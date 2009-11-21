@@ -3,12 +3,14 @@
 #### NOTE: Right now, needs to run from "go-dev/amigo/testing".
 #### Run tests: ./aunit.rb
 ####
+#### TODO: needs tests for PageRunner and such (will probably need to
+#### mess with the constructor a bit).
+####
 
 module AUnit
 
   require 'utils'
   require 'pagent'
-
 
   ## TODO: See tanuki
   ## Figure out where agents should go and what they should do there.
@@ -147,7 +149,13 @@ module AUnit
 
       ##
       @comment_regexp = Regexp.new('\<\!\-\-.*\-\-\>')
-      @comments = @pagent.content.scan(@comment_regexp)
+
+      begin 
+        @comments = @pagent.content.scan(@comment_regexp)
+      rescue
+        error("PAgent is bad")        
+        raise "PAgent is bad"
+      end
 
       ##
       @comment_properties = nil
@@ -229,12 +237,6 @@ module AUnit
           fname = output_dir +'/'+ gtime +'_'+ slabel + suffix
         end
         
-        # puts "output_dir: #{output_dir}"
-        # puts "gtime: #{gtime}"
-        # puts "token_label: #{token_label}"
-        # puts "uuid: #{uuid}"
-        # puts "suffix: #{suffix}"
-        
         ##
         begin
           File.open(fname, 'w') {|f| f.write(@pagent.content)}
@@ -261,14 +263,7 @@ module AUnit
 
     ##
     def comment_property (name)
-      # puts "in cp: #{name}"
-      # puts "cp: cp1: #{@comment_properties}"
-      # puts "cp: cp2: #{@comment_properties.class}"
-      # $foo = name
-      # $bar = @comment_properties
-      res = @comment_properties.fetch(name, nil)
-      # puts "cp: res: #{res}"
-      res
+      @comment_properties.fetch(name, nil)
     end
     
     ###
@@ -285,21 +280,12 @@ module AUnit
       op = arg_bundle.fetch('op', nil)
       type = arg_bundle.fetch('as', nil)
 
+      # puts "sub: #{sub}"
+      # puts "sun.class: #{sub.class}"
+
       ##
       lval = comment_property(sub)
       
-      # puts "lval_key: #{lval_key}"
-      # puts "lval: #{lval}"
-
-      ##
-      # decomp = boper.split('_')
-      # type = decomp[0]
-      # op = decomp[1].to_sym
-      
-      # puts "pre"
-      # puts "type: #{type}"
-      # puts "op: #{op}"
-
       ##
       case type
       when 'i'
@@ -312,20 +298,25 @@ module AUnit
         lval = lval.to_s
         rval = rval.to_s
       end
-      
-      # puts "post"
-      # puts "lval: #{lval}"
-      # puts "lval.class: #{lval.class}"
-      # puts "op: #{op}"
-      # puts "op.class: #{op.class}"
-      # puts "rval: #{rval}"
-      # puts "rval.class: #{rval.class}"
 
       ##
       meth = lval.method op
-      meth.call rval
-    end
+      res = meth.call rval
 
+      # puts "lval: #{lval}"
+      # puts "lval.class: #{lval.class}"
+      # puts "rval: #{rval}"
+      # puts "rval.class: #{rval.class}"
+      # puts "op: #{op}"
+      # puts "op.class: #{op.class}"
+      # puts "type: #{type}"
+      # puts "type.class: #{type.class}"
+      # puts "meth: #{meth}"
+      # puts "res.class: #{res.class}"
+      
+      res
+    end
+    
     ###
     ### Boolean tests.
     ###
@@ -396,24 +387,6 @@ module AUnit
       all_links_pure_and_true
     end
 
-
-    ##3
-
-    # ###
-    # ### Do everything we can tests.
-    # ###
-    
-    # def do_all
-      
-    #   # num = comment_property("NUMBER_OF_RESULTS").to_i
-    #   # if num > 100
-    #   #   puts "\tX is okay!"
-    #   # else
-    #   #   puts "\tX is bad!"
-    #   # end
-      
-    # end
-    
   end
 
 end
@@ -427,15 +400,14 @@ end
 if __FILE__ == $0
 
   require 'test/unit'
+  require 'amigo'
   
   ## Test the job thingy to make sure that it's working.
- class AUnit_PageVerifier_Test_Suite < Test::Unit::TestCase
-
+  class AUnit_PageVerifier_Links_101_Test_Suite < Test::Unit::TestCase
+    
     ## Run before every test.
     def setup
-
       ## TODO: let's just assume that AmiGO is actually installed locally.
-      # @aconf = AmiGO::Conf.new('./config.json')
       test_url = 'http://localhost/cgi-bin/amigo/page_test?mode=links_101'
       p = PAgent::HTML.new(test_url)
       @pv = AUnit::PageVerifier.new(p)
@@ -461,4 +433,114 @@ if __FILE__ == $0
 
   end
 
+  ## Test the job thingy to make sure that it's working.
+  class AUnit_Simple_Test_Test_Suite < Test::Unit::TestCase
+
+    ## Run before every test.
+    def setup
+    end
+
+    ## Run after every test.
+    def teardown
+    end
+
+    ##
+    def test_comment_assertions
+
+      test_url = 'http://localhost/cgi-bin/amigo/page_test?mode=simple_test'
+      pa = PAgent::HTML.new(test_url)
+      pv = AUnit::PageVerifier.new(pa)
+
+      ##
+      assert(pv.okay?, "page living")
+      assert(pv.code?, "page has good code")
+      assert(pv.comments.size == 2, "page has two comments")
+
+      ## Work through different string properties: FOO = "BAR"
+      assert(pv.assert({"sub"=>"FOO", "op"=>"==", "arg"=>"FOO", "as"=>"s"}),
+             "\"FOO\" == \"FOO\"")
+      assert(! pv.assert({"sub"=>"FOO", "op"=>"==", "arg"=>"BAR", "as"=>"s"}),
+             "not \"FOO\" == \"BAR\"")
+      assert(! pv.assert({"sub"=>"FOO", "op"=>">", "arg"=>"FOO", "as"=>"s"}),
+             "not \"FOO\" > \"FOO\"")
+      assert(pv.assert({"sub"=>"FOO", "op"=>">", "arg"=>"BAR", "as"=>"s"}),
+             "\"FOO\" > \"BAR\"")
+
+      ## Work through different int properties: ONE = 1
+      assert(pv.assert({"sub"=>"ONE","op"=>"==","arg"=>1,"as"=>"i"}),
+             "1 == 1 (int arg)")
+      assert(pv.assert({"sub"=>"ONE","op"=>"==","arg"=>"1","as"=>"i"}),
+             "1 == 1 (str arg)")
+      assert(pv.assert({"sub"=>"ONE","op"=>"<","arg"=>2,"as"=>"i"}),
+             "1 < 2 (int arg)")
+      assert(pv.assert({"sub"=>"ONE","op"=>"<","arg"=>"2","as"=>"i"}),
+             "1 < 2 (str arg)")
+      assert(! pv.assert({"sub"=>"ONE","op"=>">","arg"=>2,"as"=>"i"}),
+             "not 1 > 2 (int arg)")
+      assert(! pv.assert({"sub"=>"ONE","op"=>">","arg"=>"2","as"=>"i"}),
+             "not 1 > 2 (str arg)")
+    end
+    
+    ## We're also doing some direct manipulation here.
+    def test_comment_assertions_after_continue
+      
+      test_url = 'http://localhost/cgi-bin/amigo/page_test?mode=echo_form'
+
+      ## 
+      pa1 = PAgent::HTML.new(test_url)
+      pv1 = AUnit::PageVerifier.new(pa1)
+      assert(pv1.okay?, "page living")
+      assert(pv1.code?, "page has good code")
+      assert(pv1.comments.size == 0, "page has zero comments")
+
+      ## 
+      pa1.set_field("echo", "name", "foo")
+      pa1.set_field("echo", "value", "bar")
+
+      ## 
+      pa2 = pa1.submit("echo")
+      pv2 = AUnit::PageVerifier.new(pa2)
+      assert(pv2.okay?, "page living")
+      assert(pv2.code?, "page has good code")
+      assert(pv2.comments.size == 2, "page has two comments")      
+
+    end
+
+    ##
+    def test_comment_assertions_with_template
+      
+      test_url = 'http://localhost/cgi-bin/amigo/page_test?mode=echo_form'
+
+      ## 
+      pa = PAgent::HTML.new(test_url)
+      form_hash = {"form" => "echo", "field" => {"name" =>"foo", "value"=>"1"} }
+      pa.form_from_conf(AmiGO::Conf.new(form_hash))
+      pa2 = pa.submit("echo")
+      pv = AUnit::PageVerifier.new(pa2)
+
+      assert(pv.okay?, "page living")
+      assert(pv.code?, "page has good code")
+      assert(pv.comments.size == 2, "page has two comments")
+
+      assert(pv.assert({"sub"=>"name","op"=>"==","arg"=>"foo","as"=>"s"}),
+             "name is \"foo\"")
+      assert(pv.assert({"sub"=>"value","op"=>"==","arg"=>"1","as"=>"i"}),
+             "value is 1")
+    end
+
+    ## TODO/BUG: Technically, we need to add a PAgent::JSON subclass...
+    def test_timeout_catch      
+      test_url =
+        'http://localhost/cgi-bin/amigo/form_test?mode=timeout&seconds=300'
+      puts "\nTESTING TIMEOUT--THIS WILL TAKE A WHILE..."
+      pa = PAgent::HTML.new(test_url)
+      # pv = AUnit::PageVerifier.new(pa)
+      assert(! pa.okay?, "should fail on timeout")
+    end
+
+    ## TODO: needs tests for PageRunner and such (will probably need
+    ## to mess with the constructor a bit).
+
+  end
+  
 end
