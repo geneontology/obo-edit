@@ -3,6 +3,7 @@ package org.geneontology.db.factory;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.geneontology.db.model.Association;
@@ -241,6 +242,30 @@ public class GOobjectFactory {
 	public synchronized Species getSpeciesByTaxa(int taxa){
 		Session session = getSession();
 		return (Species)session.createQuery("from Species where ncbi_taxa_id = ?").setInteger(0, taxa).uniqueResult();
+	}
+
+	/**
+	 * getSpeciesByName
+	 * @param species name
+	 * @return Species
+	 */
+	public synchronized Species getSpeciesByName(String genus, String species){
+		Session session = getSession();
+		Query q;
+		if (species != null && species.length() > 1) {
+			q = session.createQuery("from Species where genus = ? and species = ?");
+			q.setString(0, genus);
+			q.setString(1, species);
+			return (Species)q.uniqueResult();
+		} else {
+			q = session.createQuery("from Species where genus = ?");
+			q.setString(0, genus);
+			List specie_list = q.list();
+			if (!specie_list.isEmpty())
+				return (Species) specie_list.get(0);
+			else
+				return null;
+		}
 	}
 
 	public synchronized Iterator<Association> getAssociationsIteratorByGP(GeneProduct gp) {
