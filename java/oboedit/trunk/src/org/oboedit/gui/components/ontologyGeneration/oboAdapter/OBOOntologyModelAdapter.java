@@ -595,7 +595,8 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 		List<OBOLookupTerm> existingChildTerms = candidateTerm.getExistingChildTerms();
 
 		for (OBOLookupTerm lookupTerm : existingChildTerms) {
-			if (lookupTerm.getLabel() != null && lookupTerm.getLabel().length() > 0) {
+			List<String> knownIds = lookupOntologyTermIdsFromIndex(Collections.singleton(lookupTerm.getLabel()));
+			if (knownIds.isEmpty() && lookupTerm.getLabel() != null && lookupTerm.getLabel().length() > 0) {
 				if (!nameToIds.containsKey(lookupTerm.getLabel())) {
 					HashSet<String> set = new HashSet<String>();
 					set.add(lookupTerm.getOboID());
