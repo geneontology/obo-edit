@@ -222,9 +222,10 @@ def inspector (runner)
     $vpage = PageVerifier.new(runner.resultant)
     cleared = true
   rescue
-    ##
-    # puts "   Failed to get the testable page."
-    _log("*  Failed to get the testable page: #{$!}")
+    ## There is no PV to add an error to, so do it manually.
+    _log("*  Failed to get a testable page verifier: #{$!}")
+    # $vpage.error("Failed to get a testable page verifier: #{$!}")
+    $errors = $errors + 1
   end
   
   if cleared
