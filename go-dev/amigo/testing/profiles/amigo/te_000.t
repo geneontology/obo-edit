@@ -1,7 +1,7 @@
 {
     "id" : "te_000",
     "page" : "term_enrichment",
-    "comment" : "setting up for image test...",
+    "comment" : "setting up and doing an image test.",
     "tests" : ["okay?",
                "code?"],
     "form" : "term_enrichment_form",

@@ -20,28 +20,31 @@ require 'getoptlong'
 require 'pagent'
 require 'amigo'
 require 'aunit'
+require 'json/pure'
 #require 'amb'
 #require 'nondeterminism'
 
 include AmiGO
 include AUnit
 
+###
+### Collect options.
+###
+
 ##
 opts = GetoptLong.new(
                       ['--help', '-h', GetoptLong::NO_ARGUMENT],
-                      # ['--aconf', '-a', GetoptLong::REQUIRED_ARGUMENT],
-                      ['--data', '-d', GetoptLong::REQUIRED_ARGUMENT],
-                      ['--tests', '-t', GetoptLong::REQUIRED_ARGUMENT],
+                      # ['--data', '-d', GetoptLong::REQUIRED_ARGUMENT],
+                      # ['--tests', '-t', GetoptLong::REQUIRED_ARGUMENT],
                       ['--output', '-o', GetoptLong::REQUIRED_ARGUMENT],
                       ['--url', '-u', GetoptLong::REQUIRED_ARGUMENT]
                       )
 
 ## Globals until all of the debugging is done.
-# $aconf = './config.json'
-$data = './data'
-$tests = './profiles/tests' # ? should this be switched on if __FILE__ == $0
-$output = '/tmp'
-$url = 'http://localhost'
+# data = './data'
+# tests = './profiles/tests' # ? should this be switched on if __FILE__ == $0
+output = '/tmp'
+url = 'http://localhost'
 opts.each do |opt, arg|
   case opt
   when '--help'
@@ -49,84 +52,67 @@ opts.each do |opt, arg|
     # RDoc::usage
     puts "Please see the source code for now for usage and examples."
     Kernel.exit
-  when '--data'
-    $data = arg
-  when '--tests'
-    $tests = arg
+  # when '--data'
+  #   data = arg
+  # when '--tests'
+  #   tests = arg
   when '--output'
-    $output = arg
+    output = arg
   when '--url'
-    $url = arg
+    url = arg
   end
 end
 
-# ## Make sure that file things are files.
-# [$aconf].each do |f|
-#   if not File.readable? f
-#     raise "file argument not readable: #{f}"
-#   end
-# end
-
 ## Make sure that dir things are directories.
-[$data, $tests, $output].each do |d|
+# [data, tests, output].each do |d|
+[output].each do |d|
   if not File.writable? d
     raise "directory argument not writable: #{d}"
   end
 end
 
-##
-$log_file = $output +'/'+ 'details.log'
-$errors = 0
+###
+### Program body.
+###
 
-## Clear output directory of html and png files.
-def _clear_output_dir da_dir
-  Dir.foreach(da_dir) do |f|
-    full_name = da_dir + '/' + f
-    if File.exists?(full_name)
-      if f =~ /^[0-9]{14}\_.*\.(png|gif|html|json)$/
-        # puts "_" + full_name
-        File.delete(full_name)
-      end
-    end
-  end
-end
+inspector = Inspector.new(output)
 
-## Delete log file.
-def _erase_log log_file
-  if File.exists?(log_file)
-    File.delete(log_file)
-    true
-  else
-    false
-  end
-end
+## Ready up.
 
 ##
-def _ready_dir (dir)
-  ## Make sure that there is a directory or something there...
-  if File.exists? dir
-    if not File.directory? dir or not File.writable? dir
-      raise "There is something wrong with an extant #{dir}"
-    end
-    false
-  else
-    Dir.mkdir(dir)
-    true
-  end
+logging_hash = Hash.new()
+errors = 0
+
+##
+# Dir.chdir(tests) # TODO: definitely a better way of doing this...
+test_files = File.join("**", "*.t")
+Dir.glob(test_files).sort.each do |test_desc|
+  
+  ## Runner contains all profile info.
+  $runner = PageRunner.new(url, test_desc)
+  prof = $runner.profile
+
+  ## Inspector returns all logging/testing warnings and errors.
+  probs = inspector.collect $runner
+
+  ## TODO: Most of this in here can be folded into Inspector
+  ## Merge them into a dumpable super object.
+  res_hash = Hash.new()
+  res_hash['warnings'] = probs['warnings']
+  res_hash['errors'] = probs['errors']
+  res_hash['id'] = $runner.id
+  res_hash['comment'] = $runner.comment
+  res_hash['reference'] = $runner.reference
+
+  ##
+  logging_hash[$runner.id] = res_hash
+  errors = errors + res_hash['errors'].size   
 end
 
-## 
-def _log (line = "???")
-
-  gtime = "[#{Time.now.strftime("%Y%m%d%H%M%S")}]"
-  _ready_dir(File.dirname($log_file))
-  
-    f = File.open($log_file, 'a')
-  f.write("#{gtime} #{line}\n")
-  f.close
-  
-  nil
-end
+##
+puts "Finished with #{errors} errors."
+inspector.log("Finished with #{errors} errors.")
+inspector.write_struct logging_hash
 
 ###
 ### TODO: randomly generate input.
@@ -206,94 +192,3 @@ end
 #   end
 
 # end
-
-###
-### ...
-###
-
-def inspector (runner)
-  
-  puts "Trying tests: #{runner.id}..."
-  _log("Trying tests: #{runner.id}: #{runner.comment}")
-
-  ##
-  cleared = false
-  begin
-    $vpage = PageVerifier.new(runner.resultant)
-    cleared = true
-  rescue
-    ## There is no PV to add an error to, so do it manually.
-    _log("*  Failed to get a testable page verifier: #{$!}")
-    # $vpage.error("Failed to get a testable page verifier: #{$!}")
-    $errors = $errors + 1
-  end
-  
-  if cleared
-
-    ## Walk through tests.
-    runner.tests.each do |t|
-      _log("   Trying test: #{t.to_s}")
-      result = $vpage.send t
-      # puts "\t\t" + result.to_s
-    end
-    
-    ## Walk through assertions.
-    runner.assertions.each do |a|
-      # puts "a: #{a}"
-      # puts "a.class: #{a.class}"
-      # puts "a[0]: #{a[0]}"
-      # puts "a[1]: #{a[1]}"
-      # puts "a[2]: #{a[2]}"
-      lval_key = a.fetch('sub', nil)
-      op = a.fetch('op', nil)
-      rval = a.fetch('arg', nil)
-      _log( "   Trying assertion: #{lval_key.to_s} #{op.to_s} #{rval.to_s}")
-      # puts "\t\t" + $vpage.assert(a).to_s
-    end
-    
-    ## Output: files and logging.
-    $vpage.dump($output, runner.id)
-    
-    $vpage.warnings.each do |w|
-      _log("#{runner.id}: warning: #{w}")
-    end
-    
-    $vpage.errors.each do |e|
-      _log("#{runner.id}: ERROR: #{e}")
-      $errors = $errors + 1
-    end
-
-    ## Check to see if there are any continues.
-    runner.continue.each do |next_desc|
-      _log("   Do a continue <==")
-      next_pagent = runner.resultant
-      next_runner = PageRunner.new(next_pagent, next_desc)
-      inspector(next_runner)
-    end
-    
-  else
-    ## 
-  end
-  
-end
-
-###
-### Program body.
-###
-
-## Ready up.
-_erase_log $log_file
-_ready_dir $output
-_clear_output_dir $output
-
-test_files = File.join("**", "*.t")
-Dir.glob(test_files).sort.each do |test_desc|
-  
-  $runner = PageRunner.new($url, test_desc)
-  inspector($runner)
-      
-end
-
-##
-puts "Finished with #{$errors} errors."
-_log("Finished with #{$errors} errors.")
