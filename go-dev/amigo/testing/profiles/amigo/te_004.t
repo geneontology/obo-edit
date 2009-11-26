@@ -1,7 +1,7 @@
 {
    "id" : "te_004", 
    "page" : "term_enrichment",
-   "comment" : "testing for minimal iea set breakage",
+   "comment" : "Minimal IEA set breakage.",
    "reference" : "https://sourceforge.net/tracker/?func=detail&aid=2887625&group_id=36855&atid=908269",
    "tests" : ["okay?",
               "code?"],

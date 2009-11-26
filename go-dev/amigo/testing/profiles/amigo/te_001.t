@@ -1,7 +1,7 @@
 {
     "id" : "te_001",
     "page" : "term_enrichment",
-    "comment" : "testing for small set with ieas",
+    "comment" : "Small TE set with IEAs.",
     "tests" : ["okay?", "code?", "links?"],
     "form" : "term_enrichment_form",
     "upload" : {

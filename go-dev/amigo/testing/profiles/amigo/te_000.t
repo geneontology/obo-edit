@@ -1,7 +1,7 @@
 {
     "id" : "te_000",
     "page" : "term_enrichment",
-    "comment" : "setting up and doing an image test.",
+    "comment" : "Image check through enrichment.",
     "tests" : ["okay?",
                "code?"],
     "form" : "term_enrichment_form",
@@ -14,7 +14,7 @@
     "multi_select" : {"speciesdb" : ["SGD"]},
     "continue" : [
         {"id" : "te_000 sub 1",
-         "comment" : "image test on resultant page",
+         "comment" : "Image test on resultant page.",
          "tests" : ["okay?", "code?"],
          "form" : "visualize"}
     ]
