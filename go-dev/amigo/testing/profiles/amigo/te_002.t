@@ -1,7 +1,7 @@
 {
     "id" : "te_002",
     "page" : "term_enrichment",
-    "comment" : "testing for small set without ieas",
+    "comment" : "Small TE set without IEAs.",
     "tests" : ["okay?",
                "code?"],
     "assertions" : [{"sub" : "NUMBER_OF_RESULTS",
