@@ -199,6 +199,8 @@ module AUnit
     def dump (output_dir, token_label = "")
       
       ## Work if there is a core, otherwise
+      base_name = nil
+      full_name = nil
       if @pagent and @pagent.core and @pagent.core.response
 
         ready_dir(output_dir)
@@ -214,28 +216,26 @@ module AUnit
         gtime = Time.now.strftime("%Y%m%d%H%M%S")
         
         ## Complete file name.
-        fname = nil
         if token_label.eql?('')
-          fname = output_dir +'/'+ gtime +'_'+ uuid + suffix
+          base_name = gtime +'_'+ uuid + suffix
+          full_name = output_dir +'/'+ base_name
         else
           slabel = File.basename(token_label, '.t')
-          fname = output_dir +'/'+ gtime +'_'+ slabel + suffix
+          base_name = gtime +'_'+ slabel + suffix
+          full_name = output_dir +'/'+ base_name
         end
         
         ##
         begin
-          File.open(fname, 'w') {|f| f.write(@pagent.content)}
-          # puts "HERE"
+          File.open(full_name, 'w') {|f| f.write(@pagent.content)}
         rescue
-          fname = nil
-          # puts "THERE"
+          full_name = nil
+          base_name = nil
         end
         
-        fname
-      else
-        nil
       end
       
+      base_name
     end
 
     ###
@@ -398,21 +398,19 @@ module AUnit
   ##
   class Inspector
 
-    # attr_reader :base_uri, :data_dir, :dump_dir
+    attr_reader :directory, :warnings, :errors
+    attr_reader :profile_id, :profile_comment, :profile_reference
+    attr_reader :generated_files
 
     ##
-    def initialize (output)
+    def initialize (out_dir)
 
-      #     @base_uri = URI.parse(url)
+      # @base_uri = URI.parse(url)
+      @directory = out_dir
 
-      @log_file = output +'/'+ 'details.log'
-      @log_struct_file = output +'/'+ 'struct.log'
-      @output = output
-
-      erase_log @log_file
-      erase_log @log_struct_file
-      ready_dir @output
-      clear_output_dir @output
+      ## Ready hard output location.
+      @log_file = @directory +'/'+ 'details.log'
+      @log_struct_file = @directory +'/'+ 'struct.log'
     end  
   
   #   def same_host (thingy)
@@ -430,7 +428,7 @@ module AUnit
   #   end
 
     ## Clear output directory of html and png files.
-    def clear_output_dir da_dir
+    def clear_output_dir (da_dir = @directory)
       Dir.foreach(da_dir) do |f|
         full_name = da_dir + '/' + f
         if File.exists?(full_name)
@@ -442,18 +440,20 @@ module AUnit
       end
     end
     
-    ## Delete log file.
-    def erase_log log_file
-      if File.exists?(log_file)
-        File.delete(log_file)
-        true
-      else
-        false
+    ## Delete log files.
+    def erase_logs
+      [@log_file, @log_struct_file].each do |log_file|
+        if File.exists?(log_file)
+          File.delete(log_file)
+          true
+        else
+          false
+        end
       end
     end
     
     ##
-    def ready_dir (dir)
+    def ready_dir (dir = @directory)
       ## Make sure that there is a directory or something there...
       if File.exists? dir
         if not File.directory? dir or not File.writable? dir
@@ -466,17 +466,26 @@ module AUnit
       end
     end
 
-    ## 
-    def log (line = "???")
+    ## Either :file or :console
+    def log (line = "???", place = :console)
 
-      gtime = "[#{Time.now.strftime("%Y%m%d%H%M%S")}]"
-      ready_dir(File.dirname(@log_file))
-      
-      f = File.open(@log_file, 'a')
-      f.write("#{gtime} #{line}\n")
-      f.close
-      
-      nil
+      if( place == :file )
+
+        ## Add time to line.
+        gtime = "[#{Time.now.strftime("%Y%m%d%H%M%S")}]"
+        ready_dir(File.dirname(@log_file))
+        line = "#{gtime} #{line}\n"
+
+        ## Append line to file.
+        f = File.open(@log_file, 'a')
+        f.write(line)
+        f.close
+      else
+        ## STDOUT
+        puts line
+      end
+
+      line
     end
 
     ## 
@@ -491,16 +500,22 @@ module AUnit
       nil
     end
 
-    ## BUG/TODO: change name
-    def collect (runner)
+    ##
+    def inspect (runner)
       
-      puts "Trying tests: #{runner.id}..."
       log("Trying tests: #{runner.id}: #{runner.comment}")
-      
-      trial_hash = Hash.new()
-      trial_hash['warnings'] = []
-      trial_hash['errors'] = []
+      log("Trying tests: #{runner.id}: #{runner.comment}", :file)
 
+      #
+      @warnings = []
+      @errors = []
+
+      ## Things that touch on the runner.
+      @profile_id = runner.id
+      @profile_reference = runner.reference
+      @profile_comment = runner.comment
+      @generated_files = []
+      
       ##
       vpage = PageVerifier.new(runner.resultant)
       
@@ -510,6 +525,7 @@ module AUnit
         ## Walk through tests.
         runner.tests.each do |t|
           log("   Trying test: #{t.to_s}")
+          log("   Trying test: #{t.to_s}", :file)
           result = vpage.send t
           # puts "\t\t" + result.to_s
         end
@@ -524,52 +540,56 @@ module AUnit
           lval_key = a.fetch('sub', nil)
           op = a.fetch('op', nil)
           rval = a.fetch('arg', nil)
-          log( "   Trying assertion: #{lval_key.to_s} #{op.to_s} #{rval.to_s}")
+          asstr = "   Try assertion: #{lval_key.to_s} #{op.to_s} #{rval.to_s}"
+          log(asstr)
+          log(asstr, :file)
           # puts "\t\t" + vpage.assert(a).to_s
         end
         
-        ## Output: files and logging.
-        vpage.dump(@output, runner.id)
+        ## Output: dump file and capture file name.
+        @generated_files.push(vpage.dump(@directory, runner.id))
         
         ## Check to see if there are any continues; if so, run them and
         ## flatten the output.
         runner.continue.each do |next_desc|
+
           log("   Do a continue <==")
+          log("   Do a continue <==", :file)
+
+          ## Run the item described in the continue.
           next_pagent = runner.resultant
           next_runner = PageRunner.new(next_pagent, next_desc)
-          next_probs = collect(next_runner)
+
+          # next_vpage = PageVerifier.new(next_runner.resultant)
+
+          ## (Recursively) inspect the runner.
+          next_inspector = Inspector.new(@directory)
+          next_inspector.inspect(next_runner)
           
-          ## Recursively add next probs to these probs.
-          # if next_probs
-          #   trial_hash['continue'] = next_probs
-          # end
-          
-          ## Flatten and add next probs to these probs.
-          if next_probs
-            ['warnings', 'errors'].each do |l|
-              next_probs[l].each{ |s| trial_hash[l].push(s) }
-            end
-          end
-          
+          ## Just flatten and pass up problems from below.
+          next_inspector.warnings.each{ |s| @warnings.push(s) }
+          next_inspector.errors.each{ |s| @errors.push(s) }
+          next_inspector.generated_files.each{ |f| @generated_files.push(f) }
+        
         end
         
       else
         ## There is no PV to add an error to, so do it manually.
-        log("*  Failed to get a testable page verifier: #{$!}")
-        vpage.error("Failed to get a testable page verifier: #{$!}")
+        log("*  Failed to get a testable PageVerifier: #{$!}", :file)
+        vpage.error("Failed to get a testable PageVerifier: #{$!}")
       end  
       
       ## Add the various warnings and errors to the log and hash.
       vpage.warnings.each do |w|
-        log("#{runner.id}: warning: #{w}")
-        trial_hash['warnings'].push(w)
+        log("#{runner.id}: warning: #{w}", :file)
+        @warnings.push(w)
       end
       vpage.errors.each do |e|
-        log("#{runner.id}: ERROR: #{e}")
-        trial_hash['errors'].push(e)
+        log("#{runner.id}: ERROR: #{e}", :file)
+        @errors.push(e)
       end
       
-      trial_hash
+      nil
     end
 
   end

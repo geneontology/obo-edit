@@ -50,7 +50,7 @@ opts.each do |opt, arg|
   when '--help'
     ## TODO: 
     # RDoc::usage
-    puts "Please see the source code for now for usage and examples."
+    inspector.log("Please see the source code for now for usage and examples.")
     Kernel.exit
   # when '--data'
   #   data = arg
@@ -77,6 +77,11 @@ end
 
 inspector = Inspector.new(output)
 
+## Clean up if we already ran this.
+inspector.erase_logs
+inspector.ready_dir
+inspector.clear_output_dir
+
 ## Ready up.
 
 ##
@@ -87,31 +92,36 @@ errors = 0
 # Dir.chdir(tests) # TODO: definitely a better way of doing this...
 test_files = File.join("**", "*.t")
 Dir.glob(test_files).sort.each do |test_desc|
-  
+
+  inspector.log("Found test: #{test_desc}")
+  inspector.log("Found test: #{test_desc}", :file)
+
   ## Runner contains all profile info.
   $runner = PageRunner.new(url, test_desc)
-  prof = $runner.profile
+  # prof = $runner.profile
 
   ## Inspector returns all logging/testing warnings and errors.
-  probs = inspector.collect $runner
+  # probs = inspector.collect $runner
+  inspector.inspect $runner
 
   ## TODO: Most of this in here can be folded into Inspector
   ## Merge them into a dumpable super object.
   res_hash = Hash.new()
-  res_hash['warnings'] = probs['warnings']
-  res_hash['errors'] = probs['errors']
-  res_hash['id'] = $runner.id
-  res_hash['comment'] = $runner.comment
-  res_hash['reference'] = $runner.reference
+  res_hash['warnings'] = inspector.warnings
+  res_hash['errors'] = inspector.errors
+  res_hash['id'] = inspector.profile_id
+  res_hash['comment'] = inspector.profile_comment
+  res_hash['reference'] = inspector.profile_reference
+  res_hash['generated_files'] = inspector.generated_files
 
   ##
-  logging_hash[$runner.id] = res_hash
+  logging_hash[inspector.profile_id] = res_hash
   errors = errors + res_hash['errors'].size   
 end
 
 ##
-puts "Finished with #{errors} errors."
 inspector.log("Finished with #{errors} errors.")
+inspector.log("Finished with #{errors} errors.", :file)
 inspector.write_struct logging_hash
 
 ###
@@ -135,7 +145,7 @@ inspector.write_struct logging_hash
 #         solutions.push({:a => a, :b => b, :c => c})
 #         @a.search
 #       rescue Amb::ExhaustedError
-#         #puts "No More Solutions"
+#         #inspector.log("No More Solutions")
 #       end
 
 # ## Get large bank of GPs.
@@ -183,12 +193,12 @@ inspector.write_struct logging_hash
 #     ## possible.
 #     $t11 = $t10.submit('visualize')
 #     if ! $t11.nil?
-#       puts "got image: " + $t11.dump($output)
+#       inspector.log("got image: " + $t11.dump($output))
 #     else
-#       puts "random visualize may have timed out"
+#       inspector.log("random visualize may have timed out")
 #     end
 #   else
-#     puts "random TE may have timed out"
+#     inspector.log("random TE may have timed out")
 #   end
 
 # end

@@ -1,6 +1,6 @@
 {
     "id" : "front_001",
     "page" : "go.cgi",
-    "comment" : "flat test",
+    "comment" : "Simple test of testing.",
     "tests" : ["okay?", "code?", "links?"]
 }
