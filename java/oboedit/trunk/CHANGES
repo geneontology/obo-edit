@@ -45,6 +45,12 @@ TO DO:
 
 - Update documentation for reasoner and new components
 
+1st December:
+
+Jen Deegan: Added features to Search Results Table, Assert Implied Links Component 
+and Remove Redundant Links Component so that the results tables are just white with
+ black borders in Windows rather than blue and white striped as in Mac OS X. This 
+ was necessary as the stripey look was not working so well with the windows look and feel. 
 
 
 
