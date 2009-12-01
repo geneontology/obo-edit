@@ -95,10 +95,10 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 		southPanel.add(Box.createGlue());
 		impliedLinks = getImpliedLinks();
 		//notify when there are no implied links
-//		if(impliedLinks.size()==0){
-//			JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
-//			"There are no implied links in the current ontology.");	
-//		}
+		//		if(impliedLinks.size()==0){
+		//			JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
+		//			"There are no implied links in the current ontology.");	
+		//		}
 
 		links = new ArrayList<Link>(impliedLinks);
 		displayResults();
@@ -118,7 +118,7 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 	protected void assertLinks(){
 		final Collection<Link> assertLinks = new ArrayList<Link>();
 		Collection<HistoryItem> items = new ArrayList<HistoryItem>();
-		
+
 		//logger.debug("impliedLinks size before asserting: " + impliedLinks.size());
 		logger.debug("Asserting " + selectedIx.size() + " links...");
 		for(int i=0; i<selectedIx.size(); i++){
@@ -134,14 +134,14 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 			final TermMacroHistoryItem item = new TermMacroHistoryItem(
 					"Assert "+ assertLinks.size() +" implied links");
 			item.addItem(new CreateLinkHistoryItem(link));
-			
+
 			if(item != null)
-			items.add(item);
-// apply one item at a time	
-//			if (item != null)
-//				SessionManager.getManager().apply(item);
+				items.add(item);
+			// apply one item at a time	
+			//			if (item != null)
+			//				SessionManager.getManager().apply(item);
 		}
-		
+
 		//batch processing for applying items
 		logger.debug("Applying " + items.size() + " items...");
 		SessionManager.getManager().apply(items);
@@ -304,27 +304,40 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 
 		if(table == null){
 			table = new JTable(model){
-				
+
 				//alternate row coloring 
 				public Component prepareRenderer
 				(TableCellRenderer renderer,int Index_row, int Index_col) {
 					Component comp = super.prepareRenderer(renderer, Index_row, Index_col);
 
-					if(isCellSelected(Index_row, Index_col)){
-						comp.setBackground(Color.blue);
-						comp.setForeground(Color.white);
-					} 	
-					//even index, selected or not selected
-					else if (Index_row % 2 == 0) {
-						comp.setBackground(LIGHT_BLUE);
-						comp.setForeground(Color.black);
-					} 
-					else {
+					if(System.getProperty("os.name").startsWith("Win")){
+
 						comp.setBackground(Color.white);
 						comp.setForeground(Color.black);
+
+					} else {
+
+						if(isCellSelected(Index_row, Index_col)){
+
+							comp.setBackground(Color.blue);
+							comp.setForeground(Color.white);
+						} 	
+						//even index, selected or not selected
+						else if (Index_row % 2 == 0) {
+							comp.setBackground(LIGHT_BLUE);
+							comp.setForeground(Color.black);
+						} 
+						else {
+							comp.setBackground(Color.white);
+							comp.setForeground(Color.black);
+						}
 					}
 					return comp;
+
 				}
+
+
+
 				//table header tool tips
 				protected JTableHeader createDefaultTableHeader() {
 					return new JTableHeader(columnModel) {
