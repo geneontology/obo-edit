@@ -41,7 +41,7 @@ public class SearchResultsTable extends JTable {
 
 		public SearchResultsRenderer(String... expressions) {
 			columnExpressions = expressions;
-			
+
 		}
 
 		public Component getTableCellRendererComponent(JTable table,
@@ -53,24 +53,32 @@ public class SearchResultsTable extends JTable {
 			Component c = super.getTableCellRendererComponent(table, value,
 					isSelected, hasFocus, row, column);
 			setText(provider.getLabel(null, io));
-			
-			//alternate blue and white row colors 
-//			if (row % 2 == 0 && !isSelected) {
-			if (isSelected) {
-				c.setBackground(Color.blue);
-				c.setForeground(Color.black);
-			} 
-			else if(row %2 ==0){
-				c.setBackground(LIGHT_BLUE);
-				c.setForeground(Color.black);
-			}
-			else{
+
+			if(System.getProperty("os.name").startsWith("Win")){
+
 				c.setBackground(Color.white);
 				c.setForeground(Color.black);
+
+			} else {
+				//alternate blue and white row colors 
+				//			if (row % 2 == 0 && !isSelected) {
+				if (isSelected) {
+					c.setBackground(Color.blue);
+					c.setForeground(Color.black);
+				} 
+				else if(row %2 ==0){
+					c.setBackground(LIGHT_BLUE);
+					c.setForeground(Color.black);
+				}
+				else{
+					c.setBackground(Color.white);
+					c.setForeground(Color.black);
+				}
 			}
 			return c;
+
 		}
-		
+
 	}
 
 	public SearchResultsTable(SearchResultsTableModel<?> model,
@@ -85,7 +93,7 @@ public class SearchResultsTable extends JTable {
 		setSelectionModel(new ReselectListSelectionModel());
 		getSelectionModel().addListSelectionListener(
 				searchModel.getSelectionListener(this));
-		
+
 		final JTableHeader header = getTableHeader();
 		header.addMouseListener(new MouseAdapter() {
 			@Override
