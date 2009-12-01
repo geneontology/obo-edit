@@ -210,6 +210,11 @@ module AUnit
         ct = @pagent.core.response['content-type']
         if ct
           suffix = '.' + ct.split('/')[-1]
+          ## Check to see if there is a character on there too...and
+          ## whack it off.
+          if suffix =~ /charset/
+            suffix = suffix.split(';')[0]
+          end
         end
         
         ## Good times.
