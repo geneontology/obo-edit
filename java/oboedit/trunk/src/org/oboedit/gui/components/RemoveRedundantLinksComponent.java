@@ -91,21 +91,21 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 		setLayout(new BorderLayout());
 		northPanel.add(Box.createVerticalGlue());
 		southPanel.add(Box.createGlue());
-		
+
 		redundantLinks = getRedundantLinks();
 		//notify when there are no redundant links
 		if(redundantLinks.size()==0){
 			JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
 			"There are no redundant links in the current ontology.");	
 		}
-			links = new ArrayList<Link>(redundantLinks);
-			displayResults();
-			removeLinksButton.setToolTipText("Remove selected links");	
-			removeLinksButton.addActionListener(new ActionListener(){
-				public void actionPerformed(final ActionEvent e){
-					removeLinks();
-				}
-			});
+		links = new ArrayList<Link>(redundantLinks);
+		displayResults();
+		removeLinksButton.setToolTipText("Remove selected links");	
+		removeLinksButton.addActionListener(new ActionListener(){
+			public void actionPerformed(final ActionEvent e){
+				removeLinks();
+			}
+		});
 
 		southPanel.add(removeLinksButton);
 		add(northPanel,"Center");
@@ -115,8 +115,8 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 
 	protected void removeLinks(){
 		final Collection<Link> removeLinks = new ArrayList<Link>();
-//		logger.debug("redundantLinks size before removing: " + redundantLinks.size());
-		
+		//		logger.debug("redundantLinks size before removing: " + redundantLinks.size());
+
 		logger.debug("Removing " + selectedIx.size() + " links...");
 		for(int i=0; i<selectedIx.size(); i++){
 			logger.debug("Remove selectedIx[" + i + "]: " + selectedIx.get(i));
@@ -141,7 +141,7 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 		final ReasonedLinkDatabase reasoner = SessionManager.getManager().getReasoner();
 		allLinks = new LinkedHashSet<Link>();
 		redundantLinks = new LinkedHashSet<Link>();
-		
+
 		final Iterator<Link> it = TermUtil.getAllLinks(reasoner);
 		while (it.hasNext()) {
 			final Link link = it.next();
@@ -244,11 +244,11 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 
 	public void valueChanged(final ListSelectionEvent e) {
 		if(table.getSelectedColumn() == 1 || table.getSelectedColumn() ==2 || table.getSelectedColumn() ==3){
-//			logger.debug("\nSelected [row, column]: [" + table.getSelectedRow() + ", " + table.getSelectedColumn() + "]  in Remove Redundant Links Table");
+			//			logger.debug("\nSelected [row, column]: [" + table.getSelectedRow() + ", " + table.getSelectedColumn() + "]  in Remove Redundant Links Table");
 			//Select action for Child name and Parent name columns  
 			//selects term in all components corresponding to the column in focus
 			if(table.getSelectedColumn() == 1 || table.getSelectedColumn() == 2){
-//				logger.debug("value in selected column:  " + table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()));
+				//				logger.debug("value in selected column:  " + table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()));
 				final Object colobj = table.getValueAt(table.getSelectedRow(), table.getSelectedColumn());					
 				SelectionManager.selectTerm(table, (LinkedObject) colobj);
 			}
@@ -285,20 +285,28 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 				public Component prepareRenderer
 				(TableCellRenderer renderer,int Index_row, int Index_col) {
 					Component comp = super.prepareRenderer(renderer, Index_row, Index_col);
-					
-					if(isCellSelected(Index_row, Index_col)){
-						comp.setBackground(Color.blue);
-						comp.setForeground(Color.white);
-						
-					}
-					//even index, selected or not selected
-					else if (Index_row % 2 == 0) {
-						comp.setBackground(LIGHT_BLUE);
-						comp.setForeground(Color.black);
-					} 
-					else {
+
+					if(System.getProperty("os.name").startsWith("Win")){
+
 						comp.setBackground(Color.white);
 						comp.setForeground(Color.black);
+
+					} else {
+
+						if(isCellSelected(Index_row, Index_col)){
+							comp.setBackground(Color.blue);
+							comp.setForeground(Color.white);
+
+						}
+						//even index, selected or not selected
+						else if (Index_row % 2 == 0) {
+							comp.setBackground(LIGHT_BLUE);
+							comp.setForeground(Color.black);
+						} 
+						else {
+							comp.setBackground(Color.white);
+							comp.setForeground(Color.black);
+						}
 					}
 					return comp;
 				}
