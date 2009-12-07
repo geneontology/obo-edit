@@ -318,6 +318,14 @@ public class OBOParseEngine extends AbstractParseEngine {
 				parser.startStanza(stanzaname);
 				setReadIDForCurrentBlock(false);
 			} else {
+				// Skip any whitespace at the beginning of the line
+				while (line.length() > 0 && Character.isWhitespace(line.charAt(0))) {
+					line = line.substring(1);
+				}
+				if (line.length() <= 1) {  // Nothing to see here, move along...
+					continue;
+				}
+
 				SOPair pair;
 				try {
 					pair = unescape(line, ':', 0, true);
