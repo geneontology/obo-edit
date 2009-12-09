@@ -83,6 +83,15 @@ __PACKAGE__->has_many('term_synonym' =>
 __PACKAGE__->has_many('gene_product_count' =>
 		      'GOBO::DBIC::GODBModel::Schema::GeneProductCount', 'term_id');
 
+## term_definition
+__PACKAGE__->might_have('term_definition' =>
+			'GOBO::DBIC::GODBModel::Schema::TermDefinition',
+			{'foreign.term_id' => 'self.id'});
+
+## term_subset
+__PACKAGE__->has_many('subset' =>
+		      'GOBO::DBIC::GODBModel::Schema::TermSubset', 'term_id');
+
 ## term2term
 __PACKAGE__->has_many('parent_relations' =>
 		      'GOBO::DBIC::GODBModel::Schema::Term2Term', 'term2_id');

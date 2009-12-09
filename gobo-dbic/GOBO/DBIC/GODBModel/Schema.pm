@@ -37,7 +37,9 @@ __PACKAGE__->load_classes( qw/
 			       EvidenceDBXRef
 
 			       Term
+			       TermDefinition
 			       Term2Term
+			       TermSubset
 			       TermSynonym
 			       TermDBXRef
 			       GeneProductCount
