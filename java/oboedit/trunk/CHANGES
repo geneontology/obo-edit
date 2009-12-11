@@ -52,6 +52,7 @@ and Remove Redundant Links Component so that the results tables are just white w
  black borders in Windows rather than blue and white striped as in Mac OS X. This 
  was necessary as the stripey look was not working so well with the windows look and feel. 
 
+Jen Deegan: Updated standard.dict and allowedrepeats.dict. 11 Dec 2009.
 
 
 
