@@ -37,8 +37,7 @@ public class CreateLinkHistoryItem extends HistoryItem {
 
 	public CreateLinkHistoryItem(LinkedObject child, OBOProperty type,
 			LinkedObject parent) {
-		this(child.getName(), type.getID(), parent.getName());
-//		this(child.getID(), type.getID(), parent.getID());
+		this(child.getID(), type.getID(), parent.getID());
 	}
 
 	@Override
