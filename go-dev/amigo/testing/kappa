@@ -1,17 +1,16 @@
 #!/usr/bin/ruby -w
 ####
-#### Run: ./kappa
-####
 #### TODO: Still needs to be run from geneontology/go-dev/amigo/testing.
 #### TODO: Agents should share cookies...
 #### TODO: Randomized input (generate new test files on the fly?).
-#### TODO: Still have globals running around (nice for debugging for now)...
 ####
-#### irb:
+#### irb (TODO: does this still work?):
 ####    ['pagent.rb', 'amigo.rb', 'aunit.rb', 'kappa'].each{|l| load l }
 ####
-#### command line:
-####    ./kappa --url http://localhost/cgi-bin/amigo --data /home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/data --tests /home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/profiles/amigo --output /home/sjcarbon/tmp/kappa
+#### example command line (mostly for cron):
+####    RUBYLIB=$RUBYLIB:/home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing /home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/kappa --url http://localhost/cgi-bin/amigo --output /srv/www/htdocs/amigo/kappa --tests /home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/profiles/amigo
+####
+#### NOTE: Right now, data is determined by absolute paths.
 ####
 
 require 'getoptlong'
@@ -34,32 +33,40 @@ include AUnit
 ##
 opts = GetoptLong.new(
                       ['--help', '-h', GetoptLong::NO_ARGUMENT],
+                      ## NOTE: Right now, data is determined by absolute paths.
                       # ['--data', '-d', GetoptLong::REQUIRED_ARGUMENT],
-                      # ['--tests', '-t', GetoptLong::REQUIRED_ARGUMENT],
+                      ['--tests', '-t', GetoptLong::REQUIRED_ARGUMENT],
                       ['--output', '-o', GetoptLong::REQUIRED_ARGUMENT],
                       ['--url', '-u', GetoptLong::REQUIRED_ARGUMENT]
                       )
 
-## Globals until all of the debugging is done.
+## Defaults--some probably not very sensible.
 # data = './data'
-# tests = './profiles/tests' # ? should this be switched on if __FILE__ == $0
+tests = './profiles/tests' # ? should this be switched on if __FILE__ == $0
 output = '/tmp'
 url = 'http://localhost'
+
+## Arg loop.
 opts.each do |opt, arg|
   case opt
   when '--help'
     ## TODO: 
     # RDoc::usage
-    inspector.log("Please see the source code for now for usage and examples.")
+    #inspector.log("Please see the source code for now for usage and examples.")
+    puts("Please see the source code for now for usage and examples.")
     Kernel.exit
-  # when '--data'
-  #   data = arg
-  # when '--tests'
-  #   tests = arg
-  when '--output'
-    output = arg
   when '--url'
     url = arg
+    puts("* Will use base URL: \"#{url}\".")
+  when '--tests'
+    tests = arg
+    puts("* Will look for tests in: \"#{tests}\".")
+  # when '--data'
+  #   data = arg
+  #   puts("* Will look for test data in: \"#{tests}\".")
+  when '--output'
+    output = arg
+    puts("* Will output test information to: \"#{output}\".")
   end
 end
 
@@ -75,6 +82,7 @@ end
 ### Program body.
 ###
 
+##
 inspector = Inspector.new(output)
 
 ## Clean up if we already ran this.
@@ -89,7 +97,7 @@ logging_hash = Hash.new()
 errors = 0
 
 ##
-# Dir.chdir(tests) # TODO: definitely a better way of doing this...
+Dir.chdir(tests) # TODO: definitely a better way of doing this...
 test_files = File.join("**", "*.t")
 Dir.glob(test_files).sort.each do |test_desc|
 
@@ -120,8 +128,8 @@ Dir.glob(test_files).sort.each do |test_desc|
 end
 
 ##
-inspector.log("Finished with #{errors} errors.")
-inspector.log("Finished with #{errors} errors.", :file)
+inspector.log("Finished with #{errors} error(s).")
+inspector.log("Finished with #{errors} error(s).", :file)
 inspector.write_struct logging_hash
 
 ###

@@ -199,10 +199,17 @@ class PAgent::HTML < PAgent
     ret
   end
 
-  ##   ## BUG/TODO: We'll need to go
-
+  ##
   def set_upload (form_identifier, name, file_str)
+
     form = find_form(form_identifier)
+
+    ## Test for the existance of the file.
+    if not File.readable? file_str
+      raise "Cannot locate data file: \"#{file_str}\"!"
+    end
+    
+    ## Upload.
     form.file_upload_with(:name => name).file_name = file_str
   end
   
@@ -235,33 +242,36 @@ class PAgent::HTML < PAgent
     field.value = value
   end
 
-  ## Turn the conf fields into form information.
+  ## Turn the conf fields into form information. If it doesn't work,
+  ## return nil. If it works, true.
   def form_from_conf (form_conf)
     
     ##
     form_id = form_conf.get('form')
     if form_id.nil?
-      raise "we need at least a form name to prepare it"
-    end
+      # raise "we need at least a form name to prepare it"
+      nil
+    else
       
-    types = {
-      'radio' => :set_radio,
-      'field' => :set_field,
-      'upload' => :set_upload,
-      'select' => :set_select,
-      'multi_select' => :set_multi_select
+      types = {
+        'radio' => :set_radio,
+        'field' => :set_field,
+        'upload' => :set_upload,
+        'select' => :set_select,
+        'multi_select' => :set_multi_select
       }
-    types.each_pair do |label, function|
-      params_of_type = form_conf.get(label)
-      if ! params_of_type.nil? 
-        params_of_type.each_pair do |key,val|
-          send(function, form_id, key, val)
+      types.each_pair do |label, function|
+        params_of_type = form_conf.get(label)
+        if ! params_of_type.nil? 
+          params_of_type.each_pair do |key,val|
+            send(function, form_id, key, val)
+          end
         end
+        
       end
       
+      true
     end
-
-    nil
   end
   
   ## TODO: Turn the extra conf fields into meta information (comments,
