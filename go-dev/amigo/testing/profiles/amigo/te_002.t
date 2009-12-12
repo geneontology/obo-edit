@@ -6,11 +6,11 @@
                "code?"],
     "assertions" : [{"sub" : "NUMBER_OF_RESULTS",
                      "op" : ">=", "as" : "i",
-                     "arg" : "100"}],
+                     "arg" : "300"}],
     "form" : "term_enrichment_form",
     "upload" : {
-	"gp_file" : "data/sgd-small-10.txt",
-	"bggp_file" : "data/sgd-small-40.txt"
+	"gp_file" : "/home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/data/sgd-small-10.txt",
+	"bggp_file" : "/home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/data/sgd-small-40.txt"
     },
     "multi_select" : {"speciesdb" : ["SGD"]},
     "radio" : {"iea" : "no"},
