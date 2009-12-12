@@ -7,8 +7,8 @@
                "code?"],
     "form" : "term_enrichment_form",
     "upload" : {
-	"gp_file" : "data/Willman_target.w32.smaller.txt",
-	"bggp_file" : "data/Willman_background.w32.smaller.txt"
+	"gp_file" : "/home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/data/Willman_target.w32.smaller.txt",
+	"bggp_file" : "/home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/data/Willman_background.w32.smaller.txt"
     },
     "multi_select" : {"speciesdb" : ["TAIR"]}
 }

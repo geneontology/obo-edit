@@ -11,7 +11,10 @@ module AUnit
 
   require 'utils'
   require 'pagent'
-  
+
+  ## 
+  #class DataMissingError < Exception
+  #end
 
   ## A class to run a pagent out of a file.
   class PageRunner
@@ -84,17 +87,16 @@ module AUnit
       
       ## If there is a form defined and it exists in page, go do
       ## that. Otherwise, just use the current page as the resultant.
-      begin
-        @tester.form_from_conf(@json_conf)
+      if @tester.form_from_conf(@json_conf)
         form_name = @json_conf.get('form')
         @resultant = @tester.submit(form_name)
-      rescue
+      else
         @resultant = @tester        
       end
       
     end
 
-    ## Dafely copy out AmiGO.Conf.
+    ## Safely copy out AmiGO.Conf.
     def profile
       Marshal.restore Marshal.dump @json_conf
     end
@@ -273,7 +275,8 @@ module AUnit
     def assert (arg_bundle)
 
       if @pagent.nil?
-        nil
+        error("PAgent is nil")
+        false
       else
 
         ## 
@@ -316,7 +319,12 @@ module AUnit
         # puts "meth: #{meth}"
         # puts "res.class: #{res.class}"
         
-        res
+        if res
+          true
+        else
+          error("Assertion failed")
+          false
+        end
       end
     end
     
@@ -545,10 +553,13 @@ module AUnit
           lval_key = a.fetch('sub', nil)
           op = a.fetch('op', nil)
           rval = a.fetch('arg', nil)
-          asstr = "   Try assertion: #{lval_key.to_s} #{op.to_s} #{rval.to_s}"
-          log(asstr)
-          log(asstr, :file)
-          # puts "\t\t" + vpage.assert(a).to_s
+          asstr = "#{lval_key.to_s} #{op.to_s} #{rval.to_s}"
+          asstr_plus = "   Try assertion: #{asstr}"
+          log(asstr_plus)
+          log(asstr_plus, :file)
+          ans = vpage.assert(a)
+          log("      ==> #{ans.to_s}")
+          log("      ==> #{ans.to_s}", :file)
         end
         
         ## Output: dump file and capture file name.
@@ -580,8 +591,8 @@ module AUnit
         
       else
         ## There is no PV to add an error to, so do it manually.
-        log("*  Failed to get a testable PageVerifier: #{$!}", :file)
-        vpage.error("Failed to get a testable PageVerifier: #{$!}")
+        log("*  Failed to get a testable PageVerifier: \"#{$!}\"", :file)
+        vpage.error("Failed to get a testable PageVerifier: \"#{$!}\"")
       end  
       
       ## Add the various warnings and errors to the log and hash.
