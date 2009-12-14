@@ -254,8 +254,8 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 		protected JCheckBox allowDanglingBox = new JCheckBox("Allow dangling parents");
 
-		//is_a closure for cross-referenced terms
-		protected JCheckBox closureforDanglingBox = new JCheckBox("Perform is_a closure for cross-referenced terms"); 
+		//is_a closure for cross-referenced terms from other ontologies loaded
+		protected JCheckBox isaClosureBox = new JCheckBox("Include is_a closure for cross-referenced terms"); 
 
 		protected JCheckBox writeModificationBox = new JCheckBox("Write modification info");
 
@@ -296,8 +296,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			rootAlgorithmChooser.addItem("STRICT");
 
 			currentHistory = SessionManager.getManager().getSession();
-			Iterator it = TermUtil.getRelationshipTypes(currentHistory)
-			.iterator();
+			Iterator it = TermUtil.getRelationshipTypes(currentHistory).iterator();
 			while (it.hasNext()) {
 				OBOProperty property = (OBOProperty) it.next();
 				prefilterTypeChooser.addItem(property);
@@ -316,7 +315,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			prefilterBox.setOpaque(false);
 
 			allowDanglingBox.setOpaque(false);
-			closureforDanglingBox.setOpaque(false);
+			isaClosureBox.setOpaque(false);
 			writeModificationBox.setOpaque(false);
 			saveImpliedBox.setOpaque(false);
 			assertImpliedBox.setOpaque(false);
@@ -396,7 +395,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			checkboxPanelA.add(allowDanglingBox);
 			//			checkboxPanelA.add(Box.createHorizontalStrut(10));
 
-			checkboxPanelA1.add(closureforDanglingBox);
+			checkboxPanelA1.add(isaClosureBox);
 			checkboxPanelA1.add(Box.createHorizontalGlue());
 
 			checkboxPanelA1.add(writeModificationBox);
@@ -499,9 +498,13 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 				filterTabbedPane.addTab("Link filtering", linkFilterEditor);
 			}
 			if (tagFilterBox.isSelected()) {
+
+				filterTabbedPane.addTab("Tag filtering", tagFilterEditor);
+
 				scrollPane = new JScrollPane(tagFilterEditor);
 				filterTabbedPane.addTab("Tag filtering", scrollPane);
 				
+
 			}
 			boolean rootAlgorithmControlsEnabled = filterBox.isSelected()
 			|| linkFilterBox.isSelected() || prefilterBox.isSelected();
@@ -529,7 +532,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			return path;
 		}
 
-		public void load(java.lang.Object o) {
+		public void load(Object o) {
 			if (!(o instanceof OBOSerializationEngine.FilteredPath))
 				return;
 			OBOSerializationEngine.FilteredPath profile = (OBOSerializationEngine.FilteredPath) o;
@@ -540,7 +543,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			tagFilterEditor.setTagsToWriteInGUI(profile.getTagFilter());
 
 			allowDanglingBox.setSelected(profile.getAllowDangling());
-			closureforDanglingBox.setSelected(profile.getCloseDangling());
+			isaClosureBox.setSelected(profile.getIsaClosure());
 			writeModificationBox.setSelected(profile.getWriteModificationData());
 			saveImpliedBox.setSelected(profile.getSaveImplied());
 			impliedTypeBox.setSelectedItem(profile.getImpliedType());
@@ -566,7 +569,6 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			filterTypesBox.setSelected(profile.getSaveTypes());
 			linkFilterBox.setSelected(profile.getDoLinkFilter());
 			tagFilterBox.setSelected(profile.getDoTagFilter());
-			logger.debug("AdvancedOBOUI: IOProfileEditor: load().");
 			rebuildPanel();
 		}
 
@@ -577,7 +579,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 		 * Gets users settings from the controls in the "Save as" dialogue box 
 		 * and writes them to the FilteredPath object.
 		 */
-		public void store(java.lang.Object saveme) {
+		public void store(Object saveme) {
 			if (!(saveme instanceof OBOSerializationEngine.FilteredPath))
 				return;
 			OBOSerializationEngine.FilteredPath profile = (OBOSerializationEngine.FilteredPath) saveme;
@@ -590,7 +592,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			}
 
 			profile.setAllowDangling(allowDanglingBox.isSelected());
-			profile.setCloseDangling(closureforDanglingBox.isSelected());
+			profile.setIsaClosure(isaClosureBox.isSelected());
 			profile.setWriteModificationData(writeModificationBox.isSelected());
 			profile.setSaveImplied(saveImpliedBox.isSelected());
 			profile.setImpliedType((String) impliedTypeBox.getSelectedItem());
@@ -621,7 +623,9 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 				localTagFilter = tagFilterEditor.getTagsToWriteFromGUI();
 				profile.setDoTagFilter(true);
 				profile.setTagFilter(localTagFilter);
-				}
+//				logger.debug("AdvancedOBOUI: store: tagFilter = \n" + profile.getTagsToWrite());
+				//profile.setDoTagFilter(true);
+			}
 
 			/*
 			 * This else is here so that if someone deselects all the tab types in the tab filter editor and 
@@ -630,18 +634,16 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			 */
 			else{
 				HashSet<OBOConstants.TagMapping> tagsToWrite = new HashSet<TagMapping>();
-				LinkedList listOfTags = new LinkedList();
+			    LinkedList listOfTags = new LinkedList();
 				TagFilter localTagFilter = new TagFilter();
 				listOfTags.addAll(OBOConstants.DEFAULT_TAG_ORDER);
-				for (Iterator iterator = listOfTags.iterator(); iterator.hasNext();) {
-					TagMapping object = (TagMapping) iterator.next();
-					tagsToWrite.add(object);
+				for(Object object : listOfTags){
+					TagMapping tmo = (TagMapping) object;
+					tagsToWrite.add(tmo);					
 				}
 				localTagFilter.setTagsToWrite(tagsToWrite);
 				profile.setTagFilter(localTagFilter);
 			}
-
-
 
 		}
 	}
@@ -835,9 +837,6 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 		pathList.setData(out);
 		allowDanglingBox.setSelected(profile.getAllowDangling());
 		closureforDanglingBox.setSelected(profile.getClosureforDangling());
-		//		System.err
-		//				.println("setConfiguration called, allowDanglingBox.setSelected("
-		//						+ profile.getAllowDangling() + ")");
 		serializerBox.setSelectedItem(profile.getSerializer());
 
 		Vector v = new Vector();
