@@ -25,7 +25,7 @@ public class DefaultOperationModel implements OperationModel {
 	public OperationWarning apply(Collection<HistoryItem> items) {
 		OperationWarning warning = null;
 		for(HistoryItem item : items){
-		logger.debug(" DefaultOperationModel: apply =" + items);
+//		logger.debug(" DefaultOperationModel: apply =" + items);
 		if (items instanceof CreateObjectHistoryItem)
 			warning = apply((CreateObjectHistoryItem) items);
 		else if (items instanceof CreateLinkHistoryItem)
@@ -800,6 +800,7 @@ public class DefaultOperationModel implements OperationModel {
 	}
 
 	protected IdentifiedObject getRealIDObject(String term) {
+		logger.debug(" DefaultOperationModel.getRealIDObject  term: " + term);
 		if (term == null)
 			return null;
 		IdentifiedObject out = session.getObject(term);
@@ -1538,6 +1539,7 @@ public class DefaultOperationModel implements OperationModel {
 	}
 
 	public OperationWarning apply(CreateLinkHistoryItem item) {
+		logger.debug("item: " +  item);
 		LinkedObject target = getRealObject(item.getTarget());
 		if (target == null) {
 			return new OperationWarning("Could not add parents to unknown "
