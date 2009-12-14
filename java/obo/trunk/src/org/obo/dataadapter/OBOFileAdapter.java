@@ -48,7 +48,7 @@ public class OBOFileAdapter implements OBOAdapter {
 
 		protected boolean allowDangling = false;
 		
-		protected boolean closeDangling = false;
+		protected boolean doIsaClosure = false;
 
 		protected boolean followImports = true;
 
@@ -123,8 +123,8 @@ public class OBOFileAdapter implements OBOAdapter {
 			return allowDangling;
 		}
 
-		public void setClosureforDangling(boolean closeDangling) {
-			this.closeDangling = closeDangling;
+		public void setClosureforDangling(boolean doIsaClosure) {
+			this.doIsaClosure = doIsaClosure;
 		}
 
 		public boolean getFollowImports() {
@@ -311,7 +311,7 @@ public class OBOFileAdapter implements OBOAdapter {
 
 				if (ioprofile.getBasicSave()) {
 					filteredPaths.add(new OBOSerializationEngine.FilteredPath(
-							null, null, null, ioprofile.getWritePath()));
+							 null, null, ioprofile.getWritePath()));
 				} else {
 					filteredPaths.addAll(ioprofile.getSaveRecords());
 				}

@@ -10,13 +10,10 @@ import org.obo.dataadapter.OBOConstants.TagMapping;
 import org.obo.datamodel.*;
 import org.obo.datamodel.impl.*;
 import org.obo.filters.*;
-import org.obo.identifier.DefaultIDGenerator;
 import org.obo.identifier.IDProfile;
 import org.obo.identifier.IDRule;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.ReasonerFactory;
-import org.obo.reasoner.impl.ForwardChainingReasoner;
-import org.obo.reasoner.impl.ForwardChainingReasonerFactory;
 import org.obo.reasoner.impl.LinkPileReasonerFactory;
 import org.obo.reasoner.impl.TrimmedLinkDatabase;
 import org.obo.util.ReasonerUtil;
@@ -65,7 +62,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		protected boolean allowDangling = false;
 
-		protected boolean closeDangling = false;
+		protected boolean followIsaClosure = false;
 
 		protected boolean saveImplied = false;
 
@@ -159,12 +156,12 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			return allowDangling;
 		}
 
-		public void setCloseDangling(boolean closeDangling) {
-			this.closeDangling = closeDangling;
+		public void setIsaClosure(boolean isaClosure) {
+			this.followIsaClosure = isaClosure;
 		}
 
-		public boolean getCloseDangling() {
-			return closeDangling;
+		public boolean getIsaClosure() {
+			return followIsaClosure;
 		}
 
 		public void setSaveImplied(boolean saveImplied) {
@@ -307,7 +304,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 	protected boolean allowDangling;
 
-	protected boolean closeDangling;
+	protected boolean followIsaClosure;
 
 	protected boolean saveImplied;
 
@@ -315,7 +312,6 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 	protected boolean assertImplied;
 
-	//Should this still be here? - Jen
 	protected List<TagMapping> tagOrdering;
 
 	protected List<TagMapping> engineTagOrderingList;
@@ -497,8 +493,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 					linkFilter = null;
 				if (!filteredPath.getDoTagFilter())
 					tagFilter = null;
-				writeFile(session, objectFilter, linkFilter, tagFilter, serializer,
-						stream, filteredPath);
+				writeFile(session, objectFilter, linkFilter, tagFilter, serializer, stream, filteredPath);
 			} catch (IOException ex) {
 				throw new DataAdapterException("Write error", ex);
 			}
@@ -713,6 +708,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 	public void writeObject(IdentifiedObject obj, LinkDatabase linkDatabase,
 			OBOSerializer serializer) throws IOException,
 			CancelledAdapterException {
+//		logger.debug("\n writing object: " + obj);
 		boolean written = false;
 		for (OBOSerializerExtension extension : extensions) {
 			if (extension.startStanza(obj)) {
@@ -726,12 +722,12 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			if (isRealObject(obj))
 				serializer.startStanza(obj);
 			else {
-				//				logger.info("OBOSerializationEngine.writeObject: not writing bogus object " + obj); // DEL
+				//logger.info("OBOSerializationEngine.writeObject: not writing bogus object " + obj); // DEL
 				return;
 			}
 		}
 
-		
+
 		//ordering collection to figure out which tags will be written in the file. 
 		for(Object o: engineTagOrderingList){
 			OBOConstants.TagMapping tagMapping = (OBOConstants.TagMapping) o;
@@ -747,7 +743,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		}
 		if (!written)
 			serializer.endStanza(obj);
-	}
+	} //writeObject
 
 	/** Don't write out bogus objects (which would come out as "[null]" stanzas).
 	(Is this the right test?) */
@@ -765,15 +761,15 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 	protected void writeTag(TagMapping tagMapping, IdentifiedObject obj,
 			LinkDatabase linkDatabase, OBOSerializer serializer)
 	throws IOException, CancelledAdapterException {
-		writeTag(tagMapping, obj, linkDatabase, serializer, allowDangling,closeDangling,
+		writeTag(tagMapping, obj, linkDatabase, serializer, allowDangling,followIsaClosure,
 				assertImplied, writeModificationData);
 	}
 
 	protected void writeTag(TagMapping tagMapping, IdentifiedObject obj,
 			LinkDatabase linkDatabase, OBOSerializer serializer,
-			boolean allowDangling, boolean closeDangling, 
+			boolean allowDangling, boolean doIsaClosure, 
 			boolean realizeImpliedLinks, boolean writeModificationData) throws IOException, CancelledAdapterException {
-		//		logger.debug("OBOSerializationEngine.writeTag -- obj:  " + obj);
+//		logger.debug("OBOSerializationEngine.writeTag -- obj:  " + obj + "  tag: " + tagMapping);
 		for (OBOSerializerExtension extension : extensions) {
 			if (extension.writeTag(tagMapping, obj, linkDatabase))
 				return;
@@ -955,12 +951,14 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 					serializer.writeHoldsOverChainTag(chain);
 				}
 			}
-		} else if (obj instanceof LinkedObject
-				&& tagMapping.equals(OBOConstants.LINK_TAG)) {
+		} 
+	
+		else if (obj instanceof LinkedObject && tagMapping.equals(OBOConstants.LINK_TAG)) {
 			if (obj instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject) obj;
 				List<Link> linkList = new LinkedList<Link>();
-				Collection<Link> parents = linkDatabase.getParents(lo);
+				//get parents from object instead of linkdatabase to bypass filter constraints
+				Collection<Link> parents = lo.getParents();
 				for (Link p : parents) {
 					if (p.getParent() == null) {
 						logger.error("invalid link: "+p+" Child: "+p.getChild().getClass());
@@ -1019,10 +1017,6 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 	public void writeLink(OBOSerializer serializer, Link link, LinkDatabase database)
 	throws IOException, CancelledAdapterException {
-		if (closeDangling && !(link.getParent() instanceof DanglingObject)) {
-			writeObjectsforDanglingLink(serializer, link, database);
-		}
-
 		if (allowDangling || !(link.getParent() instanceof DanglingObject)) {
 			if (TermUtil.isImplied(link)) {
 				if (saveImplied) {
@@ -1033,51 +1027,6 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			} else
 				serializer.writeLinkTag(link, link.getNestedValue());
 		}
-	}
-
-	/*
-	 * is_a closure for cross-referenced terms
-	 * @param serializer
-	 * @param link
-	 * @param database
-	 * */
-	public void writeObjectsforDanglingLink(OBOSerializer serializer, Link link, LinkDatabase database) throws CancelledAdapterException, IOException{
-		//		logger.debug("OBOSerializeEngine -- writeLink");
-		//		logger.debug("link: " + link);
-		//		logger.debug("child: " + link.getChild());
-		//		logger.debug("parent: " + link.getParent());
-		//get relations of child and parent upto root 
-		Collection parentAncestors = TermUtil.getAncestors(link.getParent(), null);
-		Collection childAncestors = TermUtil.getAncestors(link.getChild(), null);
-
-		Collection<Link> parentLinksofChildTerm = database.getParents(link.getChild());
-		Collection<Link> parentLinksofParentTerm = database.getParents(link.getParent());
-
-		for(Object o : parentAncestors){
-			Object obj = (LinkedObject)o;
-
-			IdentifiedObject parentAncestorObject = (IdentifiedObject) o;			
-			writeObject(parentAncestorObject,database,serializer);
-
-		}
-		if(parentLinksofChildTerm != null){
-			for(Link pclink : parentLinksofChildTerm){
-				serializer.writeLinkTag(pclink, pclink.getNestedValue());
-			}
-		}
-
-		for(Object o : childAncestors){
-			IdentifiedObject childAncestorObject = (IdentifiedObject) o;
-			writeObject(childAncestorObject,database,serializer);
-		}
-		if(parentLinksofParentTerm != null){
-			for(Link pplink : parentLinksofParentTerm){
-				serializer.writeLinkTag(pplink, pplink.getNestedValue());
-			}
-		}
-
-
-
 	}
 
 	protected OBORestriction assertLink(Link l) {
@@ -1128,7 +1077,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			CancelledAdapterException {
 		String path = filteredPath.getPath();
 		allowDangling = filteredPath.getAllowDangling();
-		closeDangling = filteredPath.getCloseDangling();
+		followIsaClosure = filteredPath.getIsaClosure();
 		saveImplied = filteredPath.getSaveImplied();
 		assertImplied = filteredPath.getSaveImplied();
 		writeModificationData = filteredPath.getWriteModificationData();
@@ -1137,8 +1086,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		OBOProperty prefilterProperty = null;
 		if (filteredPath.getPrefilterProperty() != null)
-			prefilterProperty = (OBOProperty) session.getObject(filteredPath
-					.getPrefilterProperty());
+			prefilterProperty = (OBOProperty) session.getObject(filteredPath.getPrefilterProperty());
 
 		String rootAlgorithm = filteredPath.getRootAlgorithm();
 
@@ -1153,9 +1101,6 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		}
 
 		boolean saveAll = impliedType.equals(SAVE_ALL);
-
-
-		//		LinkDatabase database = new DefaultLinkDatabase(session);
 
 		LinkDatabase database = session.getLinkDatabase();
 
@@ -1191,8 +1136,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 						public boolean satisfies(Object o) {
 							if (o instanceof Link) {
 								Link link = (Link) o;
-								return !ReasonerUtil.shouldBeTrimmedNew(
-										propertyFiltered, link);
+								return !ReasonerUtil.shouldBeTrimmedNew(propertyFiltered, link);
 							} else
 								return false;
 						}
@@ -1221,7 +1165,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				}
 			}
 			if (database instanceof ReasonedLinkDatabase) {
-				((ReasonedLinkDatabase) database).recache(); // why twice?
+				((ReasonedLinkDatabase) database).recache(); 
 			}
 		}
 
@@ -1230,29 +1174,55 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			((FilteredLinkDatabase) database).setLinkFilter(linkFilter);
 			((FilteredLinkDatabase) database).setTermFilter(objectFilter);
 			((FilteredLinkDatabase) database).setAllowDangling(allowDangling);
-			((FilteredLinkDatabase) database).setCloseDangling(closeDangling);
+			((FilteredLinkDatabase) database).setFollowIsaClosure(followIsaClosure);
 		}
+
+		//Get filteredObjects after applying relevant filters
+		Collection filteredObjects = database.getObjects();
+
+		Collection<LinkedObject> termsToFetch = new ArrayList();
+
+		//adding filteredObjects to termsToFetch to consolodate objects and prevent duplicate entries 
+		for(Object term : filteredObjects){
+			LinkedObject lo = (LinkedObject) term;
+			termsToFetch.add(lo);
+		}
+
+		setProgressString("Collecting objects to write to file: " + path);
+		// if Include is_a closure save option selected - compile termsToFetch from the filteredObjects
+		if(((FilteredLinkDatabase) database).getFollowIsaClosure()){
+			for(Object obj : filteredObjects){
+				LinkedObject lo = (LinkedObject) obj;				  
+				for(Object parent : lo.getParents()){
+					Link link = (Link) parent;
+					//check if object already exists in termsToFetch
+					boolean exists = false;
+					if(link.getParent().getName() != null){
+						for(IdentifiedObject term : termsToFetch){
+							if(link.getParent().getName().equals(term.getName()))
+								exists = true;					
+						}
+						if(!exists){
+							//add term and all its ancestors
+							termsToFetch.add(link.getParent());
+							Collection termParents = TermUtil.getAncestors(link.getParent(), null);
+							for(Object o : termParents){
+								LinkedObject linkedo = (LinkedObject) o;
+								termsToFetch.add(linkedo);
+							}
+						}
+					}
+				}
+			}
+		}
+
 
 		if (rootAlgorithm.equals("STRICT")) {
 			database = new RootAlgorithmModeratedLinkDatabase(database,
 					RootAlgorithm.STRICT);
 			((RootAlgorithmModeratedLinkDatabase) database).recache();
 		}
-		/*
-		 * ReasonedLinkDatabase reasonedLinkDatabase = null; if (controller !=
-		 * null) { reasonedLinkDatabase = controller.getReasonedLinkDatabase();
-		 * useReasoner = controller.getUseReasoner(); } // Start database as a
-		 * FilteredReasonedLinkDatabase LinkDatabase database =
-		 * reasonedLinkDatabase; if (impliedType.equals("Save all links")) { //
-		 * if this is selected make it a PushAndBubbleReasoner database =
-		 * reasonedLinkDatabase.getLinkDatabase(); } if (filterPair != null) {
-		 * if (!saveImplied || !useReasoner) { database = new
-		 * FilteredLinkDatabase(new DefaultLinkDatabase( session));
-		 * ((FilteredLinkDatabase) database).setFilterPair(filterPair);
-		 * ((FilteredLinkDatabase) database) .setAllowDangling(allowDangling); } }
-		 * else { if (!saveImplied || !controller.getUseReasoner()) database =
-		 * new DefaultLinkDatabase(session); }
-		 */
+
 		setProgressString("Writing header: " + path);
 		writeHeader(session, database, serializer, filteredPath);
 
@@ -1271,14 +1241,14 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			headerTagOrdering.addAll(serializer.getHeaderTagOrdering());
 
 		//This is where tagOrdering is populated.
-				engineTagOrderingList = new LinkedList<TagMapping>();
-				if (serializer.getTagOrdering() == null  ){
-					engineTagOrderingList.addAll(OBOConstants.DEFAULT_TAG_ORDER);
-				} else {
-					serializer.setTagOrdering(filteredPath.getTagFilter().getTagsToWrite());
-					engineTagOrderingList.addAll(serializer.getTagOrdering());
-				}
-		
+		engineTagOrderingList = new LinkedList<TagMapping>();
+		if (serializer.getTagOrdering() == null  ){
+			engineTagOrderingList.addAll(OBOConstants.DEFAULT_TAG_ORDER);
+		} else {
+			serializer.setTagOrdering(filteredPath.getTagFilter().getTagsToWrite());
+			engineTagOrderingList.addAll(serializer.getTagOrdering());
+		}
+
 		for (OBOSerializerExtension extension : extensions) {
 			extension.changeStanzaOrder(stanzaOrdering);
 			extension.changeHeaderTagOrder(headerTagOrdering);
@@ -1290,9 +1260,11 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			objectComparator = OBOConstants.DEFAULT_OBJECT_COMPARATOR;
 		for(Object o : stanzaOrdering){
 			OBOConstants.StanzaMapping stanzaMapping = (OBOConstants.StanzaMapping) o;
-			//this is where we get the objects to write to file
+
+			//get objects to write to file
 			List objectList = new ArrayList();
-			for(IdentifiedObject io : database.getObjects()){
+
+			for(IdentifiedObject io : termsToFetch){	
 				if (stanzaMapping.getStanzaClass().isInstance(io) && !io.isBuiltIn()) {
 					objectList.add(io);
 				}
@@ -1316,9 +1288,10 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 						break;
 					}
 				}
-				//add to database if it hasn't already been picked
+				//write object and add to database if it hasn't already been picked
 				if (!picked)
 					writeObject(io, database, serializer);
+
 			}
 		}
 		for (OBOSerializerExtension extension : extensions) {

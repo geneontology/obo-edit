@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.*;
-import java.lang.reflect.Constructor;
 
 import org.bbop.util.*;
 import org.obo.datamodel.*;
@@ -14,7 +13,6 @@ import org.obo.history.OperationModel;
 import org.obo.history.SessionHistoryList;
 import org.obo.identifier.IDProfile;
 import org.obo.query.QueryResolver;
-import org.obo.query.impl.DefaultQueryResolver;
 import org.obo.util.TermUtil;
 
 import org.apache.log4j.*;
