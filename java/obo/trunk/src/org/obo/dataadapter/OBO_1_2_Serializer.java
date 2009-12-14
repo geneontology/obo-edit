@@ -92,7 +92,7 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 		//This keeps only the tags that the user wants. 
 		serializer_1_2_tagOrdering.retainAll(tagsToWrite);
 		setSerializer_1_2_tagOrdering(serializer_1_2_tagOrdering);
-		System.out.println("OBO_1_2_Serializer: setTagOrdering: serializer_1_2_tagOrdering = " + getSerializer_1_2_tagOrdering());
+//		logger.debug("OBO_1_2_Serializer: setTagOrdering: serializer_1_2_tagOrdering = " + getSerializer_1_2_tagOrdering());
 		}
 		
 		return;

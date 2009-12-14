@@ -22,12 +22,12 @@ public class FilteredLinkDatabase extends AbstractLinkDatabase {
 
 	protected LinkDatabase linkDatabase;
 	protected boolean allowDangling = false;
-	protected boolean closeDangling = false;
+	protected boolean followIsaClosure = false;
 
 	public FilteredLinkDatabase(LinkDatabase linkDatabase) {
 		this.linkDatabase = linkDatabase;
 	}
-	
+
 	public void setLinkDatabase(LinkDatabase linkDatabase) {
 		this.linkDatabase = linkDatabase;
 	}
@@ -39,13 +39,13 @@ public class FilteredLinkDatabase extends AbstractLinkDatabase {
 	public boolean getAllowDangling() {
 		return allowDangling;
 	}
-	
-	public void setCloseDangling(boolean closeDangling) {
-		this.closeDangling = closeDangling;
+
+	public void setFollowIsaClosure(boolean followIsaClosure) {
+		this.followIsaClosure = followIsaClosure;
 	}
 
-	public boolean getCloseDangling() {
-		return closeDangling;
+	public boolean getFollowIsaClosure() {
+		return followIsaClosure;
 	}
 
 	protected final VectorFilter childFilter = new VectorFilter() {
@@ -100,7 +100,7 @@ public class FilteredLinkDatabase extends AbstractLinkDatabase {
 
 		this.filterMethod = filterMethod;
 	}
-	
+
 	public LinkDatabase getLinkDatabase() {
 		return linkDatabase;
 	}
@@ -136,20 +136,11 @@ public class FilteredLinkDatabase extends AbstractLinkDatabase {
 	}
 
 	public Collection<IdentifiedObject> getObjects() {
-//		logger.debug("FilteredLinkDatabase.getObjects");
-		/*
-		 * Set out = new LinkedHashSet(); 
-		 * Iterator it = linkDatabase.getObjects().iterator(); 
-		 * while(it.hasNext()) {
-		 * IdentifiedObject io = (IdentifiedObject) it.next(); 
-		 * if (termFilter == null || termFilter.satisfies(io)) out.add(io); } return out;
-		 */
-		if (termFilter == null){
+		if (termFilter == null)
 			return linkDatabase.getObjects();
-		}
-		else {
+		else 
 			return new Subset(termFilter, linkDatabase.getObjects());
-		}
+
 	}
 
 	protected boolean satisfiesChild(Link link) {
@@ -157,17 +148,17 @@ public class FilteredLinkDatabase extends AbstractLinkDatabase {
 			return allowDangling || satisfies(link.getChild());
 		} else {
 			return linkFilter.satisfies(link)
-					&& (allowDangling || satisfies(link.getChild()));
+			&& (allowDangling || satisfies(link.getChild()));
 		}
 	}
 
 	protected boolean satisfiesParent(Link link) {
 		if (linkFilter == null) {
 			return satisfies(link.getChild())
-					&& (allowDangling || satisfies(link.getParent()));
+			&& (allowDangling || satisfies(link.getParent()));
 		} else {
 			return linkFilter.satisfies(link)
-					&& (allowDangling || satisfies(link.getParent()));
+			&& (allowDangling || satisfies(link.getParent()));
 		}
 	}
 
@@ -190,7 +181,7 @@ public class FilteredLinkDatabase extends AbstractLinkDatabase {
 
 	// getting objects for global filters
 	public IdentifiedObject getObject(String id) {
-//		logger.debug("FilteredLinkDatabase.getObject");
+		//		logger.debug("FilteredLinkDatabase.getObject");
 		IdentifiedObject out = linkDatabase.getObject(id);
 		if (out == null)
 			return null;
