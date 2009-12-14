@@ -10,8 +10,6 @@ import java.io.*;
 
 import org.apache.log4j.*;
 
-import com.hp.hpl.jena.ontology.Profile;
-
 public class OBO_1_2_Serializer implements OBOSerializer {
 
 	//initialize logger
@@ -82,7 +80,7 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 	//ordering is set and can be accessed using getTagsToWrite(). 
 	
 	public void setTagOrdering(HashSet tagsToWrite) {
-		System.out.println("OBO_1_2_Serializer: setTagOrdering: tagsToWrite = " + tagsToWrite);
+//		logger.debug("OBO_1_2_Serializer: setTagOrdering: tagsToWrite = " + tagsToWrite);
 
 		if(!(tagsToWrite == null)){
 		serializer_1_2_tagOrdering = getSerializer_1_2_tagOrdering();
