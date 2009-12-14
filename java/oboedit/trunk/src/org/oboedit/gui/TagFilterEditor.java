@@ -4,21 +4,13 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.Serializable;
-import java.util.HashSet;
-
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-
-import org.apache.log4j.Logger;
-import org.obo.dataadapter.OBOConstants;
-import org.obo.dataadapter.OBOConstants.TagMapping;
-import org.obo.filters.Filter;
 import org.obo.filters.TagFilter;
-import org.oboedit.gui.event.GUIUpdateListener;
+import org.apache.log4j.Logger;
+
+
 
 /**
  * 
@@ -103,8 +95,8 @@ public class TagFilterEditor extends JPanel implements ActionListener {
 			return;
 
 		} else {
-			logger.debug("TagFilterEditor: setTagsToWrite: tagsToWrite = "
-					+ tagFilterFromDisc.getTagsToWrite());
+//			logger.debug("TagFilterEditor: setTagsToWrite: tagsToWrite = "
+//					+ tagFilterFromDisc.getTagsToWrite());
 			idCheckBox.setSelected(tagFilterFromDisc.isIdTagToBeWritten());
 			nameCheckBox.setSelected(tagFilterFromDisc.isNameTagToBeWritten());
 			is_anonymousCheckBox.setSelected(tagFilterFromDisc.isIs_anonymousTagToBeWritten());
@@ -137,15 +129,6 @@ public class TagFilterEditor extends JPanel implements ActionListener {
 			modified_byCheckBox.setSelected(tagFilterFromDisc.isModifiedByTagToBeWritten());
 			modification_dateCheckBox.setSelected(tagFilterFromDisc.isModificationDateTagToBeWritten());
 			is_metadataCheckBox.setSelected(tagFilterFromDisc.isIsMetadataTagToBeWritten());
-			
-			
-			
-			
-			
-			
-			
-			
-			
 			
 		}
 		return;
@@ -216,9 +199,6 @@ public class TagFilterEditor extends JPanel implements ActionListener {
 	 */
 	boolean selectAllButtonSelectsAll = false;
 
-	
-
-
 	JCheckBox idCheckBox = new JCheckBox("id");
 	JCheckBox nameCheckBox = new JCheckBox("name");
 	JCheckBox is_anonymousCheckBox = new JCheckBox("is_anonymous");
@@ -239,8 +219,7 @@ public class TagFilterEditor extends JPanel implements ActionListener {
 	JCheckBox property_valueCheckBox = new JCheckBox("property_value");
 	JCheckBox domainCheckBox = new JCheckBox("domain");
 	JCheckBox rangeCheckBox = new JCheckBox("range");
-	JCheckBox always_implies_inverseCheckBox = new JCheckBox(
-	"always_implies_inverse");
+	JCheckBox always_implies_inverseCheckBox = new JCheckBox("always_implies_inverse");
 	JCheckBox is_cyclicCheckBox = new JCheckBox("is_cyclic");
 	JCheckBox is_reflexiveCheckBox = new JCheckBox("is_reflexive");
 	JCheckBox is_symmetricCheckBox = new JCheckBox("is_symmetric");
