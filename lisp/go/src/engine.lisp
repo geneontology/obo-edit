@@ -10,8 +10,8 @@
 ;;;; Should just return raw schema objects and data.
 ;;;;
 
-(clc:clc-require :clsql)
-(clc:clc-require :clsql-mysql)
+(require :clsql)
+(require :clsql-mysql)
 (defpackage :go-engine
   (:use :cl
 	:clsql-mysql
