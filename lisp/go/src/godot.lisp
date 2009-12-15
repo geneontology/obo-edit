@@ -12,15 +12,19 @@
 
 (defpackage :godot
   (:use :cl
-	:toolkit-conv
+	:toolkit-string
 	;; :hunchentoot ; explicit calls to hunchentoot while I learn it
 	:parenscript))
 (in-package :godot)
 
 ;; Our global server.
 (defvar *server* nil)
-(defvar *location* "/srv/www/hunchentoot/")
+(defvar *location* "/srv/www/hunchentoot")
 
+;; HT logs.
+(setf HUNCHENTOOT::*MESSAGE-LOG-PATHNAME* (ccat *location* "/comb.log"))
+;; (setf HUNCHENTOOT::*ACCESS-LOG-PATHNAME* *location*)
+(setf HUNCHENTOOT::*SHOW-LISP-ERRORS-P* t)
 
 ;;;
 ;;; Server control.
