@@ -3083,13 +3083,13 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 				query.setKnownTerms(parents);
 				ProxyInfo.prepareProxySettings(definitionGeneratorStub);
 				GetDefinitionsResponse response = definitionGeneratorStub.getDefinitions(query);
-				ProxyInfo.restoreSystemProxySettings();
 				defs = response.get_return();
 			}
 			catch (Exception exception) {
 				logger.error("Definition generation failed", exception);
 			}
 			finally {
+				ProxyInfo.restoreSystemProxySettings();
 				this.setProgress(50);
 			}
 			return defs;
