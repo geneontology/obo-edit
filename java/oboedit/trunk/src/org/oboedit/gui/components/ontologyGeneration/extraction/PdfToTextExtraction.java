@@ -38,15 +38,15 @@ public class PdfToTextExtraction extends DataExtraction{
 	
 	@Override
 	public boolean definitionExtraction(CandidateDefinition definition) {
-		if(definition == null || definition.getCachedURL() == null || definition.getCachedURL().isEmpty()
-				|| !definition.getCachedURL().get(0).endsWith(".pdf")) {
+		if(definition == null || definition.getCachedURLs() == null || definition.getCachedURLs().isEmpty()
+				|| !definition.getCachedURLs().get(0).endsWith(".pdf")) {
    			return false;	
    		}
 		
 		URL url;
 		
 		try {
-			url = new URL(definition.getCachedURL().get(0));
+			url = new URL(definition.getCachedURLs().get(0));
 		} catch (MalformedURLException e) {
 			return false;
 		}

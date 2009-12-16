@@ -88,7 +88,6 @@ import org.oboedit.gui.components.ontologyGeneration.extraction.PdfToTextExtract
 import org.oboedit.gui.components.ontologyGeneration.interfaces.AbstractOntologyTermsTable;
 import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyGenerationComponentServiceInterface;
 import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyModelAdapterInterface;
-import org.oboedit.gui.components.ontologyGeneration.interfaces.UpdateListenerInterface;
 import org.oboedit.gui.components.ontologyGeneration.oboAdapter.OBOOntologyGenerationGUIComponent;
 import org.oboedit.gui.components.ontologyGeneration.oboAdapter.OBOOntologyModelAdapter;
 import org.oboedit.gui.components.ontologyGeneration.oboAdapter.ParentRelationEntry;
@@ -759,9 +758,16 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 		{
 			public void caretUpdate(CaretEvent e)
 			{
-				String currentDefinition = editDefArea.getText().trim();
-				if (currentDefinition.equals(selectedCandidateTerm.getUserDefinedDefinition())
-						|| currentDefinition.equals(adapter.getDefinitionForExistingTerm(selectedCandidateTerm))) {
+				final String currentDefinition = editDefArea.getText().trim();
+				final String userDefinedDefinition = selectedCandidateTerm.getUserDefinedDefinition();
+				final String definitionForExistingTerm = adapter.getDefinitionForExistingTerm(selectedCandidateTerm);
+				if (userDefinedDefinition == null && definitionForExistingTerm == null && currentDefinition.length() == 0) {
+					updateSaveDefWarningLabel(false);
+				}
+				else if (userDefinedDefinition != null && currentDefinition.equals(userDefinedDefinition.trim())) {
+					updateSaveDefWarningLabel(false);
+				}
+				else if (definitionForExistingTerm != null && currentDefinition.equals(definitionForExistingTerm.trim())) {
 					updateSaveDefWarningLabel(false);
 				}
 				else {
@@ -1845,6 +1851,119 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	}
 
 	/**
+	 * TODO Definitions should be updated, but grouping should take place in the
+	 * DefinitionTableModel on update of any definition. This will ensure, that
+	 * all definitions are always grouped
+	 * 
+	 * @param def
+	 * @param defList
+	 * @param index
+	 */
+
+	public static void organizeDefinition(DefinitionContainer def, List<CandidateDefinition> defList, int index)
+	{
+		if (def != null) {
+			boolean duplicateDefinition = false;
+
+			String defStr = def.getDefinition();
+			if (defStr.endsWith(" ...")) {
+				defStr = defStr.substring(0, defStr.length() - 4);
+			}
+
+			for (int i = 0; i < defList.size(); i++) {
+				CandidateDefinition candDef = defList.get(i);
+
+				String candDefStr = candDef.getDefinition();
+				if (candDefStr.endsWith(" ...")) {
+					candDefStr = candDefStr.substring(0, candDefStr.length() - 4);
+				}
+
+				if (defStr.equals(candDefStr)) {
+					candDef.addURL(def.getUrl());
+					candDef.addCachedURL(def.getCachedURL());
+					duplicateDefinition = true;
+				}
+				else if (candDefStr.contains(defStr) || defStr.contains(candDefStr)) {
+					duplicateDefinition = true;
+
+					boolean duplicateAlternativeDefinition = false;
+					if (candDef.getAlternativeDefinitions() != null) {
+						for (CandidateDefinition definition : candDef.getAlternativeDefinitions()) {
+							// Try to find identical alternative
+							// definition.
+							if (definition.getDefinition().equals(def.getDefinition())) {
+								duplicateAlternativeDefinition = true;
+
+								definition.addURL(def.getUrl());
+								definition.addCachedURL(def.getCachedURL());
+							}
+						}
+					}
+
+					// If no identical alternative definition is
+					// found,
+					// add a new alternative definition.
+					if (!duplicateAlternativeDefinition) {
+						final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def.getDefinition(), def.getFormattedDefinition(), def
+								.getUrl(), def.getCachedURL(), def.getParentTermCount(), false);
+
+						if (def.getDefinition().length() > candDef.getDefinition().length()) {
+							// swap candidateDefinition and
+							// alternative Definition
+							candidateDefinition.addAlternativeDefinition(candDef);
+							if (candDef.getAlternativeDefinitions() != null) {
+								for (CandidateDefinition candDefAltDef : candDef.getAlternativeDefinitions()) {
+									candidateDefinition.addAlternativeDefinition(candDefAltDef);
+								}
+								candDef.resetAlternativeDefinitions();
+							}
+							// candDef.removeListeners();
+							int pos = defList.indexOf(candDef);
+							defList.remove(candDef);
+
+							defList.add(pos, candidateDefinition);
+
+							// candidateDefinition.addListener(new
+							// UpdateListenerInterface()
+							// {
+							// public void update()
+							// {
+							// updateParentAsTermFromDefinition(selectedCandidateTerm,
+							// candidateTermsTable, ontologyTermsTable,
+							// definitionTable);
+							// }
+							// });
+
+						}
+						else {
+							candDef.addAlternativeDefinition(candidateDefinition);
+						}
+					}
+				}
+			}
+			// Otherwise, add new definition to list.
+			if (!duplicateDefinition) {
+				final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def.getDefinition(), def.getFormattedDefinition(), def.getUrl(),
+						def.getCachedURL(), def.getParentTermCount(), false);
+				index++;
+				// candidateDefinition.addListener(new UpdateListenerInterface()
+				// {
+				// public void update()
+				// {
+				// updateParentAsTermFromDefinition(selectedCandidateTerm,
+				// candidateTermsTable, ontologyTermsTable, definitionTable);
+				// }
+				// });
+				defList.add(candidateDefinition);
+			}
+		}
+		else {
+			logger.trace("A retrieved definition was null");
+		}
+
+	}
+
+	/**
 	 * Create all ngrams contained in the texts in the specified list and
 	 * looking up the term these ngrams match.
 	 * 
@@ -2717,7 +2836,9 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 		{
 			this.setProgress(0);
 			TextConceptRepresentation[] concepts = new TextConceptRepresentation[1000];
+
 			try {
+				ProxyInfo.prepareProxySettings(termGenerationServiceStub);
 				if (source.equals(SOURCE_PUBMED)) {
 					candidateTermsTable.setShowInformationIcon(true);
 					GenerateConceptsFromPubMedQuery query = new GoPubMedTermGenerationStub.GenerateConceptsFromPubMedQuery();
@@ -2789,6 +2910,9 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 			}
 			catch (RemoteException exception) {
 				logger.warn("Term generation failed.", exception);
+			}
+			finally {
+				ProxyInfo.restoreSystemProxySettings();
 			}
 			this.setProgress(50);
 			return concepts;
@@ -2957,7 +3081,9 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 				query.setApplicationCode(PLUGIN_VERSIONED_NAME);
 				query.setTermLabels(termLabels);
 				query.setKnownTerms(parents);
+				ProxyInfo.prepareProxySettings(definitionGeneratorStub);
 				GetDefinitionsResponse response = definitionGeneratorStub.getDefinitions(query);
+				ProxyInfo.restoreSystemProxySettings();
 				defs = response.get_return();
 			}
 			catch (Exception exception) {
@@ -3036,104 +3162,5 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 			guiComponent.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
 
-		private void organizeDefinition(DefinitionContainer def, List<CandidateDefinition> defList, int index)
-		{
-			if (def != null) {
-				boolean duplicateDefinition = false;
-
-				String defStr = def.getDefinition();
-				if (defStr.endsWith(" ...")) {
-					defStr = defStr.substring(0, defStr.length() - 4);
-				}
-
-				for (int i = 0; i < defList.size(); i++) {
-					CandidateDefinition candDef = defList.get(i);
-
-					String candDefStr = candDef.getDefinition();
-					if (candDefStr.endsWith(" ...")) {
-						candDefStr = candDefStr.substring(0, candDefStr.length() - 4);
-					}
-
-					if (defStr.equals(candDefStr)) {
-						candDef.addURL(def.getUrl());
-						candDef.addCachedURL(def.getCachedURL());
-						duplicateDefinition = true;
-					}
-					else if (candDefStr.contains(defStr) || defStr.contains(candDefStr)) {
-						duplicateDefinition = true;
-
-						boolean duplicateAlternativeDefinition = false;
-						if (candDef.getAlternativeDefinitions() != null) {
-							for (CandidateDefinition definition : candDef.getAlternativeDefinitions()) {
-								// Try to find identical alternative
-								// definition.
-								if (definition.getDefinition().equals(def.getDefinition())) {
-									duplicateAlternativeDefinition = true;
-
-									definition.addURL(def.getUrl());
-									definition.addCachedURL(def.getCachedURL());
-								}
-							}
-						}
-
-						// If no identical alternative definition is
-						// found,
-						// add a new alternative definition.
-						if (!duplicateAlternativeDefinition) {
-							final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def.getDefinition(), def.getFormattedDefinition(),
-									def.getUrl(), def.getCachedURL(), def.getParentTermCount(), false);
-
-							if (def.getDefinition().length() > candDef.getDefinition().length()) {
-								// swap candidateDefinition and
-								// alternative Definition
-								candidateDefinition.addAlternativeDefinition(candDef);
-								if (candDef.getAlternativeDefinitions() != null) {
-									for (CandidateDefinition candDefAltDef : candDef.getAlternativeDefinitions()) {
-										candidateDefinition.addAlternativeDefinition(candDefAltDef);
-									}
-									candDef.resetAlternativeDefinitions();
-								}
-								candDef.removeListeners();
-								int pos = defList.indexOf(candDef);
-								defList.remove(candDef);
-
-								defList.add(pos, candidateDefinition);
-
-								candidateDefinition.addListener(new UpdateListenerInterface()
-								{
-									public void update()
-									{
-										updateParentAsTermFromDefinition(selectedCandidateTerm, candidateTermsTable, ontologyTermsTable, definitionTable);
-									}
-								});
-
-							}
-							else {
-								candDef.addAlternativeDefinition(candidateDefinition);
-							}
-						}
-					}
-				}
-				// Otherwise, add new definition to list.
-				if (!duplicateDefinition) {
-					final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def.getDefinition(), def.getFormattedDefinition(), def
-							.getUrl(), def.getCachedURL(), def.getParentTermCount(), false);
-					index++;
-					candidateDefinition.addListener(new UpdateListenerInterface()
-					{
-						public void update()
-						{
-							updateParentAsTermFromDefinition(selectedCandidateTerm, candidateTermsTable, ontologyTermsTable, definitionTable);
-						}
-					});
-					defList.add(candidateDefinition);
-				}
-			}
-			else {
-				logger.trace("A retrieved definition was null");
-			}
-
-		}
 	}
-
 }

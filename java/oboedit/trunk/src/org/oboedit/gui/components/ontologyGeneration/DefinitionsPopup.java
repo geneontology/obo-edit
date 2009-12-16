@@ -148,12 +148,12 @@ public class DefinitionsPopup extends JDialog
 		 * In the first loop, the original definition is inserted, in the second loop the alternative definitions are
 		 * inserted.
 		 */
-		for (int i = 0; i < (def.getUrl().size() + 1); i++) {
+		for (int i = 0; i < (def.getUrls().size() + 1); i++) {
 			candDefList.add(new DefPosPair(def, i));
 		}
 		if (def.getAlternativeDefinitions() != null) {
 			for (CandidateDefinition alternativeDef : def.getAlternativeDefinitions()) {
-				for (int i = 0; i < (alternativeDef.getUrl().size() + 1); i++) {
+				for (int i = 0; i < (alternativeDef.getUrls().size() + 1); i++) {
 					candDefList.add(new DefPosPair(alternativeDef, i));
 				}
 			}
@@ -184,9 +184,9 @@ public class DefinitionsPopup extends JDialog
 		for (int i = 0; i < originalDefinition.getAlternativeDefinitions().size(); i++) {
 			CandidateDefinition def = originalDefinition.getAlternativeDefinitions().get(i);
 			if (def.getDefinition().equals(originalDefinition.getDefinition())) {
-				for (String url : def.getUrl()) {
+				for (String url : def.getUrls()) {
 					boolean skipURL = false;
-					for (String alreadyExistingURL : originalDefinition.getUrl()) {
+					for (String alreadyExistingURL : originalDefinition.getUrls()) {
 						if (url.equals(alreadyExistingURL)) {
 							skipURL = true;
 						}
@@ -195,7 +195,7 @@ public class DefinitionsPopup extends JDialog
 						// add URL
 						originalDefinition.addURL(url);
 						// add the corresponding cachedURL
-						originalDefinition.addCachedURL(def.getCachedURL().get(def.getUrl().indexOf(url)));
+						originalDefinition.addCachedURL(def.getCachedURLs().get(def.getUrls().indexOf(url)));
 						// remove alternative definition
 					}
 				}
@@ -208,9 +208,9 @@ public class DefinitionsPopup extends JDialog
 				    .getAlternativeDefinitions().size(); j++) {
 					CandidateDefinition altDef = originalDefinition.getAlternativeDefinitions().get(j);
 					if (def.getDefinition().equals(altDef.getDefinition())) {
-						for (String url : altDef.getUrl()) {
+						for (String url : altDef.getUrls()) {
 							boolean skipURL = false;
-							for (String alreadyExistingURL : def.getUrl()) {
+							for (String alreadyExistingURL : def.getUrls()) {
 								if (url.equals(alreadyExistingURL)) {
 									skipURL = true;
 								}
@@ -219,7 +219,7 @@ public class DefinitionsPopup extends JDialog
 								// add URL
 								def.addURL(url);
 								// add the corresponding cachedURL
-								def.addCachedURL(def.getCachedURL().get(def.getUrl().indexOf(url)));
+								def.addCachedURL(def.getCachedURLs().get(def.getUrls().indexOf(url)));
 								// remove alternative definition
 							}
 						}
@@ -419,7 +419,7 @@ public class DefinitionsPopup extends JDialog
 			String errMsg = "Error attempting to launch web browser";
 			String osName = System.getProperty("os.name");
 			DefPosPair defPosPair = getModel().getDefinitionForRow(rowIndex);
-			String url = defPosPair.def.getCachedURL().get(defPosPair.pos - 1);
+			String url = defPosPair.def.getCachedURLs().get(defPosPair.pos - 1);
 			try {
 				if (osName.startsWith("Mac OS")) {
 					Class fileMgr = Class.forName("com.apple.eio.FileManager");
@@ -494,7 +494,7 @@ public class DefinitionsPopup extends JDialog
 				}
 				// row contains URL
 				else {
-					return defPosPair.def.getUrl().get(defPosPair.pos - 1);
+					return defPosPair.def.getUrls().get(defPosPair.pos - 1);
 				}
 			}
 			return null;

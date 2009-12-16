@@ -27,6 +27,7 @@ public class DefinitionsTableModel extends AbstractTableModel
 	private static final long serialVersionUID = 3393092862004698314L;
 	private final List<CandidateDefinition> definitions;
 	private String lastRegex = new String();
+//	private static Logger logger = Logger.getLogger(DefinitionsTableModel.class.getSimpleName());
 
 	public DefinitionsTableModel()
 	{
@@ -171,6 +172,15 @@ public class DefinitionsTableModel extends AbstractTableModel
 	public void setDefinitions(List<CandidateDefinition> definitions)
 	{
 		this.definitions.clear();
+//		for (final CandidateDefinition candidateDefinition : definitions) {
+//			candidateDefinition.addPropertyChangeListener(new PropertyChangeListener(){
+//				public void propertyChange(PropertyChangeEvent evt)
+//				{
+//					if (evt.getPropertyName().equals(CandidateDefinition.PROPERTY_DEFINITION)){
+//						organizeDefinition(candidateDefinition);
+//					}
+//					// TODO, add listerners to gear display of defintitions in popup and elsewhere
+//				}});};
 		this.definitions.addAll(definitions);
 		fireTableDataChanged();
 	}
@@ -217,4 +227,106 @@ public class DefinitionsTableModel extends AbstractTableModel
 		}
 		return Collections.unmodifiableList(list);
 	}
+	
+	
+	
+//	private void organizeDefinition(CandidateDefinition changedDefinition)
+//	{
+//		if (changedDefinition != null) {
+//			boolean duplicateDefinition = false;
+//
+//			String defStr = changedDefinition.getDefinition();
+//			if (defStr.endsWith(" ...")) {
+//				defStr = defStr.substring(0, defStr.length() - 4);
+//			}
+//
+//			for (int i = 0; i < definitions.size(); i++) {
+//				CandidateDefinition candDef = definitions.get(i);
+//
+//				String candDefStr = candDef.getDefinition();
+//				if (candDefStr.endsWith(" ...")) {
+//					candDefStr = candDefStr.substring(0, candDefStr.length() - 4);
+//				}
+//
+//				if (defStr.equals(candDefStr)) {
+//					candDef.addURLs(changedDefinition.getUrls());
+//					candDef.addCachedURLs(changedDefinition.getCachedURLs());
+//					duplicateDefinition = true;
+//				}
+//				else if (candDefStr.contains(defStr) || defStr.contains(candDefStr)) {
+//					duplicateDefinition = true;
+//
+//					boolean duplicateAlternativeDefinition = false;
+//					if (candDef.getAlternativeDefinitions() != null) {
+//						for (CandidateDefinition definition : candDef.getAlternativeDefinitions()) {
+//							// Try to find identical alternative
+//							// definition.
+//							if (definition.getDefinition().equals(changedDefinition.getDefinition())) {
+//								duplicateAlternativeDefinition = true;
+//
+//								definition.addURLs(changedDefinition.getUrls());
+//								definition.addCachedURLs(changedDefinition.getCachedURLs());
+//							}
+//						}
+//					}
+//
+//					// If no identical alternative definition is
+//					// found,
+//					// add a new alternative definition.
+//					if (!duplicateAlternativeDefinition) {
+//						// TODO, candidateDefinition.getIndex() is correct at this position
+//						final CandidateDefinition alternativeCandidateDefinition = new CandidateDefinition(changedDefinition.getIndex(), changedDefinition.getDefinition(), changedDefinition.getDefinitionHTMLFormatted(), changedDefinition.getUrls(), changedDefinition.getCachedURLs(), changedDefinition.getParentTermCount(), false);
+//
+//						if (changedDefinition.getDefinition().length() > candDef.getDefinition().length()) {
+//							// swap candidateDefinition and
+//							// alternative Definition
+//							alternativeCandidateDefinition.addAlternativeDefinition(candDef);
+//							if (candDef.getAlternativeDefinitions() != null) {
+//								for (CandidateDefinition candDefAltDef : candDef.getAlternativeDefinitions()) {
+//									alternativeCandidateDefinition.addAlternativeDefinition(candDefAltDef);
+//								}
+//								candDef.resetAlternativeDefinitions();
+//							}
+//							candDef.removePropertyChangeListeners();
+//							int pos = definitions.indexOf(candDef);
+//							definitions.remove(candDef);
+//							definitions.add(pos, changedDefinition);
+////
+////							alternativeCandidateDefinition.addPropertyChangeListener(new PropertyChangeListener()
+////							{
+////								public void propertyChange(PropertyChangeEvent evt)
+////								{
+////									if (evt.getPropertyName().equals(CandidateDefinition.PROPERTY_DEFINITION)) {
+////										updateParentAsTermFromDefinition(selectedCandidateTerm, candidateTermsTable, ontologyTermsTable, definitionTable);
+////									}
+////								}
+////							});
+//
+//						}
+//						else {
+//							candDef.addAlternativeDefinition(alternativeCandidateDefinition);
+//						}
+//					}
+//				}
+//			}
+//			// Otherwise, add new definition to list.
+//			if (!duplicateDefinition) {
+//				final CandidateDefinition alternativeCandidateDefinition = new CandidateDefinition(changedDefinition.getIndex(), changedDefinition.getDefinition(), changedDefinition.getDefinitionHTMLFormatted(), changedDefinition
+//						.getUrls(), changedDefinition.getCachedURLs(), changedDefinition.getParentTermCount(), false);
+////				alternativeCandidateDefinition.addListener(new UpdateListenerInterface()
+////				{
+////					public void update()
+////					{
+////						updateParentAsTermFromDefinition(selectedCandidateTerm, candidateTermsTable, ontologyTermsTable, definitionTable);
+////					}
+////				});
+//				definitions.add(alternativeCandidateDefinition);
+//			}
+//		}
+//		else {
+//			logger.trace("A retrieved definition was null");
+//		}
+//
+//	}
+
 }
