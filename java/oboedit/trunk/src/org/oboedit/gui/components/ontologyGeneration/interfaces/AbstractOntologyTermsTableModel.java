@@ -29,7 +29,9 @@ import org.obo.datamodel.LinkedObject;
 public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTableModel
 {
 
-	public enum columns  { Selector, Predicted, Relation, Term, Comment }
+	public enum columns {
+		Selector, Predicted, Relation, Term, Comment
+	}
 
 	private static final long serialVersionUID = 4146368118692966602L;
 
@@ -582,15 +584,19 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	public void updateSimilarTerms(Collection<String> labels, List<String> idsOfSimilarTerms)
 	{
 		for (String id : idsOfSimilarTerms) {
-			T term = allTermsMap.get(id);
-			String termLabel = getTermName(term);
-			for (String label : labels) {
-				if (termLabel.equalsIgnoreCase(label)) {
-					addSameAsCandidateTerm(Collections.singleton(term));
+			if (allTermsMap.containsKey(id)) {
+				T term = allTermsMap.get(id);
+				String termLabel = getTermName(term);
+				for (String label : labels) {
+					if (termLabel.equalsIgnoreCase(label)) {
+						addSameAsCandidateTerm(Collections.singleton(term));
+					}
+					else if (columns.Selector.ordinal() < calcFirstIndexOf(termLabel, label) || columns.Selector.ordinal() < calcFirstIndexOf(label, termLabel)) {
+						addSimilarToCandidateTerm(Collections.singleton(term));
+					}
 				}
-				else if (columns.Selector.ordinal() < calcFirstIndexOf(termLabel, label) || columns.Selector.ordinal() < calcFirstIndexOf(label, termLabel)) {
-					addSimilarToCandidateTerm(Collections.singleton(term));
-				}
+			} else {
+				throw new RuntimeException("id not known!");
 			}
 		}
 		sortingNeeded = true;
