@@ -19,9 +19,11 @@ public class OBOTermsTable extends AbstractOntologyTermsTable<LinkedObject, OBOP
 	}
 
 	@Override
-	public String nameFor(Object arg1)
+	public String nameFor(Object object)
 	{
-		return ((OBOProperty) arg1).getName();
+		if (object == null)
+			return null;
+		return ((OBOProperty) object).getName();
 	}
 
 }

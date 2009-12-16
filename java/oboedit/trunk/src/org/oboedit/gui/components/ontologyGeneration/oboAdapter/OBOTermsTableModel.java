@@ -23,12 +23,18 @@ public class OBOTermsTableModel extends AbstractOntologyTermsTableModel<LinkedOb
 	@Override
 	public String getTermId(LinkedObject term)
 	{
+		if (term == null) {
+			return null;
+		}
 		return term.getID();
 	}
 
 	@Override
 	public String getTermName(LinkedObject term)
 	{
+		if (term == null) {
+			return null;
+		}
 		return term.getName();
 	}
 

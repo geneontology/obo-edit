@@ -3,7 +3,9 @@ package org.oboedit.gui.components.ontologyGeneration.extraction;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.Authenticator;
 import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -19,14 +21,15 @@ import javax.swing.text.html.HTMLEditorKit;
 import org.apache.log4j.Logger;
 import org.jdesktop.swingworker.SwingWorker;
 import org.oboedit.gui.components.ontologyGeneration.CandidateDefinition;
+import org.oboedit.gui.components.ontologyGeneration.ProxyInfo;
 
 /**
- * Tries to extend an existing definition by looking up its source HTML content. If no extension could be found, the
- * definition is left as it is.
+ * Tries to extend an existing definition by looking up its source HTML content.
+ * If no extension could be found, the definition is left as it is.
  */
 public class DefinitionExtensionWorker extends SwingWorker<Boolean, Object>
 {
-    public static final String WAS_EXTENDED_PROPERTY = "wasExtended";
+	public static final String WAS_EXTENDED_PROPERTY = "wasExtended";
 	private static final Logger logger = Logger.getLogger(DefinitionExtensionWorker.class);
 	private CandidateDefinition definition;
 	private final JTable table;
@@ -35,7 +38,7 @@ public class DefinitionExtensionWorker extends SwingWorker<Boolean, Object>
 	{
 		this.definition = definition;
 		this.table = table;
-		
+
 	}
 
 	@Override
@@ -57,27 +60,27 @@ public class DefinitionExtensionWorker extends SwingWorker<Boolean, Object>
 	}
 
 	/**
-	 * Tries to extend an existing definition by looking up its source html content. If no extension could be found,
-	 * the definition is left as it is.
+	 * Tries to extend an existing definition by looking up its source html
+	 * content. If no extension could be found, the definition is left as it is.
 	 * 
 	 * @return true if extended, false otherwise
 	 */
 	private boolean definitionExtraction()
 	{
-		if (definition == null || definition.getCachedURL() == null || definition.getCachedURL().isEmpty()) {
+		if (definition == null || definition.getCachedURLs() == null || definition.getCachedURLs().isEmpty()) {
 			return false;
 		}
 
 		URL url;
 
 		try {
-			if (definition.getCachedURL().get(0).endsWith("pdf") || definition.getCachedURL().get(0)
-			    .endsWith("ppt") || definition.getCachedURL().get(0).endsWith("doc")) {
+			if (definition.getCachedURLs().get(0).endsWith("pdf") || definition.getCachedURLs().get(0).endsWith("ppt")
+					|| definition.getCachedURLs().get(0).endsWith("doc")) {
 				logger.error("Definitions from files not in HTML are not extended.");
 				return false;
 			}
 
-			url = new URL(definition.getCachedURL().get(0));
+			url = new URL(definition.getCachedURLs().get(0));
 
 			HTMLEditorKit kit = new HTMLEditorKit();
 			HTMLDocument doc = (HTMLDocument) kit.createDefaultDocument();
@@ -87,6 +90,19 @@ public class DefinitionExtensionWorker extends SwingWorker<Boolean, Object>
 			URLConnection con = url.openConnection();
 			con.setConnectTimeout(1000);
 
+			// do authentication if needed
+			if (System.getProperty(ProxyInfo.PROXY_HOST) != null) {
+				final String proxyUser = System.getProperty(ProxyInfo.PROXY_USERNAME);
+				final String proxyPassword = System.getProperty(ProxyInfo.PROXY_PASSWORD);
+				Authenticator.setDefault(new Authenticator()
+				{
+					@Override
+					protected PasswordAuthentication getPasswordAuthentication()
+					{
+						return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());
+					}
+				});
+			}
 			con.connect();
 
 			Reader HTMLReader = new InputStreamReader(con.getInputStream());
@@ -94,7 +110,7 @@ public class DefinitionExtensionWorker extends SwingWorker<Boolean, Object>
 
 			String def = definition.getDefinition();
 			if (def.endsWith("...")) {
-				def = def.substring(0, def.length()-3);
+				def = def.substring(0, def.length() - 3);
 			}
 			// filter out some special characters
 			if (def.contains("[") || def.contains("]")) {
@@ -172,12 +188,16 @@ public class DefinitionExtensionWorker extends SwingWorker<Boolean, Object>
 		catch (BadLocationException e) {
 			return false;
 		}
-
+		catch (RuntimeException e) {
+			logger.error("Error during fetching extended definitions. Definition is skipped.");
+			return false;
+		}
 		return false;
 	}
 
 	/**
-	 * Adds the extended definition to the already existing HTML formatted definition.
+	 * Adds the extended definition to the already existing HTML formatted
+	 * definition.
 	 */
 	private void generateHTMLFormattedDefinition()
 	{
@@ -186,8 +206,7 @@ public class DefinitionExtensionWorker extends SwingWorker<Boolean, Object>
 		String originalHTMLDefSubStr = "";
 		try {
 			// original HTML string without last <html> tag
-			String originalHTMLDef = definition.getDefinitionHTMLFormatted().substring(0,
-			    definition.getDefinitionHTMLFormatted().length() - 7);
+			String originalHTMLDef = definition.getDefinitionHTMLFormatted().substring(0, definition.getDefinitionHTMLFormatted().length() - 7);
 			// find last HTML tag
 			originalHTMLDefSubStr = originalHTMLDef.substring(0, originalHTMLDef.lastIndexOf(">") + 1);
 		}

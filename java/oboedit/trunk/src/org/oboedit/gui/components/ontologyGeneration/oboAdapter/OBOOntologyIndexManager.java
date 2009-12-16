@@ -161,18 +161,23 @@ public class OBOOntologyIndexManager
 		List<Query> queries = new ArrayList<Query>();
 		Set<String> testSet = new HashSet<String>();
 		for (String string : collection) {
-			try {
-				string = QueryParser.escape(string);
-				Query parsedQuery = queryParser.parse("\"" + string + "\"");
-				queries.add(parsedQuery);
-			}
-			catch (ParseException exception) {
-				logger.error("Error parsing query: " + exception.getMessage());
-			}
-			String testString = string;
-			testSet.add(testString.toLowerCase());
-			if (testString.charAt(testString.length() - 1) == 's') {
-				testSet.add(testString.substring(0, testString.length() - 1).toLowerCase());
+			if (string != null) {
+				try {
+					String escape = QueryParser.escape(string);
+					Query parsedQuery = queryParser.parse("\"" + escape + "\"");
+					queries.add(parsedQuery);
+				}
+				catch (ParseException exception) {
+					logger.error("Error parsing query: " + exception.getMessage());
+				}
+				String testString = string;
+				testSet.add(testString.toLowerCase());
+				if (testString.charAt(testString.length() - 1) == 's') {
+					testSet.add(testString.substring(0, testString.length() - 1).toLowerCase());
+				}
+				if (testString.contains("-")) {
+					testSet.add(testString.replace('-', ' ').toLowerCase());
+				}
 			}
 		}
 
@@ -183,7 +188,7 @@ public class OBOOntologyIndexManager
 		OUTERLOOP: for (String id : idList) {
 			OBOClass ontologyClass = (OBOClass) SessionManager.getManager().getSession().getLinkDatabase().getObject(id);
 			if (ontologyClass != null) {
-				String name = ontologyClass.getName();
+				String name = ontologyClass.getName().toLowerCase();
 				if (testSet.contains(name)) {
 					if (!idSet.contains(id)) {
 						filteredList.add(id);
@@ -193,7 +198,7 @@ public class OBOOntologyIndexManager
 				}
 				Set<Synonym> synonyms = ontologyClass.getSynonyms();
 				for (Synonym synonym : synonyms) {
-					if (testSet.contains(synonym.getText())) {
+					if (testSet.contains(synonym.getText().toLowerCase())) {
 						if (!idSet.contains(id)) {
 							filteredList.add(id);
 							idSet.add(id);
