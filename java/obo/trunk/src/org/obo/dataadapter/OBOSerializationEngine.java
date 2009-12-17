@@ -503,8 +503,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			try {
 				os.close();
 			} catch (IOException ex) {
-				throw new DataAdapterException("Could not commit changes to "
-						+ os);
+				throw new DataAdapterException("Could not commit changes to " + os);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -708,7 +707,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 	public void writeObject(IdentifiedObject obj, LinkDatabase linkDatabase,
 			OBOSerializer serializer) throws IOException,
 			CancelledAdapterException {
-//		logger.debug("\n writing object: " + obj);
+		//		logger.debug("\n writing object: " + obj);
 		boolean written = false;
 		for (OBOSerializerExtension extension : extensions) {
 			if (extension.startStanza(obj)) {
@@ -769,7 +768,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			LinkDatabase linkDatabase, OBOSerializer serializer,
 			boolean allowDangling, boolean doIsaClosure, 
 			boolean realizeImpliedLinks, boolean writeModificationData) throws IOException, CancelledAdapterException {
-//		logger.debug("OBOSerializationEngine.writeTag -- obj:  " + obj + "  tag: " + tagMapping);
+		//		logger.debug("OBOSerializationEngine.writeTag -- obj:  " + obj + "  tag: " + tagMapping);
 		for (OBOSerializerExtension extension : extensions) {
 			if (extension.writeTag(tagMapping, obj, linkDatabase))
 				return;
@@ -952,7 +951,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				}
 			}
 		} 
-	
+
 		else if (obj instanceof LinkedObject && tagMapping.equals(OBOConstants.LINK_TAG)) {
 			if (obj instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject) obj;
@@ -1192,10 +1191,10 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		// if Include is_a closure save option selected - compile termsToFetch from the filteredObjects
 		if(((FilteredLinkDatabase) database).getFollowIsaClosure()){
 			for(Object obj : filteredObjects){
-				LinkedObject lo = (LinkedObject) obj;				  
+				LinkedObject lo = (LinkedObject) obj;
 				for(Object parent : lo.getParents()){
 					Link link = (Link) parent;
-					//check if object already exists in termsToFetch
+					//check if object already exists in termsToFecth
 					boolean exists = false;
 					if(link.getParent().getName() != null){
 						for(IdentifiedObject term : termsToFetch){
@@ -1267,6 +1266,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			for(IdentifiedObject io : termsToFetch){	
 				if (stanzaMapping.getStanzaClass().isInstance(io) && !io.isBuiltIn()) {
 					objectList.add(io);
+
 				}
 			}
 			setProgressString("Sorting objects: " + path);
@@ -1274,6 +1274,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 			setProgressString("Writing objects : " + path);
 
+			Collection<IdentifiedObject> pickedList = new ArrayList();		
 			Iterator it2 = objectList.iterator();
 			for (int i = 0; it2.hasNext(); i++) {
 				if (cancelled)
@@ -1282,16 +1283,18 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				int percent = (100 * i) / objectList.size();
 				setProgressValue(percent);
 				boolean picked = false;
-				for (OBOSerializerExtension extension : extensions) {
-					if (extension.writeObject(database, io)) {
-						picked = true;
-						break;
+				if(pickedList.size() > 0){
+					for(IdentifiedObject po : pickedList){
+						if(io.getID().equalsIgnoreCase(po.getID())){
+							picked = true;
+							break;
+						}			
 					}
-				}
-				//write object and add to database if it hasn't already been picked
-				if (!picked)
+				} 
+				if (!picked){
 					writeObject(io, database, serializer);
-
+					pickedList.add(io);
+				}
 			}
 		}
 		for (OBOSerializerExtension extension : extensions) {
