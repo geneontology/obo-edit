@@ -13,9 +13,7 @@ import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
 import org.oboedit.util.GUIUtil;
-
 import javax.swing.*;
-
 import org.apache.log4j.*;
 
 public class CloneAction implements ClickMenuAction {
@@ -60,12 +58,12 @@ public class CloneAction implements ClickMenuAction {
 
 	public HistoryItem execute() {
 		List<HistoryItem> itemList = new LinkedList<HistoryItem>();
-		Iterator it = sources.getTerms().iterator();
 		Collection<String> ids = new HashSet<String>();
 		List<LinkedObject> newTerms = new LinkedList<LinkedObject>();
-		while (it.hasNext()) {
+		for(Object o : sources.getTerms()){
 			HistoryList historyList = new DefaultHistoryList();
-			IdentifiedObject io = (IdentifiedObject) it.next();
+			
+			IdentifiedObject io = (IdentifiedObject) o;
 			io = (IdentifiedObject) io.clone();
 
 			String id = IDUtil.fetchID(IDManager.getManager().getIDAdapter(),
@@ -74,30 +72,32 @@ public class CloneAction implements ClickMenuAction {
 
 			io.setName("CLONE OF " + io.getName());
 
-			IdentifiedObject clone = defaultFactory.createObject(id,
-					(OBOClass) io.getType(), false);
+			IdentifiedObject clone = defaultFactory.createObject(id,(OBOClass) io.getType(), false);
 
 			newTerms.add(new DanglingObjectImpl(id));
 
-			historyList.addItem(new CreateObjectHistoryItem(id, io.getType()
-					.getID()));
+			historyList.addItem(new CreateObjectHistoryItem(id, io.getType().getID()));
+			
 			HistoryGenerator.getTermTextChanges(clone, io, historyList, true,
 					null);
 			if (io.getNamespace() != null) {
-				historyList.addItem(new NamespaceHistoryItem(null, io
-						.getNamespace(), id));
+				historyList.addItem(new NamespaceHistoryItem(null, io.getNamespace(), id));
 			}
 			if (io instanceof LinkedObject) {
-				Iterator it2 = ((LinkedObject) io).getChildren().iterator();
-				while (it2.hasNext()) {
-					Link childLink = (Link) it2.next();
+				for(Link childLink : ((LinkedObject)io).getChildren() ){
 					historyList.addItem(new CreateLinkHistoryItem(childLink
 							.getChild(), childLink.getType(),
 							(LinkedObject) clone));
 				}
-				it2 = ((LinkedObject) io).getParents().iterator();
-				while (it2.hasNext()) {
-					Link parentLink = (Link) it2.next();
+				for(Link parentLink : ((LinkedObject) io).getParents()){
+					// cloning terms with cross-products
+					if (parentLink instanceof OBORestriction){
+						OBORestriction newLink = new OBORestrictionImpl((LinkedObject) clone, ((OBORestriction)parentLink).getType(),
+						parentLink.getParent());
+						HistoryItem item = new CreateIntersectionLinkHistoryItem(newLink);
+						historyList.addItem(item);
+					} 
+					else
 					historyList.addItem(new CreateLinkHistoryItem(
 							(LinkedObject) clone, parentLink.getType(),
 							parentLink.getParent()));
@@ -117,9 +117,8 @@ public class CloneAction implements ClickMenuAction {
 			item = itemList.get(0);
 		} else {
 			item = new TermMacroHistoryItem("Cloned multiple terms");
-			it = itemList.iterator();
-			while (it.hasNext()) {
-				HistoryItem subItem = (HistoryItem) it.next();
+			for(Object o : itemList){
+				HistoryItem subItem = (HistoryItem) o;
 				((TermMacroHistoryItem) item).addItem(subItem);
 			}
 		}
