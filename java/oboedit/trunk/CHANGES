@@ -1,8 +1,10 @@
-===  OBO-Edit 2.1 RELEASE NOTES  === 
+===  OBO-Edit 2.1beta2 RELEASE NOTES  === 
 
 ================================
-What's New in OBO-Edit 2.1
+What's New in OBO-Edit 2.1beta2
 ================================
+
+- Parent Editor and Cross Product Text Editor component are now in synch and warn regarding changes made in either component
 
 - Graph Viewer Improvements
 -- Renamed "Succinct" configuration option to "Trim reasoner-generated (implied) links from display".
@@ -24,18 +26,28 @@ watch diffs carefully for lost tags.
 ============
 Bug Fixes
 ============
+
 - flaky xp commit
 - graph viewer issue
 - filtering union_of cycles in OTE
 - lock view selection behavior
 - fixed root detection algorithm to detect inverse relations and display root
 
-- [ geneontology-Bugs-2869195 ] text editor is not working
-- [ geneontology-Bugs-2864861 ] replaced_by statement causing problems in SO
-- [ geneontology-Bugs-2840516 ] no way to get to genus term while defing xps
-- [ geneontology-Bugs-2840500 ] relation name vanishes
 
 
+
+[ geneontology-Bugs-2914257 ] When a term is cloned, intersections become relationships
+
+[ geneontology-Bugs-2869195 ] text editor is not working
+[ geneontology-Bugs-2864861 ] replaced_by statement causing problems in SO
+[ geneontology-Bugs-2840516 ] no way to get to genus term while defing xps
+[ geneontology-Bugs-2840500 ] relation name vanishes
+[ geneontology-Bugs-2908106 ] OBO-merge fail
+
+[ geneontology-Bugs-2610787] disjointness violations not detected
+Duplicates:
+[ geneontology-Bugs-2821857] disjoint violations not being checked by RBR
+[ geneontology-Bugs-2749049]  disjoinedness check working?
 
 TO DO:
 - make new icons for 
