@@ -19,8 +19,8 @@ public class DisjointednessCheck extends AbstractCheck implements OntologyCheck 
 	@Override
 	protected void initConfiguration() {
 		configuration
-				.setCondition((byte) (VerificationManager.SAVE
-						| VerificationManager.REASONER_ACTIVATED | VerificationManager.MANUAL));
+		.setCondition((byte) (VerificationManager.SAVE
+				| VerificationManager.REASONER_ACTIVATED | VerificationManager.MANUAL));
 	}
 
 	@Override
@@ -32,37 +32,33 @@ public class DisjointednessCheck extends AbstractCheck implements OntologyCheck 
 			byte condition, boolean checkObsoletes) {
 
 		Set out = new HashSet();
-
 		int badItems = 0;
+		int historyObjsSize = history.getObjects().size();
+
 		Iterator it = history.getObjects().iterator();
 		for (int i = 0; badItems < MAX_BAD_ITEMS && it.hasNext(); i++) {
-			Object o = it.next();
+			Object historyObject = it.next();
 			boolean isBad = false;
-			int percentage = 100 * i / history.getObjects().size();
+			int percentage = 100 * i / historyObjsSize;
 			setProgressValue(percentage);
-			setProgressString("checking object " + (i + 1) + " of "
-					+ history.getObjects().size());
+			setProgressString("checking object " + (i + 1) + " of " + historyObjsSize);
 
-			if (o instanceof LinkedObject) {
-				LinkedObject lo = (LinkedObject) o;
+			if (historyObject instanceof LinkedObject) {
+				LinkedObject lo = (LinkedObject) historyObject;
 				Collection superClasses = new HashSet();
-				Iterator it2 = linkDatabase.getParents(lo).iterator();
-				while (it2.hasNext()) {
-					Link link = (Link) it2.next();
+
+				for(Link link : linkDatabase.getParents(lo)){
 					if (link.getParent() instanceof OBOClass
-							&& linkDatabase.isSubPropertyOf(link.getType(),
-									OBOProperty.IS_A)) {
+							&& linkDatabase.isSubPropertyOf(link.getType(), OBOProperty.IS_A)) {
 						superClasses.add(link.getParent());
 					}
 				}
-				it2 = superClasses.iterator();
-				while (it2.hasNext()) {
-					OBOClass oboClass = (OBOClass) it2.next();
-					Iterator it3 = superClasses.iterator();
-					while (it3.hasNext()) {
-						OBOClass oboClass2 = (OBOClass) it3.next();
-						if (ReasonerUtil.isDisjoint(linkDatabase, oboClass,
-								oboClass2, false)) {
+
+				for(Object superClassObj1 : superClasses){
+					OBOClass oboClass1 = (OBOClass) superClassObj1;
+					for(Object superClassObj2 : superClasses){
+						OBOClass oboClass2 = (OBOClass) superClassObj2;
+						if (ReasonerUtil.isDisjoint(linkDatabase, oboClass1, oboClass2, false)) {
 							if (!isBad)
 								badItems++;
 							isBad = true;
@@ -72,7 +68,7 @@ public class DisjointednessCheck extends AbstractCheck implements OntologyCheck 
 									+ lo.getID()
 									+ ") "
 									+ "has disjoint superclasses "
-									+ oboClass
+									+ oboClass1
 									+ " and " + oboClass2, true, this, lo);
 							out.add(warning);
 							if (isCancelled()
@@ -81,22 +77,11 @@ public class DisjointednessCheck extends AbstractCheck implements OntologyCheck 
 						}
 					}
 				}
-			}
+			}				
 		}
 		return out;
 	}
 
-	/*
-	 * protected void check(LinkedObject object, Collection properties, List
-	 * warnings) { Iterator it = properties.iterator(); while(it.hasNext()) {
-	 * OBOProperty property = (OBOProperty) it.next();
-	 * 
-	 * if (TermUtil.isCycle(Controller.getController().
-	 * getCurrentLinkDatabase(), property, object)) { CheckWarning warning = new
-	 * CheckWarning(object.getName()+" ("+object.getID()+") "+ "is part of a
-	 * cycle over the property "+ property+". ", true, this, object);
-	 * warnings.add(warning); } } }
-	 */
 
 	@Override
 	public String getDescription() {
