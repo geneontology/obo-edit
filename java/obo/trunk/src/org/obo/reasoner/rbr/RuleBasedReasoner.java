@@ -403,7 +403,15 @@ public class RuleBasedReasoner extends AbstractReasoner {
 
 	//getParents() 
 	public Collection<Link> getParents(LinkedObject lo) {
-		return impliedLinkDatabase.getParents(lo);
+		Collection<Link> given = linkDatabase.getParents(lo);
+		Collection<Link> impliedParents = impliedLinkDatabase.getParents(lo);
+		Collection<Link> out = new LinkedHashSet<Link>(given.size()
+				+ impliedParents.size());
+		out.addAll(impliedParents);
+		out.addAll(given);
+		return out;
+		
+//		return impliedLinkDatabase.getParents(lo);
 	}
 
 	/**
@@ -448,9 +456,7 @@ public class RuleBasedReasoner extends AbstractReasoner {
 	public Set<LinkedObject> getParentsOfType(LinkedObject a,
 			OBOProperty prop) {
 		Set<LinkedObject> out = new LinkedHashSet<LinkedObject>();
-		Iterator<Link> it = getParents(a).iterator();
-		while (it.hasNext()) {
-			Link link = (Link) it.next();
+		for(Link link : getParents(a)){
 			if (link.getType().equals(prop)) {
 				out.add(link.getParent());
 			}
@@ -460,10 +466,10 @@ public class RuleBasedReasoner extends AbstractReasoner {
 
 	// TODO: use an index
 	public Link hasRelationship(LinkedObject a, OBOProperty prop, LinkedObject b) {
-		Iterator<Link> it = getParents(a).iterator();
-		while (it.hasNext()) {
-			Link link = (Link) it.next();
-			if (link.getParent().equals(b) && link.getType().equals(prop)) {
+		for(Link link : getParents(a)){
+			if (isSubPropertyOf(link.getType(), prop)
+					&& link.getParent().equals(b)) {
+//			if (link.getParent().equals(b) && link.getType().equals(prop)) {
 				return link;
 			}
 		}
@@ -481,14 +487,32 @@ public class RuleBasedReasoner extends AbstractReasoner {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
+	
 	public boolean isSubPropertyOf(OBOProperty a, OBOProperty b) {
-		return hasRelationship(a, OBOProperty.IS_A, b) != null;
+		return isSubclass(a, b);
 	}
 
 	public boolean isSubclassOf(OBOClass a, OBOClass b) {
-		return hasRelationship(a, OBOProperty.IS_A, b) != null;
+		return isSubclass((LinkedObject) a, (LinkedObject) b);
 	}
+	
+	public boolean isSubclass(LinkedObject a, LinkedObject b) {
+		if (a.equals(b))
+			return true;
+		for (Link link : getParents(a)) {
+			if (isSubPropertyOf(link.getType(), OBOProperty.IS_A) && link.getParent().equals(b))
+				return true;
+		}
+		return false;
+	}
+
+//	public boolean isSubPropertyOf(OBOProperty a, OBOProperty b) {
+//		return hasRelationship(a, OBOProperty.IS_A, b) != null;
+//	}
+//
+//	public boolean isSubclassOf(OBOClass a, OBOClass b) {
+//		return hasRelationship(a, OBOProperty.IS_A, b) != null;
+//	}
 
 	public void removeLinks(Collection<Link> link) {
 		// TODO Auto-generated method stub
