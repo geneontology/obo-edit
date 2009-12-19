@@ -196,13 +196,20 @@ public class ReasonerUtil {
 		return out;
 	}
 
+	/**
+	 * isDisjoint
+	 * @param ReasonedlinkDatabase linkDatabase
+	 * @param OBOClass a
+	 * @param OBOClass b
+	 * @param boolean siblingsAreDisjoint
+	 * */
 	public static boolean isDisjoint(ReasonedLinkDatabase linkDatabase,
 			OBOClass a, OBOClass b, boolean siblingsAreDisjoint) {
 		// classes are never disjoint with themselves
-		if (a.equals(b))
+		if (a.equals(b)){
 			return false;
-
-		if (siblingsAreDisjoint) {
+		}			
+		else if (siblingsAreDisjoint) {
 			// classes are never disjoint with their super/subclasses
 			if (linkDatabase.isSubclassOf(a, b)
 					|| linkDatabase.isSubclassOf(b, a))
@@ -217,17 +224,20 @@ public class ReasonerUtil {
 			.getParentsOfType(b, OBOProperty.IS_A);
 			a_superClasses.retainAll(b_superClasses);
 			return a_superClasses.size() > 0;
-		} else {
-			Collection<LinkedObject> disjoints = linkDatabase.getParentsOfType(
-					a, OBOProperty.DISJOINT_FROM);
-			if (disjoints.contains(b))
+		} 
+		else {
+			Collection<LinkedObject> disjoints = linkDatabase.getParentsOfType(a, OBOProperty.DISJOINT_FROM);
+			if (disjoints.contains(b)){
 				return true;
+			}
 
-			// remove this section once the reasoner starts handling
-			// symmetry properly
-			disjoints = linkDatabase.getParentsOfType(b,
-					OBOProperty.DISJOINT_FROM);
-			return disjoints.contains(a);
+
+			// remove this section once the reasoner starts handling symmetry properly
+			disjoints = linkDatabase.getParentsOfType(b, OBOProperty.DISJOINT_FROM);
+			if(disjoints.contains(a)){
+				return true;	
+			}
+			return false;
 		}
 	}
 
@@ -295,7 +305,7 @@ public class ReasonerUtil {
 			return null; // N+S conditions are never redundant
 		if (TermUtil.isImplied(link))
 			return null; // only asserted links can be redundant
-		
+
 		Explanation redExp = null;
 		for (Explanation exp : reasoner.getExplanations(link)) {
 
@@ -581,7 +591,7 @@ public class ReasonerUtil {
 			}
 		}
 	}
-	
+
 	/**
 	 * single intersection links are illegal
 	 * 
@@ -591,7 +601,7 @@ public class ReasonerUtil {
 	 */
 	public static boolean isIllegalIntersection(LinkedObject lo, boolean forceGenusDifferentia) {
 		Collection<Link> out = new LinkedList<Link>();
-				
+
 		for (Link link : lo.getParents()) {
 			if (TermUtil.isIntersection(link))
 				out.add(link);
