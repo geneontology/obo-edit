@@ -403,15 +403,7 @@ public class RuleBasedReasoner extends AbstractReasoner {
 
 	//getParents() 
 	public Collection<Link> getParents(LinkedObject lo) {
-		Collection<Link> given = linkDatabase.getParents(lo);
-		Collection<Link> impliedParents = impliedLinkDatabase.getParents(lo);
-		Collection<Link> out = new LinkedHashSet<Link>(given.size()
-				+ impliedParents.size());
-		out.addAll(impliedParents);
-		out.addAll(given);
-		return out;
-		
-//		return impliedLinkDatabase.getParents(lo);
+		return impliedLinkDatabase.getParents(lo);
 	}
 
 	/**
