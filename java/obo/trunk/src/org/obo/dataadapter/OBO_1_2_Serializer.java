@@ -82,7 +82,7 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 	public void setTagOrdering(HashSet tagsToWrite) {
 //		logger.debug("OBO_1_2_Serializer: setTagOrdering: tagsToWrite = " + tagsToWrite);
 
-		if(!(tagsToWrite == null)){
+		if(tagsToWrite != null){
 		serializer_1_2_tagOrdering = getSerializer_1_2_tagOrdering();
 		serializer_1_2_tagOrdering.clear();
 		//This gets the order right.
