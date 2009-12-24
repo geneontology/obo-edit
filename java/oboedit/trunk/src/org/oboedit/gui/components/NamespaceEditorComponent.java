@@ -2,6 +2,8 @@ package org.oboedit.gui.components;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
+
 import javax.swing.*;
 
 import org.bbop.util.*;
@@ -59,9 +61,8 @@ public class NamespaceEditorComponent extends AbstractTextEditComponent {
 			namespaces.addAll(SessionManager.getManager().getSession()
 					.getNamespaces());
 			Collections.sort(namespaces, Namespace.COMPARATOR);
-			Iterator it = namespaces.iterator();
-			while (it.hasNext()) {
-				Namespace ns = (Namespace) it.next();
+			for(Object nso : namespaces){
+				Namespace ns = (Namespace) nso;
 				namespaceList.addItem(ns);
 			}
 			namespaceList.setSelectedItem(currentObject.getNamespace());
@@ -89,7 +90,7 @@ public class NamespaceEditorComponent extends AbstractTextEditComponent {
 		io.setNamespace((Namespace) namespaceList.getSelectedItem());
 	}
 
-	public java.util.List getChanges() {
+	public List getChanges() {
 		if (currentObject != null) {
 			if (!ObjectUtil.equals(namespaceList.getSelectedItem(),
 					currentObject.getNamespace())) {

@@ -1,18 +1,15 @@
 package org.oboedit.controller;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.ViewMenus;
 import org.bbop.swing.BackgroundUtil;
 import org.bbop.util.AbstractTaskDelegate;
-import org.bbop.util.CollectionUtil;
 import org.bbop.util.EventUtil;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.OBOSession;
@@ -37,7 +34,6 @@ import org.oboedit.gui.event.ReasonerStatusEvent;
 import org.oboedit.gui.event.ReasonerStatusListener;
 import org.oboedit.gui.event.RootChangeEvent;
 import org.oboedit.gui.event.RootChangeListener;
-import org.oboedit.gui.tasks.DefaultGUIStartupTask;
 import org.oboedit.util.GUIUtil;
 
 
@@ -171,17 +167,17 @@ public class SessionManager {
 
 	// partial incremental reasoning where the reasonedlink database is topped off after completion of a task 
 	public boolean getStepIncReasoningStatus() {
-		logger.debug("SessionManager.getStepIncReasoningStatus");
+//		logger.debug("SessionManager.getStepIncReasoningStatus");
 		return Preferences.getPreferences().getStepIncReasoningStatus();
 	}
 	//
 	public void setStepIncReasoningStatus(final boolean isStepIncrementalOn){
-		logger.debug("SessionManager.setStepIncReasoningStatus");
+//		logger.debug("SessionManager.setStepIncReasoningStatus");
 	}
 	
 	
 	public boolean getIncReasoningStatus() {
-		logger.debug("SessionManager.getIncReasoningStatus");
+//		logger.debug("SessionManager.getIncReasoningStatus");
 		return Preferences.getPreferences().getIncReasoningStatus();
 	}
 	

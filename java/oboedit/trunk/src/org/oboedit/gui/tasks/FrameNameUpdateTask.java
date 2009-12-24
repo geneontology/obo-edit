@@ -37,7 +37,7 @@ public class FrameNameUpdateTask extends AbstractReloadTask {
 		if(SessionManager.getManager().getStepIncReasoningStatus())
 			out += "_^";
 		
-		logger.debug("FrameNameUpdateTask - " + out);
+//		logger.debug("FrameNameUpdateTask - " + out);
 		return out;
 	}
 }

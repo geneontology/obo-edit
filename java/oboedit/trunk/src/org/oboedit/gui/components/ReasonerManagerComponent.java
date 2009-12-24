@@ -91,8 +91,8 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 //		// basically what this reasones over the complete linkdatabase again - same effect as switching the reasoner off and then on again
 //		// this will be used when the continuous incremental reasoning is off
 		JButton refreshButton = new JButton("Reset/Refresh Results");
-		add(incrementalCheck);
-		add(refreshButton);
+		//add(incrementalCheck);
+		//add(refreshButton);
 		// ======================
 		
 		add(summaryField);

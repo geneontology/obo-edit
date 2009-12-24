@@ -87,10 +87,6 @@ public class FileMenu extends DynamicMenu {
 		add(newItem);
 		add(loadItem);
 		add(importItem);
-//		add(resolveItem);
-		// removed until the correct behavior is figured out
-		// fileMenu.add(saveItem);
-
 		add(saveAsItem);
 
 		add(applyHistoryItem);
@@ -111,14 +107,6 @@ public class FileMenu extends DynamicMenu {
 			}
 
 		});
-
-// 		resolveItem.addActionListener(new ActionListener() {
-// 
-// 			public void actionPerformed(ActionEvent e) {
-// 				resolveIDs();
-// 			}
-// 
-// 		});
 
 		loadItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

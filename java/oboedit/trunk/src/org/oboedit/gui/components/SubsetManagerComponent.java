@@ -205,20 +205,15 @@ public class SubsetManagerComponent extends AbstractGUIComponent {
 
 	protected void loadSubsets() {
 		Vector v = new Vector();
-
-		Iterator it = SessionManager.getManager().getSession().getSubsets()
-				.iterator();
-		while (it.hasNext()) {
-			TermSubset cat = (TermSubset) it.next();
-			Iterator it2 = TermUtil.getTerms(
-					SessionManager.getManager().getSession()).iterator();
-			while (it2.hasNext()) {
-				OBOClass term = (OBOClass) it2.next();
-				if (term.getSubsets().contains(cat)) {
+		
+		for(TermSubset termSub : SessionManager.getManager().getSession().getSubsets()){
+			
+			for(OBOClass term : TermUtil.getTerms(SessionManager.getManager().getSession())){
+				if (term.getSubsets().contains(termSub)) {
 					break;
 				}
-			}
-			v.add(new SubsetWrapper(cat));
+			}		
+			v.add(new SubsetWrapper(termSub));	
 		}
 		subsetList.setData(v);
 	}
