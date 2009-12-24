@@ -555,7 +555,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 				selectGenusButton.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e) {
-						logger.debug(">> genusTerm: " + genusTerm);
+						logger.debug("genusTerm: " + genusTerm);
 						SelectionManager.selectTerm(CrossProductEditorComponent.this, genusTerm);
 					}
 
