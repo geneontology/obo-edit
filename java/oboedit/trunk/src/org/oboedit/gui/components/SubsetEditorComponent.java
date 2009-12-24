@@ -2,6 +2,8 @@ package org.oboedit.gui.components;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
+
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -162,7 +164,7 @@ public class SubsetEditorComponent extends AbstractTextEditComponent {
 	protected void initializeGUI() {
 	}
 
-	public java.util.List getWarnings() {
+	public List getWarnings() {
 		return Collections.EMPTY_LIST;
 	}
 
@@ -186,9 +188,9 @@ public class SubsetEditorComponent extends AbstractTextEditComponent {
 		}
 	}
 
-	public java.util.List getChanges() {
+	public List getChanges() {
 		if (currentObject != null) {
-			java.util.List out = new LinkedList();
+			List out = new LinkedList();
 			if (currentObject instanceof SubsetObject) {
 				for (int i = 0; i < subsetTableModel.getRowCount(); i++) {
 					TermSubset sub = (TermSubset) subsetTableModel

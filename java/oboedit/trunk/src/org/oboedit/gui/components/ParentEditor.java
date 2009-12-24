@@ -342,11 +342,8 @@ public class ParentEditor extends AbstractGUIComponent {
 				final JComboBox typeBox = new JComboBox();
 				typeBox.setFont(font);
 				typeBox.setEnabled(enabled);
-
-				Iterator it = TermUtil.getRelationshipTypes(
-						SessionManager.getManager().getSession()).iterator();
-				while (it.hasNext()) {
-					OBOProperty type = (OBOProperty) it.next();
+				
+				for(OBOProperty type : TermUtil.getRelationshipTypes(SessionManager.getManager().getSession()) ){
 					if (TermUtil.isLegalRelationship(tr.getChild(), type, tr
 							.getParent()))
 						typeBox.addItem(type);
@@ -354,8 +351,7 @@ public class ParentEditor extends AbstractGUIComponent {
 				typeBox.setSelectedItem(tr.getType());
 				typeBox.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						OBOProperty type = (OBOProperty) typeBox
-						.getSelectedItem();
+						OBOProperty type = (OBOProperty) typeBox.getSelectedItem();
 						HistoryItem item = new LinkTypeHistoryItem(tr, type);
 						TreePath[] paths = SelectionManager
 						.getGlobalSelection().getPaths();
@@ -419,10 +415,10 @@ public class ParentEditor extends AbstractGUIComponent {
 				}
 
 
-				final JButton trashButton = new JButton(Preferences
-						.loadLibraryIcon("trashcan.gif"));
-				trashButton.setPreferredSize(new Dimension(20, 18));
-				trashButton.addActionListener(new ActionListener() {
+				final JButton deleteRelationIcon = new JButton(Preferences.loadLibraryIcon("trashcan.gif"));
+				deleteRelationIcon.setToolTipText("Delete relation");
+				deleteRelationIcon.setPreferredSize(new Dimension(20, 18));
+				deleteRelationIcon.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						DeleteLinkHistoryItem ditem = new DeleteLinkHistoryItem(
 								tr);
@@ -450,10 +446,10 @@ public class ParentEditor extends AbstractGUIComponent {
 						GUIUtil.setPostSelection(ditem, SelectionManager.getManager().getSelection());
 					}
 				});
-				trashButton.setEnabled(enabled
+				deleteRelationIcon.setEnabled(enabled
 						&& tr.getChild().getParents().size() > 1);
 				Box topBox = Box.createHorizontalBox();
-				topBox.add(trashButton);
+				topBox.add(deleteRelationIcon);
 				topBox.add(Box.createHorizontalStrut(5));
 				topBox.add(typeBox);
 				topBox.add(Box.createHorizontalStrut(5));
@@ -500,11 +496,7 @@ public class ParentEditor extends AbstractGUIComponent {
 				final JComboBox namespaceBox = new JComboBox();
 				namespaceBox.setFont(font);
 				namespaceBox.setEnabled(enabled);
-				it = SessionManager.getManager().getSession().getNamespaces()
-				.iterator();
-				namespaceBox.addItem("<no namespace>");
-				while (it.hasNext()) {
-					Namespace ns = (Namespace) it.next();
+				for(Namespace ns : SessionManager.getManager().getSession().getNamespaces()){
 					namespaceBox.addItem(ns);
 				}
 				if (tr.getNamespace() == null)
@@ -516,8 +508,7 @@ public class ParentEditor extends AbstractGUIComponent {
 						Namespace ns = null;
 						if (namespaceBox.getSelectedIndex() > 0)
 							ns = (Namespace) namespaceBox.getSelectedItem();
-						TRNamespaceHistoryItem item = new TRNamespaceHistoryItem(
-								tr, ns);
+						TRNamespaceHistoryItem item = new TRNamespaceHistoryItem(tr, ns);
 						GUIUtil.setSelections(item, SelectionManager
 								.getGlobalSelection(), SelectionManager
 								.getGlobalSelection());
