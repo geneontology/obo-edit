@@ -93,7 +93,6 @@ public class ObjectFilterImpl implements ObjectFilter {
 	}
 
 	public boolean satisfies(Object object) {
-//		logger.debug("ObjectFilterImpl.satisfies");
 		if (!criterion.getInputType().isAssignableFrom(object.getClass()))
 			return false;
 		else {
@@ -105,7 +104,6 @@ public class ObjectFilterImpl implements ObjectFilter {
 			}
 			List os = new LinkedList();
 			aspect.getObjects(os, getReasoner(), traversalFilter, object);
-//			logger.debug("criterion: " + criterion);
 			criterion.setReasoner(getReasoner());
 			boolean matches = negate;
 

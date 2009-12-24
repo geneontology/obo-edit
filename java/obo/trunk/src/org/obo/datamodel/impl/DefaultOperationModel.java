@@ -800,7 +800,6 @@ public class DefaultOperationModel implements OperationModel {
 	}
 
 	protected IdentifiedObject getRealIDObject(String term) {
-		logger.debug(" DefaultOperationModel.getRealIDObject  term: " + term);
 		if (term == null)
 			return null;
 		IdentifiedObject out = session.getObject(term);
