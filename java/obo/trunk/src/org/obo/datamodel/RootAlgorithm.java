@@ -63,12 +63,12 @@ public interface RootAlgorithm {
 					Relationship child_link = (Relationship) child;
 					
 					
-					if(parent_link.getType().getName().equals(OBOProperty.HAS_PART.getName())){
+//					if(parent_link.getType().getName().equals(OBOProperty.HAS_PART.getName())){
 		
-						if(child_link.getType().getName().equals(OBOProperty.PART_OF.getName())){			
-							return true;
-						}
-					}
+//						if(child_link.getType().getName().equals(OBOProperty.PART_OF.getName())){			
+//							return true;
+//						}
+//					}
 					
 				}
 				

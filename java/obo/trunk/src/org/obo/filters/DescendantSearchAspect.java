@@ -18,7 +18,7 @@ public class DescendantSearchAspect implements SearchAspect {
 
 	public Collection<LinkedObject> getObjects(Collection<LinkedObject> c, ReasonedLinkDatabase reasoner,
 			Filter traversalFilter, Object o) {
-		logger.debug("DescendantSearchAspect.getObjects");
+//		logger.debug("DescendantSearchAspect.getObjects");
 		if (reasoner != null && o instanceof LinkedObject) {
 //			Collection<Link> reasonedChildren = reasoner.getChildren((LinkedObject) o);		
 //			logger.debug("DescendantreasonedChildren.size(): " + reasonedChildren.size());
