@@ -58,7 +58,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		protected boolean doLinkFilter = false;
 
-		protected boolean doTagFilter = false;
+		protected boolean doTagFilter = true;
 
 		protected boolean allowDangling = false;
 
@@ -1082,6 +1082,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		writeModificationData = filteredPath.getWriteModificationData();
 		String impliedType = filteredPath.getImpliedType();
 		reasonerFactory = filteredPath.getReasonerFactory();
+		
+
 
 		OBOProperty prefilterProperty = null;
 		if (filteredPath.getPrefilterProperty() != null)
@@ -1176,28 +1178,32 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			((FilteredLinkDatabase) database).setFollowIsaClosure(followIsaClosure);
 		}
 
-		//Get filteredObjects after applying relevant filters
-		Collection filteredObjects = database.getObjects();
 
-		Collection<LinkedObject> termsToFetch = new ArrayList();
-
-		//adding filteredObjects to termsToFetch to consolodate objects and prevent duplicate entries 
-		for(Object term : filteredObjects){
-			LinkedObject lo = (LinkedObject) term;
-			termsToFetch.add(lo);
-		}
 
 		setProgressString("Collecting objects to write to file: " + path);
+		
+		//compiling termsToFetch with objects, applying relevant filters, if applicable
+		Collection termsToFetch = database.getObjects();
+
+		
 		// if Include is_a closure save option selected - compile termsToFetch from the filteredObjects
-		if(((FilteredLinkDatabase) database).getFollowIsaClosure()){
-			for(Object obj : filteredObjects){
+		if((database.equals("FilteredLinkDatabase")) && ((FilteredLinkDatabase) database).getFollowIsaClosure()){
+			//adding filteredObjects to termsToFetch to consolodate objects and prevent duplicate entries 
+			for(Object term : termsToFetch){
+				LinkedObject lo = (LinkedObject) term;
+				termsToFetch.add(lo);
+			}
+			
+			
+			for(Object obj : termsToFetch){
 				LinkedObject lo = (LinkedObject) obj;
 				for(Object parent : lo.getParents()){
 					Link link = (Link) parent;
 					//check if object already exists in termsToFecth
 					boolean exists = false;
 					if(link.getParent().getName() != null){
-						for(IdentifiedObject term : termsToFetch){
+						for(Object t : termsToFetch){
+							IdentifiedObject term = (IdentifiedObject) t;
 							if(link.getParent().getName().equals(term.getName()))
 								exists = true;					
 						}
@@ -1263,7 +1269,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			//get objects to write to file
 			List objectList = new ArrayList();
 
-			for(IdentifiedObject io : termsToFetch){	
+			for(Object obj : termsToFetch){
+				IdentifiedObject io = (IdentifiedObject) obj;
 				if (stanzaMapping.getStanzaClass().isInstance(io) && !io.isBuiltIn()) {
 					objectList.add(io);
 
