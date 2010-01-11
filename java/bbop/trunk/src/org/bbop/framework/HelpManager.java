@@ -37,13 +37,17 @@ public class HelpManager {
 
 	public void setHelpSetFile(File helpSetFile) {
 		this.helpSetFile = helpSetFile;
+		logger.debug("HelpManager.setHelpSetFile " + helpSetFile); // DEL
 		helpBroker = createHelpBroker(helpSetFile);
 	}
 
 	public void displayHelp() {
-		(new CSH.DisplayHelpFromSource(helpBroker))
+		if (GUIManager.getManager() != null)
+			(new CSH.DisplayHelpFromSource(helpBroker))
 				.actionPerformed(new ActionEvent(GUIManager.getManager()
-						.getFrame(), 0, "help"));
+								 .getFrame(), 0, "help"));
+		else
+			new CSH.DisplayHelpFromSource(helpBroker);
 	}
 
 	public void displayHelp(String topicID) {
@@ -54,8 +58,8 @@ public class HelpManager {
 		try {
 //			Popup popup = (Popup) Popup.getPresentation(
 //					helpBroker.getHelpSet(), null);
-		    SecondaryWindow popup = (SecondaryWindow) SecondaryWindow.getPresentation(
-					helpBroker.getHelpSet(), null);
+			SecondaryWindow popup = (SecondaryWindow) SecondaryWindow.getPresentation(
+				helpBroker.getHelpSet(), null);
 			if (topicID != null)
 				popup.setCurrentID(topicID);
 //			popup.setInvoker(invoker);
