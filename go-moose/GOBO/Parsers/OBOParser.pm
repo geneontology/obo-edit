@@ -306,7 +306,7 @@ sub parse_body {
 			$self->add_metadata($s,$2);
 			$g->add_link($s);
 			if ($stanzaclass eq 'typedef') {
-				$n->add_subrelation_of($tn);
+                            $n->add_subrelation_of($tn);
 			}
 		}
 		elsif (/^relationship:\s*(\S+)\s+(\S+)(.*)/) {

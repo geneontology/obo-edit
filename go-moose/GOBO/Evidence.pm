@@ -15,4 +15,8 @@ sub as_string {
     return $self->type . '-' . $self->with_str;
 }
 
+sub is_IEA {
+    return shift->type->id eq 'IEA';
+}
+
 1;

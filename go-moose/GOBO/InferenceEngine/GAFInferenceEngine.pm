@@ -11,7 +11,6 @@ An GOBO::InferenceEngine for making inferences over a GAF (Gene Association File
 
 =head2 Rules
 
-
 =cut
 
 package GOBO::InferenceEngine::GAFInferenceEngine;
@@ -61,6 +60,9 @@ sub infer_annotations {
     my $got_h = $self->got_h;
     my @ics = ();
     foreach my $ann (@$anns) {
+        if ($ann->evidence->is_IEA) {
+            next;
+        }
         my $t = $ann->target;
         my $tid = $t->id;
         my $t_ns = $t->namespace;

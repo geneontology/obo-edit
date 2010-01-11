@@ -33,7 +33,13 @@ sub add_statement {
 # TODO - check for duplicates?
 sub add_statements {
     my $self = shift;
-    my $sl = shift;
+    my $sl;
+    if (ref($_[0]) && ref($_[0]) eq 'ARRAY') {
+	$sl = shift;
+    }
+    else {
+	$sl = [@_];
+    }
     foreach my $s (@$sl) {
         confess("no subject in $s") unless $s->node;
         my $nid = $s->node->id;

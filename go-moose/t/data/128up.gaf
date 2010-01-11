@@ -33,8 +33,18 @@
 !saved-by: Susan Tweedie s.tweedie@gen.cam.ac.uk
 !Data from FlyBase version FB2009_07
 !version: $Revision: 1.154 $
+! 
+! 128up: This one should result in a F->P IC (GTP Binding -> guanyly nb -> purine nb -> purine deoxy biosynth)
+! fake1: no IC here, due to IEA
+! fake2: no IC here as it would be redundant with more specific P annotation
+! fake3: no IC here as it would be redundant with P annotation
 FB	FBgn0010339	128up		GO:0005525	FB:FBrf0067209|PMID:8121394	IDA		F	upstream of RpIII128	CG8340|GTP-bp|X71866	gene	taxon:7227	20060803	FlyBase
 FB	FBgn0010339	128up		GO:0005525	FB:FBrf0105495	ISS	UniProtKB:P43690	F	upstream of RpIII128	CG8340|GTP-bp|X71866	gene	taxon:7227	20060803	FlyBase
 FB	FBgn0010339	128up		GO:0005525	FB:FBrf0156694	NAS		F	upstream of RpIII128	CG8340|GTP-bp|X71866	gene	taxon:7227	20060803	FlyBase
 FB	FBgn0010339	128up		GO:0005622	FB:FBrf0174215	IEA	InterPro:IPR002917	C	upstream of RpIII128	CG8340|GTP-bp|X71866	gene	taxon:7227	20090124	FlyBase
 FB	FBgn0010339	128up		GO:0005622	FB:FBrf0174215	IC	GO:0005525	C	upstream of RpIII128	CG8340|GTP-bp|X71866	gene	taxon:7227	20090124	FlyBase
+FB	fake1	fake1		GO:0005622	FB:FBrf0174215	IDA	GO:0005525	F	do not infer, already has P	CG8340|GTP-bp|X71866	gene	taxon:7227	20090124	FlyBase
+FB	fake1	fake1		GO:0005622	FB:FBrf0174215	IDA	GO:0046123	P	do not infer, already has P	CG8340|GTP-bp|X71866	gene	taxon:7227	20090124	FlyBase
+FB	fake2	fake2		GO:0005622	FB:FBrf0174215	IDA	GO:0005525	F	do not infer, already has deeper P	CG8340|GTP-bp|X71866	gene	taxon:7227	20090124	FlyBase
+FB	fake2	fake2		GO:0005622	FB:FBrf0174215	IDA	GO:0042452	P	do not infer, already has deeper P	CG8340|GTP-bp|X71866	gene	taxon:7227	20090124	FlyBase
+FB	fake3	fake3		GO:0005525	FB:FBrf0174215	IEA	InterPro:IPR002917	C	upstream of RpIII128	CG8340|GTP-bp|X71866	gene	taxon:7227	20090124	FlyBase
