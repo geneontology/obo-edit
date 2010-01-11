@@ -270,8 +270,11 @@ sub set_referenced {
 
 sub _quote {
     my $s = shift;
+    $s = "" unless defined $s;
     $s =~ s/\\/\\\\/g; # e.g. Dmel\CR32864
     $s =~ s/\"/\\\"/g;
+    $s =~ s/\n/ /g;
+    #$s =~ s/\r/\\\n/g;
     return sprintf('"%s"',$s);
 }
 

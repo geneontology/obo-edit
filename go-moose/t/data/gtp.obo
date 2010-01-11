@@ -339,6 +339,18 @@ is_a: GO:0046120  ! deoxyribonucleoside biosynthetic process
 is_a: GO:0046122  ! purine deoxyribonucleoside metabolic process
 
 [Term]
+id: GO:0042452
+name: deoxyguanosine biosynthetic process
+namespace: biological_process
+def: "The chemical reactions and pathways resulting in the formation of deoxyguanosine, a nucleoside consisting of the base guanine and the sugar deoxyribose." [GOC:jl, http://cancerweb.ncl.ac.uk/]
+subset: gosubset_prok  ! Prokaryotic GO subset
+synonym: "deoxyguanosine anabolism" EXACT []
+synonym: "deoxyguanosine biosynthesis" EXACT []
+synonym: "deoxyguanosine formation" EXACT []
+synonym: "deoxyguanosine synthesis" EXACT []
+is_a: GO:0046123  ! purine deoxyribonucleoside biosynthetic process
+
+[Term]
 id: GO:0055086
 name: nucleobase, nucleoside and nucleotide metabolic process
 namespace: biological_process
