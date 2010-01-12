@@ -101,7 +101,7 @@ public class SplashScreen extends JWindow {
 		textArea.setForeground(Color.black);
 		textArea.setOpaque(false);
 		textArea.setText("An open source ontology editor distributed "
-				 + "under\nthe terms of the Artistic License.\n"
+				 + "under\nthe terms of the FreeBSD License.\n"
 				 + "Version " + Preferences.getVersion() + ", "
 				 + "copyright 2001-" + year + "\n"
 				 + "Originally written by John Day-Richter, with\n"
