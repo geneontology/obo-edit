@@ -120,6 +120,9 @@ sub validate_annotations {
     my $ontg = $self->graph;
     my @invalid_annots = ();
     foreach my $ann (@$anns) {
+	if ($ann->negated) {
+	    next;
+	}
         my $g = $ann->gene;
         my $taxon = $g->taxon;
 # TODO - something with unknown taxon
