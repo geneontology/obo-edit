@@ -393,7 +393,7 @@ sub get_outgoing_links {
 	my $n = shift;
 	my $rel = shift;
 	my @sl = @{$self->link_ix->statements_by_node_id(ref($n) ? $n->id : $n) || []};
-	return [] if ! @sl;
+	#return [] if ! @sl;
 	# if x = a AND r(b), then x r b
 	if (ref($n) && $n->isa('GOBO::ClassExpression::Intersection')) {
 		foreach (@{$n->arguments}) {
