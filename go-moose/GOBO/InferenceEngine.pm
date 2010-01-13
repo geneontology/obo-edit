@@ -288,6 +288,7 @@ sub subsumed_by {
         return 1;
     }
 
+    # parent is not itself a class expression, but may have an equivalence relation to a class expression
     if ($parent->isa('GOBO::TermNode')) {
         # TODO: equiv test for roles?
         if ( $parent->logical_definition) {
@@ -298,6 +299,8 @@ sub subsumed_by {
         }
 
     }
+
+    # check is_a closure
     if (grep {$_->id eq $parent->id} @{$self->get_inferred_target_nodes($child, new GOBO::RelationNode(id=>'is_a'))}) {
         return 1;
     }
