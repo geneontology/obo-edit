@@ -13,6 +13,7 @@
 
 (defpackage :bbop-couchdb
   (:use :cl
+	:json
 	:drakma
 	:bbop-utils
 	:bbop-json)
@@ -53,11 +54,15 @@
 	  (values nil (gethash :reason hash))
 	  (values t db-ok)))))
 
-(defun add-doc (db-name id object)
+(defun add-doc (db-name object &optional (id nil))
   (multiple-value-bind (json)
-      (http-request (string-merge *cdb* "/" db-name "/" id)
-		    :method :put
-		    :content (json:encode-json-to-string object))
+      (if (null id)
+	  (http-request (string-merge *cdb* "/" db-name "/")
+			:method :post
+			:content (json:encode-json-to-string object))
+	  (http-request (string-merge *cdb* "/" db-name "/" id)
+			:method :put
+			:content (json:encode-json-to-string object)))
     (let* ((hash (json-to-hash json))
 	   (db-error (gethash :error hash))
 	   ;;(db-ok (gethash :ok hash)))
@@ -82,6 +87,6 @@
 
 ;; BUG?: is this only available from 0.9+?
 (defun get-uuid (&optional (num 1))
-;;   (http-request (string-merge *cdb* "/_uuids?" (write-to-string num))
-;; 		:method :get))
-  (string-merge *cdb* "/_uuids?" (write-to-string num)))
+  (with-input-from-string (s (http-request (string-merge *cdb* "/_uuids?" (write-to-string num)) :method :get))
+    (cadar (decode-json s))))
+;;  (string-merge *cdb* "/_uuids?" (write-to-string num)))

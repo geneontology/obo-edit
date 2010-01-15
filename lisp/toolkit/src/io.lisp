@@ -9,6 +9,7 @@
 	:cl-fad)
   (:export :slurp
 	   :read-file
+	   :read-file-as-string
 	   :write-file
 	   :make-splitter
 	   :make-filter
@@ -35,6 +36,12 @@ just collect the strings into a list."
   "Return a list of a structured \"print\" outputted file."
   (with-open-file (stream file-string)
     (read stream nil)))
+
+(defun read-file-as-string (path)
+  (with-open-file (s path)
+    (let* ((len (file-length s))
+           (data (make-string len)))
+      (values data (read-sequence data s)))))
 
 ;; Usage: (funcall (make-filter (not (eq (length x) 3))) list)
 (defmacro make-filter (&rest tests)
