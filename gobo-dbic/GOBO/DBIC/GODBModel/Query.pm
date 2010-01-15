@@ -297,6 +297,12 @@ sub new {
 			   'term'];
     $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
 
+  }elsif( $type eq 'dbxref_lazy' ){
+
+    $self->{QUERY_RESULT_SET} = 'DBXRef';
+    $self->{QUERY_JOIN} = [];
+    $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
+
   }elsif( $type eq 'db' ){
 
     ## Trivial, is it not?
