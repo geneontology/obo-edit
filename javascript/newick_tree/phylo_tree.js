@@ -19,8 +19,18 @@
 var global_pos_style = 'absolute';
 // phylo_Tip() and UnTip() not defined.
 // TODO: Restore this functionality...
-function UnTip(){}
-function phylo_Tip(){}
+// Hide div and destroy inner text.
+function phylo_Tip(str){
+    if( ! str ){ str = ''; }
+    core.kvetch('phylo_Tip: ' + str);
+    
+    widgets.tooltip_show(str);
+}
+function UnTip(){
+    //core.kvetch('UnTip');
+    widgets.tooltip_hide();
+}
+
 
 function writeTime(aTime, aStr) {       
 //      var currentTime = new Date();
