@@ -8,6 +8,10 @@
 	:cl-ppcre
 	:cl-fad)
   (:export :slurp
+	   :slurp-lite
+	   ;;:slurp-cache
+	   ;;:slurp-cache-reset
+	   ;;:*slurp-cache*
 	   :read-file
 	   :read-file-as-string
 	   :write-file
@@ -26,6 +30,40 @@ just collect the strings into a list."
        for line = (read-line stream nil)
        while line
        collect (funcall function line))))
+
+
+(defun slurp-lite (file-string &key
+			       (function #'(lambda (x) x))
+			       (test #'(lambda (r) (declare (ignore r)) t)))
+  "Read in a file line by line, exectute a function on each line as a
+string and add to output. The default function is to just collect the strings into a list."
+  (let ((cache '()))
+    (with-open-file
+     (stream file-string)
+     (loop
+      for line = (read-line stream nil)
+      while line
+      do (let ((result (funcall function line)))
+	   (if (funcall test result)
+	       (push result cache)))))
+    (nreverse cache)))
+
+;;(defvar *slurp-cache* nil)
+;;(defun slurp-cache-reset () (setf *slurp-cache* nil))
+;; (defun slurp-cache (file-string &key (function #'(lambda (x) x)))
+;;   "Read in a file line by line, exectute a function on each line as a
+;; string and cons the output onto *slurp-cache*. The default function is to
+;; just collect the strings into a list."
+;;   (let ((cache '()))
+;;     (with-open-file
+;;      (stream file-string)
+;;      (loop
+;;       for line = (read-line stream nil)
+;;       while line
+;;       do (let ((result (funcall function line)))
+;; 	   (if result
+;;  (push (funcall function line) cache)))
+;;     (nreverse cache)))
 
 ;; Needs cl-ppcre
 (defun make-splitter (&optional (regexp-text "\\t+"))

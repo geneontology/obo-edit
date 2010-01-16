@@ -1,13 +1,19 @@
 ;;;; #!/usr/bin/sbcl --script
 ;;;;
-;;;;
-;;;;
+;;;; (load "../../bbop/src/log-parse.lisp")
+;;;; ;; set logj to be list of JAR accessing Java agents
+;;;; (size (setf logj (slurp-lite "/home/sjcarbon/tmp/access_log" :function #'(lambda (line) (logline line)) :test #'(lambda (r) (if (and (scan +phenote-jar-scanner+ (cdr (assoc :file r))) (scan +java-scanner+ (cdr (assoc :agent r)))) t nil)))))
+;;;; ;; look at number of unique ips in logj
+;;;; (size (remove-duplicates (mapcar #'(lambda (x) (cdr (assoc :ip x))) logj) :test #'equal))
 ;;;;
 
 
 (require 'cl-containers)
 (require 'cl-json)
+(require 'puri)
 (require 'cl-ppcre)
+(require 'adw-charting)
+(require 'adw-charting-vecto)
 (require 'toolkit)
 (require 'bbop)
 
@@ -16,6 +22,7 @@
 	:cl-containers
 	:json
 	:cl-ppcre
+	:adw-charting-vecto
 	:toolkit-io
 	:bbop-couchdb)
   (:export))
@@ -24,14 +31,16 @@
 				     "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"))
 (defvar *month-num-strings* '("01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12"))
 
-(defconstant +apache-line-scanner+ (create-scanner "^([\\d.]+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(.+?)\" (\\d{3}|\-) (\\d+|\-) \"([^\"]+)\" \"([^\"]+)\""))
-(defconstant +apache-date-scanner+ (create-scanner "[\\s\:\/]+"))
-(defconstant +whitespace-scanner+ (create-scanner "\\s+"))
-(defconstant +double-return-scanner+ (create-scanner "\\n\\n"))
-(defconstant +single-return-scanner+ (create-scanner "\\n"))
-(defconstant +colon-space-scanner+ (create-scanner "\:\\s+"))
-(defconstant +robot-useragent-scanner+ (create-scanner "^robot-useragent:\\s+"))
-(defconstant +phenote-scanner+ (create-scanner "phenote\.jnlp$"))
+(defconstant +apache-line-scanner+ (cl-ppcre:create-scanner "^([\\d.]+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(.+?)\" (\\d{3}|\-) (\\d+|\-) \"([^\"]+)\" \"([^\"]+)\""))
+(defconstant +apache-date-scanner+ (cl-ppcre:create-scanner "[\\s\:\/]+"))
+(defconstant +whitespace-scanner+ (cl-ppcre:create-scanner "\\s+"))
+(defconstant +double-return-scanner+ (cl-ppcre:create-scanner "\\n\\n"))
+(defconstant +single-return-scanner+ (cl-ppcre:create-scanner "\\n"))
+(defconstant +colon-space-scanner+ (cl-ppcre:create-scanner "\:\\s+"))
+(defconstant +robot-useragent-scanner+ (cl-ppcre:create-scanner "^robot-useragent:\\s+"))
+(defconstant +phenote-scanner+ (cl-ppcre:create-scanner "phenote\.jnlp$"))
+(defconstant +phenote-jar-scanner+ (cl-ppcre:create-scanner "phenote\.jar$"))
+(defconstant +java-scanner+ (cl-ppcre:create-scanner "[Jj]ava"))
 
 (defun log-date-convert (str)
   "Convert a date sequence into a sane orderable integer rep (not seconds, eg 200908..."
@@ -61,6 +70,35 @@
 	(:size . ,size)
 	(:referer . ,referer)
 	(:agent . ,agent)))))
+
+
+(defun downloads-per-month (log-list)
+  "Return list of number of records per yearmonth as list."
+  (let ((cache (make-hash-table)))
+    (loop for alist in log-list 
+	  do (let* ((year-str (cdr (assoc :year (cdr (assoc :time alist)))))
+		    (month-str (cdr (assoc :month (cdr (assoc :time alist)))))
+		    (date-num (parse-integer
+			       (concatenate 'string year-str month-str))))
+	       (if (null (gethash date-num cache))
+		   (setf (gethash date-num cache) 0))
+	       (setf (gethash date-num cache) (1+ (gethash date-num cache)))))
+    (let ((final-list '()))
+      (maphash #'(lambda (k v)
+		   ;;(format t "~A~%" (list k v))
+		   (push (list k v) final-list))
+	     cache)
+      final-list)))
+
+    
+(defun graph-downloads (list png-filename)
+  (with-chart
+   (:bar 600 400)
+   (add-series "Downloads" list)
+   (set-axis :y "log entries")
+   (set-axis :x "year/month")
+   (save-file png-filename)))
+
 
 (defun process-to-couchdb (db-str file-str)
   "Returns the number of lines successfully processed."
@@ -120,7 +158,7 @@
 			    (null (gethash agent-str *all-bad-agents-hash*)))
 		   ;; Is known date?
 		   (if (null (gethash date-str date-hash))
-		       (setf (gethash date-str date-hash)) 0)
+		       (setf (gethash date-str date-hash) 0))
 		   ;;(setf total-acc (1+ total-acc))
 		   (when (null (gethash ip-str unique-ips-hash))
 		     (setf (gethash ip-str unique-ips-hash)
