@@ -66,8 +66,7 @@ __PACKAGE__->set_primary_key('term_id');
 #__PACKAGE__->add_unique_constraint('term_id', ['term_id']);
 #print STDERR ">>>". __PACKAGE__-> ."\n";
 
-__PACKAGE__->belongs_to('term' =>
-			'GOBO::DBIC::GODBModel::Schema::Term', 'term_id');
+__PACKAGE__->belongs_to('term' => 'GOBO::DBIC::GODBModel::Schema::Term', 'term_id');
 
 
 

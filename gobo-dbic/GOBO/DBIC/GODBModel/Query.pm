@@ -277,6 +277,27 @@ sub new {
 
     $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
 
+  }elsif( $type eq 'gene_product_n_terms' ){
+
+    my $n = $args->{n} || die "need axis count: $!";
+    die "axis count must be 2 or 3" if $n > 3 || $n < 2;
+
+    my $assoc_qset = [];
+    for( my $i = 1; $i <= $n; $i++ ){
+      push @$assoc_qset,
+	{'association_aux_' . $i =>
+	 #{'graph_path_relations_aux_' . $i =>
+	 {'graph_path_relations' =>
+	  #['rel_type', 'object']}}]];
+	  'object_aux_' . $i}};
+    }
+
+    $self->{QUERY_RESULT_SET} = 'GeneProduct';
+    $self->{QUERY_JOIN} = ['species',
+			   $assoc_qset];
+
+    $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
+
   }elsif( $type eq 'gene_product_synonym' ){
 
     $self->{QUERY_RESULT_SET} = 'GeneProductSynonym';
@@ -293,8 +314,9 @@ sub new {
   }elsif( $type eq 'dbxref' ){
 
     $self->{QUERY_RESULT_SET} = 'DBXRef';
-    $self->{QUERY_JOIN} = ['gene_product',
-			   'term'];
+    #     $self->{QUERY_JOIN} = ['gene_product',
+    # 			   'term'];
+    $self->{QUERY_JOIN} = ['gene_product'];
     $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
 
   }elsif( $type eq 'dbxref_lazy' ){
@@ -318,7 +340,7 @@ sub new {
     $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
 
   }else{
-    die "that type is not yet implemented";
+    die "that type ($type) is not yet implemented";
   }
 
   ## Defined in super now...
@@ -385,7 +407,7 @@ sub get_all_results {
     $self->{SCHEMA}->resultset($self->{QUERY_RESULT_SET})->search($search_args,
 								  $aux_args);
 
-  ## TODO: can toss some error checking in here for return values.
+  ## TODO: should toss some error checking in here for return values.
   my @all = $results->all;
   return \@all;
 }

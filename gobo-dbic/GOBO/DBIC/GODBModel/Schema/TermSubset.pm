@@ -35,10 +35,8 @@ __PACKAGE__->add_columns(
 ##
 #__PACKAGE__->set_primary_key('id');
 
-__PACKAGE__->belongs_to('term' =>
-			'GOBO::DBIC::GODBModel::Schema::Term', 'term_id');
-__PACKAGE__->belongs_to('subset' =>
-			'GOBO::DBIC::GODBModel::Schema::Term', 'subset_id');
+__PACKAGE__->belongs_to('term' => 'GOBO::DBIC::GODBModel::Schema::Term', 'term_id');
+__PACKAGE__->belongs_to('subset' => 'GOBO::DBIC::GODBModel::Schema::Term', 'subset_id');
 
 ##
 
