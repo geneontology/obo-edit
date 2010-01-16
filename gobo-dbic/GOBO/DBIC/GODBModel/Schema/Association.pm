@@ -8,7 +8,7 @@ use strict;
 
 package GOBO::DBIC::GODBModel::Schema::Association;
 
-## TODO: Make sure that GOBO::DBIC::GODBModel
+## TODO: Make sure that AmiGO
 #use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class/;
 
@@ -80,7 +80,7 @@ __PACKAGE__->add_columns(
 ##
 __PACKAGE__->set_primary_key('id');
 
-##
+## ...
 __PACKAGE__->has_many('evidence' =>
 		      'GOBO::DBIC::GODBModel::Schema::Evidence',
 		      'association_id');
@@ -89,6 +89,20 @@ __PACKAGE__->belongs_to('term' =>
 __PACKAGE__->has_many('graph_path_relations' =>
 		      'GOBO::DBIC::GODBModel::Schema::GraphPath',
 		      {'foreign.term2_id' => 'self.term_id'});
+##
+__PACKAGE__->has_many('graph_path_relations_aux_1' =>
+		      'GOBO::DBIC::GODBModel::Schema::GraphPath',
+		      {'foreign.term2_id' => 'self.term_id'});
+__PACKAGE__->has_many('graph_path_relations_aux_2' =>
+		      'GOBO::DBIC::GODBModel::Schema::GraphPath',
+		      {'foreign.term2_id' => 'self.term_id'});
+__PACKAGE__->has_many('graph_path_relations_aux_3' =>
+		      'GOBO::DBIC::GODBModel::Schema::GraphPath',
+		      {'foreign.term2_id' => 'self.term_id'});
+__PACKAGE__->has_many('graph_path_relations_aux_4' =>
+		      'GOBO::DBIC::GODBModel::Schema::GraphPath',
+		      {'foreign.term2_id' => 'self.term_id'});
+##
 __PACKAGE__->belongs_to('gene_product' =>
 			'GOBO::DBIC::GODBModel::Schema::GeneProduct', 'gene_product_id');
 __PACKAGE__->belongs_to('db' =>

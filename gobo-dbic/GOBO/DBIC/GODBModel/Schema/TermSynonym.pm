@@ -66,6 +66,8 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->belongs_to('term' =>
 			'GOBO::DBIC::GODBModel::Schema::Term', 'term_id');
+__PACKAGE__->belongs_to('synonym_type' =>
+			'GOBO::DBIC::GODBModel::Schema::Term', 'synonym_type_id');
 
 ##
 #__PACKAGE__->add_unique_constraint("t0", ["id"]);
