@@ -75,9 +75,26 @@ __PACKAGE__->set_primary_key('id');
 __PACKAGE__->has_many('association' =>
 		      'GOBO::DBIC::GODBModel::Schema::Association',
 		      'gene_product_id');
+## BUG/TODO: Used in the simple coannoation. Should eventually be
+## replaced by the general one below.
 __PACKAGE__->has_many('association_aux' =>
 		      'GOBO::DBIC::GODBModel::Schema::Association',
 		      'gene_product_id');
+## Used in higher axes for coannotation. Uses this counter as shared
+## (BUG?) information with Query.pm (or its subclasses) in some cases.
+__PACKAGE__->has_many('association_aux_1' =>
+		      'GOBO::DBIC::GODBModel::Schema::Association',
+		      'gene_product_id');
+__PACKAGE__->has_many('association_aux_2' =>
+		      'GOBO::DBIC::GODBModel::Schema::Association',
+		      'gene_product_id');
+__PACKAGE__->has_many('association_aux_3' =>
+		      'GOBO::DBIC::GODBModel::Schema::Association',
+		      'gene_product_id');
+__PACKAGE__->has_many('association_aux_4' =>
+		      'GOBO::DBIC::GODBModel::Schema::Association',
+		      'gene_product_id');
+##
 __PACKAGE__->has_many('gene_product_seq' =>
 		      'GOBO::DBIC::GODBModel::Schema::GeneProductSeq',
 		      'gene_product_id');

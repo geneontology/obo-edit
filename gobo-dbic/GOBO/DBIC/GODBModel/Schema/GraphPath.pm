@@ -43,11 +43,27 @@ __PACKAGE__->add_columns(
 			  is_auto_increment => 0,
 			  default_value => '',
 			 },
+			 relationship_type_id =>
+			 {
+			  data_type => 'integer',
+			  size      => 11,
+			  is_nullable => 1,
+			  is_auto_increment => 0,
+			  default_value => '',
+			 },
 			 distance =>
 			 {
 			  data_type => 'integer',
 			  size      => 11,
-			  is_nullable => 0,
+			  is_nullable => 1,
+			  is_auto_increment => 0,
+			  default_value => '',
+			 },
+			 relation_distance =>
+			 {
+			  data_type => 'integer',
+			  size      => 11,
+			  is_nullable => 1,
 			  is_auto_increment => 0,
 			  default_value => '',
 			 },
@@ -62,12 +78,29 @@ __PACKAGE__->belongs_to('term2' =>
 			'GOBO::DBIC::GODBModel::Schema::Term', 'term2_id');
 __PACKAGE__->belongs_to('object' =>
 			'GOBO::DBIC::GODBModel::Schema::Term', 'term1_id');
+__PACKAGE__->belongs_to('object_aux' =>
+			'GOBO::DBIC::GODBModel::Schema::Term', 'term1_id');
+## NOTE/TODO: this is an experiment for making axes easier in
+## coannotation cases.
+__PACKAGE__->belongs_to('object_aux_1' =>
+			'GOBO::DBIC::GODBModel::Schema::Term', 'term1_id');
+__PACKAGE__->belongs_to('object_aux_2' =>
+			'GOBO::DBIC::GODBModel::Schema::Term', 'term1_id');
+__PACKAGE__->belongs_to('object_aux_3' =>
+			'GOBO::DBIC::GODBModel::Schema::Term', 'term1_id');
+__PACKAGE__->belongs_to('object_aux_4' =>
+			'GOBO::DBIC::GODBModel::Schema::Term', 'term1_id');
+##
 __PACKAGE__->belongs_to('subject' =>
 			'GOBO::DBIC::GODBModel::Schema::Term', 'term2_id');
 __PACKAGE__->belongs_to('graph_object' =>
 			'GOBO::DBIC::GODBModel::Schema::Term', 'term1_id');
 __PACKAGE__->belongs_to('graph_subject' =>
 			'GOBO::DBIC::GODBModel::Schema::Term', 'term2_id');
+__PACKAGE__->belongs_to('relationship_type' =>
+			'AmiGO::Model::Schema::Term', 'relationship_type_id');
+__PACKAGE__->belongs_to('rel_type' =>
+			'AmiGO::Model::Schema::Term', 'relationship_type_id');
 
 ##
 #__PACKAGE__->add_unique_constraint("t0", ["id"]);
