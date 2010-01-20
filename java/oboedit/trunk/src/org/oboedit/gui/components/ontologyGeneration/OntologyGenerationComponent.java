@@ -110,9 +110,8 @@ import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGeneration
 import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGenerationStub.TextConceptRepresentation;
 
 /**
- * Ontology Generation Component which supports the automatic generation of
- * candidate terms and candidate definitions to create candidate to be added to
- * the loaded ontologies.
+ * Ontology Generation Component which supports the automatic generation of candidate terms and candidate definitions to
+ * create candidate to be added to the loaded ontologies.
  * <p>
  * Developed at the Bioinformatics Group, BIOTEC, TU Dresden, Dresden, Germany
  * </p>
@@ -126,7 +125,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	private final OntologyModelAdapterInterface<T, R> adapter;
 	private final OBOOntologyGenerationGUIComponent guiComponent;
 
-	public static final String PLUGIN_VERSION = "3.0";
+	public static final String PLUGIN_VERSION = "3.1";
 	public static final String PLUGIN_VERSIONED_NAME = "OBO-Edit-" + OBOOntologyModelAdapter.getOboEditVersion() + "_" + PLUGIN_VERSION;
 	private static final String SOURCE_PUBMED = "PUBMED";
 	private static final String SOURCE_TEXT = "TEXT";
@@ -355,8 +354,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	}
 
 	/**
-	 * @param e
-	 *            {@link PropertyChangeEvent}
+	 * @param e {@link PropertyChangeEvent}
 	 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
 	 */
 	public void propertyChange(PropertyChangeEvent e)
@@ -828,8 +826,8 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 					if (selectedRow >= 0) {
 						adapter.selectOntologyTerm(selectedObjectID);
 					}
-					ontologyTermsTable.setRowSelectionInterval(ontologyTermsTable.getModel().getRowFromTerm(selectedObjectID), ontologyTermsTable.getModel()
-							.getRowFromTerm(selectedObjectID));
+					ontologyTermsTable.setRowSelectionInterval(ontologyTermsTable.getModel().getRowFromTerm(selectedObjectID), ontologyTermsTable.getModel().getRowFromTerm(
+					    selectedObjectID));
 					ontologyTermsTable.getModel().setTickedTerms(tickedTerms);
 				}
 			}
@@ -1213,19 +1211,18 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	}
 
 	/**
-	 * Launches web browser to get results from www.gopubmed.org for queryTerm
-	 * and termsTable selected term.
+	 * Launches web browser to get results from www.gopubmed.org for queryTerm and termsTable selected term.
 	 */
 	@SuppressWarnings("unchecked")
-	private void onClickOpenExternalGoPubMedPage(String lastSource)
+	private void onClickOpenExternalGoPubMedPage(String pLastSource)
 	{
 		String goURL;
 		JTextField textField;
-		if (lastSource == SOURCE_PUBMED) {
+		if (pLastSource == SOURCE_PUBMED) {
 			textField = inputPubMedQueryField;
 			goURL = "http://www.gopubmed.org/search?q=";
 		}
-		else if (lastSource == SOURCE_WEB) {
+		else if (pLastSource == SOURCE_WEB) {
 			textField = inputWebQueryField;
 			goURL = "http://www.gopubmed.org/web/goweb/search?q=";
 		}
@@ -1299,8 +1296,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	}
 
 	/**
-	 * Instantiates DefinitionWorker thread responsible to call
-	 * definitionGeneration Service
+	 * Instantiates DefinitionWorker thread responsible to call definitionGeneration Service
 	 */
 	private void onClickGenerateDefinitions()
 	{
@@ -1334,9 +1330,8 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	 * @param definitionField
 	 */
 	/*
-	 * SPEC: generate definition for the term, if the term is visible, move term
-	 * to the top, if not make it visible and move it to the top and select
-	 * (selection should make the definition, if exist, listed first)
+	 * SPEC: generate definition for the term, if the term is visible, move term to the top, if not make it visible and
+	 * move it to the top and select (selection should make the definition, if exist, listed first)
 	 */
 	private void onClickGenerateDefinitionsManually(JTextField definitionField)
 	{
@@ -1391,8 +1386,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	}
 
 	/**
-	 * Picks the clicked definition, sets it ticked and updates depended GUI
-	 * components
+	 * Picks the clicked definition, sets it ticked and updates depended GUI components
 	 * 
 	 * @param rowIndex
 	 */
@@ -1427,8 +1421,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	}
 
 	/**
-	 * Opens a popup showing the URLs for the definition and its similar
-	 * definitions.
+	 * Opens a popup showing the URLs for the definition and its similar definitions.
 	 */
 	private void onClickOpenDefinitionsPopup()
 	{
@@ -1450,8 +1443,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	}
 
 	/**
-	 * Save definition for {@link CandidateTerm} and update add-to-ontology
-	 * table
+	 * Save definition for {@link CandidateTerm} and update add-to-ontology table
 	 */
 	private void onClickSaveDefinition()
 	{
@@ -1480,8 +1472,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	}
 
 	/**
-	 * Save definition for {@link CandidateTerm} and update add-to-ontology
-	 * table
+	 * Save definition for {@link CandidateTerm} and update add-to-ontology table
 	 */
 	private void onClickSaveLabel()
 	{
@@ -1518,8 +1509,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	}
 
 	/**
-	 * Displays term selected in the termsTable and updates all depending gui
-	 * components
+	 * Displays term selected in the termsTable and updates all depending gui components
 	 */
 	public synchronized void updateAllDependedOnSelectedTerm()
 	{
@@ -1560,8 +1550,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	}
 
 	/**
-	 * Add similar (based on substring inclusion) terms to similiarTermsComboBox
-	 * based on substring comparison
+	 * Add similar (based on substring inclusion) terms to similiarTermsComboBox based on substring comparison
 	 */
 	public void updateParentAsSimiliarTerm()
 	{
@@ -1597,8 +1586,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	}
 
 	/**
-	 * Update the table holding synonyms and children of the currently selected
-	 * terms
+	 * Update the table holding synonyms and children of the currently selected terms
 	 */
 	private void updateSynonymOrChildTable()
 	{
@@ -1677,8 +1665,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 		int firstVisibleRow = pTermsTable.rowAtPoint(new Point(0, visibleRect.y));
 		int lastVisibleRow = pTermsTable.rowAtPoint(new Point(0, visibleRect.y + visibleRect.height - 1));
 		logger.trace(String.format("UPDATE updateTermsTableUsingOntologyLookup; FEED %s %s", firstVisibleRow, lastVisibleRow));
-		if (firstVisibleRow >= 0 && lastVisibleRow >= 0
-				&& (candidateTermsTable.getCurrentFirstVisibleRow() != firstVisibleRow || candidateTermsTable.getCurrentLastVisibleRow() != lastVisibleRow)) {
+		if (firstVisibleRow >= 0 && lastVisibleRow >= 0 && (candidateTermsTable.getCurrentFirstVisibleRow() != firstVisibleRow || candidateTermsTable.getCurrentLastVisibleRow() != lastVisibleRow)) {
 			ontologyLookupQueue.clear();
 			for (int i = firstVisibleRow; i <= lastVisibleRow; i++) {
 				CandidateTerm candidateTerm = pTermsTable.getModel().getTermAt(i);
@@ -1807,25 +1794,30 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 		inputDefinitionGenerationField.setText(label);
 	}
 
-	public void updateParentAsTermFromDefinition(CandidateTerm selectedCandidateTerm, TermsTable termsTable,
-			AbstractOntologyTermsTable<T, R> ontologyTermsTable, DefinitionsTable definitionsTable)
+	public void updateParentAsTermFromDefinition(CandidateTerm pSelectedCandidateTerm, TermsTable termsTable, AbstractOntologyTermsTable<T, R> pOntologyTermsTable,
+	    DefinitionsTable definitionsTable)
 	{
-		logger.trace("UPDATE TERMS FROM DEFINITION for :" + selectedCandidateTerm);
+		logger.trace("UPDATE TERMS FROM DEFINITION for :" + pSelectedCandidateTerm);
 
-		if (null == selectedCandidateTerm) {
+		if (null == pSelectedCandidateTerm) {
 			int row = termsTable.rowAtPoint(termsTable.getMousePosition());
-			selectedCandidateTerm = termsTable.getModel().getTermAt(row);
+			pSelectedCandidateTerm = termsTable.getModel().getTermAt(row);
 			logger.warn("Selection lost in terms table, recovered though mouse position");
 		}
-		// clear
-		ontologyTermsTable.getModel().clearTermsFromDefinitions();
+		// clearT
+		pOntologyTermsTable.getModel().clearTermsFromDefinitions();
 
 		// process user defined definition
-		if (null != selectedCandidateTerm.getUserDefinedDefinition()) {
-			List<String> ids = searchForOntologyTermsInStrings(Collections.singletonList(selectedCandidateTerm.getUserDefinedDefinition()));
+		if (null != pSelectedCandidateTerm.getUserDefinedDefinition()) {
+			String definitionalContext = pSelectedCandidateTerm.getUserDefinedDefinition();
+			String[] split = definitionalContext.split("is a|a|are|are a|are an", 2);
+			if (split.length == 2) {
+				definitionalContext = split[1].trim();
+			}
+			List<String> ids = searchForOntologyTermsInStrings(Collections.singletonList(definitionalContext), true);
 			int rank = 1;
-			for (String id : ids) {
-				ontologyTermsTable.getModel().addFromUserDefinedDefinition(id, rank);
+			for (String someId : ids) {
+				pOntologyTermsTable.getModel().addFromUserDefinedDefinition(someId, rank);
 				rank++;
 			}
 		}
@@ -1836,14 +1828,17 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 		for (CandidateDefinition definition : definitions) {
 			String definitionalContext = definition.getDefinitionalContext();
 			if (definitionalContext != null && definitionalContext.length() < definition.getDefinition().length()) {
-				definitionStringsToCheck.add(definitionalContext);
+				// TODO only use definitions where the A is B with C is well matched, meaning the definition starts with the term followed by a form of be
+				if (definition.getDefinition().indexOf(definitionalContext) <= pSelectedCandidateTerm.getLabel().length() + 25) {
+					definitionStringsToCheck.add(definitionalContext);
+				}
 			}
 		}
 		if (definitionStringsToCheck.size() > 0) {
-			List<String> ids = searchForOntologyTermsInStrings(definitionStringsToCheck);
+			List<String> ids = searchForOntologyTermsInStrings(definitionStringsToCheck, false);
 			int rank = 1;
-			for (String id : ids) {
-				ontologyTermsTable.getModel().addFromCandidateDefinition(id, rank);
+			for (String someId : ids) {
+				pOntologyTermsTable.getModel().addFromCandidateDefinition(someId, rank);
 				rank++;
 
 			}
@@ -1851,9 +1846,8 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	}
 
 	/**
-	 * TODO Definitions should be updated, but grouping should take place in the
-	 * DefinitionTableModel on update of any definition. This will ensure, that
-	 * all definitions are always grouped
+	 * TODO Definitions should be updated, but grouping should take place in the DefinitionTableModel on update of any
+	 * definition. This will ensure, that all definitions are always grouped
 	 * 
 	 * @param def
 	 * @param defList
@@ -1904,8 +1898,8 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 					// found,
 					// add a new alternative definition.
 					if (!duplicateAlternativeDefinition) {
-						final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def.getDefinition(), def.getFormattedDefinition(), def
-								.getUrl(), def.getCachedURL(), def.getParentTermCount(), false);
+						final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def.getDefinition(), def.getFormattedDefinition(), def.getUrl(), def
+						    .getCachedURL(), def.getParentTermCount(), false);
 
 						if (def.getDefinition().length() > candDef.getDefinition().length()) {
 							// swap candidateDefinition and
@@ -1943,8 +1937,8 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 			}
 			// Otherwise, add new definition to list.
 			if (!duplicateDefinition) {
-				final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def.getDefinition(), def.getFormattedDefinition(), def.getUrl(),
-						def.getCachedURL(), def.getParentTermCount(), false);
+				final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def.getDefinition(), def.getFormattedDefinition(), def.getUrl(), def.getCachedURL(),
+				    def.getParentTermCount(), false);
 				index++;
 				// candidateDefinition.addListener(new UpdateListenerInterface()
 				// {
@@ -1964,41 +1958,68 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	}
 
 	/**
-	 * Create all ngrams contained in the texts in the specified list and
-	 * looking up the term these ngrams match.
+	 * Create ngrams contained in the beginning of the texts in the specified list and looking up the term these ngrams
+	 * match.
 	 * 
-	 * @param ngrams
+	 * @param strings
 	 * @return
 	 */
-	private List<String> searchForOntologyTermsInStrings(Collection<String> ngrams)
+	private List<String> searchForOntologyTermsInStrings(Collection<String> strings, boolean generatedAllNGrams)
 	{
 		int RANGE_FOR_PARENT_IN_DEFINITION = 5;
 
 		List<String> queries = new ArrayList<String>();
 		List<String> queriesHead = new ArrayList<String>();
-		List<String[]> listOfArrays = new ArrayList<String[]>(ngrams.size());
+		Set<String[]> setOfArrays = new HashSet<String[]>(strings.size());
 
-		for (String string : ngrams) {
-			listOfArrays.add(string.trim().split(" |-"));
+		for (String string : strings) {
+			setOfArrays.add(string.trim().split(" |-"));
 		}
 
-		for (String[] stringArray : listOfArrays) {
-			StringBuffer buffer = new StringBuffer();
-			for (int i = 0; i < RANGE_FOR_PARENT_IN_DEFINITION; i++) {
-				if (i < stringArray.length) {
-					buffer.append(stringArray[i]);
-					buffer.append(" ");
+		if (!generatedAllNGrams) {
+			for (String[] stringArray : setOfArrays) {
+				for (int i = 0; i < RANGE_FOR_PARENT_IN_DEFINITION; i++) {
+					StringBuffer buffer = new StringBuffer();
+					for (int k = i; k < stringArray.length && k < RANGE_FOR_PARENT_IN_DEFINITION; k++) {
+						if (k < stringArray.length) {
+							buffer.append(stringArray[k]);
+							buffer.append(" ");
+						}
+					}
+					String trim = buffer.toString().trim();
+					if (trim.length() > 0) {
+						queriesHead.add(trim);
+					}
 				}
 			}
-			queriesHead.add(0, buffer.toString().trim());
+		}
+		else {
+			for (String[] stringArray : setOfArrays) {
+				for (int i = 0; i < stringArray.length && i < RANGE_FOR_PARENT_IN_DEFINITION; i++) {
+					for (int j = 0; j < stringArray.length && j < RANGE_FOR_PARENT_IN_DEFINITION; j++) {
+						if (i < j) {
+							StringBuffer buffer = new StringBuffer();
+							for (int k = i; k <= j; k++) {
+								if (k < stringArray.length) {
+									buffer.append(stringArray[k]);
+									buffer.append(" ");
+								}
+							}
+							String trim = buffer.toString().trim();
+							if (trim.length() > 0) {
+								queriesHead.add(trim);
+							}
+						}
+					}
+				}
+			}
 		}
 		queries.addAll(queriesHead);
 		return adapter.lookupOntologyTermIdsFromIndex(queries);
 	}
 
 	/**
-	 * Updates the <code>definition</code>, based on the selected and user
-	 * defined definitions.
+	 * Updates the <code>definition</code>, based on the selected and user defined definitions.
 	 */
 	public void updateEditDefArea()
 	{
@@ -2442,8 +2463,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 		checkboxIncludeChildren.setToolTipText(Messages.getString("OntologyGenerationComponent.IncludeChildrenCheckbox")); //$NON-NLS-1$
 		candidateToAddPanel.add(checkboxIncludeChildren);
 		/*
-		 * checkboxIncludeBranch = new JCheckBox();
-		 * candidateToAddPanel.add(checkboxIncludeBranch); JLabel label3 = new
+		 * checkboxIncludeBranch = new JCheckBox(); candidateToAddPanel.add(checkboxIncludeBranch); JLabel label3 = new
 		 * JLabel("include sub-branch"); candidateToAddPanel.add(label3);
 		 */
 		JPanel oboClassTableHeaderPanel = new JPanel(new BorderLayout());
@@ -2604,8 +2624,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	/**
 	 * Displays or hides the progress bar dialog with the default wait text
 	 * 
-	 * @param displayDlg
-	 *            if true, display progress bar dialog, hide otherwise
+	 * @param displayDlg if true, display progress bar dialog, hide otherwise
 	 */
 	public void showProgressDlg(boolean displayDlg)
 	{
@@ -2615,11 +2634,8 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	/**
 	 * Displays or hides the progress bar dialog
 	 * 
-	 * @param displayDlg
-	 *            if true, display progress bar dialog, hide otherwise
-	 * @param displayMsg
-	 *            The wait text inside the dialog. If null, display default wait
-	 *            text
+	 * @param displayDlg if true, display progress bar dialog, hide otherwise
+	 * @param displayMsg The wait text inside the dialog. If null, display default wait text
 	 */
 	public void showProgressDlg(boolean displayDlg, String displayMsg)
 	{
@@ -2782,8 +2798,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	}
 
 	/**
-	 * Inner Class to invoke {@link GoPubMedTermGenerationStub} in a separate
-	 * worker thread
+	 * Inner Class to invoke {@link GoPubMedTermGenerationStub} in a separate worker thread
 	 */
 	private class TermGenerationServiceWorker extends SwingWorker<TextConceptRepresentation[], Void>
 	{
@@ -2795,12 +2810,9 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 		/**
 		 * Constructs a {@link TermGenerationServiceWorker}
 		 * 
-		 * @param inputData
-		 *            , the query or text uses for the generation
-		 * @param destinationTable
-		 *            , the table where to place the terms
-		 * @param textSourceName
-		 *            , the source type (e.g. TEXT,PUBMED)
+		 * @param inputData , the query or text uses for the generation
+		 * @param destinationTable , the table where to place the terms
+		 * @param textSourceName , the source type (e.g. TEXT,PUBMED)
 		 */
 		public TermGenerationServiceWorker(String inputData, TermsTable destinationTable, String textSourceName)
 		{
@@ -2972,8 +2984,8 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 							candidateTerm = updateCandidateTermWithConcept(concept, candidateTerm);
 						}
 						else {
-							candidateTerm = new CandidateTerm(concept.getLabel(), concept.getKnownAbbreviation(), concept.getLexicalRepresentation(), concept
-									.getScore(), CandidateTerm.TYPE_GENERATED);
+							candidateTerm = new CandidateTerm(concept.getLabel(), concept.getKnownAbbreviation(), concept.getLexicalRepresentation(), concept.getScore(),
+							    CandidateTerm.TYPE_GENERATED);
 						}
 						termsFromService.add(candidateTerm);
 					}
@@ -3024,8 +3036,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	}
 
 	/**
-	 * Worker to invoke the {@link GoPubMedDefinitionGeneratorStub} in a
-	 * separate thread
+	 * Worker to invoke the {@link GoPubMedDefinitionGeneratorStub} in a separate thread
 	 */
 	private class DefinitionGenerationServiceWorker extends SwingWorker<DefinitionContainer[], Void>
 	{
@@ -3036,11 +3047,8 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 		/**
 		 * Constructs a {@link DefinitionGenerationServiceWorker}
 		 * 
-		 * @param term
-		 *            , the term to be defined
-		 * @param relatedTerms
-		 *            , known terms associated with the term (e.g. known parent
-		 *            terms)
+		 * @param term , the term to be defined
+		 * @param relatedTerms , known terms associated with the term (e.g. known parent terms)
 		 */
 		public DefinitionGenerationServiceWorker(String term, String[] relatedTerms, DefinitionsTable destinationTable)
 		{

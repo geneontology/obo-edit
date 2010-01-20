@@ -3,10 +3,7 @@ package org.oboedit.gui.components.ontologyGeneration.interfaces;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListCellRenderer;
@@ -31,12 +28,12 @@ public abstract class AbstractOntologyTermsTable<T, R> extends JTable
 	private static final long serialVersionUID = -5517462579527283469L;
 	private int minScrollableViewPortHeight;
 	private int maxScrollableViewPortHeight;
-	private String lastRegex = new String();
+	// private String lastRegex = new String();
 
 	/**
 	 * Constructs a {@link AbstractOntologyTermsTable}
 	 */
-	public AbstractOntologyTermsTable(AbstractOntologyTermsTableModel<T,R> tableModel)
+	public AbstractOntologyTermsTable(AbstractOntologyTermsTableModel<T, R> tableModel)
 	{
 		super(tableModel);
 		setGridColor(Color.LIGHT_GRAY);
@@ -69,13 +66,11 @@ public abstract class AbstractOntologyTermsTable<T, R> extends JTable
 	public abstract String nameFor(Object arg1);
 
 	/**
-	 * Set the {@link List} of {@link T} to be contained in the
-	 * {@link TermsTable} and resize table if necessary.
+	 * Set the {@link List} of {@link T} to be contained in the {@link TermsTable} and resize table if necessary.
 	 * 
 	 * @param results
-	 */	
-	
-	
+	 */
+
 	public void setTerms(Collection<T> results)
 	{
 		getModel().setTerms(results);
@@ -83,8 +78,7 @@ public abstract class AbstractOntologyTermsTable<T, R> extends JTable
 	}
 
 	/**
-	 * Remove all instances of {@link T} from the {@link TermsTable} and resize
-	 * table if necessary.
+	 * Remove all instances of {@link T} from the {@link TermsTable} and resize table if necessary.
 	 * 
 	 * @param terms
 	 */
@@ -95,8 +89,7 @@ public abstract class AbstractOntologyTermsTable<T, R> extends JTable
 	}
 
 	/**
-	 * Remove all instances of {@link T} from the {@link TermsTable} and resize
-	 * table if necessary.
+	 * Remove all instances of {@link T} from the {@link TermsTable} and resize table if necessary.
 	 * 
 	 * @param terms
 	 */
@@ -126,43 +119,53 @@ public abstract class AbstractOntologyTermsTable<T, R> extends JTable
 		this.maxScrollableViewPortHeight = maxHeight;
 	}
 
-	/**
-	 * Update displayed candidate terms. Filter by regex provided.
-	 * 
-	 * @param regex
-	 */
-	public void findTerm(String regex)
-	{
-		if (regex != null && !lastRegex.equals(regex)) {
-			lastRegex = regex;
-			Pattern p = null;
-
-			try {
-				p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-			}
-			catch (PatternSyntaxException exception) {
-				return;
-			}
-			Iterator<T> it = getModel().getAllTerms().iterator();
-			int index = 0;
-			while (it.hasNext()) {
-				T term = it.next();
-				String name = getModel().getTermName(term);
-				if (p.matcher(name).find()) {
-					getSelectionModel().setSelectionInterval(index, index);
-					JTableHelper.scrollToCenter(this, index, 2);
-					return;
-				}
-				index++;
-			}
-		}
-	}
+//	/**
+//	 * Update displayed candidate terms. Filter by regex provided.
+//	 * 
+//	 * @param regex
+//	 */
+//	public void findTerm(String regex)
+//	{
+//		if (regex != null && !lastRegex.equals(regex)) {
+//			lastRegex = regex;
+//			Pattern p = null;
+//
+//			try {
+//				p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+//			}
+//			catch (PatternSyntaxException exception) {
+//				return;
+//			}
+//			Iterator<T> it = getModel().getAllTerms().iterator();
+//			int index = 0;
+//			while (it.hasNext()) {
+//				T term = it.next();
+//				{
+//					String name = getModel().getTermName(term);
+//					if (p.matcher(name).find()) {
+//						getSelectionModel().setSelectionInterval(index, index);
+//						JTableHelper.scrollToCenter(this, index, 2);
+//						return;
+//					}
+//				}
+//				Collection<String> synonyms = getModel().getSynonymNames(term);
+//				for (String syn : synonyms) {
+//					if (p.matcher(syn).find()) {
+//						getSelectionModel().setSelectionInterval(index, index);
+//						JTableHelper.scrollToCenter(this, index, 2);
+//						return;
+//					}
+//				}
+//				index++;
+//			}
+//		}
+//	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public AbstractOntologyTermsTableModel<T,R> getModel()
+	public AbstractOntologyTermsTableModel<T, R> getModel()
 	{
-		return (AbstractOntologyTermsTableModel<T,R>) super.getModel();
+		return (AbstractOntologyTermsTableModel<T, R>) super.getModel();
 	}
 
 	private class RelationComboBoxRenderer extends DefaultTableCellRenderer

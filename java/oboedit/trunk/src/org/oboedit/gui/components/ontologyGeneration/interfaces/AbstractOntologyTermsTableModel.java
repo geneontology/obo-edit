@@ -21,8 +21,7 @@ import javax.swing.table.TableModel;
 import org.obo.datamodel.LinkedObject;
 
 /**
- * {@link AbstractOntologyTermsTableModel} to hold instances of
- * {@link LinkedObject} for display in {@link JTable}
+ * {@link AbstractOntologyTermsTableModel} to hold instances of {@link LinkedObject} for display in {@link JTable}
  * 
  * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2008
  */
@@ -39,9 +38,10 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 
 	private Set<String> ticked = new HashSet<String>();
 	private Set<String> visible = new HashSet<String>();
+	private Map<String,String> visibleThroughSynonymMap = new HashMap<String,String>();
 
 	private Map<String, T> allTermsMap;
-	private List<String> allTermsIDList;
+	private List<String> allTermsidList;
 	private boolean sortingNeeded = true;
 	private List<Set<String>> rankingOrder;
 	private Set<String> termsSelected = new HashSet<String>();
@@ -56,11 +56,11 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	private Map<String, String> commentForKnownParentTerms = new HashMap<String, String>();
 
 	private Object[][] order = { { termsSelected, "selected term", null }, //
-			{ termsSameAsCandidateTerm, "same as existing term", "identical" }, //
-			{ termsKnownParentsOfCandidateTerm, "validated", commentForKnownParentTerms },//
-			{ termsPredictedParentsOfCandidateTerm, "predicted", "sub_class_of" }, //
-			{ termsFromDefinitions, "predicted", "sub_class_of" }, //
-			{ termsSimilarToCandidateTerm, "similar term", null } };
+	        { termsSameAsCandidateTerm, "same as existing term", "identical" }, //
+	        { termsKnownParentsOfCandidateTerm, "validated", commentForKnownParentTerms },//
+	        { termsPredictedParentsOfCandidateTerm, "predicted", "sub_class_of" }, //
+	        { termsFromDefinitions, "predicted", "sub_class_of" }, //
+	        { termsSimilarToCandidateTerm, "similar term", null } };
 
 	private boolean showOnlyTicked;
 
@@ -75,25 +75,25 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	public AbstractOntologyTermsTableModel()
 	{
 		allTermsMap = new HashMap<String, T>();
-		allTermsIDList = new ArrayList<String>();
+		allTermsidList = new ArrayList<String>();
 		rankingOrder = new ArrayList<Set<String>>(order.length);
 		for (int i = 0; i < order.length; i++) {
 			rankingOrder.add((Set<String>) order[i][0]);
 		}
 	}
 
-	public void addFromCandidateDefinition(String termID, int rank)
+	public void addFromCandidateDefinition(String termId, int rank)
 	{
-		termsFromDefinitions.add(termID);
-		addTermsRank(termID, rank);
+		termsFromDefinitions.add(termId);
+		addTermsRank(termId, rank);
 		sortingNeeded = true;
 		fireTableDataChanged();
 	}
 
-	public void addFromUserDefinedDefinition(String termID, int rank)
+	public void addFromUserDefinedDefinition(String termId, int rank)
 	{
-		termsFromDefinitions.add(termID);
-		addTermsRank(termID, rank);
+		termsFromDefinitions.add(termId);
+		addTermsRank(termId, rank);
 		sortingNeeded = true;
 		fireTableDataChanged();
 	}
@@ -153,10 +153,10 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 		fireTableDataChanged();
 	}
 
-	private void addTermsRank(String termID, int rank)
+	private void addTermsRank(String termId, int rank)
 	{
-		if (!termsRankInDefinitions.containsKey(termID) || rank < termsRankInDefinitions.get(termID)) {
-			termsRankInDefinitions.put(termID, rank);
+		if (!termsRankInDefinitions.containsKey(termId) || rank < termsRankInDefinitions.get(termId)) {
+			termsRankInDefinitions.put(termId, rank);
 		}
 	}
 
@@ -169,8 +169,10 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	{
 		if (regex != null && !lastRegex.equals(regex)) {
 			visible.clear();
+			visibleThroughSynonymMap.clear();
 			lastRegex = regex;
 			Pattern p = null;
+
 
 			try {
 				p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
@@ -179,18 +181,25 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 				return;
 			}
 
-			for (String termID : this.allTermsIDList) {
-				T term = allTermsMap.get(termID);
-				String name = getTermName(term);
-				if (name != null) {
-					if (regex.length() == 0) {
-						visible.add(getTermId(term));
+			for (String termId : this.allTermsidList) {
+				T term = allTermsMap.get(termId);
+				if (regex.length() == 0) {
+					visible.add(termId);
+				}
+				if (!visible.contains(termId)) {
+					String name = getTermName(term);
+					if (name != null && p.matcher(name).find()) {
+						visible.add(termId);
 					}
-					else if (p.matcher(name).find()) {
-						visible.add(getTermId(term));
-					}
-					else {
-						visible.remove(term);
+				}
+				if (!visible.contains(termId)) {
+					Collection<String> synonyms = getSynonymNames(term);
+					for (String syn : synonyms) {
+						if (p.matcher(syn).find()) {
+							visible.add(termId);
+							visibleThroughSynonymMap.put(termId,syn);
+							break;
+						}
 					}
 				}
 			}
@@ -198,7 +207,8 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 		}
 		else if (regex == null) {
 			visible.clear();
-			visible.addAll(allTermsIDList);
+			visibleThroughSynonymMap.clear();
+			visible.addAll(allTermsidList);
 		}
 	}
 
@@ -345,6 +355,8 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	 */
 	public abstract String getTermName(T term);
 
+	public abstract Collection<String> getSynonymNames(T term);
+
 	/**
 	 * Returns ticked candidate terms ids
 	 * 
@@ -427,15 +439,15 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 			sortingNeeded = false;
 		}
 		ArrayList<T> list = new ArrayList<T>();
-		for (String termID : allTermsIDList) {
+		for (String termId : allTermsidList) {
 			if (showOnlyTicked) {
-				if (visible.contains(termID) && ticked.contains(termID)) {
-					list.add(allTermsMap.get(termID));
+				if (visible.contains(termId) && ticked.contains(termId)) {
+					list.add(allTermsMap.get(termId));
 				}
 			}
 			else {
-				if (visible.contains(termID)) {
-					list.add(allTermsMap.get(termID));
+				if (visible.contains(termId)) {
+					list.add(allTermsMap.get(termId));
 				}
 			}
 			if (list.size() == 100) {
@@ -463,36 +475,59 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	 */
 	protected boolean isTicked(T term)
 	{
-		return ticked.contains(term);
+		return ticked.contains(getTermId(term));
 	}
 
+	
+	/**
+	 * @param term
+	 * @return
+	 */
+	protected boolean isFoundBySynonym(T term)
+	{
+		return visibleThroughSynonymMap.containsKey(getTermId(term));
+	}
+
+	/**
+	 * @param term
+	 * @return
+	 */
+	protected String getSynonymNameMatch(T term)
+	{
+		return visibleThroughSynonymMap.get(getTermId(term));
+	}
+
+	
+	
 	/**
 	 * Remove all instances of {@link T} from the {@link TableModel}
 	 */
 	public void removeAll()
 	{
 		allTermsMap.clear();
-		allTermsIDList.clear();
+		allTermsidList.clear();
 		ticked.clear();
 		visible.clear();
+		visibleThroughSynonymMap.clear();
 		sortingNeeded = true;
 		fireTableDataChanged();
 	}
 
 	/**
-	 * Remove all instances of {@link T} provided in terms from the
-	 * {@link TableModel}
+	 * Remove all instances of {@link T} provided in terms from the {@link TableModel}
 	 * 
 	 * @param terms
 	 */
 	public void removeAll(Collection<T> terms)
 	{
 		for (T term : terms) {
-			allTermsIDList.remove(getTermId(term));
-			allTermsMap.remove(getTermId(term));
+			String termId = getTermId(term);
+			allTermsidList.remove(termId);
+			allTermsMap.remove(termId);
+			ticked.remove(termId);
+			visible.remove(termId);
+			visibleThroughSynonymMap.remove(termId);
 		}
-		ticked.removeAll(terms);
-		visible.removeAll(terms);
 		fireTableDataChanged();
 	}
 
@@ -523,15 +558,16 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	protected void setTerms(Collection<T> collection)
 	{
 		this.allTermsMap.clear();
-		this.allTermsIDList.clear();
+		this.allTermsidList.clear();
 		this.ticked.clear();
 		this.visible.clear();
+		this.visibleThroughSynonymMap.clear();
 
 		for (T term : collection) {
 			this.allTermsMap.put(getTermId(term), term);
-			this.allTermsIDList.add(getTermId(term));
+			this.allTermsidList.add(getTermId(term));
 		}
-		this.visible.addAll(this.allTermsIDList);
+		this.visible.addAll(this.allTermsidList);
 		sortingNeeded = true;
 		fireTableDataChanged();
 	}
@@ -542,11 +578,12 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	 */
 	protected void setTicked(T term, boolean isTicked)
 	{
+		String termId = getTermId(term);
 		if (isTicked == false) {
-			ticked.remove(getTermId(term));
+			ticked.remove(termId);
 		}
 		else {
-			ticked.add(getTermId(term));
+			ticked.add(termId);
 		}
 	}
 
@@ -578,7 +615,7 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	 */
 	private void sortElements()
 	{
-		Collections.sort(allTermsIDList, new AddToOntologyTComparator(rankingOrder));
+		Collections.sort(allTermsidList, new AddToOntologyTComparator(rankingOrder));
 	}
 
 	public void updateSimilarTerms(Collection<String> labels, List<String> idsOfSimilarTerms)
@@ -595,7 +632,8 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 						addSimilarToCandidateTerm(Collections.singleton(term));
 					}
 				}
-			} else {
+			}
+			else {
 				throw new RuntimeException("id not known!");
 			}
 		}
@@ -604,17 +642,15 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	}
 
 	/**
-	 * Updating linked object in the table (usually in cases where those
-	 * {@link T}s have been changed)
+	 * Updating linked object in the table (usually in cases where those {@link T}s have been changed)
 	 * 
-	 * @param terms
-	 *            to update
+	 * @param terms to update
 	 */
 	public void updateTerms(List<T> terms)
 	{
 		removeAll(terms);
 		for (T term : terms) {
-			allTermsIDList.add(getTermId(term));
+			allTermsidList.add(getTermId(term));
 			allTermsMap.put(getTermId(term), term);
 		}
 		sortingNeeded = true;
