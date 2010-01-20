@@ -298,14 +298,14 @@ public class CandidateDefinition implements Cloneable
 		return null;
 	}
 
-	public void addURLs(Collection<String> urls)
+	public void addURLs(final Collection<String> pUrls)
 	{
-		this.urls.addAll(urls);
+		this.urls.addAll(pUrls);
 	}
 
-	public void addCachedURLs(Collection<String> cachedURLs)
+	public void addCachedURLs(Collection<String> pCachedURLs)
 	{
-		this.cachedURLs.addAll(cachedURLs);
+		this.cachedURLs.addAll(pCachedURLs);
 	}
 
 	public void addURL(String url)

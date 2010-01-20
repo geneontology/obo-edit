@@ -22,6 +22,8 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.Namespace;
 import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.OBOProperty;
+import org.obo.datamodel.Synonym;
+import org.obo.datamodel.SynonymedObject;
 import org.obo.datamodel.impl.DbxrefImpl;
 import org.obo.history.AddDbxrefHistoryItem;
 import org.obo.history.AddSynonymHistoryItem;
@@ -167,7 +169,6 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 	};
 	private List<OBOProperty> relationTypes = null;
 
-
 	private void updateRelationTypes()
 	{
 		List<OBOProperty> list = new ArrayList<OBOProperty>(10);
@@ -299,6 +300,28 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 		return label;
 	}
 
+	/**
+	 * TODO describe me!
+	 * 
+	 * @param linkedObject
+	 * @return
+	 * @see org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyModelAdapterInterface#getSynonymsForOntologyTerm(org.obo.datamodel.LinkedObject)
+	 */
+	public List<String> getSynonymsForOntologyTerm(LinkedObject linkedObject)
+	{
+		if (linkedObject instanceof SynonymedObject) {
+			Set<Synonym> synonyms = ((SynonymedObject) linkedObject).getSynonyms();
+			if (synonyms != null && !synonyms.isEmpty()) {
+				List<String> list = new ArrayList<String>(synonyms.size());
+				for (Synonym synonym : synonyms) {
+					list.add(synonym.getText());
+				}
+				return list;
+			}
+		}
+		return Collections.emptyList();
+	}
+
 	public String getDefinitionForExistingTerm(CandidateTerm candidateTerm)
 	{
 		// search the term with that id
@@ -312,9 +335,8 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 	}
 
 	/**
-	 * Returns the LinkedObject[] instantiated with the real parents obtained
-	 * from the ontology model. Return <code>null</code> if no definition could
-	 * be found.
+	 * Returns the LinkedObject[] instantiated with the real parents obtained from the ontology model. Return
+	 * <code>null</code> if no definition could be found.
 	 */
 	public Map<String, String> getParentsForExistingTerm(CandidateTerm selectedCandidateTerm)
 	{
@@ -356,9 +378,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 	}
 
 	/**
-	 * Feed all terms known to OBOEdit into the
-	 * {@link AbstractOntologyTermsTable}
-	 * 
+	 * Feed all terms known to OBOEdit into the {@link AbstractOntologyTermsTable}
 	 */
 	public void refillOBOTermsTableWithExistingTerms()
 	{
@@ -373,14 +393,6 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 		service.getOntologyTermsTable().setTerms(linkedObjects);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.oboedit.gui.components.ontologyGeneration.interfaces.
-	 * OntologyModelAdapterInterface
-	 * #commitDefinition(org.oboedit.gui.components.
-	 * ontologyGeneration.CandidateTerm)
-	 */
 	public void commitDefinition(CandidateTerm selectedCandidateTerm)
 	{
 		if (null != selectedCandidateTerm.getExistingIdOfLoadedTerm()) {
@@ -389,7 +401,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 		else {
 			logger.info("Term does not exist, no definition commited");
 		}
-		updateAllOnOntologyChange(selectedCandidateTerm.isInLoadedOntology()); // TODO change for better
+		updateAllOnOntologyChange(false);
 	}
 
 	private void updateAllOnOntologyChange(boolean externalOntologyModelChanged)
@@ -403,13 +415,6 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 		service.updateAllDependedOnSelectedTerm();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.oboedit.gui.components.ontologyGeneration.interfaces.
-	 * OntologyModelAdapterInterface
-	 * #commitLabel(org.oboedit.gui.components.ontologyGeneration.CandidateTerm)
-	 */
 	public void commitLabel(CandidateTerm selectedCandidateTerm)
 	{
 		if (null != selectedCandidateTerm.getExistingIdOfLoadedTerm()) {
@@ -418,12 +423,11 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 		else {
 			logger.info("Term does not exist, no label commited");
 		}
-		updateAllOnOntologyChange(selectedCandidateTerm.isInLoadedOntology()); // TODO change for better
+		updateAllOnOntologyChange(false); // TODO change for better
 	}
 
 	/**
-	 * Takes the LinkedObject, locates it in the Ontology Tree and adds selected
-	 * term as child
+	 * Takes the LinkedObject, locates it in the Ontology Tree and adds selected term as child
 	 * 
 	 * @param candidateTerm
 	 * @param parentRelations
@@ -431,7 +435,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 	 * @param includeBranch
 	 */
 	public void commitAddToOntologyAsChildOfLinkedObject(CandidateTerm selectedCandidateTerm, Collection<ParentRelationEntry<OBOProperty>> parentRelations,
-			boolean includeChildren, boolean includeBranch)
+	    boolean includeChildren, boolean includeBranch)
 	{
 		if (parentRelations == null || parentRelations.size() == 0) {
 			JOptionPane.showMessageDialog(null, "Please select a term to add children or add root edit/Add Root/Add Root");
@@ -440,8 +444,8 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 
 		String message = null;
 		if (includeChildren && selectedCandidateTerm.getExistingChildTerms() != null && selectedCandidateTerm.getExistingChildTerms().size() > 0) {
-			message = String.format("Add term '%s' and its %s known child terms?", selectedCandidateTerm.getLabel(), String.valueOf(selectedCandidateTerm
-					.getExistingChildTerms().size()));
+			message = String.format("Add term '%s' and its %s known child terms?", selectedCandidateTerm.getLabel(), String.valueOf(selectedCandidateTerm.getExistingChildTerms()
+			    .size()));
 		}
 		else {
 			message = String.format("Add term '%s'?", selectedCandidateTerm.getLabel());
@@ -452,7 +456,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 			return;
 		}
 		tryCommitAddTerm(selectedCandidateTerm, parentRelations, includeChildren, includeBranch);
-		// updateAllOnOntologyChange(); // TODO change for better
+		updateAllOnOntologyChange(false);
 	}
 
 	/**
@@ -460,7 +464,6 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 	 * 
 	 * @param label
 	 * @return
-	 * 
 	 */
 	public List<IdentifiedObject> getLinkedObjectsIfExist(String label)
 	{
@@ -480,8 +483,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 		return sessionManager;
 	}
 
-	private void tryCommitAddTerm(CandidateTerm candidateTerm, Collection<ParentRelationEntry<OBOProperty>> parentRelations, boolean includeChildren,
-			boolean includeBranch)
+	private void tryCommitAddTerm(CandidateTerm candidateTerm, Collection<ParentRelationEntry<OBOProperty>> parentRelations, boolean includeChildren, boolean includeBranch)
 	{
 		List<HistoryItem> items = new ArrayList<HistoryItem>();
 		List<IdentifiedObject> termsExistingIntern = getLinkedObjectsIfExist(candidateTerm.getLabel());
@@ -505,8 +507,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 				if (childTermID == null || childTermID.trim().length() == 0) {
 					logger.error("Could not generate ID! " + "Action cancelled.");
 				}
-				List<HistoryItem> addTermItems = createAddTermHistoryItem(candidateTerm, childTermID, parentLinkedObject.getType().getID(), parentLinkedObject
-						.getNamespace());
+				List<HistoryItem> addTermItems = createAddTermHistoryItem(candidateTerm, childTermID, parentLinkedObject.getType().getID(), parentLinkedObject.getNamespace());
 				items.addAll(addTermItems);
 			}
 			else if (termsExistingIntern.size() == 1) {
@@ -645,8 +646,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 			Iterator<OBOLookupTerm> iterator = childrenExistingExtern.iterator();
 			while (iterator.hasNext()) {
 				OBOLookupTerm refTerm = iterator.next();
-				AddDbxrefHistoryItem addDbxrefHistoryItem = new AddDbxrefHistoryItem(id, new DbxrefImpl("REF_OBO", refTerm.getOboID()), false, refTerm
-						.getLabel());
+				AddDbxrefHistoryItem addDbxrefHistoryItem = new AddDbxrefHistoryItem(id, new DbxrefImpl("REF_OBO", refTerm.getOboID()), false, refTerm.getLabel());
 				item.add(addDbxrefHistoryItem);
 			}
 		}
@@ -654,13 +654,10 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 	}
 
 	/**
-	 * Create a history item with the changed definitions from the specified
-	 * {@link CandidateTerm}
+	 * Create a history item with the changed definitions from the specified {@link CandidateTerm}
 	 * 
-	 * @param id
-	 *            , the id of the newly added term
-	 * @param candidateTerm
-	 *            , the term to add
+	 * @param id , the id of the newly added term
+	 * @param candidateTerm , the term to add
 	 * @return
 	 */
 	private TermMacroHistoryItem createDefinitionHistoryItem(String id, CandidateTerm candidateTerm)
@@ -684,13 +681,10 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 	}
 
 	/**
-	 * Create a history item with the changed the label of a term from the
-	 * specified {@link CandidateTerm}
+	 * Create a history item with the changed the label of a term from the specified {@link CandidateTerm}
 	 * 
-	 * @param id
-	 *            , the id of the newly added term
-	 * @param candidateTerm
-	 *            , the term to add
+	 * @param id , the id of the newly added term
+	 * @param candidateTerm , the term to add
 	 * @return
 	 */
 	private HistoryItem createLabelHistoryItem(String id, CandidateTerm candidateTerm)
@@ -702,12 +696,9 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 	/**
 	 * Add a new child to the OBO Ontology
 	 * 
-	 * @param id
-	 *            , the id of the child
-	 * @param parentId
-	 *            , the id of the parent
-	 * @param relationId
-	 *            ,the id of the relation
+	 * @param id , the id of the child
+	 * @param parentId , the id of the parent
+	 * @param relationId ,the id of the relation
 	 * @return
 	 */
 	private List<HistoryItem> createdAddLinkHistoryItem(String id, String parentId, String relationId)

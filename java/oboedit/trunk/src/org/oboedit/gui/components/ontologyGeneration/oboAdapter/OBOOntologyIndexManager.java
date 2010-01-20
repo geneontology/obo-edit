@@ -161,7 +161,7 @@ public class OBOOntologyIndexManager
 		List<Query> queries = new ArrayList<Query>();
 		Set<String> testSet = new HashSet<String>();
 		for (String string : collection) {
-			if (string != null) {
+			if (string != null && string.length() > 0) {
 				try {
 					String escape = QueryParser.escape(string);
 					Query parsedQuery = queryParser.parse("\"" + escape + "\"");

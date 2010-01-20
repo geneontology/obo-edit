@@ -323,11 +323,11 @@ public class DefinitionsPopup extends JDialog
 					private static final long serialVersionUID = -4293679914935943300L;
 
 					@Override
-                    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-					    boolean hasFocus, int row, int column)
+                    public Component getTableCellRendererComponent(JTable pTable, Object value, boolean isSelected,
+					    boolean hasFocus, int pRow, int pColumn)
 					{
-						JLabel comp = (JLabel) super.getTableCellRendererComponent(table, value, isSelected,
-						    hasFocus, row, column);
+						JLabel comp = (JLabel) super.getTableCellRendererComponent(pTable, value, isSelected,
+						    hasFocus, pRow, pColumn);
 						comp.setText(null);
 						return comp;
 					}
@@ -341,17 +341,17 @@ public class DefinitionsPopup extends JDialog
 					private static final int MAX_LINE_LENGTH = 40;
 					
 					@Override
-                    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-						    boolean hasFocus, int row, int column)
+                    public Component getTableCellRendererComponent(JTable pTable, Object value, boolean isSelected,
+						    boolean hasFocus, int pRow, int pColumn)
 						{
 							// Check if the row belongs to a definition
-							if (candidateDefinitionList.get(row).isDef()) {
-								JLabel comp = (JLabel) super.getTableCellRendererComponent(table, value, isSelected,
-								    hasFocus, row, column);
-								comp.setText((String)getModel().getValueAt(row, column));
+							if (candidateDefinitionList.get(pRow).isDef()) {
+								JLabel comp = (JLabel) super.getTableCellRendererComponent(pTable, value, isSelected,
+								    hasFocus, pRow, pColumn);
+								comp.setText((String)getModel().getValueAt(pRow, pColumn));
 								
 								// add multi-line tooltip displaying the full HTML-formatted definition.
-								String htmlDef = getModel().getDefinitionForRow(row).def.getDefinitionHTMLFormatted();
+								String htmlDef = getModel().getDefinitionForRow(pRow).def.getDefinitionHTMLFormatted();
 								
 								String toolTipText = "";
 								
@@ -396,8 +396,8 @@ public class DefinitionsPopup extends JDialog
 								
 								return comp;
 							}
-							return table.getDefaultRenderer(table.getColumnClass(column)).getTableCellRendererComponent(
-							    table, value, isSelected, hasFocus, row, column);
+							return pTable.getDefaultRenderer(pTable.getColumnClass(pColumn)).getTableCellRendererComponent(
+							    pTable, value, isSelected, hasFocus, pRow, pColumn);
 						}
 				};
 			}
