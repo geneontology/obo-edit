@@ -1,4 +1,4 @@
-#!/usr/bin/ruby -w
+#!/usr/bin/ruby1.8 -w
 ####
 #### TODO: Still needs to be run from geneontology/go-dev/amigo/testing.
 #### TODO: Agents should share cookies...
@@ -8,7 +8,7 @@
 ####    ['pagent.rb', 'amigo.rb', 'aunit.rb', 'kappa'].each{|l| load l }
 ####
 #### example command line (mostly for cron):
-####    RUBYLIB=$RUBYLIB:/home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing /home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/kappa --url http://localhost/cgi-bin/amigo --output /srv/www/htdocs/amigo/kappa --tests /home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/profiles/amigo
+####    GEM_HOME=/home/sjcarbon/local/ruby RUBYOPT=rubygems RUBYLIB=/home/sjcarbon/local/ruby/lib:/home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing /home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/kappa --url http://amigo.berkeleybop.org/cgi-bin/amigo --output /local/www/htdocs/amigo/kappa --tests /home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/profiles/amigo
 ####
 #### NOTE: Right now, data is determined by absolute paths.
 ####

@@ -1,4 +1,4 @@
-#!/usr/bin/ruby -w
+#!/usr/bin/ruby1.8 -w
 ####
 #### NOTE: Right now, needs to run from "go-dev/amigo/testing".
 #### Run tests: ./amigo.rb
