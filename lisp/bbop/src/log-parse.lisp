@@ -1,10 +1,16 @@
 ;;;; #!/usr/bin/sbcl --script
 ;;;;
-;;;; (load "../../bbop/src/log-parse.lisp")
+;;;; (load "log-parse.lisp")
+;;;;
+;;;; ;; load an apache log file into couch
+;;;; (process-to-couchdb "a2_log" "/tmp/access_log")
+;;;;
 ;;;; ;; set logj to be list of JAR accessing Java agents
 ;;;; (size (setf logj (slurp-lite "/home/sjcarbon/tmp/access_log" :function #'(lambda (line) (logline line)) :test #'(lambda (r) (if (and (scan +phenote-jar-scanner+ (cdr (assoc :file r))) (scan +java-scanner+ (cdr (assoc :agent r)))) t nil)))))
 ;;;; ;; look at number of unique ips in logj
 ;;;; (size (remove-duplicates (mapcar #'(lambda (x) (cdr (assoc :ip x))) logj) :test #'equal))
+;;;; ;; graph the little ones
+;;;; (graph-downloads (downloads-per-month logj) "/tmp/num.png")
 ;;;;
 
 
@@ -22,7 +28,8 @@
 	:cl-containers
 	:json
 	:cl-ppcre
-	:adw-charting-vecto
+	;;:adw-charting-vecto
+	:adw-charting
 	:toolkit-io
 	:bbop-couchdb)
   (:export))
