@@ -25,8 +25,9 @@ import java.util.*;
 import org.apache.log4j.*;
 
 /**
- * Writes OBO Files.
- * Delegates work to OBOSerializer
+ * Engine to write files in OBO format. Provides writeList to OBOSerializer to write file.
+ *
+ * ** DO NOT EDIT without prior notification to aabdulla@berkeleybop.org or cjm@berkeleybop.org **
  *
  */
 public class OBOSerializationEngine extends AbstractProgressValued {
@@ -58,14 +59,13 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		protected boolean doLinkFilter = false;
 
-		protected boolean doTagFilter = false;
+		protected boolean doTagFilter = true;
 
 		protected boolean allowDangling = false;
 
 		protected boolean followIsaClosure = false;
 
 		protected boolean saveImplied = false;
-
 
 		// FCR does not appear to work with regulation examples...
 		protected ReasonerFactory reasonerFactory = new 	LinkPileReasonerFactory();
@@ -474,11 +474,9 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				Filter linkFilter = filteredPath.getLinkFilter();
 				Filter objectFilter = filteredPath.getObjectFilter();
 				HashSet<OBOConstants.TagMapping> tagFilter = null;
-				if(filteredPath.getTagFilter() != null){
+				if(filteredPath.getTagFilter() != null)
 					tagFilter = filteredPath.getTagFilter().getTagsToWrite();
-				}
 				
-
 				if (!filteredPath.getDoFilter())
 					objectFilter = null;
 				else if (filteredPath.getSaveTypes()) {
@@ -1195,7 +1193,10 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		Collection refList = new ArrayList();
 
 		// if Include is_a closure save option selected - compile termsToFetch from the filteredObjects
-		if( database.equals("FilteredLinkDatabase") && (((FilteredLinkDatabase) database).getFollowIsaClosure()) ){
+//		logger.debug(database.getClass().getSimpleName().equals("FilteredLinkDatabase"));
+//		logger.debug((((FilteredLinkDatabase) database).getFollowIsaClosure()));
+		
+		if( database.getClass().getSimpleName().equals("FilteredLinkDatabase") && (((FilteredLinkDatabase) database).getFollowIsaClosure()) ){
 			for(Object obj : writeList){
 				if (cancelled)
 					doHalt();
