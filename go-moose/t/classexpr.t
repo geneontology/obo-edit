@@ -13,7 +13,7 @@ use FileHandle;
 my $g = new GOBO::Graph;
 my $x = GOBO::ClassExpression->parse_idexpr($g, 'a^foo(bar)');
 print "x=$x\n";
-printf "  target: %s\n", $_ foreach @{$g->get_outgoing_links($x)};
+printf "  target: %s\n", $_ foreach @{$g->get_outgoing_ontology_links(node=>$x)};
 ok($x->isa('GOBO::ClassExpression::Intersection'));
 ok scalar(@{$x->arguments}) == 2;
 ok grep { $_->id eq 'a' } @{$x->arguments};
@@ -50,13 +50,17 @@ ok grep { $_->id eq 'c' } @{$x->arguments};
 my $ie = new GOBO::InferenceEngine(graph=>$g);
 ok $ie->subsumed_by(GOBO::ClassExpression->parse_idexpr($g, 'a'),
                     GOBO::ClassExpression->parse_idexpr($g, 'a|b|c'));
+
+## test 19
 ok $ie->subsumed_by(GOBO::ClassExpression->parse_idexpr($g, 'a^z'),
                     GOBO::ClassExpression->parse_idexpr($g, 'a|b|c'));
 #TODO
 #ok $ie->subsumed_by(GOBO::ClassExpression->parse_idexpr($g, 'a|b'),
 #                    GOBO::ClassExpression->parse_idexpr($g, 'a|b|c'));
+## test 20
 ok $ie->subsumed_by(GOBO::ClassExpression->parse_idexpr($g, 'a^b'),
                     GOBO::ClassExpression->parse_idexpr($g, 'a'));
+## test 21
 ok $ie->subsumed_by(GOBO::ClassExpression->parse_idexpr($g, 'a^b^c'),
                     GOBO::ClassExpression->parse_idexpr($g, 'a^b'));
 

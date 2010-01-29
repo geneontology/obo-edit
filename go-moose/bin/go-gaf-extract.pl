@@ -74,7 +74,7 @@ foreach my $f (@ARGV) {
         foreach my $ann (@{$gafparser->graph->annotations}) {
             if (@ids) {
                 my $rset = new Set::Object;
-                $rset->insert(map {$_->id} @{$ie->get_inferred_target_nodes($ann->target)});
+                $rset->insert(map {$_->id} @{$ie->get_inferred_outgoing_nodes(node => $ann->target)});
                 if ($rset->intersection($idset)->size) {
                     show_ann($ann);
                 }
@@ -105,7 +105,7 @@ go-gaf-extract.pl
 =head1 SYNOPSIS
 
   # extract nucleotide binding terms
-  go-gaf-extract.pl -t GO:0000166 t/data/gtp.obo t/data/test-fb.gaf 
+  go-gaf-extract.pl -t GO:0000166 t/data/gtp.obo t/data/test-fb.gaf
 
 =head1 DESCRIPTION
 

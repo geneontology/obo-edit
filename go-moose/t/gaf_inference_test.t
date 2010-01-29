@@ -34,7 +34,7 @@ while ($gafparser->parse_chunk(size=>2)) {
 
 print "Inferred ICs:\n";
 my $icgraph = new GOBO::Graph();
-$icgraph->annotations(\@ics);
+$icgraph->add_annotations(\@ics);
 my $w = new GOBO::Writers::GAFWriter;
 $w->graph($icgraph);
 $w->write;
@@ -59,7 +59,7 @@ print "Adding inferred annotation back:\n";
 $agraph->add_annotation($ic);
 $ontg->add_annotation($ic);
 printf "num annots new: %d\n", scalar(@{$agraph->annotations});
-foreach my $xlink (@{$agraph->annotation_ix->statements_by_node_id('FB:FBgn0010339')}) {
+foreach my $xlink (@{$agraph->annotations_by_node_id('FB:FBgn0010339')}) {
     printf "  128up :: $xlink\n";
 }
 
@@ -68,9 +68,9 @@ $ie = new GOBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
 @ics = @{$ie->infer_annotations($gafparser->graph->annotations)};
 $icgraph = new GOBO::Graph();
 $icgraph->annotations(\@ics);
-my $w = new GOBO::Writers::GAFWriter;
-$w->graph($icgraph);
-$w->write;
+my $wr = new GOBO::Writers::GAFWriter;
+$wr->graph($icgraph);
+$wr->write;
 ok(@ics == 0);
 
 

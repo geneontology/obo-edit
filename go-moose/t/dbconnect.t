@@ -26,11 +26,11 @@ my $q = GOBO::DBIC::GODBModel::Query->new({
 
 my $g = new GOBO::Graph;
 my $dbh; # connect to a test db TODO
-bless $g->link_ix, 'GOBO::AmiGO::Indexes::AmiGOStatementIndex';
+bless $g->get_statement_ix_by_name('ontology_links'), 'GOBO::AmiGO::Indexes::AmiGOStatementIndex';
 #bless $g, 'GOBO::AmiGO::Indexes::AmiGOStatementIndex';
-$g->link_ix->query( $q );
+$g->get_statement_ix_by_name('ontology_links')->query( $q );
 
-my $links = $g->get_outgoing_links('GO:0005634');
+my $links = $g->get_outgoing_ontology_links('GO:0005634');
 
 foreach my $link (@$links) {
     printf "$link\n";
