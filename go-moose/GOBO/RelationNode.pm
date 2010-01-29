@@ -22,8 +22,8 @@ has functional => ( is=>'rw', isa=>'Bool' );
 has inverse_functional => ( is=>'rw', isa=>'Bool' );
 has metadata_tag => ( is=>'rw', isa=>'Bool' );
 has transitive_over => ( is=>'rw', isa=>'GOBO::RelationNode');
-has holds_over_chain_list => ( is=>'rw', isa=>'ArrayRef[ArrayRef[GOBO::RelationNode]]' );
-has equivalent_to_chain_list => ( is=>'rw', isa=>'ArrayRef[ArrayRef[GOBO::RelationNode]]' );
+has holds_over_chain_list => ( is=>'rw', isa=>'ArrayRef[ArrayRef[GOBO::RelationNode]]', predicate => 'holds_over_chain' );
+has equivalent_to_chain_list => ( is=>'rw', isa=>'ArrayRef[ArrayRef[GOBO::RelationNode]]', predicate => 'equivalent_to_chain' );
 has domain => ( is=>'rw', isa=>'GOBO::ClassNode');
 has range => ( is=>'rw', isa=>'GOBO::ClassNode');
 
@@ -45,7 +45,7 @@ sub post_init {
 }
 
 
-sub unary_property_names { 
+sub unary_property_names {
     return qw( cyclic reflexive symmetric transitive anti_symmetric irreflexive functional inverse_functional asymmetric);
 }
 

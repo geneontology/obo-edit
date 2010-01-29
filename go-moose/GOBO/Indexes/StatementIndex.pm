@@ -4,30 +4,36 @@ use Carp;
 use strict;
 use GOBO::Statement;
 use GOBO::LinkStatement;
-use GOBO::Node;
+#use GOBO::Node;
 use GOBO::RelationNode;
+use GOBO::Util::Misc;
+
+use GOBO::Indexes::StatementObjectIndex;
+use GOBO::Indexes::StatementRefIndex;
+
+
 
 has ixN => (is => 'rw', isa => 'HashRef[ArrayRef[GOBO::LinkStatement]]', default=>sub{{}});
 has ixT => (is => 'rw', isa => 'HashRef[ArrayRef[GOBO::LinkStatement]]', default=>sub{{}});
 
-sub clear_all {
-    my $self = shift;
-    $self->ixN({});
-    $self->ixT({});
-    return;
+sub clear_all_statements {
+	my $self = shift;
+	$self->ixN({});
+	$self->ixT({});
+	return;
 }
 
-sub create_statement {
-    my $self = shift;
-    my $s = GOBO::LinkStatement->new(@_); # TODO - other types
-    $self->add_statement($s);
-    return $s;
-}
+#sub create_statement {
+#	my $self = shift;
+#	my $s = GOBO::LinkStatement->new(@_); # TODO - other types
+#	$self->add_statement($s);
+#	return $s;
+#}
 
 # TODO - use Set::Object? List::MoreUtils?
 sub add_statement {
-    my $self = shift;
-    $self->add_statements([@_]);
+	my $self = shift;
+	return $self->add_statements([@_]);
 }
 
 # TODO - check for duplicates?
@@ -58,77 +64,136 @@ sub remove_statement {
 }
 
 sub remove_statements {
-    my $self = shift;
-    my $sl = shift;
-    foreach my $s (@$sl) {
-        my $nid = $s->node->id;
-        # TODO - Set::Object?
-        my $arr = $self->ixN->{$nid};
-        @$arr = grep {!$s->equals($_)} @$arr;
-        if ($s->isa("GOBO::LinkStatement")) {
-            my $tid = $s->target->id;
-            my $arr = $self->ixT->{$tid};
-            @$arr = grep {!$s->equals($_)} @$arr;
-        }
-    }
-    return;
+	my $self = shift;
+	my $sl = shift;
+	if (ref $sl ne 'ARRAY')
+	{	$sl = [ $sl ];
+	}
+	foreach my $s (@$sl) {
+		my $nid = $s->node->id;
+		# TODO - Set::Object?
+		my $arr = $self->ixN->{$nid};
+		@$arr = grep {!$s->equals($_)} @$arr;
+		if ($s->isa("GOBO::LinkStatement")) {
+			my $tid = $s->target->id;
+			my $arr = $self->ixT->{$tid};
+			@$arr = grep {!$s->equals($_)} @$arr;
+		}
+	}
+	return;
 }
 
 sub statements {
-    my $self = shift;
-    if (@_) {
-        # SET
-        $self->clear_all;
-        $self->add_statements(@_);
-    }
-    # GET
-    return [map { @$_ } values %{$self->ixN}];
+	my $self = shift;
+	if (@_) {
+		# SET
+		$self->clear_all_statements;
+		$self->add_statements(@_);
+	}
+	# GET
+	return [map { @$_ } values %{$self->ixN}];
 }
 
 sub statements_by_node_id {
-    my $self = shift;
-    my $x = shift;
-    confess("requires argument") unless $x;
-    return $self->ixN->{$x} || [];
+	my $self = shift;
+	my $x = shift;
+	confess("requires argument") unless $x;
+	return $self->ixN->{$x} || [];
 }
 
 sub statements_by_target_id {
-    my $self = shift;
-    my $x = shift;
-    return $self->ixT->{$x} || [];
+	my $self = shift;
+	my $x = shift;
+	confess("requires argument") unless $x;
+	return $self->ixT->{$x} || [];
+}
+
+sub statement_node_index {
+	my $self = shift;
+	return [ keys %{$self->ixN} ] || [];
+}
+
+sub statement_target_index {
+	my $self = shift;
+	return [ keys %{$self->ixT} ] || [];
 }
 
 sub matching_statements {
-    my $self = shift;
-    my $s = shift;
-    my $sl;
-    if ($s->node) {
-        $sl = $self->statements_by_node_id($s->node->id);
-    }
-    elsif ($s->target) {
-        $sl = $self->statements_by_target_id($s->target->id);
-    }
-    else {
-        $sl = $self->statements;
-    }
+	my $self = shift;
+	my $s = shift;
+	my $sl;
+	if ($s->node) {
+		$sl = $self->statements_by_node_id($s->node->id);
+	}
+	elsif ($s->target) {
+		$sl = $self->statements_by_target_id($s->target->id);
+	}
+	else {
+		$sl = $self->statements;
+	}
 
-    my $rel = $s->relation;
-    if ($rel) {
-        $sl = [grep {$_->relation && $_->relation->id eq $rel->id} @$sl];
-    }
-    return $sl;
+	my $rel = $s->relation;
+	if ($rel) {
+		$sl = [grep {$_->relation && $_->relation->id eq $rel->id} @$sl];
+	}
+	return $sl;
 }
 
 sub referenced_nodes {
-    my $self = shift;
-    my @nids = keys %{$self->ixN};
-    # ixN maps node IDs to lists of statements;
-    # take the distinct node IDs, the return the
-    # node object from the first statement in each
-    return 
-        [map {
-            $self->ixN->{$_}->[0]->node;
-         } @nids];
+	my $self = shift;
+	my @nids = keys %{$self->ixN};
+	# ixN maps node IDs to lists of statements;
+	# take the distinct node IDs, the return the
+	# node object from the first statement in each
+	return
+		[map {
+			$self->ixN->{$_}->[0]->node;
+		 } @nids];
+}
+
+
+=head2 get_matching_statements
+
+input:  hashref with one or more of node, relation and target defined
+output: arrayref of matching statements or []
+
+=cut
+
+sub get_matching_statements {
+	my $self = shift;
+	my %args = (@_);
+
+	my @sl;
+	if ($args{node})
+	{	@sl = @{$self->statements_by_node_id( ref($args{node}) ? $args{node}->id : $args{node} )};
+		if ($args{target})
+		{	$args{target} = $args{target}->id if ref $args{target};
+			@sl = grep { $_->target->id eq $args{target} } @sl;
+		}
+	}
+	else
+	{	@sl = @{$self->statements_by_target_id( ref($args{target}) ? $args{target}->id : $args{target} )};
+	}
+	return [] if ! @sl;
+
+	# if x = a AND r(b), then x r b
+	if (ref($args{node}) && $args{node}->isa('GOBO::ClassExpression::Intersection')) {
+		foreach (@{$args{node}->arguments}) {
+			if ($_->isa('GOBO::ClassExpression::RelationalExpression')) {
+				push(@sl, new GOBO::LinkStatement(node=>$args{node},relation=>$_->relation,target=>$_->target));
+			}
+			else {
+				push(@sl, new GOBO::LinkStatement(node=>$args{node},relation=>'is_a',target=>$_));
+			}
+		}
+	}
+
+	if ($args{relation})
+	{	$args{relation} = $args{relation}->id if ref $args{relation};
+		@sl = grep { $_->relation->id eq $args{relation} } @sl;
+	}
+
+	return \@sl;
 }
 
 1;

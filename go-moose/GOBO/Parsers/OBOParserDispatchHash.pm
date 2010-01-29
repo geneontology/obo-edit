@@ -20,7 +20,7 @@ Mostly identical to GOBO::Parsers::OBOParser but uses a dispatch table rather th
 package GOBO::Parsers::OBOParserDispatchHash;
 
 use Moose;
-#use base 
+#use base
 extends 'GOBO::Parsers::OBOParser';
 
 has header_check_sub => (is=>'rw', isa=>'CodeRef', default=>sub{ return sub { return 1 }; }, writer => 'set_header_check_sub', reader => 'get_header_check_sub');
@@ -69,7 +69,7 @@ my $body_subs = {
 		if (!${$args->{node}}) {
 			die "cannot parse: $_";
 		}
-		
+
 		${$args->{node}}->namespace($self->default_namespace) if (!${$args->{node}}->namespace && $self->default_namespace);
 #		print STDERR "node now: " . Dumper(${$args->{node}}) . "\n";
 	},
@@ -115,7 +115,7 @@ my $body_subs = {
 		my ($self, $args) = @_;
 		my $ss = $args->{graph}->subset_noderef($args->{value});
 		$args->{node}->add_subsets($ss);
-	
+
 		if ($self->liberal_mode && ! $args->{graph}->subset_index->{$ss->id})
 		{	print STDERR $args->{value} . " was not in the subset index. Crap!\n";
 			$args->{graph}->subset_index->{$args->{value}} = $ss;
@@ -164,15 +164,17 @@ my $body_subs = {
 		if ($args->{value} =~ /^(\S+)(.*)/) {
 			#	my $tn = $self->getnode($1, $args->{stanzaclass} eq 'typedef' ? 'r' : 'c');
 			my $tn;
+			my $rn = $args->{graph}->relation_noderef('is_a');
+#			my $rn = 'is_a';
 			if ($args->{stanzaclass} eq 'typedef')
 			{	$tn = $args->{graph}->relation_noderef($1);
 			}
 			else
 			{	$tn = $args->{graph}->term_noderef($1);
 			}
-			my $s = new GOBO::LinkStatement(node=>$args->{node},relation=>'is_a',target=>$tn);
+			my $s = new GOBO::LinkStatement(node=>$args->{node},relation=>$rn,target=>$tn);
 			$self->add_metadata($s,$2);
-			$args->{graph}->add_link($s);
+			$args->{graph}->add_statement($s);
 			if ($args->{stanzaclass} eq 'typedef') {
 				$args->{node}->add_subrelation_of($tn);
 			}
@@ -192,7 +194,7 @@ my $body_subs = {
 			}
 			my $s = new GOBO::LinkStatement(node=>$args->{node},relation=>$rn,target=>$tn);
 			$self->add_metadata($s,$3);
-			$args->{graph}->add_link($s);
+			$args->{graph}->add_statement($s);
 		}
 	},
 	"complement_of" => sub {
@@ -284,19 +286,21 @@ my $body_subs = {
 			{	$tn = $args->{graph}->term_noderef($2);
 			}
 			my $s = new GOBO::LinkStatement(node=>$args->{node},relation=>$rn,target=>$tn, is_intersection=>1);
-			$args->{graph}->add_link($s);
+			$args->{graph}->add_ontology_link($s);
 		}
 		elsif ($args->{value} =~ /^(\S+)/) {
 			#	my $tn = $self->getnode($1, $args->{stanzaclass} eq 'typedef' ? 'r' : 'c');
 			my $tn;
+			my $rn = $args->{graph}->relation_noderef('is_a');
+#			my $rn = 'is_a';
 			if ($args->{stanzaclass} eq 'typedef')
 			{	$tn = $args->{graph}->relation_noderef($1);
 			}
 			else
 			{	$tn = $args->{graph}->term_noderef($1);
 			}
-			my $s = new GOBO::LinkStatement(node=>$args->{node},relation=>'is_a',target=>$tn, is_intersection=>1);
-			$args->{graph}->add_link($s);
+			my $s = new GOBO::LinkStatement(node=>$args->{node},relation=>$rn,target=>$tn, is_intersection=>1);
+			$args->{graph}->add_ontology_link($s);
 		}
 		else {
 			$self->throw("badly formatted intersection: $_");
@@ -473,7 +477,7 @@ sub parse_header_from_array {
 	my $args = shift;
 	my $g = $args->{graph} || new GOBO::Graph;
 	my $header_check = $self->get_header_check_sub;
-	
+
 	foreach (@{$args->{array}})
 	{	next unless /\S/;
 
@@ -531,7 +535,7 @@ override 'parse_body' => sub {
 			}
 			next;
 		}
-		
+
 		if (/^id:\s*(.*)\s*$/) {
 #			print STDERR "id: $1; stanzaclass: $stanzaclass; node: " . Dumper($n) . "\n";
 			$body_subs->{id}->($self, { value => $1, graph => \$g, node => \$n, stanzaclass => $stanzaclass });
@@ -612,7 +616,7 @@ sub parse_body_from_array {
 			}
 			next;
 		}
-		
+
 		if (/^id:\s*(.*)\s*$/) {
 #			print STDERR "id: $1; stanzaclass: $stanzaclass; node: " . Dumper($n) . "\n";
 			$body_subs->{id}->($self, { value => $1, graph => \$g, node => \$n, stanzaclass => $stanzaclass });
@@ -669,7 +673,7 @@ override 'check_options' => sub {
 		$self->clear_body_parser_options;
 		## see if we have any settings for parsing the header
 		if ($options->{header} && keys %{$options->{header}})
-		{	
+		{
 			if ($options->{header}{ignore} && $options->{header}{parse_only})
 			{	warn "Warning: both ignore and parse_only specified in header parsing options; using setting in parse_only";
 			}
@@ -680,7 +684,7 @@ override 'check_options' => sub {
 				{	$self->set_header_parser_options({ parse_only => $options->{header}{parse_only} });
 
 					my $arr = $options->{header}{parse_only};
-					my $code = 
+					my $code =
 					$self->set_header_check_sub( sub {
 						my $t = shift;
 						return 1 if grep { $t eq $_ } @$arr;
@@ -717,7 +721,7 @@ override 'check_options' => sub {
 		## check the body parsing options
 		if ($options->{body} && keys %{$options->{body}})
 		{	my $b_hash;
-			
+
 			if ($options->{body}{ignore} && $options->{body}{parse_only})
 			{	warn "Warning: both ignore and parse_only specified in body parsing options; using setting in parse_only";
 			}
@@ -736,11 +740,11 @@ override 'check_options' => sub {
 						{	$b_hash->{$s_type} = $options->{body}{parse_only}{$s_type};
 						}
 					}
-					
+
 #					print STDERR "b hash: " . Dumper($b_hash);
 					if ($b_hash)
 					{	$self->set_body_parser_options({ parse_only => $b_hash });
-		
+
 						# parse this stanza if the stanza type exists in the parse_only set
 						# otherwise, go to the next stanza
 						$self->set_stanza_check_sub( sub {
@@ -749,7 +753,7 @@ override 'check_options' => sub {
 							$self->next_stanza([ keys %$b_hash ]);
 							return undef;
 						} );
-			
+
 						# if the stanza type exists and the tag exists, we're good
 						# otherwise, go to the next stanza
 						$self->set_tag_check_sub( sub {
@@ -799,7 +803,7 @@ override 'check_options' => sub {
 								return 1;
 							} );
 						}
-			
+
 						# ignore the stanza if the stanza type exists in the ignore set
 						# skip the line if the line type exists or the full stanza is to be ignored
 						$self->set_tag_check_sub( sub {

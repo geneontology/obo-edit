@@ -57,11 +57,13 @@ use GOBO::ClassExpression::Union;
 use GOBO::ClassExpression;
 use GOBO::Formula;
 use GOBO::Indexes::NodeIndex;
-use GOBO::Indexes::StatementIndex;
+use GOBO::Indexes::StatementIndexHelper;
+use GOBO::Indexes::StatementRefIndex;
+use GOBO::Indexes::StatementObjectIndex;
 use GOBO::InstanceNode;
 use GOBO::LinkStatement;
 use GOBO::LiteralStatement;
-#use GOBO::Node;
+use GOBO::Node;
 use GOBO::RelationNode;
 use GOBO::Statement;
 use GOBO::Subset;
@@ -72,34 +74,128 @@ use Data::Dumper;
 
 use overload ('""' => 'as_string');
 
-has 'relation_h' => (is => 'rw', isa => 'HashRef[GOBO::TermNode]', default=>sub{{}});
+has 'relation_h' => (is => 'rw', isa => 'HashRef[GOBO::RelationNode]', default=>sub{{}});
 has 'term_h' => (is => 'rw', isa => 'HashRef[GOBO::TermNode]', default=>sub{{}});
 has 'instance_h' => (is => 'rw', isa => 'HashRef[GOBO::InstanceNode]', default=>sub{{}});
-has 'link_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex',
-				default=>sub{ new GOBO::Indexes::StatementIndex() },
-				handles => { links => 'statements', add_link => 'add_statements', add_links => 'add_statements', remove_links => 'remove_statements', remove_link => 'remove_statements', remove_all_links => 'clear_all', link_node_index => 'statement_node_index', link_target_index => 'statement_target_index' } );
-has 'annotation_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex',
-				default=>sub{ new GOBO::Indexes::StatementIndex() },
-				handles => { annotations => 'statements', add_annotations => 'add_statements', remove_annotations => 'remove_statements', add_annotation => 'add_statements', remove_annotation => 'remove_statements',  remove_all_annotations => 'clear_all', annotated_entities => 'referenced_nodes', } );
 #has 'node_index' => (is => 'rw', isa => 'HashRef[GOBO::Node]', default=>sub{{}});
-has 'node_index' => (is => 'rw', isa => 'GOBO::Indexes::NodeIndex',
+has 'node_index' => (is => 'ro', isa => 'GOBO::Indexes::NodeIndex',
 				default=>sub{ new GOBO::Indexes::NodeIndex() },
-				handles => [ 'nodes' ] );
+				handles => {
+					'nodes' => 'nodes',
+					'update_node_label_index' => 'update_label_index',
+				} );
 has 'subset_index' => (is => 'rw', isa => 'HashRef[GOBO::Subset]', default=>sub{{}});
 has 'formulae' => (is => 'rw', isa => 'ArrayRef[GOBO::Formula]', default=>sub{[]});
 
+has 'statement_ix_h' => (
+	is=>'rw',
+	isa=>'GOBO::Indexes::StatementIndexHelper',
+	handles => #{
+	[ qw(
+		get_statement_ix
+		add_statement_ix
+		remove_statement_ix
+		exists_statement_ix
+		duplicate_statement_ix
 
-around 'links' => sub {
-	my $method = shift;
+		get_statement_ix_h
+		set_statement_ix_h
+		clear_statement_ix_h
+
+		get_statement_ix_h_names
+		get_statement_ix_h_values
+
+		get_statement_ix_by_name
+
+		get_matching_statements
+
+		statements
+		edges
+		ontology_links
+		annotations
+		get_all_statements_in_ix
+
+		add_statements
+		add_edges
+		add_ontology_links
+		add_annotations
+		add_statements_to_ix
+
+		remove_statements
+		remove_edges
+		remove_ontology_links
+		remove_annotations
+		remove_statements_from_ix
+
+		add_statement
+		add_edge
+		add_ontology_link
+		add_annotation
+		add_statement_to_ix
+
+		remove_statement
+		remove_edge
+		remove_ontology_link
+		remove_annotation
+		remove_statement_from_ix
+
+		clear_all_statements
+		clear_all_edges
+		clear_all_ontology_links
+		clear_all_annotations
+		clear_all_statements_in_ix
+
+		statements_by_node_id
+		statements_by_target_id
+		statement_node_index
+		statement_target_index
+
+		edges_by_node_id
+		edges_by_target_id
+		edge_node_index
+		edge_target_index
+
+		ontology_links_by_node_id
+		ontology_links_by_target_id
+		ontology_link_node_index
+		ontology_link_target_index
+
+		annotations_by_node_id
+		annotations_by_target_id
+		annotation_node_index
+		annotation_target_index
+
+		statements_in_ix_by_node_id
+		statements_in_ix_by_target_id
+		statement_ix_node_index
+		statement_ix_target_index
+
+		get_outgoing_statements
+		get_outgoing_edges
+		get_outgoing_ontology_links
+		get_outgoing_annotations
+		get_outgoing_statements_in_ix
+
+		get_incoming_statements
+		get_incoming_edges
+		get_incoming_ontology_links
+		get_incoming_annotations
+		get_incoming_statements_in_ix
+
+		remove_statements_from_ix_by_id
+
+		)],
+	default=>sub{ new GOBO::Indexes::StatementIndexHelper(); },
+);
+
+
+## Add an 'is_a' node to the graph by default
+sub BUILD {
 	my $self = shift;
-	my $results = $self->$method;
-	return [ sort { $a->node->id cmp $b->node->id || $a->target->id cmp $b->target->id } @$results ];
-};
+	my $r = new GOBO::RelationNode(id => 'is_a', label => 'is a');
+	$self->add_relation( $r );
+}
 
-#sub nodes {
-#	 my $self = shift;
-#	 return $self->node_index->nodes;
-#}
 
 sub referenced_nodes {
 	my $self = shift;
@@ -110,16 +206,17 @@ sub referenced_nodes {
 ## after adding  links / annotations, need to update the graph
 sub update_graph {
 	my $self = shift;
-	my @added = (@_);
+	my @statements = (@_);
 
-	if (! @added)
-	{	@added = (@{$self->links}, @{$self->annotations});
+	if (! @statements)
+	{	@statements = @{$self->statements};
 	}
 
-	foreach my $s (@added)
+	foreach my $s (@statements)
 	{	## check we have the nodes in the Graph
 		foreach ('node', 'relation', 'target')
-		{	my $n = $s->$_;
+		{	next unless $s->can($_);
+			my $n = $s->$_;
 			# skip if there's no such node or we already have the node
 			next unless $n && ! $self->get_node($n);
 
@@ -168,6 +265,7 @@ sub has_subsets {
 	return 1 if scalar @{$self->declared_subsets};
 	return undef;
 }
+
 *has_declared_subsets = \&has_subsets;
 
 sub has_formulae {
@@ -176,9 +274,21 @@ sub has_formulae {
 	return undef;
 }
 
-sub has_links {
+sub has_statements {
 	my $self = shift;
-	return 1 if scalar @{$self->links};
+	return 1 if scalar @{$self->statements};
+	return undef;
+}
+
+sub has_edges {
+	my $self = shift;
+	return 1 if scalar @{$self->edges};
+	return undef;
+}
+
+sub has_ontology_links {
+	my $self = shift;
+	return 1 if scalar @{$self->ontology_links};
 	return undef;
 }
 
@@ -346,9 +456,9 @@ sub add_instance {
 
 unlinks the node from this graph
 
-If cascade is 0 or undef, any links to or from this node will remain as dangling links.
+If cascade is 0 or undef, any statements involving this node will remain as dangling links.
 
-If cascade is set, then links to and from this node will also be deleted
+If cascade is set, then statements involving this node will also be deleted
 
 =cut
 
@@ -357,7 +467,11 @@ sub remove_node {
 	my $n = shift;
 	my $cascade = shift;
 
-	my $id = ref($n) ? $n->id : $n;
+	if (! ref $n)
+	{	$n = $self->get_node($n);
+	}
+	return unless $n;
+	my $id = $n->id;
 
 	if ($self->term_h->{$id}) {
 		delete $self->term_h->{$id};
@@ -369,8 +483,13 @@ sub remove_node {
 		delete $self->relation_h->{$id};
 	}
 	if ($cascade) {
-		$self->remove_link($_) foreach @{$self->get_outgoing_links($n)};
-		$self->remove_link($_) foreach @{$self->get_incoming_links($n)};
+#		$self->remove_link($_) foreach @{$self->get_outgoing_links($n)};
+#		$self->remove_link($_) foreach @{$self->get_incoming_links($n)};
+		foreach my $x qw( node relation target )
+		{	print STDERR "Running remove statements for $x = $id\n";
+			my @stt = @{$self->get_matching_statements($x=>$n)};
+			$self->remove_statements( @stt ) if @stt;
+		}
 	}
 
 	return $self->node_index->remove_node($n);
@@ -378,205 +497,6 @@ sub remove_node {
 
 
 sub add_formula { my $self = shift; push(@{$self->formulae},@_) }
-
-
-=head2 get_outgoing_links (subject GOBO::Node, relation GOBO::RelationNode OPTIONAL)
-
-given a subject (child), get target (parent) links
-
-if relation is specified, also filters results on relation
-
-=cut
-
-sub get_outgoing_links {
-	my $self = shift;
-	my $n = shift;
-	my $rel = shift;
-	my @sl = @{$self->link_ix->statements_by_node_id(ref($n) ? $n->id : $n) || []};
-	#return [] if ! @sl;
-	# if x = a AND r(b), then x r b
-	if (ref($n) && $n->isa('GOBO::ClassExpression::Intersection')) {
-		foreach (@{$n->arguments}) {
-			if ($_->isa('GOBO::ClassExpression::RelationalExpression')) {
-				push(@sl, new GOBO::LinkStatement(node=>$n,relation=>$_->relation,target=>$_->target));
-			}
-			else {
-				push(@sl, new GOBO::LinkStatement(node=>$n,relation=>'is_a',target=>$_));
-			}
-		}
-	}
-	if ($rel) {
-		# TODO: use indexes to make this faster
-		my $rid = ref($rel) ? $rel->id : $rel;
-		@sl = grep {$_->relation->id eq $rid} @sl;
-	}
-	return \@sl;
-}
-
-*get_links_by_node = \&get_outgoing_links;
-
-# @Deprecated
-*get_target_links = \&get_outgoing_links;
-
-
-=head2 get_incoming_links (subject GOBO::Node, relation GOBO::RelationNode OPTIONAL)
-
-given a target (parent), get subject (child) links
-
-if relation is specified, also filters results on relation
-
-=cut
-
-sub get_incoming_links {
-	my $self = shift;
-	my $n = shift;
-	my $rel = shift;
-	my @sl = @{$self->link_ix->statements_by_target_id(ref($n) ? $n->id : $n) || []};
-	return [] if ! @sl;
-	if ($rel) {
-		# TODO: use indexes to make this faster
-		my $rid = ref($rel) ? $rel->id : $rel;
-		@sl = grep {$_->relation->id eq $rid} @sl;
-	}
-	return \@sl;
-}
-
-*get_links_by_target = \&get_incoming_links;
-
-
-=head2 get_annotations_by_subject (subject GOBO::Node, relation GOBO::RelationNode OPTIONAL)
-
-given a subject (gene product), get target (term) links
-
-if relation is specified, also filters results on relation
-
-=cut
-
-sub get_annotations_by_subject {
-	my $self = shift;
-	my $n = shift;
-	my $rel = shift;
-	my @sl = @{$self->annotation_ix->statements_by_node_id(ref($n) ? $n->id : $n) || []};
-	# if x = a AND r(b), then x r b
-	if (ref($n) && $n->isa('GOBO::ClassExpression::Intersection')) {
-		foreach (@{$n->arguments}) {
-			if ($_->isa('GOBO::ClassExpression::RelationalExpression')) {
-				push(@sl, new GOBO::LinkStatement(node=>$n,relation=>$_->relation,target=>$_->target));
-			}
-			else {
-				push(@sl, new GOBO::LinkStatement(node=>$n,relation=>'is_a',target=>$_));
-			}
-		}
-	}
-	if ($rel) {
-		# TODO: use indexes to make this faster
-		my $rid = ref($rel) ? $rel->id : $rel;
-		@sl = grep {$_->relation->id eq $rid} @sl;
-	}
-	return \@sl;
-}
-
-=head2 get_annotations_by_target (target GOBO::Node, relation GOBO::RelationNode OPTIONAL)
-
-given a target (term), get annotated subjects (gene products)
-
-if relation is specified, also filters results on relation
-
-=cut
-
-sub get_annotations_by_target {
-	my $self = shift;
-	my $n = shift;
-	my $rel = shift;
-	my @sl = @{$self->annotation_ix->statements_by_target_id(ref($n) ? $n->id : $n) || []};
-	if ($rel) {
-		# TODO: use indexes to make this faster
-		my $rid = ref($rel) ? $rel->id : $rel;
-		@sl = grep {$_->relation->id eq $rid} @sl;
-	}
-	return \@sl;
-}
-*get_annotations_by_term = \&get_annotations_by_target;
-
-
-=head2 get_annotated_terms
-
-Retrieve all terms that are attached to an annotation
-
-=cut
-
-sub get_annotated_terms {
-	my $self = shift;
-	my @term_ids = @{$self->annotation_ix->statement_target_index};
-	return [ map { $self->get_term($_) } @term_ids ];
-}
-
-
-=head2 get_orphan_terms
-
- - Argument: optional argument to update the graph before proceeding
- - Returns:  ArrayRef[GOBO::TermNode]
-
- returns terms that aren't part of any link statements
-
-=cut
-
-sub get_orphan_terms {
-	my $self = shift;
-	my $include_update = shift;
-
-	$self->update_graph if $include_update;
-
-	# no orphans if there are no terms in the graph!
-	return [] if ! $self->has_terms;
-
-	# if no links, return all the terms
-	return $self->terms if ! $self->has_links;
-
-#	my @terms = map { $_->id } grep { $_->isa('GOBO::TermNode') } @{$self->nodes};
-	my $referenced;
-	map { $referenced->{$_}++ } (@{$self->link_node_index}, @{$self->link_target_index});
-	return [ grep { ! $referenced->{ $_->id } } @{$self->terms} ];
-}
-
-
-=head2 get_is_a_roots
-
- - Argument: none
- - Returns: ArrayRef[GOBO::TermNode]
-
-returns terms that lack an is_a parent
-
-=cut
-
-sub get_is_a_roots {
-	my $self = shift;
-	return $self->get_roots('is_a');
-}
-
-=head2 get_roots
-
- - Argument: relation Str or OBO::RelationNode [OPTIONAL]
- - Returns: ArrayRef[GOBO::TermNode]
-
-returns terms that lack a parent by the given relation. If no relation
-specified, then returns terms that lack a parent by any relation
-
-=cut
-
-sub get_roots {
-	my $self = shift;
-#	 my $rel = shift;
-	my @roots = ();
-	foreach my $term (@{$self->terms || []}) {
-		next if $term->obsolete;
-		if (!@{$self->get_outgoing_links($term, @_)}) {
-			push(@roots,$term);
-		}
-	}
-	return \@roots;
-}
-
 
 
 # given a node ID or a node object, returns the corresponding
@@ -638,6 +558,7 @@ sub add_node {
 sub get_node {
 	my $self = shift;
 	my $id = shift; # Str or GOBO::Node
+	confess("no ID supplied!") if ! $id;
 	my $ix = $self->node_index;
 	if (ref($id)) {
 		# $id is actually a GOBO::Node
@@ -747,7 +668,7 @@ sub convert_intersection_links_to_logical_definitions {
 	my @xplinks = ();
 	my @nlinks = ();
 	my %xpnodeh = ();
-	foreach (@{$self->links}) {
+	foreach (@{$self->ontology_links}) {
 		if($_->is_intersection) {
 			push(@xplinks, $_);
 			push(@{$xpnodeh{$_->node->id}}, $_);
@@ -757,7 +678,8 @@ sub convert_intersection_links_to_logical_definitions {
 		}
 	}
 	if (@xplinks) {
-		$self->links(\@nlinks);
+		$self->clear_all_ontology_links;
+		$self->add_ontology_links(\@nlinks);
 		foreach my $nid (keys %xpnodeh) {
 			my $n = $self->noderef($nid);
 			my @exprs =
@@ -782,10 +704,378 @@ sub as_string {
 	my $self = shift;
 	return
 		join('',
-			 (map { "$_\n" } @{$self->links}),
+			 (map { "$_\n" } @{$self->ontology_links}),
 			 (map { "$_\n" } @{$self->annotations}),
 		);
 }
+
+
+=head1 Methods involving statement indexes
+
+Statements are kept in StatementIndex objects, of which a graph may have several.
+These indexes are stored in a hash, $graph->statement_ix_h, with the index name
+as the key and the StatementIndex object as the value.
+
+By default, graphs have four indexes:
+
+ - statements      ## all statements in the graph
+ - edges           ## all LinkStatements with a node, relation, and target
+ - ontology_links  ## LinkStatements between TermNodes in a graph
+ - annotations     ## Annotation objects
+
+
+=head2 get_statement_ix
+
+Get a statement index from the graph
+
+ input:  $name_of_statement_ix
+ output: the index
+
+
+=head2 get_statement_ix_by_name
+
+Get a statement index, creating it if necessary
+
+ input:  $index_name, create_if_does_not_exist (OPTIONAL)
+ output: the appropriate statement index
+         OR undef if the index does not exist and 'create_if_does_not_exist' is undef/0
+
+e.g. $self->get_statement_ix_by_name('selected_statements', 1)
+would get all the statements in the index 'selected_statements', and if the
+index did not exist, it would be created.
+
+=head2 add_statement_ix
+
+Add a statement index to the graph
+
+ input:  hash in the form
+         $new_index_name => GOBO::Indexes::StatementIndex object
+ output: the StatementIndex
+
+
+=head2 remove_statement_ix
+
+Remove a statement index from the graph
+
+ input:  $index_name
+ output: none
+
+
+=head2 exists_statement_ix
+
+Returns true if $index_name exists in statement_ix_h
+
+ input:  $index_name
+ output: 1 or undef
+
+
+=head2 set_statement_ix_h
+
+Set the statement_ix_h using a hash of $index_name => Index object pairs
+
+ input:  hash in the form
+         $index_name => Index, $index_name_2 => Index_2, ...
+ output: none
+
+=head2 clear_statement_ix_h
+
+Remove everything from the entire statement_ix_h
+
+
+=head2 get_statement_ix_h
+
+Get the statement_ix_h as an array
+NB: returns an array, not an array ref!
+
+ input:  self
+ output: $index_name, Index, $index_name_2, Index_2, ...
+
+
+=head2 get_statement_ix_h_names
+
+Retrieve the names of the indexes in statement_ix_h
+NB: returns an array, not an array ref!
+
+ input:  self
+ output: array of index names
+
+
+=head2 get_statement_ix_h_values
+
+Retrieve the indexes themselves from statement_ix_h
+NB: returns an array, not an array ref!
+
+ input:  self
+ output: array of indexes
+
+
+=cut
+
+
+
+=head2 sync_statement_indexes
+
+Go through the statements in the statement indexes and make sure they're
+categorised correctly and that the nodes are those in the graph's node index.
+
+ input:  self
+ output: self, but with the indexes beautifully synchronised!
+
+=cut
+
+sub sync_statement_indexes {
+	my $self = shift;
+	print STDERR "Starting sync_statement_indexes\n";
+	my $all = $self->get_statement_ix_by_name('statements')->get_all_statements;
+	my $add_h;
+	foreach my $s (@$all)
+	{	foreach my $c qw(node relation target)
+		{	if ($s->can($c) && $s->$c->id)
+			{	my $c_obj = $self->get_node($s->$c->id);
+				$s->$c( $c_obj ) if defined $c_obj;
+			}
+		}
+		map { push @{$add_h->{$_}}, $s } @{$self->statement_ix_h->_get_statement_type( $s )};
+	}
+	if ($add_h)
+	{	map {
+			$self->statement_ix_h->clear_all_statements_in_ix($_);
+			$self->add_statements_to_ix( ix => $_, statements => $add_h->{$_} )
+		} keys %$add_h;
+	}
+}
+
+
+
+=head2 get_outgoing_edges
+
+given a subject (node / child), get the target (parent) from a LinkStatement
+
+ input:  $node     ## GOBO::Node
+         $relation ## GOBO::RelationNode (optional)
+ output: arrayref of Statements where the node is $node
+
+if relation is specified, also filters results on relation
+
+=head2 get_outgoing_ontology_links
+
+Shortcut for get_outgoing_edges
+
+=head2 get_outgoing_annotations
+
+Retrieve annotations by the gene product in the annotation statement.
+
+ input:  $gene_product
+ output: arrayref of Annotations where the node is $gene_product
+
+Also aliased as 'get_annotations_by_subject' and 'get_annotations_by_gene_product'
+
+
+=head2 get_incoming_edges
+
+given a subject (node / child), get the target (parent) from a LinkStatement
+
+ input:  $node     ## GOBO::Node
+         $relation ## GOBO::RelationNode (optional)
+ output: arrayref of Statements where the node is $node
+
+if relation is specified, also filters results on relation
+
+=head2 get_outgoing_ontology_links
+
+Shortcut for get_outgoing_edges
+
+=head2 get_outgoing_annotations
+
+Shortcut for get_outgoing_edges
+
+=cut
+
+
+
+*get_edges_by_node = \&get_outgoing_edges;
+*get_target_edges = \&get_outgoing_edges; # @Deprecated
+*get_ontology_links_by_node = \&get_outgoing_ontology_links;
+*get_target_ontology_links = \&get_outgoing_ontology_links; # @Deprecated
+*get_annotations_by_subject = \&get_outgoing_annotations;
+*get_annotations_by_gene_product = \&get_outgoing_annotations;
+*get_edges_by_target = \&get_incoming_edges;
+*get_ontology_links_by_target = \&get_incoming_ontology_links;
+*get_annotations_by_target = \&get_incoming_annotations;
+*get_annotations_by_term = \&get_incoming_annotations;
+
+
+=head2 get_annotated_terms
+
+Retrieve all terms that are attached to an annotation
+
+ input:   $ix_name  ## optional argument specifying which index to use
+ output:  ArrayRef[GOBO::TermNode]
+
+=cut
+
+sub get_annotated_terms {
+	my $self = shift;
+	if (@_)
+	{	my $ix_name = shift;
+		return [] if ! $self->exists_statement_ix($ix_name);
+		my %term_h = ();
+		foreach my $t (@{$self->get_statement_ix_by_name($ix_name)->statement_target_index})
+		{	foreach (@{$self->statements_in_ix_by_target_id($ix_name, $t)})
+			{	if ($_->isa('GOBO::Annotation'))
+				{	$term_h{ $_->target->id } = $_->target;
+					last;
+				}
+			}
+		}
+		return [ values %term_h ];
+	}
+	else
+	{	my @term_ids = @{$self->get_statement_ix_by_name('annotations', 1)->statement_target_index(@_)};
+		return [ map { $self->get_term($_) } @term_ids ];
+	}
+}
+
+
+=head2 get_orphan_terms
+
+ input:   optional argument to update the graph before proceeding
+          optional argument with the name of the index to look for edges in
+ output:  ArrayRef[GOBO::TermNode]
+
+ returns terms that aren't part of any ontology link statements
+
+=cut
+
+sub get_orphan_terms {
+	my $self = shift;
+	my $include_update = shift;
+	my $ix = shift || 'ontology_links';
+
+	$self->update_graph if $include_update;
+
+	# no orphans if there are no terms in the graph!
+	return [] if ! $self->has_terms;
+
+	# if no links, return all the terms
+	return $self->terms if ! $self->has_ontology_links;
+
+	return $self->terms if ! $self->exists_statement_ix($ix);
+#	my @terms = map { $_->id } grep { $_->isa('GOBO::TermNode') } @{$self->nodes};
+	my $referenced;
+	map { $referenced->{$_}++ } (@{$self->statement_ix_node_index($ix)}, @{$self->statement_ix_target_index($ix)});
+	return [ grep { ! $referenced->{ $_->id } } @{$self->terms} ];
+}
+
+
+=head2 get_is_a_roots
+
+ input:  none
+ output: ArrayRef[GOBO::TermNode]
+
+returns terms that lack an is_a parent
+
+=cut
+
+sub get_is_a_roots {
+	my $self = shift;
+	return $self->get_roots('is_a');
+}
+
+=head2 get_roots
+
+ - Argument: relation Str or OBO::RelationNode [OPTIONAL]
+ - Returns: ArrayRef[GOBO::TermNode]
+
+returns terms that lack a parent by the given relation. If no relation
+specified, then returns terms that lack a parent by any relation
+
+=cut
+
+sub get_roots {
+	my $self = shift;
+#	 my $rel = shift;
+	my @roots = ();
+	foreach my $term (@{$self->terms || []}) {
+		next if $term->obsolete;
+		if (!@{$self->get_outgoing_ontology_links($term, @_)}) {
+			push(@roots,$term);
+		}
+	}
+	return \@roots;
+}
+
+=head2 get_connected_roots
+
+ input:  
+ output: ArrayRef[GOBO::TermNode]
+
+Find nodes connected to the graph which have no outgoing ontology links (i.e.
+they are 'parent' terms but have no 'parents' themselves)
+
+=cut
+
+sub get_connected_roots {
+	my $self = shift;
+#	 my $rel = shift;
+	my @roots = ();
+
+	my $node_h;
+
+#print STDERR "ontology links:\n" . join("\n", @{$self->ontology_links}) . "\n";
+
+#	print STDERR "ontology link node index: " . join("\n", sort @{$self->ontology_link_node_index} ) . "\n\n";
+#	print STDERR "ontology link target index: " . join("\n", sort @{$self->ontology_link_target_index} ) . "\n\n";
+
+	map { $node_h->{$_}++ } @{ $self->ontology_link_target_index };
+
+#	print STDERR "got target index:\n" . join(", ", sort keys %$node_h) . "\n\n\nLooking at nodes now:\n";
+
+
+#	print STDERR "ontology link node index: " . join(", ", sort @{$self->ontology_link_node_index} ) . "\n";
+	foreach (@{$self->ontology_link_node_index})
+	{	delete $node_h->{$_};
+	}
+#	print STDERR "\n\nremoved link nodes:\n" . join(", ", sort keys %$node_h) . "\n";
+
+	foreach (keys %$node_h)
+	{	my $t = $self->get_term($_);
+		if ($t->obsolete)
+		{	delete $node_h->{$_} && next;
+		}
+		$node_h->{$_} = $t;
+	}
+
+#	print STDERR "link values:\n" . join(", ", sort { $a->as_string cmp $b->as_string } values %$node_h) . "\n";
+	
+
+	return [ values %$node_h ];
+}
+
+
+=head2 get_leaves
+
+Find nodes connected to the graph which have no incoming ontology links
+
+ input:  [none]
+ output: ArrayRef[GOBO::TermNode]
+ 
+=cut
+
+sub get_leaves {
+	my $self = shift;
+	my $node_h;
+	map { $node_h->{$_}++ } @{ $self->ontology_link_node_index };
+	foreach (@{$self->ontology_link_target_index})
+	{	delete $node_h->{$_};
+	}
+	foreach (keys %$node_h)
+	{	$node_h->{$_} = $self->get_term($_);
+	}
+	return [ grep { defined $_ } values %$node_h ];
+}
+
+
 
 1;
 

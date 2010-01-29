@@ -60,14 +60,16 @@ sub write_body {
 	{	## set the writer to display association counts
 		$write_term_sub = sub {
 			my ($g, $t) = (@_);
-			my $annots = $g->get_annotations_by_target($t);
-			if (! $annots)
+
+			my $all_annots = $g->statements_in_ix_by_target_id($self->annotation_ix, $t->id);
+			if (! $all_annots)
 			{	return $t->id . ( " : " . $t->label || "" ) . " (0 / 0 total)";
 			}
 			else
-			{	my $direct = scalar ( grep { ! $_->inferred } @$annots ) || 0;
-				my $str = $t->id . ( " : " . $t->label || "" ) . " ($direct / " . (scalar @$annots)." total)\n";
-				foreach (sort { $a->node->id cmp $b->node->id } @$annots)
+			{	my $direct = 0;
+				map { $direct++ if ! $_->inferred } @$all_annots;
+				my $str = $t->id . ( " : " . $t->label || "" ) . " ($direct / " . (scalar @$all_annots)." total)\n";
+				foreach (sort { $a->node->id cmp $b->node->id } @$all_annots)
 				{	#$str .= "\t" . $_->node->id . "; ";
 					$str .= "\t" . $_->node->data->[2] . ": ";
 					if ($_->inferred)
@@ -85,13 +87,15 @@ sub write_body {
 	{	## set the writer to display association counts
 		$write_term_sub = sub {
 			my ($g, $t) = (@_);
-			my $annots = $g->get_annotations_by_target($t);
-			if (! $annots)
+			my $all_annots = $g->statements_in_ix_by_target_id($self->annotation_ix, $t->id);
+			if (! $all_annots)
 			{	return $t->id . ( " : " . $t->label || "" ) . " (0 / 0 total)";
 			}
 			else
-			{	my $direct = scalar ( grep { ! $_->inferred } @$annots ) || 0;
-				return $t->id . ( " : " . $t->label || "" ) . " ($direct / " . (scalar @$annots)." total)";
+			{	my $direct = 0;
+				map { $direct++ if ! $_->inferred } @$all_annots;
+				my $str = $t->id . ( " : " . $t->label || "" ) . " ($direct / " . (scalar @$all_annots)." total)";
+				return $str;
 			}
 		};
 	}
@@ -103,13 +107,14 @@ sub write_body {
 		};
 	}
 
+
 	##
-	my $indent = 0;
 	foreach my $term (sort { $a->id cmp $b->id } @{$graph->get_roots})
 	{	## print the term info
+		my $indent = 0;
 #		my $str = &$write_term_sub($graph, $term);
 		print $fh "" . &$write_term_sub($graph, $term) . "\n";
-		my $links = $graph->get_links_by_target($term);
+		my $links = $graph->statements_in_ix_by_target_id($self->ontology_link_ix, $term->id);
 		if ($links && @$links)
 		{	$self->print_term_array(graph => $graph, links => $links, indent => $indent, write_term_sub => $write_term_sub, terms_on_path => [$term->id]);
 		}
@@ -140,7 +145,7 @@ sub print_term_array {
 			next;
 		}
 		## see if this term has any incoming links
-		my $inlinks = $graph->get_links_by_target($l->node);
+		my $inlinks = $graph->statements_in_ix_by_target_id($self->ontology_link_ix, $l->node->id);
 		if ($inlinks && @$inlinks)
 		{	$self->print_term_array(graph => $graph, links => $inlinks, indent => $indent, write_term_sub => $write_term_sub, terms_on_path => [ @$terms_on_path, $l->node->id ]);
 		}
@@ -164,8 +169,9 @@ sub create_r_abbrev {
 	if (! $rel_h->{$r})
 	{	#print STDERR "Looking at $r...\n" if $ENV{VERBOSE};
 		my $orig_r = $r;
-		$r =~ s/negative(ly)?/-/;
-		$r =~ s/positive(ly)?/+/;
+		$r =~ s/negative(ly)?(.*)/$2-/;
+		$r =~ s/positive(ly)?(.*)/$2+/;
+		
 		## replace all the words with their first letters
 		## remove the underscores
 		$r =~ s/([a-z])[a-z]+(_|$)/$1$2/gi;
