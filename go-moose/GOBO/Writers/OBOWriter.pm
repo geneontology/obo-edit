@@ -33,12 +33,16 @@ sub write_body {
         $self->write_stanza($term);
     }
     foreach my $relation (_order_by_id(@{$g->relations})) {
+        ## ignore is_a node
+        next if $relation->id eq 'is_a';
         $self->write_stanza($relation);
     }
     foreach my $instance (_order_by_id(@{$g->instances})) {
         $self->write_stanza($instance);
     }
-    foreach my $ann (@{$g->annotations}) {
+
+#    foreach my $ann (@{$g->annotations}) {
+    foreach my $ann (@{$g->get_all_statements_in_ix( $self->annotation_ix )}) {
         $self->write_annotation_stanza($ann);
     }
     # TODO: instances
@@ -93,7 +97,9 @@ sub write_stanza {
         $self->tagval('equivalent_to_chain', _chain($_)) foreach @{$node->equivalent_to_chain_list || []};
     }
 
-    foreach (@{$g->get_outgoing_links($node)}) {
+    foreach (@{$g->get_matching_statements(node=>$node, ix=>$self->edge_ix)}) {
+#    foreach (@{$g->get_outgoing_edges(node=>$node)}) {
+#    foreach (@{$g->get_outgoing_links($node)}) {
         if ($_->is_intersection) {
             if ($_->relation->is_subsumption) {
                 $self->tagval(intersection_of => $_->target);

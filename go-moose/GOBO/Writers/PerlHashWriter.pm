@@ -22,7 +22,8 @@ sub write_body {
     foreach my $relation (@{$g->relations}) {
         $self->write_stanza($relation);
     }
-    foreach my $ann (@{$g->annotations}) {
+#    foreach my $ann (@{$g->annotations}) {
+    foreach my $ann (@{$g->get_all_statements_in_ix( $self->annotation_ix )}) {
         $self->write_annotation_stanza($ann);
     }
     # TODO: instances
@@ -80,7 +81,9 @@ sub write_stanza {
 
     my @isas = ();
     my @rels = ();
-    foreach (@{$g->get_outgoing_links($node)}) {
+#    foreach (@{$g->get_outgoing_links($node)}) {
+#    foreach (@{$g->get_outgoing_edges(node=>$node)}) {
+    foreach (@{$g->get_matching_statements(node=>$node, ix=>$self->edge_ix)}) {
         if ($_->is_intersection) {
         }
         else {

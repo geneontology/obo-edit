@@ -20,9 +20,12 @@ sub write_body {
         $self->write_stanza($term);
     }
     foreach my $relation (@{$g->relations}) {
+        ## ignore is_a node
+        next if $relation->id eq 'is_a';
         $self->write_stanza($relation);
     }
-    foreach my $ann (@{$g->annotations}) {
+#    foreach my $ann (@{$g->annotations}) {
+    foreach my $ann (@{$g->get_all_statements_in_ix( $self->annotation_ix )}) {
         $self->write_annotation_stanza($ann);
     }
     # TODO: instances
@@ -62,9 +65,8 @@ sub write_stanza {
         $self->ntagval('synonym',[scope=>$s->scope],
                        [synonym_text=>$s->label],
                        map {_dbxref($_)} @{$s->definition_xrefs || []});
-
+    }
     # xref
-
     if ($node->isa('GOBO::RelationNode')) {
         $self->tagval('domain', $node->domain);
         $self->tagval('range', $node->range);
@@ -75,7 +77,9 @@ sub write_stanza {
         $self->tagval('equivalent_to_chain', _chain($_)) foreach @{$node->equivalent_to_chain_list || []};
     }
 
-    foreach (@{$g->get_outgoing_links($node)}) {
+#    foreach (@{$g->get_outgoing_links($node)}) {
+#    foreach (@{$g->get_outgoing_edges(node=>$node)}) {
+    foreach (@{$g->get_matching_statements(node=>$node, ix=>$self->edge_ix)}) {
         if ($_->is_intersection) {
             if ($_->relation->is_subsumption) {
                 $self->ntagval(intersection_of => ([], [to=>$_->target]));
@@ -89,7 +93,7 @@ sub write_stanza {
                 $self->tagval(is_a => $_->target, $_);
             }
             else {
-                $self->ntagval(relationship => ([],[type=>$_->relation, to=>$_->target]);
+                $self->ntagval(relationship => ([],[type=>$_->relation, to=>$_->target]));
             }
         }
     }
@@ -109,7 +113,7 @@ sub write_stanza {
 
 sub _chain {
     my $arr = shift;
-    return map {[relation=>$_->id] @$arr);
+    return join(" ", map {[relation=>$_->id]} @$arr);
 }
 
 sub write_annotation_stanza {
@@ -138,7 +142,7 @@ sub open_element {
     return;
 }
 
-sub open_element {
+sub close_element {
     my $self = shift;
     my $c = shift;
     $self->println("</$c>");
@@ -158,7 +162,7 @@ sub tagval {
     return unless defined $obj;
     my $val = ref($obj) ? $obj->id : $obj;
     if (ref($val)) {
-        $val;
+        $self->printf("%s", $val);
     }
     else {
         $self->printf("%s: %s",$tag,$val);

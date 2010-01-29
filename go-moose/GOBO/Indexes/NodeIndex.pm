@@ -25,23 +25,29 @@ sub add_node {
 
 # TODO - check for duplicates?
 sub add_nodes {
-    my $self = shift;
-    my $nl = shift;
-    foreach my $n (@$nl) {
-        my $nid = $n->id;
-        $self->ixN->{$n->id} = $n;
-    }
-    if ($self->ixLabel) {
-        foreach my $n (@$nl) {
-            my $nid = $n->id;
-            push(@{$self->ixLabel->{$n->label}}, $n) if $n->label;
-        }
-    }
-    return;
+	my $self = shift;
+	my $nl = shift;
+	foreach my $n (@$nl) {
+		my $nid = $n->id;
+		$self->ixN->{$n->id} = $n;
+	}
+	if ($self->ixLabel)
+	{	foreach my $n (@$nl)
+		{	if ($n->label)
+			{	## label isn't in the index
+				if (! $self->ixLabel->{$n->label} ||
+				## the ID isn't already in the list of nodes with that name
+				! grep { $_->id eq $n->id } @{$self->ixLabel->{$n->label}} )
+				{	push @{$self->ixLabel->{$n->label}}, $n;
+				}
+			}
+		}
+	}
+	return;
 }
 
 # note that this removes nodes only from the node index;
-# links must be removed separately
+# any statements must be removed separately
 sub remove_nodes {
     my $self = shift;
     my $nl = shift;
@@ -116,6 +122,25 @@ sub nodes_by_metaclass {
 
 }
 
+=head2 update_label_index
+
+Ensures that the label index, ixLabel, is populated
+
+=cut
+
+sub update_label_index {
+	my $self = shift;
+	foreach my $n (values %{$self->ixN})
+	{	if ($n->label)
+		{	## label isn't in the index
+			if (! $self->ixLabel->{$n->label} ||
+			## the ID isn't already in the list of nodes with that name
+			! grep { $_->id eq $n->id } @{$self->ixLabel->{$n->label}} )
+			{	push @{$self->ixLabel->{$n->label}}, $n;
+			}
+		}
+	}
+}
 
 1;
 

@@ -2,7 +2,7 @@ package GOBO::LinkStatement;
 use Moose;
 use strict;
 extends 'GOBO::Statement';
-use GOBO::Node;
+#use GOBO::Node;
 
 has 'target' => ( is=>'rw', isa=>'GOBO::Node', coerce=>1 );
 has 'distance_index' => ( is=>'rw', isa=>'HashRef[Number]', coerce=>1 );
@@ -26,6 +26,7 @@ sub equals {
 
     return 1;
 }
+
 
 =head1 NAME
 
