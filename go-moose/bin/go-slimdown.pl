@@ -9,11 +9,12 @@ $Data::Dumper::Sortkeys = 1;
 
 use GOBO::Graph;
 use GOBO::Parsers::OBOParserDispatchHash;
+use GOBO::InferenceEngine::CustomEngine;
 use GOBO::InferenceEngine;
 use GOBO::Writers::OBOWriter;
 use GOBO::Writers::TreeWriter;
-
 use GOBO::Util::GraphFunctions;
+use Storable qw(dclone);
 
 my $options = parse_options(\@ARGV);
 my $subset_min = $options->{minimum_subset_terms} || 5;
@@ -29,52 +30,58 @@ die "Error: parser could not find a graph in " . $options->{input} . "!\n" unles
 
 	print STDERR "Finished parsing file " . $options->{input} . "\n" if $options->{verbose};
 
-my $graph = $parser->graph;
-
 # get the nodes matching our subset criteria
 # will die if no subset terms found
-my $data = GOBO::Util::GraphFunctions::get_subset_nodes({ graph => $graph, options => $options });
+my $data = GOBO::Util::GraphFunctions::get_subset_nodes( graph => $parser->graph, options => $options );
 	print STDERR "Done GOBO::Util::GraphFunctions::get_subset_nodes!\n" if $options->{verbose};
-
-# get the relations from the graph
-$data->{relations} = GOBO::Util::GraphFunctions::get_graph_relations({ graph => $graph, options => $options });
-	print STDERR "Done GOBO::Util::GraphFunctions::get_graph_relations!\n" if $options->{verbose};
-
-my $ie = new GOBO::InferenceEngine(graph=>$graph);
-
-## give the inference engine a subroutine to execute upon each wee little term
-## so it stops looking for parent terms when it reaches a subset node
-my $sub = sub {
-	my $x = shift;
-	return 1 if $subset->{$x->target->id};
-	return 0;
-};
-$ie->test_sub( $sub );
 
 $options->{return_as_graph} = 1;
 $options->{remove_unlinked_terms} = 1;
+$parser->graph->duplicate_statement_ix('ontology_links', 'asserted_links');
 
 my @errs;
 foreach my $s (keys %{$data->{subset}})
-{	# check there are sufficient terms in the subset
+{	my $g = $parser->graph;
+	print STDERR "subset $s: n graph terms: " . (scalar @{$g->terms}) . "\nn indices: " . (scalar $g->get_statement_ix_h_names ) . ": " . join(", ", sort $g->get_statement_ix_h_names ) . "\n" if $options->{verbose};
+	
+
+	# check there are sufficient terms in the subset
 	if (scalar keys %{$data->{subset}{$s}} < $subset_min && ! $options->{force_continue})
 	{
 		print STDERR "subset keys found:\n" . join("\n", keys %{$data->{subset}{$s}}) . "\n" if $options->{verbose};
 		push @errs, "Error: only " . (scalar keys %{$data->{subset}{$s}}) . " terms from the subset " . Dumper($s) . " could be found. To continue anyway, please run the script again with the extra command line parameter -f";
 		next;
 	}
+	my @subset_arr = values %{$data->{subset}{$s}};
+#	my $ie = new GOBO::InferenceEngine::CustomEngine(graph => $parser->graph);
+	my $ie = new GOBO::InferenceEngine::CustomEngine(graph => $g);
+#	my $ie = new GOBO::InferenceEngine(graph=>$graph);
 
 	# slim down the graph...
 	# in these slims, the input set is the same as the mapping set
-	my $new_graph = GOBO::Util::GraphFunctions::slim_graph({ graph => $graph, subset => $data->{subset}{$s}, input => [ keys %{$data->{subset}{$s}}], relations => $data->{relations}, options => $options, inf_eng => $ie });
+	$ie->slim_graph( subset_ids => [ keys %{$data->{subset}{$s}} ], input_ids => [ keys %{$data->{subset}{$s}} ], from_ix => 'asserted_links', save_ix => 'inferred_ontology_links', options => $options );
+
+	print STDERR "post slimming\nsubset: " . join(", ", sort keys %{$data->{subset}{$s}}) . "\nterms:  " . join(", ", sort { $a->id cmp $b->id } @{$ie->graph->terms}) . "\nn indices: " . (scalar $ie->graph->get_statement_ix_h_names ) . ": " . join(", ", sort $ie->graph->get_statement_ix_h_names ) . "\n\n\n" if $options->{verbose};
+
+
+#	print STDERR "n terms: " . (scalar @{$ie->graph->terms}) . "\nn relations: " . (scalar @{$ie->graph->relations} ) . "\n\n" if $ENV{VERBOSE};
+
+	print STDERR "new graph statements:\n" . join("\n", @{$ie->graph->statements}) . "\nontology_links: " . join("\n", @{$ie->graph->ontology_links}) . "\n" if $options->{verbose};
+
 
 	if ($options->{tree_format})
-	{	my $writer = new GOBO::Writers::TreeWriter( file => $options->{output}, graph => $new_graph, show_annotation_counts => 1 );
+	{	my $writer = new GOBO::Writers::TreeWriter( file => $options->{output}, graph => $ie->graph, edge_ix => 'inferred_ontology_links' );
 		$writer->write;
 	}
 	else
-	{	GOBO::Util::GraphFunctions::write_graph_to_file({ graph => $new_graph, subset => $s, options => $options });
-		print STDERR "Done GOBO::Util::GraphFunctions::write_graph_to_file!\n" if $options->{verbose};
+	{	if ($options->{basename})
+		{	# create the file name from the slim name
+			($options->{output} = $options->{basename}) =~ s/SLIM_NAME/$s/;
+		}
+		my $writer = GOBO::Writers::OBOWriter->create(file=>$options->{output}, format=>'obo', edge_ix => 'inferred_ontology_links');
+		$writer->graph($ie->graph);
+		$writer->write();
+		print STDERR "Done write_graph_to_file for " . $options->{output} . "!\n" if $options->{verbose};
 	}
 }
 
@@ -124,6 +131,7 @@ sub parse_options {
 			$opt->{subset_regexp} = shift @$args if @$args && $args->[0] !~ /^\-/;
 		}
 		elsif ($o eq '-t' || $o eq '--tree') {
+			# output can be formatted as a denormalised tree
 			$opt->{tree_format} = 1;
 		}
 		elsif ($o eq '-f' || $o eq '--force') {

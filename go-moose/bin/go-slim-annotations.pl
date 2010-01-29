@@ -61,6 +61,16 @@ association file
 Show term names (in addition to IDs) in the annotation counts file. Only
 works in conjunction with the B<--count> [above].
 
+=item --show_tree
+
+When in count mode, show the results as a denormalised tree
+
+=item -r || --report_orphans
+
+Orphans are terms in the graph that, after slimming, are no longer connected to
+graph root node. By default, these are removed from the graph. With this option
+on, 
+
 =item -v || --verbose
 
 prints various messages
@@ -102,10 +112,12 @@ $Data::Dumper::Indent = 1;
 use GOBO::Graph;
 use GOBO::Parsers::OBOParserDispatchHash;
 use GOBO::Parsers::QuickGAFParser;
-use GOBO::InferenceEngine;
+use GOBO::Writers::TreeWriter;
+use GOBO::InferenceEngine::CustomEngine;
 use GOBO::Util::GraphFunctions;
+use GOBO::Util::Misc;
 use GOBO::DataArray;
-#use GOBO::Writers::TreeWriter;
+use GOBO::Writers::GAFWriter;
 my $options = parse_options(\@ARGV);
 
 my $data;
@@ -114,12 +126,14 @@ my $graph;
 
 # parse the input file and check we get a graph
 
+$options->{closest_nodes_only} = 1;
+
 if ($options->{mapping_file})
 {
 	die "Sorry, this option is not yet implemented";
 
 =cut
-	$data = GOBO::Util::GraphFunctions::load_mapping({ mapping_file => $options->{mapping_file} });
+	$data = GOBO::Util::GraphFunctions::load_mapping( mapping_file => $options->{mapping_file} );
 	# check we have enough subset terms
 	test_subset( $data->{subset_term}, $options );
 	map { $subset->{$_} = 1 } keys %{$data->{subset_term}};
@@ -143,10 +157,10 @@ if ($options->{mapping_file})
 	$parser->parse;
 
 	## create a graph from the data we have
-	my $new_graph = GOBO::Util::GraphFunctions::add_nodes_and_links_to_graph({ old_g => $parser->graph, new_g => new GOBO::Graph, graph_data => $data->{graph}, options => $options });
+	my $new_graph = GOBO::Util::GraphFunctions::add_nodes_and_links_to_graph( old_g => $parser->graph, new_g => new GOBO::Graph, graph_data => $data->{graph}, options => $options );
 	print STDERR "Done GOBO::Util::GraphFunctions::add_nodes_and_links_to_graph!\n" if $options->{verbose};
 
-	$graph = GOBO::Util::GraphFunctions::add_extra_stuff_to_graph({ old_g => $parser->graph, new_g => $new_graph, options => $options });
+	$graph = GOBO::Util::GraphFunctions::add_extra_stuff_to_graph( old_g => $parser->graph, new_g => $new_graph, options => $options );
 	print STDERR "Done GOBO::Util::GraphFunctions::add_extra_stuff_to_graph!\n" if $options->{verbose};
 =cut
 
@@ -154,8 +168,8 @@ if ($options->{mapping_file})
 else
 {	# before we check out the graph, let's see if the file actually contains any terms...
 	if ($options->{termlist})
-	{	$data->{to_find} = read_term_file($options);
-		test_subset( $data->{to_find}, $options );
+	{	$data->{to_find} = GOBO::Util::Misc::read_term_file($options);
+		test_subset( [keys %{$data->{to_find}}], $options );
 	}
 
 	my $p_options = {
@@ -171,14 +185,14 @@ else
 	$graph = $parser->graph;
 	# get the nodes matching our subset criteria
 	if ($options->{subset})
-	{	$data = GOBO::Util::GraphFunctions::get_subset_nodes({ graph => $graph, options => $options });
+	{	$data = GOBO::Util::GraphFunctions::get_subset_nodes( graph => $graph, options => $options );
 		print STDERR "Done GOBO::Util::GraphFunctions::get_subset_nodes!\n" if $options->{verbose};
 
 		# move the subset to $subset
 		foreach my $s (keys %{$data->{subset}})
 		{	map { $subset->{$_} = 1 } keys %{$data->{subset}{$s}};
 		}
-		test_subset( $subset, $options );
+		test_subset( [keys %$subset], $options );
 	}
 	else
 	{	my @fail;
@@ -201,180 +215,47 @@ else
 			}
 		}
 
-		test_subset( $subset, $options );
+		test_subset( [keys %$subset], $options );
 
 		## make sure that we have the root nodes
 		map { $subset->{ $_->id }++ } @{$graph->get_roots};
 	}
 }
 
-## buckets: look at all GS terms and get their parent terms;
-## we're looking for terms which slim to the parent terms but NOT the child
+my $results = GOBO::Util::GraphFunctions::go_slim_annotations(options => $options, subset => $subset, graph => $graph );
 
-## foreach GO slim term
-## get the parent term
-##
-
-
-
-
-## get the GA data
-my $gaf_parser = GOBO::Parsers::QuickGAFParser->new(fh=>$options->{ga_input});
-
-my $assoc_data = $gaf_parser->parse;
-#print STDERR "assoc data: " . Dumper($assoc_data) . "\n\n";
-
-if (! $assoc_data )
-{	die "No annotations were found! Dying";
-}
-
-# we're going to do a slight hack here as the reasoner doesn't reason over term-
-# annotation relations, so we'll add the annotation data as link objects and
-# save the annotations elsewhere
-my $annot = new GOBO::RelationNode( id => 'annotated_to', label => 'annotated to' );
-my $not_annot = new GOBO::RelationNode( id => 'annotated_to_NOT', label => 'annotated to NOT' );
-$graph->add_relation($annot);
-$graph->add_relation($not_annot);
-## should there be any other relationships for annotated_to?
-$annot->transitive_over( $graph->relation_noderef('part_of') );
-
-my @errs;
-my $a_ids;
-foreach my $a (keys %{$assoc_data->{by_a}})
-{	foreach my $t (@{$assoc_data->{by_a}{$a}{terms}})
-	{	## check the term exists in the graph
-		if (! $graph->get_term($t))
-		{	push @errs, $t;
-			next;
-		}
-		$a_ids->{$a}++;
-		my $link;
-		# check for a NOT annotation
-		if ($assoc_data->{by_a}{$a}{arr}[4] && $assoc_data->{by_a}{$a}{arr}[4] =~ /NOT/)
-		{	$link = new GOBO::LinkStatement(node=>$graph->noderef($a), relation=>$not_annot, target=>$graph->get_term($t));
-		}
-		else
-		{	$link = new GOBO::LinkStatement(node=>$graph->noderef($a), relation=>$annot, target=>$graph->get_term($t));
-		}
-		$graph->add_link($link);
-	}
-}
-
-$graph->update_graph;
-
-if (@errs)
-{	if (scalar @errs == scalar keys %{$assoc_data->{by_t}})
-	{	die "None of the terms in the annotation file matched those in the ontology file. Dying";
-	}
-	else
-	{	warn "The following terms were not found in the ontology file: " . join(", ", @errs);
-	}
-}
-
-## OK, we have our graph with the annotations attached. Let's get slimming!
-# the input set is any terms with an annotation connected to them
-my $input = [ keys %$subset, keys %$a_ids ];
-
-# get the links between the nodes
-my $node_data = GOBO::Util::GraphFunctions::get_graph_links({ subset => $subset, graph => $graph, options => $options, input => $input });
-print STDERR "Done GOBO::Util::GraphFunctions::get_graph_links!\n" if $options->{verbose};
-
-# slim down the graph...
-# in these slims, the input set is all terms in the graph
-my $graph_data = GOBO::Util::GraphFunctions::slim_graph({ graph => $graph, subset => $subset, options => $options, node_data => $node_data });
-
-undef @errs;
-my $n_annots = scalar keys %$a_ids;
-## look for missing annotations
-foreach my $a (keys %$a_ids)
-{	# this annotation has been lost from the graph!
-	if (! $graph_data->{graph}{$a})
-	{	push @errs, $a;
-		delete $a_ids->{$a};
-		next;
-	}
-	## transfer this info into the a_ids hash
-	$a_ids->{$a} = $graph_data->{graph}{$a};
-## remove the link data that's supposed to represent annotations (we will replace
-## it with annotation objects later on)
-	delete $graph_data->{graph}{$a};
-}
-
-if (@errs)
-{	if (scalar @errs == $n_annots)
-	{	die "All annotations were lost during slimming! Dying";
-	}
-	else
-	{	warn "The following annotations were lost during slimming: " . join(", ", @errs);
-	}
-}
-
-## convert this into a graph object
-my $new_graph = GOBO::Util::GraphFunctions::add_referenced_nodes_to_graph({ old_g => $graph, graph_data => $graph_data, options => $options });
-
-# add the links
-$new_graph = GOBO::Util::GraphFunctions::add_nodes_and_links_to_graph({ old_g => $graph, graph_data => $graph_data, options => $options });
-
-$new_graph = GOBO::Util::GraphFunctions::add_extra_stuff_to_graph({ old_g => $graph, new_g => $new_graph, options => $options });
+$graph = $results->{graph};
 
 ## add the annotations, and check for any missing assocs
-## if we are rewriting the file, we don't need to add all assocs,
-## only the closest ones
+## if we are rewriting the file, we can get the annotations from the graph
+## and then print them out
+## we only need the closest assocs, not the whole lot
 
-if ($options->{rewrite})
-{	foreach my $a (keys %$a_ids)
-	{	foreach my $r (keys %{$a_ids->{$a}})
-		{	foreach my $t (keys %{$a_ids->{$a}{$r}})
-			{	my $a_node = new GOBO::DataArray( id => $a, data => $assoc_data->{by_a}{$a}{arr} );
-				my $annot = new GOBO::Annotation(
-					node => $a_node,
-					relation => $new_graph->get_node($r),
-					target => $new_graph->get_node($t) );
-				$new_graph->add_annotation($annot);
-			}
-		}
-	}
-
-	## and now we can rewrite the file!
-	print_gaf_file({ graph => $new_graph, assoc_data => $assoc_data, options => $options });
-
+if ($options->{mode} eq 'rewrite')
+{	print_gaf_file( options => $options, assoc_array => $graph->get_all_statements_in_ix('transitive_reduction') );
 	exit(0);
 }
 
-## otherwise, we'll build the graph with additional links
-foreach my $a (keys %$a_ids)
-{	## add the full data
-	if ($node_data->{graph}{$a})
-	{	foreach my $r (keys %{$node_data->{graph}{$a}})
-		{	foreach my $t (keys %{$node_data->{graph}{$a}{$r}})
-			{	my $a_node = new GOBO::DataArray( id => $a, data => $assoc_data->{by_a}{$a}{arr} );
-				my $annot = new GOBO::Annotation(
-					node => $a_node,
-					relation => $new_graph->get_node($r),
-					target => $new_graph->get_node($t),
-				);
-				## see if this combo exists in the a_ids hash, which contains
-				## only the closest links
-				if ($a_ids->{$a} && $a_ids->{$a}{$r} && $a_ids->{$a}{$r}{$t})
-				{	## ok, this is a direct annotation
-				}
-				else
-				{	$annot->inferred(1);
-				}
-				$new_graph->add_annotation($annot);
-			}
-		}
-	}
+# count or tree mode: print out the results
+if ($options->{mode} eq 'count')
+{	#print STDERR "statements:\n" . join("\n", @{$graph->statements}) . "\n";
+	print_counts( graph => $graph, options => $options );
 }
+else
+{	my $writer = new GOBO::Writers::TreeWriter( file => $options->{output}, graph => $graph, show_annotation_counts => 1, ontology_link_ix => 'direct_ontology_links', annotation_ix => 'all_annotations' );
+	$writer->write;
+}
+
+print STDERR "Job complete!\n" if $options->{verbose};
 
 ## a few little statistical bits...
 if ($options->{verbose})
-{	my @roots = @{$new_graph->get_roots};
+{	my @roots = @{$graph->get_roots};
 	print STDERR "roots: " . join("\n", @roots) . "\n\n";
 
 	print STDERR "Annotations to root nodes:\n";
 	foreach (@roots)
-	{	my $a = $new_graph->get_annotations_by_target($_) || [];
+	{	my $a = $graph->get_annotations_by_target($_) || [];
 		my @all = grep { $_->inferred } @$a;
 		print STDERR "$_: direct: " . ( scalar @$a - scalar @all )
 		. "\t"
@@ -382,16 +263,6 @@ if ($options->{verbose})
 	}
 	print STDERR "\n\n";
 }
-
-# now print out the results
-if ($options->{print_tree})
-{	my $writer = new GOBO::Writers::TreeWriter( graph => $new_graph, show_annotation_counts => 1 );
-	$writer->write_tree;
-}
-else
-{	print_counts( $new_graph, $options );
-}
-print STDERR "Job complete!\n" if $options->{verbose};
 
 exit(0);
 
@@ -424,10 +295,10 @@ sub parse_options {
 			## a regular expression for isolating terms from a text file
 			$opt->{term_regexp} = shift @$args if @$args && $args->[0] !~ /^\-/;
 		}
-		### load the slim data from a mapping file
-		elsif ($o eq '-m' || $o eq '--mapping_file') {
-			$opt->{mapping_file} = shift @$args if @$args && $args->[0] !~ /^\-/;
-		}
+#		### load the slim data from a mapping file
+#		elsif ($o eq '-m' || $o eq '--mapping_file') {
+#			$opt->{mapping_file} = shift @$args if @$args && $args->[0] !~ /^\-/;
+#		}
 		### annotation input options
 		elsif ($o eq '-g' || $o eq '--gene_association') {
 			$opt->{ga_input} = shift @$args if @$args && $args->[0] !~ /^\-/;
@@ -438,17 +309,29 @@ sub parse_options {
 		}
 		### action options
 		elsif ($o eq '-c' || $o eq '--count') {
-			$opt->{count} = 1;
+			if ($opt->{mode} && $opt->{mode} eq 'tree')
+			{	## ignore this
+			}
+			else
+			{	$opt->{mode} = 'count';
+			}
 		}
 		elsif ($o eq '--show_tree') {
-			$opt->{print_tree} = 1;
+			## override any existing mode
+			$opt->{mode} = 'tree';
 		}
-		elsif ($o eq '-b' || $o eq '--buckets') {
-			$opt->{buckets} = 1;
+		elsif ($o eq '-r' || $o eq '--report_orphans') {
+			$opt->{report_orphans} = 1;
 		}
-		elsif ($o eq '-n' || $o eq '--show_names') {
-			$opt->{show_names} = 1;
-		}
+#		elsif ($o eq '-b' || $o eq '--buckets') {
+#			$opt->{buckets} = 1;
+#		}
+#		elsif ($o eq '-n' || $o eq '--show_names') {
+#			$opt->{show_names} = 1;
+#		}
+#		elsif ($o eq '--show_gp_names') {
+#			$opt->{show_gp_names} = 1;
+#		}
 		elsif ($o eq '-f' || $o eq '--force_continue') {
 			$opt->{force_continue} = 1;
 		}
@@ -546,15 +429,15 @@ sub check_options {
 		}
 	}
 
-	if (! $opt->{count})
-	{	$opt->{rewrite} = 1;
+	if (! $opt->{mode})
+	{	$opt->{mode} = 'rewrite';
 	}
 
 	### output - if we're in rewrite mode, we MUST have an output file
 	if (! $opt->{output} && $opt->{rewrite})
 	{	push @$errs, "specify an output gene association file using -o /path/to/<file_name>";
 	}
-	elsif (! $opt->{output} && $opt->{count})
+	elsif (! $opt->{output} && $opt->{mode} eq 'count')
 	{	warn "No output file specified; results will be printed in the terminal window";
 	}
 
@@ -567,7 +450,7 @@ sub check_options {
 	return $opt;
 }
 
-
+=cut
 sub read_term_file {
 	my $sub_h;  # we'll store the data in here
 	my $opt = shift;
@@ -616,11 +499,12 @@ sub read_term_file {
 	return $sub_h;
 
 }
-
+=cut
 
 sub print_counts {
-	my $graph = shift;
-	my $options = shift;
+	my %args = (@_);
+	my $g = $args{graph};
+	my $options = $args{options};
 
 	if ($options->{output})
 	{	open (STDOUT, ">" . $options->{output}) or confess "Could not create file " . $options->{output} . ": $! ";
@@ -628,38 +512,33 @@ sub print_counts {
 
 	print STDOUT "! Gene Association file created by go-slim-annotations.pl from source file " . $options->{ga_input} . "\n!\n";
 
-#	my $print_term = sub {
-#		return shift;
-#	};
+#	print STDERR "annotated terms: " . join(", ", @{$g->get_annotated_terms('all_annotations')} ) ."\n\n";
 
-#	if ($options->{show_names})
-#	{	$print_term = sub {
-#			my ($id, $g) = @_;
-#			my $t = $g->get_term($id);
-#			return $t->id . ", " . $t->label;
-#		};
-#	}
+#	sort { $a->id cmp $b->id } @{$g2->get_annotated_terms('annotations')}
 
-	foreach my $t (sort { $a->id cmp $b->id } @{$graph->get_annotated_terms})
-	{	my $annots = [ sort { $a->node->id cmp $b->node->id } @{$graph->get_annotations_by_target($t)} ];
-		my @inf = grep { $_->inferred } @$annots;
+	foreach my $t (sort { $a->id cmp $b->id } @{$g->get_annotated_terms('all_annotations')})
+	{	my $all = $g->statements_in_ix_by_target_id('all_annotations', $t);
+		my $direct = 0;
+		map { $direct++ if ! $_->inferred } @$all;
+
 		print STDOUT
-		"$t: direct: " . ( scalar @$annots - scalar @inf )
-		. "\t"
-		. "inferred: " . ( scalar @inf ) . "total: " . ( scalar @$annots ) . "\n";
+		"$t: direct: " . $direct
+		. "\tinferred: " . ( scalar(@$all) - $direct )
+		. "\ttotal: " . (scalar @$all) . "\n";
+
+#		print STDERR
+#		"$t: direct: " . $direct
+#		. "\tinferred: " . ( scalar(@$all) - $direct )
+#		. "\ttotal: " . (scalar @$all) . "\n";
+
 
 	}
-
-#	foreach my $assoc (sort { $a->node->id cmp $b->node->id || $a->target->id cmp $b->target->id } @{$graph->annotations})
-#	{	## retrieve the array data...
-
-#	}
 }
 
 
 sub print_gaf_file {
-	my $args = shift;
-	my ($graph, $options) = ($args->{graph}, $args->{options});
+	my %args = (@_);
+	my ($assoc_array, $options) = ($args{assoc_array}, $args{options});
 
 	if ($options->{output})
 	{	open (STDOUT, ">" . $options->{output}) or confess "Could not create file " . $options->{output} . ": $! ";
@@ -667,13 +546,16 @@ sub print_gaf_file {
 
 	print STDOUT "! Gene Association file created by go-slim-annotations.pl from source file " . $options->{ga_input} . "\n!\n";
 
-	foreach my $assoc (sort { $a->node->id cmp $b->node->id || $a->target->id cmp $b->target->id } @{$graph->annotations})
-	{	## retrieve the array data...
+	foreach my $assoc (sort { $a->node->id cmp $b->node->id || $a->target->id cmp $b->target->id } @$assoc_array)
+	{	next unless $assoc->isa('GOBO::Annotation');
+		## retrieve the array data...
 		my $arr = $assoc->node->data;
 		print STDOUT
 			join("\t", @$arr[1..4])
 			. "\t" . $assoc->target->id . "\t"
-			. join("\t", @$arr[6..$#$arr])
+			. join("\t", @$arr[6..8])
+			. "\t" . GOBO::Writers::GAFWriter::_aspect($assoc->target) ."\t"
+			. join("\t", @$arr[10..$#$arr]) ## assuming the ontology hasn't changed!
 			. "\n";
 	}
 }
@@ -681,9 +563,9 @@ sub print_gaf_file {
 
 sub test_subset {
 	my ($ss, $opt) = (@_);
-	if (scalar keys %$ss < 5 && ! $opt->{force_continue})
-	{	print STDERR "subset keys found:\n" . join("\n", keys %$ss) . "\n" if $opt->{verbose};
-		die "Only " . (scalar keys %$ss) . " terms from the subset specified could be found. To continue anyway, please run the script again with the extra command line parameter -f\nDying";
+	if (scalar @$ss < 5 && ! $opt->{force_continue})
+	{	print STDERR "subset keys found:\n" . join("\n", @$ss) . "\n" if $opt->{verbose};
+		die "Only " . (scalar @$ss) . " terms from the subset specified could be found. To continue anyway, please run the script again with the extra command line parameter -f\nDying";
 	}
 }
 
