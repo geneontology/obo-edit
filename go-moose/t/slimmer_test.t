@@ -12,9 +12,13 @@ use GOBO::Util::GraphFunctions;
 use Test::More;
 plan tests => 46;
 
-my $verbose = $ENV{GO_VERBOSE} || 0;
-
+my $verbose = $ENV{GO_VERBOSE} || 1;
+$ENV{EXPERIMENTAL} = 1;
 my $status;
+my $parser;
+
+# =cut
+
 # 1
 $status = `perl bin/go-slimdown.pl -i t/data/obofile.obo -s test_goslim -o t/data/slimmer_test_results.obo 2>&1 1>/dev/null`;
 like( $status, qr/Error: /, "Checking go-slimdown.pl with invalid input");
@@ -44,12 +48,12 @@ die "go-slimdown.pl exited funny: $?" unless $status == 0;
 # ok($status == 0, "Checking go-slimdown.pl with valid args");
 
 ## read in the graph, check it is ok
-my $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>"t/data/slimmer_test_results.obo");
+$parser = new GOBO::Parsers::OBOParserDispatchHash(file=>"t/data/slimmer_test_results.obo");
 $parser->parse;
 
 cmp_ok(testme($parser->graph, 1), "==", 1, "Checking slimmer_test_results.obo");
+#die if testme($parser->graph) == 2;
 system("rm", "t/data/slimmer_test_results.obo");
-
 die ("Did not remove t/data/slimmer_test_results.obo properly!") if -e "t/data/slimmer_test_results.obo";
 
 # 7
@@ -105,24 +109,32 @@ foreach my $a (reverse sort values %$args)
 	$cmd = 'perl bin/go-slimdown.pl -i t/data/obo_file.obo ' . join(" ", @$a) . " --combined -b t/data/SLIMMER_TEST_SLIM_NAME.obo 2>&1 1>/dev/null";
 	$status = `$cmd`;
 
+	## 10
 	like( $status, qr/Error: /, "Checking go-slimdown.pl with invalid params");
 
 	# xxx, not combined, no basefile
 	$cmd = 'perl bin/go-slimdown.pl -i t/data/obo_file.obo ' . join(" ", @$a) . " -o t/data/SLIMMER_TEST_results.obo 2>&1 1>/dev/null";
 	$status = `$cmd`;
 
+	## 11
 	like( $status, qr/Error: /, "Checking go-slimdown.pl with invalid params");
+
+	$ENV{GO_VERBOSE} = 1;
 
 	# valid inputs
 	$status = system("perl", qw( bin/go-slimdown.pl -i t/data/obo_file.obo -b t/data/SLIMMER_TEST_SLIM_NAME.obo), @$a );
 
+	## 12
 	ok($status == 0, "Running go-slimdown.pl with args -i t/data/obo_file.obo -b t/data/SLIMMER_TEST_SLIM_NAME.obo " . join(" ", @$a) );
+
+undef $ENV{GO_VERBOSE};
 
 	die "go-slimdown.pl exited funny: $?" unless $status == 0;
 
 	# now test a combination of slims
 	$status = system("perl", qw( bin/go-slimdown.pl -i t/data/obo_file.obo -o t/data/SLIMMER_TEST_results.obo --combined) , @$a );
 
+	## 13
 	ok($status == 0, "Running go-slimdown.pl with valid args -i t/data/obo_file.obo -o t/data/SLIMMER_TEST_results.obo --combined " . join(" ", @$a) );
 
 	die "go-slimdown.pl exited funny: $?" unless $status == 0;
@@ -132,33 +144,51 @@ foreach my $a (reverse sort values %$args)
 	$parser = new GOBO::Parsers::OBOParserDispatchHash(file=>"t/data/SLIMMER_TEST_test_goslim.obo");
 	$parser->parse;
 
+	## 14
 	cmp_ok(testme($parser->graph, 1), "==", 1, "Checking SLIMMER_TEST_test_goslim.obo");
+
+	if (testme($parser->graph, 1) != 1)
+	{	die "Inference failed! Please check t/data/SLIMMER_TEST_test_goslim.obo";
+	}
 
 	## read in the graph, check it is ok
 	undef $parser;
 	$parser = new GOBO::Parsers::OBOParserDispatchHash(file=>"t/data/SLIMMER_TEST_test_next_goslim.obo");
 	$parser->parse;
 
+	## 15
 	cmp_ok(testme($parser->graph, 2), "==", 1, "Checking SLIMMER_TEST_test_next_goslim.obo");
+
+	if (testme($parser->graph, 1) != 1)
+	{	die "Inference failed! Please check t/data/SLIMMER_TEST_test_next_goslim.obo";
+	}
 
 	## read in the graph, check it is ok
 	undef $parser;
 	$parser = new GOBO::Parsers::OBOParserDispatchHash(file=>"t/data/SLIMMER_TEST_results.obo");
 	$parser->parse;
 
-	cmp_ok(testme($parser->graph, 3), "==", 1, "Checking SLIMMER_TEST_results.obo");
+	## 16
+	cmp_ok(testme($parser->graph, 3), "==", 1, "Checking SLIMMER_TEST_results.obo [combined]");
+
+	if (testme($parser->graph, 1) != 1)
+	{	die "Inference failed! Please check t/data/SLIMMER_TEST_results.obo";
+	}
+
+#	if (testme($parser->graph, 3) != 1)
+#	{	system( "cp", "t/data/SLIMMER_TEST_results.obo", "t/data/wrong_SLIMMER_TEST_results.obo" );
+#	}
 
 	system("rm", "t/data/SLIMMER_TEST_results.obo");
 	system("rm", "t/data/SLIMMER_TEST_test_goslim.obo");
 	system("rm", "t/data/SLIMMER_TEST_test_next_goslim.obo");
 	die ("Did not remove t/data/SLIMMER_TEST_*.obo properly!") if
 		(-e "t/data/SLIMMER_TEST_results.obo" || -e "t/data/SLIMMER_TEST_test_goslim.obo" || -e "t/data/SLIMMER_TEST_test_next_goslim.obo");
-
 }
-
-
 ## OK, let's do a slimming, create a mapping file, and then check
 ## load_mapping is ok
+
+# =cut
 
 # make sure that there isn't already a mapping file in place...
 if (-e "t/data/mapping_file.txt")
@@ -166,12 +196,13 @@ if (-e "t/data/mapping_file.txt")
 	die "Mapping file still exists at t/data/mapping_file.txt" if -e "t/data/mapping_file.txt";
 }
 
+## test 45
 undef $status;
-$status = system("perl", qw( bin/mapmaker.pl -i t/data/slimmer_test_3.obo -s goslim_test -o t/data/mapping_file.txt) );
+$status = system("perl", qw( bin/mapmaker.pl -i t/data/slimmer_test_3.obo -s test_goslim -o t/data/mapping_file.txt) );
 ok($status == 0, "Checking mapmaker.pl with valid args");
 
 ## read in the mapping file
-my $data = GOBO::Util::GraphFunctions::load_mapping({ mapping_file => 't/data/mapping_file.txt' });
+my $data = GOBO::Util::GraphFunctions::load_mapping( mapping_file => 't/data/mapping_file.txt' );
 
 ## the slim terms are in $data->{subset_term}
 ## closest terms are in data->{graph}
@@ -182,15 +213,15 @@ my $combos = {
 	"1" => [ "is_a", ],
 	"2" => [ "part_of", ],
 	"3" => [ "regulates", ],
-	"4" => [ "negatively_regulates", ],# "regulates", ],
-	"5" => [ "positively_regulates", ],# "regulates", ],
+	"4" => [ "negatively_regulates", "regulates", ],
+	"5" => [ "positively_regulates", "regulates", ],
 	"6" => [ "has_part", ],
 
 	"11" => [ "is_a", ],
 	"12" => [ "part_of", ],
 	"13" => [ "regulates", ],
-	"14" => [ "negatively_regulates", ],# "regulates", ],
-	"15" => [ "positively_regulates", ],# "regulates", ],
+	"14" => [ "negatively_regulates", "regulates", ],
+	"15" => [ "positively_regulates", "regulates", ],
 	"16" => [ "has_part", ],
 
 	"21" => [ "part_of", ],
@@ -199,10 +230,10 @@ my $combos = {
 	"31" => [ "regulates", ],
 	"32" => [ "regulates", ],
 
-	"41" => [ "negatively_regulates", ],# "regulates", ],
+	"41" => [ "negatively_regulates", "regulates", ],
 	"42" => [ "regulates", ],
 
-	"51" => [ "positively_regulates", ],# "regulates", ],
+	"51" => [ "positively_regulates", "regulates", ],
 	"52" => [ "regulates", ],
 
 	"61" => [ "has_part", ],
@@ -223,14 +254,14 @@ foreach my $t (sort keys %{$data->{termlist}})
 	{	map { $got->{$r . " " . $_} = 1 } keys %{$data->{graph}{$t}{$r}};
 	}
 	foreach my $r (keys %{$data->{all}{$t}})
-	{	map { $got->{$r . " " . $_} = 2 } keys %{$data->{all}{$t}{$r}};
+	{	map { $got->{$r . " " . $_} += 10 } keys %{$data->{all}{$t}{$r}};
 	}
 	if ($data->{subset_term}{$t})
 	{	$got->{is_subset_term}++;
 	}
 
 	if ($t =~ /PAD/)
-	{	$expected->{"is_a" . " " . 'GO:00000' . $first . $last }++;
+	{	$expected->{"is_a" . " " . 'GO:00000' . $first . $last } = 11;
 	}
 	else
 	{	$expected->{is_subset_term}++;
@@ -250,10 +281,14 @@ foreach my $t (sort keys %{$data->{termlist}})
 		}
 	}
 	else
-	{	foreach (@{$combos->{$last}})
-		{	$expected->{$_ . " GO:00000" . '00'}++;
+	{	## IDs are xxxxx0n
+		foreach (@{$combos->{$last}})
+		{	$expected->{$_ . " GO:00000" . '00'} = 11 if $t =~ /PAD/;
+			$expected->{$_ . " GO:00000" . '00'}++;
 		}
 	}
+
+#	print STDERR "$t expected: " . Dumper($expected) . "got: " . Dumper($got) . "\n\n";
 
 	# now compare the keys...
 	foreach (keys %$expected)
@@ -281,46 +316,69 @@ if (@errs)
 {	print STDERR "Found the following errors!\n" . join("\n", @errs) . "\n";
 }
 
-
-
-
 exit(0);
 
 
 
 =cut
-GO:0000001 is_a GO:0000008
-GO:0000001 part_of GO:0000008
-GO:0000001 regulates GO:0000008
-GO:0000002 is_a GO:0000006
-GO:0000002 is_a GO:0000007
-GO:0000003 part_of GO:0000007
-GO:0000004 is_a GO:0000012
-GO:0000004 positively_regulates GO:0000015
-GO:0000004 negatively_regulates GO:0000016
-GO:0000005 regulates GO:0000008
-GO:0000006 is_a GO:0000009
-GO:0000007 part_of GO:0000011
-GO:0000008 negatively_regulates GO:0000010
-GO:0000009 is_a GO:0000010
-GO:0000010 is_a GO:0000018
-GO:0000011 is_a GO:0000010
-GO:0000012 is_a GO:0000013
-GO:0000013 is_a GO:0000014
-GO:0000014 is_a GO:0000018
-GO:0000015 part_of GO:0000014
-GO:0000016 is_a GO:0000014
-GO:0000017 is_a GO:0000019
-GO:0000018 is_a GO:0000019
-GO:0000021 is_a GO:0000019
-GO:0000022 is_a GO:0000021
-GO:0000023 is_a GO:0000022
-GO:0000024 is_a GO:0000023
-GO:0000024 part_of GO:0000025
-GO:0000025 part_of GO:0000019
 
-negatively_regulates is_a regulates
-positively_regulates is_a regulates
+GO:0000001 --[is_a]-->GO:0000008
+GO:0000001 --[part_of]-->GO:0000008
+GO:0000001 --[regulates]-->GO:0000008
+
+GO:0000002 --[is_a]-->GO:0000006
+GO:0000002 --[is_a]-->GO:0000007
+GO:0000002 --[part_of]-->GO:0000011
+
+
+GO:0000003 --[part_of]-->GO:0000007
+GO:0000003 --[part_of]-->GO:0000011
+
+GO:0000004 --[is_a]-->GO:0000012
+GO:0000004 --[negatively_regulates]-->GO:0000016
+GO:0000004 --[positively_regulates]-->GO:0000015
+
+GO:0000005 --[regulates]-->GO:0000008
+
+GO:0000006 --[is_a]-->GO:0000009
+
+GO:0000007 --[part_of]-->GO:0000011
+
+GO:0000008 --[negatively_regulates]-->GO:0000010
+
+GO:0000009 --[is_a]-->GO:0000010
+
+GO:0000010 --[is_a]-->GO:0000018
+
+GO:0000011 --[is_a]-->GO:0000010
+
+GO:0000012 --[is_a]-->GO:0000013
+
+GO:0000013 --[is_a]-->GO:0000014
+
+GO:0000014 --[is_a]-->GO:0000018
+
+GO:0000015 --[part_of]-->GO:0000014
+
+GO:0000016 --[is_a]-->GO:0000014
+
+GO:0000017 --[is_a]-->GO:0000019
+
+GO:0000018 --[is_a]-->GO:0000019
+
+GO:0000021 --[is_a]-->GO:0000019
+
+GO:0000022 --[is_a]-->GO:0000021
+
+GO:0000023 --[is_a]-->GO:0000022
+
+GO:0000024 --[is_a]-->GO:0000023
+GO:0000024 --[part_of]-->GO:0000025
+
+GO:0000025 --[part_of]-->GO:0000019
+
+negatively_regulates --[is_a]-->regulates
+positively_regulates --[is_a]-->regulates
 
 GS terms:
 
@@ -356,6 +414,7 @@ GO:0000004
 GO:0000019 is root
 
 rlns we should therefore have:
+
 GO:0000001 is_a GO:0000008 negatively_regulates GO:0000010       neg regs
 GO:0000001 part_of GO:0000008 negatively_regulates GO:0000010    regs
 GO:0000001 regulates GO:0000008 negatively_regulates GO:0000010  no rln
@@ -376,8 +435,6 @@ GO:0000024 is_a ... is_a GO:0000021 is_a GO:0000019              is a
 GO:0000024 part_of GO:0000025                                    part of
 GO:0000025 part_of GO:0000019                                    part of
 
-negatively_regulates is_a regulates
-positively_regulates is_a regulates
 
 GO:0000001 is_a GO:0000008
 GO:0000001 part_of GO:0000008
@@ -415,17 +472,15 @@ sub testme {
 
 my $answers;
 
-$answers->{1}{"GO:0000001"}{negatively_regulates}{"GO:0000010"} = 1,
-#$answers->{"GO:0000001"}{regulates}{"GO:0000010"} = 1,
+## test_goslim
+$answers->{1}{"GO:0000001"}{negatively_regulates}{"GO:0000010"} = 1;
 $answers->{1}{"GO:0000002"}{is_a}{"GO:0000006"} = 1;
 $answers->{1}{"GO:0000002"}{is_a}{"GO:0000007"} = 1;
 # $answers->{1}{"GO:0000002"}{part_of}{"GO:0000010"} = 1; REDUNDANT
 $answers->{1}{"GO:0000003"}{part_of}{"GO:0000007"} = 1;
 $answers->{1}{"GO:0000004"}{is_a}{"GO:0000014"} = 1;
-$answers->{1}{"GO:0000004"}{positively_regulates}{"GO:0000015"} = 1;
-# $answers->{"GO:0000004"}{regulates}{"GO:0000015"} = 1;
 $answers->{1}{"GO:0000004"}{negatively_regulates}{"GO:0000014"} = 1;
-# $answers->{"GO:0000004"}{regulates}{"GO:0000014"} = 1;
+$answers->{1}{"GO:0000004"}{positively_regulates}{"GO:0000015"} = 1;
 $answers->{1}{"GO:0000006"}{is_a}{"GO:0000010"} = 1;
 $answers->{1}{"GO:0000007"}{part_of}{"GO:0000010"} = 1;
 $answers->{1}{"GO:0000010"}{is_a}{"GO:0000019"} = 1;
@@ -434,54 +489,60 @@ $answers->{1}{"GO:0000015"}{part_of}{"GO:0000014"} = 1;
 $answers->{1}{"GO:0000024"}{is_a}{"GO:0000019"} = 1;
 $answers->{1}{"GO:0000024"}{part_of}{"GO:0000025"} = 1;
 $answers->{1}{"GO:0000025"}{part_of}{"GO:0000019"} = 1;
+# $answers->{"GO:0000001"}{regulates}{"GO:0000010"} = 1;
+# $answers->{"GO:0000004"}{regulates}{"GO:0000015"} = 1;
+# $answers->{"GO:0000004"}{regulates}{"GO:0000014"} = 1;
 #$answers->{negatively_regulates}{is_a}{regulates} = 1;
 #$answers->{positively_regulates}{is_a}{regulates} = 1;
 
-$answers->{2}{"GO:0000001"}{regulates}{"GO:0000008"} = 1,
-$answers->{2}{"GO:0000001"}{is_a}{"GO:0000008"} = 1,
-$answers->{2}{"GO:0000001"}{part_of}{"GO:0000008"} = 1,
-# $answers->{2}{"GO:0000001"}{negatively_regulates}{"GO:0000019"} = 1, REDUNDANT
-$answers->{2}{"GO:0000002"}{is_a}{"GO:0000019"} = 1,
-$answers->{2}{"GO:0000002"}{part_of}{"GO:0000019"} = 1,
-$answers->{2}{"GO:0000003"}{part_of}{"GO:0000019"} = 1,
-$answers->{2}{"GO:0000005"}{regulates}{"GO:0000008"} = 1,
-$answers->{2}{"GO:0000008"}{negatively_regulates}{"GO:0000019"} = 1,
-$answers->{2}{"GO:0000013"}{is_a}{"GO:0000019"} = 1,
-$answers->{2}{"GO:0000021"}{is_a}{"GO:0000019"} = 1,
 
+## test_next_goslim
+$answers->{2}{"GO:0000001"}{regulates}{"GO:0000008"} = 1;
+$answers->{2}{"GO:0000001"}{is_a}{"GO:0000008"} = 1;
+$answers->{2}{"GO:0000001"}{part_of}{"GO:0000008"} = 1;
+# $answers->{2}{"GO:0000001"}{negatively_regulates}{"GO:0000019"} = 1; REDUNDANT
+$answers->{2}{"GO:0000002"}{is_a}{"GO:0000019"} = 1;
+$answers->{2}{"GO:0000002"}{part_of}{"GO:0000019"} = 1;
+$answers->{2}{"GO:0000003"}{part_of}{"GO:0000019"} = 1;
+$answers->{2}{"GO:0000005"}{regulates}{"GO:0000008"} = 1;
+$answers->{2}{"GO:0000008"}{negatively_regulates}{"GO:0000019"} = 1;
+$answers->{2}{"GO:0000013"}{is_a}{"GO:0000019"} = 1;
+$answers->{2}{"GO:0000021"}{is_a}{"GO:0000019"} = 1;
 
-$answers->{3}{"GO:0000001"}{regulates}{"GO:0000008"} = 1,
-$answers->{3}{"GO:0000001"}{is_a}{"GO:0000008"} = 1,
-$answers->{3}{"GO:0000001"}{part_of}{"GO:0000008"} = 1,
-# $answers->{3}{"GO:0000001"}{negatively_regulates}{"GO:0000010"} = 1, REDUNDANT
+## combined
+$answers->{3}{"GO:0000001"}{is_a}{"GO:0000008"} = 1;
+$answers->{3}{"GO:0000001"}{part_of}{"GO:0000008"} = 1;
+$answers->{3}{"GO:0000001"}{regulates}{"GO:0000008"} = 1;
+# $answers->{3}{"GO:0000001"}{negatively_regulates}{"GO:0000010"} = 1; REDUNDANT
 $answers->{3}{"GO:0000002"}{is_a}{"GO:0000006"} = 1;
 $answers->{3}{"GO:0000002"}{is_a}{"GO:0000007"} = 1;
-# $answers->{3}{"GO:0000002"}{part_of}{"GO:0000010"} = 1, REDUNDANT
+# $answers->{3}{"GO:0000002"}{part_of}{"GO:0000010"} = 1; REDUNDANT
 $answers->{3}{"GO:0000003"}{part_of}{"GO:0000007"} = 1;
 $answers->{3}{"GO:0000004"}{is_a}{"GO:0000013"} = 1;
-$answers->{3}{"GO:0000004"}{positively_regulates}{"GO:0000015"} = 1;
 $answers->{3}{"GO:0000004"}{negatively_regulates}{"GO:0000014"} = 1;
-$answers->{3}{"GO:0000005"}{regulates}{"GO:0000008"} = 1,
+$answers->{3}{"GO:0000004"}{positively_regulates}{"GO:0000015"} = 1;
+$answers->{3}{"GO:0000005"}{regulates}{"GO:0000008"} = 1;
 $answers->{3}{"GO:0000006"}{is_a}{"GO:0000010"} = 1;
 $answers->{3}{"GO:0000007"}{part_of}{"GO:0000010"} = 1;
-$answers->{3}{"GO:0000008"}{negatively_regulates}{"GO:0000010"} = 1,
+$answers->{3}{"GO:0000008"}{negatively_regulates}{"GO:0000010"} = 1;
 $answers->{3}{"GO:0000010"}{is_a}{"GO:0000019"} = 1;
-$answers->{3}{"GO:0000013"}{is_a}{"GO:0000014"} = 1,
+$answers->{3}{"GO:0000013"}{is_a}{"GO:0000014"} = 1;
 $answers->{3}{"GO:0000014"}{is_a}{"GO:0000019"} = 1;
 $answers->{3}{"GO:0000015"}{part_of}{"GO:0000014"} = 1;
-$answers->{3}{"GO:0000021"}{is_a}{"GO:0000019"} = 1,
+$answers->{3}{"GO:0000021"}{is_a}{"GO:0000019"} = 1;
 $answers->{3}{"GO:0000024"}{is_a}{"GO:0000021"} = 1;
 $answers->{3}{"GO:0000024"}{part_of}{"GO:0000025"} = 1;
 $answers->{3}{"GO:0000025"}{part_of}{"GO:0000019"} = 1;
 
-$answers->{4}{"GO:0000001"}{negatively_regulates}{"GO:0000019"} = 1,
-#$answers->{4}{"GO:0000001"}{regulates}{"GO:0000019"} = 1,
+
+## gosubset_prok
+$answers->{4}{"GO:0000001"}{negatively_regulates}{"GO:0000019"} = 1;
+#$answers->{4}{"GO:0000001"}{regulates}{"GO:0000019"} = 1;
 $answers->{4}{"GO:0000002"}{is_a}{"GO:0000019"} = 1;
 $answers->{4}{"GO:0000002"}{part_of}{"GO:0000019"} = 1;
-$answers->{4}{"GO:0000004"}{is_a}{"GO:0000019"} = 1,
+$answers->{4}{"GO:0000004"}{is_a}{"GO:0000019"} = 1;
 $answers->{4}{"GO:0000004"}{negatively_regulates}{"GO:0000019"} = 1;
-#$answers->{4}{"GO:0000004"}{regulates}{"GO:0000019"} = 1,
-
+#$answers->{4}{"GO:0000004"}{regulates}{"GO:0000019"} = 1;
 
 	my $summary;
 	my $ans;
@@ -496,22 +557,21 @@ $answers->{4}{"GO:0000004"}{negatively_regulates}{"GO:0000019"} = 1;
 		} keys %{$answers->{$n}};
 
 	foreach my $t (sort { $a->id cmp $b->id } @{$g->terms})
-	{	#my @links = @{ $infeng->get_inferred_target_links($t) };
-		my @links = @{ $g->get_outgoing_links($t) };
+	{	#my @links = @{ $infeng->get_inferred_outgoing_links($t) };
+		my @links = @{ $g->get_outgoing_ontology_links(node_id=>$t->id) };
 
 #		print STDERR "links for " . $t->id . ": " . Dumper( \@links );
 
 		foreach (sort { $a->target->id cmp $b->target->id } @links)
 		{
-			print STDERR "\nnode: " . $_->node->id . ", target: " . $_->target->id . "\n" if $verbose;
+#			print STDERR "\nnode: " . $_->node->id . ", target: " . $_->target->id . "\n" if $verbose;
 
 			if ($ans->{$_->node->id}
 				&& $ans->{$_->node->id}{$_->relation->id}
 				&& $ans->{$_->node->id}{$_->relation->id}{$_->target->id} )
 			{	# found the correct answer :D
-			#	ok(1, "Checking ". $_->node->id . " " . $_->relation->id . " " . $_->target->id);
 
-				print STDERR $_->node->id .": looking for ". join(" or ", keys %{$ans->{$_->node->id}} ) . ", found " . $_->relation->id . "\n" if $verbose;
+#				print STDERR $_->node->id .": looking for ". join(" or ", keys %{$ans->{$_->node->id}} ) . ", found " . $_->relation->id . "\n" if $verbose;
 
 				delete $ans->{$_->node->id}{$_->relation->id}{$_->target->id};
 
@@ -525,8 +585,7 @@ $answers->{4}{"GO:0000004"}{negatively_regulates}{"GO:0000019"} = 1;
 			}
 			else
 			{	# shouldn't have found a relation
-				print STDERR $_->node->id .": found " . $_->relation->id . " " . $_->target->id . ", incorrect!\n" if $verbose;
-			#	ok(0, $_->node->id .": incorrectly inferred relation " . $_->relation->id . " (none expected)");
+#				print STDERR $_->node->id .": found " . $_->relation->id . " " . $_->target->id . ", incorrect!\n" if $verbose;
 				$summary->{$_->node->id}{$_->relation->id}{$_->target->id}++;
 			}
 		}
@@ -537,10 +596,20 @@ $answers->{4}{"GO:0000004"}{negatively_regulates}{"GO:0000019"} = 1;
 #	if ($verbose)
 	if (keys %$ans || keys %$summary)
 	{	if (keys %$ans)
-		{	print STDERR "Missing the following inferences:\n" . Dumper($ans);
+		{	print STDERR "Missing the following inferences:\n";
+			foreach my $t1 (sort keys %$ans)
+			{	foreach my $r (sort keys %{$ans->{$t1}})
+				{	map { print STDERR "$t1 $r $_\n" } sort keys %{$ans->{$t1}{$r}};
+				}
+			}
 		}
 		if (keys %$summary)
-		{	print STDERR "Made the following incorrect inferences:\n" . Dumper($summary);
+		{	print STDERR "Made the following incorrect inferences:\n";
+			foreach my $t1 (sort keys %$summary)
+			{	foreach my $r (sort keys %{$summary->{$t1}})
+				{	map { print STDERR "$t1 $r $_\n" } sort keys %{$summary->{$t1}{$r}};
+				}
+			}
 		}
 		return 2;
 	}
