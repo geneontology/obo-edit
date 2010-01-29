@@ -30,12 +30,12 @@ ok($ie->subsumed_by($an,$u->union_definition));
 ok($ie->subsumed_by($n,$u->union_definition));
 ok($ie->subsumed_by($l,$u));
 
-foreach my $link (@{$ie->get_inferred_target_links('foo2')}) {
+foreach my $link (@{$ie->get_inferred_outgoing_edges(node=>$g->noderef('foo2'))}) {
     printf "link: $link\n";
 }
-foreach my $link (@{$ie->get_inferred_target_links('foo2','only_in')}) {
+foreach my $link (@{$ie->get_inferred_outgoing_edges(node=>$g->noderef('foo2'),relation=>$g->noderef('only_in'))}) {
     printf "link: $link\n";
 }
-foreach my $link (@{$ie->get_inferred_target_nodes('foo2', 'only_in')}) {
-    printf "link: $link\n";
+foreach my $node (@{$ie->get_inferred_outgoing_nodes(node=>$g->noderef('foo2'), relation=>$g->noderef('only_in'))}) {
+    printf "node: $node\n";
 }

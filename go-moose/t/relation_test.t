@@ -1,22 +1,17 @@
 use Test::More tests => 29;
 use strict;
-use GOBO::Graph;
-use GOBO::Statement;
-use GOBO::LinkStatement;
-use GOBO::NegatedStatement;
-use GOBO::Node;
-use GOBO::Parsers::OBOParser;
-use GOBO::Writers::OBOWriter;
+use GOBO::Parsers::OBOParserDispatchHash;
 use GOBO::InferenceEngine;
+#use GOBO::Util::GraphFunctions;
 use FileHandle;
 
 use Data::Dumper;
 
 my $fh = new FileHandle("t/data/relation_test.obo");
-my $parser = new GOBO::Parsers::OBOParser(fh=>$fh);
+my $parser = new GOBO::Parsers::OBOParserDispatchHash(fh=>$fh);
 $parser->parse;
-my $g = $parser->graph;
-my $ie = new GOBO::InferenceEngine(graph=>$g);
+my $graph = $parser->graph;
+my $ie = new GOBO::InferenceEngine(graph=>$graph);
 
 my $verbose = 1;
 
@@ -83,24 +78,24 @@ my $answers = {
 };
 
 # dump the relations
-if ($verbose)
-{	foreach my $r (@{$g->relations})
-	{	if ($r->id ne 'is_a')
-		{	print  $r->id . ": " . Dumper($r);
-		}
-	}
-}
+#if ($verbose)
+#{	foreach my $r (@{$g->relations})
+#	{	if ($r->id ne 'is_a')
+#		{	print  $r->id . ": " . Dumper($r);
+#		}
+#	}
+#}
 
 my $summary;
 
-foreach my $t (sort { $a->id cmp $b->id } @{$g->terms})
+foreach my $t (sort { $a->id cmp $b->id } @{$graph->terms})
 {	next if $t->id =~ /GO:PAD/;
-	my @links = @{ $ie->get_inferred_target_links($t) };
-	
+	my @links = @{ $ie->get_inferred_outgoing_edges(node_id => $t->id) };
+
 	foreach (sort { $a->target->id cmp $b->target->id } @links)
 	{	next unless $_->target->id eq 'GO:0000000';
 
-		print  "\nnode: " . $_->node->id . ", target: " . $_->target->id . "\n" if $verbose;
+		print  "\nnode: " . $_->node->id . ", target: " . $_->target->id . "\n" . join("\n", map { $_->[1] } sort { $a->[0] cmp $b->[0] } map { [ $_->as_string, $_ ] } @links ) . "\n\n" if $verbose;
 
 		if ($answers->{$_->node->id})
 		{	if ($answers->{$_->node->id}{$_->relation->id})
@@ -142,3 +137,33 @@ if ($verbose)
 	{	print  "Made the following incorrect inferences:\n" . Dumper($summary);
 	}
 }
+
+print STDERR "subrelation_closure_h:\n";
+foreach (keys %{$ie->subrelation_closure_h})
+{	print STDERR "$_: " . join(", ", map { $_->id } @{$ie->subrelation_closure_h->{$_}} ) . "\n";
+}
+print STDERR "\n\n";
+
+print STDERR "subrelation_reflexive_closure_h:\n";
+foreach (keys %{$ie->subrelation_closure_h})
+{	print STDERR "$_: " . join(", ", map { $_->id } @{$ie->subrelation_reflexive_closure_h->{$_}} ) . "\n";
+}
+print STDERR "\n\n";
+
+#print STDERR "subrelation_reflexive_closure_h: " . Dumper($ie->subrelation_reflexive_closure_h) . "\n\n";
+
+print STDERR "relation_composition_h:\n";
+foreach my $r1 (keys %{$ie->relation_composition_h})
+{	foreach my $r2 (keys %{$ie->relation_composition_h->{$r1}})
+	{	print STDERR "$r1 + $r2 => " . join("; ", @{$ie->relation_composition_h->{$r1}{$r2}} ). "\n";
+	}
+}
+
+#Dumper($ie->relation_composition_h) . "\n\n";
+
+foreach ($graph->get_statement_ix_h_names)
+{	print STDERR "key: $_; links:\n" . join("\n", map { $_->[1] }
+	sort { $a->[0] cmp $b->[0] }
+	map { [ $_->as_string, $_ ] } @{$graph->get_all_statements_in_ix($_)} ) . "\n\n";
+}
+

@@ -8,8 +8,9 @@ $Data::Dumper::Sortkeys = 1;
 
 use GOBO::Graph;
 use GOBO::Parsers::OBOParserDispatchHash;
-use GOBO::InferenceEngine;
+use GOBO::InferenceEngine::CustomEngine;
 use GOBO::Util::GraphFunctions;
+use GOBO::Util::Misc;
 
 =head1 NAME
 
@@ -77,7 +78,7 @@ file C<term_list.txt>.
 
 =item -n || --show_names
 
-show term names (as well as IDs) in the mapping file
+show term names (as well as IDs) in the first column of the mapping file
 
 =item -v || --verbose
 
@@ -91,7 +92,17 @@ By default, the output of mapmaker.pl is arranged thus:
 
  term ID [tab] closest ancestral subset terms for each relationship [tab] all other ancestral terms
 
-With the b<show_names> option on, the first column will look like this:
+If the term is in the subset, there will be an additional fourth column to indicate
+this:
+
+ term ID [tab] closest terms [tab] all other terms [tab] B<subset_term>
+
+
+Obsolete terms are represented thus:
+
+ term ID [tab] obsolete
+
+With the B<show_names> option on, the first column will look like this:
 
  term ID, term name
 
@@ -151,7 +162,7 @@ my $output = new FileHandle($options->{output}, "w") or die "Could not create ou
 
 # before we check out the graph, let's see if the file actually contains any terms...
 if ($options->{termlist})
-{	$data->{to_find} = get_subset_terms($options);
+{	$data->{to_find} = GOBO::Util::Misc::read_term_file($options);
 }
 
 # parse the input file and check we get a graph
@@ -159,7 +170,7 @@ my $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>$options->{input},
 options => {
 	body => {
 		parse_only => {
-			term => [ qw( name namespace relation is_a subset is_obsolete ) ],
+			term => [ qw( name namespace relationship is_a subset is_obsolete ) ],
 			typedef => '*',
 		},
 	},
@@ -173,7 +184,7 @@ my $graph = $parser->graph;
 
 # get the nodes matching our subset criteria
 if ($options->{subset})
-{	$data = GOBO::Util::GraphFunctions::get_subset_nodes({ graph => $graph, options => $options });
+{	$data = GOBO::Util::GraphFunctions::get_subset_nodes( graph => $graph, options => $options );
 	print STDERR "Done GOBO::Util::GraphFunctions::get_subset_nodes!\n" if $options->{verbose};
 
 	# move the subset to $subset
@@ -201,8 +212,13 @@ else
 		{	die "$msg Please try again.\nDying";
 		}
 	}
+
 	## make sure that we have the root nodes
 	map { $subset->{ $_->id }++ } @{$graph->get_roots};
+}
+
+if (! $subset || scalar keys %$subset == 0)
+{	die "No subset terms or root nodes were found in the graph. Please check the files you are using and try again.";
 }
 
 if (scalar keys %$subset < 5 && ! $options->{force_continue})
@@ -210,40 +226,48 @@ if (scalar keys %$subset < 5 && ! $options->{force_continue})
 	die "Only " . (scalar keys %$subset) . " terms from the subset specified could be found. To continue anyway, please run the script again with the extra command line parameter -f\nDying";
 }
 
-# get the relations from the graph
-$data->{relations} = GOBO::Util::GraphFunctions::get_graph_relations({ graph => $graph, options => $options });
-	print STDERR "Done GOBO::Util::GraphFunctions::get_graph_relations!\n" if $options->{verbose};
+##
 
-my $ie = new GOBO::InferenceEngine(graph => $graph);
+=insert
+my @subset_arr = values %{$data->{subset}{$s}};
+$graph->duplicate_statement_ix('ontology_links', 'asserted_links');
+my $ie = new GOBO::InferenceEngine::CustomEngine(graph=>$graph);
+#	my $ie = new GOBO::InferenceEngine(graph=>$graph);
 
-# get the links between the nodes
-$data->{nodes} = GOBO::Util::GraphFunctions::get_graph_links({ inf_eng => $ie, subset => $subset, graph => $graph, options => $options });
-print STDERR "Done GOBO::Util::GraphFunctions::get_graph_links!\n" if $options->{verbose};
+## give the inference engine a subroutine to execute upon each wee little term
+## so it stops looking for parent terms when it reaches a subset node
+my @subset_ids = keys %{$data->{subset}{$s}};
+my $sub = sub {
+	my $x = shift;
+#		print STDERR "subset: " . join(", ", @subset_ids) . "\n\n";
+	return 1 if grep { $_ eq $x->target->id } @subset_ids ;
+	return 0;
+};
+$ie->test_sub( $sub );
 
-# populate the node look up hashes
-GOBO::Util::GraphFunctions::populate_lookup_hashes({ graph_data => $data->{nodes} });
-print STDERR "Done GOBO::Util::GraphFunctions::populate_lookup_hashes!\n" if $options->{verbose};
+# slim down the graph...
+# in these slims, the input set is the same as the mapping set
+my $new_graph = $ie->slim_graph( subset_ids => \@subset_ids, input_ids => [ keys %{$data->{subset}{$s}} ], from_ix => 'asserted_links', save_ix => 'inferred_' . $s . '_ontology_links', options => $options );
 
-# remove redundant relationships between nodes
-GOBO::Util::GraphFunctions::remove_redundant_relationships({ node_data => $data->{nodes}, rel_data => $data->{relations}, graph => $graph, options => $options });
-print STDERR "Done GOBO::Util::GraphFunctions::remove_redundant_relationships!\n" if $options->{verbose};
+=cut
 
-# repopulate the node look up hashes
-GOBO::Util::GraphFunctions::populate_lookup_hashes({ graph_data => $data->{nodes} });
-print STDERR "Done GOBO::Util::GraphFunctions::populate_lookup_hashes!\n" if $options->{verbose};
 
-# slim down dem nodes
-my $slimmed = GOBO::Util::GraphFunctions::trim_graph({ graph_data => $data->{nodes}, options => $options });
-print STDERR "Done GOBO::Util::GraphFunctions::trim_graph!\n" if $options->{verbose};
+$graph->duplicate_statement_ix('ontology_links', 'asserted_links');
+my $ie = new GOBO::InferenceEngine::CustomEngine( graph => $graph );
 
-foreach my $n (keys %{$slimmed->{graph}})
-{	foreach my $r (keys %{$slimmed->{graph}{$n}})
-	{	map { $slimmed->{termlist}{$_} = 1 } keys %{$slimmed->{graph}{$n}{$r}};
-		$slimmed->{rel_list}{$r} = 1;
-	}
-	$slimmed->{termlist}{$n} = 1;
-}
+#$ie->generate_simple_combined_rel_h;
 
+$ie->get_closest_and_ancestral( subset_ids => [ keys %$subset ], from_ix => 'asserted_links', all_ix => 'transitive_closure', closest_ix => 'transitive_reduction' );
+
+$graph = $ie->graph;
+
+## check out ALL links:
+#print STDERR "All links, closest and otherwise:\n" . join("\n", @{$graph->get_all_statements_in_ix('all_inferred_links')} ) . "\n\n";
+
+## check out CLOSEST links:
+#print STDERR "Closest links only:\n" . join("\n", @{$graph->get_all_statements_in_ix('closest_links')}) . "\n\n\n";
+
+my $slimmed;
 
 ## we are ready to output the data now! woohoo.
 ## print out the file header material
@@ -281,6 +305,15 @@ if ($graph->comment)
 
 print $output "! Generated from " . join("; ", @f_data) . "\n";
 
+print $output '! Format:
+! term_id [tab] closest ancestral subset terms [tab] all other ancestral subset terms
+! # terms in the subset have subset_term in the fourth column:
+! term_id [tab] closest [tab] all [tab] subset_term
+! # obsolete terms are displayed thus:
+! term_id [tab] obsolete
+
+';
+
 my $print_term = sub {
 	return shift;
 };
@@ -296,38 +329,48 @@ if ($options->{show_names})
 ## OK, let's print dem terms.
 
 foreach my $id (sort map { $_->id } @{$parser->graph->terms})
-{	if (! $slimmed->{termlist}{$id})
+{	if (! $graph->get_term($id) || ! $graph->get_matching_statements(node_id=>$id, ix=>'transitive_closure'))
 	{	my $term = $parser->graph->get_term($id);
 		if ($term->obsolete)
 		{	print $output $print_term->($id, $parser->graph) . "\tobsolete\n";
 		}
-		else
+		elsif (defined $term)
 		{	warn $print_term->($id, $parser->graph) . ": term lost!\n";
+		}
+		else
+		{	warn "$id could not be found!";
 		}
 		next;
 	}
 
-	print $output $print_term->($id, $parser->graph)
-	. "\t" .
-	join("; ",
-		map {
-			my $r1 = $_;
-			join(", ",  map { "$r1 $_" } sort keys %{$slimmed->{graph}{$id}{$r1}})
-		} sort keys %{$slimmed->{graph}{$id}}
+	print $output $print_term->($id, $parser->graph) . "\t";
+
+	my $t = $graph->get_term($id);
+	if ($t->obsolete)
+	{	print STDERR $t->id . " is obsolete!\n";
+		print $output "obsolete!\n";
+		next;
+	}
+
+	print $output join(", ",
+		map { $_->relation->id . " " . $_->target->id }
+		sort { $a->target->id cmp $b->target->id || $a->relation->id cmp $b->relation->id }
+		@{$graph->get_matching_statements(node_id=>$id, ix=>'transitive_reduction')}
 		)
 	. "\t" .
-	join("; ",
-		grep { /\S/ }
-		map {
-			my $r2 = $_;
-			join(", ",
-				map { "$r2 $_" }
-				grep { ! $slimmed->{graph}{$id}{$r2}{$_} }
-				sort keys %{$data->{nodes}{graph}{$id}{$r2}}
-			)
-		} sort keys %{$data->{nodes}{graph}{$id}})
-	. "\n";
+	join(", ",
+		map { $_->relation->id . " " . $_->target->id }
+		sort { $a->target->id cmp $b->target->id || $a->relation->id cmp $b->relation->id }
+		@{$graph->get_matching_statements(node_id=>$id, ix=>'transitive_closure')}
+	);
 
+	# if the term is in the subset, say so
+	if ($subset->{$id})
+	{	print $output "\tsubset_term";
+	}
+
+
+	print $output "\n";
 }
 
 print STDERR "Job complete!\n" if $options->{verbose};
@@ -459,7 +502,7 @@ sub check_options {
 	return $opt;
 }
 
-
+=cut
 sub get_subset_terms {
 	my $sub_h;  # we'll store the data in here
 	my $opt = shift;
@@ -508,3 +551,4 @@ sub get_subset_terms {
 	return $sub_h;
 
 }
+=cut

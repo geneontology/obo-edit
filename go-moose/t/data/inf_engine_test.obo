@@ -1,0 +1,73 @@
+format-version: 1.2
+date: 14:07:2009 13:33
+auto-generated-by: OBO-Edit 2.0
+default-namespace: test_ontology
+
+[Typedef]
+id: part_of
+name: part_of
+xref: OBO_REL:part_of
+is_transitive: true
+
+[Typedef]
+id: has_part
+name: has_part
+inverse_of_on_instance_level: part_of
+is_reflexive: true
+is_anti_symmetric: true
+is_transitive: true
+
+[Typedef]
+id: negatively_regulates
+name: negatively_regulates
+is_a: regulates
+
+[Typedef]
+id: positively_regulates
+name: positively_regulates
+is_a: regulates
+
+[Typedef]
+id: regulates
+name: regulates
+transitive_over: part_of ! part_of
+
+[Typedef]
+id: physical_part_of
+name: physical_part_of
+is_a: part_of
+is_transitive: true
+
+[Typedef]
+id: metaphorical_part_of
+name: metaphorical part of
+is_a: part_of
+is_reflexive: true
+is_transitive: true
+transitive_over: part_of ! part_of
+
+[Typedef]
+id: has_physical_part
+name: has_physical_part
+inverse_of_on_instance_level: physical_part_of
+transitive_over: part_of ! part_of
+is_reflexive: true
+is_anti_symmetric: true
+is_transitive: true
+
+[Typedef]
+id: indirectly_negatively_regulates
+name: indirectly negatively regulates
+is_a: indirectly_regulates
+is_a: negatively_regulates
+
+[Typedef]
+id: indirectly_positively_regulates
+name: indirectly positively regulates
+is_a: indirectly_regulates
+is_a: positively_regulates
+
+[Typedef]
+id: indirectly_regulates
+name: indirectly regulates
+holds_over_chain: regulates regulates
