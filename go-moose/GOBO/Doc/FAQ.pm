@@ -141,7 +141,7 @@ GOBO allows both.
 		iff
 	$ce = Intersection([@args])
 		where
-	@args = grep { $_->is_intersection } @{$graph->get_outgoing_links($term)}
+	@args = grep { $_->is_intersection } @{$graph->get_outgoing_links(node=>$term)}
 
 (that's an approximation, we need to use the class itself for is_a and a RelationalExpression for the differentia)
 

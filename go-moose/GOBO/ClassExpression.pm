@@ -25,7 +25,7 @@ equivalence to a GOBO::ClassExpression
   id: GO:new
   name: oocyte cytoplasm
   intersection_of: GO:0005737 ! cytoplasm
-  intersection_of: part_of CL:0000023 ! oocyte 
+  intersection_of: part_of CL:0000023 ! oocyte
 
 This can also be thought of as necessary and sufficient conditions for
 membership of a class.
@@ -92,7 +92,7 @@ A class expression can be expressed as an ID expression. See:
 http://www.geneontology.org/GO.format.obo-1_3.shtml#S.1.6
 
 For example:
-  GO:0005737^part_of(CL:0000023) 
+  GO:0005737^part_of(CL:0000023)
 
 The set of all cytoplasm (GO:0005737) instances that are part_of some oocyte (CL:0000023)
 
@@ -189,7 +189,7 @@ sub _parse_idexpr_toks {
     return $this;
 }
 
-=head2 normalize 
+=head2 normalize
 
 A or (B or C) ==> A or B or C
 A and (B and C) ==> A and B and C

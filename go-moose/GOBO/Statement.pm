@@ -4,12 +4,11 @@ use strict;
 with 'GOBO::Attributed';
 with 'GOBO::Identified';
 
-use GOBO::Node;
+#use GOBO::Node;
 use GOBO::RelationNode;
 
 has 'node' => ( is=>'rw', isa=>'GOBO::Node', coerce=>1 );
 has 'relation' => ( is=>'rw', isa=>'GOBO::RelationNode', coerce=>1 );
-#has 'target' => ( is=>'rw', isa=>'Item');
 has 'inferred' => ( is=>'rw', isa=>'Bool');
 has 'negated' => ( is=>'rw', isa=>'Bool'); # TODO: use this or NegatedStatement?
 has 'is_intersection' => ( is=>'rw', isa=>'Bool');
@@ -26,10 +25,15 @@ sub as_string {
 sub matches {
     my $self = shift;
     my %h = @_;
+#    my $h_str = join(".", sort keys %h);
+#    my $s_str = join(".", sort keys %$self);
+#    return 0 unless $h_str eq $s_str;
+
     foreach my $k (keys %h) {
         my $v = $self->$k;
         return 0 unless $v->id eq $h{$k};
     }
+
     return 1;
 }
 

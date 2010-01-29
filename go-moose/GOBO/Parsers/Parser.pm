@@ -39,6 +39,10 @@ sub BUILDARGS {
 		$arg_h{file} = $arg_h{fh};
 		delete $arg_h{fh};
 	}
+	if ( $arg_h{file} )
+	{	die "The file $arg_h{file} could not be found! " if ! -e $arg_h{file};
+	}
+	
 	return \%arg_h;
 }
 
@@ -214,7 +218,9 @@ sub set_file {
 		return;
 	}
 	elsif (! ref $f)
-	{	my $fh;
+	{	die "The file $f could not be found! " if ! -e $f;
+		
+		my $fh;
 		if ($f =~ /\.gz$/) {
 			$fh = FileHandle->new("gzip -dc $f |") or confess "Could not create a filehandle for $f: $! ";
 		}

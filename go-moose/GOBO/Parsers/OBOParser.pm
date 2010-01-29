@@ -105,7 +105,7 @@ sub parse_body {
 	my $self = shift;
 
 	my $stanza_check = sub { return 1; };
-	my $tag_check = sub { return 1; }; 
+	my $tag_check = sub { return 1; };
 
 	if ($self->has_body_parser_options)
 	{	if ($self->body_parser_options->{ignore_all})
@@ -116,9 +116,9 @@ sub parse_body {
 		}
 		elsif ($self->body_parser_options->{ignore})
 		{	my $h = $self->body_parser_options->{ignore};
-			
+
 			my @ignore_all = grep { $h->{$_}[0] eq '*' } keys %$h;
-			
+
 			if (@ignore_all)
 			{	# ignore this stanza if the stanza type exists in the ignore all set
 				$stanza_check = sub {
@@ -195,8 +195,8 @@ sub parse_body {
 			}
 			next;
 		}
-		
-		
+
+
 		if (/^(.*?):\s*/) {
 			next unless &$tag_check( $stanzaclass, $1 );
 #			print STDERR "passed the tag check!\n";
@@ -228,7 +228,7 @@ sub parse_body {
 			if (!$n) {
 				die "cannot parse: $_";
 			}
-			
+
 			$n->namespace($self->default_namespace)
 				if (!$n->namespace &&
 					$self->default_namespace);
@@ -302,9 +302,11 @@ sub parse_body {
 		elsif (/^is_a:\s*(\S+)(.*)/) {
 			#my $tn = $stanzaclass eq 'typedef' ? $g->relation_noderef($1) : $g->term_noderef($1);
 			my $tn = $self->getnode($1, $stanzaclass eq 'typedef' ? 'r' : 'c');
-			my $s = new GOBO::LinkStatement(node=>$n,relation=>'is_a',target=>$tn);
+#			my $rn = 'is_a';
+			my $rn = $g->relation_noderef('is_a');
+			my $s = new GOBO::LinkStatement(node=>$n,relation=>$rn,target=>$tn);
 			$self->add_metadata($s,$2);
-			$g->add_link($s);
+			$g->add_statement($s);
 			if ($stanzaclass eq 'typedef') {
                             $n->add_subrelation_of($tn);
 			}
@@ -316,7 +318,7 @@ sub parse_body {
 			#my $tn = $g->term_noderef($2);
 			my $s = new GOBO::LinkStatement(node=>$n,relation=>$rn,target=>$tn);
 			$self->add_metadata($s,$3);
-			$g->add_link($s);
+			$g->add_statement($s);
 		}
 		elsif (/^complement_of:\s*(\S+)/) {
 			my $tn = $self->getnode($1, $stanzaclass eq 'typedef' ? 'r' : 'c');
@@ -362,14 +364,16 @@ sub parse_body {
 				my $tn = $self->getnode($2, $stanzaclass eq 'typedef' ? 'r' : 'c');
 				#my $tn = $stanzaclass eq 'typedef' ? $g->relation_noderef($2) : $g->term_noderef($2);
 				my $s = new GOBO::LinkStatement(node=>$n,relation=>$rn,target=>$tn, is_intersection=>1);
-				$g->add_link($s);
+				$g->add_statement($s);
 			}
 			elsif (/^intersection_of:\s*(\S+)/) {
 				#my $tn = $g->term_noderef($1);
 				#my $tn = $stanzaclass eq 'typedef' ? $g->relation_noderef($1) : $g->term_noderef($1);
 				my $tn = $self->getnode($1, $stanzaclass eq 'typedef' ? 'r' : 'c');
-				my $s = new GOBO::LinkStatement(node=>$n,relation=>'is_a',target=>$tn, is_intersection=>1);
-				$g->add_link($s);
+				my $rn = $g->relation_noderef('is_a');
+#				my $rn = 'is_a';
+				my $s = new GOBO::LinkStatement(node=>$n,relation=>$rn,target=>$tn, is_intersection=>1);
+				$g->add_statement($s);
 			}
 			else {
 				$self->throw("badly formatted intersection: $_");
@@ -559,7 +563,7 @@ sub check_options {
 		$self->clear_body_parser_options;
 		## see if we have any settings for parsing the header
 		if ($options->{header} && keys %{$options->{header}})
-		{	
+		{
 			if ($options->{header}{ignore} && $options->{header}{parse_only})
 			{	warn "Warning: both ignore and parse_only specified in header parsing options; using setting in parse_only";
 			}
@@ -589,7 +593,7 @@ sub check_options {
 		## check the body parsing options
 		if ($options->{body} && keys %{$options->{body}})
 		{	my $b_hash;
-			
+
 			if ($options->{body}{ignore} && $options->{body}{parse_only})
 			{	warn "Warning: both ignore and parse_only specified in body parsing options; using setting in parse_only";
 			}
@@ -608,7 +612,7 @@ sub check_options {
 						{	$b_hash->{$s_type} = $options->{body}{parse_only}{$s_type};
 						}
 					}
-					
+
 #					print STDERR "b hash: " . Dumper($b_hash);
 					$self->set_body_parser_options({ parse_only => $b_hash }) if $b_hash;
 				}
@@ -736,7 +740,7 @@ is_a and relationship tags are converted to GOBO::LinkStatement objects and adde
 
 These are added to the graph as GOBO::LinkStatement objects, with is_intersection=>1
 
-You can call 
+You can call
 
   $g->convert_intersection_links_to_logical_definitions
 
@@ -765,7 +769,7 @@ Header parsing instructions should be contained in the options hash with the key
  $options->{header} = ...
 
  # parse only tag_1, tag_2 and tag_3, and ignore any other tags in the header
- $options->{header} = { 
+ $options->{header} = {
  	parse_only => [ 'tag_1', 'tag_2', 'tag_3' ],
  }
 
@@ -834,7 +838,7 @@ parse the date from the header; ignore instance and annotation stanzas
 
  $parser->set_options({
    header => { parse_only => [ 'date' ] },
-   body => { 
+   body => {
      ignore => { instance => '*', annotation => '*' },
    },
  });

@@ -18,9 +18,9 @@ use overload ('""' => 'as_string');
 
 sub as_string {
     my $self = shift;
-    if ($self->label) {
-        return sprintf('%s "%s"',$self->id,$self->label);
-    }
+#    if ($self->label) {
+#        return sprintf('%s "%s"',$self->id,$self->label);
+#    }
     if ($self->id) {
         return $self->id;
     }

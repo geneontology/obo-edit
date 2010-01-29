@@ -38,7 +38,7 @@ sub index_annotations {
             $fv = new Set::Object;
             $fvmap{$fid} = $fv;
         }
-        foreach my $n (@{$self->get_inferred_target_nodes($ann->target)}) {
+        foreach my $n (@{ $self->get_inferred_outgoing_nodes(node=>$ann->target) }) {
             $fv->insert($n->id);
         }
         $fv->insert($ann->target); # TODO - reflexivity
@@ -63,7 +63,7 @@ sub calculate_simJ {
     my $self = shift;
     my $f1 = shift;
     my $f2 = shift;
-    
+
     my $av1 = $self->feature_attribute_vector_map->{$f1};
     my $av2 = $self->feature_attribute_vector_map->{$f2};
     my $iv = $av1 * $av2;

@@ -48,7 +48,8 @@ sub write_body {
     my $self = shift;
     my $g = $self->graph;
 
-    foreach my $ann (@{$g->annotations}) {
+     foreach my $ann (@{$g->get_all_statements_in_ix( $self->annotation_ix )}) {
+#    foreach my $ann (@{$g->annotations}) {
         $self->write_annotation($ann);
     }
     return;

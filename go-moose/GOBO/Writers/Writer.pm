@@ -7,6 +7,12 @@ has fh => (is=>'rw', isa=>'FileHandle', clearer=>'clear_fh', predicate=>'has_fh'
 has file => (is=>'rw', isa=>'Str');
 has graph => (is=>'rw', isa=>'GOBO::Graph');
 
+## indexes to use for the different types of statement
+has 'statement_ix' => (is=>'rw', isa=>'Str', default=>sub { 'statements' } );
+has 'annotation_ix' => (is=>'rw', isa=>'Str', default=>sub { 'annotations' } );
+has 'edge_ix' => (is=>'rw', isa=>'Str', default=>sub { 'edges' } );
+has 'ontology_link_ix' => (is=>'rw', isa=>'Str', default=>sub { 'ontology_links' } );
+
 sub create {
     my $proto = shift;
     my %argh = @_;
