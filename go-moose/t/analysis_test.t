@@ -25,10 +25,24 @@ my $gafparser = new GOBO::Parsers::GAFParser(fh=>$fh);
 
 my @ics = ();
 $gafparser->parse;
+
+#print STDERR "Done parsing!\n";
+
+#foreach (@{$gafparser->graph->annotations})
+#{	print STDERR "annotation: $_\n" . $_->dump(3) . "\n";
+#}
+
 $ontg->add_annotations($gafparser->graph->annotations);
 
+#print STDERR "Done adding annotations!\n";
+
 $ae->graph($ontg);
+
+#print STDERR "done adding the graph!\n";
+
 $ae->index_annotations;
+
+#print STDERR "Done indexing annotations!\n";
 
 ok(compare('FB:FBgn0010339','FB:FBgn0039946') > 0);
 

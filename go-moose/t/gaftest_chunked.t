@@ -23,7 +23,7 @@ ok($n>0);
 my $ag = $parser->graph;
 #print $parser->graph;
 
-my $sl = $ag->annotation_ix->statements_by_node_id('FB:FBgn0043467');
+my $sl = $ag->annotations_by_node_id('FB:FBgn0043467');
 foreach my $s (@$sl) {
     print "$s\n";
 }

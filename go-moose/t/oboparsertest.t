@@ -33,16 +33,16 @@ foreach my $ss (@{$neuron->subsets}) {
 ok(@{$neuron->subsets} == 1);
 ok($neuron->subsets->[0]->id eq 'test');
 
-my $n_links = scalar(@{$g->links});
+my $n_links = scalar(@{$g->ontology_links});
 print "links: $n_links\n";
 ok($n_links > 0);
 #print $g;
 
-print "neuron: $neuron\n";
-use Data::Dumper;
-print Dumper $g->link_ix->ixN->{$neuron->id};
+#print "neuron: $neuron\n";
+#use Data::Dumper;
+#print Dumper $g->ontology_links_by_node_id($neuron->id);
 
-my $pls = $g->get_target_links($neuron);
+my $pls = $g->get_outgoing_ontology_links($neuron);
 print "pls=@$pls\n";
 ok(@$pls>1);
 

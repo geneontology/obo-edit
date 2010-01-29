@@ -8,7 +8,7 @@ use GOBO::Statement;
 use GOBO::LinkStatement;
 use GOBO::NegatedStatement;
 use GOBO::Node;
-use GOBO::Parsers::OBOParser;
+use GOBO::Parsers::OBOParserDispatchHash;
 use GOBO::Writers::OBOWriter;
 use FileHandle;
 
@@ -16,7 +16,7 @@ use FileHandle;
 my $fn = "t/data/roundtripme.obo";
 
 my $fn2 = $fn.'-2';
-convert($fn=>$fn2,obo=>'obo');
+convert($fn,$fn2,'obo','obo');
 ok(1); # TODO
 #ok(nodiff($fn,$fn2));
 
@@ -25,14 +25,14 @@ unlink($fn2);
 exit 0;
 
 sub convert {
-    my ($fin=>$fout,$from,$to) = @_;
+    my ($fin,$fout,$from,$to) = @_;
     my $parser = GOBO::Parsers::Parser->create(file=>$fin,format=>$from);
     $parser->parse;
 
     my $g = $parser->graph;
     my $writer = GOBO::Writers::Writer->create(file=>$fout,format=>$from);
     $writer->graph($g);
-    $writer->write($g);
+    $writer->write();
 }
 
 sub nodiff {

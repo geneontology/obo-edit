@@ -23,7 +23,7 @@ ok($n>0);
 my $ag = $parser->graph;
 #print $parser->graph;
 
-my $sl = $ag->annotation_ix->statements_by_node_id('MGI:MGI:1913318');
+my $sl = $ag->annotations_by_node_id('MGI:MGI:1913318');
 foreach my $s (@$sl) {
     printf "$s GP:%s\n", $s->specific_node;
 }

@@ -87,8 +87,8 @@ is_deeply($g_AT1G, $g2_AT1G, "parse_file: GAF parsers returned the same results"
 ## testing the OBO parsers...
 
 my $tags = {
-	has_x => [ qw( nodes terms relations links declared_subsets annotations instances formulae ) ],
-	body_only => [ qw( nodes terms relations links annotations instances formulae ) ],
+	has_x => [ qw( nodes terms relations statements edges ontology_links annotations declared_subsets annotations instances formulae) ],
+	body_only => [ qw( nodes terms relations statements edges ontology_links annotations instances formulae ) ],
 	header_only => [ qw(default_namespace date comment format_version version property_value) ],
 	both => [ qw(declared_subsets) ],
 };
@@ -112,7 +112,7 @@ $obo_parser = new GOBO::Parsers::OBOParser(file=>'t/data/obo_file_2.obo');
 $dh_parser = new GOBO::Parsers::OBOParserDispatchHash(file=>'t/data/obo_file_2.obo');
 my $results;
 my $errs;
-	
+# 23 onwards
 foreach my $p ($obo_parser, $dh_parser)
 {	$p->parse;
 	my $graph = $p->graph;
@@ -122,28 +122,32 @@ foreach my $p ($obo_parser, $dh_parser)
 	#	print STDERR "fn: $fn; result of graph->fn: ". Dumper( $graph->$fn ) . "\n";
 		push @$errs, $e if ! $graph->$fn;
 	}
+	# 23, 32
 	ok( ! defined $errs, "Checking entities in the graph" );
 	print STDOUT "Did not find the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
-	
+
 	push @{$results->{ ref($p) }}, $graph;
-	
+
 	my $g_keys;  # store the non-body stuff in g_keys
 	foreach my $k (keys %$graph)
 	{	next if grep { $k eq $_ } @{$tags->{body_only}};
 		$g_keys->{$k} = $graph->{$k};
 	}
-	
+
 	## let's try a few options now...
-	
+
 #	print STDOUT "\n\n\nStarting options testing!\n";
-	
+
 	# ignore body and header
 	$p->reset_parser;
 	$p->parse_file
 	(file=>'t/data/obo_file_2.obo', options => { body => { ignore => '*' }, header => { ignore => '*' } });
-	
+
 	my $new_graph = $p->graph;
+	$new_graph->remove_node( $new_graph->get_relation('is_a'), 1 );
+
 	#print STDOUT "ignore body and header graph: " . Dumper($new_graph);
+	# 24, 33
 	isa_ok( $new_graph, "GOBO::Graph", "Ignoring body and header" );
 
 	push @{$results->{ ref($p) }}, $new_graph;
@@ -154,83 +158,91 @@ foreach my $p ($obo_parser, $dh_parser)
 	{	my $fn = "has_$e";
 		push @$errs, $e if $new_graph->$fn;
 	}
-	
+	# 25, 34
 	ok( ! $errs, "Checking entities in the graph" );
 	print STDOUT "Found the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
-	
+
 	$p->reset_parser;
 	$p->parse_file(file=>'t/data/obo_file_2.obo', options => { header => { ignore => '*' } });
 	$new_graph = $p->graph;
 	print STDOUT "ignoring headers\n";
-	
+
 	push @{$results->{ ref($p) }}, $new_graph;
 	#foreach my $e (@{$tags->{has_x}})
 	#{	print STDOUT "graph->$e: " . Dumper( $graph->$e ) . "\n";
 	#}
-	
+
 	undef $errs;
 	foreach my $e (@{$tags->{has_x}})
 	{	push @$errs, $e if scalar @{ $new_graph->$e } != scalar @{ $graph->$e };
 	}
+	# 26, 35
 	ok( ! defined $errs, "Ignored header: checking body elements" );
 	if ($errs && @$errs)
 	{	print STDOUT "Discrepancies in the following: " . join(", ", @$errs ) . "\n";
 	}
-	
+
 	undef $errs;
 	foreach my $e (@{$tags->{header_only}})
 	{	push @$errs, $e if $new_graph->{$e};
 	}
-	
+
+	# 27, 36
 	ok( ! defined $errs, "Ignored header: checking header elements" );
 	print STDOUT "Found the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
-	
-	
+
+
 	$p->reset_parser;
 	$p->parse_file(file=>'t/data/obo_file_2.obo', options => { body => { ignore => '*' } });
 	$new_graph = $p->graph;
 	push @{$results->{ ref($p) }}, $new_graph;
+	$new_graph->remove_node( $new_graph->get_relation('is_a'), 1 );
 
 	undef $errs;
 	foreach my $e (@{$tags->{body_only}})
 	{	my $fn = "has_$e";
 		push @$errs, $e if $new_graph->$fn;
 	}
-	
+
+	# 28, 37
 	ok( ! defined $errs, "Ignored body: checking body elements" );
 	print STDOUT "Found the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
-	
+
 	undef $errs;
 	foreach my $e (@{$tags->{header_only}}, @{$tags->{both}})
 	{	if (! eq_deeply( $graph->{$e}, $new_graph->{$e} ))
 		{	push @$errs, $e;
 		}
 	}
+	# 29, 38
 	ok( ! defined $errs, "Ignored body: checking header elements" );
 	print STDOUT "Found the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
-	
-	
+
+
 	## ignore everything except the instance and typedef stanza
 	$p->reset_parser;
 	$p->parse_file(file=>'t/data/obo_file.obo', options => { body => { parse_only => { instance => '*', annotation => '*' } } });
-	
+
 	$new_graph = $p->graph;
 	push @{$results->{ ref($p) }}, $new_graph;
+	$new_graph->remove_node( $new_graph->get_relation('is_a'), 1 );
 
 	foreach my $e (@{$tags->{body_only}})
 	{	my $fn = "has_$e";
 		push @$errs, $e if $new_graph->$fn;
 	}
-	
+
+	# 30, 39
 	ok( ! defined $errs, "Parse only instances and annotations: checking body elements" );
 	print STDOUT "Found the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
-	
-	
+
+
 	## ignore everything except the instance and typedef stanza
 	$p->reset_parser;
 	$p->parse_file(file=>'t/data/transporters.obo', options => { body => { parse_only => { term => ['id', 'namespace', 'synonym'] } } });
-	
+
 	$new_graph = $p->graph;
+	$new_graph->remove_node( $new_graph->get_relation('is_a'), 1 );
 	push @{$results->{ ref($p) }}, $new_graph;
 
 	foreach my $e (@{$tags->{body_only}})
@@ -238,16 +250,18 @@ foreach my $p ($obo_parser, $dh_parser)
 		my $fn = "has_$e";
 		push @$errs, $e if $new_graph->$fn;
 	}
+	# 31, 40
 	ok( ! defined $errs, "Parse only term ids, names and namespaces: checking body elements" );
 	print STDOUT "Found the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
-	
-	
+
+
 	## ignore everything except the instance and typedef stanza
 	$p->reset_parser;
 	$p->parse_file(file=>'t/data/obo_file_2.obo', options => { body => { ignore => { term => ['is_a', 'relationship', 'synonym' ] } } });
-	
+
 }
 
+# 41 - 46
 my @p_types = ( keys %$results );
 # check that both parsers got the same results
 while (@{$results->{$p_types[0]}})
@@ -255,6 +269,7 @@ while (@{$results->{$p_types[0]}})
 	cmp_deeply( pop @{$results->{$p_types[0]}}, pop @{$results->{$p_types[1]}}, "Comparing results...");
 }
 
+# 47
 ## try using the Dispatch Hash parser
 $dh_parser = new GOBO::Parsers::OBOParserDispatchHash;
 #my $dh_parser = new GOBO::Parsers::AltOBOParser;
@@ -276,7 +291,7 @@ if ($errs && @$errs)
 	{	if ($_ eq 'nodes')
 		{	print STDOUT "$_: got:\n" . join("\n", sort map { $_->id } @{$dh_parser->graph->$_}) . "\n\n\n$_: expected:\n" . join("\n", sort map { $_->id } @{$obo_parser->graph->$_}) . "\n\n\n\n";
 		}
-		elsif ($_ eq 'links')
+		elsif ($_ eq 'ontology_links')
 		{	print STDOUT "$_: got:\n" . join("\n", @{$dh_parser->graph->$_}) . "\n\n\n$_: expected:\n" . join("\n", @{$obo_parser->graph->$_}) . "\n\n\n\n";
 		}
 	}
@@ -295,7 +310,7 @@ my @body_arr;
 	open(FH, "<" . 't/data/obo_file_2.obo') or die("Could not open t/data/obo_file_2.obo: $!");
 	@header_arr = split("\n", <FH> );
 	close FH;
-	
+
 	local $/ = "\n";
 	open(FH, "<" . 't/data/obo_file_2.obo') or die("Could not open t/data/obo_file_2.obo: $!");
 
@@ -303,7 +318,7 @@ my @body_arr;
 	{	push @body_arr, $_;
 	}
 
-	
+
 	my $i = 1;
 	while ($i == 1)
 	{	if ( $body_arr[0] =~ /^\[\S+/ )
