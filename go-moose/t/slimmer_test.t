@@ -102,7 +102,7 @@ my $args = {
 
 # 10 - 44
 # 7 tests per arg
-foreach my $a (reverse sort values %$args)
+foreach my $a (values %$args)
 {	my $cmd;
 	# invalid inputs
 	# xxx, combined, no output
@@ -159,7 +159,7 @@ undef $ENV{GO_VERBOSE};
 	## 15
 	cmp_ok(testme($parser->graph, 2), "==", 1, "Checking SLIMMER_TEST_test_next_goslim.obo");
 
-	if (testme($parser->graph, 1) != 1)
+	if (testme($parser->graph, 2) != 1)
 	{	die "Inference failed! Please check t/data/SLIMMER_TEST_test_next_goslim.obo";
 	}
 
@@ -171,7 +171,7 @@ undef $ENV{GO_VERBOSE};
 	## 16
 	cmp_ok(testme($parser->graph, 3), "==", 1, "Checking SLIMMER_TEST_results.obo [combined]");
 
-	if (testme($parser->graph, 1) != 1)
+	if (testme($parser->graph, 3) != 1)
 	{	die "Inference failed! Please check t/data/SLIMMER_TEST_results.obo";
 	}
 
