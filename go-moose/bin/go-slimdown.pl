@@ -28,7 +28,7 @@ my $parser = new GOBO::Parsers::OBOParserDispatchHash(file => $options->{input})
 $parser->parse;
 die "Error: parser could not find a graph in " . $options->{input} . "!\n" unless $parser->graph;
 
-	print STDERR "Finished parsing file " . $options->{input} . "\n" if $options->{verbose};
+print STDERR "Finished parsing file " . $options->{input} . "\n" if $options->{verbose};
 
 # get the nodes matching our subset criteria
 # will die if no subset terms found
@@ -41,36 +41,33 @@ $parser->graph->duplicate_statement_ix('ontology_links', 'asserted_links');
 
 my @errs;
 foreach my $s (keys %{$data->{subset}})
-{	my $g = $parser->graph;
-	print STDERR "subset $s: n graph terms: " . (scalar @{$g->terms}) . "\nn indices: " . (scalar $g->get_statement_ix_h_names ) . ": " . join(", ", sort $g->get_statement_ix_h_names ) . "\n" if $options->{verbose};
-	
-
+{
 	# check there are sufficient terms in the subset
 	if (scalar keys %{$data->{subset}{$s}} < $subset_min && ! $options->{force_continue})
-	{
+	{	push @errs, "Error: only " . (scalar keys %{$data->{subset}{$s}}) . " terms from the subset " . Dumper($s) . " could be found. To continue anyway, please run the script again with the extra command line parameter -f";
 		print STDERR "subset keys found:\n" . join("\n", keys %{$data->{subset}{$s}}) . "\n" if $options->{verbose};
-		push @errs, "Error: only " . (scalar keys %{$data->{subset}{$s}}) . " terms from the subset " . Dumper($s) . " could be found. To continue anyway, please run the script again with the extra command line parameter -f";
 		next;
 	}
 	my @subset_arr = values %{$data->{subset}{$s}};
-#	my $ie = new GOBO::InferenceEngine::CustomEngine(graph => $parser->graph);
 	my $ie = new GOBO::InferenceEngine::CustomEngine(graph => $g);
-#	my $ie = new GOBO::InferenceEngine(graph=>$graph);
+
+	## clone the graph
+	my $ie = new GOBO::InferenceEngine::CustomEngine(graph => dclone $parser->graph);
 
 	# slim down the graph...
 	# in these slims, the input set is the same as the mapping set
 	$ie->slim_graph( subset_ids => [ keys %{$data->{subset}{$s}} ], input_ids => [ keys %{$data->{subset}{$s}} ], from_ix => 'asserted_links', save_ix => 'inferred_ontology_links', options => $options );
 
-	print STDERR "post slimming\nsubset: " . join(", ", sort keys %{$data->{subset}{$s}}) . "\nterms:  " . join(", ", sort { $a->id cmp $b->id } @{$ie->graph->terms}) . "\nn indices: " . (scalar $ie->graph->get_statement_ix_h_names ) . ": " . join(", ", sort $ie->graph->get_statement_ix_h_names ) . "\n\n\n" if $options->{verbose};
+#	print STDERR "post slimming\nsubset: " . join(", ", sort keys %{$data->{subset}{$s}}) . "\nterms:  " . join(", ", sort { $a->id cmp $b->id } @{$ie->graph->terms}) . "\nn indices: " . (scalar $ie->graph->get_statement_ix_h_names ) . ": " . join(", ", sort $ie->graph->get_statement_ix_h_names ) . "\n\n\n" if $options->{verbose};
 
 
 #	print STDERR "n terms: " . (scalar @{$ie->graph->terms}) . "\nn relations: " . (scalar @{$ie->graph->relations} ) . "\n\n" if $ENV{VERBOSE};
 
-	print STDERR "new graph statements:\n" . join("\n", @{$ie->graph->statements}) . "\nontology_links: " . join("\n", @{$ie->graph->ontology_links}) . "\n" if $options->{verbose};
+#	print STDERR "new graph statements:\n" . join("\n", @{$ie->graph->statements}) . "\nontology_links: " . join("\n", @{$ie->graph->ontology_links}) . "\n" if $options->{verbose};
 
 
 	if ($options->{tree_format})
-	{	my $writer = new GOBO::Writers::TreeWriter( file => $options->{output}, graph => $ie->graph, edge_ix => 'inferred_ontology_links' );
+	{	my $writer = new GOBO::Writers::TreeWriter( file => $options->{output}, graph => $ie->graph, edge_ix => 'inferred_' . $s . '_links' );
 		$writer->write;
 	}
 	else
@@ -78,8 +75,8 @@ foreach my $s (keys %{$data->{subset}})
 		{	# create the file name from the slim name
 			($options->{output} = $options->{basename}) =~ s/SLIM_NAME/$s/;
 		}
-		my $writer = GOBO::Writers::OBOWriter->create(file=>$options->{output}, format=>'obo', edge_ix => 'inferred_ontology_links');
-		$writer->graph($ie->graph);
+		my $writer = GOBO::Writers::OBOWriter->create(file=>$options->{output}, format=>'obo', edge_ix => 'inferred_' . $s . '_links', graph=>$ie->graph);
+#		$writer->graph($ie->graph);
 		$writer->write();
 		print STDERR "Done write_graph_to_file for " . $options->{output} . "!\n" if $options->{verbose};
 	}
