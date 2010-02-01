@@ -26,12 +26,21 @@ sub read_term_file {
 	if ($opt->{termlist} =~ /\.obo$/)
 	{	# looks like it! read in the file and get the term nodes
 		## read in the OBO file and quickly pull out the slim terms
+		my $regexp;
+		if ($opt->{term_regexp})
+		{	$regexp = $opt->{term_regexp};
+		}
 		{	local $/ = "\n[";
 			open(IN, '<'.$opt->{termlist}) or die "The file ".$opt->{termlist}." could not be opened: $!\nDying";
 			print "Loading " . $opt->{termlist} . "...\n" if $opt->{verbose};
 			while (<IN>)
-			{	if (/^Term].*?^id: .+$/sm && /^id: ?(\S+)$/m)
-				{	$sub_h->{$1}++;
+			{	if (/^Term].*?^id: .+$/sm && /^id: *(\S+)$/m)
+				{	if ($regexp)
+					{	my $id = $1;
+						$sub_h->{$id}++ if $id =~ /$regexp/;
+						next;
+					}
+					$sub_h->{$1}++;
 				}
 			}
 			print "Finished loading ontology.\n" if $opt->{verbose};
@@ -43,7 +52,7 @@ sub read_term_file {
 		{	local $/ = "\n";
 			open(IN, '<'.$opt->{termlist}) or die "The file ".$opt->{termlist}." could not be opened: $!\nDying";
 			print "Loading " . $opt->{termlist} . "...\n" if $opt->{verbose};
-			my $regexp = $opt->{term_regexp} || qr/^\s*\S+[\s$]/;
+			my $regexp = $opt->{term_regexp} || qr/^\s*\S+/;
 			while (<IN>)
 			{	if (/($regexp)/)
 				{	my $x = $1;

@@ -9,15 +9,14 @@ $Data::Dumper::Sortkeys = 1;
 use GOBO::Parsers::OBOParserDispatchHash;
 use GOBO::Util::GraphFunctions;
 
+use Storable;
 use Test::More;
-plan tests => 46;
+plan tests => 55;
 
 my $verbose = $ENV{GO_VERBOSE} || 1;
 $ENV{EXPERIMENTAL} = 1;
 my $status;
 my $parser;
-
-# =cut
 
 # 1
 $status = `perl bin/go-slimdown.pl -i t/data/obofile.obo -s test_goslim -o t/data/slimmer_test_results.obo 2>&1 1>/dev/null`;
@@ -51,7 +50,7 @@ die "go-slimdown.pl exited funny: $?" unless $status == 0;
 $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>"t/data/slimmer_test_results.obo");
 $parser->parse;
 
-cmp_ok(testme($parser->graph, 1), "==", 1, "Checking slimmer_test_results.obo");
+cmp_ok(testme($parser->graph, 'ontology_links', 1), "==", 1, "Checking slimmer_test_results.obo");
 #die if testme($parser->graph) == 2;
 system("rm", "t/data/slimmer_test_results.obo");
 die ("Did not remove t/data/slimmer_test_results.obo properly!") if -e "t/data/slimmer_test_results.obo";
@@ -67,7 +66,7 @@ undef $parser;
 $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>"t/data/slimmer_test_results.obo");
 $parser->parse;
 
-cmp_ok(testme($parser->graph, 2), "==", 1, "Checking slimmer_test_results.obo");
+cmp_ok(testme($parser->graph, 'ontology_links', 2), "==", 1, "Checking slimmer_test_results.obo");
 system("rm", "t/data/slimmer_test_results.obo");
 
 die ("Did not remove t/data/slimmer_test_results.obo properly!") if -e "t/data/slimmer_test_results.obo";
@@ -87,7 +86,7 @@ undef $parser;
 $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>"t/data/slimmer_test_results.obo");
 $parser->parse;
 
-cmp_ok(testme($parser->graph, 4), "==", 1, "Checking slimmer_test_results.obo");
+cmp_ok(testme($parser->graph, 'ontology_links', 4), "==", 1, "Checking slimmer_test_results.obo");
 system("rm", "t/data/slimmer_test_results.obo");
 
 die ("Did not remove t/data/slimmer_test_results.obo properly!") if -e "t/data/slimmer_test_results.obo";
@@ -119,7 +118,7 @@ foreach my $a (values %$args)
 	## 11
 	like( $status, qr/Error: /, "Checking go-slimdown.pl with invalid params");
 
-	$ENV{GO_VERBOSE} = 1;
+#	$ENV{GO_VERBOSE} = 1;
 
 	# valid inputs
 	$status = system("perl", qw( bin/go-slimdown.pl -i t/data/obo_file.obo -b t/data/SLIMMER_TEST_SLIM_NAME.obo), @$a );
@@ -127,7 +126,7 @@ foreach my $a (values %$args)
 	## 12
 	ok($status == 0, "Running go-slimdown.pl with args -i t/data/obo_file.obo -b t/data/SLIMMER_TEST_SLIM_NAME.obo " . join(" ", @$a) );
 
-undef $ENV{GO_VERBOSE};
+#undef $ENV{GO_VERBOSE};
 
 	die "go-slimdown.pl exited funny: $?" unless $status == 0;
 
@@ -145,9 +144,9 @@ undef $ENV{GO_VERBOSE};
 	$parser->parse;
 
 	## 14
-	cmp_ok(testme($parser->graph, 1), "==", 1, "Checking SLIMMER_TEST_test_goslim.obo");
+	cmp_ok(testme($parser->graph, 'ontology_links', 1), "==", 1, "Checking SLIMMER_TEST_test_goslim.obo");
 
-	if (testme($parser->graph, 1) != 1)
+	if (testme($parser->graph, 'ontology_links', 1) != 1)
 	{	die "Inference failed! Please check t/data/SLIMMER_TEST_test_goslim.obo";
 	}
 
@@ -157,9 +156,9 @@ undef $ENV{GO_VERBOSE};
 	$parser->parse;
 
 	## 15
-	cmp_ok(testme($parser->graph, 2), "==", 1, "Checking SLIMMER_TEST_test_next_goslim.obo");
+	cmp_ok(testme($parser->graph, 'ontology_links', 2), "==", 1, "Checking SLIMMER_TEST_test_next_goslim.obo");
 
-	if (testme($parser->graph, 2) != 1)
+	if (testme($parser->graph, 'ontology_links', 2) != 1)
 	{	die "Inference failed! Please check t/data/SLIMMER_TEST_test_next_goslim.obo";
 	}
 
@@ -169,13 +168,13 @@ undef $ENV{GO_VERBOSE};
 	$parser->parse;
 
 	## 16
-	cmp_ok(testme($parser->graph, 3), "==", 1, "Checking SLIMMER_TEST_results.obo [combined]");
+	cmp_ok(testme($parser->graph, 'ontology_links', 3), "==", 1, "Checking SLIMMER_TEST_results.obo [combined]");
 
-	if (testme($parser->graph, 3) != 1)
+	if (testme($parser->graph, 'ontology_links', 3) != 1)
 	{	die "Inference failed! Please check t/data/SLIMMER_TEST_results.obo";
 	}
 
-#	if (testme($parser->graph, 3) != 1)
+#	if (testme($parser->graph, 'ontology_links', 3) != 1)
 #	{	system( "cp", "t/data/SLIMMER_TEST_results.obo", "t/data/wrong_SLIMMER_TEST_results.obo" );
 #	}
 
@@ -185,18 +184,42 @@ undef $ENV{GO_VERBOSE};
 	die ("Did not remove t/data/SLIMMER_TEST_*.obo properly!") if
 		(-e "t/data/SLIMMER_TEST_results.obo" || -e "t/data/SLIMMER_TEST_test_goslim.obo" || -e "t/data/SLIMMER_TEST_test_next_goslim.obo");
 }
+
 ## OK, let's do a slimming, create a mapping file, and then check
 ## load_mapping is ok
-
-# =cut
-
 # make sure that there isn't already a mapping file in place...
-if (-e "t/data/mapping_file.txt")
-{	system("rm", "t/data/mapping_file.txt");
-	die "Mapping file still exists at t/data/mapping_file.txt" if -e "t/data/mapping_file.txt";
+if (-e "t/data/mapping_file.txt" || -e "t/data/mapping_file2.txt")
+{	system("rm", "t/data/mapping_file.txt", "t/data/mapping_file2.txt");
+	die "Mapping file still exists at t/data/mapping_file*" if -e "t/data/mapping_file.txt" || -e "t/data/mapping_file2.txt";
 }
 
 ## test 45
+
+# 45
+$status = `perl bin/mapmaker.pl -i t/data/obofile.obo -s test_goslim -o t/data/mapping_file.txt 2>&1 1>/dev/null`;
+like( $status, qr/Error: /, "Checking mapmaker.pl with invalid input");
+
+# 46
+$status = `perl bin/mapmaker.pl -i t/data/obo_file.obo -s test_goslim 2>&1 1>/dev/null`;
+like( $status, qr/Error: /, "Checking mapmaker.pl with no output");
+
+# 47
+$status = `perl bin/mapmaker.pl -i t/data/obo_file.obo -o t/data/mapping_file.txt 2>&1 1>/dev/null`;
+like( $status, qr/Error: /, "Checking mapmaker.pl with no slim");
+
+# goslim not in file
+# 48
+$status = `perl bin/mapmaker.pl -i t/data/obo_file.obo -s goslim_monster -o t/data/mapping_file.txt 2>&1 1>/dev/null`;
+like( $status, qr/Error: /, "Checking mapmaker.pl with invalid subset");
+
+# 49
+$status = `perl bin/mapmaker.pl -i t/data/obo_file.obo -s test_goslim -o t/data/mapping_file.txt -s test_next_goslim 2>&1 1>/dev/null`;
+like( $status, qr/More than one subset was specified/, "Checking mapmaker.pl with too many subsets");
+
+system("rm", "t/data/mapping_file.txt");
+die "Mapping file still exists at t/data/mapping_file.txt" if -e "t/data/mapping_file.txt";
+
+# 50
 undef $status;
 $status = system("perl", qw( bin/mapmaker.pl -i t/data/slimmer_test_3.obo -s test_goslim -o t/data/mapping_file.txt) );
 ok($status == 0, "Checking mapmaker.pl with valid args");
@@ -310,11 +333,47 @@ foreach my $t (sort keys %{$data->{termlist}})
 	}
 }
 
-
+## 51
 ok(! @errs, "Checking that mapmaking worked...");
 if (@errs)
 {	print STDERR "Found the following errors!\n" . join("\n", @errs) . "\n";
 }
+
+# 52: use a text file and term regexp
+$status = system("perl", qw( bin/mapmaker.pl -i t/data/slimmer_test_3.obo -o t/data/mapping_file2.txt -t t/data/slimmer_test_3.obo -r GO:0000.+) );
+die "go-slimdown.pl exited funny: $?" unless $status == 0;
+
+ok( nodiff("t/data/mapping_file.txt","t/data/mapping_file2.txt"), "Checking results with a term regexp as input");
+
+
+system("rm", "t/data/mapping_file.txt");
+die "Mapping file still exists at t/data/mapping_file.txt" if -e "t/data/mapping_file.txt";
+
+# 53, 54
+# using the exciting obo_file.obo...
+$status = system("perl", qw( bin/mapmaker.pl -i t/data/obo_file.obo -s test_goslim -o t/data/mapping_file.txt) );
+die "go-slimdown.pl exited funny: $?" unless $status == 0;
+
+## read in the mapping file
+$data = GOBO::Util::GraphFunctions::load_mapping_as_graph( mapping_file => 't/data/mapping_file.txt' );
+## run tests here!
+#print STDERR "data: " . Dumper($data);
+
+my $s = 5;
+foreach my $ix qw(closest all)
+{	cmp_ok(testme($data, $ix, $s), "==", 1, "Checking $ix links...");
+	$s++;
+}
+
+# 55: use a term list as input
+$status = system("perl", qw( bin/mapmaker.pl -i t/data/obo_file.obo -t t/data/test_goslim_termlist.txt -o t/data/mapping_file2.txt) );
+die "go-slimdown.pl exited funny: $?" unless $status == 0;
+
+ok( nodiff("t/data/mapping_file.txt","t/data/mapping_file2.txt"), "Checking results with a term list as input");
+
+system("rm", "t/data/mapping_file.txt", "t/data/mapping_file2.txt");
+die "Mapping file still exists at t/data/mapping_file.txt or t/data/mapping_file2.txt" if -e "t/data/mapping_file.txt" || -e "t/data/mapping_file2.txt";
+
 
 exit(0);
 
@@ -468,6 +527,7 @@ GO:0000004 is_a, neg_regs(, regs) GO:0000019
 
 sub testme {
 	my $g = shift;
+	my $ix = shift; # index name
 	my $n = shift;  # test number
 
 my $answers;
@@ -544,6 +604,61 @@ $answers->{4}{"GO:0000004"}{is_a}{"GO:0000019"} = 1;
 $answers->{4}{"GO:0000004"}{negatively_regulates}{"GO:0000019"} = 1;
 #$answers->{4}{"GO:0000004"}{regulates}{"GO:0000019"} = 1;
 
+## mapping of all terms to test_goslim, closest links only
+
+$answers->{5} = Storable::dclone $answers->{1};
+$answers->{5}{"GO:0000008"}{negatively_regulates}{"GO:0000010"} = 1;
+$answers->{5}{"GO:0000009"}{is_a}{"GO:0000010"} = 1;
+$answers->{5}{"GO:0000011"}{is_a}{"GO:0000010"} = 1;
+$answers->{5}{"GO:0000012"}{is_a}{"GO:0000014"} = 1;
+$answers->{5}{"GO:0000013"}{is_a}{"GO:0000014"} = 1;
+$answers->{5}{"GO:0000016"}{is_a}{"GO:0000014"} = 1;
+$answers->{5}{"GO:0000017"}{is_a}{"GO:0000019"} = 1;
+$answers->{5}{"GO:0000018"}{is_a}{"GO:0000019"} = 1;
+$answers->{5}{"GO:0000021"}{is_a}{"GO:0000019"} = 1;
+$answers->{5}{"GO:0000022"}{is_a}{"GO:0000019"} = 1;
+$answers->{5}{"GO:0000023"}{is_a}{"GO:0000019"} = 1;
+
+## mapping of all terms to test_goslim, all links
+$answers->{6} = Storable::dclone $answers->{5};
+
+$answers->{6}{"GO:0000001"}{regulates}{"GO:0000010"} = 1;
+$answers->{6}{"GO:0000001"}{negatively_regulates}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000001"}{regulates}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000002"}{part_of}{"GO:0000010"} = 1;
+$answers->{6}{"GO:0000002"}{is_a}{"GO:0000010"} = 1;
+$answers->{6}{"GO:0000002"}{part_of}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000002"}{is_a}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000003"}{part_of}{"GO:0000007"} = 1;
+$answers->{6}{"GO:0000003"}{part_of}{"GO:0000010"} = 1;
+$answers->{6}{"GO:0000003"}{part_of}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000004"}{is_a}{"GO:0000014"} = 1;
+$answers->{6}{"GO:0000004"}{negatively_regulates}{"GO:0000014"} = 1;
+$answers->{6}{"GO:0000004"}{regulates}{"GO:0000014"} = 1;
+$answers->{6}{"GO:0000004"}{is_a}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000004"}{negatively_regulates}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000004"}{regulates}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000004"}{positively_regulates}{"GO:0000015"} = 1;
+$answers->{6}{"GO:0000004"}{regulates}{"GO:0000015"} = 1;
+$answers->{6}{"GO:0000015"}{part_of}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000016"}{is_a}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000006"}{is_a}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000007"}{part_of}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000008"}{negatively_regulates}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000008"}{regulates}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000008"}{regulates}{"GO:0000010"} = 1;
+$answers->{6}{"GO:0000009"}{is_a}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000010"}{is_a}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000011"}{is_a}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000012"}{is_a}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000013"}{is_a}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000014"}{is_a}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000015"}{part_of}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000016"}{is_a}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000024"}{is_a}{"GO:0000019"} = 1;
+$answers->{6}{"GO:0000024"}{part_of}{"GO:0000019"} = 1;
+
+
 	my $summary;
 	my $ans;
 	map {
@@ -558,7 +673,7 @@ $answers->{4}{"GO:0000004"}{negatively_regulates}{"GO:0000019"} = 1;
 
 	foreach my $t (sort { $a->id cmp $b->id } @{$g->terms})
 	{	#my @links = @{ $infeng->get_inferred_outgoing_links($t) };
-		my @links = @{ $g->get_outgoing_ontology_links(node_id=>$t->id) };
+		my @links = @{ $g->get_outgoing_statements_in_ix(ix=>$ix, node_id=>$t->id) };
 
 #		print STDERR "links for " . $t->id . ": " . Dumper( \@links );
 
@@ -615,3 +730,11 @@ $answers->{4}{"GO:0000004"}{negatively_regulates}{"GO:0000019"} = 1;
 	}
 	return 1;
 }
+
+sub nodiff {
+	my ($f1,$f2) = @_;
+	my $diff = `diff -I "Mapping file of terms to " -b $f1 $f2`;
+	print $diff;
+	return !$diff;
+}
+

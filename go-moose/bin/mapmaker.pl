@@ -187,7 +187,11 @@ if ($options->{subset})
 {	$data = GOBO::Util::GraphFunctions::get_subset_nodes( graph => $graph, options => $options );
 	print STDERR "Done GOBO::Util::GraphFunctions::get_subset_nodes!\n" if $options->{verbose};
 
-	# move the subset to $subset
+#print STDERR "options looks like this: " . Dumper($options);
+
+#	map { $subset->{$_} = 1 } keys %{$data->{subset}{$options->{subset}}};
+
+	## there will only be a single key here...
 	foreach my $s (keys %{$data->{subset}})
 	{	$subset = $data->{subset}{$s};
 	}
@@ -228,46 +232,12 @@ if (scalar keys %$subset < 5 && ! $options->{force_continue})
 
 ##
 
-=insert
-my @subset_arr = values %{$data->{subset}{$s}};
-$graph->duplicate_statement_ix('ontology_links', 'asserted_links');
-my $ie = new GOBO::InferenceEngine::CustomEngine(graph=>$graph);
-#	my $ie = new GOBO::InferenceEngine(graph=>$graph);
-
-## give the inference engine a subroutine to execute upon each wee little term
-## so it stops looking for parent terms when it reaches a subset node
-my @subset_ids = keys %{$data->{subset}{$s}};
-my $sub = sub {
-	my $x = shift;
-#		print STDERR "subset: " . join(", ", @subset_ids) . "\n\n";
-	return 1 if grep { $_ eq $x->target->id } @subset_ids ;
-	return 0;
-};
-$ie->test_sub( $sub );
-
-# slim down the graph...
-# in these slims, the input set is the same as the mapping set
-my $new_graph = $ie->slim_graph( subset_ids => \@subset_ids, input_ids => [ keys %{$data->{subset}{$s}} ], from_ix => 'asserted_links', save_ix => 'inferred_' . $s . '_ontology_links', options => $options );
-
-=cut
-
-
 $graph->duplicate_statement_ix('ontology_links', 'asserted_links');
 my $ie = new GOBO::InferenceEngine::CustomEngine( graph => $graph );
-
-#$ie->generate_simple_combined_rel_h;
 
 $ie->get_closest_and_ancestral( subset_ids => [ keys %$subset ], from_ix => 'asserted_links', all_ix => 'transitive_closure', closest_ix => 'transitive_reduction' );
 
 $graph = $ie->graph;
-
-## check out ALL links:
-#print STDERR "All links, closest and otherwise:\n" . join("\n", @{$graph->get_all_statements_in_ix('all_inferred_links')} ) . "\n\n";
-
-## check out CLOSEST links:
-#print STDERR "Closest links only:\n" . join("\n", @{$graph->get_all_statements_in_ix('closest_links')}) . "\n\n\n";
-
-my $slimmed;
 
 ## we are ready to output the data now! woohoo.
 ## print out the file header material
@@ -347,8 +317,8 @@ foreach my $id (sort map { $_->id } @{$parser->graph->terms})
 
 	my $t = $graph->get_term($id);
 	if ($t->obsolete)
-	{	print STDERR $t->id . " is obsolete!\n";
-		print $output "obsolete!\n";
+	{	#print STDERR $t->id . " is obsolete!\n";
+		print $output "obsolete\n";
 		next;
 	}
 
@@ -502,53 +472,3 @@ sub check_options {
 	return $opt;
 }
 
-=cut
-sub get_subset_terms {
-	my $sub_h;  # we'll store the data in here
-	my $opt = shift;
-
-	# see if we have an OBO file...
-	if ($opt->{termlist} =~ /\.obo$/)
-	{	# looks like it! read in the file and get the term nodes
-		## read in the OBO file and quickly pull out the slim terms
-		{	local $/ = "\n[";
-			open(IN, '<'.$opt->{termlist}) or die "The file ".$opt->{termlist}." could not be opened: $!\nDying";
-			print "Loading " . $opt->{termlist} . "...\n" if $opt->{verbose};
-			while (<IN>)
-			{	if (/^Term].*?^id: .+$/sm && /^id: ?(\S+)$/m)
-				{	$sub_h->{$1}++;
-				}
-			}
-			print "Finished loading ontology.\n" if $opt->{verbose};
-			close(IN);
-		}
-	}
-	else
-	{	# this is a file of unknown origin
-		{	local $/ = "\n";
-			open(IN, '<'.$opt->{termlist}) or die "The file ".$opt->{termlist}." could not be opened: $!\nDying";
-			print "Loading " . $opt->{termlist} . "...\n" if $opt->{verbose};
-			my $regexp = $opt->{term_regexp} || qr/^\s*\S+[\s$]/;
-			while (<IN>)
-			{	if (/($regexp)/)
-				{	my $x = $1;
-					$x =~ s/^\s*//;
-					$x =~ s/\s*$//;
-					$sub_h->{$x}++;
-				}
-			}
-			print "Finished loading term file.\n" if $opt->{verbose};
-			close(IN);
-		}
-	}
-
-	if (! $sub_h)
-	{	die "Could not find any terms in the file " . $opt->{termlist} . ". Dying";
-	}
-
-	print STDERR "Found subset terms: " . join(", ", keys %$sub_h) . "\n" if $options->{verbose};
-
-	return $sub_h;
-
-}
-=cut
