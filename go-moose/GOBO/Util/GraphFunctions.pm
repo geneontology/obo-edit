@@ -171,7 +171,7 @@ $not_annot->propagates_over_is_a(0);
 			push @errs, $a;
 		}
 	}
-	
+
 	if (@errs)
 	{	if (scalar @errs == $n_annots)
 		{	die "All annotations were lost during slimming! Dying";
@@ -180,13 +180,13 @@ $not_annot->propagates_over_is_a(0);
 		{	warn "The following annotations were lost during slimming: " . join(", ", sort @errs);
 		}
 	}
-	
+
 	undef @errs;
 
 	if ($options->{report_orphans})
-	{	
-	
-	
+	{
+
+
 	}
 
 	## if we're doing a rewrite of the GAF file, we don't need any more fancy
@@ -1368,7 +1368,6 @@ sub add_nodes_and_links_to_graph {
 }
 
 
-
 =head2 trim_inferred_graph
 
 input:  an inferred graph (with every link under the sun in it)
@@ -1534,6 +1533,8 @@ sub create_bucket_terms {
 	}
 }
 
+
+
 =head2 load_mapping
 
 input:  mapping file in the format
@@ -1604,6 +1605,88 @@ sub load_mapping {
 	print "Finished loading term file.\n" if $args{verbose};
 	close(IN);
 	return $data;
+}
+
+
+=head2 load_mapping_as_graph
+
+input:  mapping file in the format
+
+ term ID [tab] closest ancestral subset terms for each relationship [tab] all other ancestral terms
+
+ term [tab] r1 term, r1 term, r1 term; r2 term [tab] r1 term; r2 term, r2 term
+
+output: a graph representing the mapping data
+
+=cut
+
+sub load_mapping_as_graph {
+	my %args = (@_);
+	my $file = $args{mapping_file};
+
+	local $/ = "\n";
+	open(IN, '<' . $file) or die "The file ".$file." could not be opened: $!\nDying";
+	print "Loading $file...\n" if $args{verbose};
+
+	my $graph = new GOBO::Graph;
+	## add a subset to the subset index;
+	my $ss_obj = $graph->subset_noderef('mapping_subset');
+	$graph->subset_index->{'mapping_subset'} = $ss_obj;
+
+	while (<IN>)
+	{	next if /^!/;
+		if (/(.*?)\t(.+)/)
+		{	my @rest = split("\t", $2);
+			my $t = $1;
+			my $term;
+#			$t =~ s/(.*?), (.+)/$1/;
+			if ($t =~ /(.+?), (.+)/)
+			{	$term = $graph->term_noderef($1);
+				$term->name($2);
+			}
+			else
+			{	$term = $graph->term_noderef($t);
+			}
+			$graph->add_term($term);
+
+			if ($rest[0] =~ /obsolete/)
+			{	$term->obsolete(1);
+			}
+			else
+			{	if (defined $rest[2] && $rest[2] eq 'subset_term')
+				{	$term->add_subsets($ss_obj);
+				}
+
+				my $rest_h = {
+					'closest' => $rest[0],
+					'all' => $rest[1],
+				};
+				foreach my $k (keys %$rest_h)
+				{	next unless $rest_h->{$k};
+					my @arr = split(/[,;] /, $rest_h->{$k});
+					foreach (@arr)
+					{	if (/(.*?) (.+)/)
+						{	my ($rel, $target) = ($graph->relation_noderef($1), $graph->term_noderef($2));
+							my $stt = new GOBO::LinkStatement( node => $term,
+							relation => $rel, target => $target );
+							$graph->add_statements_to_ix(ix=>$k, statements=>[$stt]);
+						}
+						else
+						{	print STDERR "Doesn't match pattern! $_\n";
+						}
+					}
+				}
+			}
+		}
+	}
+	print "Finished loading term file.\n" if $args{verbose};
+	close(IN);
+	return $data;
+}
+
+	$graph->update_graph;
+
+	return $graph;
 }
 
 

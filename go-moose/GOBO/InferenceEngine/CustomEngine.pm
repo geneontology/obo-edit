@@ -390,7 +390,7 @@ sub get_closest_and_ancestral {
 
 	print STDERR "done __populate_all_edge_matrices\n" if $ENV{VERBOSE};
 
-	$self->__trim_edge_matrix;
+	$self->__trim_edge_matrix( trim_relations => 1 );
 
 	print STDERR "done __trim_edge_matrix!\n" if $ENV{VERBOSE};
 
