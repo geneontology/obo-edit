@@ -179,6 +179,8 @@ Prints a message to STDERR if VERBOSE is set.
 Arguments: message string
 Returns: t if message written, nil otherwise.
 
+NOTE: This is a much weaker version of the AmiGO kvetch...
+
 =cut
 sub kvetch {
 

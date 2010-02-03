@@ -70,6 +70,22 @@ sub new {
 }
 
 
+## Internal convenience function.
+sub _convert_term_or_acc_to_acc {
+
+  my $self = shift;
+  my $term = shift || '';
+
+  ## Convert string or obj to acc string.
+  my $term_acc = $term; # assume as string
+  if( $term && (ref $term eq 'GOBO::DBIC::GODBModel::Schema::Term' ) ){
+    $term_acc = $term->acc;
+  }
+
+  return $term_acc;
+}
+
+
 =item get_roots
 
 Returns the root nodes.
@@ -90,48 +106,81 @@ sub get_roots {
 
 =item is_root_p
 
-Boolean on acc.
+Boolean on acc string or DBIx::Class Term.
 
 =cut
 sub is_root_p {
   my $self = shift;
-  my $acc = shift || '';
-  return 1 ? defined $self->{ROOTS}{$acc} : 0;
+  my $thing = shift || '';
+
+  ##
+  my $retval = 0;
+  my $acc = $self->_convert_term_or_acc_to_acc($thing);
+  #$self->kvetch('_root_p_acc_: ' . $acc);
+  if( defined $self->{ROOTS}{$acc} ){
+    $retval = 1;
+  }
+  #$self->kvetch('_root_p_ret_: ' . $retval);
+  return $retval;
+}
+
+
+=item is_leaf_p
+
+Boolean on acc string or DBIx::Class Term.
+
+=cut
+sub is_leaf_p {
+  my $self = shift;
+  my $thing = shift || '';
+  # $self->kvetch('>>><<<');
+
+  ## Assume leafiness until proven otherwise.
+  my $retval = 1;
+  my $res = $self->get_child_relationships($thing);
+  if( $res && scalar(@$res) ){
+    $retval = 0;
+  }
+  return $retval;
 }
 
 
 =item get_term
 
-Gets a term from a string.
-
-TODO: should be able to take string or object.
+Gets a term from an acc string or DBIx::Class Term.
+A Term just gets passed through (little overhead).
 
 =cut
 sub get_term {
 
   my $self = shift;
-  my $acc = shift || '';
+  my $reterm = shift || undef;
 
-  my $term_rs =
-    $self->{SCHEMA}->resultset('Term')->search({ acc => $acc });
+  #$self->kvetch('GOBO::DBIC::GODBModel::Graph::get_term in: '.$reterm);
+  #$self->kvetch('GOBO::DBIC::GODBModel::Graph::get_term ref: '.ref($reterm));
 
-  return $term_rs->first || undef;
+  ## Convert to Term object if it looks like a (acc) string.
+  if( defined $reterm && ref $reterm ne 'GOBO::DBIC::GODBModel::Schema::Term' ){
+    my $term_rs = $self->{SCHEMA}->resultset('Term')->search({acc => $reterm});
+    $reterm = $term_rs->first || undef;
+  }
+
+  return $reterm;
 }
 
 
 =item get_children
 
-In: acc.
+In: acc string or Term.
 Out: Children term (object) list ref.
-
-TODO: should be able to take string or object.
 
 =cut
 sub get_children {
 
   my $self = shift;
   #my $term = shift || undef;
-  my $acc = shift || '';
+  my $thing = shift || '';
+  my $acc = $self->_convert_term_or_acc_to_acc($thing);
 
   my $all = $self->{GRAPH_Q}->get_all_results({'graph_object.acc' => $acc,
 					       'graph_path.distance' => 1});
@@ -140,8 +189,8 @@ sub get_children {
   foreach my $t2t (@$all){
     if( ! $t2t->subject->is_obsolete ){
       push @$ret, $t2t->subject;
-      $self->kvetch("GOBO::DBIC::GODBModel::Graph::get_children: kid: " .
-		    $t2t->subject->acc);
+      # $self->kvetch("GOBO::DBIC::GODBModel::Graph::get_children: kid: " .
+      # 		    $t2t->subject->acc);
     }
   }
   return $ret;
@@ -150,18 +199,17 @@ sub get_children {
 
 =item get_relationship
 
-In: acc, acc.
+In: term, term; take string or object.
 Out: int.
-
-TODO: should be able to take string or object.
 
 =cut
 sub get_relationship {
 
   my $self = shift;
-  #my $term = shift || undef;
-  my $obj_acc = shift || '';
-  my $sub_acc = shift || '';
+  my $obj_thing = shift || '';
+  my $sub_thing= shift || '';
+  my $obj_acc = $self->_convert_term_or_acc_to_acc($obj_thing);
+  my $sub_acc = $self->_convert_term_or_acc_to_acc($sub_thing);
 
   my $all = $self->{GRAPH_Q}->get_all_results({'object.acc' => $obj_acc,
 					       'subject.acc' => $sub_acc});
@@ -179,7 +227,7 @@ sub get_relationship {
 
 =item get_child_relationships
 
-Takes term.
+Takes DBIx::Class Term or acc string.
 Gets the term2term links from a term.
 
 =cut
@@ -187,14 +235,16 @@ sub get_child_relationships {
 
   my $self = shift;
   my $term = shift || undef;
-  return $self->{GRAPH_Q}->get_all_results({'graph_object.acc' => $term->acc,
+  my $term_acc = $self->_convert_term_or_acc_to_acc($term);
+
+  return $self->{GRAPH_Q}->get_all_results({'graph_object.acc' => $term_acc,
 					    'graph_path.distance' => 1});
 }
 
 
 =item get_parent_relationships
 
-Takes term.
+Takes DBIx::Class Term or acc string.
 Gets the term2term links from a term.
 
 =cut
@@ -202,18 +252,23 @@ sub get_parent_relationships {
 
   my $self = shift;
   my $term = shift || undef;
+  my $term_acc = $self->_convert_term_or_acc_to_acc($term);
+
   return
-    $self->{GRAPH_Q}->get_all_results({'graph_subject.acc' => $term->acc,
+    $self->{GRAPH_Q}->get_all_results({'graph_subject.acc' => $term_acc,
 				       'graph_path.distance' => 1});
 }
 
 
 =item climb
 
+TODO: acc or str, singular or listref
+
 With an array ref of terms, will climb to the top of the ontology
 (with an added 'all' stopper for GO).
 
-This returns an array of three things:
+This returns an array of five things:
+   (\%nodes, \%edges, \%tc_desc, \%tc_anc, \%tc_depth);
    *) a link list
    *) a term (node)
    *) a hashref of of nodes in terms of in-graph descendants
@@ -224,27 +279,40 @@ TODO: should also be able to take array ref of strings...
 sub climb {
 
   my $self = shift;
-  my $seed_terms = shift || [];
+  my $in_thing = shift || [];
+
+  ## Whatever it is, arrayify it.
+  if( ref $in_thing ne 'ARRAY' ){
+    $in_thing = [$in_thing];
+  }
+
+  ## Whatever is in there, make sure that they're all Terms. Use
+  ## Graph::get_term pass-through.
+  my @seed_terms = map {
+  #my @blah = map {
+    $self->get_term($_);
+  } @$in_thing;
+  #my $seed_terms = \@blah;
 
   ## For doing transitive closure on the graph to help with
   ## association transfer.
   my $booking_graph = Graph::Directed->new();
 
-  $self->kvetch("Climb: IN");
+  # $self->kvetch("Climb: IN");
 
   ## Pre-seed the nodes list.
   my %edges = ();
   my %nodes = ();
-  foreach my $seed ( @$seed_terms ){
+  foreach my $seed ( @seed_terms ){
     $nodes{$seed->acc} = $seed;
-    $self->kvetch("Climb: added seed: " . $seed->acc);
+    # $self->kvetch("Climb: added seed: " . $seed->acc);
   }
 
   ##
   my %in_graph_by_acc = ();
-  while( @$seed_terms ){
+  while( @seed_terms ){
 
-    my $current_term = pop @$seed_terms;
+    my $current_term = pop @seed_terms;
 
     ## BUG: Prevent super root (not really our bug though).
     my $current_acc = $current_term->acc;
@@ -253,7 +321,7 @@ sub climb {
       ## Add node to hash if not already there.
       if( ! $nodes{$current_acc} ){
 	$nodes{$current_acc} = $current_term;
-	$self->kvetch("Climb: adding node: " . $current_acc);
+	# $self->kvetch("Climb: adding node: " . $current_acc);
 	$booking_graph->add_vertex($current_acc);
       }
 
@@ -281,7 +349,7 @@ sub climb {
 	  ## Add edge to hash if not already there.
 	  if( ! defined $edges{$id} ){
 	    $edges{$id} = $parent_rel;
-	    $self->kvetch("Climb adding edge: $sub_acc $rel_id $obj_acc");
+	    # $self->kvetch("Climb adding edge: $sub_acc $rel_id $obj_acc");
 	    $booking_graph->add_edge($sub_acc, $obj_acc);
 	  }
 
@@ -296,7 +364,7 @@ sub climb {
 	  if( ! defined $in_graph_by_acc{$obj_acc}{$sub_acc} ){
 
 	    $in_graph_by_acc{$obj_acc}{$sub_acc} = 1;
-	    push @{$seed_terms}, $obj;
+	    push @seed_terms, $obj;
 	  }
 	}
       }
@@ -342,7 +410,7 @@ sub climb {
       my $len = $tc_graph->path_length($sub, $root);
       if( defined $len ){
 	$tc_depth{$sub} = $len;
-	$self->kvetch('Depth of ' . $sub . ' is ' . $len);
+	# $self->kvetch('Depth of ' . $sub . ' is ' . $len);
       }
     }
   }
