@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
-# find GO slim nodes and generate a graph based on them, removing any nodes not
-# in the slim
+# find subset nodes and generate a graph based on them, removing any nodes not
+# in the subset
 
 use strict;
 use FileHandle;
@@ -48,15 +48,13 @@ foreach my $s (keys %{$data->{subset}})
 		print STDERR "subset keys found:\n" . join("\n", keys %{$data->{subset}{$s}}) . "\n" if $options->{verbose};
 		next;
 	}
-	my @subset_arr = values %{$data->{subset}{$s}};
-	my $ie = new GOBO::InferenceEngine::CustomEngine(graph => $g);
 
 	## clone the graph
 	my $ie = new GOBO::InferenceEngine::CustomEngine(graph => dclone $parser->graph);
 
 	# slim down the graph...
 	# in these slims, the input set is the same as the mapping set
-	$ie->slim_graph( subset_ids => [ keys %{$data->{subset}{$s}} ], input_ids => [ keys %{$data->{subset}{$s}} ], from_ix => 'asserted_links', save_ix => 'inferred_ontology_links', options => $options );
+	$ie->slim_graph( subset_ids => [ keys %{$data->{subset}{$s}} ], input_ids => [ keys %{$data->{subset}{$s}} ], from_ix => 'asserted_links', save_ix => 'inferred_' . $s . '_links', options => $options );
 
 #	print STDERR "post slimming\nsubset: " . join(", ", sort keys %{$data->{subset}{$s}}) . "\nterms:  " . join(", ", sort { $a->id cmp $b->id } @{$ie->graph->terms}) . "\nn indices: " . (scalar $ie->graph->get_statement_ix_h_names ) . ": " . join(", ", sort $ie->graph->get_statement_ix_h_names ) . "\n\n\n" if $options->{verbose};
 
