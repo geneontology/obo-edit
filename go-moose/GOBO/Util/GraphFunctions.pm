@@ -15,8 +15,6 @@ use Class::MOP;
 
 
 use GOBO::DataArray;
-use GOBO::AnnotDataArray;
-
 
 #use Storable qw(dclone);
 
@@ -113,7 +111,7 @@ $not_annot->propagates_over_is_a(0);
 	undef @errs;
 	my $a_ids;
 	foreach my $a (keys %{$assoc_data->{by_a}})
-	{	my $a_node = new GOBO::DataArray( id => $a, data => $assoc_data->{by_a}{$a}{arr} );
+	{	my $a_node = new GOBO::DataArray( id => $a, data_arr => $assoc_data->{by_a}{$a}{arr} );
 		$graph->add_node($a_node);
 		foreach my $t (@{$assoc_data->{by_a}{$a}{terms}})
 		{	## check the term exists in the graph
@@ -424,14 +422,14 @@ $not_annot->propagates_over_is_a(0);
 		} @{$assoc_data->{by_t}{$t}};
 		
 		if ($annot)
-		{	my $a_node = new GOBO::AnnotDataArray( id=> "annot_data_$count", data_arr=>$annot );
+		{	my $a_node = new GOBO::DataArray( id=> "annot_data_$count", data_arr=>$annot );
 			$graph->add_node( $a_node );
 			push @statements, new GOBO::Annotation(node=>$a_node, relation=>$annotated_to, target=>$t_obj);
 			$ada_ids->{"annot_data_$count"} = $a_node;
 			$count++;
 		}
 		if ($not)
-		{	my $a_node = new GOBO::AnnotDataArray( id=> "annot_data_$count" , data_arr=>$not);
+		{	my $a_node = new GOBO::DataArray( id=> "annot_data_$count" , data_arr=>$not);
 			$graph->add_node( $a_node );
 			push @statements, new GOBO::Annotation(node=>$a_node, relation=>$annotated_to_NOT, target=>$t_obj);
 			$ada_ids->{"annot_data_$count"} = $a_node;

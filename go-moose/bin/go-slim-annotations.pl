@@ -121,7 +121,6 @@ use GOBO::InferenceEngine::CustomEngine;
 use GOBO::Util::GraphFunctions;
 use GOBO::Util::Misc;
 use GOBO::DataArray;
-use GOBO::AnnotDataArray;
 use GOBO::Writers::GAFWriter;
 my $options = parse_options(\@ARGV);
 

@@ -130,7 +130,7 @@ foreach (@{$parser->graph->relations})
 }
 ## add to the graph
 foreach my $a (keys %{$assoc_data->{by_a}})
-{	my $a_node = new GOBO::DataArray( id => $a, data => $assoc_data->{by_a}{$a}{arr} );
+{	my $a_node = new GOBO::DataArray( id => $a, data_arr => [ { id => $a, data => $assoc_data->{by_a}{$a}{arr} } ] );
 	$g->add_node($a_node);
 	foreach my $t (@{$assoc_data->{by_a}{$a}{terms}})
 	{	next if $t =~ /GO:000000[2468]/;
@@ -151,7 +151,7 @@ foreach my $a (keys %{$assoc_data->{by_a}})
 #my $t2_arr = sort { $a->id cmp $b->id } @{$g2->get_annotated_terms('annotations')};
 ok( join("--", sort { $a->id cmp $b->id } @{$g->get_annotated_terms}) eq 'GO:0000001--GO:0000003--GO:0000005--GO:0000007', "Checking links are correct");
 ok( join("--", sort { $a->id cmp $b->id } @{$g2->get_annotated_terms('annotations')} ) eq 'GO:0000001--GO:0000003--GO:0000005--GO:0000007', "Checking links are correct");
-ok( join("--", sort { $a->id cmp $b->id } @{$g2->get_annotated_terms('special_annotations')} ) eq 'GO:0000003--GO:0000007', "Checking links are correct");
+ok( join("--", sort map { $_->id } @{$g2->get_annotated_terms_in_ix('special_annotations')} ) eq 'GO:0000003--GO:0000007', "Checking links are correct");
 
 ## load up a graph and check some roots.
 $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>'t/data/obo_file.obo');

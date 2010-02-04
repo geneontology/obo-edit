@@ -2,7 +2,7 @@ package GOBO::DataArray;
 use Moose;
 use strict;
 extends 'GOBO::Gene';
-# extends 'GOBO::TermNode';
-has data => ( is=>'rw', isa=>'ArrayRef[Str]' );
-# has target => ( is=>'rw', isa=>'Str' );
+## data is in the form { id => Str, data => [ arr ] }
+has data_arr => ( is=>'rw', isa=>'ArrayRef[HashRef]' );
+
 1;
