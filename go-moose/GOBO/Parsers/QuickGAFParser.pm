@@ -22,29 +22,32 @@ override 'parse_body' => sub {
 	my $data;
 	my @errs;
 
+	
 	while (my $line = $self->next_line) {
 		next if $line =~ /^!/;
 		chomp $line;
 		my @arr = split("\t", $line);
+		## make sure we have enough columns! This ensures we have a term col
+		## at the very least.
+		next unless scalar @arr > 5; 
 		## add an extra array item to make it easier to work out which column is which
 		unshift @arr, " ";
 		#	association ID
 		my $a_id = _create_assoc_id(\@arr);
-#		print STDERR "arr[5]: $arr[5]; a_id: $a_id\n" if $ENV{VERBOSE};
-		if (grep { $a_id eq $_ } @{$data->{by_t}{$arr[5]}}) # data already exists
-		{	warn "Annotation $a_id to $arr[5] already exists!";
-			next;
-		}
-
-		## undef the term and ontology abbrev, store the array data
 		my $t_id = $arr[5];
-#		$arr[5] = '';
-#		$arr[9] = '';
 
 		if ($data->{by_a}{$a_id})
 		{	## if the assoc ID exists, we're in the strange situation of already
 			## having v. similar assoc info
-			if ( join("\t", @arr) ne join("\t", @{$data->{by_a}{$a_id}{arr}}) )
+
+			## check whether it's just a duplicate
+			if (grep { $t_id eq $_ } @{$data->{by_a}{$a_id}{terms}})
+			{	## ok, we have this annotation already. Next!
+				next;
+			}
+			
+			my @arr2 = @{$data->{by_a}{$a_id}{arr}};
+			if ( join("\t", @arr[1..4], @arr[6..8], @arr[10..$#arr]) ne join("\t", @arr2[1..4], @arr2[6..8], @arr2[10..$#arr2]) )
 			{	warn "Error: association ID $a_id already exists with different association data. Keeping old data.";
 				if ($ENV{VERBOSE})
 				{	my $x;
@@ -61,13 +64,14 @@ override 'parse_body' => sub {
 						push @$errs, [ $x, $old[$x], $arr[$x] ];
 					}
 					print STDERR "OLD: " . join("\t", map { $_->[1] } @$errs) . "\n" .
-					"NEW: " . join("\t", map { $_->[2] } @$errs) . "\n\n" if $ENV{VERBOSE};
+					"NEW: " . join("\t", map { $_->[2] } @$errs) . "\n\n";
 				}
 			}
 		}
+
 		push @{$data->{by_a}{$a_id}{terms}}, $t_id;
-		$data->{by_a}{$a_id}{arr} = [@arr] if ! $data->{by_a}{$a_id}{arr};
 		push @{$data->{by_t}{$t_id}}, $a_id;
+		$data->{by_a}{$a_id}{arr} = [@arr] if ! $data->{by_a}{$a_id}{arr};
 	}
 
 	if (@errs)

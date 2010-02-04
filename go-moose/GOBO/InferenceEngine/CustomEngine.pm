@@ -265,6 +265,9 @@ Concatenates the various sub-functions involved in slimming
         otherwise, data hash in the form
         {graph}{ node_id }{ relation_id }{ target_id }
 
+Note: if returned as a graph object, only terms that are connected to other terms
+will be in the graph. Orphaned terms will not feature in the graph.
+
 =cut
 
 
@@ -335,8 +338,31 @@ sub slim_graph {
 		## replace the graph in $self->graph with the new graph
 		$self->graph($new_graph);
 	}
-
 }
+
+
+=head2 get_closest_and_ancestral
+
+Slims a graph, and finds the closest linked node and all the ancestors for each node.
+
+ input:  graph      => Graph object
+         subset_ids => arrayref of node IDs to slim to
+         input_ids  => arrayref of node IDs to slim 'from' (all terms in graph
+                       if not specified)
+         from_ix    => $from_ix  ## optional; which statements to use to
+                                 ## for slimming; defaults to $self->from_ix
+         closest_ix => $clos_ix  ## optional; the index where the closest links
+                                 ## should be stored; defaults to 'closest'
+         all_ix     => $save_ix  ## optional; the index containing all links;
+                                 ## defaults to 'all'
+
+ output: the new Graph object in $self->graph
+        
+
+Note: if returned as a graph object, only terms that are connected to other terms
+will be in the graph. Orphaned terms will not feature in the graph.
+
+=cut
 
 
 
@@ -368,7 +394,7 @@ sub get_closest_and_ancestral {
 	my $new_graph = new GOBO::Graph;
 
 	## copy the graph metadata and relations
-	GOBO::Util::GraphFunctions::copy_attributes(from => $self->graph, to => $new_graph, ignore => [ qw( statement_ix_h ) ]);
+	GOBO::Util::GraphFunctions::copy_attributes(from => $self->graph, to => $new_graph, ignore => [ qw( statement_ix_h term_h) ]);
 
 	print STDERR "done copy_attributes!\n" if $ENV{VERBOSE};
 

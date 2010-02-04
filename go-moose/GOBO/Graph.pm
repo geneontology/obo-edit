@@ -329,8 +329,8 @@ sub declared_subsets {
 
 =head2 get_term
 
- - Argument: id Str
- - Returns: GOBO::TermNode, if term is declared in this graph
+ input:  id Str
+ output: GOBO::TermNode, if term is declared in this graph
 
 =cut
 
@@ -342,8 +342,8 @@ sub get_term {
 
 =head2 get_relation
 
- - Argument: id Str
- - Returns: GOBO::RelationNode, if relation is declared in this graph
+ input:  id Str
+ output: GOBO::RelationNode, if relation is declared in this graph
 
 =cut
 
@@ -355,8 +355,8 @@ sub get_relation {
 
 =head2 get_instance
 
- - Argument: id Str
- - Returns: GOBO::InstanceNode, if instance is declared in this graph
+ input:  id Str
+ output: GOBO::InstanceNode, if instance is declared in this graph
 
 =cut
 
@@ -369,7 +369,7 @@ sub get_instance {
 
 =head2 terms
 
- - Returns: ArrayRef[GOBO::TermNode], where each member is a term belonging to this graph
+ output: ArrayRef[GOBO::TermNode], where each member is a term belonging to this graph
 
 =cut
 
@@ -381,7 +381,7 @@ sub terms {
 
 =head2 relations
 
- - Returns: ArrayRef[GOBO::RelationNode], where each member is a relation belonging to this graph
+ output: ArrayRef[GOBO::RelationNode], where each member is a relation belonging to this graph
 
 =cut
 
@@ -393,7 +393,7 @@ sub relations {
 
 =head2 instances
 
- - Returns: ArrayRef[GOBO::InstanceNode], where each member is an instance belonging to this graph
+ output: ArrayRef[GOBO::InstanceNode], where each member is an instance belonging to this graph
 
 =cut
 
@@ -406,7 +406,7 @@ sub instances {
 =head2 add_term
 
  - Arguments: Str or GOBO::Node
- - Returns: GOBO::TermNode
+ output: GOBO::TermNode
  - Side effects: adds the object to the list of terms referenced in this graph. Forces the class to be GOBO::TermNode
 
 =cut
@@ -421,7 +421,7 @@ sub add_term {
 =head2 add_relation
 
  - Arguments: Str or GOBO::Node
- - Returns: GOBO::RelationNode
+ output: GOBO::RelationNode
  - Side effects: adds the object to the list of relations referenced in this graph. Forces the class to be GOBO::RelationNode
 
 =cut
@@ -436,7 +436,7 @@ sub add_relation {
 =head2 add_instance
 
  - Arguments: Str or GOBO::Node
- - Returns: GOBO::InstanceNode
+ output: GOBO::InstanceNode
 
 adds the object to the list of instances referenced in this
 graph. Forces the class to be GOBO::InstanceNode
@@ -486,7 +486,7 @@ sub remove_node {
 #		$self->remove_link($_) foreach @{$self->get_outgoing_links($n)};
 #		$self->remove_link($_) foreach @{$self->get_incoming_links($n)};
 		foreach my $x qw( node relation target )
-		{	print STDERR "Running remove statements for $x = $id\n";
+		{	#print STDERR "Running remove statements for $x = $id\n";
 			my @stt = @{$self->get_matching_statements($x=>$n)};
 			$self->remove_statements( @stt ) if @stt;
 		}
@@ -909,62 +909,79 @@ Shortcut for get_outgoing_edges
 
 Retrieve all terms that are attached to an annotation
 
- input:   $ix_name  ## optional argument specifying which index to use
+ input:   
+ output:  ArrayRef[GOBO::TermNode]
+
+=head2 get_annotated_terms_in_ix
+
+Retrieve all terms in index $ix_name that have an annotation attached
+
+ input:   $ix_name  ## index to use
  output:  ArrayRef[GOBO::TermNode]
 
 =cut
 
 sub get_annotated_terms {
 	my $self = shift;
-	if (@_)
-	{	my $ix_name = shift;
-		return [] if ! $self->exists_statement_ix($ix_name);
-		my %term_h = ();
-		foreach my $t (@{$self->get_statement_ix_by_name($ix_name)->statement_target_index})
-		{	foreach (@{$self->statements_in_ix_by_target_id($ix_name, $t)})
-			{	if ($_->isa('GOBO::Annotation'))
-				{	$term_h{ $_->target->id } = $_->target;
-					last;
-				}
+	my @term_ids = @{$self->get_statement_ix_by_name('annotations', 1)->statement_target_index};
+	return [ map { $self->get_term($_) } @term_ids ];
+}
+
+sub get_annotated_terms_in_ix {
+	my $self = shift;
+	my $ix = shift;
+	return [] if ! $self->exists_statement_ix($ix);
+	my %term_h = ();
+	foreach my $t (@{$self->get_statement_ix_by_name($ix)->statement_target_index})
+	{	foreach (@{$self->statements_in_ix_by_target_id($ix, $t)})
+		{	if ($_->isa('GOBO::Annotation'))
+			{	$term_h{ $_->target->id } = $_->target;
+				last;
 			}
 		}
-		return [ values %term_h ];
 	}
-	else
-	{	my @term_ids = @{$self->get_statement_ix_by_name('annotations', 1)->statement_target_index(@_)};
-		return [ map { $self->get_term($_) } @term_ids ];
-	}
+	return [ values %term_h ];
 }
 
 
 =head2 get_orphan_terms
 
  input:   optional argument to update the graph before proceeding
-          optional argument with the name of the index to look for edges in
  output:  ArrayRef[GOBO::TermNode]
 
  returns terms that aren't part of any ontology link statements
+
+=head2 get_orphan_terms_in_ix
+
+ input:   $ix_name   ## index to look for terms in
+          optional argument to update the graph before proceeding
+ output:  ArrayRef[GOBO::TermNode]
+
+ returns terms that aren't part of any statements in $ix_name
 
 =cut
 
 sub get_orphan_terms {
 	my $self = shift;
+	return $self->get_orphan_terms_in_ix('ontology_links', @_);
+}
+
+sub get_orphan_terms_in_ix {
+	my $self = shift;
+	my $ix = shift;
 	my $include_update = shift;
-	my $ix = shift || 'ontology_links';
 
 	$self->update_graph if $include_update;
 
 	# no orphans if there are no terms in the graph!
 	return [] if ! $self->has_terms;
 
-	# if no links, return all the terms
-	return $self->terms if ! $self->has_ontology_links;
+	## return all terms if the statement index does not exist
+	warn "statement index $ix does not exist!" && return $self->terms unless $self->exists_statement_ix($ix);
 
-	return $self->terms if ! $self->exists_statement_ix($ix);
-#	my @terms = map { $_->id } grep { $_->isa('GOBO::TermNode') } @{$self->nodes};
-	my $referenced;
-	map { $referenced->{$_}++ } (@{$self->statement_ix_node_index($ix)}, @{$self->statement_ix_target_index($ix)});
-	return [ grep { ! $referenced->{ $_->id } } @{$self->terms} ];
+	my $node_h;
+	map { $node_h->{$_}++ } (@{$self->statement_ix_node_index($ix)}, @{$self->statement_ix_target_index($ix)});
+	return [ grep { ! $node_h->{ $_->id } && ! $_->obsolete } @{$self->terms} ];
 }
 
 
@@ -984,17 +1001,20 @@ sub get_is_a_roots {
 
 =head2 get_roots
 
- - Argument: relation Str or OBO::RelationNode [OPTIONAL]
- - Returns: ArrayRef[GOBO::TermNode]
+ input:  relation Str or OBO::RelationNode [OPTIONAL]
+ output: ArrayRef[GOBO::TermNode]
 
 returns terms that lack a parent by the given relation. If no relation
 specified, then returns terms that lack a parent by any relation
+
+Note: this only looks at terms with no outgoing (parent) links. There is no
+check for any incoming links.
 
 =cut
 
 sub get_roots {
 	my $self = shift;
-#	 my $rel = shift;
+#	my $rel = shift;
 	my @roots = ();
 	foreach my $term (@{$self->terms || []}) {
 		next if $term->obsolete;
@@ -1007,36 +1027,39 @@ sub get_roots {
 
 =head2 get_connected_roots
 
- input:  
+ input:  [none]
  output: ArrayRef[GOBO::TermNode]
 
 Find nodes connected to the graph which have no outgoing ontology links (i.e.
 they are 'parent' terms but have no 'parents' themselves)
 
+=head2 get_connected_roots_in_ix
+
+ input:  $ix_name  ## the name of the statement index in which to look for roots
+ output: ArrayRef[GOBO::TermNode]
+
+Find nodes in a certain index that are connected to the graph but have no
+outgoing links (i.e. they are 'parent' terms but have no 'parents' themselves)
+
 =cut
 
 sub get_connected_roots {
 	my $self = shift;
-#	 my $rel = shift;
-	my @roots = ();
+	return $self->get_connected_roots_in_ix('ontology_links');
+}
 
+
+sub get_connected_roots_in_ix {
+	my $self = shift;
+	my $ix = shift;
 	my $node_h;
 
-#print STDERR "ontology links:\n" . join("\n", @{$self->ontology_links}) . "\n";
+	return [] unless $self->exists_statement_ix($ix);
 
-#	print STDERR "ontology link node index: " . join("\n", sort @{$self->ontology_link_node_index} ) . "\n\n";
-#	print STDERR "ontology link target index: " . join("\n", sort @{$self->ontology_link_target_index} ) . "\n\n";
-
-	map { $node_h->{$_}++ } @{ $self->ontology_link_target_index };
-
-#	print STDERR "got target index:\n" . join(", ", sort keys %$node_h) . "\n\n\nLooking at nodes now:\n";
-
-
-#	print STDERR "ontology link node index: " . join(", ", sort @{$self->ontology_link_node_index} ) . "\n";
-	foreach (@{$self->ontology_link_node_index})
+	map { $node_h->{$_}++ } @{ $self->statement_ix_target_index($ix) };
+	foreach (@{$self->statement_ix_node_index($ix)})
 	{	delete $node_h->{$_};
 	}
-#	print STDERR "\n\nremoved link nodes:\n" . join(", ", sort keys %$node_h) . "\n";
 
 	foreach (keys %$node_h)
 	{	my $t = $self->get_term($_);
@@ -1045,9 +1068,6 @@ sub get_connected_roots {
 		}
 		$node_h->{$_} = $t;
 	}
-
-#	print STDERR "link values:\n" . join(", ", sort { $a->as_string cmp $b->as_string } values %$node_h) . "\n";
-	
 
 	return [ values %$node_h ];
 }
@@ -1060,13 +1080,29 @@ Find nodes connected to the graph which have no incoming ontology links
  input:  [none]
  output: ArrayRef[GOBO::TermNode]
  
+=head2 get_leaves_in_ix
+
+Find nodes in a statement index that are connected to the graph but have no
+incoming links
+
+ input:  $ix_name  ## the name of the statement index in which to look for roots
+ output: ArrayRef[GOBO::TermNode]
+ 
 =cut
 
 sub get_leaves {
 	my $self = shift;
+	return $self->get_leaves('ontology_links');
+}
+
+
+sub get_leaves_in_ix {
+	my $self = shift;
+	my $ix = shift;
+	return [] unless $self->exists_statement_ix($ix);
 	my $node_h;
-	map { $node_h->{$_}++ } @{ $self->ontology_link_node_index };
-	foreach (@{$self->ontology_link_target_index})
+	map { $node_h->{$_}++ } @{ $self->statement_ix_node_index($ix) };
+	foreach (@{$self->statement_ix_target_index($ix)})
 	{	delete $node_h->{$_};
 	}
 	foreach (keys %$node_h)

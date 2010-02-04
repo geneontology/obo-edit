@@ -14,6 +14,10 @@ use GOBO::InferenceEngine;
 use Class::MOP;
 
 
+use GOBO::DataArray;
+use GOBO::AnnotDataArray;
+
+
 #use Storable qw(dclone);
 
 =head2 go_slim_annotations
@@ -55,6 +59,8 @@ sub go_slim_annotations {
 	{	die "No annotations were found! Dying";
 	}
 
+	print STDERR "Finished parsing annotations!\n" if $options->{verbose};
+
 =cut
 my $annot = new GOBO::RelationNode( id => 'annotated_to', label => 'annotated to' );
 my $not_annot = new GOBO::RelationNode( id => 'annotated_to_NOT', label => 'annotated to NOT' );
@@ -75,22 +81,52 @@ $not_annot->propagates_over_is_a(0);
 	{	$graph->add_relation($_);
 	}
 
-	# we're going to do a slight hack here because we didn't bother to parse the
-	# annotations properly; we're adding the association data as DataArray objects,
-	# a subclass of GOBO::Gene (to trick the InfEng into thinking we're dealing with
-	# proper annotations).
-
+	## check that we have an overlap between the terms in the graph and those in
+	## the GAF file
+	my @terms = map {$_->id} @{$graph->terms};
 	my @errs;
+	foreach my $t (keys %{$assoc_data->{by_t}})
+	{	next if grep { $t eq $_ } @terms;
+		## otherwise, this term was not in the graph.
+		push @errs, $t;
+	}
+
+	if (@errs)
+	{	
+		if (scalar @errs == scalar keys %{$assoc_data->{by_t}})
+		{	## crap! No matching terms!
+			die "None of the terms in the annotation file matched those in the ontology file. Dying";
+		}
+		else
+		{	warn "The following terms were not found in the ontology file: " . join(", ", sort @errs);
+		}
+	}
+	
+	
+	
+
+# we're going to do a slight hack here because we didn't bother to parse the
+# annotations properly; we're adding the association data as DataArray objects,
+# a subclass of GOBO::Gene (to trick the InfEng into thinking we're dealing with
+# proper annotations).
+
+	undef @errs;
 	my $a_ids;
 	foreach my $a (keys %{$assoc_data->{by_a}})
 	{	my $a_node = new GOBO::DataArray( id => $a, data => $assoc_data->{by_a}{$a}{arr} );
 		$graph->add_node($a_node);
 		foreach my $t (@{$assoc_data->{by_a}{$a}{terms}})
 		{	## check the term exists in the graph
-			if (! $graph->get_term($t))
+			my $t_obj = $graph->get_term($t);
+			if (! $t_obj)
 			{	push @errs, $t unless grep { $_ eq $t } @errs;
 				next;
 			}
+			elsif ($t_obj->obsolete)
+			{	push @errs, $t unless grep { $_ eq $t } @errs;
+				next;
+			}
+			
 			$a_ids->{$a}++;
 			my $link;
 			# check for a NOT annotation
@@ -105,6 +141,7 @@ $not_annot->propagates_over_is_a(0);
 	}
 
 	$graph->update_graph;
+	
 
 	if (@errs)
 	{	if (scalar @errs == scalar keys %{$assoc_data->{by_t}})
@@ -115,7 +152,12 @@ $not_annot->propagates_over_is_a(0);
 		}
 	}
 
+	print STDERR "Added associations to the graph!\n" if $options->{verbose};
+
 	$graph->duplicate_statement_ix('statements', 'asserted_links');
+
+	## find the root nodes in the graph
+	my $roots = $graph->get_connected_roots;
 
 	## OK, we have our graph with the annotations attached. Let's get slimming!
 	# the input set is any terms with an annotation connected to them
@@ -124,9 +166,15 @@ $not_annot->propagates_over_is_a(0);
 
 	$ie->get_closest_and_ancestral( subset_ids => [ keys %$subset ], input_ids => [ keys %$subset, keys %$a_ids ], from_ix => 'asserted_links', all_ix => 'transitive_closure', closest_ix => 'transitive_reduction' );
 
+	print STDERR "Finished slimming; performing error checks\n" if $options->{verbose};
+
+#	print STDERR "graph terms: " . join(", ", @{$ie->graph->terms}) . "\n";
+#	print STDERR "statements:\n" . join("\n", @{$ie->graph->statements}) . "\n";
+	
 #	print STDERR "Closest links:\n" . join("\n", @{$ie->graph->get_all_statements_in_ix('transitive_reduction')} )
 #	. "\nAll links\n" . join("\n", @{$ie->graph->get_all_statements_in_ix('transitive_closure')} ) . "\n\n";
 
+	## lots and lots of error checks!
 
 	## check for missing annotations, and transfer annotation info
 	undef @errs;
@@ -139,19 +187,24 @@ $not_annot->propagates_over_is_a(0);
 	## Do some checks.
 	## Look for missing terms:
 	foreach my $t (keys %$subset)
-	{	print STDERR "Looking at $t...";
-		if (! grep { $t eq $_ } @$t_ix)
+	{	if (! grep { $t eq $_ } @$t_ix)
 		{	# this term has been lost from the graph!
+			# shall we just forget about it?
 			push @errs, $t;
-			print STDERR " no links at all!\n";
+			print STDERR "Looking at $t... no links at all!\n";
 		}
 		elsif (! grep { $t eq $_ } @$ol_ix)
 		{	# this term is not attached to any other ontology terms!
 			push @errs, $t;
-			print STDERR " no ontology links!\n";
+			print STDERR "Looking at $t... no ontology links!\n";
+			## delete the term unless we are keeping orphans
+			if (! $options->{keep_orphans})
+			{	print STDERR "deleting node $t\n";
+				$ie->graph->remove_node($t, 1);
+			}
 		}
 		else
-		{	print STDERR " found some links!\n";
+		{	#print STDERR "Looking at $t... found some links!\n";
 		}
 	}
 
@@ -160,10 +213,10 @@ $not_annot->propagates_over_is_a(0);
 		{	die "All terms were lost during slimming! Dying";
 		}
 		else
-		{	warn "The following terms were lost during slimming: " . join(", ", sort @errs);
+		{	warn "The following terms were lost during slimming:\n" . join(", ", sort @errs);
 		}
 	}
-
+	
 	## look for missing annotations
 	foreach my $a (keys %$a_ids)
 	{	if (! grep { $a eq $_ } @$n_ix)
@@ -177,16 +230,51 @@ $not_annot->propagates_over_is_a(0);
 		{	die "All annotations were lost during slimming! Dying";
 		}
 		else
-		{	warn "The following annotations were lost during slimming: " . join(", ", sort @errs);
+		{	warn "The following annotations were lost during slimming:\n" . join(", ", sort @errs);
 		}
 	}
 
 	undef @errs;
 
-	if ($options->{report_orphans})
-	{
+	if ($options->{delete_new_roots})
+	{	
+		## check our roots... have we got some mysterious new root nodes?
+		my $new_roots = $ie->graph->get_connected_roots_in_ix('transitive_closure');
+		my $root_h;
+		my $new;
+		foreach (@$roots)
+		{	$root_h->{$_->id} = $_;
+		}
+		foreach (@$new_roots)
+		{	if ($root_h->{$_->id})
+			{	delete $root_h->{$_->id};
+				next;
+			}
+			## this is a new root!
+			$new->{$_->id} = $_;
+		}
+	
+		if (keys %$root_h)
+		{	print STDERR "The following root nodes were lost:\n" . join(", ", keys %$root_h) . "\n";
+		}
+		if (keys %$new)
+		{	print STDERR "The following terms are now root nodes:\n" . join(", ", keys %$new) . "\n";
+		}
 
-
+		my $to_delete;
+		%$to_delete = %$new;
+		foreach my $r (keys %$new)
+		{	## get all the children of this term and delete the whole blimmin' lot!
+			foreach (  # @{$ie->graph->get_outgoing_statements($r)}, 
+			@{$ie->graph->get_incoming_statements($r)})
+			{	# $to_delete->{$_->target->id} = 1;
+				$to_delete->{$_->node->id} = 1;
+			}
+		}
+		
+		foreach (keys %$to_delete)
+		{	$ie->graph->remove_node($_, 1);
+		}
 	}
 
 	## if we're doing a rewrite of the GAF file, we don't need any more fancy
@@ -194,6 +282,11 @@ $not_annot->propagates_over_is_a(0);
 	if ($options->{mode} && $options->{mode} eq 'rewrite')
 	{	return { graph => $ie->graph, assoc_data => $assoc_data };
 	}
+
+	print STDERR "Creating extra indexes\n" if $options->{verbose};
+
+	## otherwise, sort the statements into direct annotations, direct ontology
+	## links and inferred annotations
 
 	my $a_refs = $ie->graph->get_statement_ix_by_name('annotations')->get_all_references;
 	my $o_refs = $ie->graph->get_statement_ix_by_name('ontology_links')->get_all_references;
@@ -221,7 +314,300 @@ $not_annot->propagates_over_is_a(0);
 
 	return { graph => $ie->graph, assoc_data => $assoc_data };
 }
+
+
+
+sub new_go_slim_annotations {
+	my %args = (@_);
+
+	my $options = $args{options};
+	my $graph = $args{graph};
+	my $subset = $args{subset};
+
+	## get the GA data
+	my $gaf_parser = GOBO::Parsers::QuickGAFParser->new(fh=>$options->{ga_input});
+
+	my $assoc_data = $gaf_parser->parse;
+	#print STDERR "assoc data: " . Dumper($assoc_data) . "\n\n";
+
+	if (! $assoc_data )
+	{	die "No annotations were found! Dying";
+	}
+
+	print STDERR "Finished parsing annotations!\n" if $options->{verbose};
+
+my $annot = new GOBO::RelationNode( id => 'annotated_to', label => 'annotated to' );
+my $not_annot = new GOBO::RelationNode( id => 'annotated_to_NOT', label => 'annotated to NOT' );
+$graph->add_relation($annot);
+$graph->add_relation($not_annot);
+## should there be any other relationships for annotated_to?
+$annot->transitive_over( $graph->relation_noderef('part_of') );
+$not_annot->propagates_over_is_a(0);
+
+=insert
+	## this file contains the 'annotated_to' and 'annotated_to_NOT' relations
+	my $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>'t/data/annotation_relations.obo',
+		graph => new GOBO::Graph,
+		body => { parse_only => { typedef => '*' } },
+	);
+	$parser->parse;
+	foreach (@{$parser->graph->relations})
+	{	$graph->add_relation($_);
+	}
 =cut
+	## check that we have an overlap between the terms in the graph and those in
+	## the GAF file
+	my @term_ids = map {$_->id} grep { ! $_->obsolete } @{$graph->terms};
+	die "No extant terms could be found in the graph! Dying" if ! @term_ids;
+
+	my @errs;
+	my $n_terms = scalar keys %{$assoc_data->{by_t}};
+	foreach my $t (keys %{$assoc_data->{by_t}})
+	{	next if grep { $t eq $_ } @term_ids;
+		## otherwise, this term was not in the graph.
+		push @errs, $t;
+		delete $assoc_data->{by_t}{$t};
+	}
+
+	if (@errs)
+	{	
+		if (scalar @errs == $n_terms)
+		{	## crap! No matching terms!
+			die "None of the terms in the annotation file matched those in the ontology file. Dying";
+		}
+		warn "The following terms were not found in the ontology file: " . join(", ", sort @errs);
+	}
+
+	## copy the ontology links into a new index...
+	$graph->duplicate_statement_ix('ontology_links', 'asserted_links');
+	
+	## now let's slim the graph down.
+#	my $ie = new GOBO::InferenceEngine::CustomEngine( graph => $graph );
+	
+#	$ie->slim_graph( subset_ids => [ keys %$subset ], input_ids => [ @term_ids ], from_ix => 'asserted_links', save_ix => 'slimmed_links', options => { return_as_graph => 1 } );
+
+#	$graph = $ie->graph;
+#	$graph->duplicate_statement_ix('ontology_links', 'links_and_annots');
+
+# we're going to do a slight hack here because we didn't bother to parse the
+# annotations properly; we're adding the association data as DataArray objects,
+# a subclass of GOBO::Gene (to trick the InfEng into thinking we're dealing with
+# proper annotations).
+
+	my $err_count;
+	my $a_ids;
+	my $ada_ids;
+	my @statements;
+	my $annotated_to = $graph->get_relation('annotated_to');
+	my $annotated_to_NOT = $graph->get_relation('annotated_to_NOT');
+
+	my $assoc_h;
+	my $count = 1;
+	foreach my $t (keys %{$assoc_data->{by_t}})
+	{	## check the term exists in the graph
+		my $t_obj = $graph->get_term($t);
+		if (! $t_obj)
+		{	$err_count++;
+			next;
+		}
+		my ($annot, $not);
+		map { 
+#			$a_ids->{$_}++;
+			## the association data is in $assoc_data->{by_a}{$a}{arr}
+			## check for a NOT annotation
+			if ($assoc_data->{by_a}{$_}{arr}[4] && $assoc_data->{by_a}{$_}{arr}[4] =~ /NOT/)
+			{	push @$not, { id => $_, data => $assoc_data->{by_a}{$_}{arr} };
+			}
+			else
+			{	push @$annot, { id => $_, data => $assoc_data->{by_a}{$_}{arr} };
+			}
+		} @{$assoc_data->{by_t}{$t}};
+		
+		if ($annot)
+		{	my $a_node = new GOBO::AnnotDataArray( id=> "annot_data_$count", data_arr=>$annot );
+			$graph->add_node( $a_node );
+			push @statements, new GOBO::Annotation(node=>$a_node, relation=>$annotated_to, target=>$t_obj);
+			$ada_ids->{"annot_data_$count"} = $a_node;
+			$count++;
+		}
+		if ($not)
+		{	my $a_node = new GOBO::AnnotDataArray( id=> "annot_data_$count" , data_arr=>$not);
+			$graph->add_node( $a_node );
+			push @statements, new GOBO::Annotation(node=>$a_node, relation=>$annotated_to_NOT, target=>$t_obj);
+			$ada_ids->{"annot_data_$count"} = $a_node;
+			$count++;
+		}
+	}
+
+	$graph->add_statements_to_ix(ix=>'asserted_links', statements=>[@statements]);
+
+	$graph->update_graph;
+
+	if ($err_count)
+	{	warn "$err_count annotations were not added to the graph (terms could not be found or were obsolete)";
+	}
+
+	print STDERR "Added associations to the graph!\n" if $options->{verbose};
+	## OK, we have our graph with the annotations attached. Let's get slimming!
+	# the input set is any terms with an annotation connected to them
+	# get the links between the nodes
+	my $ie = new GOBO::InferenceEngine::CustomEngine( graph => $graph );
+
+	$ie->get_closest_and_ancestral( subset_ids => [ keys %$subset ], input_ids => [ keys %$subset, keys %$ada_ids ], from_ix => 'asserted_links', all_ix => 'transitive_closure', closest_ix => 'transitive_reduction' );
+
+	print STDERR "Finished slimming; performing error checks\n" if $options->{verbose};
+
+#	print STDERR "graph terms: " . join(", ", @{$ie->graph->terms}) . "\n";
+#	print STDERR "statements:\n" . join("\n", @{$ie->graph->statements}) . "\n";
+	
+#	print STDERR "Closest links:\n" . join("\n", @{$ie->graph->get_all_statements_in_ix('transitive_reduction')} )
+#	. "\nAll links\n" . join("\n", @{$ie->graph->get_all_statements_in_ix('transitive_closure')} ) . "\n\n";
+
+	## lots and lots of error checks!
+
+	## check for missing annotations, and transfer annotation info
+	undef @errs;
+	my $n_annots = scalar keys %$ada_ids;
+
+	my $n_ix = $ie->graph->statement_ix_node_index('transitive_closure');
+	my $t_ix = $ie->graph->statement_ix_target_index('transitive_closure');
+	my $ol_ix = [ @{$ie->graph->statement_ix_target_index('ontology_links')}, @{$ie->graph->statement_ix_node_index('ontology_links')} ];
+
+	## Do some checks.
+	## Look for missing terms:
+
+	foreach my $t (keys %$subset)
+	{	if (! grep { $t eq $_ } @$t_ix)
+		{	# this term has been lost from the graph!
+			# shall we just forget about it?
+			push @errs, $t;
+			print STDERR "Looking at $t... no links at all!\n";
+		}
+		elsif (! grep { $t eq $_ } @$ol_ix)
+		{	# this term is not attached to any other ontology terms!
+			push @errs, $t;
+			print STDERR "Looking at $t... no ontology links!\n";
+			## delete the term unless we are keeping orphans
+#			if (! $options->{keep_orphans})
+#			{	print STDERR "deleting node $t\n";
+#				$ie->graph->remove_node($t, 1);
+#			}
+		}
+		else
+		{	#print STDERR "Looking at $t... found some links!\n";
+		}
+	}
+
+	if (@errs)
+	{	if (scalar @errs == scalar keys %$subset)
+		{	die "All terms were lost during slimming! Dying";
+		}
+		else
+		{	warn "The following terms were lost during slimming:\n" . join(", ", sort @errs);
+		}
+	}
+
+	$err_count = 0;
+	## look for missing annotations
+	foreach my $a (keys %$ada_ids)
+	{	if (! grep { $a eq $_ } @$n_ix)
+		{	# this annotation has been lost from the graph!
+			$err_count += scalar @{$ada_ids->{$a}->data_arr};
+		}
+	}
+
+	if (@errs)
+	{	if (scalar @errs == $n_annots)
+		{	die "All annotations were lost during slimming! Dying";
+		}
+		else
+		{	warn "Some annotations ($err_count) were lost during slimming. Sorry!";
+		}
+	}
+
+	undef @errs;
+
+=cut
+	if ($options->{delete_new_roots})
+	{	
+		## check our roots... have we got some mysterious new root nodes?
+		my $new_roots = $ie->graph->get_connected_roots_in_ix('transitive_closure');
+		my $root_h;
+		my $new;
+		foreach (@$roots)
+		{	$root_h->{$_->id} = $_;
+		}
+		foreach (@$new_roots)
+		{	if ($root_h->{$_->id})
+			{	delete $root_h->{$_->id};
+				next;
+			}
+			## this is a new root!
+			$new->{$_->id} = $_;
+		}
+	
+		if (keys %$root_h)
+		{	print STDERR "The following root nodes were lost:\n" . join(", ", keys %$root_h) . "\n";
+		}
+		if (keys %$new)
+		{	print STDERR "The following terms are now root nodes:\n" . join(", ", keys %$new) . "\n";
+		}
+
+		my $to_delete;
+		%$to_delete = %$new;
+		foreach my $r (keys %$new)
+		{	## get all the children of this term and delete the whole blimmin' lot!
+			foreach (  # @{$ie->graph->get_outgoing_statements($r)}, 
+			@{$ie->graph->get_incoming_statements($r)})
+			{	# $to_delete->{$_->target->id} = 1;
+				$to_delete->{$_->node->id} = 1;
+			}
+		}
+		
+		foreach (keys %$to_delete)
+		{	$ie->graph->remove_node($_, 1);
+		}
+	}
+=cut
+
+	## if we're doing a rewrite of the GAF file, we don't need any more fancy
+	## trimmings
+	if ($options->{mode} && $options->{mode} eq 'rewrite')
+	{	return { graph => $ie->graph, assoc_data => $assoc_data };
+	}
+
+	print STDERR "Creating extra indexes\n" if $options->{verbose};
+
+	## otherwise, sort the statements into direct annotations, direct ontology
+	## links and inferred annotations
+
+	my $a_refs = $ie->graph->get_statement_ix_by_name('annotations')->get_all_references;
+	my $o_refs = $ie->graph->get_statement_ix_by_name('ontology_links')->get_all_references;
+	my $t_red = $ie->graph->get_statement_ix_by_name('transitive_reduction')->get_all_references;
+
+	## sort out direct annotations and direct ontology links
+	foreach my $r (@$t_red)
+	{	if ( grep { $r eq $_ } @$a_refs )
+		{	## direct annotation
+			$ie->graph->add_statements_to_ix(ix=>'direct_annotations', statements=>[$$r]);
+		}
+		elsif (grep { $r eq $_ } @$o_refs)
+		{	## ontology link
+			$ie->graph->add_statements_to_ix(ix=>'direct_ontology_links', statements=>[$$r]);
+		}
+	}
+
+	## add inferred annotations to 'all_annotations' and label them as 'inferred'
+	foreach my $r (@{$ie->graph->get_statement_ix_by_name('transitive_closure')->get_all_references})
+	{	if ( grep { $r eq $_ } @$a_refs) # && ! grep { $r eq $_ } @$t_red)
+		{	$$r->inferred(1) if ! grep { $r eq $_ } @$t_red;
+			$ie->graph->add_statements_to_ix(ix=>'all_annotations', statements=>[$$r]);
+		}
+	}
+
+	return { graph => $ie->graph, assoc_data => $assoc_data };
+}
+
 
 
 
@@ -1681,8 +2067,6 @@ sub load_mapping_as_graph {
 	}
 	print "Finished loading term file.\n" if $args{verbose};
 	close(IN);
-	return $data;
-}
 
 	$graph->update_graph;
 
