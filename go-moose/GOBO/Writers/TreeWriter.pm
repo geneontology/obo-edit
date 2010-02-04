@@ -101,7 +101,7 @@ sub write_body {
 
 
 		map {
-			if ($_->node->isa('GOBO::AnnotDataArray'))
+			if ($_->node->isa('GOBO::DataArray'))
 			{
 				my $n_gp = scalar @{$_->node->data_arr};
 				$all += $n_gp;
