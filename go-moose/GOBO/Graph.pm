@@ -1092,7 +1092,7 @@ incoming links
 
 sub get_leaves {
 	my $self = shift;
-	return $self->get_leaves('ontology_links');
+	return $self->get_leaves_in_ix('ontology_links');
 }
 
 
