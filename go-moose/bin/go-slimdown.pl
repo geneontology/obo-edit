@@ -56,14 +56,6 @@ foreach my $s (keys %{$data->{subset}})
 	# in these slims, the input set is the same as the mapping set
 	$ie->slim_graph( subset_ids => [ keys %{$data->{subset}{$s}} ], input_ids => [ keys %{$data->{subset}{$s}} ], from_ix => 'asserted_links', save_ix => 'inferred_' . $s . '_links', options => $options );
 
-#	print STDERR "post slimming\nsubset: " . join(", ", sort keys %{$data->{subset}{$s}}) . "\nterms:  " . join(", ", sort { $a->id cmp $b->id } @{$ie->graph->terms}) . "\nn indices: " . (scalar $ie->graph->get_statement_ix_h_names ) . ": " . join(", ", sort $ie->graph->get_statement_ix_h_names ) . "\n\n\n" if $options->{verbose};
-
-
-#	print STDERR "n terms: " . (scalar @{$ie->graph->terms}) . "\nn relations: " . (scalar @{$ie->graph->relations} ) . "\n\n" if $ENV{VERBOSE};
-
-#	print STDERR "new graph statements:\n" . join("\n", @{$ie->graph->statements}) . "\nontology_links: " . join("\n", @{$ie->graph->ontology_links}) . "\n" if $options->{verbose};
-
-
 	if ($options->{tree_format})
 	{	my $writer = new GOBO::Writers::TreeWriter( file => $options->{output}, graph => $ie->graph, edge_ix => 'inferred_' . $s . '_links' );
 		$writer->write;

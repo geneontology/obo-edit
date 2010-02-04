@@ -1,0 +1,29 @@
+format-version: 1.2
+date: 14:07:2009 13:33
+default-namespace: test_ontology
+
+[Typedef]
+id: annotated_to
+name: annotated to
+transitive_over: part_of
+! transitive_over: OBO_REL:part_of
+
+[Typedef]
+id: annotated_to_NOT
+name: annotated to NOT
+
+[Typedef]
+id: OBO_REL:part_of
+name: part_of
+inverse_of_on_instance_level: OBO_REL:has_part
+is_reflexive: true
+is_anti_symmetric: true
+is_transitive: true
+
+[Typedef]
+id: OBO_REL:has_part
+name: has_part
+inverse_of_on_instance_level: OBO_REL:part_of
+is_reflexive: true
+is_anti_symmetric: true
+is_transitive: true
