@@ -97,8 +97,8 @@ sub write_stanza {
         $self->tagval('equivalent_to_chain', _chain($_)) foreach @{$node->equivalent_to_chain_list || []};
     }
 
+    ## get outgoing links...
     foreach (@{$g->get_matching_statements(node=>$node, ix=>$self->edge_ix)}) {
-#    foreach (@{$g->get_outgoing_edges(node=>$node)}) {
 #    foreach (@{$g->get_outgoing_links($node)}) {
         if ($_->is_intersection) {
             if ($_->relation->is_subsumption) {

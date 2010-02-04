@@ -93,8 +93,32 @@ sub write_body {
 			}
 			else
 			{	my $direct = 0;
-				map { $direct++ if ! $_->inferred } @$all_annots;
-				my $str = $t->id . ( " : " . $t->label || "" ) . " ($direct / " . (scalar @$all_annots)." total)";
+				my $all;
+#				map { $direct++ if ! $_->inferred } @$all_annots;
+
+
+## NEW
+
+
+		map {
+			if ($_->node->isa('GOBO::AnnotDataArray'))
+			{
+				my $n_gp = scalar @{$_->node->data_arr};
+				$all += $n_gp;
+				$direct += $n_gp if ! $_->inferred;
+			}
+			else
+			{	$direct++ if ! $_->inferred;
+				$all++;
+			}
+		} @$all_annots;
+				
+
+
+### END NEW
+
+
+				my $str = $t->id . ( " : " . $t->label || "" ) . " ($direct / $all total)";
 				return $str;
 			}
 		};

@@ -563,7 +563,7 @@ override 'parse_body' => sub {
 		}
 
 		# we don't know what's going on here!
-		warn "ignored: $_";
+		warn "ignored: $_" if /\w/;
 	}
 	if (@anns) {
 		$g->add_annotations(\@anns);
