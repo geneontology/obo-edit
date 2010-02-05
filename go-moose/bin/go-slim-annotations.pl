@@ -235,7 +235,7 @@ else
 
 print STDERR "Ready to slim annotations!\n" if $options->{verbose};
 
-my $results = GOBO::Util::GraphFunctions::new_go_slim_annotations(options => $options, subset => $subset, graph => $graph );
+my $results = GOBO::Util::GraphFunctions::slim_annotations(options => $options, subset => $subset, graph => $graph );
 
 print STDERR "Got our results!\n" if $options->{verbose};
 
