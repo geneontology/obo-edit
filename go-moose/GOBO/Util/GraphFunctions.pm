@@ -18,7 +18,7 @@ use GOBO::DataArray;
 
 #use Storable qw(dclone);
 
-=head2 go_slim_annotations
+=head2 slim_annotations_old
 
 expects a graph, a subset, options{ga_input} => GAF file
 
@@ -40,7 +40,7 @@ The graph will have the following indexes:
 
 =cut
 
-sub go_slim_annotations {
+sub slim_annotations_old {
 	my %args = (@_);
 
 	my $options = $args{options};
@@ -315,7 +315,30 @@ $not_annot->propagates_over_is_a(0);
 
 
 
-sub new_go_slim_annotations {
+=head2 slim_annotations
+
+expects a graph, a subset, options{ga_input} => GAF file
+
+ input:  hash of the form
+          graph => $graph
+          subset => hashref with subset IDs as keys
+          options =>
+          { ga_input => '/path/to/GAF_file',
+            mode => 'rewrite' } ## optional; the script doesn't create extra
+                                ## indexes with this option on
+ output: hashref containing { graph => $graph, assoc_data => $assoc_data }
+
+The graph will have the following indexes:
+ - direct_annotations
+ - all_annotations
+ - direct_ontology_links
+ - transitive_closure
+ - transitive_reduction
+
+=cut
+
+
+sub slim_annotations {
 	my %args = (@_);
 
 	my $options = $args{options};
@@ -379,14 +402,6 @@ $not_annot->propagates_over_is_a(0);
 	## copy the ontology links into a new index...
 	$graph->duplicate_statement_ix('ontology_links', 'asserted_links');
 	
-	## now let's slim the graph down.
-#	my $ie = new GOBO::InferenceEngine::CustomEngine( graph => $graph );
-	
-#	$ie->slim_graph( subset_ids => [ keys %$subset ], input_ids => [ @term_ids ], from_ix => 'asserted_links', save_ix => 'slimmed_links', options => { return_as_graph => 1 } );
-
-#	$graph = $ie->graph;
-#	$graph->duplicate_statement_ix('ontology_links', 'links_and_annots');
-
 # we're going to do a slight hack here because we didn't bother to parse the
 # annotations properly; we're adding the association data as DataArray objects,
 # a subclass of GOBO::Gene (to trick the InfEng into thinking we're dealing with
@@ -422,14 +437,15 @@ $not_annot->propagates_over_is_a(0);
 		} @{$assoc_data->{by_t}{$t}};
 		
 		if ($annot)
-		{	my $a_node = new GOBO::DataArray( id=> "annot_data_$count", data_arr=>$annot );
+		{	#my $a_node = new GOBO::DataArray( id=> $t_obj->id . "_x_" . $annotated_to->id . "_$count", data_arr=>$annot );
+			my $a_node = new GOBO::DataArray( id=>"annot_data_$count", data_arr=>$annot );
 			$graph->add_node( $a_node );
 			push @statements, new GOBO::Annotation(node=>$a_node, relation=>$annotated_to, target=>$t_obj);
 			$ada_ids->{"annot_data_$count"} = $a_node;
 			$count++;
 		}
 		if ($not)
-		{	my $a_node = new GOBO::DataArray( id=> "annot_data_$count" , data_arr=>$not);
+		{	my $a_node = new GOBO::DataArray( id=>"annot_data_$count", data_arr=>$not );
 			$graph->add_node( $a_node );
 			push @statements, new GOBO::Annotation(node=>$a_node, relation=>$annotated_to_NOT, target=>$t_obj);
 			$ada_ids->{"annot_data_$count"} = $a_node;
