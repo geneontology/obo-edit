@@ -61,7 +61,7 @@ $parser->parse;
 my $ss_data = GOBO::Util::GraphFunctions::get_subset_nodes( graph => $parser->graph, options => { subset => { 'goslim_test' => 1 } }  );
 my $subset = $ss_data->{subset}{goslim_test};
 
-my $results = GOBO::Util::GraphFunctions::go_slim_annotations(options =>  { ga_input => 't/data/tiny_gaf.gaf' }, subset => $subset, graph => dclone $parser->graph );
+my $results = GOBO::Util::GraphFunctions::slim_annotations(options =>  { ga_input => 't/data/tiny_gaf.gaf' }, subset => $subset, graph => dclone $parser->graph );
 
 my $graph = $results->{graph};
 my $assoc_data = $results->{assoc_data};
@@ -71,7 +71,7 @@ my $assoc_data = $results->{assoc_data};
 ## everything that was annotated to GO:0000001-3 should now be annotated to
 ## GO:0000003
 my $annots = $graph->get_annotations_by_target('GO:0000003');
-my $str = join("\n", sort map { $_->node->id } @$annots);
+my $str = join("\n", sort map { map { $_->{id} } @{$_->node->data_arr} } @$annots);
 my $str2 = join("\n", sort ( @{$assoc_data->{by_t}{'GO:0000001'}} , @{$assoc_data->{by_t}{'GO:0000002'}} , @{$assoc_data->{by_t}{'GO:0000003'}} ) );
 
 ## 6
@@ -80,22 +80,14 @@ ok( $str eq $str2, "Checking inference is working correctly" );
 ## all the assocs should be annotated to the root, node 08
 my $links_to_root = $graph->statements_in_ix_by_target_id('transitive_closure', 'GO:0000008');
 
-my $h;
-map {
-#	print STDERR ref( $_ ) . " $_\n";
-	$h->{ ref($_) } = $_; } @$links_to_root;
-#print STDERR "keys: " . join("; ", keys %$h ) . "\n";
-
-my @annots = grep { $_->isa('GOBO::Annotation') } @$links_to_root;
-
-#print STDERR "links to root:\n" . join("\n", @$links_to_root) . "\n\n";
-#print STDERR "annots: " . join("\n", @annots) . "\n\n";
+my @annots = map { map { $_->{id} } @{$_->node->data_arr} } grep { $_->isa('GOBO::Annotation') } @$links_to_root;
+#@annots = @annots;
 
 ## 7
 ok( (scalar @annots == 16), "Checking we have all annots to root" );
 ## should only have two direct annots to the root
 $links_to_root = $graph->statements_in_ix_by_target_id('transitive_reduction', 'GO:0000008');
-@annots = grep { $_->isa('GOBO::Annotation') } @$links_to_root;
+@annots = map { map { $_->{id} } @{$_->node->data_arr} } grep { $_->isa('GOBO::Annotation') } @$links_to_root;
 ## 8
 ok( scalar @annots == 2, "Checking there are only two direct annots to root" );
 
@@ -200,7 +192,7 @@ print STDERR "\n\n";
 
 ## run the annotation slimmer again
 undef $results;
-$results = GOBO::Util::GraphFunctions::go_slim_annotations(options =>  { ga_input => 't/data/tiny_gaf.gaf' }, subset => $subset, graph => $graph );
+$results = GOBO::Util::GraphFunctions::slim_annotations(options =>  { ga_input => 't/data/tiny_gaf.gaf' }, subset => $subset, graph => $graph );
 
 ## OK, we should find that we have lost the annotations that were attached to GO:0000001, but we've kept those attached to GO:0000002.
 undef $graph;
@@ -213,14 +205,14 @@ $assoc_data = $results->{assoc_data};
 #}
 
 $annots = $graph->get_annotations_by_target('GO:0000003');
-$str = join("\n", sort map { $_->node->id } @$annots);
+$str = join("\n", sort map { map { $_->{id} } @{$_->node->data_arr} } @$annots);
 $str2 = join("\n", sort ( @{$assoc_data->{by_t}{'GO:0000002'}} , @{$assoc_data->{by_t}{'GO:0000003'}} ) );
 
 ## 12
 ok( $str eq $str2, "Checking we lost the regulates annotations" );
 
 $annots = $graph->get_annotations_by_target('GO:0000004');
-$str = join("\n", sort map { $_->node->id } @$annots);
+$str = join("\n", sort map { map { $_->{id} } @{$_->node->data_arr} } @$annots);
 $str2 = join("\n", sort ( @{$assoc_data->{by_t}{'GO:0000002'}} , @{$assoc_data->{by_t}{'GO:0000003'}}, @{$assoc_data->{by_t}{'GO:0000004'}} ) );
 ## 13
 ok( $str eq $str2, "Checking we have no doubled annotations" );
@@ -233,9 +225,9 @@ $parser->parse;
 $ss_data = GOBO::Util::GraphFunctions::get_subset_nodes( graph => $parser->graph, options => { subset => { 'goslim_test' => 1 } }  );
 $subset = $ss_data->{subset}{goslim_test};
 
-$results = GOBO::Util::GraphFunctions::go_slim_annotations(options =>  { ga_input => 't/data/tiny_gaf.gaf' }, subset => $subset, graph => dclone $parser->graph );
+$results = GOBO::Util::GraphFunctions::slim_annotations(options =>  { ga_input => 't/data/tiny_gaf.gaf' }, subset => $subset, graph => dclone $parser->graph );
 
-$results = GOBO::Util::GraphFunctions::go_slim_annotations(options =>  { ga_input => 't/data/tiny_gaf.gaf', delete_new_roots => 1 }, subset => $subset, graph => dclone $parser->graph );
+$results = GOBO::Util::GraphFunctions::slim_annotations(options =>  { ga_input => 't/data/tiny_gaf.gaf', delete_new_roots => 1 }, subset => $subset, graph => dclone $parser->graph );
 
 $graph = $results->{graph};
 $assoc_data = $results->{assoc_data};
