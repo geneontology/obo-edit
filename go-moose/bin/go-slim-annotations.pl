@@ -122,6 +122,8 @@ use GOBO::Util::GraphFunctions;
 use GOBO::Util::Misc;
 use GOBO::DataArray;
 use GOBO::Writers::GAFWriter;
+use GOBO::Writers::QuickGAFWriter;
+
 my $options = parse_options(\@ARGV);
 
 my $data;
@@ -247,8 +249,11 @@ $graph = $results->{graph};
 ## we only need the closest assocs, not the whole lot
 
 if ($options->{mode} eq 'rewrite')
-{	#print_gaf_file( options => $options, assoc_array => $graph->get_all_statements_in_ix('transitive_reduction') );
-	new_print_gaf_file( options => $options, assoc_array => $graph->get_all_statements_in_ix('transitive_reduction') );
+{	my $writer = new GOBO::Writers::QuickGAFWriter( file => $options->{output} );
+	$writer->header_data( [ "Gene Association file created by go-slim-annotations.pl from source file " . $options->{ga_input} ] );
+	$writer->assoc_array( $graph->get_all_statements_in_ix('transitive_reduction') );
+	$writer->write;
+
 	exit(0);
 }
 
@@ -452,35 +457,6 @@ sub check_options {
 }
 
 
-sub print_counts {
-	my %args = (@_);
-	my $g = $args{graph};
-	my $options = $args{options};
-
-	if ($options->{output})
-	{	open (STDOUT, ">" . $options->{output}) or confess "Could not create file " . $options->{output} . ": $! ";
-	}
-
-	print STDOUT "! Gene Association file created by go-slim-annotations.pl from source file " . $options->{ga_input} . "\n!\n";
-
-#	print STDERR "annotated terms: " . join(", ", @{$g->get_annotated_terms('all_annotations')} ) ."\n\n";
-
-#	sort { $a->id cmp $b->id } @{$g2->get_annotated_terms('annotations')}
-
-	foreach my $t (sort { $a->id cmp $b->id } @{$g->get_annotated_terms_in_ix('all_annotations')})
-	{	my $all = $g->statements_in_ix_by_target_id('all_annotations', $t);
-		my $direct = 0;
-		map { $direct++ if ! $_->inferred } @$all;
-
-		print STDOUT
-		"$t: direct: " . $direct
-		. "\tinferred: " . ( scalar(@$all) - $direct )
-		. "\ttotal: " . (scalar @$all) . "\n";
-
-	}
-}
-
-
 sub new_print_counts {
 	my %args = (@_);
 	my $g = $args{graph};
@@ -511,38 +487,6 @@ sub new_print_counts {
 		. "\tinferred: " . ( $all - $direct )
 		. "\ttotal: " . $all . "\n";
 
-	}
-}
-
-
-sub new_print_gaf_file {
-	my %args = (@_);
-	my ($assoc_array, $options) = ($args{assoc_array}, $args{options});
-
-	if ($options->{output})
-	{	open (STDOUT, ">" . $options->{output}) or confess "Could not create file " . $options->{output} . ": $! ";
-	}
-
-	## should we sort our associations in some way?
-
-	print STDOUT "! Gene Association file created by go-slim-annotations.pl from source file " . $options->{ga_input} . "\n!\n";
-
-	foreach my $assoc (sort { $a->node->id cmp $b->node->id || $a->target->id cmp $b->target->id } grep { $_->isa('GOBO::Annotation') } @$assoc_array)
-	{	next unless $assoc->isa('GOBO::Annotation');
-		## retrieve the array data...
-
-#		my $arr = $assoc->node->data;
-		foreach my $arr ( map { $_->{data} } @{$assoc->node->data_arr})
-		{	 
-
-		print STDOUT
-			join("\t", @$arr[1..4])
-			. "\t" . $assoc->target->id . "\t"
-			. join("\t", @$arr[6..8])
-			. "\t" . GOBO::Writers::GAFWriter::_aspect($assoc->target) ."\t"
-			. join("\t", @$arr[10..$#$arr]) ## assuming the ontology hasn't changed!
-			. "\n";
-		}
 	}
 }
 

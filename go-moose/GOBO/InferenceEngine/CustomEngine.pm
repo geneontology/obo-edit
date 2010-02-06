@@ -323,7 +323,7 @@ sub slim_graph {
 
 	$self->__trim_edge_matrix( trim_relations => 1 );
 
-#	$self->dump_edge_matrix('N_R_T');
+#	$self->dump_edge_matrix(key => 'N_R_T');
 
 	if ($args{options} && $args{options}->{return_as_graph})
 	{	# make a copy of the old graph, but without statements and nodes
@@ -419,13 +419,16 @@ sub get_closest_and_ancestral {
 	$self->__trim_edge_matrix( trim_relations => 1 );
 
 	print STDERR "done __trim_edge_matrix!\n" if $ENV{VERBOSE};
-
+	
+	$self->dump_edge_matrix(key=>'N_R_T');
 	$self->__convert_matrix_to_edges(matrix => 'N_R_T', from => $self->graph, to => $new_graph, save_ix => $args{closest_ix});
+
 
 	print STDERR "done __convert_matrix_to_edges!\n" if $ENV{VERBOSE};
 
 	$self->graph($new_graph);
 }
+
 
 =head2 get_closest_ancestral_edges_from_matrix
 
@@ -789,8 +792,6 @@ input:  $self, graph => $graph or as part of $self
         subset => arr of nodes to map to (all if not stated)
 output: a graph with no redundant links (with any luck)
 
-=cut
-
 sub get_reduced_graph {
 	my $self = shift;
 	my $g = $self->graph;
@@ -825,40 +826,8 @@ sub get_reduced_graph {
 		}
 	}
 
-#	print STDERR "rel_reduction_h: " . Dumper($rel_reduction) . "\n\n";
-
-#	foreach my $r1 (keys %$rels_combined)
-#	{	foreach my $r2 (keys %{$rels_combined->{$r1}})
-#		{	foreach my $r (keys %{$rels_combined->{$r1}{$r2}})
-#			{	if ($rel_reduction->{$r})
-#				{	delete $rels_combined->{$r1}{$r2}{$_} foreach keys %{$rel_reduction->{$r}};
-#				}
-#			}
-#		}
-#	}
-
 	return unless $t_hash && $matrix && $rels_combined;
 
-=cut
-	## ok, let's see about subsets and inputs and all that jazz
-	foreach my $l qw(subset input)
-	{	if ($args{$l})
-		{	foreach my $t (@{$args{$l}})
-			{	## find the ID in t_hash and get the appropriate matrix row #
-				next if ! $t_hash->{by_id}{$t};
-				push @{$args{$l . "_acc_list"}}, $t_hash->{by_id}{$t};
-			}
-		}
-	}
-
-	undef $matrix->[$_] foreach @{$args{subset_acc_list}};
-	foreach my $i (@$matrix)
-	{	next unless defined $i;
-		foreach (@{$args{subset_acc_list}})
-		{	undef $i->[$_];
-		}
-	}
-=cut
 	## now let's multiply up the matrix!
 #	my $results_2 = $self->_get_reduction_matrix(%args, matrix => $matrix, rel_combination_h => $rels_combined, term_mapping => $t_hash );
 	my $results_2 = $self->_get_reduction_matrix(matrix => $matrix, rel_combination_h => $rels_combined, term_mapping => $t_hash );
@@ -910,108 +879,6 @@ sub get_reduced_graph {
 
 }
 
-
-
-=head2 _create_matrix
-
-Create a matrix from graph data
-
-input:  $graph
-output: a matrix
-        a hash containing the mapping of term ids to rows in the matrix
-
-
-sub _create_matrix {
-	my $self = shift;
-	my $g = shift || $self->graph;
-
-	$g->update_graph;
-
-#	my %args = ( graph => $self->graph, @_ );
-#	my $g = $args{graph};
-
-	die "No graph present... aborting" if ! defined $g;
-	die "No links in graph... aborting" unless $g->has_links;
-
-	my $t_hash;
-	my $matrix;
-	my $acc = 1;
-	# add the terms and links to the matrix
-	foreach my $l (@{$g->links})
-	{	foreach ($l->node, $l->target)
-		{	if (! $t_hash->{by_id}{$_->id})
-			{	$t_hash->{by_id}{$_->id} = $acc;
-				$t_hash->{by_acc}{$acc} = $_->id;
-				$acc++;
-			}
-		}
-
-		foreach my $rel ($l->relation, @{$self->get_subrelation_closure($l->relation)})
-		{	$matrix->[ $t_hash->{by_id}{$l->node->id} ][ $t_hash->{by_id}{$l->target->id} ]{ $rel->id } = 1;
-		}
-	}
-
-	return { matrix => $matrix, term_mapping => $t_hash };
-}
-
-=cut
-
-=head2 _combine_relations
-
-Work out what different relation(s) would result from combining two links
-
-input:  graph containing relations OR arrayref of relations
-output: a hash of the form
-          {rel_1_id}{rel_2_id}{ rel_a => 1, rel_b => 1 }
-          where rel_a and rel_b are the result of combining rel_1 and rel_2
-
-
-sub _combine_relations {
-	my $self = shift;
-	my %args = ( relations => $self->graph->relations, @_ );
-#	my $relations = shift || $self->graph->relations;
-
-	return unless $args{relations} && @{$args{relations}};
-
-	my $rels_combined;
-	## work out the results of various combinations of links
-	foreach my $r1 (@{$args{relations}})
-	{	foreach my $r2 (@{$args{relations}})
-		{	foreach my $rc_1 (@{$self->get_subrelation_reflexive_closure($r1)})
-			{	my @rels = $self->relation_composition($rc_1, $r2);
-				@rels = map { @{$self->get_subrelation_reflexive_closure($_)} } @rels;
-				foreach my $rel (@rels)
-				{	$rels_combined->{ $r1->id }{ $r2->id }{$rel->id}++;
-				}
-			}
-		}
-	}
-	return $rels_combined;
-}
-=cut
-
-=head2 _get_closure_matrix
-
-Get every possible combination of things in the matrix
-
-input:  matrix,
-output:
-
-
-sub _get_closure_matrix {
-	my $self = shift;
-	my %args = (@_);
-
-	$self->__create_edge_matrix unless $self->edge_matrix->{N_T_R};
-	$self->__populate_all_edge_matrices unless $self->edge_matrix->{T_N_R};
-
-	my $matrix = $self->edge_matrix;
-
-	my $rel_combo_h = $self->relation_composition_h;
-=cut
-
-
-=cut
 
 transitive closure algorithm:
 
