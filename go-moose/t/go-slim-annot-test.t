@@ -70,12 +70,19 @@ my $assoc_data = $results->{assoc_data};
 ## slim terms now; let's see if they have!
 ## everything that was annotated to GO:0000001-3 should now be annotated to
 ## GO:0000003
-my $annots = $graph->get_annotations_by_target('GO:0000003');
+my $annots = $graph->statements_in_ix_by_target_id('annotations', 'GO:0000003');
 my $str = join("\n", sort map { map { $_->{id} } @{$_->node->data_arr} } @$annots);
 my $str2 = join("\n", sort ( @{$assoc_data->{by_t}{'GO:0000001'}} , @{$assoc_data->{by_t}{'GO:0000002'}} , @{$assoc_data->{by_t}{'GO:0000003'}} ) );
 
+#my $str3 = join("\n", sort map { map { $_->{id} } @{$_->node->data_arr} } @{$graph->statements_in_ix_by_target_id('new_da_object', 'GO:0000003')});
+
+#print STDERR "str3: $str3\n";
+
 ## 6
 ok( $str eq $str2, "Checking inference is working correctly" );
+if ($str ne $str2)
+{	print STDERR "str: $str\nstr2: $str2\n\n";
+}
 
 ## all the assocs should be annotated to the root, node 08
 my $links_to_root = $graph->statements_in_ix_by_target_id('transitive_closure', 'GO:0000008');
@@ -121,6 +128,8 @@ GO:0000008: direct: 2	inferred: 14	total: 16/;
 
 $str = join("\n", @$arr);
 
+# print STDERR "str:\n$str\nwanted:\n$str2\n\n";
+
 ## 10
 ok( $str2 =~ /$str/sm, "Checking count results are correct");
 system("rm", "t/data/count_file.txt");
@@ -143,7 +152,8 @@ q!GO:0000008 : test term GO:0000008 (2 / 16 total)
 ## 11
 ok( $str eq $str2, "Checking tree is correct");
 
-die if $str ne $str2;
+
+die "got:\n$str\nwanted:\n$str2\n\n" if $str ne $str2;
 
 system("rm", "t/data/tree_file.txt");
 die "Could not delete existing file t/data/tree_file.txt" if -e "t/data/tree_file.txt";
@@ -156,8 +166,12 @@ $graph = dclone $parser->graph;
 ## we now have 0001 -- r --> 0002 -- p --> 0003
 $graph->remove_node('GO:0000002', 1);
 $graph->add_term( new GOBO::TermNode( id => 'GO:0000002', label => 'GO:0000002' ) );
+
 $graph->add_statements( new GOBO::LinkStatement( node=>$graph->get_term('GO:0000002'), relation=>$graph->get_relation('part_of'), target=>$graph->get_term('GO:0000003') ) );
+
 $graph->add_statements( new GOBO::LinkStatement( node=>$graph->get_term('GO:0000001'), relation=>$graph->get_relation('regulates'), target=>$graph->get_term('GO:0000002') ) );
+
+## we now have 0002 -- p --> 0004
 $graph->add_statements( new GOBO::LinkStatement( node=>$graph->get_term('GO:0000002'), relation=>$graph->get_relation('part_of'), target=>$graph->get_term('GO:0000004')));
 
 ## we now have 0007 -- p --> 0006 -- r --> 0005
@@ -167,56 +181,30 @@ $graph->add_term( new GOBO::TermNode( id => 'GO:0000006', label => 'GO:0000006' 
 $graph->add_statements( new GOBO::LinkStatement( node=>$graph->get_term('GO:0000007'), relation=>$graph->get_relation('part_of'), target=>$graph->get_term('GO:0000006') ) );
 $graph->add_statements( new GOBO::LinkStatement( node=>$graph->get_term('GO:0000006'), relation=>$graph->get_relation('regulates'), target=>$graph->get_term('GO:0000005') ) );
 
-print STDERR "\n\n";
-my $pr1 = new GOBO::Writers::TreeWriter( graph => $graph );
-$pr1->write;
-print STDERR "\n\n";
-
-## slim the graph down and see what happens
-## clone the graph
-my $ie = new GOBO::InferenceEngine::CustomEngine(graph => dclone $graph);
-my $data = GOBO::Util::GraphFunctions::get_subset_nodes( graph => $graph, options => { subset => { 'goslim_test' => 1 } } );
-
-# slim down the graph...
-$ie->slim_graph( subset_ids => [ keys %{$data->{subset}{goslim_test}} ], input_ids => [ keys %{$data->{subset}{goslim_test}} ], save_ix => 'inferred_ontology_links', options => { return_as_graph => 1 } );
-
-print STDERR "graph terms: " . join(", ", @{$ie->graph->terms}) . "\n";
-print STDERR "statements:\n" . join("\n", @{$ie->graph->statements}) . "\n";
-
-print STDERR "\n\nSLIMMED:\n";
-$pr1 = new GOBO::Writers::TreeWriter( graph => $ie->graph );
-$pr1->write;
-print STDERR "\n\n";
-
-
-
 ## run the annotation slimmer again
 undef $results;
-$results = GOBO::Util::GraphFunctions::slim_annotations(options =>  { ga_input => 't/data/tiny_gaf.gaf' }, subset => $subset, graph => $graph );
+$results = GOBO::Util::GraphFunctions::slim_annotations(options =>  { ga_input => 't/data/tiny_gaf.gaf' }, subset => $subset, graph => dclone $graph );
 
 ## OK, we should find that we have lost the annotations that were attached to GO:0000001, but we've kept those attached to GO:0000002.
-undef $graph;
-$graph = $results->{graph};
-$assoc_data = $results->{assoc_data};
 
-#foreach my $z qw(ontology_links annotations)
-#{	my @arr = @{$graph->get_all_statements_in_ix($z)};
-#	print STDERR "$z:\n" . join("\n", @arr) . "\n\n";
-#}
-
-$annots = $graph->get_annotations_by_target('GO:0000003');
+$annots = $results->{graph}->get_incoming_annotations('GO:0000003');
 $str = join("\n", sort map { map { $_->{id} } @{$_->node->data_arr} } @$annots);
-$str2 = join("\n", sort ( @{$assoc_data->{by_t}{'GO:0000002'}} , @{$assoc_data->{by_t}{'GO:0000003'}} ) );
+$str2 = join("\n", sort ( @{$results->{assoc_data}->{by_t}{'GO:0000002'}} , @{$results->{assoc_data}->{by_t}{'GO:0000003'}} ) );
 
 ## 12
 ok( $str eq $str2, "Checking we lost the regulates annotations" );
 
-$annots = $graph->get_annotations_by_target('GO:0000004');
+$annots = $results->{graph}->get_incoming_annotations('GO:0000004');
 $str = join("\n", sort map { map { $_->{id} } @{$_->node->data_arr} } @$annots);
-$str2 = join("\n", sort ( @{$assoc_data->{by_t}{'GO:0000002'}} , @{$assoc_data->{by_t}{'GO:0000003'}}, @{$assoc_data->{by_t}{'GO:0000004'}} ) );
+$str2 = join("\n", sort ( @{$results->{assoc_data}->{by_t}{'GO:0000002'}} , @{$results->{assoc_data}->{by_t}{'GO:0000003'}}, @{$results->{assoc_data}->{by_t}{'GO:0000004'}} ) );
 ## 13
 ok( $str eq $str2, "Checking we have no doubled annotations" );
 
+## 
+$results = GOBO::Util::GraphFunctions::slim_annotations(options =>  { ga_input => 't/data/tiny_gaf2.gaf' }, subset => $subset, graph => dclone $graph );
+
+
+exit(0);
 
 ## now let's make a new graph where slimming produces a new root.
 $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>'t/data/tiny_obo2.obo');
@@ -233,7 +221,7 @@ $graph = $results->{graph};
 $assoc_data = $results->{assoc_data};
 
 print STDERR "\n\nSLIMMED:\n";
-$pr1 = new GOBO::Writers::TreeWriter( graph => $graph, show_annotation_counts => 1, ontology_link_ix => 'direct_ontology_links', annotation_ix => 'all_annotations' );
+my $pr1 = new GOBO::Writers::TreeWriter( graph => $graph, show_annotation_counts => 1, ontology_link_ix => 'direct_ontology_links', annotation_ix => 'all_annotations' );
 $pr1->write;
 print STDERR "\n\n";
 

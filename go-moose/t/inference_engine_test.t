@@ -150,16 +150,16 @@ print STDERR "indir regs: " . Dumper($ie->graph->get_relation('indirectly_regula
 $ie->__create_edge_matrix;
 $ie->__populate_all_edge_matrices;
 print STDERR "edge matrix:\n";
-$ie->dump_edge_matrix('N_T_R');
+$ie->dump_edge_matrix(key => 'N_T_R');
 print STDERR "\n";
 
 $ie->__remove_redundant_relationships;
 $ie->__populate_all_edge_matrices;
 print STDERR "edge matrix now:\n";
-$ie->dump_edge_matrix('N_T_R');
+$ie->dump_edge_matrix(key => 'N_T_R');
 print STDERR "\n";
 $ie->__trim_edge_matrix;
-$ie->dump_edge_matrix('trimmed');
+$ie->dump_edge_matrix(key => 'trimmed');
 
 
 =cut
