@@ -952,7 +952,7 @@ sub __create_edge_matrix {
 	}
 
 #	print STDERR "edges: ";
-#	$self->dump_edge_matrix( 'N_R_T', $edges);
+#	$self->dump_edge_matrix(key => 'N_R_T', matrix => $edges);
 #	print STDERR "\n\n";
 
 	$self->edge_matrix($edges);
@@ -1070,7 +1070,7 @@ foreach k in edge->targets
 
 =cut
 
-#	$self->dump_edge_matrix('N_R_T');
+#	$self->dump_edge_matrix(key => 'N_R_T');
 
 	my $matrix = $self->edge_matrix;
 	foreach my $k (keys %{$matrix->{T_N_R}})
@@ -1234,14 +1234,19 @@ sub __convert_matrix_to_edges {
 	{	warn "Edge matrix not specified or no values defined";
 		return;
 	}
-
+	
 	my $matrix = $self->get_edge_matrix($args{matrix});
+	
+	$self->dump_edge_matrix(matrix => $matrix);
+	
 	my $to_add;
+	my $h;
 	## add any nodes required and create link statements
 	foreach my $n (keys %$matrix)
 	{	if (! $args{to}->get_node($n))
 		{	$args{to}->add_node($args{from}->get_node($n));
 		}
+		
 		foreach my $r (keys %{$matrix->{$n}})
 		{	if (! $args{to}->get_node($r))
 			{	$args{to}->add_relation($args{from}->get_node($r));
@@ -1250,14 +1255,14 @@ sub __convert_matrix_to_edges {
 			{	if (! $args{to}->get_node($t))
 				{	$args{to}->add_node($args{from}->get_node($t));
 				}
-
-				my $l = $self->create_link_statement( node => $args{to}->noderef($n), relation => $args{to}->relation_noderef($r), target => $args{to}->noderef($t) );
+				my $l = $self->create_link_statement( node => $args{to}->get_node($n), relation => $args{to}->relation_noderef($r), target => $args{to}->get_node($t) );
 				push @$to_add, $l;
 			}
 		}
 	}
 
 	$args{to}->add_statements_to_ix( statements => $to_add, ix => $args{save_ix});
+
 }
 
 =head2 __remove_redundant_relationships
@@ -1330,35 +1335,39 @@ sub __remove_redundant_relationships {
 
 Prettier printing of an edge matrix
 
+input:  $key     ## the ID of the matrix to get
+         OR
+        $matrix  ## a matrix to print
+output: matrix printed out on STDERR
+
 =cut
 
 sub dump_edge_matrix {
 	my $self = shift;
-	my $key = shift;
-	my $matrix = shift || $self->edge_matrix;
+	my %args = (@_);
+
+	my $matrix;
+	if (! $args{matrix} || ! $args{key})
+	{	warn "Please supply a key or a matrix for printing!" && return;
+	}
+	$matrix = $args{matrix} || $self->edge_matrix;
+	if ($args{key})
+	{	warn "key $args{key} could not be found in the matrix!" if ! $matrix->{$args{key}} && return;
+		$matrix = $matrix->{$args{key}};
+	}
+
 	warn "No edge matrix found!" && return if ! $matrix;
 
-	if ($key)
-	{	warn "key $key could not be found in the matrix!" if ! $matrix->{$key} && return;
-
-		print STDERR "Matrix $key\n";
-		foreach my $n (sort keys %{$matrix->{$key}})
-		{	foreach my $r (sort keys %{$matrix->{$key}{$n}})
-			{	foreach my $t (sort keys %{$matrix->{$key}{$n}{$r}})
-				{	print STDERR "  $n $r $t\n";
-				}
-			}
-		}
+	if ($args{key})
+	{	print STDERR "Matrix $args{key}\n";
 	}
 	else
-	{	foreach my $key (sort keys %$matrix)
-		{	print STDERR "Matrix $key\n";
-			foreach my $n (sort keys %{$matrix->{$key}})
-			{	foreach my $r (sort keys %{$matrix->{$key}{$n}})
-				{	foreach my $t (sort keys %{$matrix->{$key}{$n}{$r}})
-					{	print STDERR "  $n $r $t\n";
-					}
-				}
+	{	print STDERR "Matrix\n";
+	}
+	foreach my $n (sort keys %$matrix)
+	{	foreach my $r (sort keys %{$matrix->{$n}})
+		{	foreach my $t (sort keys %{$matrix->{$n}{$r}})
+			{	print STDERR "  $n $r $t\n";
 			}
 		}
 	}

@@ -357,13 +357,13 @@ sub slim_annotations {
 
 	print STDERR "Finished parsing annotations!\n" if $options->{verbose};
 
-my $annot = new GOBO::RelationNode( id => 'annotated_to', label => 'annotated to' );
-my $not_annot = new GOBO::RelationNode( id => 'annotated_to_NOT', label => 'annotated to NOT' );
-$graph->add_relation($annot);
-$graph->add_relation($not_annot);
-## should there be any other relationships for annotated_to?
-$annot->transitive_over( $graph->relation_noderef('part_of') );
-$not_annot->propagates_over_is_a(0);
+	my $annot = new GOBO::RelationNode( id => 'annotated_to', label => 'annotated to' );
+	my $not_annot = new GOBO::RelationNode( id => 'annotated_to_NOT', label => 'annotated to NOT' );
+	$graph->add_relation($annot);
+	$graph->add_relation($not_annot);
+	## should there be any other relationships for annotated_to?
+	$annot->transitive_over( $graph->relation_noderef('part_of') );
+	$not_annot->propagates_over_is_a(0);
 
 =insert
 	## this file contains the 'annotated_to' and 'annotated_to_NOT' relations
@@ -411,8 +411,6 @@ $not_annot->propagates_over_is_a(0);
 	my $a_ids;
 	my $ada_ids;
 	my @statements;
-	my $annotated_to = $graph->get_relation('annotated_to');
-	my $annotated_to_NOT = $graph->get_relation('annotated_to_NOT');
 
 	my $assoc_h;
 	my $count = 1;
@@ -423,31 +421,31 @@ $not_annot->propagates_over_is_a(0);
 		{	$err_count++;
 			next;
 		}
-		my ($annot, $not);
+		my ($annots, $nots);
 		map { 
 #			$a_ids->{$_}++;
 			## the association data is in $assoc_data->{by_a}{$a}{arr}
 			## check for a NOT annotation
 			if ($assoc_data->{by_a}{$_}{arr}[4] && $assoc_data->{by_a}{$_}{arr}[4] =~ /NOT/)
-			{	push @$not, { id => $_, data => $assoc_data->{by_a}{$_}{arr} };
+			{	push @$nots, { id => $_, data => $assoc_data->{by_a}{$_}{arr} };
 			}
 			else
-			{	push @$annot, { id => $_, data => $assoc_data->{by_a}{$_}{arr} };
+			{	push @$annots, { id => $_, data => $assoc_data->{by_a}{$_}{arr} };
 			}
 		} @{$assoc_data->{by_t}{$t}};
 		
-		if ($annot)
+		if ($annots)
 		{	#my $a_node = new GOBO::DataArray( id=> $t_obj->id . "_x_" . $annotated_to->id . "_$count", data_arr=>$annot );
-			my $a_node = new GOBO::DataArray( id=>"annot_data_$count", data_arr=>$annot );
+			my $a_node = new GOBO::DataArray( id=>"annot_data_$count", data_arr=>$annots );
 			$graph->add_node( $a_node );
-			push @statements, new GOBO::Annotation(node=>$a_node, relation=>$annotated_to, target=>$t_obj);
+			push @statements, new GOBO::Annotation(node=>$a_node, relation=>$annot, target=>$t_obj);
 			$ada_ids->{"annot_data_$count"} = $a_node;
 			$count++;
 		}
-		if ($not)
-		{	my $a_node = new GOBO::DataArray( id=>"annot_data_$count", data_arr=>$not );
+		if ($nots)
+		{	my $a_node = new GOBO::DataArray( id=>"annot_data_$count", data_arr=>$nots );
 			$graph->add_node( $a_node );
-			push @statements, new GOBO::Annotation(node=>$a_node, relation=>$annotated_to_NOT, target=>$t_obj);
+			push @statements, new GOBO::Annotation(node=>$a_node, relation=>$not_annot, target=>$t_obj);
 			$ada_ids->{"annot_data_$count"} = $a_node;
 			$count++;
 		}
@@ -456,6 +454,8 @@ $not_annot->propagates_over_is_a(0);
 	$graph->add_statements_to_ix(ix=>'asserted_links', statements=>[@statements]);
 
 	$graph->update_graph;
+	
+	my $roots = $graph->get_connected_roots;
 
 	if ($err_count)
 	{	warn "$err_count annotations were not added to the graph (terms could not be found or were obsolete)";
@@ -541,7 +541,6 @@ $not_annot->propagates_over_is_a(0);
 
 	undef @errs;
 
-=cut
 	if ($options->{delete_new_roots})
 	{	
 		## check our roots... have we got some mysterious new root nodes?
@@ -582,7 +581,6 @@ $not_annot->propagates_over_is_a(0);
 		{	$ie->graph->remove_node($_, 1);
 		}
 	}
-=cut
 
 	## if we're doing a rewrite of the GAF file, we don't need any more fancy
 	## trimmings
@@ -756,437 +754,6 @@ sub get_subset_nodes {
 }
 
 
-
-
-=head2 slim_graph
-
-Concatenates the various sub-functions involved in slimming
-
-input:  graph   => Graph object
-        options => option_h
-          return_as_graph => ## to return the results as a proper Graph object
-
-output:
-        with option 'return_as_graph' on: a slimmed Graph object
-        otherwise, data hash in the form
-        {graph}{ node_id }{ relation_id }{ target_id }
-
-
-sub slim_graph {
-	my %args = ( @_ );
-	my $graph = $args{graph};
-	my $subset = $args{subset};
-	my $options = $args{options};
-
-	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless defined $graph && $options && $subset;
-
-	$graph->duplicate_statement_ix('ontology_links', 'asserted_links');
-	my $inf_eng = $args{inf_eng} || new GOBO::InferenceEngine::CustomEngine(graph => $graph, from_ix => 'asserted_links', save_ix => 'inferred_links');
-
-
-	# get the links between the nodes
-#	my $node_data = $args{node_data} ||
-#		get_graph_inferred_links( subset => $subset, graph => $graph, input => $args{input}, inf_eng => $inf_eng, options => $options );
-	$ie->__create_edge_matrix( subset => $subset, input => $args{input}, options => $options );
-	# populate the node look up hashes
-	$ie->__populate_all_edge_matrices;
-
-	print STDERR "Done \$ie->__create_edge_matrix!\n" if $options->{verbose};
-
-
-	# get the relations from the graph
-	my $relations = $args{relations} ||
-		get_graph_relations( graph => $graph, options => $options );
-		print STDERR "Done GOBO::Util::GraphFunctions::get_graph_relations!\n" if $options->{verbose};
-
-	# remove redundant relationships between nodes
-	$ie->remove_redundant_relationships;
-
-	print STDERR "Done GOBO::Util::GraphFunctions::remove_redundant_relationships!\n" if $options->{verbose};
-
-	if ($options->{verbose})
-	{	$ie->dump_edge_matrix('node_rel_target');
-	}
-
-	# repopulate the node look up hashes
-	$ie->__populate_all_edge_matrices;
-	print STDERR "Done GOBO::Util::GraphFunctions::populate_lookup_hashes!\n" if $options->{verbose};
-
-	if ($options->{return_as_graph})
-	{	my $inf_graph = add_extra_stuff_to_graph( old_g => $graph, new_g => $inf_eng->inferred_graph, options => $options );
-		return trim_inferred_graph( graph_data => $node_data, inf_graph => $inf_graph, options => $options );
-	}
-	else
-	{	return $ie->trim_graph;
-	}
-
-=cut
-
-=cut
-	# slim down dem nodes
-	my $slimmed = trim_graph( graph_data => $node_data, options => $options );
-	print STDERR "Done GOBO::Util::GraphFunctions::trim_graph!\n" if $options->{verbose};
-
-	if ($options->{return_as_graph})
-	{	my $new_graph = add_nodes_and_links_to_graph( old_g => $graph, full_g => $inf_eng->inferred_graph, graph_data => $slimmed->{graph}, options => $options );
-		print STDERR "Done GOBO::Util::GraphFunctions::add_nodes_and_links_to_graph!\n" if $options->{verbose};
-
-		return add_extra_stuff_to_graph( old_g => $graph, new_g => $new_graph, options => $options );
-		print STDERR "Done GOBO::Util::GraphFunctions::add_extra_stuff_to_graph!\n" if $options->{verbose};
-
-	}
-	return $slimmed;
-}
-
-=cut
-
-=head2 get_graph_relations
-
-Get the relations and their inter-relation from a graph
-
-input:  graph   => Graph object
-        options => option_h
-
-output: rel_h containing the relations from graph in the form
-             { rel_node_id }{ rel_relation_id }{ rel_target_id }
-        and rel_h->{got_graph} = 1
-
-
-sub get_graph_relations {
-	my %args = (@_);
-	my $graph = $args{graph};
-	my $options = $args{options};
-
-	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless $graph && $options;
-	my $rel_h;
-
-	# get the relations specified in the graph and see how they relate to each other...
-	foreach (@{$graph->relations})
-	{	if ($graph->get_outgoing_statements(node=>$_, ix=>'edges'))
-		{	foreach (@{$graph->get_outgoing_statements(node=>$_, ix=>'edges')})
-			{	$rel_h->{graph}{$_->node->id}{$_->relation->id}{$_->target->id}++;
-			}
-		}
-	}
-	print STDERR "Finished getting relationships\n" if $options->{verbose};
-
-	$rel_h->{got_graph} = 1;
-	return $rel_h;
-}
-
-=cut
-
-=head2 get_graph_inferred_links
-
-Find the links between the terms in $input and those in $subset
-
-input:  input   => array of input node IDs; optional; uses all graph nodes
-                   all graph nodes if not specified
-        subset  => subset nodes in the form node_id => 1; optional; uses
-                   all graph nodes if not specified
-        graph   => Graph object
-        inf_eng => inference engine (a new one will be created if not)
-
-        options => hash of options, including options->{verbose}
-
-output: node data in the form
-             {graph}{ node_id }{ relation_id }{ target_id }
-
-
-sub get_graph_inferred_links {
-	my %args = (@_);
-#	my $roots = $args{roots};
-	my $graph = $args{graph};
-
-	my $subset = $args{subset};
-	my $input = $args{input};
-	my $options = $args{options} || {};
-
-	confess( (caller(0))[3] . ": missing required arguments" ) unless defined $graph;
-
-	if (! $graph->exists_statement_ix('asserted_links'))
-	{	$graph->duplicate_statement_ix('ontology_links', 'asserted_links');
-	}
-
-	my $ie = $args{inf_eng} || new GOBO::InferenceEngine::CustomEngine(from_ix => 'asserted_links', save_ix => 'inferred_links');
-	$ie->graph($graph);
-
-	# no input: use all the terms in the graph as input
-	if (! $input || ! @$input)
-	{	@$input = map { $_->id } @{$graph->terms};
-		print STDERR "Using all terms as input set\n" if $options->{verbose};
-	}
-
-	confess( (caller(0))[3] . ": missing required arguments" ) unless $ie && $input;
-
-	# get rid of any existing data
-	my $node_data;
-
-#print STDERR "subset: " . join(", ", sort keys %$subset) . "\n";
-
-	if ($subset)
-	{	# get all the links between the input nodes and those in the subset
-		foreach my $t (@$input)
-		{
-			## asserted links
-			foreach (@{ $graph->get_outgoing_links(node=>$t) })
-			{	# skip it unless the target is a root or in the subset
-				next unless $subset->{$_->target->id}; # || $roots->{$_->target->id} ;
-				$node_data->{graph}{$t}{$_->relation->id}{$_->target->id} = 1;
-#				print STDERR "ASS: $t " . $_->relation->id . " " . $_->target->id . "\n";
-			}
-
-=cut
-
-
-=cut
-			foreach (@{ $ie->get_inferred_outgoing_edges(node=>$t) })
-			{	# skip it unless the target is a root or in the subset
-#				print STDERR "looking at $_\n";
-				if (! $subset->{$_->target->id})
-				{	#print STDERR $_->target . " is not a subset term!\n";
-					next;
-				}
-				next unless exists $subset->{$_->target->id}; # || $roots->{$_->target->id} ;
-#				# skip it if we already have this link
-#				next if defined $node_data->{graph}{$t}{$_->relation->id}{$_->target->id};
-				## add to a list of inferred entries
-				$node_data->{graph}{$t}{$_->relation->id}{$_->target->id}++;
-			}
-		}
-	}
-	else
-	{	# get all the links involving the input nodes
-		foreach my $t (@$input)
-		{	## asserted links
-#			foreach (@{ $graph->get_outgoing_links(node=>$t) })
-#			{	$node_data->{graph}{$t}{$_->relation->id}{$_->target->id} = 1;
-#			}
-
-			foreach (@{ $ie->get_inferred_outgoing_edges(node=>$t) })
-			{	# skip it if we already have this link
-#				next if defined $node_data->{graph}{$t}{$_->relation->id}{$_->target->id};
-				## add to a list of inferred entries
-				$node_data->{graph}{$t}{$_->relation->id}{$_->target->id}++;
-			}
-		}
-	}
-	return $node_data;
-}
-=cut
-
-
-=head2 remove_redundant_relationships
-
-input:  node_data => hash of node data in the form
-                     {graph}{ node_id }{ relation_id }{ target_id }
-        rel_data  => relationship data hash (structure same as node_data)
-        graph     => Graph object
-        options   => option_h
-
-
-output: node_data with redundant rels carefully removed
-
-if we have relationships between relations -- e.g. positively_regulates is_a
-regulates -- and two (or more) related relations are found between the same
-two nodes, the less specific relationships are removed.
-
-e.g.
-
-A positively_regulates B
-A regulates B
-
-==> A regulates B will be removed
-
-
-sub remove_redundant_relationships {
-	my %args = (@_);
-	my $node_data = $args{node_data};
-	my $rel_data = $args{rel_data};
-	my $graph = $args{graph};
-	my $options = $args{options};
-
-	# make sure we have the relation relationships
-	if (! $rel_data->{got_graph} )
-	{	$rel_data = get_graph_relations( graph => $graph, options => $options );
-	}
-
-	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless $node_data && $rel_data && $graph;
-
-	if (defined $rel_data->{graph})
-	{	$ie->__populate_all_edge_matrices;
-
-		my $slimmed = trim_graph( graph_data => $rel_data, options => $options );
-
-		$ie->__populate_all_edge_matrices;
-
-		## slim down the relationships
-		## get rid of redundant relations
-		# these are the closest to the root
-
-		## this could probably be done more effectively / efficiently
-
-		foreach my $r (keys %{$slimmed->{target_node_rel}})
-		{	foreach my $r2 (keys %{$slimmed->{target_node_rel}{$r}})
-			{	# if both exist...
-				if ($node_data->{rel_node_target}{$r} && $node_data->{rel_node_target}{$r2})
-				{
-					# delete anything where we have the same node pairs with both relations
-					foreach my $n (keys %{$node_data->{rel_node_target}{$r2}})
-					{	if (defined $node_data->{graph}{$n}{$r})
-					#	if ($data->{nodes}{rel_node_target}{$r}{$n})
-						{
-							foreach my $t (keys %{$node_data->{rel_node_target}{$r2}{$n}})
-							{	if (defined $node_data->{graph}{$n}{$r}{$t})
-								{
-									delete $node_data->{graph}{$n}{$r}{$t};
-									if (! values %{$node_data->{graph}{$n}{$r}})
-									{	delete $node_data->{graph}{$n}{$r};
-										if (! values %{$node_data->{graph}{$n}})
-										{	delete $node_data->{graph}{$n};
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-#	return $node_data;
-}
-
-=cut
-
-=head2 trim_graph
-
-input:  graph_data => data hash with nodes and relations specified as
-               {graph}{ node_id }{ relation_id }{ target_id }
-          plus various rearrangements, with a hash key specifying the ordering
-          e.g. {node_target_rel}
-               {target_node_rel}
-        options => option_h  # no options specified as yet
-
-output: new data hash, slimmed down, with relations specified as
-               {graph}{ node_id }{ relation_id }{ target_id }
-
-For each term, finds the closest node for each relation and stores them in a hash
-
-
-sub trim_graph {
-	my %args = (@_);
-	my $d = $args{graph_data};
-	my $new_d;      # new data hash - woohoo!
-	my $options = $args{options};
-
-	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless values %{$d->{graph}};
-
-	if (! $ie->edge_matrix->defined('target_node_rel') )
-	{	$ie->__populate_all_edge_matrices;
-	}
-
-	# for each node with a link to a 'target' (closer to root) node
-	foreach my $id (keys %{$d->{node_target_rel}})
-	{	# only connected to one node: must be the closest!
-		if (scalar keys %{$d->{node_target_rel}{$id}} == 1)
-		{	$new_d->{graph}{$id} = $d->{graph}{$id};
-			next;
-		}
-		foreach my $rel (keys %{$d->{node_rel_target}{$id}})
-		{	# only one node connected by $rel
-			if (scalar keys %{$d->{node_rel_target}{$id}{$rel}} == 1)
-			{	$new_d->{graph}{$id}{$rel} = $d->{node_rel_target}{$id}{$rel};
-				next;
-			}
-
-			#	list_by_rel contains all the nodes between it and the root(s) of $id
-			my @list_by_rel = keys %{$d->{node_rel_target}{$id}{$rel}};
-
-			REL_SLIMDOWN_LOOP:
-			while (@list_by_rel)
-			{	my $a = pop @list_by_rel;
-				my @list2_by_rel = ();
-				while (@list_by_rel)
-				{	my $b = pop @list_by_rel;
-					if ($d->{target_node_rel}{$a}{$b})
-					{	#	b is node, a is target
-						#	forget about a, go on to the next list item
-						push @list_by_rel, $b;
-						push @list_by_rel, @list2_by_rel if @list2_by_rel;
-						next REL_SLIMDOWN_LOOP;
-					}
-					elsif ($d->{node_target_rel}{$a}{$b})
-					{	#	a is node, b is target
-						#	forget about b, look at the next in the list
-						next;
-					}
-					else
-					{	#a and b aren't related
-						#	keep b
-						push @list2_by_rel, $b;
-						next;
-					}
-				}
-				#	if a is still around, it must be a descendent of
-				#	all the nodes we've looked at, so it can go on our
-				#	descendent list
-				$new_d->{graph}{$id}{$rel}{$a} = $d->{node_rel_target}{$id}{$rel}{$a};
-
-				#	if we have a list2_by_rel, transfer it back to @list_by_rel
-				push @list_by_rel, @list2_by_rel if @list2_by_rel;
-			}
-		}
-	}
-	return $new_d;
-}
-
-=cut
-
-
-=head2 populate_lookup_hashes
-
-input:  data hash with nodes and relations specified as
-             {graph}{ node_id }{ relation_id }{ target_id }
-output: rearrangements of the data with first key specifying the order:
-             {node_target_rel}
-             {target_node_rel}
-             {node_rel_target}
-             {target_rel_node}
-             {rel_node_target}
-             {rel_target_node}
-
-
-sub populate_lookup_hashes {
-	my %args = (@_);
-	my $hash = $args{graph_data};
-
-	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless values %{$hash->{graph}};
-
-	foreach my $k qw(node_target_rel target_node_rel node_rel_target target_rel_node rel_node_target rel_target_node)
-	{	delete $hash->{$k};
-	}
-
-	foreach my $n (keys %{$hash->{graph}})
-	{	foreach my $r (keys %{$hash->{graph}{$n}})
-		{	foreach my $t (keys %{$hash->{graph}{$n}{$r}})
-			{	$hash->{node_target_rel}{$n}{$t}{$r} = #1;
-				$hash->{target_node_rel}{$t}{$n}{$r} = #1;
-				$hash->{node_rel_target}{$n}{$r}{$t} = #1;
-				$hash->{target_rel_node}{$t}{$r}{$n} = #1;
-				$hash->{rel_node_target}{$r}{$n}{$t} = #1;
-				$hash->{rel_target_node}{$r}{$t}{$n} = #1;
-				$hash->{graph}{$n}{$r}{$t};
-			}
-		}
-	}
-}
-
-=cut
-
-
-
-
 =head2 get_furthest_ancestral_nodes
 
 input:  graph_data => data hash with nodes and relations specified as
@@ -1205,6 +772,9 @@ output: new data hash, slimmed down, with relations specified as
 For a given term, finds the furthest node[s]
 
 =cut
+
+
+### DOES THIS WORK?!?!
 
 sub get_furthest_ancestral_nodes_from_matrix {
 	my %args = (@_);
@@ -1419,8 +989,6 @@ input:  old_g => old Graph object
 
 output: new graph with all nodes from old Graph object added
 
-=cut
-
 sub add_referenced_nodes_to_graph {
 	my %args = (@_);
 	my $old_g = $args{old_g};
@@ -1462,6 +1030,8 @@ sub add_referenced_nodes_to_graph {
 	return $new_g;
 }
 
+=cut
+
 
 
 =head2 add_all_nodes_to_graph
@@ -1471,7 +1041,6 @@ input:  old_g => old Graph object
 
 output: new graph with all nodes from old Graph object added
 
-=cut
 
 sub add_all_nodes_to_graph {
 	my %args = (@_);
@@ -1499,6 +1068,7 @@ sub add_all_nodes_to_graph {
 	return $new_g;
 }
 
+=cut
 
 
 =head2 add_all_relations_to_graph
@@ -1508,8 +1078,6 @@ input:  old_g => old Graph object
         no_rel_links => 1  if links should be NOT added (default is to add them)
 
 output: new graph with relations from the old graph added
-
-=cut
 
 sub add_all_relations_to_graph {
 	my %args = (@_);
@@ -1552,6 +1120,8 @@ sub add_all_relations_to_graph {
 	return $new_g;
 }
 
+=cut
+
 
 =head2 add_all_terms_to_graph
 
@@ -1565,7 +1135,6 @@ input:  old_g => old Graph object
 
 output: new graph with terms from the old graph added
 
-=cut
 
 sub add_all_terms_to_graph {
 	my %args = (@_);
@@ -1600,6 +1169,7 @@ sub add_all_terms_to_graph {
 
 	return $new_g;
 }
+=cut
 
 
 =head2 add_extra_stuff_to_graph
@@ -1729,8 +1299,6 @@ input:  graph_data => data hash with nodes and relations specified as
 
 output: new graph, containing all the nodes and relations specified in
 
-=cut
-
 sub add_nodes_and_links_to_graph {
 	my %args = (@_);
 	my $graph_data = $args{graph_data}{graph};
@@ -1766,6 +1334,7 @@ sub add_nodes_and_links_to_graph {
 	}
 	return $new_g;
 }
+=cut
 
 
 =head2 trim_inferred_graph
@@ -2086,6 +1655,7 @@ sub load_mapping_as_graph {
 
 	return $graph;
 }
+
 
 
 ## quick sub to extract terms matching a certain criteria
