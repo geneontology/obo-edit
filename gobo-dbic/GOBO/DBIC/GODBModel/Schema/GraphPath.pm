@@ -98,9 +98,11 @@ __PACKAGE__->belongs_to('graph_object' =>
 __PACKAGE__->belongs_to('graph_subject' =>
 			'GOBO::DBIC::GODBModel::Schema::Term', 'term2_id');
 __PACKAGE__->belongs_to('relationship_type' =>
-			'AmiGO::Model::Schema::Term', 'relationship_type_id');
+			'GOBO::DBIC::GODBModel::Schema::Term', 'relationship_type_id');
 __PACKAGE__->belongs_to('rel_type' =>
-			'AmiGO::Model::Schema::Term', 'relationship_type_id');
+			'GOBO::DBIC::GODBModel::Schema::Term', 'relationship_type_id');
+__PACKAGE__->belongs_to('relationship' =>
+			'GOBO::DBIC::GODBModel::Schema::Term', 'relationship_type_id');
 
 ##
 #__PACKAGE__->add_unique_constraint("t0", ["id"]);

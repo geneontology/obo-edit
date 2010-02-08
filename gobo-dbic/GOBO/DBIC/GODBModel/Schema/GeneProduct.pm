@@ -115,8 +115,6 @@ __PACKAGE__->belongs_to('type' =>
 			'GOBO::DBIC::GODBModel::Schema::Term',
 			'type_id');
 
-
-
 ##
 __PACKAGE__->add_unique_constraint("dbxref_id", ["dbxref_id"]);
 __PACKAGE__->add_unique_constraint("g0", ["id"]);

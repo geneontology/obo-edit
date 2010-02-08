@@ -36,6 +36,10 @@ sub new {
   $args->{type} = 'term2term_over_graph_path';
   $self->{GRAPH_Q} = GOBO::DBIC::GODBModel::Query->new($args);
 
+  ## TODO: Let's start trying life without t2t:
+  $args->{type} = 'graph_path';
+  $self->{GRAPH_PATH} = GOBO::DBIC::GODBModel::Query->new($args);
+
   ## We'll borrow SUCCESS and ERROR_MESSAGE from GOBO::DBIC::GODBModel.
 
   ### Nodes are defined as terms (keyed by acc) and edges are defined
@@ -182,13 +186,15 @@ sub get_children {
   my $thing = shift || '';
   my $acc = $self->_convert_term_or_acc_to_acc($thing);
 
-  my $all = $self->{GRAPH_Q}->get_all_results({'graph_object.acc' => $acc,
-					       'graph_path.distance' => 1});
+  # my $all = $self->{GRAPH_Q}->get_all_results({'graph_object.acc' => $acc,
+  # 					       'graph_path.distance' => 1});
+  my $all = $self->{GRAPH_PATH}->get_all_results({'me.acc' => $acc,
+						  'me.distance' => 1});
 
   my $ret = [];
-  foreach my $t2t (@$all){
-    if( ! $t2t->subject->is_obsolete ){
-      push @$ret, $t2t->subject;
+  foreach my $gp (@$all){
+    if( ! $gp->subject->is_obsolete ){
+      push @$ret, $gp->subject;
       # $self->kvetch("GOBO::DBIC::GODBModel::Graph::get_children: kid: " .
       # 		    $t2t->subject->acc);
     }
@@ -200,7 +206,7 @@ sub get_children {
 =item get_relationship
 
 In: term, term; take string or object.
-Out: int.
+Out: String.
 
 =cut
 sub get_relationship {
@@ -211,16 +217,17 @@ sub get_relationship {
   my $obj_acc = $self->_convert_term_or_acc_to_acc($obj_thing);
   my $sub_acc = $self->_convert_term_or_acc_to_acc($sub_thing);
 
-  my $all = $self->{GRAPH_Q}->get_all_results({'object.acc' => $obj_acc,
-					       'subject.acc' => $sub_acc});
+  ## 
+  my $all = $self->{GRAPH_PATH}->get_all_results({'object.acc' => $obj_acc,
+						  'subject.acc' => $sub_acc});
 
-  ## Should be one.
+  ## Should be just one.
   my $ret = undef;
-  foreach my $t2t (@$all){
-    #$ret = $t2t->relationship_type_id;
-    $ret = $t2t->relationship->name;
+  foreach my $gp (@$all){
+    $ret = $gp->relationship->name;
     last;
   }
+
   return $ret;
 }
 
@@ -230,6 +237,9 @@ sub get_relationship {
 Takes DBIx::Class Term or acc string.
 Gets the term2term links from a term.
 
+# TODO/BUG: track down functions that use this to switch over to running
+# through returned graph_paths. Seems to appear many times.
+
 =cut
 sub get_child_relationships {
 
@@ -237,8 +247,10 @@ sub get_child_relationships {
   my $term = shift || undef;
   my $term_acc = $self->_convert_term_or_acc_to_acc($term);
 
+  # return $self->{GRAPH_PATH}->get_all_results({'me.acc' => $term_acc,
+  #                                              'me.distance' => 1});
   return $self->{GRAPH_Q}->get_all_results({'graph_object.acc' => $term_acc,
-					    'graph_path.distance' => 1});
+  					    'graph_path.distance' => 1});
 }
 
 
@@ -247,6 +259,9 @@ sub get_child_relationships {
 Takes DBIx::Class Term or acc string.
 Gets the term2term links from a term.
 
+TODO/BUG: track down functions that use this to switch over to running
+through returned graph_paths. It seems to just appear once.
+
 =cut
 sub get_parent_relationships {
 
@@ -254,6 +269,9 @@ sub get_parent_relationships {
   my $term = shift || undef;
   my $term_acc = $self->_convert_term_or_acc_to_acc($term);
 
+  # return
+  #   $self->{GRAPH_PATH}->get_all_results({'me.acc' => $term_acc,
+  # 				       'me.distance' => 1});
   return
     $self->{GRAPH_Q}->get_all_results({'graph_subject.acc' => $term_acc,
 				       'graph_path.distance' => 1});
