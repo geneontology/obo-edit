@@ -25,11 +25,14 @@ __PACKAGE__->load_classes( qw/
 			       InstanceData
 			       Homolset
 
+			       Phylotree
+
 			       Seq
 			       SeqDBXRef
 
 			       GeneProduct
 			       GeneProductHomolset
+			       GeneProductPhylotree
 			       GeneProductSynonym
 			       GeneProductSeq
 
