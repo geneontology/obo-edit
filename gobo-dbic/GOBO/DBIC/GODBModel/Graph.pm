@@ -188,7 +188,7 @@ sub get_children {
 
   # my $all = $self->{GRAPH_Q}->get_all_results({'graph_object.acc' => $acc,
   # 					       'graph_path.distance' => 1});
-  my $all = $self->{GRAPH_PATH}->get_all_results({'me.acc' => $acc,
+  my $all = $self->{GRAPH_PATH}->get_all_results({'object.acc' => $acc,
 						  'me.distance' => 1});
 
   my $ret = [];
