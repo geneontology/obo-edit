@@ -216,6 +216,12 @@ sub new {
  			    'dbxref'}];
     $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
 
+  }elsif( $type eq 'term_dbxref' ){
+
+    $self->{QUERY_RESULT_SET} = 'TermDBXref';
+    $self->{QUERY_JOIN} = ['term', 'dbxref'];
+    $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
+
   }elsif( $type eq 'term_synonym' ){
 
     $self->{QUERY_RESULT_SET} = 'TermSynonym';
@@ -263,6 +269,12 @@ sub new {
 			   {'association' =>
 			    ['term',
 			     'evidence']}];
+    $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
+
+  }elsif( $type eq 'gene_product_count' ){
+
+    $self->{QUERY_RESULT_SET} = 'GeneProductCount';
+    $self->{QUERY_JOIN} = ['term'];
     $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
 
   }elsif( $type eq 'gene_product_two_terms' ){
@@ -433,7 +445,7 @@ sub get_paged_results {
 								   distinct => 'me',
 								   prefetch => $self->{QUERY_PREFETCH},
 								   rows => 10,
-								  });
+							  });
 
   #$self->{QUERY_PAGER} = $results->pager();
   $self->{QUERY_COUNT} = $results->count();
