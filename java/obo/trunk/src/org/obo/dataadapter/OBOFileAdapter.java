@@ -315,8 +315,7 @@ public class OBOFileAdapter implements OBOAdapter {
 				} else {
 					filteredPaths.addAll(ioprofile.getSaveRecords());
 				}
-				logger.info("Writing " +	filteredPaths
-						+ " (serializer = " + ioprofile.getSerializer() + ", basicSave = " + ioprofile.getBasicSave() + ")");
+				logger.info("Writing " + filteredPaths + " (serializer = " + ioprofile.getSerializer() + ", basicSave = " + ioprofile.getBasicSave() + ")");
 
 				serializeEngine.serialize((OBOSession) input, serializer,filteredPaths);
 

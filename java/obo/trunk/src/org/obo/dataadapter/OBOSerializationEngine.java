@@ -476,7 +476,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				HashSet<OBOConstants.TagMapping> tagFilter = null;
 				if(filteredPath.getTagFilter() != null)
 					tagFilter = filteredPath.getTagFilter().getTagsToWrite();
-				
+
 				if (!filteredPath.getDoFilter())
 					objectFilter = null;
 				else if (filteredPath.getSaveTypes()) {
@@ -1085,8 +1085,6 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		String impliedType = filteredPath.getImpliedType();
 		reasonerFactory = filteredPath.getReasonerFactory();
 
-
-
 		OBOProperty prefilterProperty = null;
 		if (filteredPath.getPrefilterProperty() != null)
 			prefilterProperty = (OBOProperty) session.getObject(filteredPath.getPrefilterProperty());
@@ -1180,22 +1178,19 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			((FilteredLinkDatabase) database).setFollowIsaClosure(followIsaClosure);
 		}
 
-
-
 		setProgressString("Collecting objects to write to file: " + path);
 		Collection writeList = new ArrayList();
 		Collection filteredObjects = database.getObjects();
-		for(Object o : filteredObjects){
-			writeList.add(o);
-		}
 
+		for(Object o : filteredObjects){
+				writeList.add(o);
+		}
 
 		Collection refList = new ArrayList();
 
 		// if Include is_a closure save option selected - compile termsToFetch from the filteredObjects
-//		logger.debug(database.getClass().getSimpleName().equals("FilteredLinkDatabase"));
-//		logger.debug((((FilteredLinkDatabase) database).getFollowIsaClosure()));
-		
+		logger.debug("database equals FilteredLinkDatabse? : " + database.getClass().getSimpleName().equals("FilteredLinkDatabase"));
+
 		if( database.getClass().getSimpleName().equals("FilteredLinkDatabase") && (((FilteredLinkDatabase) database).getFollowIsaClosure()) ){
 			for(Object obj : writeList){
 				if (cancelled)
@@ -1223,7 +1218,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 					}
 				} 
 			}
-			
+
 			for(Object refObject : refList){
 				writeList.add(refObject);
 			}
@@ -1259,7 +1254,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			engineTagOrderingList.addAll(OBOConstants.DEFAULT_TAG_ORDER);
 		} else {
 			if(filteredPath.getTagFilter() != null)
-			serializer.setTagOrdering(filteredPath.getTagFilter().getTagsToWrite());
+				serializer.setTagOrdering(filteredPath.getTagFilter().getTagsToWrite());
 			engineTagOrderingList.addAll(serializer.getTagOrdering());
 		}
 
@@ -1275,9 +1270,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		for(Object o : stanzaOrdering){
 			OBOConstants.StanzaMapping stanzaMapping = (OBOConstants.StanzaMapping) o;
 
-			//get objects to write to file
+			//compiling writeObjects from writeList
 			List writeObjects = new ArrayList();
-
 			for(Object obj : writeList){
 				IdentifiedObject io = (IdentifiedObject) obj;
 				if (stanzaMapping.getStanzaClass().isInstance(io) && !io.isBuiltIn()) {
@@ -1290,27 +1284,9 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 			setProgressString("Writing objects : " + path);
 
-			Collection<IdentifiedObject> pickedList = new ArrayList();		
-			Iterator it2 = writeList.iterator();
-			for (int i = 0; it2.hasNext(); i++) {
-				if (cancelled)
-					doHalt();
-				IdentifiedObject io = (IdentifiedObject) it2.next();
-				int percent = (100 * i) / writeList.size();
-				setProgressValue(percent);
-				boolean picked = false;
-				if(pickedList.size() > 0){
-					for(IdentifiedObject po : pickedList){
-						if(io.getID().equalsIgnoreCase(po.getID())){
-							picked = true;
-							break;
-						}			
-					}
-				} 
-				if (!picked){
-					writeObject(io, database, serializer);
-					pickedList.add(io);
-				}
+			for(Object writeo : writeObjects){
+				IdentifiedObject io = (IdentifiedObject) writeo;
+				writeObject(io,database,serializer);
 			}
 		}
 		for (OBOSerializerExtension extension : extensions) {
