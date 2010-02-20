@@ -29,9 +29,9 @@ has range => ( is=>'rw', isa=>'GOBO::ClassNode');
 
 has symmetric_on_instance_level => ( is=>'rw', isa=>'Bool' );
 has inverse_of_on_instance_level_list => ( is=>'rw', isa=>'ArrayRef[GOBO::RelationNode]' );
-
 has subrelation_of_list => ( is=>'rw', isa=>'ArrayRef[GOBO::RelationNode]' );
 has inverse_of_list => ( is=>'rw', isa=>'ArrayRef[GOBO::RelationNode]' );
+has negation_of_list => ( is=>'rw', isa=>'ArrayRef[GOBO::RelationNode]' );
 has disjoint_from_list => (is => 'rw', isa => 'ArrayRef[GOBO::RelationNode]');
 has disjoint_over_list => (is => 'rw', isa => 'ArrayRef[GOBO::RelationNode]');
 
@@ -54,7 +54,13 @@ sub is_subsumption {
 }
 
 sub propagates_over_is_a {
+    my $self = shift;
+    return 0 if @{$self->negation_of_list || []};
     return 1; # by default all links propagate over is_a
+}
+
+sub propagates_under_is_a {
+    return 1; # by default all links propagate under is_a
 }
 
 sub add_holds_over_chain {
@@ -89,6 +95,12 @@ sub add_inverse_of {
     my $self = shift;
     $self->inverse_of_list([]) unless $self->inverse_of_list([]);
     push(@{$self->inverse_of_list},@_);
+}
+
+sub add_negation_of {
+    my $self = shift;
+    $self->negation_of_list([]) unless $self->negation_of_list([]);
+    push(@{$self->negation_of_list},@_);
 }
 
 sub add_inverse_of_on_instance_level {
