@@ -324,6 +324,10 @@ sub parse_body {
 			my $tn = $self->getnode($1, $stanzaclass eq 'typedef' ? 'r' : 'c');
 			$n->complement_of($tn);
 		}
+		elsif (/^negation_of:\s*(\S+)/) {
+			my $tn = $self->getnode($1, 'r');
+			$n->add_negation_of($tn);
+		}
 		elsif (/^disjoint_from:\s*(\S+)/) {
 			my $tn = $self->getnode($1, $stanzaclass eq 'typedef' ? 'r' : 'c');
 			$n->add_disjoint_from($tn);

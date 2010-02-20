@@ -22,7 +22,13 @@ sub create {
         if ($fmt eq 'obo') {
             $pc = 'GOBO::Writers::OBOWriter';
         }
-#        require $pc;
+        elsif ($fmt eq 'oboxml') {
+            $pc = 'GOBO::Writers::OBOXMLWriter';
+        }
+	my $mod = $pc;
+	$mod =~ s/::/\//g;
+	require "$mod.pm";
+	# TODO
         return $pc->new(%argh);
     }
 }

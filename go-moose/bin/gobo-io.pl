@@ -9,8 +9,16 @@ use GOBO::Parsers::OBOParser;
 use GOBO::Writers::OBOWriter;
 use FileHandle;
 
+my $outfmt = 'obo';
+while (scalar(@ARGV) && $ARGV[0] =~ /^\-/) {
+    my $opt = shift @ARGV;
+    if ($opt eq '--to') {
+	$outfmt = shift;
+    }
+}
+
 my $f = shift;
 my $parser = new GOBO::Parsers::OBOParser(file=>$f);
 $parser->parse;
-my $writer = new GOBO::Writers::OBOWriter(graph=>$parser->graph);
+my $writer = GOBO::Writers::Writer->create(format=>$outfmt, graph=>$parser->graph);
 $writer->write;
