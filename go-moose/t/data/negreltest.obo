@@ -1,0 +1,64 @@
+[Term]
+id: a
+is_a: b
+
+[Term]
+id: b
+is_a: c
+
+[Term]
+id: c
+is_a: d
+
+[Term]
+id: d
+relationship: part_of e
+
+[Term]
+id: e
+is_a: f
+
+[Term]
+id: f
+relationship: only_in_taxon U1
+relationship: never_in_taxon U2
+
+[Term]
+id: U1
+is_a: V1 
+
+[Term]
+id: V1
+is_a: W1
+
+[Term]
+id: U2
+is_a: V2
+
+[Term]
+id: V2
+is_a: W2
+
+[Typedef]
+id: in_organism
+name: in_organism
+holds_over_chain: part_of in_organism
+holds_over_chain: has_part in_organism
+
+[Typedef]
+id: never_in_taxon
+name: never_in_taxon
+complement_of: only_in_taxon
+def: "C only_in_taxon T iff no instances of C are features of some instance of T." [GOC:cjm, GOC:wk]
+holds_over_chain: part_of never_in_taxon
+holds_over_chain: has_part never_in_taxon
+negation_of: only_in_taxon
+all_only_complement: in_organism
+
+[Typedef]
+id: only_in_taxon
+name: only_in_taxon
+def: "C only_in_taxon T iff all instances of C are features of some instance of T." [GOC:cjm, GOC:wk]
+holds_over_chain: part_of only_in_taxon
+holds_over_chain: has_part only_in_taxon
+all_only: in_organism

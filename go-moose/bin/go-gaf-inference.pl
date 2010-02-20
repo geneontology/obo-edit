@@ -60,7 +60,9 @@ if (!$validate && !$infer) {
 }
 
 my $obo_parser = new GOBO::Parsers::OBOParser();
+print STDERR "Parsing: @ontfiles\n";
 $obo_parser->parse_file($_) foreach @ontfiles;
+print STDERR "Parsed: @ontfiles\n";
 my $ontg = $obo_parser->graph;
 my $ie = new GOBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
 
@@ -68,6 +70,7 @@ my %nodemap = ();
 
 # iterate through annotations writing new ICs
 foreach my $f (@ARGV) {
+    print STDERR "Parsing GAF: $f\n";
     my @ics = ();
     my @invalid = ();
     $ontg->annotations([]);
@@ -112,7 +115,7 @@ foreach my $f (@ARGV) {
         foreach my $i (@invalid) {
             my $term_id = $i->[2];
             my $term = $ontg->noderef($term_id);
-            printf '%s only_in %s :: ', $term || $term_id, $i->[1];
+            printf '%s %s %s :: ', $term || $term_id, $i->[3], $i->[1];
             $w->write_annotation($i->[0]);
         }
     }

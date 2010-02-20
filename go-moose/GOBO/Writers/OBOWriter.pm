@@ -95,6 +95,9 @@ sub write_stanza {
         }
         $self->tagval('holds_over_chain', _chain($_)) foreach @{$node->holds_over_chain_list || []};
         $self->tagval('equivalent_to_chain', _chain($_)) foreach @{$node->equivalent_to_chain_list || []};
+        $self->tagval('inverse_of', $_) foreach @{$node->inverse_of_list || []};
+        $self->tagval('inverse_of_on_instance_level', $_) foreach @{$node->inverse_of_on_instance_level_list || []};
+        $self->tagval('negation_of', $_) foreach @{$node->negation_of_list || []};
     }
 
     ## get outgoing links...
