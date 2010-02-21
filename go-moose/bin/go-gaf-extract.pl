@@ -42,6 +42,7 @@ while ($ARGV[0] =~ /^\-/) {
         die "no such opt: $opt";
     }
 }
+$writer->init_fh;
 if (!$ontf) {
     $ontf = shift;
 }
@@ -63,7 +64,6 @@ my $ontg = $obo_parser->graph;
 my $ie = new GOBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
 
 
-# iterate through annotations writing new ICs
 my @ics = ();
 foreach my $f (@ARGV) {
     my $gafparser = new GOBO::Parsers::GAFParser(file=>$f);
@@ -74,7 +74,8 @@ foreach my $f (@ARGV) {
         foreach my $ann (@{$gafparser->graph->annotations}) {
             if (@ids) {
                 my $rset = new Set::Object;
-                $rset->insert(map {$_->id} @{$ie->get_inferred_outgoing_nodes(node => $ann->target)});
+		my @outnodes = ($ann->target, @{$ie->get_inferred_outgoing_nodes(node => $ann->target)});
+                $rset->insert(map {$_->id} @outnodes);
                 if ($rset->intersection($idset)->size) {
                     show_ann($ann);
                 }

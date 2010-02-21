@@ -98,6 +98,7 @@ foreach my $f (@ARGV) {
         my $icgraph = new GOBO::Graph();
         $icgraph->annotations(\@ics);
         my $w = new GOBO::Writers::GAFWriter;
+	$w->init_fh;
         if ($per_file_ic) {
             my $of = $f;
             $of =~ s/.*\///g;

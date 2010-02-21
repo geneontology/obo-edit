@@ -149,10 +149,14 @@ output: arrayref of inferred statements
 
 sub get_inferred_outgoing_edges {
 	my $self = shift;
+	my @in = @_;
+	if (scalar(@in) == 1) {
+	    @in = (node_id=>$in[0]);
+	}
 	my %args = (
 		from_ix => $self->from_ix, ## default
 		save_ix => $self->save_ix, ## default || 'inferred_outgoing_edges',
-		@_
+		@in
 	);
 
 	confess( (caller(0))[3]  . ": no node specified! " ) unless $args{node} || $args{node_id};
