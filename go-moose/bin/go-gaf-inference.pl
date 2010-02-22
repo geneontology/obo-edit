@@ -13,6 +13,8 @@ use GOBO::InferenceEngine::GAFInferenceEngine;
 use DateTime;
 use FileHandle;
 
+$| = 1;
+
 my @ontfiles;
 my %relh = ();
 my $per_file_ic=0;
@@ -68,6 +70,9 @@ my $ie = new GOBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
 
 my %nodemap = ();
 
+my $w = new GOBO::Writers::GAFWriter;
+$w->init_fh;
+
 # iterate through annotations writing new ICs
 foreach my $f (@ARGV) {
     print STDERR "Parsing GAF: $f\n";
@@ -86,7 +91,16 @@ foreach my $f (@ARGV) {
             push(@ics, @{$ie->infer_annotations($gafparser->graph->annotations)});
         }
         if ($validate) {
-            push(@invalid, @{$ie->validate_annotations($gafparser->graph->annotations)});
+
+	    my @bad = @{$ie->validate_annotations($gafparser->graph->annotations)};
+	    foreach my $i (@bad) {
+		my $term_id = $i->[2];
+		my $term = $ontg->noderef($term_id);
+		printf '%s %s %s :: ', $term || $term_id, $i->[3], $i->[1];
+		$w->write_annotation($i->[0]);
+	    }
+
+            push(@invalid, @bad);
         }
         
         # clear
@@ -97,8 +111,6 @@ foreach my $f (@ARGV) {
     if (@ics) {
         my $icgraph = new GOBO::Graph();
         $icgraph->annotations(\@ics);
-        my $w = new GOBO::Writers::GAFWriter;
-	$w->init_fh;
         if ($per_file_ic) {
             my $of = $f;
             $of =~ s/.*\///g;
@@ -110,16 +122,10 @@ foreach my $f (@ARGV) {
         $w->graph($icgraph);
         $w->write;
     }
-    if (@invalid) {
-        my $w = new GOBO::Writers::GAFWriter;
-        $w->init_fh;
-        foreach my $i (@invalid) {
-            my $term_id = $i->[2];
-            my $term = $ontg->noderef($term_id);
-            printf '%s %s %s :: ', $term || $term_id, $i->[3], $i->[1];
-            $w->write_annotation($i->[0]);
-        }
-    }
+#    if (@invalid) {
+#        foreach my $i (@invalid) {
+#        }
+#    }
 }
 exit 0;
 
