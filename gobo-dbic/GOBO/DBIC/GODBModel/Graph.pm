@@ -151,6 +151,8 @@ sub is_leaf_p {
 
 =item get_term
 
+TODO: accept arrayrefs as well. That should help the speedups.
+
 Gets a term from an acc string or DBIx::Class Term.
 A Term just gets passed through (little overhead).
 
@@ -280,8 +282,6 @@ sub get_parent_relationships {
 
 =item climb
 
-TODO: acc or str, singular or listref
-
 With an array ref of terms, will climb to the top of the ontology
 (with an added 'all' stopper for GO).
 
@@ -290,8 +290,6 @@ This returns an array of five things:
    *) a link list
    *) a term (node)
    *) a hashref of of nodes in terms of in-graph descendants
-
-TODO: should also be able to take array ref of strings...
 
 =cut
 sub climb {
@@ -436,6 +434,75 @@ sub climb {
   #return (\%nodes, \%edges, \%in_graph_by_acc);
   #return (\%nodes, \%edges, \%tc_desc);
   return (\%nodes, \%edges, \%tc_desc, \%tc_anc, \%tc_depth);
+}
+
+
+=item lineage
+
+TODO: clearly differentiate climb and lineage.
+
+Not quite get ancestors, as we're getting depth info too.
+
+With an array ref of terms, will climb to the top of the ontology
+(with an added 'all' stopper for GO). This should be an easy and
+lightweight alternative to climb for some use cases.
+
+This returns an array of five things:
+   (\%nodes, \%edges, \%tc_desc, \%tc_anc, \%tc_depth);
+   *) a link list
+   *) a term (node)
+   *) a hashref of of nodes in terms of in-graph descendants
+
+=cut
+sub lineage {
+
+  my $self = shift;
+  my $sub_thing= shift || '';
+  my $sub_acc = $self->_convert_term_or_acc_to_acc($sub_thing);
+
+  ##
+  my $all = $self->{GRAPH_PATH}->get_all_results({'subject.acc' => $sub_acc});
+
+  my $nodes = {};
+  my $node_depth = {};
+  my $node_rel = {};
+  my $max_depth = 0;
+  foreach my $gp (@$all){
+    if( ! $gp->object->is_obsolete &&
+	$gp->object->acc ne 'all' ){ # GO control
+
+      ## Inc. depth if necessary.
+      if( $gp->distance > $max_depth ){ $max_depth = $gp->distance; }
+
+      ## TODO: check existance:
+      if( ! defined $node_rel->{$gp->object->acc} ){
+	$node_rel->{$gp->object->acc} = $gp->relationship_type->acc;
+	$node_depth->{$gp->object->acc} = $gp->distance;
+	$nodes->{$gp->object->acc} = $gp->object;
+      }else{
+
+	## Take the dominating relation.
+	if( $gp->relationship_type->acc eq 'is_a' ){
+	  $node_rel->{$gp->object->acc} = $gp->relationship_type->acc;
+	}
+
+	## Take the greater distance.
+	if( $node_depth->{$gp->object->acc} < $gp->distance ){
+	  $node_depth->{$gp->object->acc} = $gp->distance;
+	}
+      }
+    }
+  }
+
+  ## Now go through and correct distance to depth.
+  foreach my $acc (keys %$node_depth){
+    my $d = $node_depth->{$acc};
+    $d = $d - $max_depth;
+    $d = abs($d);
+    $node_depth->{$acc} = $d;
+  }
+
+  return ($nodes, $node_rel, $node_depth, $max_depth);
 }
 
 
