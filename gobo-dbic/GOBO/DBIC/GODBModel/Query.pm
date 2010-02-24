@@ -240,7 +240,8 @@ sub new {
 
     $self->{QUERY_RESULT_SET} = 'GraphPath';
     $self->{QUERY_JOIN} = ['subject',
-			   'object'];
+			   'object',
+			   'relationship_type'];
     $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
 
   }elsif( $type eq 'term2term_over_graph_path' ){
