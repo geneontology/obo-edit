@@ -332,7 +332,7 @@ module AUnit
     ### Boolean tests.
     ###
     
-    ## TODO: Yeah, need to get more codes here eventually.
+    ##
     def okay?
       if @pagent.nil?
         false
@@ -350,6 +350,18 @@ module AUnit
         false
       elsif not @pagent.code.eql?("200")
         error("returned without a 200 code")
+        false
+      else
+        true
+      end
+    end
+
+    ## TODO: Yeah, need to get more codes here eventually.
+    def ierror?
+      if @pagent.nil?
+        false
+      elsif not @pagent.code.eql?("500")
+        error("returned without a 500 code")
         false
       else
         true
