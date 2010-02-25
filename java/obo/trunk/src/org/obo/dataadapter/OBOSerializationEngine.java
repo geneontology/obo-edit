@@ -59,6 +59,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		protected boolean doLinkFilter = false;
 
+		// Tag filtering TRUE by default to account for cases that do not go through the advances menu
 		protected boolean doTagFilter = true;
 
 		protected boolean allowDangling = false;
@@ -495,6 +496,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 					linkFilter = null;
 				if (!filteredPath.getDoTagFilter())
 					tagFilter = null;
+
+				logger.debug("OBOSerializationEngine.serialize initiating writeFile.. checking tagFilter: " + tagFilter);
 				writeFile(session, objectFilter, linkFilter, tagFilter, serializer, stream, filteredPath);
 			} catch (IOException ex) {
 				throw new DataAdapterException("Write error", ex);
@@ -1183,7 +1186,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		Collection filteredObjects = database.getObjects();
 
 		for(Object o : filteredObjects){
-				writeList.add(o);
+			writeList.add(o);
 		}
 
 		Collection refList = new ArrayList();
@@ -1248,14 +1251,17 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		else
 			headerTagOrdering.addAll(serializer.getHeaderTagOrdering());
 
-		//This is where tagOrdering is populated.
+		//populating tags
 		engineTagOrderingList = new LinkedList<TagMapping>();
 		if (serializer.getTagOrdering() == null  ){
 			engineTagOrderingList.addAll(OBOConstants.DEFAULT_TAG_ORDER);
 		} else {
-			if(filteredPath.getTagFilter() != null)
+			if(filteredPath.getTagFilter() != null){
 				serializer.setTagOrdering(filteredPath.getTagFilter().getTagsToWrite());
-			engineTagOrderingList.addAll(serializer.getTagOrdering());
+				engineTagOrderingList.addAll(serializer.getTagOrdering());
+			}
+			if(filteredPath.getTagFilter() == null)
+				engineTagOrderingList.addAll(OBOConstants.DEFAULT_TAG_ORDER);
 		}
 
 		for (OBOSerializerExtension extension : extensions) {

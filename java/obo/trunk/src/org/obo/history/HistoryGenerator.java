@@ -159,7 +159,7 @@ public class HistoryGenerator implements Serializable {
 		}
 
 		for(IdentifiedObject newSessionIO : newObjects){
-			logger.debug("HistoryGenerator: newObjects:newSessionIdentifiedObject = " + newSessionIO);	
+//			logger.debug("HistoryGenerator: newObjects:newSessionIdentifiedObject = " + newSessionIO);	
 			IdentifiedObject oldSessionIO = oldHistory.getObject(newSessionIO.getID());
 			//System.out.println("HistoryGenerator: newObjects:oldSessionIdentifiedObject = " + oldSessionIdentifiedObject);
 
@@ -395,8 +395,6 @@ public class HistoryGenerator implements Serializable {
 			}
 			//logger.debug("HistoryGenerator: getObsoleteChanges: replacementchanges = " + replacementchanges);
 
-			//new
-
 		} else if (!TermUtil.isObsolete(newIO) && TermUtil.isObsolete(oldIO)
 				&& warnings != null) {
 			warnings.add(newIO + " was somehow unobsoleted!");
@@ -492,18 +490,13 @@ public class HistoryGenerator implements Serializable {
 					warnings)) {
 				MultiIDObject mio = (MultiIDObject) io;
 				MultiIDObject cmio = (MultiIDObject) newio;
-
-				Iterator it = mio.getSecondaryIDs().iterator();
-				while (it.hasNext()) {
-					String id = (String) it.next();
+				for(String id : mio.getSecondaryIDs()){
 					if (!cmio.getSecondaryIDs().contains(id)) {
 						history.addItem(new SecondaryIDHistoryItem(mio, id,
 								true));
 					}
 				}
-				it = cmio.getSecondaryIDs().iterator();
-				while (it.hasNext()) {
-					String id = (String) it.next();
+				for(String id : cmio.getSecondaryIDs()){
 					if (!mio.getSecondaryIDs().contains(id)) {
 						history.addItem(new SecondaryIDHistoryItem(mio, id,
 								false));
@@ -524,16 +517,12 @@ public class HistoryGenerator implements Serializable {
 			if (!ObjectUtil.equals(dio.getDefinition(), dnewio.getDefinition()))
 				history.addItem(new DefinitionChangeHistoryItem(dio, dnewio
 						.getDefinition()));
-			Iterator it = dio.getDefDbxrefs().iterator();
-			while (it.hasNext()) {
-				Dbxref ref = (Dbxref) it.next();
+			for(Dbxref ref : dio.getDefDbxrefs()){
 				if (!dnewio.getDefDbxrefs().contains(ref))
 					history.addItem(new DelDbxrefHistoryItem(io.getID(), ref,
 							true, null));
 			}
-			it = dnewio.getDefDbxrefs().iterator();
-			while (it.hasNext()) {
-				Dbxref ref = (Dbxref) it.next();
+			for(Dbxref ref : dnewio.getDefDbxrefs()){
 				if (!dio.getDefDbxrefs().contains(ref)) {
 					history.addItem(new AddDbxrefHistoryItem(io.getID(), ref,
 							true, null));
@@ -548,17 +537,13 @@ public class HistoryGenerator implements Serializable {
 		} else if (checkInterface(io, history, DbxrefedObject.class, warnings)) {
 			DbxrefedObject dio = (DbxrefedObject) io;
 			DbxrefedObject dnewio = (DbxrefedObject) newio;
-
-			Iterator it = dio.getDbxrefs().iterator();
-			while (it.hasNext()) {
-				Dbxref ref = (Dbxref) it.next();
+			
+			for(Dbxref ref : dio.getDbxrefs()){
 				if (!dnewio.getDbxrefs().contains(ref))
 					history.addItem(new DelDbxrefHistoryItem(io.getID(), ref,
 							false, null));
 			}
-			it = dnewio.getDbxrefs().iterator();
-			while (it.hasNext()) {
-				Dbxref ref = (Dbxref) it.next();
+			for(Dbxref ref : dnewio.getDbxrefs()){
 				if (!dio.getDbxrefs().contains(ref)) {
 					history.addItem(new AddDbxrefHistoryItem(io.getID(), ref,
 							false, null));
@@ -575,20 +560,15 @@ public class HistoryGenerator implements Serializable {
 				warnings)) {
 			SubsetObject cio = (SubsetObject) io;
 			SubsetObject cnewio = (SubsetObject) newio;
-
-			Iterator it = cio.getSubsets().iterator();
-			while (it.hasNext()) {
-				TermSubset termCategory = (TermSubset) it.next();
-
+			
+			for(TermSubset termCategory : cio.getSubsets()){
 				if (!cnewio.getSubsets().contains(termCategory)) {
 					SubsetChangeHistoryItem item = new SubsetChangeHistoryItem(
 							termCategory.getName(), true, io.getID());
 					history.addItem(item);
 				}
 			}
-			it = cnewio.getSubsets().iterator();
-			while (it.hasNext()) {
-				TermSubset termCategory = (TermSubset) it.next();
+			for(TermSubset termCategory : cnewio.getSubsets()){
 				if (!cio.getSubsets().contains(termCategory)) {
 					SubsetChangeHistoryItem item = new SubsetChangeHistoryItem(
 							termCategory.getName(), false, io.getID());
@@ -605,27 +585,18 @@ public class HistoryGenerator implements Serializable {
 			SynonymedObject sio = (SynonymedObject) io;
 			SynonymedObject snewio = (SynonymedObject) newio;
 
-			Iterator it = sio.getSynonyms().iterator();
-			while (it.hasNext()) {
-				Synonym s = (Synonym) it.next();
+			for(Synonym s : sio.getSynonyms()){
 				boolean found = false;
-				Iterator it2 = snewio.getSynonyms().iterator();
-				while (it2.hasNext()) {
-					Synonym news = (Synonym) it2.next();
+				for(Synonym news : snewio.getSynonyms()){
 					if (news.getText().equals(s.getText())) {
 						found = true;
-
-						Iterator it3 = s.getXrefs().iterator();
-						while (it3.hasNext()) {
-							Dbxref oldref = (Dbxref) it3.next();
+						for(Dbxref oldref : s.getXrefs()){
 							if (!news.getXrefs().contains(oldref))
 								history.addItem(new DelDbxrefHistoryItem(sio
 										.getID(), oldref, false, s.getText()));
 						}
-
-						it3 = news.getXrefs().iterator();
-						while (it3.hasNext()) {
-							Dbxref newref = (Dbxref) it3.next();
+						
+						for(Dbxref newref : news.getXrefs()){
 							if (!s.getXrefs().contains(newref))
 								history.addItem(new AddDbxrefHistoryItem(sio
 										.getID(), newref, false, s.getText()));
@@ -646,30 +617,21 @@ public class HistoryGenerator implements Serializable {
 					}
 				}
 				if (!found) {
-					history.addItem(new DelSynonymHistoryItem(io.getID(), s
-							.getText()));
+					history.addItem(new DelSynonymHistoryItem(io.getID(), s.getText()));
 				}
 			}
 
-			it = snewio.getSynonyms().iterator();
-			while (it.hasNext()) {
-				Synonym s = (Synonym) it.next();
+			for(Synonym s : snewio.getSynonyms()){
 				boolean found = false;
-				Iterator it2 = sio.getSynonyms().iterator();
-				while (it2.hasNext()) {
-					Synonym olds = (Synonym) it2.next();
+				for(Synonym olds : sio.getSynonyms()){
 					if (olds.getText().equals(s.getText())) {
 						found = true;
-
 						break;
 					}
 				}
 				if (!found) {
-					history.addItem(new AddSynonymHistoryItem(io.getID(), s
-							.getText()));
-					it2 = s.getXrefs().iterator();
-					while (it2.hasNext()) {
-						Dbxref ref = (Dbxref) it2.next();
+					history.addItem(new AddSynonymHistoryItem(io.getID(), s.getText()));
+					for(Dbxref ref : s.getXrefs()){
 						history.addItem(new AddDbxrefHistoryItem(sio.getID(),
 								ref, false, s.getText()));
 					}
