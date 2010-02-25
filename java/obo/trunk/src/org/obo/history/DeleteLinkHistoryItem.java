@@ -57,7 +57,6 @@ public class DeleteLinkHistoryItem extends LinkHistoryItem {
 	@Override
 	public Set getEditedTerms() {
 		editedTerms.add(rel.getChild());
-		System.out.println("DeleteLinkHistoryItem: getEditedTerms: rel.getChild() = " + rel.getChild());
 		return (Set) editedTerms.clone();
 	}
 }
