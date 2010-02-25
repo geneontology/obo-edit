@@ -344,24 +344,24 @@ module AUnit
       end
     end
 
+    ##
+    def ierror?
+      if @pagent.nil?
+        true
+      elsif not @pagent.okay?
+        true
+      else
+        error("actually looks free of errors")
+        false
+      end
+    end
+
     ## TODO: Yeah, need to get more codes here eventually.
     def code?
       if @pagent.nil?
         false
       elsif not @pagent.code.eql?("200")
         error("returned without a 200 code")
-        false
-      else
-        true
-      end
-    end
-
-    ## TODO: Yeah, need to get more codes here eventually.
-    def ierror?
-      if @pagent.nil?
-        false
-      elsif not @pagent.code.eql?("500")
-        error("returned without a 500 code")
         false
       else
         true
