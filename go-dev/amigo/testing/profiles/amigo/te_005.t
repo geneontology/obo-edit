@@ -2,6 +2,7 @@
    "id" : "te_005", 
    "page" : "term_enrichment",
    "comment" : "Make sure that all-root does not cause problems.",
+   "reference" : "https://sourceforge.net/tracker/?func=detail&aid=2887625&group_id=36855&atid=908269",
    "tests" : ["okay?",
               "code?"],
    "form" : "term_enrichment_form",

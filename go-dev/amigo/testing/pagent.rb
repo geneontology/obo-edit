@@ -3,6 +3,11 @@
 #### NOTE: Right now, needs to run from "go-dev/amigo/testing".
 #### Run tests: ./webunit.rb
 ####
+#### Raw usage example:
+####  irb(main):049:0> p = PAgent::HTML.new('http://localhost/cgi-bin/amigo/term_enrichment')
+####  irb(main):050:0> p.set_multi_select("term_enrichment_form", "speciesdb", ["TAIR"])
+####  irb(main):051:0> p.set_field("term_enrichment_form", "gp_list", "AT3G21260 AT3G48490")
+####
 
 require 'mechanize'
 require 'uuidtools'
@@ -30,9 +35,9 @@ class PAgent
     elsif init.class.eql?(String)
       begin
         @core = @agent.get(init)
-      rescue WWW::Mechanize::ResponseCodeError
-        puts "bad response on init"
-        @core = nil
+      rescue WWW::Mechanize::ResponseCodeError => bad_resp
+        puts "bad response on init, but continuing with code: #{bad_resp.response_code}"
+        @core = bad_resp.page
         @okay = false
       rescue SocketError
         puts "bad getaddrinfo on init"
@@ -326,8 +331,9 @@ class PAgent::HTML < PAgent
     new_thing = nil
     begin
       new_thing = @agent.submit(form)
-    rescue WWW::Mechanize::ResponseCodeError
-      puts "bad response on submit"
+    rescue WWW::Mechanize::ResponseCodeError => bad_resp
+      puts "bad response on submit, but continuing with code: #{bad_resp.response_code}"
+      new_thing = bad_resp.page
     rescue SocketError
       puts "bad getaddrinfo on submit"
     rescue Timeout::Error
