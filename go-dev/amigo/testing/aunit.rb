@@ -345,10 +345,20 @@ module AUnit
     end
 
     ##
+    def not_okay?
+      not okay?
+    end
+
+    ##
     def ierror?
       if @pagent.nil?
         true
       elsif not @pagent.okay?
+        true
+      elsif @pagent.okay? and
+          ( @pagent.code.eql?("400") or
+            @pagent.code.eql?("404") or
+            @pagent.code.eql?("500") ) then
         true
       else
         error("actually looks free of errors")
