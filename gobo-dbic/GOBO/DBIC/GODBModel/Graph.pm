@@ -75,6 +75,35 @@ sub new {
 
 
 ## Internal convenience function.
+sub _convert_rel_to_scale {
+
+  my $self = shift;
+  my $rel = shift || '';
+  my $default = shift || 0;
+
+  my $order =
+    {
+     is_a => 1,
+     has_part => 2,
+     part_of => 3,
+     regulates => 4,
+     negatively_regulates => 5,
+     positively_regulates => 6,
+    };
+
+  my $ret = $default;
+  if( defined $rel &&
+      $rel &&
+      defined $order->{$rel} ){
+    $ret = $order->{$rel};
+  }
+  #print STDERR ";;; $rel $ret\n";
+
+  return $ret;
+}
+
+
+## Internal convenience function.
 sub _convert_term_or_acc_to_acc {
 
   my $self = shift;
@@ -457,7 +486,9 @@ This returns an array of five things:
 sub lineage {
 
   my $self = shift;
-  my $sub_thing= shift || '';
+  my $sub_thing = shift || '';
+  my $rel_type = shift || die 'no rel_type arg' ; # TODO/BUG: remove after tests
+
   my $sub_acc = $self->_convert_term_or_acc_to_acc($sub_thing);
 
   ##
@@ -474,7 +505,8 @@ sub lineage {
       ## Inc. depth if necessary.
       if( $gp->distance > $max_depth ){ $max_depth = $gp->distance; }
 
-      ## TODO: check existance:
+      ## Check existance, if it's not there yet, make it. If it's
+      ## already there, modify the entry accordingly.
       if( ! defined $node_rel->{$gp->object->acc} ){
 	$node_rel->{$gp->object->acc} = $gp->relationship_type->acc;
 	$node_depth->{$gp->object->acc} = $gp->distance;
@@ -482,8 +514,25 @@ sub lineage {
       }else{
 
 	## Take the dominating relation.
-	if( $gp->relationship_type->acc eq 'is_a' ){
-	  $node_rel->{$gp->object->acc} = $gp->relationship_type->acc;
+	## NOTE/WARNING: this may be GO specific.
+	## TODO/BUG: remove/simplify after testing.
+	my $curr_scale =
+	  $self->_convert_rel_to_scale($node_rel->{$gp->object->acc}, 1000);
+	my $test_scale =
+	  $self->_convert_rel_to_scale($gp->relationship_type->acc, 1000);
+	#print STDERR ":pre: $rel_type $curr_scale $test_scale\n";
+	if( $rel_type eq 'pos' ){
+	  #print STDERR " :pos: $rel_type $curr_scale $test_scale\n";
+	  if( $curr_scale > $test_scale ){
+	    $node_rel->{$gp->object->acc} = $gp->relationship_type->acc;
+	    #print STDERR "  :in>: $rel_type $curr_scale $test_scale\n";
+	  }
+	}else{
+	  #print STDERR " :neg: $rel_type $curr_scale $test_scale\n";
+	  if( $curr_scale < $test_scale ){
+	    $node_rel->{$gp->object->acc} = $gp->relationship_type->acc;
+	    #print STDERR "  :in<: $rel_type $curr_scale $test_scale\n";
+	  }
 	}
 
 	## Take the greater distance.
