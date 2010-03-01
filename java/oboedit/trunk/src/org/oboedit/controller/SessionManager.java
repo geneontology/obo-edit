@@ -286,27 +286,27 @@ public class SessionManager {
 		}
 	}
 	
-	/** doApply multiple history items*/
-	private void doApply(Collection<HistoryItem> items, boolean doSelect) {
-		session.getCurrentHistory().addItems(items);
-		OperationWarning warning = getOperationModel().apply(items);
-		for(HistoryItem item : items){
-			if (warning != null) {
-				Object[] params = { item, warning };
-			}
-			logger.debug("SessionManager.doApply " + item.toString() + ((warning != null) ? (" (warnings: " + warning + ")") : ""));
-
-			fireHistoryApplied(new HistoryAppliedEvent(this, item));
-
-			if (GUIUtil.getPostSelection(item) != null && doSelect) {
-
-				Selection selection = SelectionManager.resolveSelectionDanglers(
-						session, GUIUtil.getPostSelection(item));
-				if (SelectionManager.getManager().doPreSelectValidation(selection))
-					SelectionManager.setGlobalSelection(selection);
-			}
-		}		
-	}
+//	/** doApply multiple history items*/
+//	private void doApply(Collection<HistoryItem> items, boolean doSelect) {
+//		session.getCurrentHistory().addItems(items);
+//		OperationWarning warning = getOperationModel().apply(items);
+//		for(HistoryItem item : items){
+//			if (warning != null) {
+//				Object[] params = { item, warning };
+//			}
+//			logger.debug("SessionManager.doApply " + item.toString() + ((warning != null) ? (" (warnings: " + warning + ")") : ""));
+//
+//			fireHistoryApplied(new HistoryAppliedEvent(this, item));
+//
+//			if (GUIUtil.getPostSelection(item) != null && doSelect) {
+//
+//				Selection selection = SelectionManager.resolveSelectionDanglers(
+//						session, GUIUtil.getPostSelection(item));
+//				if (SelectionManager.getManager().doPreSelectValidation(selection))
+//					SelectionManager.setGlobalSelection(selection);
+//			}
+//		}		
+//	}
 
 	public boolean canRedo() {
 		return redoHistoryItems.size() > 0;
@@ -326,15 +326,15 @@ public class SessionManager {
 		unflushedChanges = true;
 	}
 	
-	public void apply(Collection<HistoryItem> items) {
-		apply(items, true);
-	}
+//	public void apply(Collection<HistoryItem> items) {
+//		apply(items, true);
+//	}
 
-	public void apply(Collection<HistoryItem> items, boolean doSelect) {
-		doApply(items, doSelect);
-		redoHistoryItems.clear();
-		unflushedChanges = true;
-	}
+//	public void apply(Collection<HistoryItem> items, boolean doSelect) {
+//		doApply(items, doSelect);
+//		redoHistoryItems.clear();
+//		unflushedChanges = true;
+//	}
 
 
 
