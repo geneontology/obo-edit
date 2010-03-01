@@ -138,13 +138,13 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 			if(item != null)
 				items.add(item);
 			// apply one item at a time	
-			//			if (item != null)
-			//				SessionManager.getManager().apply(item);
+						if (item != null)
+							SessionManager.getManager().apply(item);
 		}
 
 		//batch processing for applying items
-		logger.debug("Applying " + items.size() + " items...");
-		SessionManager.getManager().apply(items);
+//		logger.debug("Applying " + items.size() + " items...");
+//		SessionManager.getManager().apply(items);
 
 		//logger.debug("impliedLinks size after asserting: " + impliedLinks.size());
 		//update table

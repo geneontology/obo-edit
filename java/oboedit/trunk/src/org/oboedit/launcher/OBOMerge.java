@@ -121,14 +121,15 @@ public class OBOMerge {
 	}
 
 	protected static void applyChanges(OBOSession session, HistoryList changes) {
-//		logger.debug("OBOMerge.applyChanges");
+		logger.debug("OBOMerge.applyChanges");
 		OperationModel model = new DefaultOperationModel();
 		model.setSession(session);
 		for(HistoryItem item : changes.getHistoryItems()){
 			OperationWarning warning = model.apply(item);
-			if (warning != null)
-				System.out.println("* warning: " + warning);
-			logger.info("* warning: " + warning);
+			
+			if (warning != null){
+				logger.info("warning: " + warning);
+			}
 		}
 	}
 
@@ -463,11 +464,9 @@ public class OBOMerge {
 
 		OBOSession writeMe;
 		if (mergeIDRemap.size() > 0) {
-			SessionHistoryList sessionHistoryListParentToBranch = HistoryGenerator.getHistory(parentSession, branchSession,
-					null);
-			Iterator it = mergeIDRemap.keySet().iterator();
-			while(it.hasNext()) {
-				String id = it.next().toString();
+			SessionHistoryList sessionHistoryListParentToBranch = HistoryGenerator.getHistory(parentSession, branchSession, null);
+			for(Object o : mergeIDRemap.keySet()){
+				String id = (String) o;
 				Collection<String> ids = (Collection<String>) mergeIDRemap.get(id);
 				System.out.println("** Warning: Mapping edits that refer to secondary "+id+" in file "+branchFile+" to the following primary ids "+ids);
 				logger.info("** Warning: Mapping edits that refer to secondary "+id+" in file "+branchFile+" to the following primary ids "+ids);

@@ -17,9 +17,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Properties;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -34,17 +32,12 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import org.apache.batik.ext.awt.image.renderable.RedRable;
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.framework.GUIComponent;
-import org.bbop.framework.GUIManager;
+
 import org.bbop.framework.dock.LayoutAdapter;
 import org.bbop.framework.dock.LayoutListener;
-import org.bbop.swing.MinusIcon;
-import org.bbop.swing.PlusIcon;
-import org.oboedit.launcher.OBOMerge;
-
 
 import javax.swing.JFrame;
 
