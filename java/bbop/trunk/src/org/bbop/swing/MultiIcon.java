@@ -21,9 +21,8 @@ public class MultiIcon implements Icon {
 //		logger.debug(">> MultiIcon.paintIcon(Component c, Graphics g, int x, int y) ");
 		int height = getIconHeight();
 //		logger.debug("height: " + height);
-		Iterator it = icons.iterator();
-		while(it.hasNext()){
-			Icon icon = (Icon) it.next();
+		for(Object o : icons){
+			Icon icon = (Icon) o;
 //			logger.debug("-- icon: " +  icon);
 //			logger.debug("paintIcon, g, x, y + (height - icon.getIconHeight()) / 2)");
 //			logger.debug("x: " +x);
@@ -48,9 +47,8 @@ public class MultiIcon implements Icon {
 
 	public int getIconHeight() {
 		int maxHeight = 0;
-		Iterator it = icons.iterator();
-		while (it.hasNext()){
-			Icon icon = (Icon) it.next();
+		for(Object o : icons){
+			Icon icon = (Icon) o;
 //			logger.debug("icon.getIconHeight(): " + icon.getIconHeight());
 //			logger.debug("maxHeight: " + maxHeight);
 			if (icon.getIconHeight() > maxHeight){

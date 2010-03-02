@@ -70,7 +70,10 @@ public interface LayoutDriver {
   
   public void unlockDockingPanels(); 
   
-  // OTE view/scroll lock
+  /**
+   * lockOTE - view/scroll lock
+   * Locks the OTE view around a specific path.
+   * */
   public void lockOTE();
   
   public void unlockOTE();
