@@ -75,6 +75,7 @@ sub new {
 
 
 ## Internal convenience function.
+## From Chris: "{-,+} reg < reg < {part_of,has_part} < is_a"
 sub _convert_rel_to_scale {
 
   my $self = shift;
@@ -487,7 +488,6 @@ sub lineage {
 
   my $self = shift;
   my $sub_thing = shift || '';
-  my $rel_type = shift || die 'no rel_type arg' ; # TODO/BUG: remove after tests
 
   my $sub_acc = $self->_convert_term_or_acc_to_acc($sub_thing);
 
@@ -515,24 +515,13 @@ sub lineage {
 
 	## Take the dominating relation.
 	## NOTE/WARNING: this may be GO specific.
-	## TODO/BUG: remove/simplify after testing.
 	my $curr_scale =
 	  $self->_convert_rel_to_scale($node_rel->{$gp->object->acc}, 1000);
 	my $test_scale =
 	  $self->_convert_rel_to_scale($gp->relationship_type->acc, 1000);
-	#print STDERR ":pre: $rel_type $curr_scale $test_scale\n";
-	if( $rel_type eq 'pos' ){
-	  #print STDERR " :pos: $rel_type $curr_scale $test_scale\n";
-	  if( $curr_scale > $test_scale ){
-	    $node_rel->{$gp->object->acc} = $gp->relationship_type->acc;
-	    #print STDERR "  :in>: $rel_type $curr_scale $test_scale\n";
-	  }
-	}else{
-	  #print STDERR " :neg: $rel_type $curr_scale $test_scale\n";
-	  if( $curr_scale < $test_scale ){
-	    $node_rel->{$gp->object->acc} = $gp->relationship_type->acc;
-	    #print STDERR "  :in<: $rel_type $curr_scale $test_scale\n";
-	  }
+	if( $curr_scale > $test_scale ){
+	  $node_rel->{$gp->object->acc} = $gp->relationship_type->acc;
+	  #print STDERR "  :in>: $curr_scale $test_scale\n";
 	}
 
 	## Take the greater distance.
