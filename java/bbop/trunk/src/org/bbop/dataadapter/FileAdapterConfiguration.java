@@ -19,6 +19,7 @@ public class FileAdapterConfiguration implements AdapterConfiguration {
     protected int maxWriteHistorySize;
     protected Collection<String> readPaths = new Vector<String>();
     protected String writePath;
+    protected String readPath;
 
     public FileAdapterConfiguration(String readFile) {
 	this();
@@ -35,6 +36,10 @@ public class FileAdapterConfiguration implements AdapterConfiguration {
     public void setReadPaths(Collection<String> c) {
 	this.readPaths = c;
     }
+    
+    public void setReadPath(String path) {
+    	this.readPath = path;
+        }
 
     public void setWritePath(String path) {
 	this.writePath = path;
