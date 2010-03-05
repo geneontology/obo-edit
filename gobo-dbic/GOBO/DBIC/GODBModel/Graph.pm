@@ -519,7 +519,8 @@ sub lineage {
 	  $self->_convert_rel_to_scale($node_rel->{$gp->object->acc}, 1000);
 	my $test_scale =
 	  $self->_convert_rel_to_scale($gp->relationship_type->acc, 1000);
-	if( $curr_scale > $test_scale ){
+	if( $curr_scale < $test_scale ){ # less specific
+	#if( $curr_scale > $test_scale ){ # more specific
 	  $node_rel->{$gp->object->acc} = $gp->relationship_type->acc;
 	  #print STDERR "  :in>: $curr_scale $test_scale\n";
 	}

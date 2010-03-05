@@ -338,6 +338,12 @@ sub new {
     $self->{QUERY_JOIN} = [];
     $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
 
+  }elsif( $type eq 'phylotree_lazy' ){
+
+    $self->{QUERY_RESULT_SET} = 'Phylotree';
+    $self->{QUERY_JOIN} = [];
+    $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
+
   }elsif( $type eq 'db' ){
 
     ## Trivial, is it not?
