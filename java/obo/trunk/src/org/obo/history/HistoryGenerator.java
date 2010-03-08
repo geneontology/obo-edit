@@ -211,7 +211,9 @@ public class HistoryGenerator implements Serializable {
 
 	public static void getChanges(IdentifiedObject io, IdentifiedObject newio,
 			HistoryList changes) {
-		getChanges(io, newio, changes);
+          // !! How could this call possibly work?  Wouldn't it just go into an infinite loop?  (NH, 3/8/10)
+//		getChanges(io, newio, changes);
+          getChanges(io, newio, changes, new LinkedList<String>());
 	}
 
 	public static void getChanges(IdentifiedObject io, IdentifiedObject newio,
