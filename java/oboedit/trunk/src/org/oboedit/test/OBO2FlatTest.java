@@ -25,7 +25,7 @@ public class OBO2FlatTest extends TestCase {
 		File originalDefsFile = new File("lib/resources/GO.defs");
 
 		Process p = Runtime.getRuntime().exec(
-				"./obo2flat " + "lib/resources/testfile.1.0.obo "
+				"./obo2flat " + "test_resources/testfile.1.0.obo "
 						+ "--gopresets " + processFile.getPath() + " "
 						+ componentFile.getPath() + " "
 						+ functionFile.getPath() + " " + defsFile.getPath());
