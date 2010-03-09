@@ -1487,7 +1487,7 @@ public class DefaultOBOParser implements OBOParser {
 
 			if (!(prop_o instanceof OBOProperty))
 				throw new OBOParseException("Non-property " + pvs.propID
-						+ " specified as" + "property.", pvs.getPath(), pvs
+						+ " specified as" + " property.", pvs.getPath(), pvs
 						.getLine(), pvs.getLineNum());
 
 			OBOProperty prop = (OBOProperty) prop_o;
