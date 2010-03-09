@@ -420,7 +420,7 @@
 
         <!-- terse FAIL or PASS -->
 	<target name="test" depends="classes" description="Unit tests">
-	  <junit fork="yes" printsummary="on" maxmemory="1048m">
+	  <junit fork="yes" printsummary="on" maxmemory="1048m" timeout="600000">
 	    <classpath>
               <!-- Need this because the test classes aren't in the jar -->
               <pathelement path="${classes}"/>
@@ -439,8 +439,8 @@
 	</target>
 
         <!-- prints to stdout all messages -->
-	<target name="verbose-test" depends="" description="Unit tests">
-	  <junit fork="yes" printsummary="withOutAndErr" maxmemory="1024m" showoutput="true" timeout="120000">
+	<target name="verbose-test" depends="classes" description="Unit tests">
+	  <junit fork="yes" printsummary="withOutAndErr" maxmemory="1024m" showoutput="true">
 	    <classpath>
               <!-- Need this because the test classes aren't in the jar -->
               <pathelement path="${classes}"/>
@@ -460,8 +460,8 @@
 	
         <!-- set var junit.test.class.name from cmd line for example:
              ant runatest -Djunit.test.class.name="phenote.servlet.ControllerTest"-->
-	<target name="runatest" depends="">
-	  <junit fork="yes" printsummary="withOutAndErr" maxmemory="1024m" showoutput="true">
+	<target name="runatest" depends="classes">
+	  <junit fork="yes" printsummary="withOutAndErr" maxmemory="1024m" showoutput="true" timeout="600000">
 	    <classpath>
               <!-- Need this because the test classes aren't in the jar -->
               <pathelement path="${classes}"/>
