@@ -446,7 +446,7 @@ public class TermUtil {
 	}
 
 	/**
-	 * Returns the descendants of the given term.
+	 * Returns the descendants of the given term. Does not include self by default
 	 */
 	public static Collection<LinkedObject> getDescendants(LinkedObject term, LinkFilter lf) {
 		return getDescendants(term,false,lf);
@@ -458,7 +458,7 @@ public class TermUtil {
 	 * @param term
 	 *            the term to search
 	 * @param includeSelf
-	 *            whether to include the term itself in the results
+	 *            whether to include the term itself in the results (reflexive transitive closure)
 	 */
 	public static Collection<LinkedObject> getDescendants(LinkedObject term, boolean includeSelf, LinkFilter lf) {
 		return getDescendants(term, null, includeSelf, lf);
