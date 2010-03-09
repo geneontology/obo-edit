@@ -190,10 +190,11 @@
 	</target>
 
 	<target name="library_jars" depends="buildbbop, buildobo">
-		<mkdir dir="${runtimedir}" />
-		<sync todir="${runtimedir}">
+<!--		<mkdir dir="${runtimedir}" />  -->
+<!--		<sync todir="${runtimedir}"> -->
+		<copy todir="${runtimedir}">
 			<fileset refid="library_jars" />
-		</sync>
+		</copy>
 	</target>
 
 	<target name="buildnum">
@@ -372,7 +373,7 @@
 		<delete file="${main_jar_manifest}" />
 		<delete file="docs/toc.html" />
 		<delete dir="${apidoc_dest}" />
-		<delete dir="${runtimedir}" />
+		<delete file="${runtimedir}/oboedit.jar" />
 		<delete dir="${release_path}" />
 		<delete file="release_resources/README" />
 	</target>
@@ -395,7 +396,7 @@
 	<property name="ontogen_jar_manifest" location="${outputdir}/org/oboedit/gui/components/ontologyGeneration/resources/jar_manifest_ontogen" />
 
 	<target name="jar-ontogen" depends="clean, classes, library_jars, checkjar" unless="main_jar_current" description="Generate jar for Ontology Generation Plugin">
-		<mkdir dir="${runtimedir}" />
+<!--		<mkdir dir="${runtimedir}" />  -->
 		<mkdir dir="lib/lib"/>
 		<echo message="plugins specific library dir = ${runtimedir}"/>
 		<copy todir="lib/lib">
@@ -410,4 +411,67 @@
 		</jar>
 		<delete dir="lib/lib"/>
 	</target>
+
+
+        <!-- For running JUnit tests (NH added 3/1/10) -->
+        <property name="src" value="./src"/>
+        <property name="lib" value="runtime"/>
+        <property name="classes" value="classes"/>
+
+        <!-- terse FAIL or PASS -->
+	<target name="test" depends="classes" description="Unit tests">
+	  <junit fork="yes" printsummary="on" maxmemory="1048m">
+	    <classpath>
+              <!-- Need this because the test classes aren't in the jar -->
+              <pathelement path="${classes}"/>
+              <fileset dir="${lib}">
+                <include name="*.jar"/>
+                <exclude name="oboedit.jar"/>
+              </fileset>
+            </classpath>
+	    <batchtest>
+	      <fileset dir="${src}">
+                <include name="**/test/**"/>
+                <exclude name="AllTests*"/>
+              </fileset>
+	    </batchtest>
+	  </junit>
+	</target>
+
+        <!-- prints to stdout all messages -->
+	<target name="verbose-test" depends="" description="Unit tests">
+	  <junit fork="yes" printsummary="withOutAndErr" maxmemory="1024m" showoutput="true" timeout="120000">
+	    <classpath>
+              <!-- Need this because the test classes aren't in the jar -->
+              <pathelement path="${classes}"/>
+              <fileset dir="${lib}">
+                <include name="*.jar"/>
+                <exclude name="oboedit.jar"/>
+              </fileset>
+            </classpath>
+	    <batchtest haltonfailure="no">
+	      <fileset dir="${src}">
+                <include name="**/test/*"/>
+                <exclude name="AllTests*"/>
+              </fileset>
+	    </batchtest>
+	  </junit>
+	</target>
+	
+        <!-- set var junit.test.class.name from cmd line for example:
+             ant runatest -Djunit.test.class.name="phenote.servlet.ControllerTest"-->
+	<target name="runatest" depends="">
+	  <junit fork="yes" printsummary="withOutAndErr" maxmemory="1024m" showoutput="true">
+	    <classpath>
+              <!-- Need this because the test classes aren't in the jar -->
+              <pathelement path="${classes}"/>
+              <fileset dir="${lib}">
+                <include name="*.jar"/>
+                <exclude name="oboedit.jar"/>
+              </fileset>
+            </classpath>
+	    <test name="${junit.test.class.name}" haltonfailure="no"/>
+	  </junit>
+ 	</target>
+
 </project>
