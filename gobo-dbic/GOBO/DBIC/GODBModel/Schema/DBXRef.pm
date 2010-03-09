@@ -76,6 +76,9 @@ __PACKAGE__->has_one('seq_dbxref' =>
 __PACKAGE__->has_one('homolset' =>
 		     'GOBO::DBIC::GODBModel::Schema::Homolset',
 		     'dbxref_id');
+__PACKAGE__->has_one('phylotree' =>
+		     'GOBO::DBIC::GODBModel::Schema::Phylotree',
+		     'dbxref_id');
 ## DEPRECATED: This is just here temporarily to enable a hack in
 ## HomolsetEvidence.pm.
 __PACKAGE__->has_one('seq_hack' =>
