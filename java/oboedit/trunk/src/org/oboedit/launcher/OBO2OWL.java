@@ -101,9 +101,6 @@ public class OBO2OWL {
 		if (writeObsoleteComments) {
 			writeComments(session);
 		}
-		if (fixDbxrefs) {
-			fixDbxrefs(session);
-		}
 		Iterator it = scripts.iterator();
 		while (it.hasNext()) {
 			ScriptWrapper wrapper = (ScriptWrapper) it.next();
@@ -125,63 +122,6 @@ public class OBO2OWL {
 		ExpressionUtil.exec(script, context);
 	}
 
-	protected static void fixDbxrefs(OBOSession session) {
-		Iterator it = session.getObjects().iterator();
-		while (it.hasNext()) {
-			IdentifiedObject io = (IdentifiedObject) it.next();
-			if (io instanceof DefinedObject) {
-				DefinedObject dfo = (DefinedObject) io;
-				Iterator it2 = dfo.getDefDbxrefs().iterator();
-				Dbxref metacycRef = null;
-				Dbxref brokenRef = null;
-				Dbxref otherRef = null;
-				int metacycCount = 0;
-				int brokenCount = 0;
-				while (it2.hasNext()) {
-					Dbxref ref = (Dbxref) it2.next();
-					if (ref.getDatabase().equalsIgnoreCase("metacyc")) {
-						metacycCount++;
-						metacycRef = ref;
-					} else if (ref.getDatabase().length() == 0) {
-						brokenCount++;
-						brokenRef = ref;
-					} else {
-						otherRef = ref;
-					}
-				}
-				if (brokenRef != null && metacycRef != null) {
-					if (brokenCount > 1 || metacycCount > 1) {
-						System.err
-								.println("*!!!!! Probable broken ref at "
-										+ io.getID()
-										+ " cannot be automatically repaired. There are too many pieces.");
-						continue;
-					}
-					dfo.removeDefDbxref(metacycRef);
-					dfo.removeDefDbxref(brokenRef);
-					logger.info("* Repairing broken dbxref at "
-							+ dfo.getID() + ", merging dbxrefs " + metacycRef
-							+ " and " + brokenRef);
-					metacycRef.setDatabaseID(metacycRef.getDatabaseID() + ","
-							+ brokenRef.getDatabaseID());
-					dfo.addDefDbxref(metacycRef);
-				} else if (dfo.getDefDbxrefs().size() == 2 && brokenRef != null
-						&& otherRef != null) {
-					dfo.removeDefDbxref(otherRef);
-					dfo.removeDefDbxref(brokenRef);
-					logger.info("* Repairing broken dbxref at "
-							+ dfo.getID() + ", merging dbxrefs " + otherRef
-							+ " and " + brokenRef);
-					otherRef.setDatabaseID(otherRef.getDatabaseID() + "," + brokenRef.getDatabaseID());
-					dfo.addDefDbxref(otherRef);
-				} else if (brokenRef != null) {
-					logger.info("*!! Possible broken ref at "
-							+ dfo.getID()
-							+ " could not be automatically repaired.");
-				}
-			}
-		}
-	}
 
 	protected static void groupTerms(List terms, Map mappable, List external) {
 		long time = System.currentTimeMillis();
