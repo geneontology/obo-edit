@@ -83,6 +83,7 @@ import org.oboedit.gui.OntologyEditor;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.actions.AddAction;
 import org.oboedit.gui.actions.AddConsiderAction;
+import org.oboedit.gui.actions.AddGenusDifferentiaAction;
 import org.oboedit.gui.actions.AddParentAction;
 import org.oboedit.gui.actions.AddReplacementAction;
 import org.oboedit.gui.actions.AddRootAction;
@@ -594,6 +595,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		EditActionManager.getManager().addEditAction(new MergeAction());
 		EditActionManager.getManager().addEditAction(new TypeChangeAction());
 		EditActionManager.getManager().addEditAction(new AddAction());
+		EditActionManager.getManager().addEditAction(new AddGenusDifferentiaAction());
 		EditActionManager.getManager().addEditAction(new MultiAddAction());
 		EditActionManager.getManager().addEditAction(new DeleteAction(false));
 		EditActionManager.getManager().addEditAction(new DeleteAction(true));
