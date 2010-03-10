@@ -1,6 +1,4 @@
 format-version: 1.2
-id-mapping: has_part OBO_REL:has_part
-id-mapping: part_of part_of
 
 [Term]
 id: FMA:16018
@@ -369,7 +367,7 @@ def: "The chemical reactions and pathways involving carbohydrates, any of a grou
 is_a: GO:0043170     ! macromolecule metabolism
 is_a: GO:0044238     ! primary metabolism
 intersection_of: GO:0008152     ! metabolism
-intersection_of: has_central_participant CHEBI:23008     ! carbohydrates
+intersection_of: has_participant CHEBI:23008     ! carbohydrates
 
 [Term]
 id: GO:0005996
@@ -379,7 +377,7 @@ def: "The chemical reactions and pathways involving monosaccharides, the simples
 is_a: GO:0006066     ! alcohol metabolism
 is_a: GO:0044262     ! cellular carbohydrate metabolism
 intersection_of: GO:0008152     ! metabolism
-intersection_of: has_central_participant CHEBI:35381     ! monosaccharides
+intersection_of: has_participant CHEBI:35381     ! monosaccharides
 
 [Term]
 id: GO:0006006
@@ -388,7 +386,7 @@ namespace: biological_process
 def: "The chemical reactions and pathways involving glucose, the aldohexose gluco-hexose. D-glucose is dextrorotatory and is sometimes known as dextrose; it is an important source of energy for living organisms and is found free as well as combined in homo- and hetero-oligosaccharides and polysaccharides." []
 is_a: GO:0019318     ! hexose metabolism
 intersection_of: GO:0008152     ! metabolism
-intersection_of: has_central_participant CHEBI:17234     ! glucose
+intersection_of: has_participant CHEBI:17234     ! glucose
 xref: Reactome:70326
 
 [Term]
@@ -398,7 +396,7 @@ namespace: biological_process
 def: "The chemical reactions and pathways involving alcohols, any of a class of alkyl compounds containing a hydroxyl group." []
 is_a: GO:0044237     ! cellular metabolism
 intersection_of: GO:0008152     ! metabolism
-intersection_of: has_central_participant CHEBI:30879     ! alcohols
+intersection_of: has_participant CHEBI:30879     ! alcohols
 
 [Term]
 id: GO:0008152
@@ -421,8 +419,6 @@ synonym: "cell physiology" EXACT []
 synonym: "cellular physiological process" EXACT []
 synonym: "cell growth and/or maintenance" NARROW []
 is_a: GO:0008150     ! biological_process
-intersection_of: GO:0008150     ! biological_process
-intersection_of: OBO_REL:located_in CL:0000000     ! cell
 
 [Term]
 id: GO:0019318
@@ -431,7 +427,7 @@ namespace: biological_process
 def: "The chemical reactions and pathways involving a hexose, any aldose with a chain of six carbon atoms in the molecule." []
 is_a: GO:0005996     ! monosaccharide metabolism
 intersection_of: GO:0008152     ! metabolism
-intersection_of: has_central_participant CHEBI:18133     ! hexoses
+intersection_of: has_participant CHEBI:18133     ! hexoses
 
 [Term]
 id: GO:0042592
@@ -447,7 +443,7 @@ namespace: biological_process
 def: "Any of the processes involved in the maintenance of an internal equilibrium of glucose within an organism or cell." []
 is_a: GO:0042592     ! homeostasis
 intersection_of: GO:0042592     ! homeostasis
-intersection_of: has_central_participant CHEBI:17234     ! glucose
+intersection_of: has_participant CHEBI:17234     ! glucose
 
 [Term]
 id: GO:0043170
@@ -456,7 +452,7 @@ namespace: biological_process
 def: "The chemical reactions and pathways involving macromolecules, large molecules including proteins, nucleic acids and carbohydrates." []
 is_a: GO:0008152     ! metabolism
 intersection_of: GO:0008152     ! metabolism
-intersection_of: has_central_participant CHEBI:33839     ! macromolecules
+intersection_of: has_participant CHEBI:33839     ! macromolecules
 
 [Term]
 id: GO:0044237
@@ -465,8 +461,6 @@ namespace: biological_process
 def: "The chemical reactions and pathways by which individual cells transform chemical substances." []
 is_a: GO:0008152     ! metabolism
 is_a: GO:0009987     ! cellular process
-intersection_of: GO:0008152     ! metabolism
-intersection_of: OBO_REL:located_in CL:0000000     ! cell
 
 [Term]
 id: GO:0044238
@@ -481,8 +475,6 @@ name: cellular carbohydrate metabolism
 namespace: biological_process
 def: "The chemical reactions and pathways involving carbohydrates, any of a group of organic compounds based of the general formula Cx(H2O)y, as carried out by individual cells." []
 is_a: GO:0005975     ! carbohydrate metabolism
-intersection_of: GO:0005975     ! carbohydrate metabolism
-intersection_of: OBO_REL:located_in CL:0000000     ! cell
 
 [Typedef]
 id: develops_from
@@ -790,7 +782,7 @@ id: DOID:344
 name: biological process disease
 namespace: mixed_disease_ontology
 intersection_of: DOID:4     ! Disease
-intersection_of: affects GO:0008150 ! bliological process
+intersection_of: affects GO:0008150 ! biological process
 
 [Term]
 id: DOID:4
@@ -887,9 +879,6 @@ def: "For continuants: C part_of C' if and only if: given any c that instantiate
 is_transitive: true
 is_reflexive: true
 is_anti_symmetric: true
-inverse_of: OBO_REL:has_part
-is_a: OBO_REL:relationship     ! relationship
-comment: Parthood as a relation between instances: The primitive instance-level relation p part_of p1 is illustrated in assertions such as: this instance of rhodopsin mediated phototransduction part_of this instance of visual perception.    This relation satisfies at least the following standard axioms of mereology: reflexivity (for all p, p part_of p); anti-symmetry (for all p, p1, if p part_of p1 and p1 part_of p then p and p1 are identical); and transitivity (for all p, p1, p2, if p part_of p1 and p1 part_of p2, then p part_of p2). Analogous axioms hold also for parthood as a relation between spatial regions.    For parthood as a relation between continuants, these axioms need to be modified to take account of the incorporation of a temporal argument. Thus for example the axiom of transitivity for continuants will assert that if c part_of c1 at t and c1 part_of c2 at t, then also c part_of c2 at t.    Parthood as a relation between classes: To define part_of as a relation between classes we again need to distinguish the two cases of continuants and processes, even though the explicit reference to instants of time now falls away. For continuants, we have C part_of C1 if and only if any instance of C at any time is an instance-level part of some instance of C1 at that time, as for example in: cell nucleus part_ of cell.
 
 [Term]
 id: PATO:0000001
@@ -4287,239 +4276,6 @@ id: is_quality_of
 name: is_quality_of
 namespace: quality
 
-[Typedef]
-id: OBO_REL:adjacent_to
-name: adjacent_to
-namespace: relationship
-def: "C adjacent to C' if and only if: given any instance c that instantiates C at a time t, there is some c' such that: c' instantiates C' at time t and c and c' are in spatial proximity" []
-is_a: OBO_REL:relationship     ! relationship
-comment: Note that adjacent_to as thus defined is not a symmetric relation, in contrast to its instance-level counterpart. For it can be the case that Cs are in general such as to be adjacent to instances of C1 while no analogous statement holds for C1s in general in relation to instances of C. Examples are: nuclear membrane adjacent_to cytoplasm; seminal vesicle adjacent_to urinary bladder; ovary adjacent_to parietal pelvic peritoneum
-
-[Typedef]
-id: OBO_REL:agent_in
-name: agent_in
-namespace: relationship
-inverse_of: OBO_REL:has_agent
-is_a: OBO_REL:relationship     ! relationship
-
-[Typedef]
-id: OBO_REL:contained_in
-name: contained_in
-namespace: relationship
-def: "C contained_in C' if and only if: given any instance c that instantiates C at a time t, there is some c' such that: c' instantiates C' at time t and c located_in c' at t, and it is not the case that c *overlaps* c' at t. (c' is a conduit or cavity.)" []
-inverse_of: OBO_REL:contains
-is_a: OBO_REL:relationship     ! relationship
-comment: Containment obtains in each case between material and immaterial continuants, for instance: lung contained_in thoracic cavity; bladder contained_in pelvic cavity. Hence containment is not a transitive relation.    If c part_of c1 at t then we have also, by our definition and by the axioms of mereology applied to spatial regions, c located_in c1 at t. Thus, many examples of instance-level location relations for continuants are in fact cases of instance-level parthood. For material continuants location and parthood coincide. Containment is location not involving parthood, and arises only where some immaterial continuant is involved. To understand this relation, we first define overlap for continuants as follows:    c1 overlap c2 at t =def for some c, c part_of c1 at t and c part_of c2 at t.    The containment relation on the instance level can then be defined (see definition):
-
-[Typedef]
-id: OBO_REL:contains
-name: contains
-namespace: relationship
-inverse_of: OBO_REL:contained_in
-is_a: OBO_REL:relationship     ! relationship
-
-[Typedef]
-id: OBO_REL:derived_into
-name: derived_into
-namespace: relationship
-is_transitive: true
-inverse_of: OBO_REL:derives_from
-is_a: OBO_REL:relationship     ! relationship
-
-[Typedef]
-id: OBO_REL:derives_from
-name: derives_from
-namespace: relationship
-def: "Derivation on the instance level (*derives_from*) holds between distinct material continuants when one succeeds the other across a temporal divide in such a way that at least a biologically significant portion of the matter of the earlier continuant is inherited by the later. We say that one class C derives_from class C' if instances of C are connected to instances of C' via some chain of instance-level derivation relations. Example: osteocyte derives_from osteoblast. Formally: C derives_immediately_from C' if and only if: given any c and any t, if c instantiates C at time t, then there is some c' and some t', such that c' instantiates C' at t' and t' earlier-than t and c *derives_from* c'. C derives_from C' if and only if: there is an chain of immediate derivation relations connecting C to C'." []
-is_transitive: true
-inverse_of: OBO_REL:derived_into
-is_a: OBO_REL:relationship     ! relationship
-comment: Derivation as a relation between instances. The temporal relation of derivation is more complex. Transformation, on the instance level, is just the relation of identity: each adult is identical to some child existing at some earlier time. Derivation on the instance-level is a relation holding between non-identicals. More precisely, it holds between distinct material continuants when one succeeds the other across a temporal divide in such a way that at least a biologically significant portion of the matter of the earlier continuant is inherited by the later. Thus we will have axioms to the effect that from c derives_from c1 we can infer that c and c1 are not identical and that there is some instant of time t such that c1 exists only prior to and c only subsequent to t. We will also be able to infer that the spatial region occupied by c as it begins to exist at t overlaps with the spatial region occupied by c1 as it ceases to exist in the same instant.
-
-[Typedef]
-id: OBO_REL:has_agent
-name: has_agent
-namespace: relationship
-def: "As for has_participant, but with the additional condition that the component instance is causally active in the relevant process" []
-inverse_of: OBO_REL:agent_in
-is_a: OBO_REL:relationship     ! relationship
-
-[Typedef]
-id: OBO_REL:has_improper_part
-name: has_improper_part
-namespace: relationship
-is_transitive: true
-is_reflexive: true
-inverse_of: OBO_REL:improper_part_of
-is_a: OBO_REL:has_part     ! has_part
-
-[Typedef]
-id: OBO_REL:has_integral_part
-name: has_integral_part
-namespace: relationship
-is_transitive: true
-is_reflexive: true
-is_anti_symmetric: true
-inverse_of: OBO_REL:integral_part_of
-is_a: OBO_REL:has_part     ! has_part
-
-[Typedef]
-id: OBO_REL:has_part
-name: has_part
-namespace: relationship
-is_transitive: true
-is_reflexive: true
-is_anti_symmetric: true
-inverse_of: part_of
-is_a: OBO_REL:relationship     ! relationship
-
-[Typedef]
-id: OBO_REL:has_participant
-name: has_participant
-namespace: relationship
-def: "P has_participant C if and only if: given any process p that instantiates P there is some continuant c, and some time t, such that: c instantiates C at t and c participates in p at t" []
-inverse_of: OBO_REL:participates_in
-is_a: OBO_REL:relationship     ! relationship
-comment: Has_participant is a primitive instance-level relation between a process, a continuant, and a time at which the continuant participates in some way in the process. The relation obtains, for example, when this particular process of oxygen exchange across this particular alveolar membrane has_participant this particular sample of hemoglobin at this particular time.
-
-[Typedef]
-id: OBO_REL:has_proper_part
-name: has_proper_part
-namespace: relationship
-is_transitive: true
-inverse_of: OBO_REL:proper_part_of
-is_a: OBO_REL:has_part     ! has_part
-
-[Typedef]
-id: OBO_REL:improper_part_of
-name: improper_part_of
-namespace: relationship
-def: "As for part_of, with the additional constraint that subject and object may be identical" []
-is_transitive: true
-is_reflexive: true
-inverse_of: OBO_REL:has_improper_part
-is_a: part_of     ! part_of
-
-[Typedef]
-id: OBO_REL:instance_of
-name: instance_of
-namespace: relationship
-def: "A relation between an instance and a class. For components: a primitive relation between a component instance and a class which it instantiates at a specific time. For processes: a primitive relation, between a process instance and a class which it instantiates, holding independently of time" []
-is_a: OBO_REL:relationship     ! relationship
-comment: The instance_of relationship is considered axiomatic by the obo file format specification; ie it is taken for granted. The is_a relation is still included in this ontology for completeness
-
-[Typedef]
-id: OBO_REL:integral_part_of
-name: integral_part_of
-namespace: relationship
-def: "C integral_part_of C' if and only if: C part_of C' AND C' has_part C" []
-is_transitive: true
-is_reflexive: true
-is_anti_symmetric: true
-inverse_of: OBO_REL:has_integral_part
-is_a: part_of     ! part_of
-
-[Typedef]
-id: OBO_REL:is_a
-name: is_a
-namespace: relationship
-def: "For continuants: C is_a C' if and only if: given any c that instantiates C at a time t, c instantiates C' at t. For processes: P is_a P' if and only if: that given any p that instantiates P, then p instantiates P'." []
-is_transitive: true
-is_reflexive: true
-is_anti_symmetric: true
-synonym: "is_subtype_of" EXACT []
-comment: The is_a relationship is considered axiomatic by the obo file format specification, and by OWL
-xref: owl:subClassOf
-
-[Typedef]
-id: OBO_REL:located_in
-name: located_in
-namespace: relationship
-def: "C located_in C' if and only if: given any c that instantiates C at a time t, there is some c' such that: c' instantiates C' at time t and c *located_in* c'. (Here *located_in* is the instance-level location relation.)" []
-is_transitive: true
-is_reflexive: true
-inverse_of: OBO_REL:location_of
-is_a: OBO_REL:relationship     ! relationship
-comment: Location as a relation between instances: The primitive instance-level relation c located_in r at t reflects the fact that each continuant is at any given time associated with exactly one spatial region, namely its exact location. Following we can use this relation to define a further instance-level location relation - not between a continuant and the region which it exactly occupies, but rather between one continuant and another. c is located in c1, in this sense, whenever the spatial region occupied by c is part_of the spatial region occupied by c1.    Note that this relation comprehends both the relation of exact location between one continuant and another which obtains when r and r1 are identical (for example, when a portion of fluid exactly fills a cavity), as well as those sorts of inexact location relations which obtain, for example, between brain and head or between ovum and uterus
-
-[Typedef]
-id: OBO_REL:location_of
-name: location_of
-namespace: relationship
-is_transitive: true
-is_reflexive: true
-inverse_of: OBO_REL:located_in
-is_a: OBO_REL:relationship     ! relationship
-
-[Typedef]
-id: part_of
-name: part_of
-namespace: relationship
-def: "For continuants: C part_of C' if and only if: given any c that instantiates C at a time t, there is some c' such that c' instantiates C' at time t, and c *part_of* c' at t. For processes: P part_of P' if and only if: given any p that instantiates P at a time t, there is some p' such that p' instantiates P' at time t, and p *part_of* p' at t. (Here *part_of* is the instance-level part-relation.)" []
-is_transitive: true
-is_reflexive: true
-is_anti_symmetric: true
-inverse_of: OBO_REL:has_part
-is_a: OBO_REL:relationship     ! relationship
-comment: Parthood as a relation between instances: The primitive instance-level relation p part_of p1 is illustrated in assertions such as: this instance of rhodopsin mediated phototransduction part_of this instance of visual perception.    This relation satisfies at least the following standard axioms of mereology: reflexivity (for all p, p part_of p); anti-symmetry (for all p, p1, if p part_of p1 and p1 part_of p then p and p1 are identical); and transitivity (for all p, p1, p2, if p part_of p1 and p1 part_of p2, then p part_of p2). Analogous axioms hold also for parthood as a relation between spatial regions.    For parthood as a relation between continuants, these axioms need to be modified to take account of the incorporation of a temporal argument. Thus for example the axiom of transitivity for continuants will assert that if c part_of c1 at t and c1 part_of c2 at t, then also c part_of c2 at t.    Parthood as a relation between classes: To define part_of as a relation between classes we again need to distinguish the two cases of continuants and processes, even though the explicit reference to instants of time now falls away. For continuants, we have C part_of C1 if and only if any instance of C at any time is an instance-level part of some instance of C1 at that time, as for example in: cell nucleus part_ of cell.
-
-[Typedef]
-id: OBO_REL:participates_in
-name: participates_in
-namespace: relationship
-inverse_of: OBO_REL:has_participant
-is_a: OBO_REL:relationship     ! relationship
-
-[Typedef]
-id: OBO_REL:preceded_by
-name: preceded_by
-namespace: relationship
-def: "P preceded_by P' if and only if: given any process p that instantiates P at a time t, there is some process p' such that p' instantiates P' at time t', and t' is earlier than t. " []
-is_transitive: true
-inverse_of: OBO_REL:precedes
-is_a: OBO_REL:relationship     ! relationship
-comment: An example is: translation preceded_by transcription; aging preceded_by development (not however death preceded_by aging). Where derives_from links classes of continuants, preceded_by links classes of processes. Clearly, however, these two relations are not independent of each other. Thus if cells of type C1 derive_from cells of type C, then any cell division involving an instance of C1 in a given lineage is preceded_by cellular processes involving an instance of C.    The assertion P preceded_by P1 tells us something about Ps in general: that is, it tells us something about what happened earlier, given what we know about what happened later. Thus it does not provide information pointing in the opposite direction, concerning instances of P1 in general; that is, that each is such as to be succeeded by some instance of P. Note that an assertion to the effect that P preceded_by P1 is rather weak; it tells us little about the relations between the underlying instances in virtue of which the preceded_by relation obtains. Typically we will be interested in stronger relations, for example in the relation immediately_preceded_by, or in relations which combine preceded_by with a condition to the effect that the corresponding instances of P and P1 share participants, or that their participants are connected by relations of derivation, or (as a first step along the road to a treatment of causality) that the one process in some way affects (for example, initiates or regulates) the other.
-
-[Typedef]
-id: OBO_REL:precedes
-name: precedes
-namespace: relationship
-is_transitive: true
-inverse_of: OBO_REL:preceded_by
-is_a: OBO_REL:relationship     ! relationship
-
-[Typedef]
-id: OBO_REL:proper_part_of
-name: proper_part_of
-namespace: relationship
-def: "As for part_of, with the additional constraint that subject and object are distinct" []
-is_transitive: true
-inverse_of: OBO_REL:has_proper_part
-is_a: part_of     ! part_of
-
-[Typedef]
-id: OBO_REL:relationship
-name: relationship
-namespace: relationship
-def: "A relationship between two classes (terms). Relationships between classes are expressed in terms of relations on underlying instances." []
-
-[Typedef]
-id: OBO_REL:transformation_of
-name: transformation_of
-namespace: relationship
-def: "Relation between two classes, in which instances retain their identity yet change their classification by virtue of some kind of transformation. Formally: C transformation_of C' if and only if given any c and any t, if c instantiates C at time t, then for some t', c instantiates C' at t' and t' earlier t, and there is no t2 such that c instantiates C at t2 and c instantiates C' at t2." []
-is_transitive: true
-inverse_of: OBO_REL:transformed_into
-is_a: OBO_REL:relationship     ! relationship
-comment: When an embryonic oenocyte (a type of insect cell) is transformed into a larval oenocyte, one and the same continuant entity preserves its identity while instantiating distinct classes at distinct times. The class-level relation transformation_of obtains between continuant classes C and C1 wherever each instance of the class C is such as to have existed at some earlier time as an instance of the distinct class C1 (see Figure 2 in paper). This relation is illustrated first of all at the molecular level of granularity by the relation between mature RNA and the pre-RNA from which it is processed, or between (UV-induced) thymine-dimer and thymine dinucleotide. At coarser levels of granularity it is illustrated by the transformations involved in the creation of red blood cells, for example, from reticulocyte to erythrocyte, and by processes of development, for example, from larva to pupa, or from (post-gastrular) embryo to fetus or from child to adult. It is also manifest in pathological transformations, for example, of normal colon into carcinomatous colon. In each such case, one and the same continuant entity instantiates distinct classes at different times in virtue of phenotypic changes.
-
-[Typedef]
-id: OBO_REL:transformed_into
-name: transformed_into
-namespace: relationship
-is_transitive: true
-inverse_of: OBO_REL:transformation_of
-is_a: OBO_REL:relationship     ! relationship
 
 [Term]
 id: CL:0000000
@@ -4534,4 +4290,18 @@ name: inheres_in
 [Typedef]
 id: towards
 name: towards
+
+[Typedef]
+id: affects
+name: affects
+
+[Typedef]
+id: part_of
+name: part_of
+
+[Typedef]
+id: has_participant
+name: has_participant
+
+
 
