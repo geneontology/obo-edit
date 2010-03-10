@@ -34,6 +34,11 @@ import com.swabunga.spell.event.SpellChecker;
 import com.swabunga.spell.event.StringWordTokenizer;
 import com.swabunga.spell.event.WordFinder;
 
+/**
+ * TODO: can we extend this to also check for ontology terms or synonyms in
+ * definitions?
+ *
+ */
 public abstract class AbstractTextCheck extends AbstractCheck implements
 FieldCheck {
 
