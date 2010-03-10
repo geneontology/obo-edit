@@ -46,7 +46,7 @@ public class ReasonerTest extends TestCase {
 	public ReasonerTest(String name) {
 		super(name);
 	}
-	public static final String SO_XP_PATH="lib/resources/so-xp.obo";
+	public static final String SO_XP_PATH="test_resources/so-xp.obo";
 	
 	public static Test suite() {
 		PrintStream audited = new AuditedPrintStream(System.err, 25, true);
