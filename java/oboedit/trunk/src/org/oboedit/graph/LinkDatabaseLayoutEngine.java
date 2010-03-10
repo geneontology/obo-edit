@@ -167,6 +167,7 @@ public class LinkDatabaseLayoutEngine {
 			// PPath p = createNodeForObject(lo, s);
 			provider.setNamedChild(lo, out, p);
 			for (Link link : linkDatabase.getParents(lo)) {
+				// CJM NOTES -- why is this here? removing it seems to cause the blue spinning wheel of death...
 				if (TermUtil.isIntersection(link))
 					continue;
 				Shape links = graphLayout.getEdgeShape(link.getChild(), link
