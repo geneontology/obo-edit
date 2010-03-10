@@ -32,8 +32,8 @@ public class GOAnnotationFilePlusOntologyTest extends GOAnnotationFileTest {
 		return Arrays.asList(files);
 	}
 	public Collection<String> getOntologyFilesToLoad() {
-//		String[] files={"http://purl.org/obo/obo/GO"};
-		String[] files={"/users/cjm/cvs/go/ontology/gene_ontology_edit.obo"};
+		String[] files={"http://purl.org/obo/obo/GO"};
+//		String[] files={"/users/cjm/cvs/go/ontology/gene_ontology_edit.obo"};
 		return Arrays.asList(files);
 	}
 
