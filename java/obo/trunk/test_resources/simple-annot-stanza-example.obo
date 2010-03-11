@@ -8,6 +8,7 @@ id: bread
 name: bread
 property_value: term_created_by mildred
 made_up_tag: foo
+property_value: nif_annot:createdDate "February 12, 2009" xsd:string
 
 [Term]
 id: dread
