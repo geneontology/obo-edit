@@ -26,23 +26,27 @@ public class CardinalityIntersectionTest extends AbstractReasonerTest {
 	}
 
 	public Collection<String> getFilesToLoad() {
-		String[] files = { "cardi.obo"};
+		String[] files = { "cardinality.obo"};
 		return Arrays.asList(files);
 	}
 	
 	public void testForCard() throws Exception {
 
-		OBOObject obj = (OBOObject) session.getObject("GO:0022614");
-		boolean ok = false;
+		OBOObject obj = (OBOObject) session.getObject("human_body");
+		int oks = 0;
 		for (Link link : obj.getParents()) {
 			OBORestriction r = (OBORestriction)link;
 			logger.info(r);
 			Integer card = r.getCardinality();
 			logger.info("c="+card);
-			if (card != null && card==2)
-				ok = true;
+			if(r.getParent().getID().equals("leg") && card == 2) {
+				oks++;
+			}
+			if(r.getParent().getID().equals("human_limb") && card == 4) {
+				oks++;
+			}
 		}
-		assertTrue(ok);
+		assertTrue(oks == 2);
 		writeTempOBOFile();
 	}
 }
