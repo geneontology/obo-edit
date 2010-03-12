@@ -41,6 +41,7 @@ public interface OBOProperty extends OBOObject {
 		}
 	};
 	
+	// TODO: do not hardcode relations
 	public static final OBOProperty HAS_PART = new OBOPropertyImpl("OBO_REL:has_part",
 			null) {
 		/**
@@ -63,6 +64,7 @@ public interface OBOProperty extends OBOObject {
 		}
 	};
 	
+	// TODO: do not hardcode relations
 	public static final OBOProperty PART_OF = new OBOPropertyImpl("OBO_REL:part_of",
 			null) {
 		/**
@@ -161,6 +163,24 @@ public interface OBOProperty extends OBOObject {
 			return true;
 		}
 	};
+	
+	public static final OBOProperty HAS_ZERO_CARDINALITY_OVER = new OBOPropertyImpl(
+			"has_zero_cardinality_over", null) {
+	
+		{
+			this.name = "has_zero_cardinality_over";
+		}
+
+		@Override
+		public boolean isBuiltIn() {
+			return true;
+		}
+		
+		public boolean isNonInheritable() {
+			return true;
+		}
+	};
+
 	
 	public static final OBOProperty TRANSITIVE_OVER = new OBOPropertyImpl(
 			"transitive_over", null) {
@@ -304,7 +324,7 @@ public interface OBOProperty extends OBOObject {
 
 
 	public static final OBOProperty[] BUILTIN_TYPES = { IS_A, DISJOINT_FROM,
-							    UNION_OF, INVERSE_OF, TRANSITIVE_OVER};
+							    UNION_OF, INVERSE_OF, TRANSITIVE_OVER, HAS_ZERO_CARDINALITY_OVER};
     // 4/11/08: Don't make these builtin
     //REGULATES, NEGATIVELY_REGULATES, POSITIVELY_REGULATES};
 
