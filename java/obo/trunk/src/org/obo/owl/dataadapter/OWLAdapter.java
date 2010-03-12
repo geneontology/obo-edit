@@ -1039,12 +1039,29 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 								}
 								else {
 									OWLObjectProperty owlProp = getOWLObjectProperty(oboProp);
-									owlSuperClasses.add( 
-											owlFactory.getOWLObjectSomeRestriction(owlProp, owlParentClass));
-									if (oboProp.isUniversallyQuantified()) {
-										owlSuperClasses.add( 
-												owlFactory.getOWLObjectAllRestriction(owlProp, owlParentClass));
+									boolean consumed = false;
+									if (!oboProp.getParents().isEmpty()) {
+										for (Link p : oboProp.getParents()) {
+											if (p.getType().equals(OBOProperty.HAS_ZERO_CARDINALITY_OVER)) {
+												owlSuperClasses.add( 
+														owlFactory.getOWLObjectExactCardinalityRestriction(getOWLObjectProperty(p.getParent()), 0, owlParentClass));
+												consumed = true;
+											}
+										}
+																		
+									}	
 
+									if (!consumed) {
+										if (oboProp.isUniversallyQuantified()) {
+											owlSuperClasses.add( 
+													owlFactory.getOWLObjectAllRestriction(owlProp, owlParentClass));
+
+										}
+										else {
+											owlSuperClasses.add( 
+													owlFactory.getOWLObjectSomeRestriction(owlProp, owlParentClass));
+
+										}
 									}
 								}
 
