@@ -187,6 +187,9 @@ public class NCBOOboInOWLMetadataMapping extends AbstractOWLMetadataMapping {
 				break;
 			}
 		}
+		
+		if (session == null)
+			session = adapter.getSession();
 
 		// hack to get the header tags, only called when this function is called for the first time
 		if (first) {
@@ -345,7 +348,10 @@ public class NCBOOboInOWLMetadataMapping extends AbstractOWLMetadataMapping {
 
 			// adding namespace
 			Namespace defNs = session.getDefaultNamespace();
-			if (ns.equals(defNs)) {
+			if (ns == null) {
+				
+			}
+			else if (ns.equals(defNs)) {
 				// default namespace found, added already
 			}
 			else {
