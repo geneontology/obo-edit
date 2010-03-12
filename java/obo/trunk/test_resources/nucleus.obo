@@ -117,9 +117,23 @@ id: prok_cell
 union_of: arc_cell
 union_of: eubac_cell
 
+[Term]
+id: anucleate_cell
+intersection_of: GO:0005623
+intersection_of: lacks_part GO:0005634
+
 [Typedef]
 id: part_of
 name: part of
 namespace: gene_ontology
 is_transitive: true
+
+[Typedef]
+id: has_part
+name: has_part
+
+[Typedef]
+id: lacks_part
+name: lacks_part
+relationship: has_zero_cardinality_over has_part
 
