@@ -11,6 +11,7 @@ import junit.framework.TestSuite;
 
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.io.AuditedPrintStream;
+import org.obo.datamodel.OBOProperty;
 import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping;
 
 import org.apache.log4j.*;
@@ -42,6 +43,7 @@ public class BasicOWLTest extends AbstractOWLTest {
 		testForIsA("CHEBI:33304","CHEBI:33675"); /* asserted */
 		testForLink("testA","part_of","testB"); /* asserted */
 		testForIsTransitive("part_of");
+		testForLink("prok_cell",OBOProperty.UNION_OF.getID(),"arc_cell"); /* asserted */
 		
 	}
 
