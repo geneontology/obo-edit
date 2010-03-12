@@ -106,6 +106,17 @@ subset: gosubset_prok  ! Prokaryotic GO subset
 is_a: GO:0005575  ! cellular_component
 relationship: part_of GO:0005623 ! cell
 
+[Term]
+id: arc_cell
+
+[Term]
+id: eubac_cell
+
+[Term]
+id: prok_cell
+union_of: arc_cell
+union_of: eubac_cell
+
 [Typedef]
 id: part_of
 name: part of

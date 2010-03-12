@@ -40,6 +40,8 @@ public class NCBOStyleOWLTest extends AbstractOWLTest {
 		OWLAdapter adapter = new OWLAdapter();
 		OWLAdapter.OWLAdapterConfiguration config = new OWLAdapter.OWLAdapterConfiguration();
 		config.addMetadataMapping(new NCBOOboInOWLMetadataMapping());
+		
+		logger.info("loading from: "+names);
 		for (String f : names) {
 			String path;
 			if (f.startsWith("/"))

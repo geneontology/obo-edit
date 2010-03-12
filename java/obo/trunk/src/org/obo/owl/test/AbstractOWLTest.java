@@ -52,8 +52,10 @@ public abstract class AbstractOWLTest extends AbstractOBOTest {
 	@Override
 	protected OBOSession getSessionFromResources(Collection<String> names)
 	throws DataAdapterException {
-		if (!isSourceOWL())
+		if (!isSourceOWL()) {
+			logger.info("initializing OBOSession from: "+names);
 			return super.getSessionFromResources(names);
+		}
 		readOWLFiles(names);
 		return session;
 	}

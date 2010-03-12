@@ -931,6 +931,8 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		if (!file.contains("file:"))
 			file = "file:"+file;
 		physicalURI = URI.create(file);
+		System.err.println("writing:"+physicalURI+" -- from "+file);
+
 
 		// We need to set up a mapping which points to a concrete file where the ontology will
 		// be stored. (It's good practice to do this even if we don't intend to save the ontology).
@@ -969,6 +971,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			// file), we MAP the ontology URI to a PHYSICAL URI.  We do this using a URIMapper
 
 			// Now create the ontology - we use the ontology URI (not the physical URI)
+			System.err.println("creating ontology:"+ontologyURI);
 			ontology = manager.createOntology(ontologyURI);
 			// Now we want to specify that A is a subclass of B.  To do this, we add a subclass
 			// axiom.  A subclass axiom is simply an object that specifies that one class is a
@@ -1000,6 +1003,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 						//	addAxiom(owlFactory.
 
 						Set<OWLDescription> intersectionElements = new HashSet<OWLDescription>();
+						Set<OWLDescription> unionElements = new HashSet<OWLDescription>();
 						for (Link link : oboClass.getParents()) {
 
 							OWLClass owlParentClass = null;
@@ -1021,6 +1025,9 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 								pair.add(owlClass);
 								pair.add(owlParentClass);
 								addAxiom(owlFactory.getOWLDisjointClassesAxiom(pair));
+							}
+							else if (TermUtil.isUnion(link)) {
+								unionElements.add(owlParentClass);
 							}
 							else {
 								Collection<OWLDescription> owlSuperClasses =
@@ -1072,12 +1079,23 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 								}           
 							}
 						}
-						if (intersectionElements.size() > 0) {
+						
+						if (intersectionElements.size() > 1) {
 							OWLDescription owlIntersection =
 								owlFactory.getOWLObjectIntersectionOf(intersectionElements);
 							HashSet<OWLDescription> pair = new HashSet<OWLDescription>();
 							pair.add(owlClass);
 							pair.add(owlIntersection);
+							OWLAxiom ecAxiom =
+								owlFactory.getOWLEquivalentClassesAxiom(pair);
+							manager.applyChange(new AddAxiom(ontology,ecAxiom));
+						}
+						if (unionElements.size() > 1) {
+							OWLDescription owlUnion =
+								owlFactory.getOWLObjectUnionOf(unionElements);
+							HashSet<OWLDescription> pair = new HashSet<OWLDescription>();
+							pair.add(owlClass);
+							pair.add(owlUnion);
 							OWLAxiom ecAxiom =
 								owlFactory.getOWLEquivalentClassesAxiom(pair);
 							manager.applyChange(new AddAxiom(ontology,ecAxiom));
@@ -1278,7 +1296,10 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		return getURI(x.getDatabase() + ":" + x.getDatabaseID());
 	}
 
-
+	public String getDefaultIDSpace() {
+		//return "_global";
+		return "obo";
+	}
 
 	public URI getURI(String id) throws UnsupportedEncodingException {
 		//logger.info("getting uri for "+id);
@@ -1293,11 +1314,11 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			localId = idParts[1];
 		}
 		else if (idParts.length == 0) {
-			db = "_global";
+			db = getDefaultIDSpace();
 			localId = id;
 		}
 		else { // ==1
-			db = "_global";
+			db = getDefaultIDSpace();
 			localId = idParts[0];
 		}
 		if (db.equals("http")) { // TODO - roundtrip from other schemes
