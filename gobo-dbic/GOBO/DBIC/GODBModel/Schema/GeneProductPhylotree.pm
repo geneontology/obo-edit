@@ -52,6 +52,12 @@ __PACKAGE__->belongs_to('gene_product' =>
 __PACKAGE__->belongs_to('phylotree' =>
                         'GOBO::DBIC::GODBModel::Schema::Phylotree', 'phylotree_id');
 
+## Allow many_to_many from Phylotree.
+
+__PACKAGE__->has_many
+  ('association' => 'GOBO::DBIC::GODBModel::Schema::Association',
+   { 'foreign.gene_product_id' => 'self.gene_product_id' },
+   { join_type => 'right' }  ); # get's rid of NULLs?
 
 
 1;
