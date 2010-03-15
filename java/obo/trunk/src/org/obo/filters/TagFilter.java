@@ -57,8 +57,7 @@ public class TagFilter implements Serializable {
 		this.setModifiedByTagToBeWritten(true);
 		this.setModificationDateTagToBeWritten(true);
 		this.setIsMetadataTagToBeWritten(true);
-		
-		
+	
 	}
 
 	/**
@@ -119,73 +118,73 @@ public class TagFilter implements Serializable {
 
 	boolean doTagFilter;
 
-	boolean idTagToBeWritten;
+	static boolean idTagToBeWritten;
 
-	boolean nameTagToBeWritten;
+	static boolean nameTagToBeWritten;
 
-	boolean is_anonymousTagToBeWritten;
+	static boolean is_anonymousTagToBeWritten;
 
-	boolean namespaceTagToBeWritten;
+	static boolean namespaceTagToBeWritten;
 
-	boolean alt_idTagToBeWritten;
+	static boolean alt_idTagToBeWritten;
 
-	boolean defTagToBeWritten;
+	static boolean defTagToBeWritten;
 
-	boolean commentTagToBeWritten;
+	static boolean commentTagToBeWritten;
 
-	boolean subsetTagToBeWritten;
+	static boolean subsetTagToBeWritten;
 
-	boolean synonymTagToBeWritten;
+	static boolean synonymTagToBeWritten;
 
-	boolean xrefTagToBeWritten;
+	static boolean xrefTagToBeWritten;
 
-	boolean is_obsoleteTagToBeWritten;
+	static boolean is_obsoleteTagToBeWritten;
 
-	boolean replaced_byTagToBeWritten;
+	static boolean replaced_byTagToBeWritten;
 
-	boolean considerTagToBeWritten;
+	static boolean considerTagToBeWritten;
 
-	boolean instanceOfTagToBeWritten;
+	static boolean instanceOfTagToBeWritten;
 
-	boolean propertyValueTagToBeWritten;
+	static boolean propertyValueTagToBeWritten;
 
-	boolean domainTagToBeWritten;
+	static boolean domainTagToBeWritten;
 
-	boolean rangeTagToBeWritten;
+	static boolean rangeTagToBeWritten;
 
-	boolean alwaysImpliesInverseTagToBeWritten;
+	static boolean alwaysImpliesInverseTagToBeWritten;
 
-	boolean isIsCyclicTagToBeWritten;
+	static boolean isIsCyclicTagToBeWritten;
 
-	boolean isIsReflexiveTagToBeWritten;
+	static boolean isIsReflexiveTagToBeWritten;
 
-	boolean isIsSymmetricTagToBeWritten;
+	static boolean isIsSymmetricTagToBeWritten;
 
-	boolean isIsTransitiveTagToBeWritten;
+	static boolean isIsTransitiveTagToBeWritten;
 
-	boolean isTransitiveOverTagToBeWritten;
+	static boolean isTransitiveOverTagToBeWritten;
 
-	boolean isHoldsOverChainTagToBeWritten;
+	static boolean isHoldsOverChainTagToBeWritten;
 
-	boolean isLinkTagToBeWritten;
+	static boolean isLinkTagToBeWritten;
 
-	boolean IsValueLinkTagToBeWritten;
+	static boolean IsValueLinkTagToBeWritten;
 
-	boolean isUnrecognizedTagToBeWritten;
+	static boolean isUnrecognizedTagToBeWritten;
 
-	boolean isCreatedByTagToBeWritten;
+	static boolean isCreatedByTagToBeWritten;
 
-	boolean isCreationDateTagToBeWritten;
+	static boolean isCreationDateTagToBeWritten;
 
-	boolean isModifiedByTagToBeWritten;
+	static boolean isModifiedByTagToBeWritten;
 
-	boolean isModificationDateTagToBeWritten;
+	static boolean isModificationDateTagToBeWritten;
 
-	boolean isIsMetadataTagToBeWritten;	
+	static boolean isIsMetadataTagToBeWritten;	
 
-	boolean selectAllTagsToBeWritten;
+	static boolean selectAllTagsToBeWritten;
 
-	boolean selectAllButtonSelectsAll = false;
+	static boolean selectAllButtonSelectsAll = false;
 
 	String selectAllButtonString = "Unselect All";
 
@@ -197,7 +196,8 @@ public class TagFilter implements Serializable {
 		return selectAllButtonString;
 	}
 
-	public HashSet<OBOConstants.TagMapping> getTagsToWrite() {
+	public static HashSet<OBOConstants.TagMapping> getTagsToWrite() {
+		
 		HashSet<OBOConstants.TagMapping> localHashSet = new HashSet<OBOConstants.TagMapping>();
 
 		if (isIdTagToBeWritten()) {
@@ -301,23 +301,23 @@ public class TagFilter implements Serializable {
 
 	//Getters
 
-	public boolean isAlt_idTagToBeWritten() {
+	public static boolean isAlt_idTagToBeWritten() {
 		return alt_idTagToBeWritten;
 	}
 
-	public boolean isNamespaceTagToBeWritten() {
+	public static boolean isNamespaceTagToBeWritten() {
 		return namespaceTagToBeWritten;
 	}
 
-	public boolean isCommentTagToBeWritten() {
+	public static boolean isCommentTagToBeWritten() {
 		return commentTagToBeWritten;
 	}
 
-	public boolean isConsiderTagToBeWritten() {
+	public static boolean isConsiderTagToBeWritten() {
 		return considerTagToBeWritten;
 	}
 
-	public boolean isDefTagToBeWritten() {
+	public static boolean isDefTagToBeWritten() {
 		return defTagToBeWritten;
 	}
 
@@ -325,23 +325,23 @@ public class TagFilter implements Serializable {
 		return doTagFilter;
 	}
 
-	public boolean isIdTagToBeWritten() {
+	public static boolean isIdTagToBeWritten() {
 		return idTagToBeWritten;
 	}
 
-	public boolean isIs_anonymousTagToBeWritten() {
+	public static boolean isIs_anonymousTagToBeWritten() {
 		return is_anonymousTagToBeWritten;
 	}
 
-	public boolean isIs_obsoleteTagToBeWritten() {
+	public static boolean isIs_obsoleteTagToBeWritten() {
 		return is_obsoleteTagToBeWritten;
 	}
 
-	public boolean isNameTagToBeWritten() {
+	public static boolean isNameTagToBeWritten() {
 		return nameTagToBeWritten;
 	}
 
-	public boolean isReplaced_byTagToBeWritten() {
+	public static boolean isReplaced_byTagToBeWritten() {
 		return replaced_byTagToBeWritten;
 	}
 
@@ -349,91 +349,91 @@ public class TagFilter implements Serializable {
 		return selectAllTagsToBeWritten;
 	}
 
-	public boolean isSubsetTagToBeWritten() {
+	public static boolean isSubsetTagToBeWritten() {
 		return subsetTagToBeWritten;
 	}
 
-	public boolean isSynonymTagToBeWritten() {
+	public static boolean isSynonymTagToBeWritten() {
 		return synonymTagToBeWritten;
 	}
 
-	public boolean isXrefTagToBeWritten() {
+	public static boolean isXrefTagToBeWritten() {
 		return xrefTagToBeWritten;
 	}
 
-	public boolean isInstanceOfTagToBeWritten() {
+	public static boolean isInstanceOfTagToBeWritten() {
 		return instanceOfTagToBeWritten;
 	}
 
-	public boolean isPropertyValueTagToBeWritten() {
+	public static boolean isPropertyValueTagToBeWritten() {
 		return propertyValueTagToBeWritten;
 	}
 
-	public boolean isDomainTagToBeWritten() {
+	public static boolean isDomainTagToBeWritten() {
 		return domainTagToBeWritten;
 	}
 
-	public boolean isRangeTagToBeWritten() {
+	public static boolean isRangeTagToBeWritten() {
 		return rangeTagToBeWritten;
 	}
 
-	public boolean isAlwaysImpliesInverseTagToBeWritten() {
+	public static boolean isAlwaysImpliesInverseTagToBeWritten() {
 		return alwaysImpliesInverseTagToBeWritten;
 	}
 
-	public boolean isIsCyclicTagToBeWritten() {
+	public static boolean isIsCyclicTagToBeWritten() {
 		return isIsCyclicTagToBeWritten;
 	}
 
-	public boolean isIsReflexiveTagToBeWritten() {
+	public static boolean isIsReflexiveTagToBeWritten() {
 		return isIsReflexiveTagToBeWritten;
 	}
 
-	public boolean isIsSymmetricTagToBeWritten() {
+	public static boolean isIsSymmetricTagToBeWritten() {
 		return isIsSymmetricTagToBeWritten;
 	}
 
-	public boolean isIsTransitiveTagToBeWritten() {
+	public static boolean isIsTransitiveTagToBeWritten() {
 		return isIsTransitiveTagToBeWritten;
 	}
 
-	public boolean isTransitiveOverTagToBeWritten() {
+	public static boolean isTransitiveOverTagToBeWritten() {
 		return isTransitiveOverTagToBeWritten;
 	}
 
-	public boolean isHoldsOverChainTagToBeWritten() {
+	public static boolean isHoldsOverChainTagToBeWritten() {
 		return isHoldsOverChainTagToBeWritten;
 	}
 
-	public boolean isLinkTagToBeWritten() {
+	public static boolean isLinkTagToBeWritten() {
 		return isLinkTagToBeWritten;
 	}
 
-	public boolean isValueLinkTagToBeWritten() {
+	public static boolean isValueLinkTagToBeWritten() {
 		return IsValueLinkTagToBeWritten;
 	}
 
-	public boolean isUnrecognizedTagToBeWritten() {
+	public static boolean isUnrecognizedTagToBeWritten() {
 		return isUnrecognizedTagToBeWritten;
 	}
 
-	public boolean isCreatedByTagToBeWritten() {
+	public static boolean isCreatedByTagToBeWritten() {
 		return isCreatedByTagToBeWritten;
 	}
 
-	public boolean isCreationDateTagToBeWritten() {
+	public static boolean isCreationDateTagToBeWritten() {
 		return isCreationDateTagToBeWritten;
 	}
 
-	public boolean isModifiedByTagToBeWritten() {
+	public static boolean isModifiedByTagToBeWritten() {
 		return isModifiedByTagToBeWritten;
 	}
 
-	public boolean isModificationDateTagToBeWritten() {
+	public static boolean isModificationDateTagToBeWritten() {
 		return isModificationDateTagToBeWritten;
 	}
 
-	public boolean isIsMetadataTagToBeWritten() {
+	public static boolean isIsMetadataTagToBeWritten() {
 		return isIsMetadataTagToBeWritten;
 	}
 

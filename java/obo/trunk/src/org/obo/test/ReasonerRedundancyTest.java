@@ -1,14 +1,7 @@
 package org.obo.test;
 
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
-import org.bbop.io.AuditedPrintStream;
-import org.obo.reasoner.impl.LinkPileReasonerFactory;
 
 import org.apache.log4j.*;
 
