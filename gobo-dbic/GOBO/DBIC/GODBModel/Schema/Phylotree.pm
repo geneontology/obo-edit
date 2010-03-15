@@ -52,7 +52,10 @@ __PACKAGE__->set_primary_key('id');
 __PACKAGE__->might_have('gene_product_phylotree' =>
 			'GOBO::DBIC::GODBModel::Schema::GeneProductPhylotree',
 			'phylotree_id');
-__PACKAGE__->many_to_many(gene_products => 'gene_product_phylotree', 'gene_product');
+__PACKAGE__->many_to_many
+  (gene_products => 'gene_product_phylotree', 'gene_product');
+__PACKAGE__->many_to_many
+  (associations => 'gene_product_phylotree', 'association');
 
 ##
 __PACKAGE__->belongs_to('dbxref' =>
