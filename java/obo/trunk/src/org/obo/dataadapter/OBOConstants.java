@@ -18,16 +18,14 @@ public class OBOConstants {
 
 	public static class TagMapping {
 		protected String tagName;
-
-		protected Class allowsClass;
-
+		protected Class<?> allowsClass;
 		protected OBOSerializerExtension provider;
 
-		public TagMapping(String tagName, Class allowsClass) {
+		public TagMapping(String tagName, Class<?> allowsClass) {
 			this(tagName, allowsClass, null);
 		}
 
-		public TagMapping(String tagName, Class allowsClass,
+		public TagMapping(String tagName, Class<?> allowsClass,
 				OBOSerializerExtension provider) {
 			this.tagName = tagName;
 			this.allowsClass = allowsClass;
@@ -46,7 +44,6 @@ public class OBOConstants {
 
 	public static class StanzaMapping {
 		protected String stanzaName;
-
 		protected Class forClass;
 
 		public StanzaMapping(String stanzaName, Class forClass) {
