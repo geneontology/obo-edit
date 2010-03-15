@@ -961,8 +961,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			if (obj instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject) obj;
 				List<Link> linkList = new LinkedList<Link>();
-				//get parents from object instead of linkdatabase to bypass filter constraints
-				Collection<Link> parents = lo.getParents();
+				Collection<Link> parents = linkDatabase.getParents(lo);
 				for (Link p : parents) {
 					if (p.getParent() == null) {
 						logger.error("invalid link: "+p+" Child: "+p.getChild().getClass());
