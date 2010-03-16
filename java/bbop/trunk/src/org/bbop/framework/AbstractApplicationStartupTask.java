@@ -330,12 +330,12 @@ AbstractSingleActionTask {
 	protected void configureLogging() {
 		
 		final Logger logger = Logger.getLogger("");
-		PropertyConfigurator.configure("log4j.properties");
-		
-		logger.info("Configured logging output destinations");
-		logger.info("Reset standard error stream");
-		logger.info("Testing raw log stream");
-		logger.info("Testing standard error stream");
+//not needed as all applications now have seperate logging properties
+//		PropertyConfigurator.configure("log4j.properties");	
+//		logger.info("Configured logging output destinations");
+//		logger.info("Reset standard error stream");
+//		logger.info("Testing raw log stream");
+//		logger.info("Testing standard error stream");
 
 		Thread
 		.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
