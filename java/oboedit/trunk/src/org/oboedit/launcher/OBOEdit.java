@@ -1,12 +1,16 @@
 package org.oboedit.launcher;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.bbop.dataadapter.CommandLineWidget;
@@ -162,7 +166,7 @@ public class OBOEdit {
 			}
 		}
 		if (loadTag != null) {
-			java.util.List progressListeners = new Vector();
+			List progressListeners = new Vector();
 
 			// Actually read in the command line file
 			logger.info("Loading file " + loadTag);
@@ -202,7 +206,17 @@ public class OBOEdit {
 					GUIManager.getManager().start();
 
 					// Configure logging
-					PropertyConfigurator.configure("log4j.properties");
+//					PropertyConfigurator.configure("log4j.properties");
+					Properties props = new Properties();
+					try {
+						InputStream configStream = getClass().getResourceAsStream("/log4j.properties");
+						props.load(configStream);
+						configStream.close();
+					} catch(IOException e) {
+						System.out.println("Error: Cannot laod configuration file ");
+					}
+					setupLog4j(props, configDir);
+					
 					logger.info("Starting " + getAppName() + " "
 							+ Preferences.getVersion() + ": " + (new Date()));
 
@@ -262,6 +276,25 @@ public class OBOEdit {
 		logger.info("OBO-Edit supports the following command-line options:\n -help (or --help or -usage) - Print this usage message and exit\n -verbose - Displays verbose status messages while OBO-Edit is running\n --listadapters - Lists all the available data adapters and exits\n -load <adapter name> <file name> (default) - Loads a file on startup.\nThis parameter is the default parameter, meaning that it is implicit, and does not need to be specified.\nIf no adapter name is provided, -OBO_EDIT:OBO_Adapter is assumed.\nHence, if you want to load an OBO file, all you need to provide is the file name\nwith no other arguments, e.g., oboedit test_resources/camphor_catabolism.obo\n(The obo file is assumed to be in the default obo version of OBO_1_2).\n The following adapters are available:");
 		printAdapters();
 
+	}
+	
+		private static void setupLog4j(Properties props, String configDir){
+
+		props.setProperty("log4j.rootLogger","DEBUG, A1, A2");
+
+		props.setProperty("log4j.appender.A1","org.apache.log4j.ConsoleAppender");
+		props.setProperty("log4j.appender.A1.layout","org.apache.log4j.PatternLayout");
+		props.setProperty("log4j.appender.A1.layout.ConversionPattern","%m%n");
+
+		props.setProperty("log4j.appender.A2","org.apache.log4j.RollingFileAppender");
+		props.setProperty("log4j.appender.A2.file",configDir + "/log/oboedit.log");
+		props.setProperty("log4j.appender.A2.MaxFileSize","1MB");
+		props.setProperty("log4j.appender.A2.MaxBackupIndex","10");
+		props.setProperty("log4j.appender.A2.append","true");
+		props.setProperty("log4j.appender.A2.layout","org.apache.log4j.PatternLayout");
+		props.setProperty("log4j.appender.A2.layout.ConversionPattern","%d [%t] %-5p %c - %m%n");
+		LogManager.resetConfiguration();
+		PropertyConfigurator.configure(props);
 	}
 
 	private static void printAdapters() {
