@@ -51,6 +51,9 @@ Subset to use for graph-based comparisons
 
 output file for results
 
+If the output format is specified as 'html', the suffix '.html' will be added
+to the file name if it is not already present.
+
 =back
 
 =head3 Optional switches
@@ -115,9 +118,16 @@ if (! defined $options->{verbose})
 {	$options->{verbose} = $ENV{GO_VERBOSE} || 0;
 }
 
-my $tt = Template->new({
-    INCLUDE_PATH => 'web/templates',
-}) || die "$Template::ERROR\n";
+my $t_args = {
+	INCLUDE_PATH => 'web/templates'
+};
+if ($options->{format} eq 'html')
+{	$t_args->{POST_CHOMP} = 1;
+}
+
+
+my $tt = Template->new($t_args) || die "$Template::ERROR\n";
+
 
 my $data;
 my $output;
@@ -233,10 +243,11 @@ foreach my $f ('f1', 'f2')
 		{	print STDERR "Couldn't understand data!\n";
 		}
 	}
-	$data->{$f}{graph} = $parser->parse_body_from_array( array => [ @lines ] ) if $ss;
-	print STDERR "Finished parsing $f body\n" if $options->{verbose};
 	close FH;
+	print STDERR "Finished parsing $f body\n" if $options->{verbose};
 
+	$data->{$f}{graph} = $parser->parse_body_from_array( array => [ @lines ] ) if $ss;
+	print STDERR "Generating graph of $f\n";
 	if ($ss)
 	{	my $results = GOBO::Util::GraphFunctions::get_subset_nodes(graph=>$data->{$f}{graph}, options => { subset => $ss } );
 		if ($results->{subset}{ $ss })
@@ -248,9 +259,8 @@ foreach my $f ('f1', 'f2')
 	}
 
 	my $ie = new GOBO::InferenceEngine::CustomEngine( graph => $data->{$f}{graph} );
-	$ie->slim_graph( subset_ids => $data->{$f}{subset_ids}, input_ids => [ map { $_->id } @{$data->{$f}{graph}->terms} ], from_ix => 'ontology_links', save_ix => 'trimmed', options => { return_as_graph => 1 } );
+	$ie->slim_graph( subset_ids => $data->{$f}{subset_ids}, from_ix => 'ontology_links', save_ix => 'trimmed', options => { return_as_graph => 1 } );
 	$data->{$f}{trimmed} = $ie->graph;
-
 }
 
 #my $end_time = gettimeofday;
@@ -287,7 +297,6 @@ foreach my $t (keys %{$data->{f1_hash}{Term}})
 		{	warn "$t is only in file 1\n" if $options->{verbose};
 			$output->{f1_only}{$t}++;
 			get_term_data( data => $data, output => $output, term => $t, data_to_get => [ qw(name namespace anc) ], f_data => 'f1' );
-#			$data->{diffs}{Term}{f1_only}{$t}++;
 		}
 	}
 
@@ -317,7 +326,7 @@ foreach my $t (sort keys %{$data->{f2_hash}{Term}})
 			get_term_data( data => $data, output => $output, term => $t, data_to_get => [ qw(name namespace) ], f_data => 'f2' );
 		}
 		else
-		{	$output->{f2_only}{$t}++;	#= { id => $t, name => $data->{f2_hash}{Term}{$t}{name}[0], namespace => $ns };
+		{	$output->{f2_only}{$t}++;
 			get_term_data( data => $data, output => $output, term => $t, data_to_get => [ qw(name namespace anc) ], f_data => 'f2' );
 
 		}
@@ -325,27 +334,24 @@ foreach my $t (sort keys %{$data->{f2_hash}{Term}})
 ## the term is in f1 and f2. let's see if there are any differences
 	else
 	{	# quickly compare the arrays, see if they are the same
-
+		## fx_str is composed of the sorted tag-value pairs
 		my $f1_str = join("\0", map {
 			join("\0", @{$data->{f1_hash}{Term}{$t}{$_}})
 		} sort keys %{$data->{f1_hash}{Term}{$t}});
 		my $f2_str = join("\0", map {
 			join("\0", @{$data->{f2_hash}{Term}{$t}{$_}})
 		} sort keys %{$data->{f2_hash}{Term}{$t}});
+
 		next if $f1_str eq $f2_str;
 
-#		next if join("\0", @{$data->{f1}{Term}{$t}}) eq join("\0", @{$data->{f2}{Term}{$t}});
-
 		## the arrays are different. Let's see just how different they are...
-		{	my $r = compare_hashes( f1 => $data->{f1_hash}{Term}{$t}, f2 => $data->{f2_hash}{Term}{$t}, to_ignore => $ignore_regex );
-			if ($r)
-			{	$data->{diffs}{Term}{both}{$t} = $r;
-				get_term_data( data => $data, output => $output, term => $t, data_to_get => [ qw(name namespace) ], f_data => 'f2' );
-				foreach (keys %$r)
+		my $r = compare_hashes( f1 => $data->{f1_hash}{Term}{$t}, f2 => $data->{f2_hash}{Term}{$t}, to_ignore => $ignore_regex );
+		if ($r)
+		{	$data->{diffs}{Term}{both}{$t} = $r;
+			get_term_data( data => $data, output => $output, term => $t, data_to_get => [ qw(name namespace) ], f_data => 'f2' );
+			foreach (keys %$r)
 #				foreach (keys %{$r->{summary}})
-				{	$data->{diffs}{Term}{all_tags_used}{$_}{$t}++;
-				}
-
+			{	$data->{diffs}{Term}{all_tags_used}{$_}{$t}++;
 			}
 		}
 	}
@@ -378,6 +384,7 @@ if ($ss)
 	my $g2 = $data->{f2}{trimmed};
 	my $g1_stt_ix = $g1->get_statement_ix('trimmed')->ixT;
 	my $g2_stt_ix = $g2->get_statement_ix('trimmed')->ixT;
+	my $term_tally;
 
 	# go through the g2 subset terms and compare the data to that we got from g1
 	foreach my $t (@{$data->{f2}{subset_ids}})
@@ -419,10 +426,12 @@ if ($ss)
 			if ($count->{$e} == 1)
 			{	# term has been removed from $ss
 				$data->{subset_movements}{$t}{$e}{out} = 1 unless $data->{f2_alt_ids}{$e};
+				$term_tally->{$e}++;
 			}
 			elsif ($count->{$e} == 10)
 			{	# term has been added to $ss
 				$data->{subset_movements}{$t}{$e}{in} = 1 unless $data->{f1_alt_ids}{$e};
+				$term_tally->{$e}++;
 			}
 		}
 	}
@@ -438,7 +447,7 @@ if ($ss)
 		}
 	}
 
-	foreach my $t (keys %{$data->{subset_movements}}, keys %{$output->{f1_subset_only}}, keys %{$output->{f2_subset_only}})
+	foreach my $t (keys %{$data->{subset_movements}}, keys %{$output->{f1_subset_only}}, keys %{$output->{f2_subset_only}}, keys %$term_tally)
 	{	get_term_data( data => $data, output => $output, term => $t, data_to_get => [ qw(name namespace) ], f_data => 'f2' );
 	}
 
@@ -459,6 +468,8 @@ $output->{show_term_changes} = 1;
 
 #print STDERR "output keys: " . join("; ", sort keys %$output) . "\n";
 print STDERR "Printing results!\n" if $options->{verbose};
+
+#print STDERR "output: " . Dumper($output) . "\n\n";
 
 $tt->process($options->{format} . '_report.tmpl', $output, $options->{output})
     || die $tt->error(), "\n";
@@ -561,6 +572,12 @@ sub check_options {
 
 	if (!$opt->{output})
 	{	push @$errs, "specify an output file using -o /path/to/<file_name>";
+	}
+	else
+	{	if ($opt->{format} eq 'html' && $opt->{output} !~ /html$/)
+		{	$opt->{output} .= ".html";
+			warn "Output will be saved in file " . $opt->{output};
+		}
 	}
 
 	if (!$opt->{subset})
@@ -678,7 +695,7 @@ sub store_term_changes {
 				if ($d->{diffs}{Term}{both}{$t}{$a}{f1} && $d->{diffs}{Term}{both}{$t}{$a}{f2})
 				{	my $net = (scalar @{$d->{diffs}{Term}{both}{$t}{$a}{f2}}) - (scalar @{$d->{diffs}{Term}{both}{$t}{$a}{f1}});
 					if ($net == 0)
-					{	$h->{$a} = (scalar @{$d->{diffs}{Term}{both}{$t}{$a}{f2}}) . "C";
+					{	$h->{$a} = (scalar @{$d->{diffs}{Term}{both}{$t}{$a}{f2}}) . " C";
 
 					}
 					elsif ($net < 0)
@@ -725,33 +742,15 @@ sub compare_other_stanzas {
 	foreach my $type (keys %{$d->{f1_hash}})
 	{	next if $type eq 'Term';
 		foreach my $t (keys %{$d->{f1_hash}{$type}})
-		{	if (! $d->{f2_hash}{$type}{$t})
-			{	# check it hasn't been merged
-				if ($d->{f2_alt_ids}{$t})
-				{	# the term was merged. N'mind!
-		#			print STDERR "$t was merged into " . $d->{f2_alt_ids}{$t} . "\n";
-
-					$output->{$type}{f1_to_f2_merge}{$t} = $d->{f2_alt_ids}{$t};
-				}
-				else
-				{	warn "$type $t is only in file 1\n";
-					$output->{$type}{f1_only}{$t}++;
-				}
+		{	if (! $d->{f2_hash}{$type} || ! $d->{f2_hash}{$type}{$t})
+			{	warn "$type $t is only in file 1\n";
+				$output->{other}{f1_only}{$type}{$t}++;
 			}
 		}
 		foreach my $t (keys %{$d->{f2_hash}{$type}})
-		{	if (! $d->{f1_hash}{$type}{$t})
-			{	# check it hasn't been de-merged
-				if ($d->{f1_alt_ids}{$t})
-				{	# erk! it was an alt id... what's going on?!
-					warn "$t was an alt id for " . $d->{f1_alt_ids}{$t} . " but it has been de-merged!";
-					$output->{$type}{f2_to_f21_merge}{$t} = $d->{f1_alt_ids}{$t};
-				}
-				else
-				{	$output->{$type}{f2_only}{$t}++;
-				}
+		{	if (! $d->{f1_hash}{$type}|| ! $d->{f1_hash}{$type}{$t})
+			{	$output->{other}{f2_only}{$type}{$t}++;
 			}
-
 			else
 			{	# quickly compare the arrays, see if they are the same
 				my $f1_str = join("\0", map {
@@ -763,14 +762,12 @@ sub compare_other_stanzas {
 				} sort keys %{$d->{f2_hash}{$type}{$t}});
 				next if $f1_str eq $f2_str;
 
-#				next if join("\0", map { join("\0", @{$d->{f1_hash}{$type}{$t}{$_}}) } sort keys %{$d->{f1_hash}{$type}{$t}}) eq join("\0", map { join("\0", @{$d->{f2_hash}{$type}{$t}{$_}}) } sort keys %{$d->{f2_hash}{$type}{$t}});
-
 				my $r = compare_hashes( f1 => $d->{f1_hash}{$type}{$t}, f2 => $d->{f2_hash}{$type}{$t}, to_ignore => $ignore );
 				if ($r)
-				{	$output->{diffs}{$type}{both}{$t} = $r;
-					foreach (keys %$r)
-					{	$output->{diffs}{$type}{all_tags_used}{$_}++;
-					}
+				{	$output->{other}{both}{$type}{$t} = $r;
+		#			foreach (keys %$r)
+		#			{	$output->{diffs}{$type}{all_tags_used}{$_}++;
+		#			}
 				}
 			}
 		}
@@ -787,7 +784,8 @@ sub generate_stats {
 
 	$vars->{f2_stats} = $d->{f2_stats};
 	$vars->{f1_stats} = $d->{f1_stats};
-
+	map { $vars->{ontology_list}{$_}++ } (keys %{$vars->{f1_stats}{by_ns}}, keys %{$vars->{f2_stats}{by_ns}});
+	
 	foreach my $f qw( f1 f2 )
 	{	foreach my $o (keys %{$vars->{$f . "_stats"}{by_ns}})
 		{	## we have def => n terms defined
@@ -852,7 +850,7 @@ sub get_term_data {
 				{	my $stts = $d->{$f}{trimmed}->statements_in_ix_by_node_id('ontology_links', $t);
 					if (@$stts)
 					{	my %parent_h;
-						map { $parent_h{$_->node->id} = 1 } @$stts;
+						map { $parent_h{$_->target->id} = 1 } @$stts;
 						$output->{$f}{$t}{anc} = [ sort keys %parent_h ];
 					}
 				}
@@ -886,7 +884,7 @@ sub block_to_sorted_array {
 	foreach ( split( "\n", $block ) )
 	{	next unless /\S/;
 		next if /^(id: \S+|\[|\S+\])\s*$/;
-		$_ =~ s/^(is_a:|relationship:)\s*(.+)\s*!\s.*$/$1 $2/;
+		$_ =~ s/^(.+?:)\s*(.+)\s*^\\!\s.*$/$1 $2/;
 		$_ =~ s/\s*$//;
 		push @$arr, $_;
 	}
@@ -946,7 +944,7 @@ sub block_to_hash {
 	foreach ( split( "\n", $block ) )
 	{	next unless /\S/;
 		next if /^(id: \S+|\[|\S+\])\s*$/;
-		$_ =~ s/^(.+?:)\s*(.+)\s*!\s.*$/$1 $2/;
+		$_ =~ s/^(.+?:)\s*(.+)\s*^\\!\s.*$/$1 $2/;
 		$_ =~ s/\s*$//;
 		push @$arr, $_;
 	}
