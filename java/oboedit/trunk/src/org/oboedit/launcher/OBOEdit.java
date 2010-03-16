@@ -206,15 +206,7 @@ public class OBOEdit {
 					GUIManager.getManager().start();
 
 					// Configure logging
-//					PropertyConfigurator.configure("log4j.properties");
 					Properties props = new Properties();
-					try {
-						InputStream configStream = getClass().getResourceAsStream("/log4j.properties");
-						props.load(configStream);
-						configStream.close();
-					} catch(IOException e) {
-						System.out.println("Error: Cannot laod configuration file ");
-					}
 					setupLog4j(props, configDir);
 					
 					logger.info("Starting " + getAppName() + " "
@@ -281,6 +273,12 @@ public class OBOEdit {
 		private static void setupLog4j(Properties props, String configDir){
 
 		props.setProperty("log4j.rootLogger","DEBUG, A1, A2");
+		
+		props.setProperty("log4j.logger.org.apache.axis","ERROR");
+		props.setProperty("log4j.logger.org.apache.axis2","ERROR");
+		props.setProperty("log4j.logger.org.apache.axiom","ERROR");
+		props.setProperty("log4j.logger.httpclient","ERROR");
+		props.setProperty("log4j.logger.org.apache.commons.httpclient","ERROR");
 
 		props.setProperty("log4j.appender.A1","org.apache.log4j.ConsoleAppender");
 		props.setProperty("log4j.appender.A1.layout","org.apache.log4j.PatternLayout");
