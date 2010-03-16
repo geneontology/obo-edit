@@ -16,6 +16,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Rectangle;
@@ -420,42 +421,26 @@ public class ParentEditor extends AbstractGUIComponent {
 				deleteRelationIcon.setPreferredSize(new Dimension(20, 18));
 				deleteRelationIcon.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						DeleteLinkHistoryItem ditem = new DeleteLinkHistoryItem(
-								tr);
-						GUIUtil.setPreSelection(ditem, SelectionManager
-								.getGlobalSelection());
-
-						// Getting oldpaths (above) is REALLY REALLY slow and not really necessary.
-//						List<TreePath> temp = new ArrayList<TreePath>();
-//						for (int i = 0; i < oldpaths.length; i++) {
-//						if (!oldpaths[i].getLastPathComponent().equals(tr)) {
-//						temp.add(oldpaths[i]);
-//						}
-//						}
-//						TreePath[] paths = temp.toArray(new TreePath[temp.size()]);
-
-//						GUIUtil.setPostSelection(ditem, SelectionManager
-//						.createSelectionFromPaths(ParentEditor.this,
-//						paths, null, SessionManager
-//						.getManager()
-//						.getCurrentLinkDatabase(),
-//						RootAlgorithm.GREEDY, true));
+						DeleteLinkHistoryItem ditem = new DeleteLinkHistoryItem(tr);
+						GUIUtil.setPreSelection(ditem, SelectionManager.getGlobalSelection());
 						// Do the edit
 						SessionManager.getManager().apply(ditem);
 						// Just re-select currently selected term (not all instances of it, as with the paths thing)
 						GUIUtil.setPostSelection(ditem, SelectionManager.getManager().getSelection());
+						
 					}
 				});
-				deleteRelationIcon.setEnabled(enabled
-						&& tr.getChild().getParents().size() > 1);
+				deleteRelationIcon.setEnabled(enabled && tr.getChild().getParents().size() >= 1);
+				
 				Box topBox = Box.createHorizontalBox();
 				topBox.add(deleteRelationIcon);
 				topBox.add(Box.createHorizontalStrut(5));
 				topBox.add(typeBox);
 				topBox.add(Box.createHorizontalStrut(5));
 				topBox.add(idButton);
-				Box bottomBox = Box.createHorizontalBox();
 				controlsPanel.add(topBox);
+
+				Box bottomBox = Box.createHorizontalBox();
 				if (!TermUtil.isProperty(parent)) {
 					JButton cardinalityButton = new JButton();
 					cardinalityButton.setFont(font);
@@ -489,6 +474,7 @@ public class ParentEditor extends AbstractGUIComponent {
 					cardinalityButton.setText(label);
 					bottomBox.add(cardinalityButton);
 					bottomBox.add(Box.createHorizontalStrut(5));
+
 				}
 				// completesBox.setSelected(tr.isNecessarilyTrue());
 				// completesBox.setSelected(tr.isInverseNecessarilyTrue());
@@ -516,6 +502,7 @@ public class ParentEditor extends AbstractGUIComponent {
 					}
 				});
 				bottomBox.add(namespaceBox);
+
 				controlsPanel.add(bottomBox);
 
 				panel.setOpaque(false);
@@ -692,8 +679,7 @@ public class ParentEditor extends AbstractGUIComponent {
 	}
 
 	protected void removeListeners() {
-		SelectionManager.getManager()
-		.removeSelectionListener(selectionListener);
+		SelectionManager.getManager().removeSelectionListener(selectionListener);
 		GUIUtil.removeReloadListener(reloadListener);
 	}
 

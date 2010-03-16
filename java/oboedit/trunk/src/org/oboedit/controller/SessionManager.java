@@ -323,7 +323,7 @@ public class SessionManager {
 	public void apply(HistoryItem item, boolean doSelect) {
 		doApply(item, doSelect);
 		redoHistoryItems.clear();
-		unflushedChanges = true;
+		unflushedChanges = false;
 	}
 	
 //	public void apply(Collection<HistoryItem> items) {

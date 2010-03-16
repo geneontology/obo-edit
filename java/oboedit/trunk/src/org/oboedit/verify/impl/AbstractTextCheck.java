@@ -810,7 +810,7 @@ FieldCheck {
 								// Add this word to the user defined dictionary: user.dict
 								saveWord(arg0.getInvalidWord(), Preferences.getUserDefDictionaryFile());
 								//refresh Text Editor to reflect changes
-								Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
+//								Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 							}
 						};
 
@@ -824,7 +824,7 @@ FieldCheck {
 								// Add this word to the standard dictionary: standard.dict
 								saveWord(arg0.getInvalidWord(), Preferences.getStandardDictionaryFile());
 //								refresh Text Editor to reflect changes
-								Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
+//								Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 							}
 						};
 
