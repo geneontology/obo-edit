@@ -2,24 +2,20 @@ package org.oboedit.gui.components;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
+
 import javax.swing.*;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.DocumentFilter;
-import javax.swing.text.StyledDocument;
-import javax.swing.text.DocumentFilter.FilterBypass;
 
 import org.bbop.util.*;
 import org.obo.datamodel.*;
-import org.obo.filters.DefinitionSearchCriterion;
 import org.obo.filters.NameSearchCriterion;
 import org.obo.history.*;
 import org.obo.util.TermUtil;
-import org.oboedit.controller.VerificationManager;
 import org.oboedit.gui.AbstractTextEditComponent;
-import org.oboedit.gui.Preferences;
 
 import org.apache.log4j.*;
 
@@ -46,24 +42,24 @@ public class NameEditorComponent extends AbstractTextEditComponent {
 	public NameEditorComponent() {
 		if (textField.getDocument() instanceof AbstractDocument) {
 			((AbstractDocument) textField.getDocument())
-					.setDocumentFilter(new DocumentFilter() {
-						@Override
-						public void insertString(FilterBypass fb, int offset,
-								String string, AttributeSet attr)
-								throws BadLocationException {
-							// TODO Auto-generated method stub
-							super.insertString(fb, offset,
-									replaceNewlines(string), attr);
-						}
+			.setDocumentFilter(new DocumentFilter() {
+				@Override
+				public void insertString(FilterBypass fb, int offset,
+						String string, AttributeSet attr)
+				throws BadLocationException {
+					// TODO Auto-generated method stub
+					super.insertString(fb, offset,
+							replaceNewlines(string), attr);
+				}
 
-						@Override
-						public void replace(FilterBypass fb, int offset,
-								int length, String text, AttributeSet attrs)
-								throws BadLocationException {
-							super.replace(fb, offset, length,
-									replaceNewlines(text), attrs);
-						}
-					});
+				@Override
+				public void replace(FilterBypass fb, int offset,
+						int length, String text, AttributeSet attrs)
+				throws BadLocationException {
+					super.replace(fb, offset, length,
+							replaceNewlines(text), attrs);
+				}
+			});
 		}
 		/*
 		 * textField.setDocument(new DefaultStyledDocument() { @Override public
@@ -144,17 +140,29 @@ public class NameEditorComponent extends AbstractTextEditComponent {
 		io.setName(textField.getText());
 	}
 
-	public java.util.List getChanges() {
+	//	public List getChanges() {
+	//		if (currentObject != null && currentObject instanceof IdentifiedObject) {
+	//			if (!ObjectUtil.equals(textField.getText(), ((IdentifiedObject) currentObject).getName())) {
+	//				HistoryItem item = new NameChangeHistoryItem((IdentifiedObject) currentObject, textField.getText());
+	//				return Collections.singletonList(item);
+	//			} else
+	//				return Collections.EMPTY_LIST;
+	//			} else
+	//			return Collections.EMPTY_LIST;
+	//	}
+
+
+	public List<HistoryItem> getChanges(){
 		if (currentObject != null && currentObject instanceof IdentifiedObject) {
-			if (!ObjectUtil.equals(textField.getText(),
-					((IdentifiedObject) currentObject).getName())) {
-				HistoryItem item = new NameChangeHistoryItem(
-						(IdentifiedObject) currentObject, textField.getText());
-				return Collections.singletonList(item);
-			} else {
-				return Collections.EMPTY_LIST;
+			LinkedList<HistoryItem> out = new LinkedList<HistoryItem>();
+			IdentifiedObject obj = (IdentifiedObject) currentObject;
+
+			if (!ObjectUtil.equals(textField.getText(), obj.getName())) {
+				HistoryItem item = new NameChangeHistoryItem(obj, textField.getText());
+				out.add(item);
 			}
+			return out;
 		} else
-			return Collections.EMPTY_LIST;
+			return Collections.EMPTY_LIST;	
 	}
 }
