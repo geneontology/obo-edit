@@ -8,6 +8,8 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.*;
 import java.util.*;
+import java.util.List;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.tree.*;
@@ -346,28 +348,21 @@ public class CompleteDefPanel extends AbstractTextEditComponent {
 		genusSelectButton.removeActionListener(genusSelectListener);
 	}
 
-	public java.util.List getChanges() {
-		java.util.List<HistoryItem> historyList = new LinkedList<HistoryItem>();
+	public List getChanges() {
+		List<HistoryItem> historyList = new LinkedList<HistoryItem>();
 		if (currentObject instanceof LinkedObject) {
 			// Find any intersection links that have been deleted
-			Iterator it = ((LinkedObject) currentObject).getParents()
-					.iterator();
-			while (it.hasNext()) {
-				Link link = (Link) it.next();
-
+			for(Link link : ((LinkedObject) currentObject).getParents()){
 				if (!TermUtil.isIntersection(link))
 					continue;
 
 				boolean found = false;
-				Iterator it2 = getRelationshipList().iterator();
-				while (it2.hasNext()) {
-					Link completeDefLink = (Link) it2.next();
+				for(Link completeDefLink : getRelationshipList()){
 					if (completeDefLink.equals(link)) {
 						found = true;
 						break;
 					} else {
-						logger.info("   " + completeDefLink + " != "
-								+ link);
+						logger.info("   " + completeDefLink + " != " + link);
 					}
 				}
 
@@ -377,9 +372,8 @@ public class CompleteDefPanel extends AbstractTextEditComponent {
 			}
 			logger.info("relationshipList = " + getRelationshipList());
 			// Find any intersection links that have been added
-			it = getRelationshipList().iterator();
-			while (it.hasNext()) {
-				OBORestriction completeDefLink = (OBORestriction) it.next();
+			for(Link link : getRelationshipList()){
+				OBORestriction completeDefLink = (OBORestriction) link;
 
 				Link matchLink = HistoryUtil.findParentRel(completeDefLink,
 						(LinkedObject) currentObject);
@@ -412,9 +406,8 @@ public class CompleteDefPanel extends AbstractTextEditComponent {
 		logger.info("CompleteDefPanel.setClass: parents of " + oboClass + " = "
 				+ oboClass.getParents());
 
-		Iterator it = oboClass.getParents().iterator();
-		while (it.hasNext()) {
-			OBORestriction link = (OBORestriction) it.next();
+		for(Link l : oboClass.getParents()){
+			OBORestriction link = (OBORestriction) l;
 			if (!link.completes())
 				continue;
 			if (link.getType().equals(OBOProperty.IS_A)) {
@@ -430,9 +423,7 @@ public class CompleteDefPanel extends AbstractTextEditComponent {
 	public void populateFields(IdentifiedObject currentObject) {
 		if (!(currentObject instanceof OBOClass))
 			return;
-		Iterator it = getRelationshipList().iterator();
-		while (it.hasNext()) {
-			Link link = (Link) it.next();
+		for(Link link : getRelationshipList()){
 			if (!((OBOClass) currentObject).getParents().contains(link)) {
 				((OBOClass) currentObject).atomicAddParent(link);
 			}
@@ -456,9 +447,8 @@ public class CompleteDefPanel extends AbstractTextEditComponent {
 			linkListPanel.add(propertyLabel);
 		}
 
-		Iterator it = relationshipList.iterator();
-		while (it.hasNext()) {
-			final OBORestriction tr = (OBORestriction) it.next();
+		for(Link link : relationshipList){
+			final OBORestriction tr = (OBORestriction) link;
 
 			JPanel relationshipLinePanel = new JPanel();
 			relationshipLinePanel.setOpaque(false);
@@ -469,10 +459,7 @@ public class CompleteDefPanel extends AbstractTextEditComponent {
 
 			JComboBox typeBox = new JComboBox();
 
-			Iterator it2 = TermUtil.getRelationshipTypes(
-					SessionManager.getManager().getSession()).iterator();
-			while (it2.hasNext()) {
-				OBOProperty property = (OBOProperty) it2.next();
+			for(OBOProperty property : TermUtil.getRelationshipTypes(SessionManager.getManager().getSession())){
 				typeBox.addItem(property.getID());
 			}
 			typeBox.setSelectedItem(tr.getType().getID());

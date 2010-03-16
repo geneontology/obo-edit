@@ -166,7 +166,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			parentBox.setFocusTraversalKeysEnabled(false);
 			parentBox.addCommitListener(commitListener);
 
-			deleteRelationButton.setPreferredSize(new Dimension(20, 20));
+			deleteRelationButton.setPreferredSize(new Dimension(20, 18));
 			deleteRelationButton.setToolTipText("Delete relation");
 
 			selectDifferentiaButton.setPreferredSize(new Dimension(20, 20));

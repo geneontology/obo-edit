@@ -2,6 +2,8 @@ package org.oboedit.gui.components;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
+
 import javax.swing.*;
 
 import org.obo.datamodel.*;
@@ -77,7 +79,7 @@ public class IDEditorComponent extends AbstractTextEditComponent {
 			idLabel.setText(currentObject.getID());
 			secondaryIDLabel.setEnabled(true);
 			if (currentObject instanceof MultiIDObject) {
-				java.util.List list = new ArrayList();
+				List list = new ArrayList();
 				list.addAll(((MultiIDObject) currentObject).getSecondaryIDs());
 				setSecondariesVisible(list.size() > 0);
 				Collections.sort(list);
@@ -137,7 +139,7 @@ public class IDEditorComponent extends AbstractTextEditComponent {
 	public void populateFields(IdentifiedObject io) {
 	}
 
-	public java.util.List getChanges() {
+	public List getChanges() {
 		return Collections.EMPTY_LIST;
 	}
 }

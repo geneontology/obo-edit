@@ -9,7 +9,6 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +71,7 @@ import org.oboedit.gui.widget.CheckWarningComponent;
 import org.oboedit.script.TextEditorScriptDelegate;
 import org.oboedit.util.GUIUtil;
 import org.oboedit.verify.CheckWarning;
+import org.oboedit.gui.components.OBOTermPanel;
 
 import org.apache.log4j.*;
 
@@ -118,7 +118,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 
 	protected Timer checkTimer;
 
-	public static final int TIMER_DELAY = 1500;  // was 1000
+	public static final int TIMER_DELAY = 1500;
 
 	protected ActionListener checkTask = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -165,7 +165,6 @@ RootTextEditComponent, SelectionDrivenComponent {
 	}
 
 	protected void doTimedTextChecks(boolean requireDirtyPaths, boolean onCommit) {
-//		logger.debug("TextEditor.doTimedTextChecks");
 		if (currentObject == null)
 			return;
 		if (requireDirtyPaths && 
@@ -594,8 +593,6 @@ RootTextEditComponent, SelectionDrivenComponent {
 			+
 
 			"<box orientation='vert'>"
-			// put this back if we need it
-			// + "<component id='ERROR_PANEL'/>"
 			+
 
 			"<compactgrid cols='2' yPad='3'>"
@@ -662,13 +659,6 @@ RootTextEditComponent, SelectionDrivenComponent {
 			+ "<component id='COMMENT_EDITOR'/>"
 			+ "</tab>"
 			+
-
-//			"<tab name=' Cross Products`if (TermUtil.isIntersection(TextEditor.getObject())) \" *\"; else \"\";`' selected='`TermUtil.isIntersection(TextEditor.getObject())`'>"
-//			+ "<if eval='!TermUtil.isProperty(TextEditor.getObject())'>"
-//			+ "<component id='INTERSECTION_EDITOR'/>"
-//			+ "</if>"
-//			+ "</tab>"
-//			+
 
 			"<tab name=' Cross Products`if (TermUtil.isIntersection(TextEditor.getObject())) \" *\"; else \"\";`' selected='`TermUtil.isIntersection(TextEditor.getObject())`'>"
 			+ "<if eval='!TermUtil.isProperty(TextEditor.getObject())'>"
@@ -744,7 +734,6 @@ RootTextEditComponent, SelectionDrivenComponent {
 	public boolean hasChanges() {
 		for (OBOTextEditComponent c : getMyResolver().getRegisteredComponents()) {
 			if (c.hasChanges()){
-//				logger.debug("Text Editor -- component hasChanges: " + c);
 				return true;
 			}
 				
@@ -783,14 +772,6 @@ RootTextEditComponent, SelectionDrivenComponent {
 		return currentObject;
 	}
 
-//	Commit for Text Edits
-	public void commit() {
-		if (checkComponents()){
-			flushEdits();
-			Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
-		}
-	}
-
 	public void setRoot(RootTextEditComponent root) {
 		// do nothing; this is always its own root
 	}
@@ -802,21 +783,36 @@ RootTextEditComponent, SelectionDrivenComponent {
 	protected boolean checkComponents() {
 		return true;
 	}
+	
+//	Commit for Text Edits
+	public void commit() {
+		if (checkComponents()){
+			flushEdits();
+//			OBOTermPanel.reload();
+		}
+	}
 
 	public void flushEdits() {
-//		logger.debug("TextEditor.flushEdits");
 		// Trigger verification checks that should happen on text commit
 		doTimedTextChecks(false, true);
 		TermMacroHistoryItem item = new TermMacroHistoryItem("Text edit");
 		for (HistoryItem subItem : getChanges()) {
 			item.addItem(subItem);
 		}
-//		logger.debug("TextEditor.flushEdits -- item.size: " +item.size());
-//		logger.debug("TextEditor.flushEdits -- item: " + item);
 		if (item.size() > 0) {
 			GUIUtil.setSelections(item, SelectionManager.getGlobalSelection(),
 					SelectionManager.getGlobalSelection());
 			SessionManager.getManager().apply(item, false);
 		}
+	}
+	
+	//reload on commit and 
+	// 1. after dictionary usage
+	// 2. after applying external changes from other components
+	public void textEditorReload(){
+		logger.debug("Reloading Text Editor");
+		long time = System.currentTimeMillis();
+		Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
+		logger.info("Reloaded TextEditor in " + (System.currentTimeMillis() -time) + " ms");
 	}
 }
