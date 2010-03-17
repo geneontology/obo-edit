@@ -1,0 +1,119 @@
+#!/usr/local/bin/perl
+
+# Smoke tests for OBO-Edit.
+# This script runs either the OBO-Edit JUnit tests (default) or the OBO JUnit tests
+# (if you specify "obo" on the command line).
+# Results are printed on stdout.
+# Right now, runs out of Nomi's directory.
+
+my $home = "/users/nomi";  # For now
+
+# When testing, you can call it with "-one" or "-debug" to make it run only a single test (it will pick a simple one).
+my $doOnlyOneTest = 0;
+if ($#ARGV >= 0 && $ARGV[0] =~ /one/ || $ARGV[0] =~ /debug/) {
+     $doOnlyOneTest = 1;
+     shift(@ARGV);
+}
+
+# Default project is oboedit.  To run tests for obo, specify obo as a command-line argument.
+my $project = "oboedit";
+if ($#ARGV >= 0 && $ARGV[0] =~ /obo/i) {
+    $project = $ARGV[0];
+    $project =~ tr/[A-Z]/[a-z]/;
+}
+
+print "Preparing to run unit tests for $project...\n";
+my $beginTime = `date`;
+chomp($beginTime);
+
+my $projectHome;
+
+# If we're testing OBO-Edit, first svn update OBO (then OBO-Edit).
+if (`uname -a` =~ /Linux/) {
+    $projectHome = "$home/workspace/OBO";
+} else { # On my Mac
+    $projectHome = "$home/Documents/workspace/OBO";
+}
+chdir($projectHome);
+print "svn updating OBO...\n";
+`svn update 2>&1`;   # Should we save the output in case there were conflicts?
+
+if ($project eq "oboedit") {
+    if (`uname -a` =~ /Linux/) {
+        $projectHome = "$home/workspace/oboedit";
+    } else { # On my Mac
+        $projectHome = "$home/Documents/workspace/OBO-Edit";
+    }
+
+    chdir($projectHome);
+    print "svn updating $project...\n";
+    `svn update 2>&1`;   # Should we save the output in case there were conflicts?
+}
+
+print "Rebuilding...\n";
+my $ant = `ant clean; ant classes | grep BUILD`;
+if ($ant =~ /FAILED/) {
+    print "WARNING: build failed!\n\n";  # Should we give up at this point?
+}
+
+my $testLogs = "$projectHome/testlogs";
+
+# Eventually, we could make it use "ant test" to run all tests.  For now, it works better to have it run one test
+# at a time and report the results.
+my $test = "$projectHome/src/org/$project/test";
+if ($project eq "OBO") {
+    $test .= " $projectHome/src/org/$project/*/test";
+}
+my @testClasses = `/bin/ls $test/*java`;
+
+if (!-e($testLogs)) {
+    mkdir($testLogs);
+}
+
+if ($doOnlyOneTest) {
+     @testClasses = ();
+     # These are two tests that are quick and simple.
+     $testClasses[0] = ($project eq "oboedit") ? "TermCommentTest" : "TrimmingTest";
+     print("Running only ONE unit test (just to make sure things are working right)\n");
+}
+
+my $tests = 0;
+my $passed = 0;
+
+#print "Classes to test:\n@testClasses\n";
+print "Running " . ($#testClasses+1) . " or so tests (some may be skipped).\n\n";
+
+foreach my $class (@testClasses) {
+    chomp($class);
+    $class =~ s/.*\///;
+    $class =~ s/.java.*//;
+
+    if ($class =~ /^All/ || $class =~ /TestUtil/ || $class =~ /^AA/ || $class =~ /^Abstract/) {
+        print "Skipping $class\n\n";
+        next;
+    }
+#    # FOR TESTING, skip some of the slower ones
+#    if ($class =~ /OBO2OBOBigReasonerTest/ || $class =~ /OBO2FlatTest/ || $class =~ /TagFilterTest/) {
+#        print "Skipping $class WHILE TESTING CRON\n";
+#        next;
+#    }
+
+    my $cmd = "ant runatest -Djunit.test.class.name=\"org.$project.test.$class\" >$testLogs/$class.out 2>&1";
+    print "$cmd\n";
+    system($cmd);
+    my $result = `grep 'Time elapsed' $testLogs/$class.out`;
+    $result =~ s/.*junit./$class:/;
+    if ($result =~ /Time elapsed: 0 sec/) {
+        $result .= "  (may have timed out)\n";
+    }
+    print "$result\n";
+
+    ++$tests;
+    if ($result =~ /Failures: 0, Errors: 0/) {
+        ++$passed;
+    }
+}
+
+print "Begin time: $beginTime.  End time: " . `date`;
+print "Output from tests is in $testLogs\n";
+print "Ran $tests $project unit tests.  $passed passed.\n";
