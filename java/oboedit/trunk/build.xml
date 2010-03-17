@@ -440,7 +440,7 @@
 
         <!-- prints to stdout all messages -->
 	<target name="verbose-test" depends="classes,runtimelink" description="Unit tests">
-	  <junit fork="yes" printsummary="withOutAndErr" maxmemory="1024m" showoutput="true">
+	  <junit fork="yes" printsummary="withOutAndErr" maxmemory="1024m" showoutput="true" timeout="600000">
 	    <classpath>
               <!-- Need this because the test classes aren't in the jar -->
               <pathelement path="${classes}"/>
