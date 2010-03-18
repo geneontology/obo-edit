@@ -22,8 +22,7 @@ public class Launcher {
 		Preferences.setBatchMode(false);
 		String memsetting = Preferences.readMemStringFromDisk();
 
-		logger.info("Starting OBO-Edit using " + memsetting
-				+ " of memory");
+		logger.info("Starting OBO-Edit using " + memsetting + " of memory specified in the OBO-Edit.vmoptions file");
 
 		List<String> argList = new LinkedList<String>();
 		argList.add("java");
