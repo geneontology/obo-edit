@@ -1,6 +1,19 @@
 ===  OBO-Edit 2.1beta3 RELEASE NOTES  === 
 
 ================================
+What's New in OBO-Edit 2.1beta4
+================================
+============
+Bug Fixes
+============
+
+
+
+
+
+
+
+================================
 What's New in OBO-Edit 2.1beta3
 ================================
 ============
@@ -13,14 +26,16 @@ Bug Fixes
 [ geneontology-Bugs-2952892 ] Reasoning with union_of terms
 [ geneontology-Bugs-2949754 ] Verification plugin dictionary - problem with quickfixes
 [ geneontology-Bugs-2922331 ] No log file for OE2.1beta2
-[ geneontology-Bugs-2874878 ] Missing log files in Mac 
+[ geneontology-Bugs-2874878 ] Missing log files in Mac
+[ geneontology-Bugs-2610787] disjointness violations not detected
+[ geneontology-Bugs-2821857] disjoint violations not being checked by RBR 
 
 
 
 Known Issues - Upcoming fixes
 Parent Editor and Text Editor not in sync.
 Ontology Tree Editor - Name unnamed terms
-Remaming issues in Text Editor
+Renaming terms problematic in Text Editor
 
 
 
@@ -78,29 +93,7 @@ Jen Deegan: Added features to Search Results Table, Assert Implied Links Compone
 and Remove Redundant Links Component so that the results tables are just white with
  black borders in Windows rather than blue and white striped as in Mac OS X. This 
  was necessary as the stripey look was not working so well with the windows look and feel. 
-
-Jen Deegan: Updated standard.dict and allowedrepeats.dict. 11 Dec 2009.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Jen Deegan: Updated standard.dict and allowedrepeats.dict.
 
 
 
