@@ -1,8 +1,10 @@
 OBO-Edit README
 Copyright (C) 2001, Gene Ontology Consortium
-Author:       John Day-Richter (john.richter@aya.yale.edu)
-Version:      2.1-beta1
-Release date: July 31, 2009
+Website: http://oboedit.org/
+Developed by the Berkeley Bioinformatics and Open Source Projects Group at Lawrence Berkeley National Lab, Berkeley, California.
+
+Version:      2.1-beta4
+Release date: March 17, 2010
 
 OBO-Edit is an open source tool written in Java for browsing, searching, and
 modifying OBO ontologies.
@@ -23,7 +25,108 @@ How to report bugs:
 
 Revision History:
 -----------
-  Version 2.1-beta1
+  Version 2.1-beta4
+===  OBO-Edit 2.1beta3 RELEASE NOTES  === 
+
+================================
+What's New in OBO-Edit 2.1beta4
+================================
+============
+Bug Fixes
+============
+
+
+
+
+
+
+
+================================
+What's New in OBO-Edit 2.1beta3
+================================
+============
+Bug Fixes
+============
+[ geneontology-Bugs-2922369 ] Is_a closure not working as expected
+[ geneontology-Bugs-2908106 ] OBO-merge fail
+[ geneontology-Bugs-2915594] Not saving
+[ geneontology-Bugs-2968827 ] saving implied links
+[ geneontology-Bugs-2952892 ] Reasoning with union_of terms
+[ geneontology-Bugs-2949754 ] Verification plugin dictionary - problem with quickfixes
+[ geneontology-Bugs-2922331 ] No log file for OE2.1beta2
+[ geneontology-Bugs-2874878 ] Missing log files in Mac
+[ geneontology-Bugs-2610787] disjointness violations not detected
+[ geneontology-Bugs-2821857] disjoint violations not being checked by RBR 
+
+
+
+Known Issues - Upcoming fixes
+Parent Editor and Text Editor not in sync.
+Ontology Tree Editor - Name unnamed terms
+Renaming terms problematic in Text Editor
+
+
+
+
+
+
+===  OBO-Edit 2.1beta2 RELEASE NOTES  === 
+
+================================
+What's New in OBO-Edit 2.1beta2
+================================
+- Parent Editor and Cross Product Text Editor component are now in synch and warn regarding changes made in either component
+
+- Graph Viewer Improvements
+-- Renamed "Succinct" configuration option to "Trim reasoner-generated (implied) links from display".
+--> Removed reasoner dependency from displaying all-types panels and showing ancestors upto root
+
+- New Default Global Term Renderer for highlighting terms with cross product definitions
+
+- Cross Product Editor -> Go to Genus term button
+
+- 2nd October - J. Deegan committed new Tag Filter code. This feature enables 
+users to choose which tags are saved out into OBO files. The GUI is in the 
+'save as' dialog. There is still some work to do to make the GUI look less intimidating. Also, though the feature has been
+carefully tested, further testing will be required in case an obscure bug is causing parts of
+the data not to be saved out at all. I have not yet run the JUnit tests. When this code is released we should warn in-house users to
+watch diffs carefully for lost tags. 
+
+============
+Bug Fixes
+============
+
+- flaky xp commit
+- graph viewer issue
+- filtering union_of cycles in OTE
+- lock view selection behavior
+- fixed root detection algorithm to detect inverse relations and display root
+
+[ geneontology-Bugs-2915594 ] Not saving
+[ geneontology-Bugs-2914257 ] When a term is cloned, intersections become relationships
+[ geneontology-Bugs-2828905 ] verification config in 2.1 test release
+[ geneontology-Bugs-2869195 ] text editor is not working
+[ geneontology-Bugs-2864861 ] replaced_by statement causing problems in SO
+[ geneontology-Bugs-2840516 ] no way to get to genus term while defing xps
+[ geneontology-Bugs-2840500 ] relation name vanishes
+[ geneontology-Bugs-2908106 ] OBO-merge fail
+[ geneontology-Bugs-2610787] disjointness violations not detected
+Duplicates:
+[ geneontology-Bugs-2821857] disjoint violations not being checked by RBR
+[ geneontology-Bugs-2749049]  disjoinedness check working?
+
+1st December:
+
+Jen Deegan: Added features to Search Results Table, Assert Implied Links Component 
+and Remove Redundant Links Component so that the results tables are just white with
+ black borders in Windows rather than blue and white striped as in Mac OS X. This 
+ was necessary as the stripey look was not working so well with the windows look and feel. 
+Jen Deegan: Updated standard.dict and allowedrepeats.dict.
+
+
+
+=========================================
+=========================================
 ===  OBO-Edit 2.1beta1 RELEASE NOTES  === 
 
 ================================
@@ -100,24 +203,6 @@ Now there is only one redraw at the end of the bulk process.
 is in the process of being subsumed in a merge. Fixes bug: ID: 2790775
 
 
-============
-Notes
-============
-Effective bug reports are the most likely to be fixed. These guidelines 
-explain how to write such reports.
-    * Reproduce your bug using the most recent release, to see weather it has already been fixed.
-    * Be precise and clear - explain the behavior so others can reproduce the bug
-    * Limit bugs to one per report
-    * No bug is too trivial to report - small bugs may hide big bugs
-    * Clearly separate fact from speculation
-    * Search the Bugs Tracker to check weather your bug has already been reported
-
-* Reporting a New Bug *
-- If you have reproduced a bug in the most recent release and no-one else 
-appears to have reported it, then report it on our sourceforge bug tracker:
-https://sourceforge.net/tracker/?atid=418257&group_id=36855&func=browse
-
-
 ============================
 Frequently Asked Questions
 ============================
@@ -169,5 +254,23 @@ Documentation:
 Troubleshooting- add note about:
 https://sourceforge.net/tracker2/index.php?func=detail&aid=2683791&group_id=36855&atid=418257
 
+============
+Notes
+============
+Effective bug reports are the most likely to be fixed. These guidelines 
+explain how to write such reports.
+    * Reproduce your bug using the most recent release, to see weather it has already been fixed.
+    * Be precise and clear - explain the behavior so others can reproduce the bug
+    * Limit bugs to one per report
+    * No bug is too trivial to report - small bugs may hide big bugs
+    * Clearly separate fact from speculation
+    * Search the Bugs Tracker to check weather your bug has already been reported
+
+
+
+* Reporting a New Bug *
+- If you have reproduced a bug in the most recent release and no-one else 
+appears to have reported it, then report it on our sourceforge bug tracker:
+https://sourceforge.net/tracker/?atid=418257&group_id=36855&func=browse
 
 
