@@ -32,6 +32,7 @@ import org.bbop.util.*;
 import org.obo.datamodel.*;
 import org.obo.datamodel.impl.*;
 import org.obo.util.VersionNumber;
+import org.oboedit.gui.components.ConfigurationManager;
 import org.oboedit.gui.event.ReconfigEvent;
 import org.oboedit.gui.event.ReconfigListener;
 import org.oboedit.gui.widget.TextIcon;
@@ -524,8 +525,7 @@ public class Preferences {
 	}
 
 	public static String readMemStringFromDisk() {
-		File optionFile = new File(getInstallationDirectory(), 
-				getLauncherName() + ".vmoptions");
+		File optionFile = new File(getInstallationDirectory(), getLauncherName() + ".vmoptions");
 		String mem = null;
 		if (optionFile.exists()) {
 			try {
@@ -537,9 +537,7 @@ public class Preferences {
 					if (line.toLowerCase().trim().startsWith("-xmx")) {
 						mem = s.substring(4).toUpperCase();
 						reader.close();
-						String m = "Got memory string " + mem + " from option file " + optionFile;
-						logger.debug(m);
-						//						JOptionPane.showMessageDialog(null, m); // DEL
+						logger.info("Got memory string " + mem + " from option file " + optionFile);
 						break;
 					}
 				}
@@ -548,19 +546,9 @@ public class Preferences {
 				ex.printStackTrace();
 			}
 		}
-		if (mem == null) {
-			mem = DEFAULT_MEMORY_SETTING;
-			String warning = "Warning: couldn't read memory setting from optionFile " + optionFile + ";\n using default memory setting of " + mem;
-			logger.info(warning);
-			//			JOptionPane.showMessageDialog(null, warning); // DEL
-		}
-		String numMem = mem.substring(0, mem.indexOf("M"));
-		int intMem = Integer.parseInt(numMem);
-		if(intMem >= 1800){
-			logger.debug("Allocated heap space greater than 1.5GB.. switching to default memory settings");
-			mem = DEFAULT_MEMORY_SETTING;
-		}
-		return mem;
+
+		String numMem = mem.substring(0, mem.indexOf("MB"));
+		return numMem + "MB";
 	}
 
 	public String getMemString() {
@@ -572,11 +560,13 @@ public class Preferences {
 
 	public void setMemoryValue(String mem) {
 		this.mem = mem;
+		String numMem = mem.substring(0, mem.indexOf("MB"));
 		//update vmoptions
 		String diskmem = readMemStringFromDisk();
-		if (!mem.equals(diskmem)){
+		if (!numMem.equals(diskmem)){
 			updateDiskMemValue(mem);
 		}
+		
 	}
 
 	//update OBOEdit.vmoptions when memory settings have been updated through the config manager

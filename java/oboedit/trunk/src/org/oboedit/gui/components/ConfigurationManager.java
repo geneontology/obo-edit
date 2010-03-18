@@ -188,7 +188,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		}
 
 		public IconEditor() {
-//			colorButton.setBorderPainted(false);
+			//			colorButton.setBorderPainted(false);
 			previewLabel.setVerticalAlignment(SwingConstants.CENTER);
 			setMinimumSize(new Dimension(0, 0));
 			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -227,7 +227,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 							ConfigurationManager.this, "Select link color",
 							colorButton.getForeground());
 					if (c != null) {
-//						colorButton.setBackground(c);   // Doesn't seem to do anything--background stays light gray.  (May be a Mac-specific problem.)
+						//						colorButton.setBackground(c);   // Doesn't seem to do anything--background stays light gray.  (May be a Mac-specific problem.)
 						colorButton.setForeground(c);
 						colorButton.setText(ColorUtil.getName(c)
 								+ " (click to modify)");
@@ -279,10 +279,10 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			colorPanel.setLayout(new BorderLayout());
 			Box colorLabelBox = Box.createHorizontalBox();
 			colorLabelBox.add(new JLabel("Link color"));
-//			colorLabelBox.add(Box.createHorizontalStrut(10));
-//			colorPanel.add(colorLabelBox, "North");
+			//			colorLabelBox.add(Box.createHorizontalStrut(10));
+			//			colorPanel.add(colorLabelBox, "North");
 			colorPanel.add(colorLabelBox, "Center");
-//			colorPanel.add(colorButton, "Center");
+			//			colorPanel.add(colorButton, "Center");
 			colorPanel.add(colorButton, "South");
 
 			add(typeBox);
@@ -328,7 +328,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			typeField.setText(iw.getType());
 			urlField.setCaretPosition(0);
 			typeField.setCaretPosition(0);
-//			colorButton.setBackground(iw.getColor());  // Doesn't seem to do anything--background stays light gray
+			//			colorButton.setBackground(iw.getColor());  // Doesn't seem to do anything--background stays light gray
 			colorButton.setForeground(iw.getColor());
 			colorButton.setText(ColorUtil.getName(iw.getColor())
 					+ " (click to modify)");
@@ -438,9 +438,9 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 		public boolean closing(GUIComponent c) {
 			// Don't save unless asked!  Maybe user wanted to close it w/o saving.
-//			if (c.equals(ConfigurationManager.this)) {
+			//			if (c.equals(ConfigurationManager.this)) {
 			// save();
-//			}
+			//			}
 			return true;
 		}
 
@@ -717,7 +717,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 		Box configFileLabelBox = new Box(BoxLayout.X_AXIS);
 		JLabel configFileLabel = new JLabel("User configuration directory");
-//		JLabel configFilePath = new JLabel(GUIManager.getPrefsDir().getPath());
+		//		JLabel configFilePath = new JLabel(GUIManager.getPrefsDir().getPath());
 		JTextField configFilePath = new JTextField(GUIManager.getPrefsDir().getPath()); // TextField rather than label so it can be copied
 		configFilePath.setEditable(false);
 		configFilePath.setBackground(getBackground()); // so that it looks non-editable
@@ -767,7 +767,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		logFileBox.add(logFilePath);
 		logFileBox.add(Box.createHorizontalStrut(5));
 
-//		JPanel fieldsPanel = new JPanel(new SpringLayout());
+		//		JPanel fieldsPanel = new JPanel(new SpringLayout());
 		Box fieldsPanel = new Box(BoxLayout.X_AXIS);
 		fieldsPanel.setOpaque(false);
 		fieldsPanel.add(userLabel);
@@ -778,7 +778,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 		memoryField = new JTextField();
 		memoryField.setText(Preferences.getPreferences().getMemString());
-		JLabel memoryLabel = new JLabel("OBO-Edit memory allocation");
+		JLabel memoryLabel = new JLabel("OBO-Edit Memory allocation (in MB)");
 
 		Box memoryBox = new Box(BoxLayout.X_AXIS);
 		memoryBox.add(memoryLabel);
@@ -788,7 +788,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 		JPanel userPanel = new JPanel();
 		userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
-//		userPanel.add(Box.createVerticalGlue());
+		//		userPanel.add(Box.createVerticalGlue());
 		userPanel.add(Box.createVerticalStrut(10));
 		userPanel.add(configFileLabelBox);
 		userPanel.add(removeConfigFiles);
@@ -827,7 +827,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		fontPreviewArea.setEditable(false);
 		fontPreviewArea.setOpaque(false);
 
-//		memoryBox.add(fontPreviewArea);
+		//		memoryBox.add(fontPreviewArea);
 		memoryBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, memoryBox.getPreferredSize().height));
 
 		JPanel autosavePanel = new JPanel();
@@ -841,7 +841,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 		JPanel guiPanel = new JPanel();
 		guiPanel.setLayout(new BorderLayout());
-//		guiPanel.setBorder(new TitledBorder("GUI Options"));
+		//		guiPanel.setBorder(new TitledBorder("GUI Options"));
 
 		Box fontLine = new Box(BoxLayout.X_AXIS);
 		fontLine.add(fontNameList);
@@ -886,14 +886,14 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		moreOptionsPanel.setBorder(new TitledBorder(
 		"Startup Options (changes do not take effect until restart)"));
 		moreOptionsPanel.add(Box.createVerticalStrut(10));
-//		moreOptionsPanel.add(memoryBox);
-//		moreOptionsPanel.add(Box.createVerticalStrut(10));
+		//		moreOptionsPanel.add(memoryBox);
+		//		moreOptionsPanel.add(Box.createVerticalStrut(10));
 		moreOptionsPanel.add(fontBox);
-//		moreOptionsPanel.setMaximumSize(moreOptionsPanel.getPreferredSize());
+		//		moreOptionsPanel.setMaximumSize(moreOptionsPanel.getPreferredSize());
 
 		JPanel runtimeDisplayPanel = new JPanel();
-//		runtimeDisplayPanel.setBorder(new TitledBorder(
-//		"Runtime display options"));
+		//		runtimeDisplayPanel.setBorder(new TitledBorder(
+		//		"Runtime display options"));
 		runtimeDisplayPanel.setOpaque(false);
 		runtimeDisplayPanel.setLayout(new BoxLayout(runtimeDisplayPanel,
 				BoxLayout.Y_AXIS));
@@ -986,7 +986,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		// advanced users config tab
 		JPanel advancedPanel = new JPanel();
 		advancedPanel.setLayout(new GridLayout(5,1));
-//		advancedPanel.setOpaque(true);
+		//		advancedPanel.setOpaque(true);
 		JLabel advEditorsLabel = new JLabel("Editors");
 		JLabel advReasonerLabel = new JLabel("Reasoner");
 
@@ -997,7 +997,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		advancedPanel.add(advSemanticParserCheckBox);
 
 		mainPanel.addTab("User Settings", null, userPanel, "Set user options");
-//		mainPanel.addTab("General GUI", null, guiPanel, "General GUI options");
+		//		mainPanel.addTab("General GUI", null, guiPanel, "General GUI options");
 		mainPanel.addTab("Font", null, guiPanel, "Set default font");
 		mainPanel.addTab("Icons & Colors", null, iconPanel,
 		"Set up default colors and icons for relationship types");
@@ -1052,9 +1052,9 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		return out;
 	}
 
-//	protected boolean validateConfiguration() {
-//	return true;
-//	}
+	//	protected boolean validateConfiguration() {
+	//	return true;
+	//	}
 	protected void updateSystemDicts() {
 		List<String>systemDictFiles = Preferences.getSystemDictFilenames();
 		String confDir = Preferences.getOBOEditPrefsDir().toString();
@@ -1229,7 +1229,21 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		preferences.setFont(GUIUtil.decodeFont((String) fontNameList
 				.getSelectedItem(), (String) fontSizeList.getSelectedItem(),
 				(String) fontTypeList.getSelectedItem()));
-		preferences.setMemoryValue(memoryField.getText());
+		
+		String mem = memoryField.getText();
+		String numMem = mem.substring(0, mem.indexOf("MB"));
+		int intMem = Integer.parseInt(numMem);
+		if(intMem >= 1860){
+			if (JOptionPane.showConfirmDialog( GUIManager.getManager().getFrame(), "WARNING -- Allocating heap space greater than 1860M " +
+					"will not be acceptable on all sytems. Proceed after validating system configuration and JVM requirements " +
+					"\n Continue?", "Warning", JOptionPane.OK_CANCEL_OPTION)
+				!= JOptionPane.OK_OPTION) mem = "1860MB";
+		} 
+		//sending mem value to preferences to update vmoptions file
+	    preferences.setMemoryValue(mem);
+	    //updating mem in config manager text field -- needed only when user cancels memory upgrade > 1860MB operation
+	    memoryField.setText(mem);
+	    
 
 		Map<String, String> iconURLIndex = new HashMap<String, String>();
 		Map<String, Color> colorIndex = new HashMap<String, Color>();
@@ -1254,7 +1268,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			preferences.setPersonalDbxrefs(null);
 		}
 
-		Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
+		reload();
 	}
 
 	@Override
@@ -1274,4 +1288,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		return "OBO-Edit Configuration Manager";
 	}
 
+	public void reload(){
+		Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
+	}
 }
