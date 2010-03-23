@@ -80,8 +80,8 @@ public class DefaultQueryResolver implements QueryResolver {
 						Collection<FieldPath> values = FieldPath.resolve(qpath,linkDatabase);
 						
 						for (FieldPath p : values) {
-							logger.debug("queryAccepts(q, p.getLastValue().getClass()): " + queryAccepts(q, p.getLastValue().getClass()));
-							logger.debug("p.getObject().isBuiltIn(): " + p.getObject().isBuiltIn());
+//							logger.debug("queryAccepts(q, p.getLastValue().getClass()): " + queryAccepts(q, p.getLastValue().getClass()));
+//							logger.debug("p.getObject().isBuiltIn(): " + p.getObject().isBuiltIn());
 							if (queryAccepts(q, p.getLastValue().getClass())
 							    // Don't include built-ins like "xsd:date" or "obo:TERM"
 							    && !(p.getObject()).isBuiltIn()) {
@@ -93,12 +93,12 @@ public class DefaultQueryResolver implements QueryResolver {
 					int total = paths.size();
 					int i = 0;
 					for (FieldPath path : paths) {
-						logger.debug("q: " + q);
+//						logger.debug("q: " + q);
 						progress = new Integer(100 * i / total);
 						if (cancelled)
 							return;
 						Object vgg = path.getLastValue();
-						logger.debug("vgg: " + vgg);
+//						logger.debug("vgg: " + vgg);
 
 						q.setFieldPath(path);
 						Object r = q.matches((T) vgg);
