@@ -71,7 +71,6 @@ import org.oboedit.gui.widget.CheckWarningComponent;
 import org.oboedit.script.TextEditorScriptDelegate;
 import org.oboedit.util.GUIUtil;
 import org.oboedit.verify.CheckWarning;
-import org.oboedit.gui.components.OBOTermPanel;
 
 import org.apache.log4j.*;
 
