@@ -778,7 +778,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 		memoryField = new JTextField();
 		memoryField.setText(Preferences.getPreferences().getMemString());
-		JLabel memoryLabel = new JLabel("OBO-Edit Memory allocation (in MB)");
+		JLabel memoryLabel = new JLabel("OBO-Edit Memory allocation ");
 
 		Box memoryBox = new Box(BoxLayout.X_AXIS);
 		memoryBox.add(memoryLabel);
@@ -1231,17 +1231,17 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				(String) fontTypeList.getSelectedItem()));
 		
 		String mem = memoryField.getText();
-		String numMem = mem.substring(0, mem.indexOf("MB"));
+		String numMem = mem.substring(0, mem.indexOf("M"));
 		int intMem = Integer.parseInt(numMem);
 		if(intMem >= 1860){
 			if (JOptionPane.showConfirmDialog( GUIManager.getManager().getFrame(), "WARNING -- Allocating heap space greater than 1860M " +
 					"will not be acceptable on all sytems. Proceed after validating system configuration and JVM requirements " +
 					"\n Continue?", "Warning", JOptionPane.OK_CANCEL_OPTION)
-				!= JOptionPane.OK_OPTION) mem = "1860MB";
+				!= JOptionPane.OK_OPTION) mem = "1860M";
 		} 
 		//sending mem value to preferences to update vmoptions file
 	    preferences.setMemoryValue(mem);
-	    //updating mem in config manager text field -- needed only when user cancels memory upgrade > 1860MB operation
+	    //updating mem in config manager text field -- needed only when user cancels memory upgrade > 1860M operation
 	    memoryField.setText(mem);
 	    
 
