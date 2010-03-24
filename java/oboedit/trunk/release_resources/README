@@ -1,7 +1,13 @@
 OBO-Edit README
 Copyright (C) 2001, Gene Ontology Consortium
+<<<<<<< .mine
+Author:       John Day-Richter (john.richter@aya.yale.edu)
+Version:      2.1-beta4
+Release date: March 24, 2010
+=======
 Website: http://oboedit.org/
 Developed by the Berkeley Bioinformatics and Open Source Projects Group at Lawrence Berkeley National Lab, Berkeley, California.
+>>>>>>> .r2656
 
 Version:      2.1-beta4
 Release date: March 17, 2010
