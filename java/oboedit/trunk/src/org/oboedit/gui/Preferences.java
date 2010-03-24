@@ -42,8 +42,6 @@ public class Preferences {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(Preferences.class);
 
-	protected static String DEFAULT_MEMORY_SETTING = "1024M"; 
-
 	protected Font font;
 
 	protected Color backgroundColor = null;
@@ -544,8 +542,8 @@ public class Preferences {
 			}
 		}
 
-		String numMem = mem.substring(0, mem.indexOf("MB"));
-		return numMem + "MB";
+		String numMem = mem.substring(0, mem.indexOf("M"));
+		return numMem + "M";
 	}
 
 	public String getMemString() {
@@ -557,7 +555,7 @@ public class Preferences {
 
 	public void setMemoryValue(String mem) {
 		this.mem = mem;
-		String numMem = mem.substring(0, mem.indexOf("MB"));
+		String numMem = mem.substring(0, mem.indexOf("M"));
 		//update vmoptions
 		String diskmem = readMemStringFromDisk();
 		if (!numMem.equals(diskmem)){
