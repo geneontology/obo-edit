@@ -4,6 +4,7 @@ import org.bbop.dataadapter.*;
 import org.bbop.expression.JexlContext;
 import org.bbop.io.SafeFileOutputStream;
 import org.bbop.util.*;
+import org.hsqldb.SessionManager;
 import org.obo.annotation.dataadapter.AnnotationParserExtension;
 import org.obo.dataadapter.OBOConstants.StanzaMapping;
 import org.obo.dataadapter.OBOConstants.TagMapping;
@@ -59,8 +60,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		protected boolean doLinkFilter = false;
 
-		// Tag filtering TRUE by default to account for cases that do not go through the advances menu
-		protected boolean doTagFilter = true;
+		// set Tag filtering FALSE by default
+		protected boolean doTagFilter = false;
 
 		protected boolean allowDangling = false;
 
@@ -961,7 +962,17 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			if (obj instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject) obj;
 				List<Link> linkList = new LinkedList<Link>();
-				Collection<Link> parents = linkDatabase.getParents(lo);
+				
+				Collection<Link> parents;
+				// followIsaClosure will typically be combined with filtering objects over some condition - The link database here is thus a FilteredLinkDatabase
+				// To obtain all the links (including the ones that do not comply with the filter conditions) for the closure, 
+				// get all parents from the linked object instead of accessing them through the linkDatabase.
+				if(followIsaClosure)
+					parents = lo.getParents();
+				else 
+					parents = linkDatabase.getParents(lo);
+				
+				
 				for (Link p : parents) {
 					if (p.getParent() == null) {
 						logger.error("invalid link: "+p+" Child: "+p.getChild().getClass());
@@ -1191,14 +1202,13 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		Collection refList = new ArrayList();
 
 		// if Include is_a closure save option selected - compile termsToFetch from the filteredObjects
-		logger.debug("database equals FilteredLinkDatabse? : " + database.getClass().getSimpleName().equals("FilteredLinkDatabase"));
-
+//		logger.debug("database equals FilteredLinkDatabse? : " + database.getClass().getSimpleName().equals("FilteredLinkDatabase"));
 		if( database.getClass().getSimpleName().equals("FilteredLinkDatabase") && (((FilteredLinkDatabase) database).getFollowIsaClosure()) ){
 			for(Object obj : writeList){
 				if (cancelled)
 					doHalt();
 				LinkedObject lo = (LinkedObject) obj;
-				//identify if term has 
+				//identify if term has intersection links 
 				if(TermUtil.isIntersection(lo)){
 					for(Link link : lo.getParents()){
 						//check if this is an  intersection link
@@ -1206,15 +1216,31 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 							//get ancestors of cross referenced parent term
 							for(Object o : TermUtil.getAncestors(link.getParent(), null)){
 								IdentifiedObject refParent = (IdentifiedObject) o;
-								//check if term exists in filteredObjects 
-								boolean exists = false;
-								for(Object filo : writeList){
-									IdentifiedObject filio = (IdentifiedObject) filo;
-									if(filio.getName().equals(refParent.getName()))
-										exists = true;
-								}	
-								if(!exists)
-									refList.add(refParent);
+//								logger.debug("refParent: " + refParent);
+
+								//get ancestors of cross referenced child term
+								for(Object oc : TermUtil.getAncestors(link.getChild(), null)){
+									IdentifiedObject refChild = (IdentifiedObject) oc;
+//									logger.debug("refChild: " + refChild);
+
+
+									//check if terms exists in filteredObjects 
+									boolean pexists = false;
+									boolean cexists = false;
+									
+									// filo: filtered object, filio: filtered identified object
+									for(Object filo : writeList){
+										IdentifiedObject filio = (IdentifiedObject) filo;
+										if(filio.getName().equals(refParent.getName()))
+											pexists = true;
+										if(filio.getName().equals(refChild.getName()))
+											cexists = true;
+									}	
+									if(!pexists)
+										refList.add(refParent);
+									if(!cexists)
+										refList.add(refChild);
+								}
 							}
 						}
 					}
@@ -1291,6 +1317,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 			for(Object writeo : writeObjects){
 				IdentifiedObject io = (IdentifiedObject) writeo;
+//				logger.debug("writing object " + io);
 				writeObject(io,database,serializer);
 			}
 		}
