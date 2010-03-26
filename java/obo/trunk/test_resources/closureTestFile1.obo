@@ -1,0 +1,31 @@
+format-version: 1.2
+remark: version: 1 -- closureTestFile1
+
+[Term]
+id: A
+name: A
+namespace: NS1
+
+[Term]
+id: B
+name: B
+namespace: NS1
+is_a: A ! A
+
+[Term]
+id: C
+name: C
+namespace: NS1
+is_a: B ! B
+
+[Typedef]
+id: is_a
+name: is_a
+
+[Typedef]
+id: part_of
+name: part_of
+
+[Typedef]
+id: develops_from
+name: develops_from
