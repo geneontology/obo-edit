@@ -962,7 +962,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			if (obj instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject) obj;
 				List<Link> linkList = new LinkedList<Link>();
-				
+
 				Collection<Link> parents;
 				// followIsaClosure will typically be combined with filtering objects over some condition - The link database here is thus a FilteredLinkDatabase
 				// To obtain all the links (including the ones that do not comply with the filter conditions) for the closure, 
@@ -971,8 +971,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 					parents = lo.getParents();
 				else 
 					parents = linkDatabase.getParents(lo);
-				
-				
+
+
 				for (Link p : parents) {
 					if (p.getParent() == null) {
 						logger.error("invalid link: "+p+" Child: "+p.getChild().getClass());
@@ -1199,10 +1199,10 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			writeList.add(o);
 		}
 
-		Collection refList = new ArrayList();
-
-		// if Include is_a closure save option selected - compile termsToFetch from the filteredObjects
-//		logger.debug("database equals FilteredLinkDatabse? : " + database.getClass().getSimpleName().equals("FilteredLinkDatabase"));
+		// Include is_a closure for cross referenced terms
+		//List of all referenced objects that are not present in the original writeList (will contain duplicate entries -- adding to a HashSet later to remove redundant objects)
+		Collection allRefsList = new ArrayList();
+		//		logger.debug("database equals FilteredLinkDatabse? : " + database.getClass().getSimpleName().equals("FilteredLinkDatabase"));
 		if( database.getClass().getSimpleName().equals("FilteredLinkDatabase") && (((FilteredLinkDatabase) database).getFollowIsaClosure()) ){
 			for(Object obj : writeList){
 				if (cancelled)
@@ -1216,40 +1216,36 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 							//get ancestors of cross referenced parent term
 							for(Object o : TermUtil.getAncestors(link.getParent(), null)){
 								IdentifiedObject refParent = (IdentifiedObject) o;
-//								logger.debug("refParent: " + refParent);
-
 								//get ancestors of cross referenced child term
-								for(Object oc : TermUtil.getAncestors(link.getChild(), null)){
-									IdentifiedObject refChild = (IdentifiedObject) oc;
-//									logger.debug("refChild: " + refChild);
-
-
-									//check if terms exists in filteredObjects 
+								for(Object co : TermUtil.getAncestors(link.getChild(), null)){
+									IdentifiedObject refChild = (IdentifiedObject) co;
+									//check if terms exists in filteredObjects. filo: filtered object, filio: filtered identified object
 									boolean pexists = false;
 									boolean cexists = false;
-									
-									// filo: filtered object, filio: filtered identified object
 									for(Object filo : writeList){
 										IdentifiedObject filio = (IdentifiedObject) filo;
 										if(filio.getName().equals(refParent.getName()))
-											pexists = true;
+											pexists = true;		
 										if(filio.getName().equals(refChild.getName()))
 											cexists = true;
-									}	
+									}								
 									if(!pexists)
-										refList.add(refParent);
+										allRefsList.add(refParent);
 									if(!cexists)
-										refList.add(refChild);
+										allRefsList.add(refChild);
 								}
 							}
-						}
+						}// isIntersection(link)
 					}
 				} 
 			}
 
-			for(Object refObject : refList){
-				writeList.add(refObject);
+			//remove duplicate objects from allRefsList
+			HashSet refshs = new HashSet(allRefsList);
+			for(Object o : refshs){
+				writeList.add(o);
 			}
+
 
 		}
 
@@ -1313,11 +1309,11 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			setProgressString("Sorting objects: " + path);
 			Collections.sort(writeObjects, objectComparator);
 
-			setProgressString("Writing objects : " + path);
+			setProgressString("Writing objects: " + path);
 
 			for(Object writeo : writeObjects){
 				IdentifiedObject io = (IdentifiedObject) writeo;
-//				logger.debug("writing object " + io);
+				//				logger.debug("writing object " + io);
 				writeObject(io,database,serializer);
 			}
 		}
