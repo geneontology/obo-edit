@@ -1,0 +1,404 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	  "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+[% install_dir = 'http://127.0.0.1/go' %]
+	<title>Ontology Comparison Report</title>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+	<link rel="stylesheet" type="text/css" href="[% install_dir %]/stylesheets/stylesheet.css">
+	<!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="[% install_dir %]/stylesheets/ie-fix.css"><![endif]-->
+	<script src="[% install_dir %]/enhancer.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="main">
+<h1>Ontology Comparison Report</h1>
+<p>Files used:</p>
+<ul>
+<li><b>file 1 (old)</b>: [% f1_file_data %]</li>
+<li><b>file 2 (new)</b>: [% f2_file_data %]</li>
+<li><b>subset</b>: [% subset %]</li>
+</ul>
+
+<div class="block">
+<h2>New terms</h2>
+
+[% IF f2_only %]
+<table class="stripey">
+<thead>
+<tr>
+<th>ID</th>
+<th>name</th>
+<th>namespace</th>
+<th>nearest ancestral subset term(s)</th>
+</tr>
+</thead>
+<tbody>
+[% 	FOREACH t IN f2_only.keys.sort %]
+<tr>
+<td>[% t %]</td>
+<td>[% f2.$t.name %]</td>
+<td>[% f2.$t.namespace || '' %]</td>
+<td>[% f2.$t.anc.join(", ") %]</td>
+</tr>
+[% 	END %]
+</tbody>
+</table>
+[% ELSE %]
+<p>None</p>
+[% END %]
+</div>
+
+<div class="block">
+<h2>Obsoletions</h2>
+
+[% IF f2_obsoletes %]
+<ul>
+[% 	FOREACH t IN f2_obsoletes.keys.sort %]
+<li>[% t %], [% f2.$t.name %][% IF f1.$t.namespace %] ([% f1.$t.namespace %])[% END %]</li>
+[% 	END %]
+</ul>
+[% ELSE %]
+<p>None</p>
+[% END %]
+</div>
+
+<div class="block">
+<h2>Term merges</h2>
+
+[% IF f1_to_f2_merge %]
+<ul>
+[% 	FOREACH t IN f1_to_f2_merge.keys.sort;
+			merge = f1_to_f2_merge.$t %]
+<li>[% t %], [% f1.$t.name %] was merged into [% merge %], [% f2.$merge.name %]</li>
+[% 	END %]
+</ul>
+[% ELSE %]
+<p>None</p>
+[% END %]
+</div>
+
+[% IF show_term_changes %]
+<div class="block">
+
+<h2>Term changes</h2>
+[% IF ! term_changes %]
+<p>None</p>
+[% ELSIF brief_mode %]
+<p>[% term_changes.size %] terms edited.</p>
+[% ELSE %]
+<p>KEY:  'A' : added, 'D' : deleted, 'C' : changed</p>
+
+<table class="stripey col-based" summary="Additions, deletions and changes to ontology terms between old and new versions of the ontology">
+<caption>Changes in term-related data</caption>
+<colgroup>
+<col>
+[% x = 0;
+	FOREACH a IN term_change_attribs;
+		IF x == 1;
+			x = 0;
+	'<col>';
+		ELSE;
+			x = 1;
+	'<col class="col-alt">';
+		END;
+	END %]
+</colgroup>
+<thead>
+<tr><th scope="col">Term ID</th>
+[% FOREACH a IN term_change_attribs; %]
+<th scope="col">[% a %]</th>
+[% END %]
+</tr>
+</thead>
+[% IF term_changes.size > 10 %]
+<tfoot>
+<tr><th>Term ID</th>
+[% FOREACH a IN term_change_attribs %]
+<th>[% a %]</th>
+[% END %]
+</tr>
+</tfoot>
+[% END %]
+<tbody>
+[%	x= 0;
+	FOREACH t IN term_changes.keys.sort;
+		IF x == 1;
+			x = 0;
+	'<tr>';
+		ELSE;
+			x = 1;
+	'<tr>';
+		END;
+# Dumper.dump(term_changes.$t);
+-%]
+<th scope="row">[% t %]<br>[% f2.$t.name %]</th>
+[% 	FOREACH a IN term_change_attribs;
+			IF term_changes.$t.d_hash.$a;
+				IF single_value_attribs.grep(a);
+				%]<td>[% term_changes.$t.d_hash.$a %]</td>[%
+				ELSE;
+				%]<td>[% term_changes.$t.d_hash.$a %]</td>[%
+				END;
+			ELSE;
+				%]<td> </td>[%
+			END;
+		END %]
+</tr>
+[%	END;
+%]
+</tbody>
+</table>
+[% END ## term_changes %]
+</div>
+[% END ## show_term_changes %]
+
+<div class="block">
+<h2>Subset Changes</h2>
+
+<h3>Subset term alterations</h3>
+
+[% IF f2_subset_only || f1_subset_only;
+		IF f2_subset_only;
+	'<h4>New subset terms</h4>
+<ul>';
+			FOREACH t IN f2_subset_only.keys.sort %]
+				<li>[% t %], [% f2.$t.name %] [% IF f2.$t.namespace %] ([% f2.$t.namespace %])[% END %]</li>
+[%			END;
+'</ul>
+';
+		END;
+		IF f1_subset_only;
+	'<h4>Subset terms removed</h4>
+<ul>';
+			FOREACH t IN f1_subset_only.keys.sort; %]
+				<li>[% t %], [% f1.$t.name || f2.$t.name %] [% IF f1.$t.namespace || f2.$t.namespace %] ([% f1.$t.namespace || f2.$t.namespace %])[% END %]</li>
+[%			END;
+'</ul>
+';
+		END;
+	ELSE;
+	'<p>None</p>';
+	END;
+	'<h3>Term movement between subsets</h3>
+';
+	IF subset_movements;
+		FOREACH t IN subset_movements.keys.sort %]
+			<h4>Movements under [% t %], [% f2.$t.name %] [% IF f2.$t.namespace %] ([% f2.$t.namespace %])[% END %]</h4>
+<ul>
+[%			FOREACH m IN subset_movements.$t.keys.sort;
+				IF subset_movements.$t.$m.in %]
+					<li>IN [% m %], [% f2.$m.name %]</li>
+[%				ELSE %]
+					<li>OUT [% m %], [% f2.$m.name %]</li>
+[%				END;
+			END;
+				'</ul>
+';
+		END;
+	ELSE %]
+<p>None</p>
+[% END %]
+</div>
+
+[% IF other && (other.f2_only || other.f1_only || other.both); %]
+<div class="block">
+<h2>Other Stanza Types</h2>
+[% IF other.f2_only %]
+<h3>New Stanzas</h3>
+<table class="stripey">
+<thead>
+<tr>
+<th>Stanza type</th>
+<th>ID</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody>
+[% 	FOREACH s_type IN other.f2_only.keys.sort;
+			FOREACH t IN other.f2_only.$s_type.keys.sort %]
+<tr>
+<td>[% s_type %]</td>
+<td>[% t %]</td>
+<td>[% other.f2_only.$s_type.$t.name || '' %]</td>
+</tr>
+[% 		END;
+		END %]
+</tbody>
+</table>
+[% END %]
+[% IF other.f1_only %]
+<h3>Stanzas removed</h3>
+<table class="stripey">
+<thead>
+<tr>
+<th>Stanza type</th>
+<th>ID</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody>
+[% 	FOREACH s_type IN other.f1_only.keys.sort;
+			FOREACH t IN other.f1_only.$s_type.keys.sort %]
+<tr>
+<td>[% s_type %]</td>
+<td>[% t %]</td>
+<td>[% other.f1_only.$s_type.$t.name || '' %]</td>
+</tr>
+[% 		END;
+		END %]
+</tbody>
+</table>
+[% END %]
+[% IF other.both %]
+<h3>Stanzas Edited</h3>
+<table class="stripey">
+<thead>
+<tr>
+<th>Stanza type</th>
+<th>ID</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody>
+[% 	FOREACH s_type IN other.both.keys.sort;
+			FOREACH t IN other.both.$s_type.keys.sort %]
+<tr>
+<td>[% s_type %]</td>
+<td>[% t %]</td>
+<td>[% other.both.$s_type.$t.name || '' %]</td>
+</tr>
+[% 		END;
+		END %]
+</tbody>
+</table>
+[% END %]
+</div>
+[% END; %]
+
+<div class="block">
+<h2>File Stats</h2>
+
+<table class="stripey">
+<caption>Term counts for the old and new files</caption>
+<thead class="C">
+<tr>
+<th scope="col" class="C">Ontology</th>
+<th scope="col" class="C">Old file</th>
+<th scope="col" class="C">New file</th>
+<th scope="col" class="C">Change</th>
+</tr>
+</thead>
+<tbody class="R">
+[% sign = '+';
+	FOREACH o IN ontology_list.keys %]
+<tr>
+<td scope="row">[% o.replace('_', ' ') %]</td>
+<td>
+[% IF f1_stats.by_ns.$o %]
+[% f1_stats.by_ns.$o.total %]<br>[% f1_stats.by_ns.$o.def %] defined
+[% ELSE %]
+-
+[% END %]
+</td>
+<td>
+[% IF f2_stats.by_ns.$o %]
+[% f2_stats.by_ns.$o.total %]<br>[% f2_stats.by_ns.$o.def %] defined
+[% ELSE %]
+-
+[% END %]
+</td>
+<td>
+</td>
+</tr>
+[% END %]
+</tbody>
+<tbody class="obs R">
+<tr>
+<td>Obsolete</td>
+<td>[% f1_stats.obs %] ([% f1_stats.obs_percent %]%)</td>
+<td>[% f2_stats.obs %] ([% f2_stats.obs_percent %]%)</td>
+<td>
+[% IF delta.obs > 0; sign; END;
+	delta.obs %] ([%
+	IF delta.obs_percent > 0; sign; END;
+	delta.obs_percent %]%)
+</td>
+</tr>
+</tbody>
+<tbody class="total R">
+<tr>
+<td scope="row">Totals</td>
+<td>
+[% f1_stats.total %]<br>[% f1_stats.def_not_obs %] ([% f1_stats.def_not_obs_percent %]%) defined<br>
+</td>
+<td>
+[% f2_stats.total %]<br>[% f2_stats.def_not_obs %] ([% f2_stats.def_not_obs_percent %]%) defined<br>
+</td> 
+<td>
+[% IF delta.total > 0; sign; END;
+	delta.total %] ([% 
+	IF delta.total_percent > 0; sign; END;
+	delta.total_percent %]%)<br>[% 
+	IF delta.def_not_obs > 0; sign; END;
+	delta.def_not_obs %] ([% 
+	IF delta.def_not_obs_percent > 0; sign; END;
+	delta.def_not_obs_percent %]%) defined</td> 
+</tr>
+</tbody>
+</table>
+</div>
+
+[% IF f1_only || f1_obsoletes || f2_to_f1_merge %]
+<div class="block">
+<h2>File Errors</h2>
+
+[% IF f1_only %]
+<h3>Terms lost</h3>
+
+<table class="stripey">
+<thead>
+<tr>
+<th>ID</th>
+<th>name</th>
+<th>namespace</th>
+<th>nearest ancestral subset term(s)</th>
+</tr>
+</thead>
+<tbody>
+[% 	FOREACH t IN f1_only.keys.sort %]
+<tr>
+<td>[% t %]</td>
+<td>[% f1.$t.name %]</td>
+<td>[% f1.$t.namespace || '' %]</td>
+<td>[% f1.$t.anc.join(", ") %]</td>
+</tr>
+[% 	END %]
+</tbody>
+</table>
+[% END;
+
+	IF f1_obsoletes %]
+<h3>Resurrections</h3>
+<ul>
+[% 	FOREACH t IN f1_obsoletes.keys.sort %]
+<li>[% t %], [% f2.$t.name %][% IF f2.$t.namespace %] ([% f2.$t.namespace %])[% END %]</li>
+[% 	END %]
+</ul>
+[% END;
+
+	IF f2_to_f1_merge %]
+<h3>Term splits</h3>
+<ul>
+[% 	FOREACH t IN f2_to_f1_merge.keys.sort;
+			merge = f2_to_f1_merge.$t %]
+<li>[% t %], [% f2.$t.name %] was split from [% merge %], [% f1.$merge.name %]</li>
+[% 	END %]
+</ul>
+[% END %]
+</div>
+[% END %]
+
+</div>
+</body>
+</html>
+
