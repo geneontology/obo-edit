@@ -71,7 +71,7 @@ use File::stat;
 # use lib "geneontology/go-moose/";
 use GOBO::Graph;
 use GOBO::Parsers::OBOParserDispatchHash;
-use GOBO::InferenceEngine;
+# use GOBO::InferenceEngine;
 # use GOBO::Writers::OBOWriter;
 
 my $verbose = $ENV{GO_VERBOSE} || 1;
@@ -301,12 +301,12 @@ foreach my $n (sort { $a->id cmp $b->id } @{$graph->terms} )
 		}
 	}
 
-	if ($n->subsets)
-	{	foreach ($n->subsets)
-		{	push @{$data->{subset}{$_}}, $id;
-		}
-		$data->{all_slim_terms}{$id}++;
-	}
+#	if ($n->subsets)
+#	{	foreach ($n->subsets)
+#		{	push @{$data->{subset}{$_}}, $id;
+#		}
+#		$data->{all_slim_terms}{$id}++;
+#	}
 }
 
 ## close and save files
