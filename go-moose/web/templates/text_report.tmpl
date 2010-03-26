@@ -1,0 +1,207 @@
+Ontology Comparison Report
+==========================
+
+Files used:
+- file 1 (old): [% f1_file_data %]
+- file 2 (new): [% f2_file_data %]
+subset: [% subset %]
+
+
+NEW TERMS
+=========
+[% IF f2_only %]
+ID	name	namespace	nearest ancestral subset term(s)
+[% 	FOREACH t IN f2_only.keys.sort;
+ %][% t %]	[% f2.$t.name %]	[% f2.$t.namespace || '' %]	[% f2.$t.anc.join(", ") %]
+[% 	END;
+	ELSE %]
+None
+[% END %]
+
+OBSOLETIONS
+===========
+[% IF f2_obsoletes;
+		FOREACH t IN f2_obsoletes.keys.sort;
+ %][% t %], [% f2.$t.name %][% IF f1.$t.namespace %] ([% f1.$t.namespace %])[% END %]
+[% 	END;
+	ELSE %]
+None
+[% END %]
+
+TERM MERGES
+===========
+[% IF f1_to_f2_merge;
+		FOREACH t IN f1_to_f2_merge.keys.sort;
+			merge = f1_to_f2_merge.$t;
+%][% t %], [% f1.$t.name %] was merged into [% merge %], [% f2.$merge.name %]
+[% 	END;
+	ELSE %]
+None
+[% END %]
+
+TERM CHANGES
+============
+[% IF term_changes %]
+KEY:  'A' : added, 'D' : deleted, 'C' : changed
+
+Term ID	[%
+		FOREACH a IN term_change_attribs;
+			a _ '	';
+		END %]
+[%		FOREACH t IN term_changes.keys.sort;
+			t _ ', ' _ f2.$t.name _ '	';
+			FOREACH a IN term_change_attribs;
+				IF term_changes.$t.d_hash.$a;
+					term_changes.$t.d_hash.$a %]	[%
+				ELSE;
+					'	';
+				END;
+			END; %]
+[%		END; ## term_changes
+	ELSE %]
+None
+[% END %]
+
+SUBSET CHANGES
+==============
+[% IF f2_subset_only || f1_subset_only %]
+Subset term alterations
+=======================
+[%		IF f2_subset_only %]
+New subset terms
+
+[%			FOREACH t IN f2_subset_only.keys.sort;
+ %][% t %], [% f2.$t.name %][% IF f2.$t.namespace %] ([% f2.$t.namespace %])[% END %]
+[% 		END %]
+[% 	END;  ## end f2_subset_only
+
+		IF f1_subset_only %]
+Subset terms removed
+
+[% 		FOREACH t IN f1_subset_only.keys.sort;
+ %][% t %], [% f1.$t.name %][% IF f1.$t.namespace %] ([% f1.$t.namespace %])[% END %]
+[% 		END %]
+[% 	END;  ## end f1_subset_only %]
+[%	END; ## end subset term alterations
+
+	IF subset_movements %]
+Term movement between subsets
+=============================
+[%		FOREACH t IN subset_movements.keys.sort %]
+Movements under [% t %], [% f2.$t.name %] [% IF f2.$t.namespace %] ([% f2.$t.namespace %])[% END %]
+[%			FOREACH m IN subset_movements.$t.keys.sort;
+				IF subset_movements.$t.$m.in;
+ %]IN [% m %], [% f2.$m.name %]
+[%				ELSE;
+ %]OUT [% m %], [% f2.$m.name %]
+[%				END;
+			END %]
+[% 	END;
+	END;  ## subset_movements
+	
+	IF ! subset_movements && ! f2_subset_only && ! f1_subset_only %]
+None
+[% END %]
+[% IF other && (other.f2_only || other.f1_only || other.both); %]
+OTHER STANZA TYPES
+==================
+[% 	IF other.f2_only %]
+New Stanzas
+==========-
+
+Stanza type	ID	Name
+[% 		FOREACH s_type IN other.f2_only.keys.sort;
+				FOREACH t IN other.f2_only.$s_type.keys.sort;
+			%][% s_type %]	[% t %]	[% other.f2_only.$s_type.$t.name || '' %]
+[% 			END;
+			END %]
+
+[%		END;
+	 	IF other.f1_only %]
+Stanzas removed
+==============-
+
+Stanza type	ID	Name
+[% 		FOREACH s_type IN other.f1_only.keys.sort;
+				FOREACH t IN other.f1_only.$s_type.keys.sort;
+%][% s_type %]	[% t %]	[% other.f1_only.$s_type.$t.name || '' %]
+[% 			END;
+			END %]
+
+[%		END;
+		IF other.both %]
+Stanzas Edited
+==============
+
+Stanza type	ID	Name
+[% 		FOREACH s_type IN other.both.keys.sort;
+				FOREACH t IN other.both.$s_type.keys.sort;
+%][% s_type %]	[% t %]	[% other.both.$s_type.$t.name || '' %]
+[% 			END;
+			END %]
+[%		END %]
+[% END; ## other %]
+FILE STATS
+==========
+
+Term counts for the old and new files
+
+Ontology	Old file	New file	Change
+[% sign = '+';
+	FOREACH o IN ontology_list.keys;
+%][% o.replace('_', ' ') %]	[%
+	IF f1_stats.by_ns.$o %][% f1_stats.by_ns.$o.total %] ([% f1_stats.by_ns.$o.def %] defined)[%
+	ELSE;
+		'-';
+	END %]	[% 
+
+	IF f2_stats.by_ns.$o %][% f2_stats.by_ns.$o.total %] ([% f2_stats.by_ns.$o.def %] defined)[%
+	ELSE;
+		'-';
+	END %]	[% END %]
+Obsolete	[% f1_stats.obs %] ([% f1_stats.obs_percent %]%)	[% f2_stats.obs %] ([% f2_stats.obs_percent %]%)	[% 
+	IF delta.obs > 0; sign; END;
+	delta.obs %] ([%
+	IF delta.obs_percent > 0; sign; END;
+	delta.obs_percent %]%)
+[% IF delta.total > 0; sign; END; %]
+Totals	[% f1_stats.total %]	[% f2_stats.total %]	[% delta.total %] ([% 
+	IF delta.total_percent > 0; sign; END;
+	delta.total_percent %]%)
+	[% f1_stats.def_not_obs %] ([% f1_stats.def_not_obs_percent %]%) defined	[% f2_stats.def_not_obs %] ([% f2_stats.def_not_obs_percent %]%) defined	[% 
+	IF delta.def_not_obs > 0; sign; END;
+	delta.def_not_obs %] ([% 
+	IF delta.def_not_obs_percent > 0; sign; END;
+	delta.def_not_obs_percent %]%) defined
+
+
+[% IF f1_only || f1_obsoletes || f2_to_f1_merge %]
+FILE ERRORS
+===========
+
+[% IF f1_only %]
+Terms lost
+==========
+ID	name	namespace	nearest ancestral subset term(s)
+[% 	FOREACH t IN f1_only.keys.sort;
+%][% t %]	[% f1.$t.name %]	[% f1.$t.namespace || '' %]	[% f1.$t.anc.join(", ") %]
+[% 	END;
+	END;
+
+	IF f1_obsoletes %]
+Resurrections
+=============
+[% 	FOREACH t IN f1_obsoletes.keys.sort;
+%][% t %], [% f2.$t.name %][% IF f2.$t.namespace %] ([% f2.$t.namespace %])[% END %]
+[% 	END;
+	END;
+
+	IF f2_to_f1_merge %]
+Term splits
+===========
+[% 	FOREACH t IN f2_to_f1_merge.keys.sort;
+			merge = f2_to_f1_merge.$t
+%][% t %], [% f2.$t.name %] was split from [% merge %], [% f1.$merge.name %]
+[% 	END;
+	END;
+END %]
