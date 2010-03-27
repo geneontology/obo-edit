@@ -26,6 +26,7 @@ __PACKAGE__->load_classes( qw/
 			       Homolset
 
 			       Phylotree
+			       PhylotreeProperty
 
 			       Seq
 			       SeqDBXRef
