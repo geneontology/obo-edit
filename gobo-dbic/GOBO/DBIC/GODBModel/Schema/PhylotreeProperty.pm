@@ -49,7 +49,7 @@ __PACKAGE__->add_columns(
                           is_nullable => 1,
                           is_auto_increment => 0,
                           default_value => undef,
-                         },
+                         }
 			);
 
 ##
