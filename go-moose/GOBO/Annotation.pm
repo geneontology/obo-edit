@@ -36,6 +36,11 @@ sub add_qualifier {
     return;
 }
 
+sub as_string {
+    my $self = shift;
+    return $self->SUPER::as_string() . " ev:" . $self->evidence;
+}
+
 =head1 NAME
 
 GOBO::Annotation
