@@ -127,6 +127,7 @@ foreach my $f (@ARGV) {
 #        }
 #    }
 }
+print STDERR "Done!\n";
 exit 0;
 
 
