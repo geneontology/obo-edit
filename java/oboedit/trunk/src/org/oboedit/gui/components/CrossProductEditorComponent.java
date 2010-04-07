@@ -64,9 +64,9 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 	protected AutocompleteBox<IdentifiedObject> genusField = new AutocompleteBox<IdentifiedObject>(new TermAutocompleteModel());
 
-	protected IntersectionPanelFocusPolicy focusPolicy = new IntersectionPanelFocusPolicy();
+	protected CrossProductPanelFocusPolicy focusPolicy = new CrossProductPanelFocusPolicy();
 
-	protected class IntersectionPanelFocusPolicy extends LayoutFocusTraversalPolicy {
+	protected class CrossProductPanelFocusPolicy extends LayoutFocusTraversalPolicy {
 		public boolean accept(Component aComponent) {
 			if (aComponent instanceof JComboBox
 					|| SwingUtilities.getAncestorOfClass(
@@ -555,7 +555,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 				selectGenusButton.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e) {
-						logger.debug("genusTerm: " + genusTerm);
+//						logger.debug("genusTerm: " + genusTerm);
 						SelectionManager.selectTerm(CrossProductEditorComponent.this, genusTerm);
 					}
 
