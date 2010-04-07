@@ -176,31 +176,7 @@ public class GlobalFilterManager extends AbstractGUIComponent {
 		});
 
 		removeAll();
-		/*
-		 * TitledBorder linkFilterBorder = new TitledBorder("Link filters");
-		 * linkFilterList.setBorder(linkFilterBorder);
-		 * filterPanel.add(linkFilterList);
-		 * 
-		 * Vector v = new Vector();
-		 * v.addAll(FilterManager.getManager().getGlobalLinkFilter().getFilters());
-		 * linkFilterList.setData(v);
-		 * 
-		 * TitledBorder termFilterBorder = new TitledBorder("Term filters");
-		 * termFilterList.setBorder(termFilterBorder);
-		 * filterPanel.add(termFilterList);
-		 * 
-		 * v = new Vector();
-		 * v.addAll(FilterManager.getManager().getGlobalTermFilter().getFilters());
-		 * termFilterList.setData(v);
-		 * 
-		 * v = new Vector();
-		 * v.addAll(FilterManager.getManager().getGlobalTermRenderers());
-		 * termSpecFilterList.setData(v);
-		 * 
-		 * v = new Vector();
-		 * v.addAll(FilterManager.getManager().getGlobalLinkRenderers());
-		 * linkSpecFilterList.setData(v);
-		 */
+
 		TitledBorder termSpecBorder = new TitledBorder("Term renderers");
 		termSpecFilterList.setBorder(termSpecBorder);
 
@@ -234,29 +210,5 @@ public class GlobalFilterManager extends AbstractGUIComponent {
 		linkFilterList.commit();
 		linkSpecFilterList.commit();
 		termSpecFilterList.commit();
-		Iterator it;
-		/*
-		 * FilterManager.getManager().getGlobalTermFilter().clear(); Vector
-		 * terms = termFilterList.getData(); for (int i = 0; i < terms.size();
-		 * i++) FilterManager.getManager().getGlobalTermFilter().addFilter(
-		 * (Filter) terms.get(i));
-		 * 
-		 * FilterManager.getManager().getGlobalLinkFilter().clear(); Vector
-		 * links = linkFilterList.getData(); for (int i = 0; i < links.size();
-		 * i++) FilterManager.getManager().getGlobalLinkFilter().addFilter(
-		 * (Filter) links.get(i));
-		 * 
-		 * FilterManager.getManager().getGlobalTermRenderers().clear(); it =
-		 * termSpecFilterList.getData().iterator(); while (it.hasNext()) {
-		 * FilterPair pair = (FilterPair) it.next();
-		 * FilterManager.getManager().getGlobalTermRenderers().add(pair); }
-		 * 
-		 * FilterManager.getManager().getGlobalLinkRenderers().clear(); it =
-		 * linkSpecFilterList.getData().iterator(); while (it.hasNext()) {
-		 * FilterPair pair = (FilterPair) it.next();
-		 * FilterManager.getManager().getGlobalLinkRenderers().add(pair); }
-		 * 
-		 * FilterManager.getManager().fireGlobalFilterChange();
-		 */
 	}
 }
