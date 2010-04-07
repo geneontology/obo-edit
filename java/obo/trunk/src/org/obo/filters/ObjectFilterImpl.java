@@ -3,7 +3,6 @@ package org.obo.filters;
 import org.bbop.expression.ExpressionException;
 import org.bbop.expression.ExpressionUtil;
 import org.bbop.expression.JexlContext;
-import org.obo.datamodel.IdentifiedObject;
 import org.obo.reasoner.ReasonedLinkDatabase;
 
 import java.util.*;
