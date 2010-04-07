@@ -43,11 +43,14 @@ public class GlobalFilterManagerComponent extends AbstractGUIComponent {
 		super(id);
 		termFilterComponent = new FilterComponent(new TermFilterEditorFactory());
 		termFilterComponent.setButtonVisible(false);
+		
 		linkFilterComponent = new FilterComponent(new LinkFilterEditorFactory());
 		linkFilterComponent.setButtonVisible(false);
+		
 		termRendererList = new TableList(true, true);
 		termRendererList.setRenderer(new RendererRenderer(false));
 		termRendererList.setEditor(new RendererEditor(false));
+		
 		linkRendererList = new TableList(true, true);
 		linkRendererList.setRenderer(new RendererRenderer(true));
 		linkRendererList.setEditor(new RendererEditor(true));

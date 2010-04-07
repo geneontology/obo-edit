@@ -89,8 +89,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 	protected JLabel urlLabel = new JLabel("URL for import");
 
-	protected JCheckBox importExternalRefsBox = new JCheckBox(
-	"Import external references");
+	protected JCheckBox importExternalRefsBox = new JCheckBox("Import external references");
 
 	protected JCheckBox allowDanglingBox = new JCheckBox("Allow dangling references");
 
@@ -237,7 +236,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 		protected JCheckBox categoryBox = new JCheckBox(
 		"Discard unused categories");
 
-		protected JCheckBox filterBox = new JCheckBox("Filter terms");
+		protected JCheckBox termFilterBox = new JCheckBox("Filter terms");
 
 		/*
 		 * The tabbed pane that holds the interfaces for setting up 
@@ -245,8 +244,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 		 */
 		JTabbedPane filterTabbedPane = new JTabbedPane();
 
-		protected JCheckBox filterTypesBox = new JCheckBox(
-		"Always save properties");
+		protected JCheckBox filterTypesBox = new JCheckBox("Always save properties");
 
 		protected JCheckBox linkFilterBox = new JCheckBox("Filter links");
 
@@ -296,9 +294,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			rootAlgorithmChooser.addItem("STRICT");
 
 			currentHistory = SessionManager.getManager().getSession();
-			Iterator it = TermUtil.getRelationshipTypes(currentHistory).iterator();
-			while (it.hasNext()) {
-				OBOProperty property = (OBOProperty) it.next();
+			for(OBOProperty property : TermUtil.getRelationshipTypes(currentHistory)){
 				prefilterTypeChooser.addItem(property);
 			}
 
@@ -307,7 +303,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 			objectFilterEditor.setOpaque(false);
 			linkFilterEditor.setOpaque(false);
-			filterBox.setOpaque(false);
+			termFilterBox.setOpaque(false);
 			categoryBox.setOpaque(false);
 			filterTypesBox.setOpaque(false);
 			linkFilterBox.setOpaque(false);
@@ -384,7 +380,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			Box checkboxPanelB = new Box(BoxLayout.X_AXIS);
 			Box checkboxPanelC = new Box(BoxLayout.X_AXIS);
 			//			checkboxPanelA.add(Box.createHorizontalGlue());
-			checkboxPanelA.add(filterBox);
+			checkboxPanelA.add(termFilterBox);
 			checkboxPanelA.add(Box.createHorizontalStrut(10));
 			checkboxPanelA.add(filterTypesBox);
 			checkboxPanelA.add(Box.createHorizontalStrut(10));
@@ -451,7 +447,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			// "panel" is where the object/link filters go when you check those checkboxes
 			add(panel, "Center");
 
-			filterBox.addActionListener(new ActionListener() {
+			termFilterBox.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					rebuildPanel();
 				}
@@ -491,7 +487,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			panel.remove(filterTabbedPane);
 			panel.add(filterTabbedPane);
 
-			if (filterBox.isSelected()) {
+			if (termFilterBox.isSelected()) {
 				filterTabbedPane.addTab("Object filtering", objectFilterEditor);
 			}
 			if (linkFilterBox.isSelected()) {
@@ -506,7 +502,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 				
 
 			}
-			boolean rootAlgorithmControlsEnabled = filterBox.isSelected()
+			boolean rootAlgorithmControlsEnabled = termFilterBox.isSelected()
 			|| linkFilterBox.isSelected() || prefilterBox.isSelected();
 			rootAlgorithmLabel.setEnabled(rootAlgorithmControlsEnabled);
 			rootAlgorithmChooser.setEnabled(rootAlgorithmControlsEnabled);
@@ -516,7 +512,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			impliedTypeBox.setEnabled(saveImpliedBox.isSelected());
 			assertImpliedBox.setEnabled(saveImpliedBox.isSelected());
 			prefilterTypeChooser.setEnabled(prefilterBox.isSelected());
-			filterTypesBox.setEnabled(filterBox.isSelected());
+			filterTypesBox.setEnabled(termFilterBox.isSelected());
 
 			panel.setLayout(new GridLayout(1, 1));
 			panel.validate();
@@ -565,7 +561,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			 * impliedTypeBox.setEnabled(false); }
 			 */
 			categoryBox.setSelected(profile.getDiscardUnusedCategories());
-			filterBox.setSelected(profile.getDoFilter());
+			termFilterBox.setSelected(profile.getDoFilter());
 			filterTypesBox.setSelected(profile.getSaveTypes());
 			linkFilterBox.setSelected(profile.getDoLinkFilter());
 			tagFilterBox.setSelected(profile.getDoTagFilter());
@@ -597,7 +593,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			profile.setSaveImplied(saveImpliedBox.isSelected());
 			profile.setImpliedType((String) impliedTypeBox.getSelectedItem());
 			profile.setAssertImpliedLinks(assertImpliedBox.isSelected());
-			profile.setDoFilter(filterBox.isSelected());
+			profile.setDoFilter(termFilterBox.isSelected());
 			profile.setSaveTypes(filterTypesBox.isSelected());
 			profile.setDoLinkFilter(linkFilterBox.isSelected());
 			profile.setDoTagFilter(tagFilterBox.isSelected());
@@ -606,7 +602,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 						.getSelectedItem()).getID());
 			}
 			profile.setDiscardUnusedCategories((prefilterBox.isSelected()
-					|| filterBox.isSelected() || linkFilterBox.isSelected())
+					|| termFilterBox.isSelected() || linkFilterBox.isSelected())
 					&& categoryBox.isSelected());
 			profile.setRootAlgorithm((String) rootAlgorithmChooser.getSelectedItem());
 
@@ -614,7 +610,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			 * Here is where the filters are interpreted and information is collected on what the filter
 			 * criteria are. 
 			 */
-			if (filterBox.isSelected())
+			if (termFilterBox.isSelected())
 				profile.setObjectFilter(objectFilterEditor.getFilter());
 			if (linkFilterBox.isSelected())
 				profile.setLinkFilter(linkFilterEditor.getFilter());
