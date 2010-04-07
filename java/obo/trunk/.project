@@ -3,6 +3,7 @@
 	<name>OBO</name>
 	<comment></comment>
 	<projects>
+		<project>OWLTools</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

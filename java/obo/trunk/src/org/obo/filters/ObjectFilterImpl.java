@@ -3,6 +3,7 @@ package org.obo.filters;
 import org.bbop.expression.ExpressionException;
 import org.bbop.expression.ExpressionUtil;
 import org.bbop.expression.JexlContext;
+import org.obo.datamodel.IdentifiedObject;
 import org.obo.reasoner.ReasonedLinkDatabase;
 
 import java.util.*;
@@ -93,6 +94,7 @@ public class ObjectFilterImpl implements ObjectFilter {
 	}
 
 	public boolean satisfies(Object object) {
+
 		if (!criterion.getInputType().isAssignableFrom(object.getClass()))
 			return false;
 		else {
@@ -126,7 +128,7 @@ public class ObjectFilterImpl implements ObjectFilter {
 
 				b = comparison.matches(values, matchVal);
 
-				if (b) {
+				if (b || object.getClass().getName().contains("OBOProperty")){
 					matches = !negate;
 					break;
 				}
