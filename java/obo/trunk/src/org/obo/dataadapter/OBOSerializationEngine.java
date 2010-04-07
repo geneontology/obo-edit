@@ -1301,10 +1301,15 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			List writeObjects = new ArrayList();
 			for(Object obj : writeList){
 				IdentifiedObject io = (IdentifiedObject) obj;
-				if (stanzaMapping.getStanzaClass().isInstance(io) && !io.isBuiltIn()) {
-					writeObjects.add(io);
-
+				if(stanzaMapping.stanzaName.equalsIgnoreCase("Typdef")){
+					if (stanzaMapping.getStanzaClass().isInstance(io) && !io.isBuiltIn())
+						writeObjects.add(io);
 				}
+				if(!stanzaMapping.stanzaName.equalsIgnoreCase("Typdef")){
+					if (stanzaMapping.getStanzaClass().isInstance(io) && !io.isBuiltIn())
+						writeObjects.add(io);
+				}
+
 			}
 			setProgressString("Sorting objects: " + path);
 			Collections.sort(writeObjects, objectComparator);
@@ -1313,7 +1318,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 			for(Object writeo : writeObjects){
 				IdentifiedObject io = (IdentifiedObject) writeo;
-				//				logger.debug("writing object " + io);
+				//logger.debug("writing object " + io);
 				writeObject(io,database,serializer);
 			}
 		}

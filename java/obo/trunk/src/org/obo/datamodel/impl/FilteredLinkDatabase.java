@@ -163,6 +163,7 @@ public class FilteredLinkDatabase extends AbstractLinkDatabase {
 	}
 
 	protected boolean satisfies(LinkedObject lo) {
+//		logger.debug("FilteredLinkDatabase.satisfies: " + lo);
 		return termFilter == null || termFilter.satisfies(lo);
 	}
 
