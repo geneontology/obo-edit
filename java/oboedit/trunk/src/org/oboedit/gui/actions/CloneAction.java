@@ -62,7 +62,7 @@ public class CloneAction implements ClickMenuAction {
 		List<LinkedObject> newTerms = new LinkedList<LinkedObject>();
 		for(Object o : sources.getTerms()){
 			HistoryList historyList = new DefaultHistoryList();
-			
+
 			IdentifiedObject io = (IdentifiedObject) o;
 			io = (IdentifiedObject) io.clone();
 
@@ -77,7 +77,7 @@ public class CloneAction implements ClickMenuAction {
 			newTerms.add(new DanglingObjectImpl(id));
 
 			historyList.addItem(new CreateObjectHistoryItem(id, io.getType().getID()));
-			
+
 			HistoryGenerator.getTermTextChanges(clone, io, historyList, true,
 					null);
 			if (io.getNamespace() != null) {
@@ -90,17 +90,23 @@ public class CloneAction implements ClickMenuAction {
 							(LinkedObject) clone));
 				}
 				for(Link parentLink : ((LinkedObject) io).getParents()){
-					// cloning terms with cross-products
+
+					HistoryItem item;
+
 					if (parentLink instanceof OBORestriction){
 						OBORestriction newLink = new OBORestrictionImpl((LinkedObject) clone, ((OBORestriction)parentLink).getType(),
-						parentLink.getParent());
-						HistoryItem item = new CreateIntersectionLinkHistoryItem(newLink);
+								parentLink.getParent());
+						// check for cross product links
+						if(((OBORestriction) parentLink).completes())
+							item = new CreateIntersectionLinkHistoryItem(newLink);
+						else
+							item = new CreateLinkHistoryItem(newLink);
 						historyList.addItem(item);
 					} 
 					else
-					historyList.addItem(new CreateLinkHistoryItem(
-							(LinkedObject) clone, parentLink.getType(),
-							parentLink.getParent()));
+						historyList.addItem(new CreateLinkHistoryItem(
+								(LinkedObject) clone, parentLink.getType(),
+								parentLink.getParent()));
 				}
 			}
 			// HistoryGenerator.getParentageChanges(clone, io, historyList);
@@ -122,7 +128,7 @@ public class CloneAction implements ClickMenuAction {
 				((TermMacroHistoryItem) item).addItem(subItem);
 			}
 		}
-		
+
 		GUIUtil.setSelections(item, sources, SelectionManager.createSelection(sources
 				.getComponent(), newTerms, null, newTerms.get(0), sources
 				.getRootAlgorithm(), sources.getLinkDatabase()));
