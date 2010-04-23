@@ -344,6 +344,18 @@ sub new {
     $self->{QUERY_JOIN} = [];
     $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
 
+  }elsif( $type eq 'phylotree' ){
+
+    $self->{QUERY_RESULT_SET} = 'Phylotree';
+    $self->{QUERY_JOIN} = [ 'dbxref' ],
+    #$self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
+
+  }elsif( $type eq 'seq' ){
+
+    $self->{QUERY_RESULT_SET} = 'Seq';
+    $self->{QUERY_JOIN} = [ 'gene_product_seq' ];
+    $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
+
   }elsif( $type eq 'db' ){
 
     ## Trivial, is it not?
