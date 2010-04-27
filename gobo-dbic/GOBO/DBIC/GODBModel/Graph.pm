@@ -469,9 +469,9 @@ sub climb {
 
 =item lineage
 
-TODO: clearly differentiate climb and lineage.
+BUG/TODO: clearly differentiate climb and lineage.
 
-Not quite get ancestors, as we're getting depth info too.
+Not quite get ancestors, as we're getting depth and inference info too.
 
 With an array ref of terms, will climb to the top of the ontology
 (with an added 'all' stopper for GO). This should be an easy and
@@ -497,20 +497,33 @@ sub lineage {
   my $nodes = {};
   my $node_depth = {};
   my $node_rel = {};
+  my $node_rel_inf = {};
   my $max_depth = 0;
   foreach my $gp (@$all){
     if( ! $gp->object->is_obsolete &&
-	$gp->object->acc ne 'all' ){ # GO control
+	$gp->object->acc ne 'all' ){ # GO specific control
 
       ## Inc. depth if necessary.
       if( $gp->distance > $max_depth ){ $max_depth = $gp->distance; }
 
+      ## We'll start by assuming that relations aren't direct unless
+      ## proven otherwise.
+      if( ! defined $node_rel_inf->{$gp->object->acc} ){
+	$node_rel_inf->{$gp->object->acc} = 1;
+      }
+
       ## Check existance, if it's not there yet, make it. If it's
       ## already there, modify the entry accordingly.
+      #$self->verbose(1);
+      #$self->kvetch('distance: ' . $gp->object->acc . ' : ' . $gp->distance);
       if( ! defined $node_rel->{$gp->object->acc} ){
 	$node_rel->{$gp->object->acc} = $gp->relationship_type->acc;
 	$node_depth->{$gp->object->acc} = $gp->distance;
 	$nodes->{$gp->object->acc} = $gp->object;
+	## Update if it looks like a direct.
+	if( $gp->distance == 1 ){
+	  $node_rel_inf->{$gp->object->acc} = 0;
+	}
       }else{
 
 	## Take the dominating relation.
@@ -523,6 +536,10 @@ sub lineage {
 	#if( $curr_scale > $test_scale ){ # more specific
 	  $node_rel->{$gp->object->acc} = $gp->relationship_type->acc;
 	  #print STDERR "  :in>: $curr_scale $test_scale\n";
+	  ## Update if it looks like a direct.
+	  if( $gp->distance == 1 ){
+	    $node_rel_inf->{$gp->object->acc} = 0;
+	  }
 	}
 
 	## Take the greater distance.
@@ -541,7 +558,7 @@ sub lineage {
     $node_depth->{$acc} = $d;
   }
 
-  return ($nodes, $node_rel, $node_depth, $max_depth);
+  return ($nodes, $node_rel, $node_rel_inf, $node_depth, $max_depth);
 }
 
 
