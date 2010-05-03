@@ -145,13 +145,11 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 		public RelationshipLinePanel() {
 			getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
-					KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false),
-			"escapeLine");
+					KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false), "escapeLine");
 			getActionMap().put("escapeLine", new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
 					if (getProperty() == null || getParentTerm() == null) {
-						Container parent = RelationshipLinePanel.this
-						.getParent();
+						Container parent = RelationshipLinePanel.this.getParent();
 						removeLine(RelationshipLinePanel.this);
 						Component lastComp = getLastRelationshipLine();
 						if (lastComp != null)
@@ -315,6 +313,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 	protected Action commitListener = new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
+			logger.debug(">> CrossProductEditorComponent commitListener");
 			//			tabToNext();
 			//			if (e.getSource() instanceof Component) { Component next =
 			//			focusPolicy.getComponentAfter( IntersectionPanel.this,
@@ -549,7 +548,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			}
 
 			final OBOClass genusTerm = (OBOClass) parent;
-			logger.debug("genusTerm: " +  genusTerm);
+//			logger.debug("genusTerm: " +  genusTerm);
 			if (link.getType().equals(OBOProperty.IS_A)) {
 				genusField.setValue(parent);
 
