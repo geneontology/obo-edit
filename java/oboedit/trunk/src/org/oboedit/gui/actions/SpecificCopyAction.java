@@ -94,11 +94,10 @@ public class SpecificCopyAction implements ClickMenuAction {
 
 		this.sources = selection;
 		for (LinkedObject tr : selection.getTerms()) {
-
 			Link newtr = getTR(target, tr, type);
-			if (!TermUtil.isLegalRelationship(newtr.getChild(),
-					newtr.getType(), newtr.getParent())) {
+			if (!TermUtil.isLegalRelationship(newtr.getChild(), newtr.getType(), newtr.getParent())) {
 				isLegal = false;
+				
 				return;
 			}
 		}
@@ -110,14 +109,27 @@ public class SpecificCopyAction implements ClickMenuAction {
 	}
 
 	public HistoryItem execute() {
-
 		List<HistoryItem> historyList = new Vector<HistoryItem>();
 		List<TreePath> pathouts = new Vector<TreePath>();
-
+		// target term
 		LinkedObject target = dest.getTerm();
-
-		for (LinkedObject tr : sources.getTerms()) {
-
+		
+		//terms selected
+		Collection<LinkedObject> selectionTerms = sources.getTerms();
+		
+		// not null when a self link is being created
+		LinkedObject redundantObj = null;
+		
+		for (LinkedObject tr : selectionTerms) {
+			if(tr.equals(target)){
+				redundantObj = tr;
+			}
+		}
+		
+		if(redundantObj != null)
+		selectionTerms.remove(redundantObj);
+		
+			for (LinkedObject tr : selectionTerms) {
 			Link newtr = getTR(target, tr, type);
 
 			if (copyChild) {

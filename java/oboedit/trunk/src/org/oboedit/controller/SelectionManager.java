@@ -524,7 +524,6 @@ public class SelectionManager implements ObjectSelector {
 		Collection<SelectionListener> selectionListeners = new LinkedList<SelectionListener>(
 				this.selectionListeners);
 		for (SelectionListener listener : selectionListeners) {
-//			logger.debug("listener: " + listener);
 			listener.selectionChanged(event);
 		}
 	}
@@ -533,10 +532,9 @@ public class SelectionManager implements ObjectSelector {
 		if (ObjectUtil.equals(source, checkedPreSelection))
 			return true;
 		PreSelectionEvent event = new PreSelectionEvent(source);
-		Iterator it = new LinkedList<PreSelectionListener>(
-				preSelectionListeners).iterator();
-		while (it.hasNext()) {
-			PreSelectionListener listener = (PreSelectionListener) it.next();
+		LinkedList<PreSelectionListener> psl = new LinkedList<PreSelectionListener>(preSelectionListeners);
+		
+		for(PreSelectionListener listener : psl){ 
 			if (!listener.isPreSelectOkay(event)) {
 				checkedPreSelection = null;
 				return false;

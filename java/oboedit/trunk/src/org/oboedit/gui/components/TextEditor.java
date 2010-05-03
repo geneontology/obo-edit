@@ -732,7 +732,12 @@ RootTextEditComponent, SelectionDrivenComponent {
 
 	public boolean hasChanges() {
 		for (OBOTextEditComponent c : getMyResolver().getRegisteredComponents()) {
+//			logger.debug("component: " + c);
+//			if(c.equals("CrossProductEditorComponent")){
+//				logger.debug("stop");
+//			}
 			if (c.hasChanges()){
+				logger.debug("TextEditor.hasChanges -- Component c has changes - c: " + c);
 				return true;
 			}
 				
