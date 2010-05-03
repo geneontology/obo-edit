@@ -2,15 +2,9 @@ package org.oboedit.gui.actions;
 
 
 import java.util.*;
-import org.obo.datamodel.*;
-import org.obo.datamodel.impl.DanglingObjectImpl;
 import org.obo.history.*;
-import org.obo.util.IDUtil;
-import org.oboedit.controller.SelectionManager;
-import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
 
-import javax.swing.tree.TreePath;
 import javax.swing.*;
 
 import org.apache.log4j.*;

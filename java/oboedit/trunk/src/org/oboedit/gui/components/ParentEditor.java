@@ -267,6 +267,7 @@ public class ParentEditor extends AbstractGUIComponent {
 	protected static TypeRenderer typeRenderer = new TypeRenderer();
 
 	public void loadTerm(LinkedObject t) {
+//		logger.debug("ParentEditor.loadTerm t" + t);
 		currentObject = t;
 		outerPanel.removeAll();
 		if (t == null)
@@ -317,6 +318,7 @@ public class ParentEditor extends AbstractGUIComponent {
 			boolean first = true;
 			for (int i = 0; i < sortedList.size(); i++) {
 				final OBORestriction tr = (OBORestriction) sortedList.get(i);
+//				logger.debug("tr: " + tr);
 				final LinkedObject parent = tr.getParent();
 
 				Font font = getFont();
@@ -336,8 +338,7 @@ public class ParentEditor extends AbstractGUIComponent {
 
 				JPanel panel = new JPanel();
 				JPanel controlsPanel = new JPanel();
-				controlsPanel.setLayout(new BoxLayout(controlsPanel,
-						BoxLayout.Y_AXIS));
+				controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.Y_AXIS));
 				panel.setLayout(new BorderLayout());
 				panel.add(controlsPanel, "West");
 				final JComboBox typeBox = new JComboBox();
@@ -345,8 +346,7 @@ public class ParentEditor extends AbstractGUIComponent {
 				typeBox.setEnabled(enabled);
 				
 				for(OBOProperty type : TermUtil.getRelationshipTypes(SessionManager.getManager().getSession()) ){
-					if (TermUtil.isLegalRelationship(tr.getChild(), type, tr
-							.getParent()))
+					if (TermUtil.isLegalRelationship(tr.getChild(), type, tr.getParent()))
 						typeBox.addItem(type);
 				}
 				typeBox.setSelectedItem(tr.getType());

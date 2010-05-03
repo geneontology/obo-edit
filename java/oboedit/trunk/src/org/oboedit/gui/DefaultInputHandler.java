@@ -2,15 +2,14 @@ package org.oboedit.gui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 
-import org.bbop.framework.GUIManager;
 import org.bbop.swing.*;
 
-import java.util.*;
-import java.util.List;
 import org.obo.datamodel.*;
 import org.obo.history.HistoryItem;
 import org.oboedit.controller.EditActionManager;
@@ -53,13 +52,13 @@ public class DefaultInputHandler implements InputHandlerI {
 			return false;
 	}
 
-	public static JMenu getMenu(final java.util.List editActions,
+	public static JMenu getMenu(final List editActions,
 			final boolean fromDrop) {
 		return getMenu(editActions, SelectionManager.createEmptyTarget(), true,
 				fromDrop);
 	}
 
-	public static JMenu getMenu(final java.util.List editActions,
+	public static JMenu getMenu(final List editActions,
 			final GestureTarget dest, final boolean showDisabled,
 			final boolean fromDrop) {
 		AbstractDynamicMenuItem menu = new AbstractDynamicMenuItem(
@@ -72,12 +71,13 @@ public class DefaultInputHandler implements InputHandlerI {
 				if (selected == null)
 					selected = SelectionManager.getGlobalSelection();
 
-				Iterator it = editActions.iterator();
 				Set<Character> inUseSet = new HashSet<Character>();
 				int enabledCount = 0;
 				int[] index = { 0 };
-				while (it.hasNext()) {
-					ClickMenuAction editAction = (ClickMenuAction) it.next();
+				
+				for(Object o : editActions){
+					ClickMenuAction editAction = (ClickMenuAction) o;
+
 					JMenuItem item = getMenuItem(selected, dest, editAction,
 							liveSelection, fromDrop, (fromDrop ? index : null),
 							inUseSet);
@@ -96,13 +96,13 @@ public class DefaultInputHandler implements InputHandlerI {
 		return menu;
 	}
 
-	public static void buildMenu(JComponent menu, java.util.List editActions,
+	public static void buildMenu(JComponent menu, List editActions,
 			boolean fromDrop) {
 		buildMenu(menu, editActions, SelectionManager.getGlobalSelection(),
 				SelectionManager.createEmptyTarget(), true, fromDrop);
 	}
 
-	public static int buildMenu(JComponent menu, java.util.List editActions,
+	public static int buildMenu(JComponent menu, List editActions,
 			Selection selected, GestureTarget dest, boolean showDisabled,
 			boolean fromDrop) {
 
@@ -110,16 +110,16 @@ public class DefaultInputHandler implements InputHandlerI {
 		if (selected == null)
 			selected = SelectionManager.getGlobalSelection();
 
-		Iterator it = editActions.iterator();
 		Set<Character> inUseSet = new HashSet<Character>();
 		int enabledCount = 0;
 		int[] index = { 0 };
-		while (it.hasNext()) {
-			ClickMenuAction editAction = (ClickMenuAction) it.next();
+		
+		for(Object o : editActions){
+			ClickMenuAction editAction = (ClickMenuAction) o;
 			JMenuItem item = getMenuItem(selected, dest, editAction,
 					liveSelection, fromDrop, (fromDrop ? index : null),
 					inUseSet);
-//			logger.info("item = " + item);
+			//			logger.info("item = " + item);
 			if (item.isEnabled()) {
 				enabledCount++;
 				menu.add(item);
@@ -148,15 +148,14 @@ public class DefaultInputHandler implements InputHandlerI {
 		JMenuItem item;
 		List subActions = editAction.getSubActions();
 		boolean hasChildren = subActions != null
-			&& subActions.size() > 0;
+		&& subActions.size() > 0;
 
 		if (hasChildren) {
 			item = new JMenu(editAction.getName());
 			if (editAction.isLegal()) {
 				boolean foundEnabled = false;
-				Iterator it = subActions.iterator();
-				while (it.hasNext()) {
-					ClickMenuAction ea = (ClickMenuAction) it.next();
+				for(Object o : subActions){
+					ClickMenuAction ea = (ClickMenuAction) o;
 					JMenuItem subItem = getMenuItem(selection, dest, ea,
 							liveSelection, fromDrop, null, inUse);
 					if (subItem.isEnabled())
@@ -207,7 +206,7 @@ public class DefaultInputHandler implements InputHandlerI {
 				if (key == null)
 					key = KeyStroke.getKeyStroke(("" + index[0]++).charAt(0),
 							Toolkit.getDefaultToolkit()
-									.getMenuShortcutKeyMask());
+							.getMenuShortcutKeyMask());
 			}
 			Character c = getMnemonicKey(editAction.getName(), inUse);
 			if (c != null)
@@ -280,10 +279,10 @@ public class DefaultInputHandler implements InputHandlerI {
 			dragMenu.show(dropPanel, (int) p.getX(), (int) p.getY());
 			return true;
 		} /*
-			 * else if (enabledCount == 1) {
-			 * logger.info("DefaultInputHandler: applying "+liveAction);
-			 * controller.apply(liveAction.execute()); return true; }
-			 */
+		 * else if (enabledCount == 1) {
+		 * logger.info("DefaultInputHandler: applying "+liveAction);
+		 * controller.apply(liveAction.execute()); return true; }
+		 */
 		else
 			return false;
 	}
@@ -291,11 +290,11 @@ public class DefaultInputHandler implements InputHandlerI {
 	protected static Selection getSelectionFromObject(JComponent comp, Object o) {
 		if (o instanceof TreePath[]) {
 			(new Exception(
-					"Someone dropped a TreePath[], but should have dropped a selection"))
-					.printStackTrace();
+			"Someone dropped a TreePath[], but should have dropped a selection"))
+			.printStackTrace();
 			return SelectionManager.createSelectionFromPaths(comp,
 					((TreePath[]) o), null, SessionManager.getManager()
-							.getCurrentLinkDatabase(), RootAlgorithm.GREEDY,
+					.getCurrentLinkDatabase(), RootAlgorithm.GREEDY,
 					true);
 		} else
 			return null;

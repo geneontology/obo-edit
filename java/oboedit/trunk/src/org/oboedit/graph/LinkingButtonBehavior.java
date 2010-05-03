@@ -1,18 +1,12 @@
 package org.oboedit.graph;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.swing.Icon;
@@ -24,9 +18,7 @@ import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.OBOProperty;
-import org.obo.datamodel.PathCapable;
 import org.obo.datamodel.RootAlgorithm;
-import org.obo.datamodel.impl.DanglingLinkImpl;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SelectionManager;
@@ -34,7 +26,6 @@ import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.GestureTarget;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.Selection;
-import org.oboedit.gui.actions.CopyAction;
 import org.oboedit.gui.actions.SpecificCopyAction;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 import org.oboedit.piccolo.PiccoloUtil;
@@ -45,7 +36,6 @@ import edu.umd.cs.piccolo.event.PInputEvent;
 import edu.umd.cs.piccolo.event.PInputEventListener;
 import edu.umd.cs.piccolo.event.PPanEventHandler;
 import edu.umd.cs.piccolo.nodes.PPath;
-import edu.umd.cs.piccolo.util.PPickPath;
 
 import org.apache.log4j.*;
 
@@ -119,10 +109,9 @@ public class LinkingButtonBehavior implements ToolbarButtonBehavior {
 			if (event.isLeftMouseButton() && originNodes.size() > 0) {
 				Point2D dragPos = event.getPosition();
 				for (Link dummyLink : dummyLinks) {
-					OENode originNode = (OENode) canvas.getNode(dummyLink
-							.getChild());
-					Point2D startPoint = originNode.getFullBoundsReference()
-							.getCenter2D();
+//					logger.debug("dummy temp Link: " + dummyLink);
+					OENode originNode = (OENode) canvas.getNode(dummyLink.getChild());
+					Point2D startPoint = originNode.getFullBoundsReference().getCenter2D();
 					line.setLine(startPoint, dragPos);
 					PPath arrowGhost = new OELink(canvas, dummyLink, canvas
 							.getIconManager(), canvas.getColorManager(), canvas
@@ -130,16 +119,12 @@ public class LinkingButtonBehavior implements ToolbarButtonBehavior {
 					arrowGhost.setPickable(false);
 					arrowGhost.setChildrenPickable(false);
 					MouseEvent me = (MouseEvent) event.getSourceSwingEvent();
-//					if (!canvas.getCamera().getViewBounds().contains(dragPos))
-//						canvas.getCamera().animateViewToCenterBounds(
-//								new Rectangle2D.Double(dragPos.getX(), dragPos
-//										.getY(), 1, 1), false, PAN_DURATION);
-					OENode thisDestNode = (OENode) PiccoloUtil.getNodeOfClass(
-							canvas.getCamera().pick(me.getX(), me.getY(), 1),
-							OENode.class);
 
-					if (!ObjectUtil.equals(thisDestNode, destNode)) {
-						this.destNode = thisDestNode;
+					OENode thisDestNode = (OENode) PiccoloUtil.getNodeOfClass(
+							canvas.getCamera().pick(me.getX(), me.getY(), 1), OENode.class);
+					
+					if (thisDestNode != originNode) {
+						this.destNode = thisDestNode;						
 						if (destNode != null) {
 							tempTarget = SelectionManager.createGestureTarget(
 									canvas, canvas.getLinkDatabase(), canvas
@@ -147,7 +132,7 @@ public class LinkingButtonBehavior implements ToolbarButtonBehavior {
 											.getObject());
 							copyAction.clickInit(tempSelection, tempTarget);
 						}
-					}
+					} 					
 					if (thisDestNode == null || !copyAction.isLegal()) {
 						arrowGhost.setTransparency(.5f);
 					}
@@ -177,15 +162,29 @@ public class LinkingButtonBehavior implements ToolbarButtonBehavior {
 		@Override
 		public void mouseReleased(PInputEvent event) {
 			if (event.isLeftMouseButton() && originNodes.size() > 0) {
+//				logger.debug("originNodes size: " + originNodes.size());
+				OENode redundantNode = null;
+		
+				if(originNodes.size() >= 1){
+					for(OENode singleOriginNode : originNodes){
+						if(singleOriginNode.equals(destNode)){
+							logger.warn("Ignoring self-link -- originNode: " + singleOriginNode + " -- destinationNode: " + destNode);
+						redundantNode = singleOriginNode;
+						}
+					}
+				}
+				
+				if(redundantNode != null)
+					originNodes.remove(redundantNode);
+				
 				NamedChildProvider provider = canvas.getNamedChildProvider();
-				PNode arrowGhost = (PNode) provider.getNamedChild(
-						ARROW_GHOST_KEY, canvas.getLayer());
+				PNode arrowGhost = (PNode) provider.getNamedChild(ARROW_GHOST_KEY, canvas.getLayer());
 				if (arrowGhost != null) {
-					provider.setNamedChild(ARROW_GHOST_KEY, canvas.getLayer(),
-							null);
+					provider.setNamedChild(ARROW_GHOST_KEY, canvas.getLayer(), null);
 					canvas.decorate();
 				}
 				canvas.setPanEventHandler(panHandler);
+				
 				if (destNode != null && copyAction.isLegal()) {
 					SessionManager.getManager().apply(copyAction.execute());
 				}
