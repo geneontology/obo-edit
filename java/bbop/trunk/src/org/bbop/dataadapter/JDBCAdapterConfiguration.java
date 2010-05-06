@@ -1,15 +1,13 @@
 package org.bbop.dataadapter;
 
-import java.util.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
 
-/**
- *
- * An implementation of AdapterConfiguration for adapters that reads
- * one or more files and write a single file
- * 
- */
-import org.apache.log4j.*;
+import javax.sql.DataSource;
+
+import org.apache.log4j.Logger;
 
 public class JDBCAdapterConfiguration implements AdapterConfiguration {
 
@@ -22,12 +20,23 @@ public class JDBCAdapterConfiguration implements AdapterConfiguration {
     protected String dbUsername;
     protected String dbPassword = "";
     protected String writePath;
+    protected DataSource dataSource;
 	protected Connection conn;
 
     // example: jdbc:postgresql://foo.com:5432/dbname
     public JDBCAdapterConfiguration(String jdbcPath) {
     	this();
     	this.readPath = jdbcPath;
+    }
+    
+    /**
+     * Create an adapter which uses a DataSource to obtain JDBC connection information.
+     * This allows JDBC connections to be declaratively specified for a web application 
+     * using JNDI. If the adapter is created with a DataSource, other connection information 
+     * will be ignored.
+     */
+    public JDBCAdapterConfiguration(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     public JDBCAdapterConfiguration() {
@@ -54,31 +63,33 @@ public class JDBCAdapterConfiguration implements AdapterConfiguration {
     	return "readPaths = " + readPath;
     }
     
-	public Connection getConnection() throws SQLException, ClassNotFoundException {
-		Class.forName("org.postgresql.Driver");
-		//System.out.println("connecting to " + this.getReadPath());
-		
-		String username = this.getDbUsername();
-		
-		if (username==null){
-			String systemUser = System.getenv("USER");
-			if (systemUser==null){
-				logger.info("WARN: No username specified for database connection. Attempting to connect without a user.");
-				username = "";
-			} else {
-				logger.info("WARN: No username specified for database connection. Using environmental username " + systemUser);
-				username = systemUser;
-			}
-		}
-		
-		String password = this.getDbPassword();
-		if (password == null){
-			logger.info("WARN: No password specified for database connection.");
-			password ="";
-		}
-		
-		return DriverManager.getConnection(this.readPath, username, password);
-	} 
+    public Connection getConnection() throws SQLException, ClassNotFoundException {
+        if (this.dataSource != null) {
+            return dataSource.getConnection();
+        } else {
+            Class.forName("org.postgresql.Driver");
+            //System.out.println("connecting to " + this.getReadPath());
+
+            String username = this.getDbUsername();
+
+            if (username==null) {
+                String systemUser = System.getenv("USER");
+                if (systemUser==null) {
+                    logger.info("WARN: No username specified for database connection. Attempting to connect without a user.");
+                    username = "";
+                } else {
+                    logger.info("WARN: No username specified for database connection. Using environmental username " + systemUser);
+                    username = systemUser;
+                }
+            }
+            String password = this.getDbPassword();
+            if (password == null) {
+                logger.info("WARN: No password specified for database connection.");
+                password ="";
+            }
+            return DriverManager.getConnection(this.readPath, username, password);
+        }
+    } 
 	
 	// TODO: DRY
 	public void getConnection(String driverstring, String host, String db, String port, String user, String password) {
