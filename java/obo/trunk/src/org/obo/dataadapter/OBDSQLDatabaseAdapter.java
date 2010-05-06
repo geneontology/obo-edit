@@ -16,6 +16,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
+import org.apache.log4j.Logger;
 import org.bbop.dataadapter.AdapterConfiguration;
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.dataadapter.DataAdapterUI;
@@ -33,8 +36,6 @@ import org.obo.annotation.datamodel.AnnotationOntology;
 import org.obo.annotation.datamodel.impl.AnnotationImpl;
 import org.obo.dataadapter.OBOSerializationEngine.FilteredPath;
 import org.obo.datamodel.CommentedObject;
-import org.obo.datamodel.PropertyValue;
-import org.obo.datamodel.SubsetObject;
 import org.obo.datamodel.DanglingObject;
 import org.obo.datamodel.DatatypeValue;
 import org.obo.datamodel.Dbxref;
@@ -54,6 +55,8 @@ import org.obo.datamodel.OBORestriction;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.ObjectFactory;
 import org.obo.datamodel.ObsoletableObject;
+import org.obo.datamodel.PropertyValue;
+import org.obo.datamodel.SubsetObject;
 import org.obo.datamodel.Synonym;
 import org.obo.datamodel.SynonymType;
 import org.obo.datamodel.SynonymedObject;
@@ -159,8 +162,6 @@ import org.obo.util.TermUtil;
  * 
  * 
  */
-import org.apache.log4j.*;
-
 public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBOAdapter {
 
 	//initialize logger
@@ -191,8 +192,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 	protected Connection connection;
 
 
-	public static class OBDSQLDatabaseAdapterConfiguration extends
-	JDBCAdapterConfiguration {
+	public static class OBDSQLDatabaseAdapterConfiguration extends JDBCAdapterConfiguration {
 		protected boolean allowDangling = false;
 
 		protected boolean failFast = true;
@@ -221,6 +221,10 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 
 		public OBDSQLDatabaseAdapterConfiguration() {
 		}
+		
+		public OBDSQLDatabaseAdapterConfiguration(DataSource dataSource) {
+		    super(dataSource);
+        }
 
 		public void setSerializer(String serializer) {
 			this.serializer = serializer;
