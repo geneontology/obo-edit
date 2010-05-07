@@ -1,7 +1,6 @@
 package org.oboedit.gui;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.ExceptionListener;
@@ -36,7 +35,6 @@ import org.oboedit.gui.event.SelectionEvent;
 import org.oboedit.gui.event.SelectionListener;
 import org.oboedit.gui.filter.RenderSpec;
 import org.oboedit.gui.filter.RenderedFilter;
-import org.oboedit.gui.filter.SpecEditor;
 
 import org.apache.log4j.*;
 
@@ -249,7 +247,6 @@ public class FilterComponent extends JPanel {
 		};
 		searchButton.addActionListener(actionListener);
 		contentPanel.addActionListener(actionListener);
-//		JButton newButton = new JButton(Preferences.loadLibraryIcon("file.gif"));
 		JButton newButton = new JButton(Preferences.loadLibraryIcon("erase.gif"));
 		newButton.setToolTipText("Clear");
 		JButton loadButton = new JButton(Preferences.loadLibraryIcon("folder.gif"));
