@@ -56,7 +56,9 @@ public class FilterQuery<T> implements Query<T, SearchHit<T>> {
 		return inputType;
 	}
 
+	
 	public SearchHit<T> matches(T a) {
+//		logger.debug("FilterQuery.matches -- checking object: " + a );
 		filter.setReasoner(reasoner);  
 		if (filter.satisfies(a))
 			return new BasicSearchHit<T>(a);

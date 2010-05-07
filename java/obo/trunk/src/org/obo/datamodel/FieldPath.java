@@ -203,8 +203,7 @@ public class FieldPath {
 				Collections.emptySet();
 				if (ObjectUtil.equals(lastValue, EMPTY))
 					return EmptyIterator.emptyIterator();
-				final Collection values = crit.getValues(new LinkedList(),
-						lastValue);
+				final Collection values = crit.getValues(new LinkedList(),lastValue);
 				if (values.size() == 0) {
 					return new SingletonIterator(new FieldPath(parent, crit,
 							EMPTY));

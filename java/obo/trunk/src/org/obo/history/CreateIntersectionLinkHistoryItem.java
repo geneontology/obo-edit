@@ -74,9 +74,8 @@ public class CreateIntersectionLinkHistoryItem extends HistoryItem {
 				|| ObjectUtil.equals(typeID, oldID)
 				|| ObjectUtil.equals(parentID, oldID)) {
 			HistoryList out = new DefaultHistoryList();
-			Iterator it = newIDs.iterator();
-			while (it.hasNext()) {
-				String id = it.next().toString();
+			for(Object oid : newIDs){
+				String id = (String) oid;
 				String newChildID = target;
 				String newTypeID = typeID;
 				String newParentID = parentID;

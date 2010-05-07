@@ -7,9 +7,6 @@ package org.obo.filters;
  */
 
 import java.util.*;
-
-import org.bbop.util.StringUtil;
-
 import org.apache.log4j.*;
 
 public class ContainsComparison extends AbstractComparison {
@@ -32,9 +29,8 @@ public class ContainsComparison extends AbstractComparison {
 			return false;
 
 		value = value.toLowerCase();
-		Iterator it = testVals.iterator();
-		while (it.hasNext()) {
-			String s = ((String) it.next()).toLowerCase();
+		for(Object tV: testVals){
+			String s = tV.toString().toLowerCase();
 			// I guess this was done to make the search case-insensitive, but it's really slow!
 			// It's much (~8x) faster to lowercase it and use indexOf.
 //			boolean returnVal = StringUtil.unicodeIndexOf(s, value) >= 0;

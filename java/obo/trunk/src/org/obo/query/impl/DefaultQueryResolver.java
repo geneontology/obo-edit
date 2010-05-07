@@ -1,6 +1,5 @@
 package org.obo.query.impl;
 
-import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,17 +7,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.bbop.util.AbstractTaskDelegate;
-import org.bbop.util.ProgressValued;
 import org.bbop.util.TaskDelegate;
 import org.obo.datamodel.FieldPath;
 import org.obo.datamodel.FieldPathSpec;
-import org.obo.datamodel.IdentifiedObject;
-import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
-import org.obo.datamodel.LinkedObject;
-import org.obo.datamodel.Namespace;
-import org.obo.datamodel.OBOSession;
-import org.obo.filters.TermParentSearchCriterion;
 import org.obo.query.Query;
 import org.obo.query.QueryResolver;
 
@@ -48,7 +40,7 @@ public class DefaultQueryResolver implements QueryResolver {
 	}
 
 	protected boolean queryAccepts(Query q, Class<?> c) {
-//		logger.debug("queryAccepts Class c: " + c);
+//		logger.debug("queryAccepts Class c: " + c + " -- Query q: " + q);
 		Class<?> inputType = q.getInputType();
 		boolean isAssignable = inputType.isAssignableFrom(c);
 		// boolean isAssignable = c.isAssignableFrom(inputType);
@@ -78,13 +70,14 @@ public class DefaultQueryResolver implements QueryResolver {
 							return;
 					
 						Collection<FieldPath> values = FieldPath.resolve(qpath,linkDatabase);
-						
+						// collecting valid paths
 						for (FieldPath p : values) {
 //							logger.debug("queryAccepts(q, p.getLastValue().getClass()): " + queryAccepts(q, p.getLastValue().getClass()));
 //							logger.debug("p.getObject().isBuiltIn(): " + p.getObject().isBuiltIn());
 							if (queryAccepts(q, p.getLastValue().getClass())
 							    // Don't include built-ins like "xsd:date" or "obo:TERM"
-							    && !(p.getObject()).isBuiltIn()) {
+							    && !(p.getObject()).isBuiltIn()) 
+							{
 //							    logger.debug("DefaultQueryResolver.execute adding FieldPath " + p); 
 								paths.add(p);
 							}
