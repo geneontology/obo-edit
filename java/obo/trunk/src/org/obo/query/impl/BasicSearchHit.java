@@ -1,7 +1,5 @@
 package org.obo.query.impl;
 
-import org.obo.datamodel.FieldPath;
-
 import org.apache.log4j.*;
 
 public class BasicSearchHit<T> implements SearchHit<T> {

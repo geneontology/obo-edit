@@ -18,9 +18,7 @@ public class NameSynonymSearchCriterion extends AbstractStringCriterion {
 				scratch.add(name);
 		}
 		if (obj instanceof SynonymedObject) {
-			Iterator it = ((SynonymedObject) obj).getSynonyms().iterator();
-			while (it.hasNext()) {
-				Synonym s = (Synonym) it.next();
+			for(Synonym s : ((SynonymedObject) obj).getSynonyms()){
 				scratch.add(s.getText());
 			}
 		}

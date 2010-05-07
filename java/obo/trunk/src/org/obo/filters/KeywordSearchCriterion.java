@@ -27,20 +27,17 @@ public class KeywordSearchCriterion extends AbstractStringCriterion {
 	}
 
 	public Collection getValues(Collection scratch, Object obj) {
-		Iterator it = keywordCriteria.iterator();
-
-		while (it.hasNext()) {
-			SearchCriterion sc = (SearchCriterion) it.next();
+		
+		for(Object kc : keywordCriteria){
+			SearchCriterion sc = (SearchCriterion) kc;
 			List scratchList = new LinkedList();
 			sc.getValues(scratchList, obj);
-			Iterator it2 = scratchList.iterator();
-			while (it2.hasNext()) {
-				String s = it2.next().toString();
+			for(Object sl : scratchList){
+				String s = sl.toString();
 				// extractKeywords(scratch, s);
 				scratch.add(s);
 			}
 		}
-
 		return scratch;
 	}
 

@@ -42,7 +42,7 @@ public class ObjectFilterImpl implements ObjectFilter {
 	@Override
 	public int hashCode() {
 		return aspect.hashCode() + criterion.hashCode() + comparison.hashCode()
-				+ value.hashCode() + (negate ? 1 : 0);
+		+ value.hashCode() + (negate ? 1 : 0);
 	}
 
 	public void setContext(JexlContext context) {
@@ -62,11 +62,11 @@ public class ObjectFilterImpl implements ObjectFilter {
 		if (o instanceof ObjectFilter) {
 			ObjectFilter filter = (ObjectFilter) o;
 			return filter.getAspect().getClass().equals(aspect.getClass())
-					&& filter.getCriterion().getClass().equals(
-							criterion.getClass())
+			&& filter.getCriterion().getClass().equals(
+					criterion.getClass())
 					&& filter.getComparison().getClass().equals(
 							comparison.getClass())
-					&& filter.getValue().equals(value);
+							&& filter.getValue().equals(value);
 		} else
 			return false;
 	}
@@ -92,8 +92,9 @@ public class ObjectFilterImpl implements ObjectFilter {
 		this.reasoner = reasoner;
 	}
 
+	// checking object's compliance to filter conditions
 	public boolean satisfies(Object object) {
-
+//		logger.debug("ObjectFilterImpl.satisfies -- evaluating object: " + object);
 		if (!criterion.getInputType().isAssignableFrom(object.getClass()))
 			return false;
 		else {
@@ -127,7 +128,13 @@ public class ObjectFilterImpl implements ObjectFilter {
 
 				b = comparison.matches(values, matchVal);
 
-				if (b || object.getClass().getName().contains("OBOProperty")){
+				/*//if (b || object.getClass().getName().contains("OBOProperty")){
+				 * Removing condition for OBOProperty objects getting a green flag through a set filter.
+				 * This causes all relations to show up in the search results irrespective of their relavance to the set filter.
+				 * If relations need to pass for certain conditions to hold..eveluate situation and set this at the higher level, not so late in the filtering process.
+				 * */
+				
+				if(b){
 					matches = !negate;
 					break;
 				}
@@ -140,14 +147,14 @@ public class ObjectFilterImpl implements ObjectFilter {
 	public String toString() {
 		if (criterion instanceof BooleanCriterion)
 			return (negate ? "NOT " : "")
-					+ (aspect instanceof SelfSearchAspect ? "" : aspect
-							.toString()
-							+ " ") + criterion;
+			+ (aspect instanceof SelfSearchAspect ? "" : aspect
+					.toString()
+					+ " ") + criterion;
 		else
 			return (negate ? "NOT " : "")
-					+ (aspect instanceof SelfSearchAspect ? "" : aspect
-							.toString()
-							+ " ") + criterion + " " + comparison + " \""
+			+ (aspect instanceof SelfSearchAspect ? "" : aspect
+					.toString()
+					+ " ") + criterion + " " + comparison + " \""
 					+ value + "\"";
 	}
 
