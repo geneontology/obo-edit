@@ -112,9 +112,6 @@ public class HTMLNodeLabelProvider implements NodeLabelProvider {
 	}
 
 	public String getLabel(ObjectSelector selector, IdentifiedObject lo) {
-//		if (lo.equals("sequence_varient")){
-//			logger.debug("stop here");
-//		}
 		FilteredRenderable fr = null;
 		if (selector instanceof FilteredRenderable)
 			fr = (FilteredRenderable) selector;
