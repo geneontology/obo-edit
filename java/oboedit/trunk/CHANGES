@@ -1,24 +1,37 @@
-===  OBO-Edit 2.1beta3 RELEASE NOTES  === 
+===  OBO-Edit v2.1 RELEASE NOTES  === 
 
 ================================
-What's New in OBO-Edit 2.1beta4
+What's New in OBO-Edit v2.1-beta5
 ================================
+
+
+
+===================================================================================
+*IMPORTANT* ANNOUNCEMENT FOR v2.1x on Importing Settings From Previous Versions
+===================================================================================
+Config directory located in the users home directory and called "oboedit_config".
+Settings from the previous releases (OBO-Edit 1. 2.0 or 2.0 beta versions) are located in the 
+configuration folder found at the default application installation location of your operating system. 
+You can import the perspective and layout settings from previous versions to the folder called "oboedit_config".
+* Please note the config folder naming convention is not consistent with previous version.* 
+Config files can also be reset when required through the Configuration Manager.
+
+
 ============
 Bug Fixes
 ============
+v2.1b5
+[ geneontology-Bugs-2996593 ] Weird search results OE beta 4
 
 
 
-
-
-
-
-================================
-What's New in OBO-Edit 2.1beta3
-================================
-============
-Bug Fixes
-============
+Previous
+=========================================================================
+[geneontology-Bugs-2899760] Too easy to make link to self in graph editor
+[geneontology-Bugs-2971221] eliminate possibility to create is_a relationships to self
+Text Editor and Parent Editor are now in sync
+[ geneontology-Bugs-2971364 ] b3 - problems committing text edits
+[ geneontology-Bugs-2987680 ] spontaneous intersection_of terms when cloning
 [ geneontology-Bugs-2922369 ] Is_a closure not working as expected
 [ geneontology-Bugs-2908106 ] OBO-merge fail
 [ geneontology-Bugs-2915594] Not saving
@@ -28,25 +41,58 @@ Bug Fixes
 [ geneontology-Bugs-2922331 ] No log file for OE2.1beta2
 [ geneontology-Bugs-2874878 ] Missing log files in Mac
 [ geneontology-Bugs-2610787] disjointness violations not detected
-[ geneontology-Bugs-2821857] disjoint violations not being checked by RBR 
+[ geneontology-Bugs-2821857] disjoint violations not being checked by RBR
+[ geneontology-Bugs-2941032] Functionality - application does not run on windows 7
+[ geneontology-Bugs-2915594 ] Not saving
+[ geneontology-Bugs-2914257 ] When a term is cloned, intersections become relationships
+[ geneontology-Bugs-2828905 ] verification config in 2.1 test release
+[ geneontology-Bugs-2869195 ] text editor is not working
+[ geneontology-Bugs-2864861 ] replaced_by statement causing problems in SO
+[ geneontology-Bugs-2840516 ] no way to get to genus term while defing xps
+[ geneontology-Bugs-2840500 ] relation name vanishes
+[ geneontology-Bugs-2908106 ] OBO-merge fail
+[ geneontology-Bugs-2610787] disjointness violations not detected
+[ geneontology-Bugs-2821857] disjoint violations not being checked by RBR
+[ geneontology-Bugs-2749049]  disjoinedness check working?
+[ geneontology-Bugs-2750699 ] config manager memory settings option out of sync
+[ geneontology-Bugs-2785074 ] OBO-Edit2-rc still present
+[ geneontology-Bugs-2787869 ] very minor bug with saving filters
+[ geneontology-Bugs-2812189 ] GAZ.obo not displayed correctly in OBOEdit2.0
+[ geneontology-Bugs-2824732 ] obodiff is broken!
+[ geneontology-Bugs-2818616] stop panel changes if click on top
+[ geneontology-Bugs-2814791] OBO merge doesn't work!
+[ geneontology-Bugs-2805373] Assert implied links - color table rows
+[ geneontology-Bugs-2818549] parent search ignores relationship type
+[ geneontology-Bugs-2815689] change tracker save 
+[ geneontology-Bugs-2805371] Assert implied links - resize
+[ geneontology-Bugs-2801684] OBO-Merge generates null-pointer exception
+[ geneontology-Bugs-2790372] Mac version 2 does not generate log files
+[ geneontology-Bugs-2749070] reasoner active even in OFF mode
+[ geneontology-Bugs-2722323] assert implied links pop-up hogs focus and halts editing
+[ geneontology-Bugs-2787869] very minor bug with saving filters
+[ geneontology-Bugs-2815829] Simplify 'save implied links'
+[ geneontology-Bugs-2722318] OTE local mode indication not intuitive
+- Fixed bug that stopped the box at the bottom of the history browser from appearing unless another component was clicked on. 
+- flaky xp commit
+- graph viewer issue
+- filtering union_of cycles in OTE
+- lock view selection behavior
+- fixed root detection algorithm to detect inverse relations and display root
+(Part of OE2.0 - history browser minor bugs - ID: 2507044)
+- Fixed the history browser html message so it shows 'name (id)' rather then 'id (id)'.
+(Part of OE2.0 - history browser minor bugs - ID: 2507044)
+- Graphviz uses a lot of memory when you assign dbxrefs: ID: 2057452
+The Graphviz interface redraws have been removed for the bulk addition of dbxrefs. 
+Now there is only one redraw at the end of the bulk process.
+- Added new feature to OBOMerge so that it reports if any term has been edited in both the live and branch files. 
+- Added new feature to TermMergeHistoryItem, so it can update substitution tags that mention any term that
+is in the process of being subsumed in a merge. Fixes bug: ID: 2790775
 
 
+============
+Features
+============
 
-Known Issues - Upcoming fixes
-Parent Editor and Text Editor not in sync.
-Ontology Tree Editor - Name unnamed terms
-Renaming terms problematic in Text Editor
-
-
-
-
-
-
-===  OBO-Edit 2.1beta2 RELEASE NOTES  === 
-
-================================
-What's New in OBO-Edit 2.1beta2
-================================
 - Parent Editor and Cross Product Text Editor component are now in synch and warn regarding changes made in either component
 
 - Graph Viewer Improvements
@@ -57,54 +103,13 @@ What's New in OBO-Edit 2.1beta2
 
 - Cross Product Editor -> Go to Genus term button
 
-- 2nd October - J. Deegan committed new Tag Filter code. This feature enables 
+- J. Deegan committed new Tag Filter code. This feature enables 
 users to choose which tags are saved out into OBO files. The GUI is in the 
 'save as' dialog. There is still some work to do to make the GUI look less intimidating. Also, though the feature has been
 carefully tested, further testing will be required in case an obscure bug is causing parts of
 the data not to be saved out at all. I have not yet run the JUnit tests. When this code is released we should warn in-house users to
 watch diffs carefully for lost tags. 
 
-============
-Bug Fixes
-============
-
-- flaky xp commit
-- graph viewer issue
-- filtering union_of cycles in OTE
-- lock view selection behavior
-- fixed root detection algorithm to detect inverse relations and display root
-
-[ geneontology-Bugs-2915594 ] Not saving
-[ geneontology-Bugs-2914257 ] When a term is cloned, intersections become relationships
-[ geneontology-Bugs-2828905 ] verification config in 2.1 test release
-[ geneontology-Bugs-2869195 ] text editor is not working
-[ geneontology-Bugs-2864861 ] replaced_by statement causing problems in SO
-[ geneontology-Bugs-2840516 ] no way to get to genus term while defing xps
-[ geneontology-Bugs-2840500 ] relation name vanishes
-[ geneontology-Bugs-2908106 ] OBO-merge fail
-[ geneontology-Bugs-2610787] disjointness violations not detected
-Duplicates:
-[ geneontology-Bugs-2821857] disjoint violations not being checked by RBR
-[ geneontology-Bugs-2749049]  disjoinedness check working?
-
-1st December:
-
-Jen Deegan: Added features to Search Results Table, Assert Implied Links Component 
-and Remove Redundant Links Component so that the results tables are just white with
- black borders in Windows rather than blue and white striped as in Mac OS X. This 
- was necessary as the stripey look was not working so well with the windows look and feel. 
-Jen Deegan: Updated standard.dict and allowedrepeats.dict.
-
-
-
-=========================================
-=========================================
-===  OBO-Edit 2.1beta1 RELEASE NOTES  === 
-
-================================
-What's New in OBO-Edit 2.1beta1
-================================
-FEATURES:
 - Assert Implied Links Component
 -- Displays impled links table and asserts selected links.
 -- Row sorting enabled (ascending and descending) for Child and Parent name columns
@@ -130,70 +135,25 @@ FEATURES:
 
 - NEW Configuration directory location: users home directory/oboedit_config
 
-
-===================================================================================
-*IMPORTANT* ANNOUNCEMENT FOR 2.1beta1 on Importing Settings From Previous Versions
-===================================================================================
-Config directory located in the users home directory and called "oboedit_config".
-Settings from the previous releases (OBO-Edit 1. 2.0 or 2.0 beta versions) are located in the 
-configuration folder found at the default application installation location of your operating system. 
-You can import the perspective and layout settings from previous versions to the folder called "oboedit_config".
-* Please note the config folder naming convention is not consistent with previous version.* 
-Config files can also be reset when required through the Configuration Manager.
-
-
-============
-Bug Fixes
-============
-- [ geneontology-Bugs-2750699 ] config manager memory settings option out of sync
-- [ geneontology-Bugs-2785074 ] OBO-Edit2-rc still present
-- [ geneontology-Bugs-2787869 ] very minor bug with saving filters
-- [ geneontology-Bugs-2812189 ] GAZ.obo not displayed correctly in OBOEdit2.0
-- [ geneontology-Bugs-2824732 ] obodiff is broken!
-- [ geneontology-Bugs-2818616] stop panel changes if click on top
-- [ geneontology-Bugs-2814791] OBO merge doesn't work!
-- [ geneontology-Bugs-2805373] Assert implied links - color table rows
-- [ geneontology-Bugs-2818549] parent search ignores relationship type
-- [ geneontology-Bugs-2815689] change tracker save 
-- [ geneontology-Bugs-2805371] Assert implied links - resize
-- [ geneontology-Bugs-2801684] OBO-Merge generates null-pointer exception
-- [ geneontology-Bugs-2790372] Mac version 2 does not generate log files
-- [ geneontology-Bugs-2749070] reasoner active even in OFF mode
-- [ geneontology-Bugs-2722323] assert implied links pop-up hogs focus and halts editing
-- [ geneontology-Bugs-2787869] very minor bug with saving filters
-- [ geneontology-Bugs-2815829] Simplify 'save implied links'
-- [ geneontology-Bugs-2722318] OTE local mode indication not intuitive
-- Fixed bug that stopped the box at the bottom of the history browser from appearing unless another component was clicked on. 
-(Part of OE2.0 - history browser minor bugs - ID: 2507044)
-- Fixed the history browser html message so it shows 'name (id)' rather then 'id (id)'.
-(Part of OE2.0 - history browser minor bugs - ID: 2507044)
-- Graphviz uses a lot of memory when you assign dbxrefs: ID: 2057452
-The Graphviz interface redraws have been removed for the bulk addition of dbxrefs. 
-Now there is only one redraw at the end of the bulk process.
-- Added new feature to OBOMerge so that it reports if any term has been edited in both the live and branch files. 
-- Added new feature to TermMergeHistoryItem, so it can update substitution tags that mention any term that
-is in the process of being subsumed in a merge. Fixes bug: ID: 2790775
+- Cloning behavior corrected - clones now persist on the same branch as the original term. 
 
 
 ============================
 Frequently Asked Questions
 ============================
-1. Why is there a beta release for OBO-Edit after the 2.0 official release?
-This version includes bug fixes and some new features while additional significant features are in the pipeline. 
-The 2.1 official release is pending completion of those features and fixing of bugs posted for 2.0.
 
-2. Why has the location of the configuration folder changed?
-In the previous versions the location of the config folder was a characteristic of the opterating system used. 
+1. Why has the location of the configuration folder changed?
+In the previous versions the location of the config folder was a characteristic of the operating system used. 
 This led to a lot of confusion and most users could not locate their config folder hence I decided to change it 
 to a standard location in the file system.
 
-3. What can I do to help?
+2. What can I do to help?
 The success of any software tool is dependent on feedback from the user community.
 Ways in which you can help:
         * Participate in OBO-Edit Working Group Weekly Meetings held on alternate Tuesday/Thursdays over webex and conference call.
         * You can subscribe to the OEWG meeting calendar here:
 https://www.google.com/calendar/render?cid=cDN1bXNkOG45bDMyYW5kbGR1M2xqcjNuazhAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&invEmailKey=geneontology-oboedit-working-group%40lists.sourceforge.net%3Af41cf4fbc1e0ab381b88e541f31307dd73d92ab1
-        * Email aabdulla[at]berkeleybop[dot]org if you experience issues subscribing to the OEWG meeting calendar.
+        * Email aabdulla [at] berkeleybop [dot] org if you experience issues subscribing to the OEWG meeting calendar.
         * Join the OBO-Edit Working Group sourceforge mailing list:     
 https://sourceforge.net/mailarchive/forum.php?forum_name=geneontology-oboedit-working-group
         * Program or Report New Features - Let us know your ideas for new features or how we can improve existing features.
@@ -201,6 +161,20 @@ https://sourceforge.net/mailarchive/forum.php?forum_name=geneontology-oboedit-wo
         * Add Documentation
         * Write Tutorials and put them up on the OBO-Edit wiki page
         * Help others learn to use OBO-Edit, etc.
+
+3. How can I file a bug report?
+If you have reproduced a bug in the most recent release and no-one else appears to have reported it, then report it on our sourceforge bug tracker:
+https://sourceforge.net/tracker/?atid=418257&group_id=36855&func=browse
+
+Effective bug reports are the most likely to be fixed. These guidelines 
+explain how to write such reports.
+    * Reproduce your bug using the most recent release, to see weather it has already been fixed.
+    * Be precise and clear - explain the behavior so others can reproduce the bug
+    * Limit bugs to one per report
+    * No bug is too trivial to report - small bugs may hide big bugs
+    * Clearly separate fact from speculation
+    * Search the Bugs Tracker to check weather your bug has already been reported
+        
 
 4. Where can I find the source code?
 http://wiki.geneontology.org/index.php/OBO-Edit:_Getting_the_Source_Code
@@ -212,7 +186,7 @@ https://sourceforge.net/mailarchive/forum.php?forum_name=geneontology-oboedit-wo
 
 6. Who develops OBO-Edit?
 Amina Abdulla at Berkeley Bioinformatics and Open Source Projects Group (BBOP),LBL,Berkeley,California is the lead OBO-Edit developer.
-You can email her at: aabdulla[at]berkeleybop[dot]org or attend a working group meeting to discuss any questions/comments about the tool.
+You can email her at: aabdulla [at] berkeleybop [dot] org or attend a working group meeting to discuss any questions/comments about the tool.
 
 
 ============
@@ -226,23 +200,7 @@ Documentation:
 Troubleshooting- add note about:
 https://sourceforge.net/tracker2/index.php?func=detail&aid=2683791&group_id=36855&atid=418257
 
-============
-Notes
-============
-Effective bug reports are the most likely to be fixed. These guidelines 
-explain how to write such reports.
-    * Reproduce your bug using the most recent release, to see weather it has already been fixed.
-    * Be precise and clear - explain the behavior so others can reproduce the bug
-    * Limit bugs to one per report
-    * No bug is too trivial to report - small bugs may hide big bugs
-    * Clearly separate fact from speculation
-    * Search the Bugs Tracker to check weather your bug has already been reported
-
-
-
-* Reporting a New Bug *
-- If you have reproduced a bug in the most recent release and no-one else 
-appears to have reported it, then report it on our sourceforge bug tracker:
-https://sourceforge.net/tracker/?atid=418257&group_id=36855&func=browse
-
-
+Known Issues - Upcoming fixes
+Parent Editor and Text Editor not in sync.
+Ontology Tree Editor - Name unnamed terms
+Renaming terms problematic in Text Editor
