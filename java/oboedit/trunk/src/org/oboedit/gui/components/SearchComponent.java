@@ -234,7 +234,7 @@ public class SearchComponent extends AbstractGUIComponent {
 					desc = " " + task.getResults().size() + " matches";
 				}
 				String title = (isShortenResultsDesc() ? ""
-						: "Search results: ")
+						: "  results: ")
 						+ desc;
 				String id = ComponentManager.getManager().showComponent(
 						ComponentManager.getManager().getFactory(
