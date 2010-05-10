@@ -1,0 +1,145 @@
+<!-- START template: homolset_annotation.tmpl -->
+<!-- SYMBOL = [% SYMBOL %] -->
+<!-- GRAPH_LINK_SVG = [% GRAPH_LINK_SVG %] -->
+<!-- GRAPH_LINK_PNG = [% GRAPH_LINK_PNG %] -->
+<!-- SUMMARY_LINK_MAIN = [% SUMMARY_LINK_MAIN %] -->
+<!-- SUMMARY_LINK_DETAILED = [% SUMMARY_LINK_DETAILED %] -->
+<!-- LOOKUP_FOR_TERM = [% LOOKUP_FOR_TERM %] -->
+<!-- LOOKUP_FOR_SPECIES = [% LOOKUP_FOR_SPECIES %] -->
+<!-- ORDERED_LIST_FOR_SPECIES = [% ORDERED_LIST_FOR_SPECIES %] -->
+<!-- ONTOLOGIES = [% ONTOLOGIES %] -->
+<!-- TERMS_BY_ONTOLOGY = [% TERMS_BY_ONTOLOGY %] -->
+
+<div class="contents">
+
+  <h1> Compare GO annotations for [% SYMBOL %] and its orthologs</h1>
+
+  <div class="block">
+
+    <h2>Information</h2>
+
+    <p>
+      This page contains detailed 
+      <a title="Top of summary"
+	 href="[% SUMMARY_LINK_MAIN %]">homology</a>
+      information for [% SYMBOL %].
+    </p>
+
+    <p>
+      A <em>text-only</em> entry indicates that the term
+      is <em>indirectly</em> annotated with the gene
+      product. A <em>colored</em> entry indicates that the term is
+      <em>directly</em> annotated with the gene product.
+
+      <!--
+      <a title="This symbol in the summary"
+	 href="[% SUMMARY_LINK_DETAILED %]">detailed</a>
+      -->
+    </p>
+    
+    <p>
+      You may also view the infomation on this page as an interactive
+      <a title="SVG graph"
+	 href="[% GRAPH_LINK_SVG %]">SVG</a>
+      (Firefox, Safari, or Opera required;
+      instructions are on the <a title="Instructions for interacting with the Reference Genome SVGs" href="http://wiki.geneontology.org">GO wiki</a>)
+      or as a static 
+      <a title="PNG graph"
+	 href="[% GRAPH_LINK_PNG %]">PNG</a>
+      image.
+    </p>
+
+    <p>
+      <b id="d_exp">&dagger;</b>:
+      gene product with EXP evidence only<br />
+      <b id="dd_exp">&Dagger;</b>:
+      gene product with ISS evidence only<br />
+    </p>
+
+    <p>
+      Jump to:
+	[% FOREACH ont = ONTOLOGIES %]
+	<a title="Jump to [% ont %]"
+	   href="#[% ont %]">[% ont %]</a>
+      [% END %]
+    </p>
+
+  </div>
+
+  <div class="block">
+
+    <h2>Summary for [% SYMBOL %]</h2>
+
+    [% FOREACH ont = ONTOLOGIES %]
+
+    <h3 id="[% ont %]">[% ont %]</h3>
+    <table style="border:1px solid #666666">      
+      <tr style="border:1px solid #666666">
+
+	<td style="border:1px solid #666666">GO Term ID</td>
+	<td style="border:1px solid #666666">Name</td>
+
+	[% FOREACH spec_id = ORDERED_LIST_FOR_SPECIES %]
+	<td style="border:1px solid #666666">
+	  [% LOOKUP_FOR_SPECIES.$spec_id.name %]
+	</td>
+	[% END %]
+
+      </tr>
+
+      [% FOREACH term_id = TERMS_BY_ONTOLOGY.$ont %]
+      <tr style="border:1px solid #666666">
+
+	<td style="border:1px solid #666666">
+	  <a href="[% LOOKUP_FOR_TERM.$term_id.term_details_link %]"
+	     title="Go to term detail page for [% term_id %]">[% term_id %]</a>
+	  [% $term_id %]
+	</td>
+	<td style="border:1px solid #666666">
+	  [% LOOKUP_FOR_TERM.$term_id.name %]
+	</td>
+
+	[% FOREACH spec_id = ORDERED_LIST_FOR_SPECIES %]
+	[%   gps = LOOKUP_FOR_TERM.$term_id.gene_products_by_taxa.$spec_id %]
+	[%   IF gps %]
+
+	[%     tmp_key = gps.keys.0 %]
+	[%     IF gps.keys && gps.keys.size == 1 && gps.$tmp_key.direct_p == 1 %]
+	<td style="border:1px solid #666666" bgcolor="[% LOOKUP_FOR_SPECIES.$spec_id.color %]">
+	[%     ELSE %]
+	<td style="border:1px solid #666666">
+	[%     END %]
+
+	  [%   FOREACH gid = gps.keys %]
+	  [%     g_struct = gps.$gid %]
+
+	  [%     IF g_struct.direct_p == 1 %]
+	  <span style="background-color: [% LOOKUP_FOR_SPECIES.$spec_id.color %];">
+	    <a title="[% g_struct.gp_symbol %]"
+	       href="[% g_struct.gp_link %]">[% g_struct.gp_symbol %]</a>[% IF g_struct.exp_only_p == 1 %]<sup><a title="EXP only" href="#d_exp">&dagger;</a></sup>[% END %][% IF g_struct.iss_only_p == 1 %]&nbsp;<sup><a title="ISS only" href="#dd_exp">&Dagger;</a></sup>[% END %]
+	  </span>
+	  [%     ELSE %]
+	    <a title="[% g_struct.gp_symbol %]"
+	       href="[% g_struct.gp_link %]">[% g_struct.gp_symbol %]</a>[% IF g_struct.exp_only_p == 1 %]<sup><a title="EXP only" href="#d_exp">&dagger;</a></sup>[% END %][% IF g_struct.iss_only_p == 1 %]&nbsp;<sup><a title="ISS only" href="#dd_exp">&Dagger;</a></sup>[% END %]
+	  [%     END %]
+	  [%   END %]
+	  [% ELSE %]
+	<td style="border:1px solid #666666">
+	  &nbsp;
+	  [% END %]
+	</td>
+	[% END %]
+
+      </tr>
+      [% END %]
+
+    </table>
+
+    [% END %]
+
+
+  </div>
+
+</div>
+
+<!-- END template: homolset_annotation.tmpl -->

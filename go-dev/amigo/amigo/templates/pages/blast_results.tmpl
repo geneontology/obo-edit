@@ -1,0 +1,50 @@
+[% USE HTML %]
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<!-- START template: blast_results.tmpl -->
+<html lang="en">
+	<head>
+		<title>AmiGO: BLAST Results</title>
+	[% INCLUDE header_info.tmpl %]
+	</head>
+	<body>
+[% INCLUDE header.tmpl %]
+		<div class="contents">
+		<h1>BLAST Results</h1>
+[% TRY;
+		IF error;
+			PROCESS message.tmpl;
+		END;
+		PROCESS blast_summary.tmpl;
+		#USE Dumper(indent=1) ; '<pre>'; Dumper.dump( data.product_h ); '</pre>';
+	IF data %]
+	<div class="block" id="result-[% seq_no %]">
+		<h2>Query Sequence</h2>
+		<blockquote>
+<p class="sequence">[% data.sequence.header %]<br>
+[% data.sequence.seq.chunk(60).join('<br>') %]</p>
+		</blockquote>
+	</div>
+	[% IF data.gplist;
+			PROCESS blast_results_table.tmpl;
+		END;
+		IF data.raw_data %]
+	<div class="block">
+		<h2>Raw Blast Data</h2>
+		<blockquote>
+<pre class="blast_data">[% data.raw_data %]</pre>
+		</blockquote>
+		<p class="toTop">
+			<a href="#top" title="Back to the top of the page">Back to top</a>
+		</p>
+	</div>
+	[% END;
+	END;
+	CATCH;
+		PROCESS error.tmpl;
+	END %]
+		</div>
+[% INCLUDE footer.tmpl %]
+	</body>
+</html>
+<!-- END template: blast_results.tmpl -->

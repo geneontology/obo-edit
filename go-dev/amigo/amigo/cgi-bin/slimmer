@@ -1,0 +1,1210 @@
+#!/usr/local/bin/perl -w
+####
+#### Tags that I use: BUG, TODO, WARN, NOTE, ASK
+####
+#### TODO: Make sure that all errors will work with all formats. Gunna
+#### need an error chooser pretty early on.
+####
+#### WARNING: The label resolve acceleration (LabelResolve) does not
+#### apply to the terms.
+####
+#### BUG: These need to be moved onto core for all caching and communication!
+####
+
+## Try to get the local environment sane.
+BEGIN {
+  require "config.pl" if -f "config.pl" ;
+  if( ! defined($ENV{GO_ROOT}) &&
+      -f "../cvs/go-dev/"){
+    $ENV{GO_ROOT} = "../cvs/go-dev";
+  }
+  die "cannot find templates: $!" if ! $ENV{AMIGO_TEMPLATE_PATHS};
+}
+use lib "$ENV{GO_ROOT}/go-perl";
+use lib "$ENV{GO_ROOT}/go-db-perl";
+use lib "$ENV{GO_ROOT}/amigo/perl";
+
+## Bring in necessaries.
+use utf8;
+use strict;
+use Template;
+use IO::Scalar;
+use GO::AppHandle;
+use GO::Parser;
+use AmiGO; # via "core" until integrated
+use AmiGO::Reader;
+use AmiGO::Slimmer;
+use AmiGO::LabelResolve;
+#use AmiGO::Error;
+
+my $core = AmiGO->new();
+my $google_id = $core->amigo_env('AMIGO_GOOGLE_ANALYTICS_ID') || '';
+
+## Set up CGI environment,
+use CGI qw/:standard/;
+use CGI::Carp qw(warningsToBrowser fatalsToBrowser);
+$CGI::POST_MAX=1024 * 100000;	## 100M uploads max.
+my $query = new CGI;
+
+
+## Before we do anything, we have to figure out what out ouput type is
+## going to be--the error handler will need this. Default is html.
+my $format = $query->param('format');
+if( $format && ( $format eq 'tab' ||
+		 $format eq 'xml' ||
+		 $format eq 'html' ) ){
+  ## OK, let it go.
+}else{
+  $format = 'html';
+}
+
+## With this, initiate the error handler.
+#my $amigo_error = AmiGO::Error->new({TYPE => $format});
+
+##########
+##
+## I hate to do this at the top, but we need this to get names of the
+## different subsets, databases, evcodes, etc. for creating the
+## initial page. Ask the db...
+##
+##########
+
+use GO::CGI::Utilities;
+my $apph = GO::CGI::Utilities::create_apph();
+
+#my $apph = GO::AppHandle->connect(-dbname=>$ENV{GO_DBNAME},
+#				  -dbhost=>$ENV{GO_DBHOST});
+## Need these for errors.
+my $time_stamp = 'unknown';
+my $html_url = $ENV{AMIGO_HTML_URL};
+
+## First check.
+server_die_template({MESSAGE => "Could not connect to GO database.",
+		     STAMP => $time_stamp, URL => $html_url})
+  if ! $apph;
+
+## Correct the time assuming that we have the handle.
+my $instance_hash = $apph->instance_data();
+$time_stamp = $instance_hash->{release_name} if $instance_hash->{release_name};
+
+
+## Available subsets.
+my $apph_subset_hash = {};
+foreach my $tmp_slim (@{$apph->get_terms({term_type=>"subset"})}){
+  $apph_subset_hash->{$tmp_slim->acc} = $tmp_slim->name; }
+
+## Available species databases.
+my $apph_sd_hash = {};
+my $tmp_apph_sd_hash = $core->source();
+foreach my $src (keys %$tmp_apph_sd_hash) {
+  $apph_sd_hash->{$src} = $src;
+}
+
+## Available evidence codes.
+my $apph_evcode_hash = {};
+%{$apph_evcode_hash} = map {$_ => $_} $apph->evidence_codes;
+
+## Available evidence codes.
+my $apph_ontology_hash = {};
+$apph_ontology_hash->{biological_process} = 'Biological Process';
+$apph_ontology_hash->{cellular_component} = 'Cellular Component';
+$apph_ontology_hash->{molecular_function} = 'Molecular Function';
+
+
+##########
+##
+## Sanity check all possible incoming parameters:
+##
+## Flow arguments:
+## 'session_id' maintain for the time being so we can easily link back into
+##              the main AmiGO bits
+## 'request' drop into data mode, build data structure
+## 'force' this will force continuation instead of dying for *small*
+##          problems
+##
+## Results arguments:
+## 'output' what we output (e.g. map, gafile, count, etc.)
+## 'format' how we output (e.g. html (partial), tab (partial), xml (TODO))
+##
+## Data arguments:
+## 'bucket' generate and display bucket terms
+## 'subset' a subset id from the database
+## 'slim_file' content of a slim file (post)
+## 'slim_list' list of terms for slim
+## 'gp_file' content of a gene association file (post)
+## 'gp_list' list of gps for slim
+##
+## Filter arguments:
+## 'ontology'
+## 'speciesdb'
+## 'evcode'
+##
+##########
+
+my $upper_arg_size_limit = 256;
+my $upper_list_arg_size_limit = 100000;
+
+
+## Optional--if we don't have it, don't make a new one (for now...)
+my $session_id = $query->param('session_id');
+my $session_id_for_url = 'session_id=';
+if( $session_id ){
+  $session_id_for_url .= $session_id;
+}
+
+
+## Required
+my $request = $query->param('request');
+if( $request && $request ne 'results' ){
+  #$amigo_error->error({ERROR_MESSAGE =>
+  #		       'illegitimate request type (unknown value)',
+  #		       ERROR_LIST => ['eenie','meenie']})
+  #&& exit(-1);
+  client_die_template({STAMP => $time_stamp, URL => $html_url,
+		       MESSAGE => 'illegitimate request type (unknown value)'});
+}
+
+##
+my $force = $query->param('force');
+if( $force && ( $force ne 'yes' &&  $force ne 'no' ) ){
+  client_die_template({STAMP => $time_stamp, URL => $html_url,
+		       MESSAGE => 'illegitimate force value'});
+}
+if( $force && $force eq 'yes' ){
+  $force = 1; }
+else{
+  $force = 0; }
+
+
+## What do we want to output?
+my $output = $query->param('output');
+if( $output && length($output) > $upper_arg_size_limit ){
+  client_die_template({STAMP => $time_stamp, URL => $html_url,
+		       MESSAGE => "illegitimate output value"});
+}elsif( $output && ( $output eq 'fullmap' ||
+		     $output eq 'minimap' ||
+ 		     $output eq 'minicount' ||
+ 		     $output eq 'fullcount' ||
+		     $output eq 'assoc' ) ){
+  ## OK, let it go.
+}elsif( $output ){
+  client_die_template({STAMP => $time_stamp, URL => $html_url,
+		       MESSAGE => "unknown output value"});
+}
+
+
+## "bucket" will be 1 or 0 and the end of this block.
+my $bucket = $query->param('bucket');
+if( $bucket ){
+  if( $bucket eq 'yes' ){
+    $bucket = 1;
+  }elsif( $bucket eq 'no' ){
+    $bucket = 0;
+  }else {
+    client_die_template({STAMP => $time_stamp, URL => $html_url,
+			 MESSAGE => 'illegitimate bucket value'});
+  }
+}else {
+  $bucket = 0;
+}
+
+
+## Identifier of a subset from the database.
+my $subset = $query->param('subset');
+if( $subset && length($subset) > $upper_arg_size_limit ){
+  client_die_template({STAMP => $time_stamp, URL => $html_url,
+		       MESSAGE => "illegitimate subset value"});
+}elsif( $subset && ! $apph_subset_hash->{$subset} ){
+  client_die_template({STAMP => $time_stamp, URL => $html_url,
+		MESSAGE => "unknown subset value"});
+}
+
+## The content of a slim file to be created.
+my $slim_filehandle = $query->upload('slim_file');
+my $slim_filehandle_type = 'list';
+if ( ! $slim_filehandle  && $query->cgi_error() ){
+  my $error = $query->cgi_error();
+  server_die_template({STAMP => $time_stamp, URL => $html_url,
+		MESSAGE => "slim_file upload failed: $error "});
+}else{
+  if ( $slim_filehandle ){
+    if ( $slim_filehandle =~ /\.gz/i ||
+	 $slim_filehandle =~ /\.bz/i ||
+	 $slim_filehandle =~ /\.bz2/i ||
+	 $slim_filehandle =~ /\.zip/i ||
+	 $slim_filehandle =~ /\.z/i ||
+	 $slim_filehandle =~ /\.tgz/i ) {
+      server_die_template({STAMP => $time_stamp, URL => $html_url,
+			   MESSAGE =>
+			   "AmiGO does not currently accept compressed files. ".
+			   "Please uncompress your file and try again."});
+    }elsif ( $slim_filehandle =~ /\.obo/i ) {
+      $slim_filehandle_type = 'obo';
+    }
+  }
+}
+
+## Term ids in the input box for slim.
+my $slim_list = $query->param('slim_list');
+if( $slim_list && length($slim_list) > $upper_list_arg_size_limit ){
+  client_die_template({STAMP => $time_stamp, URL => $html_url,
+		MESSAGE => 'illegitimate slim list value'});
+}
+if( $slim_list && $slim_list !~ /[a-z0-9]/i ){ # text in there too
+  $slim_list = '';
+}
+
+## The content of an gene association file to be created.
+my $gp_filehandle = $query->upload('gp_file');
+if ( ! $gp_filehandle  && $query->cgi_error() ){
+  my $error = $query->cgi_error();
+  client_die_template({STAMP => $time_stamp, URL => $html_url,
+		MESSAGE => "gp_file upload failed: $error "});
+}else{
+  if ( $gp_filehandle && (
+			  $gp_filehandle =~ /\.gz/i ||
+			  $gp_filehandle =~ /\.bz/i ||
+			  $gp_filehandle =~ /\.bz2/i ||
+			  $gp_filehandle =~ /\.zip/i ||
+			  $gp_filehandle =~ /\.z/i ||
+			  $gp_filehandle =~ /\.tgz/i ) ){
+    server_die_template({STAMP => $time_stamp, URL => $html_url,
+			 MESSAGE =>
+			 "AmiGO does not currently accept compressed files. " .
+			 "Please uncompress your file and try again."});
+  }
+}
+
+## Gene labels in the input box for slim processing.
+my $gp_list = $query->param('gp_list');
+if( $gp_list && length($gp_list) > $upper_list_arg_size_limit ){
+  client_die_template({STAMP => $time_stamp, URL => $html_url,
+		       MESSAGE => 'illegitimate gene list value'});
+}
+if( $gp_list && $gp_list !~ /[a-z0-9]/i ){ # text in there too
+  $gp_list = '';
+}
+
+## What is the GP file type?
+my $gp_file_type = $query->param('gp_file_type');
+if( $gp_file_type && length($gp_file_type) > $upper_arg_size_limit ){
+  client_die_template({STAMP => $time_stamp, URL => $html_url,
+		       MESSAGE => "illegitimate gp_file_type value"});
+}elsif( $gp_file_type && ( $gp_file_type eq 'list' ||
+			   $gp_file_type eq 'ga' ) ){
+  ## OK, let it go.
+}elsif( $gp_file_type ){
+  client_die_template({STAMP => $time_stamp, URL => $html_url,
+		       MESSAGE => "unknown gp_file_type value"});
+}
+
+## There's a reason for all this oddness: CGI was taking empty
+## arguments and making legitimate arrays out of them.
+my @speciesdbs = ();
+my @in_speciesdbs = $query->param('speciesdb');
+if( @in_speciesdbs ){
+  foreach my $speciesdb (@in_speciesdbs){
+    if( $speciesdb ){
+      if( length($speciesdb) > $upper_arg_size_limit ){
+	client_die_template({STAMP => $time_stamp, URL => $html_url,
+			     MESSAGE => 'illegitimate speciesdb value'});
+      }elsif( ! $apph_sd_hash->{$speciesdb} ){
+	client_die_template({STAMP => $time_stamp, URL => $html_url,
+			     MESSAGE =>'unknown speciesdb value: '.$speciesdb});
+      }
+      push @speciesdbs, $speciesdb;
+    }
+  }
+}else{
+  @speciesdbs = ();
+}
+
+##
+my @ontologies = ();
+my @in_ontologies = $query->param('ontology');
+if( @in_ontologies ){
+  foreach my $ontology (@in_ontologies){
+    if( $ontology ){
+      if( length($ontology) > $upper_arg_size_limit ){
+	client_die_template({STAMP => $time_stamp, URL => $html_url,
+			     MESSAGE => 'illegitimate ontology value'});
+      }elsif( $ontology && ! $apph_ontology_hash->{$ontology} ){
+	client_die_template({STAMP => $time_stamp, URL => $html_url,
+			     MESSAGE => 'unknown ontology value: ' .$ontology});
+      }
+      push @ontologies, $ontology;
+    }
+  }
+}else{
+  @ontologies = ();
+}
+
+##
+my @evcodes = ();
+my @in_evcodes = $query->param('evcode');
+if( @in_evcodes ){
+  foreach my $evcode (@in_evcodes){
+    if( $evcode ){
+      if( length($evcode) > $upper_arg_size_limit ){
+	client_die_template({STAMP => $time_stamp, URL => $html_url,
+			     MESSAGE => 'illegitimate evcode value'});
+      }elsif( $evcode && ! $apph_evcode_hash->{$evcode} ){
+	client_die_template({STAMP => $time_stamp, URL => $html_url,
+			     MESSAGE => 'unknown evcode value: ' . $evcode});
+      }
+      push @evcodes, $evcode;
+    }
+  }
+}else{
+  @evcodes = ();
+}
+
+##########
+##
+## Set defaults for values that will be used during template
+## processing.
+##
+##########
+
+## Main/default template.
+my $template = 'slimmer_main.tmpl';
+
+## Main template variable.
+my $vars = {};
+
+## TODO: Temporary fix until new framework brought in.
+## Variables for AmiGO
+$vars->{session_id} = $session_id;
+$vars->{session_id_for_url} = $session_id_for_url;
+$vars->{show_goose_links} = $ENV{AMIGO_SHOW_GOOSE_LINKS} || 0;
+$vars->{SHOW_BLAST_P} = $ENV{AMIGO_SHOW_BLAST} || 0;
+$vars->{BETA} = $core->amigo_env('AMIGO_BETA') || 0;
+$vars->{TROUBLE} = $core->amigo_env('AMIGO_TROUBLE_SWITCH') || 0;
+$vars->{TROUBLE_MESSAGE} = $core->amigo_env('AMIGO_TROUBLE_MESSAGE') || '';
+$vars->{GOOGLE_ANALYTICS_ID} = $google_id;
+$vars->{VERSION} = $core->amigo_env('VERSION') || 'unknown';
+
+## Variables for GUI
+$vars->{AVAILABLE_SUBSETS} = $apph_subset_hash; # Subsets we can choose from.
+$vars->{AVAILABLE_ONTOLOGIES} = $apph_ontology_hash; # Onts we can choose from.
+$vars->{AVAILABLE_SPECIESDBS} = $apph_sd_hash; # DBs we can choose from.
+$vars->{AVAILABLE_EVCODES} = $apph_evcode_hash; # Evcodes we can choose from.
+%{$vars->{ECHO_ONTOLOGIES}} = map { $_ => 1 } @ontologies;
+%{$vars->{ECHO_SPECIESDBS}} = map { $_ => 1 } @speciesdbs;
+%{$vars->{ECHO_EVCODES}} = map { $_ => 1 } @evcodes;
+$vars->{ECHO_SUBSET} = $subset; # Our current subset.
+$vars->{ECHO_SLIM_LIST} = $slim_list;
+$vars->{ECHO_GP_LIST} = $gp_list;
+
+## Variables for results.
+$vars->{DISPLAY_MAIN_RESULTS} = $output; # What results to show.
+$vars->{USE_BUCKET_RESULTS} = $bucket; # Show bucket within a results page.
+
+## Different results buffers.
+$vars->{NUMBER_OF_RESULTS} = 0; # general counter
+$vars->{NUMBER_OF_ADDED_TERMS} = -1;
+$vars->{NUMBER_OF_ADDED_GPS} = -1;
+$vars->{MAPPINGS} = []; # for fullmap and minimap
+$vars->{COUNTINGS} = []; # for getting counts
+$vars->{LINES} = []; # for ouputting a new GA file
+
+$vars->{DISPLAY_MISSING_TERMS} = 0; # show
+$vars->{MISSING_TERMS} = []; # terms not found
+$vars->{DISPLAY_MISSING_GPS} = 0; # show
+$vars->{MISSING_GPS} = []; # gps not found
+
+$vars->{DISPLAY_DUPLICATE_TERMS} = 0; # show
+$vars->{DUPLICATE_TERMS} = []; # dupe terms
+$vars->{DISPLAY_DUPLICATE_GPS} = 0; # show
+$vars->{DUPLICATE_GPS} = []; # dupe gps
+
+$vars->{DISPLAY_REPEAT_GPS} = 0; # show
+$vars->{REPEAT_GPS} = {}; # repeat gps
+
+$vars->{T2G_MAPS} = {}; # how terms map to gps
+
+## A couple of things for template niceness.
+$vars->{LAST_UPDATE_STRING} = localtime( (stat($0))[9] ) || 'unknown';
+$vars->{HTML_URL} = $ENV{AMIGO_HTML_URL};
+
+$core->kvetch("___here 1");
+
+## The minimum we need to attempt a data run is the request, and both
+## a slim and genes defined in some form.
+if( $request && $request eq 'results' ){
+
+  ## Gotta have a format and a target output.
+  client_die_template({STAMP => $time_stamp, URL => $html_url,
+		       MESSAGE => "Need to have an output type."}) if ! $output;
+  client_die_template({STAMP => $time_stamp, URL => $html_url,
+		       MESSAGE => "Need to have a format type."}) if ! $format;
+
+  ## BUGGY/HACK: Force the mapping files to be downloaded. This should
+  ## be cleaned later when we work the format stuff out better.
+  if( $output eq 'fullmap' ){
+      #  if( $output eq 'fullmap' ||
+      #      $output eq 'assoc' ||
+      #      $output eq 'count' ||
+      #     $output eq 'minimap' ){
+      $format = 'tab';
+   }
+
+  ## TODO: Other filters in.
+  $apph->filters({}); # workaround for null case bug
+  $apph->filters({speciesdb=>\@speciesdbs}) if @speciesdbs;
+  $apph->filters({evcodes=>\@evcodes}) if @evcodes;
+  #$apph->filters({ontology=>\@ontologies}) if @ontologies;
+
+  ##
+  ## Let's bring in the subset terms, whatever their source.
+  ##
+
+  $core->kvetch("___here 2");
+
+  ## Make sure that we only have one input.
+  if( ( $slim_list && $slim_filehandle ) ||
+      ( $slim_filehandle && $subset ) ||
+      ( $subset && $slim_list ) ){
+    client_die_template({STAMP => $time_stamp, URL => $html_url,
+			 MESSAGE =>
+			 "Please choose just a single GO slim term input method."});
+  }
+
+  ##
+  my %slim_set_hash = (); # see BUG below
+  my $slim_set = [];
+  ## Source is a text list or a uploaded list (go_list or obo format)
+  if( $slim_list || $slim_filehandle ){
+
+    ## Convert incoming whatever to a filehandle.
+    my $fh;
+    my $type = 'none';
+    if( $slim_list ){
+      $fh = new IO::Scalar \$slim_list;
+      $type = 'list';
+    }elsif( $slim_filehandle ){
+      $fh = $slim_filehandle;
+      $type = 'file';
+    }
+
+    ## Get all the nodes from the graph.
+    ## Get any in the textarea.
+    my $reader;
+    if( $slim_filehandle_type eq 'obo' ){
+      $reader = AmiGO::Reader->new('obo_text', 'sessions/scratch');
+    }else {
+      $reader = AmiGO::Reader->new('go_ids', 'sessions/scratch');
+    }
+    my $tmp_term_l = $reader->readh($fh);
+    client_die_template({STAMP => $time_stamp, URL => $html_url,
+			 MESSAGE => "Failed on term input ($type): " .
+			 $reader->error_message})
+      if ! $reader->success;
+
+    ## Convert the temporary "term" list into a GO term list (fill out
+    ## the data structures and find synonyms as necessary).
+    foreach my $term (@$tmp_term_l){
+
+      ## Complete the term with products.
+      my $t = $apph->get_term({acc => $term->acc});
+
+      if( $t ){
+
+ 	## Remove the term dupes. BUG: This does nothing as the dupes
+ 	## are removed by {PARSER}->parse();
+	if( ! $slim_set_hash{$t->acc} ){
+	  $slim_set_hash{$t->acc} = 1;
+	  push @$slim_set, $t;
+	}else{
+	  push @{$vars->{DUPLICATE_TERMS}}, $t->acc;
+	  $vars->{DISPLAY_DUPLICATE_TERMS} = 1;
+	}
+
+      }else{
+
+	## Die or tally it and continue.
+	$t =  $apph->get_term({synonym => $term->acc});
+	if ( $force ) {
+	  push @{$vars->{MISSING_TERMS}}, $term->acc;
+	  $vars->{DISPLAY_MISSING_TERMS} = 1;
+	}else {
+	  client_die_template({STAMP => $time_stamp, URL => $html_url,
+			       MESSAGE =>
+			       "Term in slim terms not found in ontology: " .
+			       $term->acc});
+	}
+      }
+    }
+
+  ## Source is a subset.
+  }elsif( $subset ){
+
+    ## Pull terms from a subset.
+    $slim_set = $apph->get_terms({subset=>$subset});
+
+  }else{
+    client_die_template({STAMP => $time_stamp, URL => $html_url,
+			 MESSAGE => "No subset defined."});
+  }
+
+  ## We did get something, right?
+  client_die_template({STAMP => $time_stamp, URL => $html_url,
+		       MESSAGE => "No terms in defined subset."})
+    if ! $slim_set || ! @$slim_set;
+
+  ## DEBUG
+  #my $foo = '';
+  #foreach my $term (@$slim_set){
+  #  $foo .= '(' . $term->acc . ' [' . $term->name . ']) '; }
+  #die_template({STAMP => $time_stamp, URL => $html_url,
+  #MESSAGE => "got there: " . $foo});
+
+
+  $core->kvetch("___here 3");
+
+  ## Resolve into graphs.
+  my $ontology_graph = $apph->get_graph(-template=>{terms=>{acc=>1}});
+
+  $core->kvetch("___here 4");
+
+  my $slim_graph = $apph->get_graph_by_terms(-terms=>$slim_set, -depth=>0);
+
+  $core->kvetch("___here 5");
+
+  ## Snag the roots.
+  my $ont_roots = {};
+  foreach ( @{$apph->get_ontology_root_terms } ){
+    if ( ! $_->is_obsolete ) {
+      $ont_roots->{$_->acc} = $_;
+    }
+  }
+
+  ## There is (may be) an error in here in some circumstances--this is
+  ## to help catch it if it surfaces again.
+  my $e1 = 1;
+  my $e2 = 1;
+  my $e3 = 1;
+  my $e4 = 1;
+  $e1 = 2 if ! $ontology_graph;
+  $e2 = 3 if ! $slim_graph;
+  $e3 = 5 if ! $slim_set;
+  $e4 = 7 if ! $ont_roots;
+  my $e = $e1 * $e2 * $e3 * $e4;
+
+  ## Shall we use buckets?
+  my $slim = AmiGO::Slimmer->new($ontology_graph, $slim_graph,
+				 $slim_set, $ont_roots,
+				 $vars->{USE_BUCKET_RESULTS});
+  server_die_template({STAMP => $time_stamp, URL => $html_url,
+		       MESSAGE => "failed to generate slim object ".
+		       "(error code: $e): " .
+		       $slim->error_message})
+    if ! $slim->success;
+
+  $core->kvetch("___here 6");
+
+  ##
+  ## From here on out, the output flows diverge...really, into fullmap
+  ## and everything else.
+  ##
+  if( $output eq 'fullmap' ){
+
+    ## This doesn't require any gene input, so easy.
+    $vars->{MAPPINGS} = $slim->get_ontology_mappings();
+    server_die_template({STAMP => $time_stamp, URL => $html_url,
+			 MESSAGE =>
+			 "failed to get mapping: " . $slim->error_message})
+      if ! $slim->success;
+
+  }else{
+
+    ##
+    client_die_template({STAMP => $time_stamp, URL => $html_url,
+			 MESSAGE =>
+			 "A gene product list is necessary ".
+			 "for this operation: "})
+      if ! $gp_list && ! $gp_filehandle && ! scalar(@speciesdbs);
+
+    ## ...but only one sample...
+    if( $gp_filehandle && $gp_list ){
+      client_die_template({STAMP => $time_stamp, URL => $html_url,
+			   MESSAGE => "Please choose just a single  gene " .
+			   "product input method: ".
+			   "you have selected at least two."});
+    }
+
+    ## Convert incoming whatever to a term list.
+    #my %complete_gp_hash = ();
+    my $gp_term_l = [];
+    if( $gp_list || ( $gp_filehandle && $gp_file_type eq 'list' ) ){
+
+      ## Convert a list into the list.
+      if( $gp_filehandle && $gp_file_type eq 'list' ){
+	my @minibuf = ();
+	while ( <$gp_filehandle> ) {
+	  push @minibuf, $_; }
+	$gp_list = join ' ', @minibuf;
+      }
+
+      ## Get genes in textarea. This must be done the old fashioned
+      ## way because we don't pass the apph to the reader. Changing
+      ## this might be a TODO item.
+
+      ## May be an incoming spammer--stop them.
+      if( $gp_list =~ /http\:\/\//gos ){
+	client_die_template({MESSAGE =>
+			     'illegitimate gene list value: URLs not allowed',
+			     STAMP => $time_stamp, URL => $html_url});
+      }
+
+      ## Tokenize--crop trailing and leading ws, split on ws-like
+      ## things.
+      #       $gp_list =~ s/^\s+//;
+      #       $gp_list =~ s/\s+$//;
+      #       my @gp_list = split /\s+/, $gp_list;
+      my @gp_list = @{$core->clean_gene_product_list($gp_list)};
+
+      ##
+      my $lresolve = AmiGO::LabelResolve->new($apph->dbh, \@speciesdbs);
+      $lresolve->convert_list(\@gp_list);
+
+      ##
+      my $duplicate_list = $lresolve->get_duplicate_gps();
+      if( scalar(@$duplicate_list) ){
+	push @{$vars->{DUPLICATE_GPS}}, @$duplicate_list;
+	$vars->{DISPLAY_DUPLICATE_GPS} = 1;
+      }
+
+      ##
+      my $missing_list = $lresolve->get_missing_gps();
+      if( scalar(@$missing_list) ){
+	if ( $force ) {
+	  push @{$vars->{MISSING_GPS}}, @$missing_list;
+	  $vars->{DISPLAY_MISSING_GPS} = 1;
+	}else {
+	  client_die_template({STAMP => $time_stamp, URL => $html_url,
+			       MESSAGE => "Couldn't find: " . @$missing_list .
+			       ' with current filters. ' .
+			       'If the filters are correct, ' .
+			       'the gene product may not be present in the ' .
+			       'GO database.'});
+	}
+      }
+
+      ## Warn about repeats.
+      my $repeat_hash = $lresolve->get_repeat_gps_hash();
+      $core->kvetch("::: sample repeat :" . scalar(keys %$repeat_hash) . ' '.
+		    $repeat_hash);
+      if( scalar(keys %$repeat_hash) ){
+	if ( $force ) {
+	  $vars->{REPEAT_GPS} = $repeat_hash;
+	  $vars->{DISPLAY_REPEAT_GPS} = 1;
+	}else {
+	  client_die_template({STAMP => $time_stamp, URL => $html_url,
+			       MESSAGE => keys(%$repeat_hash) .
+			       ' were found in multiple species '.
+			       'in the sample set.'});
+	}
+      }
+
+      ## Check to see if the filters actually removed everything.
+      my $good_list = $lresolve->get_good_gps();
+      #my $gp_term_l = [];
+      if ( $good_list && scalar(@$good_list) ){
+	$gp_term_l = $apph->get_terms({product_accs=>$good_list});
+      }
+
+      $core->kvetch("___here 8");
+
+      ## We did get something, right? Check to see if the filters hacked
+      ## everything out.
+      if( ! $gp_term_l || ! @$gp_term_l ){
+	client_die_template({STAMP => $time_stamp, URL => $html_url,
+			     MESSAGE => $gp_list .
+			     ': could not be found with the current filters. ' .
+			     'If the filters are correct, ' .
+			     'the gene product may not be present in the ' .
+			     'GO database.'});
+      }
+
+      ##
+      #$slim->add_list($gp_term_l, 0);
+      $slim->add_list($gp_term_l, 1);
+      server_die_template({STAMP => $time_stamp, URL => $html_url,
+			   MESSAGE => "Problem with adding list: " .
+			   $slim->error_message})
+	if ! $slim->success;
+
+      $core->kvetch("___here 9 (out)");
+
+    }elsif( $gp_filehandle && $gp_file_type eq 'ga' ){
+      ## Get gene associations in upload.
+      my $reader = AmiGO::Reader->new('go_assoc', 'sessions/scratch');
+      $gp_term_l = $reader->readh($gp_filehandle);
+      server_die_template({STAMP => $time_stamp, URL => $html_url,
+			   MESSAGE => "Failed on association input (file): " .
+			   $reader->error_message})
+	if ! $reader->success;
+
+      ## We did get something, right? Check to see if the filters hacked
+      ## everything out.
+      if( ! $gp_term_l || ! @$gp_term_l ){
+	client_die_template({STAMP => $time_stamp, URL => $html_url,
+		      MESSAGE => $gp_list .
+		      ': could not be found in the file with ' .
+		      'the current filters. ' .
+		      'If the filters are correct, ' .
+		      'the gene product may not be present in the ' .
+		      'GO database.'});
+      }
+
+      ##
+      $slim->add_list($gp_term_l, 0);
+      server_template({STAMP => $time_stamp, URL => $html_url,
+		       MESSAGE => "Problem with adding list: " .
+		       $slim->error_message})
+	if ! $slim->success;
+
+    }elsif( scalar(@speciesdbs) ){
+
+      $core->kvetch("___here 11 (in)");
+
+#        my $all_products = $apph->get_products({speciesdbs => \@speciesdbs});
+#        my $dbid_list = [];
+#        foreach my $p (@$all_products){
+#  	push @$dbid_list, $p->acc;
+# 	$core->kvetch("___foo: " . $p->acc);
+#        }
+#       $gp_term_l = $apph->get_terms({product_accs => $dbid_list});
+#       $slim->add_list($gp_term_l, 1);
+
+      ## If nothing above is there, and we have a source defined, use
+      ## that instead.
+      ## Alternate method of we need speed.
+      my $lresolve = AmiGO::LabelResolve->new($apph->dbh, \@speciesdbs);
+      my $good_list = $lresolve->all_accs();
+      $gp_term_l = $apph->get_terms({product_accs => $good_list});
+
+      $core->kvetch("___good list from 11: " . scalar(@$good_list));
+      $core->kvetch("___gp term list from 11: " . scalar(@$gp_term_l));
+
+      $slim->add_list($gp_term_l, 1);
+
+    }else{
+      die "Impossible doesn\'t mean what I think it means.";
+    }
+
+
+    #die "TEST: " . scalar(@$gp_term_l) . " : " . $$gp_term_l[0];
+
+    ##
+    ## Do actual operations over the slim object.
+    ##
+    if( $output eq 'minimap' ){
+
+      ##
+      $vars->{MAPPINGS} = $slim->get_association_mappings();
+      server_die_template({STAMP => $time_stamp, URL => $html_url,
+			   MESSAGE => "Problem with minimap: " .
+			   $slim->error_message})
+	if ! $slim->success;
+
+    }elsif( $output eq 'minicount' || $output eq 'fullcount' ){
+
+      $core->kvetch("___here count: " . $output);
+      $core->kvetch("___raw bucket: " . $bucket);
+      $core->kvetch("___bucket: " . $vars->{USE_BUCKET_RESULTS});
+
+      ## Decide whether or not we give the gene list after the count.
+      $vars->{GPLIST_P} = 0;
+      if( $output eq 'fullcount' ){
+	$vars->{GPLIST_P} = 1;
+      }
+
+      ## Peel out the count structures.
+      #$vars->{COUNTS} = $slim->get_counts();
+      my $count_struct = $slim->get_counts();
+      $vars->{BP_COUNTS} = $count_struct->{BP};
+      $vars->{CC_COUNTS} = $count_struct->{CC};
+      $vars->{MF_COUNTS} = $count_struct->{MF};
+      if( $vars->{USE_BUCKET_RESULTS} ){
+	$vars->{BUCKET_COUNTS} = $count_struct->{BUCKET} || [];
+      }
+
+      ## Collect the total count.
+      #$vars->{NUMBER_OF_RESULTS} = scalar(@{$vars->{COUNTS}});
+      $vars->{DISPLAY_BP_RESULTS} = scalar( @{ $vars->{BP_COUNTS} } );
+      $vars->{DISPLAY_CC_RESULTS} = scalar( @{ $vars->{CC_COUNTS} } );
+      $vars->{DISPLAY_MF_RESULTS} = scalar( @{ $vars->{MF_COUNTS} } );
+      if( $vars->{BUCKET_COUNTS} ){
+	$vars->{DISPLAY_BUCKET_RESULTS} = scalar( @{ $vars->{BUCKET_COUNTS} } );
+      }
+
+      ##
+      $vars->{NUMBER_OF_RESULTS} = $vars->{DISPLAY_BP_RESULTS}
+	+ $vars->{DISPLAY_CC_RESULTS}
+	  + $vars->{DISPLAY_MF_RESULTS};
+
+      server_die_template({STAMP => $time_stamp, URL => $html_url,
+			   MESSAGE => "Problem with counting: " .
+			   $slim->error_message})
+	if ! $slim->success;
+
+      $vars->{NUMBER_OF_TERMS} = $slim->get_number_of_added_terms();
+      $vars->{NUMBER_OF_GPS} = $slim->get_number_of_added_gps();
+      $vars->{T2G_MAPS} = $slim->get_terms_to_gps_mappings();
+      $vars->{ONT_ROOT_ASSOC} = $slim->get_ontology_roots_association_hash();
+
+      ## See if anybody is missed.
+      $vars->{MISSED_GPS} = $slim->get_missed();
+      $vars->{DISPLAY_MISSED_GPS} = scalar( keys %{$vars->{MISSED_GPS}} );
+      ## An arrified version.
+      $vars->{MISSED_GPS_ARRAY} = [];
+      foreach my $mgps (keys %{$vars->{MISSED_GPS}}){
+	push @{$vars->{MISSED_GPS_ARRAY}},
+	  {
+	   BEST_SYMBOL => $vars->{MISSED_GPS}{$mgps},
+	   ACC => $mgps,
+	  };
+      }
+      my @sorted_missed_gps = sort {
+	return lc($a->{BEST_SYMBOL}) cmp lc($b->{BEST_SYMBOL});
+      } @{$vars->{MISSED_GPS_ARRAY}};
+      $vars->{MISSED_GPS_ARRAY} = \@sorted_missed_gps;
+
+    }elsif( $output eq 'assoc' ){
+
+      ##
+      $vars->{LINES} = $slim->get_columns();
+      server_die_template({STAMP => $time_stamp, URL => $html_url,
+			   MESSAGE => "Problem with new assiciation file: " .
+			   $slim->error_message})
+	if ! $slim->success;
+
+    }else{
+      client_die_template({STAMP => $time_stamp, URL => $html_url,
+			   MESSAGE => "output error (1)"});
+    }
+  }
+}
+
+
+##########
+##
+## Publish results using template or direct file download.
+##
+##########
+
+if( $format eq 'html' ){
+
+  ## Template runtime parameters.
+  my $tt = Template->new({
+			  INCLUDE_PATH => $ENV{AMIGO_TEMPLATE_PATHS},
+			  EVAL_PERL => 1,
+			  #PRE_CHOMP => 1,
+			  #POST_CHOMP => 1,
+			  TRIM => 1,
+			  RECURSION => 1
+			 });
+
+  html_header();
+  $tt->process($template, $vars) ||
+    server_die_template({STAMP => $time_stamp, URL => $html_url,
+			 MESSAGE => "failed to process $template"});
+
+}elsif( $format eq 'tab' ){
+
+  ## Hand emit.
+  #unknown_header();
+  text_header();
+
+  if( $output eq 'fullmap' || $output eq 'minimap' ){
+    foreach my $row (@{ $vars->{MAPPINGS} }){
+
+      # acc
+      print $row->{ACC};
+      print "\t";
+
+      # leaves
+      my @minibuf = ();
+      foreach my $leaf (@{ $row->{LEAVES} }){
+	push @minibuf, $leaf;
+      }
+      my $string = join ' ', @minibuf;
+      print $string;
+      print "\t";
+
+      # all
+      @minibuf = ();
+      foreach my $item (@{ $row->{ALL} }){
+	push @minibuf, $item;
+      }
+      $string = join ' ', @minibuf;
+      print $string;
+      print "\n";
+    }
+
+  }elsif( $output eq 'minicount' || $output eq 'fullcount' ){
+
+    my @all_results = ();
+    push @all_results, @{ $vars->{BP_COUNTS} };
+    push @all_results, @{ $vars->{CC_COUNTS} };
+    push @all_results, @{ $vars->{MF_COUNTS} };
+
+    foreach my $count (@all_results){
+
+      my @minibuf = ();
+
+      push @minibuf, $count->{ACC};
+      push @minibuf, $count->{NAME};
+      push @minibuf, $count->{COUNT_SLIM};
+      #push @minibuf, $count->{ALL_PERCENT};
+      #push @minibuf, $count->{COUNT_DIRECT_SLIM};
+      #push @minibuf, $count->{DIRECT_PERCENT};
+
+      ## Gather the gps binned with a term.
+      my @microbuf = ();
+      foreach my $mgp (@{$vars->{T2G_MAPS}{$count->{ACC}}}) {
+	push @microbuf, $mgp->{ACC}; }
+      push @minibuf,  join ' ', @microbuf;
+
+      push @minibuf, $count->{TYPE};
+      #push @minibuf, $count->{OBSOLETE};
+
+      my $string = join "\t", @minibuf;
+      print $string;
+      print "\n";
+
+    }
+
+  }elsif( $output eq 'assoc' ){
+
+    #die_template({STAMP => $time_stamp, URL => $html_url, MESSAGE =>  @{$vars->{LINES}} });
+    foreach my $line ( @{$vars->{LINES}} ){
+      my $str = join "\t", @$line;
+      print $str . "\n";
+    }
+
+  }else{
+    client_die_template({STAMP => $time_stamp, URL => $html_url,
+			 MESSAGE => "There is no such output."});
+  }
+
+}elsif( $format eq 'xml' ){
+
+  ## Hand emit.
+  xml_header();
+  print "<response>";
+
+  if( $output eq 'fullmap' || $output eq 'minimap' ){
+
+    foreach my $row (@{ $vars->{MAPPINGS} }){
+
+      print "<mapping>";
+
+      # acc
+      print "<acc>";
+      print $row->{ACC};
+      print "</acc>";
+
+      # leaves
+      foreach my $leaf (@{ $row->{LEAVES} }){
+	print "<leaf>";
+	print $leaf;
+	print "</leaf>";
+      }
+
+      # all
+      foreach my $item (@{ $row->{ALL} }){
+	print "<all>";
+	print $item;
+	print "</all>";
+      }
+
+      print "</mapping>";
+    }
+
+  }elsif( $output eq 'minicount' || $output eq 'fullcount' ){
+
+    my @all_results = ();
+    push @all_results, @{ $vars->{BP_COUNTS} };
+    push @all_results, @{ $vars->{CC_COUNTS} };
+    push @all_results, @{ $vars->{MF_COUNTS} };
+
+    my @minibuf = ();
+    foreach my $count (@all_results){
+
+      print "<count>";
+
+      print "<acc>";
+      print $count->{ACC};
+      print "</acc>";
+      print "<name>";
+      print $count->{NAME};
+      print "</name>";
+      print "<count_all>";
+      print $count->{COUNT_SLIM};
+      print "</count_all>";
+      #print "<all_percent>";
+      #print $count->{ALL_PERCENT};
+      #print "</all_percent>";
+
+      print "<gene_products>";
+      foreach my $mgp (@{$vars->{T2G_MAPS}{$count->{ACC}}}) {
+	print "<gp_acc>";
+	print $mgp->{ACC};
+	print "</gp_acc>";
+      }
+      print "</gene_products>";
+
+      #print "<count_direct>";
+      #print $count->{COUNT_SLIM};
+      #print "</count_direct>";
+      #print "<direct_percent>";
+      #print $count->{DIRECT_PERCENT};
+      #print "</direct_percent>";
+      print "<type>";
+      print $count->{TYPE};
+      print "</type>";
+      #print "<obsolete>";
+      #push @minibuf, $count->{OBSOLETE};
+      #print "</obsolete>";
+
+      print "</count>";
+    }
+
+  }elsif( $output eq 'assoc' ){
+
+    #die_template({STAMP => $time_stamp, URL => $html_url, MESSAGE =>  @{$vars->{LINES}} });
+    foreach my $line ( @{$vars->{LINES}} ){
+      print "<association>";
+
+      print "<db>";
+      print @{$line}[0];
+      print "</db>";
+
+      print "<id>";
+      print @{$line}[1];
+      print "</id>";
+
+      print "<symbol>";
+      print @{$line}[2];
+      print "</symbol>";
+
+      print "<not>";
+      print @{$line}[3];
+      print "</not>";
+
+      print "<go_id>";
+      print @{$line}[4];
+      print "</go_id>";
+
+      print "<reference>";
+      print @{$line}[5];
+      print "</reference>";
+
+      print "<evidence>";
+      print @{$line}[6];
+      print "</evidence>";
+
+      print "<with>";
+      print @{$line}[7];
+      print "</with>";
+
+      print "<aspect>";
+      print @{$line}[8];
+      print "</aspect>";
+
+      print "<full_name>";
+      print @{$line}[9];
+      print "</full_name>";
+
+      print "<synonym>";
+      print @{$line}[10];
+      print "</synonym>";
+
+      print "<type>";
+      print @{$line}[11];
+      print "</type>";
+
+      print "<taxon>";
+      print @{$line}[12];
+      print "</taxon>";
+
+      print "<date>";
+      print @{$line}[13];
+      print "</date>";
+
+      print "<assigned_by>";
+      print @{$line}[14];
+      print "</assigned_by>";
+
+      print "</association>";
+    }
+
+  }else{
+    client_die_template({STAMP => $time_stamp, URL => $html_url,
+			 MESSAGE => "There is no such output."});
+  }
+
+  print "</response>";
+
+}else{
+  client_die_template({STAMP => $time_stamp, URL => $html_url,
+		       MESSAGE => "How did you get here? Impossible!"});
+}
+
+###
+### Subs.
+###
+
+##
+sub status_error_client{ print "Status: 400 Bad Request\n"; }
+sub status_error_server{ print "Status: 500 Internal Server Error\n"; }
+sub xml_header{ print "content-type:text/xml\n\n"; }
+sub html_header{ print "content-type:text/html\n\n"; }
+sub text_header{ print "content-type:text/plain\n\n"; }
+sub unknown_header{ print "content-type:unknown\n\n"; }
+
+
+##
+sub client_die_template {
+  my $message = shift || 'generic error';
+  status_error_client();
+  die_template($message);
+}
+
+
+##
+sub server_die_template {
+  my $message = shift || 'generic error';
+  status_error_server();
+  die_template($message);
+}
+
+
+##
+sub die_template {
+
+  my $arg = shift || {};
+  my $message = $arg->{MESSAGE} || 'generic error';
+  my $stamp = $arg->{STAMP} || '';
+  my $url = $arg->{URL} || '';
+
+  ## Template runtime parameters.
+  my $diet = Template->new({
+			    INCLUDE_PATH => $ENV{AMIGO_TEMPLATE_PATHS},
+			    EVAL_PERL => 1,
+			    TRIM => 1
+			   });
+  html_header();
+  $diet->process('amigo_error.tmpl',
+		 {
+		  ERROR_MESSAGE => $message,
+		  LAST_UPDATE_STRING => $stamp,
+		  HTML_URL => $url,
+		  BETA => $core->amigo_env('AMIGO_BETA') || 0,
+		 })
+    || die "$message: $!"; # ASK: Is croak or confess more appropriate?
+  exit(-1); ## BUG: Why do I need both.
+}

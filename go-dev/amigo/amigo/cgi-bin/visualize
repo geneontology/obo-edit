@@ -1,0 +1,234 @@
+#!/usr/bin/perl -w
+####
+####
+####
+
+BEGIN { require "config.pl"; }
+use lib $ENV{GO_ROOT} . '/go-perl';
+use lib $ENV{GO_ROOT} . '/go-db-perl';
+use lib $ENV{GO_ROOT} . '/amigo/perl';
+use lib $ENV{GO_SVN_ROOT} . '/gobo-dbic';
+
+package AmiGO::WebApp::Visualize;
+use base 'AmiGO::WebApp';
+
+
+use strict;
+
+use GOBO::DBIC::GODBModel::Graph;
+use AmiGO::GraphViz;
+use AmiGO::SVGRewrite;
+use AmiGO::WebApp::Input;
+use AmiGO::JavaScript;
+use AmiGO::JSON;
+use AmiGO::Aid;
+use Data::Dumper;
+
+
+##
+sub setup {
+
+  my $self = shift;
+
+  $self->{STATELESS} = 1;
+
+  $self->mode_param('mode');
+  $self->start_mode('status');
+  $self->error_mode('mode_js_fatal');
+  $self->run_modes(
+		   'basic'       => 'mode_basic', # server alive?
+		   'status'       => 'mode_js_status', # server alive?
+		   'AUTOLOAD'     => 'mode_js_exception'
+		  );
+}
+
+
+## Example:
+## http://localhost/cgi-bin/amigo/amigo?mode=visualize&term_data={"GO:0002244" : 0.00001, "GO:0048856" : 0.5}&format=svg
+sub mode_basic {
+
+  my $self = shift;
+  my $output = '';
+
+  my $json_resp = AmiGO::JSON->new('basic');
+
+  ##
+  my $i = AmiGO::WebApp::Input->new();
+  my $params = $i->input_profile('visualize');
+  my $inline_p = $params->{inline};
+  my $format = $params->{format};
+  my $input_term_data_type = $params->{term_data_type};
+  my $input_term_data = $params->{term_data};
+
+  my $aid = AmiGO::Aid->new();
+
+  ## Decode the incoming term data, depending on incoming data
+  ## type. Completely overwrite the input_term_list if we can.
+  my $term_list = [];
+  my $term_hash = {};
+  if( $input_term_data_type eq 'string' ){
+    $term_list = $self->{CORE}->clean_term_list($input_term_data);
+  }else{
+    $term_hash = $self->{CORE}->parse_json_viz_data($input_term_data);
+    #if( defined($input_term_data) &&
+    #	scalar(keys %$input_term_data) != 0 ){
+    # $input_term_list = [];
+    foreach my $itd (keys %$term_hash){
+      push @$term_list, $itd;
+    }
+  }
+
+  ## DEBUG.
+  #$self->{CORE}->kvetch(Dumper($term_list));
+  #$self->{CORE}->kvetch(Dumper($term_hash));
+
+  ## Set correct graphics renderer.
+  my $gv = undef;
+  if( $format && $format eq 'svg' ){
+    $gv = AmiGO::GraphViz->new();
+  }else{
+    $gv = AmiGO::GraphViz->new({bitmap => 1});
+  }
+
+  ###
+  ### Build graph.
+  ###
+
+  ## Go through build graph routine only if there is something coming
+  ## in. We'll need the empty amigo_terms later on in some cases even
+  ## if there is nothing (example: producing empty SVG).
+  my $amigo_terms = {};
+  if( defined($term_list) &&
+      scalar(@$term_list) != 0 ){
+
+    my $graph = GOBO::DBIC::GODBModel::Graph->new();
+
+    ## Convert input terms to AmiGO terms.
+    my $terms = [];
+    foreach my $acc (@$term_list){
+      my $term = $graph->get_term($acc);
+      if( defined $term ){
+	push @$terms, $term;
+      }
+    }
+
+    ## Assemble the graph.
+    my($nodes, $edges) = $graph->climb($terms);
+
+    ## Add edges to gv.
+    foreach my $key (keys %$edges){
+
+      my $t2t = $edges->{$key};
+      my $s = $t2t->subject->acc;
+      my $o = $t2t->object->acc;
+      my $r = $t2t->relationship->name;
+      $gv->add_edge($s, $r, $o);
+
+      $self->{CORE}->kvetch("edge: $s $r $o");
+    }
+
+    ## Add nodes and node information to gv.
+    foreach my $acc (keys %$nodes){
+      my $t = $nodes->{$acc};
+
+      my $title = $t->acc;
+      my $body = $t->name;
+      my $border = '';
+      my $fill = '';
+      my $font = '';
+
+      ## BUG: this bit is great, except it shouldn't be here--it
+      ## should be generated on the "client" side. How should I do
+      ## that since this is the client...?  Special section for
+      ## jsoned data.
+      ## Deal with additional data...
+      if( defined $term_hash->{$acc} && ref($term_hash->{$acc}) eq 'HASH' ){
+	my $data_hash = $term_hash->{$acc};
+	$title = $data_hash->{title} if defined $data_hash->{title};
+	$body = $data_hash->{body} if defined $data_hash->{body};
+	$border = $data_hash->{border} if defined $data_hash->{border};
+	$fill = $data_hash->{fill} if defined $data_hash->{fill};
+	$font = $data_hash->{font} if defined $data_hash->{font};
+	#($fill, $font) = $aid->pval_to_color($term_hash->{$acc});
+      }
+
+      ## Back to standard adding.
+      $gv->add_node($acc, $title, $body,
+		    {
+		     color => $border,
+		     fillcolor => $fill,
+		     fontcolor => $font,
+		    });
+      if( ! $amigo_terms->{$title} ){
+	$amigo_terms->{$title} = {
+				  name => $body,
+				  gene_products => {},
+				 };
+      }
+    }
+  }
+
+  ## Produce the (possibly empty) image in SVG or PNG.
+  if( $format && $format eq 'svg' ){
+
+    my $svg_file = $gv->get_svg();
+    my $svg_rewriter = AmiGO::SVGRewrite->new();
+    $svg_rewriter->add_js_variable('amigo_terms', $amigo_terms);
+    $svg_rewriter->add_js_variable('amigo_species_order', []);
+    $svg_rewriter->add_js_library('org.bbop.NodeDetails');
+    $svg_rewriter->add_js_initializer("org.bbop.NodeDetails('detail_context');");
+    $svg_rewriter->add_js_library('org.bbop.Viewer');
+    $svg_rewriter->add_js_initializer("org.bbop.Viewer('rgsvg','tform_matrix');");
+    $output = $svg_rewriter->rewrite($svg_file);
+
+  }else{
+    $output = $gv->get_png();
+  }
+
+  ## If a header is needed, set correct header type for format.
+  if( $inline_p eq 'false' ){
+    if( $format && $format eq 'svg' ){
+      $self->header_add( -type => 'image/svg+xml' );
+    }else{
+      $self->header_add( -type => 'image/png' );
+    }
+  }else{
+
+    ## No header.
+    $self->header_add( -type => '' );
+
+    ## BUG: inline SVG needs the first few lines removed as well...
+    if( $format && $format eq 'svg' ){
+     ## TODO: 
+    }
+  }
+
+  return $output;
+}
+
+
+###
+###
+###
+
+
+## Last called before the lights go out.
+sub teardown {
+  my $self = shift;
+
+  # Disconnect when we're done, (Although DBI usually does this automatically)
+  #$self->dbh->disconnect();
+}
+
+
+###
+### Callables:
+###
+
+
+package main;
+
+use AmiGO;
+#use Visualize;
+my $v = AmiGO::WebApp::Visualize->new(PARAMS => {});
+$v->run();

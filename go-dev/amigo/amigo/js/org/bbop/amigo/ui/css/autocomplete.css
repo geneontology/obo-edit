@@ -1,0 +1,34 @@
+/*
+ * TODO: Couldn't this be JSified?
+ */
+
+.org_bbop_amigo_ui_autocomplete_base{
+    z-index: 10;
+    position:absolute;
+    width: 30em;
+    outline: black solid 1px;
+    /* color: blue; */
+}
+
+/* .org_bbop_amigo_ui_autocomplete_ul{ */
+/*     list-style: none; */
+/*     list-style-type: none; */
+/* } */
+
+.org_bbop_amigo_ui_autocomplete_row{
+    padding-left: .25em;
+    padding-right: .25em;
+}
+
+.org_bbop_amigo_ui_autocomplete_row_odd{
+    background: #d9ecf4;
+}
+
+.org_bbop_amigo_ui_autocomplete_row_even{
+    background: #ffffff;
+}
+
+.org_bbop_amigo_ui_autocomplete_row_hover{
+    background: #dcc9e4;
+    /*color: #333333;*/
+}

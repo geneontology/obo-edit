@@ -1,0 +1,521 @@
+#!/usr/bin/perl
+#!/usr/bin/perl -w
+####
+#### query: the lucene-style query string to be used. Wildcards are
+####        are automatically appended in places that make sense for
+####        us through the AmiGO::Lucene module.
+####
+#### format:
+####   opensearch: as the current spec (default).
+####   widget: same as opensearch except the content-type is json.
+####   formfill: same as widget except qurl are just unique accs.
+####   amigo: return all data in a AmiGO::JSON container.
+####   autocomplete: just a simple list of item names.
+####   debug: same as autocomplete except the content-type is text.
+####
+#### type:
+####   term: use the terms' index.
+####   gene_product: use the gene products' index.
+####   general: search both of the above in a combined index.
+####
+#### ontology (default null):
+####   <ontology name>
+####
+#### narrow (defaults to false):
+####   true: limit search to strict examination of name ("typing assist")
+####   false: general document search
+####
+#### NOTE: mod_perl ready...
+####
+#### NOTE: Completion time in seconds using ab on moiraine.
+#### n = 1000  mod  cgi
+#### c = 1      20   81
+#### c = 10     10   35
+#### c = 100     8   35
+#### c = 1000    8   48*
+#### *: test redone three times due to failure
+####
+
+###
+### Need a little knowledge of the "AmiGO" environment.  NOTE:
+### single-file mod_perl is a bit dumb about requires, the below is
+### necessary in production under mod_perl. I'm setting the default to
+### my environment because I keep disabling the main completion site
+### by accident.
+###
+### For command line usage, try: perl -I /srv/www/cgi-bin/amigo ./completion
+###
+BEGIN{
+
+  ## Make sure that the misc environment files are in the path somewhere.
+  my $path = $ENV{SCRIPT_FILENAME} || '';
+  $path =~ s/completion$//; # truncate
+  #print STDERR "BEGIN_path: $path\n";
+  chdir $path;
+
+  ## Get the config.pl file in the same directory (first CGI param,
+  ## second filesystem).
+  my $fname = $ENV{SCRIPT_FILENAME} || 'config.pl';
+  $fname =~ s/completion$/config.pl/;
+  #print STDERR "BEGIN_fname: $fname\n";
+  require $fname;
+}
+## Needs no database access at all, so just:
+use lib $ENV{GO_ROOT} . '/amigo/perl';
+use lib $ENV{GO_SVN_ROOT} . '/gobo-dbic';
+
+## Bring in necessaries.
+use utf8;
+use strict;
+use Carp;
+
+##
+use JSON;
+use Lucene;
+use CGI;
+use AmiGO::Lucene;
+use AmiGO::JSON;
+
+##
+my $MIN_SIZE = 3;
+my $MAX_SIZE = 100;
+my $RETURN_LIMIT = 10;
+
+## Just enough CGI to grab the incoming arg.
+$CGI::POST_MAX = 0;
+
+our $ajs = AmiGO::JSON->new('completion') if ! $ajs;
+
+our $lucy = AmiGO::Lucene->new() if ! $lucy;
+
+## Ready environmental globals for reuse. The logic here is a bit
+## twisted, but think about the BEGIN block and consider what happens
+## without the "if"s down here. If we just want to read the config
+## file once, we need these to be global and not be rewritten by the
+## null environment (BEGIN just once) of the spawned children. These
+## variables should just be set the first time.
+our $regexp = $ajs->amigo_env('AMIGO_TERM_REGEXP') if ! $regexp;
+our $search_dir = $ajs->amigo_env('AMIGO_INDEX_DIR') if ! $search_dir;
+
+## What URLs should OpenSearch resolve to?
+our $term_url =
+  $ajs->amigo_env('AMIGO_CGI_URL') . '/term-details.cgi?term='
+  if ! $term_url;
+our $gp_url =
+  $ajs->amigo_env('AMIGO_CGI_URL') . '/gp-details.cgi?gp='
+  if ! $gp_url;
+
+##
+my $q = new CGI;
+
+## Grab the actually query string. Don't worry about it, we'll just be
+## passing it to Lucene anyways.
+my $in_query_str = $q->param('query') || '';
+
+## Default type to "general". "term" and "gene_product" are also
+## allowed.
+my $type = $q->param('type') || 'general';
+$type = 'general' if
+  ($type ne 'term') &&
+  ($type ne 'gene_product') &&
+  ($type ne 'general');
+
+## Default type to "general". "term" and "gene_product" are also
+## allowed.
+my $ontology = '';
+{
+  my $ontology_arg = $q->param('ontology') || '';
+  my $all_onts = $ajs->ontology();
+  if( $ontology_arg && $all_onts->{$ontology_arg} ){
+    $ontology = $ontology_arg;
+  }
+}
+
+## Whether or not to function as a thought completion system or as a
+## typing aid.
+my $narrow_p = 0;
+{
+  my $narrow = $q->param('narrow') || 0;
+  $narrow_p = 1 if
+    ($narrow eq 'true') ||
+      ($narrow eq '1');
+}
+
+## Default format to "opensearch". "autocomplete", "widget", and
+## "debug" are also allowed. "debug" should just make sure that the
+## headers are readable in the browser and just let defaults fall
+## through for everything else.
+my $format = $q->param('format') || 'opensearch';
+$format = 'opensearch' if
+  ($format ne 'opensearch') &&
+  ($format ne 'widget') &&
+  ($format ne 'formfill') &&
+  ($format ne 'amigo') &&
+  ($format ne 'autocomplete') &&
+  ($format ne 'debug');
+
+## Switch between content-typesdepending on format.
+if( $format eq 'opensearch' ){
+  print <<EOC;
+content-type:application/x-suggestions+json
+
+EOC
+}elsif( $format eq 'widget' ||
+	$format eq 'formfill' ||
+	$format eq 'autocomplete' ||
+	$format eq 'amigo' ){
+  print <<EOC;
+content-type:application/json
+
+EOC
+}else{ # fallthrough for debug
+  print <<EOC;
+content-type:text/plain
+
+EOC
+}
+
+## Create proper default answer for most formats.
+my $ret = '[]';
+
+#print STDERR "pre: $in_query_str\n";
+
+## Make sure things are escaped.
+my $fixed_query_str = $lucy->fix_query($in_query_str);
+#print STDERR "fixed: $fixed_query_str\n";
+
+## Narrow or full case of completion?
+my $final_query_str = '';
+if( $narrow_p ){
+  #print STDERR "narrow search\n";
+  $final_query_str = $lucy->make_query_narrow($fixed_query_str, $ontology);
+}else{
+  #print STDERR "broad search\n";
+  $final_query_str = $lucy->make_query_wild($fixed_query_str);
+}
+#print STDERR "final: $final_query_str\n";
+
+## If there is no major problem, try it.
+## Look only if we meet minimal requirements.
+my $cgi_error = $q->cgi_error;
+if ( ! $cgi_error &&
+     $final_query_str &&
+     length($final_query_str) > $MIN_SIZE &&
+     length($final_query_str) < $MAX_SIZE ){
+
+  ## Default to general type, switch otherwise.
+  my $spot = $search_dir . '/lucene/general';
+  my @search_field_list = (keys(%{$lucy->term_keywords()}),
+			   keys(%{$lucy->gene_product_keywords()}));
+  if( $type eq 'term' ){
+    @search_field_list = keys(%{$lucy->term_keywords()});
+    $spot = $search_dir . '/lucene/term';
+  }elsif( $type eq 'gene_product' ){
+    @search_field_list = keys(%{$lucy->gene_product_keywords()});
+    $spot = $search_dir . '/lucene/gene_product';
+  }
+  my $analyzer = new Lucene::Analysis::Standard::StandardAnalyzer();
+  my $store = Lucene::Store::FSDirectory->getDirectory($spot, 0);
+  my $searcher = new Lucene::Search::IndexSearcher($store);
+
+  ## Ready boosting (weight to names).
+  my $boosts =
+    {
+     #"name" => 2.0,
+     #"synonym" => 10,
+    };
+
+  ## Build queries over name and everything.
+  #my $name_parser = new Lucene::QueryParser('name', $analyzer, $boosts);
+  my $name_parser = new Lucene::QueryParser('name', $analyzer);
+  my $general_parser =
+    new Lucene::MultiFieldQueryParser(\@search_field_list, $analyzer, $boosts);
+  my $general_query = $general_parser->parse($final_query_str);
+  my $name_query = $name_parser->parse($final_query_str);
+
+  ## Reality check.
+  #print STDERR "lucene sees: " . $general_query->toString() . "\n";
+
+  ## Get results then number of results.
+  my $general_hits = undef;
+  my $name_hits = undef;
+  my $overloaded_p = 0;
+  eval{
+    $general_hits = $searcher->search($general_query);
+    $name_hits = $searcher->search($name_query);
+  };
+  if($@){
+    ## BUG: too many returned?! "pro" on gp is an example. This might
+    ## be an error generated by testing on the broken database...
+    ## Retry with something less explosive--i.e. non-wild search.
+    #print STDERR "fail!" . "\n";
+    $general_query = $general_parser->parse($fixed_query_str);
+    $name_query = $name_parser->parse($fixed_query_str);
+    #print STDERR "lucene sees2: " . $general_query->toString() . "\n";
+    $general_hits = $searcher->search($general_query);
+    $name_hits = $searcher->search($name_query);
+
+    $overloaded_p = 1;
+  }
+
+  ## Fields and ranking for each result.
+  my $id = [];
+  my $comp = [];
+  my $desc = [];
+  my $sci = [];
+  my $qurl = [];
+  my $already_added = 0;
+
+  ##
+  my $num_general_hits = $general_hits->length();
+  my $num_name_hits = $name_hits->length();
+
+  ## First, deal with the name path. We essentially just care about
+  ## the closest name.
+  $ajs->kvetch("hits: " . $num_name_hits . " vs. " . $num_general_hits);
+  my $inserted_id = undef;
+  if( $num_name_hits && $num_general_hits ){
+    my $top_name_hit = _get_hit($name_hits, 0);
+    my $top_general_hit = _get_hit($general_hits, 0);
+
+    my $name_score = $top_name_hit->{score};
+    my $general_score = $top_general_hit->{score};
+
+    $ajs->kvetch("scores: " . $name_score . " >= " . $general_score . "?");
+
+    ##
+    if( $name_score >= $general_score ){
+
+      $ajs->kvetch("\tadding name hit!");
+
+      push @$comp, _pull_name($top_name_hit);
+      push @$id, _pull_acc($top_name_hit);
+      push @$qurl, _pull_qurl($top_name_hit);
+      push @$desc, _pull_desc($top_name_hit);
+
+      $inserted_id = _pull_acc($top_name_hit);
+
+      ## We'll need to add one less to the main results.
+      $already_added++;
+    }
+  }
+
+  ## Now move on, adding the bulk of the results.
+  my $i = 0;
+  while( $i < $num_general_hits &&
+	 $i < $RETURN_LIMIT ){
+
+    my $hit = _get_hit($general_hits ,$i);
+
+    ## We don't want the same 
+    my $tmp_acc = _pull_acc($hit);
+    $ajs->kvetch("same id? " . $inserted_id . " eq? " . $tmp_acc);
+    if( defined $inserted_id && $inserted_id eq $tmp_acc ){
+      ## Don't need to increment since we're skipping here.
+      $ajs->kvetch("\tdeja vu!");
+    }else{
+
+      ## TODO: shorten name to something smaller...
+      push @$comp, _pull_name($hit);
+      push @$id, _pull_acc($hit);
+      push @$qurl, _pull_qurl($hit);
+      push @$desc, _pull_desc($hit);
+    }
+
+    ##
+    $i++;
+  }
+
+  ###
+  ### Output the results list.
+  ###
+
+  ## Opensearch has a more complicated structure than the simpler
+  ## autocomplete.
+  if( $format eq 'opensearch' ||
+      $format eq 'widget' ||
+      $format eq 'formfill' ){
+
+    ## Encode findings.
+    my $json = JSON->new();
+    my $json_comp = $json->encode($comp);
+    my $json_desc = $json->encode($desc);
+
+    ## 'formfill' is a special case.
+    my $json_qurl = undef;
+    if( $format ne 'formfill' ){
+      $json_qurl = $json->encode($qurl);
+    }else{
+      $json_qurl = $json->encode($id);
+    }
+
+    my $response_head = '["' . $in_query_str . '", ';
+    my $response_tail = ']';
+    #$ret = $response_head . '[]' . $response_tail;
+
+    ## Cat it all together in the opensearch style.
+    $ret =
+      $response_head .
+	$json_comp . ', ' .
+	  $json_desc . ', ' .
+	    $json_qurl .
+	      $response_tail;
+
+  }elsif( $format eq 'amigo' ){
+
+    my $count = scalar(@$comp);
+    my $data = [];
+    for( my $c = 0; $c < $count; $c++ ){
+      push @$data,
+	{
+	 completion => $$comp[$c],
+	 description => $$desc[$c],
+	 url => $$qurl[$c],
+	 id => $$id[$c],
+	};
+    }
+
+    ## Send everything we have back in an AmiGO JSON-style wrapper.
+    $ajs->set_results({
+		       raw_query => $in_query_str,
+		       fixed_query => $final_query_str,
+		       count => $count,
+		       data => $data,
+		      });
+
+    ## BUG: this is cover for the overloaded...
+    if( $overloaded_p ){
+      $ajs->add_warning("BUG: too many clauses, dropping to minimal mode");
+    }
+
+    $ret = $ajs->make_js_fast();
+
+  }else{
+
+    ## Finish with an easy-to-read completion dump.
+    my $json = JSON->new();
+    my $json_comp = $json->encode($comp);
+    $ret = $json_comp;
+
+  }
+
+  ###
+  ### Final cleaning.
+  ###
+
+  ## Free memory and close everything.
+  undef $general_hits;
+  undef $general_query;
+  undef $general_parser;
+  undef $analyzer;
+  $searcher->close();
+  #undef $fsdir;
+  undef $searcher;
+  $store->close;
+  undef $store;
+}
+
+## Final.
+print $ret;
+
+
+###
+### Helpers.
+###
+
+
+## Pry serial results out of a hits object.
+sub _get_hit {
+  my $hitter = shift || die "need a hitter";
+  my $index = shift;
+  if( ! defined $index ){
+    die "need an index";
+  }
+
+  my $doc = $hitter->doc($index);
+
+  return
+    {
+     'doc' => $doc,
+     'score' => $hitter->score($index),
+     'acc' => $doc->get('acc') || undef,
+     'dbxref' => $doc->get('dbxref') || undef,
+     'symbol' => $doc->get('symbol') || undef,
+     'name' => $doc->get('name') || undef,
+     'full_name' => $doc->get('full_name') || undef,
+     'scientific' => $doc->get('scientific') || undef,
+    };
+}
+
+
+##
+sub _pull_acc {
+  my $hit = shift || die "need arg";
+
+  my $retval = undef;
+  if( $hit->{acc} =~ /$regexp/ ){
+    $retval = $hit->{acc};
+  }else{
+    $retval = $hit->{dbxref};
+  }
+
+  return $retval;
+}
+
+
+##
+sub _pull_name {
+
+  my $hit = shift || die "need arg";
+
+  my $retval = undef;
+  if( $hit->{acc} =~ /$regexp/ ){
+    $retval = $hit->{name};
+  }else{
+    $retval = $hit->{full_name};
+  }
+
+  return $retval;
+}
+
+
+##
+sub _pull_qurl {
+
+  my $hit = shift || die "need arg";
+
+  my $retval = undef;
+  if( $hit->{acc} =~ /$regexp/ ){
+    $retval = $term_url . $hit->{acc};
+  }else{
+    $retval = $gp_url . $hit->{dbxref};
+  }
+
+  return $retval;
+}
+
+
+##
+sub _pull_desc {
+
+  my $hit = shift || die "need arg";
+
+  my $retval = undef;
+  if( $hit->{acc} =~ /$regexp/ ){
+    $retval = $hit->{acc};
+  }else{
+
+    ## Tag on a species description if there is one.
+    my $sci = $hit->{scientific} || undef;
+    if( defined $sci && $sci ){
+      ## Trim it.
+      $sci = substr($sci, 0, 6);
+      ## Add it.
+      $retval = '(' . $sci . '.) ' . $hit->{symbol};
+    }else{
+      $retval = $hit->{symbol};
+    }
+  }
+
+  return $retval;
+}

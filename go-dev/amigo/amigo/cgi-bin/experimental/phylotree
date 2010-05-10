@@ -1,0 +1,19 @@
+#!/usr/bin/perl -w
+use warnings;
+use strict;
+BEGIN { require "config.pl"; }
+use lib $ENV{GO_SVN_ROOT} . '/gobo-dbic';
+use lib $ENV{GO_ROOT} . '/amigo/perl';
+use AmiGO::WebApp::Phylotree;
+
+
+
+###
+### Callables:
+###
+
+
+#use AmiGO;
+#use Visualize;
+my $ft = AmiGO::WebApp::Phylotree->new(PARAMS => {});
+$ft->run();
