@@ -1,0 +1,47 @@
+<!-- START template: amigo_common_missing_gps.tmpl -->
+<!-- type = [% type %] -->
+<!-- message = [% message %] -->
+<!-- set = [% set %] -->
+<div class="block">
+  <h2><span class="error_text">[% message %]</span></h2>
+
+  [% IF type == "gps" %]
+
+  <p>
+    The following gene products were duplicated in the input and were
+    removed from the calculation. This list may include accessions,
+    symbols, and/or synonyms.
+  </p>
+  
+  [% ELSE %]
+
+  <p>
+    The following terms were duplicated in the input and were removed
+    from the calculation. This list may include accessions and/or
+    synonyms.
+  </p>
+  
+  [% END %]
+
+  <table summary="Inputted gene products duplicated">
+    [% eo = 0 %]
+    [% FOREACH mgps = set %]
+    [%    IF eo % 2 == 0 %]
+    <tr class="even_row">
+      [%    ELSE %]
+    <tr class="even_odd">
+      [%    END %]
+      <td rowspan="1">
+	[% mgps %]
+      </td>
+    </tr>
+    [%    eo = eo + 1 %]
+    [% END %]
+  </table>
+
+  <p class="toTop">
+    <a href="#top" title="Back to the top of the page">Back to top</a>
+  </p>
+  
+</div>
+<!-- END template: amigo_common_missing_gps.tmpl -->

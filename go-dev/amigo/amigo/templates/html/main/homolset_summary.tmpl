@@ -1,0 +1,132 @@
+<!-- START template: homolset_summary.tmpl -->
+<!-- SYMBOL = [% SYMBOL %] -->
+<!-- SPECIES_LIST = [% SPECIES_LIST %] -->
+<!-- RESULTS_MATRIX = [% RESULTS_MATRIX %] -->
+<!-- ALPHABETICAL_DATA = [% ALPHABETICAL_DATA %] -->
+
+<h1>All Reference Genome Homolog Sets</h1>
+<div class="contents">
+  <div class="block">
+
+    <h2>Reference Genome Homolog Sets</h2>
+
+    <p>
+      The goal of this project is to provide high-quality functional
+      annotations for gene products from 12 diverse,
+      well-characterised model organisms, so that those annotations
+      may be used to effectively contribute towards the automatic
+      annotation efforts of other genomes.  More information can be
+      found at the GO
+      <a href="http://www.geneontology.org/GO.refgenome.shtml">Reference
+	Genome</a> site.
+    </p>
+
+    <p>
+      Each gene family summary contains both a static and interactive
+      graphical representation of the gene products in the homolog
+      set. For more information about the interactive graphical view,
+      including requirements, please see the AmiGO <a title="Reference
+      Genome interactive graph documentation"
+      href="http://wiki.geneontology.org/index.php/AmiGO_Manual:_RG_Graphical_View">documentation</a>.
+      For more information about this page, please see the <a title="Reference Genome Summary documentation" href="http://wiki.geneontology.org/index.php/AmiGO_Manual:_RG_Summary">AmiGO Manual</a>.
+    </p>
+
+    <p>
+      <b>Caution</b>: The static image may be very large and
+      inappropriate for viewing within a web browser.
+    </p>
+
+    <p>
+      <h4>Key:</h4>
+      
+      <ul class="info_keys">
+	<li>
+	  An <span id="ev_e" style="border:1px solid #666666; background-color: [% STATUS_COLORS.exp %];">&nbsp;EXP&nbsp;</span> (experimental) label indicates that there is at least one annotation to a term that has direct experimental evidence. There may be other non-experimental annotations as well.
+	</li>
+	<li>
+	  An <span id="ev_p" style="border:1px solid #666666; background-color: [% STATUS_COLORS.good %];">&nbsp;ISS&nbsp;</span> label indicates that there are no
+	  annotations based on direct experimental data, and at least
+	  one annotation by sequence similarity (ISS). There may be
+	  other non-experimental and non-ISS annotations as well.
+	</li>
+	<li>
+	  An <span id="ev_o" style="border:1px solid #666666; background-color: [% STATUS_COLORS.odd %];">&nbsp;OTHER&nbsp;</span> label indicates annotations that are neither experimental nor ISS (or one of its sub-classes). 
+	</li>
+	<!--
+	<li>
+      A text-only label indicates that there is an annotation to a term, but the evidence is neither of the above.
+	</li>
+-->
+
+	<li>A &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (blank) entry
+	  indicates that no homolog has been identified for that
+	  species.</li>
+
+    </p>
+
+    <p>
+      <h4>Jump to symbols starting with:</h4>
+      <ul class="info_keys">
+	<li>
+	  [% FOR letter = ALPHABET %]  
+	  <a href="#[% letter %]">[% letter FILTER upper %]</a>
+	  [% END %]
+	</li>
+      </ul>
+    </p>
+
+    [% FOR letter = ALPHABET %]  
+
+    <h3 id="[% letter %]">[% letter FILTER upper %]</h3>
+
+    <table>
+      <thead>
+	<tr>
+	  <th>Gene Family</th>
+	  [% FOR spec = SPECIES_LIST %]
+	  <th>&nbsp;[% spec %]&nbsp;</th>
+	  [% END %]
+	</tr>
+      </thead>
+
+      <tbody>
+      [% eo = 0 %]
+      [% FOR hid = ALPHABETICAL_DATA.$letter %]
+      [%    IF eo % 2 == 0 %]
+      <tr id="[% hid %]" class="even_row">
+      [%    ELSE %]
+      <tr id="[% hid %]" class="odd_row">
+      [%    END %]
+      [%    eo = eo + 1 %]
+
+	<td>
+	  <a title="view annotation summary for gene family [% HS_INFO.$hid.symbol %]"
+	     href="[% HS_INFO.$hid.detail_link %]">[% HS_INFO.$hid.symbol %]</a>
+	  <small>graphical&nbsp;view:
+	    <!-- <a title="View in AmiGO browser" href="[% HS_INFO.$hid.browser_link %]">browser</a>| -->
+	    <a title="View static PNG" href="[% HS_INFO.$hid.png_link %]">static</a>|<a title="View interactive SVG" href="[% HS_INFO.$hid.svg_link %]">interactive</a></small>
+	</td>
+
+	[% FOREACH spec = SPECIES_LIST %]
+        <td title="[% spec %]">
+
+	  [% IF ! RESULTS_MATRIX.$hid.$spec.keys %]
+	  &nbsp;
+	  [% ELSIF RESULTS_MATRIX.$hid.$spec.keys.size == 0 %]
+	  &nbsp;
+	  [% ELSE %]
+	  [%    aid_hash = RESULTS_MATRIX.$hid.$spec %]
+	  [% #   INCLUDE "html/inc/rg_gp_render_uniform.tmpl" %]
+	  [% #   INCLUDE "html/inc/rg_gp_render_uniform_compact.tmpl" %]
+	  [%    INCLUDE "html/inc/rg_gp_render_uniform_compact_summary.tmpl" %]
+	  [% END %]
+	</td>
+	[% END %]
+      </tr>
+      [% END %]
+      </tbody>
+    </table>
+    [% END %]
+  </div>
+</div>
+<!-- END template: homolset_summary.tmpl -->

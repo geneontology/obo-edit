@@ -6,99 +6,118 @@
 ##
 ## WARNING:
 ##
-## Both perl threading libraries are *awful*--regularly 
+## Both perl threading libraries are *awful*.
 ##
 
 use strict;
 use threads;
 use Getopt::Std;
 use WWW::Mechanize;
-#use WWW::Mechanize::XML;
 use vars qw(
 	    $opt_h
 	    $opt_v
 	    $opt_c
-	    $opt_n
+	    $opt_r
+	    $opt_b
 	    $opt_t
 	    $opt_i
 	    $opt_l
+	    $opt_f
+	    $opt_o
 	   );
 
 ## Sane and easy to modify defaults.
 my %local = (
-	     AMIGO_USER_NUMBER => 1,
-	     AMIGO_TARGET => 'http://amigo.geneontology.org/cgi-bin/amigo/go.cgi?action=query&view=query&query=kinase&search_constraint=terms',
-	     #AMIGO_TARGET => 'http://amigo.geneontology.org/cgi-bin/amigo/go.cgi?action=query&view=query&query=kinase&search_constraint=gp',
-	     #AMIGO_TARGET => 'http://toy.lbl.gov:9002/cgi-bin/amigo/go.cgi?action=query&view=query&query=kinase&search_constraint=terms',
-	     #AMIGO_TARGET => 'http://toy.lbl.gov:9002/cgi-bin/amigo/go.cgi?action=query&view=query&query=kinase&search_constraint=gp',
+	     BOT_NUMBER => 1,
+	     BOT_TIMEOUT => 180,
 
 	     TRIAL_ITERATIONS => 1,
 	     TRIAL_COUNT => 1,
 
-	     BOT_TIME_LIMIT => 0
+	     AMIGO_TARGETS => ['http://amigo.geneontology.org/cgi-bin/amigo/go.cgi'],
+	     AMIGO_TARGETS_FILE => 'acotillo_urls.txt',
+
+	     AMIGO_REPORT => []
 	    );
 
-getopts('hvcn:t:i:l:');
+getopts('hvrcb:t:i:l:f:o');
 
+
+##
 if ( $opt_h ) {
+  usage();
+  exit();
+}
 
-  print <<EOC;
 
-  Usage:
-     acotillo.pl [-h] [-v] [-c]
-                 [-n <number>] [-t <url>] [-i <iterations>] [-l <limit>]
+##
+## Preparation with command line arguments.
+##
 
-  Options:
-     -h               Print this message.
-     -v               Enable more verbose messages. This is useful for checking
-                      installation errors.
-     -c               Repeat the number of iterations from 1 to <iterations>.
-     -n <number>      Number of AmiGO users to simulate.
-     -t <url>         URL of an AmiGO target.
-     -i <iterations>  Number of iterations to try.
-     -l <limit>       Number of seconds a bot takes before bailing.
+if ( $opt_v ) {
+  print "Will be verbose.\n"; }
 
-  Example Usage:
-     perl acotillo.pl -v -l 300 -n 8 -i 5 -t "http://foo.org/foo.cgi" > foo.txt;
+## Check our options and set variables accordingly.
+$local{BOT_NUMBER} = $opt_b if $opt_b && $opt_b > 0;
+$local{TRIAL_ITERATIONS} = $opt_i if $opt_i;
+$local{BOT_TIMEOUT} = $opt_l if $opt_l && $opt_l >= 0;
 
-EOC
+print "Will simulate $local{BOT_NUMBER} user(s).\n" if $opt_v;
+print "Will limit each bot to $local{BOT_TIMEOUT} seconds.\n" if $opt_v;
+print "Will do repeated trial(s) by bot number counting up.\n"
+  if $opt_v && $opt_c;
+print "Will take average of $local{TRIAL_ITERATIONS} iteration(s).\n" if $opt_v;
 
-} else {
+## Load targets.
+if ( $opt_f ) {
 
-  ##
-  ## Preparation with command line arguments.
-  ##
+  ## Remove defaults.
+  $local{AMIGO_TARGETS} = [];
 
-  ## Check our options and set variables accordingly.
-  if ( $opt_v ) {
-    print "Will be verbose.\n"; }
-  if ( $opt_n && $opt_n > 0 ) {
-    $local{AMIGO_USER_NUMBER} = $opt_n;
-    print "Will simulate $opt_n user(s).\n" if $opt_v; }
+  ## File adjustment.
+  $local{AMIGO_TARGETS_FILE} = $opt_f;
+  die "$local{AMIGO_TARGETS_FILE} not available"
+    if ! -f $local{AMIGO_TARGETS_FILE} || ! -R $local{AMIGO_TARGETS_FILE} ;
+  print "Will use URLs in: $local{AMIGO_TARGETS_FILE}.\n" if $opt_v;
+
+  open(TARGETS, "< $local{AMIGO_TARGETS_FILE}");
+  #      || "$local{AMIGO_TARGETS_FILE} not found";
+  while (<TARGETS>) {
+    chomp;
+    if ( ! /^[\s\n\t]*$/ && ! /^\s*\#.*/) {
+      #print "Adding URL: $_ \n" if $opt_v;
+      push @{$local{AMIGO_TARGETS}}, $_;
+    }
+  }
+}else{
   if ( $opt_t ) {
-    $local{AMIGO_TARGET} = $opt_t;
-    print "Will check AmiGO at: $opt_t.\n" if $opt_v; }
-  if ( $opt_i ) {
-    $local{TRIAL_ITERATIONS} = $opt_i;
-    print "Will take average of $opt_i iteration(s).\n" if $opt_v; }
-  if ( $opt_c ) {
-    $local{TRIAL_COUNT} = $local{AMIGO_USER_NUMBER};
-    print "Will count up to: $local{TRIAL_COUNT}.\n" if $opt_v;
+    #print "Will single target at: $local{AMIGO_TARGET}.\n" if $opt_v;
+    @{$local{AMIGO_TARGETS}}[0] = $opt_t;
   }
-  if ( $opt_l && $opt_l >= 0 ) {
-    $local{BOT_TIME_LIMIT} = $opt_l;
-    print "Will limit to $local{BOT_TIME_LIMIT}.\n" if $opt_v;
-  }
+}
 
+## DEBUG.
+foreach my $url (@{$local{AMIGO_TARGETS}}) {
+  print "Will target: $url.\n" if $opt_v;
+}
+
+##
+print "\n" if $opt_v;
+foreach my $url (@{$local{AMIGO_TARGETS}}) {
+
+  ## Whether or not to do it once or count up to the number of bots.
+  $local{TRIAL_COUNT} = $local{BOT_NUMBER} if $opt_c;
 
   ##
   for( my $j = 1; $j <= $local{TRIAL_COUNT}; $j++ ){
 
     ## Check to see whether we count up or not.
-    my $number_of_bots = $local{AMIGO_USER_NUMBER};
-    if( $opt_c ){
-      $number_of_bots = $j;
-    }
+    my $number_of_bots = $local{BOT_NUMBER};
+    $number_of_bots = $j if $opt_c;
+
+    print "Running trial with $number_of_bots bot(s)"
+      . " $local{TRIAL_ITERATIONS} times on \"$url\"...\n"
+	if $opt_v;
 
     ## Start averaging timer.
     my $cumulative_time = 0;
@@ -106,43 +125,57 @@ EOC
     ## Average over a number of iterations.
     for( my $i = 0; $i < $local{TRIAL_ITERATIONS}; $i++ ){
 
-      ## Start local timer.
-      my $time = time();
 
       ## Ready the bots and send them to the fields.
       my @bot_threads = ();
       for( my $i = 0; $i < $number_of_bots; $i++ ){
-	push @bot_threads, threads->create(\&bot);
+	push @bot_threads, threads->create(\&bot, $i, $url);
       }
 
-      ## Collect the bots safely
+      ## Collect the bots safely.
       foreach my $bot_thread (@bot_threads){
-	my $response = $bot_thread->join();
+	my $results = $bot_thread->join();
+	my $id = $results->{id};
+	my $time = $results->{time};
 	if( $@ ){
-	  warn "Thread failure: $@"; }
-	else{
+	  #warn "Thread failure: $@";
+	  die "Thread failure: $@";
+	}else{
+	  $cumulative_time += $time;
+	  my $it_num = $i + 1;
+	  print "Time for bot with id:$id in iteration $it_num: " .
+	    "$time seconds.\n" if $opt_v;
 	}
-      }
-
-      ## End timer.
-      $time = time() - $time;
-      my $it_num = $i + 1;
-      print "\tTime for $number_of_bots user(s) in iteration $it_num: " .
-	"$time seconds.\n" if $opt_v;
-      $cumulative_time += $time;
-
-      ## Check limits and bail if exceeded.
-      if( $opt_l && $time >= $local{BOT_TIME_LIMIT} ){
-	print "A bot has returned exceeding the time limit. Terminating...\n";
-	$i = $local{TRIAL_ITERATIONS} + 10;
-	$j = $local{TRIAL_COUNT} + 10;
       }
     }
 
     ## Print the average for this count.
-    my $average_time = $cumulative_time / $local{TRIAL_ITERATIONS};
+    my $average_time = ($cumulative_time / $local{TRIAL_ITERATIONS})
+      / $number_of_bots;
     print "Average time for $number_of_bots user(s) " .
-      "over $local{TRIAL_ITERATIONS} iterations: $average_time seconds.\n";
+      "over $local{TRIAL_ITERATIONS} iterations: $average_time seconds.\n\n"
+    	if $opt_v;
+
+    ## Set up the struct as necessary.
+    #if( $local{AMIGO_REPORT}->{$url} ){
+    #  $local{AMIGO_REPORT}->{$url} = {};
+    #}
+    push @{$local{AMIGO_REPORT}},
+      {
+       url=>$url,
+       bots=>$number_of_bots,
+       time=>$average_time,
+      };
+  }
+}
+
+## Report.
+if ( $opt_r ) {
+  if ( $opt_o ) {
+    #html_report();
+    report();
+  }else{
+    report();
   }
 }
 
@@ -154,13 +187,125 @@ EOC
 ##########
 
 
-## I could make the bot more complex...click on things...etc.
+##
 sub bot {
 
+  ## Init bot.
+  my $id = shift;
+  my $url = shift;
   my $new_mech = WWW::Mechanize->new();
-  $new_mech->get($local{AMIGO_TARGET});
+  $new_mech->timeout($local{BOT_TIMEOUT});
   #$new_mech->cookie_jar(HTTP::Cookies->new());
-  #print $new_mech->content();
-  return $new_mech->response();
+
+  ## Start local timer.
+  my $time = time();
+
+  ## Get.
+  $new_mech->get($url);
+
+  ## End timer.
+  $time = time() - $time;
+
+  my $retval = 0;
+  if ( $new_mech->success() ){
+    $retval = $time;
+  }
+  return {
+	  id=>$id,
+	  time=>$retval,
+	 };
+}
+
+
+# ##
+# sub html_report {
+#   print <<EOC;
+# <html><body><table>
+# EOC
+#   foreach my $url (keys %{ $local{AMIGO_REPORT} }){
+#     foreach my $nbots (keys %{}){
+#     my $time = $local{AMIGO_REPORT}->{$_};
+#     print "<tr><td>\n";
+#     print $_;
+#     print "\n</td><td>\n";
+#     print $time;
+#     print "\n</td></tr>\n\n";
+#   }
+#   print <<EOC;
+# </table></body></html>
+# EOC
+# }
+
+
+##
+sub report {
+
+  print <<EOC;
+##@ START benchmark table (url #bots #seconds)
+EOC
+
+  foreach my $item (@{ $local{AMIGO_REPORT} }){
+    #  foreach my $url (keys %{ $local{AMIGO_REPORT} }){
+    #    foreach my $nbots (keys %{ $local{AMIGO_REPORT}->{$url} }){
+    #      my $time = $local{AMIGO_REPORT}->{$url}{$nbots};
+    my $url = $item->{"url"};
+    my $bots = $item->{"bots"};
+    my $time = $item->{"time"};
+    print $url;
+    print "\t";
+    print $bots;
+    print "\t";
+    print $time;
+    print "\n";
+    # }
+}
+
+  print <<EOC;
+##@ END benchmark table
+EOC
+
+}
+
+
+##
+sub usage{
+
+  print <<EOC;
+
+  Usage:
+     acotillo.pl [-h] [-v]
+                 [-c] [-b <number>] [-t <url>] [-i <iterations>] [-l <limit>]
+                 [-r] [-o] ][-f <filename>]
+
+  General Options:
+     -h               Print this message.
+     -v               Enable more verbose messages. This is useful for checking
+                      installation errors.
+
+  Options for stress mode:
+
+     -b <number>      Number of bots to dispatch.
+     -t <url>         URL of a target for a trial.
+     -i <iterations>  Number of iterations to try per trial.
+     -c               Repeat the trial using 1 to <number> bots.
+     -l <limit>       Number of seconds a bot takes before bailing.
+     -f <filename>    If a file is defined, read URLs from the file
+                      and use them as targets (overrides -t flag).
+     -r               Emit an additional summary table of results.
+     -o *TODO*        Output report (see above) in HTML instead of text *TODO*.
+
+  Example usage:
+     perl acotillo.pl -v -l 300 -b 3 -c -i 2 -t "http://www.google.com"
+     perl acotillo.pl -v -r -f acotillo_urls.txt
+
+  Note:
+     If you select neither the -v nor the -r option, you will very likely
+     get no output at all.
+
+  WARNING:
+     Threads in perl are pretty awful, so you must expect the occasional
+     core dump.
+
+EOC
 
 }

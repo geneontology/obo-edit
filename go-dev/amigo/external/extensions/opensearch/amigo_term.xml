@@ -1,0 +1,10 @@
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/"
+                       xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+  <ShortName>AmiGO Labs (term)</ShortName>
+  <Description>Search for terms in the Gene Ontology</Description>
+  <Image height="16" width="16" type="image/x-icon">http://amigo.berkeleybop.org/amigo/images/opensearch_logo.ico</Image>
+  <Image height="64" width="64" type="image/png">http://amigo.berkeleybop.org/amigo/images/opensearch_logo.png</Image>
+  <Url type="text/html" method="GET" template="http://amigo.berkeleybop.org/cgi-bin/amigo/search.cgi?action=new-search&amp;search_constraint=term&amp;search_query={searchTerms}" />
+  <Url type="application/x-suggestions+json" template="http://amigo.berkeleybop.org/cgi-bin/amigo/completion?format=opensearch&amp;type=term&amp;query={searchTerms}" />
+  <moz:SearchForm>http://amigo.berkeleybop.org/cgi-bin/amigo/go</moz:SearchForm>
+</OpenSearchDescription>
