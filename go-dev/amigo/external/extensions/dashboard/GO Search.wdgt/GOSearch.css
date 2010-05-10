@@ -1,0 +1,107 @@
+/* General...not sure what it does...yet... */
+Body {
+    margin: 0;
+}
+
+/* Main panels' gross settings. */
+#front {
+    display:block;
+}
+#back {
+    display:none;
+}
+
+/* Positioning for the Apple widgets. */
+#infoButton {
+    position:absolute;
+    top:5px;
+    right:20px;
+}
+#returnButton {
+    position:absolute;
+    bottom:20px;
+    right:20px;
+}
+
+/* Styles for the query area. */
+#search-fields {
+    font: 14px "Lucida Grande";
+    position: absolute;
+    top: 32px;
+    left: 25px;
+}
+/* Styles for the query area. */
+#type-fields {
+    font: 14px "Lucida Grande";
+    position: absolute;
+    top: 57px;
+    left: 70px;
+}
+#query-field {
+    width: 200px;
+}
+
+/* Styles for the results from the completion server. */
+#title-curtain {
+    font: 16px "Lucida Grande";
+    font-weight: bold;
+    color: black;
+    position: absolute;
+    top: 7px;
+    left: 45px;
+    width: 250;
+    height: 20px;
+/*    background-color: white;*/
+}
+
+/* Styles for the results from the completion server. */
+#results-curtain {
+/*    font: 12px "Lucida Grande";*/
+    position: absolute;
+    top: 80px; 
+    left: 20px;
+/*  width: 260;
+    height: 200px;
+    background: #e9effa; */
+}
+
+/* Styles for the results from the completion server. */
+#results {
+    font: 14px "Lucida Grande";
+    color: black;
+    position: absolute;
+    top: 80px;
+    left: 20px;
+    width: 260;
+    height: 200px;
+    overflow: auto; 
+}
+.even_row {
+    background: #cddcf3;
+}
+.row {
+    padding-left: 5px;
+    padding-top: 1px;
+    padding-bottom: 2px;
+}
+
+
+/* Styles for the results from the completion server. */
+#back-info {
+/*    font: 12px "Lucida Grande";*/
+    font-weight: bold;
+    position: absolute;
+    color: white;
+    top: 95px;
+    left: 40px;
+    width: 260;
+    height: 200px;
+}
+
+#kvetch {
+    position: absolute;
+    top: 90px;
+    left: 0px;
+/*    font: 8px; */
+    overflow: auto;
+}

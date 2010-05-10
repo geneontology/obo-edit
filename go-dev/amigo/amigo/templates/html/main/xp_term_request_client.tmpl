@@ -1,0 +1,28 @@
+<!-- START: xp_term_request_client.tmpl -->
+<div class="contents">
+  
+  <h1>Cross-product Term Request</h1>
+
+  <div class="block">
+    
+    <h2>Template Selection</h2>
+    
+    <p>
+      Please select the template that fits the type of term that you are going to request:
+    </p>
+    
+    <p>
+      <ul>
+	[% FOREACH temp IN XPTEMPLATES %]
+	<li>
+	  <a href="?mode=[% temp.mode %]">[% temp.name %]</a>
+	</li>
+	[% END %]
+      </ul>
+    </p>
+    
+    <br />
+    
+  </div>    
+</div>    
+<!-- END: xp_term_request_client.tmpl -->

@@ -1,0 +1,126 @@
+<!-- START template: homolset_summary_exp.tmpl -->
+
+<h1>All Reference Genome Homolog Sets</h1>
+<div class="contents">
+  <div class="block">
+
+    <h2>Reference Genome Homolog Sets</h2>
+
+    <p>
+      The goal of this project is to provide high-quality functional
+      annotations for gene products from 12 diverse,
+      well-characterised model organisms, so that those annotations
+      may be used to effectively contribute towards the automatic
+      annotation efforts of other genomes.  More information can be
+      found at the GO
+      <a href="http://www.geneontology.org/GO.refgenome.shtml">Reference
+	Genome</a> site.
+    </p>
+
+    <p>
+      Each gene family summary contains both a static and interactive
+      graphical representation of the gene products in the homolog
+      set. For more information about the interactive graphical view,
+      including requirements, please see the AmiGO <a title="Reference
+      Genome interactive graph documentation"
+      href="http://wiki.geneontology.org/index.php/AmiGO_Manual:_RG_Graphical_View">documentation</a>.
+      For more information about this page, please see the <a title="Reference Genome Summary documentation" href="http://wiki.geneontology.org/index.php/AmiGO_Manual:_RG_Summary">AmiGO Manual</a>.
+    </p>
+
+    <p>
+      <b>Caution</b>: The static image may be very large and
+      inappropriate for viewing within a web browser.
+    </p>
+
+    <p>
+      <h4>Key:</h4>
+      
+      <ul class="info_keys">
+	<li>
+	  An <span id="ev_e" style="border:1px solid #666666; background-color: [% STATUS_COLORS.exp %];">&nbsp;EXP&nbsp;</span> (experimental) label indicates that there is at least one annotation to a term that has direct experimental evidence. There may be other non-experimental annotations as well.
+	</li>
+	<li>
+	  An <span id="ev_p" style="border:1px solid #666666; background-color: [% STATUS_COLORS.good %];">&nbsp;ISS&nbsp;</span> label indicates that there are no
+	  annotations based on direct experimental data, and at least
+	  one annotation by sequence similarity (ISS). There may be
+	  other non-experimental and non-ISS annotations as well.
+	</li>
+	<li>
+	  An <span id="ev_o" style="border:1px solid #666666; background-color: [% STATUS_COLORS.odd %];">&nbsp;OTHER&nbsp;</span> label indicates annotations that are neither experimental nor ISS (or one of its sub-classes). 
+	</li>
+	<!--
+	<li>
+      A text-only label indicates that there is an annotation to a term, but the evidence is neither of the above.
+	</li>
+-->
+
+	<li>A &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (blank) entry
+	  indicates that no homolog has been identified for that
+	  species.</li>
+
+    </p>
+
+    <p>
+      <h4>Jump to symbols starting with:</h4>
+      <ul class="info_keys">
+	<li>
+	  [% FOR letter = ALPHABET %]  
+	  <a href="#[% letter %]">[% letter FILTER upper %]</a>
+	  [% END %]
+	</li>
+      </ul>
+    </p>
+
+    [% FOR letter = ALPHABET %]  
+
+    <h3 id="[% letter %]">[% letter FILTER upper %]</h3>
+
+    <table>
+      <thead>
+	<tr>
+	  <th>Gene Family</th>
+	  [% FOR taxa = RG_ORDERED_SPECIES_LIST %]
+	  <th>&nbsp;[% SPECIES.$taxa %]&nbsp;</th>
+	  [% END %]
+	</tr>
+      </thead>
+
+      <tbody>
+      [% eo = 0 %]
+      [% FOR hid = ALPHABETICAL_DATA.$letter %]
+      [%    IF eo % 2 == 0 %]
+      <tr id="[% hid %]" class="even_row">
+      [%    ELSE %]
+      <tr id="[% hid %]" class="odd_row">
+      [%    END %]
+      [%    eo = eo + 1 %]
+
+	<td>
+	 [% rg_info = RG_SETS.$hid %]
+	  <a title="View annotation summary for gene family [% rg_info.symbol %]"
+	     href="[% rg_info.detail_link %]">[% rg_info.symbol %]</a>
+	  <small>graphical&nbsp;view:
+	    <a title="View static PNG" href="[% rg_info.png_link %]">static</a>|<a title="View interactive SVG" href="[% rg_info.svg_link %]">interactive</a></small>
+	</td>
+
+	[% FOREACH taxa = RG_ORDERED_SPECIES_LIST %]
+        <td title="[% SPECIES.$taxa %]">
+
+	[%    FOR gp = SUMMARY.$hid.$taxa %]
+	[%       ehash = gp.value %]
+	[%       gp_acc = gp.key %]
+	[%       gp_info = GPS.$gp_acc %]
+	   <a title="[% gp_info.symbol %] ([% gp_acc %])" href="[% gp_info.link %]">[% gp_info.symbol %]</a>&nbsp;[%       IF ehash.exp_p == 1 %]<a href="#ev_e"  title="Evidence is experimental." style="border:1px solid #666666; background-color: [% STATUS_COLORS.exp %];">&nbsp;EXP&nbsp;</a>[%       ELSIF ehash.good_p == 1 %]<a href="#ev_p"  title="Evidence is ISS or one of its sub-categories." style="border:1px solid #666666; background-color: [% STATUS_COLORS.good %];">&nbsp;ISS&nbsp;</a>[%       ELSIF ehash.odd_p == 1 %]<a href="#ev_o"  title="Evidence is neither experimental nor ISS." style="border:1px solid #666666; background-color: [% STATUS_COLORS.odd %];">&nbsp;OTHER&nbsp;</a>
+	[%       END %]
+	[%    END %]
+
+	</td>
+	[% END %]
+      </tr>
+      [% END %]
+      </tbody>
+    </table>
+    [% END %]
+  </div>
+</div>
+<!-- END template: homolset_summary_exp.tmpl -->

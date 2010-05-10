@@ -1,0 +1,139 @@
+[% USE HTML %]
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<!-- START template: front.tmpl -->
+<html lang="en">
+  <head>
+    <title>AmiGO! Your friend in the Gene Ontology.</title>
+
+    [% INCLUDE header_info.tmpl %]
+
+    [%# INCLUDE yui.tmpl %]
+
+    <style type="text/css">
+
+<!--
+
+#front-nav ul { margin: 0 }
+
+#front-nav li { background: #e9effa; color: #3875D7; margin: 1em 200px; border: 1px dotted #006; text-align: center; }
+
+#front-nav .h1 { font: 3em/1.0 "trebuchet ms", "lucida grande", arial, sans-serif; padding: 1em 0; }
+
+#front-nav a { border: none; display: block; padding: 1em; }
+
+#front-nav fieldset { color: #000; }
+
+#front-nav legend { display: inline; }
+
+-->
+
+    </style>
+  </head>
+  <body>
+
+    [% INCLUDE header.tmpl %]
+    <div class="contents">
+
+      <form action="search.cgi" name="frontForm" id="frontForm" method="POST">
+	<fieldset class="C">
+	  <legend>Search</legend>
+	  <input type="hidden" name="session_id" value="[% session_id %]">
+	  <p><label for="query">Search the Gene Ontology database</label></p>
+
+	  <!-- START: Experimental stuff. -->
+	  <!-- TODO/BUG: need to work on styles, a lot... -->
+	  <!-- see: http://developer.yahoo.com/yui/autocomplete/ -->
+	  <!-- see: http://developer.yahoo.com/yui/datasource/ -->
+	  <!-- see: http://developer.yahoo.com/yui/docs/YAHOO.util.DataSourceBase.html#method_parseArrayData -->
+<!--	  
+	      <div class="yui-skin-sam">
+		<div id="autoCompleteTest">
+-->		  
+	  <input type="text"
+		 name="search_query"
+		 size="30"
+		 value="[% query %]"
+		 class="textBox"
+		 id="query">
+
+<!--	  
+	      <div id="ac_rc"></div>
+
+	  </div>
+	</div>
+
+	<script type="text/javascript">
+
+// DataSource for a remote location with dynamic script nodes.
+//amigoDataSource.responseType = YAHOO.util.ScriptNodeDataSource.TYPE_JSARRAY;
+var amigoDataSource = new YAHOO.util.XHRDataSource("[% cgi_url %]/completion"); 
+amigoDataSource.responseType = YAHOO.util.XHRDataSource.TYPE_JSARRAY;
+//amigoDataSource.responseSchema = {fields: ["name"]};
+amigoDataSource.parseArrayData =
+  function( oRequest , oFullResponse ){
+  // BUG/TODO: I don't like this at all...should use a lib from
+  // JSON.org
+  var foo = [];
+  try { 
+    foo = YAHOO.lang.JSON.parse(oFullResponse); 
+  } catch (e) { 
+    // Something bad happened...
+    foo = [];
+  }
+  //results: ["foo", "bar"],
+  return { results: foo, error: false };
+};
+
+//amigoDataSource.scriptCallbackParam = nil;
+//amigoDataSource.responseSchema = { 
+//  resultsList : "this[1]",
+//  fields : [""],
+//  metaFields : {}
+//}; 
+//var testDS = new YAHOO.util.LocalDataSource(["head","head 2","heed","tail"]); 
+
+// 
+var autoComplete = new YAHOO.widget.AutoComplete("query", "ac_rc",
+amigoDataSource);
+//testDS);
+
+//autoComplete.typeAhead = true;
+//autoComplete.resultTypeList = false;
+//autoComplete.formatResult = function(oResultData, sQuery, sResultMatch){
+//   var sMarkup = (sResultMatch) ? sResultMatch : ""; 
+//   alert(sMarkup);
+//   return sMarkup; 
+//};
+
+autoComplete.generateRequest = function(sQuery) { 
+   var generated_str = "?type=general&format=autocomplete&query=" + sQuery;
+   //alert(generated_str);
+   return generated_str;
+}; 
+	</script>
+-->
+
+<!-- END: Experimental stuff. -->
+
+	  <input type="hidden" name="action" value="new-search">
+
+	  <fieldset>
+	    <legend>Search type</legend>
+	    <span><input type="radio" name="search_constraint" value="term" checked id="term"><label for="term">GO terms</label></span>
+	    <span><input type="radio" name="search_constraint" value="gp" id="gp"><label for="gp">genes or proteins</label></span>
+	    <input type="checkbox" id="exact_match" name="exact_match" value="yes"><label for="exact_match">exact match</label>
+
+	  </fieldset>
+
+	  <input class="button" type="submit">
+
+	</fieldset>
+
+      </form>
+
+    </div>
+    [% INCLUDE footer.tmpl %]
+  </body>
+</html>
+<!-- END template: front.tmpl -->

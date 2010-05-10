@@ -1,0 +1,34 @@
+LAYER
+NAME "msterraservicedoq"
+TYPE RASTER
+STATUS DEFAULT
+CONNECTION "http://terraservice.net/ogcmap.ashx?"
+CONNECTIONTYPE WMS
+MINSCALE 3000
+MAXSCALE 20000
+#DEBUG ON
+METADATA
+"wms_srs"             "EPSG:26919"
+"wms_name"            "doq"
+"wms_server_version"  "1.1.1"
+"wms_format"          "image/jpeg"
+"wms_style"         "UTMGrid_Cyan"
+"wms_latlonboundingbox" "-71.19 42.23 -71 42.40"
+END
+END
+# MAP
+#   NAME core
+#   #  SIZE 5132 3547
+#   SIZE 1000 1000
+#   EXTENT 0 0 1000 1000
+#   #EXTENT -1000.00 -1000.00 1000.00 1000.00
+#   #IMAGECOLOR 249 245 186
+#   IMAGETYPE png
+#   LAYER
+#     NAME ont
+#     TYPE RASTER
+#     STATUS DEFAULT
+#     ## TODO: convert to dynamic template
+#     DATA "/home/sjcarbon/local/src/cvs/go-dev/amigo/amigo/cgi-bin/experimental/test.map.png"
+#   END
+# END

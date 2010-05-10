@@ -1,0 +1,171 @@
+[% USE HTML %]
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<!-- START template: gp_details.tmpl -->
+<html lang="en">
+	<head>
+	<title>AmiGO: [% page_title_header %]</title>
+		[% INCLUDE header_info.tmpl %]
+	</head>
+	<body>
+[% INCLUDE header.tmpl %]
+		<div class="contents">
+		<h1 class="symbol">[% page_title %]</h1>
+[% TRY;
+		INCLUDE message.tmpl;
+		IF gp %]
+<ul id="navPage" class="inline C">
+<li><a href="#info" title="View gene product information">Gene product information <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
+[% IF gp.seq_list && gp.seq_list.size > 0 %]
+<li><a href="#sequence" title="View peptide sequence" id="barSeqToggle">Peptide sequence <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
+<li><a href="#seq-info" title="View sequence information">Sequence information <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
+[% END %]
+[% term_assoc_link = 'Term associations';
+	IF term_count && term_count > 0;
+		term_assoc_link = term_count _ ' term association';
+		IF term_count != 1;
+			term_assoc_link = term_assoc_link _ 's';
+		END;
+	END %]
+<li><a href="gp-assoc.cgi?gp=[% HTML.escape(gp.xref.xref_dbname _ ':' _ gp.xref.xref_key) %]&amp;session_id=[% session_id %]" title="View term associations for this gene product">[% term_assoc_link %] <img src="[% image_dir %]/left.png" alt="link to another page"></a></li>
+</ul>
+		<div class="block" id="info">
+		<h2>Information</h2>
+		<dl class="gp">
+			<dt>Symbol</dt> 
+					<dd class="symbol">[% HTML.escape(gp.symbol) %]</dd>
+			<dt>Name(s)</dt> 
+				[% IF gp.full_name %]
+					<dd class="full_name">[% HTML.escape(gp.full_name) %]</dd>
+				[% ELSE %]
+					<dd>None</dd>
+				[% END %]
+			<dt>Type</dt> 
+				[% IF gp.type %]
+					<dd class="type">[% gp.type %]</dd>
+				[% ELSE %]
+					<dd>No Type</dd>
+				[% END %]
+			<dt>Species</dt> 
+				[% IF gp.species.binomial.match('\S+');
+						IF gp.species.ncbi_taxa_id %]
+					<dd class="spp"><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=[% HTML.escape(gp.species.ncbi_taxa_id) %]" title="View [% HTML.escape(gp.species.binomial) %] details on the NCBI taxonomy website">[% HTML.escape(gp.species.binomial) %]</a> [% IF gp.species.common_name %] ([% HTML.escape(gp.species.common_name) %])[% END %]</dd>
+					[% ELSE %]
+					<dd class="spp">[% HTML.escape(gp.species.binomial) %]</dd>
+					[% END %]
+				[% ELSE %]
+					<dd>Unknown</dd>
+				[% END %]
+			<dt>Synonyms</dt> 
+				[% IF gp.synonym_list && gp.synonym_list.size > 0;
+						FOREACH syn = gp.synonym_list %]
+						<dd class="synonym">[% HTML.escape(syn) %]</dd>
+					[% END;
+					ELSE %]
+						<dd>None</dd>
+				[% END %]
+				[% db = gp.speciesdb %]
+				<dt>Database</dt>
+				<dd>[% HTML.escape(munger.get_human_name(gp.speciesdb)) %], <a href="[% HTML.escape(munger.get_url(gp.speciesdb, gp.acc)) %]" title="View details of [% HTML.escape(gp.symbol) %] at [% HTML.escape(munger.get_human_name(gp.speciesdb)) %]">[% HTML.escape(gp.speciesdb _ ':' _ gp.acc) %]</a>
+				</dd>
+				<dt>Sequence</dt>
+				[% IF gp.seq_list && gp.seq_list.size > 0 %]
+				<dd><a href="#sequence" title="View [% HTML.escape(gp.symbol) %] sequence" id="seqToggle">View sequence</a>; 
+				<a class="blast-link" href="blast.cgi?action=blast&amp;seq_id=[% HTML.escape(gp.xref.xref_dbname _ ':' _ gp.xref.xref_key) %]&amp;session_id=[% session_id %]" title="Use sequence as BLAST query">use as BLAST query sequence</a></dd>
+				[% ELSE %]
+				<dd>No peptide sequence available</dd>
+				[% END %]
+				
+			[% IF REFGEN_P %]
+			<dt>Ref Genome</dt>
+			[%   FOREACH rg = REFGEN_RHASHES %]
+			<dd>
+			  <a href="[% rg.main_link %]"
+			     title="Homolset Summary">Homology</a> 
+			  under
+			  <a href="[% rg.detail_link %]"
+			     title="Homolset Annotation Summary">[% rg.symbol %]</a>
+			  [%   IF rg.other_species.size > 0 %](
+			  [%      FOREACH osp = rg.other_species %]
+			  [%         hset = rg.id %]
+			  [%         hname = REFGEN_SPECIES_INFO.$hset.$osp.species_name %]
+			  [%         hcolor = REFGEN_SPECIES_INFO.$hset.$osp.species_color %]
+			  <span style="border:1px solid #666666; background-color: [% hcolor %];">&nbsp;[% hname %]&nbsp;</span>
+			  [%      END %])
+			  [%   END %]
+			</dd>
+			[%   END %]
+			[% END %]
+			
+			</dl>
+			<p class="toTop">
+				<a href="#top" title="Back to the top of the page">Back to top</a> 
+			</p>
+		</div>
+		[% IF gp.seq_list && gp.seq_list.size > 0;
+			s_list = gp.seq_list.sort(pseq.seq.length).reverse;
+			seq = s_list.first %]
+		<div class="block" id="sequence">
+		<h2>Primary Peptide Sequence</h2>
+			<p>Longest sequence shown.</p>
+			<blockquote class="sequence">
+			<p>[% seq.pseq.desc %]<br>
+[% seq.pseq.seq.chunk(60).join('<br>') %]
+			</p></blockquote>
+			<p class="toTop">
+				<a href="#top" title="Back to the top of the page">Back to top</a> 
+			</p>
+		</div>
+		<div class="block" id="seq-info">
+			<h2>Primary Sequence Information</h2>
+				<dl class="seq">
+					<dt>Display ID</dt>
+				[% IF seq.pseq.display_id %]
+					<dd class="display_id">[% seq.pseq.display_id %]</dd>
+				[% ELSE %]
+					<dd>None.</dd>
+				[% END %]
+					<dt>Description</dt>
+				[% IF seq.pseq.desc %]
+					<dd class="desc">[% seq.pseq.desc %]</dd>
+				[% ELSE %]
+					<dd>None.</dd>
+				[% END %]
+					<dt>Sequence type</dt>
+				[% IF seq.pseq.alphabet %]
+					<dd class="alphabet">[% seq.pseq.alphabet %]</dd>
+				[% ELSE %]
+					<dd>None.</dd>
+				[% END %]
+					<dt>External references (from FASTA header)</dt>
+				[% IF seq.xref_list && seq.xref_list.size > 0;
+					FOREACH xref = seq.xref_list.sort('xref_dbname', 'xref_key');
+					IF xref.xref_dbname == 'GO' OR xref.xref_key.substr(0, 3) == 'GO:';
+					  # skip if it looks like GO
+					ELSE;
+					url = munger.get_url(xref.xref_dbname, xref.xref_key);
+					     IF url %]
+					<dd class="xref"><a href="[% HTML.escape(url) %]">[% HTML.escape(xref.xref_dbname _ ':' _ xref.xref_key.replace('GO:','')) %]</a></dd>
+					     [% ELSE %]
+					<dd class="xref">[% HTML.escape(xref.xref_dbname _ ':' _ xref.xref_key) %]</dd>
+				             [% END %]
+				          [% END %]
+					[% END;
+						ELSE %]
+					<dd>None.</dd>
+				[% END %]
+				</dl>
+			<p class="toTop">
+				<a href="#top" title="Back to the top of the page">Back to top</a> 
+			</p>
+		</div>
+		[% END;
+		END;
+	CATCH;
+		PROCESS error.tmpl;
+	END %]
+		</div>
+[% INCLUDE footer.tmpl %]
+	</body>
+</html>	
+<!-- END template: gp_details.tmpl -->

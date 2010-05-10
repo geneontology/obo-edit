@@ -1,0 +1,6 @@
+##
+## Remove temporary files and directories older than two hours every four hours
+##
+0 0,4,8,12,16,20 * * * find /srv/www/cgi-bin/amigo/sessions/ -name \*_data -type d -mmin +120 -exec \rm -rf {} \; > /dev/null 2>&1
+5 0,4,8,12,16,20 * * * find /srv/www/cgi-bin/amigo/sessions/ -name cgisess_\* -type f -mmin +120 -exec \rm -rf {} \; > /dev/null 2>&1
+10 0,4,8,12,16,20 * * * find /srv/www/cgi-bin/amigo/tmp_images/* -type d -mmin +120 -exec \rm -rf {} \; > /dev/null 2>&1

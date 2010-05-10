@@ -1,0 +1,21 @@
+[%- IF clusters.size == 0 -%]
+<p>No phylotree entries to display.</p>
+[%- ELSE -%]
+
+<h1>[% dbname %]</h1>
+
+<style type="text/css">th{text-align:left}td{vertical-align:middle}</style>
+<table>[% IF next %]<caption>
+[[% IF prev %]<a href="[% prev %]">prev</a>[% ELSE %]prev[% END %]]
+[[% IF prev %]<a href="[% home %]">home</a>[% ELSE %]home[% END %]]
+[[% IF next %]<a href="[% next %]">next</a>[% ELSE %]next[% END %]]
+</caption>[% END -%]
+<tr><td></td><th>Cluster</th><th>Last Annotated</th><th>Members</th><th>Reference Genome Distribution</th></tr>
+[%- FOREACH cluster IN clusters %]<tr>
+<td>[% IF offset ; loop.count + offset ; ELSE ; loop.count ; END %]</td>
+<td><a href="[% cluster.url %]">[% cluster.key %]</a></td>
+<td>[% cluster.last_annotated %]</td>
+<td>[% cluster.number_of_members %]</td>
+<td><img src="[% cluster.dist %]" alt="[Reference Distribution Image]"/></td>
+</tr>[% END %]</table>
+[%- END -%]

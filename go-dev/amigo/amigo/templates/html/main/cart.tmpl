@@ -1,0 +1,148 @@
+<!-- START template: workspace.tmpl -->
+
+<div class="contents">
+
+  <h1>AmiGO Workspace</h1>
+
+  <div class="block">
+
+    <h2>Workspace Controls</h2>
+
+    <h4>Current: [% WORKSPACE %]</h4>
+
+    <p>
+      Other workspaces:<br />
+      [% FOREACH c = WORKSPACE_LIST %]
+      <a href="amigo_exp?mode=workspace&workspace=[% c %]">[% c %]</a> 
+      [% END %]
+    </p>    
+
+    <p>
+      <form action="amigo_exp" id="workspace_form" method="GET">
+	Add workspace:
+	<input type="hidden" name="mode" value="workspace" />
+	<input class="textBox"
+	       type="text"
+	       name="add_workspace"
+	       size="50"
+	       value=""
+       	       id="add_workspace" />
+	<input type="submit" class="button" />
+      </form>
+    </p>
+
+    <p>
+      <a href="amigo_exp?mode=workspace&remove_workspace=[% WORKSPACE %]">delete workspace [% WORKSPACE %]</a> 
+    </p>    
+
+  </div>
+
+  <div class="block">
+
+    <h2>Item Controls</h2>
+
+    <p>
+      <form action="amigo_exp" id="workspace_form" method="POST">
+	Add item:
+	<input type="hidden" name="mode" value="workspace" />
+	<input type="hidden" name="workspace" value="[% WORKSPACE %]" />
+	<input class="textBox"
+	       type="text"
+	       name="add"
+	       size="50"
+	       value=""
+       	       id="acc" />
+	<input type="radio"
+	       name="category"
+	       value="term"
+	       class="radio"
+	       checked
+	       id="term" />
+	<label for="term">term</label>
+	<input type="radio"
+	       name="category"
+	       value="gp"
+	       class="radio"
+	       id="gp" />
+	<label for="gp">gp</label>
+	<input type="submit" class="button" />
+      </form>
+
+      <form action="amigo_exp" id="workspace_form" method="POST">
+	Remove item:
+	<input type="hidden" name="mode" value="workspace" />
+	<input type="hidden" name="workspace" value="[% WORKSPACE %]" />
+	<input class="textBox"
+	       type="text"
+	       name="remove"
+	       size="50"
+	       value=""
+       	       id="acc" />
+	<input type="radio"
+	       name="category"
+	       value="term"
+	       class="radio"
+	       checked
+	       id="term" />
+	<label for="term">term</label>
+	<input type="radio"
+	       name="category"
+	       value="gp"
+	       class="radio"
+	       id="gp" />
+	<label for="gp">gp</label>
+	<input type="submit" class="button" />
+      </form>
+    </p>
+
+  </div>
+
+  <div class="block">
+
+    <h2>Items</h2>
+
+    <h3 id="">Terms</h3>
+
+    <table style="border:1px solid #666666">      
+
+      <!--
+      <tr style="border:1px solid #666666">
+	<td style="border:1px solid #666666">Acc</td>
+      </tr>
+      -->
+
+      [% FOREACH t = TERM_LIST %]
+      <tr style="border:1px solid #666666">
+	<td style="border:1px solid #666666">
+	  [% t %]
+	</td>
+      </tr>
+      [% END %]
+	
+    </table>
+
+    <h3 id="">GPs</h3>
+
+    <table style="border:1px solid #666666">      
+
+      <!--
+      <tr style="border:1px solid #666666">
+	<td style="border:1px solid #666666">Acc</td>
+      </tr>
+      -->
+
+      [% FOREACH gp = GP_LIST %]
+      <tr style="border:1px solid #666666">
+	<td style="border:1px solid #666666">
+	  [% gp %]
+	</td>
+      </tr>
+      [% END %]
+	
+    </table>
+
+  </div>
+  
+</div>
+
+<!-- END template: workspace.tmpl -->
