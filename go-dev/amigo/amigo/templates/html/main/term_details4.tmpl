@@ -123,28 +123,7 @@
      <dd>None</dd>
      [% END %]
      
-     <!-- TODO: Community -->
-     <dt>Community</dt>
-     [% IF GONUTS_SUCCESS %]
-     <dd>
-       There have been
-       [% IF GONUTS_TOTAL_COUNT > 0 %] 
-	   <a href="[% GONUTS_PAGE_URL %]#Notes"
-	      title="Community note for [% GONUTS_PAGE_TITLE %]">
-	     <b>community comments</b>
-	   </a>
-	   [% ELSE %]
-	   no community comments
-	   [% END %]
-	   for this term.
-	   If you would like to view or participate in the
-	   community annotation, please continue to the
-	   <a href="[% GONUTS_PAGE_URL %]"
-	      title="[% GONUTS_PAGE_TITLE %]">GONUTS page</a>.
-     </dd>
-     [% ELSE %]
-     <dd>Unavailable</dd>
-     [% END %]
+     [% INCLUDE term_details_gonuts.tmpl %]
      <!-- <dt>Community</dt> -->
      <!-- [% IF GONUTS_SUCCESS %] -->
      <!-- <dd> -->
