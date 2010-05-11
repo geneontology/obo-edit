@@ -1,0 +1,34 @@
+This is a set of scripts to to setup the GO-Schema under oracle and
+load GO into it.
+
+You first have to create a schema in Oracle to create the tables in.
+Unless schema, user and password are all go, you should set the
+foloowing environment variables to their correct values:
+
+GO_ROOT
+GO_DATABASE_USER
+GO_DATABASE_AUTH
+GO_DATABASE_HOST
+
+* oracle_go.sh is the main script creating and loading the oracle
+  database. Invoke it with "./oracle_go.sh sql-dump-datafile".
+
+* compiledb is an extension of the one provided by GO. Data type
+  mappings for Oracle are explained in the comments.
+
+* go-drop-all.sql is a script to drop the stuff you created, since
+  there are no "databases" in oracle and maybe you do not want to drop
+  the whole schema.
+
+* get_table_cols.pl is a helper script to figure out a field
+  definition list for sql loader.
+
+You will get some complaints about indices, this is because Oracle
+automatically creates indices for the primary key fields, so they
+already exist when GO tries to create them. I guess for the purpose of
+creating a schema diagram and loading the data (as for most other)
+this doesnt hurt.
+
+
+
+

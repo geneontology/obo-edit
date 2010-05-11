@@ -1,0 +1,2 @@
+#!/bin/sh
+xsltproc $GO_ROOT/xml/xsl/$1.xsl $2
