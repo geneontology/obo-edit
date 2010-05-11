@@ -133,25 +133,17 @@
 		<dt>Community</dt>
 		[% IF GONUTS_SUCCESS %]
 		<dd>
-		  [% GONUTS_IS_SINGULAR = 0 %]
-		  [% IF GONUTS_TOTAL_COUNT == 1 %]
-		  [%    GONUTS_IS_SINGULAR = 1 %]
-		  [% END %]
-		  There
-		  [% IF GONUTS_IS_SINGULAR %]
-		  has
-		  [% ELSE %]
-		  have
-		  [% END %]
-		  been
+		  There have been
+		  [% IF GONUTS_TOTAL_COUNT > 0 %] 
 		  <a href="[% GONUTS_PAGE_URL %]#Notes"
 		     title="Community note for [% GONUTS_PAGE_TITLE %]">
-		  <b>[% GONUTS_TOTAL_COUNT %]</b>
-		  [% IF GONUTS_IS_SINGULAR %]comment[% ELSE %]comments[% END %]</a>
-		  for this term[% IF GONUTS_TOTAL_COUNT %],
-		  with <b>[% GONUTS_RECENT_COUNT %]</b>
-		  since <b>[% GONUTS_DATE_STRING %]</b>[% END %].  If
-		  you would like to view or participate in the
+		    <b>community comments</b>
+		  </a>
+		  [% ELSE %]
+		  no community comments
+		  [% END %]
+		  for this term.
+		  If you would like to view or participate in the
 		  community annotation, please continue to the
 		  <a href="[% GONUTS_PAGE_URL %]"
 		     title="[% GONUTS_PAGE_TITLE %]">GONUTS page</a>.
@@ -159,6 +151,36 @@
 		[% ELSE %]
 		<dd>Unavailable</dd>
 		[% END %]
+
+		<!-- <dt>Community</dt> -->
+		<!-- [% IF GONUTS_SUCCESS %] -->
+		<!-- <dd> -->
+		<!--   [% GONUTS_IS_SINGULAR = 0 %] -->
+		<!--   [% IF GONUTS_TOTAL_COUNT == 1 %] -->
+		<!--   [%    GONUTS_IS_SINGULAR = 1 %] -->
+		<!--   [% END %] -->
+		<!--   There -->
+		<!--   [% IF GONUTS_IS_SINGULAR %] -->
+		<!--   has -->
+		<!--   [% ELSE %] -->
+		<!--   have -->
+		<!--   [% END %] -->
+		<!--   been -->
+		<!--   <a href="[% GONUTS_PAGE_URL %]#Notes" -->
+		<!--      title="Community note for [% GONUTS_PAGE_TITLE %]"> -->
+		<!--   <b>[% GONUTS_TOTAL_COUNT %]</b> -->
+		<!--   [% IF GONUTS_IS_SINGULAR %]comment[% ELSE %]comments[% END %]</a> -->
+		<!--   for this term[% IF GONUTS_TOTAL_COUNT %], -->
+		<!--   with <b>[% GONUTS_RECENT_COUNT %]</b> -->
+		<!--   since <b>[% GONUTS_DATE_STRING %]</b>[% END %].  If -->
+		<!--   you would like to view or participate in the -->
+		<!--   community annotation, please continue to the -->
+		<!--   <a href="[% GONUTS_PAGE_URL %]" -->
+		<!--      title="[% GONUTS_PAGE_TITLE %]">GONUTS page</a>. -->
+		<!-- </dd> -->
+		<!-- [% ELSE %] -->
+		<!-- <dd>Unavailable</dd> -->
+		<!-- [% END %] -->
 
 	</dl>
 [%	IF tmpl_verbose;
