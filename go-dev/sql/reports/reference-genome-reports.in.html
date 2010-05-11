@@ -1,0 +1,329 @@
+<html>
+ <head>
+
+    <title>Reference Genome Reports</title>
+    <meta http-equiv="content-type"
+	  content="text/html; charset=iso-8859-1"/>
+    <link href="http://www.berkeleybop.org/amigo/css/formatting.css"
+	  rel="stylesheet"
+	  type="text/css"/>
+
+
+    <meta name="description"
+         content="Gene Ontology SQL web client."/>
+
+ </head>
+ <body>
+  <div class="contents">
+    <h1>Reference Genome Reports</h1>
+    <div class="block">
+     <h2>Information about this database</h2>
+      <expand view="instance_data"/>
+      <p>
+	This table has metadata on when the database was constructed
+      </p>
+    </div>
+    <div class="block">
+      <h2>Homology sets</h2>
+    
+      <p>
+	The views in this section of the report pertain to the
+homolset table in the GO database. At the present time, this is
+populated via the google spreadhseets. A homolset is simply a grouping
+of gene/gene product identifiers from multiple species. A homolset
+sometimes contains multiple genes from the same species
+
+      </p>
+      <div class="result">
+	<expand view="total_homolsets"/>
+	<p>
+	  Total number of homology-based groupings in the database. Each
+	  such grouping (homolset) itself contains a number of genes
+	  from a varierty of species.
+	</p>
+      </div>
+      
+      <div class="result">
+	<expand view="total_homolsets_by_species"/>
+	<p>
+	  How many homolsets per species? i.e. given a species, how many
+	  homolsets include a gene from this species?
+	</p>
+      </div>
+
+      <!--
+      <div class="result">
+	<expand view="homolset_sp_summary"/>
+	<p>
+	Not all homolsets have a representative gene or genes from each
+	species. This view summarises the distribution of total number of
+	species for each homolset.
+	</p>
+      </div>
+
+      <div class="result">
+      <expand view="homolset_gp_summary"/>
+      <p>
+	This view shows the distribution of the total number of genes for
+	each homolset. Note the numbers here are different from the above, as
+	many homolsets have multiple representatives from each species.
+      </p>
+      </div>
+      -->
+
+      <!--
+      <div class="result">
+      <p>
+	<expand view="homolsets_with_most_gps"/>
+	The max_total_gps in the above corresponds to the following homolset(s):
+      </p>
+      </div>
+      -->
+
+    </div>
+    <div class="block">
+      
+      <h2>Annotation Publications Stats</h2>
+      
+      <div class="result">
+      <expand view="total_pubs"/>
+      <p>
+	Total publications in the entire database
+      </p>
+      </div>
+
+      <div class="result">
+      <expand view="avg_total_pubs_per_gp_by_refg_species" returns="scalar" plot="go-barchart-basic"/>
+      <p>
+	Each annotated gene product has 1 or more publications
+	associated with it (we do not include unannotated gene
+	products). This is the total_pubs_per_gp. This view shows the
+	average number of publications per-gene broken down by species.
+      </p>
+
+      </div>
+
+      <div class="result">
+      <expand view="avg_total_refg_pubs_per_gp_by_refg_species" plot="go-barchart-basic"/>
+      <p>
+	This is the same metric as above, but this time only counting
+	gene products that have been assigned to a homolset
+      </p>
+      </div>
+
+      <p>
+	
+      </p>
+    </div>
+
+ <!--
+    <div class="block">
+      
+      <h2>Evidence Code Stats</h2>
+      
+      <expand view="refg_num_annotations_by_ontology_evidence_and_refspecies"/>
+      <p>
+	Breakdown of annotations to reference genome genes, showing
+	number of annotations to an ontology by evidence code. (note:
+	this should be similar to Mike's graph, only without the nice
+	visuals, and the evidence binning. Mike's is also number of genes)
+      </p>
+    </div>
+-->
+
+    <div class="block">
+
+      <h2>Graph coverage (transitive)</h2>
+
+      <p>
+	This section deals with the <i>coverage</i> of the graph by
+	gene annotations. We define coverage for any gene as the set
+	of all terms used to annotate that gene, plus all ancestors of
+	those terms. You can think of this as the parts of the graph
+	"coloured" by annotations for any gene.
+      </p>
+      <p>
+	This gives us some measure of breadth and depth of coverage:
+	deeper annotations will cover more annotations by virtue of
+	the additional paths-to-root. A variety of different
+	annotations across the graph will also color lots of nodes.
+      </p>
+      <p>
+	Care should be taken comparing across species. I hypothesize
+	we expect rat (for example) to be higher, by virtue of the
+	number of annotations to physiological processes. These
+	processes by their nature are quite spread out across the DAG
+	and have many paths to root. However, comparisons between
+	versions of the data, or between refg-sets and the entire
+	annotated genome are meaningful.
+      </p>
+
+      <expand view="avg_total_transitive_terms_per_gp" returns="scalar"/>
+      <p>
+	average coverage over ALL genes in database
+      </p>
+
+      <expand view="avg_total_nonroot_transitive_terms_per_gp" returns="scalar"/>
+      <p>
+	average coverage of ALL genes, excluding annotations to root
+	nodes. Note this number may be higher as the exclusion
+	property has the side-effect of omitting root-only genes
+	(i.e. unknown annotations)
+      </p>
+
+      <expand view="avg_total_transitive_terms_per_gp_by_refg_species"/>
+      <p>
+	average coverage per gene, broken down by reference genome species
+      </p>
+
+      <expand view="avg_total_nonroot_transitive_terms_per_gp_by_refg_species"/>
+      <p>
+	average coverage broken per gene, down by reference genome
+	species. This time annotations to the root are excluded.
+      </p>
+
+      <expand view="avg_total_transitive_terms_per_refg_gp_by_refg_species"/>
+      <p>
+	This is the same metric above, only considering genes that
+	belong to a homolset (i.e. genes parts of the reference genome
+	curation set)
+      </p>
+
+      <expand view="avg_total_nonroot_transitive_terms_per_refg_gp_by_refg_species"/>
+      <p>
+	This is the same metric above, but excluding root terms.
+      </p>
+
+    </div>
+    
+    <div class="block">
+
+      <h2>Graph coverage (non-transitive)</h2>
+
+      <p>
+	This section is for metrics on what parts of GO are covered
+	by <i>direct</i> annotation - it is simply the number of terms
+	that each gene product is annotated with. This excludes
+	annotations to the root nodes. No attempt is made to use the
+	graph: for example, if a gene G has two annotations to X and
+	Y, and X is more specific than Y, then this counts as two
+	terms. In future it would be nice to filter out the
+	non-informative annotations
+      </p>
+
+      <expand view="avg_total_nonroot_terms_per_gp_by_refg_species"/>
+      <p>
+	Average numbers of terms used in annotating genes in refg species
+      </p>
+
+      <expand view="avg_total_nonroot_terms_per_refg_gp_by_refg_species"/>
+      <p>
+	This is the same metric above, only considering genes that
+	belong to a homolset (i.e. genes parts of the reference genome
+	curation set)
+      </p>
+
+    </div>
+    
+    <div class="block">
+
+      <h2>Depth of annotations</h2>
+
+
+      <expand view="max_max_distance_to_root_by_term"/>
+      <p>
+        This is the "height" of GO - the depth of the deepest term, along its longest path to root
+      </p>
+
+      <expand view="term_having_max_max_distance_to_root"/>
+      <p>
+      </p>
+
+      <expand view="avg_max_distance_to_leaf_term_by_refg_species"/>
+      <p>
+        average depth of annotations by reference species
+      </p>
+
+      <expand view="avg_max_distance_to_leaf_for_refg_annot_by_refg_species"/>
+      <p>
+        average depth of reference genome annotations by reference species
+      </p>
+
+    </div>
+
+    <div class="block">
+
+      <h2>Specificity (Information Content)</h2>
+
+
+      <expand view="avg_annotation_entropy"/>
+      <p>
+        How informative is the typical annotation? Information content
+        is <code>-log2(p(t))</code>, where <code>p(t)</code> is the
+        probability of there being an annotation to t or anything
+        beneath t. Note that because this is logarithmic, small
+        increases 
+      </p>
+
+
+      <expand view="avg_entropy_per_annot_by_refg_species"/>
+      <p>
+        average information content per annotation, broken down by reference genome species (all annotations within that species)
+      </p>
+
+      <expand view="avg_entropy_per_refg_annot_by_refg_species"/>
+      <p>
+        average information content per reference genome annotation, broken down by reference genome species (ie only annotations for genes that have been assigned homolsets)
+      </p>
+
+    </div>
+
+      <expand view="avg_max_entropy_per_gp_by_ont_and_refspecies"/>
+      <p>
+        average max IC per gene in all genes for reference genome species. global IC metric is used.
+      </p>
+
+      <expand view="avg_max_entropy_per_refg_gp_by_ont_and_refspecies"/>
+      <p>
+        average max IC per gene in reference gene set. global IC metric is used.
+      </p>
+
+      <expand view="avg_max_spentropy_per_gp_by_ont_and_refspecies"/>
+      <p>
+        average max IC per gene in all genes for reference genome species. species-local IC metric is used.
+      </p>
+
+      <expand view="avg_max_spentropy_per_refg_gp_by_ont_and_refspecies"/>
+      <p>
+        average max IC per gene in reference gene set. species-local IC metric is used.
+      </p>
+
+
+<!--    
+
+    <div class="block">
+      <h2>Sequence summaries</h2>
+
+      <expand view="refg_total_gps_with_sequence_by_species"/>
+      <expand view="refg_total_gps_lacking_sequence_by_species"/>
+      <p>
+	Of these genes in the reference genome set, which ones have a
+	sequence associated with them (via gp2protein), and which ones lack a
+	sequence?
+	
+      </p>
+    </div>
+
+-->
+    
+    <div class="block">
+
+      <h2>About this page</h2>
+      <p>
+	This page is generated directly from the GO database. Each table
+	corresponds to a SQL view
+      </p>
+    </div>
+  </div>
+ </body>
+</html>

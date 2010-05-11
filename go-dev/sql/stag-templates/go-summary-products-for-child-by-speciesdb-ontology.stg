@@ -1,0 +1,32 @@
+:SELECT
+  term.name,
+  c.name,
+  s.common_name,
+  count(distinct gp.id) AS s__gene_product_count
+:FROM
+ term
+ INNER JOIN term2term AS t2t ON (term.id=t2t.term1_id)
+ INNER JOIN term AS c ON (c.id=t2t.term2_id)
+ INNER JOIN graph_path AS t2tt ON (c.id=t2tt.term1_id)
+ INNER JOIN association AS a ON (a.term_id=t2tt.term2_id)
+ INNER JOIN gene_product AS gp ON (a.gene_product_id=gp.id)
+ INNER JOIN species AS s ON (gp.species_id=s.id)
+:WHERE
+    [term.acc => &term_acc&]
+    [term.name => &term_name&]
+    [term.term_type => &term_type&]
+    [term.is_obsolete => &term_is_obsolete&]
+    [term.is_root => &term_is_root&]
+    [term.id => &term_id&]
+    [term_definition.term_definition => &term_definition&]
+    [(term.name LIKE '%unknown%' AND  &is_unknown&)]
+    [ (term.name NOT LIKE '%unknown%' AND  &is_known&) ]
+:GROUP BY
+ term.name,c.name,s.common_name
+:ORDER BY
+ term.name,c.name,s.common_name
+:USE NESTING (set(term(c(s))))
+//
+schema: go
+desc: 
+
