@@ -98,7 +98,7 @@ module AUnit
 
     ## Safely copy out AmiGO.Conf.
     def profile
-      Marshal.restore Marshal.dump @json_conf
+      Marshal.restore(Marshal.dump(@json_conf))
     end
     
   end
@@ -529,7 +529,7 @@ module AUnit
       ready_dir(File.dirname(@log_struct_file))
       
       f = File.open(@log_struct_file, 'a')
-      f.write(JSON.dump in_hash)
+      f.write(JSON.dump(in_hash))
       f.close  
       
       nil
