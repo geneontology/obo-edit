@@ -1,0 +1,45 @@
+XSL Transformations
+===================
+
+These are XSLT files for transforming the XML formats produced by the
+GO and OBO projects.
+
+In order to use these files you will need an xslt processor. I use
+xsltproc, which comes as part of libxml and libxml2.
+
+If you have xsltproc on your system, you can also use
+go-dev/scripts/go-apply-xslt. (If you wish to use a different xslt
+processor, email me and I will make go-apply-xslt more generic)
+
+  go-apply-xslt oboxml_to_owl MyFile.obo-xml
+
+
+These transformations work off of OBO XML, *not* the deprecated GO RDF
+XML file format.
+
+To transform flatfiles into OBO XML you can use the go2xml script,
+which is part of the go-perl distro.
+
+EXAMPLES
+========
+
+To generate OWL from an OBO XML file, do this
+
+  go2xml go.obo | xsltproc $GO_ROOT/xml/xsl/oboxml_to_owl.xsl -
+
+To generate go-database xml ready to be be loaded into the db, do this
+
+  go2xml go.obo | xsltproc $GO_ROOT/xml/xsl/oboxml_to_godb_prestore.xsl -
+
+This will also work on gene assocition files
+
+  go2xml gene_association.wb | xsltproc $GO_ROOT/xml/xsl/oboxml_to_godb_prestore.xsl -
+
+AUTHORS
+=======
+
+Chris Mungall, adapted from xsl code originally by Brad Marshall
+
+Questions: cjm AT fruitfly DOT org
+
+WEBSITE:  http://www.godatabase.org/dev
