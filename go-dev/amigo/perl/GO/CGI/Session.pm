@@ -45,32 +45,31 @@ returns  GO::CGI::Session;
 =cut
 
 sub new {
-	print STDERR "Session::new: Starting!\n" if $verbose;
-	my $class = shift;
-	my $self = {};
-	bless $self, $class;
-	my ($q, $ses_type, $read_only, $temp, $apph) = rearrange([qw(q ses_type read_only temp apph)], @_);
 
-	#	set the session type
-	$ses_type = 'amigo_message' if !$ses_type;
-	$self->ses_type($ses_type);
-	
-	print STDERR "session type: ".$self->ses_type."\n" if $verbose;
-	
-	$q->param('session_id');
+  print STDERR "Session::new: Starting!\n" if $verbose;
+  my $class = shift;
+  my $self = {};
+  bless $self, $class;
+  my ($q, $ses_type, $read_only, $temp, $apph) =
+    rearrange([qw(q ses_type read_only temp apph)], @_);
 
-#	$self->__clear_sessions;
-	if ($q && $q->param('session_id'))
-	{	my $ses_id = $q->param('session_id');
-		#	check the session ID is OK before we do anything else
-		if ($self->is_valid_session_id($ses_id))
-		{	$self->id($ses_id);
-			$self->__load_session($ses_id) unless $temp;
-		}
-		else
-		{	#	invalid session ID. Delete it!
-			$q->delete('session_id');
-			$self->__create_session_id;
+  #	set the session type
+  $ses_type = 'amigo_message' if !$ses_type;
+  $self->ses_type($ses_type);
+
+  print STDERR "session type: ".$self->ses_type."\n" if $verbose;
+
+  # $self->__clear_sessions;
+  if ($q && $q->param('session_id')){
+    my $ses_id = $q->param('session_id');
+    # check the session ID is OK before we do anything else
+    if ($self->is_valid_session_id($ses_id)){
+      $self->id($ses_id);
+      $self->__load_session($ses_id) unless $temp;
+    }else{
+		  #	invalid session ID. Delete it!
+		  $q->delete('session_id');
+		  $self->__create_session_id;
 		}
 	}
 	else
