@@ -275,6 +275,18 @@ CREATE TABLE association (
 
 );
 
+--- @@ association_isoform
+CREATE TABLE association_isoform (
+
+	association_id	integer not null,
+	foreign key (association_id) references association(id),
+
+        -- @@ association.gene_product_id
+        -- the gene or gene_product to which the term is associated
+	gene_product_id	integer not null,
+	foreign key (gene_product_id) references gene_product(id)
+);
+
 --- @@ association_qualifier
 --- associations can have a number of qualifiers. These include,
 --- but are not limited to the NOT qualifier (which technically is

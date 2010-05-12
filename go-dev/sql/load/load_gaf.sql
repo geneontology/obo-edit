@@ -20,27 +20,46 @@ CREATE TABLE load_gaf (
 
        -- these are updated based on db contents:
         gene_product_dbxref_id  INT DEFAULT NULL,
+        gene_product_species_id  INT DEFAULT NULL,
         gene_product_id  INT DEFAULT NULL,
         association_id INT DEFAULT NULL,
         evidence_id INT DEFAULT NULL,
         term_id INT DEFAULT NULL
 );
 
+CREATE TABLE load_prodtaxa (
+        prodtaxa  VARCHAR(255),
+        species_id      INT DEFAULT NULL,
+        interacting_species_id      INT DEFAULT NULL
+);
+
 COPY load_gaf( proddb, prodacc, prodsymbol, qualifier, termacc, ref, evcode, evwith, aspect, prodname, prodsyn, prodtype, prodtaxa, assocdate, source_db)
 FROM '/Users/cjm/cvs/go-dev/sql/load/load_gaf.txt';
 
+load data local infile '/Users/cjm/cvs/go-dev/sql/load/load_gaf.txt' into table load_gaf;
+
+-- OR
+-- mysqlimport -L go_load load_gaf.txt
 
 CREATE INDEX load_gaf_ix1 ON load_gaf(proddb,prodacc);
+
+INSERT INTO load_prodtaxa (prodtaxa) SELECT DISTINCT prodtaxa FROM load_gaf;
+--UPDATE load_gaf SET gene_product_species_id = (SELECT id FROM species WHERE CONCAT('taxon:',ncbi_taxa_id)=prodtaxa);
+UPDATE load_prodtaxa SET species_id = (SELECT id FROM species WHERE CONCAT('taxon:',ncbi_taxa_id)=prodtaxa);
+UPDATE load_gaf SET gene_product_species_id = (SELECT species_id FROM load_prodtaxa WHERE load_prodtaxa.prodtaxa = load_gaf.prodtaxa);
 
 -- Load: gene product dbxrefs --   
 INSERT INTO dbxref (xref_dbname,xref_key) SELECT DISTINCT proddb,prodacc FROM load_gaf WHERE NOT EXISTS (SELECT id FROM dbxref WHERE xref_dbname=proddb AND xref_key=prodacc);
 UPDATE load_gaf SET gene_product_dbxref_id = (SELECT id FROM dbxref WHERE xref_dbname=proddb AND xref_key=prodacc);
 
+
 -- Load: gene products --   
 -- TODO: species, names, synonyms
-INSERT INTO gene_product (dbxref_id,symbol) SELECT DISTINCT gene_product_dbxref_id,prodsymbol FROM load_gaf
+INSERT INTO gene_product (dbxref_id,symbol,species_id) SELECT DISTINCT gene_product_dbxref_id,prodsymbol,gene_product_species_id FROM load_gaf
   WHERE NOT EXISTS (SELECT id FROM gene_product WHERE dbxref_id=gene_product_dbxref_id);
 UPDATE load_gaf SET gene_product_id = (SELECT id FROM gene_product WHERE dbxref_id=gene_product_dbxref_id);
+
+-- UPDATE gene_product SET species_id= (SELECT DISTINCT gene_product_species_id FROM load_gaf WHERE dbxref_id=gene_product_dbxref_id);
 
 -- we assume terms already loaded
 UPDATE load_gaf SET term_id = (SELECT id FROM term WHERE acc=termacc);
@@ -55,3 +74,7 @@ INSERT INTO association (gene_product_id,term_id) SELECT DISTINCT gene_product_i
   WHERE NOT EXISTS (SELECT id FROM association WHERE association.gene_product_id=load_gaf.gene_product_id AND association.term_id=load_gaf.term_id);
 
 -- TODO: evidence
+
+-- species. TODO: dual taxa
+
+-- gpc

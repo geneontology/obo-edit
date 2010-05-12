@@ -444,6 +444,11 @@ sub parse_fh_inner {
                 } @rels;
 		$val = [map {[relation=>$_]} @rels];
 	    }
+	    elsif ($tag =~ /^expand/) {
+		my ($template, $parts) =
+		  extract_qstr($val);
+		$val = $template;
+	    }
 	    else {
 		$val = $val2;
 		# normal tag:val
