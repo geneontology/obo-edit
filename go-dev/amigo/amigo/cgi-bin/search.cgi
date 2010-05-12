@@ -61,17 +61,20 @@ my $q = new CGI;
 my $cgi_error = $q->cgi_error;
 my $vars;
 
-print STDERR "\n\n\nStarting search.cgi\nCGI: ".Dumper($q)."\n" if $verbose;
+$core->kvetch("Starting errors: ". $cgi_error);
+$core->kvetch("Starting search.cgi, CGI: ".Dumper($q));
 
 # Initial check for cgi errors
-if ($cgi_error)
-{	if ($cgi_error eq '413 Request entity too large')
-	{	$cgi_error = 'The file you uploaded was too large. The maximum size for file uploads is '.$max_upload_size.' Kb.';
-	}
-	$vars->{error} = set_message(undef, 'fatal', $cgi_error);
-	my $session = new GO::CGI::Session(-temp => 1);
-	process_page_template({ error => $vars->{error}, page_title => 'Search Error' }, $session);
-	exit;
+if( $cgi_error ){
+  if ($cgi_error eq '413 Request entity too large'){
+    $cgi_error = 'The file you uploaded was too large. The maximum size for file uploads is '.$max_upload_size.' Kb.';
+  }
+  $vars->{error} = set_message(undef, 'fatal', $cgi_error);
+  $core->kvetch("In error 1: ". $cgi_error);
+  my $session = new GO::CGI::Session(-temp => 1);
+  $core->kvetch("In error 2: ". $cgi_error);
+  process_page_template({ error => $vars->{error}, page_title => 'Search Error' }, $session);
+  exit;
 }
 
 my %params = $q->Vars;
