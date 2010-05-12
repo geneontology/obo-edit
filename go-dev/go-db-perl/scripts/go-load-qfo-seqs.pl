@@ -1,10 +1,12 @@
 #!/usr/local/bin/perl -w
-
-BEGIN {
-    if (defined($ENV{GO_ROOT})) {
-	use lib "$ENV{GO_ROOT}/perl-api";
-    }
-}
+####
+#### Load the QfO sequences after downloading them from the website.
+####
+# BEGIN {
+#     if (defined($ENV{GO_ROOT})) {
+# 	use lib "$ENV{GO_ROOT}/perl-api";
+#     }
+# }
 use strict;
 use GO::AppHandle;
 use GO::Model::Seq;

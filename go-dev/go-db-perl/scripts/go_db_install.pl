@@ -95,10 +95,19 @@ my %local = (
 
 getopts('hvzijxng:m:a:s:f:l:d:u:p:P:t:e:D:M:');
 
-## Hunt down the paths.
-my $exec_path = realpath($0);
-my($top_path, $remainder) =
-  split 'go-db-perl/scripts/go_db_install', $exec_path;
+## Hunt down the paths and let's try and get all of the likely
+## libraries in. Trying "use lib" didn't work so well, so got hacky
+## with PERL5LIB.
+my($go_dev_path, $remainder) =
+  split 'go-db-perl/scripts/go_db_install', realpath($0);
+my @try_libs =
+ (
+  $go_dev_path . 'go-db-perl',
+  $go_dev_path . 'go-perl',
+  $go_dev_path . 'amigo/perl',
+  $go_dev_path . '../gobo-dbic'
+ );
+$ENV{PERL5LIB} = join(':', @try_libs) . ':' . $ENV{PERL5LIB};
 
 ## Print help through perldoc.
 if ( $opt_h ) {
@@ -486,7 +495,7 @@ if( $opt_M ){
   ## "go-deb/go-db-perl/sql/migrate".
 
   ## Test additional migrate path.
-  my $migrate_dir_path = $top_path . 'sql/migrate/';
+  my $migrate_dir_path = $go_dev_path . 'sql/migrate/';
   die "Migrates directory not accessible."
     if ! -d  $migrate_dir_path || ! -R $migrate_dir_path;
   ll("[SYSTEM] Found: \"" . $migrate_dir_path . "\".");
@@ -544,7 +553,7 @@ if( ! $opt_n && ! $already_loaded_p ){
   ## "go-deb/go-db-perl/sql/utils".
 
   ## Test matview procedure path.
-  my $util_exec_path = $top_path . 'sql/util/materialized_views_proc.sql';
+  my $util_exec_path = $go_dev_path . 'sql/util/materialized_views_proc.sql';
   die "Couldn\'t find materialized_views_proc.sql"
     if ! -f  $util_exec_path || ! -R $util_exec_path;
   my $short_name = basename($util_exec_path);
@@ -562,7 +571,7 @@ if( ! $opt_n && ! $already_loaded_p ){
   ll("[DB] Finished addition.");
 
   ## Test additional view path.
-  my $view_dir_path = $top_path . 'sql/view/';
+  my $view_dir_path = $go_dev_path . 'sql/view/';
   die "Views directory not accessible."
     if ! -d  $view_dir_path || ! -R $view_dir_path;
   ll("[SYSTEM] Found: \"" . $view_dir_path . "\".");
@@ -643,20 +652,15 @@ if( $opt_j ){
     ## Add Newick blobs using phylotree properties.
     my $panther_newick_path = $ENV{PANTHER_NEWICK_PATH};
     ## BUG: this will be folded away once the CVS repo is moved to SVN.
-    my $go_svn_path = $ENV{GO_SVN_PATH};
     if( ! defined( $panther_newick_path ) ){
       ww("WARNING: PANTHER_NEWICK_PATH not defined--could not add blobs.");
-    }elsif( ! defined( $go_svn_path ) ){
-      ww("WARNING: GO_SVN_PATH not defined--cannot run load-phylotree-properties.pl.");
     }elsif( ! $phylo_run_success ){
       ww("WARNING: seq2pthr2phylotree failed--could not add blobs.");
     }else{
       ll("Using PANTHER_NEWICK_PATH: " . $panther_newick_path);
-      ll("Using GO_SVN_PATH: " . $go_svn_path);
       $ENV{GO_DBNAME} = $local{EXTENSION};
       my $script = "go-db-perl/scripts/load-phylotree-properties.pl";
-      my @args = ('perl', '-I', $go_svn_path . '/geneontology/gobo-dbic',
-		  $top_path . $script,
+      my @args = ($go_dev_path . $script,
 		  $panther_newick_path);
       my $argstr = join(' ', @args);
       ll("[SYSTEM] \"$argstr\"");
@@ -819,10 +823,9 @@ sub load_qfo {
       $ftp->get($qfile, $tmp_dl_file) or die "Cannot download $qfile: $!";
 
       ## Run final command.
-      $ENV{GO_ROOT} = $top_path;
       my @args =
 	(
-	 $top_path . $qfo_script,
+	 $go_dev_path . $qfo_script,
 	 '-dbname', $local{EXTENSION},
 	 '-dbhost', $local{DB_HOST},
 	 #'-verbose',
@@ -904,7 +907,7 @@ sub run_seq2pthr2phylotree {
   ## Run final command.
   my @args =
     (
-     $top_path . $s2p2p_script,
+     $go_dev_path . $s2p2p_script,
      '--no-dry-run',
      '--quiet',
      # '--every=60', # we'd like a little update
@@ -980,7 +983,7 @@ Get the lite database (without IEAs).
 
 =item -j
 
-Try loading additional phylotree data. The environmental variables PANTHER_NEWICK_PATH and GO_SVN_PATH will (temporarily) have to be defined for this to work.
+Try loading additional phylotree data. The environmental variable PANTHER_NEWICK_PATH will (temporarily) have to be defined for this to work.
 
 =item -x
 
@@ -1064,7 +1067,7 @@ Load the latest lite DB onto spitz, under the name go_latest_lite, views include
 
 Load the latest lite DB onto localhost, under the name go_latest_lite, views not included, but additional phylotree data added:
 
-PANTHER_NEWICK_PATH=/srv/www/htdocs/amigo/panther GO_SVN_PATH=/home/sjcarbon/local/src/svn /home/sjcarbon/local/src/cvs/go-dev/go-db-perl/scripts/go_db_install.pl -i -n -j -e go_latest_lite -v -d localhost
+PANTHER_NEWICK_PATH=/srv/www/htdocs/amigo/panther /home/sjcarbon/local/src/cvs/go-dev/go-db-perl/scripts/go_db_install.pl -i -n -j -e go_latest_lite -v -d localhost
 
 Load the latest full onto spitz, no views included:
 
