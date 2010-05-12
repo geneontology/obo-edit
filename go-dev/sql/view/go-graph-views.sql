@@ -82,6 +82,23 @@ CREATE OR REPLACE VIEW path_to_root AS
     INNER JOIN term t ON (p.term1_id=t.id)
     WHERE t.is_root = 1;
 
+-- @@ num_ancestors
+-- 
+CREATE OR REPLACE VIEW term_num_ancestors AS
+    SELECT 
+     distinct p.term2_id AS term_id, 
+     COUNT(DISTINCT p.term1_id) AS num_ancestors
+    FROM graph_path p
+    GROUP BY p.term2_id;
+
+-- BEGIN MATERIALIZE
+-- CALL create_mview_in_place('term_num_ancestors');
+-- CREATE UNIQUE INDEX term_num_ancestors_idx1 ON term_num_ancestors(term_id);
+-- CREATE INDEX term_num_ancestors_idx2 ON term_num_ancestors(num_ancestors);
+-- CREATE UNIQUE INDEX term_num_ancestors_idx3 ON term_num_ancestors(term_id,num_ancestors);
+-- END MATERIALIZE
+
+
 -- @@ distance_to_root_stats_by_term
 -- each term can have multiple paths to the root(s); this finds the min, max and avg distance - grouped by term
 -- (note: see max_distance_to_root_by_term for a more efficient query)
@@ -156,6 +173,12 @@ CREATE OR REPLACE VIEW distance_to_leaf_stats_by_term AS
         max(distance)-min(distance) AS delta_distance
     FROM path_to_leaf AS p
     GROUP BY term_id;
+
+-- BEGIN MATERIALIZE
+-- CALL create_mview_in_place('distance_to_leaf_stats_by_term');
+-- CREATE UNIQUE INDEX distance_to_leaf_stats_by_term_idx1 ON distance_to_leaf_stats_by_term(term_id);
+-- CREATE UNIQUE INDEX distance_to_leaf_stats_by_term_idx2 ON distance_to_leaf_stats_by_term(term_id,min_distance);
+-- END MATERIALIZE
 
 -- @@ max_distance_to_leaf_by_term
 -- each term can have multiple paths to multiples leaves; this finds the maximum distance - grouped by term
@@ -302,4 +325,5 @@ CREATE OR REPLACE VIEW avg_max_distance_to_leaf_term_by_db_and_species_uniprot_f
 -- CALL create_mview_in_place('avg_max_distance_to_leaf_term_by_db_and_species');
 -- CREATE UNIQUE INDEX avg_max_distance_to_leaf_term_by_db_and_species_idx1 ON avg_max_distance_to_leaf_term_by_db_and_species(xref_dbname,common_name);
 -- END MATERIALIZE
+
 

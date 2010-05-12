@@ -23,6 +23,7 @@
 	This table has metadata on when the database was constructed
       </p>
     </div>
+    <index/>
     <div class="block">
       <h2>Homology sets</h2>
     
@@ -110,6 +111,18 @@ sometimes contains multiple genes from the same species
 	gene products that have been assigned to a homolset
       </p>
       </div>
+
+      <expand name="pubs">
+        SELECT 
+        ncbi_taxa_id,
+        genus || ' ' || species,
+        pg.avg_total_pubs AS n_pubs,
+        p.avg_total_pubs AS n_pubs_refg
+        FROM
+        avg_total_pubs_per_gp_by_refg_species AS pg
+        INNER JOIN avg_total_refg_pubs_per_gp_by_refg_species AS p
+        USING (ncbi_taxa_id,genus,species)
+      </expand>
 
       <p>
 	
@@ -229,6 +242,57 @@ sometimes contains multiple genes from the same species
 
       <h2>Depth of annotations</h2>
 
+
+      <h3>Distance to leaf</h3>
+
+      <div class="result">
+        <h3>Dist to leaf: By Ontology</h3>
+	<expand name="annot_dist_to_leaf_refgsp">
+          SELECT
+            t.term_type,
+            avg(max_distance) AS avg_annot_dist_to_leaf
+          FROM 
+          association AS a 
+          INNER JOIN non_root_term AS t ON (t.id=a.term_id)
+          INNER JOIN max_distance_to_leaf_by_term AS ld ON
+            (ld.term_id=t.id)
+          INNER JOIN gene_product AS g ON (g.id=a.gene_product_id)
+          INNER JOIN refg_species AS sp ON (sp.id=g.species_id)
+          GROUP BY
+            t.term_type
+          ORDER BY term_type
+        </expand>
+
+	<expand name="annot_dist_to_leaf_ref_gene">
+          SELECT
+            t.term_type,
+            avg(max_distance) AS avg_annot_dist_to_leaf
+          FROM 
+          association AS a 
+          INNER JOIN non_root_term AS t ON (t.id=a.term_id)
+          INNER JOIN max_distance_to_leaf_by_term AS ld ON
+            (ld.term_id=t.id)
+          INNER JOIN gene_product_homolset AS gph ON (gph.gene_product_id=a.gene_product_id)
+          GROUP BY
+            t.term_type
+          ORDER BY term_type
+        </expand>
+
+	<expand name="annot_dist_to_leaf_ref_gene_c">
+          SELECT
+            term_type,
+            code,
+            md.avg_annot_dist_to_leaf AS avg_dist_refsp,
+            mdg.avg_annot_dist_to_leaf AS avg_dist_ref_genes,
+            100 - ((mdg.avg_annot_dist_to_leaf * 100) / md.avg_annot_dist_to_leaf) AS pct_chg
+          FROM
+          avg_max_distance_to_leaf_term_per_refg_within_refg_species AS mdg
+          INNER JOIN avg_max_distance_to_leaf_term_within_refg_species AS md USING (term_type,code)
+          ORDER BY term_type,code
+        </expand>
+      </div>
+
+      <h3>Distance to root</h3>
 
       <expand view="max_max_distance_to_root_by_term"/>
       <p>
