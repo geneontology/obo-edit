@@ -196,6 +196,18 @@ sub e_term2term {
     }
 }
 
+sub e_intersection_of {
+    my $self = shift;
+    my @nodes = @_;
+    if ($self->up(1)->name eq 'godb_prestore') {
+        $self->stagdbh->_storenode($_) foreach @nodes;
+        return;
+    }
+    else {
+        return @nodes;
+    }
+}
+
 sub e_typedef {
     my $self = shift;
     foreach my $node (@_) {

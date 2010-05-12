@@ -773,7 +773,7 @@ CREATE OR REPLACE VIEW homolset_annotation_outlier_full AS
                         AND  ha1.is_not=0
                         AND  ha1.homolset_id = ha.homolset_id);
 
---- 100 less results. 
+-- 100 less results. 
 CREATE OR REPLACE VIEW homolset_annotation_outlier_old AS
  SELECT 
   ha.*

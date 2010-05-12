@@ -275,6 +275,9 @@ sub _flatten_dbxref {
     if ($db eq "URL" && $acc =~ /http/) {  # TODO - check for all URI forms (LSID,...)
         return $acc;
     }
+    elsif ($acc eq 'NULL') {
+        return $db;
+    }
     else {
         return "$db:$acc";
     }
