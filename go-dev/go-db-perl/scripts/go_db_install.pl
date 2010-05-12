@@ -1063,22 +1063,22 @@ http://wiki.geneontology.org/
 
 Load the latest lite DB onto spitz, under the name go_latest_lite, views included:
 
-/users/sjcarbon/local/src/cvs/go-dev/go-db-perl/scripts/go_db_install.pl -i -e go_latest_lite -v -d spitz
+/users/sjcarbon/local/src/svn/geneontology/go-dev/go-db-perl/scripts/go_db_install.pl -i -e go_latest_lite -v -d spitz
 
 Load the latest lite DB onto localhost, under the name go_latest_lite, views not included, but additional phylotree data added:
 
-PANTHER_NEWICK_PATH=/srv/www/htdocs/amigo/panther /home/sjcarbon/local/src/cvs/go-dev/go-db-perl/scripts/go_db_install.pl -i -n -j -e go_latest_lite -v -d localhost
+PANTHER_NEWICK_PATH=/srv/www/htdocs/amigo/panther /home/sjcarbon/local/src/svn/geneontology/go-dev/go-db-perl/scripts/go_db_install.pl -i -n -j -e go_latest_lite -v -d localhost
 
 Load the latest full onto spitz, no views included:
 
-/users/sjcarbon/local/src/cvs/go-dev/go-db-perl/scripts/go_db_install.pl -v -n -d spitz
+/users/sjcarbon/local/src/svn/geneontology/go-dev/go-db-perl/scripts/go_db_install.pl -v -n -d spitz
 
 Load historical DB onto spitz (2004-01-01), include views:
 
-/users/sjcarbon/local/src/cvs/go-dev/go-db-perl/scripts/go_db_install.pl -v -i -D 20040101 -d spitz
+/users/sjcarbon/local/src/svn/geneontology/go-dev/go-db-perl/scripts/go_db_install.pl -v -i -D 20040101 -d spitz
 
 Load historical DB onto spitz (2004-01-01), include views, was name ye_old_db:
 
-/users/sjcarbon/local/src/cvs/go-dev/go-db-perl/scripts/go_db_install.pl -v -i -D 20040101 -e ye_old_db -d spitz
+/users/sjcarbon/local/src/svn/geneontology/go-dev/go-db-perl/scripts/go_db_install.pl -v -i -D 20040101 -e ye_old_db -d spitz
 
 =cut
