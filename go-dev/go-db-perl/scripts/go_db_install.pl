@@ -107,7 +107,11 @@ my @try_libs =
   $go_dev_path . 'amigo/perl',
   $go_dev_path . '../gobo-dbic'
  );
-$ENV{PERL5LIB} = join(':', @try_libs) . ':' . $ENV{PERL5LIB};
+if( defined $ENV{PERL5LIB} ){
+  $ENV{PERL5LIB} = join(':', @try_libs) . ':' . $ENV{PERL5LIB};
+}else{
+  $ENV{PERL5LIB} = join(':', @try_libs);
+}
 
 ## Print help through perldoc.
 if ( $opt_h ) {
