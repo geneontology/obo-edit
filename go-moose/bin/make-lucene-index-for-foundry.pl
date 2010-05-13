@@ -7,7 +7,7 @@
 ####
 #### Usage:
 ####
-####    perl -I /users/sjcarbon/local/src/cvs/obo/website/cgi-bin -I /users/sjcarbon/local/src/svn/geneontology/go-moose /users/sjcarbon/local/src/svn/geneontology/go-moose/bin/make-lucene-index-for-foundry.pl -v -e -d /ftp/pub/obo/obo-all -o /users/sjcarbon/local/src/cvs/obo/website/cgi-bin/ontologies.txt -t /tmp/lucene
+####   perl -I /users/sjcarbon/local/src/cvs/obo/website/cgi-bin -I /users/sjcarbon/local/src/svn/geneontology/go-moose /users/sjcarbon/local/src/svn/geneontology/go-moose/bin/make-lucene-index-for-foundry.pl -v -e -o /ftp/pub/obo/obo-all -t /users/sjcarbon/local/src/cvs/obo/website/cgi-bin/ontologies.txt -d /tmp/lucene
 ####
 
 ## Bring in GOBO and OBO site data parser.
