@@ -26,9 +26,6 @@ our $dbh = $apph->dbh;
 
 our $debug;
 
-# At least BOVIN flopped from protein to gene
-our $ignore_type = 1;
-
 # Often I only want one row returned from an SQL query.  This return
 # undef if we get zero rows and dies if it gets more then one.
 sub select_one{
@@ -112,89 +109,59 @@ sub new{
 }
 
 
-our $select_gene_product = $dbh->prepare
-  (<<SQL . ($ignore_type ? '' : 'AND type_id=?'));
+our $select_gene_product = $dbh->prepare(<<SQL);
 SELECT gene_product.id AS gene_product_id
 ,dbxref.id AS dbxref_id
+,xref_key
+,xref_dbname
 FROM dbxref
 JOIN gene_product ON(dbxref.id=gene_product.dbxref_id)
-WHERE xref_dbname=? AND xref_key=? AND species_id=?
+WHERE xref_key=? AND species_id=?
 SQL
 # Tries to get the gene_product_id for this item. It sets dbxref_id if
 # it finds it too.
-#
-# If a hash reference is passed it, it will the use items in it as
-# synonyms for the ids.
 sub gene_product_id{
     my $s = shift;
     return $s->{gene_product_id} if (exists $s->{gene_product_id});
-    my $hash = shift;
 
-    my %hash = %{ $s->{species}->dbname_hash };
-    my $out;
-    while (my ($type, $dbnames) = each %hash) {
-	my $type_id;
-	$type_id = type_id($type) if (!$ignore_type);
-	for my $species_id ( $s->species_ids ) {
-	    for my $dbname (@$dbnames) {
-		my @id = @{ $s->{ids} };
-
-		if ($hash) {
-		    my @new;
-		    for my $id (@id) {
-			my $new = $hash->{$id->[1]};
-			if ($new) {
-			    push @new, [ $dbname, $new ];
-			}
-		    }
-		    if (scalar @new) {
-			#warn Dumper \@new;
-			push @id, @new;
-		    }
-		}
-
-		for my $id (@id) {
-		    next if ($dbname ne $id->[0]);
-		    my $key = $id->[1];
-
-		    if ($metonym{$dbname}) {
-			for my $metonym (@{$metonym{$dbname}}) {
-			    if ($ignore_type) {
-				$out = select_one
-				  ($select_gene_product,
-				   $metonym, $key, $species_id);
-			    } else {
-				$out = select_one
-				  ($select_gene_product,
-				   $metonym, $key, $species_id, $type_id);
-			    }
-			    last if ($out);
-			}
-		    } else {
-			if ($ignore_type) {
-			    $out = select_one
-			      ($select_gene_product,
-			       $dbname, $key, $species_id);
-			} else {
-			    $out = select_one
-			      ($select_gene_product,
-			       $dbname, $key, $species_id, $type_id);
-			}
-		    }
-
-		    if ($out) {
-			$s->{gene_product_id} = $out->[0];
-			$s->{dbxref_id} = $out->[1];
-			$s->{xref} = $id;
-			$s->{type_id} = $type_id if (!$ignore_type);
-			return $s->{gene_product_id};
-		    }
-		}
-	    }
+    my @out;
+    for my $species_id ( $s->species_ids ) {
+	my @id = map { $_->[1] } @{ $s->{ids} };
+	for my $id (@id) {
+	    my @args = ($id, $species_id);
+	    #my $r = select_one($select_gene_product, @args);
+	    #push @out, $r if ($r);
+	    $select_gene_product->execute(@args) or die;
+	    push @out, @{ $select_gene_product->fetchall_arrayref() };
 	}
     }
 
-    return ($s->{gene_product_id} = undef);
+    my $found = scalar @out;
+    return ($s->{gene_product_id} = undef) if ($found == 0);
+
+    my $out;
+    if ($found == 1) {
+	$out = $out[0]
+    } else {
+	my @prefer = @{ $s->{species}->{prefer} || [] };
+	while (@prefer) {
+	    my $want = shift @prefer;
+	    $out = first {
+		lc($_->[3]) eq lc($want);
+	    } @out;
+	    last if ($out);
+	}
+	if ($out) {
+	    print "$s->{pthr} matched $found gene_product rows\n";
+	} else {
+	    die $s->{pthr} . Dumper \@out;
+	}
+    }
+
+    $s->{gene_product_id} = $out->[0];
+    $s->{dbxref_id} = $out->[1];
+    $s->{xref} = $out->[2];
+    return $s->{gene_product_id};
 }
 
 
@@ -208,54 +175,54 @@ SQL
 # If not already set, this will seek a dbxref entry that isn't
 # connected to a gene_product. If you don't care if it's connected or
 # not call $s->gene_product_id first and then call this.
-sub dbxref_id{
-    my $s = shift;
-    return $s->{dbxref_id} if ($s->{dbxref_id});
+# sub dbxref_id{
+#     my $s = shift;
+#     return $s->{dbxref_id} if ($s->{dbxref_id});
 
-    my $out;
+#     my $out;
 
-    for my $dbname ($s->{species}->id_types) {
-	for my $id (@{ $s->{ids} }) {
-	    next if ($dbname ne $id->[0]);
-	    my $key = $id->[1];
+#     for my $dbname ($s->{species}->id_types) {
+# 	for my $id (@{ $s->{ids} }) {
+# 	    next if ($dbname ne $id->[0]);
+# 	    my $key = $id->[1];
 
-	    if ($metonym{$dbname}) {
-		for my $metonym (@{$metonym{$dbname}}) {
-		    $out = select_one($select_dbxref_id, $metonym, $key);
-		}
-		last if ($out);
-	    } else {
-		$out = select_one($select_dbxref_id, $dbname, $key);
-	    }
+# 	    if ($metonym{$dbname}) {
+# 		for my $metonym (@{$metonym{$dbname}}) {
+# 		    $out = select_one($select_dbxref_id, $metonym, $key);
+# 		}
+# 		last if ($out);
+# 	    } else {
+# 		$out = select_one($select_dbxref_id, $dbname, $key);
+# 	    }
 
-	    if ($out) {
-		$s->{xref} = $id;
-		$s->{dbxref_id} = $out->[0];
-		return $s->{dbxref_id};
-	    }
-	}
-    }
+# 	    if ($out) {
+# 		$s->{xref} = $id;
+# 		$s->{dbxref_id} = $out->[0];
+# 		return $s->{dbxref_id};
+# 	    }
+# 	}
+#     }
 
-    return ($s->{dbxref_id} = undef);
-}
+#     return ($s->{dbxref_id} = undef);
+# }
 
-# returns the xref.  If it doesn't have an xref it will pick one.
-sub xref{
-    my $s = shift;
-    return $s->{xref} if ($s->{xref});
-    my %dbname = %{ $s->{species}->dbname_hash };
+# # returns the xref.  If it doesn't have an xref it will pick one.
+# sub xref{
+#     my $s = shift;
+#     return $s->{xref} if ($s->{xref});
+#     my %dbname = %{ $s->{species}->dbname_hash };
 
-    for my $type (keys %dbname) {
-	for my $id ( @{ $s->{ids} } ) {
-	    if ($dbname{$type}->[0] eq $id->[0]) {
-		$s->{xref} = $id;
-		$s->{type_id} = type_id($type) if (!$ignore_type);
-		return $s->{xref};
-	    }
-	}
-    }
-    die 'xref ' . Dumper $s;
-}
+#     for my $type (keys %dbname) {
+# 	for my $id ( @{ $s->{ids} } ) {
+# 	    if ($dbname{$type}->[0] eq $id->[0]) {
+# 		$s->{xref} = $id;
+# 		$s->{type_id} = type_id($type) if (!$ignore_type);
+# 		return $s->{xref};
+# 	    }
+# 	}
+#     }
+#     die 'xref ' . Dumper $s;
+# }
 
 
 my $select_type_id = $dbh->prepare(<<SQL);
@@ -463,13 +430,13 @@ while(<>) {
 
     if ($row->gene_product_id(\%tsv)) {
 	$summary->{gene_product}++;
-    } elsif ($row->dbxref_id) {
-	$summary->{dbxref_id}++;
-	print "No gene_product entry for $row->{pthr}\n" if (!$quiet);
-	#die Dumper $row;
+    # } elsif ($row->dbxref_id) {
+    # 	$summary->{dbxref_id}++;
+    # 	print "No gene_product entry for $row->{pthr}\n" if (!$quiet);
+    # 	#die Dumper $row;
     } else {
 	$summary->{nothing}++;
-	print "No gene_product/dbxref entry for $row->{pthr}\n" if (!$quiet);
+	print "No gene_product rows for $row->{pthr}\n" if (!$quiet);
 	#die Dumper $row;
     }
 
