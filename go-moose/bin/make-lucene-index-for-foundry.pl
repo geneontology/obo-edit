@@ -7,7 +7,7 @@
 ####
 #### Usage:
 ####
-####    perl -I/home/sjcarbon/local/src/cvs/obo/website/cgi-bin -I/home/sjcarbon/local/src/svn/geneontology/go-moose local/src/svn/geneontology/go-moose/bin/make-lucene-index-for-foundry.pl -v -e -o /data/public_ftp/pub/obo/obo-all -t /home/sjcarbon/local/src/cvs/obo/website/cgi-bin/ontologies.txt -d /tmp/lucene
+####    perl -I /users/sjcarbon/local/src/cvs/obo/website/cgi-bin -I /users/sjcarbon/local/src/svn/geneontology/go-moose /users/sjcarbon/local/src/svn/geneontology/go-moose/bin/make-lucene-index-for-foundry.pl -v -e -d /ftp/pub/obo/obo-all -o /users/sjcarbon/local/src/cvs/obo/website/cgi-bin/ontologies.txt -t /tmp/lucene
 ####
 
 ## Bring in GOBO and OBO site data parser.
@@ -62,8 +62,7 @@ my $target_dir = './';
 if ( $opt_d ) {
   $target_dir = $opt_d;
 }
-if( ! -d $target_dir ||
-    ! -w $target_dir ){
+if( ! -d $target_dir ){
   die "The targetted directory must be writable: $!";
 }
 kvetch('Will write to: ' . $target_dir);
