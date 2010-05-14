@@ -1228,14 +1228,13 @@ public class DefaultOBOParser implements OBOParser {
 	}
 
 	public void endParse() throws OBOParseException {
-		Iterator it = linkSet.iterator();
 		List danglingViolations = new ArrayList();
-		while (it.hasNext()) {
+		for(Object o : linkSet){
 			if (halted)
 				throw new OBOParseException("Operation cancelled " + "by user",
 						null, null, -1);
 
-			RelStruct rs = (RelStruct) it.next();
+			RelStruct rs = (RelStruct) o;
 			IdentifiedObject child = getObject(rs.getChild());
 			IdentifiedObject parent = getObject(rs.getParent());
 			IdentifiedObject type = getObject(rs.getType());
@@ -1306,6 +1305,7 @@ public class DefaultOBOParser implements OBOParser {
 			OBORestriction tr = objectFactory.createOBORestriction(
 					(LinkedObject) child, (OBOProperty) type,
 					(LinkedObject) parent, rs.isImplied());
+//			logger.info("tr: " + tr);
 			if (tr.isImplied())
 				logger.info("loaded implied rel " + tr);
 			tr.setNecessarilyTrue(rs.isNecessary());
@@ -1324,19 +1324,17 @@ public class DefaultOBOParser implements OBOParser {
 
 			}
 
-
 			if (ns != null && !ns.equals(child.getNamespace())) {
 				tr.setNamespace(ns);
 			}
 			tr.getParent().addChild(tr);
 		}
-		it = rangeMap.keySet().iterator();
-		while (it.hasNext()) {
+		for(Object op : rangeMap.keySet()){
 			if (halted)
 				throw new OBOParseException("Operation cancelled " + "by user",
 						null, null, -1);
 
-			OBOProperty t = (OBOProperty) it.next();
+			OBOProperty t = (OBOProperty) op;
 			String rangeID = (String) rangeMap.get(t);
 			IdentifiedObject o = getObject(rangeID);
 			if (o == null) {
@@ -1358,13 +1356,12 @@ public class DefaultOBOParser implements OBOParser {
 				t.setRange((Type) o);
 			}
 		}
-		it = domainMap.keySet().iterator();
-		while (it.hasNext()) {
+		for(Object o : domainMap.keySet()){
 			if (halted)
 				throw new OBOParseException("Operation cancelled " + "by user",
 						null, null, -1);
 
-			OBOProperty t = (OBOProperty) it.next();
+			OBOProperty t = (OBOProperty) o;
 			String domainID = (String) domainMap.get(t);
 			IdentifiableObject domain = getObject(domainID);
 			if (domain == null) {
@@ -1421,13 +1418,12 @@ public class DefaultOBOParser implements OBOParser {
 			}
 		}
 
-		it = instanceOfHash.keySet().iterator();
-		while (it.hasNext()) {
+		for(Object o : instanceOfHash.keySet()){
 			if (halted)
 				throw new OBOParseException("Operation cancelled " + "by user",
 						null, null, -1);
 
-			String id = (String) it.next();
+			String id = (String) o;
 			InstanceStruct is = (InstanceStruct) instanceOfHash.get(id);
 
 			IdentifiableObject instance = getObject(id);
@@ -1460,13 +1456,12 @@ public class DefaultOBOParser implements OBOParser {
 
 		}
 
-		it = propertyValSet.iterator();
-		while (it.hasNext()) {
+		for(Object o : propertyValSet){
 			if (halted)
 				throw new OBOParseException("Operation cancelled " + "by user",
 						null, null, -1);
 
-			PropertyValStruct pvs = (PropertyValStruct) it.next();
+			PropertyValStruct pvs = (PropertyValStruct) o;
 			Instance instance = (Instance) getObject(pvs.instanceID);
 			AnnotatedObject prop_o = (AnnotatedObject) session
 			.getObject(pvs.propID);
@@ -1539,12 +1534,12 @@ public class DefaultOBOParser implements OBOParser {
 				 * 
 				 * ie linking two instanes
 				 */
-				IdentifiedObject o = session.getObject(pvs.val);
-				if (o == null) {
+				IdentifiedObject io = session.getObject(pvs.val);
+				if (io == null) {
 					if (allowDanglingParents) {
-						o = objectFactory.createDanglingObject(pvs.val, false);
-						session.addObject(o);
-						logger.info("Created dangling object " + o);
+						io = objectFactory.createDanglingObject(pvs.val, false);
+						session.addObject(io);
+						logger.info("Created dangling object " + io);
 					} else {
 						danglingViolations.add(pvs);
 						continue;
@@ -1556,13 +1551,13 @@ public class DefaultOBOParser implements OBOParser {
 							.getPath(), pvs.getLine(), pvs.getLineNum());
 				}
 
-				logger.info("pvs.val = " + pvs.val + ", o = " + o);
-				if (!(o instanceof Value)) {
+				logger.info("pvs.val = " + pvs.val + ", io = " + io);
+				if (!(io instanceof Value)) {
 					throw new OBOParseException("Attempted to assign "
 							+ "non value to a " + "propertyValue", pvs
 							.getPath(), pvs.getLine(), pvs.getLineNum());
 				} else
-					instance.addPropertyValue(prop, o);
+					instance.addPropertyValue(prop, io);
 			}
 		}
 
@@ -1598,14 +1593,12 @@ public class DefaultOBOParser implements OBOParser {
 			 */
 			throw new OBOParseException(message, path, line, linenum);
 		}
-
-		it = useSet.iterator();
-		while (it.hasNext()) {
+		for(Object o : useSet){
 			if (halted)
 				throw new OBOParseException("Operation cancelled " + "by user",
 						null, null, -1);
 
-			BasicMapping bm = (BasicMapping) it.next();
+			BasicMapping bm = (BasicMapping) o;
 			IdentifiedObject subject = session.getObject(bm.getSubject());
 
 			if (subject == null) {
@@ -1673,13 +1666,13 @@ public class DefaultOBOParser implements OBOParser {
 			}
 		}
 
-		it = considerSet.iterator();
-		while (it.hasNext()) {
+
+		for(Object o : considerSet){
 			if (halted)
 				throw new OBOParseException("Operation cancelled " + "by user",
 						null, null, -1);
 
-			BasicMapping bm = (BasicMapping) it.next();
+			BasicMapping bm = (BasicMapping) o;
 			IdentifiedObject subject = session.getObject(bm.getSubject());
 
 			if (subject == null) {
