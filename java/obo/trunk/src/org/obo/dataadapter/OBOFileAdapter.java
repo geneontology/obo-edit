@@ -4,10 +4,8 @@ import java.util.*;
 
 import org.bbop.dataadapter.*;
 import org.bbop.io.IOUtil;
-import org.bbop.util.*;
 import org.obo.dataadapter.OBOSerializationEngine.FilteredPath;
 import org.obo.datamodel.*;
-import org.obo.datamodel.impl.WriteCachedOBOSession;
 import org.obo.identifier.IDProfile;
 import org.obo.nlp.SemanticParser;
 
@@ -47,7 +45,7 @@ public class OBOFileAdapter implements OBOAdapter {
 	FileAdapterConfiguration {
 
 		protected boolean allowDangling = false;
-		
+
 		protected boolean doIsaClosure = false;
 
 		protected boolean followImports = true;
@@ -118,7 +116,7 @@ public class OBOFileAdapter implements OBOAdapter {
 		public void setAllowDangling(boolean allowDangling) {
 			this.allowDangling = allowDangling;
 		}
-		
+
 		public boolean getClosureforDangling() {
 			return allowDangling;
 		}
@@ -302,6 +300,7 @@ public class OBOFileAdapter implements OBOAdapter {
 				if (serializer == null)
 					throw new DataAdapterException("Could not serialize to "
 							+ "serializer " + ioprofile.getSerializer());
+
 				serializeEngine = new OBOSerializationEngine();
 				serializeEngine.setUsername(getUserName());
 				serializeEngine.setAutogenString(getAutogenString());
@@ -310,11 +309,19 @@ public class OBOFileAdapter implements OBOAdapter {
 				List<FilteredPath> filteredPaths = new LinkedList<FilteredPath>();
 
 				if (ioprofile.getBasicSave()) {
-					filteredPaths.add(new OBOSerializationEngine.FilteredPath(
-							 null, null, ioprofile.getWritePath()));
+					filteredPaths.add(new OBOSerializationEngine.FilteredPath(null, null, ioprofile.getWritePath()));
 				} else {
 					filteredPaths.addAll(ioprofile.getSaveRecords());
 				}
+				/**FilteredPath sets the allowdangling modifier to false on initialization by default.
+				 * this works for all other cases wrt the gui where allowdangling is false by default.
+				 * it is true by default for obo2obo though, hence
+				 * explicitly setting allowdangling as per ioprofile settings since the ioprofile.getSaveRecords does not import that modifier.
+				 * 
+				 * */
+					for(FilteredPath filteredPath : filteredPaths)
+						filteredPath.setAllowDangling(ioprofile.allowDangling);
+
 				logger.info("Writing " + filteredPaths + " (serializer = " + ioprofile.getSerializer() + ", basicSave = " + ioprofile.getBasicSave() + ")");
 
 				serializeEngine.serialize((OBOSession) input, serializer,filteredPaths);
@@ -332,6 +339,7 @@ public class OBOFileAdapter implements OBOAdapter {
 			throw new DataAdapterException("Operation " + op
 					+ " not supported!");
 	}
+
 
 	public void cancel() {
 		cancelled = true;

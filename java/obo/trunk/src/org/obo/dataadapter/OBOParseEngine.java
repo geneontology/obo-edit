@@ -6,7 +6,6 @@ import java.util.regex.*;
 import java.net.*;
 import java.text.*;
 
-import javax.swing.JOptionPane;
 import javax.xml.parsers.*;
 import org.xml.sax.*;
 import org.obo.datamodel.*;
@@ -17,7 +16,6 @@ import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
 
 import org.bbop.io.*;
-import org.bbop.util.*;
 
 import org.apache.log4j.*;
 
@@ -996,6 +994,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 		parseTagValue(stanza, line, linenum, charoffset, name, value, nv);
 	}
 
+	// see RelStruct in DefaultOBOParser and try to reference to RelStruct with comparable here
 	public static class RelStruct {
 		protected String type;
 
