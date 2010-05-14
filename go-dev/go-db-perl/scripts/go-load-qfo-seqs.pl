@@ -1,10 +1,12 @@
 #!/usr/local/bin/perl -w
-
-BEGIN {
-    if (defined($ENV{GO_ROOT})) {
-	use lib "$ENV{GO_ROOT}/perl-api";
-    }
-}
+####
+#### Load the QfO sequences after downloading them from the website.
+####
+# BEGIN {
+#     if (defined($ENV{GO_ROOT})) {
+# 	use lib "$ENV{GO_ROOT}/perl-api";
+#     }
+# }
 use strict;
 use GO::AppHandle;
 use GO::Model::Seq;
@@ -46,17 +48,20 @@ my $type_h =
 
 my $time = localtime(time);
 
-my $n_seqs;
-my $n_files;
-my $n_new_gps;
+my $n_seqs = 0;
+my $n_files = 0;
+my $n_new_gps = 0;
 
-my $ftpurl = "ftp://ftp.ebi.ac.uk/pub/contrib/qfo/";
+## Internally fetch QfO from FTP. The method from inside
+## go_db_install.pl should be preferred as it is safe (cleans self up)
+## during problems.
 if ($opt_h->{fetch}) {
-    if (system("wget -np -r -l 1 $ftpurl")) {
-	die "cannot fetch from $ftpurl";
-	# retry?
-    }
-    @ARGV = split(/\n/,`ls ftp.ebi.ac.uk/pub/contrib/qfo/*fasta`);
+  my $ftpurl = "ftp://ftp.ebi.ac.uk/pub/contrib/qfo/";
+  if (system("wget -np -r -l 1 $ftpurl")) {
+    die "cannot fetch from $ftpurl";
+    # retry?
+  }
+  @ARGV = split(/\n/,`ls ftp.ebi.ac.uk/pub/contrib/qfo/*fasta`);
 }
 
 
@@ -82,9 +87,9 @@ foreach my $f (@ARGV) {
 
 }
 
-print "n_files: $n_files\n";
-print "n_seqs: $n_seqs\n";
-print "n_new_gps: $n_new_gps\n";
+logmsg("n_files: $n_files");
+logmsg("n_seqs: $n_seqs");
+logmsg("n_new_gps: $n_new_gps");
 
 if (@bad) {
     print "ERRORS:\n";
@@ -102,6 +107,7 @@ sub logmsg {
 
 sub load_fasta {
     my $f = shift;
+    my %unknown_ids = ();
 
     logmsg("loading $f");
     my ($ncbitaxid, $binomial);
@@ -125,7 +131,6 @@ sub load_fasta {
     while (<F>) {
 	chomp;
 	if (/^\>/) {
-	    my @tagvals = ();
 	    if (/\s+Description:(.*)/) {
 		$desc = $1;
 		s/\s+Description.*//;
@@ -142,7 +147,8 @@ sub load_fasta {
 	    }
 
 	    $symbol = '';
-	    my @tagvals = split(' ',$3);
+	    my @tagvals = (); # protect from use of uninit $3
+	    @tagvals = split(' ',$3) if defined $3;
 	    foreach (@tagvals) {
 		my ($t,$v) = split(/:/,$_);
 		if ($t eq 'GN') {
@@ -161,11 +167,22 @@ sub load_fasta {
 		}
 		elsif ($t eq 'protein_id') {
 		}
+		elsif ($t eq 'UniProtKB/Swiss-Prot') {
+		}
+		elsif ($t eq 'HGNC') {
+		}
+		elsif ($t eq 'RefSeq_peptide') {
+		}
 		else {
-		    warn("wot iz $t?");
+		  #warn("wot iz $t?");
+		  logmsg("wot iz $t?");
+
+		  ## Count odd ids.
+		  $unknown_ids{$t} = 0 if ! defined $unknown_ids{$t};
+		  $unknown_ids{$t}++;
 		}
 	    }
-	    
+
 	    # unless this is the first header, store the LAST sequence
 	    store_seq($gp_id,$seqid,$seq) unless !$seq;
 	    $seq = ''; # reset
@@ -189,11 +206,16 @@ sub load_fasta {
     }
     close(F);
 
+    ## Final warning about unknown ids.
+    #foreach my $kid (keys %unknown_ids){
+    my @uid_list = keys %unknown_ids;
+    warn("WARNING: Unknown ids: " . join(' ', @uid_list)) if scalar(@uid_list);
+    #}
+
     # store the final sequence
     store_seq($gp_id,$seqid,$seq);
 
     $n_files ++;
-
 }
 
 sub get_gp_id {
