@@ -1382,4 +1382,5 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
 }
