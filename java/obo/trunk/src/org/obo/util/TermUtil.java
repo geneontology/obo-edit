@@ -1150,9 +1150,12 @@ public class TermUtil {
 	 * this method only checks to be sure that {@link OBOProperty#INVERSE_OF}
 	 * only links properties, and that {@link OBOProperty#DISJOINT_FROM} only
 	 * links terms.
+	 * 4/30/2010 Adding self links to illegal relations list
 	 */
-	public static boolean isLegalRelationship(LinkedObject child,
-			OBOProperty type, LinkedObject parent) {
+	public static boolean isLegalRelationship(LinkedObject child, OBOProperty type, LinkedObject parent) {
+//		logger.debug("TermUtil.isLegalRelationship -- checking relationship: " + child + " -" + type + "-> " + parent);
+//		if (child.equals(parent))
+//			return false;
 		if (ReasonerUtil.isSubclass(type, OBOProperty.INVERSE_OF)
 				&& !(TermUtil.isProperty(child) && TermUtil.isProperty(parent)))
 			return false;
@@ -1186,14 +1189,10 @@ public class TermUtil {
 	 * given {@link OBOSession}
 	 */
 	public static boolean isUsed(OBOSession session, OBOProperty prop) {
-		Iterator it = session.getObjects().iterator();
-		while (it.hasNext()) {
-			IdentifiedObject io = (IdentifiedObject) it.next();
+		for(IdentifiedObject io : session.getObjects()){
 			if (!io.isBuiltIn() && io instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject) io;
-				Iterator it2 = lo.getParents().iterator();
-				while (it2.hasNext()) {
-					Link link = (Link) it2.next();
+				for(Link link : lo.getParents()){
 					if (!link.getParent().isBuiltIn()
 							&& link.getType().equals(prop)) {
 						return true;
@@ -1264,9 +1263,7 @@ public class TermUtil {
 	 * relationship type.
 	 */
 	public static boolean usesType(LinkedObject lo, OBOProperty prop) {
-		Iterator it = lo.getParents().iterator();
-		while (it.hasNext()) {
-			Link l = (Link) it.next();
+		for(Link l : lo.getParents()){
 			if (l.getType().equals(prop))
 				return true;
 		}
