@@ -1,5 +1,9 @@
 package org.oboedit.launcher;
-
+/*
+ * The obo2obo utility loads one or more obo files, optionally filters them, and then saves the results into one or more
+ * new obo files.
+ * 5/14/2010: fix for -allowdangling option to indeed be default for both input and output files.
+ * **/
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,7 +31,6 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.ObsoletableObject;
 import org.obo.filters.Filter;
-import org.obo.filters.IsCompleteLinkCriterion;
 import org.obo.filters.IsRedundantLinkCriterion;
 import org.obo.filters.LinkFilter;
 import org.obo.filters.LinkFilterFactory;
@@ -131,9 +134,8 @@ public class OBO2OBO {
 				System.out.println(report); // bypasses logger, direct reporting
 			}
 		}
-		Iterator it = scripts.iterator();
-		while (it.hasNext()) {
-			ScriptWrapper wrapper = (ScriptWrapper) it.next();
+		for(Object sw : scripts){
+			ScriptWrapper wrapper = (ScriptWrapper) sw;
 			runScript(session, wrapper.getScript(), wrapper.getArgs());
 		}
 		logger.info("About to write files... session object count = "
@@ -153,19 +155,16 @@ public class OBO2OBO {
 	}
 
 	protected static void fixDbxrefs(OBOSession session) {
-		Iterator it = session.getObjects().iterator();
-		while (it.hasNext()) {
-			IdentifiedObject io = (IdentifiedObject) it.next();
+		for(IdentifiedObject io : session.getObjects()){
 			if (io instanceof DefinedObject) {
 				DefinedObject dfo = (DefinedObject) io;
-				Iterator it2 = dfo.getDefDbxrefs().iterator();
 				Dbxref metacycRef = null;
 				Dbxref brokenRef = null;
 				Dbxref otherRef = null;
 				int metacycCount = 0;
 				int brokenCount = 0;
-				while (it2.hasNext()) {
-					Dbxref ref = (Dbxref) it2.next();
+				
+				for(Dbxref ref : dfo.getDefDbxrefs()){
 					if (ref.getDatabase().equalsIgnoreCase("metacyc")) {
 						metacycCount++;
 						metacycRef = ref;
@@ -212,9 +211,7 @@ public class OBO2OBO {
 
 	protected static void groupTerms(List terms, Map mappable, List external) {
 		long time = System.currentTimeMillis();
-		Iterator it = terms.iterator();
-		while (it.hasNext()) {
-			Object o = it.next();
+		for(Object o : terms){
 			if (o instanceof DanglingWrapper) {
 				external.add(o);
 			} else if (o instanceof IdentifiedObject) {
@@ -325,7 +322,6 @@ public class OBO2OBO {
 		LinkedList replacementPhrases = new LinkedList();
 		LinkedList considerPhrases = new LinkedList();
 
-		Iterator it;
 		List list = new ArrayList();
 		Map mappableTerms = new LinkedHashMap();
 		List externalTerms = new LinkedList();
@@ -335,9 +331,8 @@ public class OBO2OBO {
 
 		list.addAll(mappableTerms.keySet());
 		Collections.sort(list, wordComparator);
-		it = list.iterator();
-		while (it.hasNext()) {
-			IdentifiedObject io = (IdentifiedObject) it.next();
+		for(Object o : list){
+			IdentifiedObject io = (IdentifiedObject) o;
 			List phraseItems = (List) mappableTerms.get(io);
 			String phrase = buildPhrase(phraseItems, io.getName(), false);
 			if (phrase != null)
@@ -352,9 +347,9 @@ public class OBO2OBO {
 		groupTerms(consider, mappableTerms, externalTerms);
 		list.addAll(mappableTerms.keySet());
 		Collections.sort(list, wordComparator);
-		it = list.iterator();
-		while (it.hasNext()) {
-			IdentifiedObject io = (IdentifiedObject) it.next();
+		
+		for(Object o : list){
+			IdentifiedObject io = (IdentifiedObject) o;
 			phrase = buildPhrase((List) mappableTerms.get(io), io.getName(),
 					true);
 			if (phrase != null)
@@ -391,22 +386,16 @@ public class OBO2OBO {
 	protected static void writeComments(OBOSession session) {
 		List<ObsoletableObject> replacedBy = new LinkedList<ObsoletableObject>();
 		List<ObsoletableObject> consider = new LinkedList<ObsoletableObject>();
-		Iterator<ObsoletableObject> it = TermUtil.getObsoletes(session)
-		.iterator();
-		while (it.hasNext()) {
-			ObsoletableObject io = it.next();
+		
+		for(ObsoletableObject io : TermUtil.getObsoletes(session)){
 			if (io instanceof CommentedObject) {
 				parseComments(session, (CommentedObject) io, replacedBy,
 						consider, false);
-				Iterator<ObsoletableObject> it2 = io.getReplacedBy().iterator();
-				while (it2.hasNext()) {
-					ObsoletableObject o = it2.next();
+				for(ObsoletableObject o : io.getReplacedBy()){
 					if (!replacedBy.contains(o))
 						replacedBy.add(o);
 				}
-				it2 = io.getConsiderReplacements().iterator();
-				while (it2.hasNext()) {
-					ObsoletableObject o = it2.next();
+				for(ObsoletableObject o : io.getConsiderReplacements()){
 					if (!consider.contains(o))
 						consider.add(o);
 				}
@@ -423,20 +412,17 @@ public class OBO2OBO {
 	protected static void parseComments(OBOSession session) {
 		List<ObsoletableObject> replacedBy = new LinkedList<ObsoletableObject>();
 		List<ObsoletableObject> consider = new LinkedList<ObsoletableObject>();
-		Iterator<ObsoletableObject> it = TermUtil.getObsoletes(session)
-		.iterator();
-		while (it.hasNext()) {
-			ObsoletableObject io = it.next();
+		
+		
+		for(ObsoletableObject io : TermUtil.getObsoletes(session)){
 			if (io instanceof CommentedObject) {
-				parseComments(session, (CommentedObject) io, replacedBy,
-						consider, true);
+				parseComments(session, (CommentedObject) io, replacedBy, consider, true);
 				Iterator<ObsoletableObject> it2 = replacedBy.iterator();
 				while (it2.hasNext()) {
 					ObsoletableObject o = it2.next();
 					io.addReplacedBy(o);
 					it2.remove();
 				}
-
 				it2 = consider.iterator();
 				while (it2.hasNext()) {
 					ObsoletableObject o = it2.next();
@@ -457,8 +443,7 @@ public class OBO2OBO {
 			CommentedObject commented, List replacedBy, List consider,
 			boolean showWarnings) {
 		long time = System.currentTimeMillis();
-		int index = commented.getComment()
-		.lastIndexOf("To update annotations,");
+		int index = commented.getComment().lastIndexOf("To update annotations,");
 		if (index == -1) {
 			if (showWarnings)
 				System.err
@@ -496,12 +481,13 @@ public class OBO2OBO {
 					Object io = session.getObject(token);
 					if (io == null) {
 						StringBuffer text = new StringBuffer();
-						Iterator it = quoteList.iterator();
-						while (it.hasNext()) {
+						
+						for(Object q : quoteList){
 							if (text.length() > 0)
 								text.append(" ");
-							text.append(it.next().toString());
+							text.append(q.toString());
 						}
+						
 						io = new DanglingWrapper(token, text.toString());
 					} else if (!(io instanceof ObsoletableObject)) {
 						logger.info("Warning (" + commented.getID()
@@ -554,8 +540,12 @@ public class OBO2OBO {
 			printUsage(1);
 		OBOFileAdapter.OBOAdapterConfiguration readConfig = new OBOFileAdapter.OBOAdapterConfiguration();
 		readConfig.setBasicSave(false);
+		//allowdangling in input file
+		readConfig.setAllowDangling(true);
 		OBOFileAdapter.OBOAdapterConfiguration writeConfig = new OBOFileAdapter.OBOAdapterConfiguration();
 		writeConfig.setBasicSave(false);
+		//allowdangling in output file
+		writeConfig.setAllowDangling(true);
 		boolean parseObsoleteComments = false;
 		boolean writeObsoleteComments = false;
 		boolean fixDbxrefs = false;
@@ -577,8 +567,7 @@ public class OBO2OBO {
 			} else if (args[i].equals("-parsecomments")) {
 				parseObsoleteComments = true;
 			} else if (args[i].equals("-allowdangling")) {
-				logger.info("Please note: allowdangling is already set to true by default.");
-				readConfig.setAllowDangling(true);
+				logger.info("Please note: allowdangling is already set to true by default for both input and output files.");
 			} else if (args[i].equals("-fixdbxrefs")) {
 				fixDbxrefs = true;
 			} else if (args[i].equals("-writecomments")) {
