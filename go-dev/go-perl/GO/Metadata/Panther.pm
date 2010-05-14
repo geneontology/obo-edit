@@ -163,7 +163,8 @@ our @species =
 
    { #  Escherichia coli str. K-12 substr. MG1655
     key => 'ECOLI',
-    ncbi_taxa_id => [ 83333 ],
+    # I think the 511145 is more for reverse compatibility
+    ncbi_taxa_id => [ 83333, 511145 ],
    },
 
    #
