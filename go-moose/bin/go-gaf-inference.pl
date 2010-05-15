@@ -116,6 +116,8 @@ foreach my $f (@ARGV) {
             $of =~ s/.*\///g;
             $of =~ s/\.gz//;
             $of .= ".ics.gaf";
+	    $w->fh->close();
+	    $w = new GOBO::Writers::GAFWriter;
             $w->file($of);
             $w->init_fh;
         }
