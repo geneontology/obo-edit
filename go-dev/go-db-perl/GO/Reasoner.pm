@@ -155,9 +155,12 @@ sub run {
   LEFT JOIN $LINK_TABLE AS existing_link
         ON (x.$SUBJECT_COL=existing_link.$SUBJECT_COL AND
             x.$REL_COL=existing_link.$REL_COL AND
+            x.distance=existing_link.distance AND
+            x.relation_distance=existing_link.relation_distance AND
             y.$TARGET_COL=existing_link.$TARGET_COL)
 ];
     my $lj_cond = "AND existing_link.$LINK_ID_COL IS NULL";
+
 
 # TODO: transitive_over and relation compositions
     my @views = ();
@@ -271,8 +274,11 @@ sub run {
     $self->logmsg("total views: ".scalar(@views));
 
 
-    $sth_link = $dbh->prepare_cached("SELECT $LINK_ID_COL FROM $LINK_TABLE WHERE $SUBJECT_COL=? AND $REL_COL=? AND $TARGET_COL=?");
-#my $sth_store = $dbh->prepare_cached("INSERT INTO $LINK_TABLE ($SUBJECT_COL,$REL_COL,$TARGET_COL,is_inferred) VALUES (?,?,?,'t')");
+    $sth_link = $dbh->prepare_cached("SELECT $LINK_ID_COL FROM $LINK_TABLE WHERE $SUBJECT_COL=? AND $REL_COL=? AND $TARGET_COL=? AND distance=? AND relation_distance=?");
+
+    ## uncomment to avoid semi-redundant paths with different distances
+    ##$sth_link = $dbh->prepare_cached("SELECT $LINK_ID_COL FROM $LINK_TABLE WHERE $SUBJECT_COL=? AND $REL_COL=? AND $TARGET_COL=?");
+
     $sth_store = $dbh->prepare_cached("INSERT INTO $LINK_TABLE ($SUBJECT_COL,$REL_COL,$TARGET_COL,distance,relation_distance) VALUES (?,?,?,?,?)");
 
     my $i_by_node_id = $self->get_intersections();
@@ -343,10 +349,16 @@ sub cache_view {
         my $n_rows = 0;
         while (my $link = $sth->fetchrow_hashref) {
             $n_rows++;
+
+	    # changed: no longer a triple as it includes distance
             my @triple =
                 ($link->{node_id},
                  $link->{predicate_id},
-                 $link->{object_id});
+                 $link->{object_id},
+		 $link->{distance},
+		 $link->{relation_distance},
+		);
+
             if ($triple[0] == $triple[2] && $view_id ne 'isa*' && $view->{type} ne 'reflexive') {
                 # TODO: proper reflexivity rules. hardcode OK for is_a for now
                 # also: will report cycles for intersections to self, which is normal?
@@ -356,6 +368,7 @@ sub cache_view {
                 $self->logmsg("    Cycle detected for node: $triple[0] pred: $triple[1]");
                 next;
             }
+	    # no not add duplicates
             my $rv = $sth_link->execute(@triple);
             if ($n_rows % 1000 == 0) {
                 $self->logmsg("    Checked $n_rows links. Current: @triple");
@@ -365,9 +378,10 @@ sub cache_view {
             }
             else {
                 #print STDERR "NEW @triple\n";
+		# triple now includes distances
                 $sth_store->execute(@triple,                
-                                    $link->{distance},
-                                    $link->{relation_distance},
+#                                    $link->{distance},
+#                                    $link->{relation_distance},
                     );
                 $links_added++;
             }
