@@ -36,7 +36,7 @@ my $sp_cache = AmiGO::Cache::Species->new($specnum);
 $sp_cache->build();
 
 ##
-print "Making reference genome cache...\n";
-print "This is the problematically long one so it is last, feel free to kill...\n";
-my $rg_cache = AmiGO::Cache::ReferenceGenome->new();
-$rg_cache->build();
+# print "Making reference genome cache...\n";
+# print "This is the problematically long one so it is last, feel free to kill...\n";
+# my $rg_cache = AmiGO::Cache::ReferenceGenome->new();
+# $rg_cache->build();
