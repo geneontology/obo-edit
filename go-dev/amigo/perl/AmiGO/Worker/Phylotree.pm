@@ -189,10 +189,12 @@ sub show{
 sub _index_display{
     my $s = shift;
 
+    return () if (0 == scalar(@_));
+
     my $r = GOBO::DBIC::GODBModel::Query->new({type=>'phylotree_lazy'})->get_all_results
       ({
 	phylotree_id  => \@_,
-	xref_dbname  => $s->{dbname},
+	xref_dbname  => [ $s->{dbname} ],
        },
        {
 	join =>
@@ -212,9 +214,10 @@ sub _index_display{
 	  'members',
 	  'last_anno',
 	 ],
-
-	 order_id => 'xref_key',
+	group_by => 'xref_key', # Not needed in Lucid
+	order_id => 'xref_key',
        });
+    warn "Yea!";
 
     return map {
 	my %new = %$s;
