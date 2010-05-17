@@ -336,7 +336,7 @@ our @species =
 
    { # Tetrahymena thermophila
     key => 'TETTH',
-    ncbi_taxa_id => [ 5911 ],
+    ncbi_taxa_id => [ 5911, 312017 ],
    },
 
    { # Thermotoga maritima
@@ -387,7 +387,8 @@ sub ncbi{
 	    return bless $species, $c;
 	}
     }
-    return undef;
+
+    die "Unable to find metadata for ncbi_id $ncbi";
 }
 
 
