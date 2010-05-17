@@ -217,7 +217,6 @@ sub _index_display{
 	group_by => 'xref_key', # Not needed in Lucid
 	order_id => 'xref_key',
        });
-    warn "Yea!";
 
     return map {
 	my %new = %$s;
