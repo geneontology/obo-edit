@@ -146,3 +146,12 @@ VERSION 0.09
 2007-03-14      - [cjm] imports tag followed
 2007-06-10      - [cjm] chadoxml only: xref handling of OBO_REL : relationship namespace is used
 2007-06-10      - [cjm] shownames option in map2slim
+
+VERSION 0.10
+============
+
+
+VERSION 0.11
+============
+
+2010-05-18	- [cjm] macro expansion in OWL
