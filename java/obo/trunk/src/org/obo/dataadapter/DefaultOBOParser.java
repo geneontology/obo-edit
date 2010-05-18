@@ -670,9 +670,7 @@ public class DefaultOBOParser implements OBOParser {
 					.getLineNum(), 0);
 		idPrefix = prefix;
 		// create id mappings for every built-in object
-		Iterator it = session.getObjects().iterator();
-		while (it.hasNext()) {
-			IdentifiedObject io = (IdentifiedObject) it.next();
+		for(IdentifiedObject io : session.getObjects()){
 			String convertedID = mapID(io.getID());
 			if (!convertedID.equals(io.getID())) {
 				idMapping.put(convertedID, io.getID());
@@ -757,13 +755,16 @@ public class DefaultOBOParser implements OBOParser {
 					engine.getCurrentLine(), engine.getLineNum());
 		CommentedObject co = ((CommentedObject) currentObject);
 		String currCmt = co.getComment();
-		if (currCmt != null && currCmt != "") {
-			co.setComment(currCmt + "\n"+ comment);
-			logger.info("appending to existing comment: "+currCmt+" + "+comment);
+		if(currCmt != null && currCmt != ""){
+			co.setComment(currCmt);
 		}
-		else {
-			co.setComment(comment);
-		}
+//		if (currCmt != null && currCmt != "") {
+//			co.setComment(currCmt + "\n"+ comment);
+//			logger.info("appending to existing comment: "+currCmt+" + "+comment);
+//		}
+//		else {
+//			co.setComment(comment);
+//		}
 		co.setCommentExtension(nv);
 	}
 
@@ -845,7 +846,8 @@ public class DefaultOBOParser implements OBOParser {
 					+ "object " + currentObject + " which does not support "
 					+ "definitions.", getCurrentPath(),
 					engine.getCurrentLine(), engine.getLineNum());
-
+		logger.debug("DefaultOBOParser.readDef --- def: " + def);
+		
 		((DefinedObject) currentObject).setDefinition(def);
 		for (int i = 0; i < xrefs.length; i++) {
 			Dbxref ref = getDbxref(xrefs[i], Dbxref.DEFINITION);
