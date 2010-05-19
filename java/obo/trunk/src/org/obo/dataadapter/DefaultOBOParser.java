@@ -846,7 +846,6 @@ public class DefaultOBOParser implements OBOParser {
 					+ "object " + currentObject + " which does not support "
 					+ "definitions.", getCurrentPath(),
 					engine.getCurrentLine(), engine.getLineNum());
-		logger.debug("DefaultOBOParser.readDef --- def: " + def);
 		
 		((DefinedObject) currentObject).setDefinition(def);
 		for (int i = 0; i < xrefs.length; i++) {
