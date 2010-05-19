@@ -148,16 +148,12 @@
    <div id="display-tabs" style="font-size:100%;">
      <ul>
        <li>
-	 <a href="#display-neighborhood"
-	    class="override"><span>Immediate Neighborhood</span></a>
+	 <a href="#display-graph"
+	    class="override"><span>Inferred Tree View</span></a>
        </li>
        <li>
 	 <a href="#display-sentences"
 	    class="override"><span>Ancestors and Children</span></a>
-       </li>
-       <li>
-	 <a href="#display-graph"
-	    class="override"><span>Inferred Tree View</span></a>
        </li>
        <li>
 	 <a href="#display-out"
@@ -166,89 +162,50 @@
      </ul>
 
      <!-- -->
-     <div id="display-neighborhood">
+     <div id="display-graph">
 
-       <table id="neighborhood-table-above"
-	      style="border-collapse: collapse;"
-	      cellpadding="0" cellspacing="0">
+       <!-- <h4>Term lineage for [% TERM_INFO.name %], including inferred links:</h4> -->
 
-	 <caption>
-	   Parents of [% TERM_INFO.name %] ([% TERM_INFO.acc %])
-	 </caption>
+       <ul>
+	 <!-- <li> -->
+	 <!-- 	 <h4>[[% TERM_INFO.acc %]] [% TERM_INFO.name %]:</h4> -->
+	 <!-- </li> -->
 
-	 <thead>
-	   <tr>
-	     <th style="width: 35%">subject<img style="border: 0px;" src="[% image_dir %]/reorder.gif" alt="Reorder by subject" /></th>
-	     <th style="width: 15%">relation<img style="border: 0px;" src="[% image_dir %]/reorder.gif" alt="Reorder by relation" /></th>
-	     <th style="width: 35%">object<img style="border: 0px;" src="[% image_dir %]/reorder.gif" alt="Reorder by object" /></th>
-	     <th style="width: 15%">annotations<img style="border: 0px;" src="[% image_dir %]/reorder.gif" alt="Reorder by count" /></th>
-	   </tr>
-	 </thead>
-	 
-	 <tbody>
-       
-   [% eo_rows = 0 %]
-   [% IF PARENT_CHUNKS_BY_DEPTH && MAX_DEPTH > 0 %]
-   [%    d = 0 %]
-   [%    WHILE d <= MAX_DEPTH %]
-   [%       IF PARENT_CHUNKS_BY_DEPTH.$d %]
-   [%          ANCESTOR_CHUNKS = PARENT_CHUNKS_BY_DEPTH.$d %]
-   [%          FOREACH anc IN ANCESTOR_CHUNKS %]
-   [%             IF NOT anc.inferred_p %]
-   [%                subject_chunk = TERM_INFO %]
-   [%                object_chunk = anc %]
-   [%                even_odd_rows = eo_rows %]
-   [%                munge_id_tail = "_n" %]
-   [%                count_type = "object" %]
-   [%                INCLUDE html/inc/term_details_re_row.tmpl %]
-   [%                eo_rows = eo_rows + 1 %]
-   [%             END %]
-   [%          END %]
-   [%       END %]
-   [%       d = d + 1 %]
-   [%    END %]
-   [% END %]
+	 [% IF PARENT_CHUNKS_BY_DEPTH && MAX_DEPTH > 0 %]
+	 [%    d = 0 %]
+	 [%    WHILE d <= MAX_DEPTH %]
+         [%       IF PARENT_CHUNKS_BY_DEPTH.$d %]
+         [%          ANCESTOR_CHUNKS = PARENT_CHUNKS_BY_DEPTH.$d %]
+         [%          FOREACH anc IN ANCESTOR_CHUNKS %]
+         [%             graph_entry = anc %]
+         [%             number_of_spaces = d %]
+         [%             INCLUDE html/inc/term_details_entry.tmpl %]
+         [%          END %]
+         [%       END %]
+         [%       d = d + 1 %]
+         [%    END %]
+         [% END %]
 
-	</tbody>
+         [% graph_entry = TERM_INFO %]
+         [% number_of_spaces = d - 1 %]
+         [% override_image = image_dir _ "/" _ "term_lineage_wedge.png" %]
+         [% override_title = "Current term" %]
+         [% override_link = "1" %]
+         [% INCLUDE html/inc/term_details_entry.tmpl %]
+         [% # Reset subroutine values. %]
+         [% override_image = "" %]
+         [% override_title = "" %]
+         [% override_link = "" %]
 
-    </table>
-
-     <table id="neighborhood-table-below"
-	    style="border-collapse: collapse;"
-	    cellpadding="0" cellspacing="0">
-
-       <caption>
-	 Children of [% TERM_INFO.name %] ([% TERM_INFO.acc %])
-       </caption>
-
-       <thead>
-	 <tr>
-	   <th style="width: 35%">subject<img style="border: 0px;" src="[% image_dir %]/reorder.gif" alt="Reorder by subject" /></th>
-	   <th style="width: 15%">relation<img style="border: 0px;" src="[% image_dir %]/reorder.gif" alt="Reorder by relation" /></th>
-	   <th style="width: 35%">object<img style="border: 0px;" src="[% image_dir %]/reorder.gif" alt="Reorder by object" /></th>
-	   <th style="width: 15%">annotations<img style="border: 0px;" src="[% image_dir %]/reorder.gif" alt="Reorder by count" /></th>
-	 </tr>
-       </thead>
-
-       <tbody>
-       
-     [% eo_rows = 0 %]
-     [% IF CHILD_CHUNKS && CHILD_CHUNKS.size > 0 %]
-     [%    FOREACH desc IN CHILD_CHUNKS %]
-     [%       subject_chunk = desc %]
-     [%       object_chunk = TERM_INFO %]
-     [%       even_odd_rows = eo_rows %]
-     [%       munge_id_tail = "_n" %]
-     [%       count_type = "subject" %]
-     [%       INCLUDE html/inc/term_details_re_row.tmpl %]
-     [%       eo_rows = eo_rows + 1 %]
-     [%    END %]
-     [% END %]
-
-	</tbody>
-
-     </table>
-
+         [% IF CHILD_CHUNKS && CHILD_CHUNKS.size > 0 %]
+         [%    FOREACH desc IN CHILD_CHUNKS %]
+         [%       graph_entry = desc %]
+         [%       number_of_spaces = d %]
+         [%       INCLUDE html/inc/term_details_entry.tmpl %]
+         [%    END %]
+         [% ELSE %]
+         [% END %]
+       </ul>
      </div>
 
      <!-- -->
@@ -273,153 +230,99 @@
 
 	 <tbody>
        
-   [% eo_rows = 0 %]
-   [% IF PARENT_CHUNKS_BY_DEPTH && MAX_DEPTH > 0 %]
-   [%    d = 0 %]
-   [%    WHILE d <= MAX_DEPTH %]
-   [%       IF PARENT_CHUNKS_BY_DEPTH.$d %]
-   [%          ANCESTOR_CHUNKS = PARENT_CHUNKS_BY_DEPTH.$d %]
-   [%          FOREACH anc IN ANCESTOR_CHUNKS %]
-   [%             subject_chunk = TERM_INFO %]
-   [%             object_chunk = anc %]
-   [%             even_odd_rows = eo_rows %]
-   [%             munge_id_tail = "_a" %]
-   [%             count_type = "object" %]
-   [%             INCLUDE html/inc/term_details_re_row.tmpl %]
-   [%             eo_rows = eo_rows + 1 %]
-   [%          END %]
-   [%       END %]
-   [%       d = d + 1 %]
-   [%    END %]
-   [% END %]
+	   [% eo_rows = 0 %]
+           [% IF PARENT_CHUNKS_BY_DEPTH && MAX_DEPTH > 0 %]
+           [%    d = 0 %]
+           [%    WHILE d <= MAX_DEPTH %]
+           [%       IF PARENT_CHUNKS_BY_DEPTH.$d %]
+           [%          ANCESTOR_CHUNKS = PARENT_CHUNKS_BY_DEPTH.$d %]
+           [%          FOREACH anc IN ANCESTOR_CHUNKS %]
+           [%             subject_chunk = TERM_INFO %]
+           [%             object_chunk = anc %]
+           [%             even_odd_rows = eo_rows %]
+           [%             munge_id_tail = "_a" %]
+           [%             count_type = "object" %]
+           [%             INCLUDE html/inc/term_details_re_row.tmpl %]
+           [%             eo_rows = eo_rows + 1 %]
+           [%          END %]
+           [%       END %]
+           [%       d = d + 1 %]
+           [%    END %]
+           [% END %]
 
-	</tbody>
+	 </tbody>
 
-    </table>
+       </table>
 
-     <table id="all-table-below"
-	    style="border-collapse: collapse;"
-	    cellpadding="0" cellspacing="0">
+       <table id="all-table-below"
+	      style="border-collapse: collapse;"
+	      cellpadding="0" cellspacing="0">
 
-       <caption>
-	 Children of [% TERM_INFO.name %] ([% TERM_INFO.acc %])
-       </caption>
+	 <caption>
+	   Children of [% TERM_INFO.name %] ([% TERM_INFO.acc %])
+	 </caption>
 
-       <thead>
-	 <tr>
-	   <th style="width: 35%">subject<img style="border: 0px;" src="[% image_dir %]/reorder.gif" alt="Reorder by subject" /></th>
-	   <th style="width: 15%">relation<img style="border: 0px;" src="[% image_dir %]/reorder.gif" alt="Reorder by relation" /></th>
-	   <th style="width: 35%">object<img style="border: 0px;" src="[% image_dir %]/reorder.gif" alt="Reorder by object" /></th>
-	   <th style="width: 15%">annotations<img style="border: 0px;" src="[% image_dir %]/reorder.gif" alt="Reorder by count" /></th>
-	 </tr>
-       </thead>
+	 <thead>
+	   <tr>
+	     <th style="width: 35%">subject<img style="border: 0px;" src="[% image_dir %]/reorder.gif" alt="Reorder by subject" /></th>
+	     <th style="width: 15%">relation<img style="border: 0px;" src="[% image_dir %]/reorder.gif" alt="Reorder by relation" /></th>
+	     <th style="width: 35%">object<img style="border: 0px;" src="[% image_dir %]/reorder.gif" alt="Reorder by object" /></th>
+	     <th style="width: 15%">annotations<img style="border: 0px;" src="[% image_dir %]/reorder.gif" alt="Reorder by count" /></th>
+	   </tr>
+	 </thead>
 
-       <tbody>
+	 <tbody>
        
-     [% eo_rows = 0 %]
-     [% IF CHILD_CHUNKS && CHILD_CHUNKS.size > 0 %]
-     [%    FOREACH desc IN CHILD_CHUNKS %]
-     [%       subject_chunk = desc %]
-     [%       object_chunk = TERM_INFO %]
-     [%       even_odd_rows = eo_rows %]
-     [%       munge_id_tail = "_a" %]
-     [%       count_type = "subject" %]
-     [%       INCLUDE html/inc/term_details_re_row.tmpl %]
-     [%       eo_rows = eo_rows + 1 %]
-     [%    END %]
-     [% END %]
+	   [% eo_rows = 0 %]
+           [% IF CHILD_CHUNKS && CHILD_CHUNKS.size > 0 %]
+           [%    FOREACH desc IN CHILD_CHUNKS %]
+           [%       subject_chunk = desc %]
+           [%       object_chunk = TERM_INFO %]
+           [%       even_odd_rows = eo_rows %]
+           [%       munge_id_tail = "_a" %]
+           [%       count_type = "subject" %]
+           [%       INCLUDE html/inc/term_details_re_row.tmpl %]
+           [%       eo_rows = eo_rows + 1 %]
+           [%    END %]
+           [% END %]
 
-	</tbody>
+	 </tbody>
 
-     </table>
+       </table>
 
-   </div>
+     </div>
 
-   <!-- -->
-   <div id="display-graph">
+     <div id="display-out">
 
-     <!-- <h4>Term lineage for [% TERM_INFO.name %], including inferred links:</h4> -->
-
-     <ul>
-       <!-- <li> -->
-       <!-- 	 <h4>[[% TERM_INFO.acc %]] [% TERM_INFO.name %]:</h4> -->
-       <!-- </li> -->
-
-   [% IF PARENT_CHUNKS_BY_DEPTH && MAX_DEPTH > 0 %]
-   [%    d = 0 %]
-   [%    WHILE d <= MAX_DEPTH %]
-   [%       IF PARENT_CHUNKS_BY_DEPTH.$d %]
-   [%          ANCESTOR_CHUNKS = PARENT_CHUNKS_BY_DEPTH.$d %]
-   [%          FOREACH anc IN ANCESTOR_CHUNKS %]
-   [%             graph_entry = anc %]
-   [%             number_of_spaces = d %]
-   [%             INCLUDE html/inc/term_details_entry.tmpl %]
-   [%          END %]
-   [%       END %]
-   [%       d = d + 1 %]
-   [%    END %]
-   [% END %]
-
-     [%    graph_entry = TERM_INFO %]
-     [%    number_of_spaces = d - 1 %]
-     [% #   override_image = image_dir _ "/" _ "star.gif" %]
-     [% #   override_image = image_dir _ "/" _ "left.png" %]
-     [% #   override_image = image_dir _ "/" _ "ball.png" %]
-     [% #   override_image = image_dir _ "/" _ "orb_nav_closed.png" %]
-     [% #   override_image = image_dir _ "/" _ "orb_nav_open.png" %]
-     [%    override_image = image_dir _ "/" _ "term_lineage_wedge.png" %]
-     [%    override_title = "Current term" %]
-     [%    override_link = "1" %]
-     [%    INCLUDE html/inc/term_details_entry.tmpl %]
-     [%    # Reset. %]
-     [%    override_image = "" %]
-     [%    override_title = "" %]
-     [%    override_link = "" %]
-
-     [% # d = d + 1 %]
-     [% IF CHILD_CHUNKS && CHILD_CHUNKS.size > 0 %]
-     [% FOREACH desc IN CHILD_CHUNKS %]
-     [%    graph_entry = desc %]
-     [%    number_of_spaces = d %]
-     [%    INCLUDE html/inc/term_details_entry.tmpl %]
-     [% END %]
-   [% ELSE %]
-   [% END %]
-   </ul>
-   </div>
-
-
-   <div id="display-out">
-
-     <p>
-       <ul>
-	 <li><b>Actions...</b></li>
-	 <!-- TODO: do this with breadcrumbsy string (taken from REST URL) --> 
-	 <!-- <li>Last action: [% last_action || 'unknown' %]</li> -->
-	 <li><a href="browse.cgi?action=set-tree&amp;[% vbridge %]&amp;session_id=[% session_id %]" title="View tree in GO browser">View in tree browser</a></li>
+       <p>
+	 <ul>
+	   <li><b>Actions...</b></li>
+	   <!-- TODO: do this with breadcrumbsy string (taken from REST URL) --> 
+	   <!-- <li>Last action: [% last_action || 'unknown' %]</li> -->
+	   <li><a href="browse.cgi?action=set-tree&amp;[% vbridge %]&amp;session_id=[% session_id %]" title="View tree in GO browser">View in tree browser</a></li>
 	 
-	 <li><a href="[% VIZ_STATIC_LINK %]"
-		title="View the tree in graph form as a static PNG image">Graphical view (PNG)</a></li>
-	 <li><a href="[% VIZ_DYNAMIC_LINK %]"
-		title="View the tree in graph form as an interactive SVG+JS document">Graphical view (SVG)</a></li>
-	 <!-- One day this will be out of experimental. -->
-	 <!-- <li><a href="[% NAVIGATION_LINK %]" -->
-	      <!-- 	      title="Navigate the GO, using the current term as a seed">GO Navigation</a></li> -->
-       </ul>
-     </p>
+	   <li><a href="[% VIZ_STATIC_LINK %]"
+		  title="View the tree in graph form as a static PNG image">Graphical view (PNG)</a></li>
+	   <li><a href="[% VIZ_DYNAMIC_LINK %]"
+		  title="View the tree in graph form as an interactive SVG+JS document">Graphical view (SVG)</a></li>
+	   <!-- One day this will be out of experimental. -->
+	   <!-- <li><a href="[% NAVIGATION_LINK %]" -->
+		<!-- 	      title="Navigate the GO, using the current term as a seed">GO Navigation</a></li> -->
+	 </ul>
+       </p>
        
-     <p>
-       <ul>
-	 <li><b>Downloads...</b></li>
-	 <li><a href="[% cgi %].cgi?[% vbridge %]&amp;format=obo" title="Download the tree in OBO text format">OBO</a></li>
-	 <li><a href="[% cgi %].cgi?[% vbridge %]&amp;format=rdfxml" title="Download the tree in RDF-XML format">RDF-XML</a></li>
-	 <li><a href="[% cgi %].cgi?[% vbridge %]&amp;format=dot" title="Download the tree in GraphViz dot format">GraphViz dot</a></li>
-       </ul>
-     </p>
+       <p>
+	 <ul>
+	   <li><b>Downloads...</b></li>
+	   <li><a href="[% cgi %].cgi?[% vbridge %]&amp;format=obo" title="Download the tree in OBO text format">OBO</a></li>
+	   <li><a href="[% cgi %].cgi?[% vbridge %]&amp;format=rdfxml" title="Download the tree in RDF-XML format">RDF-XML</a></li>
+	   <li><a href="[% cgi %].cgi?[% vbridge %]&amp;format=dot" title="Download the tree in GraphViz dot format">GraphViz dot</a></li>
+	 </ul>
+       </p>
+       
+     </div>
 
-   </div>
-
-   </div>
+</div>
 
    <!-- <div class="filters"> -->
    <!--   [% # INCLUDE filter_term_details2.tmpl %] -->

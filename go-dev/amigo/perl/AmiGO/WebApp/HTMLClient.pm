@@ -89,11 +89,8 @@ sub setup {
 		   'homolset_graph'      => 'mode_homolset_graph',
 		   'homolset_annotation' => 'mode_homolset_annotation',
 		   'live_search'         => 'mode_live_search',
-		   'term_details0'        => 'mode_term_details0',
-		   'term_details1'        => 'mode_term_details1',
-		   'term_details2'        => 'mode_term_details2',
-		   'term_details3'        => 'mode_term_details3',
 		   'term_details4'        => 'mode_term_details4',
+		   'term_details5'        => 'mode_term_details5',
 		   'AUTOLOAD'            => 'mode_exception'
 		  );
 }
@@ -629,25 +626,13 @@ sub mode_live_search {
 }
 
 ## TODO/BUG: Temporary muxing while we get the style figured out.
-sub mode_term_details0 {
-  my $self = shift;
-  return mode_term_details($self, 'type0');
-}
-sub mode_term_details1 {
-  my $self = shift;
-  return mode_term_details($self, 'type1');
-}
-sub mode_term_details2 {
-  my $self = shift;
-  return mode_term_details($self, 'type2');
-}
-sub mode_term_details3 {
-  my $self = shift;
-  return mode_term_details($self, 'type3');
-}
 sub mode_term_details4 {
   my $self = shift;
   return mode_term_details($self, 'type4');
+}
+sub mode_term_details5 {
+  my $self = shift;
+  return mode_term_details($self, 'type5');
 }
 
 
@@ -1028,8 +1013,10 @@ sub mode_term_details {
     $self->add_template_content('html/main/term_details2.tmpl');
   }elsif( $type eq 'type3' ){
     $self->add_template_content('html/main/term_details3.tmpl');
-  }else{
+  }elsif( $type eq 'type4' ){
     $self->add_template_content('html/main/term_details4.tmpl');
+  }else{
+    $self->add_template_content('html/main/term_details5.tmpl');
   }
 
   return $self->generate_template_page();
