@@ -293,10 +293,12 @@ function TermDetailsInit(){
 		var different_ids = [
 		    global_acc_to_rand[racc],
 		    global_acc_to_rand[racc] + '_a',
-		    global_acc_to_rand[racc] + '_n'
+		    // global_acc_to_rand[racc] + '_n'
+		    global_acc_to_rand[racc] + '_z'
 		];
-		var match_a = new RegExp("_a$");  
-		var match_n = new RegExp("_n$");  
+		var match_a = new RegExp("_a$");
+		// var match_n = new RegExp("_n$");
+		var match_z = new RegExp("_z$");
 
 		for( var did = 0; did <= different_ids.length; did++ ){
 
@@ -333,8 +335,9 @@ function TermDetailsInit(){
 		    }
 		    
 		    // Add text (different styles for different pages).
-		    if( ! match_a.test(did_acc) && 
-			! match_n.test(did_acc) ){
+		    // First is for inferred tree...
+		    if( ! match_a.test(did_acc)	&& ! match_z.test(did_acc) ){
+			// && ! match_n.test(did_acc) ){
 			if( ccount[racc] && racc == global_acc ){
 			    relt.html('<b><a style="" href="' + acc_link + '" title="View gene products associated with this term">[' + ccount[racc] + '&nbsp;gene&nbsp;products]</a></b>');
 			}else if( ccount[racc] ){
@@ -343,6 +346,7 @@ function TermDetailsInit(){
 			    // Need this, or not?
 			    relt.html('[0&nbsp;gene&nbsp;products]');
 			}
+                    // This is for the others... 
 		    }else{
 			if( ccount[racc] && racc == global_acc ){
 			    // BUG: revert after dealing with
@@ -362,8 +366,8 @@ function TermDetailsInit(){
 		}	    
 	    }
 	    // Trigger sorting action after table is populated.
-	    jQuery("#neighborhood-table-above").trigger('update');
-	    jQuery("#neighborhood-table-below").trigger('update');
+	    // jQuery("#neighborhood-table-above").trigger('update');
+	    // jQuery("#neighborhood-table-below").trigger('update');
 	    jQuery("#all-table-above").trigger('update');
 	    jQuery("#all-table-below").trigger('update');
 	    // TODO/BUG: recolor?
@@ -385,18 +389,18 @@ function TermDetailsInit(){
     	var retval = jQuery(node).text();
     	return retval; 
     };
-    jQuery("#neighborhood-table-above").tablesorter(
-	{ 
-	    textExtraction: ts_callback,
-	    // widgets: ['zebra'],
-            headers: { 3: { sorter:'integer' }} 
-	});
-    jQuery("#neighborhood-table-below").tablesorter(
-	{ 
-	    textExtraction: ts_callback,
-	    // widgets: ['zebra'],
-            headers: { 3: { sorter:'integer' }} 
-	});
+    // jQuery("#neighborhood-table-above").tablesorter(
+    // 	{ 
+    // 	    textExtraction: ts_callback,
+    // 	    // widgets: ['zebra'],
+    //         headers: { 3: { sorter:'integer' }} 
+    // 	});
+    // jQuery("#neighborhood-table-below").tablesorter(
+    // 	{ 
+    // 	    textExtraction: ts_callback,
+    // 	    // widgets: ['zebra'],
+    //         headers: { 3: { sorter:'integer' }} 
+    // 	});
     jQuery("#all-table-above").tablesorter(
 	{ 
 	    textExtraction: ts_callback,
