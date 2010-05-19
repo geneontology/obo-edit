@@ -16,8 +16,15 @@
 	title="Go to [% subject_chunk.name %]">[% subject_chunk.acc %]</a>)
   </td>
   <td>
-    <img src="[% image_dir _ "/" _ subject_chunk.rel _ ".gif" %]"
-	 title="[% subject_chunk.rel %]" />&nbsp;[% subject_chunk.rel %]&nbsp;[% IF subject_chunk.inferred_p %](inferred)[% END %]
+    <span class="nowrap">
+      [% IF subject_chunk.inferred_p %]
+      <img src="[% image_dir _ "/" _ subject_chunk.rel _ ".gif" %]"
+	   title="Inferred [% subject_chunk.rel %] relation" />&nbsp;[% subject_chunk.rel %]&nbsp;(inferred)
+      [% ELSE %]
+      <img src="[% image_dir _ "/" _ subject_chunk.rel _ ".gif" %]"
+	   title="[% subject_chunk.rel %] relation" />&nbsp;[% subject_chunk.rel %]&nbsp;
+      [% END %]
+    </span>
   </td>
   <td>
     [% object_chunk.name %]
@@ -31,8 +38,15 @@
     [% subject_chunk.name %]
   </td>
   <td>
-    <img src="[% image_dir _ "/" _ object_chunk.rel _ ".gif" %]"
-	 title="[% object_chunk.rel %]" />&nbsp;[% object_chunk.rel %]&nbsp;[% IF object_chunk.inferred_p %](inferred)[% END %]
+    <span class="nowrap">
+      [% IF object_chunk.inferred_p %]
+      <img src="[% image_dir _ "/" _ object_chunk.rel _ ".gif" %]"
+	   title="Inferred [% object_chunk.rel %] relation" />&nbsp;[% object_chunk.rel %]&nbsp;(inferred)
+      [% ELSE %]
+      <img src="[% image_dir _ "/" _ object_chunk.rel _ ".gif" %]"
+	   title="[% object_chunk.rel %] relation" />&nbsp;[% object_chunk.rel %]&nbsp;
+      [% END %]
+    </span>
   </td>
   <td>
     [% object_chunk.name %]
