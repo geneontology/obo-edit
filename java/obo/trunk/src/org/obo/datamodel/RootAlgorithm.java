@@ -29,7 +29,7 @@ public interface RootAlgorithm {
 				if (link instanceof Link)
 					if (TermUtil.isObsolete(((Link) link).getParent()) || TermUtil.isObsolete(((Link) link).getType()))
 						continue;
-				
+
 				if(link.getType().equals(OBOProperty.DISJOINT_FROM)){
 					continue;
 				}
@@ -49,29 +49,44 @@ public interface RootAlgorithm {
 
 	public static final RootAlgorithm GREEDY = new AbstractRootAlgorithm() {
 		public boolean isRoot(LinkedObject lo) {
-			
+
 			if (lo instanceof Instance)
 				return true;
-				
+
 			for(Object parent : linkDatabase.getParents(lo)){
 				Relationship parent_link = (Relationship) parent;
-				
-				//check for inverse relations when the LinkedObject does not have any parents 
-				// terms with inverse relations - part_of has_part relations might not be displayed as roots 
-				// ex: X --has_part--> Z INVERSE_OF Z --part_of --> X
+				//				logger.debug("parent_link: " + parent_link);
+				//check for inverse links ex. x --inverse_of--> y and y --inverse_of--> x
+				// in this case display both relations independently as roots
+				LinkedObject parent_link_child = parent_link.getChild();
+				LinkedObject parent_link_parent = parent_link.getParent();
+
+
 				for(Object child : linkDatabase.getChildren(lo)){
 					Relationship child_link = (Relationship) child;
-					
-					
-//					if(parent_link.getType().getName().equals(OBOProperty.HAS_PART.getName())){
-		
-//						if(child_link.getType().getName().equals(OBOProperty.PART_OF.getName())){			
-//							return true;
-//						}
-//					}
-					
+					//					logger.debug("child_link: " + child_link);
+					LinkedObject child_link_child = child_link.getChild();
+					LinkedObject child_link_parent = child_link.getParent();
+
+
+					if((parent_link.getType().getName().equals(OBOProperty.INVERSE_OF.getName())) 
+							&& (parent_link_child.equals(child_link_parent)) 
+							&& (parent_link_parent.equals(child_link_child))){
+						return true;
+					}
+
+					//check for inverse relations when the LinkedObject does not have any parents 
+					// terms with inverse relations - part_of has_part relations might not be displayed as roots 
+					// ex: X --has_part--> Z INVERSE_OF Z --part_of --> X
+					if(parent_link.getType().getName().equals(OBOProperty.HAS_PART.getName())){
+
+						if(child_link.getType().getName().equals(OBOProperty.PART_OF.getName())){			
+							return true;
+						}
+					}
+
 				}
-				
+
 				if (parent_link instanceof Link && ((Link) parent_link).getParent() instanceof DanglingObject)
 					continue;
 

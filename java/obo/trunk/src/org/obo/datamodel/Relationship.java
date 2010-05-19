@@ -5,6 +5,8 @@ import java.io.Serializable;
 public interface Relationship extends Serializable, Cloneable {
 
 	public LinkedObject getChild();
+	
+	public LinkedObject getParent();
 
 	public void setChild(LinkedObject child);
 
