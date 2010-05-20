@@ -97,7 +97,7 @@ sub new{
     $s{pthr}    = shift; # panther id
     $s{cluster} = shift; # phylotree cluster
     my ($species, @ids) = split(m/\|/, $s{pthr});
-    $s{species} = GO::Metadata::Panther->key($species);
+    $s{species} = GO::Metadata::Panther->code($species);
     return undef if (!$s{species});
 
     $s{ids} = [ map {
@@ -375,7 +375,7 @@ TXT
 
 die pod2usage(join("\n", @e)) if (scalar @e);
 
-@species = GO::Metadata::Panther::keys() if (!scalar @species);
+@species = GO::Metadata::Panther::codes() if (!scalar @species);
 
 my %tsv;
 if ($tsv) {
@@ -417,15 +417,15 @@ while(<>) {
 
     my $row = My::Pthr->new(split(m/\t/, $_));
     next if (!$row);
-    next if (!first{$_ eq $row->{species}->{key}} @species);
+    next if (!first{$_ eq $row->{species}->{code}} @species);
 
 
     push @pthr, $row;
 
-    $summary{$row->{species}->{key}} = {}
-      if (not $summary{$row->{species}->{key}});
+    $summary{$row->{species}->{code}} = {}
+      if (not $summary{$row->{species}->{code}});
 
-    my $summary = $summary{$row->{species}->{key}};
+    my $summary = $summary{$row->{species}->{code}};
     $summary->{total}++;
 
     if ($row->gene_product_id(\%tsv)) {
