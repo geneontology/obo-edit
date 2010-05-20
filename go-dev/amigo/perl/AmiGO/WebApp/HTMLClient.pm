@@ -33,6 +33,7 @@ use AmiGO::External::XML::GONUTS;
 use AmiGO::Worker::HomolsetGraph2;
 use AmiGO::Worker::HomolsetSummary2;
 use AmiGO::Worker::GPInformation::HomolsetInformation;
+use AmiGO::Worker::QuickGO::OntGraphics;
 
 #use URI::Escape;
 #use CGI qw/escapeHTML/;
@@ -89,6 +90,7 @@ sub setup {
 		   'homolset_graph'      => 'mode_homolset_graph',
 		   'homolset_annotation' => 'mode_homolset_annotation',
 		   'live_search'         => 'mode_live_search',
+		   'term_details'        => 'mode_term_details4',
 		   'term_details4'        => 'mode_term_details4',
 		   'term_details5'        => 'mode_term_details5',
 		   'AUTOLOAD'            => 'mode_exception'
@@ -955,6 +957,19 @@ sub mode_term_details {
     # $gonuts->kvetch("\t" . $gonuts->get_page_title());
     # $gonuts->kvetch("\t" . $gonuts->get_page_url());
   }
+
+  ## Try images from QuickGO.
+  my $qg = AmiGO::Worker::QuickGO::OntGraphics->new();
+  my $qg_img_url = undef;
+  eval {
+    $qg_img_url = $qg->image_path($input_term_id);
+  };
+  if($@){
+    $self->{CORE}->kvetch("QuickGO image failed: $@");
+  }else{
+    $self->{CORE}->kvetch("QuickGO image on FS: $qg_img_url");
+  }
+  $self->set_template_parameter('QG_IMAGE_URL', $qg_img_url);
 
   ###
   ### Standard setup.

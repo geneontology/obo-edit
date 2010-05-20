@@ -36,8 +36,9 @@
 
     <div class="block" id="info">
 
-   <h2>Term Information</h2>
-   <dl class="term-info">
+      <h2>Term Information</h2>
+
+      <dl class="term-info">
 
      <!-- Acc and ont. -->
      <dt>Accession</dt>
@@ -154,6 +155,10 @@
        <li>
 	 <a href="#display-sentences"
 	    class="override"><span>Ancestors and Children</span></a>
+       </li>
+       <li>
+	 <a href="#display-qg"
+	    class="override"><span>Graph View</span></a>
        </li>
        <li>
 	 <a href="#display-out"
@@ -291,6 +296,20 @@
        </table>
 
      </div>
+
+      <div id="display-qg">
+	<p>
+	  From <a href="http://www.ebi.ac.uk/QuickGO">QuickGO</a>.
+	</p>
+	<p>
+	  <a href="[% QG_IMAGE_URL %]"
+	     title="Graph of [% TERM_INFO.acc %] from QuickGO">
+	    <img style="width: 50%; height: 50%"
+		 src="[% QG_IMAGE_URL %]"
+		 alt="Graph of [% TERM_INFO.acc %] from QuickGO" />
+	  </a>
+	</p>
+      </div>
 
      <div id="display-out">
 
