@@ -75,6 +75,11 @@ $w->init_fh;
 
 # iterate through annotations writing new ICs
 foreach my $f (@ARGV) {
+    if ($f =~ /goa_pdb/) {
+	print STDERR "Skipping GAF: $f\n";
+	next;
+
+    }
     print STDERR "Parsing GAF: $f\n";
     my @ics = ();
     my @invalid = ();
