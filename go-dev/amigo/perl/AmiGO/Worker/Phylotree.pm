@@ -379,26 +379,26 @@ sub species_dist{
 	my %out;
 	@out = map {
 	    my $species = AmiGO::Aid::PantherDB->ncbi($_->{ncbi});
-	    my $key = $species->{key};
-	    if ($out{$key}) {
-		$out{$key}->{count} += $_->{count};
-		#$out{$key}->{color} = $_->{color} if ($_->{color});
+	    my $code = $species->{code};
+	    if ($out{$code}) {
+		$out{$code}->{count} += $_->{count};
+		#$out{$code}->{color} = $_->{color} if ($_->{color});
 		();
 	    } else {
-		$_->{key} = $key;
-		$out{$key} = $_;
+		$_->{code} = $code;
+		$out{$code} = $_;
 		($_);
 	    }
 	} @out;
 
 	# now we add missing items.
-	my @copy = qw/key common/;
+	my @copy = qw/code common/;
 	@out = map {
 	    my $species = $_;
-	    my $key = $species->{key};
-	    my $aid = AmiGO::Aid::PantherDB->key($key);
-	    if (exists $out{$key}) {
-		($out{$key});
+	    my $code = $species->{code};
+	    my $aid = AmiGO::Aid::PantherDB->code($code);
+	    if (exists $out{$code}) {
+		($out{$code});
 	    } else {
 		my %o =
 		  (
@@ -422,7 +422,7 @@ sub species_dist{
 
 
     return map {
-	$_->{display} = [ $_->{common} || $_->{key} || ($_->{genus}, $_->{species}) ];
+	$_->{display} = [ $_->{common} || $_->{code} || ($_->{genus}, $_->{species}) ];
 	$_;
     } @out;
     return @out;
