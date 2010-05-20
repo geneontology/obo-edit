@@ -15,7 +15,7 @@ use Date::Format;
 
 =item $URL_FOR_GONUTS
 
-This is the URL that points to the GONuts data source.
+This is the URL that points to the GONUTS data source.
 
 =cut
 my $URL_FOR_GONUTS = 'http://gowiki.tamu.edu/rest/is_edited.php';
