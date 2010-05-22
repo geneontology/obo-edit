@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 ####
-####
+#### TODO: local image a
 ####
 
 BEGIN { require "config.pl"; }
@@ -12,8 +12,6 @@ use lib $ENV{GO_SVN_ROOT} . '/gobo-dbic';
 package AmiGO::WebApp::Visualize;
 use base 'AmiGO::WebApp';
 
-
-use strict;
 
 use GOBO::DBIC::GODBModel::Graph;
 use AmiGO::GraphViz;

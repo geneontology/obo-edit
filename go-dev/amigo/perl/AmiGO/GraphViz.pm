@@ -37,6 +37,11 @@ sub new {
     $self->{GV} = GraphViz->new({
 				 rankdir => 0,
 				 directed => 1,
+				 #ratio => 'compress',
+				 #concentrate => 1,
+				 #clusterrank => 'none',
+				 #ranksep => .5,
+				 #nodesep => .5,
 				 node => {
 					  shape => 'plaintext',
 					  color => 'black',
@@ -308,7 +313,7 @@ sub add_edge {
 
   $self->{GV}->add_edge(
 			$obj_id => $sub_id,
-			label => $self->{PRETTY}->readable($pred_id),
+			#label => $self->{PRETTY}->readable($pred_id),
 			color => $self->{PRETTY}->relationship_color($pred_id),
 			arrowhead => 'none',
 			arrowtail => 'normal',
