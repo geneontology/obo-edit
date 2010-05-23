@@ -310,6 +310,9 @@ public class OWLReasonerRunner {
 	}
 	
 	public static void showMemory() {
+		System.gc();
+		System.gc();
+		System.gc();
 		long tm = Runtime.getRuntime().totalMemory();
 		long fm = Runtime.getRuntime().freeMemory();
 		long mem = tm-fm;
