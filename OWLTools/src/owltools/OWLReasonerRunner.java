@@ -6,6 +6,8 @@ import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerAdapter;
+
+import org.semanticweb.owl.inference.OWLReasonerAdapter;
 import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.inference.OWLReasonerFactory;
 import org.semanticweb.owl.model.*;
@@ -127,12 +129,20 @@ public class OWLReasonerRunner {
 						System.out.println("  creating named restrictions for: "+property);
 						for (OWLClass cls : owlClasses) {
 							OWLObjectSomeRestriction restr = 
+
+							OWLObjectSomeRestriction restr = 
+								owlFactory.getOWLObjectSomeRestriction(property, cls);
+
 								owlFactory.getOWLObjectSomeRestriction(property, cls);
 							URI rURI = URI.create(pURI+"/"+cls.getURI().getFragment());
 							OWLClass ec = 
 								owlFactory.getOWLClass(rURI);
 							nrClasses.add(ec);
 							//OWLLabelAnnotation label = 
+
+							//OWLLabelAnnotation label = 
+							//	owlFactory.getOWLLabelAnnotation(pURI.getFragment(), cls.getURI().getFragment());
+
 							//	owlFactory.getOWLLabelAnnotation(pURI.getFragment(), cls.getURI().getFragment());
 							OWLEquivalentClassesAxiom ecAxiom = owlFactory.getOWLEquivalentClassesAxiom(ec,restr);
 							newAxioms.add(ecAxiom);
@@ -147,6 +157,8 @@ public class OWLReasonerRunner {
 
 					for (OWLClass cls : owlClasses) {
 						URI iuri = URI.create(cls.getURI()+"/default-inst");					
+						owlFactory.getOWLIndividual(iuri);
+
 						owlFactory.getOWLIndividual(iuri);
 						// TODO
 					}
@@ -215,7 +227,11 @@ public class OWLReasonerRunner {
 							//System.out.println("    super: "+sc);
 							Set<OWLDescription> ascs = cls.getSuperClasses(ont);
 
+							Set<OWLDescription> ascs = cls.getSuperClasses(ont);
+
 							boolean isAsserted = false;
+							for (OWLDescription asc : ascs) {
+
 							for (OWLDescription asc : ascs) {
 								if (asc.equals(sc)) {
 									//System.out.println("    ASC: "+asc);
@@ -223,9 +239,13 @@ public class OWLReasonerRunner {
 								}
 							}
 							for (OWLDescription ec : cls.getEquivalentClasses(ont)) {
+
+							for (OWLDescription ec : cls.getEquivalentClasses(ont)) {
 								
 								if (ec instanceof OWLObjectIntersectionOf) {
 									OWLObjectIntersectionOf io = (OWLObjectIntersectionOf)ec;
+									for (OWLDescription op : io.getOperands()) {
+
 									for (OWLDescription op : io.getOperands()) {
 										if (op.equals(sc)) {
 											isAsserted = true;
