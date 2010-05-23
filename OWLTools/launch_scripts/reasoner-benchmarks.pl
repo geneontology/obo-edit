@@ -17,17 +17,17 @@ my $totaltime_h = {};
 my $reasonertime_h = {};
 my $reasoner_h =
 {
-    oboedit_lpr => sub {
-        my $f = shift;
-        my $benchf = shift;
-        run_oboedit_reasoner($f,$benchf);
-    },
+#    oboedit_lpr => sub {
+#        my $f = shift;
+#        my $benchf = shift;
+#        run_oboedit_reasoner($f,$benchf);
+#    },
 
-    oboedit_fcr => sub {
-        my $f = shift;
-        my $benchf = shift;
-        run_oboedit_reasoner($f, $benchf, "-reasonerfactory org.obo.reasoner.impl.ForwardChainingReasonerFactory");
-    },
+#    oboedit_fcr => sub {
+#        my $f = shift;
+#        my $benchf = shift;
+#        run_oboedit_reasoner($f, $benchf, "-reasonerfactory org.obo.reasoner.impl.ForwardChainingReasonerFactory");
+#    },
 
     oboedit_rbr => sub {
         my $f = shift;
