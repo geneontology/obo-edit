@@ -2,23 +2,23 @@ package owltools;
 
 import org.apache.log4j.Logger;
 
-import org.mindswap.pellet.owlapi.PelletReasonerFactory;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.inference.OWLReasoner;
-import org.semanticweb.owl.inference.OWLReasonerAdapter;
+import com.clarkparsia.pellet.owlapiv3.*;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.reasoner.Node;
+import org.semanticweb.owlapi.reasoner.NodeSet;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerException;
+import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.util.DLExpressivityChecker;
+import org.semanticweb.owlapi.util.VersionInfo;
+import org.semanticweb.owlapi.util.InferredAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredOntologyGenerator;
+import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
+import uk.ac.manchester.cs.factplusplus.owlapiv3.*;
 
-import org.semanticweb.owl.inference.OWLReasonerAdapter;
-import org.semanticweb.owl.inference.OWLReasonerException;
-import org.semanticweb.owl.inference.OWLReasonerFactory;
-import org.semanticweb.owl.model.*;
-import org.semanticweb.owl.util.DLExpressivityChecker;
-import org.semanticweb.owl.util.VersionInfo;
-import org.semanticweb.owl.util.InferredAxiomGenerator;
-import org.semanticweb.owl.util.InferredAxiomGeneratorException;
-import org.semanticweb.owl.util.InferredOntologyGenerator;
-import org.semanticweb.owl.util.InferredSubClassAxiomGenerator;
-import org.semanticweb.owl.vocab.OWLRDFVocabulary;
-import org.semanticweb.reasonerfactory.factpp.FaCTPlusPlusReasonerFactory;
+import org.semanticweb.HermiT.Reasoner;
 
 
 import java.lang.reflect.Constructor;
@@ -38,7 +38,7 @@ import java.util.Set;
  */
 public class OWLReasonerRunner {
 
-	public static final String PHYSICAL_URI = "http://purl.org/obo/owl/CARO";
+	public static final String PHYSICAL_IRI = "http://purl.org/obo/owl/CARO";
 	protected final static Logger logger = Logger.getLogger(OWLReasonerRunner.class);
 
 
@@ -46,19 +46,24 @@ public class OWLReasonerRunner {
 
 		Collection<String> paths = new ArrayList<String>();
 		int i=0;
-		String reasonerClassName = "uk.ac.manchester.cs.factplusplus.owlapi.Reasoner";
+		String reasonerClassName = "uk.ac.manchester.cs.factplusplus.owlapiv3.Reasoner";
 		String reasonerName = null;
 		boolean createNamedRestrictions = false;
 		boolean createDefaultInstances = false;
 
 		while (i < args.length) {
 			String opt = args[i];
+			System.out.println("processing arg: "+opt);
 			i++;
 			if (opt.equals("--pellet")) {
-				reasonerClassName = "org.mindswap.pellet.owlapi.Reasoner";
+				reasonerClassName = "com.clarkparsia.pellet.owlapiv3.Reasoner";
 				reasonerName = "pellet";
 			}
-			if (opt.equals("--no-reasoner")) {
+			else if (opt.equals("--hermit")) {
+				reasonerClassName = "org.semanticweb.HermiT.Reasoner";
+				reasonerName = "hermit";
+			}
+			else if (opt.equals("--no-reasoner")) {
 				reasonerClassName = "";
 				reasonerName = "";
 			}
@@ -74,20 +79,26 @@ public class OWLReasonerRunner {
 		}
 
 		if (paths.size() == 0) {
-			paths.add(PHYSICAL_URI);
+			paths.add(PHYSICAL_IRI);
 		}
 		System.out.println("OWLAPI: "+VersionInfo.getVersionInfo().getVersion());
 
 		try {
-			for (String uri : paths) {
+			for (String iri : paths) {
 				showMemory();
 				
 				// Create our ontology manager in the usual way.
 				OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+				
+				OWLDataFactory df = manager.getOWLDataFactory();
+;
 
 				// Load a copy of the  ontology.
-				OWLOntology ont = manager.loadOntologyFromPhysicalURI(URI.create(uri));
-				System.out.println("Loaded " + ont.getURI());
+				IRI x = IRI.create(iri);
+				System.out.println("loading: "+x);
+				OWLOntology ont = manager.loadOntologyFromOntologyDocument(x);
+				
+				System.out.println("Loaded " + ont);
 
 				showMemory();
 				
@@ -96,7 +107,7 @@ public class OWLReasonerRunner {
 				// query functionality that we need, for example the ability obtain the subclasses
 				// of a class etc.  See the createReasoner method implementation for more details
 				// on how to instantiate the reasoner
-				OWLReasoner reasoner = createReasoner(manager,reasonerName);
+				OWLReasoner reasoner = createReasoner(ont,reasonerName,manager);
 				
 
 
@@ -104,7 +115,7 @@ public class OWLReasonerRunner {
 				// imports closure of an ontology that we're interested in.  
 				Set<OWLOntology> importsClosure = manager.getImportsClosure(ont);
 				System.out.println("importsClosure: "+importsClosure);
-				reasoner.loadOntologies(importsClosure);
+				//reasoner.loadOntologies(importsClosure);
 
 				showMemory();
 				
@@ -120,30 +131,22 @@ public class OWLReasonerRunner {
 					System.out.println("creating named restrictions");
 
 					Collection<OWLEquivalentClassesAxiom> newAxioms = new ArrayList<OWLEquivalentClassesAxiom>();
-					Set<OWLClass> owlClasses = ont.getReferencedClasses();
-					Set<OWLObjectProperty> owlProperties = ont.getReferencedObjectProperties();
+					Set<OWLClass> owlClasses = ont.getClassesInSignature();
+					Set<OWLObjectProperty> owlProperties = ont.getObjectPropertiesInSignature();	
 					for (OWLObjectProperty property : owlProperties) {
-						URI pURI = property.getURI();
+						IRI pIRI = property.getIRI();
 						if (!property.isTransitive(ont))
 							continue;
 						System.out.println("  creating named restrictions for: "+property);
 						for (OWLClass cls : owlClasses) {
-							OWLObjectSomeRestriction restr = 
-
-							OWLObjectSomeRestriction restr = 
-								owlFactory.getOWLObjectSomeRestriction(property, cls);
-
-								owlFactory.getOWLObjectSomeRestriction(property, cls);
-							URI rURI = URI.create(pURI+"/"+cls.getURI().getFragment());
+							OWLObjectSomeValuesFrom restr = 
+								owlFactory.getOWLObjectSomeValuesFrom(property, cls);
+							IRI rIRI = IRI.create(pIRI+"/"+cls.getIRI().getFragment());
 							OWLClass ec = 
-								owlFactory.getOWLClass(rURI);
+								owlFactory.getOWLClass(rIRI);
 							nrClasses.add(ec);
 							//OWLLabelAnnotation label = 
-
-							//OWLLabelAnnotation label = 
-							//	owlFactory.getOWLLabelAnnotation(pURI.getFragment(), cls.getURI().getFragment());
-
-							//	owlFactory.getOWLLabelAnnotation(pURI.getFragment(), cls.getURI().getFragment());
+							//	owlFactory.getOWLLabelAnnotation(pIRI.getFragment(), cls.getIRI().getFragment());
 							OWLEquivalentClassesAxiom ecAxiom = owlFactory.getOWLEquivalentClassesAxiom(ec,restr);
 							newAxioms.add(ecAxiom);
 						}
@@ -153,20 +156,18 @@ public class OWLReasonerRunner {
 					}
 				}
 				if (createDefaultInstances) {
-					Set<OWLClass> owlClasses = ont.getReferencedClasses();
+					Set<OWLClass> owlClasses = ont.getClassesInSignature();
 
 					for (OWLClass cls : owlClasses) {
-						URI iuri = URI.create(cls.getURI()+"/default-inst");					
-						owlFactory.getOWLIndividual(iuri);
-
-						owlFactory.getOWLIndividual(iuri);
+						IRI iiri = IRI.create(cls.getIRI()+"/default-inst");					
+						owlFactory.getOWLNamedIndividual(iiri);
 						// TODO
 					}
 					
 				}
 
 				long initTime = System.nanoTime();
-				reasoner.classify();
+				reasoner.prepareReasoner();
 				long totalTime = System.nanoTime() - initTime;
 
 				showMemory();
@@ -183,7 +184,7 @@ public class OWLReasonerRunner {
 				// We can determine if the ontology is actually consistent.  (If an ontology is
 				// inconsistent then owl:Thing is equivalent to owl:Nothing - i.e. there can't be any
 				// models of the ontology)
-				boolean consistent = reasoner.isConsistent(ont);
+				boolean consistent = reasoner.isConsistent();
 				System.out.println("Consistent: " + consistent);
 				System.out.println("\n");
 
@@ -191,13 +192,13 @@ public class OWLReasonerRunner {
 				// can't possibly have any instances).  Note that the getInconsistentClasses method
 				// is really just a convenience method for obtaining the classes that are equivalent
 				// to owl:Nothing.
-				Set<OWLClass> inconsistentClasses = reasoner.getInconsistentClasses();
-				if (!inconsistentClasses.isEmpty()) {
+				Node<OWLClass> inconsistentClasses = reasoner.getUnsatisfiableClasses();
+				if (inconsistentClasses.getSize() > 0) {
 					System.out.println("The following classes are inconsistent: ");
 					for(OWLClass cls : inconsistentClasses) {
 						if (cls.toString().equals("Nothing"))
 							continue;
-						System.out.println("    INCONSISTENT: " + getLabel(cls,ont));
+						System.out.println("    INCONSISTENT: " + getLabel(cls,ont,df));
 					}
 				}
 				else {
@@ -205,18 +206,18 @@ public class OWLReasonerRunner {
 				}
 				System.out.println("\n");
 
-				for (OWLClass cls : ont.getReferencedClasses()) {
+				for (OWLClass cls : ont.getClassesInSignature()) {
 					if (nrClasses.contains(cls))
 						continue; // do not report these
 					for (OWLClass ec : reasoner.getEquivalentClasses(cls)) {
 						if (nrClasses.contains(ec))
 							continue; // do not report these
 						if (cls.toString().compareTo(ec.toString()) > 0) // equivalence is symmetric: report each pair once
-							System.out.println("  INFERRED: equivalent "+getLabel(cls,ont)+" "+getLabel(ec,ont));
+							System.out.println("  INFERRED: equivalent "+getLabel(cls,ont,df)+" "+getLabel(ec,ont,df));
 					}
 					//System.out.println("  "+cls);
-					Set<Set<OWLClass>> scs = reasoner.getSuperClasses(cls);
-					for (Set<OWLClass> scSet : scs) {
+					NodeSet<OWLClass> scs = reasoner.getSuperClasses(cls, false);
+					for (Node<OWLClass> scSet : scs) {
 						for (OWLClass sc : scSet) {
 							if (sc.toString().equals("Thing")) {
 								continue;
@@ -225,28 +226,20 @@ public class OWLReasonerRunner {
 								continue; // do not report these
 							//ont.get
 							//System.out.println("    super: "+sc);
-							Set<OWLDescription> ascs = cls.getSuperClasses(ont);
-
-							Set<OWLDescription> ascs = cls.getSuperClasses(ont);
+							Set<OWLClassExpression> ascs = cls.getSuperClasses(ont);
 
 							boolean isAsserted = false;
-							for (OWLDescription asc : ascs) {
-
-							for (OWLDescription asc : ascs) {
+							for (OWLClassExpression asc : ascs) {
 								if (asc.equals(sc)) {
 									//System.out.println("    ASC: "+asc);
 									isAsserted = true;								
 								}
 							}
-							for (OWLDescription ec : cls.getEquivalentClasses(ont)) {
-
-							for (OWLDescription ec : cls.getEquivalentClasses(ont)) {
+							for (OWLClassExpression ec : cls.getEquivalentClasses(ont)) {
 								
 								if (ec instanceof OWLObjectIntersectionOf) {
 									OWLObjectIntersectionOf io = (OWLObjectIntersectionOf)ec;
-									for (OWLDescription op : io.getOperands()) {
-
-									for (OWLDescription op : io.getOperands()) {
+									for (OWLClassExpression op : io.getOperands()) {
 										if (op.equals(sc)) {
 											isAsserted = true;
 										}
@@ -254,14 +247,14 @@ public class OWLReasonerRunner {
 								}
 							}
 							if (!isAsserted) {
-								System.out.println("  INFERRED:  "+getLabel(cls,ont)+" subClassOf "+getLabel(sc,ont));
+								System.out.println("  INFERRED:  "+getLabel(cls,ont,df)+" subClassOf "+getLabel(sc,ont,df));
 							}
 						}
 					}
 				}
 				// To generate an inferred ontology we use implementations of inferred axiom generators
 				// to generate the parts of the ontology we want (e.g. subclass axioms, equivalent classes
-				// axioms, class assertion axiom etc. - see the org.semanticweb.owl.util package for more
+				// axioms, class assertion axiom etc. - see the org.semanticweb.owlapi.util package for more
 				// implementations).  
 				// Set up our list of inferred axiom generators
 				List<InferredAxiomGenerator<? extends OWLAxiom>> gens = new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
@@ -270,7 +263,7 @@ public class OWLReasonerRunner {
 				// Put the inferred axiomns into a fresh empty ontology - note that there
 				// is nothing stopping us stuffing them back into the original asserted ontology
 				// if we wanted to do this.
-				OWLOntology infOnt = manager.createOntology(URI.create(ont.getURI() + "_inferred"));
+				OWLOntology infOnt = manager.createOntology(IRI.create(ont.getOntologyID() + "_inferred"));
 
 				// Now get the inferred ontology generator to generate some inferred axioms
 				// for us (into our fresh ontology).  We specify the reasoner that we want
@@ -278,8 +271,8 @@ public class OWLReasonerRunner {
 				InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner, gens);
 				iog.fillOntology(manager, infOnt);
 
-				// Save the inferred ontology. (Replace the URI with one that is appropriate for your setup)
-				manager.saveOntology(infOnt, URI.create("file:///tmp/inferredont.owl"));
+				// Save the inferred ontology. (Replace the IRI with one that is appropriate for your setup)
+				manager.saveOntology(infOnt, IRI.create("file:///tmp/inferredont.owl"));
 
 
 			}
@@ -289,14 +282,8 @@ public class OWLReasonerRunner {
 		catch(UnsupportedOperationException exception) {
 			logger.error("Unsupported reasoner operation.");
 		}
-		catch(OWLReasonerException ex) {
-			logger.error("Reasoner error: " + ex.getMessage());
-		}
 		catch (OWLOntologyCreationException e) {
 			logger.error("Could not load the ontology: " + e.getMessage());
-		} catch (InferredAxiomGeneratorException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (OWLOntologyChangeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -309,23 +296,31 @@ public class OWLReasonerRunner {
 		}
 	}
 
-	private static String getLabel(OWLClass cls, OWLOntology ont) {
+	private static String getLabel(OWLClass cls, OWLOntology ont, OWLDataFactory df) {
 		String label = cls.toString();
-		for (OWLAnnotation a : cls.getAnnotations(ont, OWLRDFVocabulary.RDFS_LABEL.getURI())) {
-			label = "["+cls.toString()+" ! "+a.getAnnotationValueAsConstant().getLiteral()+"]";
+
+		OWLAnnotationProperty ap = df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI());
+		for (OWLAnnotation a : cls.getAnnotations(ont, ap)) {
+			label = "["+cls.toString()+" ! "+a.getValue().toString()+"]";
 		}
 		return label;
 	}
 
-	private static OWLReasoner createReasoner(OWLOntologyManager man, String reasonerName) {
+	private static OWLReasoner createReasoner(OWLOntology ont, String reasonerName, 
+			OWLOntologyManager manager) {
 			OWLReasonerFactory reasonerFactory = null;
 			if (reasonerName == null || reasonerName.equals("factpp"))
 				reasonerFactory = new FaCTPlusPlusReasonerFactory();
 			else if (reasonerName.equals("pellet"))
 				reasonerFactory = new PelletReasonerFactory();
+			else if (reasonerName.equals("hermit")) {
+				//return new org.semanticweb.HermiT.Reasoner.ReasonerFactory().createReasoner(ont);
+				//reasonerFactory = new org.semanticweb.HermiT.Reasoner.ReasonerFactory();			
+			}
 			else
 				logger.error("no such reasoner: "+reasonerName);
-			OWLReasoner reasoner = reasonerFactory.createReasoner(man);
+			
+			OWLReasoner reasoner = reasonerFactory.createReasoner(ont);
 			return reasoner;
 	}
 	
