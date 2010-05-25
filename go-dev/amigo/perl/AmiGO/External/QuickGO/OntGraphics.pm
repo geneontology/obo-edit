@@ -34,7 +34,6 @@ sub new {
 
   ##.
   $self->{EXT_DATA} = undef;
-  $self->{AEQG_KVSTORE} = AmiGO::KVStore->('qg_ont_store');
 
   bless $self, $class;
   return $self;
@@ -51,7 +50,6 @@ sub get_graph_image {
   ##
   my $self = shift;
   my $acc = shift || die "acc required $!";
-
   my $url = shift || $URL_FOR_QUICKGO_IMAGE . $acc;
   return $self->get_external_data($url);
 }

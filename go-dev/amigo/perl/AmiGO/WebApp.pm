@@ -58,6 +58,10 @@ sub cgiapp_prerun {
 
   my $self = shift;
 
+  ##
+  $self->{CORE}->kvetch("_in prerun...defining variables");
+  $self->_common_params_settings();
+
   ## If we are stateless, don't worry about sessions, carts, etc...
   if( $self->{STATELESS} ){
     $self->{CORE}->kvetch("_in prerun...we are stateless");
@@ -72,10 +76,6 @@ sub cgiapp_prerun {
     $self->{WEBAPP_JAVASCRIPT} = [];
     $self->{WEBAPP_CONTENT} = [];
     $self->{WEBAPP_TEMPLATE_PARAMS} = {};
-
-    ##
-    $self->{CORE}->kvetch("_in prerun...defining variables");
-    $self->_common_params_settings();
 
     ## TODO?: Check for the bookmark flag which will override the
     ## session handling stuff, and create a new session based on the
@@ -700,6 +700,19 @@ sub generate_template_page {
 ###
 ### Common mode handling (HTML).
 ###
+
+##
+sub mode_status {
+
+  my $self = shift;
+
+  $self->set_template_parameter('hid', $self->{CORE}->unique_id());
+  $self->set_template_parameter('page_title', 'AmiGO: Status');
+  $self->add_template_content('html/inc/status.tmpl');
+  $self->{CORE}->kvetch("added status");
+  return $self->generate_template_page();
+}
+
 
 ## Generic internal fatal error. Uses $@.
 sub mode_fatal {

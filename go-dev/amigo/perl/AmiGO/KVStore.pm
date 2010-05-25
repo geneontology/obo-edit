@@ -27,11 +27,27 @@ sub new {
 
   ## Get the store out on disk.
   $self->{AKVS_LOCATION} =
-    $self->amigo_env('AMIGO_CACHE_DIR') . '/kvstore_'.  $loc . '.db';
+    $self->amigo_env('AMIGO_CACHE_DIR') . '/akv_'.  $loc . '.db';
   $self->{AKVS_STORE} = GO::SQLite3::KVStore->new($self->{AKVS_LOCATION}, 1);
 
   bless $self, $class;
   return $self;
+}
+
+###
+### No multi-inherit here, so duck it on.
+###
+
+#
+sub get {
+  my $self = shift;
+  return $self->{AKVS_STORE}->get(@_);
+}
+
+#
+sub put {
+  my $self = shift;
+  return $self->{AKVS_STORE}->put(@_);
 }
 
 

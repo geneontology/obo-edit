@@ -11,7 +11,6 @@ use lib $ENV{GO_SVN_ROOT} . '/gobo-dbic';
 use AmiGO::Cache::GONavi;
 use AmiGO::Cache::ART;
 use AmiGO::Cache::Species;
-use AmiGO::Cache::QuickGO::OntGraphics;
 use AmiGO::Cache::ReferenceGenome;
 
 ##
@@ -30,11 +29,6 @@ print "Making species cache (top $specnum)...\n";
 # my $sp_cache = AmiGO::Cache::Species->new();
 my $sp_cache = AmiGO::Cache::Species->new($specnum);
 $sp_cache->build();
-
-##
-print "Making QuickGO image cache...\n";
-my $qic = AmiGO::Cache::QuickGO::OntGraphics->new();
-$qic->build();
 
 ##
 # print "Making reference genome cache...\n";

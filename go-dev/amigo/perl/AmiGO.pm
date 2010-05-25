@@ -1272,6 +1272,26 @@ sub get_interlink {
        #$ilink = $self->uri_safe( _fuse_hash($ihash));
      },
 
+     'visualize_simple' =>
+     sub {
+       my $engine = $args->{engine} || '';
+       my $term = $args->{term} || '';
+       my $inline = $args->{inline} || 'false';
+       my $beta = $args->{beta} || '0';
+       $ihash = {
+		 action => 'visualize',
+		 arguments =>
+		 {
+		  mode => $engine,
+		  inline => $inline,
+		  term => $term,
+		  beta => $beta,
+		 },
+		};
+
+       $ilink = $self->_fuse_hash($ihash);
+     },
+
      ## Next, things that are in the experimental app set...
 
      'exp_search' =>
