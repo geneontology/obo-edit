@@ -41,7 +41,7 @@ sub new {
 =item destroy
 
 Args:
-Returns:
+Returns: 1/0 on creation or not.
 
 If it isn't there, create/connnect, then disconnect.
 
@@ -49,6 +49,7 @@ If it isn't there, create/connnect, then disconnect.
 sub create {
 
   my $self = shift;
+  my $retval = 0; # we haven't made anything yet...
 
   ## If the file is not already there, create the database by touching
   ## it.
@@ -58,6 +59,7 @@ sub create {
 		   { RaiseError => 1, })
 	|| die "Database connection not made: $DBI::errstr";
     $dbh->disconnect;
+    $retval = 1; # we made something...
 
     ## Make permissive is possible and desired.
     if( $self->{GO_SQLITE3_PERMISSIVE_P} ){
@@ -67,6 +69,8 @@ sub create {
       };
     }
   }
+
+  return $retval;
 }
 
 

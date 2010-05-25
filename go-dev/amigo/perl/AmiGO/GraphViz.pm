@@ -233,8 +233,6 @@ sub add_stacked_node {
 			#label => "<<TABLE TOOLTIP=\"$acc\" TITLE=\"$acc\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\" ALIGN=\"right\"><TR><TD>$label_str</TD></TR>$stack_str</TABLE>>",
 			#label => "<<TABLE TOOLTIP=\"$acc\" TITLE=\"$acc\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD>$acc</TD></TR>$stack_str</TABLE>>",
 			label => "<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD>$label_str</TD></TR>$stack_str</TABLE>>",
-
-			#label => ['FOO', 'BAR'],
 			shape => 'plaintext',
 
 			## TODO: I'd like this in in some way...but it
@@ -313,7 +311,7 @@ sub add_edge {
 
   $self->{GV}->add_edge(
 			$obj_id => $sub_id,
-			#label => $self->{PRETTY}->readable($pred_id),
+			label => $self->{PRETTY}->readable($pred_id),
 			color => $self->{PRETTY}->relationship_color($pred_id),
 			arrowhead => 'none',
 			arrowtail => 'normal',
@@ -321,6 +319,20 @@ sub add_edge {
 		       );
 
   #print STDERR "_edge_ " . $sub_id . ' ' . $pred_id  .  ' ' .  $obj_id . "\n";
+}
+## TODO/BUG: this should not be here long term:
+sub add_edge_1 {
+  my $self = shift;
+  my $sub_id = shift  || 'unknown_subject';
+  my $pred_id = shift || 'unknown_predicate';
+  my $obj_id = shift  || 'unknown_object';
+  $self->{GV}->add_edge(
+			$obj_id => $sub_id,
+			color => $self->{PRETTY}->relationship_color($pred_id),
+			arrowhead => 'none',
+			arrowtail => 'normal',
+			style => 'bold'
+		       );
 }
 
 
