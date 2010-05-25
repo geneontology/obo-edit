@@ -41,6 +41,7 @@ my $fetch_dbxref_sth = $dbh->prepare("SELECT id FROM dbxref WHERE xref_dbname=? 
 my $fetch_gp_sth = $dbh->prepare("SELECT id FROM gene_product WHERE dbxref_id=?");
 my $insert_dbxref_sth = $dbh->prepare("INSERT INTO dbxref (xref_dbname,xref_key) VALUES (?,?)");
 my $insert_gp_sth = $dbh->prepare("INSERT INTO gene_product (dbxref_id,species_id,type_id,symbol,full_name) VALUES (?,?,?,?,?)");
+my $insert_gp_dbxref_sth = $dbh->prepare("INSERT INTO gene_product_dbxref (gene_product_id, dbxref_id) VALUES (?,?)");
 
 # warning - this script must be called after loading GAFs..
 my $type_h =
@@ -218,6 +219,24 @@ sub load_fasta {
     $n_files ++;
 }
 
+sub get_dbxref_id {
+    my ($db, $acc) = @_;
+    $fetch_dbxref_sth->execute($db,$acc);
+    my ($dbxref_id) = $fetch_dbxref_sth->fetchrow_array;
+    if (!$dbxref_id) {
+	if ($opt_h->{nomods}) {
+	    return;
+	}
+	($dbxref_id) = $insert_dbxref_sth->execute($db,$acc);
+	$fetch_dbxref_sth->execute($db,$acc);
+	($dbxref_id) = $fetch_dbxref_sth->fetchrow_array;
+    }
+    if (!$dbxref_id) {
+	die "weird, cannot insert/get $db:acc";
+    }
+    return $dbxref_id;
+}
+
 sub get_gp_id {
     my ($modid,$species_id,$symbol,$desc) = @_;
     my ($db,$acc);
@@ -241,19 +260,7 @@ sub get_gp_id {
 
     # first get/insert the dbxref
     # (note it's possible we have the xref but not the gp - e.g if the gp was used as evidence)
-    $fetch_dbxref_sth->execute($db,$acc);
-    my ($dbxref_id) = $fetch_dbxref_sth->fetchrow_array;
-    if (!$dbxref_id) {
-	if ($opt_h->{nomods}) {
-	    return;
-	}
-	($dbxref_id) = $insert_dbxref_sth->execute($db,$acc);
-	$fetch_dbxref_sth->execute($db,$acc);
-	($dbxref_id) = $fetch_dbxref_sth->fetchrow_array;
-    }
-    if (!$dbxref_id) {
-	die "weird, cannot insert/get $db:acc";
-    }
+    my ($dbxref_id) = get_dbxref_id($db,$acc);
 
     # now get/insert the gp
     $fetch_gp_sth->execute($dbxref_id);
@@ -278,6 +285,16 @@ sub get_gp_id {
 
 sub store_seq {
     my ($gp_id,$seqid,$res) = @_;
+
+    if ($seqid =~ /(\S+):(\S+)/) {
+	my ($db, $acc) = ($1,$2);
+	if ($db =~ /uniprot/i) {
+	    $db = 'UniProtKB'; # standardize
+	}
+	my ($dbxref_id) = get_dbxref_id($db,$acc);
+	$insert_gp_dbxref_sth->execute($gp_id, $dbxref_id);
+    }
+
     return if $opt_h->{noseq};
     #logmsg("storing $gp_id <-> $seqid. Res=$res");
 
@@ -294,7 +311,7 @@ sub store_seq {
 }
 
 sub usage {
-    print "get-load-qfo-seqs.pl  [-d dbname] [-h dbhost] [-dbms dbms] <FILES>\n";
+    print "go-load-qfo-seqs.pl  [-d dbname] [-h dbhost] [-dbms dbms] <FILES>\n";
     print <<EOM;
 
 This script will load the QuestForOrtholog sequences. See:
