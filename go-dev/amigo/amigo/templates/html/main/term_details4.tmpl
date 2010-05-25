@@ -158,7 +158,15 @@
        </li>
        <li>
 	 <a href="#display-qg"
-	    class="override"><span>Graph View</span></a>
+	    class="override"><span>Graph View (1)</span></a>
+       </li>
+       <li>
+	 <a href="#display-gv2"
+	    class="override"><span>Graph View (2)</span></a>
+       </li>
+       <li>
+	 <a href="#display-gv3"
+	    class="override"><span>Graph View (3)</span></a>
        </li>
        <li>
 	 <a href="#display-out"
@@ -299,20 +307,46 @@
 
       <div id="display-qg">
 	<p>
-	  From <a href="http://www.ebi.ac.uk/QuickGO">QuickGO</a>.
+	  From <a href="http://www.ebi.ac.uk/QuickGO">QuickGO</a>. For a larger version, click on the image.
 	</p>
 	<p>
-	  <a href="[% QG_IMAGE_URL %]"
+	  <a href="[% VIZ_QUICKGO_LINK %]"
 	     title="Graph of [% TERM_INFO.acc %] from QuickGO">
-	    <img style="width: 50%; height: 50%"
-		 src="[% QG_IMAGE_URL %]"
+	    <img src="[% VIZ_QUICKGO_LINK %]"
 		 alt="Graph of [% TERM_INFO.acc %] from QuickGO" />
 	  </a>
 	</p>
       </div>
 
-     <div id="display-out">
+      <div id="display-gv2">
+	<p>
+	  For a larger version, click on the image.
+	</p>
+	<p>
+	  <a href="[% VIZ_SIMPLE_2_LINK %]"
+	     title="Graph of [% TERM_INFO.acc %]">
+	    <img style="width: 75%; height: 75%"
+		 src="[% VIZ_SIMPLE_2_LINK %]"
+		 alt="Graph of [% TERM_INFO.acc %]" />
+	  </a>
+	</p>
+      </div>
 
+      <div id="display-gv3">
+	<p>
+	  For a larger version, click on the image.
+	</p>
+	<p>
+	  <a href="[% VIZ_SIMPLE_3_LINK %]"
+	     title="Graph of [% TERM_INFO.acc %]">
+	    <img style="width: 75%; height: 75%"
+		 src="[% VIZ_SIMPLE_3_LINK %]"
+		 alt="Graph of [% TERM_INFO.acc %]" />
+	  </a>
+	</p>
+      </div>
+
+     <div id="display-out">
        <p>
 	 <ul>
 	   <li><b>Actions...</b></li>

@@ -13,14 +13,14 @@ package AmiGO::WebApp::Visualize;
 use base 'AmiGO::WebApp';
 
 
+use CGI::Application::Plugin::TT;
 use GOBO::DBIC::GODBModel::Graph;
+use Data::Dumper;
 use AmiGO::GraphViz;
 use AmiGO::SVGRewrite;
 use AmiGO::WebApp::Input;
-use AmiGO::JavaScript;
-use AmiGO::JSON;
-use AmiGO::Aid;
-use Data::Dumper;
+#use AmiGO::Aid;
+use AmiGO::Worker::Visualize;
 
 
 ##
@@ -30,25 +30,169 @@ sub setup {
 
   $self->{STATELESS} = 1;
 
+  $self->tt_config(TEMPLATE_OPTIONS =>
+		   {INCLUDE_PATH =>
+		    $self->{CORE}->amigo_env('GO_ROOT') .
+		    '/amigo/amigo/templates'});
+
   $self->mode_param('mode');
   $self->start_mode('status');
-  $self->error_mode('mode_js_fatal');
+  $self->error_mode('mode_fatal');
   $self->run_modes(
-		   'basic'       => 'mode_basic', # server alive?
-		   'status'       => 'mode_js_status', # server alive?
-		   'AUTOLOAD'     => 'mode_js_exception'
+		   'quickgo'      => 'mode_quickgo', # TODO: fold into ...?
+		   'single'       => 'mode_single',
+		   'basic'        => 'mode_advanced', # TODO: 'mode_single',
+		   'multi'        => 'mode_advanced', # TODO: 'mode_multi',
+		   'advanced'     => 'mode_advanced',
+		   'status'       => 'mode_status', # server alive?
+		   'AUTOLOAD'     => 'mode_exception'
 		  );
 }
 
 
+## If a header is needed, set correct header type for format.
+sub _add_fiddly_header {
+
+  my $self = shift;
+  my $type = shift || die "need type as arg: $!";
+  my $inline_p = shift;
+  die "need inline as arg: $!" if ! defined $inline_p;
+
+  ##
+  if( $inline_p eq 'true' ){
+    $inline_p = 1;
+  }elsif( $inline_p eq 'false' ){
+    $inline_p = 0;
+  }
+
+  ##
+  if( $inline_p ){
+    ## If it is inline, we want no headers (raw image feed).
+    #$self->header_add( -type => '' );
+    $self->header_type('none');
+  }else{
+    if( $type && $type eq 'svg' ){
+      $self->header_add( -type => 'image/svg+xml' );
+    }else{
+      $self->header_add( -type => 'image/' . $type );
+    }
+  }
+}
+
+
 ## Example:
-## http://localhost/cgi-bin/amigo/amigo?mode=visualize&term_data={"GO:0002244" : 0.00001, "GO:0048856" : 0.5}&format=svg
-sub mode_basic {
+## http://localhost/cgi-bin/amigo/visualize?mode=quickgo&term=GO:0048856
+sub mode_quickgo {
 
   my $self = shift;
   my $output = '';
 
-  my $json_resp = AmiGO::JSON->new('basic');
+  ##
+  my $i = AmiGO::WebApp::Input->new();
+  my $params = $i->input_profile('visualize_single');
+  my $inline_p = $params->{inline};
+  my $term = $params->{term};
+
+  ##
+  my $qg_viz = AmiGO::Worker::Visualize->new($term);
+
+  ##
+  $self->_add_fiddly_header('png', $inline_p);
+
+  ##
+  my $img = $qg_viz->quickgo() || die "could not get image for quickgo: $!";
+  return $img;
+}
+
+
+## Example:
+## http://localhost/cgi-bin/amigo/visualize?mode=single&term=GO:0048856
+sub mode_single {
+
+  my $self = shift;
+  my $output = '';
+
+  ##
+  my $i = AmiGO::WebApp::Input->new();
+  my $params = $i->input_profile('visualize_single');
+  my $inline_p = $params->{inline};
+  my $acc = $params->{term};
+  my $beta = $params->{beta};
+
+  ## Set graphics renderer.
+  my $gv = AmiGO::GraphViz->new({bitmap => 1});
+
+  ###
+  ### Build graph.
+  ###
+
+  ## Convert input terms to AmiGO terms.
+  my $graph = GOBO::DBIC::GODBModel::Graph->new();
+
+  if( $acc ){
+
+    my $terms = [$graph->get_term($acc)];
+
+    ## Assemble the graph.
+    my($nodes, $edges) = $graph->climb($terms);
+
+    ## Add edges to gv.
+    foreach my $key (keys %$edges){
+
+      my $t2t = $edges->{$key};
+      my $s = $t2t->subject->acc;
+      my $o = $t2t->object->acc;
+      my $r = $t2t->relationship->name;
+
+      ## TODO/BUG: no
+      if( $beta eq '1' ){
+	$gv->add_edge_1($s, $r, $o);
+      }else{
+	$gv->add_edge($s, $r, $o);
+      }
+
+      $self->{CORE}->kvetch("edge: $s $r $o");
+    }
+
+    ## Add nodes and node information to gv.
+    foreach my $acc (keys %$nodes){
+      my $t = $nodes->{$acc};
+
+      my $title = $t->acc;
+      my $body = $t->name;
+      my $border = '';
+      my $fill = '';
+      my $font = '';
+
+      ## Back to standard adding.
+      $gv->add_node($acc, $title, $body,
+		    {
+		     color => $border,
+		     fillcolor => $fill,
+		     fontcolor => $font,
+		    });
+      if( ! $amigo_terms->{$title} ){
+	$amigo_terms->{$title} = {
+				  name => $body,
+				  gene_products => {},
+				 };
+      }
+    }
+    $output = $gv->get_png();
+  }
+
+  ## If a header is needed, set correct header type for format.
+  $self->_add_fiddly_header('png', $inline_p);
+  return $output;
+}
+
+
+## Example:
+## http://localhost/cgi-bin/amigo/visualize?mode=advanced&term_data={"GO:0002244" : 0.00001, "GO:0048856" : 0.5}&format=svg
+sub mode_advanced {
+
+  my $self = shift;
+  my $output = '';
 
   ##
   my $i = AmiGO::WebApp::Input->new();
@@ -58,7 +202,7 @@ sub mode_basic {
   my $input_term_data_type = $params->{term_data_type};
   my $input_term_data = $params->{term_data};
 
-  my $aid = AmiGO::Aid->new();
+  # my $aid = AmiGO::Aid->new();
 
   ## Decode the incoming term data, depending on incoming data
   ## type. Completely overwrite the input_term_list if we can.
@@ -147,7 +291,7 @@ sub mode_basic {
 	$border = $data_hash->{border} if defined $data_hash->{border};
 	$fill = $data_hash->{fill} if defined $data_hash->{fill};
 	$font = $data_hash->{font} if defined $data_hash->{font};
-	#($fill, $font) = $aid->pval_to_color($term_hash->{$acc});
+	# ($fill, $font) = $aid->pval_to_color($term_hash->{$acc});
       }
 
       ## Back to standard adding.

@@ -148,6 +148,11 @@ sub input_profile {
     $self->_add_visual_format();
     $self->_add_term_data();
     $self->_add_term_data_type();
+  }elsif( $profile_name eq 'visualize_single' ){
+    $self->_add_inline_p();
+    $self->_add_term();
+    $self->_add_simple_argument('beta', '0',
+				['0', '1', '2']);
   }elsif( $profile_name eq 'gander' ){
     #$self->_add_visual_format();
     $self->_add_terms_string();

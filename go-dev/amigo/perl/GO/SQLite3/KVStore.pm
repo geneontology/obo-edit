@@ -22,8 +22,11 @@ sub new {
   ## Create the database at location.
   my $self = $class->SUPER::new(@_);
 
-  ## Add the table to the database.
-  $self->initialize();
+  ## Add the table to the database if we're creating it for the first
+  ## time.
+  if( $self->create() ){
+    $self->initialize();
+  }
 
   bless $self, $class;
   return $self;
@@ -101,15 +104,17 @@ sub get {
 
 =item initialize
 
-Args:
-Returns:
+Add our table to the db.
+## TODO: ON CONFLICT ABORT
+
+Args: n/a
+Returns: n/a
 
 =cut
 sub initialize {
 
   my $self = shift;
 
-  ## TODO: ON CONFLICT ABORT
   $self->open();
   my $schema = qq{
  CREATE TABLE store (

@@ -33,7 +33,7 @@ use AmiGO::External::XML::GONUTS;
 use AmiGO::Worker::HomolsetGraph2;
 use AmiGO::Worker::HomolsetSummary2;
 use AmiGO::Worker::GPInformation::HomolsetInformation;
-use AmiGO::Worker::QuickGO::OntGraphics;
+#use AmiGO::Worker::QuickGO::OntGraphics;
 
 #use URI::Escape;
 #use CGI qw/escapeHTML/;
@@ -82,7 +82,6 @@ sub setup {
   $self->mode_param('mode');
   $self->start_mode('software_list');
   $self->error_mode('mode_fatal');
-  #$self->tt_include_path('templates/html/inc');
   $self->run_modes(
 		   'visualize'           => 'mode_visualize',
 		   'software_list'       => 'mode_software_list',
@@ -889,6 +888,7 @@ sub mode_term_details {
   ###
 
   #print STDERR "<<TIME_START>>\n";
+  ## TODO/BUG: If nothing explodes, memoize this sucker a la Visualize:
   my $gpc_q = AmiGO::Worker::GeneProductCount->new($acc_list_for_gpc_info);
   #print STDERR "<<TIME_MID>>\n";
   my $gpc_info = $gpc_q->get_info();
@@ -920,6 +920,26 @@ sub mode_term_details {
 						      arg =>
 						      {terms =>
 						       $input_term_id}}));
+
+  $self->set_template_parameter('VIZ_QUICKGO_LINK',
+				$self->{CORE}->get_interlink({mode=>'visualize_simple',
+							      arg =>
+							      {engine=>'quickgo',
+							       term =>
+							       $input_term_id}}));
+  $self->set_template_parameter('VIZ_SIMPLE_2_LINK',
+				$self->{CORE}->get_interlink({mode=>'visualize_simple',
+							      arg =>
+							      {engine=>'single',
+							       term =>
+							       $input_term_id}}));
+  $self->set_template_parameter('VIZ_SIMPLE_3_LINK',
+				$self->{CORE}->get_interlink({mode=>'visualize_simple',
+							      arg =>
+							      {engine=>'single',
+							       beta => '1',
+							       term =>
+							       $input_term_id}}));
 
   ## Bridge variables from old system.
   $self->set_template_parameter('cgi', 'term-details');
@@ -957,19 +977,6 @@ sub mode_term_details {
     # $gonuts->kvetch("\t" . $gonuts->get_page_title());
     # $gonuts->kvetch("\t" . $gonuts->get_page_url());
   }
-
-  ## Try images from QuickGO.
-  my $qg = AmiGO::Worker::QuickGO::OntGraphics->new();
-  my $qg_img_url = undef;
-  eval {
-    $qg_img_url = $qg->image_path($input_term_id);
-  };
-  if($@){
-    $self->{CORE}->kvetch("QuickGO image failed: $@");
-  }else{
-    $self->{CORE}->kvetch("QuickGO image on FS: $qg_img_url");
-  }
-  $self->set_template_parameter('QG_IMAGE_URL', $qg_img_url);
 
   ###
   ### Standard setup.
