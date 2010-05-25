@@ -30,6 +30,13 @@ print "Making species cache (top $specnum)...\n";
 my $sp_cache = AmiGO::Cache::Species->new($specnum);
 $sp_cache->build();
 
+## Clean out old cach
+## TODO: Automate this by using KVStore registery.
+print "Removing old cache file...\n";
+my $amigo = AmiGO->new();
+my $c1 = $amigo->amigo_env('AMIGO_CACHE_DIR') . '/akv_'.  'qg_ont' . '.db';
+unlink $c1 if -f $c1;
+
 ##
 # print "Making reference genome cache...\n";
 # print "This is the problematically long one so it is last, feel free to kill...\n";
