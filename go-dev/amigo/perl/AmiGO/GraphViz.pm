@@ -36,12 +36,10 @@ sub new {
   if( $bitmap ){
     $self->{GV} = GraphViz->new({
 				 rankdir => 0,
+				 # nodesep=>0.001,
+				 # ranksep=>0.001,
+				 # mclimit=>0.1,
 				 directed => 1,
-				 #ratio => 'compress',
-				 #concentrate => 1,
-				 #clusterrank => 'none',
-				 #ranksep => .5,
-				 #nodesep => .5,
 				 node => {
 					  shape => 'plaintext',
 					  color => 'black',
@@ -311,7 +309,7 @@ sub add_edge {
 
   $self->{GV}->add_edge(
 			$obj_id => $sub_id,
-			label => $self->{PRETTY}->readable($pred_id),
+			#label => $self->{PRETTY}->readable($pred_id),
 			color => $self->{PRETTY}->relationship_color($pred_id),
 			arrowhead => 'none',
 			arrowtail => 'normal',
@@ -319,20 +317,6 @@ sub add_edge {
 		       );
 
   #print STDERR "_edge_ " . $sub_id . ' ' . $pred_id  .  ' ' .  $obj_id . "\n";
-}
-## TODO/BUG: this should not be here long term:
-sub add_edge_1 {
-  my $self = shift;
-  my $sub_id = shift  || 'unknown_subject';
-  my $pred_id = shift || 'unknown_predicate';
-  my $obj_id = shift  || 'unknown_object';
-  $self->{GV}->add_edge(
-			$obj_id => $sub_id,
-			color => $self->{PRETTY}->relationship_color($pred_id),
-			arrowhead => 'none',
-			arrowtail => 'normal',
-			style => 'bold'
-		       );
 }
 
 

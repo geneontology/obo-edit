@@ -32,6 +32,10 @@ sub new {
   my $self  = $class->SUPER::new();
   #my $arg = shift || {};
 
+  ## Since we're not doing this work, let's give ourselves a larger
+  ## window.
+  $self->{MECH}->timeout(5);
+
   ##.
   $self->{EXT_DATA} = undef;
 
