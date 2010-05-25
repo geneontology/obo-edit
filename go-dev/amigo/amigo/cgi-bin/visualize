@@ -117,7 +117,6 @@ sub mode_single {
   my $params = $i->input_profile('visualize_single');
   my $inline_p = $params->{inline};
   my $acc = $params->{term};
-  my $beta = $params->{beta};
 
   ## Set graphics renderer.
   my $gv = AmiGO::GraphViz->new({bitmap => 1});
@@ -143,13 +142,7 @@ sub mode_single {
       my $s = $t2t->subject->acc;
       my $o = $t2t->object->acc;
       my $r = $t2t->relationship->name;
-
-      ## TODO/BUG: no
-      if( $beta eq '1' ){
-	$gv->add_edge_1($s, $r, $o);
-      }else{
-	$gv->add_edge($s, $r, $o);
-      }
+      $gv->add_edge($s, $r, $o);
 
       $self->{CORE}->kvetch("edge: $s $r $o");
     }
