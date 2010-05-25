@@ -30,6 +30,7 @@ use AmiGO::Aid::ReferenceGenome;
 use AmiGO::Worker::Term;
 use AmiGO::Worker::GeneProductCount;
 use AmiGO::External::XML::GONUTS;
+use AmiGO::External::QuickGO::Term;
 use AmiGO::Worker::HomolsetGraph2;
 use AmiGO::Worker::HomolsetSummary2;
 use AmiGO::Worker::GPInformation::HomolsetInformation;
@@ -927,19 +928,10 @@ sub mode_term_details {
 							      {engine=>'quickgo',
 							       term =>
 							       $input_term_id}}));
-  $self->set_template_parameter('VIZ_SIMPLE_2_LINK',
-				$self->{CORE}->get_interlink({mode=>'visualize_simple',
-							      arg =>
-							      {engine=>'single',
-							       term =>
-							       $input_term_id}}));
-  $self->set_template_parameter('VIZ_SIMPLE_3_LINK',
-				$self->{CORE}->get_interlink({mode=>'visualize_simple',
-							      arg =>
-							      {engine=>'single',
-							       beta => '1',
-							       term =>
-							       $input_term_id}}));
+
+  my $qg_term = AmiGO::External::QuickGO::Term->new();
+  $self->set_template_parameter('QUICKGO_TERM_LINK',
+				$qg_term->get_term_link($input_term_id));
 
   ## Bridge variables from old system.
   $self->set_template_parameter('cgi', 'term-details');

@@ -158,15 +158,7 @@
        </li>
        <li>
 	 <a href="#display-qg"
-	    class="override"><span>Graph View (1)</span></a>
-       </li>
-       <li>
-	 <a href="#display-gv2"
-	    class="override"><span>Graph View (2)</span></a>
-       </li>
-       <li>
-	 <a href="#display-gv3"
-	    class="override"><span>Graph View (3)</span></a>
+	    class="override"><span>Graph View</span></a>
        </li>
        <li>
 	 <a href="#display-out"
@@ -184,8 +176,8 @@
 	 <!-- 	 <h4>[[% TERM_INFO.acc %]] [% TERM_INFO.name %]:</h4> -->
 	 <!-- </li> -->
 
+	 [% d = 0 %]
 	 [% IF PARENT_CHUNKS_BY_DEPTH && MAX_DEPTH > 0 %]
-	 [%    d = 0 %]
 	 [%    WHILE d <= MAX_DEPTH %]
          [%       IF PARENT_CHUNKS_BY_DEPTH.$d %]
          [%          ANCESTOR_CHUNKS = PARENT_CHUNKS_BY_DEPTH.$d %]
@@ -197,6 +189,8 @@
          [%       END %]
          [%       d = d + 1 %]
          [%    END %]
+         [% ELSE %]
+         [%    d = d + 1 %]
          [% END %]
 
          [% graph_entry = TERM_INFO %]
@@ -224,6 +218,8 @@
      <!-- -->
      <div id="display-sentences">
 
+      [% IF PARENT_CHUNKS_BY_DEPTH && MAX_DEPTH > 0 %]
+
        <table id="all-table-above"
 	      style="border-collapse: collapse;"
 	      cellpadding="0" cellspacing="0">
@@ -243,8 +239,7 @@
 
 	 <tbody>
        
-	   [% eo_rows = 0 %]
-           [% IF PARENT_CHUNKS_BY_DEPTH && MAX_DEPTH > 0 %]
+	   [%    eo_rows = 0 %]
            [%    d = 0 %]
            [%    WHILE d <= MAX_DEPTH %]
            [%       IF PARENT_CHUNKS_BY_DEPTH.$d %]
@@ -261,11 +256,20 @@
            [%       END %]
            [%       d = d + 1 %]
            [%    END %]
-           [% END %]
 
 	 </tbody>
 
        </table>
+
+       [% ELSE %]
+
+       <p>
+	 This term has no ancestors.
+       </p>
+
+       [% END %]
+
+       [% IF CHILD_CHUNKS && CHILD_CHUNKS.size > 0 %]
 
        <table id="all-table-below"
 	      style="border-collapse: collapse;"
@@ -286,8 +290,7 @@
 
 	 <tbody>
        
-	   [% eo_rows = 0 %]
-           [% IF CHILD_CHUNKS && CHILD_CHUNKS.size > 0 %]
+	   [%    eo_rows = 0 %]
            [%    FOREACH desc IN CHILD_CHUNKS %]
            [%       subject_chunk = desc %]
            [%       object_chunk = TERM_INFO %]
@@ -297,49 +300,33 @@
            [%       INCLUDE html/inc/term_details_re_row.tmpl %]
            [%       eo_rows = eo_rows + 1 %]
            [%    END %]
-           [% END %]
 
 	 </tbody>
 
        </table>
 
+       [% ELSE %]
+
+       <p>
+	 This term has no children.
+       </p>
+
+       [% END %]
+
      </div>
 
       <div id="display-qg">
 	<p>
-	  From <a href="http://www.ebi.ac.uk/QuickGO">QuickGO</a>. For a larger version, click on the image.
+	  Click on the image to view
+	  <a href="http://www.ebi.ac.uk/QuickGO">QuickGO</a>
+	  term page.
 	</p>
 	<p>
-	  <a href="[% VIZ_QUICKGO_LINK %]"
-	     title="Graph of [% TERM_INFO.acc %] from QuickGO">
+	  <a class="override"
+	     href="[% QUICKGO_TERM_LINK %]"
+	     title="Go to QuickGO term page for [% TERM_INFO.acc %]">
 	    <img src="[% VIZ_QUICKGO_LINK %]"
 		 alt="Graph of [% TERM_INFO.acc %] from QuickGO" />
-	  </a>
-	</p>
-      </div>
-
-      <div id="display-gv2">
-	<p>
-	  For a larger version, click on the image.
-	</p>
-	<p>
-	  <a href="[% VIZ_SIMPLE_2_LINK %]"
-	     title="Graph of [% TERM_INFO.acc %]">
-	    <img src="[% VIZ_SIMPLE_2_LINK %]"
-		 alt="Graph of [% TERM_INFO.acc %]" />
-	  </a>
-	</p>
-      </div>
-
-      <div id="display-gv3">
-	<p>
-	  For a larger version, click on the image.
-	</p>
-	<p>
-	  <a href="[% VIZ_SIMPLE_3_LINK %]"
-	     title="Graph of [% TERM_INFO.acc %]">
-	    <img src="[% VIZ_SIMPLE_3_LINK %]"
-		 alt="Graph of [% TERM_INFO.acc %]" />
 	  </a>
 	</p>
       </div>
