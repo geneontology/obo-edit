@@ -28,7 +28,9 @@ sub new {
   ## Get the store out on disk.
   $self->{AKVS_LOCATION} =
     $self->amigo_env('AMIGO_CACHE_DIR') . '/akv_'.  $loc . '.db';
-  $self->{AKVS_STORE} = GO::SQLite3::KVStore->new($self->{AKVS_LOCATION}, 1);
+  $self->{AKVS_STORE} =
+    GO::SQLite3::KVStore->new({location => $self->{AKVS_LOCATION},
+			       permissive => 1});
 
   bless $self, $class;
   return $self;
