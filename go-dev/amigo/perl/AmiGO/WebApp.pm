@@ -58,7 +58,14 @@ sub cgiapp_prerun {
 
   my $self = shift;
 
-  ##
+  ## Structures needed for internal template handling.
+  $self->{CORE}->kvetch("_in prerun...defining template structures");
+  $self->{WEBAPP_CSS} = [];
+  $self->{WEBAPP_JAVASCRIPT} = [];
+  $self->{WEBAPP_CONTENT} = [];
+  $self->{WEBAPP_TEMPLATE_PARAMS} = {};
+
+  ## 
   $self->{CORE}->kvetch("_in prerun...defining variables");
   $self->_common_params_settings();
 
@@ -69,13 +76,6 @@ sub cgiapp_prerun {
   }else{
 
     $self->{CORE}->kvetch("_in prerun...we are stateful");
-
-    ## Structures needed for internal template handling.
-    $self->{CORE}->kvetch("_in prerun...defining template structures");
-    $self->{WEBAPP_CSS} = [];
-    $self->{WEBAPP_JAVASCRIPT} = [];
-    $self->{WEBAPP_CONTENT} = [];
-    $self->{WEBAPP_TEMPLATE_PARAMS} = {};
 
     ## TODO?: Check for the bookmark flag which will override the
     ## session handling stuff, and create a new session based on the
