@@ -21,13 +21,23 @@ sub new {
 
   ##
   my $class = shift;
-  my $location = shift || die "gotta have a name path here $!";
-  my $permissive_p = shift || 0; # default to non-permissive db
+  my $args = shift || {};
+
+  ##
+  # print STDERR "%args\n";
+  # print STDERR "_" .scalar( keys(%args) ) . "\n";
+  # print STDERR "_" . (keys(%args))[0] . "\n";
+  # print STDERR "_" . $args{'location'} . "\n";
+
+  my $location = $args->{location} || die "gotta have a name path here $!";
+  my $permissive_p = $args->{permissive} || 0;
+  my $schema = $args->{schema} || undef;
 
   ## 
   my $self = {};
   $self->{GO_SQLITE3_LOCATION} = $location;
   $self->{GO_SQLITE3_PERMISSIVE_P} = $permissive_p;
+  $self->{GO_SQLITE3_SCHEMA} = $schema;
   $self->{GO_SQLITE3_DBH} = undef;
   bless $self, $class;
 
@@ -58,6 +68,13 @@ sub create {
       DBI->connect('dbi:SQLite:dbname=' . $self->{GO_SQLITE3_LOCATION}, '','',
 		   { RaiseError => 1, })
 	|| die "Database connection not made: $DBI::errstr";
+
+    ## Add schema if one has been defined.
+    if( defined $self->{GO_SQLITE3_SCHEMA} ){
+      $dbh->do( $self->{GO_SQLITE3_SCHEMA} )
+	or die $self->dbh->errstr;
+    }
+
     $dbh->disconnect;
     $retval = 1; # we made something...
 

@@ -18,15 +18,23 @@ Returns:
 sub new {
 
   my $class = shift;
+  my $args = shift || {};
+  $args->{schema} =
+    qq{
+       CREATE TABLE store (
+	  key TEXT PRIMARY KEY,
+	  value BLOB
+       )
+    };
 
   ## Create the database at location.
-  my $self = $class->SUPER::new(@_);
+  my $self = $class->SUPER::new($args);
 
   ## Add the table to the database if we're creating it for the first
   ## time.
-  if( $self->create() ){
-    $self->initialize();
-  }
+  # if( $self->create() ){
+  #   $self->initialize();
+  # }
 
   bless $self, $class;
   return $self;
@@ -99,32 +107,6 @@ sub get {
   undef $sth;
   $self->close();
   return $ret;
-}
-
-
-=item initialize
-
-Add our table to the db.
-## TODO: ON CONFLICT ABORT
-
-Args: n/a
-Returns: n/a
-
-=cut
-sub initialize {
-
-  my $self = shift;
-
-  $self->open();
-  my $schema = qq{
- CREATE TABLE store (
-    key TEXT PRIMARY KEY,
-    value BLOB
- )
-};
-  $self->{GO_SQLITE3_DBH}->do( $schema )
-    or die $self->{GO_SQLITE3_DBH}->errstr;
-  $self->close();
 }
 
 

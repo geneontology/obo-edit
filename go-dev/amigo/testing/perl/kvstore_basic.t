@@ -9,7 +9,7 @@ my $uuid_gen = Data::UUID->new();
 my $file = $uuid_gen->to_string( $uuid_gen->create() ) . '.db';
 
 ## Build.
-my $s = GO::SQLite3::KVStore->new($file);
+my $s = GO::SQLite3::KVStore->new({location => $file});
 ok(defined($s), "object is defined");
 ok( -f $file, "file is defined: $file");
 
@@ -45,7 +45,7 @@ $s->destroy();
 ok( ! -f $file, "file is not defined (1)");
 
 ## Initialize.
-$s->initialize();
+$s->create();
 ok( -f $file, "file is reinitialized");
 
 ## Check things not in.
