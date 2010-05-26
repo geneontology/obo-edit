@@ -20,7 +20,7 @@ use lib $ENV{GO_SVN_ROOT} . '/gobo-dbic';
 use utf8;
 use strict;
 use Data::Dumper;
-use Test::More qw(no_plan);
+#use Test::More qw(no_plan);
 use Test::WWW::Mechanize::CGIApp;
 use AmiGO::WebApp::HTMLClient;
 use Getopt::Std;
@@ -78,7 +78,7 @@ if ( ! $opt_c &&
 
 if( $do_cache ){
 
-  $core->kvetch("Making cache files, please wait...");
+  ll("Making cache files, please wait...");
 
   ## Species.
   my @args = ("perl",
@@ -101,7 +101,21 @@ if( $do_cache ){
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
 
-  $core->kvetch("Finished making cache files.");
+  ## Generated JS meta-data.
+  @args = ("perl", "./scripts/make_go_meta_js.pl",
+	   $core->amigo_env('AMIGO_HTDOCS_ROOT_DIR') .
+	   '/js/org/bbop/amigo/go_meta.js');
+  $core->kvetch("System: \"@args\"");
+  system(@args) == 0 || die "System \"@args\" failed: $?";
+
+  ll("Finished making cache files.");
+
+  ## Places for the new speed caches (clean out the old ones)
+  @args = ("perl", "./scripts/make_caches.pl");
+  $core->kvetch("System: \"@args\"");
+  system(@args) == 0 || die "System \"@args\" failed: $?";
+
+  ll("Finished cleaning old cache files.");
 }
 
 ###
@@ -206,6 +220,16 @@ foreach my $error (@errors){
   $core->kvetch($error);
 }
 
+###
+### Subs.
+###
+
+## Just a little printin' when feeling verbose.
+sub ll {
+  my $str = shift || '';
+  print $str . "\n";
+}
+
 
 =head1 NAME
 
@@ -217,12 +241,15 @@ refresh.pl [-c] [-s] [-g] [-p]
 
 =head1 DESCRIPTION
 
-This final script creates caches for some of the various
+This script creates caches for some of the various
 subsystems. Required caches are also created during the installation
-process (install.pl). This script is useful for refreshing caches and
+process (install.pl) using this script (with just the "-c" option).
+
+As a stand-alone, this script is useful for refreshing caches and
 taking some of the load off of the processing needed for Reference
 Genome subsystems (which probably aren't really necessary for most
-installations of AmiGO).
+installations of AmiGO, but very much necessary for ones that use the
+RG as supplied in the GO).
 
 =head1 OPTIONS
 
