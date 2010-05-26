@@ -933,6 +933,9 @@ sub mode_term_details {
   $self->set_template_parameter('QUICKGO_TERM_LINK',
 				$qg_term->get_term_link($input_term_id));
 
+  $self->set_template_parameter('QUICKGO_ENGINE_P',
+				$self->{CORE}->amigo_env('AMIGO_GO_ONLY_GRAPHICS'));
+
   ## Bridge variables from old system.
   $self->set_template_parameter('cgi', 'term-details');
   $self->set_template_parameter('vbridge', 'term=' . $input_term_id);
