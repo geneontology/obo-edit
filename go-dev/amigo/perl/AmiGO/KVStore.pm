@@ -9,6 +9,9 @@ package AmiGO::KVStore;
 use base 'AmiGO';
 use GO::SQLite3::KVStore;
 
+my $AKVS_PREFIX = 'akv_';
+my $AKVS_SUFFIX = '.db';
+
 
 =item new
 
@@ -27,7 +30,8 @@ sub new {
 
   ## Get the store out on disk.
   $self->{AKVS_LOCATION} =
-    $self->amigo_env('AMIGO_CACHE_DIR') . '/akv_'.  $loc . '.db';
+    $self->amigo_env('AMIGO_CACHE_DIR') . '/' .
+      $AKVS_PREFIX . $loc . $AKVS_SUFFIX;
   $self->{AKVS_STORE} =
     GO::SQLite3::KVStore->new({location => $self->{AKVS_LOCATION},
 			       permissive => 1});
@@ -40,16 +44,43 @@ sub new {
 ### No multi-inherit here, so duck it on.
 ###
 
-#
+=item get
+
+See superclass docs.
+
+=cut
 sub get {
   my $self = shift;
   return $self->{AKVS_STORE}->get(@_);
 }
 
-#
+
+=item put
+
+See superclass docs.
+
+=cut
 sub put {
   my $self = shift;
   return $self->{AKVS_STORE}->put(@_);
+}
+
+
+=item list
+
+Args: n/a
+Returns: array ref of fully qualified strings for AmiGO::KVStore databases.
+
+Useful for cleaning duties.
+
+=cut
+sub list {
+
+  my $a = AmiGO->new();
+  my @all = glob($a->amigo_env('AMIGO_CACHE_DIR') . '/' .
+		 $AKVS_PREFIX . '*' . $AKVS_SUFFIX);
+
+  return \@all;
 }
 
 

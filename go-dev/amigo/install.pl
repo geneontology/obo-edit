@@ -1016,33 +1016,13 @@ if ( $opt_s ) {
   ll("Skipping generation of cache files.");
 } else {
 
-  ll("Making cache files, please wait...");
-
-  ## Species cache.
-  @args = ("perl", "./scripts/make_spec_key.pl",
-	   "$synth_vars{AMIGO_CGI_ROOT_DIR}", "50");
+  ## Farm the cache file work out to make_cache.pl and
+  ## make_exp_cache.pl (where applicable).
+  ll("Working on cache files, please wait...");
+  @args = ("perl", "./refresh.pl", "-c");
   ll("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_t;
-
-  ## Misc. cache.
-  @args = ("perl", "./scripts/make_misc_key.pl",
-	   "$synth_vars{AMIGO_CGI_ROOT_DIR}");
-  ll("System: \"@args\"");
-  system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_t;
-
-  ## Database information cache.
-  @args = ("perl", "./scripts/make_dblinks.pl",
-	   '-f', "$synth_vars{AMIGO_CGI_ROOT_DIR}");
-  ll("System: \"@args\"");
-  system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_t;
-
-  ## Generated JS meta-data.
-  @args = ("perl", "./scripts/make_go_meta_js.pl",
-	   "$synth_vars{AMIGO_HTDOCS_ROOT_DIR}/js/org/bbop/amigo/go_meta.js");
-  ll("System: \"@args\"");
-  system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_t;
-
-  ll("Finished making cache files.");
+  ll("Finished working on cache files.");
 
   ## Things to do only under experimental.
   ## AmiGO.pm should be okay here as we've already copied config.pl.
@@ -1050,7 +1030,7 @@ if ( $opt_s ) {
     ll("\n!!! Experimental file generation: these may take a (very great) while!\n!!! Using ctrl-c on these jobs should not be problematic\nin the main parts of AmiGO...\n");
 
     ## Heavy-duty caching files (including expensive RG).
-    @args = ("perl", "./scripts/make_caches.pl");
+    @args = ("perl", "./scripts/make_exp_caches.pl");
     ll("System: \"@args\"");
     system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_t;
 
@@ -1063,12 +1043,17 @@ print "Done.\n";
 print "Your new installation is at: ". $synth_vars{AMIGO_CGI_URL} ."/go.cgi\n";
 my $csc = $synth_vars{GO_ROOT} . '/scripts/cleaner.pl';
 print <<EOC;
-We may use the cleaning script ($csc) to regularly purge the working
+You may use the cleaning script ($csc) to regularly purge the working
 directories of unneeded and old files generated while AmiGO is running.
 
 This task can also be easily performed manually by checking the
-www/cgi-bin/amigo/sessions/ and www/cgi-bin/amigo/tmp_images/ directories
-for old files and removing them.
+www/cgi-bin/amigo/sessions/ and www/cgi-bin/amigo/tmp_images/
+directories for old files and removing them. We actually do this with
+cron jobs a fair bit.
+
+Also, occasionally running the refresh.pl script (see documentation
+for flags that apply to you) is nice for purging other caches that my
+grow over time.
 
 EOC
 
