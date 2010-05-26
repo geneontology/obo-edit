@@ -316,6 +316,7 @@
      </div>
 
       <div id="display-qg">
+	[% IF QUICKGO_ENGINE_P %]
 	<p>
 	  Click on the image to view
 	  <a href="http://www.ebi.ac.uk/QuickGO">QuickGO</a>
@@ -329,6 +330,16 @@
 		 alt="Graph of [% TERM_INFO.acc %] from QuickGO" />
 	  </a>
 	</p>
+	[% ELSE %]
+	<p>
+	  <a class="override"
+	     href="[% VIZ_STATIC_LINK %]"
+	     title="Stand-alone graphic for [% TERM_INFO.acc %]">
+	    <img src="[% VIZ_STATIC_LINK %]"
+		 alt="Graph of [% TERM_INFO.acc %]" />
+	  </a>
+	</p>
+	[% END %]
       </div>
 
      <div id="display-out">

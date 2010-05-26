@@ -98,6 +98,8 @@ my @env_conf_order = qw(
 
 			 AMIGO_TERM_REGEXP
 
+		         AMIGO_GO_ONLY_GRAPHICS
+
 		         AMIGO_VERSION
 			 AMIGO_VERBOSE
 			 AMIGO_TROUBLE_SWITCH
@@ -597,6 +599,14 @@ my %env_conf = (
 		 "Use 1 for yes and 0 for no.",
 		 ERROR => 'not a 0 or a 1',
 		 PARSER => \&is_a_boolean_p,
+		},
+
+		AMIGO_GO_ONLY_GRAPHICS =>
+		{
+		 DEFAULT => '1',
+		 MESSAGE => "If you want to use graphics that cannot possible work outside of GO.",
+		 ERROR => 'not a 0 or a 1',
+		 PARSER => \&is_a_boolean_p
 		},
 
 		AMIGO_VERBOSE =>
