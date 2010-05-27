@@ -23,6 +23,7 @@ if (!@ARGV) {
 }
 our $apph = GO::AppHandle->connect(\@ARGV);
 our $dbh = $apph->dbh;
+our $quiet;
 
 our $debug;
 
@@ -108,6 +109,12 @@ sub new{
     return bless \%s, $c;
 }
 
+sub notice{
+    return if $quiet;
+    my $s = shift;
+    print join(' ', $s->{pthr}, @_) . "\n";
+}
+
 
 our @select_gene_product =
   ($dbh->prepare(<<SQL),
@@ -183,7 +190,7 @@ sub gene_product_id{
 	    $r{$o->[3]}++;
 	}
 	if (first { $_ > 1 } values %r) {
-	    print "$s->{pthr} match multiple gene_product rows with the same xref_dbname\n";
+	    $s->notice('matched multiple gene_product rows with the same xref_dbname');
 	} else {
 	    my @prefer = @{ $s->{species}->{prefer} || [] };
 	    while (@prefer) {
@@ -194,7 +201,7 @@ sub gene_product_id{
 		last if ($out);
 	    }
 	    if ($out) {
-		print "$s->{pthr} matched $found gene_product rows\n";
+		$s->notice('matched', $found, 'gene_product rows');
 	    } else {
 		die "Don't know what to prefer for: $s->{pthr}\n" . Dumper(\@out);
 	    }
@@ -206,66 +213,6 @@ sub gene_product_id{
     $s->{xref} = $out->[2];
     return $s->{gene_product_id};
 }
-
-
-# select from dbxref only if we don't have an gene_product entry
-our $select_dbxref_id = $dbh->prepare(<<SQL);
-SELECT dbxref.id,xref_dbname FROM dbxref
-LEFT JOIN gene_product ON(dbxref.id=gene_product.dbxref_id)
-WHERE gene_product.id IS NULL
-AND xref_dbname=? AND xref_key=?
-SQL
-# If not already set, this will seek a dbxref entry that isn't
-# connected to a gene_product. If you don't care if it's connected or
-# not call $s->gene_product_id first and then call this.
-# sub dbxref_id{
-#     my $s = shift;
-#     return $s->{dbxref_id} if ($s->{dbxref_id});
-
-#     my $out;
-
-#     for my $dbname ($s->{species}->id_types) {
-# 	for my $id (@{ $s->{ids} }) {
-# 	    next if ($dbname ne $id->[0]);
-# 	    my $key = $id->[1];
-
-# 	    if ($metonym{$dbname}) {
-# 		for my $metonym (@{$metonym{$dbname}}) {
-# 		    $out = select_one($select_dbxref_id, $metonym, $key);
-# 		}
-# 		last if ($out);
-# 	    } else {
-# 		$out = select_one($select_dbxref_id, $dbname, $key);
-# 	    }
-
-# 	    if ($out) {
-# 		$s->{xref} = $id;
-# 		$s->{dbxref_id} = $out->[0];
-# 		return $s->{dbxref_id};
-# 	    }
-# 	}
-#     }
-
-#     return ($s->{dbxref_id} = undef);
-# }
-
-# # returns the xref.  If it doesn't have an xref it will pick one.
-# sub xref{
-#     my $s = shift;
-#     return $s->{xref} if ($s->{xref});
-#     my %dbname = %{ $s->{species}->dbname_hash };
-
-#     for my $type (keys %dbname) {
-# 	for my $id ( @{ $s->{ids} } ) {
-# 	    if ($dbname{$type}->[0] eq $id->[0]) {
-# 		$s->{xref} = $id;
-# 		$s->{type_id} = type_id($type) if (!$ignore_type);
-# 		return $s->{xref};
-# 	    }
-# 	}
-#     }
-#     die 'xref ' . Dumper $s;
-# }
 
 
 my $select_type_id = $dbh->prepare(<<SQL);
@@ -373,7 +320,6 @@ my @species;
 my $dry_run = 10000; # start pho column ids an negative this number
 my $pthr_xref_dbname = 'PantherDB'; # Make this an option when loading
                                     # somethings other then pthr stuff
-my $quiet = undef;
 my $every = 0; #30; # seconds
 my $last = $^T;
 my $match_only;
@@ -396,7 +342,7 @@ GetOptions
 
    'dry-run!'     => \$dry_run,
    'debug!'       => \$My::Pthr::debug,
-   'quiet!'       => \$quiet,
+   'quiet!'       => \$My::Pthr::quiet,
    'match-only!'  => \$match_only,
   ) or die pod2usage();
 
@@ -473,17 +419,10 @@ while(<>) {
 
     if ($row->gene_product_id(\%tsv)) {
 	$summary->{gene_product}++;
-    # } elsif ($row->dbxref_id) {
-    # 	$summary->{dbxref_id}++;
-    # 	print "No gene_product entry for $row->{pthr}\n" if (!$quiet);
-    # 	#die Dumper $row;
     } else {
 	$summary->{nothing}++;
-	print "No gene_product rows for $row->{pthr}\n" if (!$quiet);
-	#die Dumper $row;
+	$row->notice('No gene_product rows found');
     }
-
-    #$row->xref; # pick a dbxref if we don't have one
 
 } continue {
 
@@ -516,8 +455,7 @@ sub dry_run_sth{
 
     print wrap
       ('dry run: ', "\t",
-       $sql, ':(' . join(',',@_) . ") => $out") . "\n"
-	 if (!$quiet);
+       $sql, ':(' . join(',',@_) . ") => $out") . "\n";
     return $out;
 }
 

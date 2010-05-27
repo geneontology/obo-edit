@@ -364,12 +364,7 @@ our @species =
    { # Takifugu rubripes
     code => 'FUGRU',
     # matched all 11 items! Adding the non 31033 added no new items.
-    ncbi_taxa_id => #[ 31033 ],
-    [
-     31033, # rubripes
-     346655, # rubripes nervous necrosis virus
-     47663, # rubripes rubripes
-    ],
+    ncbi_taxa_id => [ 31033, 47663 ],
    },
 
    { # Tetrahymena thermophila
@@ -489,6 +484,10 @@ sub ncbi_ids{
 }
 
 =back
+
+=head2 AUTHOR
+
+Sven Heinicke E<lt>sven@genomics.princeton.edu</gt>
 
 =cut
 
