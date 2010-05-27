@@ -109,7 +109,8 @@ sub new{
 }
 
 
-our $select_gene_product = $dbh->prepare(<<SQL);
+our @select_gene_product =
+  ($dbh->prepare(<<SQL),
 SELECT gene_product.id AS gene_product_id
 ,dbxref.id AS dbxref_id
 ,xref_key
@@ -118,6 +119,36 @@ FROM dbxref
 JOIN gene_product ON(dbxref.id=gene_product.dbxref_id)
 WHERE xref_key=? AND species_id=?
 SQL
+
+# If we want to use prefers off the gene_product_dbrxef xref_key use
+# this.
+
+#    $dbh->prepare(<<SQL),
+# SELECT gene_product.id AS gene_product_id
+# ,dbxref.id AS dbxref_id
+# ,xref_key
+# ,xref_dbname
+# FROM gene_product
+# JOIN gene_product_dbxref ON(gene_product.id=gene_product_dbxref.gene_product_id)
+# JOIN dbxref ON(gene_product_dbxref.dbxref_id=dbxref.id)
+# WHERE xref_key=? AND species_id=?
+# SQL
+
+
+   $dbh->prepare(<<SQL),
+SELECT gene_product.id AS gene_product_id
+,d2.id AS dbxref_id
+,d2.xref_key
+,d2.xref_dbname
+FROM dbxref AS d1
+JOIN gene_product_dbxref ON(d1.id=gene_product_dbxref.dbxref_id)
+JOIN gene_product ON(gene_product_dbxref.gene_product_id=gene_product.id)
+JOIN dbxref AS d2 ON(gene_product.dbxref_id=d2.id)
+WHERE d1.xref_key=? AND species_id=?
+SQL
+  );
+
+
 # Tries to get the gene_product_id for this item. It sets dbxref_id if
 # it finds it too.
 sub gene_product_id{
@@ -127,12 +158,16 @@ sub gene_product_id{
     my @out;
     for my $species_id ( $s->species_ids ) {
 	my @id = map { $_->[1] } @{ $s->{ids} };
-	for my $id (@id) {
-	    my @args = ($id, $species_id);
-	    #my $r = select_one($select_gene_product, @args);
-	    #push @out, $r if ($r);
-	    $select_gene_product->execute(@args) or die;
-	    push @out, @{ $select_gene_product->fetchall_arrayref() };
+	for my $sgp (@select_gene_product) {
+	    for my $id (@id) {
+		my @args = ($id, $species_id);
+		$sgp->execute(@args) or die;
+		push @out, @{ $sgp->fetchall_arrayref() };
+
+	    }
+
+	    # only try to get more if we didn't get any.
+	    last if (scalar @out);
 	}
     }
 
@@ -143,18 +178,26 @@ sub gene_product_id{
     if ($found == 1) {
 	$out = $out[0]
     } else {
-	my @prefer = @{ $s->{species}->{prefer} || [] };
-	while (@prefer) {
-	    my $want = shift @prefer;
-	    $out = first {
-		lc($_->[3]) eq lc($want);
-	    } @out;
-	    last if ($out);
+	my %r; # report
+	for my $o (@out) {
+	    $r{$o->[3]}++;
 	}
-	if ($out) {
-	    print "$s->{pthr} matched $found gene_product rows\n";
+	if (first { $_ > 1 } values %r) {
+	    print "$s->{pthr} match multiple gene_product rows with the same xref_dbname\n";
 	} else {
-	    die $s->{pthr} . Dumper \@out;
+	    my @prefer = @{ $s->{species}->{prefer} || [] };
+	    while (@prefer) {
+		my $want = shift @prefer;
+		$out = first {
+		    lc($_->[3]) eq lc($want);
+		} @out;
+		last if ($out);
+	    }
+	    if ($out) {
+		print "$s->{pthr} matched $found gene_product rows\n";
+	    } else {
+		die "Don't know what to prefer for: $s->{pthr}\n" . Dumper(\@out);
+	    }
 	}
     }
 
