@@ -405,9 +405,9 @@ sub make_js {
     eval{
       $retval = $self->{JSON}->encode($perl_var);
     };
-#     if ($@) {
-#       $retval = $self->{JSON}->to_json($perl_var);
-#     }
+    # if ($@) {
+    #    $retval = $self->{JSON}->to_json($perl_var);
+    # }
   }else{
     $retval = _emit_scalar($perl_var);
   }

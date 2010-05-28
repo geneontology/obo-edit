@@ -766,6 +766,8 @@ $synth_vars{AMIGO_CGI_URL} =
     $foo; }
   . '/' . $env_conf{AMIGO_PROJECT_NAME}{NEW_VALUE};
 
+$synth_vars{AMIGO_SERVICE_URL} = $synth_vars{AMIGO_CGI_URL} . '/aserve';
+
 $synth_vars{AMIGO_PUBLIC_CGI_URL} =
   eval {
     my $foo = '';
@@ -1039,7 +1041,7 @@ if ( $opt_s ) {
 }
 
 ## Done.
-print "Done.\n";
+print "Done.\n\n";
 print "Your new installation is at: ". $synth_vars{AMIGO_CGI_URL} ."/go.cgi\n";
 my $csc = $synth_vars{GO_ROOT} . '/scripts/cleaner.pl';
 print <<EOC;
