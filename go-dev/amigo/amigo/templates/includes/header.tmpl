@@ -116,7 +116,7 @@
   [% IF page_name == 'front' || page_content_layout == 'wide' %]
   [% ELSE %]
   <div id="menuSearchForm">
-    <form action="search.cgi" id="bar-form" method='POST'>
+    <form action="search.cgi" id="bar-form" method="GET">
       <p>
 	<label for="bar-query">Search GO</label><input class="textBox" type="text" name="search_query" size="25" value="[% HTML.escape(query) %]" id="bar-query">
 	[% IF !search_constraint || search_constraint == 'term' %]
