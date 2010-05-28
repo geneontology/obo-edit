@@ -192,6 +192,11 @@ sub mode_software_list {
   my $params = $i->input_profile();
 
   $self->_common_params_settings({title=>'AmiGO: Software List'});
+
+  ## Where would the ancient demos page hide...?
+  my $foo = $self->{CORE}->amigo_env('AMIGO_CGI_PARTIAL_URL');
+  $self->set_template_parameter('OLD_LOC', $foo);
+
   $self->add_template_content('html/main/software_list.tmpl');
   return $self->generate_template_page();
 }

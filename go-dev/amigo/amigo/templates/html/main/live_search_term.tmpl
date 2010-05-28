@@ -1,0 +1,127 @@
+<!-- START template: live_search_term.tmpl -->
+
+<div class="contents">
+
+  <h1>Term Search</h1>
+
+  <div class="block">
+
+    <h2>Query</h2>
+
+    [% IF SEARCHED_P == 1 %]
+    <p>
+      <a href="#results">Jump</a> to results.
+    </p>    
+    [% END %]
+
+    <p>
+      Some instructions here.
+    </p>
+    
+    <form action="amigo_exp" id="ls_term_search_form" method="GET">
+	<input type="hidden" name="mode" value="live_search_term" />
+
+	<label for="query">Search GO</label>
+	<input class="textBox"
+	       type="text"
+	       name="query"
+	       size="50"
+	       value="[% IF SEARCHED_P == 1 %][% query %][% END %]"
+       	       id="query" />
+
+	<div>
+	  Select ontology
+	  <br />
+	  [% variable = 'ontology' %]
+	  [% hash = ontology_hash %]
+	  [% selected = ontology_selected %]
+	  [% catch_all = 'all' %]
+	  [% size = 4 %]
+	  [% INCLUDE html/inc/select.tmpl %]
+	</div>
+
+	<!-- <fieldset class="block"><legend>Search fields</legend> -->
+	<!--   <ul> -->
+	<!--     <li><input type="checkbox" -->
+	<!-- 	       name="gpfield" -->
+	<!-- 	       id="gpfield.full_name" -->
+	<!-- 	       value="full_name" -->
+	<!-- 	       class="cbox" -->
+	<!-- 	       checked> -->
+	<!--       <label for="gpfield.full_name">full name(s)</label> -->
+	<!--     </li> -->
+	<!--   </ul> -->
+	<!-- </fieldset> -->
+
+	<input type="submit" class="button" />
+
+      </p>
+    </form>
+  </div>
+
+  [% IF SEARCHED_P == 1 %]
+
+  <div class="block">
+
+    <h2>Results</h2>
+
+    <h3 id="results">[% RESULTS_TOTAL %] term results for: [% query %]</h3>
+    <p>
+      page [% SEARCH_CURRENT %] of [% SEARCH_LAST %]<br />
+    </p>
+
+    <p>
+      [% IF SEARCH_CURRENT == 1 %]
+      <a title="next page of results"
+	 href="[% NEXT_LINK%]">next</a>
+      [% ELSIF SEARCH_CURRENT > 1 && SEARCH_CURRENT < SEARCH_LAST %]
+      <a title="previous page of results"
+	 href="[% PREV_LINK%]">prev</a>
+      <a title="next page of results"
+	 href="[% NEXT_LINK%]">next</a>
+      [% ELSIF SEARCH_CURRENT == SEARCH_LAST %]
+      <a title="previous page of results"
+	 href="[% PREV_LINK%]">prev</a>
+      [% ELSE %]
+	<em>The page [% SEARCH_CURRENT %] is out of bounds.</em>
+      [% END %]
+    </p>
+
+    <table style="border:1px solid #666666">      
+
+      <tr style="border:1px solid #666666">
+	<td style="border:1px solid #666666">Symbol</td>
+	<td style="border:1px solid #666666">Full Name</td>
+	<td style="border:1px solid #666666">Synonyms</td>
+      </tr>
+
+      [% FOREACH r = SEARCH_RESULTS %]
+      <tr style="border:1px solid #666666">
+	<td style="border:1px solid #666666">
+	  <a title="Jump to [% r.symbol %] information"
+	     href="[% r.gp_link %]">[% r.symbol %]</a>
+	</td>
+	<td style="border:1px solid #666666">
+	  [% r.full_name %]
+	</td>
+	<td style="border:1px solid #666666">
+	  [% IF r.synonym.size %]
+	  [%   FOREACH s = r.synonym %]
+	  [%     s %]
+	  [%   END %]
+	  [% ELSE %]
+	  &nbsp;
+	  [% END %]
+	</td>
+      </tr>
+      [% END %]
+	
+    </table>
+
+  </div>
+  
+  [% END %]
+
+</div>
+
+<!-- END template: live_search_term.tmpl -->

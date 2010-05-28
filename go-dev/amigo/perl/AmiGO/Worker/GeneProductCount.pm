@@ -14,6 +14,8 @@ use base ("AmiGO::Worker");
 
 use Data::Dumper;
 use AmiGO::Aid;
+use AmiGO::KVStore::GPCount;
+
 
 =item new
 

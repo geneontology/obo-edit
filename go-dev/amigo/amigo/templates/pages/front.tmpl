@@ -35,86 +35,18 @@
     [% INCLUDE header.tmpl %]
     <div class="contents">
 
-      <form action="search.cgi" name="frontForm" id="frontForm" method="POST">
+      <form action="search.cgi" name="frontForm" id="frontForm" method="GET">
 	<fieldset class="C">
 	  <legend>Search</legend>
 	  <input type="hidden" name="session_id" value="[% session_id %]">
 	  <p><label for="query">Search the Gene Ontology database</label></p>
 
-	  <!-- START: Experimental stuff. -->
-	  <!-- TODO/BUG: need to work on styles, a lot... -->
-	  <!-- see: http://developer.yahoo.com/yui/autocomplete/ -->
-	  <!-- see: http://developer.yahoo.com/yui/datasource/ -->
-	  <!-- see: http://developer.yahoo.com/yui/docs/YAHOO.util.DataSourceBase.html#method_parseArrayData -->
-<!--	  
-	      <div class="yui-skin-sam">
-		<div id="autoCompleteTest">
--->		  
 	  <input type="text"
 		 name="search_query"
 		 size="30"
 		 value="[% query %]"
 		 class="textBox"
 		 id="query">
-
-<!--	  
-	      <div id="ac_rc"></div>
-
-	  </div>
-	</div>
-
-	<script type="text/javascript">
-
-// DataSource for a remote location with dynamic script nodes.
-//amigoDataSource.responseType = YAHOO.util.ScriptNodeDataSource.TYPE_JSARRAY;
-var amigoDataSource = new YAHOO.util.XHRDataSource("[% cgi_url %]/completion"); 
-amigoDataSource.responseType = YAHOO.util.XHRDataSource.TYPE_JSARRAY;
-//amigoDataSource.responseSchema = {fields: ["name"]};
-amigoDataSource.parseArrayData =
-  function( oRequest , oFullResponse ){
-  // BUG/TODO: I don't like this at all...should use a lib from
-  // JSON.org
-  var foo = [];
-  try { 
-    foo = YAHOO.lang.JSON.parse(oFullResponse); 
-  } catch (e) { 
-    // Something bad happened...
-    foo = [];
-  }
-  //results: ["foo", "bar"],
-  return { results: foo, error: false };
-};
-
-//amigoDataSource.scriptCallbackParam = nil;
-//amigoDataSource.responseSchema = { 
-//  resultsList : "this[1]",
-//  fields : [""],
-//  metaFields : {}
-//}; 
-//var testDS = new YAHOO.util.LocalDataSource(["head","head 2","heed","tail"]); 
-
-// 
-var autoComplete = new YAHOO.widget.AutoComplete("query", "ac_rc",
-amigoDataSource);
-//testDS);
-
-//autoComplete.typeAhead = true;
-//autoComplete.resultTypeList = false;
-//autoComplete.formatResult = function(oResultData, sQuery, sResultMatch){
-//   var sMarkup = (sResultMatch) ? sResultMatch : ""; 
-//   alert(sMarkup);
-//   return sMarkup; 
-//};
-
-autoComplete.generateRequest = function(sQuery) { 
-   var generated_str = "?type=general&format=autocomplete&query=" + sQuery;
-   //alert(generated_str);
-   return generated_str;
-}; 
-	</script>
--->
-
-<!-- END: Experimental stuff. -->
 
 	  <input type="hidden" name="action" value="new-search">
 

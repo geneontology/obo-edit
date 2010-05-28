@@ -14,6 +14,7 @@ use AmiGO::JSON;
 use AmiGO::JavaScript;
 use AmiGO::External::XML::GONUTS;
 use AmiGO::External::Raw;
+use AmiGO::External::JSON::LiveSearch::Term;
 #use mapscript;
 
 # ## Take SuGR from a test drive.
@@ -101,6 +102,7 @@ sub setup {
 		   ## Client apps.
 		   'matrix'              => 'mode_matrix',
 		   'nmatrix'             => 'mode_nmatrix',
+		   'live_search_term'    => 'mode_live_search_term',
 		   'ntree'               => 'mode_ntree',
 		   'ptree'               => 'mode_ptree',
 		   #'term'                => 'mode_term',
@@ -134,6 +136,82 @@ sub setup {
 }
 
 
+##
+sub mode_live_search_term {
+
+  my $self = shift;
+
+  ## This bit is (and should be) a direct lift from Services. Since
+  ## we're low speed, packets will not be needed.
+  my $i = AmiGO::WebApp::Input->new();
+  my $params = $i->input_profile('live_search_term');
+  my $query = $params->{query};
+  my $index = $params->{index} + 0; # coerce to int?
+  my $count = $params->{count} + 0; # coerce to int?
+  #my $packet = $params->{packet} + 0; # coerce to int?
+  my $ontology = $params->{ontology};
+  $self->{CORE}->kvetch("query: ". $query);
+  $self->{CORE}->kvetch("index: ". $index);
+  $self->{CORE}->kvetch("count: ". $count);
+  #$self->{CORE}->kvetch("packet: ". $packet);
+  $self->{CORE}->kvetch("ontology: ". $ontology);
+
+  #$self->{CORE}->kvetch("page: ". $page);
+  $self->set_template_parameter('SEARCHED_P', 0);
+
+  if( $query && length($query) < 3 ){
+    $self->mode_die_with_message('You need a query of at least' .
+				 ' three characters.');
+  }elsif( $query ){
+
+    my $tq = AmiGO::External::JSON::LiveSearch::Term->new();
+    my $results = $tq->query({
+			      query => "pigment",
+			      index => $index,
+			      count => $count,
+			      ontology => $ontology,
+			     });
+
+    ## Flag to let the template know that we got results.
+    $self->set_template_parameter('SEARCHED_P', 1);
+
+    $self->{CORE}->kvetch(Dumper($results));
+
+    ## Add them into the parameters.
+    $self->set_template_parameter('RESULTS', $results);
+    $self->set_template_parameter('RESULTS_TOTAL',
+				  $results->{results}{meta}{total});
+  }
+
+  # $self->set_template_parameter('NEXT_LINK',
+  # 		$self->{CORE}->get_interlink({mode=>'exp_search',
+  # 					      arg=>{
+  # 						    type=>'gp',
+  # 						    page=>$page +1,
+  # 						    query=>$query,
+  # 						   }}));
+  # $self->set_template_parameter('PREV_LINK',
+  # 		$self->{CORE}->get_interlink({mode=>'exp_search',
+  # 					      arg=>{
+  # 						    type=>'gp',
+  # 						    page=>$page -1,
+  # 						    query=>$query,
+  # 						   }}));
+
+  ###
+  ###
+  ###
+
+  # my $tmp_apph_sd_hash = $self->{CORE}->ontology();
+  $self->set_template_parameter('ontology_hash',  $self->{CORE}->ontology());
+
+  ## 
+  $self->set_template_parameter('query', $self->{CORE}->html_safe($query));
+  $self->add_template_content('html/main/live_search_term.tmpl');
+  return $self->generate_template_page();
+}
+
+
 ## Maybe how things should look in this framework?
 sub mode_exp_search {
 
@@ -156,12 +234,12 @@ sub mode_exp_search {
     my $results = $search->query($query, $page);
 
     ##
-#     my ($search_total,$search_first, $search_current, $search_last) =
-#       $search->page_info();
-#     $self->set_template_parameter('SEARCH_TOTAL', $search_total);
-#     $self->set_template_parameter('SEARCH_FIRST', $search_first);
-#     $self->set_template_parameter('SEARCH_CURRENT', $search_current);
-#     $self->set_template_parameter('SEARCH_LAST', $search_last);
+    # my ($search_total,$search_first, $search_current, $search_last) =
+    #   $search->page_info();
+    # $self->set_template_parameter('SEARCH_TOTAL', $search_total);
+    # $self->set_template_parameter('SEARCH_FIRST', $search_first);
+    # $self->set_template_parameter('SEARCH_CURRENT', $search_current);
+    # $self->set_template_parameter('SEARCH_LAST', $search_last);
 
     $self->set_template_parameter('NEXT_LINK',
 				  $self->{CORE}->get_interlink({mode=>'exp_search',
@@ -191,6 +269,8 @@ sub mode_exp_search {
   }
 
   $self->set_template_parameter('query', $self->{CORE}->html_safe($query));
+  $self->set_template_parameter('title',
+				'AmiGO: Term Search');
   $self->add_template_content('html/main/exp_search.tmpl');
   return $self->generate_template_page();
 }

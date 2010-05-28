@@ -1477,6 +1477,39 @@ sub _read_frozen_file {
 }
 
 
+=item hash_to_query_string
+
+Turn a single-level hash ref into a remarkably URL-like string using
+the keys as the...keys...
+
+Accepts array refs as values.
+
+=cut
+sub hash_to_query_string {
+
+  my $self = shift;
+  my $hash = shift || {};
+
+  my $mega_buf = [];
+  foreach my $key (keys %{$hash}){
+
+    ## Array ref or not...
+    if( ref($hash->{$key}) eq 'ARRAY' ){
+
+      my $mini_buf = [];
+      foreach my $elt (@{$hash->{$key}}){
+	push @$mini_buf,  $key . '=' . $elt;
+      }
+      push @$mega_buf, join('&', @$mini_buf);
+
+    }else{
+      push @$mega_buf,  $key . '=' . $hash->{$key};
+    }
+  }
+  return join('&', @$mega_buf);
+}
+
+
 =item merge
 
 Merges two hashes (as hashrefs) together, using the first one as a template.

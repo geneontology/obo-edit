@@ -8,6 +8,10 @@ package AmiGO::KVStore;
 
 use base 'AmiGO';
 use GO::SQLite3::KVStore;
+use AmiGO::JavaScript;
+
+# sub make_js
+# sub parse_json_data
 
 my $AKVS_PREFIX = 'akv_';
 my $AKVS_SUFFIX = '.db';
