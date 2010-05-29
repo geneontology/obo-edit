@@ -1292,55 +1292,48 @@ sub get_interlink {
        $ilink = $self->_fuse_hash($ihash);
      },
 
-     ## Next, things that are in the experimental app set...
-
-     'exp_search' =>
+     'term_search' =>
      sub {
-       my $query = $args->{query} || undef;
-       my $type = $args->{type} || 'gp';
-       my $page = $args->{page} || 1;
-       if( defined($query) ){
-	 $ilink = 'amigo_exp?mode=exp_search'.
-	   #'&query=' . $self->html_safe($query) .
-	   #  '&type=' . $self->html_safe($type).
-	   #    '&page=' . $self->html_safe($page);
-	   '&query=' . $query .
-	     '&type=' . $type .
-	       '&page=' . $page;
+       if( ! $self->empty_hash_p($args) ){
+    	 $ilink = 'amigo_exp?mode=live_search_term&'.
+	   $self->hash_to_query_string($args);
        }else{
-	 $ilink = 'amigo_exp?mode=lexical_search';
+    	 $ilink = 'amigo_exp?mode=live_search_term';
        }
      },
 
-     'lexical_search' =>
-     sub {
-       my $query = $args->{query} || undef;
-       my $page = $args->{page} || 1;
-       if( defined($query) ){
-	 $ilink = 'amigo_exp?mode=lexical_search'.
-	   #'&query=' . $self->html_safe($query) .
-	   #  '&page=' . $self->html_safe($page);
-	   '&query=' . $query .
-	     '&page=' . $page;
-       }else{
-	 $ilink = 'amigo_exp?mode=lexical_search';
-       }
-     },
-
-    'lexical_search' =>
-     sub {
-       my $query = $args->{query} || undef;
-       my $page = $args->{page} || 1;
-       if( defined($query) ){
-	 $ilink = 'amigo_exp?mode=lexical_search'.
-	   #'&query=' . $self->html_safe($query) .
-	   #  '&page=' . $self->html_safe($page);
-	   '&query=' . $query .
-	     '&page=' . $page;
-       }else{
-	 $ilink = 'amigo_exp?mode=lexical_search';
-       }
-     },
+     #  ## Next, things that are in the experimental app set...
+     #  'exp_search' =>
+     #  sub {
+     #    my $query = $args->{query} || undef;
+     #    my $type = $args->{type} || 'gp';
+     #    my $page = $args->{page} || 1;
+     #    if( defined($query) ){
+     # 	 $ilink = 'amigo_exp?mode=exp_search'.
+     # 	   #'&query=' . $self->html_safe($query) .
+     # 	   #  '&type=' . $self->html_safe($type).
+     # 	   #    '&page=' . $self->html_safe($page);
+     # 	   '&query=' . $query .
+     # 	     '&type=' . $type .
+     # 	       '&page=' . $page;
+     #    }else{
+     # 	 $ilink = 'amigo_exp?mode=lexical_search';
+     #    }
+     #  },
+     #  'lexical_search' =>
+     #  sub {
+     #    my $query = $args->{query} || undef;
+     #    my $page = $args->{page} || 1;
+     #    if( defined($query) ){
+     # 	 $ilink = 'amigo_exp?mode=lexical_search'.
+     # 	   #'&query=' . $self->html_safe($query) .
+     # 	   #  '&page=' . $self->html_safe($page);
+     # 	   '&query=' . $query .
+     # 	     '&page=' . $page;
+     #    }else{
+     # 	 $ilink = 'amigo_exp?mode=lexical_search';
+     #    }
+     #  },
 
      'gp_with_2_terms' =>
      sub {

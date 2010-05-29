@@ -164,13 +164,17 @@ sub mode_live_search_term {
 				 ' three characters.');
   }elsif( $query ){
 
+    my $args_hash =
+      {
+       query => $query,
+       index => $index,
+       count => $count,
+       ontology => $ontology,
+      };
     my $tq = AmiGO::External::JSON::LiveSearch::Term->new();
-    my $results = $tq->query({
-			      query => "pigment",
-			      index => $index,
-			      count => $count,
-			      ontology => $ontology,
-			     });
+    my $results = $tq->query($args_hash);
+    my $next_url = $tq->next_url($args_hash);
+    my $prev_url = $tq->previous_url($args_hash);
 
     ## Flag to let the template know that we got results.
     $self->set_template_parameter('SEARCHED_P', 1);
@@ -179,31 +183,33 @@ sub mode_live_search_term {
 
     ## Add them into the parameters.
     $self->set_template_parameter('RESULTS', $results);
+    $self->set_template_parameter('RESULTS_LIST', $results->{results}{hits});
     $self->set_template_parameter('RESULTS_TOTAL',
 				  $results->{results}{meta}{total});
+    $self->set_template_parameter('RESULTS_FIRST',
+				  $results->{results}{meta}{first});
+    $self->set_template_parameter('RESULTS_LAST',
+				  $results->{results}{meta}{last});
+
+    $self->set_template_parameter('NEXT_LINK', $next_url);
+    $self->set_template_parameter('PREV_LINK', $prev_url);
   }
 
-  # $self->set_template_parameter('NEXT_LINK',
-  # 		$self->{CORE}->get_interlink({mode=>'exp_search',
-  # 					      arg=>{
-  # 						    type=>'gp',
-  # 						    page=>$page +1,
-  # 						    query=>$query,
-  # 						   }}));
-  # $self->set_template_parameter('PREV_LINK',
-  # 		$self->{CORE}->get_interlink({mode=>'exp_search',
-  # 					      arg=>{
-  # 						    type=>'gp',
-  # 						    page=>$page -1,
-  # 						    query=>$query,
-  # 						   }}));
+  ###
+  ###
+  ###
 
-  ###
-  ###
-  ###
+  ##
+  my $selected_ont_hash = {};
+  if( ref($ontology) ne 'ARRAY' ){
+    $selected_ont_hash->{$ontology} = 1;
+  }else{
+    foreach my $ont (@$ontology){ $selected_ont_hash->{$ont} = 1; }
+  }
+  $self->set_template_parameter('selected_ontology_hash', $selected_ont_hash);
 
   # my $tmp_apph_sd_hash = $self->{CORE}->ontology();
-  $self->set_template_parameter('ontology_hash',  $self->{CORE}->ontology());
+  $self->set_template_parameter('ontology_hash', $self->{CORE}->ontology());
 
   ## 
   $self->set_template_parameter('query', $self->{CORE}->html_safe($query));
@@ -212,68 +218,68 @@ sub mode_live_search_term {
 }
 
 
-## Maybe how things should look in this framework?
-sub mode_exp_search {
+# ## Maybe how things should look in this framework?
+# sub mode_exp_search {
 
-  my $self = shift;
+#   my $self = shift;
 
-  my $i = AmiGO::WebApp::Input->new();
-  my $params = $i->input_profile('exp_search');
+#   my $i = AmiGO::WebApp::Input->new();
+#   my $params = $i->input_profile('exp_search');
 
-  ## TODO: add error checking for invalid inputs.
-  my $query = $params->{query};
-  my $type = $params->{type};
-  my $page = $self->{CORE}->atoi($params->{page});
+#   ## TODO: add error checking for invalid inputs.
+#   my $query = $params->{query};
+#   my $type = $params->{type};
+#   my $page = $self->{CORE}->atoi($params->{page});
 
-  $self->{CORE}->kvetch("page: ". $page);
-  $self->set_template_parameter('SEARCHED_P', 0);
+#   $self->{CORE}->kvetch("page: ". $page);
+#   $self->set_template_parameter('SEARCHED_P', 0);
 
-  if( $query && $type){
+#   if( $query && $type){
 
-    my $search = AmiGO::Worker::ExpSearch->new($type);
-    my $results = $search->query($query, $page);
+#     my $search = AmiGO::Worker::ExpSearch->new($type);
+#     my $results = $search->query($query, $page);
 
-    ##
-    # my ($search_total,$search_first, $search_current, $search_last) =
-    #   $search->page_info();
-    # $self->set_template_parameter('SEARCH_TOTAL', $search_total);
-    # $self->set_template_parameter('SEARCH_FIRST', $search_first);
-    # $self->set_template_parameter('SEARCH_CURRENT', $search_current);
-    # $self->set_template_parameter('SEARCH_LAST', $search_last);
+#     ##
+#     # my ($search_total,$search_first, $search_current, $search_last) =
+#     #   $search->page_info();
+#     # $self->set_template_parameter('SEARCH_TOTAL', $search_total);
+#     # $self->set_template_parameter('SEARCH_FIRST', $search_first);
+#     # $self->set_template_parameter('SEARCH_CURRENT', $search_current);
+#     # $self->set_template_parameter('SEARCH_LAST', $search_last);
 
-    $self->set_template_parameter('NEXT_LINK',
-				  $self->{CORE}->get_interlink({mode=>'exp_search',
-							arg=>{
-							      type=>'gp',
-							      page=>$page +1,
-							      query=>$query,
-							     }}));
-    $self->set_template_parameter('PREV_LINK',
-				  $self->{CORE}->get_interlink({mode=>'exp_search',
-							arg=>{
-							      type=>'gp',
-							      page=>$page -1,
-							      query=>$query,
-							     }}));
+#     $self->set_template_parameter('NEXT_LINK',
+# 				  $self->{CORE}->get_interlink({mode=>'exp_search',
+# 							arg=>{
+# 							      type=>'gp',
+# 							      page=>$page +1,
+# 							      query=>$query,
+# 							     }}));
+#     $self->set_template_parameter('PREV_LINK',
+# 				  $self->{CORE}->get_interlink({mode=>'exp_search',
+# 							arg=>{
+# 							      type=>'gp',
+# 							      page=>$page -1,
+# 							      query=>$query,
+# 							     }}));
 
-    if( ! $results ){
-      $self->mode_die_with_message('We seem to have gotten bad input!');
-    }else{
+#     if( ! $results ){
+#       $self->mode_die_with_message('We seem to have gotten bad input!');
+#     }else{
 
-      ## Flag to let the template know that we got results.
-      $self->set_template_parameter('SEARCHED_P', 1);
+#       ## Flag to let the template know that we got results.
+#       $self->set_template_parameter('SEARCHED_P', 1);
 
-      ## Add them into the parameters.
-      $self->set_template_parameter('SEARCHED_RESULTS', $results);
-    }
-  }
+#       ## Add them into the parameters.
+#       $self->set_template_parameter('SEARCHED_RESULTS', $results);
+#     }
+#   }
 
-  $self->set_template_parameter('query', $self->{CORE}->html_safe($query));
-  $self->set_template_parameter('title',
-				'AmiGO: Term Search');
-  $self->add_template_content('html/main/exp_search.tmpl');
-  return $self->generate_template_page();
-}
+#   $self->set_template_parameter('query', $self->{CORE}->html_safe($query));
+#   $self->set_template_parameter('title',
+# 				'AmiGO: Term Search');
+#   $self->add_template_content('html/main/exp_search.tmpl');
+#   return $self->generate_template_page();
+# }
 
 
 ## While this is really a service and should may exist with aserve, it
