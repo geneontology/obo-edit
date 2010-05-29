@@ -9,6 +9,8 @@ package AmiGO::External::JSON::LiveSearch;
 
 use base ("AmiGO::External::JSON");
 
+use Data::Dumper;
+
 
 =item new
 
@@ -37,6 +39,20 @@ sub new {
 }
 
 
+## Create URL
+sub _create_url {
+
+  my $self = shift;
+  my $hash = shift || {};
+
+  my $qstr = $self->hash_to_query_string($hash);
+  my $url = $self->{JSLS_BASE_URL};
+  $url .= '&' . $qstr if $qstr;
+
+  return $url;
+}
+
+
 =item query
 
 Args: hash ref (see service/js docs)
@@ -51,13 +67,13 @@ sub query {
 
   ## Merge incoming with default template.
   my $final_hash = $self->merge($self->{JSLS_BASE_HASH}, $in_hash);
+  #$self->kvetch("in_hash:" . Dumper($in_hash));
 
-  ## Create URL
-  my $qstr = $self->hash_to_query_string($final_hash);
-  my $url = $self->{JSLS_BASE_URL};
-  $url .= '&' . $qstr if $qstr;
+  ## Create URL.
+  my $url = $self->_create_url($final_hash);
 
   ## Make query against resource and try to perlify it.
+  $self->kvetch("url:" . $url);
   $self->get_external_data($url);
   my $final_blob = $self->try();
 
@@ -67,6 +83,60 @@ sub query {
   }
 
   return $retval;
+}
+
+
+=item next_url
+
+Args: hash ref (see service/js docs)
+Return: url for the _next_ "page" on the service
+
+=cut
+sub next_url {
+
+  my $self = shift;
+  my $in_hash = shift || {};
+  my $returl = undef;
+
+  ## Merge incoming with default template.
+  my $final_hash = $self->merge($self->{JSLS_BASE_HASH}, $in_hash);
+
+  ## Try and step the "index" forward.
+  if( $final_hash->{index} ){
+    $final_hash->{index} = $final_hash->{index} + 1;
+  }else{
+    $final_hash->{index} = 1;
+  }
+
+  return $self->get_interlink({mode=>'term_search',
+			       arg=>$final_hash});
+}
+
+
+=item previous_url
+
+Args: hash ref (see service/js docs)
+Return: url for the _previous_ "page" on the service
+
+=cut
+sub previous_url {
+
+  my $self = shift;
+  my $in_hash = shift || {};
+  my $returl = undef;
+
+  ## Merge incoming with default template.
+  my $final_hash = $self->merge($self->{JSLS_BASE_HASH}, $in_hash);
+
+  ## Try and step the "index" backward.
+  if( $final_hash->{index} ){
+    $final_hash->{index} = $final_hash->{index} - 1;
+  }else{
+    $final_hash->{index} = 1;
+  }
+
+  return $self->get_interlink({mode=>'term_search',
+			       arg=>$final_hash});
 }
 
 

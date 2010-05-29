@@ -5,10 +5,14 @@
 <!--    selected = "[% selected %]"             -->
 <!--    catch_all = "[% catch_all %]"           --> 
 <!--    size = "[% size %]"                     --> 
+<!--    multiple = "[% multiple %]"             --> 
 [% IF NOT id %]
-[% id = '' %]
+[%    id = '' %]
 [% END %]
 <select id="[% id %]"
+	[% IF multiple %]
+	multiple="[% multiple %]"
+	[% END %]
 	name="[% variable %]"
 	size="[% size %]">
   [% IF catch_all %]
@@ -20,7 +24,8 @@
 [% END %]
 [% i = 0 %]
 [% FOREACH item IN hash %]
-   [% IF ( i == 0 && ! selected && ! catch_all ) || selected == item.key %]
+   [% ikey = item.key %]
+   [% IF ( i == 0 && ! selected && ! catch_all ) || selected.$ikey %]
    <option selected value="[% item.key %]">[% item.value %]</option>
    [% ELSE %]
    <option value="[% item.key %]">[% item.value %]</option>
