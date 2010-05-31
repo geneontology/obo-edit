@@ -563,8 +563,8 @@ sub extract_qstr {
 
     my ($extr, $rem, $prefix) = extract_quotelike($str);
     my $txt = $extr;
-    $txt =~ s/^\"//;
-    $txt =~ s/\"$//;
+    $txt =~ s/^\"// if $txt;
+    $txt =~ s/\"$// if $txt;
     if ($prefix) {
 	warn("illegal prefix: $prefix in: $str");
     }
@@ -595,7 +595,7 @@ sub extract_qstr {
     @parts =
       map {split_on_comma($_)} @parts;
     
-    $txt =~ s/\\//g;
+    $txt =~ s/\\//g if $txt;
     return ($txt, \@parts, \@extra);
 }
 

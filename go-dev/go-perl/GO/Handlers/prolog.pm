@@ -114,9 +114,9 @@ directed_simple_path_over directed_path_over reflexive_over)) {
             $self->factq( holds_over_chain=>[$id,\@rels]);
         }
     }
-    my @relchains = $typedef->get_equivalent_to_chain;
-    foreach my $relchain (@relchains) {
-        my @rels = $relchain->get_relation;
+    my @equivchains = $typedef->get_equivalent_to_chain;
+    foreach my $equivchain (@equivchains) {
+        my @rels = $equivchain->get_relation;
         if (@rels) {
             $self->factq( equivalent_to_chain=>[$id,\@rels]);
         }
