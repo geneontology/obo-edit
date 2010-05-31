@@ -94,7 +94,7 @@ sub parse_fh {
 
     my $obo_parser; # an OBO parser may be required for parsing the PROPERTIES column
 
-    my @COLS = (0..15);
+    my @COLS = (0..16);
     my ($PRODDB,
         $PRODACC,
         $PRODSYMBOL,

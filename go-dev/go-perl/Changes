@@ -155,3 +155,9 @@ VERSION 0.11
 ============
 
 2010-05-18	- [cjm] macro expansion in OWL
+
+VERSION 0.12
+============
+
+2010-05-31	- [hsk] fix: 17 cols for GAF2.0. https://rt.cpan.org/Public/Bug/Display.html?id=57994
+

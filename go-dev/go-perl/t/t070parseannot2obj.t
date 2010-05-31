@@ -65,7 +65,7 @@ while(my $node = $it->next_node_instance){
 my $term = $graph->get_term('GO:0003673');
 ok(!@{$term->association_list || []});
 printf "annots: %d\n", scalar @{$graph->deep_association_list('GO:0003673')};
-ok(@{$graph->deep_association_list('GO:0003673')} == 100);
+ok(@{$graph->deep_association_list('GO:0003673')} == 86);
 #ok(@{$term->deep_association_list} == 86);
 
 my $prods = $graph->deep_product_list($term->acc);
