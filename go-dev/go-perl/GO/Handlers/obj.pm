@@ -186,7 +186,7 @@ sub stanza {
             my $synstr = stag_get($sn, SYNONYM_TEXT);
             my $type = stag_find($sn, 'scope');
 	    my @xrefs = stag_get($sn, DBXREF);
-	    $term->add_synonym_by_type(lc($type), $synstr);
+	    $term->add_synonym_by_type($type ? lc($type) : '', $synstr);
 #	    $term->add_definition_dbxref($_) foreach @xrefs;
         }
         elsif ($k eq ALT_ID) {
