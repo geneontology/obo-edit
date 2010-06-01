@@ -94,7 +94,11 @@ public class ObjectFilterImpl implements ObjectFilter {
 
 	// checking object's compliance to filter conditions
 	public boolean satisfies(Object object) {
-//		logger.debug("ObjectFilterImpl.satisfies -- evaluating object: " + object);
+          if (criterion == null) {
+            logger.debug("satisfies(" +  object+ "): criterion is null"); // DEL
+            return false;
+          }
+//          logger.debug("ObjectFilterImpl.satisfies -- input type = " + criterion.getInputType() + "; evaluating object: " + object); // DEL
 		if (!criterion.getInputType().isAssignableFrom(object.getClass()))
 			return false;
 		else {
