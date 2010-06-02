@@ -196,13 +196,13 @@ our @species =
 
    { # Entamoeba histolytica
     code => 'ENTHI',
-    ncbi_taxa_id => [ 5759 ],
+    ncbi_taxa_id => [ 5759 ]
    },
 
-   { #  Escherichia coli str. K-12 substr. MG1655
+   { #  Escherichia coli
     code => 'ECOLI',
-    # I think the 511145 is more for reverse compatibility
-    ncbi_taxa_id => [ 83333 ]#, 511145 ],
+    ncbi_taxa_id => [ 83333, 511145 ],
+    prefer => [ 'EcoCyc' ],
    },
 
    #
@@ -222,8 +222,9 @@ our @species =
 
    { # Gloeobacter violaceus
     code => 'GLOVI',
-    # Matched the one item in the database
-    ncbi_taxa_id => [ 33072 ],
+    ncbi_taxa_id => [ 33072, 251221 ],
+    # 251221 is only here to match GLOVI|ENTREZ:2601616|UniProtKB
+    prefer => [ 'UniProtKB' ],
    },
 
    #
@@ -242,7 +243,7 @@ our @species =
 
    { # Leishmania major
     code => 'LEIMA',
-    ncbi_taxa_id => [ 5664 ],
+    ncbi_taxa_id => [ 5664, 347515 ],
    },
 
    { # Leptospira interrogans
@@ -296,7 +297,7 @@ our @species =
 
    { # Oryza sativa
     code => 'ORYSJ',
-    ncbi_taxa_id => [ 39947 ], # sativa Japonica Group
+    ncbi_taxa_id => [ 39947 ],
    },
 
    #
@@ -362,9 +363,8 @@ our @species =
    #
 
    { # Takifugu rubripes
-    code => 'FUGRU',
-    # matched all 11 items! Adding the non 31033 added no new items.
-    ncbi_taxa_id => [ 31033, 47663 ],
+    code => 'FUGRU', # UniProt calls this: TAKRU
+    ncbi_taxa_id => [ 31033 ],
    },
 
    { # Tetrahymena thermophila

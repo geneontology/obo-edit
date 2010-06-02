@@ -109,6 +109,7 @@ sub new{
     return bless \%s, $c;
 }
 
+memoize('notice');
 sub notice{
     return if $quiet;
     my $s = shift;
@@ -130,17 +131,20 @@ SQL
 # If we want to use prefers off the gene_product_dbrxef xref_key use
 # this.
 
-#    $dbh->prepare(<<SQL),
-# SELECT gene_product.id AS gene_product_id
-# ,dbxref.id AS dbxref_id
-# ,xref_key
-# ,xref_dbname
-# FROM gene_product
-# JOIN gene_product_dbxref ON(gene_product.id=gene_product_dbxref.gene_product_id)
-# JOIN dbxref ON(gene_product_dbxref.dbxref_id=dbxref.id)
-# WHERE xref_key=? AND species_id=?
-# SQL
+   $dbh->prepare(<<SQL),
+SELECT gene_product.id AS gene_product_id
+,dbxref.id AS dbxref_id
+,xref_key
+,xref_dbname
+FROM gene_product
+JOIN gene_product_dbxref ON(gene_product.id=gene_product_dbxref.gene_product_id)
+JOIN dbxref ON(gene_product_dbxref.dbxref_id=dbxref.id)
+WHERE xref_key=? AND species_id=?
+SQL
 
+
+
+# if you want to compare the gene_product.dbxref_id use thin.
 
    $dbh->prepare(<<SQL),
 SELECT gene_product.id AS gene_product_id
@@ -153,6 +157,8 @@ JOIN gene_product ON(gene_product_dbxref.gene_product_id=gene_product.id)
 JOIN dbxref AS d2 ON(gene_product.dbxref_id=d2.id)
 WHERE d1.xref_key=? AND species_id=?
 SQL
+
+
   );
 
 
@@ -170,7 +176,23 @@ sub gene_product_id{
 		my @args = ($id, $species_id);
 		$sgp->execute(@args) or die;
 		push @out, @{ $sgp->fetchall_arrayref() };
+	    }
 
+	    if (scalar(@out) > 1) {
+		my %r; # report
+		for my $o (@out) {
+		    $r{$o->[3]}++;
+		}
+
+		@out = map {
+		    if ($r{$_->[3]} > 1) {
+			$s->notice('Skipping multiple dbxref.xref_dbname entry:',
+				   $_->[3]);
+			();
+		    } else {
+			$_;
+		    }
+		} @out;
 	    }
 
 	    # only try to get more if we didn't get any.
@@ -179,32 +201,27 @@ sub gene_product_id{
     }
 
     my $found = scalar @out;
-    return ($s->{gene_product_id} = undef) if ($found == 0);
+    if ($found == 0) {
+	$s->notice('No gene_product rows found');
+	return ($s->{gene_product_id} = undef);
+    }
 
     my $out;
     if ($found == 1) {
 	$out = $out[0]
     } else {
-	my %r; # report
-	for my $o (@out) {
-	    $r{$o->[3]}++;
+	my @prefer = @{ $s->{species}->{prefer} || [] };
+	while (@prefer) {
+	    my $want = shift @prefer;
+	    $out = first {
+		lc($_->[3]) eq lc($want);
+	    } @out;
+	    last if ($out);
 	}
-	if (first { $_ > 1 } values %r) {
-	    $s->notice('matched multiple gene_product rows with the same xref_dbname');
+	if ($out) {
+	    $s->notice('matched', $found, 'gene_product rows');
 	} else {
-	    my @prefer = @{ $s->{species}->{prefer} || [] };
-	    while (@prefer) {
-		my $want = shift @prefer;
-		$out = first {
-		    lc($_->[3]) eq lc($want);
-		} @out;
-		last if ($out);
-	    }
-	    if ($out) {
-		$s->notice('matched', $found, 'gene_product rows');
-	    } else {
-		die "Don't know what to prefer for: $s->{pthr}\n" . Dumper(\@out);
-	    }
+	    die "Don't know what to prefer for: $s->{pthr}\n" . Dumper(\@out);
 	}
     }
 
@@ -349,9 +366,9 @@ GetOptions
 
 my @e; # error
 
-if (scalar(@species) && !GO::Metadata::Panther::valid_keys(@species)) {
+if (scalar(@species) && !GO::Metadata::Panther::valid_codes(@species)) {
     push @e, wrap('Valid argument for --species include: ', "\t",
-		  GO::Metadata::Panther->keys());
+		  GO::Metadata::Panther->codes());
 }
 
 if ($tsv) {
@@ -421,7 +438,6 @@ while(<>) {
 	$summary->{gene_product}++;
     } else {
 	$summary->{nothing}++;
-	$row->notice('No gene_product rows found');
     }
 
 } continue {
