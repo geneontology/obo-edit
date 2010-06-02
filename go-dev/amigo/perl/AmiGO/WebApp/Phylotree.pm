@@ -32,7 +32,7 @@ use Data::Dumper;
 #use IO::Scalar;
 my $core = $AmiGO::Worker::Phylotree::core;
 
-use GOBO::DBIC::GODBModel;
+#use GOBO::DBIC::GODBModel;
 use GOBO::DBIC::GODBModel::Query;
 
 ##
