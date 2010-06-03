@@ -383,8 +383,9 @@ sub _add_visual_format {
 sub _add_ontology {
 
   ## One ontology.
-  push @{$profile->{required}}, 'ontology';
-  $profile->{defaults}{ontology} = 'all';
+  #push @{$profile->{required}}, 'ontology';
+  push @{$profile->{optional}}, 'ontology';
+  # $profile->{defaults}{ontology} = 'all';
   $profile->{constraint_methods}{ontology} =
     ## BUG: why is this still hard-coded!? Core is available, right?
     is_in_list_p('all',

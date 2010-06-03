@@ -10,9 +10,9 @@ should be core in here. Then again, maybe it should just be left as
 the internal fault checker...maybe an array instead of just the last
 error message?
 
-TODO: This should all be made ENV safe. This core file should still
-behave well in a non-installed AmiGO environment; all core functions
-should have non-env overrides.
+TODO: This should all be made ENV safe. Should this core file should
+still behave well in a non-installed AmiGO environment; all core
+functions having non-env overrides?
 
 =cut
 
@@ -22,13 +22,6 @@ package AmiGO;
 ## operation, so we're really going to die.
 BEGIN {
   require "config.pl" if -f "config.pl" ;
-  #require "/srv/www/cgi-bin/amigo/config.pl";
-  #if( ! defined($ENV{GO_ROOT}) &&
-  #    -f "../cvs/go-dev/"){
-  #  $ENV{GO_ROOT} = "../cvs/go-dev";
-  #}
-  ## BUG/DEBUG/TODO this is temporarily commented out for testing.
-  #die "cannot find templates: $!" if ! $ENV{AMIGO_TEMPLATE_PATHS};
 }
 
 
@@ -829,7 +822,6 @@ sub iss_evidence_hash {
 =item species
 
 Return href of species_strings => species_id
-TODO: This should be defined from ENV?
 
 =cut
 sub species {
@@ -858,7 +850,7 @@ sub species {
     $self->{SPECIES} = $ret_hash;
   }
 
-  ## BUG: check caching, does ecoli not make the cut?
+  ## BUG?: check caching, does ecoli not make the cut?
   if( ! defined $self->{SPECIES}{83333} ){
     $self->{SPECIES}{83333} = 'E. coli';
   }
@@ -1500,6 +1492,39 @@ sub hash_to_query_string {
     }
   }
   return join('&', @$mega_buf);
+}
+
+
+=item to_hash
+
+Turn an array ref (or scalar) into a single level hash ref.
+
+Accepts array refs or scalar, with optional fill value.
+Returns hashrefs.
+
+=cut
+sub to_hash {
+
+  my $self = shift;
+  my $iarray = shift || [];
+  my $fill = shift;
+  my $ohash = {};
+
+  ## Use any given fill value.
+  if( ! defined $fill ){
+    $fill = 1;
+  }
+
+  ## Roll in array.
+  if( ref($iarray) ne 'ARRAY' ){
+    $ohash->{$iarray} = $fill;
+  }else{
+    foreach my $item (@$iarray){
+      $ohash->{$item} = $fill;
+    }
+  }
+
+  return $ohash;
 }
 
 
