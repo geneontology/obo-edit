@@ -176,7 +176,9 @@ sub query {
     if($@){
       ## BUG?: too many returned? See commentary in
       ## experimental/completion.
-      die "LiveSearch overload error?";
+      my $badness = "LiveSearch stopped due to too many results. Please try and further limit the search.\n";
+      $self->kvetch($badness);
+      die $badness;
     }
 
     ## Get the total number of results, and let the pager know.

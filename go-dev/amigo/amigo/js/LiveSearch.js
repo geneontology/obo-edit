@@ -197,10 +197,28 @@ function LiveSearchInit(){
 	    		dataType: 'json',
 	    		success: do_results,
 	    		error: function (result, status, error) {
+
 	    		    core.kvetch('Failed server request ('+
 					query_id + '): ' + status);
-	    		    // widgets.error('Failed server request ('+
-			    // 		  query_id + '): ' + status);
+
+			    // Get the error out if possible.
+			    var jreq = result.responseText;
+			    var req = jQuery.parseJSON(jreq);
+			    if( req && req['errors'] &&
+				req['errors'].length > 0 ){
+				var in_error = req['errors'][0];
+				core.kvetch('ERROR:' + in_error);
+				
+				// Split on newline if possible to get
+				// at the nice part before the perl
+				// error.
+				var reg = new RegExp("\n+", "g");
+				var clean_error_split = in_error.split(reg);
+				var clean_error = clean_error_split[0];
+				widgets.error(clean_error);
+			    }
+
+			    // Close wait no matter what.
 			    widgets.finish_wait();
 	    		}
 		    });
@@ -437,6 +455,8 @@ function _process_results (json_data, status){
 	}else{
 	    core.kvetch("dropping packet");
 	}
+    }else{
+	core.kvetch("check for overload...");
     }
     widgets.finish_wait();
 }
@@ -765,7 +785,7 @@ function _paging_binding(elt_id, url, processor){
 	    	dataType: 'json',
 	    	success: processor,
 	    	error: function (result, status, error) {
-	    	    core.kvetch('Failed server request: ' + status);
+	    	    core.kvetch('Failed server request (paging): ' + status);
 		    widgets.finish_wait();
 	    	}
 	    });

@@ -6,29 +6,31 @@
 <!--    catch_all = "[% catch_all %]"           --> 
 <!--    size = "[% size %]"                     --> 
 <!--    multiple = "[% multiple %]"             --> 
+<!--    label = "[% label %]"                   --> 
 [% IF NOT id %]
 [%    id = '' %]
 [% END %]
+[% IF label %]
+<legend><label for="[% id %]" class="select">[% label %]</label></legend>
+[% END %]
 <select id="[% id %]"
-	[% IF multiple %]
-	multiple="[% multiple %]"
-	[% END %]
+	[% IF multiple %]multiple="[% multiple %]"[% END %]
 	name="[% variable %]"
 	size="[% size %]">
   [% IF catch_all %]
-  [%    IF ! selected %]
-  <option value="" selected>[% catch_all %]</option>
+  [%    IF ! selected OR selected.keys.size == 0 %]
+  <option value="" selected>[% catch_all %]</option>[% selected.keys.size %]
   [%    ELSE %]
-  <option value="">[% catch_all %]</option>
+  <option value="">[% catch_all %]</option>[% selected.keys.size %]
   [%    END %]
 [% END %]
 [% i = 0 %]
-[% FOREACH item IN hash %]
-   [% ikey = item.key %]
+[% FOREACH ikey IN hash.sort %]
+   [% ivalue = hash.$ikey %]
    [% IF ( i == 0 && ! selected && ! catch_all ) || selected.$ikey %]
-   <option selected value="[% item.key %]">[% item.value %]</option>
+   <option selected value="[% ikey %]">[% ivalue %]</option>
    [% ELSE %]
-   <option value="[% item.key %]">[% item.value %]</option>
+   <option value="[% ikey %]">[% ivalue %]</option>
    [% END %]
    [% i = i + 1 %]
 [% END %]
