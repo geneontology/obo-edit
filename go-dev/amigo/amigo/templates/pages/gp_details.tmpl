@@ -46,7 +46,7 @@
 				[% ELSE %]
 					<dd>No Type</dd>
 				[% END %]
-			<dt>Species</dt> 
+			<dt>Taxon</dt> 
 				[% IF gp.species.binomial.match('\S+');
 						IF gp.species.ncbi_taxa_id %]
 					<dd class="spp"><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=[% HTML.escape(gp.species.ncbi_taxa_id) %]" title="View [% HTML.escape(gp.species.binomial) %] details on the NCBI taxonomy website">[% HTML.escape(gp.species.binomial) %]</a> [% IF gp.species.common_name %] ([% HTML.escape(gp.species.common_name) %])[% END %]</dd>
