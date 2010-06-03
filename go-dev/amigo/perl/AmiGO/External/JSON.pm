@@ -49,12 +49,15 @@ sub get_external_data {
   };
   if( $@ ){
     $self->kvetch("error in GETing the document from: '$url': $@");
+    ## Grab the content if possible.
+    #$self->kvetch("c: " . $mech->response->content());
+    $doc = $mech->response->content();
+    $self->{EXT_DATA} = $doc if $doc;
   }else{
 
     if ( ! $mech->success() ){
       $self->kvetch("failed to contact data source at: $url");
     }else{
-
       ## Grab the content.
       $doc = $mech->content();
       $self->{EXT_DATA} = $doc;

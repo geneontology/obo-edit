@@ -1,8 +1,8 @@
-<!-- START template: live_search_term.tmpl -->
+<!-- START template: live_search_gene_product.tmpl -->
 
 <div class="contents">
 
-  <h1>Term Search using Live Search</h1>
+  <h1>Gene Product Search using Live Search</h1>
 
   <div class="block">
 
@@ -17,20 +17,42 @@
 	 href="http://wiki.geneontology.org/index.php/AmiGO_Manual:_Live_Search">AmiGO Live Search documentation</a>.
     </p>
     
-    <form action="amigo_exp" id="ls_term_search_form" method="GET">
+    <form action="amigo_exp" id="ls_gene_product_search_form" method="GET">
 
-	<input type="hidden" name="mode" value="live_search_term" />
+	<input type="hidden" name="mode" value="live_search_gene_product" />
 	<input type="hidden" name="count" value="20" />
 
-	[% label = 'Select ontology' %]
-	[% variable = 'ontology' %]
-	[% hash = ontology_hash %]
-	[% selected = selected_ontology_hash %]
+	<!-- <fieldset class="block"><legend>Search fields</legend> -->
+
+	[% label = 'Select species' %]
+	[% variable = 'species' %]
+	[% hash = species_hash %]
+	[% selected = selected_species_hash %]
 	[% catch_all = 'No filter' %]
 	[% multiple = 1 %]
 	[% size = 4 %]
 	[% INCLUDE html/inc/select.tmpl %]
-	
+
+	[% label = 'Select source' %]
+	[% variable = 'source' %]
+	[% hash = source_hash %]
+	[% selected = selected_source_hash %]
+	[% catch_all = 'No filter' %]
+	[% multiple = 1 %]
+	[% size = 4 %]
+	[% INCLUDE html/inc/select.tmpl %]
+
+	[% label = 'Select gp type' %]
+	[% variable = 'gptype' %]
+	[% hash = gptype_hash %]
+	[% selected = selected_gptype_hash %]
+	[% catch_all = 'No filter' %]
+	[% multiple = 1 %]
+	[% size = 4 %]
+	[% INCLUDE html/inc/select.tmpl %]
+
+	<!-- </fieldset> -->
+
 	<br />
 
 	<label for="query">Search GO</label>
@@ -55,7 +77,16 @@
 
     <h3 id="results">[% RESULTS_TOTAL %] term results for: [% query %]</h3>
 
-    [% IF RESULTS_TOTAL == 0 %]
+    [% IF SUCCESS_P == 0 %]
+
+    <p>
+      There were issues with your query:
+    </p>
+    <p class="error_text">
+      [% ERROR_MESSAGE %]
+    </p>
+
+    [% ELSIF RESULTS_TOTAL == 0 %]
 
     <p>
       There were no results for your query. Please try again.
@@ -85,8 +116,12 @@
 	<tr>
 	  <th>score</th>
 	  <th>acc</th>
+	  <!-- <th>hset</th> -->
+	  <th>symbol</th>
 	  <th>name</th>
-	  <th>ontology</th>
+	  <th>gptype</th>
+	  <th>source</th>
+	  <th>species</th>
 	  <th>synonym(s)</th>
 	</tr>
       </thead>
@@ -108,20 +143,48 @@
 	</td>
 	
 	<td>
-	  <a title="link to information on [% r.acc %]"
-	     href="[% r.link %]">[% r.hilite_acc %]</a>
+	  <a title="link to information on [% r.dbxref %]"
+	     href="[% r.link %]">[% r.hilite_dbxref %]</a>
 	</td>
 	
+	<!-- Homolset? -->
+	<!-- <td> -->
+	<!-- [% IF r.homolset == 'included' %] -->
+	<!-- <img src="' + gm.get_image_resource('star') + '"' -->
+	<!-- title="This gene product is a member of a homolset." /> -->
+	<!-- [% ELSE %] -->
+	<!-- &nbsp; -->
+	<!-- [% END %] -->
+	<!-- </td> -->
+
 	<td>
-	  [% r.hilite_name %]
+	  [% r.hilite_symbol %]
 	</td>
 
 	<td>
-	  [% r.hilite_ontology %]
+	  [% r.hilite_full_name %]
 	</td>
 
 	<td>
-	  [% r.hilite_synonym.replace('\n+', ', ') %]
+	  [% r.hilite_gptype %]
+	</td>
+
+	<td>
+	  [% r.hilite_source %]
+	</td>
+
+	[% s_ncbi_taxa_id = r.species %]
+	[% s_name = species_hash.$s_ncbi_taxa_id %]
+	[% IF s_name AND s_name.split(' ').size <= 2 %]
+        <td class="nowrap">
+	[% ELSE %]
+	<td class="">
+	[% END %]
+	[% s_name %]
+	</td>
+
+	<td>
+	  [% r.hilite_gpsynonym.replace('\n+', ', ') %]
 	</td>
 
 	</tr>
@@ -139,4 +202,4 @@
 
 </div>
 
-<!-- END template: live_search_term.tmpl -->
+<!-- END template: live_search_gene_product.tmpl -->

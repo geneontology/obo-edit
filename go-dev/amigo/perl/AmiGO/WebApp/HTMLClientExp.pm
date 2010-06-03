@@ -15,6 +15,7 @@ use AmiGO::JavaScript;
 use AmiGO::External::XML::GONUTS;
 use AmiGO::External::Raw;
 use AmiGO::External::JSON::LiveSearch::Term;
+use AmiGO::External::JSON::LiveSearch::GeneProduct;
 #use mapscript;
 
 # ## Take SuGR from a test drive.
@@ -103,6 +104,7 @@ sub setup {
 		   'matrix'              => 'mode_matrix',
 		   'nmatrix'             => 'mode_nmatrix',
 		   'live_search_term'    => 'mode_live_search_term',
+		   'live_search_gene_product'=>'mode_live_search_gene_product',
 		   'ntree'               => 'mode_ntree',
 		   'ptree'               => 'mode_ptree',
 		   #'term'                => 'mode_term',
@@ -200,20 +202,122 @@ sub mode_live_search_term {
   ###
 
   ##
-  my $selected_ont_hash = {};
-  if( ref($ontology) ne 'ARRAY' ){
-    $selected_ont_hash->{$ontology} = 1;
-  }else{
-    foreach my $ont (@$ontology){ $selected_ont_hash->{$ont} = 1; }
-  }
-  $self->set_template_parameter('selected_ontology_hash', $selected_ont_hash);
-
-  # my $tmp_apph_sd_hash = $self->{CORE}->ontology();
+  $self->set_template_parameter('selected_ontology_hash',
+				$self->{CORE}->to_hash($ontology));
   $self->set_template_parameter('ontology_hash', $self->{CORE}->ontology());
 
   ## 
   $self->set_template_parameter('query', $self->{CORE}->html_safe($query));
   $self->add_template_content('html/main/live_search_term.tmpl');
+  return $self->generate_template_page();
+}
+
+
+## NOTE/WARNING: We're just going to ignore the homolset args for this
+## one (unlike the real live version)--I'm not sure they really add
+## much here.
+sub mode_live_search_gene_product {
+
+  my $self = shift;
+
+  ## This bit is (and should be) a direct lift from Services. Since
+  ## we're low speed, packets will not be needed.
+  my $i = AmiGO::WebApp::Input->new();
+  my $params = $i->input_profile('live_search_gene_product');
+  my $query = $params->{query};
+  my $index = $params->{index} + 0; # coerce to int?
+  my $count = $params->{count} + 0; # coerce to int?
+  my $species = $params->{species};
+  my $source = $params->{source};
+  my $gptype = $params->{gptype};
+  $self->{CORE}->kvetch("query: ". $query);
+  $self->{CORE}->kvetch("index: ". $index);
+  $self->{CORE}->kvetch("count: ". $count);
+  $self->{CORE}->kvetch("species: ". $species);
+  $self->{CORE}->kvetch("source: ". $source);
+  $self->{CORE}->kvetch("gptype: ". $gptype);
+
+  #$self->{CORE}->kvetch("page: ". $page);
+  $self->set_template_parameter('SEARCHED_P', 0);
+
+  if( $query && length($query) < 3 ){
+    $self->mode_die_with_message('You need a query of at least' .
+				 ' three characters.');
+  }elsif( $query ){
+
+    ## Flag to let the template know that we got results.
+    $self->set_template_parameter('SEARCHED_P', 1);
+    ## Flag to say that we didn't barf...until proven otherwise.
+    $self->set_template_parameter('SUCCESS_P', 1);
+
+    my $args_hash =
+      {
+       query => $query,
+       index => $index,
+       count => $count,
+       species => $species,
+       source => $source,
+       gptype => $gptype,
+      };
+    my $tq = AmiGO::External::JSON::LiveSearch::GeneProduct->new();
+    my $results = $tq->query($args_hash);
+
+    ## Try and describe a fail mode, but let everything else run as
+    ## normal. Work it out in the template.
+    if( ! $results->{success}){
+      my $error = 'There was a problem: please try again or modify your query,';
+      ## To get a non-generic error, cut things out after any newline.
+      if( $results->{errors} && scalar(@{$results->{errors}}) > 0 ){
+	my $raw_doc = $results->{errors}[0];
+	my @raw_doc_split = split(/\n+/, $raw_doc);
+	$error = $raw_doc_split[0];
+	chomp($error);
+      }
+      $self->{CORE}->kvetch("error message: " . $error);
+      $self->set_template_parameter('SUCCESS_P', 0);
+      $self->set_template_parameter('ERROR_MESSAGE', $error);
+    }
+
+    ##
+    my $next_url = $tq->next_url($args_hash);
+    my $prev_url = $tq->previous_url($args_hash);
+
+    # $self->{CORE}->kvetch(Dumper($results));
+
+    ## Add them into the parameters.
+    $self->set_template_parameter('RESULTS', $results);
+    $self->set_template_parameter('RESULTS_LIST', $results->{results}{hits});
+    $self->set_template_parameter('RESULTS_TOTAL',
+				  $results->{results}{meta}{total});
+    $self->set_template_parameter('RESULTS_FIRST',
+				  $results->{results}{meta}{first});
+    $self->set_template_parameter('RESULTS_LAST',
+				  $results->{results}{meta}{last});
+
+    $self->set_template_parameter('NEXT_LINK', $next_url);
+    $self->set_template_parameter('PREV_LINK', $prev_url);
+  }
+
+  ###
+  ###
+  ###
+
+  ## Selected hashes (what came in).
+  $self->set_template_parameter('selected_species_hash',
+				$self->{CORE}->to_hash($species));
+  $self->set_template_parameter('selected_source_hash',
+				$self->{CORE}->to_hash($source));
+  $self->set_template_parameter('selected_gptype_hash',
+				$self->{CORE}->to_hash($gptype));
+
+  ## Form hashes.
+  $self->set_template_parameter('species_hash', $self->{CORE}->species());
+  $self->set_template_parameter('source_hash', $self->{CORE}->source());
+  $self->set_template_parameter('gptype_hash', $self->{CORE}->gptype());
+
+  ## 
+  $self->set_template_parameter('query', $self->{CORE}->html_safe($query));
+  $self->add_template_content('html/main/live_search_gene_product.tmpl');
   return $self->generate_template_page();
 }
 
