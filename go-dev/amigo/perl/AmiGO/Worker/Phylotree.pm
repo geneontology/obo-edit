@@ -295,6 +295,7 @@ C<#I<RRGGBB>> format.
 =back
 
 =cut
+our @codes = qw/EXP IDA IMP IGI IEP IPI/;
 sub gene_products{
     my $s = shift;
 
@@ -307,7 +308,8 @@ sub gene_products{
 
     $s->{last_annotated} = $r->associations->get_column('assocdate')->max();
     $s->{exp} = $r->associations
-      ({ code => 'EXP' }, { prefetch => 'evidence' })->count();
+      ({ code => \@codes },
+       { prefetch => 'evidence' })->count();
 
     my @gp; # gene products
     for my $gp ($r->gene_products
