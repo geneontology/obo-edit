@@ -16,6 +16,7 @@ use AmiGO::External::XML::GONUTS;
 use AmiGO::External::Raw;
 use AmiGO::External::JSON::LiveSearch::Term;
 use AmiGO::External::JSON::LiveSearch::GeneProduct;
+use AmiGO::External::GODB::Query;
 #use mapscript;
 
 # ## Take SuGR from a test drive.
@@ -111,7 +112,7 @@ sub setup {
 		   'scratch'             => 'mode_scratch',
 		   'gp_with_2_terms'     => 'mode_gp_with_2_terms',
 		   'autocomplete_client' => 'mode_autocomplete_client',
-		   'exp_search'          => 'mode_exp_search',
+		   #'exp_search'          => 'mode_exp_search',
 		   'workspace_client'    => 'mode_workspace_client',
 		   'layers_graph'       => 'mode_layers_graph',
 		   'hierarchical'        => 'mode_hierarchical',
@@ -124,6 +125,8 @@ sub setup {
 		   #'orb'                 => 'mode_orb',
 		   #'coannot_matrix'      => 'mode_coannot_matrix',
 		   #'orb_client'          => 'mode_orb_client',
+
+		   'report_slimmerish_1'        => 'mode_report_slimmerish_1',
 
 		   ## Replacements.
 		   'front_page'          => 'mode_front_page',
@@ -1241,11 +1244,11 @@ sub mode_nmatrix {
   ### Calculations.
   ###
 
-#   my $insect = AmiGO::Worker::Intersection->new(10090, 2);
-#   my $res = $insect->get_information(['GO:0043073', 'GO:0045944']);
-#   $self->{CORE}->kvetch("_a_" . Dumper($res));
+  # my $insect = AmiGO::Worker::Intersection->new(10090, 2);
+  # my $res = $insect->get_information(['GO:0043073', 'GO:0045944']);
+  # $self->{CORE}->kvetch("_a_" . Dumper($res));
 
-#  die "Yay!";
+  # die "Yay!";
 
   ## Get the information matrix if the arguments are there.
   my $matrix = undef;
@@ -1656,6 +1659,163 @@ sub mode_kick_to_main {
 ### Bit-rotted code that may still be useful...
 ###
 
+
+sub mode_report_slimmerish_1 {
+
+  my $self = shift;
+
+  ## Incoming template and input.
+  my $i = AmiGO::WebApp::Input->new();
+  my $params = $i->input_profile('slimmer');
+  $self->_common_params_settings($params);
+  my $in_term_str = $params->{term} || '';
+  my $in_gp_str = $params->{gene_product} || '';
+
+  ## Clean input.
+  $self->{CORE}->kvetch("in terms: " . $in_term_str);
+  $self->{CORE}->kvetch("in gps: " . $in_gp_str);
+  my $in_term_accs = $self->{CORE}->clean_term_list($in_term_str);
+  my $in_gp_accs = $self->{CORE}->clean_gene_product_list($in_gp_str);
+
+  if( $in_term_str && $in_gp_str ){
+
+    ## TODO/BUG: Probably needs to be tighter if we go to general
+    ## production on this.
+    my $props =
+      {
+       #'login' => $self>amigo_env('') || '',
+       #'password' => $mirror->{password} || '',
+       'host' => $self->{CORE}->amigo_env('GO_DBHOST') || undef,
+       #'port' => $mirror->{port} || '3306',
+       'database' => $self->{CORE}->amigo_env('GO_DBNAME') || undef,
+      };
+    my $q = AmiGO::External::GODB::Query->new($props);
+
+    ## 
+    my $single_get = sub {
+
+      ## 
+      my $sym = shift || 'n/a';
+      my $get_sql = shift;
+
+      ## Output var.
+      my $get_ids = undef;
+
+      ##
+      $self->{CORE}->kvetch("$sym try: " . $get_sql);
+      my $results = $q->try($get_sql);
+      if( ! $q->ok() ){
+	$self->{CORE}->kvetch("$sym badness: " . $q->error_message());
+      }elsif( ! defined $results ){
+	$self->{CORE}->kvetch("no defined $sym results");
+      }else{
+	## Unfold terms ids into arrayref.
+	if( scalar(@$results) > 0 ){
+	  $get_ids = [];
+	  foreach my $row (@$results){
+	    push @$get_ids, $row->[0];
+	  }
+	}
+	$self->{CORE}->kvetch("$sym okay: " . Dumper($get_ids));
+      }
+
+      return $get_ids;
+    };
+
+    ## Get root term ids.
+    my $root_sql = "select term.id from term where acc in ('GO:0008150', 'GO:0005575', 'GO:0003674')";
+    my $root_ids = &$single_get('root', $root_sql);
+
+    ## Get term ids.
+    my $in_term_string = "('" . join("', '", @$in_term_accs) . "')";
+    my $term_sql = "select distinct aterm.id from term as sterm inner join graph_path on (sterm.id = graph_path.term1_id) inner join term as aterm on (graph_path.term2_id = aterm.id) where sterm.acc in $in_term_string";
+    my $term_ids = &$single_get('term', $term_sql);
+
+    ## Convert accs into a gp id list.
+    my $gp_ids = [];
+    my $in_gp_accs = $self->{CORE}->clean_gene_product_list($in_gp_str);
+    foreach my $gp_acc (@$in_gp_accs){
+      my ($db, $key) = $self->{CORE}->split_gene_product_acc($gp_acc);
+      my $gp_sql = "select gp.id from dbxref inner join gene_product as gp on (dbxref.id = gp.dbxref_id) where dbxref.xref_dbname = '$db' and dbxref.xref_key = '$key'";
+      my $gp_id = &$single_get('gp', $gp_sql);
+      if( $gp_id ){
+	push @$gp_ids, $gp_id->[0];
+      }
+    }
+
+    # ## Get gp ids.
+    # ## TODO/BUG: label into gp_ids
+    # my $in_gp_string = "('" . join("', '", @$parsed_gp_ids) . "')";
+    # my $gp_sql = "select igp.id from dbxref inner join gene_product as igp on (dbxref.id = igp.dbxref_id) where dbxref.xref_key in $in_gp_string";
+    # my $gp_ids = &$single_get('gp', $gp_sql);
+
+    ###
+    ### Combine everything into one query, see what's in and use that to
+    ### mark what's out
+    ###
+
+    ## Combine roots and terms and turn them into an appropriate string.
+    my @all_ids = (@$term_ids, @$root_ids);
+    my $term_string = "(" . join(', ', @all_ids) . ")";
+
+    ## Turn gps them into an appropriate string.
+    my $gp_string = "(" . join(', ', @$gp_ids) . ")";
+
+    ##
+    my $good_sql = "select gene_product.id, concat(dbxref.xref_dbname, ':', dbxref.xref_key) as dbxref from gene_product inner join dbxref on (gene_product.dbxref_id = dbxref.id) inner join association on (association.gene_product_id = gene_product.id) left outer join term on (association.term_id = term.id) where gene_product.id in $gp_string and term.id in $term_string";
+    $self->{CORE}->kvetch("good sql: " . Dumper($good_sql));
+    my $good_ids = &$single_get('good', $good_sql);
+
+    ## Compare the good ids to the total lit--the remainder should be
+    ## the ones that fell through.
+    my @bad_ids = ();
+    {
+      my $info_hash = {};
+      foreach my $id (@$gp_ids){ $info_hash->{$id} = 1; }
+      foreach my $id (@$good_ids){
+	delete $info_hash->{$id} if defined $info_hash->{$id};
+      }
+      @bad_ids = keys %$info_hash;
+    }
+
+    ## Get the final (displayable) data from the gp_ids not on the good
+    ## list.
+    my $info_string = "(" . join(', ', @bad_ids) . ")";
+    my $info_sql = "select * from gene_product, dbxref where gene_product.dbxref_id = dbxref.id and gene_product.id in $info_string";
+    my $results = $q->try($info_sql);
+    if( ! $q->ok() ){
+      $self->{CORE}->kvetch("final badness: " . $q->error_message());
+    }elsif( ! defined $results ){
+      $self->{CORE}->kvetch("no defined final results");
+    }else{
+
+      my $headers = $q->headers();
+      my $count = $q->count();
+
+      #$self->{CORE}->kvetch("final okay (headers): " . Dumper($count));
+      #$self->{CORE}->kvetch("final okay (headers): " . Dumper($headers));
+      #$self->{CORE}->kvetch("final okay (results): " . Dumper($results));
+
+      $self->set_template_parameter('results_count', $count);
+      $self->set_template_parameter('results_headers', $headers);
+      $self->set_template_parameter('results', $results);
+    }
+  }
+
+  ## Settings.
+  $self->set_template_parameter('STANDARD_YUI', 'no'); # no YUI please
+  $self->set_template_parameter('page_title', 'Slimmer-type Report');
+  my $prep =
+    {
+     css_library =>
+     [
+      'standard',
+     ],
+    };
+  $self->add_template_bulk($prep);
+  $self->add_template_content('html/main/report/slimmerish_1.tmpl');
+  return $self->generate_template_page();
+}
 
 # ##
 # sub mode_orb_client {
