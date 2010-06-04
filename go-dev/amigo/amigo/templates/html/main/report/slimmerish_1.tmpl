@@ -1,0 +1,104 @@
+<!-- START: slimmerish_1.tmpl -->
+
+<div class="contents">
+      
+  <h1>Slimmer-type Report</h1>
+
+  [% IF results %]
+
+  <div class="block">
+
+    <h2>Results</h2>
+
+    [% IF results_count == 0 %]
+
+    <p>Your query did not return any results.</p>
+
+    [% ELSE %]
+
+    <p>
+      Your query generated <b>[% results_count %]</b> result(s):<br />
+    </p>
+
+    <table summary="SQL query results">
+
+      <thead>
+	<tr>
+	  [% FOREACH header = results_headers %]
+	  <th style="">
+	    [% header %]
+	  </th>
+	  [% END%]
+	</tr>
+      </thead>
+
+      <tbody>
+	[% eo = 0 %]
+	[% FOREACH row = results %]
+	[%    IF eo % 2 == 0 %]
+	<tr class="even_row">
+	  [%  ELSE %]
+	<tr class="even_odd">
+	  [%  END %]
+	  [%  FOREACH col = row %]
+	  <td rowspan="1">
+	    [%   col %]
+	  </td>
+	  [%  END %]
+	</tr>
+	[%    eo = eo + 1 %]
+	[% END %]
+      </tbody>
+    </table>      
+
+
+    [% END %]
+
+  </div>
+
+  [% ELSE %]
+
+  <form action="amigo_exp"
+	method="POST"
+	name="the_form"
+	id="the_form">
+    
+    <div class="block">
+      
+      <input type="hidden" name="mode" value="report_slimmerish_1" />
+      
+      <h2>Generate the defined report</h2>
+	  
+      <p>
+	See the mail <a href="http://wiki.geneontology.org/index.php/Example_Queries">thread</a>. Please enter your accs with just whitespace separating.
+      </p>
+
+      <p>
+      <h3 class="first">Enter term accs:</h3>
+      Example: GO:0043476<br />
+      <textarea id="term"
+		name="term"
+		cols="80"
+		rows="5"></textarea>
+      </p>
+
+      <p>
+      <h3 class="first">Enter full gene product accs:</h3>
+      Example: FB:FBgn0000310 TAIR:locus:2019943<br />
+      <textarea id="gene_product"
+		name="gene_product"
+		cols="80"
+		rows="5"></textarea>
+      </p>
+
+      <hr class="clearL">
+      <input type="submit" class="button" value="Report" />
+
+    </div>
+
+  </form>		
+    
+  [% END %]
+  
+</div>
+<!-- END: slimmerish_1.tmpl -->
