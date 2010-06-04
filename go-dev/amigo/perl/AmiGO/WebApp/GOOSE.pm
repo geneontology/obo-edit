@@ -239,7 +239,7 @@ sub mode_goose {
     ## Let's check it again.
     if( defined $results ){
       $self->{CORE}->kvetch("_got_results_");
-     $count = $q->count();
+      $count = $q->count();
       $headers = $q->headers();
     }else{
       ## Final run sanity check.

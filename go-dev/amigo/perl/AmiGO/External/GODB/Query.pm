@@ -29,6 +29,7 @@ sub new {
   my $class = shift;
   my $dbargs = shift || {};
   my $limit = shift;
+  my $max_query_len = shift;
   my $self  = $class->SUPER::new($dbargs);
 
   ## Zero and undef are different. If nothing is really there, default
@@ -37,10 +38,16 @@ sub new {
     $limit = 1000;
   }
 
+  ## Zero and undef are different. If nothing is really there, default
+  ## to 5000.
+  if( ! defined($max_query_len) ){
+    $max_query_len = 5000;
+  }
+
   ## Set up sanitizer.
   $self->{LIMIT} = $limit;
   $self->{SANE} = Utility::Sanitize->new({
-					  UPPER_LIMIT => 5000,
+					  UPPER_LIMIT => $max_query_len,
 					  FULL_QUERY => 1,
 					 });
 
