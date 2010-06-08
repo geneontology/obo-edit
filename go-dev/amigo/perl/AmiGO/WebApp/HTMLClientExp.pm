@@ -1672,10 +1672,8 @@ sub mode_report_slimmerish_1 {
   my $in_gp_str = $params->{gene_product} || '';
 
   ## Clean input.
-  $self->{CORE}->kvetch("in terms: " . $in_term_str);
-  $self->{CORE}->kvetch("in gps: " . $in_gp_str);
-  my $in_term_accs = $self->{CORE}->clean_term_list($in_term_str);
-  my $in_gp_accs = $self->{CORE}->clean_gene_product_list($in_gp_str);
+  $self->{CORE}->kvetch("in term str: " . $in_term_str);
+  $self->{CORE}->kvetch("in gp str: " . $in_gp_str);
 
   if( $in_term_str && $in_gp_str ){
 
@@ -1689,7 +1687,7 @@ sub mode_report_slimmerish_1 {
        #'port' => $mirror->{port} || '3306',
        'database' => $self->{CORE}->amigo_env('GO_DBNAME') || undef,
       };
-    my $q = AmiGO::External::GODB::Query->new($props);
+    my $q = AmiGO::External::GODB::Query->new($props, 1000000, 1000000);
 
     ## 
     my $single_get = sub {
@@ -1699,7 +1697,7 @@ sub mode_report_slimmerish_1 {
       my $get_sql = shift;
 
       ## Output var.
-      my $get_ids = undef;
+      my $get_ids = [];
 
       ##
       $self->{CORE}->kvetch("$sym try: " . $get_sql);
@@ -1715,6 +1713,8 @@ sub mode_report_slimmerish_1 {
 	  foreach my $row (@$results){
 	    push @$get_ids, $row->[0];
 	  }
+	}else{
+	  $self->{CORE}->kvetch("$sym no results");
 	}
 	$self->{CORE}->kvetch("$sym okay: " . Dumper($get_ids));
       }
@@ -1726,32 +1726,35 @@ sub mode_report_slimmerish_1 {
     my $root_sql = "select term.id from term where acc in ('GO:0008150', 'GO:0005575', 'GO:0003674')";
     my $root_ids = &$single_get('root', $root_sql);
 
-    ## Get term ids.
+    ## Get term ids for all terms and their children (complete
+    ## coverage of slim).
+    my $in_term_accs = $self->{CORE}->clean_term_list($in_term_str);
     my $in_term_string = "('" . join("', '", @$in_term_accs) . "')";
-    my $term_sql = "select distinct aterm.id from term as sterm inner join graph_path on (sterm.id = graph_path.term1_id) inner join term as aterm on (graph_path.term2_id = aterm.id) where sterm.acc in $in_term_string";
+    my $term_sql = "select distinct aterm.id from term as sterm inner join graph_path on (sterm.id = graph_path.term1_id) inner join term as aterm on (graph_path.term2_id = aterm.id) where sterm.acc not in ('GO:0008150', 'GO:0005575', 'GO:0003674') and sterm.acc in $in_term_string";
     my $term_ids = &$single_get('term', $term_sql);
 
-    ## Convert accs into a gp id list.
+    ## Convert accs into a gp id list. Sort out the found and the
+    ## unfounds.
     my $gp_ids = [];
-    my $in_gp_accs = $self->{CORE}->clean_gene_product_list($in_gp_str);
+    my $unknown_gp_ids = [];
+    my $in_gp_accs = $self->{CORE}->clean_list($in_gp_str);
     foreach my $gp_acc (@$in_gp_accs){
       my ($db, $key) = $self->{CORE}->split_gene_product_acc($gp_acc);
-      my $gp_sql = "select gp.id from dbxref inner join gene_product as gp on (dbxref.id = gp.dbxref_id) where dbxref.xref_dbname = '$db' and dbxref.xref_key = '$key'";
+      my $gp_sql = "select distinct gp.id from dbxref inner join gene_product as gp on (dbxref.id = gp.dbxref_id) where dbxref.xref_dbname = '$db' and dbxref.xref_key = '$key'";
       my $gp_id = &$single_get('gp', $gp_sql);
-      if( $gp_id ){
-	push @$gp_ids, $gp_id->[0];
+      if(  defined $gp_id && $gp_id ){
+	my $foo = $$gp_id[0];
+	if( defined $foo && $foo ){
+	  push @$gp_ids, $foo;
+	}else{
+	  push @$unknown_gp_ids, $gp_acc;
+	}
       }
     }
 
-    # ## Get gp ids.
-    # ## TODO/BUG: label into gp_ids
-    # my $in_gp_string = "('" . join("', '", @$parsed_gp_ids) . "')";
-    # my $gp_sql = "select igp.id from dbxref inner join gene_product as igp on (dbxref.id = igp.dbxref_id) where dbxref.xref_key in $in_gp_string";
-    # my $gp_ids = &$single_get('gp', $gp_sql);
-
     ###
-    ### Combine everything into one query, see what's in and use that to
-    ### mark what's out
+    ### Combine everything into one query: see what's in and use that to
+    ### mark what's out.
     ###
 
     ## Combine roots and terms and turn them into an appropriate string.
@@ -1761,44 +1764,61 @@ sub mode_report_slimmerish_1 {
     ## Turn gps them into an appropriate string.
     my $gp_string = "(" . join(', ', @$gp_ids) . ")";
 
+    $self->{CORE}->kvetch("scalar term ids: " . scalar(@all_ids));
+    $self->{CORE}->kvetch("scalar gp ids: " . scalar(@$gp_ids));
+
     ##
-    my $good_sql = "select gene_product.id, concat(dbxref.xref_dbname, ':', dbxref.xref_key) as dbxref from gene_product inner join dbxref on (gene_product.dbxref_id = dbxref.id) inner join association on (association.gene_product_id = gene_product.id) left outer join term on (association.term_id = term.id) where gene_product.id in $gp_string and term.id in $term_string";
-    $self->{CORE}->kvetch("good sql: " . Dumper($good_sql));
+    #my $good_sql = "select distinct gene_product.id from gene_product inner join association on (association.gene_product_id = gene_product.id) left outer join term on (association.term_id = term.id) where gene_product.id in $gp_string and term.id in $term_string";
+    my $good_sql = "select distinct gene_product.id from gene_product inner join association on (association.gene_product_id = gene_product.id) inner join term on (association.term_id = term.id) where gene_product.id in $gp_string and term.id in $term_string";
+    #$self->{CORE}->kvetch("good sql: " . $good_sql);
     my $good_ids = &$single_get('good', $good_sql);
+    $self->{CORE}->kvetch("scalar good ids: " . scalar(@$good_ids));
 
     ## Compare the good ids to the total lit--the remainder should be
     ## the ones that fell through.
     my @bad_ids = ();
     {
       my $info_hash = {};
+      ## Get *all* ids in.
       foreach my $id (@$gp_ids){ $info_hash->{$id} = 1; }
+      ## Remove the ones that were found in the good list.
       foreach my $id (@$good_ids){
 	delete $info_hash->{$id} if defined $info_hash->{$id};
       }
+      ## This leaves us with the gp ids not found associated to a
+      ## term--the fall-throughs.
       @bad_ids = keys %$info_hash;
     }
+    $self->{CORE}->kvetch("scalar bad ids: " . scalar(@bad_ids));
 
     ## Get the final (displayable) data from the gp_ids not on the good
     ## list.
-    my $info_string = "(" . join(', ', @bad_ids) . ")";
-    my $info_sql = "select * from gene_product, dbxref where gene_product.dbxref_id = dbxref.id and gene_product.id in $info_string";
-    my $results = $q->try($info_sql);
-    if( ! $q->ok() ){
-      $self->{CORE}->kvetch("final badness: " . $q->error_message());
-    }elsif( ! defined $results ){
-      $self->{CORE}->kvetch("no defined final results");
+    if( scalar(@bad_ids) == 0 ){
+      $self->{CORE}->kvetch("apparently no bad ids");
     }else{
+      my $info_string = "(" . join(', ', @bad_ids) . ")";
+      my $info_sql = "select * from gene_product, dbxref where gene_product.dbxref_id = dbxref.id and gene_product.id in $info_string";
+      my $results = $q->try($info_sql);
+      if( ! $q->ok() ){
+	$self->{CORE}->kvetch("final badness: " . $q->error_message());
+      }elsif( ! defined $results ){
+	$self->{CORE}->kvetch("no defined final results");
+      }else{
 
-      my $headers = $q->headers();
-      my $count = $q->count();
+	my $headers = $q->headers();
+	my $count = $q->count();
 
-      #$self->{CORE}->kvetch("final okay (headers): " . Dumper($count));
-      #$self->{CORE}->kvetch("final okay (headers): " . Dumper($headers));
-      #$self->{CORE}->kvetch("final okay (results): " . Dumper($results));
+	#$self->{CORE}->kvetch("final okay (headers): " . Dumper($count));
+	#$self->{CORE}->kvetch("final okay (headers): " . Dumper($headers));
+	#$self->{CORE}->kvetch("final okay (results): " . Dumper($results));
 
-      $self->set_template_parameter('results_count', $count);
-      $self->set_template_parameter('results_headers', $headers);
-      $self->set_template_parameter('results', $results);
+	$self->set_template_parameter('results_count', $count);
+	$self->set_template_parameter('results_headers', $headers);
+	$self->set_template_parameter('results', $results);
+	$self->set_template_parameter('unknowns', $unknown_gp_ids);
+	$self->set_template_parameter('unknowns_count',
+				      scalar(@$unknown_gp_ids));
+      }
     }
   }
 
