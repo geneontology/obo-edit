@@ -275,6 +275,30 @@ sub term_regexp_string {
 }
 
 
+=item dbxref_db_regexp_string
+
+Return: a string that can be used to compile a regexp that matches a
+dbxref database name.
+
+=cut
+sub dbxref_db_regexp_string {
+  my $self = shift;
+  return '[\w\d\-\_\.]+';
+}
+
+
+=item dbxref_key_regexp_string
+
+Return: a string that can be used to compile a regexp that matches a
+dbxref database key.
+
+=cut
+sub dbxref_key_regexp_string {
+  my $self = shift;
+  return '[\w\d\:\-\_\.]+';
+}
+
+
 =item clean_term_list
 
 Arg: a string with or without whitespace defining one or more go ids
@@ -298,13 +322,13 @@ sub clean_term_list {
 }
 
 
-=item clean_gene_product_list
+=item clean_list
 
-Arg: a string with or without whitespace defining one or more gp ids
-Return: a clean aref of go gp ids.
+Arg: a string with or without whitespace defining one or more ids
+Return: a clean aref of ids.
 
 =cut
-sub clean_gene_product_list {
+sub clean_list {
 
   my $self = shift;
 
@@ -338,8 +362,13 @@ sub split_gene_product_acc {
   my $in_str = shift || '';
   #my @ret_list = ();
 
+  ## Assemble regexp from variables.
+  my $db = $self->dbxref_db_regexp_string();
+  my $key = $self->dbxref_key_regexp_string();
+
   ##
-  $in_str =~ /^([\w\d]+)\:([\w\d\:\-]+)$/;
+  $in_str =~ /^($db)\:($key)$/;
+  $self->kvetch("$1:$2");
   return ($1, $2);
 }
 

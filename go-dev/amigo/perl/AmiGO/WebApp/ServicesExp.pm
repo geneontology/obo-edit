@@ -358,7 +358,7 @@ sub mode_gene_product {
   ## Snag inputs: term (single) and full (boolean).
   my $i = AmiGO::WebApp::Input->new();
   my $params = $i->input_profile('gene_product_info');
-  my $input_gp_list = $self->{CORE}->clean_gene_product_list($params->{gene_product});
+  my $input_gp_list = $self->{CORE}->clean_list($params->{gene_product});
   my $use_full_p = 0;
   $use_full_p = 1 if $params->{full} eq 'true';
 

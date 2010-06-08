@@ -504,7 +504,7 @@ sub _add_gps_string {
   ## A string on incoming (possible) gps.
   push @{$profile->{optional}}, 'gene_product';
   $profile->{constraint_methods}{gene_product} =
-    qr/^(\s*[\w\d\-]+\:[\w\d\:\-]+\s*)*$/;
+    qr/^(\s*[\w\d\-\_\.]+\:[\w\d\:\-\_\.]+\s*)*$/;
 }
 
 
