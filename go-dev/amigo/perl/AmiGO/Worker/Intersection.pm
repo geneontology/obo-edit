@@ -37,7 +37,8 @@ sub new {
   $self->{MATRIX_CARD} = $card;
   $self->{MATRIX_GTYPE} = $graph_type;
   $self->{MATRIX_QUERY} =
-    GOBO::DBIC::GODBModel::Query->new({type => 'gene_product_n_terms', n => $card});
+    GOBO::DBIC::GODBModel::Query->new({type => 'gene_product_n_terms',
+				       n => $card});
 
   bless $self, $class;
   return $self;
@@ -66,6 +67,7 @@ sub get_information {
 
   ## Generate arguments from arguments. Also, cache what we see for the axis.
   my @axis_cache = ();
+  ## TODO/BUG: make multiple species possible with OR.
   my $query_args = [{'species.ncbi_taxa_id' => $self->{MATRIX_SPEC}}];
   for( my $i = 1; $i <= $n; $i++ ){
     my $ikey = 'object_aux_' . $i . '.acc';
@@ -81,6 +83,8 @@ sub get_information {
   if( $self->{MATRIX_GTYPE} eq 'change_me_later' ){
     $matrix_results = [];
   }else{
+    ## This is the problem--here
+    $self->kvetch('query_args: ' . $query_args);
     $matrix_results =
       $self->{MATRIX_QUERY}->get_all_results({-and => $query_args});
   }

@@ -587,7 +587,7 @@ if ( $request && $request eq 'results' ) {
     #     $gp_list =~ s/^\s+//;
     #     $gp_list =~ s/\s+$//;
     #     my @gp_list = split /\s+/, $gp_list;
-    @gp_list = @{$core->clean_gene_product_list($gp_list)};
+    @gp_list = @{$core->clean_list($gp_list)};
     #$core->kvetch("# gp list: " . scalar(@gp_list));
 
     ##
@@ -744,7 +744,7 @@ if ( $request && $request eq 'results' ) {
     #     $bggp_list =~ s/^\s+//;
     #     $bggp_list =~ s/\s+$//;
     #     my @bggp_list = split /\s+/, $bggp_list;
-    my @bggp_list = @{$core->clean_gene_product_list($bggp_list)};
+    my @bggp_list = @{$core->clean_list($bggp_list)};
 
     ##
     ## The next section is essentially a dupe of the one above.

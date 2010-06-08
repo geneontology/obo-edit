@@ -12,7 +12,7 @@
 
     [% IF results_count == 0 %]
 
-    <p>Your query did not return any results.</p>
+    <p>Your query did not return any results. This means that either everything was caught (Congraulations!) or there was some kind of input error that wasn't caught :(</p>
 
     [% ELSE %]
 
@@ -51,10 +51,31 @@
       </tbody>
     </table>      
 
-
     [% END %]
 
   </div>
+
+  [% IF unknowns_count > 0 %]
+
+  <div class="block">
+
+    <h2>Unknowns</h2>
+
+    <p>
+      The following gene products could not be found when we did the
+      query:
+    </p>
+
+    <ul>
+    [% FOREACH uk = unknowns %]
+    <li>
+      [% uk %]
+    </li>
+    [% END %]
+    </ul>
+
+  </div>
+  [% END %]
 
   [% ELSE %]
 

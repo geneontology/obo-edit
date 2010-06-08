@@ -662,7 +662,7 @@ if( $request && $request eq 'results' ){
       #       $gp_list =~ s/^\s+//;
       #       $gp_list =~ s/\s+$//;
       #       my @gp_list = split /\s+/, $gp_list;
-      my @gp_list = @{$core->clean_gene_product_list($gp_list)};
+      my @gp_list = @{$core->clean_list($gp_list)};
 
       ##
       my $lresolve = AmiGO::LabelResolve->new($apph->dbh, \@speciesdbs);
