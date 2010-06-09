@@ -1795,6 +1795,7 @@ sub mode_report_slimmerish_1 {
     ## list.
     if( scalar(@bad_ids) == 0 ){
       $self->{CORE}->kvetch("apparently no bad ids");
+      $self->set_template_parameter('no_bad_ids', 1);
     }else{
       my $info_string = "(" . join(', ', @bad_ids) . ")";
       my $info_sql = "select * from gene_product, dbxref where gene_product.dbxref_id = dbxref.id and gene_product.id in $info_string";
