@@ -4,15 +4,15 @@
       
   <h1>Slimmer-type Report</h1>
 
-  [% IF results %]
+  [% IF results OR no_bad_ids %]
 
   <div class="block">
 
     <h2>Results</h2>
 
-    [% IF results_count == 0 %]
+    [% IF results_count == 0 || no_bad_ids %]
 
-    <p>Your query did not return any results. This means that either everything was caught (Congraulations!) or there was some kind of input error that wasn't caught :(</p>
+    <p>Your query did not return any results. This means that either everything was "slimmed" (yay!) or there was some kind of input error that wasn't caught :(</p>
 
     [% ELSE %]
 
