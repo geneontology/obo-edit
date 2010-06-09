@@ -44,13 +44,13 @@ use AmiGO::Aid::ReferenceGenome;
 
 ## Real external workers.
 #use AmiGO::Worker::HomolsetGraph;
-use AmiGO::Worker::HomolsetGraph2;
-use AmiGO::Cache::ReferenceGenome;
-use AmiGO::Worker::ExpSearch;
-use AmiGO::Worker::LexicalSearch;
+#use AmiGO::Worker::HomolsetGraph2;
+#use AmiGO::Worker::ExpSearch;
 #use AmiGO::Worker::Matrix;
+#use AmiGO::Worker::LexicalSearch;
+#use AmiGO::Worker::Intersection;
+use AmiGO::Cache::ReferenceGenome;
 use AmiGO::Worker::NMatrix;
-use AmiGO::Worker::Intersection;
 
 use AmiGO::Worker::Term;
 use AmiGO::Worker::GeneProduct;
