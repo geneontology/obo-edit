@@ -802,8 +802,14 @@ sub load_qfo {
   ###
 
   ## Go and go down.
-  my $ftp = Net::FTP->new($qfo_site) or die "Cannot connect to $qfo_site: $!";
-  ll("[FTP] Connected to " . $qfo_site);
+  my $ftp = undef;
+  if ( $local{FTP_USE_PASSIVE_MODE} ) {
+      $ftp = Net::FTP->new($qfo_site, Passive => 1) or die "Cannot connect to $qfo_site: $!";
+      ll("[FTP] Connected (PASV) to " . $qfo_site);
+  } else {
+      $ftp = Net::FTP->new($qfo_site) or die "Cannot connect to $qfo_site: $!";
+      ll("[FTP] Connected to " . $qfo_site);
+  }
   $ftp->login('anonymous', 'anonymous') or die "Cannot login: $!";
   $ftp->binary() or die "Cannot change to binary mode: $!";
   $ftp->cwd($qfo_dir) or die "Cannot change working directory to $qfo_dir: $!";
@@ -894,8 +900,14 @@ sub run_seq2pthr2phylotree {
 
   #my $mech = AmiGO::External::Raw->new();
   #$mech->get_external_data($s2p_file);
-  my $ftp = Net::FTP->new($s2p_site) or die "Cannot connect to $s2p_site: $!";
-  ll("[FTP] Connected to " . $s2p_site);
+  my $ftp = undef;
+  if ( $local{FTP_USE_PASSIVE_MODE} ) {
+      $ftp = Net::FTP->new($s2p_site, Passive => 1) or die "Cannot connect to $s2p_site: $!";
+      ll("[FTP] Connected (PASV) to " . $s2p_site);
+  } else {
+      $ftp = Net::FTP->new($s2p_site) or die "Cannot connect to $s2p_site: $!";
+      ll("[FTP] Connected to " . $s2p_site);
+  }
 
   ## Get it.
   $ftp->login('anonymous', 'anonymous') or die "Cannot login: $!";
