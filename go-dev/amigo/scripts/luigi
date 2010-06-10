@@ -10,12 +10,12 @@
 ####
 #### This is currently taking more than a few hours on my laptop. To run:
 ####
-####    reset; DBIC_TRACE = 1 perl ./amigo/cgi-bin/experimental/luigi
+####    reset; DBIC_TRACE = 1 perl ./scripts/luigi
 ####
 #### Use "-a" if you want the "association" field to be populated, use
-#### the below. But dont' because it currently takes a _long_ time.
+#### the below. But don't because it currently takes a _long_ time.
 ####
-####    ./amigo/cgi-bin/experimental/luigi -a
+####    ./scripts/luigi -a
 ####
 
 BEGIN { require "config.pl"; }
