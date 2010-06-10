@@ -25,8 +25,7 @@ function TermDetailsInit(){
     var source_data = go_meta.sources();
 
     ///
-    /// Tabify the layout if we can (may be in a non-tabby tst
-    /// version).
+    /// Tabify the layout if we can (may be in a non-tabby version).
     ///
 
     var dtabs = jQuery("#display-tabs");
@@ -37,152 +36,152 @@ function TermDetailsInit(){
 	jQuery("#display-tabs").tabs('select', 0);
     }
 
-    ///
-    /// Add everything for inferred line graphics.
-    ///
+    // ///
+    // /// Add everything for inferred line graphics.
+    // ///
 
-    // Tired--let's just make a new lexical scope.
-    function _clear_old(addr){
-	var elt = jQuery('#' + addr);
-	if( elt.children() ){
-	    elt.children().remove();
-	}
-    }
-    function _draw_vert_line(addr){
-	var elt = jQuery('#' + addr);
-	elt.html('<table class="override" style="margin: 0px; padding: 0px; width: 1.5em; height: 1.668em; border-collapse: collapse;" cellpadding="0" cellspacing="0"><tr><td class="light-cell"></td><td class="dark-cell"></td><td class="light-cell"></td></tr><tr><td class="light-cell"></td><td class="dark-cell"></td><td class="light-cell"></td></tr><tr><td class="light-cell"></td><td class="dark-cell"></td><td class="light-cell"></td></tr></table>');
-    }
-    function _draw_horiz_line(addr){
-	var elt = jQuery('#' + addr);
-	elt.html('<table class="override" style="margin: 0px; padding: 0px; width: 1.5em; height: 1.6666666667em; border-collapse: collapse;" cellpadding="0" cellspacing="0"><tr><td class="light-cell"></td><td class="light-cell"></td><td class="light-cell"></td></tr><tr><td class="dark-cell"></td><td class="dark-cell"></td><td class="dark-cell"></td></tr><tr><td class="light-cell"></td><td class="light-cell"></td><td class="light-cell"></td></tr></table>');
-    }
-    function _draw_third_quad(addr){
-	var elt = jQuery('#' + addr);
-	elt.html('<span>inf</span>');
-    }
-    function _draw_fourth_quad(addr){
-	var elt = jQuery('#' + addr);
-	elt.html('<table class="override" style="margin: 0px; padding: 0px; width: 1.5em; height: 1.6666666667em; border-collapse: collapse;" cellpadding="0" cellspacing="0"><tr><td class="light-cell"></td><td class="light-cell"></td><td class="light-cell"></td></tr><tr><td class="light-cell"></td><td class="dark-cell"></td><td class="dark-cell"></td></tr><tr><td class="light-cell"></td><td class="dark-cell"></td><td class="light-cell"></td></tr></table>');
-    }
-    function _clear_old(addr){
-	var elt = jQuery('#' + addr);
-	if( elt.children() ){
-	    elt.children().remove();
-	}
-    }
-    function _addr_str(one, two){
-	return 'addr-' + one + '-' + two;
-    }
-    function _tag_action(iacc){
-	return function(event){
+    // // Tired--let's just make a new lexical scope.
+    // function _clear_old(addr){
+    // 	var elt = jQuery('#' + addr);
+    // 	if( elt.children() ){
+    // 	    elt.children().remove();
+    // 	}
+    // }
+    // function _draw_vert_line(addr){
+    // 	var elt = jQuery('#' + addr);
+    // 	elt.html('<table class="override" style="margin: 0px; padding: 0px; width: 1.5em; height: 1.668em; border-collapse: collapse;" cellpadding="0" cellspacing="0"><tr><td class="light-cell"></td><td class="dark-cell"></td><td class="light-cell"></td></tr><tr><td class="light-cell"></td><td class="dark-cell"></td><td class="light-cell"></td></tr><tr><td class="light-cell"></td><td class="dark-cell"></td><td class="light-cell"></td></tr></table>');
+    // }
+    // function _draw_horiz_line(addr){
+    // 	var elt = jQuery('#' + addr);
+    // 	elt.html('<table class="override" style="margin: 0px; padding: 0px; width: 1.5em; height: 1.6666666667em; border-collapse: collapse;" cellpadding="0" cellspacing="0"><tr><td class="light-cell"></td><td class="light-cell"></td><td class="light-cell"></td></tr><tr><td class="dark-cell"></td><td class="dark-cell"></td><td class="dark-cell"></td></tr><tr><td class="light-cell"></td><td class="light-cell"></td><td class="light-cell"></td></tr></table>');
+    // }
+    // function _draw_third_quad(addr){
+    // 	var elt = jQuery('#' + addr);
+    // 	elt.html('<span>inf</span>');
+    // }
+    // function _draw_fourth_quad(addr){
+    // 	var elt = jQuery('#' + addr);
+    // 	elt.html('<table class="override" style="margin: 0px; padding: 0px; width: 1.5em; height: 1.6666666667em; border-collapse: collapse;" cellpadding="0" cellspacing="0"><tr><td class="light-cell"></td><td class="light-cell"></td><td class="light-cell"></td></tr><tr><td class="light-cell"></td><td class="dark-cell"></td><td class="dark-cell"></td></tr><tr><td class="light-cell"></td><td class="dark-cell"></td><td class="light-cell"></td></tr></table>');
+    // }
+    // function _clear_old(addr){
+    // 	var elt = jQuery('#' + addr);
+    // 	if( elt.children() ){
+    // 	    elt.children().remove();
+    // 	}
+    // }
+    // function _addr_str(one, two){
+    // 	return 'addr-' + one + '-' + two;
+    // }
+    // function _tag_action(iacc){
+    // 	return function(event){
 
-	    // Preamble.
-	    event.stopPropagation();
-	    //core.kvetch('inside: ' + iacc);
-	    //core.kvetch('e: ' + event.type);
+    // 	    // Preamble.
+    // 	    event.stopPropagation();
+    // 	    //core.kvetch('inside: ' + iacc);
+    // 	    //core.kvetch('e: ' + event.type);
 
-	    // Build paths.
-	    var from_addr = global_addresses[iacc];
-	    var to_addr = global_home_address;
-	    var from_row = parseInt(from_addr['row']);
-	    var from_col =  parseInt(from_addr['column']);
-	    var to_row = parseInt(to_addr['row']);
-	    var to_col = parseInt(to_addr['column']);
-	    //
-	    var fourth_quad = [];
-	    var third_quad = [];
-	    var vert_lines = [];
-	    var horiz_lines = [];
+    // 	    // Build paths.
+    // 	    var from_addr = global_addresses[iacc];
+    // 	    var to_addr = global_home_address;
+    // 	    var from_row = parseInt(from_addr['row']);
+    // 	    var from_col =  parseInt(from_addr['column']);
+    // 	    var to_row = parseInt(to_addr['row']);
+    // 	    var to_col = parseInt(to_addr['column']);
+    // 	    //
+    // 	    var fourth_quad = [];
+    // 	    var third_quad = [];
+    // 	    var vert_lines = [];
+    // 	    var horiz_lines = [];
 	    
-	    // Do corners.
-	    fourth_quad.push(_addr_str(from_row, from_col));
-	    third_quad.push(_addr_str(to_row, from_col));
+    // 	    // Do corners.
+    // 	    fourth_quad.push(_addr_str(from_row, from_col));
+    // 	    third_quad.push(_addr_str(to_row, from_col));
 
-	    // Figure vertical line.
-	    for( var down = from_row + 1; down < to_row; down++ ){
-		vert_lines.push(_addr_str(down, from_col));
-	    }
+    // 	    // Figure vertical line.
+    // 	    for( var down = from_row + 1; down < to_row; down++ ){
+    // 		vert_lines.push(_addr_str(down, from_col));
+    // 	    }
 
-	    // Figure horizontal line.
-	    for( var across = from_col + 1; across <= to_col; across++ ){
-		horiz_lines.push(_addr_str(to_row, across));
-	    }
+    // 	    // Figure horizontal line.
+    // 	    for( var across = from_col + 1; across <= to_col; across++ ){
+    // 		horiz_lines.push(_addr_str(to_row, across));
+    // 	    }
 
-	    // Either draw or erase, depending on the type of event
-	    // (need the above information either way).
-	    if( event.type == 'mouseenter'){
-		var color = 'green';
-		(function(){
-		    for(var i = 0; i < fourth_quad.length; i++){
-			//jQuery('#' + fourth_quad[i]).css({'background-color':color});
-			_draw_fourth_quad(fourth_quad[i]);
-		    }
-		})();
-		(function(){
-		    for(var i = 0; i < third_quad.length; i++){
-			//jQuery('#' + third_quad[i]).css({'background-color':color});
-			_draw_third_quad(third_quad[i]);
-		    }
-		})();
-		(function(){
-		    for(var i = 0; i < vert_lines.length; i++){
-			//jQuery('#' + vert_lines[i]).css({'background-color':color});
-			_draw_vert_line(vert_lines[i]);
-		    }
-		})();
-		(function(){
-		    for(var i = 0; i < horiz_lines.length; i++){
-			//jQuery('#' + horiz_lines[i]).css({'background-color':color});
-			_draw_horiz_line(horiz_lines[i]);
-		    }
-		})();
-	    }else{
-		var color = 'white';
-		(function(){
-		    for(var i = 0; i < fourth_quad.length; i++){
-			//jQuery('#' + fourth_quad[i]).css({'background-color':color});
-			_clear_old(fourth_quad[i]);
-		    }
-		})();
-		(function(){
-		    for(var i = 0; i < third_quad.length; i++){
-			//jQuery('#' + third_quad[i]).css({'background-color':color});
-			_clear_old(third_quad[i]);
-		    }
-		})();
-		(function(){
-		    for(var i = 0; i < vert_lines.length; i++){
-			// jQuery('#' + vert_lines[i]).css({'background-color':color});
-			_clear_old(vert_lines[i]);
-		    }
-		})();
-		(function(){
-		    for(var i = 0; i < horiz_lines.length; i++){
-			//jQuery('#' + horiz_lines[i]).css({'background-color':color});
-			_clear_old(horiz_lines[i]);
-		    }
-		})();
-	    }
-	}
-    }
-    (function(){
+    // 	    // Either draw or erase, depending on the type of event
+    // 	    // (need the above information either way).
+    // 	    if( event.type == 'mouseenter'){
+    // 		var color = 'green';
+    // 		(function(){
+    // 		    for(var i = 0; i < fourth_quad.length; i++){
+    // 			//jQuery('#' + fourth_quad[i]).css({'background-color':color});
+    // 			_draw_fourth_quad(fourth_quad[i]);
+    // 		    }
+    // 		})();
+    // 		(function(){
+    // 		    for(var i = 0; i < third_quad.length; i++){
+    // 			//jQuery('#' + third_quad[i]).css({'background-color':color});
+    // 			_draw_third_quad(third_quad[i]);
+    // 		    }
+    // 		})();
+    // 		(function(){
+    // 		    for(var i = 0; i < vert_lines.length; i++){
+    // 			//jQuery('#' + vert_lines[i]).css({'background-color':color});
+    // 			_draw_vert_line(vert_lines[i]);
+    // 		    }
+    // 		})();
+    // 		(function(){
+    // 		    for(var i = 0; i < horiz_lines.length; i++){
+    // 			//jQuery('#' + horiz_lines[i]).css({'background-color':color});
+    // 			_draw_horiz_line(horiz_lines[i]);
+    // 		    }
+    // 		})();
+    // 	    }else{
+    // 		var color = 'white';
+    // 		(function(){
+    // 		    for(var i = 0; i < fourth_quad.length; i++){
+    // 			//jQuery('#' + fourth_quad[i]).css({'background-color':color});
+    // 			_clear_old(fourth_quad[i]);
+    // 		    }
+    // 		})();
+    // 		(function(){
+    // 		    for(var i = 0; i < third_quad.length; i++){
+    // 			//jQuery('#' + third_quad[i]).css({'background-color':color});
+    // 			_clear_old(third_quad[i]);
+    // 		    }
+    // 		})();
+    // 		(function(){
+    // 		    for(var i = 0; i < vert_lines.length; i++){
+    // 			// jQuery('#' + vert_lines[i]).css({'background-color':color});
+    // 			_clear_old(vert_lines[i]);
+    // 		    }
+    // 		})();
+    // 		(function(){
+    // 		    for(var i = 0; i < horiz_lines.length; i++){
+    // 			//jQuery('#' + horiz_lines[i]).css({'background-color':color});
+    // 			_clear_old(horiz_lines[i]);
+    // 		    }
+    // 		})();
+    // 	    }
+    // 	}
+    // }
+    // (function(){
 
-	// Add hook to every inferred row.
-	for( var iacc in global_addresses ){
+    // 	// Add hook to every inferred row.
+    // 	for( var iacc in global_addresses ){
 
-	    var imap = global_acc_to_rand[iacc];
-	    var grab_key = 'grab-' + imap
-	    var elt = jQuery('#' + grab_key);
-	    // var elt_id = elt.attr('id');
+    // 	    var imap = global_acc_to_rand[iacc];
+    // 	    var grab_key = 'grab-' + imap
+    // 	    var elt = jQuery('#' + grab_key);
+    // 	    // var elt_id = elt.attr('id');
 
-	    // core.kvetch('attaching: ' + grab_key);
-	    // core.kvetch('to: ' + elt);
-	    // core.kvetch('aka: ' + elt_id);
+    // 	    // core.kvetch('attaching: ' + grab_key);
+    // 	    // core.kvetch('to: ' + elt);
+    // 	    // core.kvetch('aka: ' + elt_id);
 	    
-	    elt.hover(_tag_action(iacc));
-	}
+    // 	    elt.hover(_tag_action(iacc));
+    // 	}
 
-    })();
+    // })();
 
     ///
     /// Add everything for filters.
