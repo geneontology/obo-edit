@@ -4,6 +4,10 @@
 <!-- even_odd_rows = [% even_odd_rows %] -->
 <!-- munge_id_tail = [% munge_id_tail %] -->
 <!-- count_type = [% count_type %] -->
+<!-- default_count = [% default_count %] -->
+[% IF NOT default_count %]
+[%    default_count = 'n/a' %]
+[% END %]
 [% IF (even_odd_rows % 2) == 0 %]
 <tr class="even_row">
 [% ELSE %]
@@ -31,7 +35,7 @@
   </td>
   <td>
     [% for_acc = subject_chunk.acc %]
-    <span id="[% ACC_TO_RAND.$for_acc _ munge_id_tail %]">n/a</span>
+    <span id="[% ACC_TO_RAND.$for_acc _ munge_id_tail %]">[% default_count %]</span>
   </td>
 [% ELSIF count_type == "object" %]
   <td>
@@ -55,7 +59,7 @@
   </td>
   <td>
     [% for_acc = object_chunk.acc %]
-    <span id="[% ACC_TO_RAND.$for_acc _ munge_id_tail %]">n/a</span>
+    <span id="[% ACC_TO_RAND.$for_acc _ munge_id_tail %]">[% default_count %]</span>
   </td>
 [% END %]
 </tr>
