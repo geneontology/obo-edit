@@ -199,6 +199,7 @@ public class RuleBasedReasoner extends AbstractReasoner {
 		addRule(new LinkCompositionRule());
 		addRule(new PropertyIntersectionRule());
 		addRule(new IntersectionRule());
+		addRule(new UnionOfRule());
 
 	}
 
