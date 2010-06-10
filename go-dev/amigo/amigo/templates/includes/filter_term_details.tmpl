@@ -2,7 +2,7 @@
 <dl>
 	<dt id="filterToggle" class="toggle">Filter tree view <a href="http://wiki.geneontology.org/index.php/AmiGO_Manual:_Browse#Filtering" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></dt>
 	<dd id="filterDiv">
-		<form action="term-details.cgi">
+		<form action="term_details">
 			[% FOREACH p IN tree.keys;
 					IF tree.$p.size > 0; %]
 			<input type="hidden" name="[% p %]" value="[% tree.$p.join(',') %]">
@@ -47,7 +47,7 @@
 			<input type="hidden" name="action" value="filter">
 			<input class="button" type="submit" value="Set filters"> 
 		</form>
-		<form action="term-details.cgi">
+		<form action="term_details">
 			<input type="hidden" name="session_id" value="[% session_id %]">
 			[% FOREACH p IN tree.keys;
 					IF tree.$p.size > 0; %]

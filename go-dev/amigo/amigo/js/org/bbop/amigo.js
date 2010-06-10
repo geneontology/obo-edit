@@ -598,7 +598,7 @@ org.bbop.amigo.core = function(){
 	var final_args = _merge(default_args, in_args);
 	
 	var acc = final_args['acc'];
-	return 'term-details.cgi?term=' + acc;
+	return 'term_details?term=' + acc;
     };
 
     this.link.gene_product = function(in_args){

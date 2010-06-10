@@ -440,7 +440,7 @@ if( $sql_query ){
 	## Convert GO IDs to links.
 	## TODO: This probably needs to be speeded up too.
 	if( $format eq 'html' ){
-	  $item =~ s/(GO:\d{7})/\<a href="http:\/\/amigo.geneontology.org\/cgi-bin\/amigo\/term-details.cgi\?term=$1" title="Go to $1 in AmiGO" \>$1\<\/a\>/g;
+	  $item =~ s/(GO:\d{7})/\<a href="http:\/\/amigo.geneontology.org\/cgi-bin\/amigo\/term_details\?term=$1" title="Go to $1 in AmiGO" \>$1\<\/a\>/g;
 	}
       }
     }

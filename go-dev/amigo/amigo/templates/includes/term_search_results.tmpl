@@ -75,7 +75,7 @@
 		<li><a href="browse.cgi?action=set-tree&amp;term=[% term.acc %]&amp;session_id=[% session_id %]" title="View term in the tree">view in tree</a></li>
 		 </ul>
 		[% END %]
-			<label for="[% term.acc %]" class="acc">[% search.hilite(term.acc, 1) %]</label> : <a href="term-details.cgi?term=[% term.acc %]&amp;session_id=[% session_id %]" title="View details of [% term.name %]" class="name">[% search.hilite(term.name, 1) %]</a>
+			<label for="[% term.acc %]" class="acc">[% search.hilite(term.acc, 1) %]</label> : <a href="term_details?term=[% term.acc %]&amp;session_id=[% session_id %]" title="View details of [% term.name %]" class="name">[% search.hilite(term.name, 1) %]</a>
 		[% IF term.definition;
 				def_class = ' class="def"';
 				IF term.source.definition || (term.source.xref && term.get_match_list('def_xref', termsort));
@@ -156,14 +156,14 @@
 				IF term.replaced_by_list; # && term.replaced_by_list.length > 0
 					' Replaced by';
 					FOREACH t = term.replaced_by_list %]
-		 <a href="term-details.cgi?term=[% t.acc %]&amp;session_id=[% session_id %]">[% t.acc %] : [% t.name %]</a>
+		 <a href="term_details?term=[% t.acc %]&amp;session_id=[% session_id %]">[% t.acc %] : [% t.name %]</a>
 		[%			END;
 					'.';
 				END;
 				IF term.consider_list; # && term.consider_list.length > 0
 					' Consider';
 					FOREACH t = term.consider_list %]
-		 <a href="term-details.cgi?term=[% t.acc %]&amp;session_id=[% session_id %]">[% t.acc %] : [% t.name %]</a>
+		 <a href="term_details?term=[% t.acc %]&amp;session_id=[% session_id %]">[% t.acc %] : [% t.name %]</a>
 		[%			END;
 					'.';
 				END;

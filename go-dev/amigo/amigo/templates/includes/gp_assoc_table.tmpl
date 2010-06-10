@@ -37,7 +37,7 @@
 		<li><a href="browse.cgi?action=set-tree&amp;term=[% term.acc %]&amp;session_id=[% session_id %]" title="View term in the tree">view in tree</a></li>
 		 </ul>
 	[% END %]
-			<label for="term-[% counter %]" class="acc">[% term.acc %]</label> : <a href="term-details.cgi?term=[% term.acc %]&amp;session_id=[% session_id %]&amp;" title="Click to view details of [% term.name %]" class="name">[% term.name %]</a>
+			<label for="term-[% counter %]" class="acc">[% term.acc %]</label> : <a href="term_details?term=[% term.acc %]&amp;session_id=[% session_id %]&amp;" title="Click to view details of [% term.name %]" class="name">[% term.name %]</a>
 			</td>
 			<td rowspan="[% rowspan %]" class="term">
 				<a href="[% munger.get_GO_doc_url('ont', term.type) %]" title="[% term.type.replace('_',' ') %]; click to view documentation" class="type">
