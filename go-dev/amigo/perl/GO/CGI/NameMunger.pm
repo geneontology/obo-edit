@@ -116,7 +116,7 @@ genedb_lmajor => "http://www.genedb.org/genedb/Search?organism=leish&name=$acc_n
 genedb_pfalciparum => "http://www.genedb.org/genedb/Search?organism=malaria&name=$acc_no",
 genedb_spombe => "http://www.genedb.org/genedb/Search?organism=pombe&name=$acc_no",
 genedb_tbrucei => "http://www.genedb.org/genedb/Search?organism=tryp&name=$acc_no",
-go => "http://amigo.geneontology.org/cgi-bin/amigo/term-details.cgi?term=$acc_no",
+go => "http://amigo.geneontology.org/cgi-bin/amigo/term_details?term=$acc_no",
 go_evcode => "http://www.geneontology.org/GO.evidence.shtml#$acc_no",
 go_ont =>"http://www.geneontology.org/GO.doc.shtml#$acc_no",
 go_qual => "http://www.geneontology.org/GO.annotation.conventions.shtml#qual",
@@ -628,7 +628,7 @@ sub markup_comment {
 	my $session_id = shift;
 	my $comment = shift || return;
 	$comment =~ s/GO\\:/GO:/g;
-	$comment =~ s/(GO:\d+)/<a href=\"term-details.cgi?term=$1&amp;session_id=$session_id\">$1<\/a>/g;
+	$comment =~ s/(GO:\d+)/<a href=\"term_details?term=$1&amp;session_id=$session_id\">$1<\/a>/g;
 	return $comment;
 }
 
@@ -639,7 +639,7 @@ sub markup_search_comment {
 	$comment =~ s/GO\\:/GO:/g;
 	$comment =~ s/.*?(To update annotations.*)/$1/i;
 	if ($comment =~ /GO:\d{7}/)
-	{	$comment =~ s/(GO:\d+)/<a href=\"term-details.cgi?term=$1&amp;session_id=$session_id\">$1<\/a>/g;
+	{	$comment =~ s/(GO:\d+)/<a href=\"term_details?term=$1&amp;session_id=$session_id\">$1<\/a>/g;
 		return $comment;
 	}
 	return;

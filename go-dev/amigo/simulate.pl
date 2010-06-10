@@ -20,7 +20,9 @@ getopts('j');
 my $scripts =
   [
    "amigo",
+   "aserve",
    "visualize",
+   "term_details",
 
    "browse.cgi",
    "gp-assoc.cgi",
@@ -29,7 +31,6 @@ my $scripts =
    "gp-select.cgi",
    "term-assoc.cgi",
    "term-chart.cgi",
-   "term-details.cgi",
    "term-select.cgi",
    "go.cgi",
    "search.cgi",

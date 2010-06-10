@@ -878,6 +878,7 @@ if ( $opt_c ) {
 	  amigo
 	  aserve
 	  visualize
+	  term_details
 
 	  browse.cgi
 	  blast.cgi
@@ -887,7 +888,6 @@ if ( $opt_c ) {
 	  gp-select.cgi
 	  term-assoc.cgi
 	  term-chart.cgi
-	  term-details.cgi
 	  term-select.cgi
 	  go.cgi
 	  search.cgi
@@ -980,6 +980,29 @@ if ( $opt_c ) {
     force_copy(Cwd::cwd() . '/amigo/cgi-bin/experimental/' . $_,
 	       $synth_vars{AMIGO_CGI_ROOT_DIR} );
     make_executable( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/' . $_);
+  }
+
+  ## Now that things are copied over, make the old term-details.cgi
+  ## link to the new term_details.
+  {
+    my $old = $synth_vars{AMIGO_CGI_ROOT_DIR} . '/term-details.cgi';
+    my $new = $synth_vars{AMIGO_CGI_ROOT_DIR} . '/term_details';
+    my $hst = $synth_vars{AMIGO_CGI_ROOT_DIR} . '/term-details-old.cgi';
+
+    ## Make sure the old ones are gone.
+    unlink $old if -f $old;
+    unlink $hst if -f $hst;
+
+    ## Make the link.
+    my @args = ("ln", "-f", "-s", $new, $old);
+    ll("Old to new term details link: link $new to $old");
+    system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_t;
+
+    ## Put old one over for comparison on experimental machines.
+    if( $opt_e ){
+      force_copy(Cwd::cwd() . '/amigo/cgi-bin/term-details.cgi', $hst);
+      make_executable($hst);
+    }
   }
 
   ## Copy some outlying executables.

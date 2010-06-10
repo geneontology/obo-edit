@@ -42,7 +42,7 @@ sub get_term_link {
   ##
   my $self = shift;
   my $acc = shift || die "acc required $!";
-  my $url = shift || $URL_FOR_QUICKGO_TERM . $acc;
+  my $url = $URL_FOR_QUICKGO_TERM . $acc;
   return $url;
 }
 

@@ -101,14 +101,14 @@
 					IF term.replaced_by_list;
 						'<dd>Replaced by';
 						FOREACH t = term.replaced_by_list %]
-		 <a href="term-details.cgi?term=[% t.acc %]&amp;session_id=[% session_id %]">[% t.acc %] : [% t.name %]</a>
+		 <a href="term_details?term=[% t.acc %]&amp;session_id=[% session_id %]">[% t.acc %] : [% t.name %]</a>
 		[%				END;
 						'</dd>';
 					END;
 					IF term.consider_list;
 						'<dd>Consider';
 						FOREACH t = term.consider_list %]
-		 <a href="term-details.cgi?term=[% t.acc %]&amp;session_id=[% session_id %]">[% t.acc %] : [% t.name %]</a>
+		 <a href="term_details?term=[% t.acc %]&amp;session_id=[% session_id %]">[% t.acc %] : [% t.name %]</a>
 		[%				END;
 						'</dd>';
 					END;
@@ -118,7 +118,7 @@
 		<dd><ul class="subset">
 		    [% FOREACH sub = term.subset_list;
 		    IF sub.search('goslim') %]
-		    <li><a href="term-details.cgi?term=[% sub %]&amp;session_id=[% session_id %]" title="View details of the [% sub %] GO slim">[% sub %]</a></li>
+		    <li><a href="term_details?term=[% sub %]&amp;session_id=[% session_id %]" title="View details of the [% sub %] GO slim">[% sub %]</a></li>
 		    [% ELSE %]
 		    <!--
 			<li>[% sub %]</li>
@@ -147,9 +147,9 @@
 <div class="block" id="lineage">
 	<h2>Term Lineage</h2>
 [% IF term_context && term_context == 'sibling' %]
-<p><a href="term-details.cgi?term=[% term.acc %]&amp;term_context=parents&amp;session_id=[% session_id %]#lineage" title="View the term and its ancestors">Switch to viewing term ancestors</a></p>
+<p><a href="term_details?term=[% term.acc %]&amp;term_context=parents&amp;session_id=[% session_id %]#lineage" title="View the term and its ancestors">Switch to viewing term ancestors</a></p>
 [% ELSE %]
-<p><a href="term-details.cgi?term=[% term.acc %]&amp;term_context=sibling&amp;session_id=[% session_id %]#lineage" title="View the parents, siblings and children of the term">Switch to viewing term parents, siblings and children</a></p>
+<p><a href="term_details?term=[% term.acc %]&amp;term_context=sibling&amp;session_id=[% session_id %]#lineage" title="View the parents, siblings and children of the term">Switch to viewing term parents, siblings and children</a></p>
 [% END %]
 	<div class="filters">
 		[% INCLUDE filter_term_details.tmpl %]

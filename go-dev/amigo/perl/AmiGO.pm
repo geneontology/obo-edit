@@ -1209,7 +1209,7 @@ sub get_interlink {
      sub {
        die "interlink mode 'term_details' requires args" if ! defined $args;
        my $acc = $args->{acc} || '';
-       $ilink = 'amigo?mode=term_details&term=' . $acc;
+       $ilink = 'term_details?term=' . $acc;
      },
 
      'browse' =>
