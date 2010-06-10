@@ -142,7 +142,7 @@ my $xref_writer = new Lucene::Index::IndexWriter($xref_store, $analyzer, 1);
 ### Walk through database.
 ###
 
-$core->kvetch('Start terms...');
+bark('Start terms...');
 
 ## Cycle through the term results and process them into something
 ## useful for the lucene engine.
@@ -221,11 +221,13 @@ while ( my $t = $term_query->get_next_result({}) ) {
     ## Hit limit?
     $limit_toss++;
     last if $limit_p && $limit_toss > $limit;
+
+    bark("Done $limit_toss terms...") if ($limit_toss % 1000) == 0;
   }
 }
 
-$core->kvetch('Done terms...');
-$core->kvetch('Start gps...');
+bark('Done terms...');
+bark('Start gps...');
 
 ## Grab species name cache for later.
 my $spec_conv = $core->species();
@@ -339,12 +341,15 @@ while ( my $gp = $gp_query->get_next_result({}) ) {
   ## Hit limit?
   $limit_toss++;
   last if $limit_p && $limit_toss > $limit;
+
+  bark("Done $limit_toss gene products...") if ($limit_toss % 1000) == 0;
 }
 
-$core->kvetch('Done gps...');
-$core->kvetch('Start assoc...');
+bark('Done gps...');
 
 ## NOTE: too much time for now. Revisit later...
+#bark('Start assoc...');
+
 # ## Cycle through the assoc results and process them into something
 # ## useful for the lucene engine.
 # $limit_toss = 0;
@@ -442,43 +447,44 @@ $core->kvetch('Start assoc...');
 #   last if $limit_p && $limit_toss > $limit;
 # }
 
+# bark('Done assoc...');
 
-$core->kvetch('Done assoc...');
-$core->kvetch('Start xrefs...');
+## NOTE: I'm not sure why this is here anymore.
+# bark('Start xrefs...');
 
-##
-$limit_toss = 0;
-my $xref_query = GOBO::DBIC::GODBModel::Query->new({type=>'dbxref_lazy'});
-while ( my $x = $xref_query->get_next_result({}) ) {
+# ##
+# $limit_toss = 0;
+# my $xref_query = GOBO::DBIC::GODBModel::Query->new({type=>'dbxref_lazy'});
+# while ( my $x = $xref_query->get_next_result({}) ) {
 
-  my $id = $x->id;
-  my $dbname = $x->xref_dbname;
-  my $key = $x->xref_key;
-  my $keytype = $x->xref_keytype || ''; # nullable
-  my $desc = $x->xref_desc || ''; # nullable
+#   my $id = $x->id;
+#   my $dbname = $x->xref_dbname;
+#   my $key = $x->xref_key;
+#   my $keytype = $x->xref_keytype || ''; # nullable
+#   my $desc = $x->xref_desc || ''; # nullable
 
-  ## TODO: figure out everything that the dbxref connects into inside
-  ## the GO DB and connect back to it? Actually, maybe this could be
-  ## done quickly at runtime?
-  #if ( $acc =~ /$re/ ) {
-  #}
+#   ## TODO: figure out everything that the dbxref connects into inside
+#   ## the GO DB and connect back to it? Actually, maybe this could be
+#   ## done quickly at runtime?
+#   #if ( $acc =~ /$re/ ) {
+#   #}
 
-  ## Lucene ADD!
-  my $doc = Lucene::Document->new;
+#   ## Lucene ADD!
+#   my $doc = Lucene::Document->new;
 
-  $doc->add(Lucene::Document::Field->Text(dbname => $dbname));
-  $doc->add(Lucene::Document::Field->Text(key => $key));
-  $doc->add(Lucene::Document::Field->Text(id => $dbname . ':' . $key));
+#   $doc->add(Lucene::Document::Field->Text(dbname => $dbname));
+#   $doc->add(Lucene::Document::Field->Text(key => $key));
+#   $doc->add(Lucene::Document::Field->Text(id => $dbname . ':' . $key));
 
-  ## Add to the assoc store.
-  $xref_writer->addDocument($doc);
+#   ## Add to the assoc store.
+#   $xref_writer->addDocument($doc);
 
-  ## Hit limit?
-  $limit_toss++;
-  last if $limit_p && $limit_toss > $limit;
-}
+#   ## Hit limit?
+#   $limit_toss++;
+#   last if $limit_p && $limit_toss > $limit;
+# }
 
-$core->kvetch('Done xrefs...');
+# bark('Done xrefs...');
 
 ###
 ### Lucene STOP!
