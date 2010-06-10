@@ -400,7 +400,8 @@ sub mode_term_details_core {
 				$self->{CORE}->amigo_env('AMIGO_GO_ONLY_GRAPHICS'));
 
   ## Bridge variables from old system.
-  $self->set_template_parameter('cgi', 'term-details');
+  #$self->set_template_parameter('cgi', 'term-details');
+  $self->set_template_parameter('cgi', 'browse');
   $self->set_template_parameter('vbridge', 'term=' . $input_term_id);
 
   ###
