@@ -76,7 +76,7 @@ sub new {
 
 ## Internal convenience function.
 ## From Chris: "{-,+} reg < reg < {part_of,has_part} < is_a"
-sub _convert_rel_to_scale {
+sub relation_weight {
 
   my $self = shift;
   my $rel = shift || '';
@@ -529,9 +529,9 @@ sub lineage {
 	## Take the dominating relation.
 	## NOTE/WARNING: this may be GO specific.
 	my $curr_scale =
-	  $self->_convert_rel_to_scale($node_rel->{$gp->object->acc}, 1000);
+	  $self->relation_weight($node_rel->{$gp->object->acc}, 1000);
 	my $test_scale =
-	  $self->_convert_rel_to_scale($gp->relationship_type->acc, 1000);
+	  $self->relation_weight($gp->relationship_type->acc, 1000);
 	if( $curr_scale < $test_scale ){ # less specific
 	#if( $curr_scale > $test_scale ){ # more specific
 	  $node_rel->{$gp->object->acc} = $gp->relationship_type->acc;
