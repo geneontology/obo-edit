@@ -307,7 +307,7 @@ sub new {
 
     $self->{QUERY_RESULT_SET} = 'GeneProduct';
     $self->{QUERY_JOIN} = ['species',
-			   $assoc_qset];
+    			   $assoc_qset];
 
     $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
 
