@@ -20,7 +20,7 @@
 		[% IF page_name == 'browse' %]
 			<li><a href="[% cgi %].cgi?action=permalink[% permalink %]" title="Permanent link to this tree">Permalink</a></li>
 		[% ELSIF page_name == 'term_details' && show_reset_link %]
-			<li><a href="term-details.cgi?action=reset-tree&amp;term=[% term_acc %]&amp;session_id=[% session_id _ context _ anchor %]" title="Reset the tree to the initial view">Reset tree</a></li>
+			<li><a href="term_details?action=reset-tree&amp;term=[% term_acc %]&amp;session_id=[% session_id _ context _ anchor %]" title="Reset the tree to the initial view">Reset tree</a></li>
 		[% END %]
 		[% IF page_name == 'term_details' || page_name == 'subset_details' %]
 			<li><a href="browse.cgi?action=set-tree[% link %]&amp;session_id=[% session_id %]" title="View tree in GO browser">View in tree browser</a></li>
@@ -105,7 +105,7 @@
 				IF is_term_node == 1 %]
 					[% t.acc %] : [% t.name %]
 			[% ELSE %]
-<a href="term-details.cgi?term=[% t.acc %]&amp;session_id=[% session_id %]" title="View details of [% t.name %]" class="term">[% t.acc %] : [% t.name %]</a>
+<a href="term_details?term=[% t.acc %]&amp;session_id=[% session_id %]" title="View details of [% t.name %]" class="term">[% t.acc %] : [% t.name %]</a>
 			[% END;
 				IF page_name == 'subset_details' && is_term_node == 1;
 				#don't show annot count as there's no number

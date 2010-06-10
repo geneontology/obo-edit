@@ -99,7 +99,7 @@ our $search_dir = $ajs->amigo_env('AMIGO_INDEX_DIR') if ! $search_dir;
 
 ## What URLs should OpenSearch resolve to?
 our $term_url =
-  $ajs->amigo_env('AMIGO_CGI_URL') . '/term-details.cgi?term='
+  $ajs->amigo_env('AMIGO_CGI_URL') . '/term_details?term='
   if ! $term_url;
 our $gp_url =
   $ajs->amigo_env('AMIGO_CGI_URL') . '/gp-details.cgi?gp='

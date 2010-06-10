@@ -22,7 +22,7 @@
 		IF termlist.size == 1;
 			target = data.term_h.$termlist.0 %]
 	<h1>[% target.name %]</h1>
-[% details = 'term-details.cgi?term=' _ target.acc _ '&amp;session_id=' _ session_id %]
+[% details = 'term_details?term=' _ target.acc _ '&amp;session_id=' _ session_id %]
 	<ul id="navPage" class="inline C">
 	<li><a href="#[% target.acc %]" title="View gene products associated with this term">Term associations <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
 	<li><a href="[% details %]" title="View term information">Term information <img src="[% image_dir %]/left.png" alt="link to another page"></a></li>
@@ -74,7 +74,7 @@
 			END;
 			%]
 		<tr><td colspan="[% colspan || 7 %]">
-		<h3 class="term"><a href="term-details.cgi?term=[% t.acc %]&amp;session_id=[% session_id %]"  title="Click to view details of [% t.name %]" class='name'>[% t.name %] ; [% t.acc %]</a> <a href="browse.cgi?action=set-tree&amp;term=[% t.acc %]&amp;session_id=[% session_id %]" title="View term in the tree" class="assoc-link">[view in tree]</a></h3>
+		<h3 class="term"><a href="term_details?term=[% t.acc %]&amp;session_id=[% session_id %]"  title="Click to view details of [% t.name %]" class='name'>[% t.name %] ; [% t.acc %]</a> <a href="browse.cgi?action=set-tree&amp;term=[% t.acc %]&amp;session_id=[% session_id %]" title="View term in the tree" class="assoc-link">[view in tree]</a></h3>
 		[% IF t.definition %]
 			<p class="def" id="[% t.acc %]-def">[% t.definition %]</p>
 		[% END;

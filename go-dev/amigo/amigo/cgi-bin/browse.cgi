@@ -137,7 +137,7 @@ if ($params{'format'})
 {	if ($params{'format'} eq 'png' || $params{'format'} eq 'dot')
 	{	my $base = {};
 		if ($params{'format'} eq 'png')
-		{	$base->{base_url} = "term-details.cgi?session_id=".$session->id."&amp;term=";
+		{	$base->{base_url} = "term_details?session_id=".$session->id."&amp;term=";
 		}
 
 		my $graphviz = GO::Dotty::Dotty::go_graph_to_graphviz

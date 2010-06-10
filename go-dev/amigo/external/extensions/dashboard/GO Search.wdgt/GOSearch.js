@@ -6,7 +6,7 @@
 // Global hard-wired variables.
 var global_amigo_base = "http://amigo.berkeleybop.org/cgi-bin/amigo/";
 //var global_amigo_gp_details = "gp-details.cgi?gp=";
-//var global_amigo_term_details = "term-details.cgi?term=";
+//var global_amigo_term_details = "term_details?term=";
 
 // Global Apple widgets.
 var global_return_button = null;

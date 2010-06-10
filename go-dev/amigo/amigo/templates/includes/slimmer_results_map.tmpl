@@ -29,17 +29,17 @@
       <tr class="even_odd">
       [%    END %]
         <td rowspan="1">
-	  <a href="term-details.cgi?term=[% mapping.ACC %]">[% mapping.ACC %]</a>
+	  <a href="term_details?term=[% mapping.ACC %]">[% mapping.ACC %]</a>
 	</td>
 	<td rowspan="1">
 	  [% FOREACH leaf = mapping.LEAVES %]
-	  <a href="term-details.cgi?term=[% leaf %]">[% leaf %]</a>
+	  <a href="term_details?term=[% leaf %]">[% leaf %]</a>
 
 	  [% END %]
 	</td>
 	<td rowspan="1">
 	  [% FOREACH anc = mapping.ALL %]
-	  <a href="term-details.cgi?term=[% anc %]">[% anc %]</a>
+	  <a href="term_details?term=[% anc %]">[% anc %]</a>
 
 	  [% END %]
 	</td>

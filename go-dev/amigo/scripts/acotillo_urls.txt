@@ -5,7 +5,7 @@ http://toy.lbl.gov:9012/cgi-bin/sleep?time=3
 ## A selection of URLs on the main public toy server for AmiGO. These
 ## URLs may or may not still be in service:
 # pigmentation term
-http://toy.lbl.gov:9012/cgi-bin/amigo/term-details.cgi?term=GO:0043473&session_id=4438amigo1200007328
+http://toy.lbl.gov:9012/cgi-bin/amigo/term_details?term=GO:0043473&session_id=4438amigo1200007328
 # search for "pigmentation" term
 http://toy.lbl.gov:9012/cgi-bin/amigo/search.cgi?search_constraint=term&search_query=pigmentation&action=new-search
 # search for "head" gene

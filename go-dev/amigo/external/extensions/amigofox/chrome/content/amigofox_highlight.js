@@ -202,13 +202,13 @@ function lookup() {
   if( go_id_re.test(str) ){
 
     blankMenu();
-    addItem(str, "http://localhost/cgi-bin/amigo/term-details.cgi?term=" + str);
+    addItem(str, "http://localhost/cgi-bin/amigo/term_details?term=" + str);
 
   }else if( go_key_re.test(str) ){
 
     blankMenu();
     str = "GO:" + str;
-    addItem(str, "http://localhost/cgi-bin/amigo/term-details.cgi?term=" + str);
+    addItem(str, "http://localhost/cgi-bin/amigo/term_details?term=" + str);
 
   }else{
     _httpGet(curr_url + str, scanAmiGO);

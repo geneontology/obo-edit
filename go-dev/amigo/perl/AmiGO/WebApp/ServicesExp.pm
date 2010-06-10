@@ -202,7 +202,7 @@ sub mode_navi_js_data {
   $retstruct->{go_term_service} =
     $self->{CORE}->amigo_env('AMIGO_CGI_URL') . '/aserve_exp?mode=term&terms=';
   $retstruct->{amigo_term_details_service} =
-    $self->{CORE}->amigo_env('AMIGO_CGI_URL') . '/term-details.cgi?term=';
+    $self->{CORE}->amigo_env('AMIGO_CGI_URL') . '/term_details?term=';
 
   ## The previous position if it is available from the incoming
   ## information.

@@ -35,7 +35,7 @@
 	[%       HTML.escape(count.ACC) %]
 	<a href="#plus_info">+</a>
 	[%    ELSE %]
-	<a href="term-details.cgi?term=[% HTML.escape(count.ACC) %]&amp;[% session_id_for_url %]">[% HTML.escape(count.ACC) %]</a> [% HTML.escape(count.NAME) %]
+	<a href="term_details?term=[% HTML.escape(count.ACC) %]&amp;[% session_id_for_url %]">[% HTML.escape(count.ACC) %]</a> [% HTML.escape(count.NAME) %]
 	[%       IF count.IS_ROOT_TERM %]
 	<a href="#star_info">*</a>
 	[%       END %]

@@ -190,7 +190,7 @@
 			this_term = data.term_h.$t;
 			IF error_h.term.${this_term.acc};
 				term_data = error_h.term.${this_term.acc} %]
-<li><a href="term-details.cgi?term=[% this_term.acc %]&amp;session=[% session_id %]" title="View term details">[% this_term.name %] ; [% this_term.acc %]</a>:</li>
+<li><a href="term_details?term=[% this_term.acc %]&amp;session=[% session_id %]" title="View term details">[% this_term.name %] ; [% this_term.acc %]</a>:</li>
 			[% #	if the term has children, offer a link
 				IF term_data.direct_children && term_data.direct_children > 0;
 					children = ' children';
