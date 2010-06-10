@@ -294,47 +294,45 @@ sub mode_term_details_core {
   $self->set_template_parameter('ACC_TO_RAND', $acc_to_rand);
   $self->set_template_parameter('RAND_TO_ACC', $rand_to_acc);
   #$self->set_template_parameter('GENE_PRODUCT_ASSOCIATIONS_COUNT', 'foo');
-
   # ## 
   # $self->{CORE}->kvetch("nodes_sorted_by_depth:\n" .
   # 			Dumper($nodes_sorted_by_depth));
   # $self->{CORE}->kvetch('lnode_rel_inf: ' . Dumper($lnode_rel_inf));
-
   # $self->{CORE}->kvetch("max depth: " . $max_ldepth);
 
-  ## Collect path addresses for javascript line to inferred.
-  my $node_addresses = {};
-  my $total_address_rows = 0;
-  if( $nodes_sorted_by_depth && $max_ldepth ){
-    my $d = 0;
-    while( $d <= $max_ldepth ){
-      if( $nodes_sorted_by_depth->{$d} ){
-	my $anc_chunks = $nodes_sorted_by_depth->{$d};
-        foreach my $anc (@$anc_chunks){
-	  #$self->{CORE}->kvetch("address: " . $anc->{acc});
-	  if( defined $lnode_rel_inf->{$anc->{acc}} &&
-	      $lnode_rel_inf->{$anc->{acc}} == 1 ){
-	    # $self->{CORE}->kvetch("addr: " . $anc->{acc} . ', ' .
-	    # 			  $total_address_rows . ', ' . $d);
-	    $node_addresses->{$anc->{acc}} =
-	      {
-	       row => $total_address_rows,
-	       column => $d,
-	      };
-	  }
-	  $total_address_rows++;
-	}
-      }
-      $d++;
-    }
-  }
-  my $home_address =
-    {
-     row => $total_address_rows,
-     column => scalar( keys %$nodes_sorted_by_depth ),
-    };
-  # $self->{CORE}->kvetch("addresses:\n" . Dumper($node_addresses));
-  # $self->{CORE}->kvetch("home address:\n" . Dumper($home_address));
+  # ## Collect path addresses for javascript line to infer.
+  # my $node_addresses = {};
+  # my $total_address_rows = 0;
+  # if( $nodes_sorted_by_depth && $max_ldepth ){
+  #   my $d = 0;
+  #   while( $d <= $max_ldepth ){
+  #     if( $nodes_sorted_by_depth->{$d} ){
+  # 	my $anc_chunks = $nodes_sorted_by_depth->{$d};
+  #       foreach my $anc (@$anc_chunks){
+  # 	  #$self->{CORE}->kvetch("address: " . $anc->{acc});
+  # 	  if( defined $lnode_rel_inf->{$anc->{acc}} &&
+  # 	      $lnode_rel_inf->{$anc->{acc}} == 1 ){
+  # 	    # $self->{CORE}->kvetch("addr: " . $anc->{acc} . ', ' .
+  # 	    # 			  $total_address_rows . ', ' . $d);
+  # 	    $node_addresses->{$anc->{acc}} =
+  # 	      {
+  # 	       row => $total_address_rows,
+  # 	       column => $d,
+  # 	      };
+  # 	  }
+  # 	  $total_address_rows++;
+  # 	}
+  #     }
+  #     $d++;
+  #   }
+  # }
+  # my $home_address =
+  #   {
+  #    row => $total_address_rows,
+  #    column => scalar( keys %$nodes_sorted_by_depth ),
+  #   };
+  # # $self->{CORE}->kvetch("addresses:\n" . Dumper($node_addresses));
+  # # $self->{CORE}->kvetch("home address:\n" . Dumper($home_address));
 
   ## Add variables to template.
   $self->set_template_parameter('MAX_DEPTH', $max_ldepth);
@@ -351,9 +349,16 @@ sub mode_term_details_core {
   my $gpc_q = AmiGO::Worker::GeneProductCount->new($acc_list_for_gpc_info);
   #print STDERR "<<TIME_MID>>\n";
   my $gpc_info = $gpc_q->get_info();
-  my $gpc_count = $gpc_q->get_count($input_term_id);
-  #print STDERR "<<TIME_END>>\n";
-  $self->set_template_parameter('GENE_PRODUCT_ASSOCIATIONS_COUNT', $gpc_count);
+
+  ## Get total counts for all terms (to use in fallback cases where JS
+  ## is not enabled).
+  my $gpc_total_count = {};
+  foreach my $acc (@$acc_list_for_gpc_info){
+    $gpc_total_count->{$acc} = $gpc_q->get_count($acc);
+  }
+  $self->set_template_parameter('GPA_COUNTS', $gpc_total_count);
+  $self->set_template_parameter('GENE_PRODUCT_ASSOCIATIONS_COUNT',
+				$gpc_total_count->{$input_term_id});
 
   ###
   ### External links.
@@ -463,8 +468,8 @@ sub mode_term_details_core {
      ],
      javascript =>
      [
-      $self->{JS}->make_var('global_addresses', $node_addresses),
-      $self->{JS}->make_var('global_home_address', $home_address),
+      # $self->{JS}->make_var('global_addresses', $node_addresses),
+      # $self->{JS}->make_var('global_home_address', $home_address),
       $self->{JS}->make_var('global_count_data', $gpc_info),
       $self->{JS}->make_var('global_rand_to_acc', $rand_to_acc),
       $self->{JS}->make_var('global_acc_to_rand', $acc_to_rand),
