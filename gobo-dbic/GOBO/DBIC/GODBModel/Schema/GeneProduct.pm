@@ -118,6 +118,9 @@ __PACKAGE__->belongs_to('type' =>
 __PACKAGE__->has_many('gene_product_phylotree',
 		      'GOBO::DBIC::GODBModel::Schema::GeneProductPhylotree',
 		      'gene_product_id');
+__PACKAGE__->has_many('gene_product_dbxref',
+		      'GOBO::DBIC::GODBModel::Schema::GeneProductDBXRef',
+		      'gene_product_id');
 ##
 __PACKAGE__->add_unique_constraint("dbxref_id", ["dbxref_id"]);
 __PACKAGE__->add_unique_constraint("g0", ["id"]);

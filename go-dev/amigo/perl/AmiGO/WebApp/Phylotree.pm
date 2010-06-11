@@ -101,7 +101,7 @@ sub mode_cluster_index{
 
     my @r;
     if (scalar @show) {
-	@r = $o->show(@show);
+	@r = $o->id2phylotree(@show);
     } else {
 	my $rows = abs(int($q->param('rows') || 5));
 	my $page = abs(int($q->param('page') || 1));
