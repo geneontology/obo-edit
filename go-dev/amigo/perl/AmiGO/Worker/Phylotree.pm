@@ -46,7 +46,7 @@ our $phylotree_gobo;
 our $core;
 
 sub BEGIN {
-    $ENV{DBIC_TRACE}=1;
+    #$ENV{DBIC_TRACE}=1;
     $core = AmiGO::JavaScript->new();
     $phylotree_gobo = GOBO::DBIC::GODBModel::Query->new({type=>'phylotree'});
 }
@@ -157,7 +157,18 @@ sub set{
     return $s->_index_display(map { $_->id } @$r);
 }
 
-sub show{
+sub key2phylotree{
+    my $s = shift;
+
+    my $r = $phylotree_gobo->get_all_results
+      ({ xref_dbname => $s->{dbname}, xref_key => \@_ });
+
+    return $s->_index_display(map {
+	$_->id;
+    } @$r);
+}
+
+sub id2phylotree{
     my $s = shift;
 
     my $dbxref1 = GOBO::DBIC::GODBModel::Query->new({type=>'dbxref'});
