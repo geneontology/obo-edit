@@ -36,6 +36,7 @@ __PACKAGE__->load_classes( qw/
 			       GeneProductPhylotree
 			       GeneProductSynonym
 			       GeneProductSeq
+			       GeneProductDBXRef
 
 			       Evidence
 			       EvidenceDBXRef

@@ -85,6 +85,12 @@ __PACKAGE__->has_one('seq_hack' =>
 		     'GOBO::DBIC::GODBModel::Schema::Seq',
 		     {'foreign.display_id' => 'self.xref_key'});
 
+__PACKAGE__->has_many('gene_product_dbxref',
+		      'GOBO::DBIC::GODBModel::Schema::GeneProductDBXRef',
+		      'dbxref_id');
+__PACKAGE__->many_to_many
+  ('gene_products' => 'gene_product_dbxref', 'gene_product');
+
 #__PACKAGE__->add_unique_constraint("g0", ["id"]);
 
 
