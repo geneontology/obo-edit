@@ -97,11 +97,14 @@ sub mode_cluster_index{
     my $q = $c->query();
     my $o = AmiGO::Worker::Phylotree->new
       (dbname => ($q->param('dbname') || $default_dbname));
-    my @show = map { split(m/\s+/, $_) } $q->param('show');
+
+    my @id = map { split(m/\s+/, $_) } $q->param('id');
+    my @key = map { split(m/\s+/, $_) } $q->param('key');
 
     my @r;
-    if (scalar @show) {
-	@r = $o->id2phylotree(@show);
+    if (scalar(@id) || scalar(@key)) {
+	@r = $o->id2phylotree(@id);
+	push @r, $o->key2phylotree(@id);
     } else {
 	my $rows = abs(int($q->param('rows') || 5));
 	my $page = abs(int($q->param('page') || 1));
@@ -139,7 +142,7 @@ sub mode_id_entry{
     $c->add_template_content(<<"FORM");
 <h1>$dbname</h1>
 <form method="post" action="$action" style="margin:auto;width:50ex">
-<textarea name="show" rows="20" cols="50"></textarea>
+<textarea name="id" rows="20" cols="50"></textarea>
 <input type="submit" />
 </form>
 FORM
