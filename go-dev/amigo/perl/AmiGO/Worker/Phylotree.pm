@@ -46,7 +46,7 @@ our $phylotree_gobo;
 our $core;
 
 sub BEGIN {
-    #$ENV{DBIC_TRACE}=1;
+    $ENV{DBIC_TRACE}=1;
     $core = AmiGO::JavaScript->new();
     $phylotree_gobo = GOBO::DBIC::GODBModel::Query->new({type=>'phylotree'});
 }
@@ -160,25 +160,32 @@ sub set{
 sub show{
     my $s = shift;
 
-    my $dbxref_gobo = GOBO::DBIC::GODBModel::Query->new({type=>'dbxref'});
-    my $r = $dbxref_gobo->get_all_results({ xref_key => \@_ });
-    my @dbxref = map {
+    my $dbxref1 = GOBO::DBIC::GODBModel::Query->new({type=>'dbxref'});
+    my $r1 = $dbxref1->get_all_results({ xref_key => \@_ });
+
+    my @phylotree_id = map {
 	map {
 	    $_->phylotree_id;
-	} $_->gene_product->gene_product_phylotree->all()
-    } @$r;
+	} $_->gene_product->gene_product_phylotree->all();
+    } @$r1;
 
-    $r = GOBO::DBIC::GODBModel::Query->new({type=>'seq'})->get_all_results
-      ({ display_id => \@_ });
-    my @seq = map {
+    my $dbxref2 = GOBO::DBIC::GODBModel::Query->new({type=>'dbxref_lazy'});
+    my $r2 = $dbxref2->get_all_results({ xref_key => \@_ });
+
+
+    push @phylotree_id, map {
     	map {
-    	    $_->phylotree_id;
-    	} $_->gene_product_seq->gene_product->gene_product_phylotree->all();
-    } @$r;
+    	    map {
+    		$_->phylotree_id;
+    	    } $_->gene_product_phylotree->all();
+    	} $_->gene_products;
+
+
+    } @$r2;
 
     my %ids;
-    for (@dbxref, @seq) {
-	$ids{$_} = '1';
+    for (@phylotree_id) {
+     	$ids{$_} = '1';
     }
 
     return $s->_index_display(keys %ids);
