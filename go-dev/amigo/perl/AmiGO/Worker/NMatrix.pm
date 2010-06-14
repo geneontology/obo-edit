@@ -15,6 +15,7 @@ use Data::Dumper;
 use Set::Scalar;
 use Algorithm::Permute;
 
+use AmiGO::Worker::Intersection;
 
 =item new
 
