@@ -122,15 +122,15 @@ my $gp_spot = $core->amigo_env('INDEX_DIR') . '/lucene/gene_product';
 my $gp_store = Lucene::Store::FSDirectory->getDirectory($gp_spot, 1);
 my $gp_writer = new Lucene::Index::IndexWriter($gp_store, $analyzer, 1);
 
-## Try at association search.
-my $assoc_spot = $core->amigo_env('INDEX_DIR') . '/lucene/association';
-my $assoc_store = Lucene::Store::FSDirectory->getDirectory($assoc_spot,1);
-my $assoc_writer = new Lucene::Index::IndexWriter($assoc_store, $analyzer, 1);
+# ## Try at association search.
+# my $assoc_spot = $core->amigo_env('INDEX_DIR') . '/lucene/association';
+# my $assoc_store = Lucene::Store::FSDirectory->getDirectory($assoc_spot,1);
+# my $assoc_writer = new Lucene::Index::IndexWriter($assoc_store, $analyzer, 1);
 
-## Try at xref search.
-my $xref_spot = $core->amigo_env('INDEX_DIR') . '/lucene/xref';
-my $xref_store = Lucene::Store::FSDirectory->getDirectory($xref_spot,1);
-my $xref_writer = new Lucene::Index::IndexWriter($xref_store, $analyzer, 1);
+# ## Try at xref search.
+# my $xref_spot = $core->amigo_env('INDEX_DIR') . '/lucene/xref';
+# my $xref_store = Lucene::Store::FSDirectory->getDirectory($xref_spot,1);
+# my $xref_writer = new Lucene::Index::IndexWriter($xref_store, $analyzer, 1);
 
 ###
 ### Walk through database.
@@ -489,10 +489,10 @@ $gp_writer->optimize;
 $gp_writer->close;
 undef $gp_writer;
 
-$assoc_writer->optimize;
-$assoc_writer->close;
-undef $assoc_writer;
+# $assoc_writer->optimize;
+# $assoc_writer->close;
+# undef $assoc_writer;
 
-$xref_writer->optimize;
-$xref_writer->close;
-undef $xref_writer;
+# $xref_writer->optimize;
+# $xref_writer->close;
+# undef $xref_writer;
