@@ -1,5 +1,4 @@
 #!/usr/bin/perl -w
-
 ####
 #### Run this after installation or after a DB update.
 #### Usage:
@@ -32,10 +31,11 @@ use vars qw(
 	     $opt_s
 	     $opt_g
 	     $opt_p
+	     $opt_l
 	  );
 
 ## Setup.
-getopts('csgp');
+getopts('csgpl');
 my $core = AmiGO->new();
 my @errors = ();
 
@@ -44,28 +44,24 @@ my $do_cache = 0;
 my $do_summary = 0;
 my $do_svg = 0;
 my $do_png = 0;
-if ( $opt_c ){
-  $do_cache = 1;
-}
-if ( $opt_s ){
-  $do_summary = 1;
-}
-if ( $opt_g ){
-  $do_svg = 1;
-}
-if ( $opt_p ){
-  $do_png = 1;
-}
+my $do_lucene = 0;
+if ( $opt_c ){ $do_cache = 1; }
+if ( $opt_s ){ $do_summary = 1; }
+if ( $opt_g ){ $do_svg = 1; }
+if ( $opt_p ){ $do_png = 1; }
+if ( $opt_l ){ $do_lucene = 1; }
 
 ## Nothing at all? Then do everything.
 if ( ! $opt_c &&
      ! $opt_s &&
      ! $opt_g &&
-     ! $opt_p ){
+     ! $opt_p &&
+     ! $opt_l ){
   $do_cache = 1;
   $do_summary = 1;
   $do_svg = 1;
   $do_png = 1;
+  $do_lucene = 1;
 }
 
 #$core->kvetch("Will do cache (" . $do_cache . ", " . $opt_c . ")");
@@ -219,6 +215,24 @@ $core->kvetch('Number of errors : ' . scalar(@errors));
 foreach my $error (@errors){
   $core->kvetch($error);
 }
+
+
+##
+if( $do_lucene ){
+
+  $core->kvetch("Making lucene indexes, please wait...");
+
+  ## Add new indexes; no args needed--from here, luigi knows where to go.
+  my @args = ("perl", $core->amigo_env('GO_ROOT') . "/amigo/scripts/luigi");
+  $core->kvetch("System: \"@args\"");
+  system(@args) == 0 || die "System \"@args\" failed: $?";
+
+  ## TODO/BUG: check/purge old ones.
+  
+
+  $core->kvetch("Finished indexing.");
+}
+
 
 ###
 ### Subs.
