@@ -283,7 +283,7 @@ dbxref database name.
 =cut
 sub dbxref_db_regexp_string {
   my $self = shift;
-  return '[\w\d\-\_\.]+';
+  return '[\w\d\-\_\.\/]+';
 }
 
 
@@ -295,7 +295,7 @@ dbxref database key.
 =cut
 sub dbxref_key_regexp_string {
   my $self = shift;
-  return '[\w\d\:\-\_\.]+';
+  return '[\w\d\:\-\_\.\/\(\)\+\,\'\\\[\]\|\?]+';
 }
 
 
@@ -368,7 +368,7 @@ sub split_gene_product_acc {
 
   ##
   $in_str =~ /^($db)\:($key)$/;
-  $self->kvetch("$1:$2");
+  # $self->kvetch("$1:$2");
   return ($1, $2);
 }
 
