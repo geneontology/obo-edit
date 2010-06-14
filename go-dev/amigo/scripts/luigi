@@ -52,12 +52,10 @@ sub bark {
   print $str . "\n" if $opt_v;
 }
 
-###
-### Analyzer experiments. If we do them, we just do them and exit.
-###
-
+# ###
+# ### Analyzer experiments. If we do them, we just do them and exit.
+# ###
 # if( $opt_a ){
-
 #   my $analyzers =
 #     {
 #      'stnd' => new Lucene::Analysis::Standard::StandardAnalyzer(),
@@ -66,7 +64,6 @@ sub bark {
 #      'keyw' => new Lucene::Analysis::KeywordAnalyzer(),
 #      'amgo' => new AmiGO::Lucene::Analysis::AmiGOTextAnalyzer(),
 #     };
-
 #   my $test_strings = [
 # 		      'GO:0005755',
 # 		      'GO\:0005755',
@@ -74,12 +71,9 @@ sub bark {
 # 		      'acc:GO:0005755 or name:foo',
 # 		      '(acc:GO:0005755 or name:foo) and bar'
 # 		     ];
-
 #   foreach my $a_id (keys %$analyzers){
-
 #     my $a = $analyzers->{$a_id};
 #     my $parser = new Lucene::QueryParser("acc", $a);
-
 #     bark("$a_id : ");
 #     foreach my $str (@$test_strings){
 #       my $query = $parser->parse($str);
@@ -190,7 +184,7 @@ while ( my $t = $term_query->get_next_result({}) ) {
     #     bark("\tname: ".$name);
     #     bark("\tsynonym: ".$cat_syn);
 
-    ## Lucene ADD!
+    ## Add trivial Lucene fields.
     my $doc = Lucene::Document->new;
     $doc->add(Lucene::Document::Field->Text(acc => $acc));
     $doc->add(Lucene::Document::Field->Text(ontology => $ontology));
@@ -205,11 +199,14 @@ while ( my $t = $term_query->get_next_result({}) ) {
     $syn_field->setBoost(0.5);
     $doc->add($syn_field);
 
-    ## Devalue definition and comment.
+    ## Devalue definition.
     my $definition_field =
       Lucene::Document::Field->Text(definition => $definition_text);
     $definition_field->setBoost(0.5);
     $doc->add($definition_field);
+
+    ## NOTE/TODO: Apparently, we've chucked the comment field for
+    ## search.
     my $comment_field = Lucene::Document::Field->Text(comment => $comment_text);
     #$comment_field->setBoost(0.5);
     #$doc->add($comment_field);
@@ -274,9 +271,7 @@ while ( my $gp = $gp_query->get_next_result({}) ) {
   my $cat_assoc = '';
   if( $opt_a ){
 
-    my $num_assoc = 0; # debug info
     my %assoc_cache = ();
-    #my %assoc_split_cache = ();
     if ( $gp->association ) {
       my @all_assocs = $gp->association->all;
       foreach my $a (@all_assocs) {
@@ -286,18 +281,12 @@ while ( my $gp = $gp_query->get_next_result({}) ) {
   	  my @all_anc = $a->term->ancestors->all;
   	  foreach my $anc (@all_anc) {
   	    my $acc = $anc->object->acc;
-  	    #$acc =~ /GO\:(\d{7})/;
-  	    #my $split_acc = $1;
-  	    #$term_split_cache{$split_acc} = 1;
   	    $assoc_cache{$acc} = 1;
   	  }
 	}
-	$num_assoc++;
       }
     }
     $cat_assoc = join "\n", keys %assoc_cache;
-    #my $cat_split_term = '';
-    #$cat_split_term = join ' ', keys %term_split_cache;
   }
 
   #   ## DEBUG
@@ -311,16 +300,14 @@ while ( my $gp = $gp_query->get_next_result({}) ) {
   #   bark("\tsynonym: ". $cat_syn);
   #   bark("\tassociation: ". $cat_assoc);
 
-  ## Lucene ADD!
+  ## Add trivial lucene fields.
   my $doc = Lucene::Document->new;
   $doc->add(Lucene::Document::Field->Text(dbxref => $acc));
-  #$doc->add(Lucene::Document::Field->Text(full_name => $full_name));
   $doc->add(Lucene::Document::Field->Text(symbol => $symbol));
   $doc->add(Lucene::Document::Field->Text(species => $species));
   $doc->add(Lucene::Document::Field->Text(scientific => $scientific));
   $doc->add(Lucene::Document::Field->Text(source => $source));
   $doc->add(Lucene::Document::Field->Text(gptype => $gptype));
-  #$doc->add(Lucene::Document::Field->Text(gpsynonym => $gpsynonym));
   $doc->add(Lucene::Document::Field->Text(association => $cat_assoc));
   $doc->add(Lucene::Document::Field->Text(homolset => $rg_check));
 
