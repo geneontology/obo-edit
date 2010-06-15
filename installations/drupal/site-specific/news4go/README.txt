@@ -5,20 +5,19 @@ The 12 Steps for a Drupal upgrade:
    wget <new drupal>
    tar -zxvf <new drupal>
 
-1) Log in as root (will need later):
-   ...
-
-2) Set site to offline:
-   http://go.berkeleybop.org/news4go/admin/settings/site-maintenance
-
-3) Backup db:
+1) Backup db:
    /local/dumps/save_db.pl -v -s localhost -d drupal_news4go -t /local/dumps
 
-4) Backup files (permissions may not be preserved):
-   /local/dumps/clone_drupal.pl -v -d /local/www/htdocs/news4go -t /local/dumps
+2) Backup files (permissions may not be preserved):
+    /local/dumps/clone_drupal.pl -v -d /local/www/htdocs/news4go -t /local/dumps
+
+3) Log in as root (will need later):
+   ...
+
+4) Set site to offline:
+   http://go.berkeleybop.org/news4go/admin/settings/site-maintenance
 
 5) Disable contributed modules (may take several passes):
-   Content, Content Permissions, Text   
    Calendar, Date API,  Date Timezone
    Advanced Help, BUEditor, IMCE, Twitter, Twitter Actions
    CAPTCHA, reCAPTCHA
@@ -36,7 +35,6 @@ The 12 Steps for a Drupal upgrade:
    mv news4go.old/sites news4go
 
 9) Move misc.:
-   mv news4go/.htaccess news4go/.htaccess.orig
    mv news4go.old/.htaccess news4go
 
 10) Go directly to update.php:
