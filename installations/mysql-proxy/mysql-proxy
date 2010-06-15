@@ -1,0 +1,39 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          mysql-proxy
+# Required-Start:
+# Required-Stop:
+# Default-Start:     S
+# Default-Stop:
+# Short-Description: Starts the mysql-proxt script in /srv/mysql-proxy.
+# Description:
+### END INIT INFO
+
+PATH=/usr/sbin:/sbin:/bin
+
+. /lib/init/vars.sh
+. /lib/lsb/init-functions
+
+do_start () {
+
+        log_action_msg "Will now start mysql-proxy"
+	[ -f /srv/mysql-proxy/simple_proxy.lua ] && [ -f /local/mysql-proxy/all.log ] && mysql-proxy --proxy-lua-script=/srv/mysql-proxy/simple_proxy.lua --proxy-address=:4404 --proxy-backend-addresses=spitz:3306 --daemon
+
+}
+
+case "$1" in
+  start|"")
+	do_start
+	;;
+  restart|reload|force-reload)
+	echo "Error: argument '$1' not supported" >&2
+	exit 3
+	;;
+  stop)
+	# No-op
+	;;
+  *)
+	echo "Usage: hostname.sh [start|stop]" >&2
+	exit 3
+	;;
+esac
