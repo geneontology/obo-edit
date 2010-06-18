@@ -1,7 +1,8 @@
 #!/usr/bin/perl -w
-
-# updates the ontology and defs files
-# *************************************************************
+####
+#### Copies the specified drupal directories to a specified
+#### location. Makes sure that the copied directory has a unique name.
+####
 
 use strict;
 use vars qw(
@@ -17,52 +18,38 @@ use File::Temp;
 
 getopts('hvs:d:t:a:');
 
+## Embedded help through perldoc.
 if( $opt_h ){
+  system('perldoc', __FILE__);
+  exit 0;
+}
 
-  print <<EOC;
-  Usage:
-     save-db.pl [-h] [-v] -s <server> -d <dbname> -t <location> [-a <address>]
+## Check our options.
+print "Will print verbose messages.\n" if $opt_v;
 
-  Options:
-     -h            Print this message.
-     -v            Enable more verbose messages. Useful for error checking.
-     -d <location> Location of the drupal directory
-     -t <location> Location of the dump directory
+## Check our arguments.
+die "No drupal directory defined, use -d option." if ! $opt_d;
+die "No dump directory defined, use -t option." if ! $opt_t;
 
-  Example usage:
-     TODO
+die "Specified drupal directory not a directory: $!" if ! -d $opt_d;
+die "Specified dump directory not a directory: $!" if ! -d $opt_t;
+die "Specified dump directory not writable: $!" if ! -W $opt_t;
 
-EOC
+my $drupal_dir = $opt_d;
+my $dump_dir = $opt_t;
 
-}else{
+## Bark.
+print "Drupal: $drupal_dir\n" if $opt_v;
+print "Dump: $dump_dir\n" if $opt_v;
 
-  ## Check our options.
-  print "Will print verbose messages.\n" if $opt_v;
+## Go!
+my $cmd = 'cp -p -r ' . $drupal_dir . ' ' . $dump_dir . '/drupal_clone' . '.' . randy();
+run($cmd);
+print "Done.\n" if $opt_v;
 
-  ## Check our arguments.
-  die "No drupal directory defined, use -d option." if ! $opt_d;
-  die "No dump directory defined, use -t option." if ! $opt_t;
-
-  die "Specified drupal directory not a directory: $!" if ! -d $opt_d;
-  die "Specified dump directory not a directory: $!" if ! -d $opt_t;
-  die "Specified dump directory not writable: $!" if ! -W $opt_t;
-
-  my $drupal_dir = $opt_d;
-  my $dump_dir = $opt_t;
-
-  ## Bark.
-  print "Drupal: $drupal_dir\n" if $opt_v;
-  print "Dump: $dump_dir\n" if $opt_v;
-
-  ## Go!
-  my $cmd = 'cp -p -r ' . $drupal_dir . ' ' . $dump_dir . '/drupal_clone' . '.' . randy();
-  run($cmd);
-  print "Done.\n" if $opt_v;
-
-  ## Super secret option.
-  if ( $opt_a) {
-    run('echo "Success." | nail -s "' . $cmd . '" ' . $opt_a);
-  }
+## Super secret option.
+if ( $opt_a) {
+  run('echo "Success." | nail -s "' . $cmd . '" ' . $opt_a);
 }
 
 
@@ -96,3 +83,40 @@ sub randy {
 
   return $trash_num;
 }
+
+
+=head1 NAME
+
+clone_drupal.pl
+
+=head1 SYNOPSIS
+
+clone_drupal.pl [-h] [-v] -d <path> -t <path> [-a <address>]
+
+=head1 DESCRIPTION
+
+Copies the specified drupal directory to a specified location.
+
+=head1 OPTIONS
+
+=over
+
+=item -h
+
+Print this message.
+
+=item -v
+
+Enable more verbose messages. Useful for error checking.
+
+=item -d <path>
+
+Location of the drupal directory
+
+=item -t <path>
+
+Location of the dump directory
+
+=item -a <address>
+
+Email address for completion notice (think cron-type jobs)

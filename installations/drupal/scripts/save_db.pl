@@ -1,7 +1,8 @@
 #!/usr/bin/perl -w
-
-# updates the ontology and defs files
-# *************************************************************
+####
+#### Dumps the specified mysql db to a specified location. Makes sure
+#### that the copied directory has a unique name.
+####
 
 use strict;
 use vars qw(
@@ -17,57 +18,41 @@ use File::Temp;
 
 getopts('hvs:d:t:a:');
 
+## Embedded help through perldoc.
 if( $opt_h ){
+  system('perldoc', __FILE__);
+  exit 0;
+}
 
-  print <<EOC;
-  Usage:
-     save-db.pl [-h] [-v] -s <server> -d <dbname> -t <location> [-a <address>]
+## Check our options.
+print "Will print verbose messages.\n" if $opt_v;
 
-  Options:
-     -h            Print this message.
-     -v            Enable more verbose messages. Useful for error checking.
-     -s <location> Database server.
-     -d <dbname>   Database name.
-     -t <location> Location of the dump directory
-     -a <address>  Address for notice
+## Check our arguments.
+die "No server defined, use -s option." if ! $opt_s;
 
-  Example usage:
-     /users/sjcarbon/local/src/cvs/obo/website/utils/save-db.pl -v -s localhost -d wikidb -t /users/sjcarbon/.Trash -a sjcarbon\@berkeleybop.org
+die "No database name defined, use -d option." if ! $opt_d;
 
-EOC
+die "No trash directory defined, use -t option." if ! $opt_t;
+die "Specified trash directory not a directory: $!" if ! -d $opt_t;
+die "Specified trash directory not writable: $!" if ! -W $opt_t;
 
-}else{
+my $database_server = $opt_s;
+my $database_name = $opt_d;
+my $trash_dir = $opt_t;
 
-  ## Check our options.
-  print "Will print verbose messages.\n" if $opt_v;
+## Bark.
+print "Database server: $database_server\n" if $opt_v;
+print "Database name: $database_name\n" if $opt_v;
+print "Trash: $trash_dir\n" if $opt_v;
 
-  ## Check our arguments.
-  die "No server defined, use -s option." if ! $opt_s;
+## Go!
+my $cmd = 'mysqldump -h ' . $database_server . ' ' . $database_name . ' > ' . $trash_dir . '/' . $database_name . '.' . randy();
+run($cmd);
+print "Done.\n" if $opt_v;
 
-  die "No database name defined, use -d option." if ! $opt_d;
-
-  die "No trash directory defined, use -t option." if ! $opt_t;
-  die "Specified trash directory not a directory: $!" if ! -d $opt_t;
-  die "Specified trash directory not writable: $!" if ! -W $opt_t;
-
-  my $database_server = $opt_s;
-  my $database_name = $opt_d;
-  my $trash_dir = $opt_t;
-
-  ## Bark.
-  print "Database server: $database_server\n" if $opt_v;
-  print "Database name: $database_name\n" if $opt_v;
-  print "Trash: $trash_dir\n" if $opt_v;
-
-  ## Go!
-  my $cmd = 'mysqldump -h ' . $database_server . ' ' . $database_name . ' > ' . $trash_dir . '/' . $database_name . '.' . randy();
-  run($cmd);
-  print "Done.\n" if $opt_v;
-
-  ## Super secret option.
-  if ( $opt_a) {
-    run('echo "Success." | nail -s "' . $cmd . '" ' . $opt_a);
-  }
+## Super secret option.
+if ( $opt_a) {
+  run('echo "Success." | nail -s "' . $cmd . '" ' . $opt_a);
 }
 
 
@@ -101,3 +86,44 @@ sub randy {
 
   return $trash_num;
 }
+
+
+=head1 NAME
+
+save_db.pl
+
+=head1 SYNOPSIS
+
+save_db.pl [-h] [-v] -s <server> -d <dbname> -t <location> [-a <address>]
+
+=head1 DESCRIPTION
+
+Dumps the specified mysql db to a specified location.
+
+=head1 OPTIONS
+
+=over
+
+=item -h
+
+Print this message.
+
+=item -v
+
+Enable more verbose messages. Useful for error checking.
+
+=item -s <location>
+
+Database server.
+
+=item -d <dbname>
+
+Database name.
+
+=item -t <location>
+
+Location of the dump directory
+
+=item -a <address>
+
+Email address for completion notice (think cron-type jobs)
