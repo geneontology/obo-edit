@@ -13,6 +13,7 @@ use vars qw(
             $opt_h
             $opt_v
             $opt_d
+            $opt_o
             $opt_b
            );
 use Getopt::Std;
@@ -25,7 +26,7 @@ use Archive::Tar;
 # my $fname = $fh->filename;
 # use File::Temp;
 
-getopts('hvs:d:b:');
+getopts('hvbd:o:');
 
 ## Embedded help through perldoc.
 if( $opt_h ){
@@ -36,6 +37,15 @@ if( $opt_h ){
 ## Check our options.
 print "Will print verbose messages.\n" if $opt_v;
 
+## Are we only doing backups?
+my $just_backups_p = 0;
+$just_backups_p = 1 if $opt_b;
+if( $just_backups_p ){
+  print "Will only do backups.\n";
+}else{
+  print "Will do backups and updates.\n";
+}
+
 ## Check our drupal argument.
 die "No drupal directory defined, use -d option." if ! $opt_d;
 die "Specified drupal directory not a directory: $!" if ! -d $opt_d;
@@ -44,10 +54,10 @@ print "Drupal installation at: $drupal_dir\n" if $opt_v;
 
 ## Check our backup argument and prep a new backup directory in the
 ## backup directory.
-die "No backup directory defined, use -b option." if ! $opt_b;
-die "Specified backup directory not a directory: $!" if ! -d $opt_b;
-die "Specified backup directory not writable: $!" if ! -W $opt_b;
-my $backup_dir = $opt_b . '/' . randy();
+die "No backup directory defined, use -b option." if ! $opt_o;
+die "Specified backup directory not a directory: $!" if ! -d $opt_o;
+die "Specified backup directory not writable: $!" if ! -W $opt_o;
+my $backup_dir = $opt_o . '/' . randy();
 mkdir $backup_dir;
 die "Created backup directory not writable: $!" if ! -W $backup_dir;
 print "Backups at: $backup_dir\n" if $opt_v;
@@ -92,8 +102,8 @@ print "Backups at: $backup_dir\n" if $opt_v;
   $tballer->create_archive($tarball_dump_dir, COMPRESS_GZIP, @drupal_files);
 }
 
-## Total upgrade...
-{
+## Total upgrade...but only if we are not just doing backups.
+if( ! $just_backups_p ){
   my $cmd = "drush -r $drupal_dir pm-update";
   run($cmd);
 }
@@ -145,7 +155,7 @@ maintain.pl
 
 =head1 SYNOPSIS
 
-maintain.pl [-h] [-v] -d <path> -b <path>
+maintain.pl [-h] [-v] [-b] -d <path> -o <path>
 
 =head1 DESCRIPTION
 
@@ -168,16 +178,20 @@ Print this message.
 
 Enable more verbose messages. Useful for error checking.
 
+=item -b
+
+Only perform backups--don't fiddle with the drupal installation.
+
 =item -d <path>
 
 Location of the drupal installation.
 
-=item -b <path>
+=item -o <path>
 
-Location of the writable backup directory.
+Location of the writable backup ouput directory.
 
 =back
 
-=head1 EXAMPLE
+=head1 EXAMPLES
 
-/home/user/local/bin/maintain.pl -v -d /srv/www/htdocs/drupal -b /tmp
+/home/user/local/bin/maintain.pl -v -d /srv/www/htdocs/drupal -o /tmp
