@@ -12,6 +12,7 @@
 use utf8;
 use strict;
 use vars qw(
+	     $opt_h
 	     $opt_v
 	     $opt_r
 	     $opt_i
@@ -686,7 +687,13 @@ foreach my $env_conf_key ( keys %env_conf ) {
 
 
 ## Since internal checks are done, get ready for user input.
-getopts('vriscmtegGjdf:');
+getopts('hvriscmtegGjdf:');
+
+## Embedded help through perldoc.
+if( $opt_h ){
+  system('perldoc', __FILE__);
+  exit 0;
+}
 
 ## Empty init (helps later scoping fun).
 my @args = ();

@@ -27,6 +27,7 @@ use Getopt::Std;
 #BEGIN { plan tests => 0 }
 
 use vars qw(
+	     $opt_h
 	     $opt_c
 	     $opt_s
 	     $opt_g
@@ -35,9 +36,15 @@ use vars qw(
 	  );
 
 ## Setup.
-getopts('csgpl');
+getopts('chsgpl');
 my $core = AmiGO->new();
 my @errors = ();
+
+## Embedded help through perldoc.
+if( $opt_h ){
+  system('perldoc', __FILE__);
+  exit 0;
+}
 
 ## Take care of arguments.
 my $do_cache = 0;
@@ -251,7 +258,7 @@ refresh.pl
 
 =head1 SYNOPSIS
 
-refresh.pl [-c] [-s] [-g] [-p]
+refresh.pl [-h] [-c] [-s] [-g] [-p]
 
 =head1 DESCRIPTION
 
