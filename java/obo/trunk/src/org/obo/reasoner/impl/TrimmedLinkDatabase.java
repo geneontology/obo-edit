@@ -1,6 +1,5 @@
 package org.obo.reasoner.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -27,6 +26,7 @@ public class TrimmedLinkDatabase extends AbstractLinkDatabase  implements LinkDa
 
 	protected LinkDatabase linkDatabase;
 
+	//enableTrimming true by default
 	protected boolean enableTrimming = true;
 
 	public static long trimTime = 0;

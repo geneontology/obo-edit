@@ -82,9 +82,7 @@ MutableLinkDatabase {
 			return s;
 		} else {
 			Collection<Link> s = new HashSet<Link>();
-			Iterator<Collection<Link>> it = parentLinkMap.values().iterator();
-			while (it.hasNext()) {
-				Collection<Link> parents = it.next();
+			for(Collection<Link> parents : parentLinkMap.values()){
 				for (Link link : parents) {
 					if (link.getParent().equals(lo))
 						s.add(link);

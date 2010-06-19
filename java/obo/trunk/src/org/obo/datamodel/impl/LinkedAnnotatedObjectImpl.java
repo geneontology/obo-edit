@@ -92,20 +92,12 @@ public abstract class LinkedAnnotatedObjectImpl extends AnnotatedObjectImpl
 		try {
 			LinkedAnnotatedObjectImpl out = (LinkedAnnotatedObjectImpl) super
 					.clone();
-
-			Iterator it;
-
 			out.children = createCollection();
-			it = getChildren().iterator();
-			while (it.hasNext()) {
-				Link tr = (Link) it.next();
+			for(Link tr : getChildren()){
 				out.atomicAddChild((Link) tr.clone());
 			}
-
 			out.parents = createCollection();
-			it = getParents().iterator();
-			while (it.hasNext()) {
-				Link tr = (Link) it.next();
+			for(Link tr : getParents()){
 				out.atomicAddParent((Link) tr.clone());
 			}
 
