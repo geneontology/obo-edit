@@ -66,12 +66,12 @@ public class TableList<T> extends JComponent {
 	protected FocusHierarchyListener focusListener = new FocusHierarchyListener() {
 
 		public void focusGained(FocusEvent e) {
-			logger.debug(">>> TableList.focusGained");
+			logger.debug("TableList.focusGained");
 		}
 
 		public void focusLost(FocusEvent e) {
 //			commitPendingEdits();
-			logger.debug(">>> TableList.focusLost");
+			logger.debug("TableList.focusLost");
 		}
 
 	};
@@ -129,7 +129,6 @@ public class TableList<T> extends JComponent {
 
 		@Override
 		public boolean stopCellEditing() {
-			logger.debug("TableList.stopCellEditing");
 			completingEdit = true;
 			flushEdits();
 			completingEdit = false;
