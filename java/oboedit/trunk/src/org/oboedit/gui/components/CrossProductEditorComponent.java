@@ -356,19 +356,27 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 				//				logger.debug("link: " + link.getType().getName() + "  " + link.getParent());
 				if (!TermUtil.isIntersection(link))
 					continue;
+				// only if relations exist do the check to see if they have been deleted.
+				// this has been added due to false positive results being generated for links being deleted.
+				// (found is returning true after links have been committed)
+				Collection relations = getRelationshipList();
+				if(relations.size() >= 1){
+					boolean found = false;
 
-				boolean found = false;
-				for(Object o : getRelationshipList()){
-					Link completeDefLink = (Link) o;
-					if (completeDefLink.equals(link)) {
-						found = true;
-						break;
-					} 
-				}
-				if (!found) {
-					historyList.add(new DeleteLinkHistoryItem(link));
+					for(Object o : relations){
+						Link completeDefLink = (Link) o;
+						if (completeDefLink.equals(link)) {
+							found = true;
+							break;
+						} 
+					}
+					if (!found) {
+						historyList.add(new DeleteLinkHistoryItem(link));
+					}
+
 				}
 			}
+
 			for(Object o : getRelationshipList()){
 				OBORestriction completeDefLink = (OBORestriction) o;
 				//				logger.debug("completeDefLink: " + completeDefLink);
@@ -382,6 +390,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 					historyList.add(new CreateIntersectionLinkHistoryItem(completeDefLink));
 				}
 			}
+
 		}
 		return historyList;
 	}
@@ -548,13 +557,13 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			}
 
 			final OBOClass genusTerm = (OBOClass) parent;
-//			logger.debug("genusTerm: " +  genusTerm);
+			//			logger.debug("genusTerm: " +  genusTerm);
 			if (link.getType().equals(OBOProperty.IS_A)) {
 				genusField.setValue(parent);
 
 				selectGenusButton.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e) {
-//						logger.debug("genusTerm: " + genusTerm);
+						logger.debug("genusTerm: " + genusTerm);
 						SelectionManager.selectTerm(CrossProductEditorComponent.this, genusTerm);
 					}
 
@@ -567,12 +576,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		repaint();
 	}
 
-	/**
-	 * setGenusTerm
-	 * called while dropping term on drop term button */
-	protected void setGenusTerm(final OBOClass genusTerm) {
-		genusField.setValue(genusTerm);
-	}
+
 
 	protected void tabToNext() {
 		Component lastComponent = focusPolicy.getLastComponent(this);
@@ -596,6 +600,13 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 	@Override
 	public boolean useSubLayout() {
 		return false;
+	}
+
+	/**
+	 * setGenusTerm
+	 * called while dropping term on drop term button */
+	protected void setGenusTerm(final OBOClass genusTerm) {
+		genusField.setValue(genusTerm);
 	}
 
 	public String getID() {

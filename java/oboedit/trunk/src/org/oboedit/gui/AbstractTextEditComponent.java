@@ -155,6 +155,7 @@ public abstract class AbstractTextEditComponent extends XMLLayoutPanel
 	}
 	
 	public boolean hasChanges() {
+//		logger.debug("AbstractTextEditComponent.hasChanges(): " + getChanges().size());
 		return getChanges().size() > 0;
 	}
 
