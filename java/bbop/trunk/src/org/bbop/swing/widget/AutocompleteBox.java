@@ -97,25 +97,13 @@ public class AutocompleteBox<T> extends JComboBox {
 			}
 		};
 
-		/*
-		 * KeyListener keyListener = new KeyListener() {
-		 * 
-		 * public void keyPressed(KeyEvent e) { if (e.getKeyCode() ==
-		 * KeyEvent.VK_ENTER) commit(); else if (!e.isActionKey()) update(); }
-		 * 
-		 * public void keyReleased(KeyEvent e) { if (e.getKeyCode() ==
-		 * KeyEvent.VK_ENTER) return; else if (!e.isActionKey()) update(); }
-		 * 
-		 * public void keyTyped(KeyEvent e) { } };
-		 */
-
 		protected KeyListener keyListener = new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_SPACE
 						&& ((e.getModifiers() & Toolkit.getDefaultToolkit()
 								.getMenuShortcutKeyMask()) > 0
-						&& e.isShiftDown() || e.isControlDown())) {
+								&& e.isShiftDown() || e.isControlDown())) {
 					autocompleteSingleWord();
 				} else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					boolean isVisible = isPopupVisible();
@@ -166,17 +154,10 @@ public class AutocompleteBox<T> extends JComboBox {
 			getDocument().addDocumentListener(docListener);
 			addKeyListener(keyListener);
 			addFocusListener(focusListener);
-
-			/*
-			 * getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
-			 * KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "commit");
-			 * getActionMap().put("commit", new AbstractAction() {
-			 * 
-			 * public void actionPerformed(ActionEvent e) { commit(); } });
-			 */
 		}
 
 		public void commit(boolean focusCommit) {
+			logger.debug("AutocompleteBox.commit");
 			killPendingTasks();
 			if (getText().length() == 0)
 				setSelectedItem(null);
@@ -188,8 +169,8 @@ public class AutocompleteBox<T> extends JComboBox {
 			}
 			// What's this big random number for??
 			ActionEvent e = new ActionEvent(AutocompleteBox.this, (int) (Math.random()
-										     // * Integer.MAX_VALUE
-							    ), "commit");
+					// * Integer.MAX_VALUE
+			), "commit");
 			for (ActionListener listener : commitListeners) {
 				listener.actionPerformed(e);
 			}
@@ -200,7 +181,6 @@ public class AutocompleteBox<T> extends JComboBox {
 
 		protected void update() {
 			updating = true;
-			// removeKeyListener(keyListener);
 			getDocument().removeDocumentListener(docListener);
 			try {
 				String text = getDocument().getText(0,
@@ -210,7 +190,6 @@ public class AutocompleteBox<T> extends JComboBox {
 				ex.printStackTrace();
 			}
 			fireUpdateEvent();
-			// addKeyListener(keyListener);
 			getDocument().addDocumentListener(docListener);
 			updating = false;
 		}
@@ -406,9 +385,12 @@ public class AutocompleteBox<T> extends JComboBox {
 	}
 
 	public T getValue() {
-//		logger.debug("getSelectedItem(): " + getSelectedItem());
-//		logger.debug("getItemCount: " + this.getItemCount());
-		if (getSelectedItem() == null && this.getItemCount() == 0)
+		logger.debug("AutoCompleteBox.getValue");
+		//		logger.debug("getSelectedItem(): " + getSelectedItem());
+		//		logger.debug("getItemCount: " + this.getItemCount());
+		// getItemCount gets datamodel size from the previous autocomplete task performed. This is misleading.
+		// TODO: clear lastHits cache - leaving this as is at the moment
+		if (getSelectedItem() == null)
 			return null;
 		else {
 			Object selected = getSelectedItem();
@@ -422,7 +404,7 @@ public class AutocompleteBox<T> extends JComboBox {
 
 				if (!autocompleteModel.toString(getSelectedItem()).equals(s))
 					return (T) autocompleteModel
-							.getOutputValue(autocompleteModel.createValue(s));
+					.getOutputValue(autocompleteModel.createValue(s));
 			}
 			return (T) autocompleteModel.getOutputValue(selected);
 		}
@@ -435,10 +417,10 @@ public class AutocompleteBox<T> extends JComboBox {
 
 	@Override
 	public void setSelectedItem(Object anObject) {
-//	    if (anObject != null) {
-//			logger.info("AutocompleteBox.setSelectedItem: TRYING to select " + anObject + ", type = "
-//					+ anObject.getClass());
-//	    }
+		//	    if (anObject != null) {
+		//			logger.info("AutocompleteBox.setSelectedItem: TRYING to select " + anObject + ", type = "
+		//					+ anObject.getClass());
+		//	    }
 		if (anObject == null) {
 			doSetSelectedItem(null);
 		} else if (autocompleteModel.getDisplayType().isAssignableFrom(
@@ -482,9 +464,9 @@ public class AutocompleteBox<T> extends JComboBox {
 						// ie., don't allow CTRL key deselection.
 						e = new MouseEvent((Component) e.getSource(),
 								e.getID(), e.getWhen(), e.getModifiers()
-										^ InputEvent.CTRL_MASK, e.getX(), e
-										.getY(), e.getClickCount(), e
-										.isPopupTrigger());
+								^ InputEvent.CTRL_MASK, e.getX(), e
+								.getY(), e.getClickCount(), e
+								.isPopupTrigger());
 					}
 					super.processMouseEvent(e);
 				}
@@ -588,28 +570,28 @@ public class AutocompleteBox<T> extends JComboBox {
 				if (buttonListener == null)
 					buttonListener = new MouseListener() {
 
-						public void mouseClicked(MouseEvent e) {
-							popup.getMouseListener().mouseClicked(e);
-						}
+					public void mouseClicked(MouseEvent e) {
+						popup.getMouseListener().mouseClicked(e);
+					}
 
-						public void mouseEntered(MouseEvent e) {
-							popup.getMouseListener().mouseEntered(e);
-						}
+					public void mouseEntered(MouseEvent e) {
+						popup.getMouseListener().mouseEntered(e);
+					}
 
-						public void mouseExited(MouseEvent e) {
-							popup.getMouseListener().mouseExited(e);
-						}
+					public void mouseExited(MouseEvent e) {
+						popup.getMouseListener().mouseExited(e);
+					}
 
-						public void mousePressed(MouseEvent e) {
-							userRequestedPopup = true;
-							popup.getMouseListener().mousePressed(e);
-							userRequestedPopup = false;
-						}
+					public void mousePressed(MouseEvent e) {
+						userRequestedPopup = true;
+						popup.getMouseListener().mousePressed(e);
+						userRequestedPopup = false;
+					}
 
-						public void mouseReleased(MouseEvent e) {
-							popup.getMouseListener().mouseReleased(e);
-						}
-					};
+					public void mouseReleased(MouseEvent e) {
+						popup.getMouseListener().mouseReleased(e);
+					}
+				};
 				return buttonListener;
 			}
 
@@ -640,7 +622,7 @@ public class AutocompleteBox<T> extends JComboBox {
 		super.setFocusTraversalKeysEnabled(focusTraversalKeysEnabled);
 		if (getEditor() instanceof Component)
 			((Component) getEditor())
-					.setFocusTraversalKeysEnabled(focusTraversalKeysEnabled);
+			.setFocusTraversalKeysEnabled(focusTraversalKeysEnabled);
 	}
 
 	protected List<MatchPair> lastHits;
@@ -719,23 +701,11 @@ public class AutocompleteBox<T> extends JComboBox {
 				String match = StringUtil.getWordSurrounding(matchPair
 						.getString(), index, index);
 				text = text.substring(0, replaceIndices[0]) + match
-						+ text.substring(replaceIndices[1], text.length());
+				+ text.substring(replaceIndices[1], text.length());
 				field.setText(text);
 				return;
 			}
 		}
-		// List<MatchPair> matches = getMatches(currentWord);
-		// if (matches.size() > 0) {
-		// MatchPair matchPair = matches.get(0);
-		// int[] indices = (int[]) matchPair.getMatch().get(currentWord);
-		// int index = indices[0];
-		// String match = StringUtil.getWordSurrounding(matchPair.getString(),
-		// index, index);
-		// text = text.substring(0,
-		// replaceIndices[0])+match+text.substring(replaceIndices[1],
-		// text.length());
-		// field.setText(text);
-		// }
 	}
 
 	protected TimerTask createTimerTask(final String str,
@@ -841,7 +811,7 @@ public class AutocompleteBox<T> extends JComboBox {
 			super.setSelectedItem(null);
 		else {
 			Object val = lastHits.get(0).getVal();
-//			System.out.println("setResults: SELECTING: " + val);
+			//			logger.debug("setResults: SELECTING: " + val);
 			super.setSelectedItem(null);
 			if (isShowing() && hasMeaningfulFocus()) {
 				// hidePopup();
@@ -881,7 +851,7 @@ public class AutocompleteBox<T> extends JComboBox {
 		}
 
 		public Object getElementAt(int index) {
-//			logger.debug("lastHits.get(index).getVal(): " +  lastHits.get(index).getVal());
+			//			logger.debug("lastHits.get(index).getVal(): " +  lastHits.get(index).getVal());
 			return lastHits.get(index).getVal();
 		}
 
