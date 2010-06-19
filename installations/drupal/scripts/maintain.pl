@@ -88,7 +88,8 @@ print "Backups at: $backup_dir\n" if $opt_v;
 
 ## Zipped file tree clone.
 {
-  my $tarball_dump_dir = "$backup_dir/file_tree.tar.gz";
+  my $dump_file = "$backup_dir/file_tree.tar";
+  my $zipped_dump_file = "$backup_dir/file_tree.tar.gz";
 
   ## Gather files with Find::File.
   my @drupal_files = ();
@@ -98,8 +99,14 @@ print "Backups at: $backup_dir\n" if $opt_v;
        }, $drupal_dir);
 
   ## Tarball 'em.
+  ## This first one doesn't seem to be present in older versions...so
+  ## we fall back to the separated one.
+  #$tballer->create_archive($tarball_dump_dir, COMPRESS_GZIP, @drupal_files);
   my $tballer = Archive::Tar->new();
-  $tballer->create_archive($tarball_dump_dir, COMPRESS_GZIP, @drupal_files);
+  $tballer->add_files(@drupal_files);
+  $tballer->write($dump_file);
+  gzip $dump_file => $zipped_dump_file or die "gzip failed: $GzipError\n";
+  unlink $dump_file;
 }
 
 ## Total upgrade...but only if we are not just doing backups.
