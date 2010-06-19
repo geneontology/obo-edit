@@ -223,7 +223,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		
 		public OBDSQLDatabaseAdapterConfiguration(DataSource dataSource) {
-		    super(dataSource);
+//			super(dataSource);
+		    super();
         }
 
 		public void setSerializer(String serializer) {
