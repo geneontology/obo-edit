@@ -111,13 +111,15 @@ print "Backups at: $backup_dir\n" if $opt_v;
 
 ## Total upgrade...but only if we are not just doing backups.
 if( ! $just_backups_p ){
+  ## Switch to this after we're sure that it's not crazy.
+  #my $cmd = "drush --yes -r $drupal_dir pm-update";
   my $cmd = "drush -r $drupal_dir pm-update";
   run($cmd);
 }
 
 ## Restart site.
 {
-  my $cmd = "drush --yes  -r $drupal_dir vset site_offline 0";
+  my $cmd = "drush --yes -r $drupal_dir vset site_offline 0";
   run($cmd);
 }
 
