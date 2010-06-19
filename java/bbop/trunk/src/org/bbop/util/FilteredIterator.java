@@ -86,7 +86,7 @@ public class FilteredIterator implements Iterator {
 		list.add("wurst");
 		FilteredIterator it = new FilteredIterator(filter, list.iterator());
 		while(it.hasNext()) {
-			System.out.println(it.next());
+			logger.debug(it.next());
 		}
 	}
 }

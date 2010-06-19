@@ -95,10 +95,8 @@ public class XMLLayoutPanel extends JPanel implements XMLLayoutRoot {
 				windowButtonPanel.setBackground(layout.getDefaultBGColor());
 			windowList.clear();
 			windowButtonPanel.removeAll();
-			Iterator it = layout.windows.iterator();
-			while (it.hasNext()) {
-				XMLLayout.WindowElement window = (XMLLayout.WindowElement) it
-						.next();
+			for(Object win : layout.windows){
+				XMLLayout.WindowElement window = (XMLLayout.WindowElement) win; 
 				window.clear();
 			}
 			removeAll();
@@ -107,17 +105,6 @@ public class XMLLayoutPanel extends JPanel implements XMLLayoutRoot {
 			if (layout.getRoot().getComponents().size() > 0)
 				add((Component) layout.getRoot().getComponents().get(0),
 						"Center");
-			/*
-			it = layout.windows.iterator();
-			while (it.hasNext()) {
-				XMLLayout.WindowElement window = (XMLLayout.WindowElement) it
-						.next();
-				// window.getComponent();
-				if (window.getComponents().size() > 0)
-					guiupdateAll((XMLLayoutComponent) window.getComponents()
-							.get(0));
-			}
-			*/
 
 			layout.resolver.endParseNotify();
 			parseException = null;
