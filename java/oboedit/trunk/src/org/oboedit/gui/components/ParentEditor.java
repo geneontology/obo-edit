@@ -416,6 +416,7 @@ public class ParentEditor extends AbstractGUIComponent {
 				}
 
 
+				//TODO: link to CPEC.removeLine and refresh TE
 				final JButton deleteRelationIcon = new JButton(Preferences.loadLibraryIcon("trashcan.gif"));
 				deleteRelationIcon.setToolTipText("Delete relation");
 				deleteRelationIcon.setPreferredSize(new Dimension(20, 18));

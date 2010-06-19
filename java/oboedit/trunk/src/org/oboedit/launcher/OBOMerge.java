@@ -307,8 +307,7 @@ public class OBOMerge {
 		try {
 			argVals = CommandLineParser.parse(getArgumentSignature(), argList);
 		} catch (Exception ex) {
-			System.out.println(ex.getMessage());
-			logger.info(ex.getMessage());
+			logger.error(ex.getMessage());
 			printUsage();
 			System.out.println("Merge Operation finished.");
 			logger.info("Merge Operation finished.");
@@ -376,7 +375,6 @@ public class OBOMerge {
 
 		for(IDClash clash: clashes){
 			if (clash.getSeverity() == LIKELY) {
-				System.err.print("!!!");
 				logger.error("!!!");
 				foundLikelyClashes = true;
 			}

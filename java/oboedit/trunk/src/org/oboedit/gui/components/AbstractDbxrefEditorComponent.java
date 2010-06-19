@@ -1,14 +1,12 @@
 package org.oboedit.gui.components;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,8 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
 
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.event.UserEvent;
@@ -28,14 +24,11 @@ import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.FieldPath;
 import org.obo.datamodel.FieldPathSpec;
 import org.obo.datamodel.IdentifiedObject;
-import org.obo.filters.DefinitionDbxrefSearchCriterion;
 import org.obo.history.HistoryItem;
-import org.oboedit.controller.VerificationManager;
+
 import org.oboedit.gui.AbstractTextEditComponent;
 import org.oboedit.gui.DbxrefListTableEditor;
 import org.oboedit.gui.DbxrefTableRenderer;
-import org.oboedit.gui.Preferences;
-import org.oboedit.gui.RootTextEditComponent;
 
 public abstract class AbstractDbxrefEditorComponent extends
 AbstractTextEditComponent {
