@@ -17,7 +17,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
 import org.bbop.swing.tablelist.AbstractListTableEditor;
@@ -28,7 +27,6 @@ import org.obo.datamodel.impl.DbxrefImpl;
 import org.obo.filters.DbxrefDBSearchCriterion;
 import org.obo.filters.DbxrefDescSearchCriterion;
 import org.obo.filters.DbxrefIDSearchCriterion;
-import org.obo.filters.DefinitionDbxrefSearchCriterion;
 import org.oboedit.gui.components.AbstractDbxrefEditorComponent;
 
 import org.apache.log4j.*;
