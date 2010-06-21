@@ -107,28 +107,28 @@ if ( $opt_l ) {
 my $analyzer = new Lucene::Analysis::Standard::StandardAnalyzer();
 
 ## General search.
-my $general_spot = $core->amigo_env('INDEX_DIR') . '/lucene/general';
+my $general_spot = $core->amigo_env('INDEX_DIR_GENERAL');
 my $general_store = Lucene::Store::FSDirectory->getDirectory($general_spot,1);
 my $general_writer =
   new Lucene::Index::IndexWriter($general_store, $analyzer, 1);
 
 ## Term search.
-my $term_spot = $core->amigo_env('INDEX_DIR') . '/lucene/term';
+my $term_spot = $core->amigo_env('INDEX_DIR_TERM');
 my $term_store = Lucene::Store::FSDirectory->getDirectory($term_spot, 1);
 my $term_writer = new Lucene::Index::IndexWriter($term_store, $analyzer, 1);
 
 ## GP search.
-my $gp_spot = $core->amigo_env('INDEX_DIR') . '/lucene/gene_product';
+my $gp_spot = $core->amigo_env('INDEX_DIR_GENE_PRODUCT');
 my $gp_store = Lucene::Store::FSDirectory->getDirectory($gp_spot, 1);
 my $gp_writer = new Lucene::Index::IndexWriter($gp_store, $analyzer, 1);
 
 # ## Try at association search.
-# my $assoc_spot = $core->amigo_env('INDEX_DIR') . '/lucene/association';
+# my $assoc_spot = $core->amigo_env('INDEX_DIR_ASSOCIATION');
 # my $assoc_store = Lucene::Store::FSDirectory->getDirectory($assoc_spot,1);
 # my $assoc_writer = new Lucene::Index::IndexWriter($assoc_store, $analyzer, 1);
 
 # ## Try at xref search.
-# my $xref_spot = $core->amigo_env('INDEX_DIR') . '/lucene/xref';
+# my $xref_spot = $core->amigo_env('INDEX_DIR_XREF');
 # my $xref_store = Lucene::Store::FSDirectory->getDirectory($xref_spot,1);
 # my $xref_writer = new Lucene::Index::IndexWriter($xref_store, $analyzer, 1);
 

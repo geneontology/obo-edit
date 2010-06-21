@@ -818,6 +818,23 @@ $synth_vars{AMIGO_INDEX_DIR} =
   $synth_vars{AMIGO_CGI_ROOT_DIR} .
   '/' . 'index';
 
+## Specific paths to be used other places.
+$synth_vars{AMIGO_INDEX_DIR_GENERAL} =
+  $synth_vars{AMIGO_INDEX_DIR} .
+  '/' . 'lucene/general';
+$synth_vars{AMIGO_INDEX_DIR_TERM} =
+  $synth_vars{AMIGO_INDEX_DIR} .
+  '/' . 'lucene/term';
+$synth_vars{AMIGO_INDEX_DIR_GENE_PRODUCT} =
+  $synth_vars{AMIGO_INDEX_DIR} .
+  '/' . 'lucene/gene_product';
+# $synth_vars{AMIGO_INDEX_DIR_GENE_ASSOCIATION} =
+#   $synth_vars{AMIGO_INDEX_DIR} .
+#   '/' . 'lucene/association';
+# $synth_vars{AMIGO_INDEX_DIR_GENE_XREF} =
+#   $synth_vars{AMIGO_INDEX_DIR} .
+#   '/' . 'lucene/xref';
+
 ## A place for caching databases.
 $synth_vars{AMIGO_CACHE_DIR} =
   $synth_vars{AMIGO_CGI_ROOT_DIR} .
@@ -1073,19 +1090,16 @@ if ( $opt_s ) {
 ## Done.
 print "Done.\n\n";
 print "Your new installation is at: ". $synth_vars{AMIGO_CGI_URL} ."/go.cgi\n";
-my $csc = $synth_vars{GO_ROOT} . '/scripts/cleaner.pl';
+
 print <<EOC;
-You may use the cleaning script ($csc) to regularly purge the working
-directories of unneeded and old files generated while AmiGO is running.
+You may use the refresh script (refresh.pl) with the "-r" flag to regularly 
+purge unneeded and old files generated while AmiGO is running.
 
-This task can also be easily performed manually by checking the
-www/cgi-bin/amigo/sessions/ and www/cgi-bin/amigo/tmp_images/
-directories for old files and removing them. We actually do this with
-cron jobs a fair bit.
-
-Also, occasionally running the refresh.pl script (see documentation
-for flags that apply to you) is nice for purging other caches that my
-grow over time.
+The refresh.pl script has many other uses, please see the
+documentation for flags that apply to you. You will need to run
+refresh.pl separately to generate the Lucene search indexes (necessary
+for most external installations) and Reference Genome cache
+(unnecessary for non-GO sites).
 
 EOC
 
