@@ -113,10 +113,12 @@ if( $do_remove ){
     return $retval;
   }
 
-  ## Scrub out the generated images.
+  ## Scrub out the generated images, maps, and directories (?!).
   sub temp_images{
-    if( (/\.png$/ || /\.gif$/) && lifespan($File::Find::name) ){
+    if( (/\.png$/ || /\.gif$/ || /\.map$/ ) && lifespan($File::Find::name) ){
       unlink $File::Find::name;
+    }elsif( -d && lifespan($File::Find::name) ){
+      remove_tree( $File::Find::name, {safe => 1} );
     }
   }
   find(\&temp_images, ($core->amigo_env('AMIGO_TEMP_IMAGE_DIR')));
