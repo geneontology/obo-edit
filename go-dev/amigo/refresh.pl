@@ -315,7 +315,7 @@ if( $do_lucene ){
   ## Add new indexes; no args needed--from here, luigi knows where to go.
   my @args = ("perl", $core->amigo_env('GO_ROOT') . "/amigo/scripts/luigi");
   $core->kvetch("System: \"@args\"");
-  #system(@args) == 0 || die "System \"@args\" failed: $?";
+  system(@args) == 0 || die "System \"@args\" failed: $?";
 
   ## Scrub out "old" index files. There is a little vagueness in
   ## figuring out what index files are in use without using
