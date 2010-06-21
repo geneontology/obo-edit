@@ -23,11 +23,16 @@ use Data::Dumper;
 use Test::WWW::Mechanize::CGIApp;
 use AmiGO::WebApp::HTMLClient;
 use Getopt::Std;
+use File::Find;
+use File::stat;
+#use Time::Local;
+use Time::localtime;
 
 #BEGIN { plan tests => 0 }
 
 use vars qw(
 	     $opt_h
+	     $opt_r
 	     $opt_c
 	     $opt_s
 	     $opt_g
@@ -36,7 +41,7 @@ use vars qw(
 	  );
 
 ## Setup.
-getopts('chsgpl');
+getopts('hrcsgpl');
 my $core = AmiGO->new();
 my @errors = ();
 
@@ -47,11 +52,13 @@ if( $opt_h ){
 }
 
 ## Take care of arguments.
+my $do_remove = 0;
 my $do_cache = 0;
 my $do_summary = 0;
 my $do_svg = 0;
 my $do_png = 0;
 my $do_lucene = 0;
+if ( $opt_r ){ $do_remove = 1; }
 if ( $opt_c ){ $do_cache = 1; }
 if ( $opt_s ){ $do_summary = 1; }
 if ( $opt_g ){ $do_svg = 1; }
@@ -59,11 +66,13 @@ if ( $opt_p ){ $do_png = 1; }
 if ( $opt_l ){ $do_lucene = 1; }
 
 ## Nothing at all? Then do everything.
-if ( ! $opt_c &&
+if ( ! $opt_r &&
+     ! $opt_c &&
      ! $opt_s &&
      ! $opt_g &&
      ! $opt_p &&
      ! $opt_l ){
+  $do_remove = 1;
   $do_cache = 1;
   $do_summary = 1;
   $do_svg = 1;
@@ -71,12 +80,80 @@ if ( ! $opt_c &&
   $do_lucene = 1;
 }
 
-#$core->kvetch("Will do cache (" . $do_cache . ", " . $opt_c . ")");
-#$core->kvetch("Will do summary (" . $do_summary . ", " . $opt_s . ")");
-#$core->kvetch("Will do graphs (" . $do_graphs . ", " . $opt_g . ")");
+###
+### Remove old files, do general cleaning as much as possible. Out of
+### necessity, this cannot include the lucene indexes and the speed
+### caches, which are handled separately below. All generic cleaning
+### can/should be handled here.
+###
+
+if( $do_remove ){
+
+  ll("Starting general cleaning, please wait...");
+
+  ## One day in seconds
+  my $lifespan_limit_one_day = 86400;
+
+  ## Function to decide if the file or diectory has reached its
+  ## lifespan limit. Wired to one day (see variable above).
+  sub lifespan {
+
+    my $file = shift || die "need a file argument...";
+    my $retval = 0;
+
+    ## Calc. time.
+    my $now = time;
+    my $mtime = stat($file)->mtime;
+    my $tdiff = $now - $mtime;
+
+    if( $tdiff >= $lifespan_limit_one_day ){
+      $retval = 1;
+    }
+
+    return $retval;
+  }
+
+  ## Scrub out the generated images.
+  sub temp_images{
+    if( (/\.png$/ || /\.gif$/) && lifespan($File::Find::name) ){
+      unlink $File::Find::name;
+    }
+  }
+  find(\&temp_images, ($core->amigo_env('AMIGO_TEMP_IMAGE_DIR')));
+  ll("Finished removing generated images.");
+
+  ## Scrub out new session files.
+  sub new_sessions{
+    if( /^cgisess_/ && lifespan($File::Find::name) ){
+      unlink $File::Find::name;
+    }
+  }
+  find(\&new_sessions, ($core->amigo_env('AMIGO_SESSIONS_ROOT_DIR')));
+  ll("Finished removing new session files.");
+
+  ## Scrub out old session files.
+  sub old_sessions{
+    if( /_data$/ && lifespan($File::Find::name) ){
+      remove_tree( $File::Find::name, {safe => 1} );
+    }
+  }
+  find(\&old_sessions, ($core->amigo_env('AMIGO_SESSIONS_ROOT_DIR')));
+  ll("Finished removing old session files.");
+
+  ## Scrub out anything hanging out in scratch.
+  sub itch_scratch{
+    if( lifespan($File::Find::name) ){
+      remove_tree($core->amigo_env('AMIGO_SCRATCH_DIR'),
+		  {safe => 1, keep_root => 1} );
+    }
+  }
+  ll("Finished cleaning scratch directory.");
+
+  ll("Finished general cleaning.");
+}
 
 ###
-### Update old cache files...
+### Update old cache files and catch cruft where possible.
 ###
 
 if( $do_cache ){
@@ -89,6 +166,7 @@ if( $do_cache ){
 	      $core->amigo_env('CGI_ROOT_DIR'), "50");
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
+  ll("Finished making spec_key file.");
 
   ## Misc.
   @args = ("perl",
@@ -96,6 +174,7 @@ if( $do_cache ){
 	   $core->amigo_env('CGI_ROOT_DIR'));
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
+  ll("Finished making misc_key file.");
 
   ## 
   @args = ("perl",
@@ -103,6 +182,7 @@ if( $do_cache ){
 	   '-f', $core->amigo_env('CGI_ROOT_DIR'));
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
+  ll("Finished making dblinks file.");
 
   ## Generated JS meta-data.
   @args = ("perl", "./scripts/make_go_meta_js.pl",
@@ -110,15 +190,15 @@ if( $do_cache ){
 	   '/js/org/bbop/amigo/go_meta.js');
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
+  ll("Finished making go_meta JS file.");
 
-  ll("Finished making cache files.");
-
-  ## Places for the new speed caches (clean out the old ones)
+  ## Places for the new speed caches (and clean out the old ones)
   @args = ("perl", "./scripts/make_caches.pl");
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
+  ll("Finished removing runtime caches.");
 
-  ll("Finished cleaning old cache files.");
+  ll("Finished refreshing cache files.");
 }
 
 ###
@@ -130,7 +210,7 @@ push @formats, 'svg' if $do_svg;
 push @formats, 'png' if $do_png;
 if( scalar(@formats) ){
 
-  $core->kvetch("Making graphs, please wait...");
+  $core->kvetch("Making graph images, please wait...");
 
   foreach my $format (@formats){
 
@@ -184,7 +264,7 @@ if( scalar(@formats) ){
 
 if( $do_summary ){
 
-  $core->kvetch("Making summary, please wait...");
+  $core->kvetch("Making RG summary, please wait...");
 
   my $summary_try_link = $core->get_interlink({mode=>'homolset_summary',
 					       arg=>{cache=>'no'}});
@@ -232,10 +312,28 @@ if( $do_lucene ){
   ## Add new indexes; no args needed--from here, luigi knows where to go.
   my @args = ("perl", $core->amigo_env('GO_ROOT') . "/amigo/scripts/luigi");
   $core->kvetch("System: \"@args\"");
-  system(@args) == 0 || die "System \"@args\" failed: $?";
+  #system(@args) == 0 || die "System \"@args\" failed: $?";
 
-  ## TODO/BUG: check/purge old ones.
-  
+  ## Scrub out "old" index files. There is a little vagueness in
+  ## figuring out what index files are in use without using
+  ## lucene. We'll take the term segement file and remove anything
+  ## more than two hours older.
+  my $lifespan_limit_two_hours = 7200; # two hours in seconds
+  my $term_segfile = $core->amigo_env('INDEX_DIR_TERM') . "/segments";
+  my $seg_mtime = stat($term_segfile)->mtime;
+  sub old_indexes{
+    if( /\.cfs$/ && lifespan($File::Find::name) ){
+      my $file_mtime = stat($File::Find::name)->mtime;
+      if( ($seg_mtime - $file_mtime) >= $lifespan_limit_two_hours ){
+	unlink $File::Find::name;
+      }
+    }
+  }
+  find(\&old_indexes,
+       ($core->amigo_env('INDEX_DIR_GENERAL'),
+	$core->amigo_env('INDEX_DIR_TERM'),
+	$core->amigo_env('INDEX_DIR_GENE_PRODUCT')));
+  ll("Finished removing old index files.");
 
   $core->kvetch("Finished indexing.");
 }
@@ -249,6 +347,7 @@ if( $do_lucene ){
 sub ll {
   my $str = shift || '';
   print $str . "\n";
+  $core->kvetch($str);
 }
 
 
@@ -258,7 +357,7 @@ refresh.pl
 
 =head1 SYNOPSIS
 
-refresh.pl [-h] [-c] [-s] [-g] [-p]
+refresh.pl [-h] [-r] [-c] [-s] [-g] [-p] [-l]
 
 =head1 DESCRIPTION
 
@@ -279,6 +378,12 @@ assumed to be on.
 
 =over
 
+=item -r
+
+Perform routine cleaning of working directories. This includes
+removing session and files that appear to be too old. This option does
+not affect the Lucene indexes and Reference Genome caches.
+
 =item -c
 
 Regenerate the species and other misc. caches that were generated
@@ -288,17 +393,24 @@ during the initial AmiGO installation process.
 
 Generate (or regenerate) the cache file for the Reference Genome
 summary page. For this page to be useful, you will probably have to
-run this at some point as the page is very large indeed.
+run this at some point as the page is very large indeed. May take on
+the order of hours to run.
 
 =item -g
 
 Generate (or regenerate) the cache files for all of the Reference
-Genome interactive graphs (SVGs).
+Genome interactive graphs (SVGs). May take on the order of hours to
+run.
 
 =item -p
 
 Generate (or regenerate) the cache files for all of the Reference
-Genome static graphs (PNGs).
+Genome static graphs (PNGs). May take on the order of hours to run.
+
+=item -l
+
+Regenerate the lucene indexes, as well as attempt to clean out the old
+ones. May take on the order of hours to run.
 
 =back
 

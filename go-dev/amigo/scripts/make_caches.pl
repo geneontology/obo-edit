@@ -1,6 +1,9 @@
 #!/usr/local/bin/perl
 ####
-#### SQLite3 cache database creation.
+#### SQLite3 cache database creation and cleaning. Because of the way
+#### that things shook out recently, all this script actually does not
+#### is remove the current KVStores being used. Also see
+#### make_exp_caches.pl.
 ####
 
 ## Setup environment.
