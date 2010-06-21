@@ -91,15 +91,16 @@ if( $do_remove ){
 
   ll("Starting general cleaning, please wait...");
 
-  ## One day in seconds
-  my $lifespan_limit_one_day = 86400;
 
   ## Function to decide if the file or diectory has reached its
-  ## lifespan limit. Wired to one day (see variable above).
+  ## lifespan limit. Wired to one day (see variable below).
   sub lifespan {
 
     my $file = shift || die "need a file argument...";
     my $retval = 0;
+
+    ## One day in seconds
+    my $lifespan_limit_one_day = 86400;
 
     ## Calc. time.
     my $now = time;
