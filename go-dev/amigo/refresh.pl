@@ -117,7 +117,7 @@ if( $do_remove ){
   sub temp_images{
     if( (/\.png$/ || /\.gif$/ || /\.map$/ ) && lifespan($File::Find::name) ){
       unlink $File::Find::name;
-    }elsif( -d && lifespan($File::Find::name) ){
+    }elsif( /amigo/ && -d && lifespan($File::Find::name) ){
       remove_tree( $File::Find::name, {safe => 1} );
     }
   }
