@@ -144,7 +144,6 @@ public class DeleteAction implements ClickMenuAction {
 				}
 			}
 		}
-//		cullFakeItems(deleteThese);
 		if (deleteThese.size() < 1) { // nothing left to delete
 			isLegal = false;
 		}
@@ -154,19 +153,6 @@ public class DeleteAction implements ClickMenuAction {
 			isLegal = false;
 		}
 	}
-
-//	protected void cullFakeItems(List<PathCapable> deleteThese) {
-//		Iterator it = deleteThese.iterator();
-//		while (it.hasNext()) {
-//			Object o = it.next();
-//			if (o instanceof Link) {
-//				Link l = (Link) o;
-//				if (TermUtil.isImplied(l)) {
-//					it.remove();
-//				}
-//			}
-//		}
-//	}
 
 	protected boolean getDeletionItems(Selection selection,
 			Collection<PathCapable> out) {
