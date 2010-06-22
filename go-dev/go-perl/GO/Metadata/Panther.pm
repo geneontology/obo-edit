@@ -326,7 +326,7 @@ our @species =
    { # Rattus norvegicus
     code => 'RAT',
     ncbi_taxa_id => [ 10116 ],
-    prefer => [ 'RGD' ],
+    prefer => [ 'RGD', 'UniProtKB' ],
    },
 
    #
