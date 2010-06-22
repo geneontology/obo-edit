@@ -842,10 +842,17 @@ sub load_qfo {
 	 $go_dev_path . $qfo_script,
 	 '-dbname', $local{EXTENSION},
 	 '-dbhost', $local{DB_HOST},
+
+	 '-dbuser', $local{DB_USER},
+	 '-dbauth', $local{DB_PASS},
+	 '-dbport', $local{DB_PORT},
+
 	 #'-verbose',
 	 '-noseq',
-	 $tmp_dl_file
+	 $tmp_dl_file,
 	);
+
+
       ll("[SYSTEM] \"@args\"");
       eval {
 	system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_x;
@@ -933,7 +940,10 @@ sub run_seq2pthr2phylotree {
      # '--every=60', # we'd like a little update
      '-dbname', $local{EXTENSION},
      '-dbhost', $local{DB_HOST},
-     $tmp_gunzip_file
+     '-dbuser', $local{DB_USER},
+     '-dbauth', $local{DB_PASS},
+     '-dbport', $local{DB_PORT},
+     $tmp_gunzip_file,
     );
   ll("[SYSTEM] \"@args\"");
   eval {
