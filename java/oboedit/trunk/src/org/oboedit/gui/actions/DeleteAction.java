@@ -7,23 +7,17 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.KeyStroke;
 
 import org.bbop.framework.GUIManager;
-import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
-import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.ObsoletableObject;
 import org.obo.datamodel.PathCapable;
 import org.obo.datamodel.impl.OBOClassImpl;
@@ -40,20 +34,13 @@ import org.obo.history.HistoryItem;
 import org.obo.history.ObsoleteObjectHistoryItem;
 import org.obo.history.RemoveConsiderHistoryItem;
 import org.obo.history.RemoveReplacementHistoryItem;
-import org.obo.history.SessionHistoryList;
 import org.obo.history.TermMacroHistoryItem;
-import org.obo.query.QueryEngine;
-import org.obo.query.impl.SearchHit;
-import org.obo.util.FilterUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.AbstractSearchResultsTableModel;
 import org.oboedit.gui.ClickMenuAction;
 import org.oboedit.gui.EditAction;
 import org.oboedit.gui.GestureTarget;
 import org.oboedit.gui.Preferences;
-import org.oboedit.gui.SearchResultsTable;
-import org.oboedit.gui.SearchResultsTableModel;
 import org.oboedit.gui.Selection;
 
 import org.apache.log4j.*;
@@ -98,8 +85,6 @@ public class DeleteAction implements ClickMenuAction {
 		this.usedInReplacementTag = usedInReplacementTag;
 	}
 
-	String termToBeObsoleted;
-
 
 
 	HashMap<String, Collection> obsoleteTermsLinkedToAllTerms;
@@ -132,7 +117,7 @@ public class DeleteAction implements ClickMenuAction {
 	}
 
 	public void clickInit(Selection selection, GestureTarget destItem) {
-//		logger.debug("DeleteAction: clickInit: selection = " + selection + ", destItem = " + destItem);
+		//		logger.debug("DeleteAction: clickInit: selection = " + selection + ", destItem = " + destItem);
 		instanceString = "";
 		wontDelete = "";
 		lastInstanceCount = 0;
@@ -151,7 +136,15 @@ public class DeleteAction implements ClickMenuAction {
 		}
 		deleteTerm = false;  // gets set by getDeletionItems
 		isLegal = getDeletionItems(selection, deleteThese);
-		cullFakeItems(deleteThese);
+		for(Object o : deleteThese){
+			if(o instanceof Link){
+				Link l = (Link) o;
+				if(TermUtil.isImplied(l)){
+					deleteThese.remove(o);
+				}
+			}
+		}
+//		cullFakeItems(deleteThese);
 		if (deleteThese.size() < 1) { // nothing left to delete
 			isLegal = false;
 		}
@@ -160,24 +153,20 @@ public class DeleteAction implements ClickMenuAction {
 		if (shouldDestroy && !deleteTerm) {
 			isLegal = false;
 		}
-
-		//		if (!isLegal)
-		//			return;
-		// But we would have returned anyway!!  What's really supposed to happen here?
 	}
 
-	protected void cullFakeItems(List<PathCapable> deleteThese) {
-		Iterator it = deleteThese.iterator();
-		while (it.hasNext()) {
-			Object o = it.next();
-			if (o instanceof Link) {
-				Link l = (Link) o;
-				if (TermUtil.isImplied(l)) {
-					it.remove();
-				}
-			}
-		}
-	}
+//	protected void cullFakeItems(List<PathCapable> deleteThese) {
+//		Iterator it = deleteThese.iterator();
+//		while (it.hasNext()) {
+//			Object o = it.next();
+//			if (o instanceof Link) {
+//				Link l = (Link) o;
+//				if (TermUtil.isImplied(l)) {
+//					it.remove();
+//				}
+//			}
+//		}
+//	}
 
 	protected boolean getDeletionItems(Selection selection,
 			Collection<PathCapable> out) {
@@ -445,27 +434,11 @@ public class DeleteAction implements ClickMenuAction {
 		//and we only want the term names. 
 		modifiedDeleteThese.addAll(deleteThese);
 
-		for (Iterator iterator = modifiedDeleteThese.iterator(); iterator.hasNext();) {
-
-			String objectType = iterator.next().getClass().getName();
-
-			//Find the links and delete them. 
-			if (!objectType.equals("org.obo.datamodel.impl.OBOClassImpl")){ //If it is a link rather than a term name.
-				//logger.debug("DeleteAction: getObsoletesLinkedToThese: objectType = " + objectType);
-				////logger.debug("DeleteAction: getObsoletesLinkedToThese: iteratorString = " + iteratorString);
-				iterator.remove();
-			}
-		}
-		//logger.debug("DeleteAction: getObsoletesLinkedToThese: modifiedDeleteThese = " + modifiedDeleteThese.toString());
-
 		obsoleteTermsLinkedToAllTerms = new HashMap<String, Collection>();
-
-		for (Iterator iterator = modifiedDeleteThese.iterator(); iterator.hasNext();) {
-			//logger.debug("DeleteAction: getObsoletesLinkedToThese: iterator.next().toString() = " + iterator.next().toString());
-
-			//Get the name of the term.
-			termToBeObsoleted = iterator.next().toString();
-			//logger.debug("DeleteAction: getObsoletesLinkedToThese: termToBeObsoleted = " + termToBeObsoleted);
+		for(Object termToObsolete : modifiedDeleteThese){
+			//If it is a link rather than a term name.
+			if(termToObsolete.getClass().getSimpleName().equals("OBOClassImpl")){
+			String termToBeObsoleted = termToObsolete.toString();
 
 			//Get the filter that will search for 'Name equals "[name of term selected]"'
 			ObjectFilter ofilter = getObjectFilter(termToBeObsoleted);
@@ -482,13 +455,9 @@ public class DeleteAction implements ClickMenuAction {
 				//	logger.debug(DeleteAction: getObsoletesLinkedToThese: obsoleteTermsLinkedToAllTerms = " + obsoleteTermsLinkedToAllTerms");
 			}
 		}
-
+		}
 		//logger.debug("DeleteAction: getObsoletesLinkedToThese: obsoleteTermsLinkedToAllTerms = " + obsoleteTermsLinkedToAllTerms.toString());
-
-
 		return obsoleteTermsLinkedToAllTerms;
-
-
 	}
 
 
@@ -526,54 +495,46 @@ public class DeleteAction implements ClickMenuAction {
 	 * @param filter
 	 * @return matches
 	 */
-	
+
 	public Collection<Object> filterLinks(Filter filter) {
 
 		Collection<Object> matches = new HashSet<Object>();
-		
+
 		//This gets the list of obsolete terms and makes an iterator so we can look through and check if any of the 
 		//terms we are obsoleting are mentioned in the consider or replaced_by tags. 
 		//TODO: It would be better if this was not done every time in the iteration, but was done once and reused, but I have not fixed this yet.
 		LinkDatabase ldb = SessionManager.getManager().getSession().getLinkDatabase();
 		Collection<ObsoletableObject> allObsoletes = TermUtil.getObsoletes(ldb);
-		Iterator obsoletesIterator = allObsoletes.iterator();
 
+		for(Object obsoleteo : allObsoletes){
+			// skip obsolete relations
+			if(!obsoleteo.getClass().getSimpleName().equals("OBOPropertyImpl")){
+				OBOClassImpl obsoleteObject = (OBOClassImpl) obsoleteo;
+				//logger.debug("DeleteAction: filterLinks: ObsoleteObject is " + obsoleteObject);
+				//logger.debug("DeleteAction: filterLinks: obsoleteObject.getReplacedBy() " + obsoleteObject.getReplacedBy());
 
-		while (obsoletesIterator.hasNext()) {
+				//For each obsolete term get the set of terms linked by consider or replaced_by tags. 
+				Set replacedBySet = obsoleteObject.getReplacedBy();
 
-			//logger.debug("DeleteAction: filterLinks: it = " + obsoletesIterator);
-			OBOClassImpl obsoleteObject = (OBOClassImpl) obsoletesIterator.next();
-			//logger.debug("DeleteAction: filterLinks: ObsoleteObject is " + obsoleteObject);
+				for(Object replacementTerm : replacedBySet){
+					if (filter.satisfies(replacementTerm)){
+						setUsedInReplacementTag(true);
+						System.out.println(usedInReplacementTag);
+						//logger.debug("DeleteAction: filterLinks: replacementTerm " + replacementTerm);
+						matches.add(obsoleteObject);
+					}
+				}
 
-			//logger.debug("DeleteAction: filterLinks: obsoleteObject.getReplacedBy() " + obsoleteObject.getReplacedBy());
+				Set considerSet = obsoleteObject.getConsiderReplacements();
+				for(Object considerTerm : considerSet){
+					if (filter.satisfies(considerTerm)){
+						setUsedInReplacementTag(true);
+						//logger.debug("DeleteAction: filterLinks: considerTerm " + considerTerm);
+						matches.add(obsoleteObject);
+					}					
 
-			//For each obsolete term get the set of terms linked by consider or replaced_by tags. 
-			Set replacedBySet = obsoleteObject.getReplacedBy();
-			Set considerSet = obsoleteObject.getConsiderReplacements();
-
-
-			for (Iterator replacementsIterator = replacedBySet.iterator(); replacementsIterator.hasNext();) {
-				Object replacementTerm = (Object) replacementsIterator.next();
-
-				if (filter.satisfies(replacementTerm)){
-					setUsedInReplacementTag(true);
-					System.out.println(usedInReplacementTag);
-					//logger.debug("DeleteAction: filterLinks: replacementTerm " + replacementTerm);
-					matches.add(obsoleteObject);
 				}
 			}
-
-			for (Iterator considerIterator = considerSet.iterator(); considerIterator.hasNext();) {
-				Object considerTerm = (Object) considerIterator.next();
-
-				if (filter.satisfies(considerTerm)){
-					setUsedInReplacementTag(true);
-					//logger.debug("DeleteAction: filterLinks: considerTerm " + considerTerm);
-					matches.add(obsoleteObject);
-				}					
-
-			}
-
 		}
 		return matches;
 	}
