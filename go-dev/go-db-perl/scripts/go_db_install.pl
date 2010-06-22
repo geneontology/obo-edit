@@ -841,17 +841,14 @@ sub load_qfo {
 	(
 	 $go_dev_path . $qfo_script,
 	 '-dbname', $local{EXTENSION},
-	 '-dbhost', $local{DB_HOST},
-
-	 '-dbuser', $local{DB_USER},
-	 '-dbauth', $local{DB_PASS},
-	 '-dbport', $local{DB_PORT},
-
-	 #'-verbose',
-	 '-noseq',
-	 $tmp_dl_file,
+	 '-dbhost', $local{DB_HOST}
 	);
-
+      push @args, ('-dbuser', $local{DB_USER}) if $local{DB_USER};
+      push @args, ('-dbauth', $local{DB_PASS}) if $local{DB_PASS};
+      push @args, ('-dbport', $local{DB_PORT}) if $local{DB_PORT};
+      #'-verbose',
+      push @args, '-noseq';
+      push @args, $tmp_dl_file;
 
       ll("[SYSTEM] \"@args\"");
       eval {
@@ -939,12 +936,12 @@ sub run_seq2pthr2phylotree {
      '--quiet',
      # '--every=60', # we'd like a little update
      '-dbname', $local{EXTENSION},
-     '-dbhost', $local{DB_HOST},
-     '-dbuser', $local{DB_USER},
-     '-dbauth', $local{DB_PASS},
-     '-dbport', $local{DB_PORT},
-     $tmp_gunzip_file,
+     '-dbhost', $local{DB_HOST}
     );
+  push @args, ('-dbuser', $local{DB_USER}) if $local{DB_USER};
+  push @args, ('-dbauth', $local{DB_PASS}) if $local{DB_PASS};
+  push @args, ('-dbport', $local{DB_PORT}) if $local{DB_PORT};
+  push @args, $tmp_gunzip_file;
   ll("[SYSTEM] \"@args\"");
   eval {
     system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_x;
