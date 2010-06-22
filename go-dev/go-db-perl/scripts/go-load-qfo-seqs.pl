@@ -39,9 +39,9 @@ if ($opt_h->{help}) {
 my $fetch_species_sth = $dbh->prepare("SELECT id FROM species WHERE ncbi_taxa_id=?");
 my $fetch_dbxref_sth = $dbh->prepare("SELECT id FROM dbxref WHERE xref_dbname=? AND xref_key=?");
 my $fetch_gp_sth = $dbh->prepare("SELECT id FROM gene_product WHERE dbxref_id=?");
-my $insert_dbxref_sth = $dbh->prepare("INSERT INTO dbxref (xref_dbname,xref_key) VALUES (?,?)");
-my $insert_gp_sth = $dbh->prepare("INSERT INTO gene_product (dbxref_id,species_id,type_id,symbol,full_name) VALUES (?,?,?,?,?)");
-my $insert_gp_dbxref_sth = $dbh->prepare("INSERT INTO gene_product_dbxref (gene_product_id, dbxref_id) VALUES (?,?)");
+my $insert_dbxref_sth = $dbh->prepare("REPLACE INTO dbxref (xref_dbname,xref_key) VALUES (?,?)");
+my $insert_gp_sth = $dbh->prepare("REPLACE INTO gene_product (dbxref_id,species_id,type_id,symbol,full_name) VALUES (?,?,?,?,?)");
+my $insert_gp_dbxref_sth = $dbh->prepare("REPLACE INTO gene_product_dbxref (gene_product_id, dbxref_id) VALUES (?,?)");
 
 # warning - this script must be called after loading GAFs..
 my $type_h =
