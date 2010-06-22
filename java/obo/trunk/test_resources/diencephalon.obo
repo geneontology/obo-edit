@@ -1,0 +1,3197 @@
+format-version: 1.2
+
+[Term]
+id: FMA:12235
+name: Nerve fasciculus
+namespace: fma
+synonym: "Nerve bundle" EXACT []
+synonym: "Nerve fiber bundle" EXACT []
+synonym: "Neural fasciculus" EXACT []
+is_a: FMA:83115  ! Cell part cluster
+relationship: part_of FMA:61284 ! Neural tree organ
+
+[Term]
+id: FMA:12237
+name: Organ cavity
+namespace: fma
+def: "Anatomical cavity, which is surrounded by all morphological parts of an organ; is continuous within the organ; contains one or more body substances. Examples: pericardial cavity, cavity of stomach, uterine cavity." []
+synonym: "Cavity of organ" EXACT []
+is_a: FMA:67552  ! Anatomical cavity
+
+[Term]
+id: FMA:14065
+name: Organ component
+namespace: fma
+def: "Cardinal organ part which is bounded predominantly by bonafide boundaries.  Examples: lobe of lung, osteon, acinus, submucosa, anterior leaflet of mitral valve, capsule of kidney, cortical bone, muscle fasciculus." []
+is_a: FMA:82472  ! Cardinal organ part
+
+[Term]
+id: FMA:20394
+name: Human body
+namespace: fma
+def: "Anatomical structure which is the aggregate material substance of an individual member of the Homo sapiens species. Examples: There is only one human body." []
+is_a: FMA:256133  ! Body of vertebrate
+
+[Term]
+id: FMA:223151
+name: Internal gray matter component
+namespace: fma
+def: "Gray matter component of neuraxis which is located in the interior of the neuraxis. Example: thalamus, dentate nucleus, ventral horn of spinal cord." []
+is_a: FMA:67242  ! Gray matter of neuraxis
+
+[Term]
+id: FMA:223419
+name: Lateral nuclear group of right thalamus
+namespace: fma
+is_a: FMA:62174  ! Lateral nuclear group of thalamus
+
+[Term]
+id: FMA:223420
+name: Lateral nuclear group of left thalamus
+namespace: fma
+is_a: FMA:62174  ! Lateral nuclear group of thalamus
+
+[Term]
+id: FMA:223421
+name: Anterior nuclear group of right thalamus
+namespace: fma
+is_a: FMA:62019  ! Anterior nuclear group of thalamus
+
+[Term]
+id: FMA:223422
+name: Anterior nuclear group of left thalamus
+namespace: fma
+is_a: FMA:62019  ! Anterior nuclear group of thalamus
+
+[Term]
+id: FMA:223423
+name: Intralaminar nuclear group of right thalamus
+namespace: fma
+is_a: FMA:62021  ! Intralaminar nuclear group of thalamus
+
+[Term]
+id: FMA:223424
+name: Intralaminar nuclear group of left thalamus
+namespace: fma
+is_a: FMA:62021  ! Intralaminar nuclear group of thalamus
+
+[Term]
+id: FMA:223425
+name: Right rostral intralaminar nuclear group
+namespace: fma
+is_a: FMA:62164  ! Rostral intralaminar nuclear group
+
+[Term]
+id: FMA:223426
+name: Left rostral intralaminar nuclear group
+namespace: fma
+is_a: FMA:62164  ! Rostral intralaminar nuclear group
+
+[Term]
+id: FMA:223427
+name: Ventral nuclear group of right thalamus
+namespace: fma
+is_a: FMA:62022  ! Ventral nuclear group of thalamus
+
+[Term]
+id: FMA:223428
+name: Ventral nuclear group of left thalamus
+namespace: fma
+is_a: FMA:62022  ! Ventral nuclear group of thalamus
+
+[Term]
+id: FMA:223429
+name: Posterior nuclear group of right thalamus
+namespace: fma
+is_a: FMA:62024  ! Posterior nuclear group of thalamus
+
+[Term]
+id: FMA:223430
+name: Posterior nuclear group of left thalamus
+namespace: fma
+is_a: FMA:62024  ! Posterior nuclear group of thalamus
+
+[Term]
+id: FMA:242000
+name: Limbic system
+namespace: fma
+is_a: FMA:42603  ! Organ component cluster
+
+[Term]
+id: FMA:24218
+name: Subdivision of head
+namespace: fma
+synonym: "Head region" EXACT []
+synonym: "Head subdivision" EXACT []
+synonym: "Region of head" EXACT []
+is_a: FMA:67504  ! Subdivision of cardinal body part
+
+[Term]
+id: FMA:242395
+name: Cavity of brain
+namespace: fma
+synonym: "Cavity of ventricular system of brain" EXACT []
+is_a: FMA:242681  ! Subdivision of cavity of neuraxis
+relationship: part_of FMA:242787 ! Ventricular system of brain
+relationship: part_of FMA:75007 ! Cavity of neuraxis
+
+[Term]
+id: FMA:242675
+name: Ventricular system of neuraxis
+namespace: fma
+is_a: FMA:83153  ! Organ component of neuraxis
+relationship: part_of FMA:55675 ! Neuraxis
+
+[Term]
+id: FMA:242681
+name: Subdivision of cavity of neuraxis
+namespace: fma
+is_a: FMA:9337  ! Organ cavity subdivision
+
+[Term]
+id: FMA:242751
+name: Cavity of third ventricle
+namespace: fma
+synonym: "Third ventricular cavity" EXACT []
+is_a: FMA:242681  ! Subdivision of cavity of neuraxis
+relationship: part_of FMA:242395 ! Cavity of brain
+relationship: part_of FMA:78454 ! Third ventricle
+
+[Term]
+id: FMA:242768
+name: Wall of ventricular system of neuraxis
+namespace: fma
+is_a: FMA:83153  ! Organ component of neuraxis
+relationship: part_of FMA:242675 ! Ventricular system of neuraxis
+
+[Term]
+id: FMA:242770
+name: Region of wall of ventricular system of neuraxis
+namespace: fma
+is_a: FMA:86103  ! Region of organ component
+
+[Term]
+id: FMA:242776
+name: Wall of third ventricle
+namespace: fma
+is_a: FMA:242770  ! Region of wall of ventricular system of neuraxis
+relationship: part_of FMA:242768 ! Wall of ventricular system of neuraxis
+relationship: part_of FMA:78454 ! Third ventricle
+
+[Term]
+id: FMA:242787
+name: Ventricular system of brain
+namespace: fma
+is_a: FMA:242789  ! Region of ventricluar system of neuraxis
+relationship: part_of FMA:242675 ! Ventricular system of neuraxis
+relationship: part_of FMA:50801 ! Brain
+
+[Term]
+id: FMA:242789
+name: Region of ventricluar system of neuraxis
+namespace: fma
+is_a: FMA:86103  ! Region of organ component
+
+[Term]
+id: FMA:242791
+name: Ependyma of neuraxis
+namespace: fma
+synonym: "Ependyma" EXACT []
+synonym: "Lamina epithelialis" EXACT []
+is_a: FMA:69064  ! Ecto-epithelium
+relationship: part_of FMA:242768 ! Wall of ventricular system of neuraxis
+
+[Term]
+id: FMA:242795
+name: Subdivision of ependyma of neuraxis
+namespace: fma
+is_a: FMA:67538  ! Subdivision of epithelium
+
+[Term]
+id: FMA:242803
+name: Ependyma proper
+namespace: fma
+is_a: FMA:242795  ! Subdivision of ependyma of neuraxis
+
+[Term]
+id: FMA:242805
+name: Ependyma proper of third ventricle
+namespace: fma
+is_a: FMA:242803  ! Ependyma proper
+relationship: part_of FMA:242833 ! Ependyma of third ventricle
+
+[Term]
+id: FMA:242813
+name: Subdivision of epithelium of choroid plexus
+namespace: fma
+is_a: FMA:242795  ! Subdivision of ependyma of neuraxis
+
+[Term]
+id: FMA:242821
+name: Epithelium of choroid plexus of third ventricle
+namespace: fma
+is_a: FMA:242813  ! Subdivision of epithelium of choroid plexus
+relationship: part_of FMA:242833 ! Ependyma of third ventricle
+
+[Term]
+id: FMA:242833
+name: Ependyma of third ventricle
+namespace: fma
+is_a: FMA:242795  ! Subdivision of ependyma of neuraxis
+relationship: part_of FMA:242776 ! Wall of third ventricle
+relationship: part_of FMA:242837 ! Ependyma of ventricular system of brain
+
+[Term]
+id: FMA:242837
+name: Ependyma of ventricular system of brain
+namespace: fma
+is_a: FMA:242795  ! Subdivision of ependyma of neuraxis
+relationship: part_of FMA:242791 ! Ependyma of neuraxis
+
+[Term]
+id: FMA:256133
+name: Body of vertebrate
+namespace: fma
+is_a: FMA:256135  ! Body
+
+[Term]
+id: FMA:256135
+name: Body
+namespace: fma
+def: "Anatomical structure which is the aggregate material substance of an individual member of a species." []
+is_a: FMA:67135  ! Anatomical structure
+
+[Term]
+id: FMA:256237
+name: Segment of neuraxis
+namespace: fma
+is_a: FMA:86140  ! Organ segment
+
+[Term]
+id: FMA:256693
+name: Nucleus of thalamus
+namespace: fma
+synonym: "Nuclear complex of thalamus" EXACT []
+is_a: FMA:83840  ! Nucleus of brain
+
+[Term]
+id: FMA:258682
+name: Pathway structure of neuraxis
+namespace: fma
+synonym: "Anatomical pathway of neuraxis" EXACT []
+is_a: FMA:83153  ! Organ component of neuraxis
+
+[Term]
+id: FMA:258685
+name: Dorsal column-medial lemniscal pathway structure
+namespace: fma
+synonym: "Anatomical dorsal column-medial leminscal pathway" EXACT []
+is_a: FMA:258682  ! Pathway structure of neuraxis
+
+[Term]
+id: FMA:258714
+name: Right thalamus
+namespace: fma
+is_a: FMA:62007  ! Thalamus
+relationship: part_of FMA:258745 ! Thalamic complex
+
+[Term]
+id: FMA:258716
+name: Left thalamus
+namespace: fma
+is_a: FMA:62007  ! Thalamus
+relationship: part_of FMA:258745 ! Thalamic complex
+
+[Term]
+id: FMA:258726
+name: Midline nuclear group of right thalamus
+namespace: fma
+is_a: FMA:62020  ! Midline nuclear group of thalamus
+
+[Term]
+id: FMA:258728
+name: Midline nuclear group of left thalamus
+namespace: fma
+is_a: FMA:62020  ! Midline nuclear group of thalamus
+
+[Term]
+id: FMA:258745
+name: Thalamic complex
+namespace: fma
+is_a: FMA:83153  ! Organ component of neuraxis
+
+[Term]
+id: FMA:258749
+name: Zone of hypothalamus
+namespace: fma
+is_a: FMA:74866  ! Zone of diencephalon
+
+[Term]
+id: FMA:258751
+name: Segment of white matter of diencephalon
+namespace: fma
+is_a: FMA:83465  ! Segment of white matter of neuraxis
+
+[Term]
+id: FMA:258760
+name: Nucleus of subthalamus
+namespace: fma
+is_a: FMA:83840  ! Nucleus of brain
+
+[Term]
+id: FMA:258762
+name: Nucleus of hypothalamus
+namespace: fma
+is_a: FMA:83840  ! Nucleus of brain
+
+[Term]
+id: FMA:258764
+name: Nucleus of epithalamus
+namespace: fma
+is_a: FMA:83840  ! Nucleus of brain
+
+[Term]
+id: FMA:42603
+name: Organ component cluster
+namespace: fma
+is_a: FMA:64990  ! Organ part cluster
+
+[Term]
+id: FMA:49443
+name: Anatomical cluster
+namespace: fma
+def: "Anatomical structure, which has as its parts a heterogeneous collection of  organs, organ parts, cells, cell parts or body part subdivisions that are adjacent to, or continuous with one another; does not constitute a cell part, cell,  tissue,  organ, organ system or organ system subdivision, cardinal body part, body part subdivision or anatomical junction. Examples: joint, adnexa of uterus, root of lung, renal pedicle, back." []
+is_a: FMA:67135  ! Anatomical structure
+
+[Term]
+id: FMA:50801
+name: Brain
+namespace: fma
+def: "Segment of neuraxis that has as its parts gray matter and white matter that surround the cerebral ventricular system;  Examples: There is only one brain." []
+is_a: FMA:83153  ! Organ component of neuraxis
+relationship: part_of FMA:54545 ! Head proper
+relationship: part_of FMA:55675 ! Neuraxis
+relationship: part_of FMA:7154 ! Head
+
+[Term]
+id: FMA:54545
+name: Head proper
+namespace: fma
+def: "Subdivision of head which consists of the neurocranium and all layers superficial to it including the cranial cavity and its contents. Examples: There is only one head proper." []
+is_a: FMA:24218  ! Subdivision of head
+relationship: part_of FMA:7154 ! Head
+
+[Term]
+id: FMA:55652
+name: Anatomical set
+namespace: fma
+def: "Material anatomical entity which consists of the maximum number of discontinuous members of the same class. Examples: set of cranial nerves, ventral branches of aorta, set of mammary arteries, thoracic viscera, dental arcade." []
+is_a: FMA:67165  ! Material anatomical entity
+
+[Term]
+id: FMA:55665
+name: Nonparenchymatous organ
+namespace: fma
+def: "Solid organ which consists of organ parts that are arranged as fascicles or sheets. Examples: muscle (organ), ligament (organ), membrane (organ), skin, viscerocranial mucosa." []
+is_a: FMA:55670  ! Solid organ
+
+[Term]
+id: FMA:55670
+name: Solid organ
+namespace: fma
+def: "Organ the unshared parts of which do not surround macroscopic anatomical spaces; only its shared parts (subdivisions of hollow tree organs) contain anatomical spaces. Examples: lung, liver, thymus, ovary, muscle (organ), meninx, superficial fascia, skin." []
+is_a: FMA:67498  ! Organ
+
+[Term]
+id: FMA:55671
+name: Cavitated organ
+namespace: fma
+def: "Organ the unshared parts of which surround one or more macroscopic anatomical spaces. Examples: neuraxis, tooth, esophagus, heart, long bone, corpus spongiosum of penis." []
+is_a: FMA:67498  ! Organ
+
+[Term]
+id: FMA:55672
+name: Organ with organ cavity
+namespace: fma
+def: "Cavitated organ in which its unshared parts surround one continuous anatomical space. Examples: stomach, urinary bladder, esophagus, uterine tube." []
+is_a: FMA:55671  ! Cavitated organ
+
+[Term]
+id: FMA:55675
+name: Neuraxis
+namespace: fma
+def: "Organ with organ cavity which consists of gray matter and white matter. Examples: There is only one neuraxis." []
+synonym: "Central nervous system" EXACT []
+synonym: "Cerebrospinal axis" EXACT []
+is_a: FMA:55672  ! Organ with organ cavity
+relationship: part_of FMA:20394 ! Human body
+relationship: part_of FMA:7157 ! Nervous system
+
+[Term]
+id: FMA:55676
+name: Segment of brain
+namespace: fma
+def: "Organ region of neuraxis with one or more fixed or anchored fiat boundaries. Examples: thalamus, midbrain, pons, cerebellum, and spinal cord." []
+synonym: "Neuraxis segment" EXACT []
+is_a: FMA:256237  ! Segment of neuraxis
+
+[Term]
+id: FMA:5897
+name: Anatomical space
+namespace: fma
+def: "Immaterial anatomical entity which has three spatial dimensions. Examples: celom, thoracic cavity, lesser sac of peritoneum, cavity of right atrium, lumen of aorta, mediastinal space, space of anterior compartment of forearm, intervertebral foramen space." []
+is_a: FMA:67112  ! Immaterial anatomical entity
+
+[Term]
+id: FMA:61284
+name: Neural tree organ
+namespace: fma
+def: "Neural tree organNonparenchymatous organ which has as its parts an aggregate of neurons (nuclei or ganglia) and their axons which are grouped into fasciculi by connective tissue to form elongated, cable-like structures that are arranged into a tree. Examples: vagus nerve, cervical spinal nerve, T2 spinal nerve (including the nuclei and ganglia of these nerves)." []
+is_a: FMA:55665  ! Nonparenchymatous organ
+
+[Term]
+id: FMA:61775
+name: Physical anatomical entity
+namespace: fma
+def: "Anatomical entity which has three or fewer spatial dimensions. Examples: hemoglobin molecule, mitochondrion, hepatocyte, erythrocyte, heart, head, blood, urine, peritoneal cavity, diaphragmatic surface of heart, inferior margin of liver, apex of lung." []
+is_a: FMA:62955  ! Anatomical entity
+
+[Term]
+id: FMA:61815
+name: Cardinal segment of brain
+namespace: fma
+def: "Organ region of brain with one or more fixed or anchored fiat boundaries. Examples: thalamus, midbrain, pons, cerebellum, and medulla oblongata." []
+synonym: "Brain segment" EXACT []
+is_a: FMA:55676  ! Segment of brain
+
+[Term]
+id: FMA:61822
+name: White matter structure of cerebral hemisphere
+namespace: fma
+is_a: FMA:83929  ! White matter of neuraxis
+
+[Term]
+id: FMA:61965
+name: Fornix of forebrain
+namespace: fma
+def: "Fornix of forebrain is an organ subdivision of the telencephalon which is made up primarily of myelinated axonal neural tissue.  The fornix is an arch-shaped fiber bundle connecting Ammon's horn of the hippocampus with the mammillary nuclei of the hypothalamus and anterior nuclei of the thalamus." []
+synonym: "Forebrain fornix" EXACT []
+is_a: FMA:83865  ! Fornix of neuraxis
+relationship: part_of FMA:61822 ! White matter structure of cerebral hemisphere
+
+[Term]
+id: FMA:61992
+name: Forebrain
+namespace: fma
+def: "Organ component of neuraxis that has as its parts the telencephalon, diencephalon, lateral ventricles and third ventricle. Examples: There is only one forebrain." []
+is_a: FMA:61815  ! Cardinal segment of brain
+relationship: part_of FMA:50801 ! Brain
+
+[Term]
+id: FMA:61996
+name: Segment of forebrain
+namespace: fma
+synonym: "Forebrain segment" EXACT []
+is_a: FMA:55676  ! Segment of brain
+
+[Term]
+id: FMA:62001
+name: Diencephalon
+namespace: fma
+def: "Organ component of neuraxis that has as its parts the epithalamus, thalamus, hypothalamus, subthalamus. There is only one diencephalon." []
+synonym: "Between brain" EXACT []
+synonym: "Interbrain" EXACT []
+synonym: "Mature diencephalon" EXACT []
+is_a: FMA:61996  ! Segment of forebrain
+relationship: part_of FMA:61992 ! Forebrain
+
+[Term]
+id: FMA:62007
+name: Thalamus
+namespace: fma
+synonym: "Dorsal thalamus" EXACT []
+synonym: "Dorsal thalamus (Anthoney)" EXACT []
+is_a: FMA:83153  ! Organ component of neuraxis
+relationship: part_of FMA:62001 ! Diencephalon
+
+[Term]
+id: FMA:62008
+name: Hypothalamus
+namespace: fma
+synonym: "Preoptico-hypothalamic area" EXACT []
+synonym: "Preoptico-hypothalamic region" EXACT []
+is_a: FMA:83153  ! Organ component of neuraxis
+relationship: part_of FMA:242000 ! Limbic system
+relationship: part_of FMA:62001 ! Diencephalon
+
+[Term]
+id: FMA:62009
+name: Epithalamus
+namespace: fma
+is_a: FMA:83153  ! Organ component of neuraxis
+relationship: part_of FMA:62001 ! Diencephalon
+
+[Term]
+id: FMA:62010
+name: Subthalamus
+namespace: fma
+synonym: "Subthalamic region" EXACT []
+synonym: "Ventral thalamus" EXACT []
+is_a: FMA:83153  ! Organ component of neuraxis
+relationship: part_of FMA:62001 ! Diencephalon
+
+[Term]
+id: FMA:62019
+name: Anterior nuclear group of thalamus
+namespace: fma
+synonym: "Anterior nuclear group" EXACT []
+synonym: "Anterior nuclei of thalamus" EXACT []
+synonym: "Anterior nucleus of thalamus" EXACT []
+synonym: "Anterior thalamic nuclei" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62007 ! Thalamus
+
+[Term]
+id: FMA:62020
+name: Midline nuclear group of thalamus
+namespace: fma
+synonym: "Median nuclei of thalamus" EXACT []
+synonym: "Midline nuclear group" EXACT []
+synonym: "Midline nuclei of thalamus" EXACT []
+synonym: "Periventricular nuclei of thalamus" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62007 ! Thalamus
+
+[Term]
+id: FMA:62021
+name: Intralaminar nuclear group of thalamus
+namespace: fma
+synonym: "Intralaminar nuclear group" EXACT []
+synonym: "Intralaminar nuclei of thalamus" EXACT []
+synonym: "Intralaminar thalamic nuclei" EXACT []
+synonym: "Nonspecific thalamic system" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62007 ! Thalamus
+
+[Term]
+id: FMA:62022
+name: Ventral nuclear group of thalamus
+namespace: fma
+synonym: "Ventral nuclear group" EXACT []
+synonym: "Ventral nuclear mass" EXACT []
+synonym: "Ventral nuclei of thalamus" EXACT []
+synonym: "Ventral tier thalamic nuclei" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62007 ! Thalamus
+
+[Term]
+id: FMA:62023
+name: Metathalamus
+namespace: fma
+synonym: "Geniculate group of the dorsal thalamus" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62007 ! Thalamus
+
+[Term]
+id: FMA:62024
+name: Posterior nuclear group of thalamus
+namespace: fma
+synonym: "Posterior complex of thalamus" EXACT []
+synonym: "Posterior nuclear complex" EXACT []
+synonym: "Posterior nuclear complex of thalamus" EXACT []
+synonym: "Posterior thalamic nuclear group" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62007 ! Thalamus
+
+[Term]
+id: FMA:62026
+name: Thalamic reticular nucleus
+namespace: fma
+synonym: "Reticular nuclear group" EXACT []
+synonym: "Reticular nucleus of thalamus" EXACT []
+synonym: "Reticular nucleus of the thalamus" EXACT []
+synonym: "Reticular nucleus-2" EXACT []
+synonym: "Reticular thalamic nucleus" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62007 ! Thalamus
+
+[Term]
+id: FMA:62027
+name: Anterior hypothalamic region
+namespace: fma
+synonym: "Chiasmal zone" EXACT []
+is_a: FMA:258749  ! Zone of hypothalamus
+relationship: part_of FMA:62008 ! Hypothalamus
+
+[Term]
+id: FMA:62028
+name: Intermediate hypothalamic region
+namespace: fma
+synonym: "Intermediate hypothalamic area" EXACT []
+is_a: FMA:258749  ! Zone of hypothalamus
+relationship: part_of FMA:62008 ! Hypothalamus
+
+[Term]
+id: FMA:62029
+name: Posterior hypothalamic region
+namespace: fma
+synonym: "Mammillary level of hypothalamus" EXACT []
+synonym: "Mammillary region" EXACT []
+synonym: "Posterior hypothalamus" EXACT []
+is_a: FMA:258749  ! Zone of hypothalamus
+relationship: part_of FMA:62008 ! Hypothalamus
+
+[Term]
+id: FMA:62030
+name: Lateral hypothalamic region
+namespace: fma
+synonym: "Lateral division of hypothalamus" EXACT []
+synonym: "Lateral group of hypothalamic nuclei" EXACT []
+synonym: "Lateral hypothalamic area" EXACT []
+synonym: "Lateral hypothalamic group" EXACT []
+synonym: "Lateral hypothalamic zone (Crosby)" EXACT []
+is_a: FMA:258749  ! Zone of hypothalamus
+relationship: part_of FMA:62008 ! Hypothalamus
+
+[Term]
+id: FMA:62032
+name: Habenula
+namespace: fma
+def: "Habenula is a segment of the epithalamus that has as its parts the lateral and medial habenular nuclei and the habenular commissure." []
+synonym: "Habenular nuclei" EXACT []
+is_a: FMA:74866  ! Zone of diencephalon
+relationship: part_of FMA:62009 ! Epithalamus
+
+[Term]
+id: FMA:62033
+name: Pineal body
+namespace: fma
+def: "Pineal body is an unpaired glandular organ subdivision shaped somewhat like a pine cone.  It is attached on the midline near the posterior and habenular commissures of the epithalamus." []
+synonym: "Pineal gland" EXACT []
+is_a: FMA:7146  ! Organ component gland
+relationship: part_of FMA:62009 ! Epithalamus
+relationship: part_of FMA:9668 ! Endocrine system
+
+[Term]
+id: FMA:62035
+name: Subthalamic nucleus
+namespace: fma
+synonym: "Body of Forel" EXACT []
+synonym: "Body of Luys" EXACT []
+synonym: "Nucleus of Corpus Luysii" EXACT []
+synonym: "Nucleus of Luys" EXACT []
+synonym: "Subthalamic nucleus (of Luys)" EXACT []
+is_a: FMA:258760  ! Nucleus of subthalamus
+relationship: part_of FMA:62010 ! Subthalamus
+
+[Term]
+id: FMA:62036
+name: Nucleus of ansa lenticularis
+namespace: fma
+synonym: "Ansa lenticularis nucleus" EXACT []
+is_a: FMA:258760  ! Nucleus of subthalamus
+relationship: part_of FMA:62010 ! Subthalamus
+
+[Term]
+id: FMA:62037
+name: Nucleus of field H
+namespace: fma
+synonym: "Field h nucleus" EXACT []
+synonym: "Nucleus of Forel's field" EXACT []
+synonym: "Nucleus of Forel's field H" EXACT []
+synonym: "Nucleus of field of Forel" EXACT []
+synonym: "Nucleus of medial field of subthalamus [H]" EXACT []
+synonym: "Prerubral field nucleus" EXACT []
+synonym: "Prerubral nucleus" EXACT []
+synonym: "Prerubral tegmental nucleus" EXACT []
+is_a: FMA:258760  ! Nucleus of subthalamus
+relationship: part_of FMA:62010 ! Subthalamus
+
+[Term]
+id: FMA:62038
+name: Zona incerta
+namespace: fma
+is_a: FMA:258760  ! Nucleus of subthalamus
+relationship: part_of FMA:62010 ! Subthalamus
+
+[Term]
+id: FMA:62048
+name: Habenular commissure
+namespace: fma
+is_a: FMA:62445  ! Commissure of diencephalon
+relationship: part_of FMA:62032 ! Habenula
+
+[Term]
+id: FMA:62049
+name: Capsule of medial geniculate body
+namespace: fma
+synonym: "Medial geniculate body capsule" EXACT []
+is_a: FMA:62448  ! Capsule of diencephalon
+relationship: part_of FMA:62211 ! Medial geniculate body
+
+[Term]
+id: FMA:62051
+name: Dorsal supraoptic decussation
+namespace: fma
+synonym: "Commissure of Meynert" EXACT []
+synonym: "Dorsal supra-optic commissure" EXACT []
+synonym: "Dorsal supraoptic commissure" EXACT []
+synonym: "Dorsal supraoptic commissure (of Ganser)" EXACT []
+synonym: "Dorsal supraoptic decussation of Meynert" EXACT []
+synonym: "Ganser's commissure" EXACT []
+synonym: "Meynert's commissure" EXACT []
+synonym: "Supraoptic commissure of Meynert" EXACT []
+synonym: "Supraoptic commissures, dorsal" EXACT []
+is_a: FMA:83906  ! Commissure of neuraxis
+relationship: part_of FMA:62027 ! Anterior hypothalamic region
+
+[Term]
+id: FMA:62052
+name: Ventral supraoptic decussation
+namespace: fma
+synonym: "Commissure of Gudden" EXACT []
+synonym: "Gudden commissure" EXACT []
+synonym: "Gudden's commissure" EXACT []
+synonym: "Supraoptic commissures, ventral" EXACT []
+synonym: "Ventral supra-optic commissure" EXACT []
+synonym: "Ventral supraoptic commissure (of Meynert)" EXACT []
+synonym: "Ventral supraoptic decussation of Gudden" EXACT []
+synonym: "Von Gudden's commissure" EXACT []
+is_a: FMA:83906  ! Commissure of neuraxis
+relationship: part_of FMA:62027 ! Anterior hypothalamic region
+
+[Term]
+id: FMA:62054
+name: Supraopticohypophysial tract
+namespace: fma
+synonym: "Supra-opticohypophysial tract" EXACT []
+synonym: "Supraopticohypophyseal tract" EXACT []
+is_a: FMA:62447  ! Tract of diencephalon
+relationship: part_of FMA:62027 ! Anterior hypothalamic region
+
+[Term]
+id: FMA:62056
+name: Supramammillary commissure
+namespace: fma
+synonym: "Commissure of Forel" EXACT []
+synonym: "Commissure y" EXACT []
+synonym: "Postmammillary decussation" EXACT []
+synonym: "Supramammillary decussation" EXACT []
+is_a: FMA:62445  ! Commissure of diencephalon
+relationship: part_of FMA:62029 ! Posterior hypothalamic region
+
+[Term]
+id: FMA:62057
+name: Mammillary princeps fasciculus
+namespace: fma
+synonym: "Principal mammillary fasciculus" EXACT []
+synonym: "Principle mamillary fasciculus" EXACT []
+is_a: FMA:62447  ! Tract of diencephalon
+relationship: part_of FMA:62029 ! Posterior hypothalamic region
+
+[Term]
+id: FMA:62058
+name: Mammillotegmental fasciculus
+namespace: fma
+synonym: "Gudden tract" EXACT []
+synonym: "Mammillotegmental tract" EXACT []
+synonym: "von Gudden's tract" EXACT []
+is_a: FMA:62447  ! Tract of diencephalon
+relationship: part_of FMA:62029 ! Posterior hypothalamic region
+
+[Term]
+id: FMA:62059
+name: Mammillothalamic tract of hypothalamus
+namespace: fma
+is_a: FMA:62447  ! Tract of diencephalon
+relationship: part_of FMA:62029 ! Posterior hypothalamic region
+
+[Term]
+id: FMA:62061
+name: Mammillary peduncle
+namespace: fma
+synonym: "Peduncle of mammillary body" EXACT []
+is_a: FMA:62444  ! Peduncle of diencephalon
+relationship: part_of FMA:62029 ! Posterior hypothalamic region
+
+[Term]
+id: FMA:62062
+name: Postcommissural fornix
+namespace: fma
+is_a: FMA:83865  ! Fornix of neuraxis
+relationship: part_of FMA:61965 ! Fornix of forebrain
+relationship: part_of FMA:62030 ! Lateral hypothalamic region
+
+[Term]
+id: FMA:62063
+name: Dorsal longitudinal fasciculus of hypothalamus
+namespace: fma
+is_a: FMA:62447  ! Tract of diencephalon
+relationship: part_of FMA:62030 ! Lateral hypothalamic region
+
+[Term]
+id: FMA:62065
+name: Field H1
+namespace: fma
+synonym: "Forel's field H1" EXACT []
+synonym: "Tegmental area H1" EXACT []
+synonym: "Thalamic fasciculus" EXACT []
+synonym: "Thalamic fasciculus [H1]" EXACT []
+is_a: FMA:83844  ! Fasciculus of brain
+relationship: part_of FMA:62010 ! Subthalamus
+
+[Term]
+id: FMA:62066
+name: Field H
+namespace: fma
+synonym: "Forel's field H" EXACT []
+synonym: "Prerubral area" EXACT []
+synonym: "Prerubral field" EXACT []
+synonym: "Tegmental area H" EXACT []
+synonym: "Tegmental field of Forel" EXACT []
+is_a: FMA:258751  ! Segment of white matter of diencephalon
+relationship: part_of FMA:62010 ! Subthalamus
+
+[Term]
+id: FMA:62067
+name: Field H2
+namespace: fma
+synonym: "Forel's field H2" EXACT []
+synonym: "Lenticular fasciculus [H2]" EXACT []
+synonym: "Lenticular fasciculus of diencephalon" EXACT []
+synonym: "Tegmental area H2" EXACT []
+is_a: FMA:83844  ! Fasciculus of brain
+relationship: part_of FMA:62010 ! Subthalamus
+
+[Term]
+id: FMA:62068
+name: Capsule of subthalamic nucleus
+namespace: fma
+synonym: "Subthalamic nuclear capsule" EXACT []
+is_a: FMA:62448  ! Capsule of diencephalon
+relationship: part_of FMA:62010 ! Subthalamus
+
+[Term]
+id: FMA:62070
+name: Ansa lenticularis
+namespace: fma
+synonym: "Ansa lenticularis in thalamus" EXACT []
+synonym: "Ventral peduncle of lateral forebrain bundle" EXACT []
+is_a: FMA:62451  ! Ansa of diencephalon
+relationship: part_of FMA:62010 ! Subthalamus
+
+[Term]
+id: FMA:62071
+name: Ansa peduncularis
+namespace: fma
+synonym: "Ansa peduncularis in thalamus" EXACT []
+synonym: "Peduncular loop" EXACT []
+is_a: FMA:62451  ! Ansa of diencephalon
+relationship: part_of FMA:62010 ! Subthalamus
+
+[Term]
+id: FMA:62141
+name: Anterodorsal nucleus
+namespace: fma
+synonym: "Anterodorsal nucleus of thalamus" EXACT []
+synonym: "Anterodorsal thalamic nucleus" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62019 ! Anterior nuclear group of thalamus
+
+[Term]
+id: FMA:62142
+name: Anteromedial nucleus
+namespace: fma
+synonym: "Anteromedial nucleus of thalamus" EXACT []
+synonym: "Anteromedial thalamic nucleus" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62019 ! Anterior nuclear group of thalamus
+
+[Term]
+id: FMA:62143
+name: Anteroventral nucleus
+namespace: fma
+synonym: "Anterior ventral nucleus of thalamus" EXACT []
+synonym: "Anteroprincipal thalamic nucleus" EXACT []
+synonym: "Anteroventral nucleus of thalamus" EXACT []
+synonym: "Anteroventral thalamic nucleus" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62019 ! Anterior nuclear group of thalamus
+
+[Term]
+id: FMA:62151
+name: Paratenial nucleus
+namespace: fma
+synonym: "Parataenial nucleus" EXACT []
+synonym: "Paratenial thalamic nucleus" EXACT []
+is_a: FMA:83840  ! Nucleus of brain
+relationship: part_of FMA:62020 ! Midline nuclear group of thalamus
+
+[Term]
+id: FMA:62152
+name: Paraventricular nucleus of thalamus
+namespace: fma
+synonym: "Paraventricular gray" EXACT []
+synonym: "Paraventricular nuclei" EXACT []
+synonym: "Paraventricular nuclei of thalamus" EXACT []
+synonym: "Paraventricular thalamic nucleus" EXACT []
+is_a: FMA:83840  ! Nucleus of brain
+relationship: part_of FMA:62020 ! Midline nuclear group of thalamus
+
+[Term]
+id: FMA:62153
+name: Reuniens nucleus
+namespace: fma
+synonym: "Medioventral nucleus" EXACT []
+synonym: "Reuniens thalamic nucleus" EXACT []
+is_a: FMA:83840  ! Nucleus of brain
+relationship: part_of FMA:62020 ! Midline nuclear group of thalamus
+
+[Term]
+id: FMA:62154
+name: Rhomboidal nucleus
+namespace: fma
+synonym: "Rhomboid nucleus" EXACT []
+synonym: "Rhomboid thalamic nucleus" EXACT []
+is_a: FMA:83840  ! Nucleus of brain
+relationship: part_of FMA:62020 ! Midline nuclear group of thalamus
+
+[Term]
+id: FMA:62155
+name: Subfascicular nucleus
+namespace: fma
+is_a: FMA:83840  ! Nucleus of brain
+relationship: part_of FMA:62020 ! Midline nuclear group of thalamus
+
+[Term]
+id: FMA:62156
+name: Medial nuclear group of thalamus
+namespace: fma
+synonym: "Dorsal medial nucleus of thalamus" EXACT []
+synonym: "Dorsomedial nuclear group" EXACT []
+synonym: "Dorsomedial nucleus" EXACT []
+synonym: "Dorsomedial nucleus of thalamus" EXACT []
+synonym: "Medial dorsal nucleus" EXACT []
+synonym: "Medial dorsal nucleus of thalamus" EXACT []
+synonym: "Medial nuclear group" EXACT []
+synonym: "Medial thalamic nuclei" EXACT []
+synonym: "Medial thalamic nucleus" EXACT []
+synonym: "Mediodorsal nucleus" EXACT []
+synonym: "Mediodorsal thalamic nucleus" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62007 ! Thalamus
+
+[Term]
+id: FMA:62159
+name: Subdivision of medial dorsal nucleus
+namespace: fma
+synonym: "Medial dorsal nuclear subdivision" EXACT []
+is_a: FMA:84053  ! Subdivision of nucleus of neuraxis
+
+[Term]
+id: FMA:62160
+name: Paralaminar part of medial dorsal nucleus
+namespace: fma
+synonym: "Dorsomedial thalamic nucleus, paralaminar part" EXACT []
+synonym: "Paralaminar part of dorsomedial nucleus" EXACT []
+synonym: "Paralaminar part of medial dorsal nucleus of thalamus" EXACT []
+synonym: "Pars paralaminaris of medial dorsal nucleus of thalamus" EXACT []
+synonym: "Ventral mediodorsal nucleus" EXACT []
+is_a: FMA:62159  ! Subdivision of medial dorsal nucleus
+relationship: part_of FMA:62156 ! Medial nuclear group of thalamus
+
+[Term]
+id: FMA:62161
+name: Magnocellular part of medial dorsal nucleus
+namespace: fma
+synonym: "Dorsomedial thalamic nucleus, magnocellular part" EXACT []
+synonym: "Magnocellular mediodorsal nucleus" EXACT []
+synonym: "Magnocellular nucleus of medial dorsal nucleus of thalamus" EXACT []
+synonym: "Magnocellular part of dorsomedial nucleus" EXACT []
+is_a: FMA:62159  ! Subdivision of medial dorsal nucleus
+relationship: part_of FMA:62156 ! Medial nuclear group of thalamus
+
+[Term]
+id: FMA:62162
+name: Parvicellular part of medial dorsal nucleus
+namespace: fma
+synonym: "Dorsomedial thalamic nucleus, parvicellular part" EXACT []
+synonym: "Lateral mediodorsal nucleus" EXACT []
+synonym: "Lateral nucleus of medial dorsal nucleus of thalamus" EXACT []
+synonym: "Parvicellular part of dorsomedial nucleus" EXACT []
+synonym: "Parvocellular nucleus of medial dorsal nucleus of thalamus" EXACT []
+synonym: "Principal division of ventral anterior nucleus of thalamus" EXACT []
+is_a: FMA:62159  ! Subdivision of medial dorsal nucleus
+relationship: part_of FMA:62156 ! Medial nuclear group of thalamus
+
+[Term]
+id: FMA:62163
+name: Densocellular part of medial dorsal nucleus
+namespace: fma
+is_a: FMA:62159  ! Subdivision of medial dorsal nucleus
+relationship: part_of FMA:62156 ! Medial nuclear group of thalamus
+
+[Term]
+id: FMA:62164
+name: Rostral intralaminar nuclear group
+namespace: fma
+synonym: "Rostral intralaminar nuclei" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62021 ! Intralaminar nuclear group of thalamus
+
+[Term]
+id: FMA:62165
+name: Centromedian nucleus
+namespace: fma
+synonym: "Central magnocellular nucleus of thalamus" EXACT []
+synonym: "Central nucleus-1" EXACT []
+synonym: "Centre median nucleus" EXACT []
+synonym: "Centromedian nucleus of thalamus" EXACT []
+synonym: "Centromedian thalamic nucleus" EXACT []
+synonym: "Noyau centre median of Luys" EXACT []
+is_a: FMA:83840  ! Nucleus of brain
+relationship: part_of FMA:62021 ! Intralaminar nuclear group of thalamus
+
+[Term]
+id: FMA:62166
+name: Parafascicular nucleus
+namespace: fma
+synonym: "Parafascicular nucleus of thalamus" EXACT []
+synonym: "Parafascicular thalamic nucleus" EXACT []
+is_a: FMA:83840  ! Nucleus of brain
+relationship: part_of FMA:62021 ! Intralaminar nuclear group of thalamus
+
+[Term]
+id: FMA:62169
+name: Central dorsal nucleus
+namespace: fma
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62164 ! Rostral intralaminar nuclear group
+
+[Term]
+id: FMA:62170
+name: Central lateral nucleus
+namespace: fma
+synonym: "Central lateral nucleus of thalamus" EXACT []
+synonym: "Central lateral thalamic nucleus" EXACT []
+synonym: "Centrolateral thalamic nucleus" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62164 ! Rostral intralaminar nuclear group
+
+[Term]
+id: FMA:62171
+name: Central medial nucleus
+namespace: fma
+synonym: "Central medial nucleus of thalamus" EXACT []
+synonym: "Central medial thalamic nucleus" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62164 ! Rostral intralaminar nuclear group
+
+[Term]
+id: FMA:62172
+name: Paracentral nucleus
+namespace: fma
+synonym: "Paracentral nucleus of thalamus" EXACT []
+synonym: "Paracentral thalamic nucleus" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62164 ! Rostral intralaminar nuclear group
+
+[Term]
+id: FMA:62174
+name: Lateral nuclear group of thalamus
+namespace: fma
+synonym: "Lateral nuclear group" EXACT []
+synonym: "Lateral nucleus of thalamus" EXACT []
+synonym: "Lateral thalamic nuclei" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62007 ! Thalamus
+
+[Term]
+id: FMA:62176
+name: Lateral dorsal nucleus
+namespace: fma
+synonym: "Lateral dorsal nucleus of thalamus" EXACT []
+synonym: "Lateral dorsal thalamic nucleus" EXACT []
+synonym: "Laterodorsal nucleus, superficial part" EXACT []
+synonym: "Laterodorsal thalamic nucleus" EXACT []
+is_a: FMA:83840  ! Nucleus of brain
+relationship: part_of FMA:62174 ! Lateral nuclear group of thalamus
+
+[Term]
+id: FMA:62177
+name: Lateral posterior nucleus
+namespace: fma
+synonym: "Lateral posterior nucleus of thalamus" EXACT []
+synonym: "Lateral posterior thalamic nucleus" EXACT []
+synonym: "Laterodorsal nucleus, caudal part" EXACT []
+synonym: "Posterior lateral nucleus of thalamus" EXACT []
+is_a: FMA:83840  ! Nucleus of brain
+relationship: part_of FMA:62174 ! Lateral nuclear group of thalamus
+
+[Term]
+id: FMA:62178
+name: Pulvinar
+namespace: fma
+synonym: "Pulvinar nuclei" EXACT []
+synonym: "Pulvinar nucleus" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62174 ! Lateral nuclear group of thalamus
+
+[Term]
+id: FMA:62180
+name: Oral pulvinar nucleus
+namespace: fma
+synonym: "Anterior pulvinar nucleus" EXACT []
+synonym: "Oral nuclear group of pulvinar" EXACT []
+synonym: "Oral part of pulvinar" EXACT []
+synonym: "Oral portion of pulvinar" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62178 ! Pulvinar
+
+[Term]
+id: FMA:62181
+name: Lateral pulvinar nucleus
+namespace: fma
+synonym: "Lateral pulvinar nucleus of thalamus" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62178 ! Pulvinar
+
+[Term]
+id: FMA:62182
+name: Medial pulvinar nucleus
+namespace: fma
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62178 ! Pulvinar
+
+[Term]
+id: FMA:62183
+name: Inferior pulvinar nucleus
+namespace: fma
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62178 ! Pulvinar
+
+[Term]
+id: FMA:62184
+name: Ventral anterior nucleus
+namespace: fma
+synonym: "Ventral anterior nucleus of thalamus" EXACT []
+synonym: "Ventral anterior thalamic nucleus" EXACT []
+is_a: FMA:83840  ! Nucleus of brain
+relationship: part_of FMA:62022 ! Ventral nuclear group of thalamus
+
+[Term]
+id: FMA:62186
+name: Ventral lateral nucleus
+namespace: fma
+synonym: "Lateral ventral nucleus of thalamus" EXACT []
+synonym: "Ventral lateral complex of thalamus" EXACT []
+synonym: "Ventral lateral nucleus of thalamus" EXACT []
+synonym: "Ventral lateral thalamic nuclei" EXACT []
+synonym: "Ventrolateral thalamic nucleus" EXACT []
+is_a: FMA:83840  ! Nucleus of brain
+relationship: part_of FMA:62022 ! Ventral nuclear group of thalamus
+
+[Term]
+id: FMA:62187
+name: Ventral posterior nucleus
+namespace: fma
+synonym: "Ventral posterior thalamic nucleus" EXACT []
+synonym: "Ventrobasal complex" EXACT []
+synonym: "Ventrobasal nucleus" EXACT []
+is_a: FMA:83840  ! Nucleus of brain
+relationship: part_of FMA:62022 ! Ventral nuclear group of thalamus
+
+[Term]
+id: FMA:62188
+name: Subdivision of ventral anterior nucleus
+namespace: fma
+synonym: "Ventral anterior nuclear subdivision" EXACT []
+is_a: FMA:84053  ! Subdivision of nucleus of neuraxis
+
+[Term]
+id: FMA:62189
+name: Subdivision of ventral lateral nucleus
+namespace: fma
+synonym: "Ventral lateral nuclear subdivision" EXACT []
+is_a: FMA:84053  ! Subdivision of nucleus of neuraxis
+
+[Term]
+id: FMA:62191
+name: Parvicellular part of ventral anterior nucleus
+namespace: fma
+synonym: "Ventral anterior nucleus, pars parvicellularis" EXACT []
+synonym: "Ventral anterior thalamic nucleus, parvicellular part" EXACT []
+synonym: "Ventralis anterior (Jones)" EXACT []
+is_a: FMA:62188  ! Subdivision of ventral anterior nucleus
+relationship: part_of FMA:62184 ! Ventral anterior nucleus
+
+[Term]
+id: FMA:62192
+name: Magnocellular part of ventral anterior nucleus
+namespace: fma
+synonym: "Magnocellular division of ventral anterior nucleus of thalamus" EXACT []
+synonym: "Ventral anterior nucleus, magnocellular part" EXACT []
+synonym: "Ventral anterior nucleus, pars magnocellularis" EXACT []
+synonym: "Ventral anterior thalamic nucleus, magnocellular part" EXACT []
+is_a: FMA:62188  ! Subdivision of ventral anterior nucleus
+relationship: part_of FMA:62184 ! Ventral anterior nucleus
+
+[Term]
+id: FMA:62193
+name: Oral part of ventral lateral nucleus
+namespace: fma
+synonym: "Ventral anterior nucleus, pars densicellularis" EXACT []
+synonym: "Ventral lateral anterior nucleus" EXACT []
+synonym: "Ventral lateral nucleus, oral part" EXACT []
+synonym: "Ventral lateral thalamic nucleus, oral part" EXACT []
+is_a: FMA:62189  ! Subdivision of ventral lateral nucleus
+relationship: part_of FMA:62186 ! Ventral lateral nucleus
+
+[Term]
+id: FMA:62194
+name: Caudal part of ventral lateral nucleus
+namespace: fma
+synonym: "Dorsal part of ventral lateral posterior nucleus (Jones)" EXACT []
+synonym: "Ventral lateral nucleus, caudal part" EXACT []
+synonym: "Ventral lateral thalamic nucleus, caudal part" EXACT []
+is_a: FMA:62189  ! Subdivision of ventral lateral nucleus
+relationship: part_of FMA:62186 ! Ventral lateral nucleus
+
+[Term]
+id: FMA:62195
+name: Medial part of ventral lateral nucleus
+namespace: fma
+synonym: "Ventral lateral nucleus, medial part" EXACT []
+synonym: "Ventral medial nucleus" EXACT []
+is_a: FMA:62189  ! Subdivision of ventral lateral nucleus
+relationship: part_of FMA:62186 ! Ventral lateral nucleus
+
+[Term]
+id: FMA:62196
+name: Pars postrema of ventral lateral nucleus
+namespace: fma
+synonym: "Posterodorsal part of ventral lateral posterior nucleus (Jones)" EXACT []
+synonym: "Ventral lateral nucleus (pars postrema)" EXACT []
+is_a: FMA:62189  ! Subdivision of ventral lateral nucleus
+relationship: part_of FMA:62186 ! Ventral lateral nucleus
+
+[Term]
+id: FMA:62198
+name: Area X
+namespace: fma
+synonym: "Anteromedial part of ventral lateral posterior nucleus (Jones)" EXACT []
+is_a: FMA:62189  ! Subdivision of ventral lateral nucleus
+relationship: part_of FMA:62186 ! Ventral lateral nucleus
+
+[Term]
+id: FMA:62199
+name: Ventral posteroinferior nucleus
+namespace: fma
+synonym: "Ventral posterior inferior nucleus" EXACT []
+synonym: "Ventral posterior inferior nucleus of thalamus" EXACT []
+synonym: "Ventral posterior inferior thalamic nucleus" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62187 ! Ventral posterior nucleus
+
+[Term]
+id: FMA:62200
+name: Ventral posterolateral nucleus
+namespace: fma
+synonym: "Posterolateral ventral nucleus of thalamus" EXACT []
+synonym: "Ventral posterolateral nucleus of thalamus" EXACT []
+synonym: "Ventral posterolateral thalamic nucleus" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:258685 ! Dorsal column-medial lemniscal pathway structure
+relationship: part_of FMA:62187 ! Ventral posterior nucleus
+
+[Term]
+id: FMA:62201
+name: Subdivision of ventral posterolateral nucleus
+namespace: fma
+synonym: "Ventral posterolateral nuclear subdivision" EXACT []
+is_a: FMA:84053  ! Subdivision of nucleus of neuraxis
+
+[Term]
+id: FMA:62202
+name: Ventral posteromedial nucleus
+namespace: fma
+synonym: "Arcuate nucleus of thalamus" EXACT []
+synonym: "Arcuate nucleus-3" EXACT []
+synonym: "Posteromedial ventral nucleus of thalamus" EXACT []
+synonym: "Semilunar nucleus" EXACT []
+synonym: "Thalamic gustatory nucleus" EXACT []
+synonym: "Ventral posterior medial nucleus" EXACT []
+synonym: "Ventral posteromedial nucleus of thalamus" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62187 ! Ventral posterior nucleus
+
+[Term]
+id: FMA:62203
+name: Subdivision of ventral posteromedial nucleus
+namespace: fma
+synonym: "Ventral posteromedial nuclear subdivision" EXACT []
+is_a: FMA:84053  ! Subdivision of nucleus of neuraxis
+
+[Term]
+id: FMA:62205
+name: Oral part of ventral posterolateral nucleus
+namespace: fma
+synonym: "Ventral part of ventral lateral posterior nucleus (Jones)" EXACT []
+synonym: "Ventral posterolateral nucleus, oral part" EXACT []
+synonym: "Ventral posterolateral thalamic nucleus, oral part" EXACT []
+is_a: FMA:62201  ! Subdivision of ventral posterolateral nucleus
+relationship: part_of FMA:62200 ! Ventral posterolateral nucleus
+
+[Term]
+id: FMA:62206
+name: Caudal part of ventral posterolateral nucleus
+namespace: fma
+synonym: "Ventral posterior lateral nucleus (Ilinsky)" EXACT []
+synonym: "Ventral posterolateral nucleus, caudal part" EXACT []
+synonym: "Ventral posterolateral thalamic nucleus, caudal part" EXACT []
+is_a: FMA:62201  ! Subdivision of ventral posterolateral nucleus
+relationship: part_of FMA:62200 ! Ventral posterolateral nucleus
+
+[Term]
+id: FMA:62207
+name: Parvicellular part of ventral posteromedial nucleus
+namespace: fma
+synonym: "Gustatory thalamic nucleus" EXACT []
+synonym: "Parvicellular part of ventral posteromedial nucleus of thalamus" EXACT []
+synonym: "Ventral posteromedial nucleus of thalamus, parvicellular part" EXACT []
+synonym: "Ventral posteromedial nucleus, parvocellular part" EXACT []
+synonym: "Ventral posteromedial thalamic nucleus, parvicellular part" EXACT []
+is_a: FMA:62203  ! Subdivision of ventral posteromedial nucleus
+relationship: part_of FMA:62202 ! Ventral posteromedial nucleus
+
+[Term]
+id: FMA:62208
+name: Principal part of ventral posteromedial nucleus
+namespace: fma
+is_a: FMA:62203  ! Subdivision of ventral posteromedial nucleus
+relationship: part_of FMA:62202 ! Ventral posteromedial nucleus
+
+[Term]
+id: FMA:62209
+name: Lateral geniculate body
+namespace: fma
+synonym: "Lateral geniculate complex" EXACT []
+synonym: "Lateral geniculate nucleus" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62023 ! Metathalamus
+
+[Term]
+id: FMA:62211
+name: Medial geniculate body
+namespace: fma
+synonym: "Medial geniculate complex" EXACT []
+synonym: "Medial geniculate nuclei" EXACT []
+synonym: "Medial geniculate nucleus" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62023 ! Metathalamus
+
+[Term]
+id: FMA:62214
+name: Dorsal nucleus of lateral geniculate body
+namespace: fma
+synonym: "Dorsal lateral geniculate nucleus" EXACT []
+synonym: "Lateral geniculate complex, dorsal part" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62209 ! Lateral geniculate body
+
+[Term]
+id: FMA:62215
+name: Ventral nucleus of lateral geniculate body
+namespace: fma
+synonym: "Lateral geniculate complex, ventral part" EXACT []
+synonym: "Pregeniculate nucleus" EXACT []
+synonym: "Ventral lateral geniculate nucleus" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62209 ! Lateral geniculate body
+
+[Term]
+id: FMA:62216
+name: Dorsal nucleus of medial geniculate body
+namespace: fma
+synonym: "Dorsal nucleus of medial geniculate complex" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62211 ! Medial geniculate body
+
+[Term]
+id: FMA:62217
+name: Ventral nucleus of medial geniculate body
+namespace: fma
+synonym: "Medial geniculate complex, ventral part" EXACT []
+synonym: "Medial geniculate nucleus, ventral part" EXACT []
+synonym: "Ventral nucleus of medial geniculate complex" EXACT []
+synonym: "Ventral principal nucleus of medial geniculate body" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62211 ! Medial geniculate body
+
+[Term]
+id: FMA:62218
+name: Magnocellular nucleus of medial geniculate body
+namespace: fma
+synonym: "Medial division of medial geniculate body" EXACT []
+synonym: "Medial geniculate complex, medial part" EXACT []
+synonym: "Medial geniculate nucleus, medial part" EXACT []
+synonym: "Medial magnocellular nucleus of medial geniculate body" EXACT []
+synonym: "Medial nucleus of medial geniculate body" EXACT []
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62211 ! Medial geniculate body
+
+[Term]
+id: FMA:62220
+name: Limitans nucleus
+namespace: fma
+is_a: FMA:83840  ! Nucleus of brain
+relationship: part_of FMA:62024 ! Posterior nuclear group of thalamus
+
+[Term]
+id: FMA:62221
+name: Posterior nucleus of thalamus
+namespace: fma
+is_a: FMA:256693  ! Nucleus of thalamus
+relationship: part_of FMA:62024 ! Posterior nuclear group of thalamus
+
+[Term]
+id: FMA:62222
+name: Suprageniculate nucleus
+namespace: fma
+synonym: "Suprageniculate thalamic nucleus" EXACT []
+is_a: FMA:83840  ! Nucleus of brain
+relationship: part_of FMA:62024 ! Posterior nuclear group of thalamus
+
+[Term]
+id: FMA:62223
+name: Submedial nucleus
+namespace: fma
+synonym: "Gelatinosus thalamic nucleus" EXACT []
+synonym: "Submedial nucleus of thalamus" EXACT []
+is_a: FMA:83840  ! Nucleus of brain
+relationship: part_of FMA:62024 ! Posterior nuclear group of thalamus
+
+[Term]
+id: FMA:62313
+name: Preoptic area
+namespace: fma
+synonym: "Preoptic nuclei" EXACT []
+synonym: "Preoptic region of hypothalamus" EXACT []
+is_a: FMA:258749  ! Zone of hypothalamus
+relationship: part_of FMA:62027 ! Anterior hypothalamic region
+
+[Term]
+id: FMA:62314
+name: Anteroventral periventricular nucleus
+namespace: fma
+is_a: FMA:258762  ! Nucleus of hypothalamus
+relationship: part_of FMA:62027 ! Anterior hypothalamic region
+
+[Term]
+id: FMA:62315
+name: Supraoptic crest
+namespace: fma
+synonym: "Vascular organ of lamina terminalis" EXACT []
+is_a: FMA:84081  ! Circumventricular organ of neuraxis
+relationship: part_of FMA:62027 ! Anterior hypothalamic region
+
+[Term]
+id: FMA:62317
+name: Supraoptic nucleus
+namespace: fma
+synonym: "Supra-optic nucleus" EXACT []
+synonym: "Supraoptic nucleus of hypothalamus" EXACT []
+is_a: FMA:258762  ! Nucleus of hypothalamus
+relationship: part_of FMA:62027 ! Anterior hypothalamic region
+
+[Term]
+id: FMA:62319
+name: Anterior nucleus of hypothalamus
+namespace: fma
+synonym: "Anterior hypothalamic area" EXACT []
+synonym: "Anterior hypothalamic nucleus" EXACT []
+synonym: "Fundamental gray substance" EXACT []
+synonym: "Parvocellular nucleus of hypothalamus" EXACT []
+is_a: FMA:258762  ! Nucleus of hypothalamus
+relationship: part_of FMA:62313 ! Preoptic area
+
+[Term]
+id: FMA:62320
+name: Paraventricular nucleus of hypothalamus
+namespace: fma
+synonym: "Filiform nucleus" EXACT []
+synonym: "Paraventricular hypothalamic nucleus" EXACT []
+synonym: "Paraventricular nucleus" EXACT []
+is_a: FMA:258762  ! Nucleus of hypothalamus
+relationship: part_of FMA:62027 ! Anterior hypothalamic region
+
+[Term]
+id: FMA:62323
+name: Median preoptic nucleus
+namespace: fma
+is_a: FMA:83840  ! Nucleus of brain
+relationship: part_of FMA:62313 ! Preoptic area
+
+[Term]
+id: FMA:62324
+name: Preoptic periventricular nucleus
+namespace: fma
+synonym: "Periventricular preoptic nucleus" EXACT []
+synonym: "Preoptic periventricular hypothalamic nucleus" EXACT []
+is_a: FMA:83840  ! Nucleus of brain
+relationship: part_of FMA:62313 ! Preoptic area
+
+[Term]
+id: FMA:62327
+name: Tuber cinereum
+namespace: fma
+is_a: FMA:74866  ! Zone of diencephalon
+relationship: part_of FMA:62028 ! Intermediate hypothalamic region
+
+[Term]
+id: FMA:62328
+name: Intermediate periventricular nucleus
+namespace: fma
+synonym: "Intermediate periventricular nucleus of hypothalamus" EXACT []
+synonym: "Periventricular nucleus at the tuberal level" EXACT []
+is_a: FMA:258762  ! Nucleus of hypothalamus
+relationship: part_of FMA:62028 ! Intermediate hypothalamic region
+
+[Term]
+id: FMA:62329
+name: Arcuate nucleus of hypothalamus
+namespace: fma
+synonym: "Arcuate hypothalamic nucleus" EXACT []
+synonym: "Arcuate nucleus" EXACT []
+synonym: "Arcuate nucleus-2" EXACT []
+synonym: "Arcuate periventricular nucleus" EXACT []
+synonym: "Infundibular hypothalamic nucleus" EXACT []
+synonym: "Infundibular nucleus" EXACT []
+synonym: "Infundibular periventricular nucleus" EXACT []
+is_a: FMA:258762  ! Nucleus of hypothalamus
+relationship: part_of FMA:62028 ! Intermediate hypothalamic region
+
+[Term]
+id: FMA:62330
+name: Retrochiasmatic area
+namespace: fma
+synonym: "Retrochiasmatic region" EXACT []
+is_a: FMA:258749  ! Zone of hypothalamus
+relationship: part_of FMA:62028 ! Intermediate hypothalamic region
+
+[Term]
+id: FMA:62331
+name: Dorsomedial nucleus of hypothalamus
+namespace: fma
+synonym: "Dorsomedial hypothalamic nucleus" EXACT []
+synonym: "Dorsomedial nucleus of dorsal hypothalamus" EXACT []
+synonym: "Dorsomedial nucleus of intermediate hypothalamus" EXACT []
+is_a: FMA:258762  ! Nucleus of hypothalamus
+relationship: part_of FMA:62028 ! Intermediate hypothalamic region
+
+[Term]
+id: FMA:62332
+name: Ventromedial nucleus of hypothalamus
+namespace: fma
+synonym: "Ventromedial hypothalamic nucleus" EXACT []
+is_a: FMA:258762  ! Nucleus of hypothalamus
+relationship: part_of FMA:62028 ! Intermediate hypothalamic region
+
+[Term]
+id: FMA:62335
+name: Tuberomammillary nucleus
+namespace: fma
+synonym: "Caudal magnocellular nucleus" EXACT []
+synonym: "Mammilloinfundibular nucleus" EXACT []
+synonym: "Tuberomammillary hypothalamic nucleus" EXACT []
+is_a: FMA:258762  ! Nucleus of hypothalamus
+relationship: part_of FMA:62030 ! Lateral hypothalamic region
+
+[Term]
+id: FMA:62336
+name: Lateral tuberal nucleus
+namespace: fma
+synonym: "Lateral tuberal hypothalamic nuclei" EXACT []
+synonym: "Lateral tuberal nuclei" EXACT []
+is_a: FMA:258762  ! Nucleus of hypothalamus
+relationship: part_of FMA:62030 ! Lateral hypothalamic region
+
+[Term]
+id: FMA:62337
+name: Lateral hypothalamic nucleus
+namespace: fma
+is_a: FMA:258762  ! Nucleus of hypothalamus
+relationship: part_of FMA:62030 ! Lateral hypothalamic region
+
+[Term]
+id: FMA:62341
+name: Lateral mammillary nucleus
+namespace: fma
+synonym: "Lateral mammillary hypothalamic nucleus" EXACT []
+synonym: "Lateral nucleus of mammillary body" EXACT []
+is_a: FMA:258762  ! Nucleus of hypothalamus
+relationship: part_of FMA:62029 ! Posterior hypothalamic region
+
+[Term]
+id: FMA:62342
+name: Medial mammillary nucleus
+namespace: fma
+synonym: "Internal mammillary nucleus" EXACT []
+synonym: "Medial nucleus of mammillary body" EXACT []
+is_a: FMA:258762  ! Nucleus of hypothalamus
+relationship: part_of FMA:62029 ! Posterior hypothalamic region
+
+[Term]
+id: FMA:62347
+name: Supramammillary nucleus
+namespace: fma
+is_a: FMA:258762  ! Nucleus of hypothalamus
+relationship: part_of FMA:62029 ! Posterior hypothalamic region
+
+[Term]
+id: FMA:62348
+name: Premammillary nucleus
+namespace: fma
+synonym: "Premammillary nuclei" EXACT []
+is_a: FMA:258762  ! Nucleus of hypothalamus
+relationship: part_of FMA:62029 ! Posterior hypothalamic region
+
+[Term]
+id: FMA:62349
+name: Posterior periventricular nucleus of hypothalamus
+namespace: fma
+synonym: "Periventricular nucleus, posterior subdivision" EXACT []
+synonym: "Posterior periventricular nucleus" EXACT []
+is_a: FMA:258762  ! Nucleus of hypothalamus
+relationship: part_of FMA:62029 ! Posterior hypothalamic region
+
+[Term]
+id: FMA:62350
+name: Posterior nucleus of hypothalamus
+namespace: fma
+synonym: "Posterior hypothalamic area" EXACT []
+synonym: "Posterior hypothalamic nucleus" EXACT []
+is_a: FMA:258762  ! Nucleus of hypothalamus
+relationship: part_of FMA:62029 ! Posterior hypothalamic region
+
+[Term]
+id: FMA:62372
+name: Lateral habenular nucleus
+namespace: fma
+synonym: "Lateral habenula" EXACT []
+is_a: FMA:258764  ! Nucleus of epithalamus
+relationship: part_of FMA:62032 ! Habenula
+
+[Term]
+id: FMA:62373
+name: Medial habenular nucleus
+namespace: fma
+synonym: "Medial habenula" EXACT []
+is_a: FMA:258764  ! Nucleus of epithalamus
+relationship: part_of FMA:62032 ! Habenula
+
+[Term]
+id: FMA:62444
+name: Peduncle of diencephalon
+namespace: fma
+synonym: "Diencephalon peduncle" EXACT []
+is_a: FMA:83860  ! Peduncle of neuraxis
+
+[Term]
+id: FMA:62445
+name: Commissure of diencephalon
+namespace: fma
+synonym: "Diencephalon commissure" EXACT []
+is_a: FMA:83906  ! Commissure of neuraxis
+
+[Term]
+id: FMA:62447
+name: Tract of diencephalon
+namespace: fma
+synonym: "Diencephalon tract" EXACT []
+is_a: FMA:83848  ! Tract of brain
+
+[Term]
+id: FMA:62448
+name: Capsule of diencephalon
+namespace: fma
+synonym: "Diencephalon capsule" EXACT []
+is_a: FMA:83931  ! White matter of diencephalon
+
+[Term]
+id: FMA:62451
+name: Ansa of diencephalon
+namespace: fma
+synonym: "Diencephalon ansa" EXACT []
+is_a: FMA:83863  ! Ansa of neuraxis
+
+[Term]
+id: FMA:62955
+name: Anatomical entity
+namespace: fma
+def: "Organismal continuant entity which is enclosed by the bona fide boundary of an organism or is an attribute of its structural organization. Examples: cell, heart, head, peritoneal cavity, apex of lung, anatomical term, sagittal plane." []
+
+[Term]
+id: FMA:64990
+name: Organ part cluster
+namespace: fma
+def: "Anatomical cluster which consists of all or some members of one or more organ part subclasses which are grouped together according to some shared attributes. Examples: root of lung, internal nose, soft palate, wall of gut, periorbita." []
+is_a: FMA:49443  ! Anatomical cluster
+
+[Term]
+id: FMA:67112
+name: Immaterial anatomical entity
+namespace: fma
+def: "Physical anatomical entity which is a three-dimensional space, surface, line or point associated with a material anatomical entity. Examples: body space, surface of heart, costal margin, apex of right lung, anterior compartment of right arm." []
+synonym: "Immaterial physical anatomical entity" EXACT []
+is_a: FMA:61775  ! Physical anatomical entity
+
+[Term]
+id: FMA:67135
+name: Anatomical structure
+namespace: fma
+def: "Material anatomical entity which is generated by coordinated expression of the organism's own genes that guide its morphogenesis; has inherent 3D shape; its parts are connected and spatially related to one another in patterns determined by coordinated gene expression. Examples: heart, right ventricle, mitral valve, myocardium, endothelium, lymphocyte, fibroblast, thorax, cardiovascular system, hemoglobin, T cell receptor." []
+synonym: "Biological structure" EXACT []
+is_a: FMA:67165  ! Material anatomical entity
+
+[Term]
+id: FMA:67165
+name: Material anatomical entity
+namespace: fma
+def: "Physical anatomical entity which has mass. Examples: hemoglobin molecule, mitochondrion, hepatocyte, erythrocyte, heart, head, blood, urine." []
+is_a: FMA:61775  ! Physical anatomical entity
+
+[Term]
+id: FMA:67242
+name: Gray matter of neuraxis
+namespace: fma
+def: "Cell part cluster consisting predominantly of somas of neurons in the brain and the spinal cord." []
+synonym: "Gray matter" EXACT []
+synonym: "Grey matter" EXACT []
+synonym: "Grey substance" EXACT []
+is_a: FMA:83143  ! Cell part cluster of neuraxis
+
+[Term]
+id: FMA:67498
+name: Organ
+namespace: fma
+def: "Anatomical structure which has as its direct parts portions of two or more types of tissue or two or more types of cardinal organ part which constitute a maximally connected anatomical structure demarcated predominantly by a bona fide anatomical surface. Examples: femur, biceps, liver, heart, skin, tracheobronchial tree, ovary." []
+is_a: FMA:67135  ! Anatomical structure
+
+[Term]
+id: FMA:67504
+name: Subdivision of cardinal body part
+namespace: fma
+def: "Anatomical structure, which is a subdivision of a cardinal body part; it may exclude bones; is demarcated from other subdivisions of the same cardinal body part by anatomical surfaces or lines or topographical references; together with other contiguous subdivisions of the same cardinal body part, it constitutes a cardinal body part. Examples: thorax, perineum, back of neck, forearm, hand, phalanx, nose, auricle of ear, scrotum." []
+synonym: "Principal body part subdivision" EXACT []
+is_a: FMA:67135  ! Anatomical structure
+
+[Term]
+id: FMA:67536
+name: Cardinal tissue part
+namespace: fma
+def: "Anatomical structure, which is a subdivision of tissue demarcated by fiat boundaries. Examples: stratum germinativum, lamina of cerebral cortex." []
+is_a: FMA:67135  ! Anatomical structure
+
+[Term]
+id: FMA:67538
+name: Subdivision of epithelium
+namespace: fma
+synonym: "Epithelium subdivision" EXACT []
+is_a: FMA:67536  ! Cardinal tissue part
+
+[Term]
+id: FMA:67552
+name: Anatomical cavity
+namespace: fma
+def: "Anatomical space which contains  portions of one or more body substances and is  bounded by the internal surface of one  maximally connected anatomical structure. Examples: cranial cavity, pharyngeal recess space, nasal cavity, tooth socket, cavity of serous sac, lumen of stomach, lumen of artery, fornix of vagina." []
+is_a: FMA:5897  ! Anatomical space
+
+[Term]
+id: FMA:67619
+name: Organ region
+namespace: fma
+def: "Cardinal organ part which is a fiat subdivision of an organ. Examples: lingula of left lung, tail of pancreas, artery, trochanter, nodulus of semilunar valve, right side of heart, duodenum, fundus of stomach." []
+is_a: FMA:82472  ! Cardinal organ part
+
+[Term]
+id: FMA:67883
+name: Suprachiasmatic nucleus
+namespace: fma
+synonym: "Suprachiasmatic nucleus of hypothalamus" EXACT []
+is_a: FMA:258762  ! Nucleus of hypothalamus
+relationship: part_of FMA:62027 ! Anterior hypothalamic region
+
+[Term]
+id: FMA:67890
+name: Medial preoptic nucleus
+namespace: fma
+synonym: "Medial preoptic area" EXACT []
+synonym: "Medial preoptic hypothalamic nucleus" EXACT []
+is_a: FMA:83840  ! Nucleus of brain
+relationship: part_of FMA:62313 ! Preoptic area
+
+[Term]
+id: FMA:69064
+name: Ecto-epithelium
+namespace: fma
+def: "Epithelium that derives from the ectoderm. Examples: epithelium of acinus of lactiferous duct, subscapular lens epithelium, epithelium of posterior surface of cornea." []
+is_a: FMA:9639  ! Portion of epithelium
+
+[Term]
+id: FMA:7146
+name: Organ component gland
+namespace: fma
+synonym: "Glandula" EXACT []
+is_a: FMA:14065  ! Organ component
+
+[Term]
+id: FMA:7149
+name: Organ system
+namespace: fma
+def: "Anatomical structure, which has as its direct parts instances of one or more organ types which are interconnected with one another by zones of continuity. Examples: skeletal system, cardiovascular system, alimentary system." []
+is_a: FMA:67135  ! Anatomical structure
+
+[Term]
+id: FMA:7153
+name: Cardinal body part
+namespace: fma
+def: "Anatomical structure, which has as its direct parts instances of anatomical sets of organs and cardinal organ parts spatially associated with either the skull, vertebral column, or the skeleton of a limb; in their aggregate are surrounded by a part of the skin Examples: Head, body proper, right upper limb." []
+synonym: "Body region" EXACT []
+is_a: FMA:67135  ! Anatomical structure
+
+[Term]
+id: FMA:7154
+name: Head
+namespace: fma
+def: "Cardinal body part, which consists of a maximal set of diverse subclasses of organ and organ part spatially associated with the skull, it is partially surrounded by skin of head. Examples: There is only one head." []
+synonym: "Head (volume)" EXACT []
+is_a: FMA:7153  ! Cardinal body part
+relationship: part_of FMA:20394 ! Human body
+
+[Term]
+id: FMA:7157
+name: Nervous system
+namespace: fma
+is_a: FMA:7149  ! Organ system
+relationship: part_of FMA:20394 ! Human body
+
+[Term]
+id: FMA:72982
+name: Right anterodorsal nucleus
+namespace: fma
+is_a: FMA:62141  ! Anterodorsal nucleus
+
+[Term]
+id: FMA:72983
+name: Left anterodorsal nucleus
+namespace: fma
+is_a: FMA:62141  ! Anterodorsal nucleus
+
+[Term]
+id: FMA:72984
+name: Right anteromedial nucleus
+namespace: fma
+is_a: FMA:62142  ! Anteromedial nucleus
+
+[Term]
+id: FMA:72985
+name: Left anteromedial nucleus
+namespace: fma
+is_a: FMA:62142  ! Anteromedial nucleus
+
+[Term]
+id: FMA:72986
+name: Right anteroventral nucleus
+namespace: fma
+is_a: FMA:62143  ! Anteroventral nucleus
+
+[Term]
+id: FMA:72987
+name: Left anteroventral nucleus
+namespace: fma
+is_a: FMA:62143  ! Anteroventral nucleus
+
+[Term]
+id: FMA:72988
+name: Right paratenial nucleus
+namespace: fma
+is_a: FMA:62151  ! Paratenial nucleus
+
+[Term]
+id: FMA:72989
+name: Left paratenial nucleus
+namespace: fma
+is_a: FMA:62151  ! Paratenial nucleus
+
+[Term]
+id: FMA:72996
+name: Right subfascicular nucleus
+namespace: fma
+is_a: FMA:62155  ! Subfascicular nucleus
+
+[Term]
+id: FMA:72997
+name: Left subfascicular nucleus
+namespace: fma
+is_a: FMA:62155  ! Subfascicular nucleus
+
+[Term]
+id: FMA:72998
+name: Medial nuclear group of right  thalamus
+namespace: fma
+synonym: "Medial dorsal nucleus of right thalamus" EXACT []
+synonym: "Right medial dorsal nucleus" EXACT []
+is_a: FMA:62156  ! Medial nuclear group of thalamus
+
+[Term]
+id: FMA:72999
+name: Medial nuclear group of left thalamus
+namespace: fma
+synonym: "Left medial dorsal nucleus" EXACT []
+synonym: "Medial dorsal nucleus of left thalamus" EXACT []
+is_a: FMA:62156  ! Medial nuclear group of thalamus
+
+[Term]
+id: FMA:73000
+name: Paralaminar part of right medial dorsal nucleus
+namespace: fma
+is_a: FMA:62160  ! Paralaminar part of medial dorsal nucleus
+
+[Term]
+id: FMA:73001
+name: Paralaminar part of left medial dorsal nucleus
+namespace: fma
+is_a: FMA:62160  ! Paralaminar part of medial dorsal nucleus
+
+[Term]
+id: FMA:73002
+name: Magnocellular part of right medial dorsal nucleus
+namespace: fma
+is_a: FMA:62161  ! Magnocellular part of medial dorsal nucleus
+
+[Term]
+id: FMA:73003
+name: Magnocellular part of left medial dorsal nucleus
+namespace: fma
+is_a: FMA:62161  ! Magnocellular part of medial dorsal nucleus
+
+[Term]
+id: FMA:73006
+name: Parvicellular part of right medial dorsal nucleus
+namespace: fma
+is_a: FMA:62162  ! Parvicellular part of medial dorsal nucleus
+
+[Term]
+id: FMA:73008
+name: Parvicellular part of left medial dorsal nucleus
+namespace: fma
+is_a: FMA:62162  ! Parvicellular part of medial dorsal nucleus
+
+[Term]
+id: FMA:73013
+name: Densocellular part of right medial dorsal nucleus
+namespace: fma
+is_a: FMA:62163  ! Densocellular part of medial dorsal nucleus
+
+[Term]
+id: FMA:73014
+name: Densocellular part of left medial dorsal nucleus
+namespace: fma
+is_a: FMA:62163  ! Densocellular part of medial dorsal nucleus
+
+[Term]
+id: FMA:73015
+name: Right lateral dorsal nucleus
+namespace: fma
+is_a: FMA:62176  ! Lateral dorsal nucleus
+
+[Term]
+id: FMA:73016
+name: Left lateral dorsal nucleus
+namespace: fma
+is_a: FMA:62176  ! Lateral dorsal nucleus
+
+[Term]
+id: FMA:73017
+name: Right lateral posterior nucleus
+namespace: fma
+is_a: FMA:62177  ! Lateral posterior nucleus
+
+[Term]
+id: FMA:73018
+name: Left lateral posterior nucleus
+namespace: fma
+is_a: FMA:62177  ! Lateral posterior nucleus
+
+[Term]
+id: FMA:73019
+name: Right pulvinar
+namespace: fma
+is_a: FMA:62178  ! Pulvinar
+
+[Term]
+id: FMA:73020
+name: Left pulvinar
+namespace: fma
+is_a: FMA:62178  ! Pulvinar
+
+[Term]
+id: FMA:73021
+name: Right oral pulvinar nucleus
+namespace: fma
+is_a: FMA:62180  ! Oral pulvinar nucleus
+
+[Term]
+id: FMA:73022
+name: Left oral pulvinar nucleus
+namespace: fma
+is_a: FMA:62180  ! Oral pulvinar nucleus
+
+[Term]
+id: FMA:73026
+name: Right lateral pulvinar nucleus
+namespace: fma
+is_a: FMA:62181  ! Lateral pulvinar nucleus
+
+[Term]
+id: FMA:73027
+name: Left lateral pulvinar nucleus
+namespace: fma
+is_a: FMA:62181  ! Lateral pulvinar nucleus
+
+[Term]
+id: FMA:73029
+name: Right medial pulvinar nucleus
+namespace: fma
+is_a: FMA:62182  ! Medial pulvinar nucleus
+
+[Term]
+id: FMA:73030
+name: Left medial pulvinar nucleus
+namespace: fma
+is_a: FMA:62182  ! Medial pulvinar nucleus
+
+[Term]
+id: FMA:73031
+name: Right inferior pulvinar nucleus
+namespace: fma
+is_a: FMA:62183  ! Inferior pulvinar nucleus
+
+[Term]
+id: FMA:73032
+name: Left inferior pulvinar nucleus
+namespace: fma
+is_a: FMA:62183  ! Inferior pulvinar nucleus
+
+[Term]
+id: FMA:73033
+name: Right central dorsal nucleus
+namespace: fma
+is_a: FMA:62169  ! Central dorsal nucleus
+
+[Term]
+id: FMA:73034
+name: Left central dorsal nucleus
+namespace: fma
+is_a: FMA:62169  ! Central dorsal nucleus
+
+[Term]
+id: FMA:73035
+name: Right central lateral nucleus
+namespace: fma
+is_a: FMA:62170  ! Central lateral nucleus
+
+[Term]
+id: FMA:73036
+name: Left central lateral nucleus
+namespace: fma
+is_a: FMA:62170  ! Central lateral nucleus
+
+[Term]
+id: FMA:73043
+name: Right paracentral nucleus
+namespace: fma
+is_a: FMA:62172  ! Paracentral nucleus
+
+[Term]
+id: FMA:73044
+name: Left paracentral nucleus
+namespace: fma
+is_a: FMA:62172  ! Paracentral nucleus
+
+[Term]
+id: FMA:73045
+name: Right centromedian nucleus
+namespace: fma
+is_a: FMA:62165  ! Centromedian nucleus
+
+[Term]
+id: FMA:73046
+name: Left centromedian nucleus
+namespace: fma
+is_a: FMA:62165  ! Centromedian nucleus
+
+[Term]
+id: FMA:73047
+name: Right parafascicular nucleus
+namespace: fma
+is_a: FMA:62166  ! Parafascicular nucleus
+
+[Term]
+id: FMA:73048
+name: Left parafascicular nucleus
+namespace: fma
+is_a: FMA:62166  ! Parafascicular nucleus
+
+[Term]
+id: FMA:73049
+name: Right ventral anterior nucleus
+namespace: fma
+is_a: FMA:62184  ! Ventral anterior nucleus
+
+[Term]
+id: FMA:73050
+name: Left ventral anterior nucleus
+namespace: fma
+is_a: FMA:62184  ! Ventral anterior nucleus
+
+[Term]
+id: FMA:73051
+name: Parvicellular part of right ventral anterior nucleus
+namespace: fma
+is_a: FMA:62191  ! Parvicellular part of ventral anterior nucleus
+
+[Term]
+id: FMA:73052
+name: Parvicellular part of left ventral anterior nucleus
+namespace: fma
+is_a: FMA:62191  ! Parvicellular part of ventral anterior nucleus
+
+[Term]
+id: FMA:73053
+name: Magnocellular part of right ventral anterior nucleus
+namespace: fma
+is_a: FMA:62192  ! Magnocellular part of ventral anterior nucleus
+
+[Term]
+id: FMA:73054
+name: Magnocellular part of left ventral anterior nucleus
+namespace: fma
+is_a: FMA:62192  ! Magnocellular part of ventral anterior nucleus
+
+[Term]
+id: FMA:73057
+name: Right ventral lateral nucleus
+namespace: fma
+is_a: FMA:62186  ! Ventral lateral nucleus
+
+[Term]
+id: FMA:73059
+name: Left ventral lateral nucleus
+namespace: fma
+is_a: FMA:62186  ! Ventral lateral nucleus
+
+[Term]
+id: FMA:73061
+name: Oral part of right ventral lateral nucleus
+namespace: fma
+is_a: FMA:62193  ! Oral part of ventral lateral nucleus
+
+[Term]
+id: FMA:73062
+name: Oral part of left ventral lateral nucleus
+namespace: fma
+is_a: FMA:62193  ! Oral part of ventral lateral nucleus
+
+[Term]
+id: FMA:73063
+name: Caudal part of right ventral lateral nucleus
+namespace: fma
+is_a: FMA:62194  ! Caudal part of ventral lateral nucleus
+
+[Term]
+id: FMA:73064
+name: Caudal part of left ventral lateral nucleus
+namespace: fma
+is_a: FMA:62194  ! Caudal part of ventral lateral nucleus
+
+[Term]
+id: FMA:73065
+name: Medial part of right ventral lateral nucleus
+namespace: fma
+is_a: FMA:62195  ! Medial part of ventral lateral nucleus
+
+[Term]
+id: FMA:73066
+name: Medial part of left ventral lateral nucleus
+namespace: fma
+is_a: FMA:62195  ! Medial part of ventral lateral nucleus
+
+[Term]
+id: FMA:73067
+name: Pars postrema of right ventral lateral nucleus
+namespace: fma
+is_a: FMA:62196  ! Pars postrema of ventral lateral nucleus
+
+[Term]
+id: FMA:73068
+name: Pars postrema of left ventral lateral nucleus
+namespace: fma
+is_a: FMA:62196  ! Pars postrema of ventral lateral nucleus
+
+[Term]
+id: FMA:73069
+name: Right area X
+namespace: fma
+is_a: FMA:62198  ! Area X
+
+[Term]
+id: FMA:73070
+name: Left area X
+namespace: fma
+is_a: FMA:62198  ! Area X
+
+[Term]
+id: FMA:73071
+name: Right ventral posterior nucleus
+namespace: fma
+is_a: FMA:62187  ! Ventral posterior nucleus
+
+[Term]
+id: FMA:73072
+name: Left ventral posterior nucleus
+namespace: fma
+is_a: FMA:62187  ! Ventral posterior nucleus
+
+[Term]
+id: FMA:73073
+name: Right ventral posteroinferior nucleus
+namespace: fma
+is_a: FMA:62199  ! Ventral posteroinferior nucleus
+
+[Term]
+id: FMA:73074
+name: Left ventral posteroinferior nucleus
+namespace: fma
+is_a: FMA:62199  ! Ventral posteroinferior nucleus
+
+[Term]
+id: FMA:73075
+name: Right ventral posterolateral nucleus
+namespace: fma
+is_a: FMA:62200  ! Ventral posterolateral nucleus
+
+[Term]
+id: FMA:73076
+name: Left ventral posterolateral nucleus
+namespace: fma
+is_a: FMA:62200  ! Ventral posterolateral nucleus
+
+[Term]
+id: FMA:73077
+name: Oral part of right ventral posterolateral nucleus
+namespace: fma
+is_a: FMA:62205  ! Oral part of ventral posterolateral nucleus
+
+[Term]
+id: FMA:73078
+name: Oral part of left ventral posterolateral nucleus
+namespace: fma
+is_a: FMA:62205  ! Oral part of ventral posterolateral nucleus
+
+[Term]
+id: FMA:73079
+name: Caudal part of right ventral posterolateral nucleus
+namespace: fma
+is_a: FMA:62206  ! Caudal part of ventral posterolateral nucleus
+
+[Term]
+id: FMA:73080
+name: Caudal part of left ventral posterolateral nucleus
+namespace: fma
+is_a: FMA:62206  ! Caudal part of ventral posterolateral nucleus
+
+[Term]
+id: FMA:73081
+name: Right ventral posteromedial nucleus
+namespace: fma
+is_a: FMA:62202  ! Ventral posteromedial nucleus
+
+[Term]
+id: FMA:73082
+name: Left ventral posteromedial nucleus
+namespace: fma
+is_a: FMA:62202  ! Ventral posteromedial nucleus
+
+[Term]
+id: FMA:73083
+name: Parvicellular part of right ventral posteromedial nucleus
+namespace: fma
+is_a: FMA:62207  ! Parvicellular part of ventral posteromedial nucleus
+
+[Term]
+id: FMA:73085
+name: Parvicellular part of left ventral posteromedial nucleus
+namespace: fma
+is_a: FMA:62207  ! Parvicellular part of ventral posteromedial nucleus
+
+[Term]
+id: FMA:73088
+name: Principal part of right ventral posteromedial nucleus
+namespace: fma
+is_a: FMA:62208  ! Principal part of ventral posteromedial nucleus
+
+[Term]
+id: FMA:73089
+name: Principal part of left ventral posteromedial nucleus
+namespace: fma
+is_a: FMA:62208  ! Principal part of ventral posteromedial nucleus
+
+[Term]
+id: FMA:73090
+name: Right metathalamus
+namespace: fma
+is_a: FMA:62023  ! Metathalamus
+
+[Term]
+id: FMA:73091
+name: Left metathalamus
+namespace: fma
+is_a: FMA:62023  ! Metathalamus
+
+[Term]
+id: FMA:73303
+name: Right lateral geniculate body
+namespace: fma
+is_a: FMA:62209  ! Lateral geniculate body
+
+[Term]
+id: FMA:73304
+name: Left lateral geniculate body
+namespace: fma
+is_a: FMA:62209  ! Lateral geniculate body
+
+[Term]
+id: FMA:73305
+name: Dorsal nucleus of right lateral geniculate body
+namespace: fma
+is_a: FMA:62214  ! Dorsal nucleus of lateral geniculate body
+
+[Term]
+id: FMA:73306
+name: Dorsal nucleus of left lateral geniculate body
+namespace: fma
+is_a: FMA:62214  ! Dorsal nucleus of lateral geniculate body
+
+[Term]
+id: FMA:73307
+name: Ventral nucleus of right lateral geniculate body
+namespace: fma
+is_a: FMA:62215  ! Ventral nucleus of lateral geniculate body
+
+[Term]
+id: FMA:73308
+name: Ventral nucleus of left lateral geniculate body
+namespace: fma
+is_a: FMA:62215  ! Ventral nucleus of lateral geniculate body
+
+[Term]
+id: FMA:73309
+name: Right medial geniculate body
+namespace: fma
+is_a: FMA:62211  ! Medial geniculate body
+
+[Term]
+id: FMA:73310
+name: Left medial geniculate body
+namespace: fma
+is_a: FMA:62211  ! Medial geniculate body
+
+[Term]
+id: FMA:73311
+name: Dorsal nucleus of right medial geniculate body
+namespace: fma
+is_a: FMA:62216  ! Dorsal nucleus of medial geniculate body
+
+[Term]
+id: FMA:73312
+name: Dorsal nucleus of left medial geniculate body
+namespace: fma
+is_a: FMA:62216  ! Dorsal nucleus of medial geniculate body
+
+[Term]
+id: FMA:73313
+name: Ventral nucleus of right medial geniculate body
+namespace: fma
+is_a: FMA:62217  ! Ventral nucleus of medial geniculate body
+
+[Term]
+id: FMA:73314
+name: Ventral nucleus of left medial geniculate body
+namespace: fma
+is_a: FMA:62217  ! Ventral nucleus of medial geniculate body
+
+[Term]
+id: FMA:73315
+name: Magnocellular nucleus of right medial geniculate body
+namespace: fma
+is_a: FMA:62218  ! Magnocellular nucleus of medial geniculate body
+
+[Term]
+id: FMA:73316
+name: Magnocellular nucleus of left medial geniculate body
+namespace: fma
+is_a: FMA:62218  ! Magnocellular nucleus of medial geniculate body
+
+[Term]
+id: FMA:73319
+name: Right suprageniculate nucleus
+namespace: fma
+is_a: FMA:62222  ! Suprageniculate nucleus
+
+[Term]
+id: FMA:73320
+name: Left suprageniculate nucleus
+namespace: fma
+is_a: FMA:62222  ! Suprageniculate nucleus
+
+[Term]
+id: FMA:73321
+name: Right submedial nucleus
+namespace: fma
+is_a: FMA:62223  ! Submedial nucleus
+
+[Term]
+id: FMA:73322
+name: Left submedial nucleus
+namespace: fma
+is_a: FMA:62223  ! Submedial nucleus
+
+[Term]
+id: FMA:73323
+name: Right thalamic reticular nucleus
+namespace: fma
+is_a: FMA:62026  ! Thalamic reticular nucleus
+
+[Term]
+id: FMA:73324
+name: Left thalamic reticular nucleus
+namespace: fma
+is_a: FMA:62026  ! Thalamic reticular nucleus
+
+[Term]
+id: FMA:73325
+name: Right medial preoptic nucleus
+namespace: fma
+is_a: FMA:67890  ! Medial preoptic nucleus
+
+[Term]
+id: FMA:73326
+name: Left medial preoptic nucleus
+namespace: fma
+is_a: FMA:67890  ! Medial preoptic nucleus
+
+[Term]
+id: FMA:73329
+name: Right suprachiasmatic nucleus
+namespace: fma
+is_a: FMA:67883  ! Suprachiasmatic nucleus
+
+[Term]
+id: FMA:73330
+name: Left suprachiasmatic nucleus
+namespace: fma
+is_a: FMA:67883  ! Suprachiasmatic nucleus
+
+[Term]
+id: FMA:73331
+name: Right supraoptic nucleus
+namespace: fma
+is_a: FMA:62317  ! Supraoptic nucleus
+
+[Term]
+id: FMA:73332
+name: Left supraoptic nucleus
+namespace: fma
+is_a: FMA:62317  ! Supraoptic nucleus
+
+[Term]
+id: FMA:73333
+name: Right anterior nucleus of hypothalamus
+namespace: fma
+is_a: FMA:62319  ! Anterior nucleus of hypothalamus
+
+[Term]
+id: FMA:73334
+name: Left anterior nucleus of hypothalamus
+namespace: fma
+is_a: FMA:62319  ! Anterior nucleus of hypothalamus
+
+[Term]
+id: FMA:73335
+name: Right paraventricular nucleus of hypothalamus
+namespace: fma
+is_a: FMA:62320  ! Paraventricular nucleus of hypothalamus
+
+[Term]
+id: FMA:73336
+name: Left paraventricular nucleus of hypothalamus
+namespace: fma
+is_a: FMA:62320  ! Paraventricular nucleus of hypothalamus
+
+[Term]
+id: FMA:73337
+name: Right arcuate nucleus of hypothalamus
+namespace: fma
+is_a: FMA:62329  ! Arcuate nucleus of hypothalamus
+
+[Term]
+id: FMA:73338
+name: Left arcuate nucleus of hypothalamus
+namespace: fma
+is_a: FMA:62329  ! Arcuate nucleus of hypothalamus
+
+[Term]
+id: FMA:73339
+name: Right dorsomedial nucleus of hypothalamus
+namespace: fma
+is_a: FMA:62331  ! Dorsomedial nucleus of hypothalamus
+
+[Term]
+id: FMA:73340
+name: Left dorsomedial nucleus of hypothalamus
+namespace: fma
+is_a: FMA:62331  ! Dorsomedial nucleus of hypothalamus
+
+[Term]
+id: FMA:73341
+name: Right ventromedial nucleus of hypothalamus
+namespace: fma
+is_a: FMA:62332  ! Ventromedial nucleus of hypothalamus
+
+[Term]
+id: FMA:73342
+name: Left ventromedial nucleus of hypothalamus
+namespace: fma
+is_a: FMA:62332  ! Ventromedial nucleus of hypothalamus
+
+[Term]
+id: FMA:73343
+name: Right lateral mammillary nucleus
+namespace: fma
+is_a: FMA:62341  ! Lateral mammillary nucleus
+
+[Term]
+id: FMA:73344
+name: Left lateral mammillary nucleus
+namespace: fma
+is_a: FMA:62341  ! Lateral mammillary nucleus
+
+[Term]
+id: FMA:73345
+name: Right medial mammillary nucleus
+namespace: fma
+is_a: FMA:62342  ! Medial mammillary nucleus
+
+[Term]
+id: FMA:73346
+name: Left medial mammillary nucleus
+namespace: fma
+is_a: FMA:62342  ! Medial mammillary nucleus
+
+[Term]
+id: FMA:73351
+name: Right supramammillary nucleus
+namespace: fma
+is_a: FMA:62347  ! Supramammillary nucleus
+
+[Term]
+id: FMA:73352
+name: Left supramammillary nucleus
+namespace: fma
+is_a: FMA:62347  ! Supramammillary nucleus
+
+[Term]
+id: FMA:73353
+name: Right posterior nucleus of hypothalamus
+namespace: fma
+is_a: FMA:62350  ! Posterior nucleus of hypothalamus
+
+[Term]
+id: FMA:73354
+name: Left posterior nucleus of hypothalamus
+namespace: fma
+is_a: FMA:62350  ! Posterior nucleus of hypothalamus
+
+[Term]
+id: FMA:73355
+name: Right tuberomammillary nucleus
+namespace: fma
+is_a: FMA:62335  ! Tuberomammillary nucleus
+
+[Term]
+id: FMA:73356
+name: Left tuberomammillary nucleus
+namespace: fma
+is_a: FMA:62335  ! Tuberomammillary nucleus
+
+[Term]
+id: FMA:73357
+name: Right lateral tuberal nucleus
+namespace: fma
+is_a: FMA:62336  ! Lateral tuberal nucleus
+
+[Term]
+id: FMA:73358
+name: Left lateral tuberal nucleus
+namespace: fma
+is_a: FMA:62336  ! Lateral tuberal nucleus
+
+[Term]
+id: FMA:73359
+name: Right lateral hypothalamic nucleus
+namespace: fma
+is_a: FMA:62337  ! Lateral hypothalamic nucleus
+
+[Term]
+id: FMA:73360
+name: Left lateral hypothalamic nucleus
+namespace: fma
+is_a: FMA:62337  ! Lateral hypothalamic nucleus
+
+[Term]
+id: FMA:73363
+name: Right lateral habenular nucleus
+namespace: fma
+is_a: FMA:62372  ! Lateral habenular nucleus
+
+[Term]
+id: FMA:73364
+name: Left lateral habenular nucleus
+namespace: fma
+is_a: FMA:62372  ! Lateral habenular nucleus
+
+[Term]
+id: FMA:73365
+name: Right medial habenular nucleus
+namespace: fma
+is_a: FMA:62373  ! Medial habenular nucleus
+
+[Term]
+id: FMA:73366
+name: Left medial habenular nucleus
+namespace: fma
+is_a: FMA:62373  ! Medial habenular nucleus
+
+[Term]
+id: FMA:73367
+name: Right subthalamic nucleus
+namespace: fma
+is_a: FMA:62035  ! Subthalamic nucleus
+
+[Term]
+id: FMA:73368
+name: Left subthalamic nucleus
+namespace: fma
+is_a: FMA:62035  ! Subthalamic nucleus
+
+[Term]
+id: FMA:73369
+name: Right nucleus of ansa lenticularis
+namespace: fma
+is_a: FMA:62036  ! Nucleus of ansa lenticularis
+
+[Term]
+id: FMA:73370
+name: Left nucleus of ansa lenticularis
+namespace: fma
+is_a: FMA:62036  ! Nucleus of ansa lenticularis
+
+[Term]
+id: FMA:73371
+name: Right nucleus of field H
+namespace: fma
+is_a: FMA:62037  ! Nucleus of field H
+
+[Term]
+id: FMA:73372
+name: Left nucleus of field H
+namespace: fma
+is_a: FMA:62037  ! Nucleus of field H
+
+[Term]
+id: FMA:73373
+name: Right zona incerta
+namespace: fma
+is_a: FMA:62038  ! Zona incerta
+
+[Term]
+id: FMA:73374
+name: Left zona incerta
+namespace: fma
+is_a: FMA:62038  ! Zona incerta
+
+[Term]
+id: FMA:73375
+name: Right mammillary peduncle
+namespace: fma
+is_a: FMA:62061  ! Mammillary peduncle
+
+[Term]
+id: FMA:73376
+name: Left mammillary peduncle
+namespace: fma
+is_a: FMA:62061  ! Mammillary peduncle
+
+[Term]
+id: FMA:73385
+name: Right supraopticohypophysial tract
+namespace: fma
+is_a: FMA:62054  ! Supraopticohypophysial tract
+
+[Term]
+id: FMA:73386
+name: Left supraopticohypophysial tract
+namespace: fma
+is_a: FMA:62054  ! Supraopticohypophysial tract
+
+[Term]
+id: FMA:73387
+name: Right mammillotegmental fasciculus
+namespace: fma
+is_a: FMA:62058  ! Mammillotegmental fasciculus
+
+[Term]
+id: FMA:73388
+name: Left mammillotegmental fasciculus
+namespace: fma
+is_a: FMA:62058  ! Mammillotegmental fasciculus
+
+[Term]
+id: FMA:73389
+name: Right mammillothalamic tract of hypothalamus
+namespace: fma
+is_a: FMA:62059  ! Mammillothalamic tract of hypothalamus
+
+[Term]
+id: FMA:73390
+name: Left mammillothalamic tract of hypothalamus
+namespace: fma
+is_a: FMA:62059  ! Mammillothalamic tract of hypothalamus
+
+[Term]
+id: FMA:73395
+name: Capsule of right medial geniculate body
+namespace: fma
+synonym: "Right medial geniculate body capsule" EXACT []
+is_a: FMA:62049  ! Capsule of medial geniculate body
+
+[Term]
+id: FMA:73396
+name: Capsule of left medial geniculate body
+namespace: fma
+synonym: "Left medial geniculate body capsule" EXACT []
+is_a: FMA:62049  ! Capsule of medial geniculate body
+
+[Term]
+id: FMA:73397
+name: Capsule of right subthalamic nucleus
+namespace: fma
+synonym: "Right subthalamic nuclear capsule" EXACT []
+is_a: FMA:62068  ! Capsule of subthalamic nucleus
+
+[Term]
+id: FMA:73398
+name: Capsule of left subthalamic nucleus
+namespace: fma
+synonym: "Left subthalamic nuclear capsule" EXACT []
+is_a: FMA:62068  ! Capsule of subthalamic nucleus
+
+[Term]
+id: FMA:73403
+name: Right field H1
+namespace: fma
+is_a: FMA:62065  ! Field H1
+
+[Term]
+id: FMA:73404
+name: Left field H1
+namespace: fma
+is_a: FMA:62065  ! Field H1
+
+[Term]
+id: FMA:73405
+name: Right field H
+namespace: fma
+is_a: FMA:62066  ! Field H
+
+[Term]
+id: FMA:73406
+name: Left field H
+namespace: fma
+is_a: FMA:62066  ! Field H
+
+[Term]
+id: FMA:73407
+name: Right field H2
+namespace: fma
+is_a: FMA:62067  ! Field H2
+
+[Term]
+id: FMA:73408
+name: Left field H2
+namespace: fma
+is_a: FMA:62067  ! Field H2
+
+[Term]
+id: FMA:73409
+name: Right ansa lenticularis
+namespace: fma
+is_a: FMA:62070  ! Ansa lenticularis
+
+[Term]
+id: FMA:73410
+name: Left ansa lenticularis
+namespace: fma
+is_a: FMA:62070  ! Ansa lenticularis
+
+[Term]
+id: FMA:73411
+name: Right ansa peduncularis
+namespace: fma
+is_a: FMA:62071  ! Ansa peduncularis
+
+[Term]
+id: FMA:73412
+name: Left ansa peduncularis
+namespace: fma
+is_a: FMA:62071  ! Ansa peduncularis
+
+[Term]
+id: FMA:73420
+name: Right postcommissural fornix
+namespace: fma
+is_a: FMA:62062  ! Postcommissural fornix
+
+[Term]
+id: FMA:73421
+name: Left postcommissural fornix
+namespace: fma
+is_a: FMA:62062  ! Postcommissural fornix
+
+[Term]
+id: FMA:73515
+name: Right limitans nucleus
+namespace: fma
+is_a: FMA:62220  ! Limitans nucleus
+
+[Term]
+id: FMA:73516
+name: Left limitans nucleus
+namespace: fma
+is_a: FMA:62220  ! Limitans nucleus
+
+[Term]
+id: FMA:73517
+name: Right posterior nucleus of thalamus
+namespace: fma
+is_a: FMA:62221  ! Posterior nucleus of thalamus
+
+[Term]
+id: FMA:73518
+name: Left posterior nucleus of thalamus
+namespace: fma
+is_a: FMA:62221  ! Posterior nucleus of thalamus
+
+[Term]
+id: FMA:74866
+name: Zone of diencephalon
+namespace: fma
+is_a: FMA:84054  ! Zone of neuraxis
+
+[Term]
+id: FMA:75007
+name: Cavity of neuraxis
+namespace: fma
+synonym: "Cavity of ventricular system of neuraxis" EXACT []
+synonym: "Neuraxis cavity" EXACT []
+is_a: FMA:12237  ! Organ cavity
+relationship: part_of FMA:242675 ! Ventricular system of neuraxis
+
+[Term]
+id: FMA:76769
+name: Subdivision of supraoptic nucleus
+namespace: fma
+synonym: "Supraoptic nuclear subdivision" EXACT []
+is_a: FMA:62317  ! Supraoptic nucleus
+
+[Term]
+id: FMA:76770
+name: Dorsolateral part of supraoptic nucleus
+namespace: fma
+is_a: FMA:76769  ! Subdivision of supraoptic nucleus
+
+[Term]
+id: FMA:76771
+name: Dorsomedial part of supraoptic nucleus
+namespace: fma
+is_a: FMA:76769  ! Subdivision of supraoptic nucleus
+
+[Term]
+id: FMA:76772
+name: Ventromedial part of supraoptic nucleus
+namespace: fma
+is_a: FMA:76769  ! Subdivision of supraoptic nucleus
+
+[Term]
+id: FMA:76988
+name: Koniocellular layer of dorsal nucleus of lateral geniculate body
+namespace: fma
+is_a: FMA:62214  ! Dorsal nucleus of lateral geniculate body
+
+[Term]
+id: FMA:76989
+name: Magnocellular layer of dorsal nucleus of lateral geniculate body
+namespace: fma
+is_a: FMA:62214  ! Dorsal nucleus of lateral geniculate body
+
+[Term]
+id: FMA:76992
+name: Parvocellular layer of dorsal nucleus of lateral geniculate body
+namespace: fma
+is_a: FMA:62214  ! Dorsal nucleus of lateral geniculate body
+
+[Term]
+id: FMA:78447
+name: Region of ventricular system of brain
+namespace: fma
+is_a: FMA:242789  ! Region of ventricluar system of neuraxis
+
+[Term]
+id: FMA:78454
+name: Third ventricle
+namespace: fma
+is_a: FMA:78447  ! Region of ventricular system of brain
+relationship: part_of FMA:242787 ! Ventricular system of brain
+relationship: part_of FMA:62001 ! Diencephalon
+
+[Term]
+id: FMA:78460
+name: Region of wall of third ventricle
+namespace: fma
+is_a: FMA:242770  ! Region of wall of ventricular system of neuraxis
+
+[Term]
+id: FMA:78462
+name: Choroid plexus of third ventricle
+namespace: fma
+synonym: "Chorioid plexus of third ventricle" EXACT []
+is_a: FMA:78460  ! Region of wall of third ventricle
+relationship: part_of FMA:242776 ! Wall of third ventricle
+relationship: part_of FMA:78463 ! Tela choroidea of third ventricle
+
+[Term]
+id: FMA:78463
+name: Tela choroidea of third ventricle
+namespace: fma
+synonym: "Choroid membrane of third ventricle" EXACT []
+is_a: FMA:78460  ! Region of wall of third ventricle
+
+[Term]
+id: FMA:78590
+name: Set of heterogeneous clusters
+namespace: fma
+synonym: "Heteregenous clusters" EXACT []
+synonym: "Heterogeneous clusters set" EXACT []
+is_a: FMA:55652  ! Anatomical set
+
+[Term]
+id: FMA:82472
+name: Cardinal organ part
+namespace: fma
+def: "anatomical structure which has as its direct parts two or more types of tissue and is continuous with one or more anatomical structures likewise constituted by two or more portions of tissues distinct from those of their complement. Examples: osteon, cortical bone, neck of femur, bronchopulmonary segment, left lobe of liver, anterior right side of heart, interventricular branch of left coronary artery, right atrium, mitral valve, head of pancreas." []
+is_a: FMA:67135  ! Anatomical structure
+
+[Term]
+id: FMA:83115
+name: Cell part cluster
+namespace: fma
+is_a: FMA:49443  ! Anatomical cluster
+
+[Term]
+id: FMA:83143
+name: Cell part cluster of neuraxis
+namespace: fma
+synonym: "Neuraxis layer" EXACT []
+is_a: FMA:83115  ! Cell part cluster
+
+[Term]
+id: FMA:83153
+name: Organ component of neuraxis
+namespace: fma
+def: "Organ component which is part of the brain or spinal cord." []
+is_a: FMA:14065  ! Organ component
+
+[Term]
+id: FMA:83465
+name: Segment of white matter of neuraxis
+namespace: fma
+is_a: FMA:83929  ! White matter of neuraxis
+
+[Term]
+id: FMA:83686
+name: Nucleus of neuraxis
+namespace: fma
+def: "Internal gray matter component of neuraxis which consists of a discrete aggregate of neuronal soma. Example:  dentate nucleus, red nucleus." []
+synonym: "Neural nucleus" EXACT []
+synonym: "Neuraxis nucleus" EXACT []
+is_a: FMA:223151  ! Internal gray matter component
+
+[Term]
+id: FMA:83840
+name: Nucleus of brain
+namespace: fma
+def: "Nucleus of neuraxis which is located within the brain. Example: pontobulbar nucleus, globose nucleus." []
+synonym: "Brain nucleus" EXACT []
+is_a: FMA:83686  ! Nucleus of neuraxis
+
+[Term]
+id: FMA:83844
+name: Fasciculus of brain
+namespace: fma
+synonym: "Brain fasciculus" EXACT []
+is_a: FMA:12235  ! Nerve fasciculus
+
+[Term]
+id: FMA:83847
+name: Tract of neuraxis
+namespace: fma
+synonym: "Neuraxis tract" EXACT []
+is_a: FMA:83465  ! Segment of white matter of neuraxis
+
+[Term]
+id: FMA:83848
+name: Tract of brain
+namespace: fma
+synonym: "Brain tract" EXACT []
+is_a: FMA:83847  ! Tract of neuraxis
+
+[Term]
+id: FMA:83860
+name: Peduncle of neuraxis
+namespace: fma
+synonym: "Neuraxis peduncle" EXACT []
+is_a: FMA:83465  ! Segment of white matter of neuraxis
+
+[Term]
+id: FMA:83863
+name: Ansa of neuraxis
+namespace: fma
+synonym: "Neuraxis ansa" EXACT []
+is_a: FMA:83465  ! Segment of white matter of neuraxis
+
+[Term]
+id: FMA:83865
+name: Fornix of neuraxis
+namespace: fma
+synonym: "Neuraxis fornix" EXACT []
+is_a: FMA:83465  ! Segment of white matter of neuraxis
+
+[Term]
+id: FMA:83906
+name: Commissure of neuraxis
+namespace: fma
+synonym: "Neuraxis commissure" EXACT []
+is_a: FMA:83143  ! Cell part cluster of neuraxis
+
+[Term]
+id: FMA:83929
+name: White matter of neuraxis
+namespace: fma
+def: "Cell part cluster consisting predominantly of neurites in the brain and the spinal cord." []
+synonym: "White matter" EXACT []
+synonym: "White substance" EXACT []
+is_a: FMA:83143  ! Cell part cluster of neuraxis
+
+[Term]
+id: FMA:83931
+name: White matter of diencephalon
+namespace: fma
+is_a: FMA:83929  ! White matter of neuraxis
+
+[Term]
+id: FMA:84053
+name: Subdivision of nucleus of neuraxis
+namespace: fma
+is_a: FMA:223151  ! Internal gray matter component
+
+[Term]
+id: FMA:84054
+name: Zone of neuraxis
+namespace: fma
+synonym: "Neuraxis zone" EXACT []
+is_a: FMA:83143  ! Cell part cluster of neuraxis
+
+[Term]
+id: FMA:84081
+name: Circumventricular organ of neuraxis
+namespace: fma
+is_a: FMA:83153  ! Organ component of neuraxis
+
+[Term]
+id: FMA:86103
+name: Region of organ component
+namespace: fma
+def: "Cardinal organ part which is a fiat subdivision of an organ component. Examples: cervical part of wall of esophagus, mucosa of body of stomach." []
+synonym: "Organ component region" EXACT []
+is_a: FMA:82472  ! Cardinal organ part
+
+[Term]
+id: FMA:86140
+name: Organ segment
+namespace: fma
+def: "Organ region with one or more anchored fiat boundaries. Examples: artery, trunk of nerve, cervical part of esophagus, pelvic part of vagina, horn of thyroid cartilage, anterior segment of eyeball." []
+synonym: "Organ region with fixed fiat boundary" EXACT []
+synonym: "Segment of organ" EXACT []
+is_a: FMA:67619  ! Organ region
+
+[Term]
+id: FMA:9337
+name: Organ cavity subdivision
+namespace: fma
+def: "Anatomical cavity, which is surrounded by a morphological subdivision of an organ; is continuous with other organ cavity subdivisions of the same organ; together with other organ cavity subdivisions, it constitutes the organ cavity. Examples: oblique sinus of pericardial cavity, pyloric antrum, costodiaphragmatic recess, cervical canal of uterus, cavity of body of gall bladder." []
+is_a: FMA:67552  ! Anatomical cavity
+
+[Term]
+id: FMA:9637
+name: Portion of tissue
+namespace: fma
+def: "Anatomical structure which has as its parts cells of predominantly one type with or without intercellular matrix. Examples: epithelium, muscle tissue, connective tissue, neural tissue, lymphoid tissue." []
+synonym: "Tissue" EXACT []
+is_a: FMA:67135  ! Anatomical structure
+
+[Term]
+id: FMA:9639
+name: Portion of epithelium
+namespace: fma
+def: "Tissue, which consists of one or more layers of epithelial cells and a basement membrane; it covers the external surface of the body and lines the internal surfaces of the anatomical structures. Examples: simple squamous epithelium, glandular cuboidal epithelium, transitional epithelium, myoepithelium." []
+synonym: "Epithelial tissue" EXACT []
+synonym: "Epithelium" EXACT []
+is_a: FMA:9637  ! Portion of tissue
+relationship: part_of FMA:14065 ! Organ component
+
+[Term]
+id: FMA:9668
+name: Endocrine system
+namespace: fma
+synonym: "Systema endocrinum" EXACT []
+is_a: FMA:78590  ! Set of heterogeneous clusters
+relationship: part_of FMA:20394 ! Human body
+
+[Typedef]
+id: part_of
+name: part_of
+namespace: fma
+is_transitive: true
+
