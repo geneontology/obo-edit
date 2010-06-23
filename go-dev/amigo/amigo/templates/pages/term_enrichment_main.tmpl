@@ -110,22 +110,12 @@
 	</p>
 
 	<p>
-
-<!-- 	  <b>Caution:</b> Please note that by default, this tool uses -->
-<!-- 	  annotation datasets that do not -->
-<!-- 	  include <a href="http://www.geneontology.org/GO.evidence.shtml#iea">IEA</a> -->
-<!-- 	  (electronically inferred) data. The results for organisms -->
-<!-- 	  where a proportion of the annotation coverage is IEA-based -->
-<!-- 	  will match/correspond only to the annotations made by -->
-<!-- 	  curators. If you wish to include IEA data, please select that option <a href="#iea_filter">below</a>. -->
-
 	  <b>Caution:</b> Please note that by default, this tool uses
 	  annotation datasets that include
 	  <a href="http://www.geneontology.org/GO.evidence.shtml#iea">IEA</a>
 	  (electronically inferred) data. If you wish to work with
 	  only non-IEA data, please upload your own background set and
 	  select the "no" option <a href="#iea_filter">below</a>.
-
 	</p>
 
 	<form action="term_enrichment"
@@ -176,7 +166,7 @@
 		   class="button">
 	  </p>
 
-<!-- 	  <h3 class="first"> -->
+	  <!-- <h3 class="first"> -->
 	  <h3>
 	    Input your background set
 	    <a href="http://wiki.geneontology.org/index.php/AmiGO_Manual:_Term_Enrichment#Background_Set"
@@ -187,20 +177,9 @@
 	    [<span>recommended</span>]
 	  </h3>
 
-	  <!--
 	  <p>
-	    If you do not enter a background set, the database subset
-	    specified using the filter will be used as the background
-	    set. The default is the entire database.
-	  </p>
-	  -->
-
-	  <p>
-	    <label for="bggp_list">Enter your gene products below (symbols, synonyms, or
-	    accessions)</label>:
+	    <label for="bggp_list">Enter your gene products below (symbols, synonyms, or accessions)</label>:
 	    <br />
-<!-- 	      If you do not provide a background set, the database -->
-<!-- 	      filter selected will be used as the background set. -->
 
 	  </p>
 	  <div>
@@ -227,43 +206,7 @@
 	  </p>
 
 
-<!--
-	  <p>
-	    Cut and paste your gene products below. If you
-	    do not enter a background set, the entire database will be
-	    used as a default.
-	  </p>
-	  <div class="or">
-	    <textarea id="bggp_list" name="bggp_list"
-		      cols="55" rows="4">[% ECHO_BGGP_LIST %]</textarea>
-	  </div>
-
-	  <div class="or">
-	  <p>
-	    <em>OR</em>
-	  </p>
-	  </div>
-	  <div class="or">
-	  <p>
-	    <label for="bggp_file">
-	      upload a
-	      <select name="bggp_file_type"
-		      id="bggp_file_type"
-		      title="Type of gene product upload file">
-		<option value="ga">gene association file</option>
-		<option value="list">list containing gene products</option>
-	      </select>
-	    </label>:<br>
-	    <input type="file"
-		   name="bggp_file"
-		   id="bggp_file"
-		   title="Upload a gene product file to use as input"
-		   class="button"> (will increase query time)
-	  </p>
-	  </div>
--->
-
-<!-- 	  <h3 class="first"> -->
+	  <!-- <h3 class="first"> -->
 	  <h3>
             Select the database filter
 	    <a href="http://wiki.geneontology.org/index.php/AmiGO_Manual:_Term_Enrichment#Filtering" class="help-link">
@@ -273,8 +216,8 @@
           </h3>
 
 	  <p>
+	  <div>
 	    <!-- title = "Database" -->
-	    [% title = "" %]
 	    [% form_name = "speciesdb" %]
 	    [% multiple = "true" %]
 	    [% size = 4 %]
@@ -283,33 +226,17 @@
 	    [% catch_all = "No selection" %]
 	    [% INCLUDE amigo_common_select.tmpl %]
 	  
-	    <!--
-	    [% title = "Ontology" %]
-	    [% form_name = "ontology" %]
-	    [% multiple = "true" %]
-	    [% size = 4 %]
-	    [% hash = AVAILABLE_ONTOLOGIES %]
-	    [% selected_hash = ECHO_ONTOLOGIES %]
-	    [% catch_all = "All" %]
-	    -->
-	    <!-- INCLUDE amigo_common_select.tmpl -->
-
+	    <!-- title = "Ontology" -->
+	    <!-- form_name = "ontology" -->
+	    <!-- multiple = "true" -->
+	    <!-- size = 4 -->
+	    <!-- hash = AVAILABLE_ONTOLOGIES -->
+	    <!-- selected_hash = ECHO_ONTOLOGIES -->
+	    <!-- catch_all = "All" -->
+	    <!-- # INCLUDE amigo_common_select.tmpl -->
+	  </div>
 	  </p>
-	  <!-- The above close tag seems to show that the w2c
-	  validator is broken: replace it with div and it works. -->
 
-	  <!--
-	  <h3 id="filters_toggle" class="first"
-	      title="Click here to open the threshold filter menu.">
-	    <a href="#">
-	      [Display threshold filters]
-	    </a>
-	  </h3>
-
-	  <div id="filters">
-	    -->
-
-<!-- 	  <h3 id="iea_filter" class="first"> -->
 	  <h3 id="iea_filter">
 	      IEA annotations
 	    <a href="http://wiki.geneontology.org/index.php/AmiGO_Manual:_Term_Enrichment#IEAs"
@@ -327,12 +254,13 @@
 	    </p>
 
 	    <p>
+    	    <div>
 
 	      <!-- <input type="checkbox" name="iea" value="yes" /> -->
 	      <!-- <label for="iea"><em>use IEAs</em> in calculation</label> -->
 	      <fieldset class="block">
 		<legend>
-		  <label for="iea">use IEAs in calculation:</label>
+		  <label for="iea_yes">use IEAs in calculation:</label>
 		</legend>
 
 	      <input class="radio"
@@ -357,7 +285,7 @@
 	      <label for="iea_no"><em>no</em> (don't use)</label><br>
 
 	      </fieldset>
-
+	    </div>
 	    </p>
 
 <!-- 	    <h3 class="first"> -->
@@ -386,6 +314,7 @@
 	    <!-- INCLUDE amigo_common_select.tmpl -->
 
 	    <p>
+	    <div>
 
 	      <fieldset class="block">
 		<legend>
@@ -410,11 +339,8 @@
 		       value="[% ECHO_MIN_GPS %]">
 	      </fieldset>
 
+	    </div>
 	    </p>
-
-	    <!--
-		</div>
-	      -->
 
 	  <h3 id="aod_toggle">
 	    <a href="#" title="Click here to open the advanced options menu.">
@@ -425,7 +351,6 @@
 	  <div id="aod">
 
 	    <h3>
-<!-- 	    <h3 class="first"> -->
 	      Choose the <em>type</em> of your results
 	    <a href="http://wiki.geneontology.org/index.php/AmiGO_Manual:_Term_Enrichment#Result_Types"
 		 class="help-link">

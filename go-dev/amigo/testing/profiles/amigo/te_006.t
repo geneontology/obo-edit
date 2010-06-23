@@ -6,5 +6,6 @@
    "tests" : ["okay?", "ierror?"],
    "form" : "term_enrichment_form",
    "field" : {"gp_list" : "AT3G21260 AT3G48490"},
+   "radio" : {"iea" : "no"},
    "multi_select" : {"speciesdb" : ["TAIR"]}
 }

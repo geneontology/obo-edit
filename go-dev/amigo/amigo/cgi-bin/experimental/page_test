@@ -342,21 +342,22 @@ sub mode_kappa_results {
   ### Directory check.
   ###
 
-  my $kurl = $core->amigo_env('AMIGO_HTML_URL') . "/kappa";
-  my $kpath = $core->amigo_env('AMIGO_HTDOCS_ROOT_DIR') . "/kappa";
+  my $kurl = $core->amigo_env('AMIGO_TESTS_URL');
+  my $kpath = $core->amigo_env('AMIGO_TESTS_DIR');
 
   if( ! -r $kpath || ! -d $kpath ){
-    return $self->mode_die_with_message("Couldn\'t find kappa directory (" . $kpath . ").");
+    return $self->mode_die_with_message("Couldn\'t find tests directory (" .
+					$kpath . ").");
   }
 
   my $all_test_files = [];
-  if( ! -r $kpath . "/details.log" || ! -r $kpath . "/struct.log" ){
-    return $self->mode_die_with_message("It seems that either kappa has not been run or is in progress. There is a scheduled cron job, so please check back later.");
+  if( ! -r $kpath . "/kappa_details.log" || ! -r $kpath . "/kappa_struct.log" ){
+    return $self->mode_die_with_message("It seems that either kappa has not been run or is in progress. This is likely due to a scheduled cron job running--please check back later.");
   }else{
 
     ## Read in the log as a block.
     my @lra= ();
-    open FILE, "<$kpath/details.log" or die $!;
+    open FILE, "<$kpath/kappa_details.log" or die $!;
     while(<FILE>){ push @lra, $_; }
     close FILE;
     my $log_string = "<pre>" . join('', @lra) . "</pre>\n";
@@ -382,7 +383,7 @@ sub mode_kappa_results {
 
     ## Reconstitute the JSON struct for display.
     my $js = AmiGO::JavaScript->new();
-    my $hash = $js->parse_json_file($kpath . "/struct.log");
+    my $hash = $js->parse_json_file($kpath . "/kappa_struct.log");
     $self->set_template_parameter('struct', $hash);
   }
 
