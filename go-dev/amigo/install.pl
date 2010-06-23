@@ -23,7 +23,6 @@ use vars qw(
 	     $opt_e
 	     $opt_g
 	     $opt_G
-	     $opt_j
 	     $opt_d
 	  );
 use Getopt::Std;
@@ -687,7 +686,7 @@ foreach my $env_conf_key ( keys %env_conf ) {
 
 
 ## Since internal checks are done, get ready for user input.
-getopts('hvriscmtegGjdf:');
+getopts('hvriscmtegGdf:');
 
 ## Embedded help through perldoc.
 if( $opt_h ){
@@ -799,11 +798,17 @@ $synth_vars{AMIGO_TEMP_IMAGE_DIR} =
 $synth_vars{AMIGO_TEMP_IMAGE_URL} =
   $synth_vars{AMIGO_HTML_URL} . '/' . 'tmp_images';
 
-## Temp image URL and dir.
+## Image URL and dir.
 $synth_vars{AMIGO_IMAGE_DIR} =
   $synth_vars{AMIGO_HTDOCS_ROOT_DIR} . '/' . 'images';
 $synth_vars{AMIGO_IMAGE_URL} =
   $synth_vars{AMIGO_HTML_URL} . '/' . 'images';
+
+## Tests URL and dir.
+$synth_vars{AMIGO_TESTS_DIR} =
+  $synth_vars{AMIGO_HTDOCS_ROOT_DIR} . '/' . 'tests';
+$synth_vars{AMIGO_TESTS_URL} =
+  $synth_vars{AMIGO_HTML_URL} . '/' . 'tests';
 
 ## For page pre-rendering.
 $synth_vars{AMIGO_PRE_RENDER_DIR} =
@@ -884,6 +889,7 @@ if ( $opt_c ) {
   safe_make_dir( $synth_vars{AMIGO_TEMP_IMAGE_DIR} );
   make_permissive( $synth_vars{AMIGO_TEMP_IMAGE_DIR} );
   safe_make_dir( $synth_vars{AMIGO_PRE_RENDER_DIR} );
+  safe_make_dir( $synth_vars{AMIGO_TESTS_DIR} );
 
   ## Copy refresh script over to cgi-bin.
   #force_copy(Cwd::cwd() . '/amigo/cgi-bin/' . 'refresh',
@@ -1022,18 +1028,16 @@ if ( $opt_c ) {
     ll("Old to new term details link: link $new to $old");
     system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_t;
 
-    ## Put old one over for comparison on experimental machines.
-    if( $opt_e ){
-      force_copy(Cwd::cwd() . '/amigo/cgi-bin/term-details.cgi', $hst);
-      make_executable($hst);
-    }
+    # ## Put old one over for comparison on experimental machines.
+    # if( $opt_e ){
+    #   force_copy(Cwd::cwd() . '/amigo/cgi-bin/term-details.cgi', $hst);
+    #   make_executable($hst);
+    # }
   }
 
-  ## Copy some outlying executables.
+  ## Copy perl config over.
   force_copy(Cwd::cwd() . '/config.pl', $synth_vars{AMIGO_CGI_ROOT_DIR} );
-  make_executable( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/config.pl' );
-  force_copy(Cwd::cwd() . '/config.pl', $synth_vars{AMIGO_CGI_ROOT_DIR} );
-  make_executable( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/config.pl' );
+  make_readable( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/config.pl' );
 
   ## Copy statics.
   force_copy(Cwd::cwd() . '/amigo/templates',
@@ -1172,9 +1176,9 @@ EOC
   close(FILE);
   ll("Created synthetic variables and configuration file \"config.pl\".");
 
-  ## Optionally emit JSON version. Already did this once, so we can
-  ## ignore the checks.
-  if( $opt_j ){
+  ## Emit JSON version for experimental. Already did this once, so we
+  ## can ignore the checks.
+  if( $opt_e ){
 
     use JSON;
 
@@ -1197,6 +1201,10 @@ EOC
     open(JFILE, ">config.json");
     print JFILE $jtext;
     close(JFILE);
+
+    force_copy(Cwd::cwd() . '/config.json', $synth_vars{AMIGO_CGI_ROOT_DIR} );
+    make_readable( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/config.json' );
+
     ll("Created configuration file \"config.json\".");
   }
 
@@ -1637,6 +1645,17 @@ sub make_permissive {
 }
 
 
+##
+sub make_readable {
+
+  my $file = shift || die;
+
+  my @args = ("chmod", "644", $file);
+  ll("System: \"@args\"");
+  system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_t;
+}
+
+
 ## Make all of the old .cgi filenames accessible through no-cgi names,
 ## if applicable.
 sub make_non_cgi_link {
@@ -1721,11 +1740,8 @@ Do a test run. Only configure files will be read and written.
 
 =item -e
 
-Also install experimental CGIs and binaries.
-
-=item -j
-
-Emit config.json as well as config.pl. Same information, different format.
+Also install experimental CGIs, binaries, and config.json as well as
+config.pl (same information, different format).
 
 =item -g
 

@@ -6,11 +6,11 @@
                "code?"],
     "form" : "term_enrichment_form",
     "upload" : {
-	"gp_file" : "/home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/data/Willman_target.unix.1000.txt"
+	"gp_file" : "Willman_target.unix.1000.txt"
     },
     "multi_select" : {"speciesdb" : ["TAIR"]},
     "continue" : [
-        {"id" : "te_000 sub 1",
+        {"id" : "te_000_sub_1",
          "comment" : "Image test on resultant page.",
          "tests" : ["okay?", "code?"],
          "form" : "visualize"}

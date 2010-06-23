@@ -18,6 +18,7 @@ require 'uuidtools'
 class PAgent
 
   attr_reader :agent, :core
+  attr_accessor :data_path
 
   def initialize (init)
 
@@ -26,6 +27,8 @@ class PAgent
     @agent.read_timeout= 600 # is that right? 10min?
 
     @okay = true
+
+    @data_path = nil
 
     ## Init @core.
     if init.class.eql?(WWW::Mechanize::Page)
@@ -209,7 +212,17 @@ class PAgent::HTML < PAgent
 
     form = find_form(form_identifier)
 
-    ## Test for the existance of the file.
+    ## Test that there is actually a form where we think it is.
+    if form.nil?
+      puts "URI: " + @core.uri.to_s
+      raise "Cannot locate form: \"#{form_identifier}\"!"
+    end
+    
+    ## Ammend if we have an extension and test for the existance of
+    ## the file.
+    if ! @data_path.nil?
+      file_str = @data_path + '/' + file_str
+    end
     if not File.readable? file_str
       raise "Cannot locate data file: \"#{file_str}\"!"
     end
@@ -279,35 +292,35 @@ class PAgent::HTML < PAgent
     end
   end
   
-  ## TODO: Turn the extra conf fields into meta information (comments,
-  ## tests to run, etc.).
-  def meta_from_conf (form_conf)
+  # ## TODO: Turn the extra conf fields into meta information (comments,
+  # ## tests to run, etc.).
+  # def meta_from_conf (form_conf)
     
-    ##
-    form_id = form_conf.get('form')
-    if form_id.nil?
-      raise "we need at least a form name to prepare it"
-    end
+  #   ##
+  #   form_id = form_conf.get('form')
+  #   if form_id.nil?
+  #     raise "we need at least a form name to prepare it"
+  #   end
       
-    types = {
-      'radio' => :set_radio,
-      'field' => :set_field,
-      'upload' => :set_upload,
-      'select' => :set_select,
-      'multi_select' => :set_multi_select
-      }
-    types.each_pair do |label, function|
-      params_of_type = form_conf.get(label)
-      if ! params_of_type.nil? 
-        params_of_type.each_pair do |key,val|
-          send(function, form_id, key, val)
-        end
-      end
+  #   types = {
+  #     'radio' => :set_radio,
+  #     'field' => :set_field,
+  #     'upload' => :set_upload,
+  #     'select' => :set_select,
+  #     'multi_select' => :set_multi_select
+  #     }
+  #   types.each_pair do |label, function|
+  #     params_of_type = form_conf.get(label)
+  #     if ! params_of_type.nil? 
+  #       params_of_type.each_pair do |key,val|
+  #         send(function, form_id, key, val)
+  #       end
+  #     end
       
-    end
+  #   end
 
-    nil
-  end
+  #   nil
+  # end
   
   def create_pagent (thing)
 

@@ -21,6 +21,7 @@ module AUnit
     
     attr_reader :resultant, :continue, :page, :tests, :assertions
     attr_reader :id, :comment, :reference
+    attr_reader :page_source, :description_source, :data_source
     
     @json_conf = nil
     @tester = nil
@@ -29,10 +30,15 @@ module AUnit
     ## and a url, or we have to work from a pagent and have a desc
     ## that doesn't need a "page" (since we are already working from a
     ## pagent).
-    def initialize (page_source, desc_source)
+    def initialize (page_source, desc_source, data_source = nil)
       
+      @page_source = page_source
+      @description_source = desc_source
+      @data_source = data_source
+
       # home_url, file_str
-      # puts "FOO: #{page_source.class} #{desc_source.class}"
+      #puts "FOO: #{page_source.class} #{desc_source.class}"
+      #puts "BAR: #{page_source.to_s} #{desc_source.to_s}"
       
       ## After this part, the following should be defined:
       ##   @json_conf : the configuration
@@ -40,7 +46,7 @@ module AUnit
       if page_source.is_a?(String) and desc_source.is_a?(String)
         
         @json_conf = AmiGO::Conf.new(desc_source)
-        page = @json_conf.get('page') || ''
+        page = @json_conf.get('page')
         if page.eql?('')
           raise "miss formatted conf file in page"      
         end
@@ -60,12 +66,15 @@ module AUnit
         raise "unusable argument types"
       end
       
+      ## Make sure the pagent has the right data path.
+      @tester.data_path= data_source
+
       ## Pull key info out of the json.
       @id = @json_conf.get('id')
       if @id.nil? then raise "at least need a test id" end
       @comment = @json_conf.get('comment') || ''
       @reference = @json_conf.get('reference') || nil
-      @continue = @json_conf.get('continue') || []
+      @continue = @json_conf.get('continue') || []      
       
       ## Pull the boolean tests out of the conf.
       tmp = @json_conf.get('tests') || []
@@ -444,8 +453,8 @@ module AUnit
       @directory = out_dir
 
       ## Ready hard output location.
-      @log_file = @directory +'/'+ 'details.log'
-      @log_struct_file = @directory +'/'+ 'struct.log'
+      @log_file = @directory +'/'+ 'kappa_details.log'
+      @log_struct_file = @directory +'/'+ 'kappa_struct.log'
     end  
   
   #   def same_host (thingy)
@@ -507,7 +516,7 @@ module AUnit
       if( place == :file )
 
         ## Add time to line.
-        gtime = "[#{Time.now.strftime("%Y%m%d%H%M%S")}]"
+        gtime = "[#{Time.now.strftime("%Y%m%d%\_H%M%S")}]"
         ready_dir(File.dirname(@log_file))
         line = "#{gtime} #{line}\n"
 
@@ -596,7 +605,7 @@ module AUnit
 
           ## Run the item described in the continue.
           next_pagent = runner.resultant
-          next_runner = PageRunner.new(next_pagent, next_desc)
+          next_runner = PageRunner.new(next_pagent, next_desc, @data_source)
 
           # next_vpage = PageVerifier.new(next_runner.resultant)
 
@@ -763,23 +772,19 @@ if __FILE__ == $0
 
       assert(pv.okay?, "page living")
       assert(pv.code?, "page has good code")
-      assert(pv.comments.size == 2, "page has two comments")
-
-      assert(pv.assert({"sub"=>"name","op"=>"==","arg"=>"foo","as"=>"s"}),
-             "name is \"foo\"")
-      assert(pv.assert({"sub"=>"value","op"=>"==","arg"=>"1","as"=>"i"}),
-             "value is 1")
     end
 
-    ## TODO/BUG: Technically, we need to add a PAgent::JSON subclass...
-    def test_timeout_catch      
-      test_url =
-        'http://localhost/cgi-bin/amigo/form_test?mode=timeout&seconds=300'
-      puts "\nTESTING TIMEOUT--THIS WILL TAKE A WHILE..."
-      pa = PAgent::HTML.new(test_url)
-      # pv = AUnit::PageVerifier.new(pa)
-      assert(! pa.okay?, "should fail on timeout")
-    end
+    ## TODO/BUG: We have a very long timeout nw, so this is getting
+    ## harder to test...
+    # ## TODO/BUG: Technically, we need to add a PAgent::JSON subclass...
+    # def test_timeout_catch      
+    #   test_url =
+    #     'http://localhost/cgi-bin/amigo/form_test?mode=timeout&seconds=300'
+    #   puts "\nTESTING TIMEOUT--THIS WILL TAKE A WHILE..."
+    #   pa = PAgent::HTML.new(test_url)
+    #   # pv = AUnit::PageVerifier.new(pa)
+    #   assert(! pa.okay?, "should fail on timeout")
+    # end
 
     ## TODO: needs tests for PageRunner and such (will probably need
     ## to mess with the constructor a bit).

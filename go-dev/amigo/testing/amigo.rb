@@ -3,7 +3,11 @@
 #### NOTE: Right now, needs to run from "go-dev/amigo/testing".
 #### Run tests: ./amigo.rb
 ####
-
+#### require 'testing/amigo.rb'
+#### include AmiGO
+#### a = AmiGO::Conf.new()
+#### a.smart_get('version')
+####
 
 module AmiGO
 
@@ -15,7 +19,17 @@ module AmiGO
 
     @conf_hash = {};
 
-    def initialize (thingy)
+    def initialize (thingy=nil)
+
+      ## If nothing came in, see if we can find the default AmiGO
+      #config floating around here somewhere...
+      if thingy.nil?
+        ['./config.json','../config.json','../../config.json'].each do |f|
+          if thingy.nil? && File.exists?(f)
+            thingy = f
+          end
+        end
+      end
 
       ## Switch on incoming hash or file identifying a JSON file.
       if thingy.is_a?(Hash)
@@ -33,6 +47,10 @@ module AmiGO
         
         end
 
+      else
+
+        raise "could find no valid configuration"
+
       end
 
       ##
@@ -47,15 +65,31 @@ module AmiGO
     ##
     def get (key)
 
-      ## Simple ladder.
-      if @conf_hash.has_key?(key.upcase)
-        @conf_hash.fetch(key.upcase, nil)
-      elsif @conf_hash.has_key?(key.downcase)
-        @conf_hash.fetch(key.downcase, nil)
-      else
-        nil
+      retval = nil
+      [key.upcase, key.downcase, 'AMIGO_' + key.upcase, 'GO_' + key.upcase,
+       'amigo_' + key.downcase, 'go_' + key.downcase].each do |k|
+        if @conf_hash.has_key?(k)
+          retval = @conf_hash.fetch(k, nil)
+          break
+        end
       end
 
+      retval
+    end
+
+    ##
+    def smart_get (key)
+
+      retval = get(key)
+      if not retval.nil?
+        if retval =~ /[0-9]*\.[0-9]+/ 
+          retval = retval.to_f
+        elsif retval =~ /[0-9]+/ 
+          retval = retval.to_i
+        end
+      end
+
+      retval
     end
 
   end
@@ -76,7 +110,7 @@ if __FILE__ == $0
 
     ## Run before every test.
     def setup
-      @aconf = AmiGO::Conf.new('./config.json')
+      @aconf = AmiGO::Conf.new()
     end
 
     ## Run after every test.
@@ -90,13 +124,28 @@ if __FILE__ == $0
 
       assert(@aconf.get('blahblahblah').nil?, "nothing for nothing")
 
-      assert(! @aconf.get('go_dbhost').nil?, "found something for dbhost")
-      assert(@aconf.get('go_dbhost').eql?("localhost"), "found dbhost")
-      assert(! @aconf.get('GO_DBHOST').nil?, "found something for dbhost")
-      assert(@aconf.get('GO_DBHOST').eql?("localhost"), "found dbhost")
+      ## Let's pick something unlikely to change dramatically across
+      ## amigo versions.
+      res = 'templates/pages:templates/includes'
+      ['AMIGO_TEMPLATE_PATHS', 'TEMPLATE_PATHS',
+       'amigo_template_paths', 'template_paths'].each do |var|
+        assert(! @aconf.get(var).nil?, "found something for variable")
+        assert(@aconf.get(var).eql?(res), "found variable")
+        assert(@aconf.smart_get(var).eql?(res), "found smartly variable")
+      end
 
+      ## Check smart_get.
+      #lambda do
+        thing = @aconf.smart_get('version')
+        puts thing
+        puts thing.class
+        assert(! thing.nil?, "found something for variable")
+        assert(thing.class.eql?(Float), "made it a float")
+        assert(thing.between?(1.0, 10.0) , "in a good range")
+      #end
+      
     end
-
+    
   end
-
+  
 end
