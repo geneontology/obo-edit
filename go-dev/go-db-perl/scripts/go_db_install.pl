@@ -796,6 +796,7 @@ sub load_qfo {
   my $qfo_script = "go-db-perl/scripts/go-load-qfo-seqs.pl";
   my $qfo_site = 'ftp.ebi.ac.uk';
   my $qfo_dir = '/pub/contrib/qfo/';
+  #my $qfo_dir = '/pub/databases/reference_proteomes/';
 
   ###
   ### Go to site and get a listing of all of the qfo fasta files.
@@ -826,7 +827,7 @@ sub load_qfo {
 
   ##
   for my $qfile (@listing){
-    if( $qfile =~ /\.fasta$/ ){
+    if( $qfile =~ /\.fasta(\.gz)?$/ ){
 
       ## Create temp file for the FTP download.
       my $tmp_dl_file = new File::Temp(TEMPLATE => $qfile . '_qfo_dl_XXXXX',

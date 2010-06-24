@@ -12,6 +12,8 @@ use GO::AppHandle;
 use GO::Model::Seq;
 use GO::Model::GeneProduct;
 
+use IO::Uncompress::AnyUncompress qw/$AnyUncompressError/;
+
 if (!@ARGV) {
     print usage();
     exit;
@@ -128,8 +130,11 @@ sub load_fasta {
     my ($seqid,$modid,$symbol,$desc);
     my $gp_id;
     my $seq = '';
-    open(F,$f) || die $f;
-    while (<F>) {
+
+    # this handel uncompress files too
+    my $fh = IO::Uncompress::AnyUncompress->new($f)
+	  or die "anyuncompress failed: $AnyUncompressError\n";
+    while (<$fh>) {
 	chomp;
 	if (/^\>/) {
 	    if (/\s+Description:(.*)/) {
@@ -205,7 +210,7 @@ sub load_fasta {
 	    die "$_ is not a sequence";
 	}
     }
-    close(F);
+    close $fh;
 
     ## Final warning about unknown ids.
     #foreach my $kid (keys %unknown_ids){
