@@ -630,6 +630,7 @@ sub __save_session {
 	if ($file->open("> $ses_data_dir/params")) {
 		print $file Dumper($self->{params});
 		$file->close;
+		chmod 0666, "$ses_data_dir/params";
 	}
 }
 *save_session = \&__save_session;

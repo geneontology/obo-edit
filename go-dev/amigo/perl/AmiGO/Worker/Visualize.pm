@@ -22,6 +22,7 @@ use AmiGO::GraphViz;
 use AmiGO::SVGRewrite;
 use AmiGO::JavaScript;
 use AmiGO::JSON;
+use AmiGO::KVStore::Filesystem::QuickGO;
 use AmiGO::KVStore::QuickGO;
 use AmiGO::External::QuickGO::OntGraphics;
 
@@ -78,17 +79,25 @@ sub new {
 }
 
 
-## Just does one
-## Touch kvstore, if fail, build url, get, and stuff in store.
-## Rturn img or undef.
+## NOTE: Just does one acc at a time.
+## Connect to store, if fail, build url, get, and stuff in store.
+## Return image blob or undef.
 sub quickgo {
 
   my $self = shift;
 
   my $acc = $self->{AV_TERMS}[0];
 
+  ## Toggle between SQLite3 and filesystem paths.
+  my $qg = undef;
+  if( 1 ){
+    $qg = AmiGO::KVStore::Filesystem::QuickGO->new();
+  }else{
+    $qg = AmiGO::KVStore::QuickGO->new();
+  }
+  $self->kvetch("will use backend: $qg");
+
   ## Try images from QuickGO.
-  my $qg = AmiGO::KVStore::QuickGO->new();
   my $qg_data = $qg->get($acc);
   if( defined $qg_data ){
     $self->kvetch("in cache: $acc");
