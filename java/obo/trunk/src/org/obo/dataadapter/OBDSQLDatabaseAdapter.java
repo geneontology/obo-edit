@@ -223,8 +223,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		
 		public OBDSQLDatabaseAdapterConfiguration(DataSource dataSource) {
-//			super(dataSource);
-		    super();
+		    super(dataSource);
         }
 
 		public void setSerializer(String serializer) {
@@ -1104,6 +1103,11 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		if (link2iid.containsKey(link))
 			return link2iid.get(link);
 		LinkedObject child = link.getChild();
+		// the OBO parse does not generally provide links with a namespace
+		// we can use the namespace of the child object provide an OBD link with a namespace
+		if (link.getNamespace() == null) {
+		    link.setNamespace(child.getNamespace());
+		}
 		//logger.info("child="+child);
 		Integer childDbId = obj2iid.get(child);
 		//logger.info("saving "+link);
@@ -1254,9 +1258,11 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			}
 			else if (arg instanceof SynonymType) {
 				stmt.setString(i+2, ((SynonymType) arg).getID());
+			} else if (arg instanceof Namespace) {
+			    stmt.setString(i+2, ((Namespace)arg).getID());
 			}
 			else {
-				stmt.setString(i+2, (String)arg);
+				stmt.setString(i+2, arg == null ? (String)arg : arg.toString());
 			}
 		}
 		//logger.info("stmt="+stmt+" :: "+args);
