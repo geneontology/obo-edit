@@ -219,7 +219,7 @@ sub session_db_soft_create_from_sid {
       or die $dbh->errstr;
   }else{
 
-    ##
+    ## Create by connection.
     $self->{CORE}->kvetch("_in sdb...creating session db: " . $dbloc);
     $dbh = DBI->connect( "dbi:SQLite:dbname=" . $dbloc, "", "" )
       or die $dbh->errstr;

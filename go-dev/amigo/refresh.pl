@@ -23,6 +23,7 @@ use Data::Dumper;
 use Test::WWW::Mechanize::CGIApp;
 use AmiGO::WebApp::HTMLClient;
 use Getopt::Std;
+use File::Path qw(remove_tree);
 use File::Find;
 use File::stat;
 #use Time::Local;
@@ -100,7 +101,8 @@ if( $do_remove ){
     my $retval = 0;
 
     ## One day in seconds
-    my $lifespan_limit_one_day = 86400;
+    my $lifespan_limit_one_day = 1; # for debug
+    #my $lifespan_limit_one_day = 86400;
 
     ## Calc. time.
     my $now = time;
@@ -122,7 +124,7 @@ if( $do_remove ){
       remove_tree( $File::Find::name, {safe => 1} );
     }
   }
-  find(\&temp_images, ($core->amigo_env('AMIGO_TEMP_IMAGE_DIR')));
+  finddepth(\&temp_images, ($core->amigo_env('AMIGO_TEMP_IMAGE_DIR')));
   ll("Finished removing generated images.");
 
   ## Scrub out new session files.
@@ -131,7 +133,7 @@ if( $do_remove ){
       unlink $File::Find::name;
     }
   }
-  find(\&new_sessions, ($core->amigo_env('AMIGO_SESSIONS_ROOT_DIR')));
+  finddepth(\&new_sessions, ($core->amigo_env('AMIGO_SESSIONS_ROOT_DIR')));
   ll("Finished removing new session files.");
 
   ## Scrub out old session files.
@@ -140,17 +142,17 @@ if( $do_remove ){
       remove_tree( $File::Find::name, {safe => 1} );
     }
   }
-  find(\&old_sessions, ($core->amigo_env('AMIGO_SESSIONS_ROOT_DIR')));
+  finddepth(\&old_sessions, ($core->amigo_env('AMIGO_SESSIONS_ROOT_DIR')));
   ll("Finished removing old session files.");
 
   ## Scrub out anything hanging out in scratch.
-  sub itch_scratch{
-    if( lifespan($File::Find::name) ){
-      remove_tree($core->amigo_env('AMIGO_SCRATCH_DIR'),
-		  {safe => 1, keep_root => 1} );
-    }
-  }
+  #sub itch_scratch{
+  remove_tree($core->amigo_env('AMIGO_SCRATCH_DIR'),
+	      {safe => 1, keep_root => 1} );
+  #}
   ll("Finished cleaning scratch directory.");
+
+  reinit_caches();
 
   ll("Finished general cleaning.");
 }
@@ -163,43 +165,15 @@ if( $do_cache ){
 
   ll("Making cache files, please wait...");
 
-  ## Species.
-  my @args = ("perl",
-	      $core->amigo_env('GO_ROOT') . "/amigo/scripts/make_spec_key.pl",
-	      $core->amigo_env('CGI_ROOT_DIR'), "50");
-  $core->kvetch("System: \"@args\"");
-  system(@args) == 0 || die "System \"@args\" failed: $?";
-  ll("Finished making spec_key file.");
+  make_spec();
 
-  ## Misc.
-  @args = ("perl",
-	   $core->amigo_env('GO_ROOT') . "/amigo/scripts/make_misc_key.pl",
-	   $core->amigo_env('CGI_ROOT_DIR'));
-  $core->kvetch("System: \"@args\"");
-  system(@args) == 0 || die "System \"@args\" failed: $?";
-  ll("Finished making misc_key file.");
+  make_misc();
 
-  ## 
-  @args = ("perl",
-	   $core->amigo_env('GO_ROOT') . "/amigo/scripts/make_dblinks.pl",
-	   '-f', $core->amigo_env('CGI_ROOT_DIR'));
-  $core->kvetch("System: \"@args\"");
-  system(@args) == 0 || die "System \"@args\" failed: $?";
-  ll("Finished making dblinks file.");
+  make_dblinks();
 
-  ## Generated JS meta-data.
-  @args = ("perl", "./scripts/make_go_meta_js.pl",
-	   $core->amigo_env('AMIGO_HTDOCS_ROOT_DIR') .
-	   '/js/org/bbop/amigo/go_meta.js');
-  $core->kvetch("System: \"@args\"");
-  system(@args) == 0 || die "System \"@args\" failed: $?";
-  ll("Finished making go_meta JS file.");
+  make_go_meta_js();
 
-  ## Places for the new speed caches (and clean out the old ones)
-  @args = ("perl", "./scripts/make_caches.pl");
-  $core->kvetch("System: \"@args\"");
-  system(@args) == 0 || die "System \"@args\" failed: $?";
-  ll("Finished removing runtime caches.");
+  reinit_caches();
 
   ll("Finished refreshing cache files.");
 }
@@ -345,6 +319,60 @@ if( $do_lucene ){
 ###
 ### Subs.
 ###
+
+  ## Species.
+sub make_spec {
+  my @args = ("perl",
+	      $core->amigo_env('GO_ROOT') . "/amigo/scripts/make_spec_key.pl",
+	      $core->amigo_env('CGI_ROOT_DIR'), "50");
+  $core->kvetch("System: \"@args\"");
+  system(@args) == 0 || die "System \"@args\" failed: $?";
+  ll("Finished making spec_key file.");
+}
+
+
+## Misc.
+sub make_misc {
+  my @args = ("perl",
+	      $core->amigo_env('GO_ROOT') . "/amigo/scripts/make_misc_key.pl",
+	      $core->amigo_env('CGI_ROOT_DIR'));
+  $core->kvetch("System: \"@args\"");
+  system(@args) == 0 || die "System \"@args\" failed: $?";
+  ll("Finished making misc_key file.");
+}
+
+
+## Places for the new speed caches and clean out the old ones.
+sub reinit_caches {
+  my @args = ("perl", "./scripts/reinit_caches.pl");
+  $core->kvetch("System: \"@args\"");
+  system(@args) == 0 || die "System \"@args\" failed: $?";
+  ll("Finished removing/initing(?) runtime caches.");
+}
+
+
+## Make db links through the database (cache for bypass of
+## NameMunger).
+sub make_dblinks {
+  my @args = ("perl",
+	      $core->amigo_env('GO_ROOT') . "/amigo/scripts/make_dblinks.pl",
+	      '-f', $core->amigo_env('CGI_ROOT_DIR'));
+  $core->kvetch("System: \"@args\"");
+  system(@args) == 0 || die "System \"@args\" failed: $?";
+  ll("Finished making dblinks file.");
+}
+
+
+## Generated JS meta-data.
+sub make_go_meta_js {
+  my @args = ("perl", "./scripts/make_go_meta_js.pl",
+	      $core->amigo_env('AMIGO_HTDOCS_ROOT_DIR') .
+	      '/js/org/bbop/amigo/go_meta.js');
+  $core->kvetch("System: \"@args\"");
+  system(@args) == 0 || die "System \"@args\" failed: $?";
+  ll("Finished making go_meta JS file.");
+}
+
 
 ## Just a little printin' when feeling verbose.
 sub ll {
