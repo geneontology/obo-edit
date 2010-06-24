@@ -1071,7 +1071,7 @@ if ( $opt_s ) {
 
   ## Farm the cache file work out to make_cache.pl and
   ## make_exp_cache.pl (where applicable).
-  ll("Working on cache files, please wait...");
+  ll("Working on required cache files, please wait...");
   @args = ("perl", "./refresh.pl", "-c");
   ll("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_t;
