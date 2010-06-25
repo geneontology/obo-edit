@@ -11,7 +11,8 @@ BEGIN { require "config.pl" if -f "config.pl" ; }
 use lib $ENV{GO_ROOT} . '/amigo/perl';
 use lib $ENV{GO_SVN_ROOT} . '/gobo-dbic';
 
-use File::Path qw(remove_tree);
+#use File::Path qw(remove_tree);
+use File::Path;
 use AmiGO::KVStore;
 use AmiGO::KVStore::Filesystem;
 
@@ -29,5 +30,6 @@ foreach my $ca (@{ AmiGO::KVStore::list() }){
 $core->kvetch("Removing old KVStore::Filesystem caches...");
 foreach my $ca (@{ AmiGO::KVStore::Filesystem::list() }){
   $core->kvetch("Removing: $ca");
-  remove_tree( $ca, {safe => 1} );
+  #remove_tree($ca, {safe => 1});
+  rmtree($ca, {safe => 1});
 }
