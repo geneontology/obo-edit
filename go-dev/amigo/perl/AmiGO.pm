@@ -34,9 +34,6 @@ use URI::Escape;
 # use JSON;
 use JSON::PP;
 use Data::UUID;
-use Digest::SHA;
-#use bignum qw/hex/;
-use bignum;
 
 use FreezeThaw qw(freeze thaw);
 
