@@ -346,7 +346,8 @@ sub mode_term_details_core {
 
   #print STDERR "<<TIME_START>>\n";
   ## TODO/BUG: If nothing explodes, memoize this sucker a la Visualize:
-  my $gpc_q = AmiGO::Worker::GeneProductCount->new($acc_list_for_gpc_info);
+  my $gpc_q = AmiGO::Worker::GeneProductCount->new($input_term_id,
+                                                   $acc_list_for_gpc_info);
   #print STDERR "<<TIME_MID>>\n";
   my $gpc_info = $gpc_q->get_info();
 
