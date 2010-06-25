@@ -385,7 +385,6 @@ public class AutocompleteBox<T> extends JComboBox {
 	}
 
 	public T getValue() {
-		logger.debug("AutoCompleteBox.getValue");
 		//		logger.debug("getSelectedItem(): " + getSelectedItem());
 		//		logger.debug("getItemCount: " + this.getItemCount());
 		// getItemCount gets datamodel size from the previous autocomplete task performed. This is misleading.
