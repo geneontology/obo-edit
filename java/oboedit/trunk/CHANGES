@@ -3,8 +3,20 @@
 ================================
 What's New in OBO-Edit v2.1-beta5
 ================================
+Bug Fixes: 
+[ geneontology-Bugs-3011139 ] delete term not deleting
+[ geneontology-Bugs-3017846 ] Ubuntu 10.04 crashes
+[ geneontology-Bugs-3007375 ] spontaneous cross products
+[ geneontology-Bugs-2996789 ] Search Panel look-ahead keyboard selection problem
+[ geneontology-Bugs-2997272 ] not all typedefs are shown in relationship branch
+[ geneontology-Bugs-3000534 ] Search function (arrow key select)
+[ geneontology-Bugs-3000571 ] problem with config manager display- 2.1 b4
+[ geneontology-Bugs-2996688 ] Comments section being duplicated with is_a closure p
+[ geneontology-Bugs-2996593 ] Weird search results OE beta 4
+[ geneontology-Bugs-2990477 ] spontaneous replication of upper level terms
 
-
+obo2obo: allowdangling true by default for input and output files.
+v2.1b5 onwards the comments are overwritten. The order in which the files are loaded dictates precedence. In the OBOEdit Advanced file load menu, if file1 and file2 both have different comments for a particular term - and file2 is below file1 in the load list - the definition from file2 will hold.
 
 ===================================================================================
 *IMPORTANT* ANNOUNCEMENT FOR v2.1x on Importing Settings From Previous Versions
@@ -20,13 +32,6 @@ Config files can also be reset when required through the Configuration Manager.
 ============
 Bug Fixes
 ============
-v2.1b5
-[ geneontology-Bugs-2996593 ] Weird search results OE beta 4
-
-
-
-Previous
-=========================================================================
 [geneontology-Bugs-2899760] Too easy to make link to self in graph editor
 [geneontology-Bugs-2971221] eliminate possibility to create is_a relationships to self
 Text Editor and Parent Editor are now in sync
