@@ -34,6 +34,8 @@ use URI::Escape;
 # use JSON;
 use JSON::PP;
 use Data::UUID;
+use Digest::SHA;
+use bignum qw/hex/;
 
 use FreezeThaw qw(freeze thaw);
 
@@ -1650,6 +1652,27 @@ sub empty_hash_p {
     return 0;
   }
 }
+
+
+# =item string_to_range
+
+# Args: string, int
+# Returns: int
+
+# Uniformly (?) returns an int between 0 and int.
+
+# =cut
+# sub string_to_range {
+#   my $self = shift;
+#   my $hash = shift || {};
+
+#   my $num_keys = scalar(keys %$hash);
+#   if( $num_keys == 0 ){
+#     return 1;
+#   }else{
+#     return 0;
+#   }
+# }
 
 ###
 ### Resource and images.

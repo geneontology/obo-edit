@@ -385,7 +385,7 @@ sub get_yui_libs {
 
 =item make_js
 
-Args: a perl data scalar and name.
+Args: a perl data scalar.
 Returns: a JSONified string.
 
 TODO: Switch to more complete JSON backend once packages reach Ubuntu.

@@ -8,11 +8,6 @@ NOTE: While sharing the safe namespace and interface as KVStore, this
 is not actually a subclass--it works directly with the filesystem and
 does not use SQLite3.
 
-TODO: If we had a nice hash-to-range string function (e.g. given any
-string, it will evenly hash out to a predetermined range), we could
-make sure a lot of the obvious problems never happen
-here. Tie::RangeHash looks almost righ, but not quite what I want...
-
 use AmiGO::KVStore::Filesystem;
 my $foo = AmiGO::KVStore::Filesystem->new('blah')
 $foo->put('a', 'b')
@@ -24,8 +19,6 @@ package AmiGO::KVStore::Filesystem;
 
 use base 'AmiGO';
 #use File::Path;
-use Digest::SHA;
-use bignum qw/hex/;
 use File::Slurp;
 
 my $AFSS_PREFIX = 'afs_';
@@ -64,6 +57,7 @@ sub new {
   }else{
     $self->kvetch('making store: ' . $self->{AFSS_LOCATION});
     mkdir $self->{AFSS_LOCATION} || die "unable to create directory...";
+    chmod 0777, $self->{AFSS_LOCATION} || die "unable to chmod directory...";
   }
 
   bless $self, $class;
@@ -80,13 +74,14 @@ sub _make_file_key {
 
   ## Generate subdir.
   my $shash = hex(Digest::SHA::sha1_hex($in_key));
-  #$self->kvetch('shash: ' . $shash);
+  $self->kvetch('shash: ' . $shash);
   my $sub_int = $shash % $self->{AFSS_WRAP};
-  #$self->kvetch('sub_int: ' . $sub_int);
+  $self->kvetch('sub_int: ' . $sub_int);
   my $sub_dir =  $self->{AFSS_LOCATION} . '/' . $sub_int;
   if( ! -d $sub_dir ){
-    #$self->kvetch('making sub-store: ' . $sub_dir);
+    $self->kvetch('making sub-store: ' . $sub_dir);
     mkdir $sub_dir || die "unable to create sub-directory...";
+    chmod 0777, $sub_dir || die "unable to make permissive sub-directory...";
   }
 
   ## Return fully qualified
@@ -129,7 +124,9 @@ sub put {
   my $val = shift || die "need val";
 
   my $file_key = $self->_make_file_key($key);
-  return write_file($file_key, {binmode => ':raw', atomic => 1}, $val);
+  my $retval = write_file($file_key, {binmode => ':raw', atomic => 1}, $val);
+  chmod 0666, $file_key || die "permissions problem here...";
+  return $retval;
 }
 
 
