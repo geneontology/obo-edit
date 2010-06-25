@@ -180,7 +180,6 @@ sub load_fasta {
 		elsif ($t eq 'RefSeq_peptide') {
 		}
 		else {
-		  #warn("wot iz $t?");
 		  logmsg("wot iz $t?");
 
 		  ## Count odd ids.
@@ -215,7 +214,7 @@ sub load_fasta {
     ## Final warning about unknown ids.
     #foreach my $kid (keys %unknown_ids){
     my @uid_list = keys %unknown_ids;
-    warn("WARNING: Unknown ids: " . join(' ', @uid_list)) if scalar(@uid_list);
+    warn("WARNING: Unknown id prefixes: " . join(' ', @uid_list)) if scalar(@uid_list);
     #}
 
     # store the final sequence
@@ -338,7 +337,7 @@ Currently if you want to run this for all datasets you have to do the file prep 
 
   wget -r ftp://ftp.ebi.ac.uk/pub/contrib/qfo/
   cd ftp.ebi.ac.uk/pub/contrib/qfo/
-  get-load-qfo-seqs.pl -d mydb *.fasta >& LOG
+  go-load-qfo-seqs.pl -d mydb *.fasta >& LOG
 
 EOM
 }
