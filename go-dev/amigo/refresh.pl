@@ -23,7 +23,8 @@ use Data::Dumper;
 use Test::WWW::Mechanize::CGIApp;
 use AmiGO::WebApp::HTMLClient;
 use Getopt::Std;
-use File::Path qw(remove_tree);
+#use File::Path qw(remove_tree);
+use File::Path; # old versions don't have this
 use File::Find;
 use File::stat;
 #use Time::Local;
@@ -121,7 +122,8 @@ if( $do_remove ){
     if( (/\.png$/ || /\.gif$/ || /\.map$/ ) && lifespan($File::Find::name) ){
       unlink $File::Find::name;
     }elsif( /amigo/ && -d && lifespan($File::Find::name) ){
-      remove_tree( $File::Find::name, {safe => 1} );
+      #remove_tree($File::Find::name, {safe => 1});
+      rmtree($File::Find::name, {safe => 1});
     }
   }
   finddepth(\&temp_images, ($core->amigo_env('AMIGO_TEMP_IMAGE_DIR')));
@@ -139,7 +141,8 @@ if( $do_remove ){
   ## Scrub out old session files.
   sub old_sessions{
     if( /_data$/ && lifespan($File::Find::name) ){
-      remove_tree( $File::Find::name, {safe => 1} );
+      #remove_tree($File::Find::name, {safe => 1});
+      rmtree($File::Find::name, {safe => 1});
     }
   }
   finddepth(\&old_sessions, ($core->amigo_env('AMIGO_SESSIONS_ROOT_DIR')));
@@ -147,8 +150,9 @@ if( $do_remove ){
 
   ## Scrub out anything hanging out in scratch.
   #sub itch_scratch{
-  remove_tree($core->amigo_env('AMIGO_SCRATCH_DIR'),
-	      {safe => 1, keep_root => 1} );
+  #remove_tree($core->amigo_env('AMIGO_SCRATCH_DIR'),
+  rmtree($core->amigo_env('AMIGO_SCRATCH_DIR'),
+	 {safe => 1, keep_root => 1} );
   #}
   ll("Finished cleaning scratch directory.");
 

@@ -20,6 +20,9 @@ package AmiGO::KVStore::Filesystem;
 use base 'AmiGO';
 #use File::Path;
 use File::Slurp;
+use Digest::SHA;
+#use bignum qw/hex/;
+use bignum;
 
 my $AFSS_PREFIX = 'afs_';
 my $AFSS_SUFFIX = '_files';
