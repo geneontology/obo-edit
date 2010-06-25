@@ -31,12 +31,12 @@ use File::Slurp;
 my $AFSS_PREFIX = 'afs_';
 my $AFSS_SUFFIX = '_files';
 my $AFSS_KEY_PREFIX = 'key_';
-my $AFSS_WRAP = 200; # number of mapable subdirectories.
+my $AFSS_WRAP = 1000; # default number of mapable subdirectories.
 
 
 =item new
 
-Args: name/id
+Args: name/id, fs wrap (optional int)
 Returns:
 
 Creates (or recognizes an extant) filesystem store.
@@ -47,12 +47,15 @@ sub new {
   ##
   my $class = shift;
   my $loc = shift || die "gotta have a name path here $!";
+  my $wrap = shift || $AFSS_WRAP;
   my $self = $class->SUPER::new();
 
   ## Create canonical name.
   $self->{AFSS_LOCATION} =
     $self->amigo_env('AMIGO_CACHE_DIR') . '/' .
       $AFSS_PREFIX . $loc . $AFSS_SUFFIX;
+
+  $self->{AFSS_WRAP} = $wrap;
 
   ## Create if not already on the filesystem...
   $self->kvetch('checking store: ' . $self->{AFSS_LOCATION});
@@ -78,7 +81,7 @@ sub _make_file_key {
   ## Generate subdir.
   my $shash = hex(Digest::SHA::sha1_hex($in_key));
   #$self->kvetch('shash: ' . $shash);
-  my $sub_int = $shash % $AFSS_WRAP;
+  my $sub_int = $shash % $self->{AFSS_WRAP};
   #$self->kvetch('sub_int: ' . $sub_int);
   my $sub_dir =  $self->{AFSS_LOCATION} . '/' . $sub_int;
   if( ! -d $sub_dir ){

@@ -19,7 +19,7 @@ sub new {
 
   ##
   my $class = shift;
-  my $self  = $class->SUPER::new('qg_ont');
+  my $self  = $class->SUPER::new('qg_ont', 200);
 
   bless $self, $class;
   return $self;
