@@ -59,3 +59,6 @@
 
 2008-10-27      - [cjm] added support for transitive_over and holds_over_chain to oboxml_to_godb_prestore. Requires relation_composition table in schema. See http://wiki.geneontology.org/index.php/Relation_composition
 2008-10-27      - [cjm] added support for relation_properties and term.is_relation to oboxml_to_godb_prestore. Requires latest schema. 
+
+2010-06-25      - [cjm] URI treatment fixed. allow * idspace option. expansion tags
+
