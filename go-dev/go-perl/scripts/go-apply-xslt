@@ -74,7 +74,12 @@ EOM
 ;
     exit 1;
 }
-system("xsltproc @ARGV $xslt_file @files");
+
+my $cmd = "xsltproc @ARGV $xslt_file @files";
+if (system($cmd)) {
+    print STDERR "problem running: $cmd\n";
+    exit 1;
+}
 exit 0;
 
 sub usage {
