@@ -3,6 +3,10 @@
   <!ENTITY oboInOwl "http://www.geneontology.org/formats/oboInOwl#">
   <!ENTITY oboContent "http://purl.org/obo/owl/">
   <!ENTITY obo "http://purl.org/obo/owl/obo#">
+  <!ENTITY newobo "http://purl.obolibrary.org/obo/">
+  <!ENTITY IAO "http://purl.obolibrary.org/obo/IAO_">
+  <!ENTITY BFO "http://purl.obolibrary.org/obo/BFO_">
+  <!ENTITY RO "http://purl.obolibrary.org/obo/RO_">
   <!ENTITY oban "http://purl.org/obo/oban/">
   <!ENTITY xref "http://purl.org/obo/owl/">
   <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
@@ -21,6 +25,7 @@
   xmlns:oboInOwl="&oboInOwl;"
   xmlns:oboContent="&oboContent;"
   xmlns:obo="&obo;"
+  xmlns:newobo="&newobo;"
   >
 
   <!-- *********************************************** -->
@@ -140,8 +145,8 @@
       <owl:AnnotationProperty rdf:about="&oboInOwl;savedBy"/>
       <owl:AnnotationProperty rdf:about="&oboInOwl;replacedBy"/>
       <owl:AnnotationProperty rdf:about="&oboInOwl;consider"/>
-      <owl:AnnotationProperty rdf:about="&oboInOwl;expandAssertionTo"/>
-      <owl:AnnotationProperty rdf:about="&oboInOwl;expandExpressionTo"/>
+      <owl:AnnotationProperty rdf:about="&newobo;IAO_0000425"/>
+      <owl:AnnotationProperty rdf:about="&newobo;IAO_0000424"/>
       <owl:Class rdf:about="&oboInOwl;DbXref"/>
       <owl:Class rdf:about="&oboInOwl;Definition"/>
       <owl:Class rdf:about="&oboInOwl;Subset"/>
@@ -542,22 +547,16 @@
   </xsl:template>
 
   <!-- full expansion happens as a separate post-processor -->
-  <xsl:template match="expands_to">
-    <oboInOwl:expandsTo>
-      <xsl:value-of select="."/>
-    </oboInOwl:expandsTo>
-  </xsl:template>
-
   <xsl:template match="expand_expression_to">
-    <oboInOwl:expandExpressionTo>
+    <newobo:IAO_0000424>
       <xsl:value-of select="."/>
-    </oboInOwl:expandExpressionTo>
+    </newobo:IAO_0000424>
   </xsl:template>
 
   <xsl:template match="expand_assertion_to">
-    <oboInOwl:expandAssertionTo>
+    <newobo:IAO_0000425>
       <xsl:value-of select="."/>
-    </oboInOwl:expandAssertionTo>
+    </newobo:IAO_0000425>
   </xsl:template>
 
   <xsl:template match="def">
@@ -952,17 +951,30 @@
 
       <!-- idspace is specified, but not mapped in the header -->
       <xsl:when test="substring-before(.,':')">
-        <xsl:text>&oboContent;</xsl:text>
-        <xsl:value-of select="$idspace"/>
-        <xsl:text>#</xsl:text>
-        <xsl:if test="number(substring($localid,1,1)) or substring($localid,1,1)='0'">
-          <xsl:value-of select="$idspace"/>
-          <xsl:text>_</xsl:text>
-        </xsl:if>
-        <xsl:if test="$localid_prefix">
-          <xsl:value-of select="$localid_prefix"/>
-        </xsl:if>
-        <xsl:value-of select="substring-after(.,':')"/>
+        <xsl:choose>
+          <xsl:when test="key('k_idspace','*')">
+            <!-- NEW-STYLE -->
+            <xsl:value-of select="key('k_idspace','*')/global"/>
+            <xsl:value-of select="$idspace"/>
+            <xsl:text>_</xsl:text>
+            <xsl:value-of select="substring-after(.,':')"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <!-- OLD-STYLE -->
+            <xsl:text>&oboContent;</xsl:text>
+            <xsl:value-of select="$idspace"/>
+            <xsl:text>#</xsl:text>
+            <xsl:if test="number(substring($localid,1,1)) or substring($localid,1,1)='0'">
+              <xsl:value-of select="$idspace"/>
+              <xsl:text>_</xsl:text>
+            </xsl:if>
+            <xsl:if test="$localid_prefix">
+              <xsl:value-of select="$localid_prefix"/>
+            </xsl:if>
+            <xsl:value-of select="substring-after(.,':')"/>
+          </xsl:otherwise>
+
+        </xsl:choose>
       </xsl:when>
 
       <!-- no idspace: ID is flat (eg part_of) -->
@@ -984,6 +996,22 @@
             <xsl:value-of select="$new-id"/>
           </xsl:otherwise>
         </xsl:choose>
+      </xsl:when>
+
+      <xsl:when test="key('k_relation',.)/xref_analog/dbname = 'BFO'">
+        <xsl:variable name="new-id">
+          <xsl:value-of select="key('k_relation',.)/xref_analog[dbname='BFO']/acc"/>
+        </xsl:variable>
+        <xsl:text>&BFO;</xsl:text>
+        <xsl:value-of select="$new-id"/>
+      </xsl:when>
+
+      <xsl:when test="key('k_relation',.)/xref_analog/dbname = 'RO'">
+        <xsl:variable name="new-id">
+          <xsl:value-of select="key('k_relation',.)/xref_analog[dbname='RO']/acc"/>
+        </xsl:variable>
+        <xsl:text>&RO;</xsl:text>
+        <xsl:value-of select="$new-id"/>
       </xsl:when>
 
       <!-- flat ID, not in OBO_REL -->
