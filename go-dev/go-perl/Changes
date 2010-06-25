@@ -161,4 +161,5 @@ VERSION 0.12
 
 2010-05-31	- [hsk] fix: 17 cols for GAF2.0. https://rt.cpan.org/Public/Bug/Display.html?id=57994
 2010-05-31	- [hsk] no refs to undefs. https://rt.cpan.org/Ticket/Display.html?id=57997
+2010-06-25	- [cjm] latest owl xslt fixes: URI treatment fixed. allow * idspace option. expansion tags
 
