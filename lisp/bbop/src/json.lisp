@@ -25,4 +25,3 @@
 		(setf (gethash (car x) hash) (cdr x)))
 	    (json:decode-json-from-string json-str))
     hash))
-
