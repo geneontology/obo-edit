@@ -1,14 +1,31 @@
 ;;;;
+;;;; BUG: CLSQL seems to be hosed right now, possibly due to uffi
+;;;; something or other; to use this, we need to switch--currently
+;;;; evaluating postmodern (postgres) and cl-prevalence (memory +
+;;;; serialization)... A little more testing, and it looks like
+;;;; cl-prevalence is insanely easy to use (a least in the small cases
+;;;; I looked at)--try this first, it may be easiest to get something
+;;;; rolling and, since it is all lisp, there will be no uffi
+;;;; problems. Of course, it will depend on how well trivial sql-like
+;;;; search go over the data...That last part turns out to be a
+;;;; problem with the way I want to structure the data; now I'll look
+;;;; at postmodern...
+;;;;
 ;;;; Usage: (require 'tanuki)
 ;;;;        (in-package :tanuki)
 ;;;;        (set-store)
-;;;;        (reconnect-store :id "a_1_6")
+;;;;        (reconnect-store :id "a_1_8")
+;;;;        ;; (spin-up)
 ;;;;
-;;;; WARNING: Threads are not described in CL, so we are, for the time
-;;;; being, depending on the SBCL implementation. Shouldn't be hard to
-;;;; make it a bit more flexible. Or maybe even a callback system.
+;;;; WARNING: Using bordeaux threads.
 ;;;;
 ;;;; Use for comm? http://cl-cookbook.sourceforge.net/sockets.html
+;;;;
+;;;; README/NOTE: One thing that would get rid of quite a few of the
+;;;; problems in here would be to switch off of the sqlite3 backend
+;;;; (cause of many many headaches) into something more lispy, like
+;;;; elephant (actually, it looks dead), cl-prevalence, cl-perec,
+;;;; postmodern (most likely right now), submarine, ...
 ;;;;
 ;;;; TODO: Currently, only one tanuki can run at a time in an
 ;;;; environment--this should be fixed.
@@ -40,9 +57,11 @@
 
 (defpackage :tanuki
   (:use :cl
+	;;:gs
+	:cl-prevalence
 	:toolkit
 	:tanuki-utils
-	:tanuki-html
+	;;:tanuki-html
 	:tanuki-decide
 	:tanuki-file
 	;;:tanuki-web
@@ -52,7 +71,9 @@
 ;;
 (defparameter +tanuki-db+ nil
   "Our connection.")
-(defparameter +tanuki-store+ '("home" "sjcarbon" "tmp" "tanuki")
+;; (defparameter +tanuki-store+ '("home" "sjcarbon" "tmp" "tanuki")
+;;   "Location of the store.")
+(defparameter +tanuki-store+ "/home/sjcarbon/tmp/tanuki/foo1"
   "Location of the store.")
 (defparameter +tanuki-data+ "/home/sjcarbon/local/src/svn/geneontology/lisp/tanuki/data"
   "Location of data to be used for forms.")
@@ -70,15 +91,77 @@
 ;; some threading issues (see "http://www.sqlite.org/faq.html#q6")).
 
 ;;;
+;;; Start of cl-prevalence high-level.
+;;;
+
+(defparameter +tanuki-system-location+ "/home/sjcarbon/tmp/tanuki/foo1"
+  "Location of the store.")
+
+(defclass tanuki-db ()
+  ((links
+    :accessor get-links
+    :initform (make-hash-table :test 'equal))
+   (target
+    :accessor get-target
+    :initarg :target)))
+   
+(defclass link ()
+  ((id
+    :accessor get-id
+    :initform nil)
+   (url
+    :accessor get-url
+    :initarg :url)
+   (hits
+    :accessor get-hits
+    :initform (make-hash-table :test 'equal))
+   (mandated
+    :accessor mandateed-p
+    :initform nil)
+   (internal
+    :accessor internal-p
+    :initform nil)))
+
+(defclass hit ()
+  ((id
+    :accessor get-id
+    :initform nil)
+   (referer
+    :accessor get-referer
+    :initform nil)
+   (time
+    :accessor get-time
+    :initform nil)
+   (date
+    :accessor get-date
+    :initform nil)
+   (flagged
+    :accessor flagged-p
+    :initform nil)
+   (success
+    :accessor success-p
+    :initform nil)))
+    
+;; (defun prep ()
+;;   "Preparation and stuff."
+;;   (gs-fs:make-directory +tanuki-store+)
+  
+;;;
+;;; New high-level handling with postmodern.
+;;;
+
+;(connect-toplevel "tanuki1" "tanuki_user" "tanuki_user" "localhost")
+
+;;;
 ;;; High-level handling
 ;;;
 
 (defun spin-up ()
   ""
   (set-store)
-  (if (probe-store :id "a_1_7")
-      (reconnect-store :id "a_1_7")
-    (create-store :id "a_1_7"
+  (if (probe-store :id "a_1_8")
+      (reconnect-store :id "a_1_8")
+    (create-store :id "a_1_8"
 		  :target
 		  "http://localhost/cgi-bin/amigo/go"))
   (start))

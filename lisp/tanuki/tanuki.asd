@@ -32,7 +32,10 @@
                                      ;;(:file "web")
                                      (:file "tanuki"))))
   :depends-on (:bbop
+	       ;;:gs
 	       :cl-ppcre
+	       :postmodern
+	       :cl-prevalence
 	       :clsql-sqlite3
 	       :clsql
 	       :s-sysdeps
