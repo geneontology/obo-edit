@@ -8,6 +8,15 @@ NOTE: While sharing the safe namespace and interface as KVStore, this
 is not actually a subclass--it works directly with the filesystem and
 does not use SQLite3.
 
+NOTE/TODO: You'll notice some very...strange...things going on with
+the handling of numbers in _make_file_key. This is because different
+versions of perl have (or don't have) bignum hex--which is necessary
+to what I'm doing in there. To get around this in a non-platform
+specific way, I'm making a detour through BigInt and strings. After a
+year or so, when all of the machines are off of 8.04, we can flip it
+back to the obvious way (and all of that goes for rmtree
+vs. remove_tree in File::Path).
+
 use AmiGO::KVStore::Filesystem;
 my $foo = AmiGO::KVStore::Filesystem->new('blah')
 $foo->put('a', 'b')
@@ -22,7 +31,9 @@ use base 'AmiGO';
 use File::Slurp;
 use Digest::SHA;
 #use bignum qw/hex/;
-use bignum;
+#use bignum;
+use Math::BigInt;
+
 
 my $AFSS_PREFIX = 'afs_';
 my $AFSS_SUFFIX = '_files';
@@ -76,10 +87,16 @@ sub _make_file_key {
   my $in_key = shift || die "need key here";
 
   ## Generate subdir.
-  my $shash = hex(Digest::SHA::sha1_hex($in_key));
+  # my $shash = hex(Digest::SHA::sha1_hex($in_key));
+  # my $sub_int = $shash % $self->{AFSS_WRAP};
+  my $shash = Digest::SHA::sha1_hex($in_key);
+  my $y = sprintf("0x%s", $shash);
+  my $z = Math::BigInt->new($y);
+  my $sub_int = $z->bmod( $self->{AFSS_WRAP} );
+
   $self->kvetch('shash: ' . $shash);
-  my $sub_int = $shash % $self->{AFSS_WRAP};
   $self->kvetch('sub_int: ' . $sub_int);
+
   my $sub_dir =  $self->{AFSS_LOCATION} . '/' . $sub_int;
   if( ! -d $sub_dir ){
     $self->kvetch('making sub-store: ' . $sub_dir);
