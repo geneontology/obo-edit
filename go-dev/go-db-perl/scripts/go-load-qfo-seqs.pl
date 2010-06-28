@@ -13,6 +13,7 @@ use GO::Model::Seq;
 use GO::Model::GeneProduct;
 
 use IO::Uncompress::AnyUncompress qw/$AnyUncompressError/;
+use List::Util qw/first/;
 
 if (!@ARGV) {
     print usage();
@@ -127,7 +128,8 @@ sub load_fasta {
 	die ("$ncbitaxid not in db");
     }
 
-    my ($seqid,$modid,$symbol,$desc);
+    #my ($seqid,$modid,$symbol,$desc);
+    my $seqid;
     my $gp_id;
     my $seq = '';
 
@@ -136,56 +138,38 @@ sub load_fasta {
 	  or die "anyuncompress failed: $AnyUncompressError\n";
     while (<$fh>) {
 	chomp;
-	if (/^\>/) {
-	    if (/\s+Description:(.*)/) {
-		$desc = $1;
-		s/\s+Description.*//;
-	    }
 
-	    if (/^\>(\S+)\s+(\S+)\s+(.*)/) {
-		($seqid,$modid) = ($1,$2);
-	    }
-	    elsif (/^\>(\S+)\s+(\S+)/) {
-		($seqid,$modid) = ($1,$2);
-	    }
-	    else {
-		die "$_";
-	    }
+	if (s/^\>\s*//) {
+	    my $head = $_;
+	    $head =~ s/\s*$//;
 
-	    $symbol = '';
-	    my @tagvals = (); # protect from use of uninit $3
-	    @tagvals = split(' ',$3) if defined $3;
-	    foreach (@tagvals) {
-		my ($t,$v) = split(/:/,$_);
+	    $head =~ s/\s+Description:\s*(.*)//;
+	    my $desc = $1;
+
+	    ($seqid,my $modid, my @tagvals) = split(m/\s+/, $head);
+
+	    die $head if (!$seqid or !$modid);
+
+	    my $symbol = '';
+	    for my $tv (@tagvals) {
+		my ($t,$v) = split(m/:/,$tv,2);
+
 		if ($t eq 'GN') {
 		    $symbol = $v;
-		}
-		elsif ($t eq 'PE') {
-		}
-		elsif (substr($modid,0,length($t)) eq $t) {
+		} elsif (first { $t eq $_ } qw
+			 (PE EMBL EntrezGene protein_id UniProtKB/Swiss-Prot HGNC
+			  RefSeq_peptide)) {
+		} elsif (substr($modid,0,length($t)) eq $t) {
 		    # e.g. >UniProtKB/Swiss-Prot:Q9HGQ1 GeneDB_Spombe:SPAC212.01c GeneDB_Spombe:SPBCPT2R1.04c PE:2
 		    # multiple genes on the same line.
 		    # here we just ignore 2nd
-		}
-		elsif ($t eq 'EMBL') {
-		}
-		elsif ($t eq 'EntrezGene') {
-		}
-		elsif ($t eq 'protein_id') {
-		}
-		elsif ($t eq 'UniProtKB/Swiss-Prot') {
-		}
-		elsif ($t eq 'HGNC') {
-		}
-		elsif ($t eq 'RefSeq_peptide') {
-		}
-		else {
-		  logmsg("wot iz $t?");
+		} else {
+		    logmsg("wot iz $t?");
 
-		  ## Count odd ids.
-		  $unknown_ids{$t} = 0 if ! defined $unknown_ids{$t};
-		  $unknown_ids{$t}++;
-		}
+		    ## Count odd ids.
+		    $unknown_ids{$t} = 0 if ! defined $unknown_ids{$t};
+		    $unknown_ids{$t}++;
+	      }
 	    }
 
 	    # unless this is the first header, store the LAST sequence
@@ -201,11 +185,9 @@ sub load_fasta {
 		}
 		die "no gp";
 	    }
-	}
-	elsif (/^[A-Z\*]+$/) {
+	} elsif (/^[A-Z\*]+$/) {
 	    $seq .= $_;
-	}
-	else {
+	} else {
 	    die "$_ is not a sequence";
 	}
     }
