@@ -69,7 +69,7 @@ public interface RootAlgorithm {
 					LinkedObject child_link_parent = child_link.getParent();
 
 
-					if((parent_link.getType().getName().equals(OBOProperty.INVERSE_OF.getName())) 
+					if((parent_link.getType().getID().equals(OBOProperty.INVERSE_OF.getID())) 
 							&& (parent_link_child.equals(child_link_parent)) 
 							&& (parent_link_parent.equals(child_link_child))){
 						return true;
@@ -78,9 +78,9 @@ public interface RootAlgorithm {
 					//check for inverse relations when the LinkedObject does not have any parents 
 					// terms with inverse relations - part_of has_part relations might not be displayed as roots 
 					// ex: X --has_part--> Z INVERSE_OF Z --part_of --> X
-					if(parent_link.getType().getName().equals(OBOProperty.HAS_PART.getName())){
+					if(parent_link.getType().getID().equals(OBOProperty.HAS_PART.getID())){
 
-						if(child_link.getType().getName().equals(OBOProperty.PART_OF.getName())){			
+						if(child_link.getType().getID().equals(OBOProperty.PART_OF.getID())){			
 							return true;
 						}
 					}
