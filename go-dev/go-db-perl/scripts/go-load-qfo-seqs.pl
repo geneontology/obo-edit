@@ -154,11 +154,24 @@ sub load_fasta {
 	    for my $tv (@tagvals) {
 		my ($t,$v) = split(m/:/,$tv,2);
 
+		if (!$v) {
+		    if ($t =~ m/^ENSG\d{11}$/) {
+			$v = $t;
+			$t = 'ENSEMBL';
+		    } else {
+			logmsg("what dbname is '$t'?");
+			next;
+		    }
+		}
+
 		if ($t eq 'GN') {
 		    $symbol = $v;
-		} elsif (first { $t eq $_ } qw
-			 (PE EMBL EntrezGene protein_id UniProtKB/Swiss-Prot HGNC
-			  RefSeq_peptide)) {
+		} elsif (($head =~ m/\bUniProtKB\b/) or
+			 first {
+			     $t eq $_;
+			 } qw/PE EMBL EntrezGene protein_id HGNC IPI
+			      RefSeq_peptide ENSEMBL RefSeq_dna/) {
+		    # do nothing...om.
 		} elsif (substr($modid,0,length($t)) eq $t) {
 		    # e.g. >UniProtKB/Swiss-Prot:Q9HGQ1 GeneDB_Spombe:SPAC212.01c GeneDB_Spombe:SPBCPT2R1.04c PE:2
 		    # multiple genes on the same line.
