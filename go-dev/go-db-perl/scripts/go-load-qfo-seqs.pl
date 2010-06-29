@@ -169,7 +169,7 @@ sub load_fasta {
 		} elsif (($head =~ m/\bUniProtKB\b/) or
 			 first {
 			     $t eq $_;
-			 } qw/PE EMBL EntrezGene protein_id HGNC
+			 } qw/PE EMBL EntrezGene protein_id HGNC RGD
 			      RefSeq_peptide ENSEMBL RefSeq_dna/) {
 		    # do nothing...om.
 		} elsif (substr($modid,0,length($t)) eq $t) {
