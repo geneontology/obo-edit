@@ -22,22 +22,22 @@
   :components ((:static-file "tanuki.asd")
                (:module :src
                         :serial t
-                        :components ((:file "utils")
-                                     (:file "forms")
-				     (:file "file")
-				     (:file "db")
-				     (:file "decide")
-                                     (:file "html")
+                        :components (;(:file "utils")
+                                     ;(:file "forms")
+				     ;(:file "file")
+				     ;(:file "db")
+				     ;(:file "decide")
+				     ;(:file "html")
                                      (:file "agent")
-                                     ;;(:file "web")
+                                     ;(:file "web")
                                      (:file "tanuki"))))
   :depends-on (:bbop
 	       ;;:gs
 	       :cl-ppcre
 	       :postmodern
-	       :cl-prevalence
-	       :clsql-sqlite3
-	       :clsql
+	       ;:cl-prevalence
+	       ;:clsql-sqlite3
+	       ;:clsql
 	       :s-sysdeps
 	       :s-http-client
 	       :bordeaux-threads
