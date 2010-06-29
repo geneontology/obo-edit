@@ -166,6 +166,11 @@ sub load_fasta {
 
 		if ($t eq 'GN') {
 		    $symbol = $v;
+		} elsif ($t eq 'MGI') {
+		    # http://wiki.geneontology.org/index.php/Identifiers#MGI
+		    if ($v !~ m/^MGI:/) {
+			$v = "MGI:$v";
+		    }
 		} elsif (($head =~ m/\bUniProtKB\b/) or
 			 first {
 			     $t eq $_;
