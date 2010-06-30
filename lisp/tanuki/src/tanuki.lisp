@@ -1,21 +1,13 @@
+;;;; -*- mode: Lisp -*-
 ;;;;
 ;;;; BUG: CLSQL seems to be hosed right now, possibly due to uffi
-;;;; something or other; to use this, we need to switch--currently
-;;;; evaluating postmodern (postgres) and cl-prevalence (memory +
-;;;; serialization)... A little more testing, and it looks like
-;;;; cl-prevalence is insanely easy to use (a least in the small cases
-;;;; I looked at)--try this first, it may be easiest to get something
-;;;; rolling and, since it is all lisp, there will be no uffi
-;;;; problems. Of course, it will depend on how well trivial sql-like
-;;;; search go over the data...That last part turns out to be a
-;;;; problem with the way I want to structure the data; now I'll look
-;;;; at postmodern...
+;;;; something or other; to use this, we need to switch. Even though I
+;;;; really liked cl-prevalence (memory + serialization), easy
+;;;; relational functionality is necessary so I'll go with postmodern.
 ;;;;
 ;;;; Usage: (require 'tanuki)
 ;;;;        (in-package :tanuki)
-;;;;        (set-store)
-;;;;        (reconnect-store :id "a_1_8")
-;;;;        ;; (spin-up)
+;;;;        (tdb-clean-slate "http://localhost/cgi-bin/amigo/amigo")
 ;;;;
 ;;;; WARNING: Using bordeaux threads.
 ;;;;
@@ -112,7 +104,7 @@
 ;;     :accessor get-hits
 ;;     :initform (make-hash-table :test 'equal))
 ;;    (mandated
-;;     :accessor mandateed-p
+;;     :accessor mandated-p
 ;;     :initform nil)
 ;;    (internal
 ;;     :accessor internal-p
@@ -168,15 +160,15 @@
     :col-type string
     :initarg :url)
    (internal
-    :accessor internal-p
-    :col-type bigint ; TODO: internal needs to be decided quickly
+    :accessor internal
+    :col-type bigint
     :initarg :internal)
    (mandated
-    :accessor mandated-p
+    :accessor mandated
     :col-type bigint
     :col-default 0)
    (visited
-    :accessor visited-p
+    :accessor visited
     :col-type bigint
     :col-default 0))
   (:metaclass dao-class)
@@ -204,11 +196,11 @@
     :col-type (or db-null bigint) ; TODO: date init.
     :initform nil)
    (flagged
-    :accessor flagged-p
+    :accessor flagged
     :col-type (or db-null bigint)
     :initform nil)
    (success
-    :accessor success-p
+    :accessor success
     :col-type (or db-null bigint)
     :initform nil))
   (:metaclass dao-class)
@@ -253,7 +245,7 @@ etc., have to be taken care of first."
 (defun tdb-time-stamp (&optional (utime (get-universal-time)))
   "Return a date integer representing the inputted utime."
   (multiple-value-bind
-	(second minute hour date month year day-of-week dst-p tz)
+      (second minute hour date month year day-of-week dst-p tz)
       (decode-universal-time utime)
     (declare (ignore tz dst-p day-of-week))
     ;; Sorry for let--don't want to return two values here.
@@ -291,30 +283,33 @@ etc., have to be taken care of first."
 
 ;; TODO: see TODO for tdb-connect.
 (defun tdb-clean-slate (&optional (url-str +default-target+))
+  "Get the system into a usable state from nothing. After running
+this, agents should be able to have free reign--the meta table is
+populated and the first (target/start) page is defined (with no
+hits)."
   (tdb-connect)
   (tdb-clear-database)
   (tdb-create-tables)
   (tdb-create-sequences)
   (let ((new-meta (make-instance 'meta 
 				 :start (tdb-time-stamp)
-				 :target url-str)))
+				 :target url-str))
+	(first-page (make-instance 'page
+				   :id (sequence-next 'page-id-seq)
+				   :url url-str
+				   :internal 1)))
     (insert-dao new-meta)
+    (insert-dao first-page)
     (values (get-start new-meta)
-	    (get-target new-meta))))
+	    (get-target new-meta)
+	    (get-id first-page))))
 
 (defun tdb-turn-out-lights ()
   (disconnect-toplevel))
 
-;(query (:select 'start :from 'meta) :single)
-;; INSERT INTO foo (ai, bar) VALUES (nextval('ai_seq'), 99);
-;; (sequence-next 'hit-id-seq) => INT
-
 ;;;
 ;;; Targeting.
 ;;;
-
-;(query "select count(*) from meta" :single)
-;(query (:select (:count '*) :from 'meta) :single)
 
 ;; (defprepared sovereign-of
 ;;   (:select 'sovereign :from 'country :where (:= 'name '$1))
@@ -325,6 +320,23 @@ etc., have to be taken care of first."
 (let ((foo 0))
   (defun get-foo ()
     (incf foo)))
+
+(defun get-unvisited-page ()
+  "..."
+  ;;(query (:limit (:select '* :from 'page :where (:= 'visited 0)) 1 0))
+  nil)
+
+;; ;; We'll just start with random to get things going.
+;; (defun next-random-page ()
+;;   "Get a random unvisited page from the database."
+;;   ;; Check to see that there are unvisted URLs.
+;;   (if (= 0 (get-unvisited-page-count +tanuki-db+))
+;;       (error 'tanuki-without-targets-error :text "no unvisited pages")
+;;     ;; Collect a sample of total pages and a sample of unvisited
+;;     ;; pages.
+;;     (get-nth-unvisited-page
+;;      +tanuki-db+
+;;      (random (get-unvisited-page-count +tanuki-db+)))))
 
 ;; ;; TODO/BUG: just returning nil makes a hell of a lot more sense.
 ;; ;; BUG: This is slooooooooooooooooooow after a while.
@@ -383,19 +395,6 @@ etc., have to be taken care of first."
 ;; 	  (if decision
 ;; 	      (get-page-from-url +tanuki-db+ decision)
 ;; 	    (error 'tanuki-without-targets-error :text "no decision")))))))
-
-;; ;; TODO/BUG: just returning nil makes a hell of a lot more sense.
-;; (defun next-random-target-page ()
-;;   "Get the next target page from the system as a page. It will find a
-;; page that has not been visited yet."
-;;   ;; Check to see that there are unvisted URLs.
-;;   (if (= 0 (get-unvisited-page-count +tanuki-db+))
-;;       (error 'tanuki-without-targets-error :text "no unvisited pages")
-;;     ;; Collect a sample of total pages and a sample of unvisited
-;;     ;; pages.
-;;     (get-nth-unvisited-page
-;;      +tanuki-db+
-;;      (random (get-unvisited-page-count +tanuki-db+)))))
 
 ;; (defun next-mandated-page ()
 ;;   "Get the next mandated page from the system as a page. It will get
