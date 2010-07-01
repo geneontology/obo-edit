@@ -4,16 +4,8 @@ import java.util.Collection;
 
 import org.obo.datamodel.*;
 
-import org.apache.log4j.*;
-
 public class OBOClassImpl extends LinkedAnnotatedObjectImpl implements OBOClass {
 
-	//initialize logger
-	protected final static Logger logger = Logger.getLogger(OBOClassImpl.class);
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -9157839845696719063L;
 
 	protected boolean isRoot = false;

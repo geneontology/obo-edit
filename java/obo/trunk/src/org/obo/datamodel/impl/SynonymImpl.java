@@ -1,20 +1,14 @@
 package org.obo.datamodel.impl;
 
-import java.util.*;
+//import java.util.*;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.bbop.util.*;
 import org.obo.datamodel.*;
 
-import org.apache.log4j.*;
-
 public class SynonymImpl implements Synonym {
-
-	//initialize logger
-	protected final static Logger logger = Logger.getLogger(SynonymImpl.class);
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 45485650012520403L;
 	protected String text;
 	protected Set references;

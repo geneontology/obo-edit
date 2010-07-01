@@ -2,7 +2,10 @@ package org.obo.datamodel.impl;
 
 import org.obo.datamodel.*;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Iterator;
 
 public abstract class LinkedAnnotatedObjectImpl extends AnnotatedObjectImpl
 		implements OBOObject {
