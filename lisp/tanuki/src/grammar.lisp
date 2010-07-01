@@ -2,7 +2,8 @@
 ;;;;
 ;;;; Will be used to generate input and form data for tanuki fuzzing.
 ;;;; Ran across this while on Norvig's site--need to reread that
-;;;; book. Will rewrite for our purposes.
+;;;; book. Will rewrite for our purposes. See:
+;;;; http://norvig.com/python-lisp.html
 ;;;;
 ;;;; > (generate 'S)
 ;;;;
