@@ -32,7 +32,6 @@
                                      ;(:file "web")
                                      (:file "tanuki"))))
   :depends-on (:bbop
-	       ;;:gs
 	       :cl-ppcre
 	       :postmodern
 	       ;:cl-prevalence

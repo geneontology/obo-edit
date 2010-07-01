@@ -1,33 +1,28 @@
 ;;;; -*- mode: Lisp -*-
 ;;;;
-;;;; BUG: CLSQL seems to be hosed right now, possibly due to uffi
-;;;; something or other; to use this, we need to switch. Even though I
-;;;; really liked cl-prevalence (memory + serialization), easy
-;;;; relational functionality is necessary so I'll go with postmodern.
+;;;; TODO: Add and use "arguments" table keyed to page--fixes future
+;;;; problems now.
+;;;;
+;;;; TODO/BUG: don't re-add links that are already in, just their
+;;;; arguments.
+;;;;
+;;;; TODO/BUG: it looks like I misaligned some argument and eventually
+;;;; a single url takes over the random...
+;;;;
+;;;; BUG: CLSQL (and so our sqlite3 store) seems to be hosed right
+;;;; now, possibly due to uffi something or other, so we need to
+;;;; switch. Even though I really liked cl-prevalence (memory +
+;;;; serialization), easy relational functionality is necessary so
+;;;; I'll go with postmodern.
 ;;;;
 ;;;; Usage: (require 'tanuki)
 ;;;;        (in-package :tanuki)
 ;;;;        (tdb-clean-slate "http://localhost/cgi-bin/amigo/amigo")
-;;;;
-;;;; WARNING: Using bordeaux threads.
-;;;;
-;;;; Use for comm? http://cl-cookbook.sourceforge.net/sockets.html
-;;;;
-;;;; README/NOTE: One thing that would get rid of quite a few of the
-;;;; problems in here would be to switch off of the sqlite3 backend
-;;;; (cause of many many headaches) into something more lispy, like
-;;;; elephant (actually, it looks dead), cl-prevalence, cl-perec,
-;;;; postmodern (most likely right now), submarine, ...
-;;;;
-;;;; TODO: Currently, only one tanuki can run at a time in an
-;;;; environment--this should be fixed.
-;;;;
-;;;; TODO: add response time to URL
+;;;;        (setf a (make-instance 'tanuki-agent))
+;;;;        (agent-process-page a (random-unvisited-internal-page))
 ;;;;
 ;;;; TODO: Make the fail/odd system also report a "comment" about the
 ;;;; problem type.
-;;;;
-;;;; TODO: little wrapper for 'ab', the apache benchmarking tool.
 ;;;;
 ;;;; TODO: Logging.
 ;;;;
@@ -54,7 +49,7 @@
 	;;:cl-prevalence
 	;:toolkit
 	;:tanuki-utils
-	:tanuki-agent
+	:tanuki-agent ; TODO/BUG: move agent to bweb, this should be subclass
 	;:tanuki-decide
 	;:tanuki-file
 	;;:tanuki-web
@@ -74,66 +69,6 @@
 ;; (defparameter +tanuki-thread+ nil
 ;;   "The keeper of the running tanuki.")
 
-;; TODO/BUG: make a current-status object to use for juggling the last
-;; reported state without hitting the DB (sqlite3 seems to be having
-;; some threading issues (see "http://www.sqlite.org/faq.html#q6")).
-
-;; ;;;
-;; ;;; Start of cl-prevalence high-level.
-;; ;;;
-
-;; (defparameter +tanuki-system-location+ "/home/sjcarbon/tmp/tanuki/foo1"
-;;   "Location of the store.")
-
-;; (defclass tanuki-db ()
-;;   ((links
-;;     :accessor get-links
-;;     :initform (make-hash-table :test 'equal))
-;;    (target
-;;     :accessor get-target
-;;     :initarg :target)))
-   
-;; (defclass link ()
-;;   ((id
-;;     :accessor get-id
-;;     :initform nil)
-;;    (url
-;;     :accessor get-url
-;;     :initarg :url)
-;;    (hits
-;;     :accessor get-hits
-;;     :initform (make-hash-table :test 'equal))
-;;    (mandated
-;;     :accessor mandated-p
-;;     :initform nil)
-;;    (internal
-;;     :accessor internal-p
-;;     :initform nil)))
-
-;; (defclass hit ()
-;;   ((id
-;;     :accessor get-id
-;;     :initform nil)
-;;    (referer
-;;     :accessor get-referer
-;;     :initform nil)
-;;    (time
-;;     :accessor get-time
-;;     :initform nil)
-;;    (date
-;;     :accessor get-date
-;;     :initform nil)
-;;    (flagged
-;;     :accessor flagged-p
-;;     :initform nil)
-;;    (success
-;;     :accessor success-p
-;;     :initform nil)))
-    
-;; ;; (defun prep ()
-;; ;;   "Preparation and stuff."
-;; ;;   (gs-fs:make-directory +tanuki-store+)
-  
 ;;;
 ;;; High-level database handling.
 ;;;
@@ -141,22 +76,22 @@
 ;; (dao-table-definition 'meta) looks correct...
 (defclass meta ()
   ((start
-    :accessor get-start
+    :accessor start
     :col-type bigint
     :initarg :start)
    (target
-    :accessor get-target
+    :accessor target
     :col-type string
     :initarg :target))
   (:metaclass dao-class))
    
 (defclass page ()
   ((id
-    :accessor get-id
+    :accessor id
     :col-type bigint
     :initarg :id)
    (url
-    :accessor get-url
+    :accessor url
     :col-type string
     :initarg :url)
    (internal
@@ -174,41 +109,82 @@
   (:metaclass dao-class)
   (:keys id))
 
-;; (dao-table-definition 'hit) looks correct...
-(defclass hit ()
+;; (dao-table-definition 'arguments) looks correct...
+(defclass arguments ()
   ((id
-    :accessor get-id
-    :col-type bigint)
-   (arguments
-    :accessor get-arguments
+    :accessor id
+    :col-type bigint
+    :initarg :id)
+   (page-id
+    :accessor page-id
+    :col-type bigint
+    :initarg :page-id)
+   (arguments ;; TODO: this will be handy...
+    :accessor arguments
     :col-type (or db-null string)
-    :initform nil)
-   (referer
-    :accessor get-referer
-    :col-type (or db-null string)
-    :initform nil)
-   (time
-    :accessor get-time
-    :col-type (or db-null bigint) ; TODO: time init.
-    :initform nil)
-   (date
-    :accessor get-date
-    :col-type (or db-null bigint) ; TODO: date init.
-    :initform nil)
-   (flagged
-    :accessor flagged
-    :col-type (or db-null bigint)
-    :initform nil)
-   (success
-    :accessor success
-    :col-type (or db-null bigint)
-    :initform nil))
+    :col-default :null
+    :initform :null
+    :initarg :arguments))
   (:metaclass dao-class)
   (:keys id))
 
-(defvar *database-tables* '(meta page hit)
+;; (dao-table-definition 'hit) looks correct...
+(defclass hit ()
+  ((id
+    :accessor id
+    :col-type bigint
+    :initarg :id)
+   (arguments-id
+    :accessor arguments-id
+    :col-type (or db-null bigint)
+    :col-default :null
+    :initform :null
+    :initarg :arguments-id)   
+   (referer
+    :accessor referer
+    :col-type (or db-null string)
+    :col-default :null
+    :initform :null
+    :initarg :referer)
+   (wait
+    :accessor wait
+    :col-type (or db-null bigint)
+    :col-default :null
+    :initform :null
+    :initarg :wait
+    :documentation "Hopefully the time to completion for a request.")
+   (date
+    :accessor date
+    :col-type (or db-null bigint)
+    :col-default :null
+    :initform :null
+    :initarg :date
+    :documentation "The approximate data/time of the hit.")
+   (agent
+    :accessor agent
+    :col-type (or db-null string)
+    :col-default :null
+    :initform :null
+    :initarg :agent
+    :documentation "Token id for an invididual agent.")
+   (flagged
+    :accessor flagged
+    :col-type (or db-null bigint)
+    :col-default :null
+    :initform :null
+    :initarg :flagged)
+   (success
+    :accessor success
+    :col-type (or db-null bigint)
+    :col-default :null
+    :initform :null
+    :initarg :success))
+  (:metaclass dao-class)
+  (:keys id))
+
+(defvar *database-tables* '(meta page arguments hit)
   "All the tables that are used in Tanuki's database.")
-(defvar *database-sequences* '(page-id-seq hit-id-seq)
+(defvar *database-sequences* '(page-id-seq arguments-id-seq hit-id-seq)
   "All the sequences that are used in Tanuki's database.")
 
 (defparameter +default-target+ "http://localhost/cgi-bin/amigo/amigo"
@@ -240,24 +216,6 @@ etc., have to be taken care of first."
   (dolist (seq (list-sequences))
     (execute (:drop-sequence seq))))
 
-;; Example usage: (tdb-time-stamp (get-universal-time))
-;; Example usage: (tdb-time-stamp)
-(defun tdb-time-stamp (&optional (utime (get-universal-time)))
-  "Return a date integer representing the inputted utime."
-  (multiple-value-bind
-      (second minute hour date month year day-of-week dst-p tz)
-      (decode-universal-time utime)
-    (declare (ignore tz dst-p day-of-week))
-    ;; Sorry for let--don't want to return two values here.
-    (let ((retval (parse-integer (format nil "~d~2,'0d~2,'0d~2,'0d~2,'0d~2,'0d"
-					 year
-					 month
-					 date
-					 hour
-					 minute
-					 second))))
-      retval)))
-
 ;; ;; We could also use some form of postmodern:create-all-tables.
 ;; ;; TODO: see TODO for tdb-connect.
 ;; (defun tdb-ready-state (&optional (url-str +default-target+))
@@ -265,21 +223,25 @@ etc., have to be taken care of first."
 ;;   (tdb-create-tables)
 ;;   (tdb-create-sequences))
 
-(defun tdb-meta (column-symbol)
-  (query (:select column-symbol :from 'meta) :single))
+;; (defun tdb-meta (column-symbol)
+;;   (query (:select column-symbol :from 'meta) :single))
 
 (defun tdb-table-count (table-symbol)
   (query (:select (:count '*) :from table-symbol) :single))
+
+(defun tdb-table-dump (table-symbol)
+  (query (:select '* :from table-symbol) :plists))
 
 ;; Seed the pages with the url from the meta target.
 (defun tdb-make-seed-page ()
   (if (= 0 (tdb-table-count 'page))
       (let ((seed-page (make-instance 'page
 				      :id (sequence-next 'page-id-seq)
-				      :url (tdb-meta 'target)
+				      :url (query (:select 'target :from 'meta)
+						  :single)
 				      :internal 1)))
 	(insert-dao seed-page)
-	(get-id seed-page))))
+	(id seed-page))))
 
 ;; TODO: see TODO for tdb-connect.
 (defun tdb-clean-slate (&optional (url-str +default-target+))
@@ -292,7 +254,7 @@ hits)."
   (tdb-create-tables)
   (tdb-create-sequences)
   (let ((new-meta (make-instance 'meta 
-				 :start (tdb-time-stamp)
+				 :start (bb-time:timestamp)
 				 :target url-str))
 	(first-page (make-instance 'page
 				   :id (sequence-next 'page-id-seq)
@@ -300,9 +262,9 @@ hits)."
 				   :internal 1)))
     (insert-dao new-meta)
     (insert-dao first-page)
-    (values (get-start new-meta)
-	    (get-target new-meta)
-	    (get-id first-page))))
+    (values (start new-meta)
+	    (target new-meta)
+	    (id first-page))))
 
 (defun tdb-turn-out-lights ()
   (disconnect-toplevel))
@@ -311,20 +273,85 @@ hits)."
 ;;; Targeting.
 ;;;
 
-;; (defprepared sovereign-of
-;;   (:select 'sovereign :from 'country :where (:= 'name '$1))
-;;   :single!)
-;; (sovereign-of "The Netherlands")
-;; ;; => "Beatrix"
+(defun random-unvisited-internal-page ()
+  "Get a random unvisted page as a DAO, otherwise nil."
+  (let ((count (query (:select (:count '*) :from 'page
+			       ;; :where (:= 'visited 0))
+			       :where (:and (:= 'visited 0)
+					    (:= 'internal 1)))
+		      :single)))
+    (if (not (= 0 count))
+	(let ((plist (query (:limit (:select '* :from 'page
+					     ;; :where (:= 'visited 0))
+					     :where (:and (:= 'visited 0)
+							  (:= 'internal 1)))
+					     1 (random count))
+			    :plist)))
+	  (if plist (get-dao 'page (write-to-string (getf plist :id))))))))
 
-(let ((foo 0))
-  (defun get-foo ()
-    (incf foo)))
+(defun update-dao-value (dao slot-name slot-value)
+  (setf (slot-value dao slot-name) slot-value)
+  (update-dao dao))
 
-(defun get-unvisited-page ()
+;; TODO/BUG: this should be specialized onto a generic html-agent.
+;; ((page (get-random-unvisited-page)))
+(defun agent-process-page (agent page)
   "..."
-  ;;(query (:limit (:select '* :from 'page :where (:= 'visited 0)) 1 0))
-  nil)
+  (purge agent)
+  (when page
+    (update-dao-value page 'visited 1) ; page is now "visited"
+    (let ((run-timer (make-instance 'bb-time:timer)))
+      (run agent (url page))
+      ;; Create the best hit we can at the moment...
+      (let ((new-hit (make-instance 'hit
+				    :id (sequence-next 'hit-id-seq)
+				    :referer (url page)
+				    :wait (bb-time:seconds run-timer)
+				    :date (bb-time:timestamp))))
+	(insert-dao new-hit)
+	;; Toggle success and flagged depending on what happened with
+	;; the agent.
+	(labels ((toggles (hit-dao success-int flagged-int)
+			  (update-dao-value hit-dao 'success success-int)
+			  (update-dao-value hit-dao 'flagged flagged-int)))
+	  (cond
+	   ((and (null (errors agent)) (ok-code-p (code agent)))
+	    (progn
+	      (toggles new-hit 1 0)
+	      (dolist (l (links agent))
+                (let ((new-page (make-instance 'page
+                                               :id (sequence-next 'page-id-seq)
+                                               :url l
+                                               :internal
+                                               (bb-util:bool-to-int
+                                                (is-internal-p agent l)))))
+                  (insert-dao new-page)))))
+	   ((null (errors agent))
+	    (progn
+	      (toggles new-hit 1 1)
+	      (dolist (l (links agent))
+                (let ((new-page (make-instance 'page
+                                               :id (sequence-next 'page-id-seq)
+                                               :url l
+                                               :internal
+                                               (bb-util:bool-to-int
+                                                (is-internal-p agent l)))))
+                  (insert-dao new-page)))))
+	   (t
+	    (progn
+	     (toggles new-hit 0 1)))))))))
+
+(defun ok-code-p (code)
+  "Decide if a return code is in the OK range or not. Argument may be
+a integer or a string. Returns nil"
+  (let ((clean-code (if (stringp code)
+                        (parse-integer code)
+                      code)))
+    (if (> (- 400 clean-code) 0) t nil)))
+
+; (select-dao 'page (:= 'visited 0))
+; (query-dao 'page (:select '* :from 'page :where (:= 'visited 0)))
+; (id (get-dao 'page (write-to-string 1)))
 
 ;; ;; We'll just start with random to get things going.
 ;; (defun next-random-page ()
