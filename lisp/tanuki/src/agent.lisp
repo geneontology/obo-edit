@@ -3,6 +3,8 @@
 ;;;; Take this over during transition--will functionally replace
 ;;;; tanuki-html.
 ;;;;
+;;;; TODO: web-agent <- html-agent <- tanuki-agent
+;;;;
 ;;;; URLs known to trip failure:
 ;;;;    1) http://www.ebi.ac.uk/cgi-bin/emblfetch?style=html&Submit=Go&id=CP000158
 ;;;;    2) http://biocyc.org/META/substring-search?type=NIL&object=PARATHION-DEGRADATION-PWY"   
@@ -20,6 +22,7 @@
 (require :drakma)
 (require :puri)
 (require :closure-html)
+(require :closure-html)
 (defpackage :tanuki-agent
   (:use :cl
 	:drakma
@@ -27,6 +30,16 @@
   (:export run
            fetch
            purge
+           is-internal-p
+
+           base-url
+           target-url
+           internal-p
+           errors
+           content
+           code
+           links
+
 	   tanuki-agent))
 (in-package :tanuki-agent)
 
@@ -80,8 +93,8 @@
     ;; Catch resolution errors (with the above function)
     (handler-case
      (progn
-       ;;(sb-ext:with-timeout 300 ; five minute timeout
-       (sb-ext:with-timeout 5 ; five second timeout for testing
+       ;;(sb-ext:with-timeout 5 ; five second timeout for testing
+       (sb-ext:with-timeout 300 ; five minute timeout
          (multiple-value-bind
              (body response-code headers puri stream must-close-p reason)
              (http-request url-str :redirect 100)
@@ -142,14 +155,13 @@
 (defmethod run ((agent tanuki-agent) target-url-str)
   "..."
   (setf (target-url agent) target-url-str)
-  (setf (internal-p agent)
-        (is-internal-p target-url-str :relative (base-url agent)))
+  (setf (internal-p agent) (is-internal-p agent target-url-str))
   (fetch agent target-url-str)
   ;; Remove links and 
   (let ((links (extract-links (content agent))))
     (setf (links agent)
           (mapcar (lambda (x)
-                    (make-canonical x :relative (base-url agent)))
+                    (make-canonical x :relative (target-url agent)))
                   links)))
   t)
 
@@ -164,6 +176,18 @@
   (setf (code agent) nil)
   (setf (links agent) '())
   t)
+
+(defgeneric is-internal-p (tanuki-agent query-url)
+  (:documentation "Check whether the argument is internal relative to
+  the agent\'s base-url."))
+
+(defmethod is-internal-p ((agent tanuki-agent) query-str)
+  "Check whether the argument is internal relative to base-url."
+  (let ((query-puri (parse-uri (make-canonical query-str
+                                               :relative (base-url agent))))
+	(base-puri (parse-uri (base-url agent))))
+    (string= (uri-authority query-puri)
+	     (uri-authority base-puri))))
 
 ;;;
 ;;; Unexported helper functions.
@@ -180,29 +204,6 @@ tries to make sense of relativity and such. Should lead to some
 interesting bugs..."
   (make-rational
    (merge-uris (parse-uri url-str) (parse-uri relative))))
-
-(defun is-internal-p (query-str &key (relative +default-target+))
-  "Check whether the argument is internal relative to default-target."
-  (let ((query-puri (parse-uri (make-canonical query-str :relative relative)))
-	(base-puri (parse-uri relative)))
-    (string= (uri-authority query-puri)
-	     (uri-authority base-puri))))
-
-(defun ok-code (code)
-  "Decide if a retun code is in the OK range or not. Argument may be
-a integer or a string."
-  (let ((clean-code (if (stringp code)
-			(parse-integer code)
-			code)))
-    (if (> (- 400 clean-code) 0) t nil)))
-
-(defun flatten (xtree)
-  "Flatten a tree into a list."
-  (labels ((rec (xtree acc)
-             (cond ((null xtree) acc)
-                   ((atom xtree) (cons xtree acc))
-                   (t (rec (car xtree) (rec (cdr xtree) acc))))))
-    (rec xtree nil)))
 
 ;; Move along the list and pull out likely triplets.
 (defun scan-out-links (xlist)
@@ -221,9 +222,16 @@ a integer or a string."
     hrefs))
 
 (defun extract-links (doc)
-  "Hackily extract links strings from an HTML document." 
-  (let ((flattened-tree (flatten (chtml:parse doc (chtml:make-lhtml-builder)))))
-    (scan-out-links flattened-tree)))
+  "Hackily extract links strings from an HTML document."
+  ;; BUG?: Maybe just a nil doc?
+  ;; NIL fell through ETYPECASE expression.
+  ;; Wanted one of (STREAM PATHNAME (AND ARRAY (NOT STRING))
+  ;;                RUNES:ROD RUNES:XSTREAM).
+  ;;    [Condition of type SB-KERNEL:CASE-FAILURE]
+  (when doc
+    (let ((flattened-tree (bb-util:flatten
+                           (chtml:parse doc (chtml:make-lhtml-builder)))))
+      (scan-out-links flattened-tree))))
 
 ;;;
 ;;; Testing.
