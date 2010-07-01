@@ -712,7 +712,9 @@ sub delete_cached_results {
 	print STDERR "Looking for $ses_data_dir/$ses_type...\n" if $verbose;
 	eval {
 		if (-f "$ses_data_dir/$ses_type") {
-			`rm -rf $ses_data_dir/$ses_type`;
+		  ## TODO/BUG: This really bothers me. Can't we just
+		  ## leave it to "refresh.pl -r" or do something else?
+		  `rm -rf $ses_data_dir/$ses_type`;
 		}
 	};
 	#	delete any other bits of cache hanging around
@@ -721,14 +723,14 @@ sub delete_cached_results {
 	delete $self->{backup}{cache_result};
 }
 
-sub delete_all_cached_results {
-	print STDERR "Session::delete_all_cached_results: Starting!\n" if $verbose;
-	my $self = shift;
-	my $ses_data_dir = $self->get_session_data_dir;
-	eval {
-			`rm -rf $ses_data_dir/*_cache`;
-	};
-}
+# sub delete_all_cached_results {
+# 	print STDERR "Session::delete_all_cached_results: Starting!\n" if $verbose;
+# 	my $self = shift;
+# 	my $ses_data_dir = $self->get_session_data_dir;
+# 	eval {
+# 			`rm -rf $ses_data_dir/*_cache`;
+# 	};
+# }
 
 sub save_graphviz_image {
 	print STDERR "Session::save_graphviz_image: Starting!\n" if $verbose;

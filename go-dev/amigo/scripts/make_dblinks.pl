@@ -154,7 +154,7 @@ if( keys %$database_info ){
 ### Helper functions.
 ###
 
-## Runner lifter from other scripts.
+## Runner lifted from other scripts.
 sub run{
   my $command = shift;
   die "No command given: $!" if ! $command;
