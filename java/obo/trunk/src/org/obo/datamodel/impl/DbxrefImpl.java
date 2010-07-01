@@ -1,18 +1,10 @@
 package org.obo.datamodel.impl;
 
-import org.bbop.util.*;
+//import org.bbop.util.*;
+import org.bbop.util.ObjectUtil;
 import org.obo.datamodel.*;
 
-import org.apache.log4j.*;
-
 public class DbxrefImpl implements Dbxref {
-
-	//initialize logger
-	protected final static Logger logger = Logger.getLogger(DbxrefImpl.class);
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7781970775816178223L;
 	protected String databaseid;
 	protected String database;
