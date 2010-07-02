@@ -1,13 +1,9 @@
 ;;;; -*- mode: Lisp -*-
 ;;;;
 ;;;; TODO: Add and use "arguments" table keyed to page--fixes future
-;;;; problems now.
+;;;; problems now. Add link arguments.
 ;;;;
-;;;; TODO/BUG: don't re-add links that are already in, just their
-;;;; arguments.
-;;;;
-;;;; TODO/BUG: it looks like I misaligned some argument and eventually
-;;;; a single url takes over the random...
+;;;; TODO: Logging.
 ;;;;
 ;;;; BUG: CLSQL (and so our sqlite3 store) seems to be hosed right
 ;;;; now, possibly due to uffi something or other, so we need to
@@ -15,16 +11,19 @@
 ;;;; serialization), easy relational functionality is necessary so
 ;;;; I'll go with postmodern.
 ;;;;
+;;;; psql -W -U tanuki_user -h localhost tanuki1
+;;;;
 ;;;; Usage: (require 'tanuki)
 ;;;;        (in-package :tanuki)
 ;;;;        (tdb-clean-slate "http://localhost/cgi-bin/amigo/amigo")
-;;;;        (setf a (make-instance 'tanuki-agent))
-;;;;        (agent-process-page a (random-unvisited-internal-page))
+;;;;        ;(setf a (make-instance 'tanuki-agent))
+;;;;        ;(agent-process-page a (random-untried-internal-page))
+;;;;        (start-a-tanuki)
+;;;;        (start-a-tanuki)
+;;;;        (flag-down)
 ;;;;
 ;;;; TODO: Make the fail/odd system also report a "comment" about the
 ;;;; problem type.
-;;;;
-;;;; TODO: Logging.
 ;;;;
 ;;;; TODO: multiple target selection--internal, external, etc.
 ;;;;
@@ -58,14 +57,10 @@
 (in-package :tanuki)
 
 ;; ;;
-;; (defparameter +tanuki-store+ "/home/sjcarbon/tmp/tanuki/foo1"
-;;   "Location of the store.")
 ;; (defparameter +tanuki-data+ "/home/sjcarbon/local/src/svn/geneontology/lisp/tanuki/data"
 ;;   "Location of data to be used for forms.")
 ;; (defparameter +sample-size+ 33 ; down from 100
 ;;   "The size of the random sample in the database for each iteration.")
-;; (defparameter +stop-signal+ nil
-;;   "A flag to indicate that we should end after the current operation.")
 ;; (defparameter +tanuki-thread+ nil
 ;;   "The keeper of the running tanuki.")
 
@@ -102,8 +97,8 @@
     :accessor mandated
     :col-type bigint
     :col-default 0)
-   (visited
-    :accessor visited
+   (tried
+    :accessor tried
     :col-type bigint
     :col-default 0))
   (:metaclass dao-class)
@@ -270,36 +265,79 @@ hits)."
   (disconnect-toplevel))
 
 ;;;
-;;; Targeting.
+;;; Queries: finding things out about the database.
 ;;;
 
-(defun random-unvisited-internal-page ()
-  "Get a random unvisted page as a DAO, otherwise nil."
+(defun page-extant-p (page-url)
+  "t or nil on the existance of a page (by url string) in the database."
   (let ((count (query (:select (:count '*) :from 'page
-			       ;; :where (:= 'visited 0))
-			       :where (:and (:= 'visited 0)
-					    (:= 'internal 1)))
+                               :where (:= 'url page-url))
 		      :single)))
-    (if (not (= 0 count))
-	(let ((plist (query (:limit (:select '* :from 'page
-					     ;; :where (:= 'visited 0))
-					     :where (:and (:= 'visited 0)
-							  (:= 'internal 1)))
-					     1 (random count))
-			    :plist)))
-	  (if plist (get-dao 'page (write-to-string (getf plist :id))))))))
+    (if (= count 0) nil t)))
+
+;;;
+;;; Operations: changing values in the database.
+;;;
 
 (defun update-dao-value (dao slot-name slot-value)
   (setf (slot-value dao slot-name) slot-value)
   (update-dao dao))
 
+;; TODO/BUG: need to separate arguments and pages.
+(defun insert-agent-links (agent)
+  (dolist (l (links agent))
+    ;; TODO: This should not be "when", but "if" depending on whether
+    ;; we do page and args or just page.
+    (with-transaction ()
+      (when (not (page-extant-p l))
+        (let ((new-page (make-instance 'page
+                                       :id (sequence-next 'page-id-seq)
+                                       :url l
+                                       :internal
+                                       (bb-util:bool-to-int
+                                        (is-internal-p agent l)))))
+        (insert-dao new-page))))))
+
+;;;
+;;; Targeting finding a page to try in the database.
+;;;
+
+(defun random-untried-internal-page ()
+  "Get a random unvisted page as a DAO, otherwise nil."
+  (let ((count (query (:select (:count '*) :from 'page
+			       ;; :where (:= 'tried 0))
+			       :where (:and (:= 'tried 0)
+					    (:= 'internal 1)))
+		      :single)))
+    (if (not (= 0 count))
+	(let ((plist (query (:limit (:select '* :from 'page
+					     ;; :where (:= 'tried 0))
+					     :where (:and (:= 'tried 0)
+							  (:= 'internal 1)))
+					     1 (random count))
+			    :plist)))
+	  (if plist (get-dao 'page (write-to-string (getf plist :id))))))))
+
+;;;
+;;; Agent control: 
+;;;
+
+(defparameter +loop-flag+ t
+  "Let working agents know they can stop.")
+(defun flag-p ()
+  +loop-flag+)
+(defun flag-up ()
+  (setf +loop-flag+ t))
+(defun flag-down ()
+  (setf +loop-flag+ nil))
+
+
 ;; TODO/BUG: this should be specialized onto a generic html-agent.
-;; ((page (get-random-unvisited-page)))
+;; ((page (get-random-untried-page)))
 (defun agent-process-page (agent page)
   "..."
-  (purge agent)
   (when page
-    (update-dao-value page 'visited 1) ; page is now "visited"
+    (update-dao-value page 'tried 1) ; page is now "tried"
     (let ((run-timer (make-instance 'bb-time:timer)))
       (run agent (url page))
       ;; Create the best hit we can at the moment...
@@ -318,28 +356,49 @@ hits)."
 	   ((and (null (errors agent)) (ok-code-p (code agent)))
 	    (progn
 	      (toggles new-hit 1 0)
-	      (dolist (l (links agent))
-                (let ((new-page (make-instance 'page
-                                               :id (sequence-next 'page-id-seq)
-                                               :url l
-                                               :internal
-                                               (bb-util:bool-to-int
-                                                (is-internal-p agent l)))))
-                  (insert-dao new-page)))))
+              (insert-agent-links agent)))
 	   ((null (errors agent))
 	    (progn
 	      (toggles new-hit 1 1)
-	      (dolist (l (links agent))
-                (let ((new-page (make-instance 'page
-                                               :id (sequence-next 'page-id-seq)
-                                               :url l
-                                               :internal
-                                               (bb-util:bool-to-int
-                                                (is-internal-p agent l)))))
-                  (insert-dao new-page)))))
+              (insert-agent-links agent)))
 	   (t
 	    (progn
 	     (toggles new-hit 0 1)))))))))
+
+;; 
+(defun tanuki-loop ()
+  "Run an agent until it shouldn't."
+  (let ((agent (make-instance 'tanuki-agent :base-url +default-target+)))
+    (format t "Starting agent ~a...~%" agent)
+    (do ()
+        ((not (flag-p)))
+      (let ((page (random-untried-internal-page)))
+        (if page
+            (progn
+              (format t "~a looking at: ~a~%" agent (url page))
+              (agent-process-page agent page))
+          (progn
+            (format t "~a is waiting a minute...~%" agent)
+            (sleep 60)))))))
+
+;; TODO: see the old runner for target selector stuff...
+;; BUG (when running multiple tanukis):
+;;    Database error: This connection is still processing another query.
+;;       [Condition of type CL-POSTGRES:DATABASE-ERROR]
+;; They must need their own connection...
+(defun start-a-tanuki ()
+  (bordeaux-threads:make-thread
+   (lambda ()
+     (with-connection
+      '("tanuki1" "tanuki_user" "tanuki_user" "localhost")
+       (tanuki-loop)))
+  :name (symbol-name (gensym))))
+
+
+
+;;;
+;;; Elsewhere: where these code bits should be.
+;;;
 
 (defun ok-code-p (code)
   "Decide if a return code is in the OK range or not. Argument may be
@@ -349,8 +408,8 @@ a integer or a string. Returns nil"
                       code)))
     (if (> (- 400 clean-code) 0) t nil)))
 
-; (select-dao 'page (:= 'visited 0))
-; (query-dao 'page (:select '* :from 'page :where (:= 'visited 0)))
+; (select-dao 'page (:= 'tried 0))
+; (query-dao 'page (:select '* :from 'page :where (:= 'tried 0)))
 ; (id (get-dao 'page (write-to-string 1)))
 
 ;; ;; We'll just start with random to get things going.
@@ -490,7 +549,6 @@ a integer or a string. Returns nil"
 ;; ;;; Stepping rules.
 ;; ;;;
 
-;; ;; 
 ;; ;(define-condition tanuki-without-targets-warning (warning)
 ;; ;  ((text :initarg :text :reader text)))
 ;; (define-condition tanuki-without-targets-error (error)
@@ -543,45 +601,6 @@ a integer or a string. Returns nil"
 ;;   (if (not (fetch-doc (get-url page)))
 ;;       (mark-page-as-failed +tanuki-db+ page)))
 
-;; ;;;
-;; ;;; Agent control.
-;; ;;;
-
-;; (defun start (&optional (page-selector #'next-target-page))
-;;   "Start a Tanuki process, if not already going."
-;;   (if (not +tanuki-thread+)
-;;       (progn
-;; 	(format t "Starting (~a)...~%" page-selector)
-;; 	(setf +tanuki-thread+
-;; ;;	      (sb-thread:make-thread (lambda ()
-;; 	      (bordeaux-threads:make-thread (lambda ()
-;; 					      (thread-handler page-selector))
-;; 					    :name "tanuki thread")))
-;;       (format t "Already started.~%")))
-
-;; (defun stop ()
-;;   "Politely stop a Tanuki process."
-;;   (if +tanuki-thread+
-;;       (progn
-;; 	(format t "Stopping...~%")
-;; 	(setf +stop-signal+ t)
-;; 	;;(sb-thread:join-thread +tanuki-thread+)
-;; 	(bordeaux-threads:join-thread +tanuki-thread+)
-;; 	(setf +tanuki-thread+ nil))
-;;     (format t "Already stopped.~%")))
-
-;; (defun thread-handler (page-selector)
-;;   "Handle starting and stopping with flags, looping."
-;;   (loop
-;;      (if +stop-signal+
-;; 	 (progn
-;; 	   (format t "Handler will stop tanuki...~%")
-;; 	   (setf +stop-signal+ nil)
-;; 	   (return nil))
-;; 	 (progn
-;; 	   (format t "Handler will step...~%")
-;; 	   (tanuki-step (funcall page-selector))))))
-
 ;; ;; TODO: for giggles, see if we can get that into a single format.
 ;; (defun report-on-failed (&key (long nil))
 ;;   "Report about all failed pages."
@@ -603,10 +622,6 @@ a integer or a string. Returns nil"
 ;; 	  (when long
 ;; 	    (format t "ON: ~a~%~%" (get-referer page)))))))
 
-;; ;; BUG: Beware, there is currently a race condition in sqlite3 that
-;; ;; may make things go way south if it trips. You might have to
-;; ;; disconnect from the lisp and try again. (Suppose we could make our
-;; ;; own in the interim.)
 ;; (defun status ()
 ;;   "Print the current status of current Tanuki system and return the
 ;; number of unvisited URLs."
@@ -629,17 +644,3 @@ a integer or a string. Returns nil"
 ;;   ;;	   (sql-engine +tanuki-db+ :count t :internal nil))
 ;;   (format t "Total odd pages: ~a~%" (get-odd-page-count +tanuki-db+))
 ;;   (format t "Total bad pages: ~a~%" (get-bad-page-count +tanuki-db+)))
-
-;; ;; (if *tanuki-thread*
-;; ;;    (sb-thread:thread-alive-p *tanuki-thread*)
-;; ;;   nil))
-;; ;; (format t "(request): ~a~%" +stop-signal+))
-
-;; ;;;
-;; ;;; This is a test section for working with forms (somewhat trickier
-;; ;;; that trying to just spider links).
-;; ;;;
-
-;; ;;;
-;; ;;; Functions for parameterizing form inputs.
-;; ;;;
