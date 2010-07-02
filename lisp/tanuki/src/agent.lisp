@@ -25,11 +25,10 @@
 (require :closure-html)
 (defpackage :tanuki-agent
   (:use :cl
-	:drakma
-	:puri)
+	:drakma)
   (:export run
            fetch
-           purge
+           ;purge ; internal-only now
            is-internal-p
 
            base-url
@@ -43,16 +42,31 @@
 	   tanuki-agent))
 (in-package :tanuki-agent)
 
+;;;
+;;; NOTE: Change the parameters of the URI parse--there are a lot of
+;;; sites that refuse to follow the RFCs.
+;;;
+(setf puri:*strict-parse* nil) ; looks like it's in export
+(defparameter puri::*illegal-characters*
+  (puri::reserved-char-vector
+   (remove #\| (remove #\# puri::*excluded-characters*))))
+(defparameter puri::*strict-illegal-query-characters*
+  (puri::reserved-char-vector
+   (append '(#\?) (remove #\# puri::*excluded-characters*))))
+(defparameter puri::*illegal-query-characters*
+  (puri::reserved-char-vector
+   puri::*excluded-characters* :except '(#\^ #\| #\#)))
+
 
 (defparameter +default-target+ "http://localhost"
   "The default (and easily redefinable) target of the agents. It is
   necessary for all of the comparative functionality.")
 
-;; NOTE: Since this functions almost the same as the way I have the
-;; class definition setup, it's not really necessary.
-(defun create-agent (&optional (base-url +default-target+))
-  (let ((agent (make-instance 'tanuki-agent :base-url base-url)))
-    agent))
+;; ;; NOTE: Since this functions almost the same as the way I have the
+;; ;; class definition setup, it's not really necessary.
+;; (defun create-agent (&optional (base-url +default-target+))
+;;   (let ((agent (make-instance 'tanuki-agent :base-url base-url)))
+;;     agent))
 
 (defclass tanuki-agent ()
   ((base-url
@@ -90,7 +104,8 @@
   (labels ((glitch (err-str)
                    (setf (errors agent) (cons err-str (errors agent)))
                    nil))
-    ;; Catch resolution errors (with the above function)
+    ;; Try and use drakma in a minimal way and catch resolution errors
+    ;; (with the above function).
     (handler-case
      (progn
        ;;(sb-ext:with-timeout 5 ; five second timeout for testing
@@ -103,11 +118,10 @@
             ;; TODO/BUG? Don't deal with images.
             ((search "png" (cdr (assoc :CONTENT-TYPE headers))) "")
             ((search "gif" (cdr (assoc :CONTENT-TYPE headers))) "")
-            ;;((ok-code code) body)
             (t
              (setf (content agent) body)
-             (setf (code agent) response-code)
-             t)))))
+             t))
+           (setf (code agent) response-code))))
     ;; Ex: 1
     (SB-KERNEL::HEAP-EXHAUSTED-ERROR (hee)
      (declare (ignore hee))
@@ -150,10 +164,10 @@
   sure all tanuki-agents slots that can be filled are. This is a more
   more full-bodied (e.g. links) extrension of fetch."))
 
-;; TODO: remember to shadow +default-target+ with the one in the
-;; instance.
+;;
 (defmethod run ((agent tanuki-agent) target-url-str)
   "..."
+  (purge agent) ; TODO: purge should be run :before in this class.
   (setf (target-url agent) target-url-str)
   (setf (internal-p agent) (is-internal-p agent target-url-str))
   (fetch agent target-url-str)
@@ -183,11 +197,11 @@
 
 (defmethod is-internal-p ((agent tanuki-agent) query-str)
   "Check whether the argument is internal relative to base-url."
-  (let ((query-puri (parse-uri (make-canonical query-str
+  (let ((query-puri (puri:parse-uri (make-canonical query-str
                                                :relative (base-url agent))))
-	(base-puri (parse-uri (base-url agent))))
-    (string= (uri-authority query-puri)
-	     (uri-authority base-puri))))
+	(base-puri (puri:parse-uri (base-url agent))))
+    (string= (puri:uri-authority query-puri)
+	     (puri:uri-authority base-puri))))
 
 ;;;
 ;;; Unexported helper functions.
@@ -196,14 +210,14 @@
 (defun make-rational (url-str)
   "Changes a str into a proper url one way or another. This is a
 cleaner for possibly funny urls."
-  (render-uri (parse-uri url-str) nil))
+  (puri:render-uri (puri:parse-uri url-str) nil))
 
 (defun make-canonical (url-str &key (relative +default-target+))
   "This merges the default-target parameter with the incoming string,
 tries to make sense of relativity and such. Should lead to some
 interesting bugs..."
   (make-rational
-   (merge-uris (parse-uri url-str) (parse-uri relative))))
+   (puri:merge-uris (puri:parse-uri url-str) (puri:parse-uri relative))))
 
 ;; Move along the list and pull out likely triplets.
 (defun scan-out-links (xlist)
