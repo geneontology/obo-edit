@@ -78,6 +78,7 @@ string and add to output. The default function is to just collect the strings in
 
 ;; From cl-user snippet.
 (defun read-file-as-string (path)
+  "Whole file as string."
   (with-open-file (s path)
     (let* ((len (file-length s))
            (data (make-string len)))
