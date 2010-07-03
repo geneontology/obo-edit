@@ -1,10 +1,9 @@
-;;;; -*- lisp -*-
-
-;;; 
-;;; TODO: bugs in
-;;;   html
-;;;   decide
-;;;
+;;;; -*- mode: Lisp -*-
+;;;; 
+;;;; TODO: bugs in
+;;;;   html
+;;;;   decide
+;;;;
 
 (defpackage :tanuki-asd
   (:use :cl :asdf))
@@ -22,42 +21,37 @@
   :components ((:static-file "tanuki.asd")
                (:module :src
                         :serial t
-                        :components (;(:file "utils")
-                                     ;(:file "forms")
+                        :components (;(:file "forms")
 				     ;(:file "file")
-				     ;(:file "db")
 				     ;(:file "decide")
 				     ;(:file "html")
-                                     (:file "agent")
                                      ;(:file "web")
+				     (:file "db")
+                                     (:file "agent")
                                      (:file "tanuki"))))
   :depends-on (:bbop
+	       :mechanize
 	       :cl-ppcre
 	       :postmodern
-	       ;:cl-prevalence
-	       ;:clsql-sqlite3
-	       ;:clsql
-	       :s-sysdeps
-	       :s-http-client
+	       ;:s-sysdeps
+	       ;:s-http-client
 	       :bordeaux-threads
 	       :closure-html
-	       :s-xml
-	       :fiveam
+	       ;:s-xml
+	       ;:fiveam
 	       :drakma
-	       :toolkit
-	       ;;:aserve
-	       ;;:net.aserve
-	       ;;:net.html.generator
-	       ;;:parenscript
 	       :puri)
-  ;; And some stuff for Albert...
-  :properties ((#:author-email . "sjcarbon@berkeleybop.org")
-	       (#:date . "Spring 2008")
-	       ((#:albert #:output-dir) . "docs")
-	       ((#:albert #:formats) . ("docbook"))
-	       ((#:albert #:docbook #:template) . "book")
-	       ((#:albert #:docbook #:bgcolor) . "white")
-	       ((#:albert #:docbook #:textcolor) . "black")))
+
+  ;;; Replace Albert, maybe with clod.
+  ;; ;; And some stuff for Albert...
+  ;; :properties ((#:author-email . "sjcarbon@berkeleybop.org")
+  ;; 	       (#:date . "Spring 2008")
+  ;; 	       ((#:albert #:output-dir) . "docs")
+  ;; 	       ((#:albert #:formats) . ("docbook"))
+  ;; 	       ((#:albert #:docbook #:template) . "book")
+  ;; 	       ((#:albert #:docbook #:bgcolor) . "white")
+  ;; 	       ((#:albert #:docbook #:textcolor) . "black"))
+)
 
 ;; ;; Add tanuki to our features.
 ;; (defmethod asdf:perform

@@ -3,7 +3,7 @@
 ;;;; TODO: Add and use "arguments" table keyed to page--fixes future
 ;;;; problems now. Add link arguments.
 ;;;;
-;;;; TODO: Logging.
+;;;; TODO: Less thinking, more alexandria.
 ;;;;
 ;;;; BUG: CLSQL (and so our sqlite3 store) seems to be hosed right
 ;;;; now, possibly due to uffi something or other, so we need to
@@ -11,16 +11,17 @@
 ;;;; serialization), easy relational functionality is necessary so
 ;;;; I'll go with postmodern.
 ;;;;
-;;;; psql -W -U tanuki_user -h localhost tanuki1
+;;;; psql -W -U tanuki_user -h localhost tanuki
 ;;;;
-;;;; Usage: (require 'tanuki)
-;;;;        (in-package :tanuki)
-;;;;        (tdb-clean-slate "http://localhost/cgi-bin/amigo/amigo")
-;;;;        ;(setf a (make-instance 'tanuki-agent))
-;;;;        ;(agent-process-page a (random-untried-internal-page))
-;;;;        (start-a-tanuki)
-;;;;        (start-a-tanuki)
-;;;;        (flag-down)
+;;;; From the beginning:
+;;;;    (require 'tanuki)
+;;;;    (in-package :tanuki)
+;;;;    (top-reset "http://localhost/cgi-bin/amigo/amigo")
+;;;;    ;(setf a (make-instance 'tanuki-agent :base-url *default-url*))
+;;;;    ;(process-page a (random-untried-internal-page))
+;;;;    (start-a-tanuki)
+;;;;    (start-a-tanuki)
+;;;;    (flag-down)
 ;;;;
 ;;;; TODO: Make the fail/odd system also report a "comment" about the
 ;;;; problem type.
@@ -28,8 +29,6 @@
 ;;;; TODO: multiple target selection--internal, external, etc.
 ;;;;
 ;;;; TODO: be able to convert fails to mandates.
-;;;;
-;;;; TODO: Use objects for top level (should also help threading problems)
 ;;;;
 ;;;; TODO: form detection, then profiling, and then mandating.
 ;;;;
@@ -43,16 +42,10 @@
 
 (defpackage :tanuki
   (:use :cl
-	;;:gs
 	:postmodern
-	;;:cl-prevalence
-	;:toolkit
-	;:tanuki-utils
-	:tanuki-agent ; TODO/BUG: move agent to bweb, this should be subclass
-	;:tanuki-decide
-	;:tanuki-file
-	;;:tanuki-web
-	;:tanuki-db
+	:tanuki-agent
+	:tanuki-db
+	;;:tanuki-decide
 	))
 (in-package :tanuki)
 
@@ -64,209 +57,32 @@
 ;; (defparameter +tanuki-thread+ nil
 ;;   "The keeper of the running tanuki.")
 
-;;;
-;;; High-level database handling.
-;;;
-
-;; (dao-table-definition 'meta) looks correct...
-(defclass meta ()
-  ((start
-    :accessor start
-    :col-type bigint
-    :initarg :start)
-   (target
-    :accessor target
-    :col-type string
-    :initarg :target))
-  (:metaclass dao-class))
-   
-(defclass page ()
-  ((id
-    :accessor id
-    :col-type bigint
-    :initarg :id)
-   (url
-    :accessor url
-    :col-type string
-    :initarg :url)
-   (internal
-    :accessor internal
-    :col-type bigint
-    :initarg :internal)
-   (mandated
-    :accessor mandated
-    :col-type bigint
-    :col-default 0)
-   (tried
-    :accessor tried
-    :col-type bigint
-    :col-default 0))
-  (:metaclass dao-class)
-  (:keys id))
-
-;; (dao-table-definition 'arguments) looks correct...
-(defclass arguments ()
-  ((id
-    :accessor id
-    :col-type bigint
-    :initarg :id)
-   (page-id
-    :accessor page-id
-    :col-type bigint
-    :initarg :page-id)
-   (arguments ;; TODO: this will be handy...
-    :accessor arguments
-    :col-type (or db-null string)
-    :col-default :null
-    :initform :null
-    :initarg :arguments))
-  (:metaclass dao-class)
-  (:keys id))
-
-;; (dao-table-definition 'hit) looks correct...
-(defclass hit ()
-  ((id
-    :accessor id
-    :col-type bigint
-    :initarg :id)
-   (arguments-id
-    :accessor arguments-id
-    :col-type (or db-null bigint)
-    :col-default :null
-    :initform :null
-    :initarg :arguments-id)   
-   (referer
-    :accessor referer
-    :col-type (or db-null string)
-    :col-default :null
-    :initform :null
-    :initarg :referer)
-   (wait
-    :accessor wait
-    :col-type (or db-null bigint)
-    :col-default :null
-    :initform :null
-    :initarg :wait
-    :documentation "Hopefully the time to completion for a request.")
-   (date
-    :accessor date
-    :col-type (or db-null bigint)
-    :col-default :null
-    :initform :null
-    :initarg :date
-    :documentation "The approximate data/time of the hit.")
-   (agent
-    :accessor agent
-    :col-type (or db-null string)
-    :col-default :null
-    :initform :null
-    :initarg :agent
-    :documentation "Token id for an invididual agent.")
-   (flagged
-    :accessor flagged
-    :col-type (or db-null bigint)
-    :col-default :null
-    :initform :null
-    :initarg :flagged)
-   (success
-    :accessor success
-    :col-type (or db-null bigint)
-    :col-default :null
-    :initform :null
-    :initarg :success))
-  (:metaclass dao-class)
-  (:keys id))
-
-(defvar *database-tables* '(meta page arguments hit)
-  "All the tables that are used in Tanuki's database.")
-(defvar *database-sequences* '(page-id-seq arguments-id-seq hit-id-seq)
-  "All the sequences that are used in Tanuki's database.")
-
-(defparameter +default-target+ "http://localhost/cgi-bin/amigo/amigo"
+(defvar *default-url* "http://localhost/"
   "The default target used when not explicitly defined.")
 
-;; TODO: make flexible on connection values.
-(defun tdb-connect ()
-  "Make sure that we at least have a connection. All permissions,
-etc., have to be taken care of first."
-  (if (or (null *database*) (not (connected-p *database*)))
-      (progn
-	(connect-toplevel "tanuki1" "tanuki_user" "tanuki_user" "localhost")
-	(connected-p *database*))))
+(defvar +default-logger+
+  (make-instance 'bb-log:simple-log :log-out "/tmp/tanuki.log")
+  "The default logger.")
 
-(defun tdb-create-tables ()
-  (dolist (table *database-tables*)
-    (if (not (table-exists-p table))
-	(execute (dao-table-definition table)))))
+(defun kvetch (obj)
+  "Wrapper."
+  (bb-log:kvetch +default-logger+ obj))
 
-(defun tdb-create-sequences ()
-  (dolist (seq *database-sequences*)
-    (if (not (sequence-exists-p seq))
-	(execute (:create-sequence seq)))))
-
-(defun tdb-clear-database ()
-  ; (dolist (table (list-tables))
-  (dolist (table (list-tables))
-    (execute (:drop-table table)))
-  (dolist (seq (list-sequences))
-    (execute (:drop-sequence seq))))
-
-;; ;; We could also use some form of postmodern:create-all-tables.
-;; ;; TODO: see TODO for tdb-connect.
-;; (defun tdb-ready-state (&optional (url-str +default-target+))
-;;   (tdb-connect)
-;;   (tdb-create-tables)
-;;   (tdb-create-sequences))
-
-;; (defun tdb-meta (column-symbol)
-;;   (query (:select column-symbol :from 'meta) :single))
-
-(defun tdb-table-count (table-symbol)
-  (query (:select (:count '*) :from table-symbol) :single))
-
-(defun tdb-table-dump (table-symbol)
-  (query (:select '* :from table-symbol) :plists))
-
-;; Seed the pages with the url from the meta target.
-(defun tdb-make-seed-page ()
-  (if (= 0 (tdb-table-count 'page))
-      (let ((seed-page (make-instance 'page
-				      :id (sequence-next 'page-id-seq)
-				      :url (query (:select 'target :from 'meta)
-						  :single)
-				      :internal 1)))
-	(insert-dao seed-page)
-	(id seed-page))))
-
-;; TODO: see TODO for tdb-connect.
-(defun tdb-clean-slate (&optional (url-str +default-target+))
-  "Get the system into a usable state from nothing. After running
-this, agents should be able to have free reign--the meta table is
-populated and the first (target/start) page is defined (with no
-hits)."
-  (tdb-connect)
-  (tdb-clear-database)
-  (tdb-create-tables)
-  (tdb-create-sequences)
-  (let ((new-meta (make-instance 'meta 
-				 :start (bb-time:timestamp)
-				 :target url-str))
-	(first-page (make-instance 'page
-				   :id (sequence-next 'page-id-seq)
-				   :url url-str
-				   :internal 1)))
-    (insert-dao new-meta)
-    (insert-dao first-page)
-    (values (start new-meta)
-	    (target new-meta)
-	    (id first-page))))
-
-(defun tdb-turn-out-lights ()
-  (disconnect-toplevel))
+(defun top-reset (new-default-url)
+  "Blows away everything for a fresh start with the given url."
+  (flag-up)
+  (setf *default-url* new-default-url)
+  (reset-database *default-url*))
 
 ;;;
 ;;; Queries: finding things out about the database.
 ;;;
+
+(defun top-remember ()
+  "Try to get ready using the database."
+  (flag-up)
+  (connect-repl)
+  (setf *default-url* (query (:select 'target :from 'meta) :single)))
 
 (defun page-extant-p (page-url)
   "t or nil on the existance of a page (by url string) in the database."
@@ -334,12 +150,12 @@ hits)."
 
 ;; TODO/BUG: this should be specialized onto a generic html-agent.
 ;; ((page (get-random-untried-page)))
-(defun agent-process-page (agent page)
+(defun process-page (agent page)
   "..."
   (when page
     (update-dao-value page 'tried 1) ; page is now "tried"
     (let ((run-timer (make-instance 'bb-time:timer)))
-      (run agent (url page))
+      (fetch agent (url page))
       ;; Create the best hit we can at the moment...
       (let ((new-hit (make-instance 'hit
 				    :id (sequence-next 'hit-id-seq)
@@ -365,20 +181,22 @@ hits)."
 	    (progn
 	     (toggles new-hit 0 1)))))))))
 
+;(defun 
+
 ;; 
 (defun tanuki-loop ()
   "Run an agent until it shouldn't."
   (let ((agent (make-instance 'tanuki-agent :base-url +default-target+)))
-    (format t "Starting agent ~a...~%" agent)
+    (kvetch (format nil "Starting agent ~a..." agent))
     (do ()
         ((not (flag-p)))
       (let ((page (random-untried-internal-page)))
         (if page
             (progn
-              (format t "~a looking at: ~a~%" agent (url page))
-              (agent-process-page agent page))
+              (kvetch (format nil "~a looking at: ~a" agent (url page)))
+              (process-page agent page))
           (progn
-            (format t "~a is waiting a minute...~%" agent)
+            (kvetch (format nil "~a is waiting a minute..." agent))
             (sleep 60)))))))
 
 ;; TODO: see the old runner for target selector stuff...
@@ -390,8 +208,8 @@ hits)."
   (bordeaux-threads:make-thread
    (lambda ()
      (with-connection
-      '("tanuki1" "tanuki_user" "tanuki_user" "localhost")
-       (tanuki-loop)))
+      tanuki-db::*connection-parameters*
+      (tanuki-loop)))
   :name (symbol-name (gensym))))
 
 

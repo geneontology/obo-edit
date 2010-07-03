@@ -23,9 +23,10 @@
                         :components ((:file "io")
                                      (:file "list")
                                      (:file "fs")
-                                     (:file "time")
                                      (:file "num")
                                      (:file "util")
+                                     (:file "time")
+                                     (:file "log")
                                      (:file "repl")
                                      (:file "shell"))))
 				     ;; (:file "url")
@@ -41,14 +42,16 @@
 	       ;; :drakma
 	       )
 
-  ;; And some stuff for Albert...
-  :properties ((#:author-email . "sjcarbon@berkeleybop.org")
-	       (#:date . "Summer 2010")
-	       ((#:albert #:output-dir) . "docs")
-	       ((#:albert #:formats) . ("docbook"))
-	       ((#:albert #:docbook #:template) . "book")
-	       ((#:albert #:docbook #:bgcolor) . "white")
-	       ((#:albert #:docbook #:textcolor) . "black")))
+  ;;; Replace Albert, maybe with clod.
+  ;; ;; And some stuff for Albert...
+  ;; :properties ((#:author-email . "sjcarbon@berkeleybop.org")
+  ;; 	       (#:date . "Summer 2010")
+  ;; 	       ((#:albert #:output-dir) . "docs")
+  ;; 	       ((#:albert #:formats) . ("docbook"))
+  ;; 	       ((#:albert #:docbook #:template) . "book")
+  ;; 	       ((#:albert #:docbook #:bgcolor) . "white")
+  ;; 	       ((#:albert #:docbook #:textcolor) . "black"))
+)
 
 ;; ;; Add tanuki to our features.
 ;; (defmethod asdf:perform
