@@ -12,8 +12,6 @@
   (:export
    :get-hash-val
    :json-to-hash
-   :file-string
-   :file-lines
    :flatten
    :kvetch
    :bool-to-int
@@ -39,24 +37,6 @@
 	    (json:decode-json-from-string json-str))
     hash))
 
-;; From cl-user snippet.
-(defun file-string (path)
-  "Whole file as string."
-  (with-open-file (s path)
-    (let* ((len (file-length s))
-           (data (make-string len)))
-      (values data (read-sequence data s)))))
-
-;; From cl-user snippet.
-(defun file-lines (path)
-  "Whole file as list of strings."
-  (with-open-file (s path)
-    (loop for line = (read-line s nil nil)
-       while line
-       collect line into lines
-       counting t into line-count
-       finally (return (values lines line-count)))))
-
 (defun flatten (xtree)
   "Flatten a tree into a list."
   (labels ((rec (xtree acc)
@@ -65,7 +45,9 @@
                    (t (rec (car xtree) (rec (cdr xtree) acc))))))
     (rec xtree nil)))
 
+;; TODO: turn this into a something a little less silly.
 (defun kvetch (obj)
+  "..."
   (format t "~A~%" obj))
 
 (defun join-strings (list &key (with ""))
