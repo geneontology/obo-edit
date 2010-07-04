@@ -26,6 +26,7 @@
 	       :closure-html
 	       :puri
 	       :drakma
+	       :alexandria
 	       ;; :cl-json
 	       ;; :fiveam
 	       )

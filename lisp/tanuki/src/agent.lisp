@@ -3,9 +3,6 @@
 ;;;; Add the concepts of internal and external.
 ;;;;
 
-;; (require :drakma)
-;; (require :puri)
-;; (require :closure-html)
 (defpackage :tanuki-agent
   (:use
    :cl
