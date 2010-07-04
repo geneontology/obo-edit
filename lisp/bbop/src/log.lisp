@@ -31,7 +31,10 @@
       ((null out)
        (format nil "\[~A\] ~A" (bb-time:timestamp) obj))
       ((stringp out)
-       (with-open-file (lstream out :direction :output :if-exists :append)
+       (with-open-file (lstream out
+				:direction :output
+				:if-exists :append
+				:if-does-not-exist :create)
 	 (format lstream "\[~A\] ~A~%" (bb-time:timestamp) obj)))
       (t
        (format out "\[~A\] ~A" (bb-time:timestamp) obj)))))

@@ -41,6 +41,8 @@
   "Force a waiting timeout after this many seconds.")
 (defparameter +make-canonical+ t
   "Try and make found links correct relative to the current url.")
+(defparameter +clean-internal-links+ t
+  "Try and remove any internal links from a url.")
 
 ;;;
 ;;; NOTE: Change the parameters of the URI parse in puri--there are a
@@ -173,6 +175,11 @@
     (setf (links agent)
 	  (mapcar (lambda (x)
 		    (make-canonical x :relative-to (current-url agent)))
+		  (links agent))))
+  (when +clean-internal-links+
+    (setf (links agent)
+	  (mapcar (lambda (x)
+		    (car (cl-ppcre:split "\#" x)))
 		  (links agent)))))
 
 (defun make-rational (url-str)
@@ -205,7 +212,7 @@ some interesting bugs..."
 (defun extract-links (doc)
   "Hackily extract links strings from an HTML document."
   (when doc
-    (let ((flattened-tree (bb-util:flatten
+    (let ((flattened-tree (alexandria:flatten
                            (chtml:parse doc (chtml:make-lhtml-builder)))))
       (scan-out-links flattened-tree))))
 
