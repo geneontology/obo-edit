@@ -17,10 +17,20 @@
 ;;;;    (require 'tanuki)
 ;;;;    (in-package :tanuki)
 ;;;;    (top-reset "http://localhost/cgi-bin/amigo/amigo")
-;;;;    ;(setf a (make-instance 'tanuki-agent :base-url *default-url*))
-;;;;    ;(process-page a (random-untried-internal-page))
 ;;;;    (start-a-tanuki)
 ;;;;    (start-a-tanuki)
+;;;;    (flag-down)
+;;;;
+;;;; Continue:
+;;;;    (top-remember)
+;;;;    (start-a-tanuki)
+;;;;    (start-a-tanuki)
+;;;;    (flag-down)
+;;;;
+;;;; Partial:
+;;;;    (flag-up)
+;;;;    (setf a (make-instance 'tanuki-agent :base-url *default-url*))
+;;;;    (process-page a (random-untried-internal-page))
 ;;;;    (flag-down)
 ;;;;
 ;;;; TODO: Make the fail/odd system also report a "comment" about the
@@ -186,7 +196,7 @@
 ;; 
 (defun tanuki-loop ()
   "Run an agent until it shouldn't."
-  (let ((agent (make-instance 'tanuki-agent :base-url +default-target+)))
+  (let ((agent (make-instance 'tanuki-agent :base-url *default-url*)))
     (kvetch (format nil "Starting agent ~a..." agent))
     (do ()
         ((not (flag-p)))
