@@ -129,13 +129,15 @@ sub load_fasta {
     }
 
     #my ($seqid,$modid,$symbol,$desc);
-    my $seqid;
-    my $gp_id;
-    my $seq = '';
+    my %last;
+
+    #my $seqid;
+    #my $gp_id;
+    #my $seq = '';
 
     # this handel uncompress files too
     my $fh = IO::Uncompress::AnyUncompress->new($f)
-	  or die "anyuncompress failed: $AnyUncompressError\n";
+	  or die "AnyUncompress failed: $AnyUncompressError\n";
     while (<$fh>) {
 	chomp;
 
@@ -146,7 +148,7 @@ sub load_fasta {
 	    $head =~ s/\s+Description:\s*(.*)//;
 	    my $desc = $1;
 
-	    ($seqid,my $modid, my @tagvals) = split(m/\s+/, $head);
+	    my ($seqid,$modid,@tagvals) = split(m/\s+/, $head);
 
 	    die $head if (!$seqid or !$modid);
 
@@ -191,20 +193,24 @@ sub load_fasta {
 	    }
 
 	    # unless this is the first header, store the LAST sequence
-	    store_seq($gp_id,$seqid,$seq) unless !$seq;
-	    $seq = ''; # reset
+	    store_seq(@last{qw/gp_id seqid seq/}) if $last{seq};
 	    $n_seqs++;
 
+	    $last{seq} = '';
+
 	    # now the new stuff:
-	    $gp_id = get_gp_id($modid,$species_id,$symbol,$desc);
-	    if (!$gp_id) {
+	    $last{gp_id} = get_gp_id($modid,$species_id,$symbol,$desc);
+	    if (!$last{gp_id}) {
 		if ($opt_h->{nomods}) {
 		    next;
 		}
 		die "no gp";
 	    }
+
+
+	    $last{seqid} = $seqid;
 	} elsif (/^[A-Z\*]+$/) {
-	    $seq .= $_;
+	    $last{seq} .= $_;
 	} else {
 	    die "$_ is not a sequence";
 	}
@@ -218,7 +224,7 @@ sub load_fasta {
     #}
 
     # store the final sequence
-    store_seq($gp_id,$seqid,$seq);
+    store_seq(@last{qw/gp_id seqid seq/});
 
     $n_files ++;
 }
