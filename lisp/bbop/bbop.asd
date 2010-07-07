@@ -37,6 +37,7 @@
   :depends-on (:cl-ppcre
 	       :cl-json
 	       :cl-fad
+	       :local-time
 	       ;; :fiveam
 	       ;; :puri
 	       ;; :drakma

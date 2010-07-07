@@ -3,166 +3,38 @@
 ;;;; High-level database handling--think gross things like making
 ;;;; tables and the like. Finer things will be handled elsewhere.
 ;;;;
+;;;; TODO/BUG: Rather ickily using get-universal-time as the
+;;;; timestamp. Take a look at something else (maybe simple-date?)
+;;;; sometime...
+;;;;
 ;;;; TODO: finish set-connection
 ;;;;
 
 (defpackage :tanuki-db
   (:use :cl
-	:postmodern)
-  (:export :meta
-	   :page
-	   :arguments
-	   :hit
-
-	   :start
-	   :target
-	   :id
-	   :url
-	   :internal
-	   :mandated
-	   :tried
-	   :page-id
-	   :arguments
-	   :arguments-id
-	   :referer
-	   :wait
-	   :date
-	   :agent
-	   :flagged
-	   :success
-
-	   :set-connection
-	   :connect-repl
-	   :disconnect-repl
-	   :create-database
-	   :clear-database
-	   :table-count
-	   :table-dump
-	   ;:make-seed-page
-	   :reset-database
-	   ))
+	:postmodern
+	:tanuki-schema)
+  (:export
+   :*connection-parameters*
+   :set-connection
+   :connect-repl
+   :disconnect-repl
+   :create-database
+   :clear-database
+   :table-count
+   :table-dump
+   ;;:make-seed-page
+   :reset-database
+   ))
 (in-package :tanuki-db)
 
 ;;;
 ;;; Schema.
 ;;;
 
-(defvar *tables* '(meta page arguments hit)
-  "All the tables that are used in Tanuki's database.")
-(defvar *sequences* '(page-id-seq arguments-id-seq hit-id-seq)
-  "All the sequences that are used in Tanuki's database.")
 (defparameter *connection-parameters*
   '("tanuki" "tanuki_user" "tanuki_pass" "localhost")
   "For Postgres, a list of: dbname, dbuser, dbpass, and server")
-
-;; (dao-table-definition 'meta) looks correct...
-(defclass meta ()
-  ((start
-    :accessor start
-    :col-type bigint
-    :initarg :start)
-   (target
-    :accessor target
-    :col-type string
-    :initarg :target))
-  (:metaclass dao-class))
-   
-(defclass page ()
-  ((id
-    :accessor id
-    :col-type bigint
-    :initarg :id)
-   (url
-    :accessor url
-    :col-type string
-    :initarg :url)
-   (internal
-    :accessor internal
-    :col-type bigint
-    :initarg :internal)
-   (mandated
-    :accessor mandated
-    :col-type bigint
-    :col-default 0)
-   (tried
-    :accessor tried
-    :col-type bigint
-    :col-default 0))
-  (:metaclass dao-class)
-  (:keys id))
-
-;; (dao-table-definition 'arguments) looks correct...
-(defclass arguments ()
-  ((id
-    :accessor id
-    :col-type bigint
-    :initarg :id)
-   (page-id
-    :accessor page-id
-    :col-type bigint
-    :initarg :page-id)
-   (arguments ;; TODO: this will be handy...
-    :accessor arguments
-    :col-type (or db-null string)
-    :col-default :null
-    :initform :null
-    :initarg :arguments))
-  (:metaclass dao-class)
-  (:keys id))
-
-;; (dao-table-definition 'hit) looks correct...
-(defclass hit ()
-  ((id
-    :accessor id
-    :col-type bigint
-    :initarg :id)
-   (arguments-id
-    :accessor arguments-id
-    :col-type (or db-null bigint)
-    :col-default :null
-    :initform :null
-    :initarg :arguments-id)   
-   (referer
-    :accessor referer
-    :col-type (or db-null string)
-    :col-default :null
-    :initform :null
-    :initarg :referer)
-   (wait
-    :accessor wait
-    :col-type (or db-null bigint)
-    :col-default :null
-    :initform :null
-    :initarg :wait
-    :documentation "Hopefully the time to completion for a request.")
-   (date
-    :accessor date
-    :col-type (or db-null bigint)
-    :col-default :null
-    :initform :null
-    :initarg :date
-    :documentation "The approximate data/time of the hit.")
-   (agent
-    :accessor agent
-    :col-type (or db-null string)
-    :col-default :null
-    :initform :null
-    :initarg :agent
-    :documentation "Token id for an invididual agent.")
-   (flagged
-    :accessor flagged
-    :col-type (or db-null bigint)
-    :col-default :null
-    :initform :null
-    :initarg :flagged)
-   (success
-    :accessor success
-    :col-type (or db-null bigint)
-    :col-default :null
-    :initform :null
-    :initarg :success))
-  (:metaclass dao-class)
-  (:keys id))
 
 ;;;
 ;;; Connection and creation.
@@ -171,7 +43,7 @@
 ;; TODO:
 (defun set-connection ()
   "TODO: Change the embedded connection parameters."
-  t)
+  nil)
   
 ;;
 (defun connect-repl ()
@@ -239,7 +111,8 @@ page is defined (with no hits)."
   (clear-database)
   (create-database)
   (let ((new-meta (make-instance 'meta 
-				 :start (bb-time:timestamp)
+				 ;;:start (bb-time:timestamp)
+				 :start (get-universal-time)
 				 :target url-str))
 	(first-page (make-instance 'page
 				   :id (sequence-next 'page-id-seq)

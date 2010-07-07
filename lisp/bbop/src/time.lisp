@@ -1,20 +1,31 @@
 ;;;; -*- mode: Lisp -*-
 ;;;;
-;;;; NOTE:
+;;;; NOTE: Backed this with local-time.
 ;;;;
 
 (defpackage :bb-time
-  (:use :cl)
+  (:use :cl
+	:local-time)
   (:export
    :date-string
    :timestamp
+   :humanstamp
    ;; TODO: timestamp-diff
    
    :timer
    :seconds))
 (in-package :bb-time)
 
-(defun date-string (&optional (utime (get-universal-time)))
+;; Example usage: (tdb-time-stamp (get-universal-time))
+;; Example usage: (tdb-time-stamp)
+(defun timestamp (&optional (utime (timestamp-to-universal (now))))
+  "Return a string representing universal time."
+  utime)
+
+;; TODO: unneeded?
+;; Example:
+;;    (date-string (local-time:timestamp-to-universal (local-time:now)))
+(defun date-string (&optional (utime (timestamp)))
   "Return a date string representing universal time. Example
 usage: (date-string (get-universal-time))."
   (let ((day-names '("Monday" "Tuesday" "Wednesday" "Thursday"
@@ -35,7 +46,7 @@ usage: (date-string (get-universal-time))."
 
 ;; Example usage: (tdb-time-stamp (get-universal-time))
 ;; Example usage: (tdb-time-stamp)
-(defun timestamp (&optional (utime (get-universal-time)))
+(defun humanstamp (&optional (utime (timestamp)))
   "Return a date integer representing the inputted utime."
   (multiple-value-bind
       (second minute hour date month year day-of-week dst-p tz)
@@ -51,10 +62,12 @@ usage: (date-string (get-universal-time))."
 					 second))))
       retval)))
 
+;;;
+
 (defclass timer ()
   ((start-time
     :accessor start-time
-    :initform (get-universal-time)
+    :initform (now)
     :initarg :start-time)
    (last-time
     :accessor last-time
@@ -64,5 +77,9 @@ usage: (date-string (get-universal-time))."
   (:documentation "..."))
 
 (defmethod seconds ((in-timer timer))
-  (let ((now (get-universal-time)))
-    (- now (start-time in-timer))))
+  (let ((then (start-time in-timer)))
+    (- (timestamp-to-universal (now))
+       (timestamp-to-universal then))))
+
+  ;; (let ((now (get-universal-time)))
+    ;; (- now (start-time in-timer))))

@@ -54,9 +54,15 @@
   (:use :cl
 	:postmodern
 	:tanuki-agent
-	:tanuki-db
 	;;:tanuki-decide
-	))
+	)
+  ;; (:import-from :tanuki-schema
+  ;;               :url
+  ;;               :page-id
+  ;;               :page
+  ;;               :tried
+  ;;               :internal)
+  )
 (in-package :tanuki)
 
 ;; ;;
@@ -82,24 +88,13 @@
   "Blows away everything for a fresh start with the given url."
   (flag-up)
   (setf *default-url* new-default-url)
-  (reset-database *default-url*))
-
-;;;
-;;; Queries: finding things out about the database.
-;;;
+  (tanuki-db:reset-database *default-url*))
 
 (defun top-remember ()
   "Try to get ready using the database."
   (flag-up)
-  (connect-repl)
+  (tanuki-db:connect-repl)
   (setf *default-url* (query (:select 'target :from 'meta) :single)))
-
-(defun page-extant-p (page-url)
-  "t or nil on the existance of a page (by url string) in the database."
-  (let ((count (query (:select (:count '*) :from 'page
-                               :where (:= 'url page-url))
-		      :single)))
-    (if (= count 0) nil t)))
 
 ;;;
 ;;; Operations: changing values in the database.
@@ -116,7 +111,7 @@
     ;; we do page and args or just page.
     (with-transaction ()
       (when (not (page-extant-p l))
-        (let ((new-page (make-instance 'page
+        (let ((new-page (make-instance 'tanuki-schema:page
                                        :id (sequence-next 'page-id-seq)
                                        :url l
                                        :internal
@@ -128,21 +123,20 @@
 ;;; Targeting finding a page to try in the database.
 ;;;
 
-(defun random-untried-internal-page ()
+(defun random-untried-page (loc-symbol)
   "Get a random unvisted page as a DAO, otherwise nil."
-  (let ((count (query (:select (:count '*) :from 'page
-			       ;; :where (:= 'tried 0))
-			       :where (:and (:= 'tried 0)
-					    (:= 'internal 1)))
-		      :single)))
+  (let* ((in-ex (if (eq loc-symbol 'external) 0 1)) 
+         (count (row-count 'page (:and (:= 'tried 0)
+                                       (:= 'internal in-ex)))))
     (if (not (= 0 count))
 	(let ((plist (query (:limit (:select '* :from 'page
-					     ;; :where (:= 'tried 0))
 					     :where (:and (:= 'tried 0)
-							  (:= 'internal 1)))
-					     1 (random count))
+							  (:= 'internal in-ex)))
+                                    1 (random count))
 			    :plist)))
-	  (if plist (get-dao 'page (write-to-string (getf plist :id))))))))
+	  ;; (if plist (get-dao 'tanuki-schema:page
+          ;;                    (write-to-string (getf plist :id))))))))
+	  (if plist (get-dao 'tanuki-schema:page (getf plist :id)))))))
 
 ;;;
 ;;; Agent control: 
@@ -158,56 +152,62 @@
   (setf +loop-flag+ nil))
 
 
-;; TODO/BUG: this should be specialized onto a generic html-agent.
-;; ((page (get-random-untried-page)))
-(defun process-page (agent page)
+;; TODO/BUG: maybe this should be specialized onto a generic
+;; html-agent.
+(defun process-page (agent page &key (add-links t))
   "..."
   (when page
-    (update-dao-value page 'tried 1) ; page is now "tried"
+    (update-dao-value page 'tanuki-schema:tried 1) ; page is now "tried"
     (let ((run-timer (make-instance 'bb-time:timer)))
-      (fetch agent (url page))
+      (fetch agent (tanuki-schema:url page))
       ;; Create the best hit we can at the moment...
-      (let ((new-hit (make-instance 'hit
-				    :id (sequence-next 'hit-id-seq)
-				    :referer (url page)
-				    :wait (bb-time:seconds run-timer)
-				    :date (bb-time:timestamp))))
+      (let* ((ret-code (if (null (code agent)) :null (code agent)))
+             (new-hit (make-instance 'tanuki-schema:hit
+                                     :id (sequence-next 'hit-id-seq)
+                                     :page-id (tanuki-schema:id page)
+                                     ;; :arguments-id # TODO
+                                     :referer (tanuki-schema:url page)
+                                     :wait (bb-time:seconds run-timer)
+                                     :date (bb-time:timestamp)
+                                     ;; :agent # TODO
+                                     :code ret-code)))
 	(insert-dao new-hit)
 	;; Toggle success and flagged depending on what happened with
 	;; the agent.
 	(labels ((toggles (hit-dao success-int flagged-int)
-			  (update-dao-value hit-dao 'success success-int)
-			  (update-dao-value hit-dao 'flagged flagged-int)))
+			  (update-dao-value hit-dao
+                                            'tanuki-schema:success
+                                            success-int)
+			  (update-dao-value hit-dao
+                                            'tanuki-schema:flagged
+                                            flagged-int)))
+          ;; 
 	  (cond
 	   ((and (null (errors agent)) (ok-code-p (code agent)))
-	    (progn
-	      (toggles new-hit 1 0)
-              (insert-agent-links agent)))
+            (toggles new-hit 1 0))
 	   ((null (errors agent))
-	    (progn
-	      (toggles new-hit 1 1)
-              (insert-agent-links agent)))
-	   (t
-	    (progn
-	     (toggles new-hit 0 1)))))))))
-
-;(defun 
+            (toggles new-hit 1 1))
+	   (t (toggles new-hit 0 1))))
+        ;; 
+        (when add-links (insert-agent-links agent))))))
 
 ;; 
-(defun tanuki-loop ()
+(defun tanuki-step (agent)
   "Run an agent until it shouldn't."
-  (let ((agent (make-instance 'tanuki-agent :base-url *default-url*)))
-    (kvetch (format nil "Starting agent ~a..." agent))
-    (do ()
-        ((not (flag-p)))
-      (let ((page (random-untried-internal-page)))
-        (if page
-            (progn
-              (kvetch (format nil "~a looking at: ~a" agent (url page)))
-              (process-page agent page))
+  (kvetch (format nil "Starting agent ~a..." agent))
+  (do ()
+      ((not (flag-p)))
+    ;; TODO: add something here to randomize internal/external.
+    (let ((page (random-untried-page 'internal)))
+      (if page
           (progn
-            (kvetch (format nil "~a is waiting a minute..." agent))
-            (sleep 60)))))))
+            (kvetch (format nil "~a looking at: ~a" agent
+                            (tanuki-schema:url page)))
+            ;;TODO: Also: (process-page agent page :add-links nil))
+            (process-page agent page))
+        (progn
+          (kvetch (format nil "~a is waiting a minute..." agent))
+          (sleep 60))))))
 
 ;; TODO: see the old runner for target selector stuff...
 ;; BUG (when running multiple tanukis):
@@ -215,17 +215,16 @@
 ;;       [Condition of type CL-POSTGRES:DATABASE-ERROR]
 ;; They must need their own connection...
 (defun start-a-tanuki ()
-  (bordeaux-threads:make-thread
-   (lambda ()
-     (with-connection
-      tanuki-db::*connection-parameters*
-      (tanuki-loop)))
-  :name (symbol-name (gensym))))
-
-
+  (let ((agent (make-instance 'tanuki-agent :base-url *default-url*)))
+    (bordeaux-threads:make-thread
+     (lambda ()
+       (with-connection
+        tanuki-db:*connection-parameters*
+        (tanuki-step agent)))
+     :name (symbol-name (gensym)))))
 
 ;;;
-;;; Elsewhere: where these code bits should be.
+;;; TODO/BUG: Elsewhere: where these code bits should be.
 ;;;
 
 (defun ok-code-p (code)
@@ -235,6 +234,81 @@ a integer or a string. Returns nil"
                         (parse-integer code)
                       code)))
     (if (> (- 400 clean-code) 0) t nil)))
+
+;;;
+;;; Report queries from connected toplevel.
+;;;
+
+(defmacro row-count (table-symbol &optional (where-list nil))
+  (if where-list
+      `(query (:select (:count '*)
+                       :from ,table-symbol 
+                       :where ,where-list)
+              :single)
+    `(query (:select (:count '*)
+                     :from ,table-symbol)
+            :single)))
+
+;; (defun get-page-by-id (id)
+;;   "Get a page's DAO by either table rows's url or id."
+;;   (get-dao 'tanuki-schema:page id
+;;            (write-to-string (getf plist :id))))))))
+  
+
+(defun page-extant-p (page-url)
+  "t or nil on the existance of a page (by url string) in the database."
+  (let ((count (row-count 'page (:= 'url page-url))))
+    (if (= count 0) nil t)))
+
+(defun general-report ()
+  "Print the current status of current Tanuki system and return the
+number of unvisited URLs."
+  (let ((target (query (:select 'target :from 'meta) :single))
+        (start (bb-time:date-string
+                (query (:select 'start :from 'meta) :single)))
+        (total-page-count (row-count 'page))
+        (internal-page-count (row-count 'page (:= 'internal 1)))
+        (hit-count (row-count 'hit))
+        (flagged-count (row-count 'hit (:= 1 'flagged)))
+        (error-count (row-count 'hit (:= 0 'success))))
+    (format t "Current Tanuki status:~%")
+    (format t "Base URL: ~a~%" target)
+    (format t "Started at: ~a~%" start)
+    (format t "Total known pages: ~a~%" total-page-count)
+    (format t "Total known internal pages: ~a~%" internal-page-count)
+    (format t "Total page visits: ~a~%" hit-count)
+    (format t "Total flagged pages: ~a~%" flagged-count)
+    (format t "Total errors: ~a~%" error-count)))
+
+(defun error-report ()
+  "Give a report about all of the \"error\" (non-success) pages."  
+;; (doquery (:select 'name 'score :from 'scores) (n s)
+;;   (incf (gethash n *scores*) s))
+;; (doquery ((:select 'name :from 'scores :where (:> 'score '$1)) 100) (name)
+;;   (print name))
+nil)
+  
+;; ;; TODO: for giggles, see if we can get that into a single format.
+;; (defun report-on-failed (&key (long nil))
+;;   "Report about all failed pages."
+;;   (let ((pages (all-failed-pages)))
+;;     (loop
+;;      for page in pages
+;;      do (progn
+;; 	  (format t "FAILED: ~a~%" (get-url page))
+;; 	  (when long
+;; 	    (format t "ON: ~a~%~%" (get-referer page)))))))
+
+;; (defun report-on-odd (&key (long nil))
+;;   "Report about all failed pages."
+;;   (let ((pages (all-odd-pages)))
+;;     (loop
+;;      for page in pages
+;;      do (progn
+;; 	  (format t "ODD: ~a~%" (get-url page))
+;; 	  (when long
+;; 	    (format t "ON: ~a~%~%" (get-referer page)))))))
+
 
 ; (select-dao 'page (:= 'tried 0))
 ; (query-dao 'page (:select '* :from 'page :where (:= 'tried 0)))
@@ -428,47 +502,3 @@ a integer or a string. Returns nil"
 ;;   (format t "external step ~a~%" (get-url page))
 ;;   (if (not (fetch-doc (get-url page)))
 ;;       (mark-page-as-failed +tanuki-db+ page)))
-
-;; ;; TODO: for giggles, see if we can get that into a single format.
-;; (defun report-on-failed (&key (long nil))
-;;   "Report about all failed pages."
-;;   (let ((pages (all-failed-pages)))
-;;     (loop
-;;      for page in pages
-;;      do (progn
-;; 	  (format t "FAILED: ~a~%" (get-url page))
-;; 	  (when long
-;; 	    (format t "ON: ~a~%~%" (get-referer page)))))))
-
-;; (defun report-on-odd (&key (long nil))
-;;   "Report about all failed pages."
-;;   (let ((pages (all-odd-pages)))
-;;     (loop
-;;      for page in pages
-;;      do (progn
-;; 	  (format t "ODD: ~a~%" (get-url page))
-;; 	  (when long
-;; 	    (format t "ON: ~a~%~%" (get-referer page)))))))
-
-;; (defun status ()
-;;   "Print the current status of current Tanuki system and return the
-;; number of unvisited URLs."
-;;   (format t "Current Tanuki status:~%")
-;;   (format t "Name: ~a~%" (get-name +tanuki-db+))
-;;   (format t "Base URL: ~a~%" (get-target +tanuki-db+))
-  
-;;   (let ((page-count (get-page-count +tanuki-db+))
-;; 	(unvisited-page-count (get-unvisited-page-count +tanuki-db+)))
-;;     (format t "Total known pages: ~a~%" page-count)
-;;     (format t "Total unvisited pages: ~a~%" unvisited-page-count)
-;;     (format t "Total visited pages: ~a~%" (- page-count unvisited-page-count)))
-;;   (format t "Visited internal pages: ~a~%"
-;; 	  (sql-engine +tanuki-db+ :count t :internal t :visited t))
-;;   (format t "Visited external pages: ~a~%"
-;; 	  (sql-engine +tanuki-db+ :count t :internal nil :visited t))
-;;   ;; (format t "Total interal pages: ~a~%"
-;;   ;;	   (sql-engine +tanuki-db+ :count t :internal t))
-;;   ;;  (format t "Total exteral pages: ~a~%"
-;;   ;;	   (sql-engine +tanuki-db+ :count t :internal nil))
-;;   (format t "Total odd pages: ~a~%" (get-odd-page-count +tanuki-db+))
-;;   (format t "Total bad pages: ~a~%" (get-bad-page-count +tanuki-db+)))
