@@ -26,11 +26,12 @@
 				     ;(:file "decide")
 				     ;(:file "html")
                                      ;(:file "web")
+				     (:file "schema")
 				     (:file "db")
                                      (:file "agent")
                                      (:file "tanuki"))))
-  :depends-on (:bbop
-	       :mechanize
+  :depends-on (:mechanize
+	       :bbop
 	       :cl-ppcre
 	       :postmodern
 	       ;:s-sysdeps
