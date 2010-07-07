@@ -29,12 +29,12 @@
   (let ((out (log-out log)))
     (cond
       ((null out)
-       (format nil "\[~A\] ~A" (bb-time:timestamp) obj))
+       (format nil "\[~A\] ~A" (bb-time:humanstamp) obj))
       ((stringp out)
        (with-open-file (lstream out
 				:direction :output
 				:if-exists :append
 				:if-does-not-exist :create)
-	 (format lstream "\[~A\] ~A~%" (bb-time:timestamp) obj)))
+	 (format lstream "\[~A\] ~A~%" (bb-time:humanstamp) obj)))
       (t
-       (format out "\[~A\] ~A" (bb-time:timestamp) obj)))))
+       (format out "\[~A\] ~A" (bb-time:humanstamp) obj)))))
