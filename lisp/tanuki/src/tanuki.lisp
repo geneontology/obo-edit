@@ -16,7 +16,7 @@
 ;;;; From the beginning:
 ;;;;    (require 'tanuki)
 ;;;;    (in-package :tanuki)
-;;;;    (top-reset "http://localhost/cgi-bin/amigo/amigo")
+;;;;    (top-reset "http://localhost/cgi-bin/amigo/amigo" "/data")
 ;;;;    (start-a-tanuki)
 ;;;;    (start-a-tanuki)
 ;;;;    (flag-down)
@@ -29,8 +29,8 @@
 ;;;;
 ;;;; Partial:
 ;;;;    (flag-up)
-;;;;    (setf a (make-instance 'tanuki-agent :base-url *default-url*))
-;;;;    (process-page a (random-untried-internal-page))
+;;;;    (setf a (make-instance 'tanuki-agent :home-url *default-url*))
+;;;;    (process-argument-set a (random-undone-argument-set))
 ;;;;    (flag-down)
 ;;;;
 ;;;; TODO: Make the fail/odd system also report a "comment" about the
@@ -60,13 +60,12 @@
   ;;               :url
   ;;               :page-id
   ;;               :page
-  ;;               :tried
+  ;;               :todo
   ;;               :internal)
   )
 (in-package :tanuki)
 
 ;; ;;
-;; (defparameter +tanuki-data+ "/home/sjcarbon/local/src/svn/geneontology/lisp/tanuki/data"
 ;;   "Location of data to be used for forms.")
 ;; (defparameter +sample-size+ 33 ; down from 100
 ;;   "The size of the random sample in the database for each iteration.")
@@ -75,8 +74,10 @@
 
 (defvar *default-url* "http://localhost/"
   "The default target used when not explicitly defined.")
+(defvar *default-data* "/tmp"
+  "The default data location used when not explicitly defined.")
 
-(defvar +default-logger+
+(defparameter +default-logger+
   (make-instance 'bb-log:simple-log :log-out "/tmp/tanuki.log")
   "The default logger.")
 
@@ -84,17 +85,21 @@
   "Wrapper."
   (bb-log:kvetch +default-logger+ obj))
 
-(defun top-reset (new-default-url)
+(defun top-reset (new-default-url new-default-data)
   "Blows away everything for a fresh start with the given url."
   (flag-up)
   (setf *default-url* new-default-url)
-  (tanuki-db:reset-database *default-url*))
+  (setf *default-data* new-default-data)
+  (tanuki-db:reset-database *default-url* *default-data*)
+  t)
 
 (defun top-remember ()
   "Try to get ready using the database."
   (flag-up)
   (tanuki-db:connect-repl)
-  (setf *default-url* (query (:select 'target :from 'meta) :single)))
+  (setf *default-url* (query (:select 'target :from 'meta) :single))
+  (setf *default-data* (query (:select 'data :from 'meta) :single))
+  t)
 
 ;;;
 ;;; Operations: changing values in the database.
@@ -104,12 +109,21 @@
   (setf (slot-value dao slot-name) slot-value)
   (update-dao dao))
 
-;; TODO/BUG: need to separate arguments and pages.
-(defun insert-agent-links (agent)
-  (dolist (l (links agent))
+(defun argument-set-to-page (argument-set)
+  "Convert an into an easily consumable plist form."
+  ;; Join arg to arg-set to page
+  (let ((page-id (tanuki-schema:page-id argument-set)))
+    (get-dao 'tanuki-schema:page page-id)))
+
+;; BUG: fix this for new schema
+(defun process-agent-links (agent)
+  (dolist (l (mapcar (lambda (l) (to-string l)) (links agent)))
     ;; TODO: This should not be "when", but "if" depending on whether
     ;; we do page and args or just page.
     (with-transaction ()
+      ;; TODO: page with base url
+      ;; TODO: argument set
+      ;; TODO: arguments
       (when (not (page-extant-p l))
         (let ((new-page (make-instance 'tanuki-schema:page
                                        :id (sequence-next 'page-id-seq)
@@ -123,20 +137,28 @@
 ;;; Targeting finding a page to try in the database.
 ;;;
 
-(defun random-untried-page (loc-symbol)
+;; select * from argument_set inner join page on (argument_set.page_id = page.id) where argument_set.todo = 1 and page.internal = 1;
+(defun random-undone-argument-set (loc-symbol)
   "Get a random unvisted page as a DAO, otherwise nil."
-  (let* ((in-ex (if (eq loc-symbol 'external) 0 1)) 
-         (count (row-count 'page (:and (:= 'tried 0)
-                                       (:= 'internal in-ex)))))
+  (let* ((in-ex (if (eq loc-symbol 'external) 0 1))
+         (count (query (:select (:count '*)
+                                :from 'argument-set
+                                :inner-join 'page
+                                :on (:= 'argument-set.page_id 'page.id)
+                                :where (:and (:= 'argument-set.todo 1)
+                                             (:= 'page.internal in-ex)))
+                       :single)))
     (if (not (= 0 count))
-	(let ((plist (query (:limit (:select '* :from 'page
-					     :where (:and (:= 'tried 0)
-							  (:= 'internal in-ex)))
-                                    1 (random count))
-			    :plist)))
-	  ;; (if plist (get-dao 'tanuki-schema:page
-          ;;                    (write-to-string (getf plist :id))))))))
-	  (if plist (get-dao 'tanuki-schema:page (getf plist :id)))))))
+	(let ((plist
+               (query (:limit (:select '*
+                                       :from 'argument-set
+                                       :inner-join 'page
+                                       :on (:= 'argument-set.page_id 'page.id)
+                                       :where (:and (:= 'todo 1)
+                                                    (:= 'internal in-ex)))
+                              1 (random count))
+                      :plist)))
+	  (if plist (get-dao 'tanuki-schema:argument-set (getf plist :id)))))))
 
 ;;;
 ;;; Agent control: 
@@ -154,19 +176,17 @@
 
 ;; TODO/BUG: maybe this should be specialized onto a generic
 ;; html-agent.
-(defun process-page (agent page &key (add-links t))
+(defun process-argument-set (agent aset &key (add-links t))
   "..."
-  (when page
-    (update-dao-value page 'tanuki-schema:tried 1) ; page is now "tried"
+  (when aset
+    (update-dao-value aset 'tanuki-schema:todo 0) ; set is now off todo list
     (let ((run-timer (make-instance 'bb-time:timer)))
-      (fetch agent (tanuki-schema:url page))
+      (fetch agent (tanuki-schema:unique-url aset))
       ;; Create the best hit we can at the moment...
       (let* ((ret-code (if (null (code agent)) :null (code agent)))
              (new-hit (make-instance 'tanuki-schema:hit
                                      :id (sequence-next 'hit-id-seq)
-                                     :page-id (tanuki-schema:id page)
-                                     ;; :arguments-id # TODO
-                                     :referer (tanuki-schema:url page)
+                                     :argument-set-id (tanuki-schema:id aset)
                                      :wait (bb-time:seconds run-timer)
                                      :date (bb-time:timestamp)
                                      ;; :agent # TODO
@@ -183,13 +203,13 @@
                                             flagged-int)))
           ;; 
 	  (cond
-	   ((and (null (errors agent)) (ok-code-p (code agent)))
+	   ((and (null (errors agent)) (is-code-ok-p agent))
             (toggles new-hit 1 0))
 	   ((null (errors agent))
             (toggles new-hit 1 1))
 	   (t (toggles new-hit 0 1))))
-        ;; 
-        (when add-links (insert-agent-links agent))))))
+         ))))
+;;    (when add-links (process-agent-links agent))))))
 
 ;; 
 (defun tanuki-step (agent)
@@ -198,13 +218,13 @@
   (do ()
       ((not (flag-p)))
     ;; TODO: add something here to randomize internal/external.
-    (let ((page (random-untried-page 'internal)))
+    (let ((page (random-undone-argument-set 'internal)))
       (if page
           (progn
             (kvetch (format nil "~a looking at: ~a" agent
                             (tanuki-schema:url page)))
-            ;;TODO: Also: (process-page agent page :add-links nil))
-            (process-page agent page))
+            ;;TODO: Also: (process-argument-set agent page :add-links nil))
+            (process-argument-set agent page))
         (progn
           (kvetch (format nil "~a is waiting a minute..." agent))
           (sleep 60))))))
@@ -215,25 +235,13 @@
 ;;       [Condition of type CL-POSTGRES:DATABASE-ERROR]
 ;; They must need their own connection...
 (defun start-a-tanuki ()
-  (let ((agent (make-instance 'tanuki-agent :base-url *default-url*)))
+  (let ((agent (make-instance 'tanuki-agent :home-url *default-url*)))
     (bordeaux-threads:make-thread
      (lambda ()
        (with-connection
         tanuki-db:*connection-parameters*
         (tanuki-step agent)))
      :name (symbol-name (gensym)))))
-
-;;;
-;;; TODO/BUG: Elsewhere: where these code bits should be.
-;;;
-
-(defun ok-code-p (code)
-  "Decide if a return code is in the OK range or not. Argument may be
-a integer or a string. Returns nil"
-  (let ((clean-code (if (stringp code)
-                        (parse-integer code)
-                      code)))
-    (if (> (- 400 clean-code) 0) t nil)))
 
 ;;;
 ;;; Report queries from connected toplevel.
@@ -249,12 +257,10 @@ a integer or a string. Returns nil"
                      :from ,table-symbol)
             :single)))
 
-;; (defun get-page-by-id (id)
-;;   "Get a page's DAO by either table rows's url or id."
-;;   (get-dao 'tanuki-schema:page id
-;;            (write-to-string (getf plist :id))))))))
+(defun get-plist-by-id (table-symbol id)
+  "Get a table's row's plist by id."
+  (query (:select '* :from table-symbol :where (:= 'id id)) :plist))
   
-
 (defun page-extant-p (page-url)
   "t or nil on the existance of a page (by url string) in the database."
   (let ((count (row-count 'page (:= 'url page-url))))
@@ -280,14 +286,41 @@ number of unvisited URLs."
     (format t "Total flagged pages: ~a~%" flagged-count)
     (format t "Total errors: ~a~%" error-count)))
 
-(defun error-report ()
-  "Give a report about all of the \"error\" (non-success) pages."  
 ;; (doquery (:select 'name 'score :from 'scores) (n s)
 ;;   (incf (gethash n *scores*) s))
 ;; (doquery ((:select 'name :from 'scores :where (:> 'score '$1)) 100) (name)
 ;;   (print name))
-nil)
-  
+
+(defun error-report ()
+  "Give a report about all of the \"error\" (non-success) pages."
+  (let ((qlist (query (:select '* :from  'hit
+                               :inner-join 'page
+                               :on (:= 'page.id 'hit.page_id)
+                               :where (:= 'success 0)) :plists)))
+    (dolist (q qlist)
+      (format t  "~%")
+      (format t  "Page ID: ~a~%" (getf q :page-id))
+      (format t  "Date: ~a~%" (bb-time:humanstamp (getf q :date)))
+      (format t  "Processing time: ~a~%" (getf q :wait))
+      (format t  "Code: ~a~%" (getf q :code))
+      (format t  "Flagged: ~a~%" (getf q :flagged))
+      (format t  "URL: ~a~%" (getf q :url)))))
+ 
+(defun flagged-report ()
+  "Give a report about all of the \"flagged\" pages."
+  (let ((qlist (query (:select '* :from  'hit
+                               :inner-join 'page
+                               :on (:= 'page.id 'hit.page_id)
+                               :where (:= 'flagged 1)) :plists)))
+    (dolist (q qlist)
+      (format t  "~%")
+      (format t  "Page ID: ~a~%" (getf q :page-id))
+      (format t  "Date: ~a~%" (bb-time:humanstamp (getf q :date)))
+      (format t  "Processing time: ~a~%" (getf q :wait))
+      (format t  "Code: ~a~%" (getf q :code))
+      (format t  "Success: ~a~%" (getf q :success))
+      (format t  "URL: ~a~%" (getf q :url)))))
+ 
 ;; ;; TODO: for giggles, see if we can get that into a single format.
 ;; (defun report-on-failed (&key (long nil))
 ;;   "Report about all failed pages."
@@ -310,8 +343,8 @@ nil)
 ;; 	    (format t "ON: ~a~%~%" (get-referer page)))))))
 
 
-; (select-dao 'page (:= 'tried 0))
-; (query-dao 'page (:select '* :from 'page :where (:= 'tried 0)))
+; (select-dao 'page (:= 'todo 1))
+; (query-dao 'page (:select '* :from 'page :where (:= 'todo 1)))
 ; (id (get-dao 'page (write-to-string 1)))
 
 ;; ;; We'll just start with random to get things going.

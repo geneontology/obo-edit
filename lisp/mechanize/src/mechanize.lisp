@@ -2,7 +2,12 @@
 ;;;;
 ;;;; Web agent based loosely on WWW::Mechanize.
 ;;;;
-;;;; TODO: Maybe make links (and forms) classes of their own.
+;;;; TODO: Make forms class.
+;;;;
+;;;; TODO: Eat own dog food with links and puris (switch all internal
+;;;; to my links).
+;;;;
+;;;; Example for test suite: (setf l (make-link "http://mail.google.com/mail/?hl=de&hl=en&tab=wm&bar=&bib#foo"))
 ;;;;
 ;;;; URLs known to trip failure:
 ;;;;    http://flybase.bio.indiana.edu/reports/FBgn0086348.html
@@ -25,13 +30,25 @@
   (:export
    ;; Classes.
    agent
-   ;; Slots.
+   link
+   ;; form # TODO
+   ;; Agent slots.
    current-url
    errors
    content
    code
    links
-   ;; Methods.
+   ;; Link slots
+   raw-url
+   clean-url
+   base-url
+   ;; Link methods.
+   make-link
+   to-string
+   authority
+   query-string
+   query-list
+   ;; Agent methods.
    fetch
    purge
    ))
@@ -41,8 +58,6 @@
   "Force a waiting timeout after this many seconds.")
 (defparameter +make-canonical+ t
   "Try and make found links correct relative to the current url.")
-(defparameter +clean-internal-links+ t
-  "Try and remove any internal links from a url.")
 
 ;;;
 ;;; NOTE: Change the parameters of the URI parse in puri--there are a
@@ -61,6 +76,79 @@
   (puri::reserved-char-vector
    puri::*excluded-characters* :except '(#\^ #\| #\#)))
 
+;;;
+;;; Link: convenience layer over puri.
+;;;
+
+;; 
+(defclass link (puri:uri)
+  ((raw-url
+    :accessor raw-url
+    :initform nil)
+   (clean-url
+    :accessor clean-url
+    :initform nil)
+   (base-url
+    :accessor base-url
+    :initform nil)))
+
+;; Constructor.
+(defun make-link (str)
+  "Constructor for links."
+  (let ((new-link (puri:parse-uri str :class 'link)))
+    (setf (slot-value new-link 'raw-url) str)
+    (let* ((scheme (string-downcase (symbol-name (puri:uri-scheme new-link))))
+	   (server (puri:uri-authority new-link))
+	   (path (puri:uri-path new-link))
+	   (new-base (concatenate 'string scheme "://" server path))
+	   (new-query (format nil "~{~A~^&~}"
+			      (mapcar (lambda (x)
+					(concatenate 'string
+						     (car x) "=" (cdr x)))
+				      (query-list new-link)))))
+      (setf (slot-value new-link 'base-url) new-base)
+      (setf (slot-value new-link 'clean-url)
+	    (concatenate 'string new-base "?" new-query))
+      new-link)))
+
+(defgeneric to-string (link)
+  (:documentation "Turn a link into a string."))
+
+(defmethod to-string ((link link))
+  "..."
+  (puri:render-uri link nil))
+
+(defgeneric authority (link)
+  (:documentation "Return the URI authority (server plus port (when not 80))."))
+
+(defmethod authority ((link link))
+  "..."
+  (puri:uri-authority link))
+
+(defgeneric query-string (link)
+  (:documentation "..."))
+
+(defmethod query-string ((link link))
+  "..."
+  (puri:uri-query link))
+
+(defgeneric query-list (link)
+  (:documentation "Return the query args as an ordered alist."))
+
+(defmethod query-list ((link link))
+  "..."
+  (sort (mapcar (lambda (l)
+		  (let ((split (cl-ppcre:split "=" l)))
+		    (if (= 2 (length split))
+			(cons (car split) (cadr split))
+			(cons (car split) ""))))
+		(cl-ppcre:split "&" (query-string link)))
+	#'compare-alist-items))
+
+;;;
+;;; Agent.
+;;;
+
 (defclass agent ()
   ((current-url
     :accessor current-url
@@ -77,8 +165,11 @@
    (links
     :accessor links
     :initform '())
+   ;; (kinks
+   ;;  :accessor links
+   ;;  :initform '())
    (forms ; TODO: implement this...
-    :accessor links
+    :accessor forms
     :initform '())))
 
 (defgeneric fetch (agent url-str)
@@ -166,21 +257,30 @@
 ;;; Unexported helper functions.
 ;;;
 
-;;
+(defun compare-alist-items (first second)
+  (if (string= (car first) (car second))
+      (string< (cdr first) (cdr second))
+      (string< (car first) (car second))))
+
+;; TODO: switch to unexported defmethod.
 (defun fill-out-agent-with-body (agent body)
-  "Things done if we get a proper text body."
+  "Things to do if we get a proper text body."
   (setf (content agent) body)
-  (setf (links agent) (extract-links body))
-  (when +make-canonical+
-    (setf (links agent)
-	  (mapcar (lambda (x)
-		    (make-canonical x :relative-to (current-url agent)))
-		  (links agent))))
-  (when +clean-internal-links+
-    (setf (links agent)
-	  (mapcar (lambda (x)
-		    (car (cl-ppcre:split "\#" x)))
-		  (links agent)))))
+  ;;(setf (links agent) (extract-links body))
+  (let ((raw-links (extract-links body)))
+    ;; Optionally make the links full (canonical) before processing. 
+    (when +make-canonical+
+      (setf raw-links
+	    (mapcar (lambda (x)
+		      (make-canonical x :relative-to (current-url agent)))
+		    raw-links)))
+    ;; ;; Optionally remove the fragment before processing. 
+    ;; (when +clean-links+
+    ;;   ;; Remove jumps.
+    ;;   (setf raw-links (mapcar (lambda (x)
+    ;; 				(car (cl-ppcre:split "\#" x)))
+    ;; 			      raw-links)))
+    (setf (links agent) (mapcar (lambda (x) (make-link x)) raw-links))))
 
 (defun make-rational (url-str)
   "Changes a url string into a proper url one way or another. This is
