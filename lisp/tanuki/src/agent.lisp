@@ -11,12 +11,17 @@
    ;; Classes.
    tanuki-agent
    ;; Slots.
-   base-url
+   home-url
    internal-p
    internal-links
    external-links
+   ;; Super class.
+   link
    ;; Super slots.
+   raw-url
+   clean-url
    current-url
+   base-url
    errors
    content
    code
@@ -24,17 +29,24 @@
    ;; Super methods.
    fetch
    purge
-   is-internal-p))
+   make-link
+   to-string
+   authority
+   query-string
+   query-list
+   ;; Methods.
+   is-internal-p
+   is-code-ok-p))
 (in-package :tanuki-agent)
 
 
 ;; Subclass of mechanize:agent.
 (defclass tanuki-agent (agent)
-  ((base-url
+  ((home-url
     :documentation "String url to help judge relativity properties."
-    :accessor base-url
+    :accessor home-url
     :initform (error "Must supply a base url (as a string) for a Tanuki agent.")
-    :initarg :base-url)
+    :initarg :home-url)
    (internal-p
     :documentation "Whether or nor the current url is internal
     relative to the base url."
@@ -42,18 +54,18 @@
     :initform nil
     :initarg :internal-p)
    (internal-links
-    :documentation "Internal links relative to the base-url."
+    :documentation "Internal links relative to the home-url."
     :accessor internal-links
     :initform '()
     :initarg :internal-links)
    (external-links
-    :documentation "External links relative to the base-url."
+    :documentation "External links relative to the home-url."
     :accessor external-links
     :initform '()
     :initarg :external-links)))
 
 (defmethod purge :after ((agent tanuki-agent))
-  "We do not reset the base-url."
+  "We do not reset the home-url."
   (setf (internal-p agent) nil)
   (setf (internal-links agent) '())
   (setf (external-links agent) '())
@@ -74,13 +86,24 @@
 
 (defgeneric is-internal-p (tanuki-agent query-url)
   (:documentation "Check whether the current url is internal relative
-  to the agent\'s base-url."))
+  to the agent\'s home-url."))
 
 (defmethod is-internal-p ((agent tanuki-agent) query-str)
-  "Check whether the current url is internal relative to base-url."
+  "Check whether the current url is internal relative to home-url."
   (let ((query-puri (puri:parse-uri
                      (mechanize::make-canonical query-str
-                                                :relative-to (base-url agent))))
-	(base-puri (puri:parse-uri (base-url agent))))
+                                                :relative-to (home-url agent))))
+	(base-puri (puri:parse-uri (home-url agent))))
     (string= (puri:uri-authority query-puri)
 	     (puri:uri-authority base-puri))))
+
+(defgeneric is-code-ok-p (agent)
+  (:documentation "Check whether the agent has an \"ok\" return code."))
+
+(defmethod is-code-ok-p ((agent tanuki-agent))
+  "..."
+  (let* ((code (code agent))
+         (clean-code (if (stringp code)
+                         (parse-integer code)
+                       code)))
+    (if (> (- 400 clean-code) 0) t nil)))
