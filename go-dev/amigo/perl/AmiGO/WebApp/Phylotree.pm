@@ -3,7 +3,8 @@ use warnings;
 use strict;
 use Memoize;
 use POSIX qw/ceil/;
-use IO::Scalar;
+#use IO::Scalar;
+use File::Basename;
 
 use Cairo;
 use AmiGO::Worker::PANTHERTree; # I'll have to change the name... -Seth
@@ -185,9 +186,19 @@ sub mode_cluster{
     $c->set_template_parameter(gene_products => [ $o->gene_products() ]);
     $c->set_template_parameter(page_title => $pid);
 
+    if ($default_dbname eq $o->{dbname}) {
+	my ($comment, @files) = $o->paint_files;
+
+	$c->set_template_parameter(paint_comment => $comment);
+	$c->set_template_parameter(paint_files => { map {
+	    basename($_) => $_;
+	} @files });
+    }
+
     $c->add_template_content('html/main/phylotree_cluster.tmpl');
     return $c->generate_template_page();
 }
+
 
 =item mode_dist_image
 

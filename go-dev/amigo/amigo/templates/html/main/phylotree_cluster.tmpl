@@ -4,6 +4,11 @@
 
 <div class="contents">
 
+[% IF paint_comment %]<h3>[% paint_comment %]</h3>[% END %]
+[% IF paint_files %]<ul>[% FOREACH file IN paint_files.keys %]
+<ol><a href="[% paint_files.$file %]">[% file %]</a></ol>
+[% END %]</ul>[% END %]
+
 <dl class="filters">
 
 <dt>1. Panthr Family ID</dt>
