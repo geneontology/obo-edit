@@ -463,7 +463,6 @@ sub _add_term {
 
   ## Terms.
   push @{$profile->{optional}}, 'term';
-  #$profile->{constraint_methods}{term} = qr/^(\s*GO\:\d{7}\s*)*$/;
   my $regexp = $self->{CORE}->term_regexp_string();
   $profile->{constraint_methods}{term} = qr/^(\s*$regexp\s*)$/;
 }

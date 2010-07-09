@@ -466,7 +466,7 @@ my %env_conf = (
 
 		AMIGO_TERM_REGEXP =>
 		{
-		 DEFAULT => 'GO\:[0-9]{7}',
+		 DEFAULT => 'all|GO\:[0-9]{7}',
 		 MESSAGE => 'hidden feature',
 		 ERROR => 'generic error',
 		 PARSER => \&is_always_true,
