@@ -108,7 +108,9 @@
 				      (query-list new-link)))))
       (setf (slot-value new-link 'base-url) new-base)
       (setf (slot-value new-link 'clean-url)
-	    (concatenate 'string new-base "?" new-query))
+	    (if (and new-query (not (string= new-query "")))
+		(concatenate 'string new-base "?" new-query)
+	    new-base))
       new-link)))
 
 (defgeneric to-string (link)
