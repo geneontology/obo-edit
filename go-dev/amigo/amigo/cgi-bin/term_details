@@ -154,15 +154,23 @@ sub mode_term_details_core {
     # $self->{CORE}->kvetch('_c.s_: ' . $sub_acc);
     # $self->{CORE}->kvetch('_c.n_: ' . $sub_name);
 
-    ## If the item is already in, check weight. Otherwise, just add
-    ## it.
     my $add_it_p = 1;
+
+    ## If the item is already in, check weight.
     if( defined $the_single_child->{$sub_acc} ){
       if( $graph->relation_weight($rel_acc, 1000) <
 	  $graph->relation_weight($the_single_child->{$sub_acc}{rel}, 1000) ){
 	$add_it_p = 0;
       }
     }
+
+    ## If the item acc smells obsolete, prevent it from being
+    ## displayed/getting into the mix.
+    if( $sub_acc =~ /^obsolete_/ ){
+      $add_it_p = 0;
+    }
+
+    ## If it passed that above tests, add it.
     if( $add_it_p ){
 
       $the_single_child->{$sub_acc} =
