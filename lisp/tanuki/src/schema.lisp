@@ -31,7 +31,7 @@
    :internal
    :page-id
    :raw-url
-   :unique-url
+   :clean-url
    :reference
    :request-method
    :request-type
@@ -74,22 +74,24 @@
     :col-type string
     :initarg :data))
   (:metaclass dao-class))
-   
+
+;; (dao-table-definition 'page) looks correct...
 (defclass page ()
   ((id
     :accessor id
     :col-type bigint
     :initarg :id)
-   (url
+   (url ; TODO: this has gots to be unique, does this do it?
     :accessor url
     :col-type string
-    :initarg :url)
+    :initarg :url
+    :unique t)
    (internal
     :accessor internal
     :col-type bigint
     :initarg :internal))
   (:metaclass dao-class)
-  (:keys id))
+  (:keys id url))
 
 ;; (dao-table-definition 'argument-set) looks correct...
 (defclass argument-set ()
@@ -108,12 +110,12 @@
     :initform :null
     :initarg :raw-url
     :documentation "The URL from first contact, if any.")
-   (unique-url
-    :accessor unique-url
+   (clean-url
+    :accessor clean-url
     :col-type (or db-null string)
     :col-default :null
     :initform :null
-    :initarg :unique-url
+    :initarg :clean-url
     :documentation "The raw URL cleaned and with an ordered query, if any.")
    (reference
     :accessor reference
