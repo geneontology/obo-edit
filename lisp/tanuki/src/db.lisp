@@ -107,7 +107,7 @@ page is defined (with no hits)."
 				    :id (sequence-next 'argument-set-id-seq)
 				    :page-id first-page-id
 				    :raw-url url-str
-				    :unique-url url-str
+				    :clean-url url-str
 				    :todo 1
 				    ;;:request-method ""
 				    ;;:request-type "base"
