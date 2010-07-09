@@ -2,6 +2,7 @@ package AmiGO::Worker::Phylotree;
 use warnings;
 use strict;
 use Data::Dumper;
+use Net::FTP;
 
 =head1 NAME
 
@@ -450,6 +451,35 @@ sub species_dist{
 =back
 
 =cut
+
+
+sub paint_files{
+    my $s = shift;
+
+    my $host = 'ftp.geneontology.org';
+    my $path = '/pub/go/gene-associations/submission/paint/' . $s->{key};
+
+    my $ftp = Net::FTP->new
+      ($host,
+       Passive => 1,
+       #Debug => 1,
+      ) or return "Can't access '$host'";
+    $ftp->login("anonymous",'-anonymous@') or return "Can't login to '$host'";
+
+    $ftp->cwd($path) or return 'Found no PAINT files.';
+    my @files = map {
+	$_ eq 'CVS' ? () : $_;
+    } $ftp->ls();
+    $ftp->quit();
+
+    my $found = scalar(@files);
+    return ('Found ' . (($found == 1) ? 'one file' : "$found files") . ' files.'), map {
+	"ftp://$host/$path/$_";
+    } @files;
+
+}
+
+
 
 1;
 
