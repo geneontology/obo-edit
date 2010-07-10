@@ -356,6 +356,7 @@ number of unvisited URLs."
     (dolist (q qlist)
       (incf count)
       (format t "~%")
+      (format t "Generic ID: ~a~%" (getf q :id))
       (format t "Argument set ID: ~a~%" (getf q :argument-set-id))
       (format t "Page ID: ~a~%" (getf q :page-id))
       (format t "Date: ~a~%" (bb-time:humanstamp (getf q :date)))

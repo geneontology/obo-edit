@@ -48,22 +48,21 @@ usage: (date-string (get-universal-time))."
 ;; Example usage: (tdb-time-stamp)
 (defun humanstamp (&optional (utime (timestamp)))
   "Return a date integer representing the inputted utime."
-  (if utime
-      (multiple-value-bind
-	  (second minute hour date month year day-of-week dst-p tz)
-	  (decode-universal-time utime)
-	(declare (ignore tz dst-p day-of-week))
-	;; Sorry for let--don't want to return two values here.
-	(let ((retval (parse-integer
-		       (format nil "~d~2,'0d~2,'0d~2,'0d~2,'0d~2,'0d"
-			       year
-			       month
-			       date
-			       hour
-			       minute
-			       second))))
-	  retval)
-	0)))
+  (when utime
+    (multiple-value-bind
+	(second minute hour date month year day-of-week dst-p tz)
+	(decode-universal-time utime)
+      (declare (ignore tz dst-p day-of-week))
+      ;; Sorry for let--don't want to return two values here.
+      (let ((retval (parse-integer
+		     (format nil "~d~2,'0d~2,'0d~2,'0d~2,'0d~2,'0d"
+			     year
+			     month
+			     date
+			     hour
+			     minute
+			     second))))
+	retval))))
 
 ;;;
 
