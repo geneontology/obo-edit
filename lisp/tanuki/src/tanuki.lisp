@@ -9,26 +9,24 @@
 ;;;;    (start-a-tanuki)
 ;;;;    (start-a-tanuki)
 ;;;;    [tail -f /tmp/tanuki.log]
-;;;;    (flag-down)
+;;;;    (stop-tanukis)
 ;;;;
 ;;;; Continue:
 ;;;;    (top-remember)
 ;;;;    (start-a-tanuki)
 ;;;;    (start-a-tanuki)
 ;;;;    [tail -f /tmp/tanuki.log]
-;;;;    (flag-down)
+;;;;    (stop-tanukis)
 ;;;;
 ;;;; Partial:
 ;;;;    (flag-up)
-;;;;    (setf a (make-instance 'tanuki-agent :home-url *default-url*))
+;;;;    (setf a (make-agent))
 ;;;;    (process-argument-set a (random-undone-argument-set 'internal))
 ;;;;    (flag-down)
 ;;;;
 ;;;; WISHLIST:
-;;;; *) User agent string.
+;;;; *) Nuke page and up by id (by way of aset and up).
 ;;;; *) Be able to report about running threads.
-;;;; *) Be able to problems-to-mandates and run them. Is keeping the
-;;;;    history a good idea?
 ;;;; *) Sampling (like we used to) for better results/coverage.
 ;;;; *) Add "action" table to keep track of tanuki life events.
 ;;;; *) "Class"ify tanuki so we can work our way towards a web-based
@@ -74,10 +72,20 @@
 ;; (defparameter +sample-size+ 33 ; down from 100
 ;;   "The size of the random sample in the database for each iteration.")
 
+(defun debug-sql (sym)
+  ""
+  (if (eq sym 'on)
+      (setf cl-postgres:*query-log* *standard-output*)
+    (setf cl-postgres:*query-log* nil)))
 
 (defun kvetch (obj)
-  "Wrapper."
+  "Wrapper; with stdout (for interactive operations) too."
+  (format nil "~a~%" obj)
   (bb-log:kvetch +default-logger+ obj))
+
+(defun make-agent ()
+  "Quick agent maker."
+  (make-instance 'tanuki-agent :home-url *default-url*))
 
 (defun top-reset (new-default-url new-default-data)
   "Blows away everything for a fresh start with the given url."
@@ -103,14 +111,31 @@
   (setf (slot-value dao slot-name) slot-value)
   (update-dao dao))
 
-(defun argument-set-to-page (argument-set)
-  "Convert an into an easily consumable plist form."
-  ;; Join arg to arg-set to page
+;; Join arg-set to page.
+(defun argument-set->page (argument-set)
+  "An argument_set to a page."
   (let ((page-id (tanuki-schema:page-id argument-set)))
     (get-dao 'tanuki-schema:page page-id)))
 
-;; TODO/BUG: Proper (table) arguments too.
+;; Join hit to arg-set.
+(defun hit->argument-set (hit)
+  "A hit to an argument_set."
+  (let ((aset-id (tanuki-schema:argument-set-id hit)))
+    (get-dao 'tanuki-schema:argument-set aset-id)))
+
+;; Join arg-set to hits.
+(defun argument-set=>hit (aset)
+  "An argument_set to hit(s)."
+  (when (and aset (tanuki-schema:id aset))
+    (query-dao 'tanuki-schema:hit
+               (:select 'hit.* :from 'hit
+                        :inner-join 'argument-set
+                        :on (:= 'hit.argument-set-id 'argument-set.id)
+                        :where (:= 'argument-set.id
+                                   (tanuki-schema:id aset))))))
+
 (defun process-agent-links (agent)
+  "..."
   (dolist (alink (links agent))
     (with-slots
      (base-url raw-url clean-url) alink
@@ -168,7 +193,7 @@ symbols 'internal, 'external, 'weighed, or 'random."
          (count (query (:select (:count '*)
                                 :from 'argument-set
                                 :inner-join 'page
-                                :on (:= 'argument-set.page_id 'page.id)
+                                :on (:= 'argument-set.page-id 'page.id)
                                 :where (:and (:= 'argument-set.todo 1)
                                              (:= 'page.internal in-ex)))
                        :single)))
@@ -177,7 +202,7 @@ symbols 'internal, 'external, 'weighed, or 'random."
                (query (:limit (:select '*
                                        :from 'argument-set
                                        :inner-join 'page
-                                       :on (:= 'argument-set.page_id 'page.id)
+                                       :on (:= 'argument-set.page-id 'page.id)
                                        :where (:and (:= 'argument-set.todo 1)
                                                     (:= 'page.internal in-ex)))
                               1 (random count))
@@ -214,7 +239,7 @@ symbols 'internal, 'external, 'weighed, or 'random."
                                      :argument-set-id (tanuki-schema:id aset)
                                      :wait (bb-time:seconds run-timer)
                                      :date (bb-time:timestamp)
-                                     ;; :agent # TODO
+                                     :agent (user-agent agent)
                                      :code ret-code)))
 	(insert-dao new-hit)
 	;; Toggle success and flagged depending on what happened with
@@ -251,7 +276,7 @@ symbols 'internal, 'external, 'weighed, or 'random."
         (progn
           (kvetch (format nil "~a is waiting for something new..." agent))
           (sleep 60)))))
-  (kvetch (format nil "Agent ~a is stopping" agent)))
+  (kvetch (format nil "Agent ~a is stopping." agent)))
 
 ;; TODO: see the old runner for target selector stuff...
 ;; BUG (when running multiple tanukis):
@@ -259,13 +284,18 @@ symbols 'internal, 'external, 'weighed, or 'random."
 ;;       [Condition of type CL-POSTGRES:DATABASE-ERROR]
 ;; They must need their own connection...
 (defun start-a-tanuki ()
-  (let ((agent (make-instance 'tanuki-agent :home-url *default-url*)))
+  (flag-up) ; hmmm...
+  (let ((agent (make-agent)))
     (bordeaux-threads:make-thread
      (lambda ()
        (with-connection
         tanuki-db:*connection-parameters*
         (tanuki-step agent)))
      :name (symbol-name (gensym)))))
+
+(defun stop-tanukis ()
+  "..."
+  (flag-down))
 
 ;;;
 ;;; Report queries from connected toplevel.
@@ -305,8 +335,10 @@ number of unvisited URLs."
         (internal-page-count (row-count 'page (:= 'internal 1)))
         (aset-count (row-count 'argument-set))
         (hit-count (row-count 'hit))
-        (flagged-count (row-count 'hit (:= 1 'flagged)))
-        (error-count (row-count 'hit (:= 0 'success))))
+        (good-count (row-count 'hit (:and (:= 0 'flagged) (:= 1 'success))))
+        (flagged-count (row-count 'hit (:and (:= 1 'flagged) (:= 1 'success))))
+        (error-count (row-count 'hit (:and (:= 1 'flagged) (:= 0 'success))))
+        (odd-count (row-count 'hit (:and (:= 0 'flagged) (:= 0 'success)))))
     (format t "Current Tanuki status:~%")
     (format t "Base URL: ~a~%" target)
     (format t "Started at: ~a~%" start)
@@ -314,182 +346,110 @@ number of unvisited URLs."
     (format t "Known internal pages: ~a~%" internal-page-count)
     (format t "Collected argument sets: ~a~%" aset-count)
     (format t "Attempted page visits: ~a~%" hit-count)
+    (format t "Total good pages: ~a~%" good-count)
     (format t "Total flagged pages: ~a~%" flagged-count)
-    (format t "Total errors: ~a~%" error-count)))
+    (format t "Total error pages: ~a~%" error-count)
+    (format t "Total odd pages: ~a~%" odd-count)))
 
-(defun error-report ()
-  "Give a report about all of the \"error\" (non-success) pages."
-  (let ((qlist (query (:select '* :from  'hit
-                               :inner-join 'argument-set
-                               :on (:= 'hit.argument_set_id 'argument-set.id)
-                               :where (:= 'hit.success 0)) :plists))
-        (count 0))
+(defun report-plists (qlist)
+  (let ((count 0))
     (dolist (q qlist)
-      (setf count (+ 1 count))
-      (format t  "~%")
-      (format t  "Page ID: ~a~%" (getf q :page-id))
-      (format t  "Date: ~a~%" (bb-time:humanstamp (getf q :date)))
-      (format t  "Processing time: ~a~%" (getf q :wait))
-      (format t  "Code: ~a~%" (getf q :code))
-      (format t  "Flagged: ~a~%" (getf q :flagged))
-      (format t  "Reference: ~a~%" (getf q :reference))
-      (format t  "URL: ~a~%" (getf q :clean-url)))
+      (incf count)
+      (format t "~%")
+      (format t "Argument set ID: ~a~%" (getf q :argument-set-id))
+      (format t "Page ID: ~a~%" (getf q :page-id))
+      (format t "Date: ~a~%" (bb-time:humanstamp (getf q :date)))
+      (format t "Processing time: ~a~%" (getf q :wait))
+      (format t "Code: ~a~%" (getf q :code))
+      (format t "Flagged: ~a~%" (getf q :flagged))
+      (format t "Reference: ~a~%" (getf q :reference))
+      (format t "URL: ~a~%" (getf q :clean-url)))
     count))
+
+(defun report-error ()
+  "Give a report about all of the sets with an \"error\" (non-success) hit."
+  (let ((qlist (query (:select '* :from 'hit
+                               :inner-join 'argument-set
+                               :on (:= 'hit.argument-set-id 'argument-set.id)
+                               :where (:and (:= 'hit.success 0)
+                                            (:= 'hit.flagged 1)))
+                      :plists)))
+    (report-plists qlist)))
  
-(defun flagged-report ()
-  "Give a report about all of the \"flagged\" pages."
-  (let ((qlist (query (:select '* :from  'hit
+(defun report-flagged ()
+  "Give a report about all of the sets with a \"flagged\" hit."
+  (let ((qlist (query (:select '* :from 'hit
                                :inner-join 'argument-set
-                               :on (:= 'hit.argument_set_id 'argument-set.id)
-                               :where (:= 'hit.flagged 1)) :plists))
+                               :on (:= 'hit.argument-set-id 'argument-set.id)
+                               :where (:and (:= 'hit.success 1)
+                                            (:= 'hit.flagged 1)))
+                      :plists)))
+    (report-plists qlist)))
+
+(defun report-marked ()
+  "Give a report about all of the sets with a \"mark\"."
+  (let ((qlist (query (:select '* :from 'argument-set
+                               :where (:= 'argument-set.mark 1))
+                      :plists)))
+    (report-plists qlist)))
+
+;;;
+;;; Live management--test fixes and do reruns interactively
+;;; (i.e. without resetting the database).
+;;;
+
+(defun mark-by-id (aset-id)
+  "Mark an argument set and remove its hits by argument set id."
+  (let ((aset (get-dao 'tanuki-schema:argument-set aset-id))
         (count 0))
-    (dolist (q qlist)
-      (setf count (+ 1 count))
-      (format t  "~%")
-      (format t  "Page ID: ~a~%" (getf q :page-id))
-      (format t  "Date: ~a~%" (bb-time:humanstamp (getf q :date)))
-      (format t  "Processing time: ~a~%" (getf q :wait))
-      (format t  "Code: ~a~%" (getf q :code))
-      (format t  "Success: ~a~%" (getf q :success))
-      (format t  "Reference: ~a~%" (getf q :reference))
-      (format t  "URL: ~a~%" (getf q :clean-url)))
+    (when aset 
+      ;; Mark found aset.
+      (update-dao-value aset 'tanuki-schema:mark 1)
+      ;; Remove associated hits.
+      (dolist (hit (argument-set=>hit aset))
+        (delete-dao hit) 
+        (incf count)))
     count))
 
-; (select-dao 'page (:= 'todo 1))
-; (query-dao 'page (:select '* :from 'page :where (:= 'todo 1)))
-; (id (get-dao 'page (write-to-string 1)))
+(defun mark-problems (type)
+  "Remove hits and set mark (but don't reset todo--hide from running agents)."
+  (let ((success-flag 1) (flagged-flag 0))
+    (cond 
+     ((eq type 'error) 
+      (progn (setf success-flag 0) (setf flagged-flag 1)))
+     ((eq type 'flagged) 
+      (progn (setf success-flag 1) (setf flagged-flag 1)))
+     (t (error "need to be either 'error or 'flagged")))
+    (with-transaction ()
+     ;; Get arguments sets.
+     (let ((hits (query-dao 'tanuki-schema:hit
+                  (:select '* :from 'hit
+                           :where (:and (:= 'hit.success success-flag)
+                                        (:= 'hit.flagged flagged-flag)))))
+           (count 0))
+       (dolist (hit hits)
+         ;; Mark found asets.
+         (let ((aset (hit->argument-set hit)))
+           (update-dao-value aset 'tanuki-schema:mark 1))
+         ;; Remove associated hits.
+         (delete-dao hit) 
+         (incf count))
+       count))))
 
-;; ;; TODO/BUG: just returning nil makes a hell of a lot more sense.
-;; ;; BUG: This is slooooooooooooooooooow after a while.
-;; (defun next-target-page ()
-;;   "Get the next target page from the system as a page. It will find a
-;; page that has not been visited yet."
-;;   ;; Check to see that there are unvisted URLs.
-;;   (if (= 0 (get-unvisited-page-count +tanuki-db+))
-;;       (error 'tanuki-without-targets-error :text "no unvisited pages")
-;;     (let ((total-page-count (get-page-count +tanuki-db+))
-;; 	  (unvisited-page-count (get-unvisited-page-count +tanuki-db+)))
-;;       ;; Collect a sample of total pages and a sample of unvisited
-;;       ;; pages.
-;;       (let ((total-pages
-;; 	     (mapcar #'(lambda (x) (get-nth-page +tanuki-db+ x))
-;; 		     (random-sequence +sample-size+
-;; 				      :squeeze t
-;; 				      :range (list 1 total-page-count))))
-;; 	    (unvisited-pages
-;; 	     (mapcar #'(lambda (x) (get-nth-unvisited-page +tanuki-db+ x))
-;; 		     (random-sequence +sample-size+
-;; 				      :squeeze t
-;; 				      :range (list 1 unvisited-page-count)))))
-;; 	;; TODO/BUG: decide should acually be
-;; 	;; working with alists.
-;; 	(let ((decision (decide (mapcar #'get-url unvisited-pages)
-;; 				(mapcar #'get-url total-pages))))
-;; 	  (if decision
-;; 	      (get-page-from-url +tanuki-db+ decision)
-;; 	    (error 'tanuki-without-targets-error :text "no decision")))))))
-
-;; (defun next-internal-target-page ()
-;;   "Get the next internal target page from the system as a page. It
-;; will find a page that has not been visited yet."
-;;   ;; Check to see that there are unvisted URLs.
-;;   (if (= 0 (get-internal-unvisited-page-count +tanuki-db+))
-;;       (error 'tanuki-without-targets-error :text "no unvisited internal pages")
-;;     (let ((total-page-count (get-internal-page-count +tanuki-db+))
-;; 	  (unvisited-page-count (get-internal-unvisited-page-count +tanuki-db+)))
-;;       ;; Collect a sample of total pages and a sample of unvisited
-;;       ;; pages.
-;;       (let ((total-pages
-;; 	     (mapcar #'(lambda (x) (get-nth-internal-page +tanuki-db+ x))
-;; 		     (random-sequence +sample-size+
-;; 				      :squeeze t
-;; 				      :range (list 1 total-page-count))))
-;; 	    (unvisited-pages
-;; 	     (mapcar #'(lambda (x) (get-nth-internal-unvisited-page +tanuki-db+ x))
-;; 		     (random-sequence +sample-size+
-;; 				      :squeeze t
-;; 				      :range (list 1 unvisited-page-count)))))
-;; 	;; TODO/BUG: decide should acually be
-;; 	;; working with alists.
-;; 	(let ((decision (decide (mapcar #'get-url unvisited-pages)
-;; 				(mapcar #'get-url total-pages))))
-;; 	  (if decision
-;; 	      (get-page-from-url +tanuki-db+ decision)
-;; 	    (error 'tanuki-without-targets-error :text "no decision")))))))
-
-;; (defun next-mandated-page ()
-;;   "Get the next mandated page from the system as a page. It will get
-;; them in no particular order."
-;;   ;; Check to see that there are unvisted URLs.
-;;   (car (sql-engine +tanuki-db+ :mandated t :visited nil)))
-
-;; (defun next-failed-page ()
-;;   "Get the next failed page from the system as a page. It will get
-;; them in no particular order."
-;;   ;; Check to see that there are unvisted URLs.
-;;   (car (sql-engine +tanuki-db+ :failed t)))
-
-;; (defun mandate-failed ()
-;;   "Changes failed pages (that aren't odd) to unvisited mandated pages."
-;;   ;; Check to see that there are unvisted URLs.
-;;   (let ((pages (sql-engine +tanuki-db+ :failed t :odd nil)))
-;;     (loop
-;;      for page in pages
-;;      do (update-page +tanuki-db+ :page page :mandated t
-;; 					    :visited nil
-;; 					    :failed nil
-;; 					    :odd nil))))
-
-;; ;; TODO: there *has* to be a way to juggle keywords to that I can
-;; ;; juggle code with the above function.
-;; (defun mandate-odd ()
-;;   "Changes odd pages to unvisited mandated pages."
-;;   ;; Check to see that there are unvisted URLs.
-;;   (let ((pages (sql-engine +tanuki-db+ :odd t)))
-;;     (loop
-;;      for page in pages
-;;      do (update-page +tanuki-db+ :page page :mandated t
-;; 					    :visited nil
-;; 					    :failed nil
-;; 					    :odd nil))))
-
-;; ;; can be used with mandate-failed and mandate-odd
-;; (defun do-all-mandates ()
-;;   "Retry all failed pages."
-;;   (loop
-;;    (let ((page (next-mandated-page)))
-;;      (if (not page) (return nil)
-;;        (progn
-;; 	 (format t "Trying mandated:~a~%" (get-url page))
-;; 	 (tanuki-step page))))))
-
-;; ;;;
-;; ;;; Stepping rules.
-;; ;;;
-
-;; (defun do-internal-step (page)
-;;   ""
-;;   (format t "internal step ~a~%" (get-url page))
-;;   (let ((html-doc (fetch-doc (get-url page))))
-;;     (if	(not html-doc)
-;; 	(mark-page-as-failed +tanuki-db+ page) ; not a good page
-;;       (multiple-value-bind (internal-pages external-pages)
-;; 	  (extract-links html-doc (get-target +tanuki-db+))
-;; 	(loop
-;; 	 for url in internal-pages
-;; 	 do (when (not (url-in-db-p +tanuki-db+ url))
-;; 	      (enter-page +tanuki-db+ :url url
-;; 				      :internal t
-;; 				      :referer (get-url page))))
-;; 	(loop
-;; 	 for url in external-pages
-;; 	 do (when (not (url-in-db-p +tanuki-db+ url))
-;; 	      (enter-page +tanuki-db+ :url url
-;; 				      :internal nil
-;; 				      :referer (get-url page))))))))
-
-;; (defun do-external-step (page)
-;;   ""
-;;   (format t "external step ~a~%" (get-url page))
-;;   (if (not (fetch-doc (get-url page)))
-;;       (mark-page-as-failed +tanuki-db+ page)))
+;; NOTE: No transaction here--nobody should be bothering us...
+(defun rerun-marked ()
+  "Rerun marked argument sets and unmark them."
+  (let ((agent (make-agent))
+        (asets (query-dao 'tanuki-schema:argument-set
+                          (:select '* :from 'argument-set
+                                   :where (:= 'argument-set.mark 1))))
+        (count 0))
+    (dolist (aset asets)
+      (incf count)
+      ;; Run as usual.
+      (kvetch (format nil "Rerunning ~a of ~a..."
+                      (+ 1 count) (+ 1 (length asets))))
+      (process-argument-set agent aset)
+      ;; Unmark.
+      (update-dao-value aset 'tanuki-schema:mark 0)
+    count)))

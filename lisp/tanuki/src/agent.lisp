@@ -20,8 +20,9 @@
    ;; Super slots.
    raw-url
    clean-url
-   current-url
    base-url
+   user-agent
+   current-url
    errors
    content
    code
@@ -39,6 +40,10 @@
    is-code-ok-p))
 (in-package :tanuki-agent)
 
+(defvar *version* "0.1.0" "This version of Tanuki Agent.")
+(defparameter +user-agent+
+  (format nil "Tanuki ~a (over CL-Mechanize (over Drakma))" *version*)
+  "User agent string.")
 
 ;; Subclass of mechanize:agent.
 (defclass tanuki-agent (agent)
@@ -47,6 +52,9 @@
     :accessor home-url
     :initform (error "Must supply a base url (as a string) for a Tanuki agent.")
     :initarg :home-url)
+   (user-agent
+    :documentation "Override super's with ours."
+    :initform +user-agent+)
    (internal-p
     :documentation "Whether or nor the current url is internal
     relative to the base url."
