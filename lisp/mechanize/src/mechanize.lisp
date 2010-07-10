@@ -33,6 +33,7 @@
    link
    ;; form # TODO
    ;; Agent slots.
+   user-agent
    current-url
    errors
    content
@@ -54,6 +55,12 @@
    ))
 (in-package :mechanize)
 
+
+(defvar *version* "0.1.0" "This version of CL-Mechanize.")
+
+(defparameter +user-agent+
+  (format nil "CL-Mechanize ~a (over Drakma)" *version*)
+  "User agent string.")
 (defparameter +agent-timeout+ 300
   "Force a waiting timeout after this many seconds.")
 (defparameter +make-canonical+ t
@@ -152,7 +159,11 @@
 ;;;
 
 (defclass agent ()
-  ((current-url
+  ((user-agent
+    :accessor user-agent
+    :initform +user-agent+
+    :initarg :user-agent)
+   (current-url
     :accessor current-url
     :initform nil)
    (errors
@@ -195,7 +206,7 @@
        (sb-ext:with-timeout +agent-timeout+
          (multiple-value-bind
              (body response-code headers puri stream must-close-p reason)
-             (http-request url-str :redirect 100)
+             (http-request url-str :redirect 100 :user-agent (user-agent agent))
            (declare (ignore puri stream must-close-p reason))
            (cond
             ;; TODO: Doesn't deal with images real well yet.

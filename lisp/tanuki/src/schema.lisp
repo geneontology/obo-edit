@@ -47,6 +47,8 @@
    :code
    :flagged
    :success
+   ;; Joins
+   ;; ...
    ))
 (in-package :tanuki-schema)
 
