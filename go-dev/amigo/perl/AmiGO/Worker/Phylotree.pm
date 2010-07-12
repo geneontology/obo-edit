@@ -473,7 +473,7 @@ sub paint_files{
     $ftp->quit();
 
     my $found = scalar(@files);
-    return ('Found ' . (($found == 1) ? 'one file' : "$found files") . ' files.'), map {
+    return (($found == 1) ? 'Found one PAINT file' : "Found $found PAINT files"), map {
 	"ftp://$host/$path/$_";
     } @files;
 

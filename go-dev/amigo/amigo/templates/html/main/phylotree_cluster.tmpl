@@ -6,7 +6,7 @@
 
 [% IF paint_comment %]<h3>[% paint_comment %]</h3>[% END %]
 [% IF paint_files %]<ul>[% FOREACH file IN paint_files.keys %]
-<ol><a href="[% paint_files.$file %]">[% file %]</a></ol>
+<li><a href="[% paint_files.$file %]">[% file %]</a></li>
 [% END %]</ul>[% END %]
 
 <dl class="filters">
