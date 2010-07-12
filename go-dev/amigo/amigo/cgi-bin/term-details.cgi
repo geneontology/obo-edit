@@ -95,12 +95,8 @@ $vars->{term_acc} = $term_list[0];
 ###
 
 $vars->{VIZ_STATIC_LINK} =
-  $core->get_interlink({mode => 'visualize',
-			arg => {data => $vars->{term_acc},format => 'png'}});
-## TODO: this does not appear in the code yet...
-$vars->{VIZ_INTERACTIVE_LINK} =
-  $core->get_interlink({mode => 'visualize',
-			arg => {data => $vars->{term_acc},format => 'svg'}});
+  $core->get_interlink({mode => 'visualize_subset',
+			arg => {subset => $vars->{term_acc}}});
 
 ###
 ### GONuts query.

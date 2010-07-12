@@ -1322,6 +1322,23 @@ sub get_interlink {
        $ilink = $self->_fuse_hash($ihash);
      },
 
+     'visualize_subset' =>
+     sub {
+       my $subset = $args->{subset} || '';
+       my $inline = $args->{inline} || 'false';
+       $ihash = {
+		 action => 'visualize',
+		 arguments =>
+		 {
+		  mode => 'subset',
+		  inline => $inline,
+		  subset => $subset,
+		 },
+		};
+
+       $ilink = $self->_fuse_hash($ihash);
+     },
+
      'term_search' =>
      sub {
        if( ! $self->empty_hash_p($args) ){
