@@ -197,6 +197,12 @@ sub new {
 			 ];
     #$self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
 
+  }elsif( $type eq 'term_subset' ){
+
+    $self->{QUERY_RESULT_SET} = 'TermSubset';
+    $self->{QUERY_JOIN} = ['term', 'subset'];
+    $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
+
   }elsif( $type eq 'term_lazy' ){
 
     $self->{QUERY_RESULT_SET} = 'Term';
@@ -206,12 +212,12 @@ sub new {
   }elsif( $type eq 'term' ){
 
     $self->{QUERY_RESULT_SET} = 'Term';
-     $self->{QUERY_JOIN} = ['term_synonym',
+    $self->{QUERY_JOIN} = ['term_synonym',
  			   'gene_product_count',
 			    {'association' =>
 			     'evidence'},
-			    # ['evidence',
-			    # 'gene_product']},
+			   # ['evidence',
+			   # 'gene_product']},
  			   {'term_dbxref' =>
  			    'dbxref'}];
     $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
