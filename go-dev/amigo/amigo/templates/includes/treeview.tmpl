@@ -159,7 +159,13 @@
 		PROCESS error.tmpl;
 	END;
 	IF count > 500; %]
-<p>Tree view limited to 500 lines. [% IF tree_view && tree_view == 'full' %]<a href="[% cgi %].cgi?action=filter&amp;tree_view=compact[% link %]&amp;term=[% term_acc %]&amp;session_id=[% session_id %]" title="View this graph in compact form">Try the compact view of the graph</a>.[% END %]
+<p>Tree view limited to 500 lines.
+[% ## Catch subsets that want to use term details and keep them in. %]
+[% IF tree_view && tree_view == 'full' && cgi == 'term-details' %]
+<a href="[% cgi %].cgi?action=filter&amp;tree_view=compact&amp;term=[% term_acc %]&amp;session_id=[% session_id %]" title="View this graph in compact form">Try the compact view of the graph</a>.
+[% ELSIF tree_view && tree_view == 'full' %]
+<a href="[% cgi %].cgi?action=filter&amp;tree_view=compact[% link %]&amp;term=[% term_acc %]&amp;session_id=[% session_id %]" title="View this graph in compact form">Try the compact view of the graph</a>.
+[% END %]
 [% IF page_name == 'browse' && show_graphviz == 1 %]
 Or try the <a href="[% VIZ_STATIC_LINK %]" title="View the tree in graph form">Graphical View</a>.
 <!--
@@ -176,7 +182,7 @@ Or try the <a href="[% cgi %].cgi?session_id=[% session_id %][% permalink _ cont
 </div>
 [%# USE Dumper; '<pre>'; Dumper.dump(graph); '</pre>'; %]
 <!--
-FOO:
+DEBUG:
 cgi: [% cgi %]
 session_id: [% session_id %]
 permalink: [% permalink %]
