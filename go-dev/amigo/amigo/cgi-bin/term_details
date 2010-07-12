@@ -452,7 +452,7 @@ sub mode_term_details_core {
   ###
 
   ## Non-standard settings.
-  # $self->set_template_parameter('STANDARD_YUI', 'no'); # no YUI please
+  $self->set_template_parameter('STANDARD_YUI', 'no'); # no YUI please
   # $self->set_template_parameter('STANDARD_YUI', 1);
 
   ## Our AmiGO services CSS.

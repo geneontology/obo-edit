@@ -918,6 +918,7 @@ if ( $opt_c ) {
 	  gp-select.cgi
 	  term-assoc.cgi
 	  term-chart.cgi
+	  term-details.cgi
 	  term-select.cgi
 	  go.cgi
 	  search.cgi
@@ -1012,28 +1013,29 @@ if ( $opt_c ) {
     make_executable( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/' . $_);
   }
 
-  ## Now that things are copied over, make the old term-details.cgi
-  ## link to the new term_details.
-  {
-    my $old = $synth_vars{AMIGO_CGI_ROOT_DIR} . '/term-details.cgi';
-    my $new = $synth_vars{AMIGO_CGI_ROOT_DIR} . '/term_details';
-    my $hst = $synth_vars{AMIGO_CGI_ROOT_DIR} . '/term-details-old.cgi';
+  ## The old term-details.cgi needs to be kept around to catch all of
+  ## the things that fall through to the term subset routines (which
+  ## is not covered by the new term_details).
+  # ## Now that things are copied over, make term-details.cgi link to
+  # ## term_details and copy term-.
+  # {
+  #   my $hst = $synth_vars{AMIGO_CGI_ROOT_DIR} . '/term-details-old.cgi';
+  #   my $old = $synth_vars{AMIGO_CGI_ROOT_DIR} . '/term-details.cgi';
+  #   my $new = $synth_vars{AMIGO_CGI_ROOT_DIR} . '/term_details';
 
-    ## Make sure the old ones are gone.
-    unlink $old if -f $old;
-    unlink $hst if -f $hst;
+  #   ## Make sure the old ones are gone.
+  #   unlink $old if -f $old;
+  #   unlink $hst if -f $hst;
 
-    ## Make the link.
-    my @args = ("ln", "-f", "-s", $new, $old);
-    ll("Old to new term details link: link $new to $old");
-    system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_t;
+  #   ## Make the link.
+  #   my @args = ("ln", "-f", "-s", $new, $old);
+  #   ll("Old to new term details link: link $new to $old");
+  #   system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_t;
 
-    # ## Put old one over for comparison on experimental machines.
-    # if( $opt_e ){
-    #   force_copy(Cwd::cwd() . '/amigo/cgi-bin/term-details.cgi', $hst);
-    #   make_executable($hst);
-    # }
-  }
+  #   # ## Put old one over for to cover for the old.
+  #   # force_copy(Cwd::cwd() . '/amigo/cgi-bin/term-details.cgi', $old);
+  #   # make_executable($old);
+  # }
 
   ## Copy perl config over.
   force_copy(Cwd::cwd() . '/config.pl', $synth_vars{AMIGO_CGI_ROOT_DIR} );

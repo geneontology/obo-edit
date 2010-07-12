@@ -979,16 +979,16 @@ sub database_link {
 
     ## Insert the id through the link string if one was available.
     if( $link_string ){
-      ## Special case for UniGene?
-      if( $db eq lc('UniGene') ){
-	## Split id on '.'. First part goes to
-	## [organism_abbreviation], second part goes to [cluster_id].
-	my($first, $second) = split(/\./, $id);
-	$link_string =~ s/\[organism\_abbreviation\]/$first/g;
-	$link_string =~ s/\[cluster\_id\]/$second/g;
-      }else{
-	$link_string =~ s/\[example\_id\]/$id/g;
-      }
+      # ## Special case for UniGene?
+      # if( $db eq lc('UniGene') ){
+      # 	## Split id on '.'. First part goes to
+      # 	## [organism_abbreviation], second part goes to [cluster_id].
+      # 	my($first, $second) = split(/\./, $id);
+      # 	$link_string =~ s/\[organism\_abbreviation\]/$first/g;
+      # 	$link_string =~ s/\[cluster\_id\]/$second/g;
+      # }else{
+      $link_string =~ s/\[example\_id\]/$id/g;
+      # }
       $retval = $link_string;
     }
   }
@@ -1184,7 +1184,7 @@ sub get_interlink {
        die "interlink mode 'term-subset' requires args" if ! defined $args;
        my $acc = $args->{acc} || '';
        my $sid = $args->{session_id} || '';
-       $ilink = 'term-details.cgi?term=' .
+       $ilink = 'term-details?term=' .
 	 #$self->html_safe($acc) . '&session_id=' . $sid;
 	 $acc . '&session_id=' . $sid;
      },

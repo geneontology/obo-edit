@@ -112,6 +112,7 @@
      [% IF TERM_INFO.subsets.size != 0 %]
      <dd><ul class="subset">
 	 [% FOREACH sub = TERM_INFO.subsets %]
+	 [% #   IF sub.link %]
 	 [%    IF sub.acc.search('goslim') %]
 	 <li><a href="[% sub.link %]" title="View details of the [% sub.name %] GO slim">[% sub.name %]</a></li>
 	 [%    ELSE %]
