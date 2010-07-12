@@ -151,6 +151,9 @@ sub input_profile {
   }elsif( $profile_name eq 'visualize_single' ){
     $self->_add_inline_p();
     $self->_add_term();
+  }elsif( $profile_name eq 'visualize_subset' ){
+    $self->_add_inline_p();
+    $self->_add_simple_argument('subset', '');
   }elsif( $profile_name eq 'gander' ){
     #$self->_add_visual_format();
     $self->_add_terms_string();
