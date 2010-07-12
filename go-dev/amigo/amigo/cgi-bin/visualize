@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 ####
-#### TODO: local image a
+#### TODO: fold more into Worker::Visualize...
 ####
 
 BEGIN { require "config.pl"; }
@@ -20,6 +20,7 @@ use AmiGO::GraphViz;
 use AmiGO::SVGRewrite;
 use AmiGO::WebApp::Input;
 #use AmiGO::Aid;
+use AmiGO::Worker::Subset;
 use AmiGO::Worker::Visualize;
 
 
@@ -40,6 +41,7 @@ sub setup {
   $self->error_mode('mode_fatal');
   $self->run_modes(
 		   'quickgo'      => 'mode_quickgo', # TODO: fold into ...?
+		   'subset'       => 'mode_subset',
 		   'single'       => 'mode_single',
 		   'basic'        => 'mode_advanced', # TODO: 'mode_single',
 		   'multi'        => 'mode_advanced', # TODO: 'mode_multi',
@@ -338,6 +340,94 @@ sub mode_advanced {
     }
   }
 
+  return $output;
+}
+
+
+## Example:
+## http://localhost/cgi-bin/amigo/visualize?mode=subset&subset=goslim_candida
+sub mode_subset {
+
+  my $self = shift;
+  my $output = '';
+
+  ##
+  my $i = AmiGO::WebApp::Input->new();
+  my $params = $i->input_profile('visualize_subset');
+  my $inline_p = $params->{inline};
+  my $subset_acc = $params->{subset};
+
+  ## Set graphics renderer.
+  my $gv = AmiGO::GraphViz->new({bitmap => 1});
+
+  ###
+  ### Build graph.
+  ###
+
+  my $graph = GOBO::DBIC::GODBModel::Graph->new();
+  if( $subset_acc ){
+
+    ## Convert input subset acc to term accs.
+    my $sget = AmiGO::Worker::Subset->new();
+    my @term_list = keys(%{$sget->get_term_accs($subset_acc)});
+
+    $self->{CORE}->kvetch("Subsets:" .
+			  join(', ', keys(%{$sget->get_subset_accs()})));
+    $self->{CORE}->kvetch("Subset terms:" . join(', ', @term_list));
+
+    ## Convert input terms to AmiGO terms.
+    my $terms = [];
+    foreach my $acc (@term_list){
+      my $term = $graph->get_term($acc);
+      if( defined $term ){
+	push @$terms, $term;
+      }
+    }
+
+    ## Assemble the graph.
+    my($nodes, $edges) = $graph->climb($terms);
+
+    ## Add edges to gv.
+    foreach my $key (keys %$edges){
+
+      my $t2t = $edges->{$key};
+      my $s = $t2t->subject->acc;
+      my $o = $t2t->object->acc;
+      my $r = $t2t->relationship->name;
+      $gv->add_edge($s, $r, $o);
+
+      $self->{CORE}->kvetch("edge: $s $r $o");
+    }
+
+    ## Add nodes and node information to gv.
+    foreach my $acc (keys %$nodes){
+      my $t = $nodes->{$acc};
+
+      my $title = $t->acc;
+      my $body = $t->name;
+      my $border = '';
+      my $fill = '';
+      my $font = '';
+
+      ## Back to standard adding.
+      $gv->add_node($acc, $title, $body,
+		    {
+		     color => $border,
+		     fillcolor => $fill,
+		     fontcolor => $font,
+		    });
+      if( ! $amigo_terms->{$title} ){
+	$amigo_terms->{$title} = {
+				  name => $body,
+				  gene_products => {},
+				 };
+      }
+    }
+    $output = $gv->get_png();
+  }
+
+  ## If a header is needed, set correct header type for format.
+  $self->_add_fiddly_header('png', $inline_p);
   return $output;
 }
 
