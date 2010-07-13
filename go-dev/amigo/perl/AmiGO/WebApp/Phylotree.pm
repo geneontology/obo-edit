@@ -58,8 +58,11 @@ sub setup {
      dist => 'mode_dist_image',
 
      box => 'mode_id_entry',
+
+     paint => 'mode_paint_ajax',
     );
 }
+
 
 
 =item mode_cluster_sets
@@ -187,12 +190,8 @@ sub mode_cluster{
     $c->set_template_parameter(page_title => $pid);
 
     if ($default_dbname eq $o->{dbname}) {
-	my ($comment, @files) = $o->paint_files;
-
-	$c->set_template_parameter(paint_comment => $comment);
-	$c->set_template_parameter(paint_files => { map {
-	    basename($_) => $_;
-	} @files });
+	$c->add_template_bulk({ javascript_library => ['com.jquery'] });
+     	$c->set_template_parameter(paint_ajax => $o->url(mode => 'paint'));
     }
 
     $c->add_template_content('html/main/phylotree_cluster.tmpl');
@@ -334,6 +333,27 @@ sub mode_dist_image{
 
     return $out;
 }
+
+sub mode_paint_ajax{
+    my $c = shift;
+    my $q = $c->query();
+    my $o = AmiGO::Worker::Phylotree->new
+      (
+       dbname => $q->param('dbname'),
+       key    => $q->param('key'),
+      );
+
+    my ($msg, @url) = $o->paint_files();
+
+    return "<h3>$msg</h3><ul>" . join('', map {
+	my $url = $_;
+	my $txt = $_;
+	$txt =~ s(.*/)();
+	"<li><a href=\"$url\">$txt</a></li>";
+    } @url) . '</ul>';
+}
+
+
 
 ##
 sub _header_wrap(){
