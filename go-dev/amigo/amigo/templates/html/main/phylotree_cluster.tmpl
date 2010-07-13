@@ -2,12 +2,24 @@
 
 <img src="[% cluster.dist %]" width="100%" alt="[Cluster Distribution]" />
 
-<div class="contents">
 
-[% IF paint_comment %]<h3>[% paint_comment %]</h3>[% END %]
-[% IF paint_files %]<ul>[% FOREACH file IN paint_files.keys %]
-<li><a href="[% paint_files.$file %]">[% file %]</a></li>
-[% END %]</ul>[% END %]
+
+[% IF paint_ajax %]
+<script type="text/javascript">
+jQuery(document).ready(function(){
+ $('#paint').click(function(){
+  $(this).load('[% paint_ajax %]');
+  return false;
+ });
+});
+</script>
+
+<div id="paint" style="margin-left:5em">
+<h3><a href="#">Check <acronym>PAINT</acronym> files</a></h3>
+</div>
+[% END %]
+
+<div class="contents">
 
 <dl class="filters">
 

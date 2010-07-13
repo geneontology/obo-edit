@@ -468,13 +468,15 @@ sub paint_files{
 
     $ftp->cwd($path) or return 'Found no PAINT files.';
     my @files = map {
-	$_ eq 'CVS' ? () : $_;
+    	$_ eq 'CVS' ? () : $_;
     } $ftp->ls();
     $ftp->quit();
 
     my $found = scalar(@files);
-    return (($found == 1) ? 'Found one PAINT file' : "Found $found PAINT files"), map {
-	"ftp://$host/$path/$_";
+    return (($found == 1)              ?
+    	    'Found one PAINT file:'    :
+    	    "Found $found PAINT files:"), map {
+    	"ftp://$host/$path/$_";
     } @files;
 
 }
