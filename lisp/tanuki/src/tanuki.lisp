@@ -26,6 +26,7 @@
 ;;;;
 ;;;; WISHLIST:
 ;;;; *) Nuke page and up by id (by way of aset and up).
+;;;; *) Manually add page/aset combo.
 ;;;; *) Be able to report about running threads.
 ;;;; *) Sampling (like we used to) for better results/coverage.
 ;;;; *) Add "action" table to keep track of tanuki life events.
@@ -117,13 +118,11 @@
   (let ((page-id (tanuki-schema:page-id argument-set)))
     (get-dao 'tanuki-schema:page page-id)))
 
-;; Join hit to arg-set.
 (defun hit->argument-set (hit)
   "A hit to an argument_set."
   (let ((aset-id (tanuki-schema:argument-set-id hit)))
     (get-dao 'tanuki-schema:argument-set aset-id)))
 
-;; Join arg-set to hits.
 (defun argument-set=>hit (aset)
   "An argument_set to hit(s)."
   (when (and aset (tanuki-schema:id aset))
@@ -134,14 +133,26 @@
                         :where (:= 'argument-set.id
                                    (tanuki-schema:id aset))))))
 
+(defun page=>argument-set (page?)
+  "An page to argument_set(s)."
+  (let* ((page (parse-page page?))
+         (page-id (when page (tanuki-schema:id page))))
+    (when page
+      (query-dao 'tanuki-schema:argument-set
+                 (:select 'argument-set.* :from 'argument-set
+                          :inner-join 'page
+                          :on (:= 'argument-set.page-id 'page.id)
+                          :where (:= 'page.id page-id))))))
+
 (defun process-agent-links (agent)
   "..."
   (dolist (alink (links agent))
     (with-slots
      (base-url raw-url clean-url) alink
      (with-transaction ()
-      (let ((curr-page-id (page-id-by-url base-url)))
-        ;; Ensure that we have a page and id to work with.
+      ;; Ensure that we have a page and id to work with.
+      (let* ((curr-page (parse-page base-url))
+             (curr-page-id (when curr-page (tanuki-schema:id curr-page))))
         (when (not curr-page-id)
           (let ((new-page (make-instance 'tanuki-schema:page
                                          :id (sequence-next 'page-id-seq)
@@ -152,7 +163,7 @@
             (insert-dao new-page)
             (setf curr-page-id (tanuki-schema:id new-page))))
         ;; Create a new argument set.
-        (when (not (argument-set-id-by-url clean-url))
+        (when (not (parse-argument-set clean-url))
           (let ((new-aset (make-instance 'tanuki-schema:argument-set
                                          :id (sequence-next
                                               'argument-set-id-seq)
@@ -312,19 +323,6 @@ symbols 'internal, 'external, 'weighed, or 'random."
   "Get a table's row's plist by id."
   (query (:select '* :from table-symbol :where (:= 'id id)) :plist))
   
-(defun page-id-by-url (page-url)
-  "Int or nil on the existance of a page (by url string) in the database."
-  (query (:select 'id
-                  :from 'page
-                  :where (:= 'url page-url)) :single))
-
-(defun argument-set-id-by-url (url &optional (type 'clean))
-  "Int or nil on the existance of an arg set (by url string) in the database."
-  (let ((field (if (eq type 'clean) 'clean-url 'raw-url)))
-    (query (:select 'id
-                    :from 'argument-set
-                    :where (:= field url)) :single)))
-
 (defun general-report ()
   "Print the current status of current Tanuki system and return the
 number of unvisited URLs."
@@ -398,6 +396,107 @@ number of unvisited URLs."
 ;;; Live management--test fixes and do reruns interactively
 ;;; (i.e. without resetting the database).
 ;;;
+
+(defun parse-page (page?)
+  "Try and turn something into a page dao."
+  (cond
+   ((eq 'tanuki-schema:page (class-name (class-of page?)))
+    page?)
+   ((integerp page?)
+    (car (select-dao 'tanuki-schema:page (:= 'tanuki-schema:id page?))))
+   ((stringp page?)
+    (car (select-dao 'tanuki-schema:page (:= 'tanuki-schema:url page?))))
+   (t
+    (error "type unsupported by parse-page"))))
+
+(defun parse-argument-set (aset? &optional (ptype nil))
+  "Try and turn something into an argument set dao. Opt: 'clean-url 'raw-url"
+  (cond
+   ((eq 'tanuki-schema:argument-set (class-name (class-of aset?)))
+    aset?)
+   ((integerp aset?)
+    (get-dao 'tanuki-schema:argument-set aset?))
+   ((and (stringp aset?) (eq ptype 'clean-url))
+    (car (select-dao 'tanuki-schema:argument-set
+                     (:= 'tanuki-schema:clean-url aset?))))
+   ((and (stringp aset?) (eq ptype 'raw-url))
+    (car (select-dao 'tanuki-schema:argument-set
+                     (:= 'tanuki-schema:raw-url aset?))))
+   ;; Not a 'raw-url or clean-url so try both, starting with clean.
+   ((stringp aset?)
+    (let ((clean-try (parse-argument-set aset? 'clean-url)))
+      (if clean-try
+          clean-try
+        (parse-argument-set aset? 'raw-url))))
+   (t
+    (error "type unsupported by parse-argument-set"))))
+
+(defun parse-hit (hit?)
+  "Try and turn something into a hit dao."
+  (cond
+   ((eq 'tanuki-schema:hit (class-name (class-of hit?)))
+    hit?)
+   ((integerp hit?)
+    (car (select-dao 'tanuki-schema:hit (:= 'tanuki-schema:id hit?))))
+   (t
+    (error "type unsupported by parse-hit"))))
+
+(defun parse-argument-set (aset? &optional (ptype nil))
+  "Try and turn something into an argument set dao. Opt: 'clean-url 'raw-url"
+  (cond
+   ((eq 'tanuki-schema:argument-set (class-name (class-of aset?)))
+    aset?)
+   ((integerp aset?)
+    (get-dao 'tanuki-schema:argument-set aset?))
+   ((and (stringp aset?) (eq ptype 'clean-url))
+    (car (select-dao 'tanuki-schema:argument-set
+                     (:= 'tanuki-schema:clean-url aset?))))
+   ((and (stringp aset?) (eq ptype 'raw-url))
+    (car (select-dao 'tanuki-schema:argument-set
+                     (:= 'tanuki-schema:raw-url aset?))))
+   ;; Not a 'raw-url or clean-url so try both, starting with clean.
+   ((stringp aset?)
+    (let ((clean-try (parse-argument-set aset? 'clean-url)))
+      (if clean-try
+          clean-try
+        (parse-argument-set aset? 'raw-url))))
+   (t
+    (error "type unsupported by function"))))
+
+;;TODO: change to remove hit.
+(defun remove-hits (aset?)
+  "Take an argument and remove its hits. Return number of removals."
+  (let ((aset (parse-argument-set aset?))
+        (count 0))
+    (when aset 
+      (with-transaction ()
+       (dolist (hit (argument-set=>hit aset))
+         (delete-dao hit) 
+         (incf count)))
+     count)))
+
+(defun remove-argument-set (aset?)
+  "Remove an argument set and all of its related hits."
+  (let ((aset (parse-argument-set aset?))
+        (count 0))
+    (when aset
+      (with-transaction ()
+       (remove-hits aset)
+       (delete-dao aset)
+       (setf count 1)))
+    count))
+
+(defun remove-page (page?)
+  "Remove an argument set and all of its related hits."
+  (let ((page (parse-page page?))
+        (count 0))
+    (when page
+      (with-transaction ()
+       (let ((asets (page=>argument-set page)))
+         (mapcar (lambda (x) (remove-argument-set x)) asets)
+         (delete-dao page)
+         (setf count 1))))
+    count))
 
 (defun mark-by-id (aset-id)
   "Mark an argument set and remove its hits by argument set id."
