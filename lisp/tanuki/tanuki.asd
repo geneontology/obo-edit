@@ -38,6 +38,7 @@
 	       ;:s-http-client
 	       :bordeaux-threads
 	       :closure-html
+	       :trivial-timeout
 	       ;:s-xml
 	       ;:fiveam
 	       :drakma

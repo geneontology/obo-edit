@@ -26,6 +26,7 @@
 	       :closure-html
 	       :puri
 	       :drakma
+	       :trivial-timeout
 	       :alexandria
 	       ;; :cl-json
 	       ;; :fiveam
