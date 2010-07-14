@@ -186,7 +186,9 @@ sub action {
 	$bar =~ s/\:\:$//g;
 	unless(
 	       $bar =~ /^AmiGO/ ||
-	       $bar =~ /^GO/ ||
+	       $bar =~ /^GO$/ ||
+	       $bar =~ /^GO\// ||
+	       $bar =~ /^GO\:/ ||
 	       $bar =~ /^\$/
 	      ){
 
