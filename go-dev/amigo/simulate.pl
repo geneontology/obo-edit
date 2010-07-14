@@ -17,7 +17,18 @@ use Getopt::Std;
 getopts('j');
 
 ## All scripts to probe.
-my $scripts =
+my $util_scripts =
+  [
+   "refresh.pl",
+   "scripts/luigi",
+   "scripts/make_dblinks.pl",
+   "scripts/make_go_meta_js.pl",
+   "scripts/make_misc_key.pl",
+   "scripts/make_spec_key.pl",
+   "scripts/reinit_caches.pl",
+   "scripts/term_enrichment_batch.pl"
+  ];
+my $web_scripts =
   [
    "amigo",
    "aserve",
@@ -112,10 +123,18 @@ sub collect{
 
 ##
 my %all_libs = ();
-foreach my $script (@$scripts){
 
+## Get everything that is scripty.
+foreach my $script (@$util_scripts){
+  my $libs = collect($script);
+  foreach my $lib (@$libs){
+    $all_libs{$lib} = 1;
+  }
+}
+
+## Get everything in the cgi-bin
+foreach my $script (@$web_scripts){
   my $libs = collect("amigo/cgi-bin/" . $script);
-
   foreach my $lib (@$libs){
     $all_libs{$lib} = 1;
   }
