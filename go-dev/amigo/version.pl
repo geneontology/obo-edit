@@ -41,9 +41,11 @@ my %ignore_list =
    'SuGR::Render' => 1,
    'SuGR::Sugiyama' => 1,
    'SuGR::TrivialGraph' => 1,
+   'Algorithm::Permute' => 1,
    'Cairo' => 1,
-   'Log::Log4perl' => 1,
    'Graphics::ColorNames' => 1,
+   'Log::Log4perl' => 1,
+   'Math::Round' => 1,
    'Text::WrapI18N' => 1,
 
    ## Used for GOOSE.
@@ -69,7 +71,6 @@ my %ignore_list =
    'GD' => 1,
    'HTML::Highlight' => 1,
    'Image::Size' => 1,
-   'Lucene' => 1,
    'Lucene::QueryParser' => 1,
    'Lucene::Analysis::Analyzer' => 1,
    'Lucene::Analysis::Tokenizer' => 1,
