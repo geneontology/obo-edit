@@ -10,6 +10,7 @@
 
 use strict;
 use Cwd;
+use lib '../../gobo-dbic';
 use vars qw(
 	     $opt_j
 	  );
