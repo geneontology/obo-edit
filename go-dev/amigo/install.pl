@@ -33,7 +33,7 @@ use Data::Dumper;
 
 ##
 my $amigo_base = getcwd();
-my $go_base = substr($amigo_base, 0, 0 - length('/amigo'));
+my $go_base = substr($amigo_base, 0, 0 - length('/go-dev/amigo'));
 
 ## These are the user changable variables. They may be used to create
 ## synthetic variables.
