@@ -912,6 +912,7 @@ if ( $opt_c ) {
 
 	  browse.cgi
 	  blast.cgi
+	  go.cgi
 	  gp-assoc.cgi
 	  gp-assoc-view.cgi
 	  gp-details.cgi
@@ -920,7 +921,6 @@ if ( $opt_c ) {
 	  term-chart.cgi
 	  term-details.cgi
 	  term-select.cgi
-	  go.cgi
 	  search.cgi
 
 	  slimmer
