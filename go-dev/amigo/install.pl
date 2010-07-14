@@ -604,7 +604,7 @@ my %env_conf = (
 		AMIGO_GO_ONLY_GRAPHICS =>
 		{
 		 DEFAULT => '1',
-		 MESSAGE => "If you want to use graphics that cannot possible work outside of GO.",
+		 MESSAGE => "If you want to use graphics that cannot possibly work outside of GO.",
 		 ERROR => 'not a 0 or a 1',
 		 PARSER => \&is_a_boolean_p
 		},
