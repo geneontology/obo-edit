@@ -194,21 +194,33 @@ MSG
 ###
 
 if( $opt_j ){
+  eval {
 
-  my @lib_list = keys %all_libs;
-  @lib_list = sort { $a cmp $b } @lib_list;
+    require JSON;
 
-  use JSON;
+    my @lib_list = keys %all_libs;
+    @lib_list = sort { $a cmp $b } @lib_list;
 
-  my $json = JSON->new();
-  $json->pretty(1);
-  $json->indent(1);
-  $json->space_after(1);
-  $json->utf8(1);
-  my $jtext = $json->encode(\@lib_list);
-  open(JFILE, ">perl_libs.json");
-  print JFILE $jtext;
-  close(JFILE);
+    my $json = JSON->new();
+    $json->pretty(1);
+    $json->indent(1);
+    $json->space_after(1);
+    $json->utf8(1);
+    my $jtext = $json->encode(\@lib_list);
+    open(JFILE, ">perl_libs.json");
+    print JFILE $jtext;
+    close(JFILE);
+  }
+};
+if($@){
+  print <<MSG;
+
+Cannot export results to JSON with JSON.pm installed.
+Please install JSON.pm.
+
+MSG
+
+  exit -1;
 }
 
 
