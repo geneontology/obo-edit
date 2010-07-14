@@ -456,8 +456,13 @@ sub mode_homolset_annotation {
     foreach my $acc (keys %{$seen_terms}){
       ## TODO: add full info content.
       my $annot = &$gp_count_for_term($seen_terms->{$acc});
-      $info_cont_cache->{$acc} =
-	sprintf("%.2f", -1 * (log($annot / $total_gp_count) / log(2)));
+      if( $annot == 0 ){
+	## Then no info content here...
+	$info_cont_cache->{$acc} = 0.0;
+      }else{
+	$info_cont_cache->{$acc} =
+	  sprintf("%.2f", -1 * (log($annot / $total_gp_count) / log(2)));
+      }
       #$self->{CORE}->kvetch("___" . $info_cont_cache->{$acc}, 1);
     }
     $self->set_template_parameter('INFORMATION_BY_TERM', $info_cont_cache);

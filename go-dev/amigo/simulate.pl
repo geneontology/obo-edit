@@ -24,7 +24,12 @@ my $scripts =
    "visualize",
    "term_details",
 
+   "slimmer",
+   "term_enrichment",
+
    "browse.cgi",
+   "blast.cgi",
+   "go.cgi",
    "gp-assoc.cgi",
    "gp-assoc-view.cgi",
    "gp-details.cgi",
@@ -32,11 +37,7 @@ my $scripts =
    "term-assoc.cgi",
    "term-chart.cgi",
    "term-select.cgi",
-   "go.cgi",
-   "search.cgi",
-
-   "slimmer",
-   "term_enrichment"
+   "search.cgi"
   ];
 
 ## Things that we might not see that we need.
@@ -46,12 +47,14 @@ my $must_list =
   ];
 
 ## Things that we might see, but don't want to worry about. These tend
-## to be things that are optionally tested and loaded.
+## to be things that are optionally tested and loaded. Or thing I have
+## no idea about.
 my %ignore_hash =
   (
    'JSON::XS' => 1,
    'Log::Agent' => 1,
    'B' => 1,
+   'Encode::ConfigLocal' => 1,
   );
 
 
