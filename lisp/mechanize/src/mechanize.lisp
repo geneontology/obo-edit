@@ -203,7 +203,7 @@
     ;; (with the above function).
     (handler-case
      (progn
-       (sb-ext:with-timeout +agent-timeout+
+       (trivial-timeout:with-timeout (+agent-timeout+)
          (multiple-value-bind
              (body response-code headers puri stream must-close-p reason)
              (http-request url-str :redirect 100 :user-agent (user-agent agent))
@@ -234,9 +234,8 @@
     (USOCKET:CONNECTION-REFUSED-ERROR (cre)
      (declare (ignore cre))
      (glitch "host/server connection refused"))
-    #+(or sbcl)
-    (sb-ext:timeout (to)
-     (declare (ignore to))
+    (trivial-timeout:timeout-error (toe)
+     (declare (ignore toe))
      (glitch "client timeout"))
     #+(or sbcl)
     (SB-KERNEL::HEAP-EXHAUSTED-ERROR (hee)
