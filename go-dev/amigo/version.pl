@@ -6,6 +6,7 @@
 use strict;
 use Cwd;
 use File::Find;
+use lib '../../gobo-dbic';
 
 ###
 ### Remember, during the library search, we are chucking out all
