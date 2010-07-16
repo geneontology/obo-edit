@@ -49,6 +49,7 @@
   (:use :cl
 	:postmodern
 	:tanuki-agent
+	:tanuki-orm
 	;;:tanuki-decide
 	)
   ;; (:import-from :tanuki-schema
@@ -77,6 +78,12 @@
   (if (eq sym 'on)
       (setf cl-postgres:*query-log* *standard-output*)
     (setf cl-postgres:*query-log* nil)))
+
+(defun debug-http (sym)
+  ""
+  (if (eq sym 'on)
+      (setq drakma:*header-stream* *standard-output*)
+    (setq drakma:*header-stream* nil)))
 
 (defun kvetch (obj)
   "Wrapper; with stdout (for interactive operations) too."
@@ -111,37 +118,55 @@
   (setf (slot-value dao slot-name) slot-value)
   (update-dao dao))
 
-;; Join arg-set to page.
-(defun argument-set->page (argument-set)
-  "An argument_set to a page."
-  (let ((page-id (tanuki-schema:page-id argument-set)))
-    (get-dao 'tanuki-schema:page page-id)))
 
-(defun hit->argument-set (hit)
-  "A hit to an argument_set."
-  (let ((aset-id (tanuki-schema:argument-set-id hit)))
-    (get-dao 'tanuki-schema:argument-set aset-id)))
-
-(defun argument-set=>hit (aset)
-  "An argument_set to hit(s)."
-  (when (and aset (tanuki-schema:id aset))
-    (query-dao 'tanuki-schema:hit
-               (:select 'hit.* :from 'hit
-                        :inner-join 'argument-set
-                        :on (:= 'hit.argument-set-id 'argument-set.id)
-                        :where (:= 'argument-set.id
-                                   (tanuki-schema:id aset))))))
-
-(defun page=>argument-set (page?)
-  "An page to argument_set(s)."
-  (let* ((page (parse-page page?))
-         (page-id (when page (tanuki-schema:id page))))
-    (when page
-      (query-dao 'tanuki-schema:argument-set
-                 (:select 'argument-set.* :from 'argument-set
-                          :inner-join 'page
-                          :on (:= 'argument-set.page-id 'page.id)
-                          :where (:= 'page.id page-id))))))
+;;
+(defun process-argument-set (agent aset)
+  "..."
+  (kvetch (format nil "~a looking at: ~a" agent
+                  (tanuki-schema:clean-url aset)))
+  (when aset
+    (update-dao-value aset 'tanuki-schema:todo 0) ; set is now off todo list
+    (let ((run-timer (make-instance 'bb-time:timer)))
+      (fetch agent (tanuki-schema:clean-url aset))
+      ;; Create the best hit we can at the moment...
+      (let* ((ret-code (if (null (code agent)) :null (code agent)))
+             (new-hit (make-instance 'tanuki-schema:hit
+                                     :id (sequence-next 'hit-id-seq)
+                                     :argument-set-id (tanuki-schema:id aset)
+                                     :wait (bb-time:seconds run-timer)
+                                     :date (bb-time:timestamp)
+                                     :agent (user-agent agent)
+                                     :code ret-code)))
+	(insert-dao new-hit)
+	;; Toggle success and flagged depending on what happened with
+	;; the agent.
+	(labels ((toggles (hit-dao success-int flagged-int)
+			  (update-dao-value hit-dao
+                                            'tanuki-schema:success
+                                            success-int)
+			  (update-dao-value hit-dao
+                                            'tanuki-schema:flagged
+                                            flagged-int)))
+          ;; 
+	  (cond
+	   ((and (null (errors agent)) (is-code-ok-p agent))
+            (toggles new-hit 1 0))
+	   ((null (errors agent))
+            (toggles new-hit 1 1))
+	   (t (toggles new-hit 0 1))))
+        ;; Add errors/comments to the database if any.
+        (dolist (e (errors agent))
+          ;;(break "3" (tanuki-schema:id new-hit))
+          (let ((new-comment (make-instance 'tanuki-schema:comment
+                                            :id (sequence-next
+                                                 'comment-id-seq)
+                                            :hit-id (tanuki-schema:id new-hit)
+                                            :comment-type "error"
+                                            :text e)))
+            (insert-dao new-comment))))
+      ;; Only add links (spider forward) when it is an internal link.
+      (when (is-internal-p agent (current-url agent))
+        (process-agent agent)))))
 
 (defun process-agent (agent)
   "..."
@@ -232,46 +257,6 @@ symbols 'internal, 'external, 'weighed, or 'random."
 (defun flag-down ()
   (setf +loop-flag+ nil))
 
-
-;;
-(defun process-argument-set (agent aset)
-  "..."
-  (kvetch (format nil "~a looking at: ~a" agent
-                  (tanuki-schema:clean-url aset)))
-  (when aset
-    (update-dao-value aset 'tanuki-schema:todo 0) ; set is now off todo list
-    (let ((run-timer (make-instance 'bb-time:timer)))
-      (fetch agent (tanuki-schema:clean-url aset))
-      ;; Create the best hit we can at the moment...
-      (let* ((ret-code (if (null (code agent)) :null (code agent)))
-             (new-hit (make-instance 'tanuki-schema:hit
-                                     :id (sequence-next 'hit-id-seq)
-                                     :argument-set-id (tanuki-schema:id aset)
-                                     :wait (bb-time:seconds run-timer)
-                                     :date (bb-time:timestamp)
-                                     :agent (user-agent agent)
-                                     :code ret-code)))
-	(insert-dao new-hit)
-	;; Toggle success and flagged depending on what happened with
-	;; the agent.
-	(labels ((toggles (hit-dao success-int flagged-int)
-			  (update-dao-value hit-dao
-                                            'tanuki-schema:success
-                                            success-int)
-			  (update-dao-value hit-dao
-                                            'tanuki-schema:flagged
-                                            flagged-int)))
-          ;; 
-	  (cond
-	   ((and (null (errors agent)) (is-code-ok-p agent))
-            (toggles new-hit 1 0))
-	   ((null (errors agent))
-            (toggles new-hit 1 1))
-	   (t (toggles new-hit 0 1)))))
-      ;; Only add links (spider forward) when it is an internal link.
-      (when (is-internal-p agent (current-url agent))
-        (process-agent agent)))))
-
 ;; 
 (defun tanuki-step (agent)
   "Run an agent until it shouldn't."
@@ -322,7 +307,7 @@ symbols 'internal, 'external, 'weighed, or 'random."
   "Get a table's row's plist by id."
   (query (:select '* :from table-symbol :where (:= 'id id)) :plist))
   
-(defun general-report ()
+(defun report-general ()
   "Print the current status of current Tanuki system and return the
 number of unvisited URLs."
   (let ((target (query (:select 'target :from 'meta) :single))
@@ -359,6 +344,7 @@ number of unvisited URLs."
       (format t "Date: ~a~%" (bb-time:humanstamp (getf q :date)))
       (format t "Processing time: ~a~%" (getf q :wait))
       (format t "Code: ~a~%" (getf q :code))
+      (format t "Success: ~a~%" (getf q :success))
       (format t "Flagged: ~a~%" (getf q :flagged))
       (format t "Reference: ~a~%" (getf q :reference))
       (format t "URL: ~a~%" (getf q :clean-url)))
@@ -396,74 +382,6 @@ number of unvisited URLs."
 ;;; (i.e. without resetting the database).
 ;;;
 
-(defun parse-page (page?)
-  "Try and turn something into a page dao."
-  (cond
-   ((eq 'tanuki-schema:page (class-name (class-of page?)))
-    page?)
-   ((integerp page?)
-    (car (select-dao 'tanuki-schema:page (:= 'tanuki-schema:id page?))))
-   ((stringp page?)
-    (car (select-dao 'tanuki-schema:page (:= 'tanuki-schema:url page?))))
-   (t
-    (error "type unsupported by parse-page"))))
-
-(defun parse-argument-set (aset? &optional (ptype 'clean-url))
-  "Try and turn something into an argument set dao. Opt: 'clean-url 'raw-url"
-  (cond
-   ((eq 'tanuki-schema:argument-set (class-name (class-of aset?)))
-    aset?)
-   ((integerp aset?)
-    (get-dao 'tanuki-schema:argument-set aset?))
-   ((and (stringp aset?) (eq ptype 'clean-url))
-    (car (select-dao 'tanuki-schema:argument-set
-                     (:= 'tanuki-schema:clean-url aset?))))
-   ((and (stringp aset?) (eq ptype 'raw-url))
-    (car (select-dao 'tanuki-schema:argument-set
-                     (:= 'tanuki-schema:raw-url aset?))))
-   ;; ;; Not a 'raw-url or clean-url so try both, starting with clean.
-   ;; ((stringp aset?)
-   ;;  (let ((clean-try (parse-argument-set aset? 'clean-url)))
-   ;;    (if clean-try
-   ;;        clean-try
-   ;;      (parse-argument-set aset? 'raw-url))))
-   (t
-    (error "type unsupported by parse-argument-set"))))
-
-(defun parse-hit (hit?)
-  "Try and turn something into a hit dao."
-  (cond
-   ((eq 'tanuki-schema:hit (class-name (class-of hit?)))
-    hit?)
-   ((integerp hit?)
-    (car (select-dao 'tanuki-schema:hit (:= 'tanuki-schema:id hit?))))
-   (t
-    (error "type unsupported by parse-hit"))))
-
-(defun remove-hit (hit?)
-  "Remove a hit from the database."
-  (let ((hit (parse-hit hit?)))
-    (when hit 
-      (delete-dao hit))))
-       
-(defun remove-argument-set (aset?)
-  "Remove an argument set and all of its related hits."
-  (let ((aset (parse-argument-set aset?)))
-    (when aset
-      (with-transaction ()
-       (dolist (hit (argument-set=>hit aset))
-         (remove-hit hit))
-       (delete-dao aset)))))
-
-(defun remove-page (page?)
-  "Remove page and its associated argument sets and related hits."
-  (let ((page (parse-page page?)))
-    (when page
-      (with-transaction ()
-       (dolist (aset (page=>argument-set page))
-         (remove-argument-set aset))
-       (delete-dao page)))))
-
 (defun mark-argument-set (aset?)
   "Mark an argument set and remove its hits by argument set id."
   (let ((aset (parse-argument-set aset?)))
@@ -472,7 +390,7 @@ number of unvisited URLs."
       (update-dao-value aset 'tanuki-schema:mark 1)
       ;; Remove associated hits.
       (dolist (hit (argument-set=>hit aset))
-        (delete-dao hit)))))
+        (remove-hit hit)))))
 
 (defun mark-problems (type)
   "Remove hits and set mark (but don't reset todo--hide from running agents)."
@@ -490,11 +408,9 @@ number of unvisited URLs."
                            :where (:and (:= 'hit.success success-flag)
                                         (:= 'hit.flagged flagged-flag))))))
        (dolist (hit hits)
-         ;; Mark found asets.
+         ;; Mark found asets (while removing past artifacts).
          (let ((aset (hit->argument-set hit)))
-           (update-dao-value aset 'tanuki-schema:mark 1))
-         ;; Remove associated hits.
-         (delete-dao hit) )))))
+           (mark-argument-set aset)))))))
 
 ;; NOTE: No transaction here--nobody should be bothering us...
 (defun rerun-marked ()
