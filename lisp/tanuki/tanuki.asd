@@ -28,6 +28,7 @@
                                      ;(:file "web")
 				     (:file "schema")
 				     (:file "db")
+				     (:file "orm")
                                      (:file "agent")
                                      (:file "tanuki"))))
   :depends-on (:mechanize

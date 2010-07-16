@@ -1,0 +1,32 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body>
+
+    <!-- Not legit. -->
+    <script type="text/javascript" src="/pdb/skins/web20/default.js"></script>
+    <link rel="stylesheet" href="/pdb/struts/xhtml/styles.css" type="text/css"/>
+    <link href="/pdb/skins/web20/main.css" rel="stylesheet" type="text/css" />
+    <a id="helpPopout" href="" style="color: #ffffff;" onclick="$('#helpOverlay').hide();$('#helpContent').hide();showApplets();window.open($('#helpPopout').attr('href'),'helpWindow','menubar=no,width=750,height=550,toolbar=no,scrollbars=yes,resizable=no');return false;">POP-OUT</a>
+    <a href="javascript:printPage('http://www.rcsb.org/explore.do?pdbId=2E56');" class="std">Print</a>
+    <a href="" onclick="$('#se_downloadFiles').hide(); $('#se_displayFiles').slideToggle(); return false;" title="Display File">foo</a>
+    <a href="#" onclick="$('#printStyle').attr('href', 'W.css');"><img src="/pdb/skins/web20/default/images/print_bw.gif" alt="BW Safe"/></a>
+    <a href="#" onclick="$('#printStyle').attr('href', 'W.css');">
+      foo
+    </a>
+					
+    <!-- Legit. -->
+    <a class="subText" href="/pdb/mypdb/forgotPass.do">Forget your Password?</a>
+    <a href="/pdb/admin/Logon.do">Login</a>
+    <a id="pdbLogo" href="/pdb">
+      <img alt="RCSB PDB" title="RCSB PDB" src="/pdb/skins/web20/logo.gif" />
+    </a>
+    <a href="/pdb/search/smartSubquery.do?smartSearchSubtype=LastLoadQuery">
+      Tuesday Jul 13, 2010 at 5 PM PDT
+    </a>
+    <a href="/pdb/rss/LastLoad"
+       onclick="javascript: pageTracker._trackPageview('/-Act/Hdr/RSS Feed');" 
+       title="RSS Feed for the Latest Released Structures">
+      <img alt="RSS Feed for the Latest Released Structures" border="0" src="/pdb/img/feed-icon16x16.png" />
+    </a>
+
+  </body>
+<html>

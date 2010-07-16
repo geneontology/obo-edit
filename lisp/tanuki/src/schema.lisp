@@ -21,6 +21,7 @@
    :argument
    :argument-set
    :hit
+   :comment
    :reference
    ;; Slots.
    :start
@@ -47,6 +48,9 @@
    :code
    :flagged
    :success
+   :hit-id
+   :comment-type
+   :text
    ;; Joins
    ;; ...
    ))
@@ -56,9 +60,9 @@
 ;;; Schema.
 ;;;
 
-(defvar *tables* '(meta page argument argument-set hit reference)
+(defvar *tables* '(meta page argument argument-set hit comment reference)
   "All the tables that are used in Tanuki's database.")
-(defvar *sequences* '(page-id-seq argument-id-seq argument-set-id-seq hit-id-seq reference-id-seq)
+(defvar *sequences* '(page-id-seq argument-id-seq argument-set-id-seq hit-id-seq comment-id-seq reference-id-seq)
   "All the sequences that are used in Tanuki's database.")
 
 ;; (dao-table-definition 'meta) looks correct...
@@ -243,6 +247,33 @@
     :col-default :null
     :initform :null
     :initarg :success))
+  (:metaclass dao-class)
+  (:keys id))
+
+;; (dao-table-definition 'comment) looks correct...
+(defclass comment ()
+  ((id
+    :accessor id
+    :col-type bigint
+    :initarg :id)
+   (hit-id
+    :accessor hit-id
+    :col-type bigint
+    :initarg :hit-id)
+   (comment-type
+    :accessor comment-type
+    :col-type (or db-null string)
+    :col-default :null
+    :initform :null
+    :initarg :comment-type
+    :documentation "...")
+   (text
+    :accessor text
+    :col-type (or db-null string)
+    :col-default :null
+    :initform :null
+    :initarg :text
+    :documentation "..."))
   (:metaclass dao-class)
   (:keys id))
 

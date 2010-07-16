@@ -9,7 +9,7 @@
 ;;;;
 ;;;; Example for test suite: (setf l (make-link "http://mail.google.com/mail/?hl=de&hl=en&tab=wm&bar=&bib#foo"))
 ;;;;
-;;;; URLs known to trip failure:
+;;;; URLs known to trip exception:
 ;;;;    http://flybase.bio.indiana.edu/reports/FBgn0086348.html
 ;;;;    http://www.ebi.ac.uk/cgi-bin/emblfetch?style=html&Submit=Go&id=CP000158
 ;;;;    http://biocyc.org/META/substring-search?type=NIL&object=PARATHION-DEGRADATION-PWY"   
@@ -82,6 +82,8 @@
 (defparameter puri::*illegal-query-characters*
   (puri::reserved-char-vector
    puri::*excluded-characters* :except '(#\^ #\| #\#)))
+
+(setf chunga:*accept-bogus-eols* t)
 
 ;;;
 ;;; Link: convenience layer over puri.
@@ -225,6 +227,9 @@
     (CHUNGA:SYNTAX-ERROR (se)
      (declare (ignore se))
      (glitch "chunga: syntax error"))
+    (USOCKET:NS-HOST-NOT-FOUND-ERROR (nhnfe)
+     (declare (ignore nhnfe))
+     (glitch "internet not connected(?)"))
     (USOCKET:TIMEOUT-ERROR (ute)
      (declare (ignore ute))
      (glitch "server(?) timeout"))
@@ -284,6 +289,7 @@
     (when +make-canonical+
       (setf raw-links
 	    (mapcar (lambda (x)
+		      ;;(format t "c: [~A] [~A]~%" x (current-url agent))
 		      (make-canonical x :relative-to (current-url agent)))
 		    raw-links)))
     ;; ;; Optionally remove the fragment before processing. 
@@ -307,32 +313,52 @@ some interesting bugs..."
    (puri:merge-uris (puri:parse-uri url-str) (puri:parse-uri relative-to))))
 
 ;; Move along the list and pull out likely triplets.
-(defun scan-out-links (xlist)
-  "Worthless without a flattened tree from chtml:parse."
-  (let ((hrefs '())
-        (len (length xlist)))
-    (when (>= len 3)
-      (dotimes (i (- len 3))
-	(let ((1st  (elt xlist i))
-	      (2nd (elt xlist (+ 1 i)))
-	      (3rd (elt xlist (+ 2 i))))
-          (if (and (eq :A 1st) (eq :HREF 2nd)
-                   (stringp 3rd))
-              (push 3rd hrefs)))))
-    hrefs))
+;; (defun scan-out-links (xlist)
+;;   "Worthless without a flattened tree from chtml:parse."
+;;   (let ((hrefs '())
+;;         (len (length xlist)))
+;;     (when (>= len 3)
+;;       (dotimes (i (- len 3))
+;; 	(let ((1st  (elt xlist i))
+;; 	      (2nd (elt xlist (+ 1 i)))
+;; 	      (3rd (elt xlist (+ 2 i))))
+;;           (if (and (eq :A 1st) (eq :HREF 2nd)
+;;                    (stringp 3rd))
+;;               (push 3rd hrefs)))))
+;;     hrefs))
+
+;; (defun extract-links (doc)
+;;   "Hackily extract links strings from an HTML document."
+;;   (when doc
+;;     (let ((flattened-tree (alexandria:flatten
+;;                            (chtml:parse doc (chtml:make-lhtml-builder)))))
+;;       (scan-out-links flattened-tree))))
+
+;;
 
 (defun extract-links (doc)
-  "Hackily extract links strings from an HTML document."
-  (when doc
-    (let ((flattened-tree (alexandria:flatten
-                           (chtml:parse doc (chtml:make-lhtml-builder)))))
-      (scan-out-links flattened-tree))))
+  (let ((try-list (get-link-like-things doc)))
+    (sane-urls-only try-list)))
 
-;;;
-;;; Testing.
-;;; TODO: better testing of everything...
-;;;
+(defun get-link-like-things (doc)
+  (let ((whittled-list '()))
+    (labels ((find-a-href (ast) (getf (alexandria:flatten ast) :HREF))
+	     (href-search (tree)
+			  (cond
+			   ((atom tree) nil)
+			   ((eq :A (car tree))
+			    (push (find-a-href (cadr tree)) whittled-list))
+			   (t (mapcar #'href-search tree)))))
+      (href-search (chtml:parse doc (chtml:make-lhtml-builder))))
+    whittled-list))
 
-;; (defun test-extract-links ()
-;;   (let ((doc "<p><a href = \"/foo\">blah</a></p>"))
-;;     (extract-links doc)))
+(defun sane-urls-only (list)
+  (remove-if #'(lambda (x)
+		 (handler-case
+		  (progn 
+		    (puri:parse-uri x)
+		    (or
+		     (not (> (length x) 0))
+		     (cl-ppcre::scan "^#" x)))
+		  (PURI:URI-PARSE-ERROR (upe) (declare (ignore upe)) t)))
+	     list))
