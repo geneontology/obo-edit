@@ -25,12 +25,12 @@
 ;;;;    (flag-down)
 ;;;;
 ;;;; WISHLIST:
-;;;; *) Manually add page/aset combo.
 ;;;; *) Be able to report about running threads.
 ;;;; *) Sampling (like we used to) for better results/coverage.
 ;;;; *) Add "action" table to keep track of tanuki life events.
 ;;;; *) "Class"ify tanuki so we can work our way towards a web-based
-;;;;     general interface for multiple sites.
+;;;;     general interface for multiple sites running in parallel.
+;;;; *) Low-frequency agents for background checking.
 ;;;; *) Form detection, profiling, and running.
 ;;;; *) Fuzzing and input (link and form) generation.
 ;;;; *) Web interface.
@@ -52,6 +52,8 @@
 	:tanuki-orm
 	;;:tanuki-decide
 	)
+  (:import-from :tanuki-db
+                :set-connection)
   ;; (:import-from :tanuki-schema
   ;;               :url
   ;;               :page-id

@@ -214,50 +214,57 @@
             ;; TODO: Doesn't deal with images real well yet.
             ((search "png" (cdr (assoc :CONTENT-TYPE headers))) "")
             ((search "gif" (cdr (assoc :CONTENT-TYPE headers))) "")
+	    ((search "pdf" (cdr (assoc :CONTENT-TYPE headers))) "")
             (t (fill-out-agent-with-body agent body)))
            (setf (code agent) response-code)
 	   ;; Return if we made it without an error.
 	   t)))
-    (END-OF-FILE (eof)
-     (declare (ignore eof))
-     (glitch "EOF--reached end of file?"))
-    (PURI:URI-PARSE-ERROR (upe)
-     (declare (ignore upe))
-     (glitch "uri parse error"))
-    (CHUNGA:SYNTAX-ERROR (se)
-     (declare (ignore se))
-     (glitch "chunga: syntax error"))
-    (USOCKET:NS-HOST-NOT-FOUND-ERROR (nhnfe)
-     (declare (ignore nhnfe))
-     (glitch "internet not connected(?)"))
-    (USOCKET:TIMEOUT-ERROR (ute)
-     (declare (ignore ute))
-     (glitch "server(?) timeout"))
-    (USOCKET:HOST-UNREACHABLE-ERROR (hue)
-     (declare (ignore hue))
-     (glitch "host/server unreachable"))
-    (USOCKET:CONNECTION-REFUSED-ERROR (cre)
-     (declare (ignore cre))
-     (glitch "host/server connection refused"))
-    (trivial-timeout:timeout-error (toe)
-     (declare (ignore toe))
-     (glitch "client timeout"))
-    #+(or sbcl)
-    (SB-KERNEL::HEAP-EXHAUSTED-ERROR (hee)
-     (declare (ignore hee))
-     (glitch "heap exhausted--page too big?"))
-    #+(or sbcl)
-    (SB-BSD-SOCKETS::NO-ADDRESS-ERROR (nae)
-     (declare (ignore nae))
-     (glitch "no (such?) address"))
-    #+(or sbcl)
-    (SB-BSD-SOCKETS:NAME-SERVICE-ERROR (nse)
-     (declare (ignore nse))
-     (glitch "name service error: could not resolve DNS?"))
-    #+(or sbcl)
-    (SB-KERNEL:CASE-FAILURE (cf)
-     (declare (ignore cf))
-     (glitch "case failure--what is this?")))))
+     ;; ;; Special handling for FTP-type errors.
+     ;; (DRAKMA:PARAMETER-ERROR
+     ;;  (pe) (declare (ignore pe))
+     ;;  (setf (errors agent) (cons "Skipping FTP (right?)" (errors agent)))
+     ;;  ;(setf (code agent) response-code)
+     ;;  t)
+     (END-OF-FILE
+      (eof) (declare (ignore eof))
+      (glitch "EOF--reached end of file?"))
+     (PURI:URI-PARSE-ERROR
+      (upe) (declare (ignore upe))
+      (glitch "uri parse error"))
+     (CHUNGA:SYNTAX-ERROR
+      (se) (declare (ignore se))
+      (glitch "chunga: syntax error"))
+     (USOCKET:NS-HOST-NOT-FOUND-ERROR
+      (nhnfe) (declare (ignore nhnfe))
+      (glitch "internet not connected(?)"))
+     (USOCKET:TIMEOUT-ERROR
+      (ute) (declare (ignore ute))
+      (glitch "server(?) timeout"))
+     (USOCKET:HOST-UNREACHABLE-ERROR
+      (hue) (declare (ignore hue))
+      (glitch "host/server unreachable"))
+     (USOCKET:CONNECTION-REFUSED-ERROR
+      (cre) (declare (ignore cre))
+      (glitch "host/server connection refused"))
+     (trivial-timeout:timeout-error
+      (toe) (declare (ignore toe))
+      (glitch "client timeout"))
+     #+(or sbcl)
+     (SB-KERNEL::HEAP-EXHAUSTED-ERROR
+      (hee) (declare (ignore hee))
+      (glitch "heap exhausted--page too big?"))
+     #+(or sbcl)
+     (SB-BSD-SOCKETS::NO-ADDRESS-ERROR
+      (nae) (declare (ignore nae))
+      (glitch "no (such?) address"))
+     #+(or sbcl)
+     (SB-BSD-SOCKETS:NAME-SERVICE-ERROR
+      (nse) (declare (ignore nse))
+      (glitch "name service error: could not resolve DNS?"))
+     #+(or sbcl)
+     (SB-KERNEL:CASE-FAILURE
+      (cf) (declare (ignore cf))
+      (glitch "case failure--what is this?")))))
 
 (defgeneric purge (agent)
   (:documentation "Try and get an agent back to a \"pristine\" state"))
@@ -337,6 +344,7 @@ some interesting bugs..."
 ;;
 
 (defun extract-links (doc)
+  "Will not include nulls, jump-onlys, and FTP."
   (let ((try-list (get-link-like-things doc)))
     (sane-urls-only try-list)))
 
@@ -359,6 +367,7 @@ some interesting bugs..."
 		    (puri:parse-uri x)
 		    (or
 		     (not (> (length x) 0))
-		     (cl-ppcre::scan "^#" x)))
+		     (cl-ppcre::scan "^#" x)
+		     (cl-ppcre::scan "^ftp\:\/\/" x)))
 		  (PURI:URI-PARSE-ERROR (upe) (declare (ignore upe)) t)))
 	     list))
