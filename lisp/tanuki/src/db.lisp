@@ -3,8 +3,6 @@
 ;;;; High-level database handling--think gross things like making
 ;;;; tables and the like. Finer things will be handled elsewhere.
 ;;;;
-;;;; TODO: finish set-connection
-;;;;
 
 (defpackage :tanuki-db
   (:use :cl
@@ -35,10 +33,16 @@
 ;;; Connection and creation.
 ;;;
 
-;; TODO:
-(defun set-connection ()
-  "TODO: Change the embedded connection parameters."
-  nil)
+(defun set-connection (&key (dbname (elt *connection-parameters* 0))
+			    (dbuser (elt *connection-parameters* 1))
+			    (dbpass (elt *connection-parameters* 2))
+			    (dbhost (elt *connection-parameters* 3)))
+  "Change the embedded connection parameters."
+  (values
+   (setf (elt *connection-parameters* 0) dbname)
+   (setf (elt *connection-parameters* 1) dbuser)
+   (setf (elt *connection-parameters* 2) dbpass)
+   (setf (elt *connection-parameters* 3) dbhost)))
   
 ;;
 (defun connect-repl ()
