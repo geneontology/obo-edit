@@ -499,20 +499,8 @@ public class RuleBasedReasoner extends AbstractReasoner {
 		return false;
 	}
 
-//	public boolean isSubPropertyOf(OBOProperty a, OBOProperty b) {
-//		return hasRelationship(a, OBOProperty.IS_A, b) != null;
-//	}
-//
-//	public boolean isSubclassOf(OBOClass a, OBOClass b) {
-//		return hasRelationship(a, OBOProperty.IS_A, b) != null;
-//	}
-
 	public void removeLinks(Collection<Link> link) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
-
-
-
 
 }
