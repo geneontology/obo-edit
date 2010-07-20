@@ -78,8 +78,8 @@ FilteredRenderable {
 	public static class GraphViewConfiguration implements
 	ComponentConfiguration {
 		protected boolean showAnimations = false;
-		// trim reasoner-generated (implied) links from display
-		protected boolean trimImpliedLinks = true;
+		//trim reasoner-generated (implied) links from display
+		protected boolean trimImpliedLinks = false;
 		protected boolean showPerType = true;
 		protected boolean allTypes = true;
 		protected boolean nonTransitive = false;
@@ -143,9 +143,6 @@ FilteredRenderable {
 		}
 	}
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1221804652480622045L;
 
 	public static int HORIZONTAL = 0;
@@ -169,12 +166,11 @@ FilteredRenderable {
 	Collection<LinkDatabaseCanvas> canvasList = new LinkedList<LinkDatabaseCanvas>();
 
 	protected JCheckBox showAnimations = new JCheckBox("Animate", false);
-	// 
 	protected JCheckBox trimImpliedLinksCheckbox = new JCheckBox("Trim reasoner-generated (implied) links from display", true);
 	protected JCheckBox showBreakdownBox = new JCheckBox("Show per-type panels", true);
 	protected JCheckBox allTypesBox = new JCheckBox("Show all types panel",true);
 	protected JCheckBox nonTransitiveBox = new JCheckBox("Show non-transitive types", false);
-	
+
 	protected JTextArea htmlArea = new JTextArea();
 
 	protected static final String[] orientations = { "horizontal", "vertical" };
@@ -234,24 +230,21 @@ FilteredRenderable {
 			int currentProgress = 0;
 			if (config.isAllTypes()) {
 				Collection<Link> parents = new HashSet<Link>();
-//				logger.debug("terms: " + terms);
-//				logger.debug("reasoner: " + reasoner);
+				logger.debug("terms: " + terms);
+				logger.debug("reasoner: " + reasoner);
 				for (LinkedObject lo : terms) {
-					if(reasoner != null){
-						Collection parentsLinks = reasoner.getParents(lo);
-						for (Link link : reasoner.getParents(lo)) {
-							if (config.isNonTransitive() || link.getType().isTransitive())
-								parents.add(link);
-						}
-					} else{
-						Collection parentLinks = SessionManager.getManager().getCurrentLinkDatabase().getParents(lo);
-						for (Link link : SessionManager.getManager().getCurrentLinkDatabase().getParents(lo)) {
-							if (config.isNonTransitive() || link.getType().isTransitive())
-								parents.add(link);
-						}
-					}
+					Collection<Link> parentLinks = null;	
+					if(reasoner != null)
+						parentLinks = reasoner.getParents(lo);
+					else
+						parentLinks = SessionManager.getManager().getCurrentLinkDatabase().getParents(lo);
 
+					for (Link link : parentLinks) {
+						if (config.isNonTransitive() || link.getType().isTransitive())
+							parents.add(link);
+					}
 				}
+
 				setProgressValue(currentProgress++ * 100 / totalCount);
 				if (isCancelled())
 					return;
@@ -273,7 +266,7 @@ FilteredRenderable {
 			}
 			setProgressValue(100);
 			setResults(databases);
-//			logger.info("found paths in " + (System.currentTimeMillis() - time));
+			//			logger.info("found paths in " + (System.currentTimeMillis() - time));
 		}
 
 	}
@@ -360,18 +353,20 @@ FilteredRenderable {
 	protected LinkDatabase createLinkDatabase(OBOProperty type,
 			Collection<Link> parents, boolean trimImpliedLinks ) {
 		LinkDatabase linkDatabase;
+
+//		logger.debug("GVC.createLinkDatabase -- trimImpliedLinks: " + trimImpliedLinks);
 		// not trimming implied links from graph
 		if (!trimImpliedLinks) {
 			MutableLinkDatabase mutable = new DefaultMutableLinkDatabase(true);
 			for (Link link : parents) {
-					if (TermUtil.isImplied(link)) {
-						Collection<Link> implied = ReasonerUtil.getGivenSupportingLinks((ReasonedLinkDatabase) reasoner, link);
-						for (Link backingLink : implied) {
-							mutable.addParent(backingLink);
-						}
-					} else
-						mutable.addParent(link);
-				}
+				if (TermUtil.isImplied(link)) {
+					Collection<Link> implied = ReasonerUtil.getGivenSupportingLinks((ReasonedLinkDatabase) reasoner, link);
+					for (Link backingLink : implied) {
+						mutable.addParent(backingLink);
+					}
+				} else
+					mutable.addParent(link);
+			}
 
 			linkDatabase = mutable;
 		} else { // succinct view - trimming implied links from graph
@@ -386,9 +381,7 @@ FilteredRenderable {
 			for (Link link : parents) {
 				if (reasoner.isSubPropertyOf(link.getType(), type)) {
 					if (TermUtil.isImplied(link)) {
-						Collection<Link> implied = ReasonerUtil
-						.getGivenSupportingLinks(
-								(ReasonedLinkDatabase) reasoner, link);
+						Collection<Link> implied = ReasonerUtil.getGivenSupportingLinks((ReasonedLinkDatabase) reasoner, link);
 						for (Link backingLink : implied) {
 							if (reasoner.isSubPropertyOf(backingLink.getType(), type))
 								objects.add(backingLink.getParent());
@@ -575,9 +568,9 @@ FilteredRenderable {
 		if (SessionManager.getManager().getUseReasoner())
 			reasoner = SessionManager.getManager().getReasoner();
 		else
-//			reasoner = new OnTheFlyReasoner(session.getLinkDatabase());
+			//			reasoner = new OnTheFlyReasoner(session.getLinkDatabase());
 			reasoner = null;
-			setDataProviders(session, session.getLinkDatabase(), reasoner);
+		setDataProviders(session, session.getLinkDatabase(), reasoner);
 		reload();
 	}
 
@@ -690,7 +683,6 @@ FilteredRenderable {
 	}
 
 	public boolean isLive() {
-//		return false;
 		return isLive;
 	}
 
