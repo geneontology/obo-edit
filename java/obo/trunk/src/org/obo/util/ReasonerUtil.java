@@ -535,9 +535,7 @@ public class ReasonerUtil {
 		if (linkDatabase instanceof ReasonedLinkDatabase)
 			return ((ReasonedLinkDatabase) linkDatabase).isSubPropertyOf(a, b);
 		else {
-			Iterator it = linkDatabase.getParents(a).iterator();
-			while (it.hasNext()) {
-				Link link = (Link) it.next();
+			for(Link link : linkDatabase.getParents(a)){
 				if (link.getType().equals(OBOProperty.IS_A)
 						&& link.getParent().equals(b))
 					return true;
@@ -549,9 +547,7 @@ public class ReasonerUtil {
 	public static boolean isSubclass(LinkedObject a, LinkedObject b) {
 		if (a.equals(b))
 			return true;
-		Iterator it = a.getParents().iterator();
-		while (it.hasNext()) {
-			Link tr = (Link) it.next();
+		for(Link tr : a.getParents()){
 			if (isSubclass(tr.getType(), OBOProperty.IS_A)
 					&& isSubclass(tr.getParent(), b))
 				return true;
@@ -582,6 +578,8 @@ public class ReasonerUtil {
 			return;
 		seenIt.add(link);
 		Collection<Explanation> exps = database.getExplanations(link);
+//		logger.debug("!TermUtil.isImplied: " + (!TermUtil.isImplied(link)));
+		//if its not an implied link...
 		if (!TermUtil.isImplied(link)) {
 			out.add(link);
 		}

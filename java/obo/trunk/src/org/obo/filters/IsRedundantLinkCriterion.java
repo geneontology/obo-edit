@@ -26,8 +26,7 @@ public class IsRedundantLinkCriterion extends AbstractBooleanLinkCriterion {
 	public boolean matches(Link o) {
 		if (o instanceof Link && getReasoner() != null) {
 			Link link = (Link) o;
-			boolean isRedundant = 
-			 getReasoner().isRedundant(link);
+			boolean isRedundant = getReasoner().isRedundant(link);
 			return isRedundant;
 		} else
 			return false;
