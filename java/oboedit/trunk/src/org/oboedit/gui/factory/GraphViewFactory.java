@@ -2,12 +2,7 @@ package org.oboedit.gui.factory;
 
 /** Was GraphDAGViewFactory, which made DAGViewCanvases */
 
-import java.util.Collections;
-import java.util.List;
-
 import org.bbop.framework.AbstractComponentFactory;
-import org.bbop.framework.GUIComponentFactory;
-import org.bbop.framework.GUIComponentFactory.FactoryCategory;
 import org.oboedit.gui.components.GraphViewCanvas;
 
 import org.apache.log4j.*;
@@ -21,7 +16,6 @@ public class GraphViewFactory extends AbstractComponentFactory<GraphViewCanvas> 
 	}
 	
 	public String getID() {
-//		return "GRAPH_DAG_VIEW";
 		return "GRAPH_VIEW";
 	}
 	
@@ -30,7 +24,6 @@ public class GraphViewFactory extends AbstractComponentFactory<GraphViewCanvas> 
 	}
 
 	public String getName() {
-//		return "Graph DAG Viewer";
 		return "Graph Viewer";
 	}
 	
