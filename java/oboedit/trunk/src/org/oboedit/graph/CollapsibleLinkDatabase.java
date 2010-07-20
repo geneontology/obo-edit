@@ -8,8 +8,6 @@ import org.oboedit.gui.event.ExpansionEvent;
 
 import java.util.*;
 
-import javax.security.auth.Refreshable;
-
 import org.apache.log4j.*;
 
 public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
@@ -95,9 +93,7 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 
 	public int getChildExpansionCount(LinkedObject lo) {
 		int expansionCount = 0;
-		Iterator it = linkDatabase.getChildren(lo).iterator();
-		while (it.hasNext()) {
-			Link link = (Link) it.next();
+		for(Link link : linkDatabase.getChildren(lo)){
 			if (isVisible(link.getChild()))
 				expansionCount++;
 		}
@@ -106,9 +102,7 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 
 	public int getParentExpansionCount(LinkedObject lo) {
 		int expansionCount = 0;
-		Iterator it = linkDatabase.getParents(lo).iterator();
-		while (it.hasNext()) {
-			Link link = (Link) it.next();
+		for(Link link : linkDatabase.getParents(lo)){
 			if (isVisible(link.getParent()))
 				expansionCount++;
 		}
@@ -116,9 +110,7 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 	}
 
 	protected boolean isChildExpanded(LinkedObject lo) {
-		Iterator it = linkDatabase.getChildren(lo).iterator();
-		while (it.hasNext()) {
-			Link link = (Link) it.next();
+		for(Link link : linkDatabase.getChildren(lo)){
 			if (isVisible(link.getChild()))
 				return true;
 		}
@@ -126,9 +118,7 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 	}
 
 	protected boolean isParentExpanded(LinkedObject lo) {
-		Iterator it = linkDatabase.getParents(lo).iterator();
-		while (it.hasNext()) {
-			Link link = (Link) it.next();
+		for(Link link : linkDatabase.getParents(lo)){
 			if (isVisible(link.getParent()))
 				return true;
 		}
@@ -178,16 +168,10 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 	public boolean shouldBeTrimmed(Link link) {
 		if (!TermUtil.isImplied(link))
 			return false;
-		Iterator it;
-
 		// trim any links to parents that are redundant with
 		// a GRANDPARENT link
 		// if any trimmed link is a GIVEN link, it is redundant
-		it = getParents(link.getChild(), true).iterator();
-		// for each parent link
-		while (it.hasNext()) {
-			Link parentLink = (Link) it.next();
-
+		for(Link parentLink : getParents(link.getChild(), true)){
 			if (parentLink.equals(link)) {
 				continue;
 			}
@@ -196,12 +180,10 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 				continue;
 			boolean sawType = parentLink.getType().equals(link.getType());
 
-			Iterator it2 = getParents(parentLink.getParent(), true).iterator();
 
 			// for each grandparent link accessible via the current
 			// parent link...
-			while (it2.hasNext()) {
-				Link gpLink = (Link) it2.next();
+			for(Link gpLink : getParents(parentLink.getParent(), true)){
 				// see if the grandparent link has the same type
 				// and parent as the current link. if it does,
 				// the current link is redundant with the grandparent
@@ -230,9 +212,7 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 
 	public Collection<Link> getChildren(LinkedObject lo, boolean ignoreTrimming) {
 		Set children = new HashSet();
-		Iterator it = linkDatabase.getChildren(lo).iterator();
-		while (it.hasNext()) {
-			Link link = (Link) it.next();
+		for(Link link : linkDatabase.getChildren(lo)){
 			if (isVisible(link.getChild())
 					&& (ignoreTrimming || !shouldBeTrimmed(link)))
 				children.add(link);
@@ -246,9 +226,7 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 
 	public Collection<Link> getParents(LinkedObject lo, boolean ignoreTrimming) {
 		Set parents = new HashSet();
-		Iterator it = linkDatabase.getParents(lo).iterator();
-		while (it.hasNext()) {
-			Link link = (Link) it.next();
+		for(Link link : linkDatabase.getParents(lo)){
 			if (isVisible(link.getParent())
 					&& (ignoreTrimming || !shouldBeTrimmed(link)))
 				parents.add(link);

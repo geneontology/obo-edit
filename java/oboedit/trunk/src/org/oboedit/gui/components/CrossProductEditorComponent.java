@@ -345,48 +345,56 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 	public List getChanges() {
 		List<HistoryItem> historyList = new LinkedList<HistoryItem>();
-		//		logger.debug("currentObject: " + currentObject.getClass().getSimpleName());
 
 		if (currentObject instanceof LinkedObject && !(currentObject.getClass().getSimpleName().toString().equalsIgnoreCase("OBOPropertyImpl")) ) {
 			//get existing differentia
 			Collection<Link> differentia = ReasonerUtil.getDifferentia((OBOClass) currentObject);
-
-			// Find any intersection links that have been deleted
+//			logger.debug("differentia: " + differentia);
+			
+			//get the list of discriminating relations associated with this object to compute additions and deletions to the relations list
+			Collection<Link> relations = getRelationshipList();
+			
+			// Find intersection links that have been deleted
 			for(Link link : ((LinkedObject) currentObject).getParents()){
-				//				logger.debug("link: " + link.getType().getName() + "  " + link.getParent());
+				//logger.debug("link: " + link.getType().getName() + "  " + link.getParent());
 				if (!TermUtil.isIntersection(link))
 					continue;
+			
 				// only if relations exist do the check to see if they have been deleted.
 				// this has been added due to false positive results being generated for links being deleted.
 				// (found is returning true after links have been committed)
-				Collection relations = getRelationshipList();
 				if(relations.size() >= 1){
 					boolean found = false;
 
 					for(Object o : relations){
-						Link completeDefLink = (Link) o;
+						OBORestriction completeDefLink = (OBORestriction) o;
+//						logger.debug("CPEC.getChanges -- relations -- completeDefLink: " + completeDefLink);
+						
+						// check for deleted links
 						if (completeDefLink.equals(link)) {
 							found = true;
 							break;
-						} 
+						}
+						
 					}
-					if (!found) {
-						historyList.add(new DeleteLinkHistoryItem(link));
+					if (!found){
+						logger.debug("CPEC - deleting link: " + link);
+						historyList.add(new DeleteLinkHistoryItem(link));			
 					}
-
 				}
 			}
 
-			for(Object o : getRelationshipList()){
+			//Find intersection links that have been added
+			for(Object o : relations){
 				OBORestriction completeDefLink = (OBORestriction) o;
-				//				logger.debug("completeDefLink: " + completeDefLink);
-				Link matchLink = HistoryUtil.findParentRel(completeDefLink,
-						(LinkedObject) currentObject);
+				//logger.debug("completeDefLink: " + completeDefLink);
+				Link matchLink = HistoryUtil.findParentRel(completeDefLink, (LinkedObject) currentObject);
 				if (matchLink == null) {
 					// set completes to false because new links are
 					// always created with completes=false by default
 					// we'll reset the completes flag in a moment
-					completeDefLink.setCompletes(false);
+					completeDefLink.setCompletes(true);
+					logger.debug("CPEC - adding link: " + completeDefLink);
 					historyList.add(new CreateIntersectionLinkHistoryItem(completeDefLink));
 				}
 			}
@@ -408,23 +416,21 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 	public Collection<Link> getRelationshipList() {
 		LinkedList<Link> out = new LinkedList<Link>();
 		Object intersectionGenus = genusField.getValue();
-		if ( intersectionGenus!= null
-				&& intersectionGenus instanceof LinkedObject) {
+		//compute and add genus link to relations list
+		if ( intersectionGenus!= null && intersectionGenus instanceof LinkedObject) {
 			OBORestriction isaLink = new OBORestrictionImpl(oboClass,
 					OBOProperty.IS_A, (LinkedObject) intersectionGenus);
 			isaLink.setCompletes(true);
 			out.add(isaLink);
 		}
-
+		//get discriminating relations 
 		for (int i = 0; i < linkListPanel.getComponentCount(); i++) {
 			if (linkListPanel.getComponent(i) instanceof RelationshipLinePanel) {
-				RelationshipLinePanel panel = (RelationshipLinePanel) linkListPanel
-				.getComponent(i);
-				if (panel.getParentTerm() == null
-						|| panel.getProperty() == null)
+				RelationshipLinePanel panel = (RelationshipLinePanel) linkListPanel.getComponent(i);
+				logger.debug("panel.getParentTerm(): " + panel.getParentTerm());
+				if (panel.getParentTerm() == null || panel.getProperty() == null)
 					continue;
-				OBORestriction discLink = new OBORestrictionImpl(oboClass,
-						panel.getProperty(), panel.getParentTerm());
+				OBORestriction discLink = new OBORestrictionImpl(oboClass, panel.getProperty(), panel.getParentTerm());
 				discLink.setCompletes(true);
 				out.add(discLink);
 			}
