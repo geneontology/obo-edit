@@ -337,7 +337,7 @@ public class TermUtil {
 			if (io instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject) io;
 				if (algorithm.isRoot(lo)) {
-//					logger.debug("TermUtil.detectRoots - adding as root: " + lo);
+					//					logger.debug("TermUtil.detectRoots - adding as root: " + lo);
 					outSet.add((LinkedObject) io);
 				}
 			}
@@ -821,7 +821,7 @@ public class TermUtil {
 			boolean includeObsoletes, boolean includeInstances) {
 		rootAlgorithm.setLinkDatabase(linkDatabase);
 		Collection<LinkedObject> out = new LinkedList<LinkedObject>();
-		
+
 		for(IdentifiedObject io : linkDatabase.getObjects()){
 
 			if (!(io instanceof LinkedObject))
@@ -1074,7 +1074,6 @@ public class TermUtil {
 	 * reasoner may).
 	 */
 	public static boolean isImplied(IdentifiedObject io) {
-		logger.debug("TermUtil.isImplied");
 		if (io instanceof Impliable)
 			return ((Impliable) io).isImplied();
 		else
@@ -1090,6 +1089,7 @@ public class TermUtil {
 		}		
 		else
 			return false;
+
 	}
 
 	/**
@@ -1121,7 +1121,7 @@ public class TermUtil {
 		}
 		return false;
 	}
-	
+
 
 
 	/**
@@ -1153,9 +1153,9 @@ public class TermUtil {
 	 * 4/30/2010 Adding self links to illegal relations list
 	 */
 	public static boolean isLegalRelationship(LinkedObject child, OBOProperty type, LinkedObject parent) {
-//		logger.debug("TermUtil.isLegalRelationship -- checking relationship: " + child + " -" + type + "-> " + parent);
-//		if (child.equals(parent))
-//			return false;
+		//		logger.debug("TermUtil.isLegalRelationship -- checking relationship: " + child + " -" + type + "-> " + parent);
+		//		if (child.equals(parent))
+		//			return false;
 		if (ReasonerUtil.isSubclass(type, OBOProperty.INVERSE_OF)
 				&& !(TermUtil.isProperty(child) && TermUtil.isProperty(parent)))
 			return false;
