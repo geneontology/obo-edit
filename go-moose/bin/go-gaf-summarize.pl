@@ -62,7 +62,13 @@ foreach my $f (@ARGV) {
         $count_by_node{$ann->target->id}++;
     }
     foreach my $nid (keys %count_by_node) {
-        printf "  %s count: %d\n", $ontg->noderef($nid), $count_by_node{$nid};
+        my $n = $ontg->noderef($nid);
+        my $label = '';
+        if ($n) {
+            $label = $n->label;
+        }
+        #printf "  %s count: %d\n", $ontg->noderef($nid), $count_by_node{$nid};
+        printf "%s\t%s\t%d\n", $nid, $label, $count_by_node{$nid};
     }
 }
 exit 0;
