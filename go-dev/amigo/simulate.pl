@@ -230,17 +230,17 @@ if( $opt_j ){
     open(JFILE, ">perl_libs.json");
     print JFILE $jtext;
     close(JFILE);
-  }
-};
-if($@){
-  print <<MSG;
+  };
+  if($@){
+    print <<MSG;
 
 Cannot export results to JSON without JSON.pm installed.
 Please install JSON.pm.
 
 MSG
 
-  exit -1;
+    exit -1;
+  }
 }
 
 
