@@ -235,7 +235,7 @@ if( $opt_j ){
 if($@){
   print <<MSG;
 
-Cannot export results to JSON with JSON.pm installed.
+Cannot export results to JSON without JSON.pm installed.
 Please install JSON.pm.
 
 MSG
