@@ -12,6 +12,9 @@ var gm = new org.bbop.amigo.go_meta();
 var last_sent_packet = 0;
 var last_received_packet = 0;
 
+// Delay before taking action when typing.
+var delay_in_ms = 350;
+
 // Our separate widget and notice object.
 var widgets = null;
 
@@ -257,15 +260,27 @@ function LiveSearchInit(){
     // jQuery("#assoc-evidence").change(assoc_saction);
 
     // Attach listeners to the gp form.
-    jQuery("#gp-query").keyup(gp_saction);
     jQuery("#gptype").change(gp_saction);
     jQuery("#species").change(gp_saction);
     jQuery("#source").change(gp_saction);
     jQuery("#homolset").change(gp_saction);
 
     // Attach listeners to the term form.
-    jQuery("#term-query").keyup(term_saction);
     jQuery("#ontology").change(term_saction);
+
+    // Slow down the input on our typing fields.
+    // jQuery("#gp-query").keyup(gp_saction);
+    // jQuery("#term-query").keyup(term_saction);
+    function delayed_keyup_action(selector, action, delay){
+	jQuery(selector).keyup(function(){
+	    if( typeof(window.inputTimeout) != 'undefined' ){
+		window.clearTimeout(window.inputTimeout);
+	    }
+	    window.inputTimeout = window.setTimeout(action, delay);
+	});
+    }
+    delayed_keyup_action("#gp-query", gp_saction, delay_in_ms);
+    delayed_keyup_action("#term-query", term_saction, delay_in_ms);
 
     // Make the forms unsubmitable.
     jQuery("#app-form-assoc").submit(function(){return false;});
