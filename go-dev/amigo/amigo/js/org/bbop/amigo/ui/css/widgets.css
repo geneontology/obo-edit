@@ -22,7 +22,8 @@
 }
 
 .org_bbop_amigo_ui_widget_for_waiting{
-    outline: blue solid 3px;
+    opacity: .67;
+    outline:  #3875d7 solid 3px;
 }
 .org_bbop_amigo_ui_widget_for_notice{
     outline: green solid 3px;
