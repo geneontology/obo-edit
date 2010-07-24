@@ -1666,16 +1666,17 @@ sub mode_report_slimmerish_1 {
 
   ## Incoming template and input.
   my $i = AmiGO::WebApp::Input->new();
-  my $params = $i->input_profile('slimmer');
+  my $params = $i->input_profile('slimmerish'); # remove slimmerish from input
   $self->_common_params_settings($params);
   my $in_term_str = $params->{term} || '';
   my $in_gp_str = $params->{gene_product} || '';
+  my $load = $params->{load} || '';
 
   ## Clean input.
   $self->{CORE}->kvetch("in term str: " . $in_term_str);
   $self->{CORE}->kvetch("in gp str: " . $in_gp_str);
 
-  if( $in_term_str && $in_gp_str ){
+  if( $in_term_str ){
 
     ## TODO/BUG: Probably needs to be tighter if we go to general
     ## production on this.
@@ -1737,19 +1738,51 @@ sub mode_report_slimmerish_1 {
     ## unfounds.
     my $gp_ids = [];
     my $unknown_gp_ids = [];
-    my $in_gp_accs = $self->{CORE}->clean_list($in_gp_str);
-    foreach my $gp_acc (@$in_gp_accs){
-      my ($db, $key) = $self->{CORE}->split_gene_product_acc($gp_acc);
-      my $gp_sql = "select distinct gp.id from dbxref inner join gene_product as gp on (dbxref.id = gp.dbxref_id) where dbxref.xref_dbname = '$db' and dbxref.xref_key = '$key'";
-      my $gp_id = &$single_get('gp', $gp_sql);
-      if(  defined $gp_id && $gp_id ){
-	my $foo = $$gp_id[0];
-	if( defined $foo && $foo ){
-	  push @$gp_ids, $foo;
-	}else{
-	  push @$unknown_gp_ids, $gp_acc;
+
+    ## Choose between one of the pre-selected ones and the user input.
+    if( defined $load && $load ){
+
+      $self->{CORE}->kvetch("Use DB input.");
+
+      ## Get all of the RG species if 'all' comes in, otherwise just
+      ## go with everything that is in 'load' as an ncbi taxa id.
+      my $gp_sql = undef;
+      if( $load eq 'all' ){
+	my $rglist = $rg_aid->species_list({num_p=>1});
+	my $sqlrglist = join(', ', @$rglist);
+      	$gp_sql = "select gp.id from gene_product as gp, species, dbxref where gp.species_id = species.id and gp.dbxref_id = dbxref.id and species.ncbi_taxa_id in ($sqlrglist)";
+      }else{
+	$gp_sql = "select gp.id from gene_product as gp, species, dbxref where gp.species_id = species.id and gp.dbxref_id = dbxref.id and species.ncbi_taxa_id in ($load)";
+      }
+
+      ## Get them and pack them in.
+      my $gids = &$single_get('gp', $gp_sql);
+      foreach my $foo (@$gids){
+	push @$gp_ids, $foo;
+      }
+
+    }elsif( $in_gp_str ){
+
+      $self->{CORE}->kvetch("Use user input.");
+
+      my $in_gp_accs = $self->{CORE}->clean_list($in_gp_str);
+      foreach my $gp_acc (@$in_gp_accs){
+	my ($db, $key) = $self->{CORE}->split_gene_product_acc($gp_acc);
+	my $gp_sql = "select distinct gp.id from dbxref inner join gene_product as gp on (dbxref.id = gp.dbxref_id) where dbxref.xref_dbname = '$db' and dbxref.xref_key = '$key'";
+	my $gp_id = &$single_get('gp', $gp_sql);
+	if(  defined $gp_id && $gp_id ){
+	  my $foo = $$gp_id[0];
+	  if( defined $foo && $foo ){
+	    push @$gp_ids, $foo;
+	  }else{
+	    push @$unknown_gp_ids, $gp_acc;
+	  }
 	}
       }
+    }else{
+      ## TODO: Need to error on no gp str and no load.
+      #$self->mode_fatal_with_message("Need to somehow specify GPs.");
+      $self->{CORE}->kvetch("Need to somehow specify GPs.");
     }
 
     ###
@@ -1821,7 +1854,16 @@ sub mode_report_slimmerish_1 {
 				      scalar(@$unknown_gp_ids));
       }
     }
+  }else{
+    ## TODO: Need to error on no term str.
+    #$self->mode_fatal_with_message("Need to somehow specify terms.");
+    $self->{CORE}->kvetch("Need to somehow specify terms.");
   }
+
+  ## Get RG info for form.
+  my $rg_info_for_form =
+    $rg_aid->species_information($rg_aid->species_list({num_p=>1}));
+  $self->set_template_parameter('RG_INFO', $rg_info_for_form);
 
   ## Settings.
   $self->set_template_parameter('STANDARD_YUI', 'no'); # no YUI please
