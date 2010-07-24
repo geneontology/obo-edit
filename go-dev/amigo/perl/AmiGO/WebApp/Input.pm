@@ -179,6 +179,10 @@ sub input_profile {
   }elsif( $profile_name eq 'slimmer' ){
     $self->_add_terms_string();
     $self->_add_gps_string();
+  }elsif( $profile_name eq 'slimmerish' ){
+    $self->_add_terms_string();
+    $self->_add_gps_string();
+    $self->_add_simple_argument('load', '');
   }elsif( $profile_name eq 'simple_search' ){
     $self->_add_simple_search_set();
   }elsif( $profile_name eq 'live_search_term' ){
