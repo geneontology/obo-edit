@@ -115,6 +115,34 @@
       <hr class="clearL">
       <input type="submit" class="button" value="Report" />
 
+      <p>
+	Other GP inputs:
+
+	<ul>
+	  <li>
+	    <input type="radio"
+		   name="load"
+		   value=""
+		   checked> <b>Use my input above</b></input>
+	  </li>
+	  [% FOREACH tid = RG_INFO.keys %]
+	  [%    name = RG_INFO.$tid.species_name %]
+	  <li>
+	    <input type="radio"
+		   name="load"
+		   value="[% tid %]"> [% name %]</input>
+	  </li>
+	  [% END %]
+	  <li>
+	    <input type="radio"
+		   name="load"
+		   value="all">
+	    <b>Use all stored inputs (the species listed above)</b></input>
+	  </li>
+      </p>
+
+      <br />
+
     </div>
 
   </form>		
