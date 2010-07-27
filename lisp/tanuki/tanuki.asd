@@ -23,12 +23,12 @@
                         :serial t
                         :components (;(:file "forms")
 				     ;(:file "file")
-				     ;(:file "decide")
 				     ;(:file "html")
                                      ;(:file "web")
 				     (:file "schema")
 				     (:file "db")
 				     (:file "orm")
+				     (:file "decide")
                                      (:file "agent")
                                      (:file "tanuki"))))
   :depends-on (:mechanize
