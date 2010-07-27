@@ -21,7 +21,7 @@
 ;;;; Partial:
 ;;;;    (flag-up)
 ;;;;    (setf a (make-agent))
-;;;;    (process-argument-set a (random-undone-argument-set 'internal))
+;;;;    (process-argument-set a (random-undone-argument-set))
 ;;;;    (flag-down)
 ;;;;
 ;;;; WISHLIST:
@@ -50,8 +50,7 @@
 	:postmodern
 	:tanuki-agent
 	:tanuki-orm
-	;;:tanuki-decide
-	)
+	:tanuki-decide)
   (:import-from :tanuki-db
                 :set-connection)
   ;; (:import-from :tanuki-schema
@@ -217,14 +216,21 @@
 ;;; Targeting finding a page to try in the database.
 ;;;
 
+;; Option to control the type of target that we're looking at.
+(defparameter +random-target-type+ 'weighed
+  ;; 'internal 'external 'weighed 'random
+  "Choose the type of target to select when looking for a new argument
+  set. Can be: 'internal, 'external, 'weighed, or 'random.")
+
 ;; select * from argument_set inner join page on (argument_set.page_id = page.id) where argument_set.todo = 1 and page.internal = 1;
-(defun random-undone-argument-set (loc-symbol)
+(defun random-undone-argument-set ()
   "Get a random unvisted page as a DAO, otherwise nil. Takes the
-symbols 'internal, 'external, 'weighed, or 'random."
-  (let* ((in-ex (cond
-                 ((eq loc-symbol 'external) 0)
-                 ((eq loc-symbol 'internal) 1)
-                 ((eq loc-symbol 'weighed)
+symbols: 'internal, 'external, 'weighed, or 'random."
+  (let* ((rttype +random-target-type+)
+         (in-ex (cond
+                 ((eq rttype 'external) 0)
+                 ((eq rttype 'internal) 1)
+                 ((eq rttype 'weighed)
                   (alexandria:random-elt '(0 1 1 1 1)))
                  (t (alexandria:random-elt '(0 1)))))
          (count (query (:select (:count '*)
@@ -250,6 +256,7 @@ symbols 'internal, 'external, 'weighed, or 'random."
 ;;; Agent control: 
 ;;;
 
+;; Flag to control agent lifetime.
 (defparameter +loop-flag+ t
   "Let working agents know they can stop.")
 (defun flag-p ()
@@ -259,15 +266,13 @@ symbols 'internal, 'external, 'weighed, or 'random."
 (defun flag-down ()
   (setf +loop-flag+ nil))
 
-;; 
-(defun tanuki-step (agent)
+;; TODO: have the aset getter be an argument rather than wired.
+(defun tanuki-step (agent selection-function)
   "Run an agent until it shouldn't."
   (kvetch (format nil "Starting agent ~a..." agent))
   (do ()
       ((not (flag-p)))
-    ;; TODO: What is best here?
-    ;; (let ((page (random-undone-argument-set 'internal)))
-    (let ((aset (random-undone-argument-set 'weighed)))
+    (let ((aset (apply selection-function nil)))
       (if aset
           (process-argument-set agent aset)
         (progn
@@ -276,18 +281,14 @@ symbols 'internal, 'external, 'weighed, or 'random."
   (kvetch (format nil "Agent ~a is stopping." agent)))
 
 ;; TODO: see the old runner for target selector stuff...
-;; BUG (when running multiple tanukis):
-;;    Database error: This connection is still processing another query.
-;;       [Condition of type CL-POSTGRES:DATABASE-ERROR]
-;; They must need their own connection...
-(defun start-a-tanuki ()
-  (flag-up) ; hmmm...
+(defun start-a-tanuki (&optional (select-fnct #'random-undone-argument-set))
+  (flag-up) ; hmmm...methinks we need read thread handling...
   (let ((agent (make-agent)))
     (bordeaux-threads:make-thread
      (lambda ()
        (with-connection
         tanuki-db:*connection-parameters*
-        (tanuki-step agent)))
+        (tanuki-step agent select-fnct)))
      :name (symbol-name (gensym)))))
 
 (defun stop-tanukis ()
