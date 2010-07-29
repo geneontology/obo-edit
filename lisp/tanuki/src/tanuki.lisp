@@ -14,28 +14,24 @@
 ;;;; Continue:
 ;;;;    (top-remember)
 ;;;;    (start-a-tanuki)
-;;;;    (start-a-tanuki)
+;;;;    (start-a-tanuki #'distant-undone-argument-set)
 ;;;;    [tail -f /tmp/tanuki.log]
 ;;;;    (stop-tanukis)
 ;;;;
 ;;;; Partial:
-;;;;    (flag-up)
 ;;;;    (setf a (make-agent))
 ;;;;    (process-argument-set a (random-undone-argument-set))
-;;;;    (flag-down)
 ;;;;
 ;;;; WISHLIST:
-;;;; *) Be able to report about running threads.
-;;;; *) Sampling (like we used to) for better results/coverage.
 ;;;; *) Add "action" table to keep track of tanuki life events.
-;;;; *) "Class"ify tanuki so we can work our way towards a web-based
-;;;;     general interface for multiple sites running in parallel.
-;;;; *) Low-frequency agents for background checking.
+;;;; *) Class-ify tanuki so we can work our way towards a web-based
+;;;;    general interface for multiple sites running in parallel. Mostly
+;;;;    this means moving parameters into slots.
 ;;;; *) Form detection, profiling, and running.
 ;;;; *) Fuzzing and input (link and form) generation.
-;;;; *) Web interface.
 ;;;; *) Toy frontend extension language with safe function calls as
 ;;;;    API.
+;;;; *) Web interface.
 ;;;;
 ;;;; BUG:
 ;;;; Can we catch the GD mem error? sbcl --noinform --dynamic-space-size 1024
@@ -71,20 +67,14 @@
 (defparameter +default-logger+
   (make-instance 'bb-log:simple-log :log-out "/tmp/tanuki.log")
   "The default logger.")
-;; (defparameter +sample-size+ 33 ; down from 100
-;;   "The size of the random sample in the database for each iteration.")
 
 (defun debug-sql (sym)
-  ""
-  (if (eq sym 'on)
-      (setf cl-postgres:*query-log* *standard-output*)
-    (setf cl-postgres:*query-log* nil)))
+  "Takes 'on or 'off."
+  (setf cl-postgres:*query-log* (if (eq sym 'on) *standard-output* nil)))
 
 (defun debug-http (sym)
-  ""
-  (if (eq sym 'on)
-      (setq drakma:*header-stream* *standard-output*)
-    (setq drakma:*header-stream* nil)))
+  "Takes 'on or 'off."
+  (setq drakma:*header-stream* (if (eq sym 'on) *standard-output* nil)))
 
 (defun kvetch (obj)
   "Wrapper; with stdout (for interactive operations) too."
@@ -97,7 +87,6 @@
 
 (defun top-reset (new-default-url new-default-data)
   "Blows away everything for a fresh start with the given url."
-  (flag-up)
   (setf *default-url* new-default-url)
   (setf *default-data* new-default-data)
   (tanuki-db:reset-database *default-url* *default-data*)
@@ -105,7 +94,6 @@
 
 (defun top-remember ()
   "Try to get ready using the database."
-  (flag-up)
   (tanuki-db:connect-repl)
   (setf *default-url* (query (:select 'target :from 'meta) :single))
   (setf *default-data* (query (:select 'data :from 'meta) :single))
@@ -119,14 +107,14 @@
   (setf (slot-value dao slot-name) slot-value)
   (update-dao dao))
 
-
 ;;
 (defun process-argument-set (agent aset)
-  "..."
+  "Run an agent with argument set, adding the results to the
+database."
   (kvetch (format nil "~a looking at: ~a" agent
                   (tanuki-schema:clean-url aset)))
   (when aset
-    (update-dao-value aset 'tanuki-schema:todo 0) ; set is now off todo list
+    (update-dao-value aset 'tanuki-schema:todo 0) ; aset is now off todo list
     (let ((run-timer (make-instance 'bb-time:timer)))
       (fetch agent (tanuki-schema:clean-url aset))
       ;; Create the best hit we can at the moment...
@@ -170,7 +158,8 @@
         (process-agent agent)))))
 
 (defun process-agent (agent)
-  "..."
+  "Take the contents of an agent and add it to the database as
+necessary."
   (dolist (alink (links agent))
     (with-slots
      (base-url raw-url clean-url) alink
@@ -216,14 +205,19 @@
 ;;; Targeting finding a page to try in the database.
 ;;;
 
+;;
+(defun no-argument-set ()
+  "Returns nothing. Can be used for testing tanuki controls."
+  nil)
+
 ;; Option to control the type of target that we're looking at.
 (defparameter +random-target-type+ 'weighed
   ;; 'internal 'external 'weighed 'random
-  "Choose the type of target to select when looking for a new argument
-  set. Can be: 'internal, 'external, 'weighed, or 'random.")
+  "Choose the type of target to select when looking for a new random
+  argument set. Can be: 'internal, 'external, 'weighed, or 'random.")
 
 ;; select * from argument_set inner join page on (argument_set.page_id = page.id) where argument_set.todo = 1 and page.internal = 1;
-(defun random-undone-argument-set ()
+(defun random-undone-argument-set (&optional (number-of-sets 1))
   "Get a random unvisted page as a DAO, otherwise nil. Takes the
 symbols: 'internal, 'external, 'weighed, or 'random."
   (let* ((rttype +random-target-type+)
@@ -241,59 +235,111 @@ symbols: 'internal, 'external, 'weighed, or 'random."
                                              (:= 'page.internal in-ex)))
                        :single)))
     (if (not (= 0 count))
-	(let ((plist
-               (query (:limit (:select '*
-                                       :from 'argument-set
-                                       :inner-join 'page
-                                       :on (:= 'argument-set.page-id 'page.id)
-                                       :where (:and (:= 'argument-set.todo 1)
-                                                    (:= 'page.internal in-ex)))
-                              1 (random count))
-                      :plist)))
-	  (if plist (get-dao 'tanuki-schema:argument-set (getf plist :id)))))))
+	(let ((plists
+               (loop for d from 1 to number-of-sets
+                     collect
+                     (query (:limit (:select '*
+                                             :from 'argument-set
+                                             :inner-join 'page
+                                             :on (:= 'argument-set.page-id
+                                                     'page.id)
+                                             :where (:and (:= 'argument-set.todo
+                                                              1)
+                                                          (:= 'page.internal
+                                                              in-ex)))
+                                    1 (random count))
+                            :plist))))
+	  (when plists
+            (let ((sets (mapcar (lambda (plist)
+                                  (get-dao 'tanuki-schema:argument-set
+                                           (getf plist :id)))
+                                plists)))
+              (if (= number-of-sets 1) (car sets) sets)))))))
+
+(defparameter +sample-size+ 33 ; down from 100
+  "The size of the random sample in the database for each iteration.")
+(defparameter +sample-truncate+ nil
+  "...")
+
+;; Built on top of random-undone-argument-set.
+(defun distant-undone-argument-set ()
+  ;; Get a sample and remove the dupes.
+  (let* ((sample-set 
+          (remove-duplicates
+           (random-undone-argument-set +sample-size+)
+           :test (lambda (x y)
+                   (equal (tanuki-schema:clean-url x)
+                          (tanuki-schema:clean-url y)))))
+         ;; Call decide using clean url.
+         (wanted-url (decide (mapcar (lambda (x)
+                                       (tanuki-schema:clean-url x))
+                                     sample-set) :truncate +sample-truncate+)))
+    ;; Fish the wanted argument set out of the list using the wanted
+    ;; url.
+    (find-if (lambda (x) (equal wanted-url (tanuki-schema:clean-url x)))
+             sample-set)))
 
 ;;;
 ;;; Agent control: 
 ;;;
 
 ;; Flag to control agent lifetime.
-(defparameter +loop-flag+ t
-  "Let working agents know they can stop.")
-(defun flag-p ()
-  +loop-flag+)
-(defun flag-up ()
-  (setf +loop-flag+ t))
-(defun flag-down ()
-  (setf +loop-flag+ nil))
+(defparameter +stop-list+ '()
+  "List of tanuki agent thread names we want stopped.")
 
-;; TODO: have the aset getter be an argument rather than wired.
-(defun tanuki-step (agent selection-function)
+(defparameter +wait-time+  60
+  "Time in seconds to wait before trying the database for a new target
+  after failing to find one.")
+
+(defun this-thread-name ()
+  "The name of the thread this executes in."
+  (bordeaux-threads:thread-name (bordeaux-threads:current-thread)))
+
+(defun tanuki-stepper (agent selection-function)
   "Run an agent until it shouldn't."
   (kvetch (format nil "Starting agent ~a..." agent))
   (do ()
-      ((not (flag-p)))
+      ;; Check for self on stop list.
+      ((find (this-thread-name) +stop-list+ :test #'string=))
     (let ((aset (apply selection-function nil)))
       (if aset
           (process-argument-set agent aset)
         (progn
-          (kvetch (format nil "~a is waiting for something new..." agent))
-          (sleep 60)))))
-  (kvetch (format nil "Agent ~a is stopping." agent)))
+          (kvetch (format nil "~a is waiting for something new (~as.)..."
+                          (this-thread-name) +wait-time+))
+          (sleep +wait-time+)))))
+  ;; Remove self from stop list (if on) and halt.
+  (setf +stop-list+ (remove (this-thread-name)  +stop-list+ :test #'string=))
+  (kvetch (format nil "Agent ~a is stopping." (this-thread-name))))
 
-;; TODO: see the old runner for target selector stuff...
 (defun start-a-tanuki (&optional (select-fnct #'random-undone-argument-set))
-  (flag-up) ; hmmm...methinks we need read thread handling...
+  "..."
   (let ((agent (make-agent)))
     (bordeaux-threads:make-thread
      (lambda ()
        (with-connection
         tanuki-db:*connection-parameters*
-        (tanuki-step agent select-fnct)))
-     :name (symbol-name (gensym)))))
+        (tanuki-stepper agent select-fnct)))
+     :name (bb-util:ccat
+            "tanuki/" (string-downcase (symbol-name select-fnct))
+            "/" (symbol-name (gensym))))))
+
+(defun running-tanukis ()
+  "Return a list of the names of the running tanuki threads."
+  (mapcar #'bordeaux-threads:thread-name
+          (remove-if (lambda (x) ()
+                       (not (cl-ppcre:scan "^tanuki/"
+                                           (bordeaux-threads:thread-name x))))
+                     (bordeaux-threads:all-threads))))
+
+(defun stop-tanuki (tt-name)
+  "Add all running tanukis to the stop list."
+  (pushnew tt-name +stop-list+ :test 'string=))
 
 (defun stop-tanukis ()
-  "..."
-  (flag-down))
+  "Add all running tanukis to the stop list."
+  (dolist (rt (running-tanukis)) (stop-tanuki rt))
+  +stop-list+)
 
 ;;;
 ;;; Report queries from connected toplevel.
