@@ -1,0 +1,12 @@
+<dataConfig>
+  <dataSource type="JdbcDataSource" 
+              driver="com.mysql.jdbc.Driver"
+              url="jdbc:mysql://spitz.lbl.gov/go_latest_lite" 
+              user="sjcarbon" 
+              password=""/>
+  <document>
+    <entity name="term" 
+            query="SELECT acc, name, term_type FROM term">
+    </entity>
+  </document>
+</dataConfig>
