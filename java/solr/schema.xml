@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<schema name="example" version="1.2">
+
+  <types>
+    <fieldType name="string"
+	       class="solr.StrField"
+	       sortMissingLast="true"
+	       omitNorms="true"/>
+  </types>
+
+  <fields>
+   <field name="acc"
+	  type="string"
+	  indexed="true"
+	  stored="true"
+	  required="true" />
+   <field name="name"
+	  type="string"
+	  indexed="true"
+	  stored="true"
+	  required="true" />
+   <field name="term_type"
+	  type="string"
+	  indexed="true"
+	  stored="true"
+	  required="true" />
+  </fields>
+
+  <uniqueKey>acc</uniqueKey>
+
+  <defaultSearchField>name</defaultSearchField>
+
+  <solrQueryParser defaultOperator="OR"/>
+
+</schema>
