@@ -170,6 +170,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			selectDifferentiaButton.setPreferredSize(new Dimension(20, 20));
 			selectDifferentiaButton.setToolTipText("Go to differentia term");
 
+			// delete relation button
 			deleteRelationButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					removeLine(RelationshipLinePanel.this);
@@ -203,6 +204,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			Container parent = getParent();
 			parent.remove(panel);
 			parent.repaint();
+			OBOSession currentSession = SessionManager.getManager().getSession();
 		}
 
 		/**
