@@ -745,9 +745,9 @@ RootTextEditComponent, SelectionDrivenComponent {
 		return false;
 	}
 
+	//populating fields for TextEditor components
 	public void populateFields(IdentifiedObject io) {
 		for (OBOTextEditComponent c : getMyResolver().getRegisteredComponents()) {
-//			logger.debug("TextEditor populateFields for component: " + c);
 			c.populateFields(io);
 		}
 	}

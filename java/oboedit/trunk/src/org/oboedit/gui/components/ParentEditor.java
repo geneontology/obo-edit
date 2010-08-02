@@ -415,26 +415,26 @@ public class ParentEditor extends AbstractGUIComponent {
 					panel.add(intersectionLabel, BorderLayout.EAST);
 				}
 
-
+// 7/30/10 discontinuing deletion in Parent Editor until link to TextEditor and commit model straightened out
 				//TODO: link to CPEC.removeLine and refresh TE 
-				final JButton deleteRelationIcon = new JButton(Preferences.loadLibraryIcon("trashcan.gif"));
-				deleteRelationIcon.setToolTipText("Delete relation");
-				deleteRelationIcon.setPreferredSize(new Dimension(20, 18));
-				deleteRelationIcon.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						DeleteLinkHistoryItem ditem = new DeleteLinkHistoryItem(tr);
-						GUIUtil.setPreSelection(ditem, SelectionManager.getGlobalSelection());
-						// Do the edit
-						SessionManager.getManager().apply(ditem);
-						// Just re-select currently selected term (not all instances of it, as with the paths thing)
-						GUIUtil.setPostSelection(ditem, SelectionManager.getManager().getSelection());
-						
-					}
-				});
-				deleteRelationIcon.setEnabled(enabled && tr.getChild().getParents().size() >= 1);
-				
+//				final JButton deleteRelationIcon = new JButton(Preferences.loadLibraryIcon("trashcan.gif"));
+//				deleteRelationIcon.setToolTipText("Delete relation");
+//				deleteRelationIcon.setPreferredSize(new Dimension(20, 18));
+//				deleteRelationIcon.addActionListener(new ActionListener() {
+//					public void actionPerformed(ActionEvent e) {
+//						DeleteLinkHistoryItem ditem = new DeleteLinkHistoryItem(tr);
+//						GUIUtil.setPreSelection(ditem, SelectionManager.getGlobalSelection());
+//						// Do the edit
+//						SessionManager.getManager().apply(ditem);
+//						// Just re-select currently selected term (not all instances of it, as with the paths thing)
+//						GUIUtil.setPostSelection(ditem, SelectionManager.getManager().getSelection());
+//						
+//					}
+//				});
+//				deleteRelationIcon.setEnabled(enabled && tr.getChild().getParents().size() >= 1);
+				 
 				Box topBox = Box.createHorizontalBox();
-				topBox.add(deleteRelationIcon);
+//				topBox.add(deleteRelationIcon);
 				topBox.add(Box.createHorizontalStrut(5));
 				topBox.add(typeBox);
 				topBox.add(Box.createHorizontalStrut(5));
