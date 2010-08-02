@@ -14,6 +14,8 @@ Bug Fixes:
 [ geneontology-Bugs-2996688 ] Comments section being duplicated with is_a closure p
 [ geneontology-Bugs-2996593 ] Weird search results OE beta 4
 [ geneontology-Bugs-2990477 ] spontaneous replication of upper level terms
+[ geneontology-Bugs-3035323 ] OE 2.1 beta 2 - clone problems
+[ geneontology-Bugs-3035322 ] 2.1 betas - GraphViz problem
 
 obo2obo: allowdangling true by default for input and output files.
 v2.1b5 onwards the comments are overwritten. The order in which the files are loaded dictates precedence. In the OBOEdit Advanced file load menu, if file1 and file2 both have different comments for a particular term - and file2 is below file1 in the load list - the definition from file2 will hold.
