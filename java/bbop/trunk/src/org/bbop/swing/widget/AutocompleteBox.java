@@ -385,14 +385,14 @@ public class AutocompleteBox<T> extends JComboBox {
 	}
 
 	public T getValue() {
+		Object selected = getSelectedItem();
 		//		logger.debug("getSelectedItem(): " + getSelectedItem());
 		//		logger.debug("getItemCount: " + this.getItemCount());
 		// getItemCount gets datamodel size from the previous autocomplete task performed. This is misleading.
 		// TODO: clear lastHits cache - leaving this as is at the moment
-		if (getSelectedItem() == null)
+		if (selected == null)
 			return null;
 		else {
-			Object selected = getSelectedItem();
 			//fix for commiting multiple items while editing cross-products in the TextEditor...
 			//getSelectedItem looks for items selected in the autocomplete JComboBox and returns null for genus as it picks up the second item while adding discriminating relations 
 			if (selected == null && getItemAt(0) != null){
@@ -850,7 +850,7 @@ public class AutocompleteBox<T> extends JComboBox {
 		}
 
 		public Object getElementAt(int index) {
-			//			logger.debug("lastHits.get(index).getVal(): " +  lastHits.get(index).getVal());
+//			logger.debug("lastHits.get(index).getVal(): " +  lastHits.get(index).getVal());
 			return lastHits.get(index).getVal();
 		}
 

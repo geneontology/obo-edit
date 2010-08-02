@@ -833,8 +833,7 @@ public class IDWDriver implements LayoutDriver {
 	protected void updateConfigButton(JToggleButton configButton) {
 		if (configButton.isSelected()) {
 			configButton.setIcon(checkIcon);
-			configButton
-					.setToolTipText("Complete configuration and display component");
+			configButton.setToolTipText("Save configuration settings and display component");
 		} else {
 			configButton.setIcon(wrenchIcon);
 			configButton.setToolTipText("Configure Component");
