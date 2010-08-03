@@ -5,8 +5,6 @@
 ;;;; TODO: Add reference (for referer) linked to arguments (yes, think
 ;;;; about it...)
 ;;;;
-;;;; TODO: finish set-connection
-;;;;
 
 (defpackage :tanuki-schema
   (:use :cl
@@ -22,6 +20,7 @@
    :argument-set
    :hit
    :comment
+   :message
    :reference
    ;; Slots.
    :start
@@ -51,6 +50,7 @@
    :hit-id
    :comment-type
    :text
+   :source   
    ;; Joins
    ;; ...
    ))
@@ -60,10 +60,17 @@
 ;;; Schema.
 ;;;
 
-(defvar *tables* '(meta page argument argument-set hit comment reference)
+(defvar *tables* '(meta page argument argument-set hit comment message reference)
   "All the tables that are used in Tanuki's database.")
-(defvar *sequences* '(page-id-seq argument-id-seq argument-set-id-seq hit-id-seq comment-id-seq reference-id-seq)
+(defvar *sequences* '(page-id-seq argument-id-seq argument-set-id-seq hit-id-seq comment-id-seq message-id-seq reference-id-seq)
   "All the sequences that are used in Tanuki's database.")
+
+;; TODO/BUG/DEBUG: You don't know this, you don't see this.
+(defun %reset-lists ()
+  "You don't know this, you don't see this." 
+  (setf *tables* '(meta page argument argument-set hit comment message reference))
+  (setf *sequences* '(page-id-seq argument-id-seq argument-set-id-seq hit-id-seq comment-id-seq message-id-seq reference-id-seq))
+  t)
 
 ;; (dao-table-definition 'meta) looks correct...
 (defclass meta ()
@@ -274,6 +281,36 @@
     :initform :null
     :initarg :text
     :documentation "..."))
+  (:metaclass dao-class)
+  (:keys id))
+
+;; (dao-table-definition 'message) looks correct...
+(defclass message ()
+  ((id
+    :accessor id
+    :col-type bigint
+    :initarg :id)
+   (source
+    :accessor from
+    :col-type (or db-null string)
+    :col-default :null
+    :initform :null
+    :initarg :source
+    :documentation "The source of the message")
+   (date
+    :accessor date
+    :col-type (or db-null bigint)
+    :col-default :null
+    :initform :null
+    :initarg :date
+    :documentation "The approximate data/time of the hit in.")
+   (text
+    :accessor text
+    :col-type (or db-null string)
+    :col-default :null
+    :initform :null
+    :initarg :text
+    :documentation "The text of the log/message."))
   (:metaclass dao-class)
   (:keys id))
 
