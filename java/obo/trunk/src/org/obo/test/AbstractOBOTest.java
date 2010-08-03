@@ -12,6 +12,7 @@ import junit.framework.TestCase;
 import org.bbop.dataadapter.DataAdapterException;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
+import org.obo.datamodel.CommentedObject;
 import org.obo.datamodel.SubsetObject;
 import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.DbxrefedObject;
@@ -223,6 +224,12 @@ public abstract class AbstractOBOTest extends TestCase {
 		DefinedObject lo = (DefinedObject) session.getObject(id);
 		String defCurr = lo.getDefinition();
 		assertTrue(defCurr.equals(def));	
+	}
+	
+	public void testForComment(String id, String comment)  {
+		CommentedObject lo = (CommentedObject) session.getObject(id);
+		String commentCurr = lo.getComment();
+		assertTrue(commentCurr.equals(comment));	
 	}
 	
 	public void testForName(String id, String name)  {
