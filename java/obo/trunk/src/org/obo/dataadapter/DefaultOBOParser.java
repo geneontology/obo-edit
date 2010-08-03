@@ -758,13 +758,9 @@ public class DefaultOBOParser implements OBOParser {
 		if(currCmt != null && currCmt != ""){
 			co.setComment(currCmt);
 		}
-//		if (currCmt != null && currCmt != "") {
-//			co.setComment(currCmt + "\n"+ comment);
-//			logger.info("appending to existing comment: "+currCmt+" + "+comment);
-//		}
-//		else {
-//			co.setComment(comment);
-//		}
+		else 
+			co.setComment(comment);
+
 		co.setCommentExtension(nv);
 	}
 
