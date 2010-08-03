@@ -27,6 +27,7 @@
                                      ;(:file "web")
 				     (:file "schema")
 				     (:file "db")
+				     (:file "db-op")
 				     (:file "orm")
 				     (:file "decide")
                                      (:file "agent")
