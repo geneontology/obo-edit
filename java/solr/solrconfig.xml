@@ -1031,7 +1031,7 @@
 
   <!-- config for the admin interface -->
   <admin>
-    <defaultQuery>solr</defaultQuery>
+    <defaultQuery>neurogenesis</defaultQuery>
 
     <!-- configure a healthcheck file for servers behind a loadbalancer
     <healthcheck type="file">server-enabled</healthcheck>
