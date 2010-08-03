@@ -7,3 +7,4 @@ default-namespace: cc_xp
 id: GO:0043229 ! intracellular organelle
 intersection_of: GO:0043226 {namespace="test"} ! organelle 
 intersection_of: part_of GO:0005623 ! cell
+comment: test_comment

@@ -78,6 +78,7 @@ def: "Organized structure of distinctive morphology and function, occurring with
 subset: gosubset_prok  ! Prokaryotic GO subset
 is_a: GO:0043226  ! organelle
 is_a: GO:0044424  ! intracellular part
+comment: test_comment
 
 [Term]
 id: GO:0043231
