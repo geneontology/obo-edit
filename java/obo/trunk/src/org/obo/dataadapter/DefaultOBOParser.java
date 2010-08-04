@@ -754,12 +754,24 @@ public class DefaultOBOParser implements OBOParser {
 					+ " which does not support comments.", getCurrentPath(),
 					engine.getCurrentLine(), engine.getLineNum());
 		CommentedObject co = ((CommentedObject) currentObject);
+		// get the existing comment -- if a term has been loaded from two
+		// separate files, then we may have to choose between two different values.
+		// in some cases, there may be >1 comment tag in any given stanza
 		String currCmt = co.getComment();
-		if(currCmt != null && currCmt != ""){
-			co.setComment(currCmt);
-		}
-		else 
+		
+		// if there is an existing comment, it takes precedence.
+		// this may not be ideal behavior -- the outcome depends on the order
+		// of file loading
+		if(currCmt == null || currCmt == "")
 			co.setComment(comment);
+		else {
+			if (!currCmt.equals(comment)) {
+				// we do not want to make this fatal but ideally
+				// there would be a better way of informing the user
+				logger.error(" >1 comment for a term: "+
+						comment+" != "+currCmt);
+			}
+		}
 
 		co.setCommentExtension(nv);
 	}
