@@ -17,6 +17,7 @@
   </types>
 
   <fields>
+   <!-- Required -->
    <field name="acc"
 	  type="string"
 	  indexed="true"
@@ -27,11 +28,32 @@
 	  indexed="true"
 	  stored="true"
 	  required="true" />
+   <!-- Optional -->
    <field name="term_type"
 	  type="string"
 	  indexed="true"
 	  stored="true"
 	  required="true" />
+   <field name="term_synonym"
+	  type="string"
+	  indexed="true"
+	  stored="true"
+	  required="false" />
+   <field name="acc_synonym"
+	  type="string"
+	  indexed="true"
+	  stored="true"
+	  required="false" />
+   <field name="term_definition"
+	  type="text_ws"
+	  indexed="true"
+	  stored="true"
+	  required="false" />
+   <field name="term_comment"
+	  type="text_ws"
+	  indexed="true"
+	  stored="true"
+	  required="false" />
   </fields>
 
   <uniqueKey>acc</uniqueKey>
