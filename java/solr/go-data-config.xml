@@ -6,7 +6,11 @@
               password=""/>
   <document>
     <entity name="term" 
-            query="SELECT acc, name, term_type FROM term">
+            query="SELECT id, acc, name, term_type FROM term">
+      <entity name="term_synonym" 
+              query="SELECT term_synonym, acc_synonym FROM term_synonym WHERE term_id='${term.id}'"/>
+      <entity name="term_definition" 
+              query="SELECT term_definition, term_comment FROM term_definition WHERE term_id='${term.id}'"/>
     </entity>
   </document>
 </dataConfig>
