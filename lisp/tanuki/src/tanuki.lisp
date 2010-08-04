@@ -128,7 +128,7 @@
                                :dbpass dbpass :dbhost dbhost))
     ts))
 
-(defmethod kvetch ((ts tanuki-system) obj)
+(defmethod write-to-log ((ts tanuki-system) obj)
   "Wrapper; with stdout (for interactive operations) too."
   (format t "~a~%" obj)
   (with-db-from ts
@@ -148,7 +148,7 @@
   (tanuki-db:reset-database (db ts) (start-url ts) (data-location ts)))
 
 ;; ;; TODO: Move to bbop.
-;; (defun %runner (program &optional (args '()))
+;; (defun command (program &optional (args '()))
 ;;   "..."
 ;;   (let ((output-stream
 ;;          (sb-ext:process-output
@@ -165,7 +165,7 @@
 ;; (defun fresh-pg-database (&key (dbname "tanuki") (dbuser "")
 ;;                                (dbpass "") (dbhost "localhost"))
 ;;   "createdb -h localhost -U tanuki_user -W tanuki"
-;;   (%runner "createdb" '("-h" dbhost "-U" dbuser "-W" dbname)))
+;;   (command "createdb" '("-h" dbhost "-U" dbuser "-W" dbname)))
 
 ;;;
 ;;; REPL report queries.
@@ -322,7 +322,7 @@ symbols: 'internal, 'external, 'weighed, or 'random."
 
 (defmethod tanuki-main-loop ((ts tanuki-system) agent selection-function)
   "Run an agent until it shouldn't."
-  (kvetch ts (format nil "Starting agent ~a..." agent))
+  (write-to-log ts (format nil "Starting agent ~a..." agent))
   (do ()
       ;; The do exit condition is checking for self on stop-list.
       ((find (this-thread-name) (stop-list ts) :test #'string=))
@@ -330,13 +330,13 @@ symbols: 'internal, 'external, 'weighed, or 'random."
       (if aset
           (process-argument-set ts agent aset)
         (progn
-          (kvetch ts (format nil "~a is waiting for something new (~as.)..."
-                          (this-thread-name) (wait-time ts)))
+          (write-to-log ts (format nil "~a is waiting for new sets (~as.)..."
+                                   (this-thread-name) (wait-time ts)))
           (sleep (wait-time ts))))))
   ;; Remove self from stop list (if on) and halt.
   (setf (stop-list ts) (remove (this-thread-name)
                                (stop-list ts) :test #'string=))
-  (kvetch ts (format nil "Agent ~a is stopping." (this-thread-name))))
+  (write-to-log ts (format nil "Agent ~a is stopping." (this-thread-name))))
 
 (defmethod start-a-tanuki ((ts tanuki-system) select-fnct)
   "..."
@@ -377,8 +377,8 @@ symbols: 'internal, 'external, 'weighed, or 'random."
   "Run an agent with argument set, adding the results to the
 database."
   (with-db-from ts
-   (kvetch ts (format nil "~a looking at: ~a" agent
-                      (tanuki-schema:clean-url aset)))
+   (write-to-log ts (format nil "~a looking at: ~a" agent
+                            (tanuki-schema:clean-url aset)))
    (when aset
      (update-dao-value aset 'tanuki-schema:todo 0) ; aset is now off todo list
      (let ((run-timer (make-instance 'bb-time:timer)))
@@ -519,7 +519,8 @@ necessary."
      (dolist (aset asets)
        (incf count)
        ;; Run as usual.
-       (kvetch ts (format nil "Rerunning ~a of ~a..." count (length asets)))
+       (write-to-log ts (format nil "Rerunning ~a of ~a..."
+                                count (length asets)))
        (process-argument-set ts agent aset)
        ;; Unmark.
        (update-dao-value aset 'tanuki-schema:mark 0)
