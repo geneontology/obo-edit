@@ -135,8 +135,17 @@
      <str name="echoParams">explicit</str>
      <int name="rows">10</int>
      <float name="tie">0.01</float>
+     <!-- <str name="qf"> -->
+     <!--    name^2.0 symbol^2.0 acc^1.0 term_synonym^0.5 acc_synonym^0.5 term_definition^0.25 product_synonym^0.5 -->
+     <!-- </str> -->
      <str name="qf">
-        name^2.0 acc^1.0 term_synonym^0.5 acc_synonym^0.5 term_definition^0.25 product_synonym^0.5 symbol^2.0 full_name^2.0
+        name^2.0 symbol^2.0
+     </str>
+     <!-- <str name="mm"> -->
+     <!--   2&lt;-1 5&lt;-2 6&lt;90% -->
+     <!-- </str> -->
+     <str name="mm">
+       2&lt;-1 5&lt;-2 6&lt;90%
      </str>
      <!-- For tie breaking? -->
      <!-- <str name="pf"> -->
@@ -149,11 +158,8 @@
        *
      </str>
      <!-- <str name="fl"> -->
-     <!--    name,acc,term_synonym,acc_synonym,term_definition,symbol,full_name,product_synonym,score -->
+     <!--    name,acc,term_synonym,acc_synonym,term_definition,symbol,product_synonym,score -->
      <!-- </str> -->
-     <str name="mm">
-       2&lt;-1 5&lt;-2 6&lt;90%
-     </str>
      <int name="ps">100</int>
      <str name="q.alt">*:*</str>
      <!-- example highlighter config, enable per-query with hl=true -->
@@ -175,7 +181,7 @@
   <!--    <str name="defType">dismax</str> -->
   <!--    <str name="echoParams">explicit</str> -->
   <!--    <str name="qf"> -->
-  <!--       name^2.0 acc^1.0 term_synonym^0.5 acc_synonym^0.5 term_definition^0.25 product_synonym^0.5 symbol^2.0 full_name^2.0 -->
+  <!--       name^2.0 symbol^2.0 acc^1.0 term_synonym^0.5 acc_synonym^0.5 term_definition^0.25 product_synonym^0.5 -->
   <!--    </str> -->
   <!--    <str name="mm">2&lt;-1 5&lt;-2 6&lt;90%</str> -->
   <!--   </lst> -->

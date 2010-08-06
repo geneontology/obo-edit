@@ -29,12 +29,13 @@
 	  indexed="true"
 	  stored="true"
 	  required="true" />
-   <!-- Optional: for terms. -->
+   <!-- Optional: for both. -->
    <field name="name"
 	  type="text_ws"
 	  indexed="true"
 	  stored="true"
 	  required="false" />
+   <!-- Optional: for terms. -->
    <field name="term_type"
 	  type="string"
 	  indexed="true"
@@ -66,11 +67,11 @@
 	  indexed="true"
 	  stored="true"
 	  required="false" />
-   <field name="full_name"
-	  type="text_ws"
-	  indexed="true"
-	  stored="true"
-	  required="false" />
+   <!-- <field name="full_name" -->
+   <!-- 	  type="text_ws" -->
+   <!-- 	  indexed="true" -->
+   <!-- 	  stored="true" -->
+   <!-- 	  required="false" /> -->
    <field name="ncbi_taxa_id"
 	  type="string"
 	  indexed="true"
@@ -95,7 +96,7 @@
 
   <uniqueKey>acc</uniqueKey>
 
-  <defaultSearchField>acc</defaultSearchField>
+  <defaultSearchField>name</defaultSearchField>
 
   <solrQueryParser defaultOperator="OR"/>
 
