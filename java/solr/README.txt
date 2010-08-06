@@ -1,3 +1,6 @@
+#### TODO/BUG: I can't get dismax to work as I want, or really at
+#### all--still slumping along with hard-coded standard...
+
 ## Also see golr.el in this directory.
 
 ## To update (redo) index:
