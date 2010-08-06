@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<schema name="example" version="1.2">
+<schema name="golr" version="1.2">
 
   <types>
     <fieldType name="string"
@@ -17,23 +17,29 @@
   </types>
 
   <fields>
-   <!-- Required -->
+   <!-- Required for both (acc|dbxref). -->
    <field name="acc"
 	  type="string"
 	  indexed="true"
 	  stored="true"
 	  required="true" />
-   <field name="name"
-	  type="text_ws"
-	  indexed="true"
-	  stored="true"
-	  required="true" />
-   <!-- Optional -->
-   <field name="term_type"
+   <!-- Required for flattening (term|gene_product). -->
+   <field name="domain"
 	  type="string"
 	  indexed="true"
 	  stored="true"
 	  required="true" />
+   <!-- Optional: for terms. -->
+   <field name="name"
+	  type="text_ws"
+	  indexed="true"
+	  stored="true"
+	  required="false" />
+   <field name="term_type"
+	  type="string"
+	  indexed="true"
+	  stored="true"
+	  required="false" />
    <field name="term_synonym"
 	  type="string"
 	  indexed="true"
@@ -54,11 +60,42 @@
 	  indexed="true"
 	  stored="true"
 	  required="false" />
+   <!-- Optional: for gene products. -->
+   <field name="symbol"
+	  type="string"
+	  indexed="true"
+	  stored="true"
+	  required="false" />
+   <field name="full_name"
+	  type="text_ws"
+	  indexed="true"
+	  stored="true"
+	  required="false" />
+   <field name="ncbi_taxa_id"
+	  type="string"
+	  indexed="true"
+	  stored="true"
+	  required="false" />
+   <field name="type_name"
+	  type="string"
+	  indexed="true"
+	  stored="true"
+	  required="false" />
+   <field name="type_acc"
+	  type="string"
+	  indexed="true"
+	  stored="true"
+	  required="false" />
+   <field name="product_synonym"
+	  type="text_ws"
+	  indexed="true"
+	  stored="true"
+	  required="false" />
   </fields>
 
   <uniqueKey>acc</uniqueKey>
 
-  <defaultSearchField>name</defaultSearchField>
+  <defaultSearchField>acc</defaultSearchField>
 
   <solrQueryParser defaultOperator="OR"/>
 

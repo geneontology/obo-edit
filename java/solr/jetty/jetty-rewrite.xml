@@ -67,20 +67,23 @@
             </Item>
 
 
-            <!-- add a regex rule -->
             <!-- BUG/TODO: make this so that locals can access it... -->
-            <Item>
-              <New class="org.mortbay.jetty.handler.rewrite.RewriteRegexRule">
-                <Set name="regex">/solr/admin.*</Set>
-                <Set name="replacement">/no_access.html</Set>
-              </New>
-            </Item>
-            <Item>
-              <New class="org.mortbay.jetty.handler.rewrite.RewriteRegexRule">
-                <Set name="regex">/solr/update.*</Set>
-                <Set name="replacement">/no_access.html</Set>
-              </New>
-            </Item>
+	    <!-- START ADMIN_BLOCK -->
+            <!-- <Item> -->
+            <!--   <New class="org.mortbay.jetty.handler.rewrite.RewriteRegexRule"> -->
+            <!--     <Set name="regex">/solr/admin.*</Set> -->
+            <!--     <Set name="replacement">/no_access.html</Set> -->
+            <!--   </New> -->
+            <!-- </Item> -->
+	    <!-- END ADMIN_BLOCK -->
+	    <!-- START UPDATE_BLOCK -->
+            <!-- <Item> -->
+            <!--   <New class="org.mortbay.jetty.handler.rewrite.RewriteRegexRule"> -->
+            <!--     <Set name="regex">/solr/update.*</Set> -->
+            <!--     <Set name="replacement">/no_access.html</Set> -->
+            <!--   </New> -->
+            <!-- </Item> -->
+	    <!-- END UPDATE_BLOCK -->
 
             <!-- add a rewrite rule -->
             <!-- <Item> -->

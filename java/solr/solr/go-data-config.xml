@@ -1,16 +1,22 @@
 <dataConfig>
   <dataSource type="JdbcDataSource" 
               driver="com.mysql.jdbc.Driver"
-              url="jdbc:mysql://spitz.lbl.gov/go_latest_lite" 
+              url="jdbc:mysql://spitz.lbl.gov/go_latest_lite"
+	      batchSize="-1"
               user="sjcarbon" 
               password=""/>
   <document>
     <entity name="term" 
-            query="SELECT id, acc, name, term_type FROM term">
+            query="SELECT id, concat('term') AS domain, acc, name, term_type FROM term">
       <entity name="term_synonym" 
               query="SELECT term_synonym, acc_synonym FROM term_synonym WHERE term_id='${term.id}'"/>
       <entity name="term_definition" 
               query="SELECT term_definition, term_comment FROM term_definition WHERE term_id='${term.id}'"/>
+    </entity>
+    <entity name="gene_product"
+            query="SELECT gene_product.id, concat('gene_product') AS domain, symbol, full_name as name, ncbi_taxa_id, term.name AS type_name, term.acc AS type_acc, concat(dbxref.xref_dbname, ':', dbxref.xref_key) AS acc FROM gene_product, species, term, dbxref WHERE species_id=species.id AND type_id=term.id AND dbxref_id=dbxref.id">
+      <entity name="gene_product_synonym" 
+              query="SELECT product_synonym FROM gene_product_synonym WHERE gene_product_id='${gene_product.id}'"/>
     </entity>
   </document>
 </dataConfig>
