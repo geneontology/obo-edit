@@ -62,3 +62,4 @@
 
 2010-06-25      - [cjm] URI treatment fixed. allow * idspace option. expansion tags
 
+2010-08-10      - [cjm] fixed AnnotationAssertions for classes. See email to obo-admin
