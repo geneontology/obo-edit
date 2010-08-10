@@ -21,6 +21,9 @@ sub e_header {
         $self->factq('metadata_db:idspace'=>[$1]);
         $self->factq('metadata_db:idspace_uri'=>[$1,$2]);
     }
+    if ($hdr->get_ontology) {
+        $self->factq('ontology'=>[$hdr->get_ontology]);
+    }
     foreach ($hdr->get_subsetdef) {
         my $id = $_->sget_id;
         my $name = $_->sget_name;
@@ -100,8 +103,7 @@ sub e_typedef {
         }
     }
     foreach (qw(transitive_over inverse_of class_level_inverse_of inverse_of_on_instance_level transitive_form_of cyclic_form_of cyclic_over 
-complement_of
-directed_simple_path_over directed_path_over reflexive_over)) {
+complement_of directed_simple_path_over directed_path_over reflexive_over expand_expression_to expand_assertion_to)) {
         my $val = $typedef->sget($_);
         if ($val) {
             $self->factq( $_,[$id,$val]);
@@ -174,7 +176,15 @@ sub e_term {
     #my @is_as = $term->findval_is_a;
     my @is_as = $term->get_is_a;
     $self->rfactq($_,'subclass', [$id, ref($_) ? $_->get('.') : $_], $name_h->{$_}) foreach @is_as;
+
+    my @equivs = $term->get_equivalent_to;
+    $self->rfactq($_, 'equivalent_class', [$id, $_]) foreach @equivs;
+
     my @xp = $term->get_intersection_of;
+    if (scalar(@xp) == 1) {
+        $self->warn("IGNORING single intersection_of tag for $id/$name");
+        @xp=();
+    }
     if (@xp) {
         my @genus_l = ();
         @xp = grep {
@@ -197,8 +207,6 @@ sub e_term {
 
         foreach my $diff (@xp) {
             my $rel = $diff->get_type;
-            #my $min_card = $diff->sget('@/min_cardinality');
-            #my $max_card = $diff->sget('@/max_cardinality');
             my $min_card = $diff->sget('@/minCardinality');
             my $max_card = $diff->sget('@/maxCardinality');
             my $card = $diff->sget('@/cardinality');
@@ -219,6 +227,7 @@ sub e_term {
             $self->factq('differentium', [$id, $rel, $diff->sget_to])
         }
     }
+    # TODO - unify handling of cardinality
     my @rels = $term->get_relationship;
     foreach (@rels) {
         my @args =
@@ -325,6 +334,11 @@ sub export_tags {
         my $xref = _flatten_dbxref($_);
         #$self->factq('class_xref',[$id, sprintf("%s:%s",$_->sget_dbname,$_->sget_acc)]);
         $self->factq('metadata_db:entity_xref',[$id, $xref]);
+        my $n = $_->sget('name');
+        if ($n && !$self->{_written_name_for}->{$xref}) {
+            $self->factq('metadata_db:entity_label',[$xref, $n]);
+            $self->{_written_name_for}->{$id} = 1;
+        }
     }
     foreach ($entity->get_formula) {
         $self->factq('logicalformula',[$id,$_->sget_formula_text,$_->sget('@/format')]);
@@ -353,7 +367,6 @@ sub export_tags {
                              [$link_id,{inst_rel=>[@args,$pv->sget_to]}]);
             }
         }
-
     }
     return;
 }
@@ -384,8 +397,8 @@ sub e_prod {
     # duplicate?
     $self->factq('seqfeature_db:feature_organism',
                 [$id,'NCBITaxon:'.$gp->sget("prodtaxa")]);
-    $self->factq('taxon_db:entity_taxon',
-                [$id,'NCBITaxon:'.$gp->sget("prodtaxa")]);
+    #$self->factq('taxon_db:entity_taxon',
+    #            [$id,'NCBITaxon:'.$gp->sget("prodtaxa")]);
     $self->factq('seqfeature_db:featureprop',
                 [$id,'description',$gp->sget_prodname]);
     $self->factq('metadata_db:entity_synonym',
