@@ -467,6 +467,18 @@
   </xsl:template>
 
   <xsl:template match="relationship">
+    <!-- 
+    <xsl:choose>
+      <xsl:when test="key('k_relation',type)/is_class_level = '1'">
+        <xsl:apply-templates mode="triple" select="."/>
+      </xsl:when>
+      <xsl:otherwise>
+        <rdfs:subClassOf>
+          <xsl:apply-templates mode="restriction" select="."/>      
+        </rdfs:subClassOf>
+      </xsl:otherwise>
+    </xsl:choose>
+    -->
     <rdfs:subClassOf>
       <xsl:apply-templates mode="restriction" select="."/>      
     </rdfs:subClassOf>
@@ -763,7 +775,6 @@
     </rdf:type>
   </xsl:template>
 
-  <!-- TODO -->
   <xsl:template match="property_value">
     <xsl:variable name="property">
       <xsl:choose>
@@ -771,10 +782,33 @@
           <xsl:value-of select="substring-after(type,':')"/>
         </xsl:when>
         <xsl:otherwise>
-	  <!-- 
-          <xsl:text>&oboContent;</xsl:text>
           <xsl:text>obo:</xsl:text>
-	  -->
+          <xsl:value-of select="type"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:element name="{$property}">
+      <xsl:choose>
+        <xsl:when test="datatype">
+          <xsl:attribute name="rdf:datatype">
+            <xsl:value-of select="datatype"/>
+          </xsl:attribute>
+          <xsl:value-of select="value"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:apply-templates mode="resource" select="to"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="OLD__property_value">
+    <xsl:variable name="property">
+      <xsl:choose>
+        <xsl:when test="contains(type,':')">
+          <xsl:value-of select="substring-after(type,':')"/>
+        </xsl:when>
+        <xsl:otherwise>
           <xsl:value-of select="type"/>
         </xsl:otherwise>
       </xsl:choose>
@@ -810,6 +844,7 @@
       </xsl:choose>
     </xsl:element>
   </xsl:template>
+
 
   <xsl:template match="relationship" mode="instance">
     <xsl:variable name="property">
