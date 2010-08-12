@@ -197,7 +197,7 @@ Location of the drupal installation.
 
 =item -o <path>
 
-Location of the writable backup ouput directory.
+Location of the writable backup output directory.
 
 =back
 
