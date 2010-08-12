@@ -19,6 +19,7 @@ use vars qw(
 use Getopt::Std;
 use Time::Format;
 use IO::Compress::Gzip qw(gzip $GzipError);
+use File::Copy;
 use File::Find;
 use Archive::Tar;
 
@@ -111,6 +112,23 @@ print "Backups at: $backup_dir\n" if $opt_v;
 
 ## Total upgrade...but only if we are not just doing backups.
 if( ! $just_backups_p ){
+
+  ## Move the volatile files somewhere nice.
+  my @backupable = ('.htaccess', 'robots.txt');
+  my $tmp_ext = randy();
+  foreach my $bfile (@backupable){
+    my $old_file = $drupal_dir . '/' . $bfile;
+    my $new_file = $old_file . '.' . $tmp_ext;
+    if( -f $old_file ){
+      print "Copying current $bfile to: $new_file\n" if $opt_v;
+      copy($old_file, $new_file) or die "Copy failed: $!";
+      print "Remember to diff $bfile and $new_file\n" if $opt_v;
+    }else{
+      print "No $bfile to take care of.\n" if $opt_v;
+    }
+  }
+
+  ## Actually do backup.
   ## Switch to this after we're sure that it's not crazy.
   #my $cmd = "drush --yes -r $drupal_dir pm-update";
   my $cmd = "drush -r $drupal_dir pm-update";
