@@ -467,18 +467,25 @@ sub paint_files{
     $ftp->login("anonymous",'-anonymous@') or return "Can't login to '$host'";
 
     $ftp->cwd($path) or return 'Found no PAINT files.';
-    my @files = map {
-    	$_ eq 'CVS' ? () : $_;
+    my %files = map {
+	my $file = $_;
+	if ($_ eq 'CVS') {
+	    ();
+	} else {
+	    my (undef, undef, undef, $mday, $mon, $year) = gmtime($ftp->mdtm($file));
+	    $year += 1900;
+	    $file => sprintf('%04d-%02d-%02d', $year, $mon, $mday);
+	}
     } $ftp->ls();
     $ftp->quit();
 
-    my $found = scalar(@files);
-    return (($found == 1)              ?
-    	    'Found one PAINT file:'    :
-    	    "Found $found PAINT files:"), map {
-    	"ftp://$host/$path/$_";
-    } @files;
-
+    my $found = scalar(keys %files);
+    return
+      (($found == 1)              ?
+       'Found one PAINT file:'    :
+       "Found $found PAINT files:"), map {
+	   ("ftp://$host/$path/$_" => $files{$_});
+       } keys %files;
 }
 
 

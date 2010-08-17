@@ -343,14 +343,14 @@ sub mode_paint_ajax{
        key    => $q->param('key'),
       );
 
-    my ($msg, @url) = $o->paint_files();
+    my ($msg, %url) = $o->paint_files();
 
-    return "<h3>$msg</h3><ul>" . join('', map {
+    return "<ul><li>$msg</li>" . join('', map {
 	my $url = $_;
 	my $txt = $_;
 	$txt =~ s(.*/)();
-	"<li><a href=\"$url\">$txt</a></li>";
-    } @url) . '</ul>';
+	"<li><a href=\"$url\">$txt</a>&nbsp;($url{$url})</li>";
+    } keys %url) . '</ul>';
 }
 
 
