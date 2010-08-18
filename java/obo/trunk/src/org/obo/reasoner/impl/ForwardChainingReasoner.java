@@ -285,7 +285,7 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 	public void addLinks(Collection<Link> links) {
 		for(Link link : links){
 			if (link instanceof OBORestriction
-					&& ((OBORestriction) link).completes()) {
+					&& ((OBORestriction) link).getCompletes()) {
 				// adding a new complete link can cause some implied
 				// relationships to get removed, because the complete
 				// definition is now narrower
@@ -330,7 +330,7 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 	public void addLink(Link link) {
 		// fireStart();
 		if (link instanceof OBORestriction
-				&& ((OBORestriction) link).completes()) {
+				&& ((OBORestriction) link).getCompletes()) {
 			// adding a new complete link can cause some implied
 			// relationships to get removed, because the complete
 			// definition is now narrower
@@ -416,7 +416,7 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 				explanationMap.remove(link);
 		}
 		if (link instanceof OBORestriction
-				&& ((OBORestriction) link).completes()) {
+				&& ((OBORestriction) link).getCompletes()) {
 			Collection<Link> completeParents = intersectionMap.get(link
 					.getChild());
 			if (completeParents != null) {

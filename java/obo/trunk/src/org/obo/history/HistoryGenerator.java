@@ -291,7 +291,7 @@ public class HistoryGenerator implements Serializable {
 								.isInverseNecessarilyTrue()) {
 							history.addItem(new InverseNecHistoryItem(rlink));
 						}
-						if (rlink.completes() != rfoundLink.completes()) {
+						if (rlink.getCompletes() != rfoundLink.getCompletes()) {
 							history.addItem(new CompletesHistoryItem(rlink));
 						}
 					}
@@ -334,7 +334,7 @@ public class HistoryGenerator implements Serializable {
 							.addItem(new InverseNecHistoryItem(
 									new StringRelationship(
 											newLink), false));
-						if (rlink.completes())
+						if (rlink.getCompletes())
 							history
 							.addItem(new CompletesHistoryItem(
 									new StringRelationship(

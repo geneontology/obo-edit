@@ -1105,7 +1105,7 @@ public class TermUtil {
 	 */
 	public static boolean isIntersection(Link link) {
 		if (link instanceof OBORestriction)
-			return ((OBORestriction) link).completes();
+			return ((OBORestriction) link).getCompletes();
 		else
 			return false;
 	}
