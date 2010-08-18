@@ -354,7 +354,7 @@ public class ReasonerTest extends TestCase {
 					Link link = (Link) it2.next();
 					if (link instanceof OBORestriction) {
 						OBORestriction or = (OBORestriction) link;
-						if (or.completes())
+						if (or.getCompletes())
 							completeLinks.add(or);
 					}
 				}
@@ -384,7 +384,7 @@ public class ReasonerTest extends TestCase {
 					Link link = (Link) it2.next();
 					if (link instanceof OBORestriction) {
 						OBORestriction or = (OBORestriction) link;
-						if (!or.completes())
+						if (!or.getCompletes())
 							count++;
 					} else
 						count++;
@@ -402,7 +402,7 @@ public class ReasonerTest extends TestCase {
 					if (index == 0)
 						return link;
 					if (link instanceof OBORestriction) {
-						if (!((OBORestriction) link).completes())
+						if (!((OBORestriction) link).getCompletes())
 							index--;
 					} else
 						index--;

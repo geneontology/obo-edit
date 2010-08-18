@@ -18,14 +18,14 @@ public interface OBORestriction extends Link, Cloneable,
 	public Integer getMaxCardinality();
 
 	public Integer getMinCardinality();
+	
+	public void setCompletes(boolean completes);
 
-	public boolean completes();
+	public boolean getCompletes();
 
 	public boolean inverseCompletes();
 
 	public void setInverseCompletes(boolean inverseCompletes);
-
-	public void setCompletes(boolean completes);
 
 	public void setNecessarilyTrue(boolean necessarilyTrue);
 

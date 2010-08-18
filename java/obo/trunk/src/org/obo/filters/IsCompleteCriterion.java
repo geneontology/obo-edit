@@ -22,7 +22,7 @@ public class IsCompleteCriterion extends AbstractBooleanCriterion {
 			while (it.hasNext()) {
 				Link l = (Link) it.next();
 				if (l instanceof OBORestriction
-						&& ((OBORestriction) l).completes()) {
+						&& ((OBORestriction) l).getCompletes()) {
 					found = true;
 					break;
 				}

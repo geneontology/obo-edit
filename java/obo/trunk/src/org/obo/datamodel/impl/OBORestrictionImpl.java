@@ -144,7 +144,7 @@ public class OBORestrictionImpl implements OBORestriction {
 		return (metadata == null ? null : metadata.minCardinality);
 	}
 
-	public boolean completes() {
+	public boolean getCompletes() {
 		return (metadata == null ? false : metadata.completes);
 	}
 
@@ -257,7 +257,7 @@ public class OBORestrictionImpl implements OBORestriction {
 
 		int hashCode = childHash + parentHash + typeHash;
 
-		if (completes())
+		if (getCompletes())
 			hashCode *= 2;
 		return hashCode;
 	}
@@ -275,7 +275,7 @@ public class OBORestrictionImpl implements OBORestriction {
 	@Override
 	public String toString() {
 		String bar = "--";
-		if (completes())
+		if (getCompletes())
 			bar = "~~";
 		else if (isImplied())
 			bar = "==";
@@ -307,7 +307,7 @@ public class OBORestrictionImpl implements OBORestriction {
 
 	public String getID() {
 		char sepChar = '-';
-		if (completes())
+		if (getCompletes())
 			sepChar = '~';
 		String childID = "null";
 		String typeID = "null";
