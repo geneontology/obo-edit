@@ -127,7 +127,7 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 				kb.addInverseProperty(c, p);
 				return;
 			}
-			if (rlink.completes()) {
+			if (rlink.getCompletes()) {
 				// TODO
 				// collect and make OWL Restriction later...
 				//ATermList ecterms = objectToEquivATermList.get(child);

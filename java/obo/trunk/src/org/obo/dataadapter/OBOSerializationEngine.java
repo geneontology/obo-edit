@@ -1050,7 +1050,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			out.setCardinality(link.getCardinality());
 			out.setMaxCardinality(link.getMaxCardinality());
 			out.setMinCardinality(link.getMinCardinality());
-			out.setCompletes(link.completes());
+			out.setCompletes(link.getCompletes());
 			out.setInverseCompletes(link.inverseCompletes());
 			out.setNecessarilyTrue(link.isNecessarilyTrue());
 			out.setInverseNecessarilyTrue(link.isInverseNecessarilyTrue());

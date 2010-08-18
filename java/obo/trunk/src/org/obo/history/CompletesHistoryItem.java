@@ -32,7 +32,7 @@ public class CompletesHistoryItem extends LinkHistoryItem {
 	}
 
 	public CompletesHistoryItem(OBORestriction tr) {
-		this(new StringRelationship(tr), tr.completes());
+		this(new StringRelationship(tr), tr.getCompletes());
 	}
 
 	@Override

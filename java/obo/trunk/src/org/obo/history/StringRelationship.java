@@ -88,7 +88,7 @@ public class StringRelationship implements Serializable, Cloneable {
 
 	public StringRelationship(OBORestriction rel) {
 		this(rel.getChild(), rel.getType(), rel.getParent(), rel
-				.completes(), rel.isNecessarilyTrue(), rel
+				.getCompletes(), rel.isNecessarilyTrue(), rel
 				.isInverseNecessarilyTrue(), rel.getCardinality(), rel
 				.getMinCardinality(), rel.getMaxCardinality(),
 				(rel.getNamespace() == null ? null : rel.getNamespace()

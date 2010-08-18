@@ -42,9 +42,9 @@ public class NamespaceTest extends AbstractOBOTest {
 		IdentifiedObject io = session.getObject(id);
 		for (Link link : 
 			((LinkedObject)io).getParents()) {
-			logger.info(link+" "+((OBORestriction)link).completes()+" "+
+			logger.info(link+" "+((OBORestriction)link).getCompletes()+" "+
 					link.getNamespace());
-			if (((OBORestriction)link).completes())
+			if (((OBORestriction)link).getCompletes())
 				if (link.getType().equals(OBOProperty.IS_A))
 					assertTrue(link.getNamespace().getID().equals("test"));
 				else
@@ -56,7 +56,7 @@ public class NamespaceTest extends AbstractOBOTest {
 		io = session.getObject("GO:0005623");
 		for (Link link : 
 			((LinkedObject)io).getParents()) {
-			logger.info(link+" "+((OBORestriction)link).completes()+" "+
+			logger.info(link+" "+((OBORestriction)link).getCompletes()+" "+
 					link.getNamespace());
 			if (link.getParent().equals("bfo:Object"))
 				assertTrue(link.getNamespace().getID().contains("cc-bfo-mapping"));

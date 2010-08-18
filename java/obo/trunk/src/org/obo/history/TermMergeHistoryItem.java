@@ -115,18 +115,17 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 			OBORestriction newtr = new OBORestrictionImpl(masterNode, tr.getType(), tr
 			.getParent());
 			
-			newtr.setCompletes(tr.completes());
+			newtr.setCompletes(tr.getCompletes());
 
 			//deleting tr on the assumption that the master term already has it
 			out.add(new DeleteLinkHistoryItem(tr));
-
 
 			if (targetDescendants.contains(slaveParent)) {
 				continue;
 			}
 
 			if (!HistoryUtil.hasChild(tr.getParent(), newtr)) {
-				if(newtr.completes()){
+				if(newtr.getCompletes()){
 					out.add(new CreateIntersectionLinkHistoryItem(masterNode, tr
 							.getType(), tr.getParent()));
 				}
@@ -202,7 +201,6 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 		}
 		out.add(new DefinitionChangeHistoryItem(masterNode, newDef));
 		out.add(new CommentChangeHistoryItem(masterNode, newComment));
-
 
 		return null;
 	}

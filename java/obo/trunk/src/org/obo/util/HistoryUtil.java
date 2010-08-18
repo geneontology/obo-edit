@@ -1,7 +1,6 @@
 package org.obo.util;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.bbop.util.VectorFilter;
@@ -15,7 +14,6 @@ import org.obo.datamodel.Synonym;
 import org.obo.datamodel.SynonymType;
 import org.obo.datamodel.SynonymedObject;
 import org.obo.datamodel.TermSubset;
-import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.history.HistoryItem;
 import org.obo.history.HistoryList;
 import org.obo.history.StringRelationship;
@@ -104,10 +102,8 @@ public class HistoryUtil {
 	
 		if (child == null)
 			return null;
-	
-		Iterator it = child.getParents().iterator();
-		while (it.hasNext()) {
-			Link link = (Link) it.next();
+		
+		for(Link link : child.getParents()){
 			if (link.getType().equals(type) && link.getParent().equals(parent)) {
 				return link;
 			}
@@ -121,9 +117,7 @@ public class HistoryUtil {
 	 * {@link OBOSession}, or null if no such category exists.
 	 */
 	public static TermSubset findCategory(String name, OBOSession session) {
-		Iterator it = session.getSubsets().iterator();
-		while (it.hasNext()) {
-			TermSubset cat = (TermSubset) it.next();
+		for(TermSubset cat : session.getSubsets()){
 			if (cat.getName().equals(name))
 				return cat;
 		}
@@ -156,9 +150,7 @@ public class HistoryUtil {
 			else {
 				return null;
 			}
-		Iterator it = t.getChildren().iterator();
-		while (it.hasNext()) {
-			Link ptr = (Link) it.next();
+		for(Link ptr : t.getChildren()){
 			if (TermUtil.equals(ptr, tr))
 				return ptr;
 		}
@@ -180,9 +172,7 @@ public class HistoryUtil {
 				return tr;
 			else
 				return null;
-		Iterator it = t.getChildren().iterator();
-		while (it.hasNext()) {
-			Link ptr = (Link) it.next();
+		for(Link ptr : t.getChildren()){
 			if (TermUtil.equalsWithoutIntersection(ptr, tr))
 				return ptr;
 		}
@@ -190,9 +180,7 @@ public class HistoryUtil {
 	}
 
 	public static Link findParentRel(Link tr, LinkedObject t) {
-		Iterator it = t.getParents().iterator();
-		while (it.hasNext()) {
-			Link ctr = (Link) it.next();
+		for(Link ctr : t.getParents()){
 			if (TermUtil.equals(ctr, tr))
 				return ctr;
 		}
@@ -201,9 +189,7 @@ public class HistoryUtil {
 
 	@Deprecated
 	public static Link findParentRelNoIntersection(Link tr, LinkedObject t) {
-		Iterator it = t.getParents().iterator();
-		while (it.hasNext()) {
-			Link ctr = (Link) it.next();
+		for(Link ctr : t.getParents()){
 			if (TermUtil.equalsWithoutIntersection(ctr, tr))
 				return ctr;
 		}
@@ -216,9 +202,7 @@ public class HistoryUtil {
 	}
 
 	public static Namespace findNamespace(String nsid, OBOSession session) {
-		Iterator it = session.getNamespaces().iterator();
-		while (it.hasNext()) {
-			Namespace ns = (Namespace) it.next();
+		for(Namespace ns : session.getNamespaces()){
 			if (ns.getID().equals(nsid))
 				return ns;
 		}
@@ -226,9 +210,7 @@ public class HistoryUtil {
 	}
 
 	public static Synonym findSynonym(SynonymedObject t, String stext) {
-		Iterator it = t.getSynonyms().iterator();
-		while (it.hasNext()) {
-			Synonym s = (Synonym) it.next();
+		for(Synonym s : t.getSynonyms()){
 			if (s.getText().equals(stext))
 				return s;
 		}
@@ -241,9 +223,7 @@ public class HistoryUtil {
 
 	public static SynonymType findSynonymCategory(String cat_id,
 			OBOSession session) {
-		Iterator it = session.getSynonymTypes().iterator();
-		while (it.hasNext()) {
-			SynonymType cat = (SynonymType) it.next();
+		for(SynonymType cat : session.getSynonymTypes()){
 			if (cat.getID().equals(cat_id))
 				return cat;
 		}
@@ -263,7 +243,7 @@ public class HistoryUtil {
 			if (tr.getChild().equals(tra.getChild())
 					&& tr.getType().equals(tra.getType())){
 				if((tr instanceof OBORestriction) && (tra instanceof OBORestriction)){
-					return ((OBORestriction)tr).completes() == ((OBORestriction)tra).completes();
+					return ((OBORestriction)tr).getCompletes() == ((OBORestriction)tra).getCompletes();
 				}
 				return true;
 			}
