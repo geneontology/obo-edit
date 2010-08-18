@@ -105,20 +105,32 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 		Vector slaveParents = new Vector();
 		slaveParents.addAll(slaveNode.getParents());
 		for (int i = 0; i < slaveParents.size(); i++) {
-			Link tr = (Link) slaveParents.get(i);
+//			Link tr = (Link) slaveParents.get(i);
+			OBORestriction tr = (OBORestriction) slaveParents.get(i);
 
 			LinkedObject slaveParent = tr.getParent();
 
-			Link newtr = new OBORestrictionImpl(masterNode, tr.getType(), tr
-					.getParent());
+//			Link newtr = new OBORestrictionImpl(masterNode, tr.getType(), tr
+//					.getParent());
+			OBORestriction newtr = new OBORestrictionImpl(masterNode, tr.getType(), tr
+			.getParent());
+			
+			newtr.setCompletes(tr.completes());
 
+			//deleting tr on the assumption that the master term already has it
 			out.add(new DeleteLinkHistoryItem(tr));
+
 
 			if (targetDescendants.contains(slaveParent)) {
 				continue;
 			}
 
 			if (!HistoryUtil.hasChild(tr.getParent(), newtr)) {
+				if(newtr.completes()){
+					out.add(new CreateIntersectionLinkHistoryItem(masterNode, tr
+							.getType(), tr.getParent()));
+				}
+				else
 				out.add(new CreateLinkHistoryItem(masterNode, tr
 						.getType(), tr.getParent()));
 			}
