@@ -863,13 +863,20 @@ sub add_seq {
                "seq_id=".$seq->id);
     my %done = ();
     foreach my $xref (@{$seq->xref_list || []}) {
-        next if $done{$xref->as_str};
+        # mysql table is case insensitive;
+        # check for dupes in case insensitive way
+        next if $done{lc($xref->as_str)};
         $self->add_dbxref($xref);
-        insert_h($dbh,
-                 "seq_dbxref",
-                 {seq_id=>$seq->id,
-                  dbxref_id=>$xref->id});
-        $done{$xref->as_str} = 1;
+        eval {
+            insert_h($dbh,
+                     "seq_dbxref",
+                     {seq_id=>$seq->id,
+                      dbxref_id=>$xref->id});
+        };
+        if ($@) {
+            warn("problem inserting xrefs for ".$seq->id."; err: ".$@);
+        }
+        $done{lc($xref->as_str)} = 1;
     }
     $seq;
 }
