@@ -3,13 +3,6 @@ package org.obo.test;
 import java.util.Arrays;
 import java.util.Collection;
 
-import junit.framework.TestSuite;
-
-import org.obo.datamodel.IdentifiedObject;
-import org.obo.datamodel.Link;
-import org.obo.datamodel.LinkedObject;
-import org.obo.datamodel.OBOProperty;
-import org.obo.datamodel.OBORestriction;
 
 import org.apache.log4j.*;
 

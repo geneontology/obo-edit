@@ -258,14 +258,20 @@ public class HistoryUtil {
 	public static boolean hasChild(LinkedObject t, Link tr) {
 		if (tr.getType() == null)
 			return false;
-		Iterator it = t.getChildren().iterator();
-		while (it.hasNext()) {
-			Link tra = (Link) it.next();
+
+		for(Link tra : t.getChildren()){
 			if (tr.getChild().equals(tra.getChild())
-					&& tr.getType().equals(tra.getType()))
+					&& tr.getType().equals(tra.getType())){
+				if((tr instanceof OBORestriction) && (tra instanceof OBORestriction)){
+					return ((OBORestriction)tr).completes() == ((OBORestriction)tra).completes();
+				}
 				return true;
+			}
+			
+				
 		}
 		return false;
 	}
+	
 
 }

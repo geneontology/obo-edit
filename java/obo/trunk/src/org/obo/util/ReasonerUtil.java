@@ -680,5 +680,15 @@ public class ReasonerUtil {
 		return out;
 
 	}
+	
+	public static Collection<Link> getIntersectionLinks(OBOClass oboClass) {
+		Collection<Link> out = new LinkedList<Link>();
+		for (Link parentLink : oboClass.getParents()) {
+			if (TermUtil.isIntersection(parentLink))
+				out.add(TermUtil.castParentToClass(parentLink));
+		}
+		return out;
+
+	}
 
 }
