@@ -15,6 +15,7 @@ import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
@@ -24,6 +25,7 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
@@ -36,7 +38,11 @@ import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import owltools.graph.OWLQuantifiedProperty.Quantifier;
 
 /**
- * Provides simple graph-like operations over the OWLAPI.
+ * Provides simple graph-like operations over the OWLAPI. In addition, provides
+ * additional convenience wrapping to OWLAPI e.g. for annotation properties.
+ * (these capabilities may in future be split)
+ * 
+ * == OWLGraph formalism ==
  * 
  * An OWLOntology includes a set of named objects O, 
  * a set of class expressions X and a set of axioms A.
@@ -107,9 +113,17 @@ public class OWLGraphWrapper {
 	OWLDataFactory dataFactory;
 	OWLOntologyManager manager;
 	Config config = new Config();
+	
 	private Map<OWLObject,Set<OWLGraphEdge>> edgeBySource;
 	private Map<OWLObject,Set<OWLGraphEdge>> edgeByTarget;
+	private Map<OWLObject,Set<OWLGraphEdge>> inferredEdgeBySource;
+	private Map<OWLObject,Set<OWLGraphEdge>> inferredEdgeByTarget;
 	
+	/**
+	 * Configuration options. These are typically specific to a
+	 * OWLGraphWrapper instance.
+	 *
+	 */
 	public class Config {
 		// by default the graph closure includes only named entities
 		public boolean isIncludeClassExpressionsInClosure = false;
@@ -117,8 +131,13 @@ public class OWLGraphWrapper {
 		// by default we do not follow complement of - TODO
 		public boolean isFollowComplementOfInClosure = false;
 
+		public boolean isCacheClosure = true;
+
 	}
 
+	/**
+	 * Create a new wrapper for an OWLOntology
+	 */
 	public OWLGraphWrapper(OWLOntology ontology) {
 		super();
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
@@ -138,14 +157,20 @@ public class OWLGraphWrapper {
 		this.ontology = ontology;
 	}
 
-
+	// ----------------------------------------
+	// BASIC GRAPH EDGE TRAVERSAL
+	// ----------------------------------------
 
 	/**
-	 * this method is for retrieving edges between _named_ objects
+	 * retrieves direct edges from a source
+	 * to the direct **named** target
 	 * 
-	 * e.g. (A SubClassOf R some B) => <A, R-some, B>
+	 * e.g. if (A SubClassOf B) then outgoing(A) = { <A,sub,B>}
+	 * e.g. if (A SubClassOf R some B) then outgoing(A) = { <A, R-some, B> }
+	 * e.g. if (A SubClassOf R some (R2 some B)) then outgoing(A) = { <A, [R-some,R2-same], B> }
+	 * 
 	 * @param source
-	 * @return all edges that originate from source
+	 * @return all edges that originate from source to nearest named object target
 	 */
 	public  Set<OWLGraphEdge> getOutgoingEdges(OWLObject cls) {
 		Set<OWLGraphEdge> pEdges = getPrimitiveOutgoingEdges(cls);
@@ -156,231 +181,9 @@ public class OWLGraphWrapper {
 		return edges;
 	}
 
-	private Set<OWLGraphEdge> primitiveEdgeToFullEdges(OWLGraphEdge e) {
-		Set<OWLGraphEdge> edges = new HashSet<OWLGraphEdge>();
-		if (e.isTargetNamedObject()) {
-			edges.add(e); // do nothing
-		}
-		else {
-			// extend
-			OWLObject s = e.getSource();
-			edges = getOutgoingEdges(e.getTarget());
-			for (OWLGraphEdge e2 : edges) {
-				e2.setSource(s);
-			}
-		}
-		return edges;
-	}
-	
 	/**
-	 * @param s
-	 * @return
-	 */
-	public Set<OWLGraphEdge> getOutgoingEdgesClosure(OWLObject s) {
-		
-		Stack<OWLGraphEdge> edgeStack = new Stack<OWLGraphEdge>();
-		Set<OWLGraphEdge> closureSet = new HashSet<OWLGraphEdge>();
-		Set<OWLGraphEdge> visitedSet = new HashSet<OWLGraphEdge>();
-		
-		// initialize
-		edgeStack.add(new OWLGraphEdge(s,s,ontology,new OWLQuantifiedProperty()));
-		
-		while (!edgeStack.isEmpty()) {
-			OWLGraphEdge ne = edgeStack.pop();
-			//System.out.println("NEXT: "+ne+" //stack: "+edgeStack);
-			int nextDist = ne.getDistance() + 1;
-			Set<OWLGraphEdge> extSet = getPrimitiveOutgoingEdges(ne.getTarget());
-			for (OWLGraphEdge extEdge : extSet) {
-				//System.out.println("   EXT:"+extEdge);
-				OWLGraphEdge nu = combineEdgePair(s, ne, extEdge, nextDist);
-				//System.out.println("     COMBINED:"+nu);
-				if (!visitedSet.contains(nu)) {
-					//System.out.println("      *NOT VISITED:"+nu+" visistedSize:"+visitedSet.size());
-					if (nu.getTarget() instanceof OWLNamedObject || 
-							config.isIncludeClassExpressionsInClosure) {
-						closureSet.add(nu);
-					}
-					edgeStack.add(nu);
-					visitedSet.add(nu);		
-				}
-			}
-		}
-		return closureSet;
-	}
-	
-	public Set<OWLGraphEdge> getEdgesBetween(OWLObject s, OWLObject t) {
-		
-		// some duplication with the above method...
-		Stack<OWLGraphEdge> edgeStack = new Stack<OWLGraphEdge>();
-		Set<OWLGraphEdge> closureSet = new HashSet<OWLGraphEdge>();
-		Set<OWLGraphEdge> visitedSet = new HashSet<OWLGraphEdge>();
-		
-		// initialize
-		edgeStack.add(new OWLGraphEdge(s,s,ontology,new OWLQuantifiedProperty()));
-		
-		while (!edgeStack.isEmpty()) {
-			OWLGraphEdge ne = edgeStack.pop();
-			int nextDist = ne.getDistance() + 1;
-			Set<OWLGraphEdge> extSet = getPrimitiveOutgoingEdges(ne.getTarget());
-			for (OWLGraphEdge extEdge : extSet) {
-				OWLGraphEdge nu = combineEdgePair(s, ne, extEdge, nextDist);
-				if (!visitedSet.contains(nu)) {
-					// note this is different from the previous method
-					// -- only add to closure set if this edge connects s and t
-					if (nu.getTarget().equals(t)) {
-						closureSet.add(nu);
-					}
-					else {
-						// we only want to go beyond here if we have NOT
-						// found the target
-						edgeStack.add(nu);
-					}
-					visitedSet.add(nu);		
-				}
-			}
-		}
-		return closureSet;
-	}
-
-	
-	/**
-	 * returns all ancestors of an object. Here, ancestors is defined as any
-	 * named object that can be reached from x over some path of asserted edges.
-	 * relations are ignored.
-	 */
-	public Set<OWLObject> getAnctesors(OWLObject x) {
-		Set<OWLObject> ancs = new HashSet<OWLObject>();
-		for (OWLGraphEdge e : getOutgoingEdgesClosure(x)) {
-			ancs.add(e.getTarget());
-		}
-		return ancs;
-	}
-
-	public Set<OWLGraphEdge> getIncomingEdgesClosure(OWLObject t) {
-		
-		Stack<OWLGraphEdge> edgeStack = new Stack<OWLGraphEdge>();
-		Set<OWLGraphEdge> closureSet = new HashSet<OWLGraphEdge>();
-		Set<OWLGraphEdge> visitedSet = new HashSet<OWLGraphEdge>();
-		
-		// initialize
-		edgeStack.add(new OWLGraphEdge(t,t,ontology,new OWLQuantifiedProperty()));
-		
-		while (!edgeStack.isEmpty()) {
-			OWLGraphEdge ne = edgeStack.pop();
-			int nextDist = ne.getDistance() + 1;
-			Set<OWLGraphEdge> extSet = getIncomingEdges(ne.getSource());
-			for (OWLGraphEdge extEdge : extSet) {
-				OWLGraphEdge nu = combineEdgePairDown(ne, t, extEdge, nextDist);
-				if (!visitedSet.contains(nu)) {
-					closureSet.add(nu);
-					edgeStack.add(nu);
-					visitedSet.add(nu);		
-				}
-			}
-		}
-		return closureSet;
-	}
-
-
-	/**
-	 * combine ne and extEdge to create a new edge
+	 * primitive edges connect any combination of named objects and expressions
 	 * 
-	 * @param s
-	 * @param ne
-	 * @param extEdge
-	 * @param nextDist
-	 * @return
-	 */
-	private OWLGraphEdge combineEdgePair(OWLObject s, OWLGraphEdge ne, OWLGraphEdge extEdge, int nextDist) {
-		OWLGraphEdge nu = new OWLGraphEdge(s, extEdge.getTarget());
-		nu.setDistance(nextDist);
-		Vector<OWLQuantifiedProperty> qps = new Vector<OWLQuantifiedProperty>();
-
-		// put all but the final one in a new list
-		int n = 0;
-		int size = ne.getQuantifiedPropertyList().size();
-		OWLQuantifiedProperty finalQP = null;
-		for (OWLQuantifiedProperty qp : ne.getQuantifiedPropertyList()) {
-			n++;
-			if (n < size)
-				qps.add(qp);
-			else
-				finalQP = qp;
-		}
-		OWLQuantifiedProperty combinedQP = 
-			combinedQuantifiedPropertyPair(ne.getFinalQuantifiedProperty(), extEdge.getSingleQuantifiedProperty());
-		if (combinedQP == null) {
-			qps.add(finalQP);
-			qps.add(extEdge.getSingleQuantifiedProperty());
-		}
-		else {
-			qps.add(combinedQP);
-		}
-		nu.setQuantifiedPropertyList(qps);
-		return nu;
-	}
-
-	private OWLGraphEdge combineEdgePairDown(OWLGraphEdge ne, OWLObject t, OWLGraphEdge extEdge, int nextDist) {
-		OWLGraphEdge nu = new OWLGraphEdge(extEdge.getSource(), t);
-		nu.setDistance(nextDist);
-		Vector<OWLQuantifiedProperty> qps = new Vector<OWLQuantifiedProperty>();
-
-		// put all but the final one in a new list
-		int n = 0;
-		int size = ne.getQuantifiedPropertyList().size();
-		OWLQuantifiedProperty finalQP = null;
-		for (OWLQuantifiedProperty qp : ne.getQuantifiedPropertyList()) {
-			n++;
-			if (n > 1)
-				qps.add(qp);
-			else
-				finalQP = qp;
-		}
-		// TODO
-		OWLQuantifiedProperty combinedQP = 
-			combinedQuantifiedPropertyPair(ne.getFinalQuantifiedProperty(), extEdge.getSingleQuantifiedProperty());
-		if (combinedQP == null) {
-			qps.add(finalQP);
-			qps.add(extEdge.getSingleQuantifiedProperty());
-		}
-		else {
-			qps.add(combinedQP);
-		}
-		nu.setQuantifiedPropertyList(qps);
-		return nu;
-	}
-
-	private OWLQuantifiedProperty combinedQuantifiedPropertyPair(OWLQuantifiedProperty x, OWLQuantifiedProperty y) {
-		if (x.isSubClassOf() && y.isSubClassOf()) {
-			return new OWLQuantifiedProperty(Quantifier.SUBCLASS_OF);
-		}
-		if (x.isInstanceOf() && y.isSubClassOf()) {
-			return new OWLQuantifiedProperty(Quantifier.INSTANCE_OF);
-		}
-		else if (x.isSubClassOf() && y.isSomeValuesFrom()) {
-			return new OWLQuantifiedProperty(y.getProperty(),Quantifier.SOME);
-		}
-		else if (x.isSomeValuesFrom() && y.isSubClassOf()) {
-			return new OWLQuantifiedProperty(x.getProperty(),Quantifier.SOME);
-		}
-		else if (x.getProperty().equals(y.getProperty()) && 
-				x.getProperty().isTransitive(ontology)) {
-			return new OWLQuantifiedProperty(x.getProperty(),Quantifier.SOME);
-		}
-		else if (x.isSubClassOf() && y.isAllValuesFrom()) {
-			return new OWLQuantifiedProperty(y.getProperty(),Quantifier.ONLY);
-		}
-		else if (x.isAllValuesFrom() && y.isSubClassOf()) {
-			return new OWLQuantifiedProperty(x.getProperty(),Quantifier.ONLY);
-		}
-		else {
-			// TODO - extend
-			return null;
-		}
-	}
-
-
-	/**
 	 * e.g. (A SubClassOf R some B) => <A,sub,R-some-B>, <R-some-B,R-some,B>
 	 * @param source
 	 * @return
@@ -401,6 +204,14 @@ public class OWLGraphWrapper {
 			// TODO - union in reverse direction - index first?
 
 		}
+		else if (s instanceof OWLIndividual) {
+			for (OWLClassAssertionAxiom a : ontology.getClassAssertionAxioms((OWLIndividual) s)) {
+				edges.add(new OWLGraphEdge(s,a.getClassExpression(),null,Quantifier.INSTANCE_OF,ontology));
+			}
+			for (OWLObjectPropertyAssertionAxiom a : ontology.getObjectPropertyAssertionAxioms((OWLIndividual) s)) {
+				edges.add(new OWLGraphEdge(s,a.getObject(),a.getProperty(),Quantifier.PROPERTY_ASSERTION,ontology));
+			}
+		}
 		else if (s instanceof OWLRestriction<?>) {
 			edges.add(restrictionToPrimitiveEdge((OWLRestriction<?>) s));
 		}
@@ -414,16 +225,31 @@ public class OWLGraphWrapper {
 		}
 		return edges;
 	}
-	
-	public Set<OWLObject> getAllOWLObjects() {
-		Set<OWLClass> cls = ontology.getClassesInSignature();
-		Set<OWLNamedIndividual> ins = ontology.getIndividualsInSignature();
-		Set<OWLObject> obs = new HashSet<OWLObject>();
-		obs.addAll(cls);
-		obs.addAll(ins);
-		return obs;
+
+	// extend an edge target until we hit a named object.
+	// this could involve multiple extensions and "forks", e.g.
+	// <A sub B^C> ==> <A sub B>, <A sub C>
+	private Set<OWLGraphEdge> primitiveEdgeToFullEdges(OWLGraphEdge e) {
+		Set<OWLGraphEdge> edges = new HashSet<OWLGraphEdge>();
+		if (e.isTargetNamedObject()) {
+			edges.add(e); // do nothing
+		}
+		else {
+			// extend
+			OWLObject s = e.getSource();
+			edges = getOutgoingEdges(e.getTarget());
+			for (OWLGraphEdge e2 : edges) {
+				e2.setSource(s);
+			}
+		}
+		return edges;
 	}
 	
+	
+
+	/**
+	 * in general you should not need to call this
+	 */
 	public void cacheEdges() {
 		edgeBySource = new HashMap<OWLObject,Set<OWLGraphEdge>>();
 		edgeByTarget = new HashMap<OWLObject,Set<OWLGraphEdge>>();
@@ -470,15 +296,25 @@ public class OWLGraphWrapper {
 		return new OWLGraphEdge(s,t,p,q,ontology);
 	}
 
-	public OWLGraphEdge expressionToPrimitiveEdge(OWLObject s, OWLClassExpression t) {
-		return new OWLGraphEdge(s,t,ontology);
+	private OWLGraphEdge expressionToPrimitiveEdge(OWLObject s, OWLClassExpression t) {
+		return new OWLGraphEdge(s,t,null,Quantifier.SUBCLASS_OF,ontology);
 	}
 	
 	/**
-	 * given an edge (either asserted or a closure edge), translate this into
-	 * an OWL class expression.
-	 * this is the reverse translation of the one from an OWLOntology to an
-	 * OWLGraph
+	 * pack/translate an edge (either asserted or a graph closure edge) into
+	 * an OWL class expression according to the OWLGraph to OWLOntology
+	 * translation rules.
+	 * 
+	 * (this is the reverse translation of the one from an OWLOntology to an
+	 * OWLGraph)
+	 * 
+	 * e.g. after calling for the graph closure of an OWLClass a,
+	 * we may get back an edge <a [part_of-some, adjacent_to-some, has_part-some] b>.
+	 * after feeding this edge into this method we obtain the expression
+	 *   part_of some (adjacent_to some (has_part some b))
+	 * 
+	 * @param edge
+	 * @return class expression equivalent to edge
 	 */
 	public OWLObject edgeToTargetExpression(OWLGraphEdge e) {
 		return edgeToTargetExpression(e.getQuantifiedPropertyList().iterator(),e.getTarget());
@@ -509,18 +345,264 @@ public class OWLGraphWrapper {
 		}
 	}
 
+	
+	// ----------------------------------------
+	// GRAPH CLOSURE METHODS
+	// ----------------------------------------
 
-	public String getLabel(OWLClass c) {
-		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()); 
-		for (OWLAnnotation a : c.getAnnotations(ontology,lap)) {
-			if (a.getValue() instanceof OWLLiteral) {
-				OWLLiteral val = (OWLLiteral) a.getValue();
-				return val.getLiteral(); // return first - todo - check zero or one
+	
+	/**
+	 * Retrieves the graph closure originating from source.
+	 * E.g. if A SubClassOf R some B & B SubClassOf S some C, then
+	 * closure(A) = { <A R-some B>, <A [R-some,S-some] C>.
+	 * 
+	 * Composition rules are used to compact the list of connecting edge labels
+	 * (e.g. transitivity).
+	 * 
+	 * The resulting edges can be translated into class expressions using 
+	 * method edgeToTargetExpression(e). E.g. in the above the expression would be
+	 *   R some (S some C)
+	 * 
+	 * @param source
+	 * @return closure of edges originating from source
+	 */
+	public Set<OWLGraphEdge> getOutgoingEdgesClosure(OWLObject s) {
+		
+		Stack<OWLGraphEdge> edgeStack = new Stack<OWLGraphEdge>();
+		Set<OWLGraphEdge> closureSet = new HashSet<OWLGraphEdge>();
+		Set<OWLGraphEdge> visitedSet = new HashSet<OWLGraphEdge>();
+		
+		// initialize. we seed the search with a reflexive identity edge DEPR
+		//edgeStack.add(new OWLGraphEdge(s,s,null,Quantifier.IDENTITY,ontology));
+		
+		// seed stack
+		edgeStack.addAll(getPrimitiveOutgoingEdges(s));
+		while (!edgeStack.isEmpty()) {
+			OWLGraphEdge ne = edgeStack.pop();
+			//System.out.println("NEXT: "+ne+" //stack: "+edgeStack);
+			int nextDist = ne.getDistance() + 1;
+			Set<OWLGraphEdge> extSet = getPrimitiveOutgoingEdges(ne.getTarget());
+			for (OWLGraphEdge extEdge : extSet) {
+				//System.out.println("   EXT:"+extEdge);
+				OWLGraphEdge nu = combineEdgePair(s, ne, extEdge, nextDist);
+				//System.out.println("     COMBINED:"+nu);
+				if (!visitedSet.contains(nu)) {
+					//System.out.println("      *NOT VISITED:"+nu+" visistedSize:"+visitedSet.size());
+					if (nu.getTarget() instanceof OWLNamedObject || 
+							config.isIncludeClassExpressionsInClosure) {
+						closureSet.add(nu);
+					}
+					edgeStack.add(nu);
+					visitedSet.add(nu);		
+				}
 			}
 		}
-		return null;
+		return closureSet;
+	}
+	
+	/**
+	 * @param source
+	 * @param target
+	 * @return all edges connecting source and target in the graph closure
+	 */
+	public Set<OWLGraphEdge> getEdgesBetween(OWLObject s, OWLObject t) {
+		
+		// some duplication with the above method...
+		Stack<OWLGraphEdge> edgeStack = new Stack<OWLGraphEdge>();
+		Set<OWLGraphEdge> closureSet = new HashSet<OWLGraphEdge>();
+		Set<OWLGraphEdge> visitedSet = new HashSet<OWLGraphEdge>();
+		
+		// initialize
+		//edgeStack.add(new OWLGraphEdge(s,s,ontology,new OWLQuantifiedProperty()));
+		edgeStack.addAll(getPrimitiveOutgoingEdges(s));
+		
+		while (!edgeStack.isEmpty()) {
+			OWLGraphEdge ne = edgeStack.pop();
+			int nextDist = ne.getDistance() + 1;
+			Set<OWLGraphEdge> extSet = getPrimitiveOutgoingEdges(ne.getTarget());
+			for (OWLGraphEdge extEdge : extSet) {
+				OWLGraphEdge nu = combineEdgePair(s, ne, extEdge, nextDist);
+				if (!visitedSet.contains(nu)) {
+					// note this is different from the previous method
+					// -- only add to closure set if this edge connects s and t
+					if (nu.getTarget().equals(t)) {
+						closureSet.add(nu);
+					}
+					else {
+						// we only want to go beyond here if we have NOT
+						// found the target
+						edgeStack.add(nu);
+					}
+					visitedSet.add(nu);		
+				}
+			}
+		}
+		return closureSet;
 	}
 
+	
+	/**
+	 * returns all ancestors of an object. Here, ancestors is defined as any
+	 * named object that can be reached from x over some path of asserted edges.
+	 * relations are ignored.
+	 * 
+	 * @param source
+	 * @return all reachable target nodes, regardless of edges
+	 */
+	public Set<OWLObject> getAnctesors(OWLObject x) {
+		Set<OWLObject> ancs = new HashSet<OWLObject>();
+		for (OWLGraphEdge e : getOutgoingEdgesClosure(x)) {
+			ancs.add(e.getTarget());
+		}
+		return ancs;
+	}
+
+	/**
+	 * TODO
+	 * @see getOutgoingEdgesClosure
+	 * @param target
+	 * @return all edges connecting all descendents of target to target
+	 */
+	public Set<OWLGraphEdge> getIncomingEdgesClosure(OWLObject t) {
+		
+		Stack<OWLGraphEdge> edgeStack = new Stack<OWLGraphEdge>();
+		Set<OWLGraphEdge> closureSet = new HashSet<OWLGraphEdge>();
+		Set<OWLGraphEdge> visitedSet = new HashSet<OWLGraphEdge>();
+		
+		// initialize
+		//edgeStack.add(new OWLGraphEdge(t,t,ontology,new OWLQuantifiedProperty()));
+		edgeStack.addAll(getIncomingEdges(t));
+		
+		while (!edgeStack.isEmpty()) {
+			OWLGraphEdge ne = edgeStack.pop();
+			int nextDist = ne.getDistance() + 1;
+			Set<OWLGraphEdge> extSet = getIncomingEdges(ne.getSource());
+			for (OWLGraphEdge extEdge : extSet) {
+				OWLGraphEdge nu = combineEdgePairDown(ne, t, extEdge, nextDist);
+				if (!visitedSet.contains(nu)) {
+					closureSet.add(nu);
+					edgeStack.add(nu);
+					visitedSet.add(nu);		
+				}
+			}
+		}
+		return closureSet;
+	}
+
+
+	/**
+	 * combine ne and extEdge to create a new edge.
+	 * 
+	 * @param s
+	 * @param ne
+	 * @param extEdge
+	 * @param nextDist
+	 * @return
+	 */
+	private OWLGraphEdge combineEdgePair(OWLObject s, OWLGraphEdge ne, OWLGraphEdge extEdge, int nextDist) {
+		//System.out.println("combing edges: "+ne+ " * "+extEdge);
+		OWLGraphEdge nu = new OWLGraphEdge(s, extEdge.getTarget());
+		nu.setDistance(nextDist);
+		Vector<OWLQuantifiedProperty> qps = new Vector<OWLQuantifiedProperty>();
+
+		// put all but the final one in a new list
+		int n = 0;
+		int size = ne.getQuantifiedPropertyList().size();
+		OWLQuantifiedProperty finalQP = null;
+		for (OWLQuantifiedProperty qp : ne.getQuantifiedPropertyList()) {
+			n++;
+			if (n < size)
+				qps.add(qp);
+			else
+				finalQP = qp;
+		}
+		OWLQuantifiedProperty combinedQP = 
+			combinedQuantifiedPropertyPair(ne.getFinalQuantifiedProperty(), extEdge.getSingleQuantifiedProperty());
+		if (combinedQP == null) {
+			qps.add(finalQP);
+			qps.add(extEdge.getSingleQuantifiedProperty());
+		}
+		else {
+			qps.add(combinedQP);
+		}
+		nu.setQuantifiedPropertyList(qps);
+		//System.out.println("DONE edges: "+ne+ " * "+extEdge+" ==> "+nu);
+
+		return nu;
+	}
+
+	private OWLGraphEdge combineEdgePairDown(OWLGraphEdge ne, OWLObject t, OWLGraphEdge extEdge, int nextDist) {
+		OWLGraphEdge nu = new OWLGraphEdge(extEdge.getSource(), t);
+		nu.setDistance(nextDist);
+		Vector<OWLQuantifiedProperty> qps = new Vector<OWLQuantifiedProperty>();
+
+		// put all but the final one in a new list
+		int n = 0;
+		int size = ne.getQuantifiedPropertyList().size();
+		OWLQuantifiedProperty finalQP = null;
+		for (OWLQuantifiedProperty qp : ne.getQuantifiedPropertyList()) {
+			n++;
+			if (n > 1)
+				qps.add(qp);
+			else
+				finalQP = qp;
+		}
+		// TODO
+		OWLQuantifiedProperty combinedQP = 
+			combinedQuantifiedPropertyPair(ne.getFinalQuantifiedProperty(), extEdge.getSingleQuantifiedProperty());
+		if (combinedQP == null) {
+			qps.add(finalQP);
+			qps.add(extEdge.getSingleQuantifiedProperty());
+		}
+		else {
+			qps.add(combinedQP);
+		}
+		nu.setQuantifiedPropertyList(qps);
+		return nu;
+	}
+
+	/**
+	 * Edge composition rules
+	 */
+	private OWLQuantifiedProperty combinedQuantifiedPropertyPair(OWLQuantifiedProperty x, OWLQuantifiedProperty y) {
+		//System.out.println("combing "+x+"+"+y);
+		if (x.isSubClassOf() && y.isSubClassOf()) {
+			return new OWLQuantifiedProperty(Quantifier.SUBCLASS_OF);
+		}
+		else if (x.isInstanceOf() && y.isSubClassOf()) {
+			return new OWLQuantifiedProperty(Quantifier.INSTANCE_OF);
+		}
+		else if (x.isSubClassOf() && y.isSomeValuesFrom()) {
+			return new OWLQuantifiedProperty(y.getProperty(),Quantifier.SOME);
+		}
+		else if (x.isSomeValuesFrom() && y.isSubClassOf()) {
+			return new OWLQuantifiedProperty(x.getProperty(),Quantifier.SOME);
+		}
+		else if (x.getProperty() != null && 
+				x.getProperty().equals(y.getProperty()) && 
+				x.getProperty().isTransitive(ontology)) {
+			return new OWLQuantifiedProperty(x.getProperty(),Quantifier.SOME);
+		}
+		else if (x.isSubClassOf() && y.isAllValuesFrom()) {
+			return new OWLQuantifiedProperty(y.getProperty(),Quantifier.ONLY);
+		}
+		else if (x.isAllValuesFrom() && y.isSubClassOf()) {
+			return new OWLQuantifiedProperty(x.getProperty(),Quantifier.ONLY);
+		}
+		else {
+			// cannot combine - caller will add QP to sequence
+			return null;
+		}
+	}
+
+
+
+
+
+	/**
+	 * @param owlClass
+	 * @return all individuals classified here via basic graph traversal
+	 */
 	public Set<OWLIndividual> getInferredIndividuals(OWLClass c) {
 		Set<OWLIndividual> ins = new HashSet<OWLIndividual>();
 		for (OWLIndividual in : ontology.getIndividualsInSignature()) {
@@ -534,7 +616,48 @@ public class OWLGraphWrapper {
 		}
 		return ins;
 	}
+	
+	// ----------------------------------------
+	// BASIC WRAPPER UTILITIES
+	// ----------------------------------------
+	
+	/**
+	 * @return all named objects
+	 */
+	public Set<OWLObject> getAllOWLObjects() {
+		Set<OWLClass> cls = ontology.getClassesInSignature();
+		Set<OWLNamedIndividual> ins = ontology.getIndividualsInSignature();
+		Set<OWLObject> obs = new HashSet<OWLObject>();
+		obs.addAll(cls);
+		obs.addAll(ins);
+		return obs;
+	}
+	
+	
+	/**
+	 * assumes zero or one rdfs:label
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public String getLabel(OWLClass c) {
+		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()); 
+		for (OWLAnnotation a : c.getAnnotations(ontology,lap)) {
+			if (a.getValue() instanceof OWLLiteral) {
+				OWLLiteral val = (OWLLiteral) a.getValue();
+				return val.getLiteral(); // return first - todo - check zero or one
+			}
+		}
+		return null;
+	}
 
+
+	/**
+	 * translates to obo URIs
+	 * 
+	 * @param id - e.g. GO:0008150
+	 * @return
+	 */
 	public OWLObject getOWLObjectByIdentifier(String id) {
 		String[] parts = id.split(":", 2);
 		String s = "http://purl.obolibrary.org/obo/"+parts[0]+"_"+parts[1];
@@ -543,9 +666,36 @@ public class OWLGraphWrapper {
 		return dataFactory.getOWLClass(iri);
 	}
 	
-	public OWLObject getOWLObject(String s) {
+	/**
+	 * @param iri
+	 * @return
+	 */
+	public OWLObject getOWLClass(String s) {
 		IRI iri = IRI.create(s);
-		return dataFactory.getOWLClass(iri);
+		OWLClass c = dataFactory.getOWLClass(iri);
+		if (ontology.getDeclarationAxioms(c).size() == 0) {
+			return null;
+		}
+		return c;
+	}
+
+	public OWLObject getOWLIndividual(String s) {
+		IRI iri = IRI.create(s);
+		OWLNamedIndividual c = dataFactory.getOWLNamedIndividual(iri);
+		if (ontology.getDeclarationAxioms(c).size() == 0) {
+			return null;
+		}
+		return c;
+	}
+
+
+	public OWLObject getOWLObject(String s) {
+		OWLObject o;
+		o = getOWLClass(s);
+		if (o == null) {
+			o = getOWLIndividual(s);
+		}
+		return o;
 	}
 
 

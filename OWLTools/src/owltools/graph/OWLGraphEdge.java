@@ -64,7 +64,7 @@ public class OWLGraphEdge {
 	}
 
 
-	public OWLGraphEdge(OWLRestriction s, OWLObject t, OWLObjectPropertyExpression p,
+	public OWLGraphEdge(OWLObject s, OWLObject t, OWLObjectPropertyExpression p,
 			Quantifier q, OWLOntology o) {
 		super();
 		OWLQuantifiedProperty el = new OWLQuantifiedProperty(p,q);
@@ -141,7 +141,7 @@ public class OWLGraphEdge {
 	}
 
 	public String toString() {
-		return "["+source+" "+getSingleQuantifiedProperty()+" "+target+"]";
+		return "["+source+" "+getQuantifiedPropertyList()+" "+target+"]";
 	}
 	
 	public int hashCode() {

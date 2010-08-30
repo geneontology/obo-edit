@@ -12,7 +12,7 @@ public class OWLQuantifiedProperty {
 	
 	// TODO - change named to predicate?
 	public enum Quantifier {
-		SOME, ONLY, CARDINALITY, SUBCLASS_OF, INSTANCE_OF
+		SOME, ONLY, CARDINALITY, SUBCLASS_OF, INSTANCE_OF, PROPERTY_ASSERTION, IDENTITY
 	}
 	
 	private OWLObjectProperty property;
@@ -23,11 +23,13 @@ public class OWLQuantifiedProperty {
 	private Integer maxCardinality;
 
 	public OWLQuantifiedProperty(OWLObjectPropertyExpression p, Quantifier q) {
-		if (p instanceof OWLObjectInverseOf) {
-			isInverseOf = true;
-			p = ((OWLObjectInverseOf)p).getInverse();
+		if (p != null) {
+			if (p instanceof OWLObjectInverseOf) {
+				isInverseOf = true;
+				p = ((OWLObjectInverseOf)p).getInverse();
+			}
+			property = p.asOWLObjectProperty();
 		}
-		property = p.asOWLObjectProperty();
 		this.quantifier = q;
 	}
 	
@@ -78,13 +80,13 @@ public class OWLQuantifiedProperty {
 	
 	private String getPropertyId() {
 		if (property == null)
-			return "subclass";
+			return "-";
 		return property.getIRI().toString();
 	}
 
 	// TODO - overload quantifier?
 	public boolean isSubClassOf() {
-		return property == null || quantifier == Quantifier.SUBCLASS_OF;
+		return quantifier != null && quantifier == Quantifier.SUBCLASS_OF;
 	}
 	public boolean isInstanceOf() {
 		return quantifier != null && quantifier == Quantifier.INSTANCE_OF;

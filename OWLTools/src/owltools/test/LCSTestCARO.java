@@ -12,6 +12,7 @@ import org.obolibrary.oboformat.parser.OBOFormatParser;
 import org.semanticweb.owlapi.io.OWLXMLOntologyFormat;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -32,24 +33,27 @@ public class LCSTestCARO extends TestCase {
 		OWLGraphWrapper g =
 			pw.parseToOWLGraph("file:test_resources/lcstest1.owl");
 		OWLOntology ont = g.getOntology();
-		OWLObject o2_x = g.getOWLObject("http://example.org#o2_x");
-		System.out.println("getting ancestors for: "+o2_x);
-		for (OWLGraphEdge e : g.getOutgoingEdges(o2_x)) {
+		OWLObject o2 = g.getOWLObject("http://example.org#o2");
+		
+		System.out.println("getting ancestors for: "+o2);
+		for (OWLGraphEdge e : g.getOutgoingEdgesClosure(o2)) {
 			System.out.println(e);
 		}
 		for (OWLClass c : ont.getClassesInSignature()) {
-			System.out.println("c="+c+" "+g.getLabel(c));
-			for (OWLGraphEdge e : g.getOutgoingEdges(c)) {
-				System.out.println(e);
+			System.out.println("getting individuals for "+c+" "+g.getLabel(c));
+			for (OWLIndividual i : g.getInferredIndividuals(c)) {
+				System.out.println("  "+i);
 			}
 		}
 
+		/*
 		for (OWLClass c : ont.getClassesInSignature()) {
 			System.out.println("c="+c+" "+g.getLabel(c));
 			for (OWLGraphEdge e : g.getOutgoingEdgesClosure(c)) {
 				System.out.println("CLOSURE: "+e);
 			}
 		}
+		*/
 		/*
 		OWLObject s = g.getOWLObjectByIdentifier("CARO:0000014");
 		OWLObject t = g.getOWLObjectByIdentifier("CARO:0000000");
