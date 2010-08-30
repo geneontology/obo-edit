@@ -1,5 +1,10 @@
 package owltools.graph;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
+
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLObject;
@@ -10,7 +15,7 @@ import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLPropertyExpression;
 import org.semanticweb.owlapi.model.OWLRestriction;
 
-import owltools.graph.OWLGraphEdgeLabel.Quantifier;
+import owltools.graph.OWLQuantifiedProperty.Quantifier;
 
 public class OWLGraphEdge {
 	
@@ -18,26 +23,27 @@ public class OWLGraphEdge {
 	private OWLObject source;
 	private OWLObject target;
 	private OWLOntology ontology;
-	OWLGraphEdgeLabel edgeLabel;
+	private int distance = 1;
+	private List<OWLQuantifiedProperty> quantifiedPropertyList;
 	
 
 	
 	public OWLGraphEdge(OWLObject source, OWLObject target,
-			OWLOntology ontology, OWLGraphEdgeLabel edgeLabel) {
+			OWLOntology ontology, OWLQuantifiedProperty qp) {
 		super();
 		this.source = source;
 		this.target = target;
 		this.ontology = ontology;
-		this.edgeLabel = edgeLabel;
+		setSingleQuantifiedProperty(qp);
 	}
 
 	public OWLGraphEdge(OWLRestriction s, OWLObject t,
-			OWLGraphEdgeLabel el, OWLOntology o) {
+			OWLQuantifiedProperty el, OWLOntology o) {
 		super();
 		this.source = s;
 		this.target = t;
 		this.ontology = o;
-		this.edgeLabel = el;
+		setSingleQuantifiedProperty(el);
 	}
 
 
@@ -47,6 +53,7 @@ public class OWLGraphEdge {
 		this.source = source;
 		this.target = target;
 		this.ontology = ontology;
+		setSingleQuantifiedProperty(new OWLQuantifiedProperty()); // defaults to subclass
 	}
 
 
@@ -60,16 +67,19 @@ public class OWLGraphEdge {
 	public OWLGraphEdge(OWLRestriction s, OWLObject t, OWLObjectPropertyExpression p,
 			Quantifier q, OWLOntology o) {
 		super();
-		OWLGraphEdgeLabel el = new OWLGraphEdgeLabel(p,q);
+		OWLQuantifiedProperty el = new OWLQuantifiedProperty(p,q);
 		this.source = s;
 		this.target = t;
 		this.ontology = o;
-		this.edgeLabel = el;
+		setSingleQuantifiedProperty(el);
 	}
 
 
 	public OWLObject getSource() {
 		return source;
+	}
+	public String getSourceId() {
+		return source.toString();
 	}
 	public void setSource(OWLObject source) {
 		this.source = source;
@@ -77,16 +87,44 @@ public class OWLGraphEdge {
 	public OWLObject getTarget() {
 		return target;
 	}
+	public String getTargetId() {
+		return target.toString();
+	}
+
 	public void setTarget(OWLObject target) {
 		this.target = target;
 	}
 	
-	public OWLGraphEdgeLabel getEdgeLabel() {
-		return edgeLabel;
+	public int getDistance() {
+		return distance;
 	}
-	public void setEdgeLabel(OWLGraphEdgeLabel edgeLabel) {
-		this.edgeLabel = edgeLabel;
+
+	public void setDistance(int distance) {
+		this.distance = distance;
 	}
+
+
+	public List<OWLQuantifiedProperty> getQuantifiedPropertyList() {
+		return quantifiedPropertyList;
+	}
+
+	public void setQuantifiedPropertyList(List<OWLQuantifiedProperty> qps) {
+		this.quantifiedPropertyList = qps;
+	}
+
+	public OWLQuantifiedProperty getSingleQuantifiedProperty() {
+		return quantifiedPropertyList.iterator().next();
+	}
+	
+	public void setSingleQuantifiedProperty(OWLQuantifiedProperty qp) {
+		quantifiedPropertyList = new Vector<OWLQuantifiedProperty>();
+		quantifiedPropertyList.add(qp);
+	}
+
+	public OWLQuantifiedProperty getFinalQuantifiedProperty() {
+		return quantifiedPropertyList.get(quantifiedPropertyList.size()-1);
+	}
+
 	public OWLOntology getOntology() {
 		return ontology;
 	}
@@ -103,7 +141,18 @@ public class OWLGraphEdge {
 	}
 
 	public String toString() {
-		return "<"+source+" "+edgeLabel+" "+target+">";
+		return "["+source+" "+getSingleQuantifiedProperty()+" "+target+"]";
 	}
+	
+	public int hashCode() {
+		return toString().hashCode();
+	}
+	
+	public boolean equals(Object e) {
+		return ((OWLGraphEdge) e).getSourceId().equals(getSourceId()) &&
+		((OWLGraphEdge) e).getTargetId().equals(getTargetId());
+		
+	}
+
 
 }
