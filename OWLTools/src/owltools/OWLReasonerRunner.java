@@ -3,12 +3,14 @@ package owltools;
 import org.apache.log4j.Logger;
 
 import com.clarkparsia.pellet.owlapiv3.*;
+
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+import org.semanticweb.owlapi.io.*;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.DLExpressivityChecker;
 import org.semanticweb.owlapi.util.VersionInfo;
@@ -46,6 +48,7 @@ public class OWLReasonerRunner {
 
 		Collection<String> paths = new ArrayList<String>();
 		int i=0;
+                // REDUNDANT: see new method
 		String reasonerClassName = "uk.ac.manchester.cs.factplusplus.owlapiv3.Reasoner";
 		String reasonerName = null;
 		boolean createNamedRestrictions = false;
@@ -91,7 +94,7 @@ public class OWLReasonerRunner {
 				OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 				
 				OWLDataFactory df = manager.getOWLDataFactory();
-;
+				
 
 				// Load a copy of the  ontology.
 				IRI x = IRI.create(iri);
@@ -216,6 +219,7 @@ public class OWLReasonerRunner {
 							System.out.println("  INFERRED: equivalent "+getLabel(cls,ont,df)+" "+getLabel(ec,ont,df));
 					}
 					//System.out.println("  "+cls);
+					//NodeSet<OWLNamedIndividual> l = reasoner.getInstances(cls,false);
 					NodeSet<OWLClass> scs = reasoner.getSuperClasses(cls, false);
 					for (Node<OWLClass> scSet : scs) {
 						for (OWLClass sc : scSet) {
@@ -271,8 +275,13 @@ public class OWLReasonerRunner {
 				InferredOntologyGenerator iog = new InferredOntologyGenerator(reasoner, gens);
 				iog.fillOntology(manager, infOnt);
 
+//				OWLOntologyFormat owlFormat = new org.semanticweb.owlapi.io.RDFXMLOntologyFormat();
+				OWLXMLOntologyFormat owlFormat = new OWLXMLOntologyFormat();
+
 				// Save the inferred ontology. (Replace the IRI with one that is appropriate for your setup)
-				manager.saveOntology(infOnt, IRI.create("file:///tmp/inferredont.owl"));
+				manager.saveOntology(infOnt, owlFormat, IRI.create("file:///tmp/inferredont.owl"));
+
+				//manager.saveOntology(infOnt, IRI.create("file:///tmp/inferredont.owl"));
 
 
 			}
