@@ -43,9 +43,6 @@ jQuery(document).ready(function(){
 <h4>8. 'Date comprehensively annotated' for groups that can provide this information</h4>
 <p>Not in DB</p>
 
-
-
-
 </div>
 
 <style type="text/css">th{text-align:left}</style>
@@ -61,6 +58,10 @@ jQuery(document).ready(function(){
 </tr>[% END %]</table>
 
 <p><strong>&#8251;</strong> Reference Genome.</p>
+
+[% IF missing.size > 0 %]<h3>Missing Gene Products</h3>
+<ul>[% FOREACH miss IN missing %]<li>[% miss.property_val %]</li>[% END %]</ul>
+[% END %]
 
 </div>
 <!-- END: phylotree_cluster.tmpl -->
