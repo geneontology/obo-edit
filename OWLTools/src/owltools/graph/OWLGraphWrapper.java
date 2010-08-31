@@ -18,6 +18,7 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
@@ -706,9 +707,16 @@ public class OWLGraphWrapper {
 	 * @param c
 	 * @return
 	 */
-	public String getLabel(OWLClass c) {
+	public String getLabel(OWLObject c) {
 		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()); 
-		for (OWLAnnotation a : c.getAnnotations(ontology,lap)) {
+		Set<OWLAnnotation>anns = null;
+		if (c instanceof OWLEntity) {
+			anns = ((OWLEntity) c).getAnnotations(ontology,lap);
+		}
+		else {
+			return null;
+		}
+		for (OWLAnnotation a : anns) {
 			if (a.getValue() instanceof OWLLiteral) {
 				OWLLiteral val = (OWLLiteral) a.getValue();
 				return val.getLiteral(); // return first - todo - check zero or one
