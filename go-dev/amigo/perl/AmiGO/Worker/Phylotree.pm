@@ -357,7 +357,9 @@ sub gene_products{
     return @gp;
 }
 
+=item $p->species_dist
 
+=cut
 sub species_dist{
     my $s = shift;
     my $ref = shift;
@@ -448,12 +450,12 @@ sub species_dist{
     return @out;
 }
 
-=back
+=item $p->paint_files
+
+Only really usable when dbname is PantherDB.
 
 =cut
-
-
-sub paint_files{
+sub paint_files{ # need to check dbname for this one
     my $s = shift;
 
     my $host = 'ftp.geneontology.org';
@@ -488,6 +490,25 @@ sub paint_files{
        } keys %files;
 }
 
+=item $p-E<gt>properties
+
+=cut
+sub properties{
+    my $s = shift;
+    my $pk = shift;
+
+    my $r = $phylotree_gobo->get_all_results
+      ({ xref_dbname => $s->{dbname}, xref_key => $s->{key} });
+    if (length(@$r) != 1) {
+	die 'I should of gotten one cluster';
+    }
+    $r = $r->[0];
+    return $r->phylotree_property(property_key => $pk);
+}
+
+=back
+
+=cut
 
 
 1;

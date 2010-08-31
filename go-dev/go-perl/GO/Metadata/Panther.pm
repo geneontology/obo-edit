@@ -381,7 +381,7 @@ our @species =
    # X
    #
 
-   { # Xenopus', '(Silurana) tropicalis
+   { # Xenopus (Silurana) tropicalis
     code => 'XENTR',
     ncbi_taxa_id => [ 8364 ],
    },
@@ -418,7 +418,7 @@ sub code{
 
 =item my $s = GO::Metadata::Panther->ncbi(I<ncbi_taxa_id>)
 
-Greate an object from the I<ncbi_taxa_id>.
+Create an object from the I<ncbi_taxa_id>.
 
 =cut
 sub ncbi{

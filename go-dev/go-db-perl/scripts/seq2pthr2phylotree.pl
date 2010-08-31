@@ -144,7 +144,7 @@ SQL
 
 
 
-# if you want to compare the gene_product.dbxref_id use thin.
+# if you want to compare the gene_product.dbxref_id use this.
 
    $dbh->prepare(<<SQL),
 SELECT gene_product.id AS gene_product_id
@@ -202,7 +202,7 @@ sub gene_product_id{
 
     my $found = scalar @out;
     if ($found == 0) {
-	$s->notice('No gene_product rows found');
+	#$s->notice('No gene_product rows found');
 	return ($s->{gene_product_id} = undef);
     }
 
@@ -334,7 +334,7 @@ This will supress the SQL output when dry running.
 
 =cut
 my @species;
-my $dry_run = 10000; # start pho column ids an negative this number
+my $dry_run = 10000; # start pho column ids at negative this number
 my $pthr_xref_dbname = 'PantherDB'; # Make this an option when loading
                                     # somethings other then pthr stuff
 my $every = 0; #30; # seconds
@@ -516,6 +516,19 @@ my $select_gene_product_phylotree = $dbh->prepare(<<SQL);
 SELECT id FROM gene_product_phylotree WHERE gene_product_id=? AND phylotree_id=?
 SQL
 
+my $insert_phylotree_property = $dbh->prepare(<<SQL);
+INSERT INTO phylotree_property(phylotree_id,property_key,property_val)VALUES(?,?,?)
+SQL
+
+# my $select_phylotree_property = $dbh->prepare(<<SQL);
+# SELECT id FROM phylotree_property WHERE
+# property_key=? AND property_val=?
+# SQL
+
+# my $delete_phylotree_property = $dbh->prepare(<<SQL);
+# DELETE FROM phylotree_property WHERE id=?
+# SQL
+
 
 memoize('gc_dbxref_id');
 sub gc_dbxref_id{
@@ -575,43 +588,21 @@ skip that entry.
 
 =cut
 for my $pthr (@pthr) {
-
-    if (not $pthr->{dbxref_id}) {
-	# my $xref   = $pthr->xref;
-	# my $dbname = $xref->[0];
-	# my $key    = $xref->[1];
-
-	# $dbname = $My::Pthr::metonym{$dbname}->[0] if ($My::Pthr::metonym{$dbname});
-	# $pthr->{dbxref_id} = gc_dbxref_id($dbname, $key);
-
-	next;
-    }
-
-    ##########
-    # Create a new gene_product entry
-    if (not $pthr->{gene_product_id}) {
-
-	# my @a = ($pthr->{pthr}, $pthr->{dbxref_id},
-	# 	 $pthr->species_id, $pthr->{type_id});
-	# if ($dry_run) {
-	#     $pthr->{gene_product_id} = dry_run_sth($insert_gene_product, @a);
-	# } else {
-	#     $insert_gene_product->execute(@a)
-	#       or die
-	# 	wrap($insert_gene_product->errstr . ': ', "\t",
-	# 	     $insert_gene_product->{Statement}, ':(', @a, ')');
-	#     $pthr->{gene_product_id} = select_one
-	#       ($select_last_insert_id_sth)->[0];
-	# }
-
-
-	next;
-    }
-    #
-    ##########
-
-
     $pthr->{phylotree_id} = gc_phylotree_id($pthr->{cluster});
+
+    if (not($pthr->{dbxref_id}) or not($pthr->{gene_product_id})) {
+	my @a = ($pthr->{phylotree_id}, 'missing', $pthr->{pthr});
+	if ($dry_run) {
+	    dry_run_sth($insert_phylotree_property, @a);
+	} else {
+	    $insert_phylotree_property->execute(@a) or
+	      die $insert_gene_product_phylotree->errstr;
+	}
+
+	next;
+    }
+
+
 
     my @a = ($pthr->{gene_product_id}, $pthr->{phylotree_id});
     my $gene_product_phylotree_id = select_one

@@ -188,11 +188,13 @@ sub mode_cluster{
     $c->set_template_parameter(cluster => $o);
     $c->set_template_parameter(gene_products => [ $o->gene_products() ]);
     $c->set_template_parameter(page_title => $pid);
+    $c->set_template_parameter(missing => [ $o->properties('missing') ]);
 
     if ($default_dbname eq $o->{dbname}) {
 	$c->add_template_bulk({ javascript_library => ['com.jquery'] });
      	$c->set_template_parameter(paint_ajax => $o->url(mode => 'paint'));
     }
+
 
     $c->add_template_content('html/main/phylotree_cluster.tmpl');
     return $c->generate_template_page();
