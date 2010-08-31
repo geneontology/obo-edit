@@ -11,5 +11,7 @@
 	<classpathentry kind="lib" path="lib/runlibs/pellet-owlapiv3.jar"/>
 	<classpathentry kind="lib" path="lib/runlibs/oboformat.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
+	<classpathentry kind="lib" path="lib/runlibs/GraphDraw-20100831-1335.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/GraphDraw.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
