@@ -5,8 +5,18 @@ import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLObject;
 
+/**
+ * general static methods for additional graph operations
+ *
+ */
 public class OWLGraphUtil {
 	
+	/**
+	 * @param g
+	 * @param x
+	 * @param y
+	 * @return 
+	 */
 	public static Set<OWLGraphEdge> findCommonSubsumersAsEdges(OWLGraphWrapper g,
 			OWLObject x, OWLObject y) {
 		Set<OWLGraphEdge> xs = g.getOutgoingEdgesClosure(x);
@@ -14,6 +24,7 @@ public class OWLGraphUtil {
 		xs.retainAll(ys);
 		return xs;
 	}
+	
 	public static Set<OWLGraphEdge> findLeastCommonSubsumersAsEdges(OWLGraphWrapper g,
 			OWLObject x, OWLObject y) {
 		Set<OWLGraphEdge> cses = findCommonSubsumersAsEdges(g,x,y);
