@@ -96,6 +96,10 @@ public class OWLQuantifiedProperty {
 		return quantifier != null && quantifier == Quantifier.SOME;
 	}
 
+	public boolean isPropertyAssertion() {
+		return quantifier != null && quantifier == Quantifier.PROPERTY_ASSERTION;
+	}
+
 	public boolean isAllValuesFrom() {
 		return quantifier != null && quantifier == Quantifier.ONLY;
 	}

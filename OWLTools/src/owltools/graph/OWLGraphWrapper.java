@@ -40,7 +40,8 @@ import owltools.graph.OWLQuantifiedProperty.Quantifier;
 /**
  * Provides simple graph-like operations over the OWLAPI. In addition, provides
  * additional convenience wrapping to OWLAPI e.g. for annotation properties.
- * (these capabilities may in future be split)
+ * (these capabilities may in future be split).
+ * 
  * 
  * == OWLGraph formalism ==
  * 
@@ -193,12 +194,12 @@ public class OWLGraphWrapper {
 		if (s instanceof OWLClass) {
 			
 			for (OWLSubClassOfAxiom sca : ontology.getSubClassAxiomsForSubClass((OWLClass) s)) {
-				edges.add(expressionToPrimitiveEdge(sca.getSubClass(), sca.getSuperClass()));
+				edges.add(createSubClassOfEdge(sca.getSubClass(), sca.getSuperClass()));
 			}
 			for (OWLEquivalentClassesAxiom eqa : ontology.getEquivalentClassesAxioms((OWLClass) s)) {
 				for (OWLClassExpression ce : eqa.getClassExpressions()) {
 					if (!ce.equals(s))
-						edges.add(expressionToPrimitiveEdge(s, ce));
+						edges.add(createSubClassOfEdge(s, ce));
 				}
 			}
 			// TODO - union in reverse direction - index first?
@@ -217,7 +218,7 @@ public class OWLGraphWrapper {
 		}
 		else if (s instanceof OWLObjectIntersectionOf) {
 			for (OWLClassExpression ce : ((OWLObjectIntersectionOf)s).getOperands()) {
-				edges.add(expressionToPrimitiveEdge(s,ce));
+				edges.add(createSubClassOfEdge(s,ce));
 			}
 		}
 		else if (s instanceof OWLObjectUnionOf) {
@@ -225,6 +226,25 @@ public class OWLGraphWrapper {
 		}
 		return edges;
 	}
+
+
+	// e.g. R-some-B ==> <R-some-B,R,B>
+	private OWLGraphEdge restrictionToPrimitiveEdge(OWLRestriction s) {
+		OWLObjectPropertyExpression p = null;
+		OWLObject t = null;
+		OWLQuantifiedProperty.Quantifier q = null;
+		if (s instanceof OWLObjectSomeValuesFrom) {
+			t  = ((OWLObjectSomeValuesFrom)s).getFiller();
+			p = (OWLObjectPropertyExpression) s.getProperty();
+			q = OWLQuantifiedProperty.Quantifier.SOME;
+		}
+		return new OWLGraphEdge(s,t,p,q,ontology);
+	}
+
+	private OWLGraphEdge createSubClassOfEdge(OWLObject s, OWLClassExpression t) {
+		return new OWLGraphEdge(s,t,null,Quantifier.SUBCLASS_OF,ontology);
+	}
+
 
 	// extend an edge target until we hit a named object.
 	// this could involve multiple extensions and "forks", e.g.
@@ -244,8 +264,8 @@ public class OWLGraphWrapper {
 		}
 		return edges;
 	}
-	
-	
+
+
 
 	/**
 	 * in general you should not need to call this
@@ -253,7 +273,7 @@ public class OWLGraphWrapper {
 	public void cacheEdges() {
 		edgeBySource = new HashMap<OWLObject,Set<OWLGraphEdge>>();
 		edgeByTarget = new HashMap<OWLObject,Set<OWLGraphEdge>>();
-		
+
 		for (OWLObject s : getAllOWLObjects()) {
 			if (!edgeBySource.containsKey(s))
 				edgeBySource.put(s, new HashSet<OWLGraphEdge>());
@@ -266,7 +286,7 @@ public class OWLGraphWrapper {
 			}
 		}
 	}
-	
+
 	public  Set<OWLGraphEdge> getIncomingEdges(OWLObject t) {
 		ensureEdgesCached();
 		return edgeByTarget.get(t);
@@ -276,30 +296,12 @@ public class OWLGraphWrapper {
 	private void ensureEdgesCached() {
 		if (edgeByTarget == null)
 			cacheEdges();
-		
+
 	}
 
 
 
-	/**
-	 * e.g. R-some-B ==> <R-some-B,R,B>
-	 */
-	private OWLGraphEdge restrictionToPrimitiveEdge(OWLRestriction s) {
-		OWLObjectPropertyExpression p = null;
-		OWLObject t = null;
-		OWLQuantifiedProperty.Quantifier q = null;
-		if (s instanceof OWLObjectSomeValuesFrom) {
-			t  = ((OWLObjectSomeValuesFrom)s).getFiller();
-			p = (OWLObjectPropertyExpression) s.getProperty();
-			q = OWLQuantifiedProperty.Quantifier.SOME;
-		}
-		return new OWLGraphEdge(s,t,p,q,ontology);
-	}
 
-	private OWLGraphEdge expressionToPrimitiveEdge(OWLObject s, OWLClassExpression t) {
-		return new OWLGraphEdge(s,t,null,Quantifier.SUBCLASS_OF,ontology);
-	}
-	
 	/**
 	 * pack/translate an edge (either asserted or a graph closure edge) into
 	 * an OWL class expression according to the OWLGraph to OWLOntology
@@ -345,7 +347,7 @@ public class OWLGraphWrapper {
 		}
 	}
 
-	
+
 	// ----------------------------------------
 	// GRAPH CLOSURE METHODS
 	// ----------------------------------------
@@ -398,6 +400,29 @@ public class OWLGraphWrapper {
 			}
 		}
 		return closureSet;
+	}
+	
+	/**
+	 * find the set of classes or class expressions subsuming source, using the graph closure.
+	 * 
+	 * this is just the composition of getOutgoingEdgesClosure and edgeToTargetExpression -- the
+	 * latter method "packs" a chain of edges into a class expression
+	 * 
+	 * only "linear" expressions are found, corresponding to a path in the graph.
+	 * e.g. [sub,part_of-some,develops_from-some] ==> part_of some (develops_from some t)
+	 * 
+	 * if the edge consists entirely of subclass links, the the subsumers will be all
+	 * named classes.
+	 * 
+	 * @param source
+	 * @return
+	 */
+	public Set<OWLObject> getSubsumersFromClosure(OWLObject s) {
+		Set<OWLObject> ts = new HashSet<OWLObject>();
+		for (OWLGraphEdge e : getOutgoingEdgesClosure(s)) {
+			ts.add(edgeToTargetExpression(e));
+		}
+		return ts;
 	}
 	
 	/**
@@ -501,9 +526,12 @@ public class OWLGraphWrapper {
 	 */
 	private OWLGraphEdge combineEdgePair(OWLObject s, OWLGraphEdge ne, OWLGraphEdge extEdge, int nextDist) {
 		//System.out.println("combing edges: "+ne+ " * "+extEdge);
+		// Create an edge with no edge labels; we will fill the label in later
 		OWLGraphEdge nu = new OWLGraphEdge(s, extEdge.getTarget());
 		nu.setDistance(nextDist);
 		Vector<OWLQuantifiedProperty> qps = new Vector<OWLQuantifiedProperty>();
+		
+		// TODO - PropertyChains - need to match the tail of the list of QRs
 
 		// put all but the final one in a new list
 		int n = 0;
@@ -532,6 +560,7 @@ public class OWLGraphWrapper {
 	}
 
 	private OWLGraphEdge combineEdgePairDown(OWLGraphEdge ne, OWLObject t, OWLGraphEdge extEdge, int nextDist) {
+		// fill in edge label later
 		OWLGraphEdge nu = new OWLGraphEdge(extEdge.getSource(), t);
 		nu.setDistance(nextDist);
 		Vector<OWLQuantifiedProperty> qps = new Vector<OWLQuantifiedProperty>();
@@ -578,10 +607,19 @@ public class OWLGraphWrapper {
 		else if (x.isSomeValuesFrom() && y.isSubClassOf()) {
 			return new OWLQuantifiedProperty(x.getProperty(),Quantifier.SOME);
 		}
-		else if (x.getProperty() != null && 
+		else if (x.isSomeValuesFrom() &&
+				y.isSomeValuesFrom() &&
+				x.getProperty() != null && 
 				x.getProperty().equals(y.getProperty()) && 
 				x.getProperty().isTransitive(ontology)) {
 			return new OWLQuantifiedProperty(x.getProperty(),Quantifier.SOME);
+		}
+		else if (x.isPropertyAssertion() &&
+				y.isPropertyAssertion() &&
+				x.getProperty() != null && 
+				x.getProperty().equals(y.getProperty()) && 
+				x.getProperty().isTransitive(ontology)) {
+			return new OWLQuantifiedProperty(x.getProperty(),Quantifier.PROPERTY_ASSERTION);
 		}
 		else if (x.isSubClassOf() && y.isAllValuesFrom()) {
 			return new OWLQuantifiedProperty(y.getProperty(),Quantifier.ONLY);
@@ -596,18 +634,25 @@ public class OWLGraphWrapper {
 	}
 
 
-
-
-
 	/**
+	 * Find all edges of the form <i INST c> in the graph closure.
+	 * (this includes both direct assertions, plus assertions to objects
+	 *  that link to c via a chain of SubClassOf assertions)
+	 *  
+	 *  the semantics are the same as inferred ClassAssertion axioms
+	 * 
 	 * @param owlClass
 	 * @return all individuals classified here via basic graph traversal
 	 */
-	public Set<OWLIndividual> getInferredIndividuals(OWLClass c) {
+	public Set<OWLIndividual> getInstancesFromClosure(OWLClass c) {
 		Set<OWLIndividual> ins = new HashSet<OWLIndividual>();
+		// iterate through all individuals; sequential scan may be slow for
+		// large knowledge bases
 		for (OWLIndividual in : ontology.getIndividualsInSignature()) {
 			for (OWLGraphEdge e : getEdgesBetween(in, c)) {
 				List<OWLQuantifiedProperty> qps = e.getQuantifiedPropertyList();
+				// check for edges of the form < i INSTANCE_OF c >
+				// we exclude relation chaims, e.g. <i [INSTANCE_OF PART_OF-some] c>
 				if (qps.size() == 1 && qps.get(0).isInstanceOf()) {
 					ins.add(in);
 					break;
@@ -616,6 +661,27 @@ public class OWLGraphWrapper {
 		}
 		return ins;
 	}
+	
+	/**
+	 * Finds all edges between an instance i and he given class c.
+	 * 
+	 * this includes inferred class assertions, as well as chains such as
+	 * 
+	 * i has_part j, j inst_of k, k part_of some c
+	 * 
+	 * @param owlClass
+	 * @return all edges in closure between an instance and owlClass
+	 */
+	public Set<OWLGraphEdge> getInstanceChainsFromClosure(OWLClass c) {
+		Set<OWLGraphEdge> edges = new HashSet<OWLGraphEdge>();
+		// iterate through all individuals; sequential scan may be slow for
+		// large knowledge bases
+		for (OWLIndividual in : ontology.getIndividualsInSignature()) {
+			edges.addAll(getEdgesBetween(in, c));
+		}
+		return edges;
+	}
+
 	
 	// ----------------------------------------
 	// BASIC WRAPPER UTILITIES
