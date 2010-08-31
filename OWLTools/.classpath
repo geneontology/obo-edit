@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/log4j-1.2.15.jar"/>
+	<classpathentry kind="src" path="/BBOP"/>
+	<classpathentry kind="lib" path="lib/runlibs/owlapi-bin.jar" sourcepath="/owlapi-v3/trunk"/>
+	<classpathentry kind="lib" path="lib/runlibs/FaCTpp-OWLAPI-v1.4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/org.semanticweb.HermiT.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/pellet-owlapiv3.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/oboformat.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>

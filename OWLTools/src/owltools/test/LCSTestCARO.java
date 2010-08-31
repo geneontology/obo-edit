@@ -41,7 +41,7 @@ public class LCSTestCARO extends TestCase {
 		}
 		for (OWLClass c : ont.getClassesInSignature()) {
 			System.out.println("getting individuals for "+c+" "+g.getLabel(c));
-			for (OWLIndividual i : g.getInferredIndividuals(c)) {
+			for (OWLIndividual i : g.getInstancesFromClosure(c)) {
 				System.out.println("  "+i);
 			}
 		}
