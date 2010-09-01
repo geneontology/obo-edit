@@ -79,6 +79,39 @@ public class TermMergeTest extends AbstractOBOTest {
 		OBOClass mergedObj = (OBOClass) session.getObject("Test:00040006");
 		this.assertTrue(ReasonerUtil.getIntersectionLinks(mergedObj).size()==3);
 	}
+	
+	//merging child term to parent term
+	public void testMergeCycles1() throws IOException{
+		//master = term to be used in genus
+		OBOClass master = (OBOClass) session.getObject("Test:00040004");
+		//slave= auto class
+		OBOClass slave = (OBOClass) session.getObject("Test:00040005");
+		
+		HistoryItem item = new TermMergeHistoryItem(master, slave);
+		operationModel = new DefaultOperationModel();
+		operationModel.setSession(session);
+		operationModel.apply(item);
+		
+		OBOClass mergedObj = (OBOClass) session.getObject("Test:00040004");
+		this.assertTrue(session.getObject("Test:00040005")==null);
+	}
+	
+	//merging parent term to child term 
+	// merged term takes over all relations of parent term
+	public void testMergeCycles2() throws IOException{
+		//master = auto class 2
+		OBOClass master = (OBOClass) session.getObject("Test:00040005");
+		//slave= term to be used in genus
+		OBOClass slave = (OBOClass) session.getObject("Test:00040004");
+		
+		HistoryItem item = new TermMergeHistoryItem(master, slave);
+		operationModel = new DefaultOperationModel();
+		operationModel.setSession(session);
+		operationModel.apply(item);
+		
+		OBOClass mergedObj = (OBOClass) session.getObject("Test:00040005");
+		this.assertTrue(session.getObject("Test:00040004")==null);
+	}
 
 	
 
