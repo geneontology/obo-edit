@@ -1,0 +1,67 @@
+format-version: 1.2
+date: 16:03:2010 12:38
+saved-by: djs93
+auto-generated-by: OBO-Edit 2.1-beta3
+default-namespace: default_namespace
+namespace-id-rule: * FBbt:$sequence(8,7000,17000)$
+remark: transitional version - may contain incomplete edits. Not to be used for annotation
+
+[Term]
+id: Test:00040000
+name: term to be used in genus
+created_by: djs93
+creation_date: 2010-03-16T12:27:44Z
+
+[Term]
+id: Test:00040001
+name: term to be merged to
+created_by: djs93
+creation_date: 2010-03-16T12:28:38Z
+
+[Term]
+id: Test:00040002
+name: intersection
+intersection_of: Test:00040000 ! term to be used in genus
+intersection_of: part_of Test:00040003 ! term to be used in diff
+created_by: djs93
+creation_date: 2010-03-16T12:28:52Z
+
+[Term]
+id: Test:00040003
+name: term to be used in diff
+created_by: djs93
+creation_date: 2010-03-16T12:29:36Z
+
+[Term]
+id: Test:00040004
+name: auto class
+is_a: Test:00040000 ! term to be used in genus
+relationship: part_of Test:00040003 ! term to be used in diff
+created_by: djs93
+creation_date: 2010-03-16T12:31:49Z
+
+[Term]
+id: Test:00040005
+name: auto class 2
+is_a: Test:00040000 ! term to be used in genus
+relationship: part_of Test:00040003 ! term to be used in diff
+created_by: djs93
+creation_date: 2010-03-16T12:33:21Z
+
+[Term]
+id: Test:00040006
+name: intersection2
+intersection_of: Test:00040002 ! term to be used in genus
+intersection_of: part_of Test:00040007 ! diff2
+
+[Term]
+id: Test:00040007
+name: diff2
+
+[Typedef]
+id: part_of
+name: part_of
+is_transitive: true
+created_by: djs93
+creation_date: 2010-03-16T12:30:03Z
+
