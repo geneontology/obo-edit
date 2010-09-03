@@ -17,13 +17,15 @@ import java.awt.image.*;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import uk.ac.ebi.interpro.graphdraw.*;
 
 /**
- * Draw an example graph.
- * <p/>
- * After running see: <a href="../../../../../../hierarchicalGraph.html">results</a>.
+ * 
+ * Adapted from QuickGO (David Binns and Tony Sawford, EBI)
+ * @author cjm
+ *
  */
 public class OWLGraphLayoutRenderer {
 
@@ -44,7 +46,9 @@ public class OWLGraphLayoutRenderer {
 		this.owlGraphWrapper = owlGraphWrapper;
 	}
 	
-	public RectangularNode makeNode(OWLObject ob) {
+	public RectangularNode getNode(OWLObject ob) {
+		if (nodemap.containsKey(ob))
+			return nodemap.get(ob);
 		String label = owlGraphWrapper.getLabel(ob);
 		IRI iri = ((OWLNamedObject)ob).getIRI();
 		RectangularNode node = 
@@ -52,12 +56,16 @@ public class OWLGraphLayoutRenderer {
 					iri.toString(), null, 
 					label, Color.RED, Color.BLACK,
 					thinStroke);
+		nodemap.put(ob, node);
+		g.nodes.add(node);
 		return node;
 	}
 	
 	public StrokeEdge<RectangularNode> makeEdge(OWLGraphEdge e) {
-		RectangularNode n1 = nodemap.get(e.getSource());
-		RectangularNode n2 = nodemap.get(e.getTarget());
+		RectangularNode n1 = getNode(e.getSource());
+		RectangularNode n2 = getNode(e.getTarget());
+		System.out.println("adding:"+e+" "+n1+"//"+n2);
+		
 		OWLQuantifiedProperty qr = e.getSingleQuantifiedProperty();
 		Color color = Color.RED;
 		if (qr.isSubClassOf()) {
@@ -69,13 +77,9 @@ public class OWLGraphLayoutRenderer {
 	}
 	
 
-	public void prepare () {
-
-
+	public void addAllObjects() {
 		for (OWLObject ob : owlGraphWrapper.getAllOWLObjects()) {
-			RectangularNode node = makeNode(ob);
-			g.nodes.add(node);
-			nodemap.put(ob, node);
+			RectangularNode node = getNode(ob);
 		}
 		for (OWLObject ob : owlGraphWrapper.getAllOWLObjects()) {
 			for (OWLGraphEdge e : owlGraphWrapper.getOutgoingEdges(ob)) {
@@ -83,9 +87,28 @@ public class OWLGraphLayoutRenderer {
 			}
 		}
 	}
+	
+	public void addObject(OWLObject focusObj) {
+		Set<OWLObject> ancObjs = owlGraphWrapper.getAnctesors(focusObj);
+		ancObjs.add(focusObj);
+		for (OWLObject ob : ancObjs) {
+			RectangularNode node = getNode(ob);
+		}
+		for (OWLObject ob : ancObjs) {
+			for (OWLGraphEdge e : owlGraphWrapper.getOutgoingEdges(ob)) {
+				g.edges.add(makeEdge(e));
+			}
+		}
+	}
 
+
+	/**
+	 * generates both html and a png
+	 * 
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	public void renderHTML() throws FileNotFoundException, IOException {
-		prepare();
 
 		PrintWriter pw = new PrintWriter(new FileWriter("hierarchicalGraph.html"));
 		pw.println("<html><body>");
@@ -112,6 +135,7 @@ public class OWLGraphLayoutRenderer {
 		g2.setColor(Color.black);
 
 		for (StrokeEdge<RectangularNode> edge : g.edges) {
+			System.out.println("EDGE:"+edge);
 			edge.render(g2);
 		}
 

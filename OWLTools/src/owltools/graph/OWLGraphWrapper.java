@@ -380,6 +380,7 @@ public class OWLGraphWrapper {
 		
 		// seed stack
 		edgeStack.addAll(getPrimitiveOutgoingEdges(s));
+		closureSet.addAll(edgeStack);
 		while (!edgeStack.isEmpty()) {
 			OWLGraphEdge ne = edgeStack.pop();
 			//System.out.println("NEXT: "+ne+" //stack: "+edgeStack);
