@@ -26,16 +26,14 @@ import owltools.io.ParserWrapper;
 
 import junit.framework.TestCase;
 
-public class DrawCAROTest extends TestCase {
+public class DrawAllCAROTest extends TestCase {
 
 	public static void testRenderCARO() throws IOException, OWLOntologyCreationException, OWLOntologyStorageException {
 		ParserWrapper pw = new ParserWrapper();
 		OWLGraphWrapper g =
 			pw.parseToOWLGraph("test_resources/caro.obo");
 		OWLGraphLayoutRenderer r = new OWLGraphLayoutRenderer(g);
-		OWLObject ob = g.getOWLObjectByIdentifier("CARO:0000070");
-		System.out.println("drawing: "+ob);
-		r.addObject(ob);
+		r.addAllObjects();
 		r.renderHTML();
 	}
 	
