@@ -11,11 +11,14 @@ import java.util.List;
 
 import org.semanticweb.owlapi.model.OWLObject;
 
+import owltools.graph.OWLGraphWrapper;
+
 public class OWLGraphLayoutNode implements Node, LayoutNode {
     public Font font;
 
     public OWLObject owlObject;
-    public String name;
+    private OWLGraphWrapper owlGraphWrapper;
+    public String label;
     public String id;
 
     public int x;
@@ -27,26 +30,30 @@ public class OWLGraphLayoutNode implements Node, LayoutNode {
 
     int[] colours=new int[0];
     private GraphStyle style;
-    
-    public class GraphStyle {
-    	
-    }
+   
+    public OWLGraphLayoutNode(OWLGraphWrapper owlGraphWrapper, OWLObject owlObject) {
+    	this(owlGraphWrapper, owlObject, new GraphStyle());
+    }  
 
-    public OWLGraphLayoutNode(String name, String id,GraphStyle style) {
-        this.name = name;
-        this.id = id;
+    public OWLGraphLayoutNode(OWLGraphWrapper owlGraphWrapper, OWLObject owlObject,GraphStyle style) {
+    	this.owlGraphWrapper = owlGraphWrapper;
+    	String label = owlGraphWrapper.getLabel(owlObject);
+    	if (label == null)
+    		label = "?";
+    	label.replace('_', ' ');
+    	
+       // this(owlObject.name().replace('_',' '), owlObject.id(), style);
+        this.owlObject=owlObject;
+        this.label = label;
+        System.out.println("LABEL="+label);
+        this.id = owlGraphWrapper.getIdentifier(owlObject);
+        if (style == null)
+        	style = new GraphStyle();
         this.style = style;
-        /*
-        if (style.termIds && id.length() > 0) topLine=style.fontSize+1;
         height=style.height;
         width=style.width;
         font=style.getFont();
-        */
-    }
 
-    public OWLGraphLayoutNode(OWLObject owlObject,GraphStyle style) {
-       // this(owlObject.name().replace('_',' '), owlObject.id(), style);
-        this.owlObject=owlObject;
         //if (!owlObject.slims.isEmpty()) line=Color.red;
 
        // if (!style.slimColours) return;
@@ -82,7 +89,7 @@ public class OWLGraphLayoutNode implements Node, LayoutNode {
     
 
     public void render(Graphics2D g2) {
-        String text=name;
+        String text=label;
 
         g2.setFont(font);
 
@@ -100,7 +107,7 @@ public class OWLGraphLayoutNode implements Node, LayoutNode {
 
         FontMetrics fm = g2.getFontMetrics();
 
-        //System.out.println("Render "+text);
+        //System.out.println("Render "+text+" "+width+" "+height);
         reflow(text, fm, g2);
         //System.out.println("Done...");
 

@@ -78,7 +78,7 @@ public class OWLQuantifiedProperty {
 		return getPropertyId()+" "+quantifier;
 	}
 	
-	private String getPropertyId() {
+	public String getPropertyId() {
 		if (property == null)
 			return "-";
 		return property.getIRI().toString();
