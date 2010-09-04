@@ -7,6 +7,7 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLObject;
 
+import owltools.gfx.GraphStyle;
 import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 import owltools.graph.OWLQuantifiedProperty;
@@ -31,14 +32,16 @@ public class OWLGraphLayoutRenderer {
 
 	private OWLGraphWrapper owlGraphWrapper;
 
-	private StandardGraph<RectangularNode, StrokeEdge<RectangularNode>> g = new StandardGraph<RectangularNode, StrokeEdge<RectangularNode>>();
+	private StandardGraph<OWLGraphLayoutNode, OWLGraphStrokeEdge> g = 
+		new StandardGraph<OWLGraphLayoutNode, OWLGraphStrokeEdge>();
+	GraphStyle style;
 	HierarchicalLayout.Orientation orientation = HierarchicalLayout.Orientation.TOP;
 	Stroke thinStroke = new BasicStroke(1);
 	Stroke fatStroke = new BasicStroke(3);
-	HashMap<OWLObject, RectangularNode> nodemap = new HashMap<OWLObject,RectangularNode>();
+	HashMap<OWLObject, OWLGraphLayoutNode> nodemap = new HashMap<OWLObject,OWLGraphLayoutNode>();
 
-	Shape parent=StrokeEdge.standardArrow(10,8,0);
-	Shape child=StrokeEdge.standardArrow(10,8,5);
+	Shape parent=OWLGraphStrokeEdge.standardArrow(10,8,0);
+	Shape child=OWLGraphStrokeEdge.standardArrow(10,8,5);
 
 
 	public OWLGraphLayoutRenderer(OWLGraphWrapper owlGraphWrapper) {
@@ -46,40 +49,46 @@ public class OWLGraphLayoutRenderer {
 		this.owlGraphWrapper = owlGraphWrapper;
 	}
 	
-	public RectangularNode getNode(OWLObject ob) {
+	public OWLGraphLayoutNode getNode(OWLObject ob) {
 		if (nodemap.containsKey(ob))
 			return nodemap.get(ob);
 		String label = owlGraphWrapper.getLabel(ob);
-		IRI iri = ((OWLNamedObject)ob).getIRI();
+		//IRI iri = ((OWLNamedObject)ob).getIRI();
+		OWLGraphLayoutNode node = 
+			new OWLGraphLayoutNode(owlGraphWrapper, ob, style);
+				
+		/*
 		RectangularNode node = 
 			new RectangularNode(100, 30, label,
 					iri.toString(), null, 
 					label, Color.RED, Color.BLACK,
 					thinStroke);
+					*/
 		nodemap.put(ob, node);
 		g.nodes.add(node);
 		return node;
 	}
 	
-	public StrokeEdge<RectangularNode> makeEdge(OWLGraphEdge e) {
-		RectangularNode n1 = getNode(e.getSource());
-		RectangularNode n2 = getNode(e.getTarget());
-		System.out.println("adding:"+e+" "+n1+"//"+n2);
+	public OWLGraphStrokeEdge makeEdge(OWLGraphEdge e) {
+		OWLGraphLayoutNode sn = getNode(e.getSource());
+		OWLGraphLayoutNode tn = getNode(e.getTarget());
+		//System.out.println("adding:"+e+" "+n1+"//"+n2);
 		
 		OWLQuantifiedProperty qr = e.getSingleQuantifiedProperty();
 		Color color = Color.RED;
 		if (qr.isSubClassOf()) {
 			color = Color.GREEN;
 		}
-		StrokeEdge<RectangularNode> ge = 
-			new StrokeEdge<RectangularNode>(n1, n2, color, fatStroke,parent,child);	
+		OWLGraphStrokeEdge ge = 
+			new OWLGraphStrokeEdge(tn, sn, e);	
+//		new OWLGraphStrokeEdge(n1, n2, color, fatStroke,parent,child);	
 		return ge;
 	}
 	
 
 	public void addAllObjects() {
 		for (OWLObject ob : owlGraphWrapper.getAllOWLObjects()) {
-			RectangularNode node = getNode(ob);
+			OWLGraphLayoutNode node = getNode(ob);
 		}
 		for (OWLObject ob : owlGraphWrapper.getAllOWLObjects()) {
 			for (OWLGraphEdge e : owlGraphWrapper.getOutgoingEdges(ob)) {
@@ -92,7 +101,7 @@ public class OWLGraphLayoutRenderer {
 		Set<OWLObject> ancObjs = owlGraphWrapper.getAnctesors(focusObj);
 		ancObjs.add(focusObj);
 		for (OWLObject ob : ancObjs) {
-			RectangularNode node = getNode(ob);
+			OWLGraphLayoutNode node = getNode(ob);
 		}
 		for (OWLObject ob : ancObjs) {
 			for (OWLGraphEdge e : owlGraphWrapper.getOutgoingEdges(ob)) {
@@ -114,10 +123,15 @@ public class OWLGraphLayoutRenderer {
 		pw.println("<html><body>");
 
 
-		HierarchicalLayout<RectangularNode, StrokeEdge<RectangularNode>> layout =
-			new HierarchicalLayout<RectangularNode, StrokeEdge<RectangularNode>>(g, orientation);
+		HierarchicalLayout<OWLGraphLayoutNode, OWLGraphStrokeEdge> layout =
+			new HierarchicalLayout<OWLGraphLayoutNode, OWLGraphStrokeEdge>(g, orientation);
+        layout.horizontalMargin=2;
+        layout.verticalMargin=5;
+        layout.edgeLengthHeightRatio=5;
+        /*
 		layout.betweenLevelExtraGap=20;
 		layout.edgeLengthHeightRatio=1;
+		*/
 		layout.layout();
 
 		final int width = layout.getWidth();
@@ -134,16 +148,16 @@ public class OWLGraphLayoutRenderer {
 
 		g2.setColor(Color.black);
 
-		for (StrokeEdge<RectangularNode> edge : g.edges) {
+		for (OWLGraphStrokeEdge edge : g.edges) {
 			System.out.println("EDGE:"+edge);
 			edge.render(g2);
 		}
 
 		StringBuilder sb = new StringBuilder();
 
-		for (RectangularNode node : g.nodes) {
+		for (OWLGraphLayoutNode node : g.nodes) {
 			node.render(g2);
-			sb.append(node.getImageMap());
+			//sb.append(node.getImageMap());
 		}
 
 		ImageIO.write(image, "png", new FileOutputStream("hierarchicalGraph"+orientation+".png"));
