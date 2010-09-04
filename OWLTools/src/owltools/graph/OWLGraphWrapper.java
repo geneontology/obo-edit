@@ -725,6 +725,21 @@ public class OWLGraphWrapper {
 		}
 		return null;
 	}
+	
+	public String getIdentifier(OWLObject owlObject) {
+		if (owlObject instanceof OWLNamedObject) {
+			String iri = ((OWLNamedObject)owlObject).getIRI().toString();
+			if (iri.startsWith("http://purl.obolibrary.org/obo/")) {
+				iri.replace("http://purl.obolibrary.org/obo/", "");
+			}
+			
+			return iri;
+
+		}
+		return "";
+	}
+
+
 
 
 	/**
@@ -772,6 +787,8 @@ public class OWLGraphWrapper {
 		}
 		return o;
 	}
+
+
 
 
 	

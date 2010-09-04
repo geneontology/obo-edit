@@ -6,7 +6,10 @@ import uk.ac.ebi.interpro.graphdraw.*;
 import java.awt.*;
 import java.awt.geom.*;
 
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+
 import owltools.graph.OWLGraphEdge;
+import owltools.graph.OWLQuantifiedProperty;
 
 public class OWLGraphStrokeEdge extends StrokeEdge<OWLGraphLayoutNode>  {
 
@@ -16,13 +19,39 @@ public class OWLGraphStrokeEdge extends StrokeEdge<OWLGraphLayoutNode>  {
 	private static final Shape arrow = StrokeEdge.standardArrow(8,6,2);
 
     OWLGraphEdge owlGraphEdge;
+    RelationType relType;
 
-    public OWLGraphStrokeEdge(OWLGraphLayoutNode parent, OWLGraphLayoutNode child, OWLGraphEdge rtype) {
+    public OWLGraphStrokeEdge(OWLGraphLayoutNode parent, OWLGraphLayoutNode child, OWLGraphEdge oge) {
         //super(parent, child, Color.black, relationStroke, (rtype.polarity == OWLGraphEdge.Polarity.POSITIVE || rtype.polarity == OWLGraphEdge.Polarity.BIPOLAR) ? arrow : null, (rtype.polarity == OWLGraphEdge.Polarity.NEGATIVE || rtype.polarity == OWLGraphEdge.Polarity.BIPOLAR) ? arrow : null);
     	super(parent, child, Color.black, relationStroke,
-    			null,null);
-    	this.owlGraphEdge = rtype;
-        //this.colour = rtype.color;
+    			arrow,null);
+    	this.owlGraphEdge = oge;
+    	setRelationType();
+        this.colour = relType.color;
+    }
+    
+    /**
+     * TODO : this is too hacky. Make this a soft configuration, e.g. 
+     * an ontology with color properties
+     * 
+     */
+    public void setRelationType() {
+     	OWLQuantifiedProperty qp = owlGraphEdge.getSingleQuantifiedProperty();
+     	if (qp.isSubClassOf()) {
+     		relType = RelationType.ISA;
+     		return;
+     	}
+     	String pid = qp.getPropertyId();
+     	          	
+       	if (pid.contains("part_of")) {
+    		relType = RelationType.PARTOF;
+    	}
+     	else if (pid.contains("has_part")) {
+    		relType = RelationType.HASPART;
+    	}
+     	else if (pid.contains("develops_from")) {
+    		relType = RelationType.DEVELOPSFROM;
+    	}
     }
 
     public class SVGEdge {
@@ -71,13 +100,4 @@ public class OWLGraphStrokeEdge extends StrokeEdge<OWLGraphLayoutNode>  {
     	return "aaaaaa";
     }
 
-    public static void main(String[] args) throws Exception {
-
-        /*Object x = QuickGOMonitor.x;
-        System.out.println(x.getClass().getCanonicalName());
-        for (Field field : x.getClass().getDeclaredFields()) {
-            System.out.println(field.getName() + "=" + field.get(x));
-        }*/
-
-    }
-}
+  }
