@@ -4,7 +4,11 @@ public class IndividualPair {
 	
 	private Individual member1;
 	private Individual member2;
-	
+
+        public IndividualPair(Individual member1, Individual member2){
+            this.member1 = member1;
+            this.member2 = member2;
+        }
 	public Individual getMember1() {
 		return member1;
 	}
@@ -17,7 +21,4 @@ public class IndividualPair {
 	public void setMember2(Individual member2) {
 		this.member2 = member2;
 	}
-	
-	
-
 }
