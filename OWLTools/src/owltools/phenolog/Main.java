@@ -209,7 +209,7 @@ public class Main {
 
         }
         catch(FileNotFoundException e) {
-            System.out.println("Could not open Fly_GenePheno File");
+            System.out.println("Could not open MGI_PhenoGenoMP.rpt File");
         }
         catch(Exception ex){
             ex.printStackTrace();
