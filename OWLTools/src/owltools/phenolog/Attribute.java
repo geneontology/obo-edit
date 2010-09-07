@@ -1,6 +1,6 @@
 package owltools.phenolog;
 
-import org.semanticweb.owlapi.model.OWLObject;
+//import org.semanticweb.owlapi.model.OWLObject;
 
 /**
  * Represents a characteristic of an individual.
@@ -8,11 +8,16 @@ import org.semanticweb.owlapi.model.OWLObject;
  *
  */
 public class Attribute {
-	
+
 	private String id;
 	private String label;
-	private OWLObject owlObject; // for future use
-	
+	// private OWLObject owlObject; // for future use
+
+        public Attribute(String id, String label){
+            this.id = id;
+            this.label = label;
+        }
+
 	public String getId() {
 		return id;
 	}
@@ -25,14 +30,13 @@ public class Attribute {
 	public void setLabel(String label) {
 		this.label = label;
 	}
-	
-	public OWLObject getOwlObject() {
-		return owlObject;
-	}
-	public void setOwlObject(OWLObject owlObject) {
-		this.owlObject = owlObject;
-	}
-	
-	
+
+    /*public OWLObject getOwlObject() {
+    return owlObject;
+    }
+    public void setOwlObject(OWLObject owlObject) {
+    this.owlObject = owlObject;
+    }*/
+
 
 }
