@@ -58,7 +58,7 @@ public class Association extends GOModel {
 	protected boolean is_inherited;
 	
 	public Association(){
-		String[] uniqueConstraintFields = {"term", "gene_product"};
+		String[] uniqueConstraintFields = {"assoc_id", "term", "gene_product"};
 		this.initUniqueConstraintFields(Association.class,uniqueConstraintFields);
 	}
 
@@ -162,4 +162,5 @@ public class Association extends GOModel {
 	public void setInherited(boolean is_inherited) {
 		this.is_inherited = is_inherited;
 	}
+
 }

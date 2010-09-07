@@ -1,8 +1,8 @@
 package org.geneontology.db.model;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
-
 
 /**
  * The Evidence class corresponds to the GO evidence table.  
@@ -61,7 +61,6 @@ public class Evidence extends GOModel {
 		String[] uniqueConstraintFields = {"code", "association", "dbxref"};
 		this.initUniqueConstraintFields(Evidence.class,uniqueConstraintFields);
 	}
-
 
 	public int getEvidence_id() {
 		return evidence_id;
