@@ -4,11 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PhenologEngine {
-	
-	Set<IndividualPair> individualPairs = new HashSet<IndividualPair>(); 
-	
-	
-	
+
+	Set<IndividualPair> individualPairs = new HashSet<IndividualPair>();
+
 	public Set<IndividualPair> getIndividualPairs() {
 		return individualPairs;
 	}
