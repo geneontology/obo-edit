@@ -131,16 +131,18 @@ public class GOobjectFactory {
 			query.setString(param_count++, xref[0]);
 			query.setString(param_count++, xref[1]);
 		}
-		/*
 		Iterator<GeneProduct> results = query.iterate();
 		return results;
-		*/
-		Iterator<?> results = query.iterate();
-		java.util.List<GeneProduct> geneProducts = new java.util.ArrayList<GeneProduct>();
-		while (results.hasNext()) {
-			geneProducts.add((GeneProduct)results.next());
-		}
-		return geneProducts.iterator();
+//		Iterator<?> results = query.iterate();
+//		java.util.List<GeneProduct> geneProducts = new java.util.ArrayList<GeneProduct>();
+//		while (results.hasNext()) {
+//			GeneProduct gp = (GeneProduct)results.next();
+//			java.util.Set<Association> associations = gp.getAssociations();
+//			geneProducts.add(gp);
+//			associations.size();
+//			//geneProducts.add((GeneProduct)results.next());
+//		}
+//		return geneProducts.iterator();
 	}
 	
 	/**
