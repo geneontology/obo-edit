@@ -45,17 +45,31 @@ jQuery(document).ready(function(){
 
 </div>
 
+
+
 <style type="text/css">th{text-align:left}</style>
-<table><caption>Members</caption><tr>
-<th>gene_product.symbol</th>
-<th>dbxref</th>
-<th colspan="2">species</th>
-</tr>[% FOREACH gene_product IN gene_products %]<tr>
+<form action="/cgi-bin/amigo/gp-assoc.cgi" method="GET">
+<table><caption>Members</caption>
+<tr>
+<th rowspan="2"><input type="submit" \></th>
+<th rowspan="2">gene_product.symbol</th>
+<th rowspan="2">dbxref</th>
+<th rowspan="2" colspan="2">species</th>
+<th colspan="2">Evidence Code Count</th>
+</tr><tr>
+<th>Experimental</th>
+<th>Other</th>
+</tr>[% FOREACH gene_product IN gene_products %]<tr class="[% IF gene_product.color %]refg[% ELSE %]nrefg[% END %]">
+<td>[% IF (gene_product.eec + gene_product.oec) > 0 %]
+<input type="checkbox" name="gp" value="[% gene_product.dbxref %]" />
+[% END %]</td>
 <td><a title="Go to gene product details page for [% gene_product.symbol %]" href="[% gene_product.link %]">[% gene_product.symbol %]</a></td>
 <td>[% gene_product.dbxref %]</td>
 <td[% IF gene_product.color %] style="color:[% gene_product.color %]">&#8251;[% ELSE %]>[% END %]</td>
 <td>[% gene_product.species %]</td>
-</tr>[% END %]</table>
+<td>[% gene_product.eec %]</td>
+<td>[% gene_product.oec %]</td>
+</tr>[% END %]</table></form>
 
 <p><strong>&#8251;</strong> Reference Genome.</p>
 

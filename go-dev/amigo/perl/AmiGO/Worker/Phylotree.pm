@@ -3,6 +3,8 @@ use warnings;
 use strict;
 use Data::Dumper;
 use Net::FTP;
+use List::Util qw/first/;
+use Fcntl qw/:seek/;
 
 =head1 NAME
 
@@ -184,7 +186,6 @@ sub id2phylotree{
     my $dbxref2 = GOBO::DBIC::GODBModel::Query->new({type=>'dbxref_lazy'});
     my $r2 = $dbxref2->get_all_results({ xref_key => \@_ });
 
-
     push @phylotree_id, map {
     	map {
     	    map {
@@ -217,22 +218,22 @@ sub _index_display{
        },
        {
 	join =>
-	 [
-	  'dbxref',
-	  { gene_product_phylotree => 'association' },
-	 ],
-	 select =>
-	 [
-	  'xref_key',
-	  { count => 'DISTINCT gene_product_phylotree.gene_product_id' },
-	  { max => 'association.assocdate' },
-	 ],
-	 as =>
-	 [
-	  'xref_key',
-	  'members',
-	  'last_anno',
-	 ],
+	[
+	 'dbxref',
+	 { gene_product_phylotree => 'association' },
+	],
+	select =>
+	[
+	 'xref_key',
+	 { count => 'DISTINCT gene_product_phylotree.gene_product_id' },
+	 { max => 'association.assocdate' },
+	],
+	as =>
+	[
+	 'xref_key',
+	 'members',
+	 'last_anno',
+	],
 	group_by => 'xref_key', # Not needed in Lucid
 	order_id => 'xref_key',
        });
@@ -332,8 +333,35 @@ sub gene_products{
     my @gp; # gene products
     for my $gp ($r->gene_products
 		({},
-		 { prefetch => [ 'species', 'dbxref' ],
+		 { prefetch => [ 'species', 'dbxref',  ],
 		   order_by => [ 'genus', 'species' ] })->all) {
+
+	##########
+	# fetch evidence
+	my @eec = @{ $core->experimental_evidence_codes };
+
+	my @code = map {
+	    $_->get_column('code');
+	} $gp->association
+	  ({ },
+	   {
+	    join => 'evidence',
+	    select => 'code',
+	    #distinct => 1,
+	   });
+
+	my $eec = 0; # experimental evidence code
+	my $oec = 0; # other evidence code
+
+	for my $code (@code) {
+	    if (first { $_ eq $code } @eec) {
+		$eec++;
+	    } else {
+		$oec++;
+	    }
+	}
+	##########
+
 	my $species = $gp->species;
 	## Get together to add a link too.
 	my $dbname = $gp->dbxref->xref_dbname;
@@ -346,6 +374,9 @@ sub gene_products{
 	   symbol  => $gp->symbol,
 	   species => $species->genus . ' ' . $species->species,
 	   dbxref  => $acc,
+
+	   eec => $eec,
+	   oec => $oec,
 	  );
 	my $aid = AmiGO::Aid::PantherDB->ncbi($species->ncbi_taxa_id);
 	$gp{color} = $aid->color;
@@ -467,27 +498,55 @@ sub paint_files{ # need to check dbname for this one
        #Debug => 1,
       ) or return "Can't access '$host'";
     $ftp->login("anonymous",'-anonymous@') or return "Can't login to '$host'";
-
     $ftp->cwd($path) or return 'Found no PAINT files.';
+    my $gaf = $s->{key} . '.save.gaf';
+
+    my $date = 0;
     my %files = map {
 	my $file = $_;
 	if ($_ eq 'CVS') {
 	    ();
+	} elsif ($_ eq $gaf) {
+	    my $buf = '';
+	    open(my $fh, '>', \$buf);
+	    my $got_p = $ftp->get($gaf, $fh);
+	    close $fh;
+
+	    if ($got_p) {
+		open($fh, '<', \$buf);
+		#seek($fh, 0, SEEK_SET) or die "bla";
+		<$fh>;
+		while (my $line = <$fh>) {
+		    my @line= split(m/\s+/, $line);
+		    if ($line[13]                                &&
+#			($line[13] =~ m/(\d\d\d\d)(\d\d)(\d\d)/) &&
+			($line[13] > $date)                      ){
+			$date = $line[13];
+		    }
+		}
+		close $fh;
+		#warn "Unable to open '$got', $!";
+	    }
+
+	    $gaf => $date;
 	} else {
-	    my (undef, undef, undef, $mday, $mon, $year) = gmtime($ftp->mdtm($file));
-	    $year += 1900;
-	    $file => sprintf('%04d-%02d-%02d', $year, $mon, $mday);
+	    $file => 0;
 	}
     } $ftp->ls();
     $ftp->quit();
+
+    if ($date =~ s/(\d\d\d\d)(\d\d)(\d\d)/$1-$2-$3/) {
+    } else {
+	$date = 'neven';
+    };
 
     my $found = scalar(keys %files);
     return
       (($found == 1)              ?
        'Found one PAINT file:'    :
-       "Found $found PAINT files:"), map {
+       "Found $found PAINT files (Latest Annotation $date):", map {
 	   ("ftp://$host/$path/$_" => $files{$_});
-       } keys %files;
+       } keys %files);
 }
 
 =item $p-E<gt>properties
