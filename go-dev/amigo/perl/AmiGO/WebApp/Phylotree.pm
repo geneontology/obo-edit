@@ -351,7 +351,7 @@ sub mode_paint_ajax{
 	my $url = $_;
 	my $txt = $_;
 	$txt =~ s(.*/)();
-	"<li><a href=\"$url\">$txt</a>&nbsp;($url{$url})</li>";
+	"<li><a href=\"$url\">$txt</a>&nbsp;</li>";
     } keys %url) . '</ul>';
 }
 
