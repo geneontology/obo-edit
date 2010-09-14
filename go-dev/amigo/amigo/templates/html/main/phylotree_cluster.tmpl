@@ -71,7 +71,7 @@ $(document).ready(function() {
  });
 
 
- $("#members").tablesorter();
+ $("#members").tablesorter({ headers: { 0: {sorter: false }}});
 
 });
 </script>
@@ -81,7 +81,7 @@ $(document).ready(function() {
 <form action="/cgi-bin/amigo/gp-assoc.cgi" method="GET">
 <table id="members"><caption>Members</caption>
 <thead><tr>
-<td><input type="submit" \></td>
+<th><input type="submit" \></th>
 <th>gene_product.symbol</th>
 <th>dbxref</th>
 <th></th>
