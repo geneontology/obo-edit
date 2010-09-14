@@ -1,3 +1,7 @@
+-- ****************************************
+-- CORE GOLD SCHEMA
+-- ****************************************
+
 CREATE TABLE annotated (
   id VARCHAR PRIMARY KEY, -- e.g. FB:FBgn00000001
   symbol VARCHAR NOT NULL,
