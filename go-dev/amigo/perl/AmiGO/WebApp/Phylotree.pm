@@ -190,8 +190,8 @@ sub mode_cluster{
     $c->set_template_parameter(page_title => $pid);
     $c->set_template_parameter(missing => [ $o->properties('missing') ]);
 
+    $c->add_template_bulk({ javascript_library => ['com.jquery', 'com.jquery.tablesorter'] });
     if ($default_dbname eq $o->{dbname}) {
-	$c->add_template_bulk({ javascript_library => ['com.jquery'] });
      	$c->set_template_parameter(paint_ajax => $o->url(mode => 'paint'));
     }
 
