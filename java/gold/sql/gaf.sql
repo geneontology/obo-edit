@@ -12,22 +12,42 @@ CREATE TABLE annotated (
 
 
 CREATE TABLE gene_annotation (
+  -- GAF: col1:col2
   gene VARCHAR NOT NULL,
+
+  -- GAF: col4
   qualifier_expression VARCHAR,
+
+  -- ontology class
+  -- GAF: col5
   cls VARCHAR NOT NULL,
+
+  -- single identifier?
   reference_expression VARCHAR,
+
+  -- col + col
   evidence_expression VARCHAR,
+
+  -- col16
   extension_expression VARCHAR,
+
+  -- col17
   gene_product VARCHAR
 );
 
+-- qualifier expression
+-- syntax: QE --> [ Q ]
 CREATE TABLE qualifier (
   qualifier_expression VARCHAR,
   cls VARCHAR
 );
 
+-- expression representing sum total of evidence for this assignment
 CREATE TABLE evidence_expression (
   evidence_expression VARCHAR,
+
+  -- an ECO class identifier
   evidence_cls VARCHAR,
   with_xref VARCHAR
 );
+
