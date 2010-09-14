@@ -29,7 +29,7 @@ jQuery(document).ready(function(){
 [% END %]
 
 <h4>4. Number of members</h4>
-<p>[% cluster.number_of_members %]</h4>
+<p>[% cluster.number_of_members %]</p>
 
 <h4>5. Number Of RefG Members</h4>
 <p>[% cluster.number_of_refg_members %]</p>
@@ -55,7 +55,24 @@ $(document).ready(function() {
   }
  })
 
+ $.tablesorter.addParser({
+  id: "bloodyDigit",
+  is: function(s,table) {
+   if (s == '0') {
+    return true;
+   } 
+   var c = table.config;
+   return $.tablesorter.isDigit(s,c);
+  },
+  format: function(s) {
+   return $.tablesorter.formatFloat(s);
+  },
+  type: "numeric"
+ });
+
+
  $("#members").tablesorter();
+
 });
 </script>
 
@@ -64,13 +81,13 @@ $(document).ready(function() {
 <form action="/cgi-bin/amigo/gp-assoc.cgi" method="GET">
 <table id="members"><caption>Members</caption>
 <thead><tr>
-<th><input type="submit" \></th>
+<td><input type="submit" \></td>
 <th>gene_product.symbol</th>
 <th>dbxref</th>
 <th></th>
 <th>species</th>
-<th class="{sorter: 'digit'}">Experimental</th>
-<th class="{sorter: 'digit'}">Other</th>
+<th>Experimental</th>
+<th>Other</th>
 </tr><thead><tbody>[% FOREACH gene_product IN gene_products %]<tr class="[% IF gene_product.color %]refg[% ELSE %]nrefg[% END %]">
 <td>[% IF (gene_product.eec + gene_product.oec) > 0 %]
 <input type="checkbox" name="gp" value="[% gene_product.dbxref %]" />
@@ -81,7 +98,9 @@ $(document).ready(function() {
 <td>[% gene_product.species %]</td>
 <td class="digit">[% gene_product.eec %]</td>
 <td>[% gene_product.oec %]</td>
-</tr>[% END %]</tbody></table></form>
+</tr>[% END %]</tbody>
+<tfoot><tr><td><input type="submit" \></td></tr></tfoot>
+</table></form>
 
 <p><strong>&#8251;</strong> Reference Genome.</p>
 
