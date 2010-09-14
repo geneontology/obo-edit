@@ -45,21 +45,33 @@ jQuery(document).ready(function(){
 
 </div>
 
+<script type="text/javascript">
+$(document).ready(function() {
+ $("#hide").click(function(){
+  if($("tr.nrefg").css("display") == "table-row") {
+   $("tr.nrefg").css("display", "none");
+  } else {
+   $("tr.nrefg").css("display", "table-row");
+  }
+ })
 
+ $("#members").tablesorter();
+});
+</script>
 
 <style type="text/css">th{text-align:left}</style>
+<p><input type="checkbox" id="hide" /> Toggle display of non-reference genome members.</p>
 <form action="/cgi-bin/amigo/gp-assoc.cgi" method="GET">
-<table><caption>Members</caption>
-<tr>
-<th rowspan="2"><input type="submit" \></th>
-<th rowspan="2">gene_product.symbol</th>
-<th rowspan="2">dbxref</th>
-<th rowspan="2" colspan="2">species</th>
-<th colspan="2">Evidence Code Count</th>
-</tr><tr>
-<th>Experimental</th>
-<th>Other</th>
-</tr>[% FOREACH gene_product IN gene_products %]<tr class="[% IF gene_product.color %]refg[% ELSE %]nrefg[% END %]">
+<table id="members"><caption>Members</caption>
+<thead><tr>
+<th><input type="submit" \></th>
+<th>gene_product.symbol</th>
+<th>dbxref</th>
+<th></th>
+<th>species</th>
+<th class="{sorter: 'digit'}">Experimental</th>
+<th class="{sorter: 'digit'}">Other</th>
+</tr><thead><tbody>[% FOREACH gene_product IN gene_products %]<tr class="[% IF gene_product.color %]refg[% ELSE %]nrefg[% END %]">
 <td>[% IF (gene_product.eec + gene_product.oec) > 0 %]
 <input type="checkbox" name="gp" value="[% gene_product.dbxref %]" />
 [% END %]</td>
@@ -67,9 +79,9 @@ jQuery(document).ready(function(){
 <td>[% gene_product.dbxref %]</td>
 <td[% IF gene_product.color %] style="color:[% gene_product.color %]">&#8251;[% ELSE %]>[% END %]</td>
 <td>[% gene_product.species %]</td>
-<td>[% gene_product.eec %]</td>
+<td class="digit">[% gene_product.eec %]</td>
 <td>[% gene_product.oec %]</td>
-</tr>[% END %]</table></form>
+</tr>[% END %]</tbody></table></form>
 
 <p><strong>&#8251;</strong> Reference Genome.</p>
 
