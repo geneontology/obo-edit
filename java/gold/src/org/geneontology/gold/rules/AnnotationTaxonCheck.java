@@ -14,6 +14,14 @@ public class AnnotationTaxonCheck {
 		super();
 		this.graphWrapper = graphWrapper;
 	}
+	
+	public AnnotationTaxonCheck(String annotationOntolPath,
+			String taxonOntolPath, String constraintsOntolPath) {
+		super();
+		this.graphWrapper = new OWLGraphWrapper();
+		
+	}
+
 
 	public boolean check(String annotationCls, String taxonCls) {
 		OWLObject cls = graphWrapper.getOWLObjectByIdentifier(annotationCls);
