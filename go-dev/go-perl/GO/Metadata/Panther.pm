@@ -234,7 +234,7 @@ our @species =
    { # Homo sapiens
     code => 'HUMAN',
     ncbi_taxa_id => [ 9606 ],
-    prefer => [ 'ENSEMBL', 'UniProtKB' ],
+    prefer => [ 'UniProtKB', 'ENSEMBL' ],
    },
 
    #
