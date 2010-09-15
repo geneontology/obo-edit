@@ -18,7 +18,7 @@ public class AnnotationTaxonCheck {
 	public AnnotationTaxonCheck(String annotationOntolPath,
 			String taxonOntolPath, String constraintsOntolPath) {
 		super();
-		this.graphWrapper = new OWLGraphWrapper();
+		this.graphWrapper = new OWLGraphWrapper(null);
 		
 	}
 
@@ -30,6 +30,7 @@ public class AnnotationTaxonCheck {
 		OWLObject rOnly = graphWrapper.getOWLObjectByIdentifier("only_in_taxon");
 		Set<OWLGraphEdge> edges = graphWrapper.getEdgesBetween(cls, tax);
 		boolean ok = true;
+		// TODO - requires correct obo2owl translation for negation and only constructs
 		for (OWLGraphEdge ge : edges) {
 			
 		}
