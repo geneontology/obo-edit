@@ -88,6 +88,7 @@ public class OBO2Database {
 			printUsage(1);
 		OBOFileAdapter.OBOAdapterConfiguration readConfig = new OBOFileAdapter.OBOAdapterConfiguration();
 		readConfig.setBasicSave(false);
+		readConfig.setFollowImports(false);
 		OBDSQLDatabaseAdapterConfiguration writeConfig = new OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration();
 		
 		writeConfig.setBasicSave(false);
@@ -110,7 +111,9 @@ public class OBO2Database {
 					printUsage(1);
 			} else if (args[i].equals("-allowdangling")) {
 				readConfig.setAllowDangling(true);
-			} else if (args[i].equals("-runscript")) {
+			} else if (args[i].equals("-followimports")) {
+                readConfig.setFollowImports(true);
+            } else if (args[i].equals("-runscript")) {
 				if (i >= args.length - 1)
 					printUsage(1);
 				i++;
@@ -222,7 +225,7 @@ public class OBO2Database {
 	protected static void printUsage(int exitCode) {
 		System.err
 				.println("obo2database [-?] [-formatversion <versionid>] <filename 1> ... <filename N> \\\n"
-						+ "    [-parsecomments] [-writecomments] \\\n"
+						+ "    [-parsecomments] [-writecomments] [-followimports] \\\n"
 						+ "     [-script <scriptname> [arg1 arg2 ... argN] \\;] \\\n"
 						+ "   [-o [-f <filterfile1.xml>] <jdbcPath>] ... \\\n"
 						+ "   [-o [-f <filterfileN.xml>] <jdbcPathN>]");
