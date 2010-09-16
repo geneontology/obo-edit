@@ -108,7 +108,7 @@ our @species =
    { # Bos taurus
     code => 'BOVIN',
     ncbi_taxa_id => [ 9913 ],
-    prefer => [ 'UniProtKB' ],
+    prefer => [ 'UniProtKB',  'Ensembl' ],
    },
 
    { # Bradyrhizobium japonicum
