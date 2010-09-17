@@ -8,8 +8,6 @@ import org.obo.util.TermUtil;
 import org.oboedit.gui.*;
 import org.oboedit.util.GUIUtil;
 import org.oboedit.util.PathUtil;
-
-import javax.swing.tree.TreePath;
 import javax.swing.*;
 
 import org.apache.log4j.*;
@@ -73,12 +71,11 @@ public class SpecificCompletesAction implements ClickMenuAction {
 
 	public HistoryItem execute() {
 		List<HistoryItem> items = new LinkedList<HistoryItem>();
-
-		Iterator it = sources.getLinks().iterator();
-		while(it.hasNext()) {
-			OBORestriction tr = (OBORestriction) it.next();
+		
+		for(Link link : sources.getLinks()){
+			OBORestriction tr = (OBORestriction) link;
 			
-			if (tr.completes() != changeTo) {
+			if (tr.getCompletes() != changeTo) {
 				items.add(new CompletesHistoryItem(tr));
 			}
 		}

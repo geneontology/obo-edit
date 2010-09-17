@@ -408,7 +408,7 @@ public class CompleteDefPanel extends AbstractTextEditComponent {
 
 		for(Link l : oboClass.getParents()){
 			OBORestriction link = (OBORestriction) l;
-			if (!link.completes())
+			if (!link.getCompletes())
 				continue;
 			if (link.getType().equals(OBOProperty.IS_A)) {
 				genusTerm = (OBOClass) link.getParent();

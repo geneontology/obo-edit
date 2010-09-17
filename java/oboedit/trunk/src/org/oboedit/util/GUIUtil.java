@@ -5,7 +5,6 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -20,7 +19,6 @@ import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.IDManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.FilteredRenderable;
-import org.oboedit.gui.ObjectSelector;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.event.GlobalFilterListener;
 import org.oboedit.gui.event.HistoryAppliedEvent;
@@ -221,11 +219,7 @@ public class GUIUtil {
 	}
 
 	public static void setSelections(HistoryItem item, Selection pre, Selection post) {
-//		logger.debug("GUIUtil.setSelections");
-//		logger.debug("HistoryItem item: " + item);
-//		logger.debug("Selection pre: " + pre);
-//		logger.debug("Selection post: " + post);
-		setPreSelection(item, pre);
+ 		setPreSelection(item, pre);
 		setPostSelection(item, post);
 	}
 
