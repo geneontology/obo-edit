@@ -204,7 +204,6 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			Container parent = getParent();
 			parent.remove(panel);
 			parent.repaint();
-			OBOSession currentSession = SessionManager.getManager().getSession();
 		}
 
 		/**
@@ -351,14 +350,12 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		if (currentObject instanceof LinkedObject && !(currentObject.getClass().getSimpleName().toString().equalsIgnoreCase("OBOPropertyImpl")) ) {
 			//get existing differentia
 			Collection<Link> differentia = ReasonerUtil.getDifferentia((OBOClass) currentObject);
-//			logger.debug("differentia: " + differentia);
 			
 			//get the list of discriminating relations associated with this object to compute additions and deletions to the relations list
-			Collection<Link> relations = getRelationshipList();
+  			Collection<Link> relations = getRelationshipList();
 			
 			// Find intersection links that have been deleted
 			for(Link link : ((LinkedObject) currentObject).getParents()){
-				//logger.debug("link: " + link.getType().getName() + "  " + link.getParent());
 				if (!TermUtil.isIntersection(link))
 					continue;
 			
@@ -429,7 +426,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		for (int i = 0; i < linkListPanel.getComponentCount(); i++) {
 			if (linkListPanel.getComponent(i) instanceof RelationshipLinePanel) {
 				RelationshipLinePanel panel = (RelationshipLinePanel) linkListPanel.getComponent(i);
-				logger.debug("panel.getParentTerm(): " + panel.getParentTerm());
+//				logger.debug("CPEC: panel.getParentTerm(): " + panel.getParentTerm());
 				if (panel.getParentTerm() == null || panel.getProperty() == null)
 					continue;
 				OBORestriction discLink = new OBORestrictionImpl(oboClass, panel.getProperty(), panel.getParentTerm());
@@ -557,7 +554,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		linkListPanel.removeAll();
 		for(Object o : oboClass.getParents()){
 			OBORestriction link = (OBORestriction) o;
-			if (!link.completes())
+			if (!link.getCompletes())
 				continue;
 			LinkedObject parent = link.getParent();
 			if (TermUtil.isDangling(parent)) {

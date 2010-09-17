@@ -16,7 +16,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Rectangle;
@@ -32,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.Box;
@@ -391,8 +389,7 @@ public class ParentEditor extends AbstractGUIComponent {
 					idButton.setForeground(Color.blue);
 					idButton.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							SelectionManager.selectTerm(ParentEditor.this, tr
-									.getParent());
+							SelectionManager.selectTerm(ParentEditor.this, tr.getParent());
 						}
 					});
 				}
@@ -415,26 +412,25 @@ public class ParentEditor extends AbstractGUIComponent {
 					panel.add(intersectionLabel, BorderLayout.EAST);
 				}
 
-// 7/30/10 discontinuing deletion in Parent Editor until link to TextEditor and commit model straightened out
-				//TODO: link to CPEC.removeLine and refresh TE 
-//				final JButton deleteRelationIcon = new JButton(Preferences.loadLibraryIcon("trashcan.gif"));
-//				deleteRelationIcon.setToolTipText("Delete relation");
-//				deleteRelationIcon.setPreferredSize(new Dimension(20, 18));
-//				deleteRelationIcon.addActionListener(new ActionListener() {
-//					public void actionPerformed(ActionEvent e) {
-//						DeleteLinkHistoryItem ditem = new DeleteLinkHistoryItem(tr);
-//						GUIUtil.setPreSelection(ditem, SelectionManager.getGlobalSelection());
-//						// Do the edit
-//						SessionManager.getManager().apply(ditem);
-//						// Just re-select currently selected term (not all instances of it, as with the paths thing)
-//						GUIUtil.setPostSelection(ditem, SelectionManager.getManager().getSelection());
-//						
-//					}
-//				});
-//				deleteRelationIcon.setEnabled(enabled && tr.getChild().getParents().size() >= 1);
+				//delete relation button
+				final JButton deleteRelationIcon = new JButton(Preferences.loadLibraryIcon("trashcan.gif"));
+				deleteRelationIcon.setToolTipText("Delete relation");
+				deleteRelationIcon.setPreferredSize(new Dimension(20, 18));
+				deleteRelationIcon.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						DeleteLinkHistoryItem ditem = new DeleteLinkHistoryItem(tr);
+						GUIUtil.setPreSelection(ditem, SelectionManager.getGlobalSelection());
+						// Do the edit
+						SessionManager.getManager().apply(ditem);
+						// Just re-select currently selected term (not all instances of it, as with the paths thing)
+						GUIUtil.setPostSelection(ditem, SelectionManager.getManager().getSelection());
+						
+					}
+				});
+				deleteRelationIcon.setEnabled(enabled && tr.getChild().getParents().size() >= 1);
 				 
 				Box topBox = Box.createHorizontalBox();
-//				topBox.add(deleteRelationIcon);
+				topBox.add(deleteRelationIcon);
 				topBox.add(Box.createHorizontalStrut(5));
 				topBox.add(typeBox);
 				topBox.add(Box.createHorizontalStrut(5));

@@ -699,7 +699,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 		Iterator it = oboClass.getParents().iterator();
 		while (it.hasNext()) {
 			OBORestriction link = (OBORestriction) it.next();
-			if (!link.completes())
+			if (!link.getCompletes())
 				continue;
 			LinkedObject parent = link.getParent();
 			if (TermUtil.isDangling(parent)) {

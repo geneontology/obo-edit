@@ -104,9 +104,7 @@ public abstract class TermHyperlinkListener implements HyperlinkListener {
 					return;
 				}
 				LinkedObject type = (LinkedObject) io;
-				Iterator it = linkDatabase.getParents(child).iterator();
-				while (it.hasNext()) {
-					Link link = (Link) it.next();
+				for(Link link : linkDatabase.getParents(child)){
 					if (link.getParent().equals(parent)
 							&& link.getType().equals(type)) {
 						linkSelected(linkParam, link);

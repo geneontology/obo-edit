@@ -300,7 +300,7 @@ ListCellRenderer {
 				} else if (tr.isInverseNecessarilyTrue()) {
 					multiIcon.addIcon(inv_icon);
 				}
-				if (tr.completes()) {
+				if (tr.getCompletes()) {
 					multiIcon.addIcon(completes_icon);
 				}
 			}
