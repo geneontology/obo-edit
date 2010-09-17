@@ -7,7 +7,6 @@ import org.obo.history.*;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.Preferences;
 import org.oboedit.gui.event.*;
 import org.oboedit.util.GUIUtil;
 
@@ -23,15 +22,11 @@ public class SubsetManagerComponent extends AbstractGUIComponent {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(SubsetManagerComponent.class);
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	protected ListEditor subsetList;
 
-	protected JLabel noSubsetLabel = new JLabel(
-			"Select subset to edit");
+	protected JLabel noSubsetLabel = new JLabel("Select subset to edit");
 
 	protected JButton commitButton = new JButton("Save Changes");
 
@@ -40,9 +35,6 @@ public class SubsetManagerComponent extends AbstractGUIComponent {
 	private class SubsetEditor extends JPanel implements
 			GenericEditorComponent {
 
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
 
 		private JTextField nameField;
@@ -99,8 +91,7 @@ public class SubsetManagerComponent extends AbstractGUIComponent {
 
 		public Object createNewValue() {
 			return new SubsetWrapper(SessionManager.getManager().getSession()
-					.getObjectFactory().createSubset("NEWSUBSET",
-							"<new term subset>"));
+					.getObjectFactory().createSubset("NEWSUBSET", "<new term subset>"));
 		}
 	}
 
@@ -219,7 +210,6 @@ public class SubsetManagerComponent extends AbstractGUIComponent {
 	}
 
 	protected void saveSubsets() {
-		(new Exception("Called saveSubsets()")).printStackTrace();
 		Set v = new HashSet();
 		Vector data = subsetList.getData();
 		Set names = new HashSet();
@@ -235,13 +225,8 @@ public class SubsetManagerComponent extends AbstractGUIComponent {
 			v.add(rtw.getSubset());
 			names.add(rtw.getName());
 		}
-		Iterator it = TermUtil.getTerms(
-				SessionManager.getManager().getSession()).iterator();
-		while (it.hasNext()) {
-			OBOClass term = (OBOClass) it.next();
-			Iterator it2 = term.getSubsets().iterator();
-			while (it2.hasNext()) {
-				TermSubset sub = (TermSubset) it2.next();
+		for(OBOClass term : TermUtil.getTerms(SessionManager.getManager().getSession())){
+			for(TermSubset sub : term.getSubsets()){
 				if (!v.contains(sub)) {
 					JOptionPane.showMessageDialog(this,
 							"Could not commit changes " + "because " + sub
@@ -252,23 +237,22 @@ public class SubsetManagerComponent extends AbstractGUIComponent {
 			}
 		}
 
-		Vector oldcats = new Vector(SessionManager.getManager().getSession()
-				.getSubsets());
+		Vector oldsets = new Vector(SessionManager.getManager().getSession().getSubsets());
 		TermMacroHistoryItem item = new TermMacroHistoryItem("Subset edits");
-		Vector newcats = (Vector) data.clone();
-		for (int i = 0; i < oldcats.size(); i++) {
-			TermSubset subset = (TermSubset) oldcats.get(i);
+		Vector newsets = (Vector) data.clone();
+		for (int i = 0; i < oldsets.size(); i++) {
+			TermSubset subset = (TermSubset) oldsets.get(i);
 			boolean found = false;
 			for (int j = 0; j < data.size(); j++) {
 				SubsetWrapper tw = (SubsetWrapper) data.get(j);
 				if (tw.getSubset() == subset) {
-					newcats.remove(tw);
+					newsets.remove(tw);
 					if (tw.isChanged()) {
 						TermSubset ts = SessionManager
 								.getManager()
 								.getSession()
 								.getObjectFactory()
-								.createSubset("NEWSUBSET", "<new term subset>");
+								.createSubset(tw.getName(), tw.getDesc());
 						TermSubsetHistoryItem subsetitem = new TermSubsetHistoryItem(
 								tw.getSubset(), ts, false, false);
 
@@ -284,8 +268,8 @@ public class SubsetManagerComponent extends AbstractGUIComponent {
 				item.addItem(subsetitem);
 			}
 		}
-		for (int i = 0; i < newcats.size(); i++) {
-			SubsetWrapper cw = (SubsetWrapper) newcats.get(i);
+		for (int i = 0; i < newsets.size(); i++) {
+			SubsetWrapper cw = (SubsetWrapper) newsets.get(i);
 			TermSubsetHistoryItem subsetitem = new TermSubsetHistoryItem(null,
 					SessionManager.getManager().getSession().getObjectFactory()
 							.createSubset(cw.getName(), cw.getDesc()), true,
