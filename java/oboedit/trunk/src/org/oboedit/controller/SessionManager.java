@@ -187,7 +187,7 @@ public class SessionManager {
 	}
 
 	/**
-	 * getUseReasoner - returns rasoner currently running
+	 * getUseReasoner - returns reasoner currently running
 	 * */
 	public boolean getUseReasoner() {
 		return Preferences.getPreferences().getUseReasoner();
@@ -269,16 +269,16 @@ public class SessionManager {
 			Object[] params = { item, warning };
 		}
 		logger.debug("SessionManager.doApply " + item.toString() + ((warning != null) ? (" (warnings: " + warning + ")") : ""));
-		// if (getUseReasoner())
-		// reasonerOpModel.apply(item);
-//		long time = System.currentTimeMillis();
 
 		fireHistoryApplied(new HistoryAppliedEvent(this, item));
+		
+		logger.debug(">>> SessionManager doApply:" + item.getShortName());
+		
+		if(item.getShortName() == "TermMergeHistoryItem" && !Preferences.getPreferences().getAutoCommitTextEdits()){
+			Preferences.getPreferences().setAutoCommitTextEdits(true);
+		}
 
-//		logger.info("fired history applied in "
-//		+ (System.currentTimeMillis() - time));
 		if (GUIUtil.getPostSelection(item) != null && doSelect) {
-//			logger.debug("getPostSelection(item)" + GUIUtil.getPostSelection(item) );
 			Selection selection = SelectionManager.resolveSelectionDanglers(
 					session, GUIUtil.getPostSelection(item));
 			if (SelectionManager.getManager().doPreSelectValidation(selection))

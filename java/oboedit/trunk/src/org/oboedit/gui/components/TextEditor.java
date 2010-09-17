@@ -719,11 +719,9 @@ RootTextEditComponent, SelectionDrivenComponent {
 
 
 	public List<HistoryItem> getChanges() {
-//		logger.debug("TextEditor.getChanges()");
 		List<HistoryItem> out = new LinkedList<HistoryItem>();
 		for (OBOTextEditComponent c : getMyResolver().getRegisteredComponents()) {
-			//Collection<HistoryItem> changes = c.getChanges();
-//			logger.debug("getting changes from component: " + c);
+
 			List<HistoryItem> changes = c.getChanges();
 			out.addAll(changes);
 		}

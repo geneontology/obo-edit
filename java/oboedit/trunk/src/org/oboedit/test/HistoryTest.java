@@ -1,7 +1,5 @@
 package org.oboedit.test;
 
-import java.util.Iterator;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -238,14 +236,10 @@ public class HistoryTest extends TestCase {
 	}
 
 	protected void checkForSelfLinks(OBOSession session) throws Exception {
-		Iterator it = session.getObjects().iterator();
-		while (it.hasNext()) {
-			IdentifiedObject io = (IdentifiedObject) it.next();
+		for(IdentifiedObject io : session.getObjects()){
 			if (io instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject) io;
-				Iterator it2 = lo.getParents().iterator();
-				while (it2.hasNext()) {
-					Link link = (Link) it2.next();
+				for(Link link : lo.getParents()){
 					assertTrue("Self link " + link + " is not allowed!", !link
 							.getParent().equals(link.getChild()));
 				}
@@ -254,7 +248,6 @@ public class HistoryTest extends TestCase {
 	}
 
 	public void testHistoryTracker() throws Exception {
-		Iterator it;
 		// get the history list and apply it to an ontology
 		HistoryList historyList = createHistoryList();
 		OBOSession changed = TestUtil.createSession();
@@ -317,9 +310,8 @@ public class HistoryTest extends TestCase {
 		assertTrue("The sessions should contain the same number of "
 				+ "objects after histories are applied", session.getObjects()
 				.size() == changed.getObjects().size());
-		it = session.getObjects().iterator();
-		while (it.hasNext()) {
-			IdentifiedObject io = (IdentifiedObject) it.next();
+
+		for(IdentifiedObject io : session.getObjects()){
 			IdentifiedObject io2 = changed.getObject(io
 					.getID());
 			assertNotNull("Every object in one ontology should have a "

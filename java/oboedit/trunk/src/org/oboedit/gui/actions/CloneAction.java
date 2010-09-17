@@ -97,7 +97,7 @@ public class CloneAction implements ClickMenuAction {
 						OBORestriction newLink = new OBORestrictionImpl((LinkedObject) clone, ((OBORestriction)parentLink).getType(),
 								parentLink.getParent());
 						// check for cross product links
-						if(((OBORestriction) parentLink).completes())
+						if(((OBORestriction) parentLink).getCompletes())
 							item = new CreateIntersectionLinkHistoryItem(newLink);
 						else
 							item = new CreateLinkHistoryItem(newLink);

@@ -1,6 +1,18 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  === 
 
 ================================
+What's New in OBO-Edit v2.1-beta7
+================================
+Bug Fixes: 
+[ geneontology-Bugs-2948445 ] Loss of intersection status on merge
+[ geneontology-Bugs-3029689 ] Subset manager - subset name change not saved
+
+================================
+What's New in OBO-Edit v2.1-beta6
+================================
+Bug Fixes: Fixed comments being eliminated from load cycle.
+
+================================
 What's New in OBO-Edit v2.1-beta5
 ================================
 Bug Fixes: 
@@ -32,7 +44,7 @@ Config files can also be reset when required through the Configuration Manager.
 
 
 ============
-Bug Fixes
+2.1 beta1 through beta4 Bug Fixes
 ============
 [geneontology-Bugs-2899760] Too easy to make link to self in graph editor
 [geneontology-Bugs-2971221] eliminate possibility to create is_a relationships to self
