@@ -141,7 +141,6 @@ public class DefaultOperationModel implements OperationModel {
 
 	public OperationWarning apply(HistoryItem item) {
 		OperationWarning warning;
-//		logger.debug(" DefaultOperationModel: apply =" + item);
 		if (item instanceof CreateObjectHistoryItem)
 			warning = apply((CreateObjectHistoryItem) item);
 		else if (item instanceof CreateLinkHistoryItem)
