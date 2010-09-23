@@ -45,11 +45,13 @@
 	  type="string"
 	  indexed="true"
 	  stored="true"
+	  multiValued="true"
 	  required="false" />
    <field name="acc_synonym"
 	  type="string"
 	  indexed="true"
 	  stored="true"
+	  multiValued="true"
 	  required="false" />
    <field name="term_definition"
 	  type="text_ws"
@@ -87,10 +89,17 @@
 	  indexed="true"
 	  stored="true"
 	  required="false" />
-   <field name="product_synonym"
+   <field name="gene_product_synonym"
 	  type="text_ws"
 	  indexed="true"
 	  stored="true"
+	  multiValued="true"
+	  required="false" />
+   <field name="associated_term"
+	  type="text_ws"
+	  indexed="true"
+	  stored="true"
+	  multiValued="true"
 	  required="false" />
   </fields>
 
