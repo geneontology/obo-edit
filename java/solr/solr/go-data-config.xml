@@ -17,6 +17,8 @@
             query="SELECT gene_product.id, concat('gene_product') AS domain, symbol, full_name as name, ncbi_taxa_id, term.name AS type_name, term.acc AS type_acc, concat(dbxref.xref_dbname, ':', dbxref.xref_key) AS acc FROM gene_product, species, term, dbxref WHERE species_id=species.id AND type_id=term.id AND dbxref_id=dbxref.id">
       <entity name="gene_product_synonym" 
               query="SELECT product_synonym FROM gene_product_synonym WHERE gene_product_id='${gene_product.id}'"/>
+      <entity name="associated_term" 
+              query="SELECT term.acc AS associated_term FROM gene_product, association, term WHERE  gene_product.id = association.gene_product_id AND association.term_id = term.id AND gene_product_id='${gene_product.id}'"/>
     </entity>
   </document>
 </dataConfig>
