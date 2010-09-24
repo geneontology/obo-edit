@@ -71,6 +71,7 @@ if ($opt_h->{fetch}) {
 
 my @bad = ();
 foreach my $f (@ARGV) {
+    #warn "Loading $f\n";
     if ($f =~ /^ftp:.*\/(\S+)/) {
 	my $localf = "$1";
 	logmsg("downloading $1 to $localf");
