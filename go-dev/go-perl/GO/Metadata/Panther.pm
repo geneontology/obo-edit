@@ -2,12 +2,11 @@ package GO::Metadata::Panther;
 use strict;
 use warnings;
 use Exporter;
-use base qw/Exporter/;
 use Memoize;
 use List::Util qw/sum first/;
 use Data::Dumper;
 
-our @EXPORT_OK = qw/@species/;
+use base qw/GO::Metadata::UniProt::Species/;
 
 =head1 NAME
 
@@ -15,454 +14,224 @@ GO::Metadata::Panther - Species info for data used by Panther Clusters
 
 =head1 SYNOPSIS
 
- use GO::Metadata::Panther qw/@species/;
-
- for my $species (@species) {
-  # do something
- }
-
-
-Or
-
  use GO::Metadata::Panther;
  my $s = GO::Metadata::Panther->code('YEAST');
 
 =head1 DESCRIPTION
 
+Inherits functions from L<GO::Metadata::UniProt::Species>.
+
 Accesses information related to species in the Panther F<seq2pthr.gz>
 file.  This file can be fetched from:
 L<ftp://ftp.pantherdb.org/genome/pthr7.0/>
 
-Each item in the exportable C<@species> array contains a hash
-reference for each species.  The items in that hash are:
-
-=over
-
-=item code
-
-A scalar or the UniProt species code.
-
-=item ncbi_taxa_id
-
-A scalar reference of NCBI taxa ids that items in the GO database
-match.  This should only be one id, but sometimes it's useful to scan
-multiple.
-
-=back
-
-For a complete list of every UniProt species matched to a NCBI taxa
-L<http://www.uniprot.org/docs/speclist>
-
-
-
 =cut
 
-# These need to be in the order you wish to view them on the AmiGO
-# dist png.
-#
-# For reference genomes, the first number is the ncbi_taxa_id list
-# needs to be the reference in AmiGO::Aid::ReferenceGenome
+# Information needed not provided by UniProt's speclist.txt file.
 
-
-our @species =
+our %species =
   (
    #
    # A
    #
 
-   { # Anopheles gambiae
-    code => 'ANOGA',
-    ncbi_taxa_id =>  [ 7165 ],
-    prefer => [ 'Gene' ],
-   },
-
-   { # Arabidopsis thaliana
-    code => 'ARATH',
-    ncbi_taxa_id => [ 3702 ],
-   },
-
-   { # Aquifex aeolicus
-    code => 'AQUAE',
-    ncbi_taxa_id => [ 63363 ],
-   },
-
-   { # Ashbya gossypii ATCC 10895
-    code => 'ASHGO',
-    ncbi_taxa_id => [ 33169 ],
-   },
+   ANOGA => { prefer => [ 'Gene' ] },
+   ARATH => {},
+   AQUAE => {},
+   ASHGO => {},
 
    #
    # B
    #
 
-   { # Bacillus subtilis,
-    code => 'BACSU',
-    ncbi_taxa_id => [ 1423 ],
-   },
-
-   { # Bacteroides thetaiotaomicron
-    code => 'BACTN',
-    ncbi_taxa_id => [ 818 ],
-   },
-
-   { # Bos taurus
-    code => 'BOVIN',
-    ncbi_taxa_id => [ 9913 ],
-    prefer => [ 'UniProtKB',  'Ensembl' ],
-   },
-
-   { # Bradyrhizobium japonicum
-    code => 'BRAJA',
-    # matches the two UniProtKB items in GO
-    ncbi_taxa_id => [ 375 ],
-   },
+   BACSU => {},
+   BACTN => {},
+   BOVIN => { prefer => [ 'UniProtKB',  'Ensembl' ] },
+   BRAJA => {},
 
    #
    # C
    #
 
-   { # Caenorhabditis briggsae
-    code => 'CAEBR',
-    ncbi_taxa_id => [ 6238 ],
-   },
-
-   { # Caenorhabditis elegans
-    code => 'CAEEL',
-    ncbi_taxa_id => [ 6239 ],
-    prefer => [ 'WB' ],
-   },
-
-   { # Canis lupus familiaris
-    code => 'CANFA',
-    ncbi_taxa_id => [ 9615 ],
-    prefer => [ 'UniProtKB' ],
-   },
-
-   { # Chlamydia trachomatis
-    code => 'CHLTA',
-    ncbi_taxa_id => [ 315277 ],
-
-   },
-
-   { # Chlamydomonas reinhardtii
-    code => 'CHLRE',
-    ncbi_taxa_id => [ 3055 ],
-    # found 11 of them
-   },
-
-   {
-    code => 'CHLAA',
-    ncbi_taxa_id => [ 324602 ],
-   },
-
-   { # Ciona intestinalis
-    code => 'CIOIN',
-    ncbi_taxa_id => [ 7719 ],
-   },
+   CAEBR => {},
+   CAEEL => { prefer => [ 'WB' ] },
+   CANFA => { prefer => [ 'UniProtKB' ] },
+   CHLTA => {},
+   CHLRE => {},
+   CHLAA => {},
+   CIOIN => {},
 
    #
    # D
    #
 
-   { # Danio rerio
-    code => 'DANRE',
-    ncbi_taxa_id => [ 7955 ],
-    prefer => [ 'ZFIN' ],
-   },
-
-   { # Deinococcus radiodurans
-    code => 'DEIRA',
-    ncbi_taxa_id => [ 1299 ],
-   },
-
-   { # Dictyostelium discoideum
-    code => 'DICDI',
-    ncbi_taxa_id => [ 44689 ],
-   },
-
-   { # Drosophila melanogaster
-    code => 'DROME',
-    ncbi_taxa_id => [ 7227 ],
-    prefer => [ 'FB' ],
-   },
+   DANRE => { prefer => [ 'ZFIN' ] },
+   DEIRA => {},
+   DICDI => {},
+   DROME => { prefer => [ 'FB' ] },
 
    #
    # E
    #
 
-   { # Emericella nidulans
-    code => 'EMENI',
-    ncbi_taxa_id => [ 162425 ],
-   },
-
-   { # Entamoeba histolytica
-    code => 'ENTHI',
-    ncbi_taxa_id => [ 5759 ]
-   },
-
-   { #  Escherichia coli
-    code => 'ECOLI',
-    ncbi_taxa_id => [ 83333, 511145 ],
-    prefer => [ 'EcoCyc' ],
-   },
+   EMENI => {},
+   ENTHI => {},
+   ECOLI => { also_node => [ 511145 ],
+	      prefer    => [ 'EcoCyc' ] },
 
    #
    # G
    #
 
-   { # Gallus gallus
-    code => 'CHICK',
-    ncbi_taxa_id => [ 9031 ],
-    prefer => [ 'UniProtKB' ],
-   },
-
-   { # Geobacter sulfurreducens
-    code => 'GEOSL',
-    ncbi_taxa_id => [ 35554 ],
-   },
-
-   { # Gloeobacter violaceus
-    code => 'GLOVI',
-    ncbi_taxa_id => [ 33072, 251221 ],
-    # 251221 is only here to match GLOVI|ENTREZ:2601616|UniProtKB
-    prefer => [ 'UniProtKB' ],
-   },
+   CHICK => { prefer => [ 'UniProtKB' ] },
+   GEOSL => {},
+   GLOVI => { also_node => [ 251221 ],
+	      prefer    => [ 'UniProtKB' ] },
 
    #
    # H
    #
 
-   { # Homo sapiens
-    code => 'HUMAN',
-    ncbi_taxa_id => [ 9606 ],
-    prefer => [ 'UniProtKB', 'ENSEMBL' ],
-   },
+   HUMAN => { prefer => [ 'UniProtKB', 'ENSEMBL' ] },
 
    #
    # L
    #
 
-   { # Leishmania major
-    code => 'LEIMA',
-    ncbi_taxa_id => [ 5664, 347515 ],
-   },
-
-   { # Leptospira interrogans
-    code => 'LEPIN',
-    # only gets one
-    ncbi_taxa_id => [ 173 ],
-   },
+   LEIMA => { also_node => [ 347515 ] },
+   LEPIN => {},
 
    #
    # M
    #
 
-   { # Macaca mulatta
-    code => 'MACMU',
-    ncbi_taxa_id => [ 9544 ],
-   },
-
-   { # Methanosarcina acetivorans
-    code => 'METAC',
-    ncbi_taxa_id => [ 2214 ],
-   },
-
-   { # Monodelphis domestica
-    code => 'MONDO',
-    ncbi_taxa_id => [ 13616 ],
-   },
-
-   { # Mus musculus
-    code => 'MOUSE',
-    ncbi_taxa_id => [ 10090 ],
-    prefer => [ 'MGI' ],
-   },
+   MACMU => {},
+   METAC => {},
+   MONDO => {},
+   MOUSE => { prefer => [ 'MGI' ] },
 
    #
    # N
    #
 
-   { # Neurospora crassa
-    code => 'NEUCR',
-    ncbi_taxa_id => [ 5141 ],
-   },
+   NEUCR => {},
 
    #
    # O
    #
 
-   { # Ornithorhynchus anatinus
-    code => 'ORNAN',
-    ncbi_taxa_id => [ 9258 ],
-   },
-
-   { # Oryza sativa
-    code => 'ORYSJ',
-    ncbi_taxa_id => [ 39947 ],
-   },
+   ORNAN => {},
+   ORYSJ => {},
 
    #
    # P
    #
 
-   { # Pan troglodytes
-    code => 'PANTR',
-    ncbi_taxa_id => [ 9598 ],
-   },
-
-   { # Plasmodium yoelii
-    code => 'PLAYO',
-    ncbi_taxa_id => [ 73239 ],
-   },
-
-   { # Pseudomonas aeruginosa
-    code => 'PSEA7',
-    ncbi_taxa_id => [ 381754 ],
-   },
+   PANTR => {},
+   PLAYO => {},
+   PSEA7 => {},
 
    #
    # R
    #
 
-   { # Rattus norvegicus
-    code => 'RAT',
-    ncbi_taxa_id => [ 10116 ],
-    prefer => [ 'RGD', 'UniProtKB' ],
-   },
+   RAT => {  prefer => [ 'RGD', 'UniProtKB' ] },
 
    #
    # S
    #
 
-   { # Saccharomyces cerevisiae
-    code => 'YEAST',
-    ncbi_taxa_id => [ 4932 ],
-   },
-
-   { # Schizosaccharomyces pombe
-    code => 'SCHPO',
-    ncbi_taxa_id => [ 4896 ],
-   },
-
-   { # Streptomyces coelicolor
-    code => 'STRCO',
-    ncbi_taxa_id => [ 1902 ],
-   },
-
-   { # Strongylocentrotus purpuratus
-    code => 'STRPU',
-    ncbi_taxa_id => [ 7668 ],
-   },
-
-   { # Sulfolobus solfataricus
-    code => 'SULSO',
-    ncbi_taxa_id => [ 2287 ],
-   },
+   YEAST => {},
+   SCHPO => {},
+   STRCO => {},
+   STRPU => {},
+   SULSO => {},
 
    #
    # T
    #
 
-   { # Takifugu rubripes
-    code => 'FUGRU', # UniProt calls this: TAKRU
-    ncbi_taxa_id => [ 31033 ],
-   },
-
-   { # Tetrahymena thermophila
-    code => 'TETTH',
-    ncbi_taxa_id => [ 5911, 312017 ],
-   },
-
-   { # Thermotoga maritima
-    code => 'THEMA',
-    ncbi_taxa_id => [ 2336 ],
-   },
+   FUGRU => { is => 'TAKRU' },
+   TAKRU => { was => 'FUGRU' },
+   TETTH => { also_node => [ 312017 ] },
+   THEMA => {},
 
    #
    # X
    #
 
-   { # Xenopus (Silurana) tropicalis
-    code => 'XENTR',
-    ncbi_taxa_id => [ 8364 ],
-   },
-
+   XENTR => {},
 );
 
-
-
-=head2 Constructors
-
-The constructors scans C<@species> for the requested data and returns
-the object that matches the data.  Otherwise it returns a false false.
-
 =over
 
-=item my $s = GO::Metadata::Panther->code(I<unicode_species_code>)
+=item GO::Metadata::Panther-E<gt>new(...);
 
-Return an object filled with the species reference from the UniProtKB
-species code.
-
-=cut
-memoize('code');
-sub code{
-    my $class = shift;
-    my $code = shift;
-
-    for my $species (@species) {
-	if ($species->{code} eq $code) {
-	    return bless $species, $class;
-	}
-    }
-    return undef;
-}
-
-=item my $s = GO::Metadata::Panther->ncbi(I<ncbi_taxa_id>)
-
-Create an object from the I<ncbi_taxa_id>.
+This basically hands things off to L<GO::Metadata::UniProt::Species>'s
+new function and populates that with other Panther/GO specific
+information.
 
 =cut
-sub ncbi{
-    my $class = shift;
-    my $ncbi = shift;
+#memoize("new");
+sub new{
+    my $c = shift;
+    my @all = $c->SUPER::new(map {
+	if ($species{$_} && $species{$_}->{is}) {
+	    warn "$_ -> $species{$_}->{is}";
+	    $species{$_}->{is};
+	} else {
+	    $_;
+	}
+    } @_);
 
-    for my $species (@species) {
-	if (first {
-	    $ncbi == $_;
-	} @{ $species->{ncbi_taxa_id} }) {
-	    return bless $species, $class;
+    for (@all) {
+	if ($species{$_->code}) {
+	    while (my ($k,$v) = each %{ $species{$_->code} }) {
+		$_->{$k} = $v;
+	    }
+	} else {
+	    die $_->code . ' Not a Panther family.';
 	}
     }
-    return undef
+
+    return undef   if (0 == scalar @all);
+    return $all[0] if (1 == scalar @all);
+    return @all;
 }
-
-=back
-
-=head2 Function
-
-Functions that can be used outside of the OO interface.
-
-=over
 
 =item GO::Metadata::Panther::codes()
 
-Returns a list of all UniProt species codes in C<@species>.
+Returns the list of UniProt species codes that are used in Panther clusters.
 
 =cut
 sub codes{
-    return map { $_->{code} } @species;
+    return map {
+	defined $species{$_}->{is} ? () : $_;
+    } keys %species;
 }
 
-=item GO::Metadata::Panther::valid_codes(I<unicode_species_code>)
 
-Send it a list of panther Unicode codes, returns true if they are all
-present in C<@species>.  Othewise returns false.
+=item GO::Metadata::Panther::all()
+
+Returns a list of C<GO::Metadata::Panther> objects that are used in Panther clusters.
+
+=cut
+sub all{
+    my $c = shift;
+    return $c->new(codes());
+}
+
+=item GO::Metadata::Panther::valid_codes(...)
+
+Returns a true value in every argument is a UniProt species code used
+in Panther cluster.  Otherwise returns false.
 
 =cut
 sub valid_codes{
-    return scalar(@_) == sum(map {
-	__PACKAGE__->code($_) ? 1 : 0;
-    } @_);
+    for my $code (@_) {
+	return undef if (!exists $species{$code});
+    }
+    return '1';
 }
 
 =back
@@ -471,7 +240,7 @@ sub valid_codes{
 
 =over
 
-=item $s->ncbi_ids()
+=item $s->ncbi_taxa_ids()
 
 Returns the list of NCBI taxa identifiers associated with the UniProt
 species code.  In a perfect word this will only every return one
@@ -481,10 +250,28 @@ identifier associated.
 =cut
 sub ncbi_ids{
     my $s = shift;
-    return @{ $s->{ncbi_taxa_id} };
+    my @out = ($s->{node});
+    push @out, @{ $s->{also_node} } if ($s->{also_node});
+    return @out;
+}
+
+=item $s->prefers()
+
+Returns a list of id types (generally to be populated in
+C<dbxref.xref_dbname>) in order of preference of use.  If a null list,
+we have never encountered a conflict that needed resolving.
+
+=cut
+sub prefers{
+    my $s = shift;
+    return @{ $s->{prefer} };
 }
 
 =back
+
+=head2 SEE ALSO
+
+L<GO::Metadata::UniProt::Species>
 
 =head2 AUTHOR
 

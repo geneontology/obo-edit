@@ -67,8 +67,8 @@ sub species_ids{
 	    if ($r->[0]) {
 		push @{ $species->{species_ids} }, $r->[0];
 	    } else {
-		die $species->key . ' (' .
-		  $species->{ncbi_taxa_id} . ') was not fonud';
+		die $species->code . ' (' .
+		  $species->ncbi_taxa_id . ') was not fonud';
 	    }
 	}
     }
@@ -97,8 +97,15 @@ sub new{
     my %s;
     $s{pthr}    = shift; # panther id
     $s{cluster} = shift; # phylotree cluster
+    my $hash = shift || {};
+
     my ($species, @ids) = split(m/\|/, $s{pthr});
-    $s{species} = GO::Metadata::Panther->code($species);
+    if (exists $hash->{$species}) {
+	$s{species} = $hash->{$species};
+    } else {
+	return undef;
+	#$s{species} = GO::Metadata::Panther->new($species)
+    }
     return undef if (!$s{species});
 
     $s{ids} = [ map {
@@ -381,14 +388,22 @@ TXT
 
 die pod2usage(join("\n", @e)) if (scalar @e);
 
-@species = GO::Metadata::Panther::codes() if (!scalar @species);
+
+if (!scalar @species) {
+    @species = GO::Metadata::Panther::codes();
+}
+
+my %species = map {
+    $_->{code} => $_;
+} GO::Metadata::Panther->new(@species);
+
 
 my %tsv;
 if ($tsv) {
     open(TSV, $tsv) or die "Unable to read '$tsv', $!";
     while(<TSV>) {
 	chomp;
-	my @row = split(m/\t/, $_);
+	my @row = split(m/\t/);
 	next if (!$row[$to]);
 	for my $from (@from) {
 	    next if (!exists $row[$from]);
@@ -415,13 +430,12 @@ C<gene_product> row if possable.  Else it tries to match it to a
 C<dbxref> row that isn't connect to a C<gene_product> row.
 
 =cut
-
 my %summary;
 my @pthr;
 while(<>) {
     chomp;
 
-    my $row = My::Pthr->new(split(m/\t/, $_));
+    my $row = My::Pthr->new(split(m/\t/, $_), \%species);
     next if (!$row);
     next if (!first{$_ eq $row->{species}->{code}} @species);
 
@@ -447,6 +461,8 @@ while(<>) {
  	warn 'mark';
     }
 }
+
+
 
 =pod
 

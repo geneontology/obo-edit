@@ -378,7 +378,7 @@ sub gene_products{
 	   eec => $eec,
 	   oec => $oec,
 	  );
-	my $aid = AmiGO::Aid::PantherDB->ncbi($species->ncbi_taxa_id);
+	my $aid = AmiGO::Aid::PantherDB->new($species->ncbi_taxa_id);
 	$gp{color} = $aid->color;
 	$s->{number_of_refg_members}++ if ($gp{color});
 
@@ -415,7 +415,7 @@ sub species_dist{
 
     my @out = map {
 	my $ncbi = $_->get_column('ncbi');
-	my $aid = AmiGO::Aid::PantherDB->ncbi($ncbi);
+	my $aid = AmiGO::Aid::PantherDB->new($ncbi);
 	my $species = $_->get_column('species');
 	{
 	    ncbi => $ncbi,
@@ -431,7 +431,7 @@ sub species_dist{
 	# First, combine items AmiGO::Aid::Pantherdb says are the same.
 	my %out;
 	@out = map {
-	    my $species = AmiGO::Aid::PantherDB->ncbi($_->{ncbi});
+	    my $species = AmiGO::Aid::PantherDB->new($_->{ncbi});
 	    my $code = $species->{code};
 	    if ($out{$code}) {
 		$out{$code}->{count} += $_->{count};
@@ -447,10 +447,14 @@ sub species_dist{
 	# now we add missing items.
 	my @copy = qw/code common/;
 	@out = map {
-	    my $species = $_;
-	    my $code = $species->{code};
-	    my $aid = AmiGO::Aid::PantherDB->code($code);
+	    my $aid = $_;
+	    my $code = $aid->code;
+#	    my $species = $_;
+#	    my $code = $species->{code};
+#	    my $aid = AmiGO::Aid::PantherDB->code($code);
 	    if (exists $out{$code}) {
+		$out{$code}->{color} = $aid->color;
+		warn Dumper $aid, \%out;
 		($out{$code});
 	    } else {
 		my %o =
@@ -460,12 +464,15 @@ sub species_dist{
 		  );
 
 		for my $copy (@copy) {
-		    $o{$copy} = $species->{$copy} if ($species->{$copy});
+		    $o{$copy} = $aid->{$copy} if ($aid->{$copy});
 		}
 		\%o;
 	    }
-	} @species;
+	#} GO::Metadata::Panther->all();
+	} AmiGO::Aid::PantherDB->all();
     }
+
+    warn Dumper \@out;
 
     if ($ref) {
 	@out = map {
