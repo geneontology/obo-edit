@@ -863,33 +863,35 @@ ll("Finish setting the installation environment.");
 
 ll("Starting installation...");
 
+## Make the new htdoc and cgi directories if necessary.
+safe_make_dir( $synth_vars{AMIGO_CGI_ROOT_DIR} );
+safe_make_dir( $synth_vars{AMIGO_CACHE_DIR} );
+make_permissive( $synth_vars{AMIGO_CACHE_DIR} );
+safe_make_dir( $synth_vars{AMIGO_LOG_DIR} );
+make_permissive( $synth_vars{AMIGO_LOG_DIR} );
+safe_make_dir( $synth_vars{AMIGO_INDEX_DIR} );
+safe_make_dir( $synth_vars{AMIGO_INDEX_DIR} . '/xapian' );
+safe_make_dir( $synth_vars{AMIGO_INDEX_DIR} . '/lucene' );
+safe_make_dir( $synth_vars{AMIGO_INDEX_DIR} . '/lucene/general' );
+safe_make_dir( $synth_vars{AMIGO_INDEX_DIR} . '/lucene/term' );
+safe_make_dir( $synth_vars{AMIGO_INDEX_DIR} . '/lucene/gene_product' );
+safe_make_dir( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/sessions' );
+safe_make_dir( $synth_vars{AMIGO_SCRATCH_DIR} );
+make_permissive( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/sessions' );
+make_permissive( $synth_vars{AMIGO_SCRATCH_DIR} );
+safe_make_dir( $synth_vars{AMIGO_HTDOCS_ROOT_DIR} );
+safe_make_dir( $synth_vars{AMIGO_HTDOCS_ROOT_DIR} . '/opensearch');
+safe_make_dir( $synth_vars{AMIGO_TEMP_IMAGE_DIR} );
+make_permissive( $synth_vars{AMIGO_TEMP_IMAGE_DIR} );
+safe_make_dir( $synth_vars{AMIGO_PRE_RENDER_DIR} );
+safe_make_dir( $synth_vars{AMIGO_TESTS_DIR} );
+
+
+
 ##
 if ( $opt_c ) {
   ll("Will generate cache files and perform no other operations.");
 } else {
-
-  ## Make the new htdoc and cgi directories if necessary.
-  safe_make_dir( $synth_vars{AMIGO_CGI_ROOT_DIR} );
-  safe_make_dir( $synth_vars{AMIGO_CACHE_DIR} );
-  make_permissive( $synth_vars{AMIGO_CACHE_DIR} );
-  safe_make_dir( $synth_vars{AMIGO_LOG_DIR} );
-  make_permissive( $synth_vars{AMIGO_LOG_DIR} );
-  safe_make_dir( $synth_vars{AMIGO_INDEX_DIR} );
-  safe_make_dir( $synth_vars{AMIGO_INDEX_DIR} . '/xapian' );
-  safe_make_dir( $synth_vars{AMIGO_INDEX_DIR} . '/lucene' );
-  safe_make_dir( $synth_vars{AMIGO_INDEX_DIR} . '/lucene/general' );
-  safe_make_dir( $synth_vars{AMIGO_INDEX_DIR} . '/lucene/term' );
-  safe_make_dir( $synth_vars{AMIGO_INDEX_DIR} . '/lucene/gene_product' );
-  safe_make_dir( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/sessions' );
-  safe_make_dir( $synth_vars{AMIGO_SCRATCH_DIR} );
-  make_permissive( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/sessions' );
-  make_permissive( $synth_vars{AMIGO_SCRATCH_DIR} );
-  safe_make_dir( $synth_vars{AMIGO_HTDOCS_ROOT_DIR} );
-  safe_make_dir( $synth_vars{AMIGO_HTDOCS_ROOT_DIR} . '/opensearch');
-  safe_make_dir( $synth_vars{AMIGO_TEMP_IMAGE_DIR} );
-  make_permissive( $synth_vars{AMIGO_TEMP_IMAGE_DIR} );
-  safe_make_dir( $synth_vars{AMIGO_PRE_RENDER_DIR} );
-  safe_make_dir( $synth_vars{AMIGO_TESTS_DIR} );
 
   ## Copy refresh script over to cgi-bin.
   #force_copy(Cwd::cwd() . '/amigo/cgi-bin/' . 'refresh',
@@ -994,14 +996,14 @@ if ( $opt_c ) {
     ## Copy over if we got it.
     if( -f Cwd::cwd() . '/perl_libs.json' ){
       force_copy(Cwd::cwd() . '/perl_libs.json',
-		 $synth_vars{AMIGO_CGI_ROOT_DIR} );
+		 $synth_vars{AMIGO_CGI_ROOT_DIR} . '/');
     }
   }
 
   ## Install all standard modules (drawn from the main directory).
   foreach ( @std_mods ) {
     force_copy(Cwd::cwd() . '/amigo/cgi-bin/' . $_,
-	       $synth_vars{AMIGO_CGI_ROOT_DIR} );
+	       $synth_vars{AMIGO_CGI_ROOT_DIR} . '/');
     make_executable( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/' . $_);
     make_non_cgi_link( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/' . $_);
   }
@@ -1009,7 +1011,7 @@ if ( $opt_c ) {
   ## Install all exp modules (drawn from the exp directory).
   foreach ( @additional_mods ) {
     force_copy(Cwd::cwd() . '/amigo/cgi-bin/experimental/' . $_,
-	       $synth_vars{AMIGO_CGI_ROOT_DIR} );
+	       $synth_vars{AMIGO_CGI_ROOT_DIR} . '/');
     make_executable( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/' . $_);
   }
 
@@ -1038,8 +1040,13 @@ if ( $opt_c ) {
   # }
 
   ## Copy perl config over.
-  force_copy(Cwd::cwd() . '/config.pl', $synth_vars{AMIGO_CGI_ROOT_DIR} );
+  force_copy(Cwd::cwd() . '/config.pl', $synth_vars{AMIGO_CGI_ROOT_DIR} . '/');
   make_readable( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/config.pl' );
+
+  ## Copy JSON config over.
+  force_copy(Cwd::cwd() . '/config.json',
+	     $synth_vars{AMIGO_CGI_ROOT_DIR} . '/');
+  make_readable( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/config.json' );
 
   ## Copy statics.
   force_copy(Cwd::cwd() . '/amigo/templates',
@@ -1203,9 +1210,6 @@ EOC
     open(JFILE, ">config.json");
     print JFILE $jtext;
     close(JFILE);
-
-    force_copy(Cwd::cwd() . '/config.json', $synth_vars{AMIGO_CGI_ROOT_DIR} );
-    make_readable( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/config.json' );
 
     ll("Created configuration file \"config.json\".");
   }
