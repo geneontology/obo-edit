@@ -359,7 +359,6 @@ sub makecoderelease {
 		   "*find $coderel -name CVS -exec rm -rf {} \\;",
 		   "tar cf $coderel.tar $coderel",
 		   "$GZIP $coderel.tar",
-                   "*sqlt --from MySQL --to HTML $schema > $html && $GZIP $html",
 		   "$sqldir/compiledb -t $dbms $sqldir/go-tables-FULL.sql > $schema",
 		   "$GZIP $schema",
                    # use SQL::Translator to make HTML
