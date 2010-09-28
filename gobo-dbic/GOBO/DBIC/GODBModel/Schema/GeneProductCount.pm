@@ -68,7 +68,12 @@ __PACKAGE__->add_columns(
 __PACKAGE__->belongs_to('term' =>
 			'GOBO::DBIC::GODBModel::Schema::Term',
 			'term_id');
-__PACKAGE__->might_have('species' =>
+
+## A fuller explanation of the change here (at the end):
+## http://search.cpan.org/dist/DBIx-Class/lib/DBIx/Class/Relationship.pm#might_have
+## So far, no problems with testing, but I'll keep and eye out.
+#__PACKAGE__->might_have('species' =>
+__PACKAGE__->belongs_to('species' =>
 			'GOBO::DBIC::GODBModel::Schema::Species',
 			{'foreign.id' => 'self.species_id'});
 
