@@ -1744,6 +1744,11 @@ to be defined either by default or other options.
 
 Do a test run. Only configure files will be read and written.
 
+=item -d
+
+Additionally add the diagnose script and run the simulate.pl script
+for external consumption.
+
 =item -e
 
 Also install experimental CGIs, binaries, and config.json as well as
