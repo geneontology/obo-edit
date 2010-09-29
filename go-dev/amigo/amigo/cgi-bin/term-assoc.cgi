@@ -49,7 +49,7 @@ my $verbose = get_environment_param('verbose');
 my $vars;
 my $q = new CGI;
 my %params = $q->Vars;
-print STDERR "\n\nstarting term-assoc.cgi\nCGI: ".Dumper($q)."\n" if $verbose;
+$core->kvetch("Starting term-assoc.cgi: ".Dumper($q));
 
 my @term_list = split('\0', $params{term}) if $params{term};
 if (!@term_list)
@@ -173,7 +173,7 @@ if (!$option_h->{cache})
 
 	$vars->{max_results_download} = $option_h->{max_results_download} = get_environment_param('max_results_download') || $vars->{max_results_html} * 10;
 
-	print STDERR "Check results is ON\n" if $verbose;
+	$core->kvetch("Check results is ON");
 }
 
 =not used
@@ -190,10 +190,10 @@ $vars->{max_results_limit} = $max_results_limit;
 
 #	new stuff
 #	if there's a format specified OR the page size is 'all', don't use paging
-unless ($params{'format'} || $option_h->{page_size} eq 'all')
-{	print STDERR "turning ON use paging\n" if $verbose;
-	$option_h->{use_paging} = 1;
-	$option_h->{chunk_by} = 'LIST_ITEM';
+unless ($params{'format'} || $option_h->{page_size} eq 'all'){
+  $core->kvetch("Turning ON use paging");
+  $option_h->{use_paging} = 1;
+  $option_h->{chunk_by} = 'LIST_ITEM';
 }
 
 #
@@ -208,6 +208,7 @@ eval{
 				option_h => $option_h });
 };
 if( $@ ){
+  $core->kvetch("Failing in db/spec: $@");
   $vars->{error} =
     set_message($vars->{error},
  		'fatal',
