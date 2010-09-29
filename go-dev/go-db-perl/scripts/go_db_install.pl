@@ -470,13 +470,13 @@ if ( $db_exists && $fresh_stamp ) {
 
   ## Install database.
   ll("[DB] Starting GO database install (this may take some time)...");
-  database_install($local{FS_MYSQL_FULL},
-		   $local{DB_HOST},
-		   $local{DB_USER},
-		   $local{DB_PASS},
-		   $local{DB_PORT},
-		   $local{EXTENSION},
-		   $tmp_gunzip_file);
+  add_to_database($local{FS_MYSQL_FULL},
+		  $local{DB_HOST},
+		  $local{DB_USER},
+		  $local{DB_PASS},
+		  $local{DB_PORT},
+		  $local{EXTENSION},
+		  $tmp_gunzip_file);
   ll("[DB] Finished installing.");
 
   ## Remove other matching databases.
@@ -694,10 +694,10 @@ sub show_databases{
   my ($mysqlshow, $host, $user, $pass, $port) = @_;
   my @return_db = ();
 
-  #ll(">>> $mysqlshow -h $host -u $user -p$pass -P $port");
+  ll("[SHELL] $mysqlshow -u $user -p$pass -P $port -h $host");
   my @sdatabases = ();
   if( ! $opt_x ){
-    @sdatabases = `$mysqlshow -u $user -p$pass -P $port  -h $host`
+    @sdatabases = `$mysqlshow -u '$user' -p$pass -P $port  -h $host`
       or die "[DB] Cannot show database: $!";
   }
 
@@ -714,6 +714,7 @@ sub show_databases{
 sub create_database{
 
   my ($mysqladmin, $host, $user, $pass, $port, $name) = @_;
+  ll("[SHELL] $mysqladmin -h $host -u $user -p$pass -P $port create $name");
   if( ! $opt_x ){
     ! system("$mysqladmin -h $host -u $user -p$pass -P $port create $name")
       or die "[DB] Cannot create database: $!";
@@ -725,20 +726,10 @@ sub create_database{
 sub drop_database{
 
   my ($mysqladmin, $host, $user, $pass, $port, $name) = @_;
+  ll("[SHELL] $mysqladmin -f -h $host -u $user -p$pass -P $port drop $name");
   if( ! $opt_x ){
     ! system("$mysqladmin -f -h $host -u $user -p$pass -P $port drop $name")
       or die "[DB] Cannot create database: $!";
-  }
-}
-
-
-## A simple wrapper to load the database.
-sub database_install{
-
-  my ($mysql, $host, $user, $pass, $port, $name, $file) = @_;
-  if( ! $opt_x ){
-    ! system("$mysql -h $host -u $user -p$pass -P $port $name < $file")
-      or die "[DB] Cannot load database tables: $!";
   }
 }
 
@@ -747,6 +738,7 @@ sub database_install{
 sub add_to_database{
 
   my ($mysql, $host, $user, $pass, $port, $name, $file) = @_;
+  ll("[SHELL] $mysql -h $host -u $user -p$pass -P $port $name < $file");
   if( ! $opt_x ){
     ! system("$mysql -h $host -u $user -p$pass -P $port $name < $file")
       or die "WARNING: [DB] Cannot add $file to database: $!";
@@ -758,6 +750,7 @@ sub add_to_database{
 sub try_to_add_to_database{
 
   my ($mysql, $host, $user, $pass, $port, $name, $file) = @_;
+  ll("[SHELL] $mysql -h $host -u $user -p$pass -P $port $name < $file");
   if( ! $opt_x ){
     my $short_name = basename($file);
     ! system("$mysql -h $host -u $user -p$pass -P $port $name < $file")
@@ -770,6 +763,7 @@ sub try_to_add_to_database{
 sub gunzip_file{
 
   my ($gzip, $zfile, $uzfile) = @_;
+  ll("[SHELL] $gzip -c -d $zfile > $uzfile");
   if( ! $opt_x ){
     ! system("$gzip -c -d $zfile > $uzfile")
       or die "[FS] Cannot gunzip file $!";
