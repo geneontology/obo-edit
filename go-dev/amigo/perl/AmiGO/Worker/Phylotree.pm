@@ -524,9 +524,9 @@ sub paint_files{ # need to check dbname for this one
 		#seek($fh, 0, SEEK_SET) or die "bla";
 		<$fh>;
 		while (my $line = <$fh>) {
-		    my @line= split(m/\s+/, $line);
+		    my @line= split(m/\t/, $line);
 		    if ($line[13]                                &&
-#			($line[13] =~ m/(\d\d\d\d)(\d\d)(\d\d)/) &&
+			($line[13] =~ m/(\d\d\d\d)(\d\d)(\d\d)/) &&
 			($line[13] > $date)                      ){
 			$date = $line[13];
 		    }
@@ -544,7 +544,7 @@ sub paint_files{ # need to check dbname for this one
 
     if ($date =~ s/(\d\d\d\d)(\d\d)(\d\d)/$1-$2-$3/) {
     } else {
-	$date = 'neven';
+	$date = 'never';
     };
 
     my $found = scalar(keys %files);
