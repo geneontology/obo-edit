@@ -159,9 +159,13 @@ if ( $opt_z ) {
 if ( $opt_d ) {
   $local{DB_HOST} = $opt_d;
   ll("Database host will be: $opt_d."); }
+## Get the username from somewhere--makes life easier.
 if ( $opt_u ) {
   $local{DB_USER} = $opt_u;
-  ll("Database user will be: $opt_u."); }
+  ll("Database user will be: $opt_u.");
+}else{
+  $local{DB_USER} = $ENV{'USERNAME'} if $ENV{'USERNAME'};
+}
 if ( $opt_p ) {
   $local{DB_PASS} = $opt_p;
   ll("Database password will be: $opt_p."); }
@@ -684,6 +688,21 @@ if( $opt_j ){
   ll("Done.");
 }
 
+###
+### Subs.
+###
+
+## Creates a string of optional mysql-type cli arguments.
+sub my_cli {
+  my ($host, $user, $pass, $port) = @_;
+  my $cli_vals = [];
+  push @$cli_vals, "-h $host" if $host;
+  push @$cli_vals, "-P $port" if $port;
+  push @$cli_vals, "-u $user" if $user;
+  push @$cli_vals, "-p$pass" if $pass;
+  return join ' ', @$cli_vals;
+}
+
 
 ## A simple wrapper to get an array of strings from the host that
 ## resemble database names (along with any other junk returned by
@@ -694,12 +713,10 @@ sub show_databases{
   my ($mysqlshow, $host, $user, $pass, $port) = @_;
   my @return_db = ();
 
-  ll("[SHELL] $mysqlshow -u $user -p$pass -P $port -h $host");
-  my @sdatabases = ();
-  if( ! $opt_x ){
-    @sdatabases = `$mysqlshow -u '$user' -p$pass -P $port  -h $host`
-      or die "[DB] Cannot show database: $!";
-  }
+  my $cli_str = my_cli($host, $user, $pass, $port);
+  ll("[SHELL] $mysqlshow -u $cli_str");
+  my @sdatabases = `$mysqlshow $cli_str`
+    or die "[DB] Cannot show database: $!";
 
   foreach my $database ( @sdatabases ){
     $database =~ s/\s|\|//g;
@@ -714,9 +731,11 @@ sub show_databases{
 sub create_database{
 
   my ($mysqladmin, $host, $user, $pass, $port, $name) = @_;
-  ll("[SHELL] $mysqladmin -h $host -u $user -p$pass -P $port create $name");
+
+  my $cli_str = my_cli($host, $user, $pass, $port);
+  ll("[SHELL] $mysqladmin $cli_str create $name");
   if( ! $opt_x ){
-    ! system("$mysqladmin -h $host -u $user -p$pass -P $port create $name")
+    ! system("$mysqladmin $cli_str create $name")
       or die "[DB] Cannot create database: $!";
   }
 }
@@ -726,9 +745,11 @@ sub create_database{
 sub drop_database{
 
   my ($mysqladmin, $host, $user, $pass, $port, $name) = @_;
-  ll("[SHELL] $mysqladmin -f -h $host -u $user -p$pass -P $port drop $name");
+
+  my $cli_str = my_cli($host, $user, $pass, $port);
+  ll("[SHELL] $mysqladmin -f $cli_str drop $name");
   if( ! $opt_x ){
-    ! system("$mysqladmin -f -h $host -u $user -p$pass -P $port drop $name")
+    ! system("$mysqladmin -f $cli_str drop $name")
       or die "[DB] Cannot create database: $!";
   }
 }
@@ -738,9 +759,11 @@ sub drop_database{
 sub add_to_database{
 
   my ($mysql, $host, $user, $pass, $port, $name, $file) = @_;
-  ll("[SHELL] $mysql -h $host -u $user -p$pass -P $port $name < $file");
+
+  my $cli_str = my_cli($host, $user, $pass, $port);
+  ll("[SHELL] $mysql $cli_str $name < $file");
   if( ! $opt_x ){
-    ! system("$mysql -h $host -u $user -p$pass -P $port $name < $file")
+    ! system("$mysql $cli_str $name < $file")
       or die "WARNING: [DB] Cannot add $file to database: $!";
   }
 }
@@ -750,10 +773,12 @@ sub add_to_database{
 sub try_to_add_to_database{
 
   my ($mysql, $host, $user, $pass, $port, $name, $file) = @_;
-  ll("[SHELL] $mysql -h $host -u $user -p$pass -P $port $name < $file");
+
+  my $cli_str = my_cli($host, $user, $pass, $port);
+  ll("[SHELL] $mysql $cli_str $name < $file");
   if( ! $opt_x ){
     my $short_name = basename($file);
-    ! system("$mysql -h $host -u $user -p$pass -P $port $name < $file")
+    ! system("$mysql $cli_str $name < $file")
       or warn "WARNING: [DB] Cannot add file to database: $short_name";
   }
 }
@@ -965,6 +990,9 @@ sub ww {
   print STDERR $str . "\n";
 }
 
+###
+### Doc.
+###
 
 =head1 NAME
 
@@ -1009,7 +1037,8 @@ Try loading additional phylotree data. The environmental variable PANTHER_NEWICK
 
 =item -x
 
-Do a dry run--do not execute any commands.
+Do a dry run--do not execute any commands that would change
+something's state.
 
 =item -n
 
