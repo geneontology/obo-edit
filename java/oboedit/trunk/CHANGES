@@ -6,6 +6,11 @@ What's New in OBO-Edit v2.1-beta7
 Bug Fixes: 
 [ geneontology-Bugs-2948445 ] Loss of intersection status on merge
 [ geneontology-Bugs-3029689 ] Subset manager - subset name change not saved
+[ geneontology-Bugs-2745699 ] 2.0 graph viewer now shows only one parent
+[ geneontology-Bugs-3049416 ] Selection from auto-complete search menu flaky
+
+[ geneontology-Bugs- ] 
+
 
 ================================
 What's New in OBO-Edit v2.1-beta6
