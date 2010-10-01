@@ -8,31 +8,61 @@ import java.util.Set;
 /**
  * represents an attribute-bearing entity; for example, a gene.
  */
-public class Individual {
+public class Individual implements Comparable<Individual>{
 
-	private String id;
-	private String label;
-	//private OWLObject owlObject; // for future use
-	private Set<Attribute> attributes = new HashSet<Attribute>();
+    private String id;
+    private String label;
+    private int orthologs = 0;
+    //private OWLObject owlObject; // for future use
+    private Set<Attribute> attributes = new HashSet<Attribute>();
 
-        public Individual(String id, String label, Set<Attribute> attributes){
-            this.id = id;
-            this.label = label;
-            this.attributes = attributes;
-        }
+    // @Override
+    public boolean equals(Object oind) {
+        Individual ind = (Individual)oind;
+        return getId().equals(ind.getId());
+    }
 
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	public String getLabel() {
-		return label;
-	}
-	public void setLabel(String label) {
-		this.label = label;
-	}
+     @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+     @Override
+    public int compareTo(Individual ind) {
+        return id.compareTo(ind.getId());
+    }
+
+    public Individual(String id, String label, Set<Attribute> attributes) {
+        this.id = id;
+        this.label = label;
+        this.attributes = attributes;
+    }
+
+    public Individual(String id, String label, int orthologs) {
+        this.id = id;
+        this.label = label;
+        this.orthologs = orthologs;
+    }
+
+    public Individual(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
     /*public OWLObject getOwlObject() {
     return owlObject;
     }
@@ -40,12 +70,19 @@ public class Individual {
     this.owlObject = owlObject;
     }*/
 
+    public int getOrthologs() {
+        return orthologs;
+    }
 
-	public Set<Attribute> getAttributes() {
-		return attributes;
-	}
+    public void setOrthologs(int orthologs) {
+        this.orthologs = orthologs;
+    }
 
-	public void setAttributes(Set<Attribute> attributes) {
-		this.attributes = attributes;
-	}
+    public Set<Attribute> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Set<Attribute> attributes) {
+        this.attributes = attributes;
+    }
 }
