@@ -117,7 +117,7 @@ else
 	$option_h->{gpsort} = ['symbol', 'full_name'];
 }
 
-#print STDERR "template: ". Dumper($option_h->{tmpl})."\n" if $verbose;
+#$core->kvetch("template: ". Dumper($option_h->{tmpl}));
 
 $option_h->{show_all_ass} = 1;
 if ($params{term_assocs} && $params{term_assocs} eq 'direct')
@@ -176,17 +176,14 @@ if (!$option_h->{cache})
 	$core->kvetch("Check results is ON");
 }
 
-=not used
-## Define when big is getting too big. This option will be used to
-## prevent certain options from appearing when a combination of
-## variables is present.
-my $max_results_limit =
-  get_environment_param('max_results_pages') *
-  get_environment_param('page_size'); # an arbitrary number
-print STDERR  "max results limit will be: " . $max_results_limit . "\n"
-  if $verbose;
-$vars->{max_results_limit} = $max_results_limit;
-=cut
+# ## Define when big is getting too big. This option will be used to
+# ## prevent certain options from appearing when a combination of
+# ## variables is present.
+# my $max_results_limit =
+#   get_environment_param('max_results_pages') *
+#   get_environment_param('page_size'); # an arbitrary number
+# $core->kvetch("max results limit will be: " . $max_results_limit);
+# $vars->{max_results_limit} = $max_results_limit;
 
 #	new stuff
 #	if there's a format specified OR the page size is 'all', don't use paging
@@ -278,7 +275,7 @@ if ($vars->{data}{term_h})
 	}
 }
 
-#print STDERR "term assocs: ".Dumper($vars->{extra_filter}{term_assocs})."\n" if $verbose;
+#$core->kvetch("term assocs: ".Dumper($vars->{extra_filter}{term_assocs}));
 
 process_page_template($vars, $session);
 exit;

@@ -13,6 +13,7 @@ use Exporter;
 use Template;
 #use Template 2.19;
 #use Template::Constants qw( :all );
+use Template::Constants qw( :debug );
 use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $VERSION);
 
 ## Just a little bit...
@@ -58,7 +59,8 @@ sub get_subset {
 	my $fullset = shift;
 	my $page_n = shift || 1;
 	my $page_size = shift || get_environment_param('page_size');
-	print STDERR "get subset: page number: $page_n; list size = ".scalar(@$fullset)."\n" if $verbose;
+	$core->kvetch("page number: $page_n; list size = " .
+		      scalar(@$fullset));
 	my @subset = @$fullset;
 	my ($from, $to) = ($page_size * ($page_n - 1), $page_size * $page_n - 1);
 
@@ -98,7 +100,7 @@ sub get_results_chunk {
 	my $chunk_n = $chunk_args->{chunk_n} || 1;
 	my $chunk_size = $chunk_args->{chunk_size} || get_environment_param('page_size');
 
-	print STDERR "getting a chunk: n = $chunk_n, size = $chunk_size, by = $chunk_by\nlist size: ".scalar(@$fullset)."\n" if $verbose;
+	$core->kvetch("getting a chunk: n = $chunk_n, size = $chunk_size, by = $chunk_by\nlist size: " . scalar(@$fullset));
 
 	#	we want everything. No changes required.
 	return { n_chunks => 1, subset => $fullset } if $chunk_size eq 'all';
@@ -183,7 +185,7 @@ sub get_n_chunks {
 	my $chunk_size = shift || get_environment_param('page_size');
 	my $n_chunks = 1;
 
-	print STDERR "Utilities::get_n_chunks: n items = $total_items; chunk size: $chunk_size\n" if $verbose;
+	$core->kvetch("n items = $total_items; chunk size: $chunk_size");
 
 	return $n_chunks if $chunk_size eq "all";
 
@@ -205,7 +207,7 @@ sub get_n_pages {
 	my $n_accs = shift;
 	my $page_size = shift || get_environment_param('page_size');
 
-	print STDERR "n_accs = $n_accs; page size: $page_size\n" if $verbose;
+	$core->kvetch("n_accs = $n_accs; page size: $page_size");
 
 	my $n_pages = 1;
 	if ($page_size ne 'all')
@@ -304,7 +306,7 @@ sub get_tmpl {
 
 	$format = 'html' if !$format;
 
-	print STDERR "format: ".$format."\n" if $verbose;
+	$core->kvetch("format: ".$format);;
 
 #	valid values
 #	gp => ['synonyms', 'gptype', 'spp', 'has_seq', 'seq']
@@ -403,13 +405,12 @@ sub get_tmpl {
 				}
 			}
 		}
+	}else{
+	  $core->kvetch("format $format is unknown!");
 	}
-	else
-	{	print STDERR "Utilities::get_tmpl: format $format is unknown!\n" if $verbose;
-	}
-	
-	print STDERR "Utilities::get_tmpl: format: ".$format."\ntmpl: ".Dumper($tmpl)."\n" if $verbose;
-	
+
+	$core->kvetch("format: ". $format ."\ntmpl: ".Dumper($tmpl));
+
 	return $tmpl;
 }
 
@@ -576,17 +577,17 @@ sub create_apph {
 	    $dbport ne '' ) {
 	  $params{-dbport} = $dbport; }
 
-#	print STDERR "apph connection params: ".Dumper(\%params);
+	#$core->kvetch("apph connection params: ".Dumper(\%params));
 
 	my $apph;
 	eval {
 		$apph = GO::AppHandle->connect(%params);
 	};
-	if ($@)
-	{	#print STDERR "Could not create apph: $@\n";
-		my $error = set_message(undef, 'fatal', 'config_error', $@);
-		output_template({error => $error});
-		exit;
+	if( $@ ){
+	  #$core->kvetch( "Could not create apph: $@");
+	  my $error = set_message(undef, 'fatal', 'config_error', $@);
+	  output_template({error => $error});
+	  exit;
 	}
 	return $apph;
 }
@@ -717,17 +718,20 @@ sub output_template {
 	};
 
 	my $template_paths = get_environment_param('template_paths');
-	my $tt = Template->new({
-		INCLUDE_PATH=>$template_paths,
-	#	PRE_CHOMP=>1,
-	#	POST_CHOMP=>1,
-	#	RECURSION=>1,
-		TRIM=>1,
-	#	DEBUG_ALL => 1,
-	});
+	my $tt =
+	  Template->new({
+			 INCLUDE_PATH=>$template_paths,
+			 # PRE_CHOMP=>1,
+			 # POST_CHOMP=>1,
+			 # RECURSION=>1,
+			 TRIM=>1,
+			 DEBUG_ALL => 1,
+			 #DEBUG => 'dirs',
+			 #DEBUG_FORMAT => '<!-- $file ($line): [% $text %] -->',
+			});
 
 	print "Content-type:text/html\n\n";
-	print STDERR "Utilities::output_template: Using template $template_to_use\n" if $verbose;
+	$core->kvetch("Using template $template_to_use");
 	$tt->process($template_to_use.".tmpl", $tmpl_vars);
 }
 

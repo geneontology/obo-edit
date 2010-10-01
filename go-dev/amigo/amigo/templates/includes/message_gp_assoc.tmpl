@@ -14,7 +14,7 @@ IF error;
 <ul id="error">
 [% 
 
-	amigo_disclaimer = "Due to limitations in the current AmiGO software, requests of this size have been disabled. Please select from one of the options below.";
+	amigo_disclaimer = "Due to limitations in the current AmiGO software, requests of this size have been disabled. If this is problematic, please contact the GO helpdesk about query limits. Otherwise, please select from one of the options below.";
 	
 	contact_link = 'If you cannot access the data you need using the options above, please <a href="http://www.geneontology.org/GO.contacts.shtml">contact the GO helpdesk</a>.';
 	
@@ -35,7 +35,22 @@ IF error;
 	#	fatal
 		CASE 'too_many_assocs';
 			tmpl = 'too_many_assocs';
-			tot = error_h.total.n_pages || error_h.total_filtered.n_pages;
+			## Replace with something more robost (as the
+			## below has failed to catch its typo).
+			# tot = error_h.total.n_pages || error_h.total_filtered.n_pages;
+			tot = '?';
+			IF error_h.defined;
+			   IF error_h.total.defined;
+			      IF error_h.total.n_pages.defined;
+			         tot = error_h.total.n_pages;
+			      END;
+			   ELSIF error_h.total_unfiltered.defined;
+			      IF error_h.total_unfiltered.n_pages.defined;
+			         tot = error_h.total_unfiltered.n_pages;
+			      END;
+			   END;
+			END;
+
 			IF (msg.size > 1);
 				last = msg.pop;
 				message = "There are over " _ tot _ " pages of terms associated with the gene products " _ msg.join(', ') _ ' and ' _ last _ '.';

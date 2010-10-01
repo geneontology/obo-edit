@@ -26,7 +26,6 @@ use FileHandle;
 use GO::CGI::Query qw(get_gp_assocs);
 use GO::CGI::Session;
 use GO::CGI::Utilities qw(:std);
-#use GO::Template::Template;
 use GO::IO::go_assoc;
 
 use CGI;
@@ -50,7 +49,7 @@ my $verbose = get_environment_param('verbose');
 
 my $q = new CGI;
 my %params = $q->Vars;
-print STDERR "\n\nstarting gp-assoc.cgi\nCGI: ".Dumper($q)."\n" if $verbose;
+$core->kvetch("Starting gp-assoc.cgi: ".Dumper($q));
 
 my $vars;
 $vars->{page_title} = 'Gene Product Associations';
@@ -69,15 +68,15 @@ if ($params{'format'} && !grep { $params{'format'} eq $_ } @valid_formats)
 {	$vars->{error} = set_message(undef, 'fatal', 'bad_format', $params{'format'});
 }
 
-#	if we've got an error already, die.
-if ($vars->{error}{fatal})
-{	my $session = new GO::CGI::Session('-q'=>$q, -temp=>1);
-	$core->status_error_server();
-	process_page_template($vars, $session);
-	exit;
+## If we've got an error already, die.
+if ($vars->{error}{fatal}){
+  my $session = new GO::CGI::Session('-q'=>$q, -temp=>1);
+  $core->status_error_server();
+  process_page_template($vars, $session);
+  exit;
 }
 
-print STDERR Dumper(\@gp_list) if $verbose;
+$core->kvetch("Pre-query: " . Dumper(\@gp_list));
 
 #
 # Perform the query
@@ -144,10 +143,10 @@ if ($use_cache)
 
 #	if this query came from a blast search,
 #	use the order from the cached blast results
-if ($params{show_blast_scores} && $params{show_blast_scores} eq 'on')
-{	print STDERR "Loading up cached blast scores...\n" if $verbose;
-	my $blast_cache = $session->load_cached_results('blast_scores');
-	print STDERR "blast scores: ".Dumper($blast_cache)."\n" if $verbose;
+if ($params{show_blast_scores} && $params{show_blast_scores} eq 'on'){
+  $core->kvetch("Loading up cached blast scores...");
+  my $blast_cache = $session->load_cached_results('blast_scores');
+  $core->kvetch("blast scores: " . Dumper($blast_cache));
 	
 #	order the gp list by blast score
 	my @new_gp_list;
@@ -163,19 +162,23 @@ if ($params{show_blast_scores} && $params{show_blast_scores} eq 'on')
 
 	#	check everything in gplist is in the new list
 	my @missing = grep { !$cache_h{$_}  } @gp_list;
-	{	if (@missing)
-		{	print STDERR "lost blast score for ".join(",", @missing)."!\n" if $verbose;
-			push @new_gp_list, @missing;
-			$vars->{error} = set_message($vars->{error}, 'warning', 'lost_blast_scores', [@missing]);
-		}
+	{
+	  if (@missing){
+	    $core->kvetch("lost blast score for " . join(",", @missing) . "!");
+	    push @new_gp_list, @missing;
+	    $vars->{error} = set_message($vars->{error},
+					 'warning',
+					 'lost_blast_scores',
+					 [@missing]);
+	  }
 	}
 
 	#	replace gp_list with new gp_list
-	print STDERR "gp_list: ".Dumper(\@gp_list)."\n" if $verbose;
+	$core->kvetch("gp_list: ".Dumper(\@gp_list));
 	@gp_list = @new_gp_list;
 	#	put the BLAST scores into $vars
 	$vars->{score_h} = \%cache_h;
-	print STDERR "score_h: ".Dumper(\%cache_h) if $verbose;
+        $core->kvetch("score_h: ".Dumper(\%cache_h));
 	$option_h->{gpsort} = 'ordered_input';
 }
 
@@ -195,7 +198,7 @@ if (!$params{'format'}){
     ## Check we don't have too many GPs
     my $max = $session->get_saved_param('max_selected_gps');
     if (scalar @gp_list > $max){
-      print STDERR "max selected gps: ".$max."\n" if $verbose;
+      $core->kvetch("max selected gps: " . $max);
       $vars->{error} =
 	set_message($vars->{error}, 'warning', 'too_many_gps');
       $vars->{max_selected_gps} = $max;
@@ -204,7 +207,7 @@ if (!$params{'format'}){
 	$option_h->{gpset} = $params{gpset};
       }
 
-      print STDERR "use paging is ON\n" if $verbose;
+      $core->kvetch("use paging is ON");
       my $paged_results =
 	get_results_chunk(\@gp_list, 
 			  {
@@ -217,12 +220,12 @@ if (!$params{'format'}){
 	$vars->{use_gpset_paging} = 1;
       }
 
-      print STDERR "gplist: ".join(", ", @gp_list)."\n" if $verbose;
+      $core->kvetch("gplist: ".join(", ", @gp_list));
     }
   }
 }
 
-#print STDERR "template: ". Dumper($option_h->{tmpl})."\n" if $verbose;
+#$core->kvetch("template: ". Dumper($option_h->{tmpl}));
 
 $option_h->{page_size} = $session->get_saved_param('page_size') if !$option_h->{page_size};
 
@@ -241,13 +244,14 @@ if (!$option_h->{cache})
 
 	$vars->{max_results_download} = $option_h->{max_results_download} = get_environment_param('max_results_download') || $vars->{max_results_html} * 10;
 
-	print STDERR "Check results is ON\n" if $verbose;
+	$core->kvetch("Check results is ON");
 }
 
 
 $edited_gp_list = \@gp_list if !$edited_gp_list || !@$edited_gp_list;
 
-print STDERR "gplist: ".join(", ", @gp_list)."\nedited: ".join(", ", @$edited_gp_list)."\n" if $verbose;
+$core->kvetch("gplist: ".join(", ", @gp_list));
+$core->kvetch("edited: ".join(", ", @$edited_gp_list));
 
 my $result_h = get_gp_assocs({
 			apph => $session->apph,
@@ -259,22 +263,25 @@ my $result_h = get_gp_assocs({
 $vars->{error} = $result_h->{error};
 $vars->{cgi} = 'gp-assoc';
 
-if (!$result_h->{results})
-{	# no results
-	print STDERR "error: ".Dumper($vars->{error}) if $verbose;
-
-	process_page_template($vars, $session, 'amigo_message');
-	exit;
+## No results.
+if (!$result_h->{results}){
+  $core->kvetch("error: ".Dumper($vars->{error}));
+  process_page_template($vars, $session, 'amigo_message');
+  exit;
 }
 
 $vars->{data} = $result_h->{results};
-print STDERR "data keys: ".join(", ", keys %{$vars->{data}})."\n" if $verbose;
+$core->kvetch("data keys: ".join(", ", keys %{$vars->{data}}));
+# foreach my $k (keys %{$vars->{data}}){
+foreach my $k (('error_hash', 'n_pages')){
+  $core->kvetch("key: $k: ". Dumper($vars->{data}{$k}));
+}
 
-if ($result_h->{to_cache})
-{	#	if we've got blast scores, include them
-	$result_h->{to_cache}{blast_cache} = $option_h->{cache}{blast_cache} if $option_h->{cache}{blast_cache};
-	### save cached results
-	$session->save_cached_results($result_h->{to_cache});
+if ($result_h->{to_cache}){
+  #	if we've got blast scores, include them
+  $result_h->{to_cache}{blast_cache} = $option_h->{cache}{blast_cache} if $option_h->{cache}{blast_cache};
+  ### save cached results
+  $session->save_cached_results($result_h->{to_cache});
 }
 
 if ($params{'format'})
@@ -297,33 +304,34 @@ if ($params{'format'})
 
 $vars->{n_pages} = $vars->{data}{n_pages} || 1;
 
-#print STDERR "n_pages: ". $vars->{n_pages} . "\n";
+#$core->kvetch("n_pages: ". $vars->{n_pages});
 
 my $page_template_to_use = 'gp_assoc';
 
-if ($vars->{data}{product_h})
-{	my @valid_gps = map { $_->xref->xref_dbname .":". $_->xref->xref_key } values %{$vars->{data}{product_h}};
-	#	set up the URL for paging
-	my $url = 'gp='
-		. join('&amp;gp=', @valid_gps);
-	$vars->{url_string} = $url;
+if ($vars->{data}{product_h}){
+  my @valid_gps = map {
+    $_->xref->xref_dbname .":". $_->xref->xref_key
+  } values %{$vars->{data}{product_h}};
+  # set up the URL for paging
+  my $url = 'gp=' . join('&amp;gp=', @valid_gps);
+  $vars->{url_string} = $url;
 
-	if (scalar keys %{$vars->{data}{product_h}} > 1 || $vars->{use_gpset_paging})
-	{	$page_template_to_use = 'gp_assoc_multi';
-	}
-	else
-	{	my $p = $vars->{data}{order}[0]{gp};
-		$vars->{page_title} = $p->symbol;
-		$vars->{page_title_header} = $vars->{page_title} . " Associations";
-	}
-	$vars->{gplist} = \@valid_gps;
+  if( scalar keys %{$vars->{data}{product_h}} > 1 ||
+      $vars->{use_gpset_paging}){
+    $page_template_to_use = 'gp_assoc_multi';
+  }else{
+    my $p = $vars->{data}{order}[0]{gp};
+    $vars->{page_title} = $p->symbol;
+    $vars->{page_title_header} = $vars->{page_title} . " Associations";
+  }
+  $vars->{gplist} = \@valid_gps;
 }
 
-if ($vars->{data}{term_count})
-{	print STDERR "term count for GPs: ".Dumper($vars->{data}{term_count})."\n" if $verbose;
+if ($vars->{data}{term_count}){
+  $core->kvetch("term count for GPs: " . Dumper($vars->{data}{term_count}));
 }
 
-#print STDERR "order: ".Dumper($vars->{data}{order})."\n" if $verbose;
+#$core->kvetch("order: ".Dumper($vars->{data}{order}));
 
 process_page_template($vars, $session, $page_template_to_use);
 exit;
