@@ -1,4 +1,4 @@
-package org.oboedit.gui.components;
+ package org.oboedit.gui.components;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

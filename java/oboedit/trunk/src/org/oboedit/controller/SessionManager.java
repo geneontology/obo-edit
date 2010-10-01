@@ -69,6 +69,7 @@ public class SessionManager {
 
 	protected QueryEngine queryEngine;
 
+	// changes pending commit
 	protected boolean unflushedChanges = false;
 
 	protected boolean recacheInBackground = true;
@@ -323,7 +324,7 @@ public class SessionManager {
 	public void apply(HistoryItem item, boolean doSelect) {
 		doApply(item, doSelect);
 		redoHistoryItems.clear();
-		unflushedChanges = false;
+		unflushedChanges = true;
 	}
 	
 //	public void apply(Collection<HistoryItem> items) {

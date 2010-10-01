@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.bbop.swing.autocomplete.AbstractAutocompleteModel;
 import org.bbop.util.FastSuperset;
 import org.bbop.util.Superset;
 import org.obo.datamodel.FieldPath;
