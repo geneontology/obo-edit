@@ -8,27 +8,32 @@ package owltools.phenolog;
  *
  */
 public class GenePheno implements Comparable<GenePheno>{
-    String id;
-    String phenoid;
-    String phenolabel;
+    private String id;
+    private String label;
+    private String phenoid;
+    private String phenolabel;
 
-    @Override
+//    @Override
     public boolean equals(Object aGenePheno){
         GenePheno gp = (GenePheno) aGenePheno;
-        return getid().equals(gp.getid());
+        String cc1 = this.id.concat(this.phenoid);
+        return cc1.equals(gp.getid().concat(gp.getphenoid()));
     }
-    @Override
+//    @Override
     public int hashCode(){
         return id.hashCode();
     }
-    @Override
+//    @Override
     public int compareTo(GenePheno g){
-        return id.compareTo(g.getid());
+        String cc1 = this.id.concat(this.phenoid);
+        String cc2 = g.getid().concat(g.getphenoid());
+        return cc1.compareTo(cc2);
     }
 
     
-    public GenePheno(String id, String phenoid, String phenolabel){
+    public GenePheno(String id, String label, String phenoid, String phenolabel){
         this.id = id;
+        this.label = label;
         this.phenoid = phenoid;
         this.phenolabel = phenolabel;
     }
@@ -44,12 +49,18 @@ public class GenePheno implements Comparable<GenePheno>{
     public void setphenoid(String phenoid){
         this.phenoid = phenoid;
     }
+    public void setlabel(String label){
+        this.label = label;
+    }
     public void setphenolabel(String phenolabel){
         this.phenolabel = phenolabel;
     }
 
     public String getid(){
         return this.id;
+    }
+    public String getlabel(){
+        return this.label;
     }
     public String getphenoid(){
         return this.phenoid;
