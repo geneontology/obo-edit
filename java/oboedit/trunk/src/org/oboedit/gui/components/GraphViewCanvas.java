@@ -6,9 +6,11 @@ import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -229,28 +231,38 @@ FilteredRenderable {
 			Map<String, LinkDatabase> databases = new LinkedHashMap<String, LinkDatabase>();
 			int currentProgress = 0;
 			if (config.isAllTypes()) {
-				Collection<Link> parents = new HashSet<Link>();
-				logger.debug("terms: " + terms);
+				Collection<Link> ancestors = new HashSet<Link>();
 				logger.debug("reasoner: " + reasoner);
-				for (LinkedObject lo : terms) {
-					Collection<Link> parentLinks = null;	
-					if(reasoner != null)
-						parentLinks = reasoner.getParents(lo);
-					else
-						parentLinks = SessionManager.getManager().getCurrentLinkDatabase().getParents(lo);
 
-					for (Link link : parentLinks) {
-						if (config.isNonTransitive() || link.getType().isTransitive())
-							parents.add(link);
+				for (LinkedObject lo : terms) {
+					Collection<Link> parentLinks = null;
+					Collection<Link> ancestorLinks = null;
+
+					LinkDatabase ld = SessionManager.getManager().getSession().getLinkDatabase();	
+
+					//get all parent links for lo
+					parentLinks = ld.getParents(lo);
+
+					//get ancestor links for lo
+					ancestorLinks = getAncestors(lo);
+
+					Collection<Link> allLinks = new LinkedHashSet<Link>(parentLinks.size() + ancestorLinks.size());
+					allLinks.addAll(parentLinks);
+					allLinks.addAll(ancestorLinks);
+
+					for (Link Link : allLinks) {	
+						if (config.isNonTransitive() || Link.getType().isTransitive())
+							ancestors.add(Link);
 					}
 				}
 
 				setProgressValue(currentProgress++ * 100 / totalCount);
 				if (isCancelled())
 					return;
-				LinkDatabase linkDatabase = createLinkDatabase(null, parents, false);
+				LinkDatabase linkDatabase = createLinkDatabase(null, ancestors, false);
 				databases.put("All", linkDatabase);
 			}
+
 
 			if (config.isShowPerType()) {
 				for (OBOProperty type : typeMap.keySet()) {
@@ -269,7 +281,31 @@ FilteredRenderable {
 			//			logger.info("found paths in " + (System.currentTimeMillis() - time));
 		}
 
+
+
 	}
+
+	//fetches all ancestor links (above immediate parent link) up to root for a given object
+	public Collection<Link> getAncestors(LinkedObject lo) {
+		//get all ancestor terms
+		Collection<LinkedObject> ancestors = TermUtil.getAncestors(lo, null);
+		Collection<Link> out = new LinkedHashSet<Link>(ancestors.size());
+
+		for(LinkedObject a : ancestors){
+			//get all child links for that ancestor term
+			Collection<Link> achildren = a.getChildren();
+			//examine child links and choose the ones present in the hierarchy for ancestor terms 
+			for(Link achild : achildren){
+				for(LinkedObject x : ancestors){
+					if(achild.getChild().equals(x))
+						out.add(achild);
+				}
+			}
+		}
+		return out;
+	}
+
+
 
 	public GraphViewCanvas(String id) {
 		super(id);
@@ -305,6 +341,8 @@ FilteredRenderable {
 		configPanel.add(htmlPanel);
 		configPanel.add(Box.createVerticalGlue());
 	}
+
+
 
 	protected static JComponent createPanel(JComponent c) {
 		Box out = Box.createHorizontalBox();
@@ -354,7 +392,7 @@ FilteredRenderable {
 			Collection<Link> parents, boolean trimImpliedLinks ) {
 		LinkDatabase linkDatabase;
 
-//		logger.debug("GVC.createLinkDatabase -- trimImpliedLinks: " + trimImpliedLinks);
+		//		logger.debug("GVC.createLinkDatabase -- trimImpliedLinks: " + trimImpliedLinks);
 		// not trimming implied links from graph
 		if (!trimImpliedLinks) {
 			MutableLinkDatabase mutable = new DefaultMutableLinkDatabase(true);
@@ -804,4 +842,5 @@ FilteredRenderable {
 		else
 			return lockGray;
 	}
+
 }
