@@ -1,3 +1,6 @@
+####
+#### For installation, see INSTALL.txt in this directory.
+####
 #### TODO/BUG: I can't get dismax to work as I want, or really at
 #### all--still slumping along with hard-coded standard...
 

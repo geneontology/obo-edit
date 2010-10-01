@@ -3,10 +3,12 @@
 <schema name="golr" version="1.2">
 
   <types>
+    <!-- Used to be in string: omitNorms="true"/> -->
     <fieldType name="string"
 	       class="solr.StrField"
-	       sortMissingLast="true"
-	       omitNorms="true"/>
+	       sortMissingLast="true"/>
+    <fieldType name="integer"
+	       class="solr.IntField"/>
     <fieldType name="text_ws"
 	       class="solr.TextField"
 	       positionIncrementGap="100">   
@@ -38,6 +40,11 @@
    <!-- Optional: for terms. -->
    <field name="term_type"
 	  type="string"
+	  indexed="true"
+	  stored="true"
+	  required="false" />
+   <field name="is_obsolete"
+	  type="integer"
 	  indexed="true"
 	  stored="true"
 	  required="false" />

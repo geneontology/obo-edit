@@ -1,0 +1,44 @@
+* Installation instructions for Ubuntu 10.04.
+** Get the necessary libraries and installations.
+
+   sudo apt-get -u install solr-jetty libmysql-java
+
+** Get Jetty into a usable state.
+
+Edit /etc/default/jetty and change NO_START to be 0 (or comment it out).
+
+** Get Sol into a usable state.
+
+Edit ./solr/go-data-config.xml to reflect your setup. This is likely
+to just be changing a couple of entries in dataConfig/dataSource for the
+JDBC driver.
+
+** Move Apache/Solr/Jetty configuration files into place.
+
+Either load golr.el and run "M-x golr-restart" or run the following:
+   
+   sudo cp apache/golr /etc/apache2/sites-available/golr
+   sudo cp jetty/jetty.conf /etc/jetty/jetty.conf
+   sudo cp jetty/jetty-rewrite.xml /etc/jetty/jetty-rewrite.xml
+   sudo cp jetty/no_access.html /var/lib/jetty/webapps/root/no_access.html
+   sudo cp solr/schema.xml /etc/solr/conf/schema.xml
+   sudo cp solr/solrconfig.xml /etc/solr/conf/solrconfig.xml
+   sudo /etc/init.d/jetty stop
+   sudo /etc/init.d/jetty start
+   sudo /etc/init.d/apache2 restart
+
+Please note that sometimes it takes a very long time for Jetty to
+restart, so you may want to wait a bit before executing the next step.
+   
+** Update the Lucene index with the current 
+
+Either load golr.el and run "M-x golr-update" or visit the following:
+
+   http://localhost:8080/solr/dataimport?command=full-import
+
+Of course, replace localhost with the appropriate string for your setup.
+
+You can check on your progress at:
+
+   http://localhost:8080/solr/admin/stats.jsp#update
+

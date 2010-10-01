@@ -1,13 +1,13 @@
 <dataConfig>
   <dataSource type="JdbcDataSource" 
               driver="com.mysql.jdbc.Driver"
-              url="jdbc:mysql://spitz.lbl.gov/go_latest_lite"
+              url="jdbc:mysql://localhost/go_latest_lite"
 	      batchSize="-1"
               user="sjcarbon" 
               password=""/>
   <document>
     <entity name="term" 
-            query="SELECT id, concat('term') AS domain, acc, name, term_type FROM term">
+            query="SELECT id, concat('term') AS domain, acc, name, term_type, is_obsolete FROM term">
       <entity name="term_synonym" 
               query="SELECT term_synonym, acc_synonym FROM term_synonym WHERE term_id='${term.id}'"/>
       <entity name="term_definition" 
