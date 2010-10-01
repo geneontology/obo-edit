@@ -704,76 +704,76 @@ Die nicely when get_gp_assocs goes wrong
 =cut
 
 sub gp_assoc_die {
-	my ($apph, $product_h, $error, $order, $option_h, $result_h) = @_;
-	my $dbh = $apph->dbh;
+  my ($apph, $product_h, $error, $order, $option_h, $result_h) = @_;
+  my $dbh = $apph->dbh;
 
-	print STDERR "Doing gp_assoc_die\n" if $verbose;
+  print STDERR "Doing gp_assoc_die\n" if $verbose;
 
-	if (!$order || !@$order)
-	{	$order = [ map { { gp => $_ } } values %$product_h ];
-	}
-#	print STDERR "product_h keys: ".Dumper( \(keys %$product_h ) ) if $verbose;
-#	print STDERR "order: ".Dumper($order) if $verbose;
-	print STDERR "error: ".Dumper($error) if $verbose;
+  if (!$order || !@$order){
+    $order = [ map { { gp => $_ } } values %$product_h ];
+  }
+  #print STDERR "product_h keys: ".Dumper( \(keys %$product_h ) ) if $verbose;
+  #print STDERR "order: ".Dumper($order) if $verbose;
+  print STDERR "error: ".Dumper($error) if $verbose;
 
-	#	set flags for what is and isn't possible:
-	#	dl_ok - can download assocs
-	#	html_ok - can view assocs
-	my $check_dl_html_ok = sub {
-		my $n_results = shift;
-		my $ok;
-		if ($n_results >= 1)
-		{	if ($n_results < $option_h->{max_results_html})
-			#	we can download or show results as html
-			{	$ok->{"html_ok"} = 1;
-				$ok->{"dl_ok"} = 1;
-			}
-			elsif ($n_results < $option_h->{max_results_download})
-			#	too many to show as html, but allow downloading
-			{	$ok->{"dl_ok"} = 1;
-			}
-		}
-		$ok->{"n_results"} = $n_results;
-		$ok->{"n_pages"} = get_n_chunks($n_results, $option_h->{page_size});
-		return $ok;
-	};
+  # set flags for what is and isn't possible:
+  # dl_ok - can download assocs
+  # html_ok - can view assocs
+  my $check_dl_html_ok = sub {
+    my $n_results = shift;
+    my $ok;
+    if ($n_results >= 1){
+      if ($n_results < $option_h->{max_results_html}){
+	# we can download or show results as html
+	$ok->{"html_ok"} = 1;
+	$ok->{"dl_ok"} = 1;
+      }elsif ($n_results < $option_h->{max_results_download}){
+	# too many to show as html, but allow downloading
+	$ok->{"dl_ok"} = 1;
+      }
+    }
+    $ok->{"n_results"} = $n_results;
+    $ok->{"n_pages"} = get_n_chunks($n_results, $option_h->{page_size});
+    return $ok;
+  };
 
-	my $info = {};
-	my $name = 'total_unfiltered';
-	my $use_filters;
-	if ($result_h->{n_results} != 0)
-	{	$use_filters = 1;
-		$name = 'total';
-	}
-	
-	#	if there are no associations, get the term count for the GPs *without filters*
-	#	if too many associations, get the filtered term count for each GP in the list
+  my $info = {};
+  my $name = 'total_unfiltered';
+  my $use_filters;
+  if ($result_h && $result_h->{n_results} != 0){
+    $use_filters = 1;
+    $name = 'total';
+  }
 
-	#	store info about the number of term associations for each GP
-	#	- number of terms (n_results) and number of pages (n_pages)
-	#	- whether we can display them as html (html_ok) or download them (dl_ok)
+  # If there are no associations, get the term count for the GPs
+  # *without filters*. If too many associations, get the filtered term
+  # count for each GP in the list.
+  # Store info about the number of term associations for each GP
+  #  - number of terms (n_results) and number of pages (n_pages)
+  #  - whether we can display them as html (html_ok) or download them (dl_ok)
+  my $gpid_termc =
+    get_term_count_for_gps($apph, [values %$product_h], $use_filters);
+  my %hash = (@$gpid_termc);
+  my $sum = 0;
+  foreach (keys %hash) {
+    $info->{gp}{$_} = &$check_dl_html_ok($hash{$_});
+    $sum += $hash{$_};
+  }
 
-	my $gpid_termc = get_term_count_for_gps($apph, [values %$product_h], $use_filters);
-	my %hash = (@$gpid_termc);
-	my $sum = 0;
-	foreach (keys %hash)
-	{	$info->{gp}{$_} = &$check_dl_html_ok($hash{$_});
-		$sum += $hash{$_};
-	}
+  # store the same info for the whole set
+  $info->{$name} = &$check_dl_html_ok($sum);
 
-	#	store the same info for the whole set
-	$info->{$name} = &$check_dl_html_ok($sum);
+  #print STDERR "info: ". Dumper ($info) . "\n";
 
-
-	#print STDERR "info: ". Dumper ($info) . "\n";
-
-	return { results => {
-					product_h => $product_h, 
-					order => $order,
-					n_pages => 1,
-					error_hash => { %$info },
-				},
-				error => $error };
+  return {
+	  results => {
+		      product_h => $product_h,
+		      order => $order,
+		      n_pages => 1,
+		      error_hash => { %$info },
+		     },
+	  error => $error
+	 };
 }
 
 =head2 get_term_assocs
@@ -2725,22 +2725,20 @@ my $t0 = gettimeofday();
 		print STDERR "Results: ".Dumper($results)."\n" if $verbose;
 	
 		#	pop the results into a list and add 'em to the terms
-		if (@$results)
-		{	my @result_l;
-			$result_l[$_->[0]] = $_->[1] foreach (@$results);
-			foreach (@$terms)
-			{	if ($result_l[$_->id])
-				{	$_->n_products($result_l[$_->id]);
-				}
-				else
-				{	$_->n_products(0);
-				}
-			}
+		if (@$results){
+		  my @result_l;
+		  $result_l[$_->[0]] = $_->[1] foreach (@$results);
+		  foreach (@$terms){
+		    if ($result_l[$_->id]){
+		      $_->n_products($result_l[$_->id]);
+		    }else{
+		      $_->n_products(0);
+		    }
+		  }
+		}else{
+		  $_->n_products(0) foreach (@$terms);
 		}
-		else
-		{	$_->n_products(0) foreach (@$terms);
-		}
-	}
+	      }
 	print STDERR (gettimeofday() - $t0).": gp counting done\n" if $verbose;
 }
 
