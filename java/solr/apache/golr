@@ -1,6 +1,8 @@
-NameVirtualHost *
+#### File unused unless trying to create "firewall" for Solr.
+#NameVirtualHost *
+#<VirtualHost *:8080>
 <VirtualHost *>
-	ServerAdmin sjcarbon@localhost
+	ServerAdmin webmaster@localhost
 	
 	DocumentRoot /srv/www/htdocs
 	<Directory />
@@ -47,16 +49,6 @@ NameVirtualHost *
         Allow from 127.0.0.0/255.0.0.0 ::1/128
     </Directory>
 
-        ## mod_perl
-        <Location /cgi-bin/amigo/completion>
-            SetHandler perl-script
-            PerlResponseHandler ModPerl::Registry
-            PerlOptions +ParseHeaders
-            Options +ExecCGI
-            Order allow,deny
-            Allow from all 
-        </Location>
-
      ProxyRequests Off
 
      <Proxy *>
@@ -64,7 +56,7 @@ NameVirtualHost *
          Allow from all
      </Proxy>
 
-     ProxyPass /solr http://accordion.lbl.gov:8080/solr/select
-     ProxyPassReverse /solr http://accordion.lbl.gov:8080/solr/select
+     # ProxyPass /solr http://accordion.lbl.gov:8080/solr/select
+     # ProxyPassReverse /solr http://accordion.lbl.gov:8080/solr/select
 
 </VirtualHost>
