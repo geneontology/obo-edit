@@ -3,8 +3,6 @@ package org.obo.datamodel.impl;
 import java.util.*;
 
 import org.obo.datamodel.*;
-import org.obo.util.TermUtil;
-
 import org.apache.log4j.*;
 
 public class DefaultLinkDatabase extends AbstractLinkDatabase implements LinkDatabase {
