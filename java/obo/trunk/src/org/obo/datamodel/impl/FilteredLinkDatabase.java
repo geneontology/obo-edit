@@ -135,6 +135,7 @@ public class FilteredLinkDatabase extends AbstractLinkDatabase {
 		}
 	}
 
+
 	public Collection<IdentifiedObject> getObjects() {
 		if (termFilter == null)
 			return linkDatabase.getObjects();

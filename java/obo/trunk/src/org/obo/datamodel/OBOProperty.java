@@ -1,7 +1,6 @@
 package org.obo.datamodel;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 import org.obo.datamodel.impl.OBOPropertyImpl;
