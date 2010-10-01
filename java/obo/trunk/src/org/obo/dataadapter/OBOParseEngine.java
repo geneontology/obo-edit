@@ -65,9 +65,8 @@ public class OBOParseEngine extends AbstractParseEngine {
 		escapeChars.put(new Character('['), new Character('['));
 		escapeChars.put(new Character(']'), new Character(']'));
 		escapeChars.put(new Character('!'), new Character('!'));
-		Iterator<Character> it = escapeChars.keySet().iterator();
-		while (it.hasNext()) {
-			Character key = it.next();
+		
+		for(Character key : escapeChars.keySet() ){
 			Character value = escapeChars.get(key);
 			unescapeChars.put(value, key);
 		}
@@ -1212,10 +1211,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 		String ns = null;
 		if (nv != null) {
 			Vector dumpEm = new Vector();
-			Iterator it = nv.getPropertyValues().iterator();
-			while (it.hasNext()) {
-				PropertyValue pv = (PropertyValue) it.next();
-
+			for(PropertyValue pv : nv.getPropertyValues()){
 				if (pv.getProperty().equalsIgnoreCase("necessary")) {
 					necessary = !pv.getValue().equalsIgnoreCase("false");
 					dumpEm.add(pv);
