@@ -138,8 +138,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		protected Icon selectDifferentiaIcon = Preferences.loadLibraryIcon("selector.gif");
 		JButton selectDifferentiaButton = new JButton(selectDifferentiaIcon);
 
-		protected AutocompleteBox<IdentifiedObject> parentBox = new AutocompleteBox<IdentifiedObject>(
-				new TermAutocompleteModel());
+		protected AutocompleteBox<IdentifiedObject> parentBox = new AutocompleteBox<IdentifiedObject>(new TermAutocompleteModel());
 		protected JComboBox propertyBox = new JComboBox();
 		protected ActionListener selectDifferentiaActionListener;
 
