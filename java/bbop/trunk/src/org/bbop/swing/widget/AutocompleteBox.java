@@ -69,7 +69,6 @@ public class AutocompleteBox<T> extends JComboBox {
 	protected final static Logger logger = Logger.getLogger(AutocompleteBox.class);
 
 	protected class AutoTextField extends JTextField implements ComboBoxEditor {
-
 		protected boolean updating = false;
 
 		protected Runnable updateRunnable = new Runnable() {
@@ -156,27 +155,27 @@ public class AutocompleteBox<T> extends JComboBox {
 			addFocusListener(focusListener);
 		}
 
+		// autocomplete commit
 		public void commit(boolean focusCommit) {
-			logger.debug("AutocompleteBox.commit");
 			killPendingTasks();
 			if (getText().length() == 0)
 				setSelectedItem(null);
-			else if ((!focusCommit || !allowNonModelValues) && lastHits != null
-					&& lastHits.size() > 0) {
+			else if ((!focusCommit || !allowNonModelValues) && termHits != null
+					&& termHits.size() > 0) {
 				setSelectedItem(list.getSelectedValue());
 			} else if (allowNonModelValues) {
 				setSelectedItem(autocompleteModel.createValue(getText()));
 			}
-			// What's this big random number for??
-			ActionEvent e = new ActionEvent(AutocompleteBox.this, (int) (Math.random()
-					// * Integer.MAX_VALUE
-			), "commit");
+			
+			ActionEvent e = new ActionEvent(AutocompleteBox.this, (int) (Math.random()), "commit");
+			
 			for (ActionListener listener : commitListeners) {
 				listener.actionPerformed(e);
 			}
 			fireUpdateEvent();
 			hidePopup();
 			list.setSelectedIndex(-1);
+			list.removeAll();
 		}
 
 		protected void update() {
@@ -200,8 +199,8 @@ public class AutocompleteBox<T> extends JComboBox {
 
 		public Object getItem() {
 			Object out = null;
-			if (lastHits != null)
-				out = lastHits.size() == 0 ? null : lastHits.get(0).getVal();
+			if (termHits != null)
+				out = termHits.size() == 0 ? null : termHits.get(0).getVal();
 			return out;
 		}
 
@@ -261,7 +260,7 @@ public class AutocompleteBox<T> extends JComboBox {
 			} else
 				label.setOpaque(false);
 
-			MatchPair pair = lastHits.get(index);
+			MatchPair pair = termHits.get(index);
 			String s = "<html>" + formatHTML(pair) + "</html>";
 			label.setText(s);
 			return label;
@@ -386,28 +385,43 @@ public class AutocompleteBox<T> extends JComboBox {
 
 	public T getValue() {
 		Object selected = getSelectedItem();
-		//		logger.debug("getSelectedItem(): " + getSelectedItem());
-		//		logger.debug("getItemCount: " + this.getItemCount());
+		logger.debug("AutocompleteBox.getValue() -- selected: " + selected);
+		// for a simple straightforward one term autocomplete selected always has a value.
+
 		// getItemCount gets datamodel size from the previous autocomplete task performed. This is misleading.
 		// TODO: clear lastHits cache - leaving this as is at the moment
-		if (selected == null)
-			return null;
-		else {
-			//fix for commiting multiple items while editing cross-products in the TextEditor...
-			//getSelectedItem looks for items selected in the autocomplete JComboBox and returns null for genus as it picks up the second item while adding discriminating relations 
-			if (selected == null && getItemAt(0) != null){
-				selected = getItemAt(0);
-			}
-			if (allowNonModelValues) {
-				String s = ((JTextComponent) editor).getText();
+		logger.debug("> selected: " + selected);
+		logger.debug("> this.getItemCount(): " + this.getItemCount());
+		logger.debug("> getItemAt(0): " + getItemAt(0));
 
-				if (!autocompleteModel.toString(getSelectedItem()).equals(s))
-					return (T) autocompleteModel
-					.getOutputValue(autocompleteModel.createValue(s));
-			}
-			return (T) autocompleteModel.getOutputValue(selected);
+		//		if(selected == null){
+		//			logger.debug("stop");
+		//			return null;
+		//		}
+
+		if(selected == null){
+			// true in the initial case while autocompleting on a single field and first iteration for defining xps
+			if (this.getItemCount() == 0)
+				return null;
+
+			//fix for committing multiple items while editing cross-products in the TextEditor...
+			//getSelectedItem looks for items selected in the autocomplete JComboBox and returns null for genus as it picks up the second item while adding discriminating relations 
+			if(getItemAt(0) != null)
+				selected = getItemAt(0);
 		}
+
+
+		else if(allowNonModelValues){
+			String s = ((JTextComponent) editor).getText();
+			if (!autocompleteModel.toString(getSelectedItem()).equals(s))
+				return (T) autocompleteModel.getOutputValue(autocompleteModel.createValue(s));
+		}
+
+
+		return (T) autocompleteModel.getOutputValue(selected);
+
 	}
+
 
 	@Override
 	/* Before I added this, it was tending to select the first thing in the list even if user selected a different one. */
@@ -422,23 +436,25 @@ public class AutocompleteBox<T> extends JComboBox {
 		//	    }
 		if (anObject == null) {
 			doSetSelectedItem(null);
-		} else if (autocompleteModel.getDisplayType().isAssignableFrom(
-				anObject.getClass())) {
+		} 
+		else if (autocompleteModel.getDisplayType().isAssignableFrom(anObject.getClass())) {
 			doSetSelectedItem(anObject);
 			Object selected = getSelectedItem();
-		} else if (autocompleteModel.getOutputType().isAssignableFrom(
-				anObject.getClass())) {
+		} 
+		else if (autocompleteModel.getOutputType().isAssignableFrom(anObject.getClass())) {
 			List values = autocompleteModel.getDisplayValues(anObject);
 			if (values.size() > 0)
 				doSetSelectedItem(values.get(0));
 			else
 				doSetSelectedItem(null);
-		} else if (anObject instanceof String)
+		}
+		else if (anObject instanceof String)
 			doSetSelectedItem(autocompleteModel.createValue((String) anObject));
 
 		if (isEditable() && getEditor() != null) {
 			configureEditor(getEditor(), getSelectedItem());
 		}
+
 	}
 
 	protected void doSetSelectedItem(Object o) {
@@ -517,8 +533,7 @@ public class AutocompleteBox<T> extends JComboBox {
 							JTextComponent text = (JTextComponent) AutocompleteBox.this.editor;
 							if (text.getText().length() == 0) {
 								ArrayList list = new ArrayList();
-								list.addAll(getAutocompleteModel()
-										.getAllValues());
+								list.addAll(getAutocompleteModel().getAllValues());
 								setDisplayResults(list);
 							} else {
 								TimerTask task = createTimerTask(
@@ -533,6 +548,7 @@ public class AutocompleteBox<T> extends JComboBox {
 					}
 
 				};
+
 			}
 
 			@Override
@@ -624,7 +640,8 @@ public class AutocompleteBox<T> extends JComboBox {
 			.setFocusTraversalKeysEnabled(focusTraversalKeysEnabled);
 	}
 
-	protected List<MatchPair> lastHits;
+	// termHits: auto complete hits generated for the term in context
+	protected List<MatchPair> termHits;
 	protected Timer timer = new Timer(true);
 	protected TimerTask currentTask = null;
 	protected int updateInterval = 100;
@@ -693,7 +710,7 @@ public class AutocompleteBox<T> extends JComboBox {
 				cursorPos, cursorPos);
 		String currentWord = text.substring(replaceIndices[0],
 				replaceIndices[1]);
-		for (MatchPair matchPair : lastHits) {
+		for (MatchPair matchPair : termHits) {
 			int[] indices = (int[]) matchPair.getMatch().get(currentWord);
 			if (indices != null) {
 				int index = indices[0];
@@ -804,12 +821,12 @@ public class AutocompleteBox<T> extends JComboBox {
 	}
 
 	protected void setResults(List results) {
-		lastHits = results;
+		termHits = results;
 		((AutocompleteListModel) getModel()).update();
-		if (lastHits == null || lastHits.size() == 0)
+		if (termHits == null || termHits.size() == 0)
 			super.setSelectedItem(null);
 		else {
-			Object val = lastHits.get(0).getVal();
+			Object val = termHits.get(0).getVal();
 			//			logger.debug("setResults: SELECTING: " + val);
 			super.setSelectedItem(null);
 			if (isShowing() && hasMeaningfulFocus()) {
@@ -817,6 +834,7 @@ public class AutocompleteBox<T> extends JComboBox {
 				showPopup();
 			}
 		}
+
 	}
 
 	public boolean hasMeaningfulFocus() {
@@ -847,20 +865,28 @@ public class AutocompleteBox<T> extends JComboBox {
 				listener.contentsChanged(event);
 			}
 			updating = false;
+
 		}
 
 		public Object getElementAt(int index) {
-//			logger.debug("lastHits.get(index).getVal(): " +  lastHits.get(index).getVal());
-			return lastHits.get(index).getVal();
+			if (termHits == null)
+				return 0;
+			else 
+				return termHits.get(index).getVal();
 		}
 
 		public int getSize() {
-			if (lastHits == null)
+			if(termHits != null)
+				logger.debug("termHits.size(): " + termHits.size());
+			if (termHits == null)
 				return 0;
 			if (getMaxResults() < 0)
-				return lastHits.size();
-			else
-				return Math.min(getMaxResults(), lastHits.size());
+				return termHits.size();
+			else{
+				logger.debug(">> Math.min(getMaxResults(), termHits.size()): " + Math.min(getMaxResults(), termHits.size()));
+				return Math.min(getMaxResults(), termHits.size());
+			}
+
 		}
 
 		public void removeListDataListener(ListDataListener l) {
