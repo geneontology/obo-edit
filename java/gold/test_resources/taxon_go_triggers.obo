@@ -2255,7 +2255,9 @@ creation_date: 2009-04-22T03:12:03Z
 [Typedef]
 id: never_in_taxon
 name: never_in_taxon
+is_class_level: true
 
 [Typedef]
 id: only_in_taxon
 name: only_in_taxon
+is_class_level: true

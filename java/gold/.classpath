@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="classes" path="src"/>
+	<classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/FaCTpp-OWLAPI-v1.4.0.1.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/GraphDraw-20100831-1335.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/GraphDraw.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/HermiT.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/aterm-java-1.6.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/oboformat.jar" sourcepath="/owlapi-v3/trunk"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/org.semanticweb.HermiT.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/owlapi-bin.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/pellet-cli.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/pellet-core.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/pellet-datatypes.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/pellet-dig.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/pellet-el.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/pellet-explanation.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/pellet-jena.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/pellet-modularity.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/pellet-owlapiv3.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/pellet-pellint.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/pellet-query.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/pellet-rules.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/pellet-test.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/pellet.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/relaxngDatatype.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/xml-apis.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/cvs/go-java/gold/lib/xsdlib.jar"/>
+	<classpathentry kind="src" path="/OWLTools"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
