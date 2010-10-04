@@ -27,6 +27,10 @@
 
 	<property name="antpath" value="ant" />
 
+	<!-- dependency information -->
+	<property name="oboformat_dest" location="../oboformat" />
+	<property name="owltools_dest" location="../owltools" />
+
 	
 	<!-- library jars that should appear in the final runtime directory -->
 	<fileset dir="${librarydir}" id="library_jars">
@@ -69,6 +73,18 @@
 		<javadoc sourcepath="${sourcedir}" classpathref="classpath" defaultexcludes="yes" destdir="${apidoc_dest}" author="true" version="true" use="true" />
 	</target>
 
+	<fileset dir="${owltools_dest}/lib" id="owltools_jars">
+		<include name="**jar" />
+	</fileset>
+
+	<target name="buildowltools" if="owltools_dest">
+		<ant dir="${owltools_dest}" target="jar" inheritAll="false" />
+		<copy file="${owltools_dest}/runtime/owltools.jar" todir="${librarydir}/runlibs" />
+		<copy todir="${librarydir}">
+		  <fileset refid="owltools_jars" />
+		</copy>
+	</target>
+
 
 	<fileset dir="${oboformat_dest}/lib" id="oboformat_jars">
 		<include name="**jar" />
@@ -77,12 +93,12 @@
 	<target name="buildoboformat" if="oboformat_dest">
 		<ant dir="${oboformat_dest}" target="jar" inheritAll="false" />
 		<copy file="${oboformat_dest}/lib/oboformat.jar" todir="${librarydir}/runlibs" />
-		<copy todir="${librarydir}/runlibs">
+		<copy todir="${librarydir}">
 		  <fileset refid="oboformat_jars" />
 		</copy>
 	</target>
 		
-	<target name="library_jars" depends="build_owltools">
+	<target name="library_jars" depends="buildowltools, buildoboformat">
 		<mkdir dir="${runtimedir}" />
 		<sync todir="${runtimedir}">
 			<fileset refid="library_jars" />
