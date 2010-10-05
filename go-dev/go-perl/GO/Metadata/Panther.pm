@@ -5,6 +5,7 @@ use Exporter;
 use Memoize;
 use List::Util qw/sum first/;
 use Data::Dumper;
+use Carp;
 
 use base qw/GO::Metadata::UniProt::Species/;
 
@@ -36,7 +37,14 @@ our %species =
    #
 
    ANOGA => { prefer => [ 'Gene' ] },
-   ARATH => {},
+   ARATH => { id_filter => sub {
+		  my ($dbname, $key) = (shift, shift);
+		  if ($dbname eq 'gene') {
+		      return ('TAIR', "locus:$key");
+		  }
+		  return ($dbname, $key);
+	      }
+	    },
    AQUAE => {},
    ASHGO => {},
 
@@ -105,7 +113,7 @@ our %species =
    # M
    #
 
-   MACMU => {},
+   MACMU => { prefer => [ 'UniProtKB', 'ENSEMBL' ] },
    METAC => {},
    MONDO => {},
    MOUSE => { prefer => [ 'MGI' ] },
@@ -160,7 +168,7 @@ our %species =
    # X
    #
 
-   XENTR => {},
+   XENTR => { prefer => [ 'UniProtKB', 'ENSEMBL' ] },
 );
 
 =over
@@ -172,17 +180,49 @@ new function and populates that with other Panther/GO specific
 information.
 
 =cut
-#memoize("new");
+our %_new_cache;
 sub new{
     my $c = shift;
-    my @all = $c->SUPER::new(map {
+
+    my @have;
+    my @all = map {
+	if ($_new_cache{$_}) {
+	    push @have, $_new_cache{$_};
+	    ();
+	} else {
+	    $_;
+	}
+    } @_;
+
+    ##########
+    # Fix up also_node entries (see ECOLI)
+    @all = map {
+	my $all = $_;
+	my $out = $all;
+	if ($all =~ m/^\d+$/) {
+	  BLA:
+	    for my $code (keys %species) {
+		for my $node (@{ $species{$code}->{also_node} }) {
+		    if ($all eq $node) {
+			$out = $code;
+			last BLA;
+		    }
+		}
+	    }
+	}
+	$out;
+    } @all;
+    # This bugs me
+    ##########
+
+    @all = $c->SUPER::new(map {
 	if ($species{$_} && $species{$_}->{is}) {
 	    warn "$_ -> $species{$_}->{is}";
 	    $species{$_}->{is};
 	} else {
 	    $_;
 	}
-    } @_);
+    } @all) if (scalar @all);
 
     for (@all) {
 	if ($species{$_->code}) {
@@ -190,9 +230,15 @@ sub new{
 		$_->{$k} = $v;
 	    }
 	} else {
-	    die $_->code . ' Not a Panther family.';
+	    warn $_->code . ' Not a Panther family.';
 	}
     }
+
+    for my $all (@all) {
+	$_new_cache{$all->{node}} = $all;
+	$_new_cache{$all->{code}} = $all;
+    }
+    push @all, @have;
 
     return undef   if (0 == scalar @all);
     return $all[0] if (1 == scalar @all);
@@ -264,8 +310,21 @@ we have never encountered a conflict that needed resolving.
 =cut
 sub prefers{
     my $s = shift;
-    return @{ $s->{prefer} };
+    if ($s->{prefer}) {
+	return @{ $s->{prefer} };
+    }
+    return ();
 }
+
+sub id_filter{
+    my $s = shift;
+
+    if ($s->{id_filter}) {
+	return ${ $s->{id_filter} }(@_);
+    }
+    @_;
+}
+
 
 =back
 

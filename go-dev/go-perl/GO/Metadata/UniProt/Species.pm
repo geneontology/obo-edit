@@ -20,6 +20,7 @@ use File::Basename;
 use IO::Uncompress::AnyUncompress qw/$AnyUncompressError/;
 use List::Util qw/first/;
 use Data::Dumper;
+use Carp;
 
 #our $SPECIES_LIST=File::Spec->catfile(dirname(__FILE__), 'speclist.txt.gz');
 our $SPECIES_LIST=File::Spec->catfile(dirname(__FILE__), 'speclist.txt');
@@ -45,9 +46,9 @@ sub new{
     while (@_) {
 	my $request = shift @_;
 	if ($request =~ m/^\d+$/) {
-	    $node{$request} = 1;
+	    $node{$request} = '';
 	} else {
-	    $code{$request} = 1;
+	    $code{$request} = '';
 	}
     }
 
@@ -80,6 +81,7 @@ sub new{
 
 	    if ((first {$_ == $species{node}} keys %node) ||
 		(first {$_ eq $species{code}} keys %code)) {
+
 		delete $node{$species{node}};
 		delete $code{$species{code}};
 
@@ -171,6 +173,10 @@ This contains a single letter for what 'kingdom' it is in:
 This will likely change if I ever need to access this information.
 
 =back
+
+=head1 SEE ALSO
+
+L<http://www.uniprot.org/docs/speclist>
 
 =head1 AUTHOR
 
