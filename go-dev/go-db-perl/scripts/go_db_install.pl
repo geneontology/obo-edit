@@ -822,12 +822,11 @@ sub load_qfo {
   ###
 
   ## Go and go down.
-  my $ftp = undef;
+  my $ftp = Net::FTP->new($qfo_site, Passive => $local{FTP_USE_PASSIVE_MODE})
+    or die "Cannot connect to $qfo_site: $!";
   if ( $local{FTP_USE_PASSIVE_MODE} ) {
-      $ftp = Net::FTP->new($qfo_site, Passive => 1) or die "Cannot connect to $qfo_site: $!";
       ll("[FTP] Connected (PASV) to " . $qfo_site);
   } else {
-      $ftp = Net::FTP->new($qfo_site) or die "Cannot connect to $qfo_site: $!";
       ll("[FTP] Connected to " . $qfo_site);
   }
   $ftp->login('anonymous', 'anonymous') or die "Cannot login: $!";
@@ -853,8 +852,22 @@ sub load_qfo {
 				       DIR => $qfo_tmp, SUFFIX => '');
       die "Could not create temporary download file: $!" if ! $tmp_dl_file;
 
-      ll("[FTP] Downloading: " . $qfile);
-      $ftp->get($qfile, $tmp_dl_file) or die "Cannot download $qfile: $!";
+      my $try = 3;
+      while ($try) {
+	  ll("[FTP] Downloading (tries left: $try): " . $qfile);
+	  $try--;
+	  if ($ftp->get($qfile, $tmp_dl_file)) {
+	      last;
+	  } elsif (0 == $try) {
+	      die "Cannot download $qfile: $!";
+	  } else {
+	      $ftp = Net::FTP->new($qfo_site, Passive => $local{FTP_USE_PASSIVE_MODE})
+		or die "Cannot reconnect to $qfo_site: $!";
+	      $ftp->login('anonymous', 'anonymous') or die "Cannot login: $!";
+	      $ftp->binary() or die "Cannot change to binary mode: $!";
+	      $ftp->cwd($qfo_dir) or die "Cannot change working directory to $qfo_dir: $!";
+	  }
+      }
 
       ## Run final command.
       my @args =
