@@ -83,7 +83,7 @@ the database.
 
 =item C<--quiet>
 
-This will supress the SQL output when dry running.
+Suppresses some warnings.
 
 =back
 
@@ -118,7 +118,7 @@ GetOptions
 
    'dry-run!'     => \$dry_run,
    'debug!'       => \$GO::MatchID::debug,
-#   'quiet!'       => \$My::Pthr::quiet,
+   'quiet!'       => \$GO::MatchID::quiet,
    'match-only!'  => \$match_only,
   ) or die pod2usage();
 
