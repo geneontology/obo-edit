@@ -1,268 +1,16 @@
 #!/usr/local/bin/perl
-package My::Pthr;
 use strict;
 use warnings;
 use Data::Dumper;
-use List::Util qw/first/;
-use Memoize;
-use Pod::Usage;
-
-use DBI;
-
-#export DBI_DBNAME=DBI:mysql:mysql_socket=/Genomics/local/go/mysql/mysql.sock;database=go_latest
-#export DBI_DBNAME=DBI:mysql:database=go_latest
-#export DBI_USER=root
-#export DBI_PASS=
-
-use GO::Metadata::Panther;
-use GO::AppHandle;
-
-if (!@ARGV) {
-    pod2usage();
-    exit;
-}
-our $apph = GO::AppHandle->connect(\@ARGV);
-our $dbh = $apph->dbh;
-our $quiet;
-
-our $debug;
-
-# Often I only want one row returned from an SQL query.  This return
-# undef if we get zero rows and dies if it gets more then one.
-sub select_one{
-    my $sth = shift;
-    die Dumper \@_ if (!ref $sth);
-    $sth->execute(@_) or die $dbh->errstr . ': ' .
-      $sth->{Statement} . ': (' . join(',',@_) . ")\n";
-
-    my $out = $sth->fetchall_arrayref();
-    if ($sth->rows == 0) {
-	return undef;
-    } elsif ($sth->rows > 1) {
-	die 'Expecting 1 row, found ' . $sth->rows . ":\n" .
-	  $sth->{Statement} . ': (' . join(',', @_) . ')';
-    }
-    return $out->[0];
-}
-
-
-my $grant = $dbh->prepare('SHOW GRANTS');
-$grant->execute();
-$grant = $grant->fetchall_arrayref;
-if (!first { $_->[0] =~ m/GRANT ALL PRIVILEGES/} @$grant) {
-    warn "I don't think you have write access to the database!\n";
-}
-
-
-our $select_species_id_sth = $dbh->prepare(<<SQL);
-SELECT id FROM species WHERE ncbi_taxa_id=?
-SQL
-sub species_ids{
-    my $s = shift;
-    my $species = $s->{species};
-    if (!$species->{species_ids}) {
-	for my $ncbi ($species->ncbi_ids) {
-	    my $r = select_one($select_species_id_sth, $ncbi);
-
-	    if ($r->[0]) {
-		push @{ $species->{species_ids} }, $r->[0];
-	    } else {
-		die $species->code . ' (' .
-		  $species->ncbi_taxa_id . ') was not fonud';
-	    }
-	}
-    }
-    return @{ $species->{species_ids} };
-}
-
-
-# The id names that panther uses isn't always the same as what GO
-# uses. Here is the translation.
-our %metonym =
-  (
-   UniProtKB => [ qw(UniProtKB UniProtKB/Swiss-Prot UniProtKB/TrEMBL
-		     UniProt uniprot UNIprotKB SWISS-PROT Swiss-Prot) ],
-   ENSEMBL   => [ qw/ENSEMBL Ensembl/ ],
-   NCBI      => [ qw/NCBI RefSeq/ ],
-   FB        => [ qw/FB FlyBase/ ],
-   WB        => [ qw/WB WormBase/ ],
-   ECOLI     => [ qw/EcoCyc/ ],
-  );
-
-
-# takes two arguments: 1> the panther id, 2> the cluster name
-sub new{
-    my $c = shift;
-
-    my %s;
-    $s{pthr}    = shift; # panther id
-    $s{cluster} = shift; # phylotree cluster
-    my $hash = shift || {};
-
-    my ($species, @ids) = split(m/\|/, $s{pthr});
-    if (exists $hash->{$species}) {
-	$s{species} = $hash->{$species};
-    } else {
-	return undef;
-	#$s{species} = GO::Metadata::Panther->new($species)
-    }
-    return undef if (!$s{species});
-
-    $s{ids} = [ map {
-	my ($dbname, $key) = split(m/:/, $_, 2);
-	[ $dbname => $key ];
-    } @ids ];
-
-    return bless \%s, $c;
-}
-
-memoize('notice');
-sub notice{
-    return if $quiet;
-    my $s = shift;
-    print join(' ', $s->{pthr}, @_) . "\n";
-}
-
-
-our @select_gene_product =
-  ($dbh->prepare(<<SQL),
-SELECT gene_product.id AS gene_product_id
-,dbxref.id AS dbxref_id
-,xref_key
-,xref_dbname
-FROM dbxref
-JOIN gene_product ON(dbxref.id=gene_product.dbxref_id)
-WHERE xref_key=? AND species_id=?
-SQL
-
-# If we want to use prefers off the gene_product_dbrxef xref_key use
-# this.
-
-   $dbh->prepare(<<SQL),
-SELECT gene_product.id AS gene_product_id
-,dbxref.id AS dbxref_id
-,xref_key
-,xref_dbname
-FROM gene_product
-JOIN gene_product_dbxref ON(gene_product.id=gene_product_dbxref.gene_product_id)
-JOIN dbxref ON(gene_product_dbxref.dbxref_id=dbxref.id)
-WHERE xref_key=? AND species_id=?
-SQL
-
-
-
-# if you want to compare the gene_product.dbxref_id use this.
-
-   $dbh->prepare(<<SQL),
-SELECT gene_product.id AS gene_product_id
-,d2.id AS dbxref_id
-,d2.xref_key
-,d2.xref_dbname
-FROM dbxref AS d1
-JOIN gene_product_dbxref ON(d1.id=gene_product_dbxref.dbxref_id)
-JOIN gene_product ON(gene_product_dbxref.gene_product_id=gene_product.id)
-JOIN dbxref AS d2 ON(gene_product.dbxref_id=d2.id)
-WHERE d1.xref_key=? AND species_id=?
-SQL
-
-
-  );
-
-
-# Tries to get the gene_product_id for this item. It sets dbxref_id if
-# it finds it too.
-sub gene_product_id{
-    my $s = shift;
-    return $s->{gene_product_id} if (exists $s->{gene_product_id});
-
-    my @out;
-    for my $species_id ( $s->species_ids ) {
-	my @id = map { $_->[1] } @{ $s->{ids} };
-	for my $sgp (@select_gene_product) {
-	    for my $id (@id) {
-		my @args = ($id, $species_id);
-		$sgp->execute(@args) or die;
-		push @out, @{ $sgp->fetchall_arrayref() };
-	    }
-
-	    if (scalar(@out) > 1) {
-		my %r; # report
-		for my $o (@out) {
-		    $r{$o->[3]}++;
-		}
-
-		@out = map {
-		    if ($r{$_->[3]} > 1) {
-			$s->notice('Skipping multiple dbxref.xref_dbname entry:',
-				   $_->[3]);
-			();
-		    } else {
-			$_;
-		    }
-		} @out;
-	    }
-
-	    # only try to get more if we didn't get any.
-	    last if (scalar @out);
-	}
-    }
-
-    my $found = scalar @out;
-    if ($found == 0) {
-	#$s->notice('No gene_product rows found');
-	return ($s->{gene_product_id} = undef);
-    }
-
-    my $out;
-    if ($found == 1) {
-	$out = $out[0]
-    } else {
-	my @prefer = @{ $s->{species}->{prefer} || [] };
-	while (@prefer) {
-	    my $want = shift @prefer;
-	    $out = first {
-		lc($_->[3]) eq lc($want);
-	    } @out;
-	    last if ($out);
-	}
-	if ($out) {
-	    $s->notice('matched', $found, 'gene_product rows');
-	} else {
-	    die "Don't know what to prefer for: $s->{pthr}\n" . Dumper(\@out);
-	}
-    }
-
-    $s->{gene_product_id} = $out->[0];
-    $s->{dbxref_id} = $out->[1];
-    $s->{xref} = $out->[2];
-    return $s->{gene_product_id};
-}
-
-
-my $select_type_id = $dbh->prepare(<<SQL);
-SELECT id FROM term WHERE name=? AND term_type=?
-SQL
-memoize('type_id');
-sub type_id{
-    my $name = shift; # $species{$s->{species}}->{sequence};
-    my $type = 'sequence';
-    my $out = select_one($select_type_id, $name, $type) or die
-      "can't find type ('$name', '$type')";
-    warn "type_id ($name, $type) => $out->[0]" if ($debug);
-    return $out->[0];
-}
-
-1;
-
-package main;
-use strict;
-use warnings;
-use Memoize;
-use Data::Dumper;
-use Text::Wrap;
 use Getopt::Long;
-use Pod::Usage;
 use List::Util qw/first/;
+use Memoize;
+use Pod::Usage;
+use Text::Wrap;
+use Carp;
+
+use GO::AppHandle;
+use GO::MatchID;
 
 =head1 NAME
 
@@ -340,6 +88,10 @@ This will supress the SQL output when dry running.
 =back
 
 =cut
+
+my $apph = GO::AppHandle->connect(\@ARGV);
+my $dbh = $GO::MatchID::dbh = $apph->dbh;
+
 my @species;
 my $dry_run = 10000; # start pho column ids at negative this number
 my $pthr_xref_dbname = 'PantherDB'; # Make this an option when loading
@@ -365,8 +117,8 @@ GetOptions
    'to=i'         => \$to,
 
    'dry-run!'     => \$dry_run,
-   'debug!'       => \$My::Pthr::debug,
-   'quiet!'       => \$My::Pthr::quiet,
+   'debug!'       => \$GO::MatchID::debug,
+#   'quiet!'       => \$My::Pthr::quiet,
    'match-only!'  => \$match_only,
   ) or die pod2usage();
 
@@ -378,13 +130,13 @@ if (scalar(@species) && !GO::Metadata::Panther::valid_codes(@species)) {
 		  GO::Metadata::Panther->codes());
 }
 
-if ($tsv) {
-    if (!$to or !scalar(@from)) {
-	push @e, wrap('', '', <<TXT);
-If --tsv is specified --to and --from are needed too.
-TXT
-    }
-}
+# if ($tsv) {
+#     if (!$to or !scalar(@from)) {
+# 	push @e, wrap('', '', <<TXT);
+# If --tsv is specified --to and --from are needed too.
+# TXT
+#     }
+# }
 
 die pod2usage(join("\n", @e)) if (scalar @e);
 
@@ -398,24 +150,24 @@ my %species = map {
 } GO::Metadata::Panther->new(@species);
 
 
-my %tsv;
-if ($tsv) {
-    open(TSV, $tsv) or die "Unable to read '$tsv', $!";
-    while(<TSV>) {
-	chomp;
-	my @row = split(m/\t/);
-	next if (!$row[$to]);
-	for my $from (@from) {
-	    next if (!exists $row[$from]);
-	    $tsv{$row[$from]} = $row[$to];
-	}
-    }
-    close TSV;
+# my %tsv;
+# if ($tsv) {
+#     open(TSV, $tsv) or die "Unable to read '$tsv', $!";
+#     while(<TSV>) {
+# 	chomp;
+# 	my @row = split(m/\t/);
+# 	next if (!$row[$to]);
+# 	for my $from (@from) {
+# 	    next if (!exists $row[$from]);
+# 	    $tsv{$row[$from]} = $row[$to];
+# 	}
+#     }
+#     close TSV;
 
-    if (0 == scalar keys %tsv) {
-	die "Found no useful data in '$tsv'.";
-    }
-}
+#     if (0 == scalar keys %tsv) {
+# 	die "Found no useful data in '$tsv'.";
+#     }
+# }
 
 =head2 LOADING
 
@@ -435,23 +187,24 @@ my @pthr;
 while(<>) {
     chomp;
 
-    my $row = My::Pthr->new(split(m/\t/, $_), \%species);
-    next if (!$row);
-    next if (!first{$_ eq $row->{species}->{code}} @species);
-
-
+    my ($protein, $cluster) = split(m/\t/, $_, 2);
+    my ($species, @ids) = split(m/\|/, $protein);
+    next if (!first{$_ eq $species} @species);
+    my $row = GO::MatchID->new
+      (
+       species_metadata => $species{$species},
+       cluster          => $cluster,
+       panther_id       => $protein,
+      );
+    my ($gene_product_id, $dbxref_id) = $row->guess(0);
     push @pthr, $row;
 
-    $summary{$row->{species}->{code}} = {}
-      if (not $summary{$row->{species}->{code}});
-
-    my $summary = $summary{$row->{species}->{code}};
-    $summary->{total}++;
-
-    if ($row->gene_product_id(\%tsv)) {
-	$summary->{gene_product}++;
+    if ($gene_product_id) {
+	$summary{$species}->{gene_product}++;
+    } elsif ($dbxref_id) {
+	$summary{$species}->{dbxref_id}++;
     } else {
-	$summary->{nothing}++;
+	$summary{$species}->{missed}++;
     }
 
 } continue {
@@ -461,8 +214,6 @@ while(<>) {
  	warn 'mark';
     }
 }
-
-
 
 =pod
 
@@ -478,12 +229,17 @@ print join("\n", map {
 
 exit (0) if ($match_only);
 
-
 sub dry_run_sth{
     my $sth = shift;
     my $out = -($dry_run++);
     my $sql = $sth->{Statement};
     chomp $sql;
+
+    for my $test (@_) {
+	if (!defined $test) {
+	    croak(Dumper \@_);
+	}
+    }
 
     print wrap
       ('dry run: ', "\t",
@@ -492,7 +248,7 @@ sub dry_run_sth{
 }
 
 sub select_one{
-    return My::Pthr::select_one(@_);
+    return GO::MatchID::_select_one_row(@_);
 }
 
 
@@ -605,9 +361,10 @@ skip that entry.
 =cut
 for my $pthr (@pthr) {
     $pthr->{phylotree_id} = gc_phylotree_id($pthr->{cluster});
+    my $gp = $pthr->{guessed}; # gene_product
 
-    if (not($pthr->{dbxref_id}) or not($pthr->{gene_product_id})) {
-	my @a = ($pthr->{phylotree_id}, 'missing', $pthr->{pthr});
+    if (not($gp->{dbxref_id}) or not($gp->{gene_product_id})) {
+	my @a = ($pthr->{phylotree_id}, 'missing', $pthr->{panther_id});
 	if ($dry_run) {
 	    dry_run_sth($insert_phylotree_property, @a);
 	} else {
@@ -618,9 +375,8 @@ for my $pthr (@pthr) {
 	next;
     }
 
+    my @a = ($gp->{gene_product_id}, $pthr->{phylotree_id});
 
-
-    my @a = ($pthr->{gene_product_id}, $pthr->{phylotree_id});
     my $gene_product_phylotree_id = select_one
       ($select_gene_product_phylotree, @a);
     if (!$gene_product_phylotree_id) {
@@ -631,6 +387,7 @@ for my $pthr (@pthr) {
 	      die $insert_gene_product_phylotree->errstr;
 	}
     }
+
 }
 
 =head1 AUTHOR

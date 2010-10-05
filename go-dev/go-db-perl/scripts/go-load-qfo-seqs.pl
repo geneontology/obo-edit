@@ -12,6 +12,8 @@ use GO::AppHandle;
 use GO::Model::Seq;
 use GO::Model::GeneProduct;
 
+use Data::Dumper;
+
 use IO::Uncompress::AnyUncompress qw/$AnyUncompressError/;
 use List::Util qw/first/;
 
@@ -200,6 +202,7 @@ sub load_fasta {
 	    $last{seq} = '';
 
 	    # now the new stuff:
+	    #die Dumper ($modid,$species_id,$symbol,$desc);
 	    $last{gp_id} = get_gp_id($modid,$species_id,$symbol,$desc);
 	    if (!$last{gp_id}) {
 		if ($opt_h->{nomods}) {
