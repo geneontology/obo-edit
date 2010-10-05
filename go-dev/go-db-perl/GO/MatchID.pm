@@ -11,6 +11,7 @@ use GO::Metadata::Panther;
 
 our $dbh;
 our $debug;
+our $quiet;
 
 sub _select_one_row{
     my $sth = shift;
@@ -121,7 +122,7 @@ sub _hash{
 	my $kv = shift @_;
 	die 'Trivial kv' if (_trivial($kv));
 	if ($kv !~ m/:/) {
-	    warn "Skipping '$kv'";
+	    warn "Skipping '$kv'" unless ($quiet);
 	    next;
 	}
 	my ($k, $v) = split(m/:/, $kv, 2);
@@ -301,7 +302,7 @@ sub guess{
 		$matched = scalar @matched;
 		next if (0 == $matched);
 		if (1 < $matched) {
-		    warn <<TXT;
+		    warn <<TXT unless ($quiet);
 Matched $matched UniProt dbxref entries for $xref_key, using $matched[0]->[2]
 TXT
 		}

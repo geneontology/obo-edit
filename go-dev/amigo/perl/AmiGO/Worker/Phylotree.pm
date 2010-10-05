@@ -42,7 +42,7 @@ Number of members that are is a reference genome.
 =cut
 
 use AmiGO::JavaScript;
-use AmiGO::Aid::PantherDB qw/@species/;
+use AmiGO::Aid::PantherDB;
 use GOBO::DBIC::GODBModel::Query;
 
 our $phylotree_gobo;
