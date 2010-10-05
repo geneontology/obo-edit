@@ -7,7 +7,9 @@ use List::Util qw/sum first/;
 use Data::Dumper;
 use Carp;
 
-use base qw/GO::Metadata::UniProt::Species/;
+use base qw/GO::Metadata::UniProt::Species Exporter/;
+our @EXPORT_OK = qw/panther_codes panther_all valid_panther_codes/;
+
 
 =head1 NAME
 
@@ -28,7 +30,7 @@ L<ftp://ftp.pantherdb.org/genome/pthr7.0/>
 
 =cut
 
-# Information needed not provided by UniProt's speclist.txt file.
+# Information needed but not provided by UniProt's speclist.txt file.
 
 our %species =
   (
@@ -63,7 +65,7 @@ our %species =
 
    CAEBR => {},
    CAEEL => { prefer => [ 'WB' ] },
-   CANFA => { prefer => [ 'UniProtKB' ] },
+   CANFA => {},
    CHLTA => {},
    CHLRE => {},
    CHLAA => {},
@@ -91,10 +93,10 @@ our %species =
    # G
    #
 
-   CHICK => { prefer => [ 'UniProtKB' ] },
+   CHICK => {},
    GEOSL => {},
-   GLOVI => { also_node => [ 251221 ],
-	      prefer    => [ 'UniProtKB' ] },
+   GLOVI => { also_node => [ 251221 ] },
+
 
    #
    # H
@@ -173,11 +175,56 @@ our %species =
 
 =over
 
+=head2 Exportable Subroutines
+
+=item GO::Metadata::Panther::codes()
+
+Returns the list of UniProt species codes that are used in Panther clusters.
+
+=cut
+sub codes{
+    warn "Rename this function panther_codes";
+
+    return map {
+	defined $species{$_}->{is} ? () : $_;
+    } keys %species;
+}
+
+
+=item GO::Metadata::Panther::all()
+
+Returns a list of C<GO::Metadata::Panther> objects that are used in Panther clusters.
+
+=cut
+sub all{
+    warn "Rename this function panther_all";
+
+    my $c = shift;
+    return $c->new(codes());
+}
+
+=item GO::Metadata::Panther::valid_codes(...)
+
+Returns a true value in every argument is a UniProt species code used
+in Panther cluster.  Otherwise returns false.
+
+=cut
+sub valid_codes{
+    for my $code (@_) {
+	return undef if (!exists $species{$code});
+    }
+    return '1';
+}
+
+=back
+
+=head2 OO Function
+
 =item GO::Metadata::Panther-E<gt>new(...);
 
 This basically hands things off to L<GO::Metadata::UniProt::Species>'s
-new function and populates that with other Panther/GO specific
-information.
+new function.   Populates that with other Panther/GO specific
+information, and does some error correction.
 
 =cut
 our %_new_cache;
@@ -245,44 +292,6 @@ sub new{
     return @all;
 }
 
-=item GO::Metadata::Panther::codes()
-
-Returns the list of UniProt species codes that are used in Panther clusters.
-
-=cut
-sub codes{
-    return map {
-	defined $species{$_}->{is} ? () : $_;
-    } keys %species;
-}
-
-
-=item GO::Metadata::Panther::all()
-
-Returns a list of C<GO::Metadata::Panther> objects that are used in Panther clusters.
-
-=cut
-sub all{
-    my $c = shift;
-    return $c->new(codes());
-}
-
-=item GO::Metadata::Panther::valid_codes(...)
-
-Returns a true value in every argument is a UniProt species code used
-in Panther cluster.  Otherwise returns false.
-
-=cut
-sub valid_codes{
-    for my $code (@_) {
-	return undef if (!exists $species{$code});
-    }
-    return '1';
-}
-
-=back
-
-=head2 OO Function
 
 =over
 
@@ -313,7 +322,7 @@ sub prefers{
     if ($s->{prefer}) {
 	return @{ $s->{prefer} };
     }
-    return ();
+    return qw/UniProtKB/;
 }
 
 sub id_filter{
