@@ -1,0 +1,18 @@
+[Term]
+id: a
+name: a
+relationship: r b
+
+[Term]
+id: b
+name: b
+
+[Term]
+id: ab
+name: ab
+intersection_of: a
+intersection_of: r b
+
+[Typedef]
+id: r
+name: r

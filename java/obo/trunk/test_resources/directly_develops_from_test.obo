@@ -1,4 +1,8 @@
 [Typedef]
+id: metadata_test_relation
+is_metadata_tag: true
+
+[Typedef]
 id: develops_from
 name: develops_from
 is_transitive: true
