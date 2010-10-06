@@ -211,7 +211,9 @@ public class OBO2Linkfile {
 						+ "   [-o [-f <filterfile1.xml>] <jdbcPath>] ... \\\n"
 						+ "   [-o [-f <filterfileN.xml>] <jdbcPathN>]");
 		System.err
-				.println("  -?                         - Writes this page to stderr and exits.");
+		.println("  -?                         - Writes this page to stderr and exits.");
+		System.err
+		.println("  -includenames                         - Writes labels.");
 		System.err
 				.println("  -formatversion <versionid> - The version of OBO to write. Allowed values are\n"
 						+ "                               OBO_1_0 and OBO_1_2. The default is OBO_1_2.\n"
@@ -220,8 +222,6 @@ public class OBO2Linkfile {
 				.println("  -script <scriptname> <args> \\; - Runs an OSL script on the ontology. A script tag's "
 						+ "                                             arguments MUST be followed by a \\; sequence.");
 
-		System.err
-		.println("  <jdbcpathN>                - A JDBC location");
 		System.err
 				.println("  <filenameN>                - An obo file to load. Any number of OBO files may\n"
 						+ "                               be loaded");
