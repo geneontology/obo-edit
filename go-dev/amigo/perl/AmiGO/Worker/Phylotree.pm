@@ -413,9 +413,13 @@ sub species_dist{
 	order_by => \@gs,
        });
 
+    my %ncbi = map {
+	$_->ncbi_taxon_id() => $_;
+    } AmiGO::Aid::PantherDB->panther_all();
+
     my @out = map {
 	my $ncbi = $_->get_column('ncbi');
-	my $aid = AmiGO::Aid::PantherDB->new($ncbi);
+	my $aid = $ncbi{$ncbi};
 	my $species = $_->get_column('species');
 	{
 	    ncbi => $ncbi,
@@ -454,7 +458,6 @@ sub species_dist{
 #	    my $aid = AmiGO::Aid::PantherDB->code($code);
 	    if (exists $out{$code}) {
 		$out{$code}->{color} = $aid->color;
-		warn Dumper $aid, \%out;
 		($out{$code});
 	    } else {
 		my %o =
@@ -468,11 +471,8 @@ sub species_dist{
 		}
 		\%o;
 	    }
-	#} GO::Metadata::Panther->all();
-	} AmiGO::Aid::PantherDB->all();
+	} AmiGO::Aid::PantherDB->panther_all();
     }
-
-    warn Dumper \@out;
 
     if ($ref) {
 	@out = map {

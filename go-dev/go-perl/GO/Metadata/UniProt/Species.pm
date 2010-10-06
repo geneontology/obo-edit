@@ -24,6 +24,7 @@ use Carp;
 
 #our $SPECIES_LIST=File::Spec->catfile(dirname(__FILE__), 'speclist.txt.gz');
 our $SPECIES_LIST=File::Spec->catfile(dirname(__FILE__), 'speclist.txt');
+our $debug;
 
 =head1 DESCRIPTION
 
@@ -52,7 +53,9 @@ sub new{
 	}
     }
 
-    warn "Opening $SPECIES_LIST\n";
+    warn "Opening $SPECIES_LIST (" . join(' ', keys(%node), '|', keys(%code)) . ")\n"
+      if ($debug);
+
     my $sl = IO::Uncompress::AnyUncompress->new($SPECIES_LIST)
        or die "AnyUncompress failed: $AnyUncompressError\n";
 
@@ -188,3 +191,4 @@ Sven Heinicke E<lt>sven@genomics.princeton.eduE<gt>
 F<speclist.txt> file.
 
 =cut
+1;
