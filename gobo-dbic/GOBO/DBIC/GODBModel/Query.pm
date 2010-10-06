@@ -87,9 +87,53 @@ sub new {
 			   'term',
 			   {'evidence' =>
 			    'dbxref'}];
-			   #'evidence'];
-			   #{'evidence' =>
-			   # 'evidence_dbxref'}];
+    $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
+
+  }elsif( $type eq 'association_deep' ){
+
+    ## This should give us the ability to explore the "with" column
+    ## and beyond with pretty good performace.
+    $self->{QUERY_RESULT_SET} = 'Association';
+    $self->{QUERY_JOIN} = ['term',
+			   {'gene_product' =>
+			    ['species',
+			     'dbxref',
+			     {'gene_product_homolset' =>
+			      'homolset'},
+			    ]},
+			   {'evidence' =>
+			    ['dbxref',
+			     'evidence_dbxref']}];
+    $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
+
+  }elsif( $type eq 'association_deep_DEBUG' ){
+
+    ## The non-DEBUG version seems to fail on some versions. See:
+    ## "Re: more amigo 1.8 issues" from about 201001006.
+    $self->{QUERY_RESULT_SET} = 'Association';
+    $self->{QUERY_JOIN} = ['term',
+			   {'gene_product' =>
+			    ['species',
+			     'dbxref',
+			     {'gene_product_homolset' =>
+			      'homolset'},
+			    ]},
+			   {'evidence' => 'dbxref'}];
+    $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
+
+  }elsif( $type eq 'association_deep2' ){
+
+    ## This should give us the ability to explore the "with" column
+    ## and beyond with pretty good performace.
+    $self->{QUERY_RESULT_SET} = 'Association';
+    $self->{QUERY_JOIN} = ['term',
+			   'evidence',
+			   {'gene_product' =>
+			    ['species',
+			     'dbxref',
+			     {'gene_product_homolset' =>
+			      'homolset'},
+			    ]}];
     $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
 
   }elsif( $type eq 'association_very_deep' ){
@@ -125,56 +169,6 @@ sub new {
 			     {'gene_product_homolset' =>
 			      'homolset'}]},
  			   'evidence'];
-    $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
-
-  }elsif( $type eq 'association_deep' ){
-
-    ## This should give us the ability to explore the "with" column
-    ## and beyond with pretty good performace.
-    $self->{QUERY_RESULT_SET} = 'Association';
-    $self->{QUERY_JOIN} = ['term',
-			   {'gene_product' =>
-			    ['species',
-			     'dbxref',
-			     {'gene_product_homolset' =>
-			      'homolset'},
-			    ]},
-			   #{'evidence' =>
-			   # ['dbxref',
-			   #  'evidence_dbxref']}];
-			   {'evidence' =>
-			    ['dbxref',
-			     'evidence_dbxref']}];
-#     $self->{QUERY_JOIN} = ['term',
-# 			   {'gene_product' =>
-# 			    ['species',
-# 			     'dbxref',
-# 			     {'gene_product_homolset' =>
-# 			      'homolset'},
-# 			    ]},
-# 			   {'evidence' =>
-# 			    {'dbxref',
-# 			     {'evidence_dbxref' =>
-# 			      {'dbxref' =>
-# 			       {'gene_product' =>
-# 				{'association' =>
-# 				 ['term',
-# 				  'evidence']}}}}}}];
-    $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
-
-  }elsif( $type eq 'association_deep2' ){
-
-    ## This should give us the ability to explore the "with" column
-    ## and beyond with pretty good performace.
-    $self->{QUERY_RESULT_SET} = 'Association';
-    $self->{QUERY_JOIN} = ['term',
-			   'evidence',
-			   {'gene_product' =>
-			    ['species',
-			     'dbxref',
-			     {'gene_product_homolset' =>
-			      'homolset'},
-			    ]}];
     $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
 
   }elsif( $type eq 'association_coannotation' ){
