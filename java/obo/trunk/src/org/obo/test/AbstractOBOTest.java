@@ -218,7 +218,7 @@ public abstract class AbstractOBOTest extends TestCase {
 		assertTrue(ns.getID().equals(nsId));	
 	}
 	
-	
+		
 	
 	public void testForDefinition(String id, String def)  {
 		DefinedObject lo = (DefinedObject) session.getObject(id);

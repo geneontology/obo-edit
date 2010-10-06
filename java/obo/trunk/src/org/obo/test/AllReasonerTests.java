@@ -23,6 +23,7 @@ public class AllReasonerTests extends TestCase {
 		out.addTestSuite(SubRelationReasonerTest.class);
 		out.addTestSuite(DisjointnessTest.class);
 		out.addTestSuite(DisjointnessTest2.class);
+		out.addTestSuite(ReasonerEquivalentToTest.class);
 
 		out.addTestSuite(HoldsOverChainReasonerTest.class);
 		out.addTestSuite(RedundancyTest.class);
