@@ -44,7 +44,7 @@ repository."
 
 (defcustom golr-transfer-schema
   '(("apache" ("golr") "/etc/apache2/sites-available/")
-    ("jetty" ("jetty.conf" "jetty-rewrite.xml") "/etc/jetty/")
+    ("jetty" ("jetty.conf" "jetty-rewrite.xml" "jetty.xml") "/etc/jetty/")
     ("jetty" ("no_access.html") "/var/lib/jetty/webapps/root/")
     ("solr" ("go-data-config.xml" "schema.xml" "solrconfig.xml") "/etc/solr/conf/"))
   "File transfers to make when \"installing\" and before
