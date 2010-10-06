@@ -177,43 +177,51 @@ our %species =
 
 =head2 Exportable Subroutines
 
-=item GO::Metadata::Panther::codes()
+=item panther_codes()
 
 Returns the list of UniProt species codes that are used in Panther clusters.
 
 =cut
-sub codes{
-    warn "Rename this function panther_codes";
-
+sub panther_codes{
     return map {
 	defined $species{$_}->{is} ? () : $_;
     } keys %species;
 }
+sub codes{
+    carp "Please use panther_codes() instead of codes()";
+    panther_codes(@_);
+}
 
 
-=item GO::Metadata::Panther::all()
+=item GO::Metadata::Panther->panther_all()
 
 Returns a list of C<GO::Metadata::Panther> objects that are used in Panther clusters.
 
 =cut
-sub all{
-    warn "Rename this function panther_all";
-
+sub panther_all{
     my $c = shift;
-    return $c->new(codes());
+    return $c->new(panther_codes());
+}
+sub all {
+    carp 'Please panther_all() instead if all()';
+    return shift()->panther_all(@_);
 }
 
-=item GO::Metadata::Panther::valid_codes(...)
+=item valid_codes(...)
 
 Returns a true value in every argument is a UniProt species code used
 in Panther cluster.  Otherwise returns false.
 
 =cut
-sub valid_codes{
+sub valid_panther_codes{
     for my $code (@_) {
 	return undef if (!exists $species{$code});
     }
     return '1';
+}
+sub valid_codes(){
+    carp 'Please use valid_panther_codes() instead of valid_codes()';
+    return valid_panther_codes(@_);
 }
 
 =back

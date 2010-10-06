@@ -1,4 +1,5 @@
 package AmiGO::Aid::PantherDB;
+# Shold probably call this AmiGO::Aid::RefGenome
 use warnings;
 use strict;
 
