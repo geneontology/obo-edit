@@ -60,7 +60,8 @@
 
   <query>
 
-    <maxBooleanClauses>1024</maxBooleanClauses>
+    <!-- <maxBooleanClauses>1024</maxBooleanClauses> -->
+    <maxBooleanClauses>65536</maxBooleanClauses>
 
     <filterCache
       class="solr.FastLRUCache"
