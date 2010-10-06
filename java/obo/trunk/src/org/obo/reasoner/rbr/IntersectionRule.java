@@ -15,6 +15,7 @@ import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBORestriction;
+import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.reasoner.Explanation;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.impl.CompletenessMatch;
@@ -70,6 +71,20 @@ public class IntersectionRule extends AbstractRule {
 	 * T cell differentiation -> [ <is_a differentiation>, <results_in_acquisition_of_features_of T-cell>]
 	 */
 	protected MultiMap<LinkedObject, Link> intersectionMap;
+	
+	
+	/**
+	 * maps from a defined OBOClass to the most informative link comprising
+	 * part of the set of xp links; this is the link that has fewest children.
+	 * this is used for optimization purposes, the actual link chosen should
+	 * not affect the final outcome.
+	 * For example, if blue_car is defined using the two links
+	 * [1] is_a car
+	 * [2] has_color blue
+	 * 
+	 * and there are many more blue colored things than cars, then [1] is chosen
+	 * as the best link
+	 */
 	protected Map<LinkedObject, Link> bestLinkMap;
 
 
@@ -153,11 +168,15 @@ public class IntersectionRule extends AbstractRule {
 			logger.info("      xpInitTime = "
 					+ (xpInitTime / 1000000d) + " ms");
 		}
+		
+		// trivial links are added; now the main classification step
 		for (LinkedObject xp : intersectionMap.keySet()) {
 
 			// each candidate is a potential subclass of xp
 			Set<LinkedObject> candidateSubClasses = new HashSet<LinkedObject>();
 
+			// choose the optimal link to test first; the choice only
+			// affects performance, not results
 			Link bestLink = null;
 			if (bestLinkMap.containsKey(xp))
 				bestLink = bestLinkMap.get(xp);
@@ -168,7 +187,12 @@ public class IntersectionRule extends AbstractRule {
 
 
 			// find candidates based on one of the N+S conditions
-			for (Link candidateLink : reasoner.getChildren(bestLink.getParent())) {
+			Collection<Link> rchildren = reasoner.getChildren(bestLink.getParent());
+			if (bestLink.getType().equals(OBOProperty.IS_A) || bestLink.getType().isReflexive()) {
+				rchildren.add(new OBORestrictionImpl(bestLink.getParent(),
+						bestLink.getParent(), bestLink.getType()));
+			}
+			for (Link candidateLink : rchildren) {
 				OBOProperty prop = candidateLink.getType();
 				if (prop.equals(bestLink.getType())) {
 					LinkedObject candidateSubClass = candidateLink.getChild();
