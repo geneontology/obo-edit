@@ -561,7 +561,7 @@ public class ReasonerUtil {
 			return true;
 		for (Link tr : db.getParents(a)) {
 			if (tr.getType().equals(OBOProperty.IS_A)
-					&& isSubclass(db, tr.getParent(), b))
+					&& tr.getParent().equals(b))
 				return true;
 		}
 		return false;
@@ -689,6 +689,17 @@ public class ReasonerUtil {
 		}
 		return out;
 
+	}
+
+	public static boolean isEquivalent(LinkedObject child, LinkedObject parent) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public static boolean isEquivalent(LinkDatabase ldb, LinkedObject a,
+			LinkedObject b) {
+		// TODO Auto-generated method stub
+		return isSubclass(ldb,a,b) && isSubclass(ldb,b,a);
 	}
 
 }

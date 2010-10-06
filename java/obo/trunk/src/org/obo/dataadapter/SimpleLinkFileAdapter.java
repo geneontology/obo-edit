@@ -194,22 +194,31 @@ public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBO
 				if (io instanceof LinkedObject) {
 					LinkedObject lo = (LinkedObject) io;
 					for (Link link : ldb.getParents(lo)) {
+						boolean isImplied = TermUtil.isImplied(link);
+						boolean isIntersection = TermUtil.isIntersection(link);
+						
 						stream.print(link.getChild().getID());
 						if (ioprofile.isIncludeNames())
 							stream.print(" "+link.getChild().getName());
 							
 						stream.print("\t");
-						stream.print(link.getType().getID());
+						if (ReasonerUtil.isEquivalent(ldb,link.getChild(),link.getParent())) {
+							stream.print("equivalent_to");
+							isImplied = true;
+							isIntersection = false;
+						}
+						else {
+							stream.print(link.getType().getID());
+						}
 						stream.print("\t");
 						stream.print(link.getParent().getID());
 						if (ioprofile.isIncludeNames())
 							stream.print(" "+link.getParent().getName());
 
 						stream.print("\t");
-						boolean isImplied = TermUtil.isImplied(link);
 						stream.print(isImplied ? "implied" : "asserted");
 						stream.print("\t");
-						stream.print(TermUtil.isIntersection(link) ? "intersection" : "link");
+						stream.print(isIntersection ? "intersection" : "link");
 						stream.print("\t"); // TODO: make isRepairMode configurable
 						stream.print(ReasonerUtil.isRedundant(fullReasoner, link, true) ? "redundant" : "");
 						if (ioprofile.isIncludeExplanations()) {
