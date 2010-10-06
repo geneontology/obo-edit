@@ -33,7 +33,8 @@ sub new {
   my $self  = $class->SUPER::new();
 
   $self->{EXP_QUERY} =
-    GOBO::DBIC::GODBModel::Query->new({type=>'association_deep'});
+    #GOBO::DBIC::GODBModel::Query->new({type=>'association_deep'});
+    GOBO::DBIC::GODBModel::Query->new({type=>'association_deep_DEBUG'});
   $self->{ISS_QUERY} =
     #GOBO::DBIC::GODBModel::Query->new({type=>'association_very_deep'});
     GOBO::DBIC::GODBModel::Query->new({type=>'association_very_deep_DEBUG'});
