@@ -47,6 +47,8 @@ public class ReasonerEquivalentToTest extends AbstractReasonerTest {
 	public void testEquivalence() throws Exception {
 		this.testForIsA("ab", "a");
 		this.testForIsA("a", "ab");
+		this.testForEquivalentTo("a", "ab");
+		this.testForNotEquivalentTo("a", "b");
 	}
 }
 

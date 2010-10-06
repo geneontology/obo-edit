@@ -129,6 +129,17 @@ public abstract class AbstractReasonerTest extends AbstractOBOTest {
 	public void testForNoIsAInTrimmed(String childID, String parentID)  {
 		assertFalse(hasIsALink(trimmedDB, childID, parentID));
 	}
+	public void testForEquivalentTo(String childID, String parentID)  {
+		LinkedObject child = (LinkedObject) session.getObject(childID);
+		LinkedObject parent = (LinkedObject) session.getObject(parentID);
+		assertTrue(ReasonerUtil.isEquivalent(reasonedDB, child, parent));
+	}
+	public void testForNotEquivalentTo(String childID, String parentID)  {
+		LinkedObject child = (LinkedObject) session.getObject(childID);
+		LinkedObject parent = (LinkedObject) session.getObject(parentID);
+		assertFalse(ReasonerUtil.isEquivalent(reasonedDB, child, parent));
+	}
+
 
 	public boolean isRedundantIsA(String childID, String parentID)  {
 		LinkedObject child = (LinkedObject) session.getObject(childID);
