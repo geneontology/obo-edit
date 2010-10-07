@@ -300,7 +300,9 @@ sub _add_core_set {
   push @{$profile->{required}}, 'format';
   $profile->{defaults}{format} = 'html';
   $profile->{constraint_methods}{format} =
-    is_in_list_p('html', 'xml', 'tab', 'text', 'json', 'svg', 'png', 'navi');
+    is_in_list_p('html', 'xml', 'tab', 'text', 'json',
+		 'svg', 'svg_raw', 'png', 'dot',
+		 'navi');
 
   ## Let's try and move away from this...
   # ## Session ID.
@@ -366,7 +368,7 @@ sub _add_url {
   push @{$profile->{required}}, 'external_resource';
   $profile->{defaults}{external_resource} = '';
   # $profile->{constraint_methods}{format} =
-  #   is_in_list_p('svg', 'png', 'navi');
+  #   is_in_list_p('svg', 'svg_raw', 'png', 'dot', 'navi');
 
   # my $return_val = 0;
   # if ( length($string) &&
@@ -385,7 +387,7 @@ sub _add_visual_format {
   push @{$profile->{required}}, 'format';
   $profile->{defaults}{format} = 'png';
   $profile->{constraint_methods}{format} =
-    is_in_list_p('svg', 'png', 'navi');
+    is_in_list_p('svg', 'svg_raw', 'png', 'dot', 'navi');
 }
 
 
@@ -626,7 +628,7 @@ sub _add_homolset_graph_set {
   ## GraphViz. It should be removed for production.`
   push @{$profile->{optional}}, 'format';
   $profile->{constraint_methods}{format} =
-    is_in_list_p('dot', 'svg', 'png', 'navi');
+    is_in_list_p('dot', 'svg', 'svg_raw', 'png', 'dot', 'navi');
 
   ## Use cache?
   push @{$profile->{required}}, 'cache';
