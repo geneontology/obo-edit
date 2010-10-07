@@ -40,11 +40,10 @@ our %species =
 
    ANOGA => { prefer => [ 'Gene' ] },
    ARATH => { id_filter => sub {
-		  my ($dbname, $key) = (shift, shift);
-		  if ($dbname eq 'gene') {
-		      return ('TAIR', "locus:$key");
+		  if ($_[0] eq 'gene') {
+		      return ('TAIR', "locus:$_[1]");
 		  }
-		  return ($dbname, $key);
+		  return @_;
 	      }
 	    },
    AQUAE => {},
@@ -118,7 +117,14 @@ our %species =
    MACMU => { prefer => [ 'UniProtKB', 'ENSEMBL' ] },
    METAC => {},
    MONDO => {},
-   MOUSE => { prefer => [ 'MGI' ] },
+   MOUSE => { prefer => [ 'MGI' ],
+	      id_filter => sub {
+		  if ($_[0] eq 'MGI') {
+		      $_[1] =~ s/^(\d)/MGI:$1/;
+		  }
+		  return @_;
+	      }
+	    },
 
    #
    # N
