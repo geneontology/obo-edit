@@ -331,13 +331,17 @@ sub make_graph {
   ## version--it's only here to facilitate graphviz testing.
   my $svg_file = '';
   if( $gv_out_type eq 'dot' ){
-    $svg_file = $gv->get_dot(0);
+    my $file = $gv->get_dot(0);
     $self->kvetch('_5_time: ' . tv_interval($t));
-    return $svg_file;
+    return $file;
   }elsif( $gv_out_type eq 'png' ){
-    $svg_file = $gv->get_png(0);
+    my $file = $gv->get_png(0);
     $self->kvetch('_5_time: ' . tv_interval($t));
-    return $svg_file;
+    return $file;
+  }elsif( $gv_out_type eq 'svg_raw' ){
+    my $file = $gv->get_svg(0);
+    $self->kvetch('_5_time: ' . tv_interval($t));
+    return $file;
   }else{
     $svg_file = $gv->get_svg(0);
   }

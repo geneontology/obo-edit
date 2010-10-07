@@ -297,9 +297,11 @@ sub mode_homolset_graph {
 
     ## Generate it ourselves.
     if( $format && $format eq 'dot' ){
-      $output = $hgraph->make_graph($set, 'dot'); # if ! defined $output;
+      $output = $hgraph->make_graph($set, 'dot');
     }elsif( $format && $format eq 'png' ){
-      $output = $hgraph->make_graph($set, 'png'); # if ! defined $output;
+      $output = $hgraph->make_graph($set, 'png');
+    }elsif( $format && $format eq 'svg_raw' ){
+      $output = $hgraph->make_graph($set, 'svg_raw');
     }else{
       $output = $hgraph->make_graph($set, 'svg'); # if ! defined $output;
     }
@@ -314,6 +316,8 @@ sub mode_homolset_graph {
     $self->header_add( -type => 'text/plain' );
   }elsif( $format && $format eq 'png' ){
     $self->header_add( -type => 'image/png' );
+  }elsif( $format && $format eq 'svg_raw' ){
+    $self->header_add( -type => 'image/svg+xml' );
   }else{
     $self->header_add( -type => 'image/svg+xml' );
   }

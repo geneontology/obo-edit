@@ -73,8 +73,10 @@ sub _add_fiddly_header {
     #$self->header_add( -type => '' );
     $self->header_type('none');
   }else{
-    if( $type && $type eq 'svg' ){
+    if( $type && ($type eq 'svg' || $type eq 'svg_raw') ){
       $self->header_add( -type => 'image/svg+xml' );
+    }elsif( $type && $type eq 'dot' ){
+      $self->header_add( -type => 'text/plain' );
     }else{
       $self->header_add( -type => 'image/' . $type );
     }
@@ -221,7 +223,8 @@ sub mode_advanced {
 
   ## Set correct graphics renderer.
   my $gv = undef;
-  if( $format && $format eq 'svg' ){
+  if( $format &&
+      ($format eq 'svg' || $format eq 'svg_raw' || $format eq 'dot') ){
     $gv = AmiGO::GraphViz->new();
   }else{
     $gv = AmiGO::GraphViz->new({bitmap => 1});
@@ -318,14 +321,20 @@ sub mode_advanced {
     $svg_rewriter->add_js_initializer("org.bbop.Viewer('rgsvg','tform_matrix');");
     $output = $svg_rewriter->rewrite($svg_file);
 
+  }elsif( $format && $format eq 'svg_raw' ){
+    $output = $gv->get_svg();
+  }elsif( $format && $format eq 'dot' ){
+    $output = $gv->get_dot();
   }else{
     $output = $gv->get_png();
   }
 
   ## If a header is needed, set correct header type for format.
   if( $inline_p eq 'false' ){
-    if( $format && $format eq 'svg' ){
+    if( $format && ($format eq 'svg' || $format eq 'svg_raw') ){
       $self->header_add( -type => 'image/svg+xml' );
+    }elsif( $format && $format eq 'dot' ){
+      $self->header_add( -type => 'text/plain' );
     }else{
       $self->header_add( -type => 'image/png' );
     }
@@ -335,8 +344,8 @@ sub mode_advanced {
     $self->header_add( -type => '' );
 
     ## BUG: inline SVG needs the first few lines removed as well...
-    if( $format && $format eq 'svg' ){
-     ## TODO: 
+    if( $format && ($format eq 'svg' || $format eq 'svg_raw') ){
+      ## TODO: 
     }
   }
 
