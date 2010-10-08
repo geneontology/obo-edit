@@ -339,12 +339,14 @@ sub rewrite {
   $self->kvetch($top);
   $self->kvetch('generated $top END');
 
-  ## Remove the initial transformation the GV wants to use.
+  ## Remove the initial transformation the GV wants to use.  NOTE: Not
+  ## quite as plastic here--the old and new versions end up giving
+  ## different numbers to this initial transform.
   my $init = '';
   $init .= "<!-- CHANGE: removed initial transformation. -->\n";
   $init .= '<g id="graph0" class="graph">';
   $init .= "<!-- END modified area -->\n";
-  $svg_file =~ s/(\<g id="graph0" class="graph"(.*?)\>)/$init/s;
+  $svg_file =~ s/(\<g id="graph[0-9]" class="graph"(.*?)\>)/$init/s;
 
   ## Get rid of the big white BG polygon.
   my $remove_poly_message = '';
