@@ -207,9 +207,10 @@ sub rewrite {
   $top .= "<title>" . $self->{JS_SVG_TITLE} . "</title>\n"
     if $self->{JS_SVG_TITLE};
 
-  ## TODO: to style or not to style...will be necessary if we do
-  ## dynamic box resizing.
-  $top .= "<style type=\"text/css\">text {font-family:monospace;}</style>\n";
+  ## While correct, having this destroys a lot of the nice layout we have.
+  # ## TODO: to style or not to style...will be necessary if we do
+  # ## dynamic box resizing.
+  # $top .= "<style type=\"text/css\">text {font-family:monospace;}</style>\n";
 
   ## Add additional segments JS if requested.
   foreach my $seg (@{$self->{JS_SVG_SEGEMENT}}){
@@ -354,7 +355,7 @@ sub rewrite {
   ## Get rid of the big white BG polygon. NOTE: not really conserved
   ## at all between versions of GV, so something pretty general here.
   my $remove_poly_message = '';
-  $remove_poly_message .= "<!-- CHANGE: removed annoying white bg poly -->\n";
+  $remove_poly_message .= "<!-- CHANGE: removed annoying white bg poly. -->\n";
   $remove_poly_message .= "<!-- END CHANGE -->\n";
   $svg_file =~ s/(\<polygon fill(.*?)white(.*?)stroke(.*?)white(.*?)points(.*?)\>)/$remove_poly_message/s;
 
@@ -379,28 +380,21 @@ sub rewrite {
   $svg_file =~ s/(font\-size\:\d+)\.00\;/$1px\;/gs; # old font-size:10.00;
   $svg_file =~ s/(font\-size\=\"\d+)\.00"/$1px\"/gs; # new font-size="10.00"
 
-  ## Try and get the new font-family as the nicer old one.
-  ## TODO: could this be in the GV args?
-  $svg_file =~ s/font\-family\=\"Times Roman,serif\"/font\-family\=\"Times New Roman\"/gs;
+  ## Try and get the new font-family as the nicer old one.  TODO:
+  ## could this be in the GV args? It looks like new repects the
+  ## global style (unlike old).
+  $svg_file =~
+    s/font\-family\=\"Times Roman,serif\"/font\-family\=\"Times New Roman\"/gs;
 
   ## Replace bottom.
   ## Changed this because of the removal of the second graph group above.
   my $bottom = '';
-  $bottom .= '<!-- BEGIN modified area -->';
+  $bottom .= '<!-- BEGIN modified area bottom -->';
   $bottom .= '<g id="overlay_context"></g>';
   $bottom .= '</g>';
   $bottom .= '<g id="control_context"></g>';
   $bottom .= '<g id="detail_context"></g>';
   $bottom .= '<g id="super_context"></g>';
-#   ## Let's just add a frame for the SVG.
-#   $bottom .= '<g id="frame_ignore_i_am_temp" stroke="black" stroke-width="3">';
-#   $bottom .= '<line x1="0" y1="0" x2="' . $svg_width . '" y2="0"/>';
-#   $bottom .= '<line x1="0" y1="0" x2="0" y2="' . $svg_height . '"/>';
-#   $bottom .= '<line x1="' . $svg_width . '" y1="' . $svg_height .
-#     '" x2="0" y2="' . $svg_height . '"/>';
-#   $bottom .= '<line x1="' . $svg_width . '" y1="' . $svg_height .
-#     '" x2="' . $svg_width . '" y2="0"/>';
-#   $bottom .= '</g>';
   $bottom .= '</svg>';
   $bottom .= '<!-- END modified area -->';
   $svg_file =~ s/(\<\/svg>)/$bottom/s;
