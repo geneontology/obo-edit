@@ -379,6 +379,9 @@ sub rewrite {
   $svg_file =~ s/(font\-size\:\d+)\.00\;/$1px\;/gs; # old font-size:10.00;
   $svg_file =~ s/(font\-size\=\"\d+)\.00"/$1px\"/gs; # new font-size="10.00"
 
+  ## Try and get the new font-family as the nicer old one.
+  ## TODO: could this be in the GV args?
+  $svg_file =~ s/font\-family\=\"Times Roman,serif\"/font\-family\=\"Times New Roman\"/gs;
 
   ## Replace bottom.
   ## Changed this because of the removal of the second graph group above.
