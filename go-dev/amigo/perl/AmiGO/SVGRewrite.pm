@@ -345,14 +345,14 @@ sub rewrite {
   my $init = '';
   $init .= "<!-- CHANGE: removed initial transformation. -->\n";
   $init .= '<g id="graph0" class="graph">';
-  $init .= "<!-- END modified area -->\n";
+  $init .= "\n<!-- END modified area -->\n";
   $svg_file =~ s/(\<g id="graph[0-9]" class="graph"(.*?)\>)/$init/s;
 
   ## Get rid of the big white BG polygon.
   my $remove_poly_message = '';
   $remove_poly_message .= "<!-- CHANGE: removed annoying white bg poly -->\n";
   $remove_poly_message .= "<!-- END CHANGE -->\n";
-  $svg_file =~ s/(\<polygon style\=\"fill\:white\;stroke\:white\;\"(.*?)\>)/$remove_poly_message/s;
+  $svg_file =~ s/(\<polygon fill(.*?)white(.*?)stroke(.*?)white(.*?)points(.*?)\>)/$remove_poly_message/s;
 
   ## Get rid of the rest of the white polygons.
   my $remove_rest_message = '';
