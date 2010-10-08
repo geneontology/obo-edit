@@ -377,7 +377,7 @@ sub rewrite {
   ## Alter those nasty font sizes. NOTE: this is somewhat different
   ## between old and new GV, so let's be careful here.
   $svg_file =~ s/(font\-size\:\d+)\.00\;/$1px\;/gs; # old font-size:10.00;
-  $svg_file =~ s/(font\-size\=\"\d+)\.00";/$1px\;/gs; # new font-size="10.00"
+  $svg_file =~ s/(font\-size\=\"\d+)\.00"/$1px\"/gs; # new font-size="10.00"
 
 
   ## Replace bottom.
