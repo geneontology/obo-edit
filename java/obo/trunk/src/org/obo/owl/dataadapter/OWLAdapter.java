@@ -1321,6 +1321,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 	public URI getURI(String id) throws UnsupportedEncodingException {
 		//logger.info("getting uri for "+id);
 		if (id.contains(" ")) {
+			System.err.println("id contains space: "+id);
 			throw new UnsupportedEncodingException();
 		}
 		String[] idParts = StringUtils.split(id,":",2);
@@ -1339,6 +1340,9 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			localId = idParts[0];
 		}
 		if (db.equals("http")) { // TODO - roundtrip from other schemes
+			return URI.create(id);
+		}
+		else if (db.equals("https")) { // TODO - roundtrip from other schemes
 			return URI.create(id);
 		}
 
