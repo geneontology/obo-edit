@@ -215,7 +215,7 @@ public interface OBOProperty extends OBOObject {
 				private static final long serialVersionUID = 3635477793098376143L;
 
 		{
-			this.name = "transitive_over";
+			this.name = "disjoint_over";
 		}
 
 		@Override
@@ -322,7 +322,7 @@ public interface OBOProperty extends OBOObject {
 	};
 
 
-	public static final OBOProperty[] BUILTIN_TYPES = { IS_A, DISJOINT_FROM,
+	public static final OBOProperty[] BUILTIN_TYPES = { IS_A, DISJOINT_FROM, DISJOINT_OVER,
 							    UNION_OF, INVERSE_OF, TRANSITIVE_OVER, HAS_ZERO_CARDINALITY_OVER};
     // 4/11/08: Don't make these builtin
     //REGULATES, NEGATIVELY_REGULATES, POSITIVELY_REGULATES};
