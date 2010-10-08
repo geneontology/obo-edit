@@ -1,7 +1,8 @@
 =head1 AmiGO::SVGRewrite
 
 A wrapper to make transforming GV SVG into something usable a little
-more tolerable. The long term fix will be to redo GV in JS.
+more tolerable. The long term fix will be to redo GV in JS. Be aware
+that this module is nearly worthless outside of a GraphViz context.
 
 =cut
 
@@ -141,7 +142,7 @@ sub add_svg_symbol {
 
 =item rewrite
 
-Args: none.
+Args: incoming raw SVG file as string
 Returns: an SVG object that "knows" how to do things for AmiGO.
 
 =cut
@@ -163,6 +164,9 @@ sub rewrite {
   $svg_file =~ /\<svg(.*?)height\s*=\s*\"(.*?)\"(.*?)\>/s;
   my $svg_height = $2;
 
+  $self->kvetch('detected width: ' . $svg_width);
+  $self->kvetch('detected height: ' . $svg_height);
+
   ## Actally, let's just use mootools...wait...this is perl...
   ## TODO: move this bit of code into the JS (if render speed allows).
   #$svg_width = Window.getWidth . 'px';
@@ -173,6 +177,9 @@ sub rewrite {
   #$svg_height = '';
   $svg_width = '32.0in'; # 
   $svg_height = '32.0in';
+
+  $self->kvetch('using width: ' . $svg_width);
+  $self->kvetch('using height: ' . $svg_height);
 
   #$file =~ /\<svg(.*?)viewBox\s*=\s*\"(.*?)\"(.*?)\>/s;
   #my $svg_viewbox = $2;
@@ -191,9 +198,9 @@ sub rewrite {
   $top .= ' xml:space="preserve"';
   #$top .= ' onload="RefGenomeVizInit('rgsvg','tform_matrix','underlay_context','overlay_context','control_context','detail_context'";
   #$top .= ")\"
-
-  ##
   $top .= ">\n";
+
+  ## Add a title.
   $top .= "<title>" . $self->{JS_SVG_TITLE} . "</title>\n"
     if $self->{JS_SVG_TITLE};
 
@@ -201,7 +208,7 @@ sub rewrite {
   ## dynamic box resizing.
   $top .= "<style type=\"text/css\">text {font-family:monospace;}</style>\n";
 
-  ## Add additional segments if requested.
+  ## Add additional segments JS if requested.
   foreach my $seg (@{$self->{JS_SVG_SEGEMENT}}){
     $top .= $seg . "\n";
   }
@@ -221,7 +228,7 @@ sub rewrite {
   $top .= $js->get_lib('net.carto.mapApp');
   #$top .= $js->get_lib('org.bbop.Viewer');
 
-  ## Necessary JS initializer library.
+  ## Requested JS initializer libraries.
   #$top .= $js->get_lib('RefGenome');
   foreach my $l (@{$self->{JS_LIBRARY}}){
     $top .= $js->get_lib($l);
@@ -241,9 +248,9 @@ sub rewrite {
     $top .= $js->initializer($i)
   }
 
-  ## Trying different things to make shift correct.
-  ## NOTE: The current one seems to be working OK.
-  $svg_file =~ /\<g id=\"graph0\" class=\"graph\" transform=\"scale\((.*?) (.*?)\) rotate\(0\) translate\((.*?) (.*?)\)\"\>/;
+  ## Trying different things to make shift correct. NOTE: This seems
+  ## to be fairly well conserved between GV version.
+  $svg_file =~ /\<g id=\"graph[0-9]\" class=\"graph\" transform=\"scale\((.*?) (.*?)\) rotate\(0\) translate\((.*?) (.*?)\)\"\>/;
   my $x_scale = $1;
   my $y_scale = $2;
   my $x_trans = $3;
@@ -254,11 +261,11 @@ sub rewrite {
   #$y_trans = $2 * $4;
   $x_trans = $3;
   $y_trans = $4;
-  #print STDERR "_\$1_" . $1 . "\n";
-  #print STDERR "_\$2_" . $2 . "\n";
-  #print STDERR "_\$3_" . $3 . "\n";
-  #print STDERR "_\$4_" . $4 . "\n";
-  #sleep 2;
+
+  $self->kvetch('detected x_scale: ' . $x_scale);
+  $self->kvetch('detected y_scale: ' . $y_scale);
+  $self->kvetch('detected x_trans: ' . $x_trans);
+  $self->kvetch('detected y_trans: ' . $y_trans);
 
   ###
   ### Add commonly used symbols.
@@ -322,12 +329,15 @@ sub rewrite {
   $top .= ', ';
   $top .= $y_trans || '0';
   $top .= ')">' . "\n";
-  #$top .= "<g id\=\"underlay_context\"\/>\n";
   $top .= "<g id\=\"underlay_context_1\"\/>\n";
   $top .= "<g id\=\"underlay_context_2\"\/>\n";
   $top .= "<g id\=\"underlay_context_3\"\/>\n";
   $top .= "<!-- END modified area -->\n";
   $svg_file =~ s/(\<svg(.*?)\>)/$top/s;
+
+  $self->kvetch('generated $top START');
+  $self->kvetch($top);
+  $self->kvetch('generated $top END');
 
   ## Remove the initial transformation the GV wants to use.
   my $init = '';
