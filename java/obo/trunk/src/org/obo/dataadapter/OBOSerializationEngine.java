@@ -17,6 +17,7 @@ import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.ReasonerFactory;
 import org.obo.reasoner.impl.LinkPileReasonerFactory;
 import org.obo.reasoner.impl.TrimmedLinkDatabase;
+import org.obo.reasoner.rbr.RuleBasedReasonerFactory;
 import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
 
@@ -70,7 +71,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		protected boolean saveImplied = false;
 
 		// FCR does not appear to work with regulation examples...
-		protected ReasonerFactory reasonerFactory = new 	LinkPileReasonerFactory();
+		protected ReasonerFactory reasonerFactory = new 	RuleBasedReasonerFactory();
 
 		protected boolean discardUnusedCategories = false;
 
