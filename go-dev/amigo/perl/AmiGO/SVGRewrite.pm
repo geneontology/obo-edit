@@ -357,13 +357,19 @@ sub rewrite {
 
   ## Get rid of the rest of the white polygons. NOTE: there appears to
   ## be a difference with visualize and RG here, so both are covered;
-  ## the news seems to be fine with this.
+  ## the new seems to be a little different as well.
   my $remove_rest_message =
     "<!-- CHANGE: removed unwanted white poly (1). END -->";
   $svg_file =~ s/(\<polygon style=\"fill\:\#ffffff\;stroke\:\#ffffff\;\"(.*?)\>)/$remove_rest_message/gs;
   $remove_rest_message =
     "<!-- CHANGE: removed unwanted white poly (2). END -->";
   $svg_file =~ s/(\<polygon style=\"fill\:white\;stroke\:white\;\"(.*?)\>)/$remove_rest_message/gs;
+  $remove_rest_message =
+    "<!-- CHANGE: removed unwanted white poly (new 1). END -->";
+  $svg_file =~ s/(\<polygon fill=\"\#ffffff\" stroke=\"\#ffffff"(.*?)\>)/$remove_rest_message/gs;
+  $remove_rest_message =
+    "<!-- CHANGE: removed unwanted white poly (new 2). END -->";
+  $svg_file =~ s/(\<polygon fill=\"white\" stroke=\"white"(.*?)\>)/$remove_rest_message/gs;
 
   ## Alter those nasty font sizes.
   $svg_file =~ s/(font\-size\:\d+)\.00\;/$1px\;/gs;
