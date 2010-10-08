@@ -4,6 +4,9 @@ A wrapper to make transforming GV SVG into something usable a little
 more tolerable. The long term fix will be to redo GV in JS. Be aware
 that this module is nearly worthless outside of a GraphViz context.
 
+There will be references to "old" and "new" GraphViz in the code. For
+the sake of the code, "old" is 2.20.2 and "new" is 2.26.3.
+
 =cut
 
 package AmiGO::SVGRewrite;
@@ -371,8 +374,11 @@ sub rewrite {
     "<!-- CHANGE: removed unwanted white poly (new 2). END -->";
   $svg_file =~ s/(\<polygon fill=\"white\" stroke=\"white"(.*?)\>)/$remove_rest_message/gs;
 
-  ## Alter those nasty font sizes.
-  $svg_file =~ s/(font\-size\:\d+)\.00\;/$1px\;/gs;
+  ## Alter those nasty font sizes. NOTE: this is somewhat different
+  ## between old and new GV, so let's be careful here.
+  $svg_file =~ s/(font\-size\:\d+)\.00\;/$1px\;/gs; # old font-size:10.00;
+  $svg_file =~ s/(font\-size\=\"\d+)\.00";/$1px\;/gs; # new font-size="10.00"
+
 
   ## Replace bottom.
   ## Changed this because of the removal of the second graph group above.
