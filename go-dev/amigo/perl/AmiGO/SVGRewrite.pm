@@ -348,16 +348,22 @@ sub rewrite {
   $init .= "\n<!-- END modified area -->\n";
   $svg_file =~ s/(\<g id="graph[0-9]" class="graph"(.*?)\>)/$init/s;
 
-  ## Get rid of the big white BG polygon.
+  ## Get rid of the big white BG polygon. NOTE: not really conserved
+  ## at all between versions of GV, so something pretty general here.
   my $remove_poly_message = '';
   $remove_poly_message .= "<!-- CHANGE: removed annoying white bg poly -->\n";
   $remove_poly_message .= "<!-- END CHANGE -->\n";
   $svg_file =~ s/(\<polygon fill(.*?)white(.*?)stroke(.*?)white(.*?)points(.*?)\>)/$remove_poly_message/s;
 
-  ## Get rid of the rest of the white polygons.
-  my $remove_rest_message = '';
-  $remove_rest_message .= "<!-- CHANGE: removed another annoying white polygon. END -->";
-  $svg_file =~ s/(\<polygon style\=\"fill\:white\;stroke\:white\;\"(.*?)\>)/$remove_rest_message/gs;
+  ## Get rid of the rest of the white polygons. NOTE: there appears to
+  ## be a difference with visualize and RG here, so both are covered;
+  ## the news seems to be fine with this.
+  my $remove_rest_message =
+    "<!-- CHANGE: removed unwanted white poly (1). END -->";
+  $svg_file =~ s/(\<polygon style=\"fill\:\#ffffff\;stroke\:\#ffffff\;\"(.*?)\>)/$remove_rest_message/gs;
+  $remove_rest_message =
+    "<!-- CHANGE: removed unwanted white poly (2). END -->";
+  $svg_file =~ s/(\<polygon style=\"fill\:white\;stroke\:white\;\"(.*?)\>)/$remove_rest_message/gs;
 
   ## Alter those nasty font sizes.
   $svg_file =~ s/(font\-size\:\d+)\.00\;/$1px\;/gs;
