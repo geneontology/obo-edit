@@ -67,8 +67,8 @@ synonym: "biological process" EXACT []
 synonym: "biological process unknown" NARROW []
 synonym: "physiological process" EXACT []
 xref: Wikipedia:Biological_process
-disjoint_from: GO:0003674  ! molecular_function
-disjoint_from: GO:0005575  ! cellular_component
+disjoint_from: GO:0003674 
+disjoint_from: GO:0005575 
 
 [Term]
 id: GO:0008283
@@ -80,6 +80,21 @@ subset: goslim_generic  ! Generic GO slim
 subset: goslim_pir  ! PIR GO slim
 subset: gosubset_prok  ! Prokaryotic GO subset
 is_a: GO:0008150  ! biological_process
+
+[Term]
+id: GO:0009653
+name: anatomical structure morphogenesis
+namespace: biological_process
+def: "The process by which anatomical structures are generated and organized. Morphogenesis pertains to the creation of form." [GOC:go_curators, ISBN:0521436125]
+subset: goslim_generic  ! Generic GO slim
+subset: goslim_plant  ! Plant GO slim
+subset: gosubset_prok  ! Prokaryotic GO subset
+synonym: "anatomical structure organization" EXACT []
+synonym: "embryogenesis and morphogenesis" BROAD []
+synonym: "morphogenesis" EXACT []
+xref: Wikipedia:Morphogenesis
+is_a: GO:0032502  ! developmental process
+relationship: part_of GO:0048856 ! anatomical structure development
 
 [Term]
 id: GO:0009790
@@ -105,6 +120,64 @@ synonym: "embryogenesis" BROAD []
 is_a: GO:0009790  ! embryo development
 
 [Term]
+id: GO:0009887
+name: organ morphogenesis
+namespace: biological_process
+def: "Morphogenesis of an organ. An organ is defined as a tissue or set of tissues that work together to perform a specific function or functions. Morphogenesis is the process by which anatomical structures are generated and organized. Organs are commonly observed as visibly distinct structures, but may also exist as loosely associated clusters of cells that work together to perform a specific function or functions." [GOC:dgh, GOC:go_curators, ISBN:0471245208, ISBN:0721662544]
+synonym: "histogenesis and organogenesis" BROAD []
+is_a: GO:0009653  ! anatomical structure morphogenesis
+relationship: part_of GO:0048513 ! organ development
+
+[Term]
+id: GO:0009888
+name: tissue development
+namespace: biological_process
+def: "The process whose specific outcome is the progression of a tissue over time, from its formation to the mature structure." [ISBN:0471245208]
+synonym: "histogenesis" EXACT []
+synonym: "histogenesis and organogenesis" BROAD []
+xref: Wikipedia:Histogenesis
+is_a: GO:0048856  ! anatomical structure development
+
+[Term]
+id: GO:0018988
+name: molting cycle, protein-based cuticle
+namespace: biological_process
+def: "The periodic shedding of part or all of a protein-based cuticle, which is then replaced by a new protein-based cuticle. A cuticle is the outer layer of an animal which acts to prevent water loss." [GOC:ems, GOC:mtg_sensu]
+synonym: "protein-based cuticle molting cycle" EXACT [GOC:dph, GOC:tb]
+is_a: GO:0042303  ! molting cycle
+
+[Term]
+id: GO:0022404
+name: molting cycle process
+namespace: biological_process
+def: "A multicellular organismal process involved in the periodic casting off and regeneration of an outer covering of cuticle, feathers, hair, horns, skin." [GOC:isa_complete]
+is_a: GO:0042303  ! molting cycle
+
+[Term]
+id: GO:0022603
+name: regulation of anatomical structure morphogenesis
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of anatomical structure morphogenesis." [GOC:mah]
+subset: gosubset_prok  ! Prokaryotic GO subset
+synonym: "regulation of morphogenesis" EXACT []
+is_a: GO:0050793  ! regulation of developmental process
+relationship: regulates GO:0009653 ! anatomical structure morphogenesis
+intersection_of: GO:0065007  ! biological regulation
+intersection_of: regulates GO:0009653 ! anatomical structure morphogenesis
+
+[Term]
+id: GO:0031214
+name: biomineral tissue development
+namespace: biological_process
+def: "Formation of hard tissues that consist mainly of inorganic compounds, and also contain a small amounts of organic matrices that are believed to play important roles in their formation." [PMID:15132736]
+synonym: "biomineral formation" RELATED [GOC:dph, GOC:tb]
+synonym: "biomineralization" EXACT []
+synonym: "mineralization" EXACT []
+xref: Wikipedia:Biomineralisation
+is_a: GO:0009888  ! tissue development
+relationship: part_of GO:0048513 ! organ development
+
+[Term]
 id: GO:0032501
 name: multicellular organismal process
 namespace: biological_process
@@ -126,6 +199,76 @@ synonym: "development" NARROW []
 is_a: GO:0008150  ! biological_process
 
 [Term]
+id: GO:0034505
+name: tooth mineralization
+namespace: biological_process
+def: "The process by which calcium salts are deposited into calcareous tooth structures such as dental enamel, dentine and cementum." [GOC:mah, MESH:tooth+calcification, MP:0002817]
+synonym: "tooth calcification" EXACT []
+is_a: GO:0031214  ! biomineral tissue development
+relationship: part_of GO:0042476 ! odontogenesis
+
+[Term]
+id: GO:0042303
+name: molting cycle
+namespace: biological_process
+def: "The periodic casting off and regeneration of an outer covering of cuticle, feathers, hair, horns, skin, etc." [GOC:jl, ISBN:0198506732]
+subset: goslim_pir  ! PIR GO slim
+is_a: GO:0032501  ! multicellular organismal process
+
+[Term]
+id: GO:0042394
+name: ecdysis, protein-based cuticle
+namespace: biological_process
+def: "The shedding of the old protein-based cuticular fragments during the molting cycle. Examples of this process are found in invertebrates." [GOC:jl, GOC:mtg_sensu]
+is_a: GO:0022404  ! molting cycle process
+relationship: part_of GO:0018988 ! molting cycle, protein-based cuticle
+
+[Term]
+id: GO:0042476
+name: odontogenesis
+namespace: biological_process
+alt_id: GO:0042477
+def: "The process whose specific outcome is the progression of a tooth or teeth over time, from formation to the mature structure(s). A tooth is any hard bony, calcareous, or chitinous organ found in the mouth or pharynx of an animal and used in procuring or masticating food." [GOC:jl, GOC:mah]
+synonym: "odontogenesis of calcareous or chitinous tooth" NARROW []
+synonym: "odontogeny" EXACT []
+synonym: "odontosis" EXACT []
+synonym: "tooth development" EXACT []
+xref: Wikipedia:Odontogenesis
+is_a: GO:0009887  ! organ morphogenesis
+
+[Term]
+id: GO:0042481
+name: regulation of odontogenesis
+namespace: biological_process
+alt_id: GO:0042484
+def: "Any process that modulates the frequency, rate or extent of the formation and development of a tooth or teeth." [GOC:jl]
+synonym: "regulation of odontogenesis of calcareous or chitinous tooth" NARROW []
+synonym: "regulation of tooth development" EXACT []
+is_a: GO:2000027  ! regulation of organ morphogenesis
+relationship: regulates GO:0042476 ! odontogenesis
+intersection_of: GO:0065007  ! biological regulation
+intersection_of: regulates GO:0042476 ! odontogenesis
+
+[Term]
+id: GO:0042482
+name: positive regulation of odontogenesis
+namespace: biological_process
+alt_id: GO:0042485
+def: "Any process that activates or increases the frequency, rate or extent of the formation and development of a tooth or teeth." [GOC:jl]
+synonym: "activation of odontogenesis" NARROW []
+synonym: "positive regulation of odontogenesis of calcareous or chitinous tooth" NARROW []
+synonym: "positive regulation of tooth development" EXACT []
+synonym: "stimulation of odontogenesis" NARROW []
+synonym: "up regulation of odontogenesis" EXACT []
+synonym: "up-regulation of odontogenesis" EXACT []
+synonym: "upregulation of odontogenesis" EXACT []
+is_a: GO:0042481  ! regulation of odontogenesis
+is_a: GO:0051094  ! positive regulation of developmental process
+relationship: positively_regulates GO:0042476 ! odontogenesis
+intersection_of: GO:0065007  ! biological regulation
+intersection_of: positively_regulates GO:0042476 ! odontogenesis
+
+[Term]
 id: GO:0043009
 name: chordate embryonic development
 namespace: biological_process
@@ -142,6 +285,24 @@ synonym: "organogenesis" EXACT []
 xref: Wikipedia:Organogenesis
 is_a: GO:0048856  ! anatomical structure development
 relationship: part_of GO:0048731 ! system development
+
+[Term]
+id: GO:0048518
+name: positive regulation of biological process
+namespace: biological_process
+alt_id: GO:0043119
+def: "Any process that activates or increases the frequency, rate or extent of a biological process. Biological processes are regulated by many means; examples include the control of gene expression, protein modification or interaction with a protein or substrate molecule." [GOC:jid]
+subset: gosubset_prok  ! Prokaryotic GO subset
+synonym: "activation of biological process" NARROW []
+synonym: "positive regulation of physiological process" EXACT []
+synonym: "stimulation of biological process" NARROW []
+synonym: "up regulation of biological process" EXACT []
+synonym: "up-regulation of biological process" EXACT []
+synonym: "upregulation of biological process" EXACT []
+is_a: GO:0050789  ! regulation of biological process
+relationship: positively_regulates GO:0008150 ! biological_process
+intersection_of: GO:0065007  ! biological regulation
+intersection_of: positively_regulates GO:0008150 ! biological_process
 
 [Term]
 id: GO:0048568
@@ -164,10 +325,63 @@ relationship: part_of GO:0007275 ! multicellular organismal development
 id: GO:0048856
 name: anatomical structure development
 namespace: biological_process
-def: "The biological process whose specific outcome is the progression of an anatomical structure from an initial condition to its mature state. This process begins with the formation of the structure and ends with the mature structure, whatever form that may be including its natural destruction. An anatomical structure is any biological entity that occupies space and is distinguished from its surroundings. Anatomical structures can be macroscopic such as a carpel, or microscopic such as an acrosome." [GO_REF:0000021, GOC:mtg_15jun06]
+def: "The biological process whose specific outcome is the progression of an anatomical structure from an initial condition to its mature state. This process begins with the formation of the structure and ends with the mature structure, whatever form that may be including its natural destruction. An anatomical structure is any biological entity that occupies space and is distinguished from its surroundings. Anatomical structures can be macroscopic such as a carpel, or microscopic such as an acrosome." [GOC:mtg_15jun06, GO_REF:0000021]
 comment: This term was added by GO_REF:0000021.
 synonym: "development of an anatomical structure" EXACT []
 is_a: GO:0032502  ! developmental process
+
+[Term]
+id: GO:0050789
+name: regulation of biological process
+namespace: biological_process
+alt_id: GO:0050791
+def: "Any process that modulates the frequency, rate or extent of a biological process. Biological processes are regulated by many means; examples include the control of gene expression, protein modification or interaction with a protein or substrate molecule." [GOC:ai, GOC:go_curators]
+subset: goslim_generic  ! Generic GO slim
+subset: goslim_goa  ! GOA and proteome slim
+subset: gosubset_prok  ! Prokaryotic GO subset
+synonym: "regulation of physiological process" EXACT []
+is_a: GO:0065007  ! biological regulation
+relationship: regulates GO:0008150 ! biological_process
+intersection_of: GO:0065007  ! biological regulation
+intersection_of: regulates GO:0008150 ! biological_process
+
+[Term]
+id: GO:0050793
+name: regulation of developmental process
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of development, the biological process whose specific outcome is the progression of a multicellular organism over time from an initial condition (e.g. a zygote, or a young adult) to a later condition (e.g. a multicellular animal or an aged adult)." [GOC:go_curators]
+subset: gosubset_prok  ! Prokaryotic GO subset
+is_a: GO:0050789  ! regulation of biological process
+relationship: regulates GO:0032502 ! developmental process
+intersection_of: GO:0065007  ! biological regulation
+intersection_of: regulates GO:0032502 ! developmental process
+
+[Term]
+id: GO:0051094
+name: positive regulation of developmental process
+namespace: biological_process
+def: "Any process that activates or increases the rate or extent of development, the biological process whose specific outcome is the progression of an organism over time from an initial condition (e.g. a zygote, or a young adult) to a later condition (e.g. a multicellular animal or an aged adult)." [GOC:ai]
+subset: gosubset_prok  ! Prokaryotic GO subset
+synonym: "activation of developmental process" NARROW []
+synonym: "stimulation of developmental process" NARROW []
+synonym: "up regulation of developmental process" EXACT []
+synonym: "up-regulation of developmental process" EXACT []
+synonym: "upregulation of developmental process" EXACT []
+is_a: GO:0048518  ! positive regulation of biological process
+is_a: GO:0050793  ! regulation of developmental process
+relationship: positively_regulates GO:0032502 ! developmental process
+intersection_of: GO:0065007  ! biological regulation
+intersection_of: positively_regulates GO:0032502 ! developmental process
+
+[Term]
+id: GO:0051239
+name: regulation of multicellular organismal process
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of a multicellular organismal process, the processes pertinent to the function of a multicellular organism above the cellular level; includes the integrated processes of tissues and organs." [GOC:ai, GOC:dph, GOC:tb]
+is_a: GO:0050789  ! regulation of biological process
+relationship: regulates GO:0032501 ! multicellular organismal process
+intersection_of: GO:0065007  ! biological regulation
+intersection_of: regulates GO:0032501 ! multicellular organismal process
 
 [Term]
 id: GO:0060722
@@ -177,10 +391,79 @@ def: "The multiplication or reproduction of cells, resulting in the expansion of
 is_a: GO:0008283  ! cell proliferation
 relationship: part_of GO:0001892 ! embryonic placenta development
 
+[Term]
+id: GO:0065007
+name: biological regulation
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of any biological process, quality or function." [GOC:isa_complete]
+subset: goslim_pir  ! PIR GO slim
+subset: gosubset_prok  ! Prokaryotic GO subset
+synonym: "regulation" BROAD []
+is_a: GO:0008150  ! biological_process
+
+[Term]
+id: GO:0070167
+name: regulation of biomineral tissue development
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of biomineral tissue development, the formation of hard tissues that consist mainly of inorganic compounds." [GOC:mah]
+synonym: "regulation of biomineral formation" EXACT [GOC:dph, GOC:tb]
+synonym: "regulation of biomineralization" EXACT [GOC:mah]
+synonym: "regulation of mineralization" EXACT [GOC:mah]
+is_a: GO:2000026  ! regulation of multicellular organismal development
+relationship: regulates GO:0031214 ! biomineral tissue development
+intersection_of: GO:0065007  ! biological regulation
+intersection_of: regulates GO:0031214 ! biomineral tissue development
+
+[Term]
+id: GO:0070170
+name: regulation of tooth mineralization
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of tooth mineralization, the deposition of calcium salts in tooth structures." [GOC:BHF, GOC:mah]
+is_a: GO:0042481  ! regulation of odontogenesis
+is_a: GO:0070167  ! regulation of biomineral tissue development
+relationship: regulates GO:0034505 ! tooth mineralization
+intersection_of: GO:0065007  ! biological regulation
+intersection_of: regulates GO:0034505 ! tooth mineralization
+
+[Term]
+id: GO:2000026
+name: regulation of multicellular organismal development
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of multicellular organismal development." [GOC:obol]
+is_a: GO:0050793  ! regulation of developmental process
+is_a: GO:0051239  ! regulation of multicellular organismal process
+relationship: regulates GO:0007275 ! multicellular organismal development
+intersection_of: GO:0065007  ! biological regulation
+intersection_of: regulates GO:0007275 ! multicellular organismal development
+
+[Term]
+id: GO:2000027
+name: regulation of organ morphogenesis
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of organ morphogenesis." [GOC:obol]
+synonym: "regulation of histogenesis and organogenesis" RELATED [GOC:obol]
+is_a: GO:0022603  ! regulation of anatomical structure morphogenesis
+is_a: GO:2000026  ! regulation of multicellular organismal development
+relationship: regulates GO:0009887 ! organ morphogenesis
+intersection_of: GO:0065007  ! biological regulation
+intersection_of: regulates GO:0009887 ! organ morphogenesis
+
 [Typedef]
 id: part_of
 name: part_of
 namespace: gene_ontology
 is_transitive: true
 xref: OBO_REL:part_of
+
+[Typedef]
+id: positively_regulates
+name: positively_regulates
+namespace: gene_ontology
+is_a: regulates  ! regulates
+
+[Typedef]
+id: regulates
+name: regulates
+namespace: gene_ontology
+transitive_over: part_of  ! part_of
 
