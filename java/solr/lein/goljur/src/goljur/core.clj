@@ -6,11 +6,13 @@
 ;; Currently ~25s. for the rude 10000.
 ;; Currently ~6s. for the rude 5000.
 ;; Currently ~1s. for the rude 1000.
-;; Fixable via filter.
+;; Fixable via filter?
+;;   (time (join-test 100))
 
 (ns goljur.core
   (:use [clojure.contrib.sql :as sql :only ()]
-	[org.danlarkin [json :as json]]))
+	[org.danlarkin [json :as json]]
+	[clojure.contrib.def]))
 (require '[clj-http.client :as client])
 (require '[clojure.contrib.string :as string])
 
@@ -87,17 +89,18 @@ argument will trigger cleaning the output to just include GO ids."
 ;;; Direct HTTP access.
 ;;;
 
-(defn golr-request
+(defnk golr-request
   "Mostly hardwired request at GO Solr."
-  [query-string]
+  [:q "" :fq ""]
+  [q fq]
   (let [in-params
 	{
 	 "explainOther" ""
 	 "fl" "*,score"
-	 "fq" ""
+	 "fq" fq
 	 "hl.fl" ""
 	 "indent" "on"
-	 "q" query-string
+	 "q" q
 	 "qt" "standard"
 	 "rows" "1000000" ; "limit" to a million
 	 "start" "0"
@@ -120,26 +123,48 @@ argument will trigger cleaning the output to just include GO ids."
 ;;; Joint try.
 ;;;
 
-(defn make-query-string
+(defn make-or-query-string
   "..."
   [n]
   (string/join " OR " (map (fn [x] (str "acc:\"" x "\""))
 			   (n-random-term-accs n :clean))))
 
 ;; Too large a number gets 413. Fixed in jetty.xml with headerBufferSize.
-;; (extract-term-data (golr-request (make-query-string 138)))
+;; (extract-term-data (golr-request :q (make-or-query-string 138)))
 ;; BUG: Too large a number gets 400. 
-;; (extract-term-data (golr-request (make-query-string 1024)))
-(defn join-test
+;; (extract-term-data (golr-request :q (make-or-query-string 1024)))
+(defn join-test-naive
   "...?"
   [n]
   (try
-    (count (extract-term-data (golr-request (make-query-string n))))
+    (count (extract-term-data (golr-request :q (make-or-query-string n))))
     (catch Exception e
       (swank.core/break)
-      (prn e)
-      ;;(prn (doc e))
-      )))
+      (prn e))))
 ;;...5600" OR acc:"GO:0042638"': too many boolean clauses
 ;;	at org.apache.lucene.queryParser.QueryParser.parse(QueryParser.java:215)
 ;; Fixed by temporarily raising maxBooleanClauses in solrconfig.xml
+
+;; Unfortunately, not much of an improvement
+(defn join-test-fq
+  "...?"
+  [n]
+  (try
+    (count (extract-term-data (golr-request :q "name:[a TO z]"
+					    :fq (make-or-query-string n))))
+    (catch Exception e
+      (swank.core/break)
+      (prn e))))
+
+;; Very very bad, but fun.
+(defn join-test-series
+  "...?"
+  [n]
+  (let [series (n-random-term-accs n :clean)]
+    (dotimes [x (count series)]
+      (try
+	(extract-term-data (golr-request :q (make-or-query-string 1)))
+	(catch Exception e
+	  (swank.core/break)
+	(prn e))))))
+  
