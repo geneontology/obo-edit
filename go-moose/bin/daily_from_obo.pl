@@ -154,7 +154,7 @@ my $date = $data->{header}{date} || 'unknown';
 my $cvs_version = $data->{header}{cvs_revision} || 'unknown';
 
 
-# ec metacyc um-bbd_pathwayid um-bbd_enzymeid resid reactome wikipedia
+# ec metacyc um-bbd_pathwayid um-bbd_enzymeid resid reactome kegg rhea wikipedia
 
 ## file header data
 my $headers = {
@@ -176,13 +176,16 @@ my $headers = {
 
 	'obsoletes-all' =>
 "! Obsolete terms and alternatives, marked as either direct [replaced-by] or possible [consider]\n!\n!Obsolete	Alternative\n",
-	reactome => "! Mapping of Reactome entries to Gene Ontology terms\n! Lisa Matthews (Reactome) and Amelia Ireland (GO)\n! http://www.reactome.org/\n! Last update at $timestring by the script ".$0."\n!\n",
+	reactome => "! Mapping of Reactome entries to Gene Ontology terms\n! Manually created by Reactome staff and integrated into GO\n! http://www.reactome.org/\n! Last update at $timestring by the script ".$0."\n!\n",
 	ec => "! Mapping of Gene Ontology terms to Enzyme Commission entries\n! Enzyme Commission: http://www.chem.qmul.ac.uk/iubmb/enzyme/\n! Last update at $timestring by the script ".$0."\n!\n",
 	resid => "! Mapping of RESID entries to Gene Ontology terms\n! RESID: http://www.ebi.ac.uk/RESID/\n! Last update at $timestring by the script ".$0."\n!\n",
 	metacyc => "! Mapping of Gene Ontology terms to MetaCyc database references.\n! MetaCyc: http://metacyc.org/\n! Last update at $timestring by the script ".$0."\n!\n",
+	rhea => "! Mapping of Gene Ontology terms to RHEA database references.\n! RHEA, the Annotated Reactions Database: http://www.ebi.ac.uk/rhea/\n! Last update at $timestring by the script ".$0."\n!\n",
 	'um-bbd_enzymeid' => "! Mapping of Gene Ontology terms to UM-BBD enzyme IDs\n! UM-BBD (The University of Minnesota Biocatalysis/Biodegradation Database): http://umbbd.msi.umn.edu/\n! Last update at $timestring by the script ".$0."\n!\n",
 	'um-bbd_pathwayid' => "! Mapping of Gene Ontology terms to UM-BBD pathway IDs\n! UM-BBD (The University of Minnesota Biocatalysis/Biodegradation Database): http://umbbd.msi.umn.edu/\n! Last update at $timestring by the script ".$0."\n!\n",
+	'um-bbd_reactionid' => "! Mapping of Gene Ontology terms to UM-BBD reaction IDs\n! UM-BBD (The University of Minnesota Biocatalysis/Biodegradation Database): http://umbbd.msi.umn.edu/\n! Last update at $timestring by the script ".$0."\n!\n",
 	'wikipedia' => "! Mapping of Gene Ontology terms to Wikipedia entries.\n! Wikipedia: http://en.wikipedia.org\n! Last update at $timestring by the script ".$0."\n!\n",
+	kegg => "! Mapping of Gene Ontology terms to KEGG database entities.\n! KEGG, the Kyoto Encyclopedia of Genes and Genomes: http://www.genome.jp/kegg/\n! Last update at $timestring by the script ".$0."\n!\n",
 };
 
 
@@ -214,7 +217,6 @@ foreach (@files)
 ## terms_and_ids: GO:0000000 [tab] text string [tab] F|P|C
 ## terms_alt_ids: GO:0000000 (primary) [tab] GO:0000000 (secondary, separated by space(s) if >1) [tab] text string [tab] F|P|C [tab] (obs)
 ## terms_ids_obs: GO:0000000 [tab] text string [tab] F|P|C [tab] (obs)
-## terms_alt_ids_obs
 
 ## Go through the terms and print out the info for the terms / etc. files
 ## save the obsolete and xref data
@@ -366,7 +368,7 @@ $path = $path_to_go . 'external2go';
 $prefix = '';
 $suffix = '2go';
 #my @dbxrefs_to_get = qw(ec metacyc um-bbd_pathwayid um-bbd_enzymeid reactome resid);
-my @dbxrefs_to_get = qw(ec metacyc um-bbd_pathwayid um-bbd_enzymeid resid reactome wikipedia);
+my @dbxrefs_to_get = qw(ec metacyc um-bbd_pathwayid um-bbd_enzymeid um-bbd_reactionid rhea kegg resid reactome wikipedia);
 
 #	print STDERR "Starting the external2go file mappings.\nCreating files...\n" if $verbose;
 
