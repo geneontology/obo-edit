@@ -25,23 +25,23 @@ import owltools.io.ParserWrapper;
 
 import junit.framework.TestCase;
 
-public class FlyTest extends TestCase {
+public class MPClosureTest extends TestCase {
 
 	public static void testConvertXPs() throws IOException, OWLOntologyCreationException, OWLOntologyStorageException {
 		ParserWrapper pw = new ParserWrapper();
 		OWLGraphWrapper g =
-			pw.parseToOWLGraph("http://purl.org/obo/obo/FBbt.obo");
-		OWLOntology ont = g.getOntology();
-		OWLObject wmb = g.getOWLObjectByIdentifier("FBbt:00004326"); // wing margin bristle
-		OWLObject eso = g.getOWLObjectByIdentifier("FBbt:00005168"); // external sensory organ
+			pw.parseToOWLGraph("http://purl.org/obo/obo/MP.obo");
+		//OWLOntology ont = g.getOntology();
+
+		OWLObject aer = g.getOWLObjectByIdentifier("MP:0001676"); // apical ectoderm ridge
+		OWLObject emb = g.getOWLObjectByIdentifier("MP:0001672"); // abnormal embryogenesis/ development
 		
-		Set<OWLObject> ancs = g.getAncestorsReflexive(wmb);
-		assertTrue(ancs.contains(wmb)); // reflexivity test
-		assertTrue(ancs.contains(eso)); //wing margin bristle --> external sensory organ
+		Set<OWLObject> ancs = g.getAncestorsReflexive(aer);
+		assertTrue(ancs.contains(aer)); // reflexivity test
 		
 		for (OWLObject c : ancs) {
-			System.out.println(g.getIdentifier(c)+" "+c);
+			System.out.println(g.getIdentifier(c));
 		}
-}
+	}
 	
 }
