@@ -13,6 +13,9 @@ our $dbh;
 our $debug;
 our $quiet;
 
+# If a query returns more then one row it will croak.  If the query
+# returns zero rows, it returns undef.  If the query only returns one
+# row, it will return a reference to that row.
 sub _select_one_row{
     my $sth = shift;
     $sth->execute(@_);
@@ -28,6 +31,9 @@ sub _select_one_row{
     return $out->[0];
 }
 
+
+# Given an NCBI Taxa id, will return the species.id from the GO
+# database.
 memoize('_ncbi2species');
 our $species_id_sth;
 sub _ncbi2species{
@@ -47,6 +53,11 @@ SQL
     return $id;
 }
 
+=item $s->species_metadata
+
+
+
+=cut
 sub species_metadata{
     my $s = shift;
     if (!$s->{species_metadata}) {
@@ -67,7 +78,7 @@ sub species_id{
 	if ($s->{ncbi_taxa_id}) {
 	    $s->{species_id} = _ncbi2species($s->{ncbi_taxa_id});
 	} else {
-	    carp 'Unable to figure out the species_id';
+	    die 'Unable to figure out the species_id';
 	    # Use $s->species_metadata() to try to fill?
 	}
     }
@@ -94,12 +105,13 @@ sub new{
 
     if ($s->{panther_id}) {
 	($s->{uniprot_species_code}, my @ids) = split(m/\|/, $s->{panther_id});
-	$s->try(@ids);
+	$s->ids(@ids);
     }
 
     return $s;
 }
 
+# adding a scalar to this object
 sub _scalar{
     my $s   = shift;
     my $key = shift;
@@ -116,7 +128,6 @@ sub _scalar{
 sub _hash{
     my $s      = shift;
     my $key    = shift;
-    my $filter = pop if (ref $_[-1]);
 
     while (@_) {
 	my $kv = shift @_;
@@ -126,10 +137,13 @@ sub _hash{
 	    next;
 	}
 	my ($k, $v) = split(m/:/, $kv, 2);
-	($k, $v) = &$filter($k, $v) if ($filter);
 	$s->{$key}->{$k} = $v;
     }
     return $s->{$key};
+}
+
+sub tagval{
+    return shift()->_hash('tagval', @_);
 }
 
 sub _trivial{
@@ -146,16 +160,83 @@ sub description{
     return shift()->_scalar('desc', shift);
 }
 
+
 sub try{
+    die "Don't use try!";
+}
+
+sub _dbname_filter{
+    my $dbname = shift;
+
+    return 'UniProtKB' if ($dbname =~ m/UniProt/i);
+    return $dbname;
+}
+
+sub ids{
     my $s = shift;
     my $f = $s->species_metadata->{id_filter};
 
-    return $s->_hash('try', @_, $f ? $f : ());
+    while (@_) {
+	my @id = split(m/:/, shift @_, 2);
+	#$id[0] = 'UniProtKB' if ($id[0] =~ m/UniProt/i);
+	$id[0] = _dbname_filter($id[0]);
+	@id = &$f(@id) if ($f);
+
+	push @{ $s->{ids} }, \@id;
+    }
+
+    return @{ $s->{ids} };
 }
 
-sub tagval{
-    return shift()->_hash('tagval', @_);
+sub unique_ids{
+    my $s = shift;
+    my @id = $s->ids;
+    return @id if (1 >= scalar(@id));
+
+
+    if (scalar(@id) > 2) {
+	die "We don't yet suppert more then 2 ids, sorry";
+    }
+
+    if ($id[0]->[1] eq $id[1]->[1]) {
+	my @p = $s->species_metadata()->prefers();
+
+	for my $id (@id) {
+	    if (first { $id->[0] eq $_ } @p) {
+		local $Data::Dumper::Varname = 'BLA';
+		return ( $id );
+	    }
+	}
+    } else {
+	return @id;
+    }
+    local $Data::Dumper::Varname = 'UNIQ';
+    die Dumper $s;
 }
+
+
+sub pick_id{
+    my $s = shift;
+    if (! $s->{guessed}) {
+	my $md = $s->species_metadata();
+	for my $prefer ($md->prefers()) {
+	    my $id = first {
+		lc($_->[0]) eq lc($prefer);
+	    } $s->ids();
+
+	    if ($id) {
+		warn join(' ', 'picked', @$id) if ($debug);
+		$s->{guessed} =
+		  {
+		   xref_dbname => $id->[0],
+		   xref_key    => $id->[1],
+		  }
+	    }
+	}
+    }
+    return $s->{guessed};
+}
+
 
 ##########
 
@@ -204,9 +285,9 @@ sub guess{
     my $s = shift;
     my $dbxref_p = shift; # Guess dbxref_id if no gene_product found?
 
-    if ($s->{guessed}) {
-	return ($s->{guessed}->{gene_product_id}, $s->{guessed}->{dbxref_id});
-    }
+#    if ($s->{guessed}) {
+#	return ($s->{guessed}->{gene_product_id}, $s->{guessed}->{dbxref_id});
+#    }
 
     if (!ref($guess_gp[0])) {
 	@guess_gp = map {
@@ -214,13 +295,17 @@ sub guess{
 	} @guess_gp;
     }
 
-
-    my @maybe;
+    ##########
+    # The main loop that does the guessing
+    my @maybe; # holds possible guesses
     for my $guess (@guess_gp) {
-	while (my ($dbname, $key) = each %{ $s->try }) {
+	for my $id ($s->ids) {
+	    my ($dbname, $key) = @$id;
+
 	    for my $species_id ($s->species_ids()) {
 		$guess->execute($key, $species_id) or die;
 		my $matched = $guess->fetchall_arrayref();
+
 		for my $row (0 .. ($guess->rows() - 1)) {
 		    my %maybe =
 		      (
@@ -240,7 +325,11 @@ sub guess{
 	    $s->{guessed} = $maybe[0];
 	} elsif (1 < $maybe) {
 	    for my $prefer ($s->species_metadata->prefers()) {
-		my $matched = first { $prefer eq $_->{xref_dbname} } @maybe;
+		my @matched;
+
+		my $matched = first {
+		    lc($prefer) eq lc(_dbname_filter($_->{xref_dbname}));
+		} @maybe;
 		if ($matched) {
 		    $s->{guessed} = $matched;
 		    last;
@@ -255,7 +344,8 @@ sub guess{
 	}
 
 	if ($s->{guessed}) {
-	    warn $s->guessed if ($debug);
+	    warn $s->pretty if ($debug);
+
 	    return ($s->{guessed}->{gene_product_id},
 		    $s->{guessed}->{dbxref_id});
 	} elsif (0 < scalar(@maybe)) {
@@ -263,22 +353,22 @@ sub guess{
 	    die Dumper $s, \@maybe;
 	}
     }
+    #
+    ##########
 
     if (!$dbxref_p) {
 	return (undef, undef);
     }
-
 
     # If we made it here we didn't find a gene_product.
     ##########
     # Lets seek a matching dbxref entry, for now lets only look for
     # UniProt IDs
 
-    my @try = map {
-	(m/\bUniProt(KB)?\b/i) ? $_ : ();
-    } keys %{ $s->{try} };
+    my @id = $s->unique_ids();
 
-    if (scalar @try) {
+    if (scalar @id) {
+
 
 	if (!ref($guess_dbxref[0])) {
 	    @guess_dbxref = map {
@@ -286,36 +376,54 @@ sub guess{
 	    } @guess_dbxref;
 	}
 
-	while (@try) {
-	    my $xref_dbname = shift @try;
-	    my $xref_key = $s->{try}->{$xref_dbname};
+	# my %sort_by;
+	# my @sort_by = $s->species_metadata()->prefers();
+	# for (my $loop = 0; $loop < scalar @sort_by; $loop++) {
+	#     $sort_by{$sort_by[$loop]} = $loop;
+	# }
+	# @id = sort {
+	#     my $A = $sort_by{$a->[0]} || 1000000;
+	#     my $B = $sort_by{$b->[0]} || 1000000;
+	#     $B <=> $B;
+	# } @id;
+
+	for my $id (@id) {
+	    my ($xref_dbname, $xref_key) = @$id;
+	    next if ($xref_key =~ m/^\d+$/); # skip ids that are all numbers
 
 	    for my $guess (@guess_dbxref){
 		$guess->execute($xref_key);
 		my $matched = $guess->fetchall_arrayref();
 		next if ($guess->rows == 0);
 
-		my @matched = map {
-		    ($_->[2] =~ m/\bUniProt(KB)?\b/i) ? $_ : ();
-		} @{ $matched };
+		my @matched;
+
+		if ($xref_dbname eq 'UniProtKB') {
+		    @matched = map {
+			($_->[2] =~ m/\bUniProt(KB)?\b/i) ? $_ : ();
+			# There is a lot of rif raf in the database
+		    } @{ $matched };
+		} else {
+		    @matched = @$matched
+		}
 
 		$matched = scalar @matched;
 		next if (0 == $matched);
-		if (1 < $matched) {
-		    warn <<TXT unless ($quiet);
-Matched $matched UniProt dbxref entries for $xref_key, using $matched[0]->[2]
+		if ((1 < $matched) && not($quiet)) {
+		    warn <<TXT;
+Matched $matched dbxref entries for $xref_key, using $matched[0]->[2]
 TXT
+		    #die Dumper $s, \@id;
 		}
 
 		$s->{guessed} =
 		  {
-		   try         => $xref_dbname,
 		   dbxref_id   => $matched[0]->[0],
 		   xref_key    => $matched[0]->[1],
 		   xref_dbname => $matched[0]->[2],
 		  };
 
-		warn $s->guessed if ($debug);
+		warn $s->pretty if ($debug);
 		return (undef, $matched[0]->[0]);
 	    }
 	}
@@ -324,32 +432,32 @@ TXT
     #
     ##########
 
-    warn $s->guessed if ($debug);
+    warn $s->pretty if ($debug);
     return (undef, undef);
 }
 
-sub guessed{
+sub panther_id{
     my $s = shift;
-    #$s->guess() if (!$s->{guessed});
+    # set panther id here too?
+
+    return $s->{panther_id} if ($s->{panther_id});
+
+    return '~' . join('|', $s->species_metadata()->code(), map {
+	join(':', @$_);
+    } $s->ids());
+}
+
+sub pretty{
+    my $s = shift;
+    my $out = $s->panther_id . ' ';
 
     if ($s->{guessed}) {
-	my $try = $s->{guessed}->{try};
-	$try .= ':' . $s->{try}->{$try};
-
-	if (!$s->{guessed}->{xref_dbname} || !$s->{guessed}->{xref_key}) {
-	    die Dumper $s;
-	}
-
-	my $got = $s->{guessed}->{xref_dbname} . ':' . $s->{guessed}->{xref_key};
-
-	return $try . ($s->{guessed}->{gene_product_id} ? ' => ' : ' ~> ') . $got;
+	$out .= ($s->{guessed}->{gene_product_id} ? '=> ' : '~> ') .
+	  $s->{guessed}->{xref_dbname} . $s->{guessed}->{xref_key};
+    } else {
+	$out .= '=> ?';
     }
-
-    my @try;
-    while (my ($dbname,$key) = each %{ $s->{try} }) {
-	push @try, "$dbname:$key";
-    }
-    return join('|', @try) . ' => ?';
+    return $out;
 }
 
 1;
