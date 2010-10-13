@@ -19,100 +19,113 @@
   </types>
 
   <fields>
-   <!-- Required for both (acc|dbxref). -->
-   <field name="acc"
-	  type="string"
-	  indexed="true"
-	  stored="true"
-	  required="true" />
-   <!-- Required for flattening (term|gene_product). -->
-   <field name="domain"
-	  type="string"
-	  indexed="true"
-	  stored="true"
-	  required="true" />
-   <!-- Optional: for both. -->
-   <field name="name"
-	  type="text_ws"
-	  indexed="true"
-	  stored="true"
-	  required="false" />
-   <!-- Optional: for terms. -->
-   <field name="term_type"
-	  type="string"
-	  indexed="true"
-	  stored="true"
-	  required="false" />
-   <field name="is_obsolete"
-	  type="integer"
-	  indexed="true"
-	  stored="true"
-	  required="false" />
-   <field name="term_synonym"
-	  type="string"
-	  indexed="true"
-	  stored="true"
-	  multiValued="true"
-	  required="false" />
-   <field name="acc_synonym"
-	  type="string"
-	  indexed="true"
-	  stored="true"
-	  multiValued="true"
-	  required="false" />
-   <field name="term_definition"
-	  type="text_ws"
-	  indexed="true"
-	  stored="true"
-	  required="false" />
-   <field name="term_comment"
-	  type="text_ws"
-	  indexed="true"
-	  stored="true"
-	  required="false" />
-   <!-- Optional: for gene products. -->
-   <field name="symbol"
-	  type="string"
-	  indexed="true"
-	  stored="true"
-	  required="false" />
-   <!-- <field name="full_name" -->
-   <!-- 	  type="text_ws" -->
-   <!-- 	  indexed="true" -->
-   <!-- 	  stored="true" -->
-   <!-- 	  required="false" /> -->
-   <field name="ncbi_taxa_id"
-	  type="string"
-	  indexed="true"
-	  stored="true"
-	  required="false" />
-   <field name="type_name"
-	  type="string"
-	  indexed="true"
-	  stored="true"
-	  required="false" />
-   <field name="type_acc"
-	  type="string"
-	  indexed="true"
-	  stored="true"
-	  required="false" />
-   <field name="gene_product_synonym"
-	  type="text_ws"
-	  indexed="true"
-	  stored="true"
-	  multiValued="true"
-	  required="false" />
-   <field name="associated_term"
-	  type="text_ws"
-	  indexed="true"
-	  stored="true"
-	  multiValued="true"
-	  required="false" />
+    <!-- Both. (acc|dbxref) -->
+    <field name="id"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   required="true" />
+    <!-- Both (term.name|gp.symbol) -->
+    <field name="label"
+	   type="text_ws"
+	   indexed="true"
+	   stored="true"
+	   required="true" />
+    <!-- Both. (term.name|gp.full_name) -->
+    <field name="descriptive_name"
+   	   type="text_ws"
+   	   indexed="true"
+   	   stored="true"
+   	   required="false" />
+    <!-- Both. (term_synonym|gene_product_synonym) -->
+    <field name="synonym"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+    <!-- Both. (term def|gp def (not there yet)) -->
+    <field name="description"
+	   type="text_ws"
+	   indexed="true"
+	   stored="true"
+	   required="false" />
+    <!-- Both. (term.term_type|gp type) -->
+    <field name="type"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   required="true" />
+    <!-- Both. (term.term_type|gp.db) -->
+    <field name="source"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   required="true" />
+    <!-- Term. (?) -->
+    <field name="subset"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+    <!-- Both. (term.term_type|gp.db) -->
+    <field name="date"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   required="false" />
+    <!-- Term. (acc_synonym) -->
+    <field name="is_obsolete"
+	   type="integer"
+	   indexed="true"
+	   stored="true"
+	   required="false" />
+    <!-- Both. (?) -->
+    <field name="alternate_id"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+ 	   required="false" />
+    <!-- Term. (term comment) -->
+    <field name="comment"
+	   type="text_ws"
+	   indexed="true"
+	   stored="true"
+	   required="false" />
+    <!-- Term. (all graph ancestors) -->
+    <field name="term_closure"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+    <!-- GP (both eventually). (species ncbi_taxa_id) -->
+    <field name="taxon"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   required="false" />
+    <!-- GP (both eventually). (closure of above to be implemented) -->
+    <field name="taxon_closure"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+    <!-- GP. (terms associatied with GP - will be changed (testing)) -->
+    <field name="annotation_closure"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
   </fields>
 
-  <uniqueKey>acc</uniqueKey>
+  <uniqueKey>id</uniqueKey>
 
-  <defaultSearchField>name</defaultSearchField>
+  <defaultSearchField>descriptive_name</defaultSearchField>
 
   <solrQueryParser defaultOperator="OR"/>
 
