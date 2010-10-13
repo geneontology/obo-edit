@@ -40,7 +40,7 @@ public class FlyTest extends TestCase {
 		assertTrue(ancs.contains(eso)); //wing margin bristle --> external sensory organ
 		
 		for (OWLObject c : ancs) {
-			System.out.println(g.getIdentifier(c)+" "+c);
+			System.out.println(g.getIdentifier(c)+" "+g.getLabel(c)+" URI:"+c);
 		}
 }
 	
