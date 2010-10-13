@@ -12,7 +12,6 @@ import org.obolibrary.oboformat.parser.OBOFormatParser;
 import org.semanticweb.owlapi.io.OWLXMLOntologyFormat;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyFormat;
@@ -25,22 +24,26 @@ import owltools.io.ParserWrapper;
 
 import junit.framework.TestCase;
 
-public class FlyTest extends TestCase {
+public class FlyXPTest extends TestCase {
 
 	public static void testConvertXPs() throws IOException, OWLOntologyCreationException, OWLOntologyStorageException {
 		ParserWrapper pw = new ParserWrapper();
 		OWLGraphWrapper g =
-			pw.parseToOWLGraph("http://purl.org/obo/obo/FBbt.obo");
+			pw.parseToOWLGraph("http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/anatomy/gross_anatomy/animal_gross_anatomy/fly/fly_anatomy_XP.obo");
+//			pw.parseToOWLGraph("test_resources/caro.obo");
 		OWLOntology ont = g.getOntology();
-		OWLObject wmb = g.getOWLObjectByIdentifier("FBbt:00004326"); // wing margin bristle
-		OWLObject eso = g.getOWLObjectByIdentifier("FBbt:00005168"); // external sensory organ
-		
-		Set<OWLObject> ancs = g.getAncestorsReflexive(wmb);
-		assertTrue(ancs.contains(wmb)); // reflexivity test
-		assertTrue(ancs.contains(eso)); //wing margin bristle --> external sensory organ
-		
-		for (OWLObject c : ancs) {
-			System.out.println(g.getIdentifier(c)+" "+c);
+		for (OWLClass c : ont.getClassesInSignature()) {
+			System.out.println("c="+c+" "+g.getLabel(c));
+			for (OWLGraphEdge e : g.getOutgoingEdges(c)) {
+				System.out.println(e);
+			}
+		}
+
+		for (OWLClass c : ont.getClassesInSignature()) {
+			System.out.println("c="+c+" "+g.getLabel(c));
+			for (OWLGraphEdge e : g.getOutgoingEdgesClosure(c)) {
+				System.out.println("CLOSURE: "+e);
+			}
 		}
 }
 	
