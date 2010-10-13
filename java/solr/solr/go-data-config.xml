@@ -7,18 +7,18 @@
               password=""/>
   <document>
     <entity name="term" 
-            query="SELECT id, concat('term') AS domain, acc, name, term_type, is_obsolete FROM term">
+            query="SELECT id AS ikey, acc AS id, name AS label, name AS descriptive_name, term_type AS type, term_type AS source, is_obsolete FROM term">
       <entity name="term_synonym" 
-              query="SELECT term_synonym, acc_synonym FROM term_synonym WHERE term_id='${term.id}'"/>
+              query="SELECT term_synonym AS synonym, acc_synonym AS alternate_id FROM term_synonym WHERE term_id='${ikey}'"/>
       <entity name="term_definition" 
-              query="SELECT term_definition, term_comment FROM term_definition WHERE term_id='${term.id}'"/>
+              query="SELECT term_definition AS description, term_comment AS comment FROM term_definition WHERE term_id='${ikey}'"/>
     </entity>
     <entity name="gene_product"
-            query="SELECT gene_product.id, concat('gene_product') AS domain, symbol, full_name as name, ncbi_taxa_id, term.name AS type_name, term.acc AS type_acc, concat(dbxref.xref_dbname, ':', dbxref.xref_key) AS acc FROM gene_product, species, term, dbxref WHERE species_id=species.id AND type_id=term.id AND dbxref_id=dbxref.id">
+            query="SELECT gene_product.id AS ikey, symbol AS label, full_name AS descriptive_name, ncbi_taxa_id AS taxon, term.name AS type, concat(dbxref.xref_dbname, ':', dbxref.xref_key) AS id, dbxref.xref_dbname AS source FROM gene_product, species, term, dbxref WHERE gene_product.species_id=species.id AND gene_product.type_id=term.id AND gene_product.dbxref_id=dbxref.id">
       <entity name="gene_product_synonym" 
-              query="SELECT product_synonym FROM gene_product_synonym WHERE gene_product_id='${gene_product.id}'"/>
-      <entity name="associated_term" 
-              query="SELECT term.acc AS associated_term FROM gene_product, association, term WHERE  gene_product.id = association.gene_product_id AND association.term_id = term.id AND gene_product_id='${gene_product.id}'"/>
+              query="SELECT product_synonym AS synonym FROM gene_product_synonym WHERE gene_product_id='${ikey}'"/>
+      <entity name="associated_term"
+              query="SELECT term.acc AS annotation_closure FROM gene_product, association, term WHERE gene_product.id = association.gene_product_id AND association.term_id = term.id AND gene_product_id='${ikey}'"/>
     </entity>
   </document>
 </dataConfig>
