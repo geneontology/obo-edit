@@ -11,11 +11,12 @@ use Carp;
 
 use GO::AppHandle;
 use GO::MatchID;
+use GO::Metadata::Panther qw/panther_codes valid_panther_codes/;
 
 =head1 NAME
 
-seq2pthr2phylotree.pl - Takes PANTHR's F<seq2pthr.gz> file and
-populates the C<phylotree> table.
+seq2pthr2phylotree.pl - Takes PANTHER's F<seq2pthr> file and populates
+GO's C<phylotree> table.
 
 =head1 SYNOPSIS
 
@@ -46,17 +47,15 @@ anything.
 
 =item C<--species=I<pthr>>
 
-Only process specified species.  Species specified with PANTHR species
-id (the bit before the first pipe in the PATHER id).  This item can be
-specified more then once.
+Only process specified species.  Specify species with UniProt species
+codes (the bit before the first pipe in the PATHER id).  This item can
+be specified more then once.
 
 =item C<--tsv=I<file>>
 
 Specify a TSV file that contains alternate name for ids in the input
 file.  When specified the C<--to>, and at least one C<--from> option
-needs to be specified.
-
-=over
+needs to be specified too.  This feature is not well tested.
 
 =item C<--to=I<col>>
 
@@ -67,12 +66,10 @@ The column in the TSV file that we wish to map ids to.
 Columns in the TSV file to make ids from.  This can be specified more
 then once.
 
-=back
-
 =item C<--match-only>
 
-Stop after before database insertion start.  Use to check which items
-are not in the database.
+Stop before database insertion start.  Use to check which items are
+not in the database.
 
 =item C<--no-dry-run>
 
@@ -125,24 +122,24 @@ GetOptions
 
 my @e; # error
 
-if (scalar(@species) && !GO::Metadata::Panther::valid_codes(@species)) {
+if (scalar(@species) && !valid_panther_codes(@species)) {
     push @e, wrap('Valid argument for --species include: ', "\t",
 		  GO::Metadata::Panther->codes());
 }
 
-# if ($tsv) {
-#     if (!$to or !scalar(@from)) {
-# 	push @e, wrap('', '', <<TXT);
-# If --tsv is specified --to and --from are needed too.
-# TXT
-#     }
-# }
+if ($tsv) {
+    if (!$to or !scalar(@from)) {
+	push @e, wrap('', '', <<TXT);
+If --tsv is specified --to and --from are needed too.
+TXT
+    }
+}
 
 die pod2usage(join("\n", @e)) if (scalar @e);
 
 
 if (!scalar @species) {
-    @species = GO::Metadata::Panther::codes();
+    @species = panther_codes();
 }
 
 my %species = map {
@@ -150,32 +147,32 @@ my %species = map {
 } GO::Metadata::Panther->new(@species);
 
 
-# my %tsv;
-# if ($tsv) {
-#     open(TSV, $tsv) or die "Unable to read '$tsv', $!";
-#     while(<TSV>) {
-# 	chomp;
-# 	my @row = split(m/\t/);
-# 	next if (!$row[$to]);
-# 	for my $from (@from) {
-# 	    next if (!exists $row[$from]);
-# 	    $tsv{$row[$from]} = $row[$to];
-# 	}
-#     }
-#     close TSV;
+my %tsv;
+if ($tsv) {
+    open(TSV, $tsv) or die "Unable to read '$tsv', $!";
+    while(<TSV>) {
+	chomp;
+	my @row = split(m/\t/);
+	next if (!$row[$to]);
+	for my $from (@from) {
+	    next if (!exists $row[$from]);
+	    $tsv{$row[$from]} = $row[$to];
+	}
+    }
+    close TSV;
 
-#     if (0 == scalar keys %tsv) {
-# 	die "Found no useful data in '$tsv'.";
-#     }
-# }
+    if (0 == scalar keys %tsv) {
+	die "Found no useful data in '$tsv'.";
+    }
+}
 
 =head2 LOADING
 
-The uncompress F<seq2pthr.gz> has two columns, the first in the
-PANTHER id, the second is the name of the cluster that member is in.
-The Panther id is a pipe separated list, the first element is the
-species abbreviation.  All other elements are colon separated
-I<dbname> I<key> pars of gene or protein identifiers.
+The uncompress F<seq2pthr> has two columns, the first in the PANTHER
+id, the second is the name of the cluster that member is in.  The
+Panther id is a pipe separated list, the first element is the species
+abbreviation.  All other elements are colon separated I<dbname> I<key>
+pars of gene or protein identifiers.
 
 The part scans the database and matches the given row to a
 C<gene_product> row if possable.  Else it tries to match it to a
@@ -350,7 +347,7 @@ number as a fake column id.
 We now know what we need to do for everything.  For each protein we
 check if there is a C<phylotree> entry for the cluster.  It get
 created, along with a related C<dbxref> row.  C<dbxref.xref_dbname>
-will be I<PanthrDB> and C<dbxref.xref_key> will be the cluster name.
+will be I<PantherDB> and C<dbxref.xref_key> will be the cluster name.
 C<phylotree.name> will be a C<dbxref.xref_dbname||':'dbxref.xref_xey>
 concatenation.
 

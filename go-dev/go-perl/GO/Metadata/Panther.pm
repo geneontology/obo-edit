@@ -38,7 +38,7 @@ our %species =
    # A
    #
 
-   ANOGA => { prefer => [ 'Gene' ] },
+   ANOGA => { prefer => [ 'UniProtKB',  'ENSEMBL' ] },
    ARATH => { id_filter => sub {
 		  if ($_[0] eq 'gene') {
 		      return ('TAIR', "locus:$_[1]");
@@ -55,7 +55,7 @@ our %species =
 
    BACSU => {},
    BACTN => {},
-   BOVIN => { prefer => [ 'UniProtKB',  'Ensembl' ] },
+   BOVIN => { prefer => [ 'UniProtKB',  'ENSEMBL' ] },
    BRAJA => {},
 
    #
@@ -63,21 +63,31 @@ our %species =
    #
 
    CAEBR => {},
-   CAEEL => { prefer => [ 'WB' ] },
-   CANFA => {},
+   CAEEL => { prefer => [ 'WB' ],
+	      id_filter => sub {
+		  $_[0] = 'WB' if ($_[1] =~ m/^WB/);
+		  return @_;
+	      }
+	    },
+   CANFA => { prefer => [ 'ENSEMBL' ] },
    CHLTA => {},
    CHLRE => {},
    CHLAA => {},
-   CIOIN => {},
+   CIOIN => { prefer => [ 'ENSEMBL' ] },
 
    #
    # D
    #
 
-   DANRE => { prefer => [ 'ZFIN' ] },
+   DANRE => { prefer => [ 'ZFIN', 'UniProtKB', 'ENSEMBL' ] },
    DEIRA => {},
    DICDI => {},
-   DROME => { prefer => [ 'FB' ] },
+   DROME => { prefer => [ 'FB' ],
+	      id_filter => sub {
+		  $_[0] = 'FB' if ($_[1] =~ m/^FB/);
+		  return @_;
+	      }
+	    },
 
    #
    # E
@@ -86,13 +96,13 @@ our %species =
    EMENI => {},
    ENTHI => {},
    ECOLI => { also_node => [ 511145 ],
-	      prefer    => [ 'EcoCyc' ] },
+	      prefer    => [ 'EcoCyc', 'UniProtKB' ] },
 
    #
    # G
    #
 
-   CHICK => {},
+   CHICK => { prefer => [ 'UniProtKB', 'ENSEMBL' ] },
    GEOSL => {},
    GLOVI => { also_node => [ 251221 ] },
 
@@ -116,8 +126,8 @@ our %species =
 
    MACMU => { prefer => [ 'UniProtKB', 'ENSEMBL' ] },
    METAC => {},
-   MONDO => {},
-   MOUSE => { prefer => [ 'MGI' ],
+   MONDO => { prefer => [ 'ENSEMBL' ] },
+   MOUSE => { prefer => [ 'MGI', 'UniProtKB', 'ENSEMBL' ],
 	      id_filter => sub {
 		  if ($_[0] eq 'MGI') {
 		      $_[1] =~ s/^(\d)/MGI:$1/;
@@ -136,14 +146,14 @@ our %species =
    # O
    #
 
-   ORNAN => {},
+   ORNAN => { prefer => [ 'ENSEMBL' ] },
    ORYSJ => {},
 
    #
    # P
    #
 
-   PANTR => {},
+   PANTR => { prefer => [ 'ENSEMBL' ] },
    PLAYO => {},
    PSEA7 => {},
 
@@ -151,7 +161,7 @@ our %species =
    # R
    #
 
-   RAT => {  prefer => [ 'RGD', 'UniProtKB' ] },
+   RAT => {  prefer => [ 'RGD', 'UniProtKB', 'ENSEMBL' ] },
 
    #
    # S
@@ -168,7 +178,9 @@ our %species =
    #
 
    FUGRU => { is => 'TAKRU' },
-   TAKRU => { was => 'FUGRU' },
+   TAKRU => { was => 'FUGRU',
+	      prefer => [ 'ENSEMBL' ],
+	    },
    TETTH => { also_node => [ 312017 ] },
    THEMA => {},
 
@@ -225,10 +237,7 @@ sub valid_panther_codes{
     }
     return '1';
 }
-sub valid_codes(){
-    carp 'Please use valid_panther_codes() instead of valid_codes()';
-    return valid_panther_codes(@_);
-}
+
 
 =back
 
@@ -286,7 +295,7 @@ sub new{
     } @all) if (scalar @all);
 
     for (@all) {
-	if ($species{$_->code}) {
+	if ($species{$_->code()}) {
 	    while (my ($k,$v) = each %{ $species{$_->code} }) {
 		$_->{$k} = $v;
 	    }
@@ -333,6 +342,7 @@ we have never encountered a conflict that needed resolving.
 =cut
 sub prefers{
     my $s = shift;
+
     if ($s->{prefer}) {
 	return @{ $s->{prefer} };
     }

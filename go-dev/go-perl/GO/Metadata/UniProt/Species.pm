@@ -103,9 +103,18 @@ sub new{
 	}
     }
 
-    if ((scalar(keys %code)) || (scalar(keys %node))) {
-	warn join(' ', 'Skipped:', keys %code, keys %node);
+    for (keys %code) {
+	carp "Unable to find the UniProt code: $_";
+	push @species, { code => $_ };
     }
+    for (keys %node) {
+	carp "Unable to find the NCBI node: $_";
+	push @species, { node => $_ };
+    }
+
+    #if ((scalar(keys %code)) || (scalar(keys %node))) {
+    #	warn join(' ', 'Skipped:', keys %code, keys %node);
+    #}
 
     for (@species) {
 	bless $_, $class;
@@ -124,7 +133,9 @@ Returns the UniProt code that was used to create the object.
 
 =cut
 sub code{
-    return shift()->{code};
+    my $s = shift;
+    my $out = $s->{code} || "node:$s->{node}";
+    return $out;
 }
 
 =item $s-E<gt>ncbi_taxon_id
