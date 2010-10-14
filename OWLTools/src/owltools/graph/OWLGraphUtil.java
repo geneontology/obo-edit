@@ -31,7 +31,7 @@ public class OWLGraphUtil {
 		Set<OWLGraphEdge> lcses = new HashSet<OWLGraphEdge>();
 		lcses.addAll(cses);
 		for (OWLGraphEdge cse: cses) {
-			Set<OWLObject> zs = g.getAnctesors(cse.getSource());
+			Set<OWLObject> zs = g.getAncestors(cse.getSource());
 			for (OWLObject z : zs) {
 				for (OWLGraphEdge lcse: lcses) {
 					if (lcse.getSource().equals(z))
@@ -44,8 +44,8 @@ public class OWLGraphUtil {
 	
 	public static Set<OWLObject> findCommonAncestors(OWLGraphWrapper g,
 				OWLObject x, OWLObject y) {
-		Set<OWLObject> xs = g.getAnctesors(x);
-		Set<OWLObject> ys = g.getAnctesors(y);
+		Set<OWLObject> xs = g.getAncestors(x);
+		Set<OWLObject> ys = g.getAncestors(y);
 		xs.retainAll(ys);
 		return xs;
 	}
@@ -55,7 +55,7 @@ public class OWLGraphUtil {
 		Set<OWLObject> lcas = new HashSet<OWLObject>();
 		lcas.addAll(cas);
 		for (OWLObject z : cas) {
-			lcas.removeAll(g.getAnctesors(z));
+			lcas.removeAll(g.getAncestors(z));
 		}
 		return lcas;
 	}

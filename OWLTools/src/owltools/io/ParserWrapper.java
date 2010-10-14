@@ -1,9 +1,11 @@
 package owltools.io;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.obolibrary.obo2owl.Obo2Owl;
 import org.obolibrary.oboformat.model.OBODoc;
+import org.obolibrary.oboformat.model.FrameMergeException;
 import org.obolibrary.oboformat.parser.OBOFormatParser;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
@@ -34,6 +36,24 @@ public class ParserWrapper {
 		OWLOntologyManager manager = bridge.getManager();
 		OWLOntology ontology = bridge.convert(obodoc);
 		return ontology;
+	}
+	
+	public OWLOntology parseOBOFiles(List<String> files) throws IOException, OWLOntologyCreationException, FrameMergeException {
+		OBOFormatParser p = new OBOFormatParser();
+		OBODoc obodoc = null;
+		for (String f : files) {
+			if (obodoc == null)
+				obodoc = p.parse(f);
+			else {
+				OBODoc obodoc2 = p.parse(f);
+				obodoc.importContents(obodoc2);
+			}
+		}
+
+		Obo2Owl bridge = new Obo2Owl();
+		OWLOntologyManager manager = bridge.getManager();
+		OWLOntology ontology = bridge.convert(obodoc);
+		return ontology;		
 	}
 
 	public OWLOntology parseOWL(String iriString) throws OWLOntologyCreationException {
