@@ -116,6 +116,14 @@ public class OWLGraphEdge {
 		return quantifiedPropertyList.iterator().next();
 	}
 	
+	public OWLQuantifiedProperty getLastQuantifiedProperty() {
+		OWLQuantifiedProperty lqp = null;
+		for (OWLQuantifiedProperty qp : quantifiedPropertyList) {
+			lqp = qp;
+		}
+		return lqp;
+	}
+
 	public void setSingleQuantifiedProperty(OWLQuantifiedProperty qp) {
 		quantifiedPropertyList = new Vector<OWLQuantifiedProperty>();
 		quantifiedPropertyList.add(qp);
