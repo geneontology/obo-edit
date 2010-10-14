@@ -98,7 +98,7 @@ public class OWLGraphLayoutRenderer {
 	}
 	
 	public void addObject(OWLObject focusObj) {
-		Set<OWLObject> ancObjs = owlGraphWrapper.getAnctesors(focusObj);
+		Set<OWLObject> ancObjs = owlGraphWrapper.getAncestors(focusObj);
 		ancObjs.add(focusObj);
 		for (OWLObject ob : ancObjs) {
 			OWLGraphLayoutNode node = getNode(ob);
