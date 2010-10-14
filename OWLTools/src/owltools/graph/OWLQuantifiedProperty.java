@@ -10,9 +10,9 @@ import org.semanticweb.owlapi.model.OWLPropertyExpression;
 
 public class OWLQuantifiedProperty {
 	
-	// TODO - change named to predicate?
+	// TODO - change name to predicate?
 	public enum Quantifier {
-		SOME, ONLY, CARDINALITY, SUBCLASS_OF, INSTANCE_OF, PROPERTY_ASSERTION, IDENTITY
+		SOME, ONLY, CARDINALITY, SUBCLASS_OF, INSTANCE_OF, PROPERTY_ASSERTION, IDENTITY, VALUE
 	}
 	
 	private OWLObjectProperty property;
@@ -57,6 +57,9 @@ public class OWLQuantifiedProperty {
 	}
 	public Quantifier getQuantifier() {
 		return quantifier;
+	}
+	public boolean isQuantified() {
+		return property != null;
 	}
 	public void setQuantifier(Quantifier quantifier) {
 		this.quantifier = quantifier;

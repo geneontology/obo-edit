@@ -25,6 +25,8 @@ import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectHasValue;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
@@ -120,6 +122,11 @@ public class OWLGraphWrapper {
 	private Map<OWLObject,Set<OWLGraphEdge>> edgeByTarget;
 	private Map<OWLObject,Set<OWLGraphEdge>> inferredEdgeBySource;
 	private Map<OWLObject,Set<OWLGraphEdge>> inferredEdgeByTarget;
+
+	// used to store mappings child->parent, where
+	// parent = UnionOf( ..., child, ...)
+	private Map<OWLObject,Set<OWLObject>> extraSubClassOfEdges = null;
+
 	
 	/**
 	 * Configuration options. These are typically specific to a
@@ -174,13 +181,43 @@ public class OWLGraphWrapper {
 	 * @param source
 	 * @return all edges that originate from source to nearest named object target
 	 */
-	public  Set<OWLGraphEdge> getOutgoingEdges(OWLObject cls) {
+	public Set<OWLGraphEdge> getOutgoingEdges(OWLObject cls) {
 		Set<OWLGraphEdge> pEdges = getPrimitiveOutgoingEdges(cls);
 		Set<OWLGraphEdge> edges = new HashSet<OWLGraphEdge>();
 		for (OWLGraphEdge e : pEdges) {
 			edges.addAll(primitiveEdgeToFullEdges(e));
 		}
 		return edges;
+	}
+	
+	private Set<OWLObject> getOutgoingEdgesViaReverseUnion(OWLObject child) {
+		if (extraSubClassOfEdges == null)
+			cacheReverseUnionMap();
+		if (extraSubClassOfEdges.containsKey(child)) 
+			return extraSubClassOfEdges.get(child);
+		else
+			return new HashSet<OWLObject>();
+	}
+	
+	private void cacheReverseUnionMap() {
+		extraSubClassOfEdges = new HashMap<OWLObject, Set<OWLObject>>();
+		for (OWLClass cls : ontology.getClassesInSignature()) {
+			for (OWLEquivalentClassesAxiom eca : ontology.getEquivalentClassesAxioms(cls)) {
+				for (OWLClassExpression ce : eca.getClassExpressions()) {
+					if (ce instanceof OWLObjectUnionOf) {
+						for (OWLObject child : ((OWLObjectUnionOf)ce).getOperands()) {
+							if (extraSubClassOfEdges.containsKey(child)) {
+								extraSubClassOfEdges.get(child).add(cls);
+							}
+							else {
+								extraSubClassOfEdges.put(child, new HashSet<OWLObject>());
+								extraSubClassOfEdges.get(child).add(cls);
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -190,7 +227,7 @@ public class OWLGraphWrapper {
 	 * @param source
 	 * @return
 	 */
-	public  Set<OWLGraphEdge> getPrimitiveOutgoingEdges(OWLObject s) {
+	public Set<OWLGraphEdge> getPrimitiveOutgoingEdges(OWLObject s) {
 		Set<OWLGraphEdge> edges = new HashSet<OWLGraphEdge>();
 		if (s instanceof OWLClass) {
 			
@@ -203,10 +240,15 @@ public class OWLGraphWrapper {
 						edges.add(createSubClassOfEdge(s, ce));
 				}
 			}
-			// TODO - union in reverse direction - index first?
-
+			for (OWLObject pbu : getOutgoingEdgesViaReverseUnion(s)) {
+				if (pbu instanceof OWLClass)
+					edges.add(createSubClassOfEdge(s,(OWLClass)pbu));
+			}
+	
 		}
 		else if (s instanceof OWLIndividual) {
+			// TODO - do we care about punning?
+			// need to define semantics here
 			for (OWLClassAssertionAxiom a : ontology.getClassAssertionAxioms((OWLIndividual) s)) {
 				edges.add(new OWLGraphEdge(s,a.getClassExpression(),null,Quantifier.INSTANCE_OF,ontology));
 			}
@@ -238,6 +280,19 @@ public class OWLGraphWrapper {
 			t  = ((OWLObjectSomeValuesFrom)s).getFiller();
 			p = (OWLObjectPropertyExpression) s.getProperty();
 			q = OWLQuantifiedProperty.Quantifier.SOME;
+		}
+		else if (s instanceof OWLObjectAllValuesFrom) {
+			t  = ((OWLObjectAllValuesFrom)s).getFiller();
+			p = (OWLObjectPropertyExpression) s.getProperty();
+			q = OWLQuantifiedProperty.Quantifier.ONLY;
+		}
+		else if (s instanceof OWLObjectHasValue) {
+			t  = ((OWLObjectHasValue)s).getValue();
+			p = (OWLObjectPropertyExpression) s.getProperty();
+			q = OWLQuantifiedProperty.Quantifier.VALUE;
+		}
+		else {
+			System.err.println("cannot handle:"+s);
 		}
 		return new OWLGraphEdge(s,t,p,q,ontology);
 	}
@@ -339,6 +394,7 @@ public class OWLGraphWrapper {
 						(OWLClassExpression) t2);
 			}
 			else {
+				System.err.println("cannot handle:"+qp);
 				// TODO
 				return null;
 			}
@@ -476,14 +532,19 @@ public class OWLGraphWrapper {
 	 * @param source
 	 * @return all reachable target nodes, regardless of edges
 	 */
-	public Set<OWLObject> getAnctesors(OWLObject x) {
+	public Set<OWLObject> getAncestors(OWLObject x) {
 		Set<OWLObject> ancs = new HashSet<OWLObject>();
 		for (OWLGraphEdge e : getOutgoingEdgesClosure(x)) {
 			ancs.add(e.getTarget());
 		}
 		return ancs;
 	}
-
+	public Set<OWLObject> getAncestorsReflexive(OWLObject x) {
+		Set<OWLObject> ancs = getAncestors(x);
+		ancs.add(x);
+		return ancs;
+	}
+		
 	/**
 	 * TODO
 	 * @see getOutgoingEdgesClosure
@@ -730,7 +791,11 @@ public class OWLGraphWrapper {
 		if (owlObject instanceof OWLNamedObject) {
 			String iri = ((OWLNamedObject)owlObject).getIRI().toString();
 			if (iri.startsWith("http://purl.obolibrary.org/obo/")) {
-				iri.replace("http://purl.obolibrary.org/obo/", "");
+				iri = iri.replace("http://purl.obolibrary.org/obo/", "");
+				int p = iri.lastIndexOf('_');
+				if (p >= 0) {
+					iri = iri.substring(0, p) + ":" + iri.substring(p+1);
+				}
 			}
 			
 			return iri;
@@ -742,6 +807,20 @@ public class OWLGraphWrapper {
 
 
 
+	public IRI getIRIByIdentifier(String id) {
+		String[] parts = id.split(":", 2);
+		String s;
+		if (parts.length <2) {
+			// TODO!
+			s = "http://purl.obolibrary.org/obo/TODO_"+parts[0];
+		}
+		else {
+			s = "http://purl.obolibrary.org/obo/"+parts[0]+"_"+parts[1];
+		}
+		
+		return IRI.create(s);
+	}
+
 	/**
 	 * translates to obo URIs
 	 * 
@@ -749,12 +828,13 @@ public class OWLGraphWrapper {
 	 * @return
 	 */
 	public OWLObject getOWLObjectByIdentifier(String id) {
-		String[] parts = id.split(":", 2);
-		String s = "http://purl.obolibrary.org/obo/"+parts[0]+"_"+parts[1];
-		
-		IRI iri = IRI.create(s);
-		return dataFactory.getOWLClass(iri);
+		return dataFactory.getOWLClass(getIRIByIdentifier(id));
 	}
+
+	public OWLObject getOWLObjectPropertyByIdentifier(String id) {
+		return dataFactory.getOWLObjectProperty(getIRIByIdentifier(id));
+	}
+
 	
 	/**
 	 * @param iri
@@ -768,6 +848,11 @@ public class OWLGraphWrapper {
 		}
 		return c;
 	}
+	
+	public OWLObject getOWLClass(OWLObject x) {
+		return dataFactory.getOWLClass(((OWLNamedObject)x).getIRI());
+	}
+
 
 	public OWLObject getOWLIndividual(String s) {
 		IRI iri = IRI.create(s);
@@ -787,6 +872,9 @@ public class OWLGraphWrapper {
 		}
 		return o;
 	}
+
+
+
 
 
 
