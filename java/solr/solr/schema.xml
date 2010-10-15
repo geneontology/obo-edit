@@ -44,12 +44,6 @@
 	   stored="true"
 	   multiValued="true"
 	   required="false" />
-    <!-- Both. (term def|gp def (not there yet)) -->
-    <field name="description"
-	   type="text_ws"
-	   indexed="true"
-	   stored="true"
-	   required="false" />
     <!-- Both. (term.term_type|gp type) -->
     <field name="type"
 	   type="string"
@@ -62,32 +56,38 @@
 	   indexed="true"
 	   stored="true"
 	   required="true" />
-    <!-- Term. (?) -->
-    <field name="subset"
-	   type="string"
-	   indexed="true"
-	   stored="true"
-	   multiValued="true"
-	   required="false" />
-    <!-- Both. (term.term_type|gp.db) -->
+    <!-- Both. (BUG: not implemented) -->
     <field name="date"
 	   type="string"
 	   indexed="true"
 	   stored="true"
 	   required="false" />
-    <!-- Term. (acc_synonym) -->
-    <field name="is_obsolete"
-	   type="integer"
-	   indexed="true"
-	   stored="true"
-	   required="false" />
-    <!-- Both. (?) -->
+    <!-- Both. (term_synonym.acc_synonym|BUG: not implemented for gp) -->
     <field name="alternate_id"
 	   type="string"
 	   indexed="true"
 	   stored="true"
 	   multiValued="true"
  	   required="false" />
+    <!-- Both. (term def|gp def (NOTE: not there yet)) -->
+    <field name="description"
+	   type="text_ws"
+	   indexed="true"
+	   stored="true"
+	   required="false" />
+    <!-- Term. (term->term_subset->term.name) -->
+    <field name="subset"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+    <!-- Term. (term.is_obsolete) -->
+    <field name="is_obsolete"
+	   type="integer"
+	   indexed="true"
+	   stored="true"
+	   required="false" />
     <!-- Term. (term comment) -->
     <field name="comment"
 	   type="text_ws"
@@ -101,20 +101,27 @@
 	   stored="true"
 	   multiValued="true"
 	   required="false" />
-    <!-- GP (both eventually). (species ncbi_taxa_id) -->
+    <!-- GP (both eventually). (species.ncbi_taxa_id) -->
     <field name="taxon"
 	   type="string"
 	   indexed="true"
 	   stored="true"
 	   required="false" />
-    <!-- GP (both eventually). (closure of above to be implemented) -->
+    <!-- GP (both eventually). (NOTE: closure of above to be implemented) -->
     <field name="taxon_closure"
 	   type="string"
 	   indexed="true"
 	   stored="true"
 	   multiValued="true"
 	   required="false" />
-    <!-- GP. (terms associatied with GP - will be changed (testing)) -->
+    <!-- GP. (direct terms associatied with GP - will be changed (testing)) -->
+    <field name="direct_annotation"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+    <!-- GP. (all terms associatied with GP - will be changed (testing)) -->
     <field name="annotation_closure"
 	   type="string"
 	   indexed="true"
