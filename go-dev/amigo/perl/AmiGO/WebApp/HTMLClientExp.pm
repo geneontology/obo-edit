@@ -57,8 +57,8 @@ use AmiGO::Worker::GeneProduct;
 use AmiGO::Worker::GeneProductCount;
 use AmiGO::Worker::PANTHERTree;
 
-use Cache::Memcached; # TODO: can't go bigger than 1MB (still,
-                      # probably best to explore);
+# use Cache::Memcached; # TODO: can't go bigger than 1MB (still,
+#                       # probably best to explore);
 #use Cache::FileCache; # can't do complex objects.
 #use FreezeThaw qw(freeze thaw); # infinite recur?
 

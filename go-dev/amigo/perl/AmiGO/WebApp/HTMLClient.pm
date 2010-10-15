@@ -269,10 +269,6 @@ sub mode_homolset_graph {
 
   my $self = shift;
 
-  ## NOTE: memcache still doesn't like the image sizes...
-  #   my $cache =
-  #     new Cache::Memcached->new({'servers' => ["127.0.0.1:11211"]});
-
   my $i = AmiGO::WebApp::Input->new();
   my $params = $i->input_profile('homolset_graph');
 
