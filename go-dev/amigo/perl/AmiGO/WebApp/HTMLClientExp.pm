@@ -1688,9 +1688,9 @@ sub mode_report_slimmerish_1 {
        #'port' => $mirror->{port} || '3306',
        'database' => $self->{CORE}->amigo_env('GO_DBNAME') || undef,
       };
-    my $q = AmiGO::External::GODB::Query->new($props, 1000000, 1000000);
+    my $q = AmiGO::External::GODB::Query->new($props, 10000000, 10000000);
 
-    ## 
+    ## NOTE/BUG: If it turns out that there are problems with DBI and getting submitting 
     my $single_get = sub {
 
       ## 
@@ -1879,136 +1879,6 @@ sub mode_report_slimmerish_1 {
   $self->add_template_content('html/main/report/slimmerish_1.tmpl');
   return $self->generate_template_page();
 }
-
-# ##
-# sub mode_orb_client {
-
-#   my $self = shift;
-
-#   #my $i = AmiGO::WebApp::Input->new();
-#   #my $params = $i->input_profile('homolset_summary');
-#   my $params = $self->_common_params_settings();
-#   #my $output = $orb_c->make_page($params->{order}, $params->{show_ev});
-#   #my $orb_client = AmiGO::Worker::ORBClient->new();
-#   #my $page = $orb_client->make_page();
-
-#   ## TODO/BUG: Somehow set the output to svg/text
-#   return $self->_generate_heavy_page($params,
-# 				     'html/main/orb_client.tmpl',
-# 				     ['html/inc/orb_bootstrap.tmpl']);
-# }
-
-
-# ##
-# sub mode_orb {
-
-#   my $self = shift;
-
-#   my $i = AmiGO::WebApp::Input->new();
-#   my $params = $i->input_profile('orb');
-
-#   _common_params_settings($params);
-
-#   my $format = $params->{format};
-#   my $request = $params->{request};
-
-#   if( $request eq 'trackers' ){
-#     $self->header_add( -type => 'text/xml' );
-
-#   }elsif( $request eq 'tracker_information' ){
-
-#   }
-
-#   if( $format eq 'obo' || $format eq 'js' ){
-#     $self->header_add( -type => 'text/plain' );
-#   }elsif( $format eq 'xml' ){
-#     $self->header_add( -type => 'text/xml' );
-#   }else{
-#     ## Normal html.
-#   }
-
-#   ## Get the right header.
-#   if( $format && $format eq 'dot' ){
-
-#   }elsif( $format && $format eq 'png' ){
-#     $self->header_add( -type => 'image/png' );
-#   }else{
-#     $self->header_add( -type => 'image/svg+xml' );
-#   }
-
-#   ## TODO/BUG: Somehow set the output to svg/text
-#   return $self->_generate_heavy_page($params,
-# 				     'html/main/orb_client.tmpl',
-# 				     ['html/inc/orb_bootstrap.tmpl']);
-# }
-
-
-# ## BUG/TODO: this is currently a one-off for suzi, but I would like to
-# ## roll this into a general "plugins" framework pretty soon down the
-# ## road.
-# sub mode_report_1 {
-
-#   my $self = shift;
-
-#   ## Capture any incoming parameters.
-#   my $i = AmiGO::WebApp::Input->new();
-#   my $params = $i->input_profile(); # no profile--straight report
-#   my $format = $params->{format};
-#   $self->_common_params_settings($params);
-
-#   my $query = GOBO::DBIC::GODBModel::Query->new({type=>'association'});
-#   my @e_codes = @{$self->{CORE}->experimental_evidence_codes()};
-#   #my $results =
-#   #  $query->get_all_results({-and=>[
-# #				    {'evidence.code'=> {'=', \@e_codes}}
-# #				   ]});
-
-#   ## Cycle through the results and process them into something useful.
-#   $params->{RESULTS} = [];
-#   $params->{COUNT} = 0;
-#   while( my $a =
-# 	 $query->get_next_result({-and=>[
-# 					 {'evidence.code'=> {'=', \@e_codes}}
-# 					]}) ){
-
-# #  foreach my $a (@$results){
-
-#     $params->{COUNT}++;
-
-#     print $a->term->acc . "\n";
-#     print $a->term->name . "";
-#     print $a->gene_product->symbol . "\n";
-#     print $a->gene_product->dbxref->xref_dbname . "\n";
-#     print $a->gene_product->dbxref->xref_dbname . "\n";
-
-# #     push @{$params->{RESULTS}},
-# #       {
-# #        is_not => 'a',
-# #        pm_id => 'b',
-# #        go_id => 'c',
-# #        go_name => 'd',
-# #        go_ont => 'e',
-# #        go_link => 'f',
-# #        gp_symbol => 'g',
-# #        gp_link => 'h',
-# #        #gp_link => $self->get_interlink({mode=>'gp-details',
-# #        #		     arg=>{gp=>$gp_ids,
-# #        #			   session_id=>$self->{SESSION_ID}}}),
-# #       };
-#   }
-
-#   my $output = '';
-#   if( $format &&
-#       ( $format eq 'text' ||
-# 	$format eq 'txt' )){
-#     $output =
-#       $self->_generate_standard_page($params, 'html/main/report_1_text.tmpl');
-#   }else{
-#     $output =
-#       $self->_generate_standard_page($params, 'html/main/report_1.tmpl');
-#   }
-#   return $output;
-# }
 
 
 
