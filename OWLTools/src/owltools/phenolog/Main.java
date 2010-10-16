@@ -5,6 +5,9 @@ import java.io.*;
 import java.util.*;
 import org.apache.commons.math.distribution.*;
 
+import owltools.graph.OWLGraphWrapper;
+import owltools.io.ParserWrapper;
+import org.semanticweb.owlapi.model.OWLObject;
 /**
  *
  * Author        : Neeral Beladia
@@ -105,8 +108,8 @@ public class Main {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        
 
+        
         // STEP2: Read through HashSet of GeneIDs read from fly_GenePheno.txt and compare with
         //        all the Gene-Phenotype associations read from HashSet
                 
@@ -179,7 +182,7 @@ public class Main {
             ex.printStackTrace();
         }
 
-
+        
         //STEP 4: Read Mice Gene ID - Gene Label data in a HashMap
         HashMap<String, String> hm_gene = new HashMap<String, String>();
         try {
@@ -465,6 +468,81 @@ public class Main {
         chk_overlap = calculate_overlap(hm1.get("FBbt:00005089"), hm2.get("MP:0005621"), hm_indpair1);
         System.out.println("Overlap : "+chk_overlap);
         System.out.println("Lets check ortho. "+hm_indpair1.get("FBgn0020440"));*/
+
+
+        try {
+            ParserWrapper pw = new ParserWrapper();
+            OWLGraphWrapper owlg = pw.parseToOWLGraph("http://purl.org/obo/obo/FBbt.obo");
+            //OWLOntology ont = g.getOntology();
+
+            OWLObject owl = null;
+            Set<OWLObject> ancs = null;
+
+            Iterator it = ph1.iterator();
+            HashSet<Pheno> nph1 = (HashSet<Pheno>) ph1.clone();
+            Pheno p = null;
+            Pheno tmp = null;
+            while (it.hasNext()) {
+                p = (Pheno) it.next();
+                owl = owlg.getOWLObjectByIdentifier(p.getId());
+                ancs = owlg.getAncestorsReflexive(owl);
+
+                for (OWLObject c : ancs) {
+                    if (owlg.getIdentifier(c).contains("FBbt:")) {
+                        if (hm1.get(owlg.getIdentifier(c)) == null) {
+                            tmp = new Pheno(owlg.getIdentifier(c), owlg.getLabel(c), p.getIndividuals());
+                            nph1.add(tmp);
+                            hm1.put(tmp.getId(), tmp);
+                        } else {
+                            tmp = hm1.get(owlg.getIdentifier(c));
+                            tmp.getIndividuals().addAll(p.getIndividuals());
+                        }
+                    }
+                }
+            }
+
+            ph1 = nph1;
+
+        } catch (Exception e) {
+        }
+
+        System.out.println("Done with PH1 Graph");
+
+        try {
+            ParserWrapper pw = new ParserWrapper();
+            OWLGraphWrapper owlg = pw.parseToOWLGraph("http://purl.org/obo/obo/MP.obo");
+            //OWLOntology ont = g.getOntology();
+
+            Set<OWLObject> ancs = null;
+
+            Iterator it = ph2.iterator();
+            HashSet<Pheno> nph2 = (HashSet<Pheno>) ph2.clone();
+            Pheno p = null;
+            Pheno tmp = null;
+            while (it.hasNext()) {
+                p = (Pheno) it.next();
+                ancs = owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId()));
+
+                for (OWLObject c : ancs) {
+                    if (owlg.getIdentifier(c).contains("MP:")) {
+                        if (hm2.get(owlg.getIdentifier(c)) == null) {
+                            tmp = new Pheno(owlg.getIdentifier(c), owlg.getLabel(c), p.getIndividuals());
+                            nph2.add(tmp);
+                            hm2.put(tmp.getId(), tmp);
+                        } else {
+                            tmp = hm2.get(owlg.getIdentifier(c));
+                            tmp.getIndividuals().addAll(p.getIndividuals());
+                        }
+                    }
+                }
+            }
+
+            ph2 = nph2;
+
+        } catch (Exception e) {
+        }
+
+        System.out.println("Done with PH2 Graph");
 
 
         //For each Phenotype in Species I
