@@ -2,6 +2,10 @@
 ////
 //// org.bbop.model
 ////
+//// This code is most likely a branch of the most recent amigo2
+//// version (in lib/javascript/beta) and should be the jumping off
+//// point for further work.
+//// 
 //// Purpose: The basic internal data structure for OBD/BBOP graphs.
 //// 
 //// TODO: Ideally, The only objects externally available should be:
