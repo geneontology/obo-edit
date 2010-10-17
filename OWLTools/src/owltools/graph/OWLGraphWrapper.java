@@ -430,6 +430,7 @@ public class OWLGraphWrapper {
 		Stack<OWLGraphEdge> edgeStack = new Stack<OWLGraphEdge>();
 		Set<OWLGraphEdge> closureSet = new HashSet<OWLGraphEdge>();
 		Set<OWLGraphEdge> visitedSet = new HashSet<OWLGraphEdge>();
+		Set<OWLObject> visitedObjs = new HashSet<OWLObject>();
 		
 		// initialize. we seed the search with a reflexive identity edge DEPR
 		//edgeStack.add(new OWLGraphEdge(s,s,null,Quantifier.IDENTITY,ontology));
@@ -445,8 +446,37 @@ public class OWLGraphWrapper {
 			for (OWLGraphEdge extEdge : extSet) {
 				//System.out.println("   EXT:"+extEdge);
 				OWLGraphEdge nu = combineEdgePair(s, ne, extEdge, nextDist);
+				OWLObject nuTarget = nu.getTarget();
 				//System.out.println("     COMBINED:"+nu);
-				if (!visitedSet.contains(nu)) {
+				
+				// check for cycles. this is not as simple as
+				// checking if we have visited the node, as we are interested
+				// in different paths to the same node
+				//if (!visitedSet.contains(nu)) {
+				boolean isEdgeVisited = false;
+				if (visitedObjs.contains(nuTarget)) {
+					// we have potentially visited this edge before
+					
+					
+					// TODO - this is temporary. need to check edge not node
+					isEdgeVisited = true;
+					/*
+					System.out.println("checking to see if  visisted "+nu);
+					System.out.println(nu.getFinalQuantifiedProperty());
+					for (OWLGraphEdge ve : visitedSet) {
+						System.out.println(" ve:"+ve.getFinalQuantifiedProperty());
+						if (ve.getFinalQuantifiedProperty().equals(nu.getFinalQuantifiedProperty())) {
+							System.out.println("already visisted: "+nu);
+							isEdgeVisited = true;
+						}
+					}
+					*/
+				}
+				else {
+					visitedObjs.add(nuTarget);
+				}
+				
+				if (!isEdgeVisited) {
 					//System.out.println("      *NOT VISITED:"+nu+" visistedSize:"+visitedSet.size());
 					if (nu.getTarget() instanceof OWLNamedObject || 
 							config.isIncludeClassExpressionsInClosure) {
@@ -454,6 +484,7 @@ public class OWLGraphWrapper {
 					}
 					edgeStack.add(nu);
 					visitedSet.add(nu);		
+					
 				}
 			}
 		}
