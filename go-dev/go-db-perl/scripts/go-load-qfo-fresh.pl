@@ -4,17 +4,27 @@ use strict;
 use Data::Dumper;
 use File::Basename;
 use File::Find;
+use File::Temp qw/tempdir/;
 use Getopt::Long;
 use IO::Uncompress::AnyUncompress qw/$AnyUncompressError/;
 use List::Util qw/first/;
-use Text::Wrap;
 use Net::FTP;
+use Text::Wrap;
 
 use Bio::SeqIO;
 
 use GO::AppHandle;
 use GO::Metadata::Panther;
 use GO::MatchID;
+
+=head1 NAME
+
+go-load-qfo-fresh.pl - Load QFO files into GO database
+
+Don't use this yet!  This will replace F<go-load-qfo-seq.pl>, right
+now it it a work in progress.
+
+=cut
 
 # Only load QFO files that are used in panther clusters.  I wanted an
 # option to only load reference genome species, but that data seems to
@@ -23,9 +33,10 @@ my $panther = 0;
 my $verbose_p = 1;
 my $dry_run = 1000;
 my $match_only;
-my $fetch_p;
+my $fetch_dir;
+my $clean_p = 0;
 
-my $download_dir = "$ENV{HOME}/tmp"; # change to tempdir
+#my $download_dir = "$ENV{HOME}/tmp"; # change to tempdir
 my %ftp_opt = ( Passive => 1 ); # In doubt use passive, it's what
                                 # wget(1) does
 my $ftp_host = 'ftp.ebi.ac.uk';
@@ -42,7 +53,7 @@ GetOptions
    'debug!'           => \$GO::MatchID::debug,
    'match-only!'      => \$match_only,
    'dry-run!'         => \$dry_run,
-   'fetch!'           => \$fetch_p,
+   'fetch:s'          => \$fetch_dir,
   ) or die;
 
 my $fasta_match;
@@ -66,7 +77,9 @@ sub ftp_connect{
 
 my @file;
 
-if ($fetch_p) {
+if (defined $fetch_dir) {
+    $fetch_dir = tmpdir(CLEANUP => $clean_p) if (!$fetch_dir);
+
     sub okp{
 	my $check = shift;
 	chomp $_[-1];
@@ -83,11 +96,11 @@ if ($fetch_p) {
 
     @file = map {
 	if (m/$fasta_match/) {
-	    my $file = File::Spec->catfile($download_dir, $_);
+	    my $file = File::Spec->catfile($fetch_dir, $_);
 	    my @stat = stat($file);
 
 	    if (-e $file) { # Just check if it exists
-		okp(1, '[FTP] Already have ', $file);
+		okp(1, '[FTP] Already have', $file);
 	    } else {
 		warn "[FTP] fetching $file\n";
 		if (!$ftp->get($_, $file)) {
