@@ -89,7 +89,7 @@ load('model.js');
      mr_t.is_defined(g, 'at least this would be nice (graph)');
 
      // Test leaf correctness.  
-     mr_t.is_same_atom(4, g.get_leaves('is_a').length, 'four leaves');
+     mr_t.is_same_atom(4, g.get_leaf_nodes('is_a').length, 'four leaves');
      mr_t.is_same_atom(true, g.is_leaf('b', 'is_a'), 'leaf b');
      mr_t.is_same_atom(true, g.is_leaf('d', 'is_a'), 'leaf d');
      mr_t.is_same_atom(true, g.is_leaf('e', 'is_a'), 'leaf e');
