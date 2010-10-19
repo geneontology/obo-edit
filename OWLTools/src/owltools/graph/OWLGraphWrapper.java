@@ -1,5 +1,6 @@
 package owltools.graph;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -113,6 +114,9 @@ import owltools.graph.OWLQuantifiedProperty.Quantifier;
  */
 public class OWLGraphWrapper {
 
+	public static final String DEFAULT_IRI_PREFIX = "http://purl.obolibrary.org/obo/";
+	
+	
 	OWLOntology ontology;
 	OWLDataFactory dataFactory;
 	OWLOntologyManager manager;
@@ -817,6 +821,58 @@ public class OWLGraphWrapper {
 		}
 		return null;
 	}
+
+	
+	/**
+	 * assumes zero or one def
+	 * It returns the definition text (encoded as def in obo format and IAO_0000115 annotation property in OWL format) of a class
+	 * @param c
+	 * @return
+	 */
+	public String getDef(OWLObject c) {
+		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_0000115")); 
+		Set<OWLAnnotation>anns = null;
+		if (c instanceof OWLEntity) {
+			anns = ((OWLEntity) c).getAnnotations(ontology,lap);
+		}
+		else {
+			return null;
+		}
+		for (OWLAnnotation a : anns) {
+			if (a.getValue() instanceof OWLLiteral) {
+				OWLLiteral val = (OWLLiteral) a.getValue();
+				return val.getLiteral(); // return first - todo - check zero or one
+			}
+		}
+		return null;
+	}
+	
+
+	/**
+	 * It returns array of synonyms (is encoded as synonym in obo format and IAO_0000118 annotation property in OWL format) of a class
+	 * @param c
+	 * @return
+	 */
+	public String[] getSynonym(OWLObject c) {
+		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_0000118")); 
+		Set<OWLAnnotation>anns = null;
+		if (c instanceof OWLEntity) {
+			anns = ((OWLEntity) c).getAnnotations(ontology,lap);
+		}
+		else {
+			return null;
+		}
+		
+		ArrayList<String> list = new ArrayList<String>();
+		for (OWLAnnotation a : anns) {
+			if (a.getValue() instanceof OWLLiteral) {
+				OWLLiteral val = (OWLLiteral) a.getValue();
+				list.add(val.getLiteral()); // return first - todo - check zero or one
+			}
+		}
+		return list.toArray(new String[list.size()]);
+	}
+	
 	
 	public String getIdentifier(OWLObject owlObject) {
 		if (owlObject instanceof OWLNamedObject) {
