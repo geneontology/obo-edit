@@ -1,6 +1,9 @@
 ////
 //// A trivial testing framework for JS. See test.test.js for usage.
 ////
+//// Notes: cannot depend on core.js
+////
+
 
 // Module and namespace checking.
 if ( typeof bbop == "undefined" ){ bbop = {}; }
