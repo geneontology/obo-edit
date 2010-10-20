@@ -92,8 +92,8 @@ if ($params{action})
 	#	move the contents into the 'query' param
 		my %q_hash;
 
-		if ($params{search_query_file})
-		{	print STDERR "Found a search_query_file!\n" if $verbose;
+		if ($params{search_query_file}){
+		  $core->kvetch("Found a search_query_file!");
 #			my $file = $params{search_query_file};
 			my $file = $q->upload('search_query_file');
 			if (-f $file)  # check for the file
@@ -120,7 +120,7 @@ if ($params{action})
 				}
 			}
 			else
-			{	print STDERR "File is not a plain file\n" if $verbose;
+			{	$core->kvetch("File is not a plain file");
 				$vars->{error} = set_message($vars->{error}, 'warning', 'not_plain_file');
 			}
 		}
@@ -152,7 +152,7 @@ if ($params{action})
 		}
 		else
 		{	#	no valid query found! return an error
-			print STDERR "No query found!\n" if $verbose;
+			$core->kvetch("No query found!");
 			$vars->{error} = set_message($vars->{error}, 'fatal', 'no_valid_query');
 		}
 	}
@@ -177,7 +177,7 @@ if ( $query && @$query &&
 if ($params{search_constraint})
 {	if (!grep { $params{search_constraint} } @valid_search_constraints)
 	{	#	invalid search constraint
-		print STDERR "search constraint: ".$params{search_constraint}."\n" if $verbose;
+		$core->kvetch("search constraint: ".$params{search_constraint}."");
 		$vars->{error} = set_message($vars->{error}, 'fatal', 'unknown_search_type', $params{search_constraint});
 	}
 }
@@ -236,14 +236,14 @@ if (($params{action} && $params{action} eq 'sort')
 	|| $params{page_size} && $params{page_size} eq 'all')
 #	|| $params{'format'}) # not yet in use
 {	#	this may well be a cached query. Load up the cache.
-	print STDERR "Loading the cache...\n" if $verbose;
+	$core->kvetch("Loading the cache...");
 	my $cache = $session->load_cached_results($params{search_constraint}."_search");
 
 	#	check the search parameters are the same as those in the cached query
 	if ($cache && $cache->{query} && $cache->{result_list})
-	{	#print STDERR "CACHE: query from cache: ".Dumper($cache->{query})."CACHE: params{query}: ".Dumper($query)."\n" if $verbose;
+	{	#$core->kvetch("CACHE: query from cache: ".Dumper($cache->{query})."CACHE: params{query}: ".Dumper($query)."");
 		if ( join("\n", sort @{$cache->{query}{input}}) eq join("\n", sort @$query) )
-		{	#print STDERR "Cached query matches this query. Hurrah!\n" if $verbose;
+		{	#$core->kvetch("Cached query matches this query. Hurrah!");
 			$option_h->{cache} = $cache;
 		}
 	}
@@ -289,18 +289,35 @@ my $data = $search->getResultList({
 	error => $vars->{error},
 });
 
-#print STDERR (gettimeofday() - $t0).": new search method done\n" if $verbose;
+#$core->kvetch((gettimeofday() - $t0).": new search method done");
 
 ## Process the results
-#print STDERR "results: ".Dumper($search->{results})."\n" if $verbose;
+#$core->kvetch("results: ".Dumper($search->{results})."");
 $vars->{n_results} = $search->n_results || 0;
 
-#	if we only have a single result, we can create a redirect and exit.
-if ($search->n_results == 1 && $search->get_param('single_result'))
-{	my $result = $search->get_param('single_result');
-	print "Location: ".$session->get_param('cgi_url')."/".$result->{search_constraint}."-details.cgi?".$result->{search_constraint}."=".$result->{id}."&session_id=".$session->id."\n\n";
-	exit;
+## BUG: "Smarts". Create a redirect without AmiGO.pm on single results and exit. Added a special case to deal with new location for term_details.
+if ($search->n_results == 1 && $search->get_param('single_result')){
+
+  my $result = $search->get_param('single_result');
+
+  ## New term system.
+  if( $result->{search_constraint} eq 'term' ){
+    my $turl = $core->get_interlink({
+  				     mode => 'term_details',
+  				     #optional => { public => 1 },
+  				     arg => {
+  					     acc => $result->{id},
+  					     session => $session->id
+  					    }
+  				    });
+    $core->kvetch("Single result--trying to forward to: " . $turl);
+    print "Location: " . $turl . "\n\n";
+  }else{
+    print "Location: ".$session->get_param('cgi_url')."/".$result->{search_constraint}."-details.cgi?".$result->{search_constraint}."=".$result->{id}."&session_id=".$session->id."\n\n";
+  }
+  exit;
 }
+
 
 $vars->{cgi} = 'search';
 $vars->{error} = $search->get_msg;
@@ -312,8 +329,8 @@ $vars->{search_constraint} = $search->get_param('search_constraint');
 $vars->{search_constraint_name} = GO::CGI::NameMunger::get_human_name_fn($vars->{search_constraint});
 $session->ses_type($vars->{search_constraint}."_search");
 
-print STDERR "Search fields: ".Dumper($search->get_param('ordered_search_fields'))."\n" if $verbose;
-print STDERR "get query param: ".Dumper($search->get_query_param)."\n" if $verbose;
+$core->kvetch("Search fields: ".Dumper($search->get_param('ordered_search_fields'))."");
+$core->kvetch("get query param: ".Dumper($search->get_query_param)."");
 
 #	if we successfully found a query and were therefore able to perform a search...
 if ($search->get_query_param)
@@ -329,8 +346,8 @@ if ($search->get_query_param)
 			    map { encode_entities($_) }
 			    @{$vars->{querylist}});
 
-	print STDERR "querylist: ".Dumper($vars->{querylist})."\n" if $verbose;
-	print STDERR "query URL: ".Dumper($vars->{queryurl})."\n" if $verbose;
+	$core->kvetch("querylist: ".Dumper($vars->{querylist})."");
+	$core->kvetch("query URL: ".Dumper($vars->{queryurl})."");
 
 	$vars->{search_fields} = [ map { GO::CGI::NameMunger::get_field_name_fn($_) } @{$search->get_param('ordered_search_fields')} ];
 
@@ -356,7 +373,7 @@ if ($search->get_query_param)
 
 		$vars->{sort_criterion} = $search->get_param(  $vars->{search_constraint}.'sort' ) || 'rel';
 
-		print STDERR "sort criterion: ".$vars->{sort_criterion}."\n" if $verbose;
+		$core->kvetch("sort criterion: ".$vars->{sort_criterion}."");
 	
 		#	disable the view all results link if the number of results is huuuuuge
 		if ($search->n_results > $option_h->{max_results_html})
