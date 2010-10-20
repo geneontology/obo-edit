@@ -1202,16 +1202,6 @@ sub get_interlink {
 	 . '&session_id=' . $sid;
      },
 
-     'term-details' =>
-     sub {
-       die "interlink mode 'term-details' requires args" if ! defined $args;
-       my $acc = $args->{acc} || '';
-       my $sid = $args->{session_id} || '';
-       $ilink = 'term-details.cgi?term=' .
-	 #$self->html_safe($acc) . '&session_id=' . $sid;
-	 $acc . '&session_id=' . $sid;
-     },
-
      ## TODO: Yes, this is intentionally close to 'term-details',
      ## hopefully this will fully bump the former soon.
      'term_details' =>
@@ -1219,6 +1209,18 @@ sub get_interlink {
        die "interlink mode 'term_details' requires args" if ! defined $args;
        my $acc = $args->{acc} || '';
        $ilink = 'term_details?term=' . $acc;
+     },
+
+     ## Switch over to using the new pages.
+     'term-details' =>
+     sub {
+       die "interlink mode 'term-details' requires args" if ! defined $args;
+       my $acc = $args->{acc} || '';
+       my $sid = $args->{session_id} || '';
+       #$ilink = 'term-details.cgi?term=' .
+       $ilink = 'term_details?term=' .
+	 #$self->html_safe($acc) . '&session_id=' . $sid;
+	 $acc . '&session_id=' . $sid;
      },
 
      'browse' =>
