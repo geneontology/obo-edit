@@ -16,6 +16,7 @@ load('test.js');
 var mr_t = new bbop.test();
 
 // Correct environment.
+load('core.js');
 load('model.js');
 load('data/go.js');
 
@@ -39,13 +40,15 @@ for( var n = 0; n < bbop.model.go.nodes.length; n++ ){
 for( var e = 0; e < bbop.model.go.edges.length; e++ ){
     var jedge = bbop.model.go.edges[e];
     //print('index: ' + e);
-    g.add_edge(new bbop.model.edge(jedge['subject'],jedge['object']));
+    g.add_edge(new bbop.model.edge(jedge['subject'],
+				   jedge['object'],
+				   jedge['predicate']));
 }
 
 //
 mr_t.is_same_atom(3, g.get_root_nodes().length, 'right number of GO roots');
-mr_t.is_same_atom(false, g.is_leaf('GO:0022008'), 'neurogenesis not a leaf');
-mr_t.is_same_atom(true, g.is_leaf('GO:0048174'), 'but this should be');
+mr_t.is_same_atom(false, g.is_leaf_node('GO:0022008'), 'neurogenesis ! a leaf');
+mr_t.is_same_atom(true, g.is_leaf_node('GO:0048174'), 'but this should be');
 
 // Let's get serious about parents.
 var p_hash = {};
@@ -69,6 +72,27 @@ mr_t.is_same_atom(true, c_hash['GO:0042063'], 'has 2 of 5');
 mr_t.is_same_atom(true, c_hash['GO:0050768'], 'has 3 of 5');
 mr_t.is_same_atom(true, c_hash['GO:0050769'], 'has 4 of 5');
 mr_t.is_same_atom(true, c_hash['GO:0050767'], 'has 5 of 5');
+
+// ファイト!
+var sub = g.get_ancestor_subgraph('GO:0022008');
+// Roots.
+mr_t.is_same_atom(1, sub.get_root_nodes().length, '1 sub root');
+mr_t.is_same_atom(true, sub.is_root_node('GO:0008150'), 'sub root');
+mr_t.is_same_atom(false, sub.is_root_node('GO:0032502'), '! sub root 1');
+mr_t.is_same_atom(false, sub.is_root_node('GO:0022008'), '! sub root 2');
+// Leaves.
+mr_t.is_same_atom(1, sub.get_leaf_nodes().length, '1 leaf');
+mr_t.is_same_atom('GO:0022008', sub.get_leaf_nodes()[0].id(), 'pig leaf');
+mr_t.is_same_atom(true, sub.is_leaf_node('GO:0022008'), 'sub leaf');
+// Graph structure up.
+mr_t.is_same_atom(0, sub.get_parent_nodes('GO:0008150').length, '8150 root');
+mr_t.is_same_atom(2, sub.get_parent_nodes('GO:0022008').length, 'pig 2 up');
+mr_t.is_same_atom(1, sub.get_parent_nodes('GO:0030154').length, 'cell 1 up');
+// Graph structure down.
+mr_t.is_same_atom('GO:0048869', sub.get_child_nodes('GO:0009987')[0].id(), 'to proc');
+// General.
+mr_t.is_same_atom(11, sub.all_nodes().length, '11 nodes');
+
 
 ///
 /// End unit testing.

@@ -5,6 +5,8 @@
 ////    Command line: "js -f test.tests.js"
 ////    Interactive: "js -f test.tests.js -f -"
 ////
+//// Notes: cannot depend on core.js
+////
 
 
 // Load testing.

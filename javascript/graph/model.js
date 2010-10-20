@@ -9,19 +9,27 @@
 //// named_nodes. nodes are real things, while named_nodes are things
 //// referenced by edges.
 ////
+//// Check TODOs, we would like everything as linear as possible.
+////
+//// TODO: memoize everything but add_*. Functional enough that it
+//// should work if we just empty the caches after every add_* op.
+////
 //// Taken name spaces:
 ////    bbop.model.*
+////
+//// Required:
+////    bbop.core
 ////
 //////////
 
 
 // Module and namespace checking.
-if ( typeof bbop == "undefined" ){ bbop = {}; }
-if ( typeof bbop.model == "undefined" ){ bbop.model = {}; }
+bbop.core.require('bbop', 'core'); // not needed, but want the habit
+bbop.core.namespace('bbop', 'model');
 
 
 // 
-bbop.model.default_predicate = 'is_a';
+bbop.model.default_predicate = 'points_at';
 
 
 ///
@@ -31,8 +39,8 @@ bbop.model.default_predicate = 'is_a';
 bbop.model.node = function(new_id){
     this._id = new_id;
     this._type = 'node';
-    this._metadata = undefined;
     this._label = undefined;
+    this._metadata = undefined;
 };
 
 // Prototype getter/setters.
@@ -40,23 +48,30 @@ bbop.model.node.prototype.id = function(value){
     if(value) this._id = value; return this._id; };
 bbop.model.node.prototype.type = function(value){
     if(value) this._type = value; return this._type; };
-bbop.model.node.prototype.metadata = function(value){
-    if(value) this._metadata = value; return this._metadata; };
 bbop.model.node.prototype.label = function(value){
     if(value) this._label = value; return this._label; };
+bbop.model.node.prototype.metadata = function(value){
+    if(value) this._metadata = value; return this._metadata; };
+
+// Clone, using bbop.core.clone for metadata object.
+bbop.model.node.prototype.clone = function(){
+    var tmp_clone = new bbop.model.node(this.id());
+    tmp_clone.type(this.type());
+    tmp_clone.label(this.label());
+    tmp_clone.metadata(bbop.core.clone(this.metadata()));
+    return tmp_clone;
+};
 
 
 ///
 ///  Edge sub-object.
 ///
 
-// While edges can have ids, they are not required (or internally
-// generated).
 // If no predicate is given, default. Predicates are currently treated
 // as raw strings.
 bbop.model.edge = function(subject, object, predicate){
-    this._id = undefined;
-    this._type = 'edge';
+
+    //
     if( typeof subject == 'string' ){
 	this._subject_id = subject;	
     }else{
@@ -71,19 +86,29 @@ bbop.model.edge = function(subject, object, predicate){
     if( predicate ){
 	this._predicate_id = predicate;
     }
+
+    //
+    this._metadata = undefined;
 };
 
 // Prototype getter/setters.
-bbop.model.edge.prototype.id = function(value){
-    if(value) this._id = value; return this._id; };
-bbop.model.node.prototype.type = function(value){
-    if(value) this._type = value; return this._type; };
 bbop.model.edge.prototype.subject_id = function(){
     return this._subject_id; };
 bbop.model.edge.prototype.object_id = function(){
     return this._object_id; };
 bbop.model.edge.prototype.predicate_id = function(){
     return this._predicate_id; };
+bbop.model.node.prototype.metadata = function(value){
+    if(value) this._metadata = value; return this._metadata; };
+
+// Clone, using bbop.core.clone for metadata object.
+bbop.model.edge.prototype.clone = function(){
+    var tmp_clone = new bbop.model.node(this.subject_id(),
+					this.object_id(),
+					this.predicate_id());
+    tmp_clone.metadata(bbop.core.clone(this.metadata()));
+    return tmp_clone;
+};
 
 
 ///
@@ -95,19 +120,17 @@ bbop.model.graph = function(){
 
     var id = undefined;
 
-    ///
-    /// Data structures to regenerate from an ID.
-    ///
-
-    // TODO: why again isn't it possible?
     // For bbop.model.node and bbop.model.edge (hash not possible for
-    // edges).
+    // edges--only relation, not "real").
     var nodes = { array: new Array, hash: {} };
-    var named_nodes = { array: new Array, hash: {} };
     var edges = { array: new Array };
-
-    // For bbop.model.edge, bbop.model.edge, and bbop.model.edge.
     var predicates = { array: new Array, hash: {} };
+
+    // All things that are referenced by edges (which may not include
+    // actual node ids--dangling links).
+    var named_nodes = { array: new Array, hash: {} };
+
+    // Useful forthings like leaves, roots, and singletons.
     var subjects = { array: new Array, hash: {} };
     var objects = { array: new Array, hash: {} };     
 
@@ -118,9 +141,9 @@ bbop.model.graph = function(){
     var object_predicate_table = {};     // [obj][pred] -> sub data struct.
 
     // New parallel structures to for our simplified graph.
-    var predicate_table = {};
-    var subject_table = {};
-    var object_table = {};
+    var so_table = {}; // true/undef
+    var os_table = {}; // true/undef
+    var sop_table = {}; // {'rel1': true, 'rel2': true}
 
     // Table structures for quick lookups of node properties.
     var is_a_singleton_lookup = {}; // [nid] -> bbop.model.node.
@@ -164,144 +187,37 @@ bbop.model.graph = function(){
 	var obj_id = edge.object_id();
 	var pred_id = edge.predicate_id();
 
-	///
-	/// New way of trying things:
-	///
-
-	// Subject.
-	if( ! subject_table[ sub_id ] ){ subject_table[ sub_id ] = {}; }
-	subject_table[ sub_id ][ obj_id ] = true;
-	// Object.
-	if( ! object_table[ obj_id ] ){ object_table[ obj_id ] = {}; }
-	object_table[ obj_id ][ sub_id ] = true;
-	// Their relationship (defined by SOP).
-	if( ! predicate_table[ sub_id ] ){
-	    predicate_table[ sub_id ] = {}; }
-	if( ! predicate_table[ sub_id ][ obj_id ] ){
-	    predicate_table[ sub_id ][obj_id] = {}; }
-	predicate_table[ sub_id ][ obj_id ][ pred_id ] = true;
-
-	///
-	/// Add edge to all predicate-first data structures. This
-	/// section will be heavily commented, while the next two
-	/// analogous sections will be crammed together.
-	///
+	// Subject -> object.
+	if( ! so_table[ sub_id ] ){ so_table[ sub_id ] = {}; }
+	so_table[ sub_id ][ obj_id ] = true;
+	// Object -> subject.
+	if( ! os_table[ obj_id ] ){ os_table[ obj_id ] = {}; }
+	os_table[ obj_id ][ sub_id ] = true;
+	// Their relationships (defined by SOP).
+	if( ! sop_table[ sub_id ] ){
+	    sop_table[ sub_id ] = {}; }
+	if( ! sop_table[ sub_id ][ obj_id ] ){
+	    sop_table[ sub_id ][obj_id] = {}; }
+	sop_table[ sub_id ][ obj_id ][ pred_id ] = true;
 
 	// If this is a new predicate add it to all of the necessary data
 	// structures.
 	if( ! predicates.hash[ pred_id ] ){
-	    
-	    // 
 	    predicates.hash[ pred_id ] = true; 
 	    predicates.array.push(pred_id); 
-
-	    //
-	    predicate_subject_table[ pred_id ] = {};
-	    predicate_object_table[ pred_id ] = {};
 	}
 
-	// Add the edge to the predicate/subject table if it doesn't
-	// exist. Every predicate subject combination can have a
-	// variable number of objects.
-	if( ! predicate_subject_table[ pred_id ][ sub_id ] ){
-	    // predicate_subject_table[ pred_id ][ sub_id ] = edge;
-	    predicate_subject_table[ pred_id ][ sub_id ] = {};
-	    predicate_subject_table[ pred_id ][ sub_id ].object =
-		{
-		    array: new Array,
-		    hash: {}
-		};
-	}
-	// Actually add the new item in. 
-	(function(){
-	     var tmp_obj = predicate_subject_table[ pred_id ][ sub_id ].object;
-	     if( ! tmp_obj.hash[ obj_id ] ){
-		 tmp_obj.hash[ obj_id ] = edge;
-		 tmp_obj.array.push(edge);
-	     }
-	 })();
-
-	// Add the edge to the predicate/object table if it doesn't
-	// exist. Every predicate object combination can have unlimited
-	// subjects, so add them into the hash and array stored in the
-	// table.
-	//
-	// Make sure we have a hash at the end of it.
-	if( ! predicate_object_table[ pred_id ][ obj_id ] ){
-	    predicate_object_table[ pred_id ][ obj_id ] = {};
-	    predicate_object_table[ pred_id ][ obj_id ].subject =
-		{
-		    array: new Array,
-		    hash: {}
-		};
-	}
-	// Actually add the new item in. 
-	(function(){
-	     var tmp_sub = predicate_object_table[ pred_id ][ obj_id ].subject;
-	     if( ! tmp_sub.hash[ sub_id ] ){
-		 tmp_sub.hash[ sub_id ] = edge;
-		 tmp_sub.array.push(edge);
-	     }
-	 })();
-
-	///
-	/// Next, add to all subject-first data structures.
-	///
-
+	// 
 	if( ! subjects.hash[ sub_id ] ){
 	    subjects.hash[ sub_id ] = true; 
 	    subjects.array.push(sub_id); 
 	    subject_predicate_table[ sub_id ] = {};
 	}
-	if( ! subject_predicate_table[ sub_id ][ pred_id ] ){
-	    // subject_predicate_table[ sub_id ][ pred_id ] = edge;
-	    // // edge_have_new_sub_p = true;
-	    subject_predicate_table[ sub_id ][ pred_id ] = {};
-	    subject_predicate_table[ sub_id ][ pred_id ].object =
-		{
-		    array: new Array,
-		    hash: {}
-		};
-	}
-	// Now that it is ensured, actually add new item in.
-	(function(){
-	     var tmp_obj = subject_predicate_table[ sub_id ][ pred_id ].object;
-	     if( ! tmp_obj.hash[ obj_id ] ){
-		 tmp_obj.hash[ obj_id ] = edge;
-		 tmp_obj.array.push(edge);
-	     }
-	 })();	     
-
-	///
-	/// Next, add to all object-first data structures.
-	///
-
 	if( ! objects.hash[ obj_id ] ){
 	    objects.hash[ obj_id ] = true; 
 	    objects.array.push(obj_id); 
 	    object_predicate_table[ obj_id ] = {};
 	}
-	if( ! object_predicate_table[ obj_id ][ pred_id ] ){
-	    object_predicate_table[ obj_id ][ pred_id ] = {};
-	    object_predicate_table[ obj_id ][ pred_id ].subject =
-		{
-		    array: new Array,
-		    hash: {}
-		};
-	}
-	// Now that it is ensured, actually add new item in.
-	(function(){
-	     var tmp_sub = object_predicate_table[ obj_id ][ pred_id ].subject;
-	     if( ! tmp_sub.hash[ sub_id ] ){
-		 tmp_sub.hash[ sub_id ] = edge;
-		 tmp_sub.array.push(edge);
-	     }
-	 })();
-
-	///
-	/// Finally, remove the subject and objects from all appropriate
-	/// "is_a_" tables (which were added during the add_node menthod).
-	///   
 
 	// Remove the edge's subject and object from the singleton table.
 	if( is_a_singleton_lookup[ sub_id ] ){
@@ -320,230 +236,172 @@ bbop.model.graph = function(){
     };
     
 
-    //
-    this.get_node = function(nid){
-	var returnval = null;
-	if( nodes.hash[ nid ] ){
-	    returnval = nodes.hash[ nid ]; }
-	return returnval;
-    };
-
-
-    //
-    this.get_nodes = function(){
+    // Returns an original list of all added nodes.
+    this.all_nodes = function(){
 	return nodes.array;
     };
 
 
-    // This depends on the user giving edges ids.
-    this.get_edge = function(lid){
-	var returnval = null;
-	if( edges.hash[ lid ] ){
-	    returnval = edges.hash[ lid ]; }
-	return returnval;
-    };
-
-
-    //
-    this.get_edge_by_sop = function(sub_id, obj_id, pred){
-
-	if( ! pred ){ pred = bbop.model.default_predicate; }
-	var returnval = null;
-	
-	if( predicate_object_table[ pred ] &&
-	    predicate_object_table[ pred ][ obj_id ] &&
-	    predicate_object_table[ pred ][ obj_id ].subject &&
-	    predicate_object_table[ pred ][ obj_id ].subject.hash &&
-	    predicate_object_table[ pred ][ obj_id ].subject.hash[ sub_id ] ){
-		returnval =
-		    predicate_object_table[pred][obj_id].subject.hash[sub_id];
-	    }
-	
-	return returnval;
-    }; 
-
-
-    // // TODO: will need for creating subgraphs.
-    // // Return a list of edges from subject and object id.
-    // this.get_edges_by_so = function(sub_id, obj_id){
-
-    // 	if( ! pred ){ pred = bbop.model.default_predicate; }
-    // 	var returnval = null;
-	
-    // 	if( predicate_object_table[ pred ] &&
-    // 	    predicate_object_table[ pred ][ obj_id ] &&
-    // 	    predicate_object_table[ pred ][ obj_id ].subject &&
-    // 	    predicate_object_table[ pred ][ obj_id ].subject.hash &&
-    // 	    predicate_object_table[ pred ][ obj_id ].subject.hash[ sub_id ] ){
-    // 		returnval =
-    // 		    predicate_object_table[pred][obj_id].subject.hash[sub_id];
-    // 	    }
-	
-    // 	return returnval;
-    // }; 
-
-
-    //
-    this.get_edges = function(){
+    // Returns an original list of all added edges.
+    this.all_edges = function(){
 	return edges.array;
     };
 
 
-    //
-    this.get_predicates = function(){
+    // Returns an original list of all added predicates.
+    this.all_predicates = function(){
 	return predicates.array;
     };
 
 
+    // List all external nodes by referenced id.
+    this.all_dangling = function(){
+	// Disjoint of named and extant.
+	var unnamed = new Array();
+	for( var named_id in named_nodes.hash ){
+	    if( ! nodes.hash[named_id] ){
+		unnamed.push(named_id);
+	    }
+	}
+	return unnamed;
+    };
+
+    // Any bad parts in graph?
+    this.is_complete = function(){
+	var retval = true;
+	if( this.all_dangling().length > 0 ){
+	    retval = false;
+	}
+	return retval;
+    };
+
+    // Return a copy of a node by id (not the original) if extant.
+    this.get_node = function(nid){
+	var retnode = null;
+	if( nodes.hash[ nid ] ){
+	    var tmp_node = nodes.hash[ nid ];
+	    retnode = tmp_node.clone();
+	}
+	return retnode;
+    };
+
+
+    // Get a new edge defined in the graph or null.
+    this.get_edge = function(sub_id, obj_id, pred){	
+
+	if( ! pred ){ pred = bbop.model.default_predicate; }
+
+	var retval = null;
+	if( sop_table[sub_id] &&
+	    sop_table[sub_id][obj_id] &&
+	    sop_table[sub_id][obj_id][pred] ){
+		retval = new bbop.model.edge(sub_id, obj_id, pred);
+	    }
+	return retval; 
+    };
+
+
+    // Return all edges of given subject and object ids. Returns
+    // entirely new edges.
+    this.get_edges = function(sub_id, obj_id){
+	var retlist = new Array();
+	if( sop_table[sub_id] &&
+	    sop_table[sub_id][obj_id] ){
+		for( var pred in sop_table[sub_id][obj_id] ){
+		    retlist.push(new bbop.model.edge(sub_id, obj_id, pred));
+		}
+	    }		
+	return retlist;
+    };
+
+
     // Translate an edge array into extant bodies, switching on either
-    // subject ot object.
-    this.edges_to_nodes = function(result_edges, target){
+    // subject or object.
+    this.edges_to_nodes = function(in_edges, target){
 	
 	// Double check.
 	if( target != 'subject' && target != 'object'){
-	    throw new Error('bad target for edges to bodies');
+	    throw new Error('Bad target for edges to bodies.');
 	}
 
 	// 
 	var results = new Array();
-	for( var i = 0; i < result_edges.length; i++ ){ 
-	    var re_i = result_edges[i];
+	for( var i = 0; i < in_edges.length; i++ ){ 
+	    var in_e = in_edges[i];
 
-	    if( re_i ){
-		// Switch between subject and object.
-		if( target == 'subject' ){
-		    var target_id = re_i.subject_id();
-		}else{
-		    var target_id = re_i.object_id();
-		}
-
-		//
-		if( target_id && nodes.hash[ target_id ] ){
-		    results.push(nodes.hash[ target_id ]);
-		}else{
-		    throw new Error(target + ' world issue');
-		}
+	    // Switch between subject and object.
+	    if( target == 'subject' ){
+		var target_id = in_e.subject_id();
 	    }else{
-		throw new Error('sanity issue');
+		var target_id = in_e.object_id();
+	    }
+	    
+	    //
+	    if( target_id && nodes.hash[ target_id ] ){
+		results.push(nodes.hash[ target_id ]);
+	    }else{
+		throw new Error(target + ' world issue');
 	    }
 	}
 	return results;
     };
 
-    //
-    this.is_root = function(nb_id, pred){
 
-	if( ! pred ){ pred = bbop.model.default_predicate; }
-	var result = false;
-	
-	// After making sure that our arguments are sanely defined, tick
-	// off the definitions of whether a node is root over a relation:
-	// 1) not a subject to anything, 2) the predicate doesn't exist,
-	// 3) is not a subject of the predicate.
-	if( named_nodes.hash[ nb_id ] && pred &&
-	    ( ! subjects.hash[ nb_id ] ||
-	      ! predicate_subject_table[ pred ] ||
-	      ! predicate_subject_table[ pred ][ nb_id ] )
-	  ){
-	      result = true;
-	  }
+    // Roots are defined as nodes who are the subject of nothing,
+    // independent of predicate.
+    this.is_root_node = function(nb_id){
+	var result = false;	
+	if( nodes.hash[ nb_id ] && ! subjects.hash[ nb_id ] ){	    
+	    result = true;
+	}
 	return result;
     };
 
-    
-    // TODO: Could I speed this up by my moving some of the calculation
-    // into the add_node and add_edge methods?
-    this.get_root_nodes = function(pred){
 
-	if( ! pred ){ pred = bbop.model.default_predicate; }
-	var results = new Array;
-
-	for( var nb_id in named_nodes.hash ){
-
-	    // After making sure that our arguments are sanely defined, tick
-	    // off the definitions of whether a node is root over a
-	    // relation: 1) not a subject to anything, 2) the
-	    // predicate doesn't exist, 3) is not a subject of the
-	    // predicate.
-	    if( named_nodes.hash[ nb_id ] && pred &&
-		( ! subjects.hash[ nb_id ] ||
-		  ! predicate_subject_table[ pred ] ||
-		  ! predicate_subject_table[ pred ][ nb_id ] ) ){
-
-		      if( nodes.hash[ nb_id ] ){
-			  results.push( nodes.hash[ nb_id ] );
-		      }else{
-			  // BUG: while this should be the correct
-			  // behavior, there are some cases where due
-			  // to part_of children, the referenced node
-			  // will be a singleton is_a root that
-			  // doesn't have an extant body.
-			  //throw new Error("world issue in get_roots: "+nb_id);
-		      }
-		  }
+    // BUG/TODO: Could I speed this up by my moving some of the
+    // calculation into the add_node and add_edge methods?
+    // O(|#nodes|)
+    this.get_root_nodes = function(){
+	var results = new Array();
+	for( var nb_id in nodes.hash ){
+	    if( this.is_root_node(nb_id) ){
+		results.push( this.get_node(nb_id).clone() );
+	    }
 	}
-	
 	return results;
     };
 
 
-    //
-    this.is_leaf = function(nb_id, pred){
+    // Leaves are defined as nodes who are the object of nothing,
+    // independent of predicate.
+    this.is_leaf_node = function(nb_id){
 
-	if( ! pred ){ pred = bbop.model.default_predicate; }
 	var result = false;
-	
-	// After making sure that our arguments are sanely defined, tick
-	// off the definitions of whether a node is leaf over a relation:
-	// 1) not an object to anything, 2) the predicate doesn't exist,
-	// 3) is not an object of the predicate.
-	if( named_nodes.hash[ nb_id ] && pred &&
-	    ( ! objects.hash[ nb_id ] ||
-	      ! predicate_object_table[ pred ] ||
-	      ! predicate_object_table[ pred ][ nb_id ] )
-	  ){
-	      result = true;
-	  }	
+	if( nodes.hash[ nb_id ] && ! objects.hash[ nb_id ] ){	    
+	    result = true;
+	}
 	return result;
     };
 
 
-    // TODO: Could I speed this up by my moving some of the calculation
-    // into the add_node and add_edge methods?
-    this.get_leaf_nodes = function(pred){
-	
-	if( ! pred ){ pred = bbop.model.default_predicate; }
-	var leaves_array = new Array;
-
-	for( var nb_id in named_nodes.hash ){
-
-	    // After making sure that our arguments are sanely defined, tick
-	    // off the definitions of whether a node is leaf over a relation:
-	    // 1) not an object to anything, 2) the predicate doesn't exist,
-	    // 3) is not an object of the predicate.
-	    if( named_nodes.hash[ nb_id ] && pred &&
-		( ! objects.hash[ nb_id ] ||
-		  ! predicate_object_table[ pred ] ||
-		  ! predicate_object_table[ pred ][ nb_id ] )
-	      ){		  
-		  if( nodes.hash[ nb_id ] ){
-		      leaves_array.push( nodes.hash[ nb_id ] );
-		  }else{
-		      throw new Error("world issue in get_leaf_nodes: "+nb_id);
-		  }
-	      }
+    // BUG/TODO: Could I speed this up by my moving some of the
+    // calculation into the add_node and add_edge methods?
+    // O(|#nodes|)
+    this.get_leaf_nodes = function(){
+	var results = new Array();
+	for( var nb_id in nodes.hash ){
+	    if( this.is_leaf_node(nb_id) ){
+		results.push( this.get_node(nb_id).clone() );
+	    }
 	}
-
-	return leaves_array;
+	return results;
     };
 
 
     // Nodes that are roots and leaves over all relations.
     this.get_singleton_nodes = function(){
-
-	var singleton_array = new Array;
-
 	// Translate array into array extant bodies.
+	var singleton_array = new Array();
 	for( var singleton_id in is_a_singleton_lookup ){
 	    if( nodes.hash[ singleton_id ] ){
 		singleton_array.push( nodes.hash[ singleton_id ] );
@@ -551,185 +409,185 @@ bbop.model.graph = function(){
 		throw new Error("world issue in get_singletons: "+singleton_id);
 	    }
 	}
-
 	return singleton_array;
     };
 
 
-    // Return all parents.
-    this.get_parent_nodes = function(nb_id, pred_id){
+    // Return all parent edges. If no predicate is give, use the
+    // default one.
+    // TODO: it might be nice to memoize this since others depend on it.
+    this.get_parent_edges = function(nb_id, in_pred){
 
-	if( ! pred_id ){ pred_id = bbop.model.default_predicate; }
-	var results = new Array;
+	var results = new Array();
 
 	// Get all parents, or just parents from a specific relation.
-	var preds = new Array;
-	if( pred_id ){
-	    preds.push(pred_id);
+	var preds_to_use = new Array();
+	if( in_pred ){
+	    preds_to_use.push(in_pred);
 	}else{
-	    preds = predicates.array;
+	    preds_to_use = predicates.array;
 	}
 
-	for( var j = 0; j < preds.length; j++ ){
-	    var pred = preds[j];
+	// Try all of our desired predicates.
+	for( var j = 0; j < preds_to_use.length; j++ ){
+	    var pred = preds_to_use[j];
 
-	    if( named_nodes.hash[ nb_id ] &&
-		predicate_subject_table[ pred ] &&
-		predicate_subject_table[ pred ][ nb_id ] &&
-		predicate_subject_table[ pred ][ nb_id ].object.array &&
-		predicate_subject_table[pred][nb_id].object.array.length > 0 ){
-		    
-		    // Translate result edges into extant bodies.
-		    var result_edges =
-			predicate_subject_table[ pred ][ nb_id ].object.array;
-		    results =
-			this.edges_to_nodes(result_edges, 'object');
-		}
-	}
-	
-	return results;
-    };
-    
-
-    // Return all children.
-    this.get_child_nodes = function(nb_id, pred_id){
-
-	if( ! pred_id ){ pred_id = bbop.model.default_predicate; }
-	var results = new Array;
-
-	// Get all children, or just children from a specific relation.
-	var preds = new Array;
-	if( pred_id ){
-	    preds.push(pred_id);
-	}else{
-	    preds = predicates.array;
-	}
-
-	for( var j = 0; j < preds.length; j++ ){
-	    var pred = preds[j];
-
-	    if( named_nodes.hash[ nb_id ] &&
-		predicate_object_table[ pred ] &&
-		predicate_object_table[ pred ][ nb_id ] &&
-		predicate_object_table[ pred ][ nb_id ].subject.array &&
-		predicate_object_table[pred][nb_id].subject.array.length > 0 ){
-		    
-		    var result_edges =
-			predicate_object_table[ pred ][ nb_id ].subject.array;
-		    results =
-			this.edges_to_nodes(result_edges, 'subject');
-		}
-	}
-	
-	return results;
-    };
-    
-
-    // Return all ancestors by id--work up to the roots and return an
-    // id
-    // list.
-    this.get_ancestor_list = function(nb_id, pred_id){
-
-	if( ! pred_id ){ pred_id = bbop.model.default_predicate; }
-
-	// Shared data structure to trim multiple paths.
-	var seen_hash = {};
-	var anchor = this;
-
-	// Define recursive ascent.
-	function rec_up(nid){
-
-	    var results = new Array;
-	    var new_parents = anchor.get_parent_nodes(nid);
-
-	    if( new_parents.length != 0 ){
-		for( var i = 0; i < new_parents.length; i++ ){
-		    // Only do things we haven't ever seen before.
-		    var new_anc = new_parents[i].id();
-		    if( ! seen_hash[ new_anc ] ){
-			seen_hash[ new_anc ] = true;
-			rec_up(new_anc);			
+	    // Scan the table for goodies; there really shouldn't be a
+	    // lot here.
+	    if( so_table[ nb_id ] ){		
+		for( var obj_id in so_table[nb_id] ){
+		    // If it looks like something is there, try to see
+		    // if there is an edge for our current pred.
+		    var tmp_edge = this.get_edge(nb_id, obj_id, pred);
+		    if( tmp_edge ){
+			results.push( tmp_edge );
 		    }
 		}
 	    }
-	    return results;
 	}
-	
-	// Recursive call and collect keys from seen_hash.
-	rec_up(nb_id);
-	var all_anc = []; for (var k in seen_hash) all_anc.push(k);
-	return all_anc;
+	return results;
     };
     
 
-    // TODO: Allow us to either get all dangling edges, or just the
-    // dangling edges asscoiated with an id.
-    //this.get_dangling = function(){
-    //  // disjoint of named and extant
-    //}
+    // Return all parents nodes. If no predicate is given, use the
+    // default one.
+    this.get_parent_nodes = function(nb_id, in_pred){
 
+	var results = new Array();
+	var edges = this.get_parent_edges(nb_id, in_pred);
+	for( var i = 0; i < edges.length; i++ ){
+	    // Make sure that any found edges are in our
+	    // world.
+	    var obj_id = edges[i].object_id();
+	    var tmp_node = this.get_node(obj_id);
+	    if( tmp_node ){
+		results.push( this.get_node(obj_id) );
+	    }
+	}
+	return results;
+    };
+    
 
-    // //
-    // this.get_extant_body = function(ebid){
-    // 	var returnval = null;
-    // 	if( nodes.hash[ nbid ] ){
-    // 	    returnval = nodes.hash[ nbid ]; }
-    // 	return returnval;
-    // };
+    // Return all children. If no predicate is given, use the default
+    // one.
+    this.get_child_nodes = function(nb_id, in_pred){
 
+	var results = new Array();
 
-    // // Returns an array of named bodies.
-    // this.get_nodes = function(){
-    // 	return nodes.array;
-    // };
+	// Get all children, or just children from a specific relation.
+	var preds_to_use = new Array();
+	if( in_pred ){
+	    preds_to_use.push(in_pred);
+	}else{
+	    preds_to_use = predicates.array;
+	}
 
+	// Try all of our desired predicates.
+	for( var j = 0; j < preds_to_use.length; j++ ){
+	    var pred = preds_to_use[j];
 
-    // // List all ids for children seen, but not accounted for.
-    // this.missing_children = function(nb_id, pred_id){
+	    // Scan the table for goodies; there really shouldn't be a
+	    // lot here.
+	    if( os_table[ nb_id ] ){		
+		for( var sub_id in os_table[nb_id] ){
+		    // If it looks like something is there, try to see
+		    // if there is an edge for our current pred.
+		    if( this.get_edge(sub_id, nb_id, pred) ){
+			// Make sure that any found edges are in our
+			// world.
+			var tmp_node = this.get_node(sub_id);
+			if( tmp_node ){
+			    results.push( this.get_node(sub_id) );
+			}
+		    }
+		}
+	    }
+	}
+	return results;
+    };
+    
 
-    // 	if( ! pred_id ){ pred_id = bbop.model.default_predicate; }
-    // 	var results = new Array;
+    // Return new ancestors subgraph. Single id or id list as first
+    // argument.
+    this.get_ancestor_subgraph = function(nb_id_or_list, pred_id){
 
-    // 	// Get all children, or just children from a specific relation.
-    // 	var preds = new Array;
-    // 	if( pred_id ){
-    // 	    preds.push(pred_id);
-    // 	}else{
-    // 	    preds = predicates.array;
-    // 	}
+    	// Shared data structure to trim multiple paths.
+	// Nodes: color to get through the graph quickly and w/o cycles.
+    	var seen_node_hash = {};
+	// Edges: just listed--hashing would be essentially the same
+	// as a call to graph.add_edge (I think--benchmark?).
+    	var seen_edge_list = [];
+	var anchor = this;
 
-    // 	for( var j = 0; j < preds.length; j++ ){
-    // 	    var pred = preds[j];
+    	// Define recursive ascent.
+    	function rec_up(nid){
 
-    // 	    if( named_nodes.hash[ nb_id ] &&
-    // 		predicate_object_table[ pred ] &&
-    // 		predicate_object_table[ pred ][ nb_id ] &&
-    // 		predicate_object_table[ pred ][ nb_id ].subject.array &&
-    // 		predicate_object_table[pred][nb_id].subject.array.length > 0 ){
-		    
-    // 		    var result_edges =
-    // 			predicate_object_table[ pred ][ nb_id ].subject.array;
-		    
-    // 		    // Translate result edges into extant bodies.
-    // 		    for( var i = 0; i < result_edges.length; i++ ){
-			
-    // 			if( result_edges[i] &&
-    // 			    result_edges[i].subject_id() ){
+	    //print('rec_up on: ' + nid);
 
-    // 			    // Missing child.
-    // 			    var rei_sid = result_edges[i].subject_id();
-    // 			    if( ! nodes.hash[ rei_sid ] ){
-    // 				results.push( rei_sid );
-    // 			    }
+    	    var results = new Array();
+    	    var new_parent_edges = anchor.get_parent_edges(nid, pred_id);
 
-    // 			}else{
-    // 			    throw new Error("world issue in missing_children");
-    // 			}
-    // 		    }
-    // 		}
-    // 	}
+	    // Capture edge list for later adding.
+	    for( var e = 0; e < new_parent_edges.length; e++ ){
+		seen_edge_list.push(new_parent_edges[e]);
+	    }
+
+	    // Pull extant nodes from edges. NOTE: This is a retread
+	    // of what happens in get_parent_nodes to avoid another
+	    // call to get_parent_edges (as all this is now
+	    // implemented).
+	    var new_parents = new Array();
+	    for( var n = 0; n < new_parent_edges.length; n++ ){
+		// Make sure that any found edges are in our
+		// world.
+		var obj_id = new_parent_edges[n].object_id();
+		var tmp_node = anchor.get_node(obj_id);
+		if( tmp_node ){
+		    new_parents.push( tmp_node );
+		}
+	    }
+
+	    // Make sure we're in there too.
+	    var tmp_node = anchor.get_node(nid);
+	    if( tmp_node ){
+		new_parents.push( tmp_node );
+	    }
+
+	    // Recur on unseen things and mark the current as seen.
+    	    if( new_parents.length != 0 ){
+    		for( var i = 0; i < new_parents.length; i++ ){
+    		    // Only do things we haven't ever seen before.
+    		    var new_anc = new_parents[i];
+    		    var new_anc_id = new_anc.id();
+    		    if( ! seen_node_hash[ new_anc_id ] ){
+    			seen_node_hash[ new_anc_id ] = new_anc;
+    			rec_up(new_anc_id);	
+    		    }
+    		}
+    	    }
+    	    return results;
+    	}
 	
-    // 	return results;
-    // };
+    	// Recursive call and collect data from search. Make multiple
+    	// ids possible.
+	if( nb_id_or_list.length && nb_id_or_list.index ){
+	    for( var l = 0; l < nb_id_or_list.length; l++ ){	    
+		rec_up(nb_id_or_list[l]);
+	    }
+	}else{
+    	    rec_up(nb_id_or_list);
+	}
+    	
+	// Build new graph using data.
+	var new_graph = new bbop.model.graph();
+	for( var k in seen_node_hash ){
+	    new_graph.add_node(seen_node_hash[k]);
+	}
+	for( var x = 0; x < seen_edge_list.length; x++ ){	    
+	    new_graph.add_edge(seen_edge_list[x]);
+	}
+
+    	return new_graph;
+    };
     
 };
