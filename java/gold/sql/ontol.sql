@@ -91,6 +91,7 @@ MAPPINGS:
  OBO: term.definition
  OWL: see obo2owl guide
  LEAD: term_definition.term_definition
+ API: getDef()
 ';
 
 -- ****************************************
