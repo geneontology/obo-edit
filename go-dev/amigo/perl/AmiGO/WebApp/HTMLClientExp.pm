@@ -1690,7 +1690,8 @@ sub mode_report_slimmerish_1 {
       };
     my $q = AmiGO::External::GODB::Query->new($props, 10000000, 10000000);
 
-    ## NOTE/BUG: If it turns out that there are problems with DBI and getting submitting 
+    ## NOTE/BUG: If it turns out that there are problems with DBI and
+    ## getting submitting
     my $single_get = sub {
 
       ## 
