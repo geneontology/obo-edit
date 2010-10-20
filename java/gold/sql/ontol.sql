@@ -1,19 +1,40 @@
 -- ****************************************
--- Core
+-- ontology
 -- ****************************************
 
 CREATE TABLE ontology (
        id VARCHAR PRIMARY KEY,
-       label VARCHAR
+       label VARCHAR,
+       versionIRI VARCHAR,
+       creation_date VARCHAR
 );
-COMMENT ON TABLE cls IS 'A collection of classes, relations and relationships.
+COMMENT ON TABLE ontology IS 'A collection of classes, relations and relationships.
 MAPPINGS: 
  OBO: header.ontology (introduced in obof1.4)
  OWL: Ontology
  LEAD: n/a';
 
--- obo: Term stanza
--- owl: Class
+CREATE TABLE ontology_annotation (
+       ontology VARCHAR,
+       property VARCHAR,
+       annotation_value VARCHAR
+);
+COMMENT ON TABLE ontology_annotation IS 'A property of an ontology
+Example properties: saved_by
+MAPPINGS: 
+ OBO: header.<property>
+ OWL: OntologyAnnotation(ontology property value)
+ LEAD: n/a';
+
+CREATE TABLE ontology_imports (
+       ontology VARCHAR,
+       imports_ontology VARCHAR
+);
+
+-- ****************************************
+-- cls
+-- ****************************************
+
 CREATE TABLE cls (
        id VARCHAR PRIMARY KEY,
 
@@ -21,7 +42,10 @@ CREATE TABLE cls (
 
        ontology VARCHAR,
        obo_namespace VARCHAR,
-       text_definition VARCHAR
+       text_comment TEXT,
+       text_definition TEXT,
+
+       is_obsolete BOOLEAN -- TODO: use separate table?
 );
 COMMENT ON TABLE cls IS 'An ontology class.
 MAPPINGS: 
@@ -69,15 +93,21 @@ MAPPINGS:
  LEAD: term_definition.term_definition
 ';
 
+-- ****************************************
+-- relation
+-- ****************************************
 CREATE TABLE relation (
        id VARCHAR PRIMARY KEY,
        label VARCHAR,
        ontology VARCHAR,
        obo_namespace VARCHAR,
-       text_definition VARCHAR,
+       text_comment TEXT,
+       text_definition TEXT,
        is_transitive BOOLEAN,
        is_symmetric BOOLEAN,
-       is_reflexive BOOLEAN
+       is_reflexive BOOLEAN,
+
+       is_obsolete BOOLEAN -- TODO: use separate table?
 );
 
 COMMENT ON TABLE relation IS 'An ontology relation.
@@ -124,11 +154,13 @@ MAPPINGS:
  LEAD: term_definition.term_definition
 ';
 
-
 -- ****************************************
 -- Obo Terminological Properties
 -- ****************************************
 
+-- ****************************************
+-- ontology_subset
+-- ****************************************
 CREATE TABLE ontology_subset (
        id VARCHAR PRIMARY KEY,
        label VARCHAR
@@ -142,6 +174,9 @@ MAPPINGS:
  LEAD: term (term table is overloaded)
 ';
 
+-- ****************************************
+-- obj_subset
+-- ****************************************
 CREATE TABLE obj_subset (
        obj VARCHAR,
        ontology_subset VARCHAR
@@ -154,6 +189,9 @@ MAPPINGS:
  LEAD: term_subset
 ';
 
+-- ****************************************
+-- obj_definition_xref
+-- ****************************************
 CREATE TABLE obj_definition_xref (
        obj VARCHAR,
        xref VARCHAR
@@ -174,6 +212,10 @@ EXAMPLE: http://en/wikipedia.org/wiki/Transcription
  LEAD: term_dbxref[is_for_definition=1].dbxref.{xref_dbname+':'+xref_key}
 ';
 
+-- ****************************************
+-- obj_alternate_label
+-- ****************************************
+-- TODO - denormalize synonym_xrefs
 CREATE TABLE obj_alternate_label (
        obj VARCHAR,
        label VARCHAR,
@@ -192,7 +234,28 @@ MAPPINGS:
 COMMENT ON COLUMN obj_alternate_label.obj IS 'class or relation that owns the alternate label.
 ';
 
+CREATE TABLE annotation_property (
+       id VARCHAR PRIMARY KEY,
+       label VARCHAR,
+       ontology VARCHAR,
+       obo_namespace VARCHAR,
+       text_comment TEXT,
+       text_definition TEXT,
 
+       is_obsolete BOOLEAN -- TODO: use separate table?
+);
+
+COMMENT ON TABLE annotation_property IS 'A non-logical relation/tag that can connect objects or objects and values.
+TYPICAL ENTRIES: consider, replaced_by
+MAPPINGS:
+ OBO: Typedef[is_metadata_tag=true]
+ OWL: AnnotationProperty
+ LEAD: term (overloaded)
+';
+
+-- ****************************************
+-- obj_alternate_id
+-- ****************************************
 CREATE TABLE obj_alternate_id (
        obj VARCHAR,
        id VARCHAR
@@ -203,6 +266,29 @@ MAPPINGS:
  OBO: alt_id
  OWL: see obo2owl spec
  LEAD: term_synonym (overloaded)
+';
+
+CREATE TABLE obj_xref (
+       obj VARCHAR,
+       xref VARCHAR,
+
+       xref_description VARCHAR
+);
+
+CREATE TABLE annotation_assertion (
+       relation VARCHAR,
+       obj VARCHAR,
+       target_obj VARCHAR,
+
+       ontology VARCHAR
+);
+COMMENT ON TABLE annotation_assertion IS 'A non-logical relationship between two objects (classes or relations).
+When an obo consider tag is being used, relation=consider
+When an obo replaced_by tag is being used, relation=replaced_by
+MAPPINGS:
+ OBO: property_value (also: consider, replaced_by)
+ OWL: AnnotationAssertion(relation obj target_obj)
+ LEAD: term2term_metadata
 ';
 
 
@@ -224,22 +310,24 @@ CREATE TABLE subclass_of (
 -- holds iff: cls SubClassOf rel Some tgt
 CREATE TABLE all_some_relationship (
        cls VARCHAR,
-       target_cls VARCHAR,
        relation VARCHAR,
+       target_cls VARCHAR,
 
        ontology VARCHAR
 );
 
 -- holds iff: cls SubClassOf rel Only tgt
+-- EXAMPLE: lactation only_in_taxon Mammalia ==> lactation SubClassOf in_taxon only Mammalia
 CREATE TABLE all_only_relationship (
        cls VARCHAR,
-       target_cls VARCHAR,
        relation VARCHAR,
+       target_cls VARCHAR,
 
        ontology VARCHAR
 );
 
 -- holds iff: cls SubClassOf ComplementOf(rel Some tgt)
+-- EXAMPLE: odontogenesis never_in_taxon Aves ==> odontogenesis SubClassOf ComplementOf(in_taxon some Aves) [taxon_go_triggers]
 CREATE TABLE never_some_relationship (
        cls VARCHAR,
        target_cls VARCHAR,
@@ -248,11 +336,11 @@ CREATE TABLE never_some_relationship (
        ontology VARCHAR
 );
 
--- holds iff: cls SubClassOf super_cls
+-- holds iff: cls SubObjectPropertyOf super_cls
 -- 
 CREATE TABLE subrelation_of (
-       cls VARCHAR,
-       super_cls VARCHAR,
+       relation VARCHAR,
+       super_relation VARCHAR,
 
        ontology VARCHAR
 );
@@ -279,6 +367,55 @@ MAPPINGS:
  OWL: n/a
  LEAD: n/a
 ';
+
+CREATE TABLE disjoint_with (
+       cls VARCHAR,
+       disjoint_cls VARCHAR,
+
+       ontology VARCHAR
+);
+
+COMMENT ON TABLE disjoint_with IS 'Two classes are disjoint if they share no instances or subclasses in common.
+MAPPINGS:
+ OBO: Term.disjoint_from
+ OWL: DisjointClasses(cls disjoint_cls)
+ LEAD: n/a
+';
+
+CREATE TABLE equivalent_to (
+       cls VARCHAR,
+       equivalent_cls VARCHAR,
+
+       ontology VARCHAR
+);
+
+CREATE TABLE cls_intersection_of (
+       cls VARCHAR,
+       relation VARCHAR,
+       target_cls VARCHAR,
+
+       ontology VARCHAR
+);
+COMMENT ON TABLE cls_intersection_of IS 'A shorthand for stating necessary and sufficient definitions.
+For any cls, the set of all_intersection_of tuples are collected. This constitutes a conjunctive expression that is equivalent to cls.
+E.g.
+[Term]
+id: blue_car
+intersection_of: car
+intersection_of: has_color blue
+==> [gold]
+cls_intersection_of(blue_car,null,car)
+cls_intersection_of(blue_car,has_color,blue)
+==> [owl]
+EquivalentTo (blue_car IntersectionOf(car SomeValuesFrom(has_color blue)))
+//
+Note that there should never be a cls that only has a single cls_intersection_of.
+MAPPINGS:
+ OBO: intersection_of
+ OWL: EquivalentTo(cls IntersectionOf( {...} ) -- see obo2owl doc
+ LEAD: term2term[completes=1]
+';
+
 
 -- ****************************************
 -- Inferred Relationships
