@@ -31,8 +31,6 @@ term B, the following things happen:</p>
   <li>All of A's parent relationships&nbsp;are <A 
   href="Deleting.htm">deleted</a>
   <li>All of A's child relationships are <A href="Deleting.htm">deleted</a>
-  <li>A is <A href="Destroying.htm">destroyed</a>&nbsp;(see <A 
-  href="#caveats">caveats</a>)</li></ul>
 <p>It is impossible to create a cycle by merging, because any potentially cyclic 
 links are not copied to the target term. See <A href="#caveats">caveats</a> for 
 potential pitfalls of this behavior.</p>
@@ -60,26 +58,30 @@ the following rules are used:</p>
   definition for the merged term.</LI></UL>
 <h2>Caveats<a name="caveats"></a></h2>
 <ul>
-  <li>When two terms are merged, only one "survives". The 
-  other&nbsp;term's ID only lives on as a secondary ID.&nbsp;Therefore, it's 
-  very important to consider which term should be the source term (the one that 
-  is destroyed) and which is the target term (the one that lives on). 
-  <li>Any term can be merged with any other term. However, 
-  some merges could result in a horrible mess of cycles, because the merged term 
-  gets all the parents and children of the source term&nbsp;(for example, if a 
-  term was merged with a grandchild, a cycle is certain). Therefore, OBO-Edit will simply remove any cyclic links when 
-  a merge occurs. Since potential cycles can be very hard for humans to detect, you may 
-  be surprised that certain relationships from the source term have not 
-  carried over to the merged term. Always check to make sure no critical links 
-  have disappeared after a merge! (The good news: OBO-Edit will never delete 
-  a link from the target term; it will only choose to not copy some 
-  links from the source term).</li></ul>
-
+  <li>When two terms are merged, only one "survives". The
+  other&nbsp;term's ID only lives on as a secondary
+  ID.&nbsp;Therefore, it's very important to consider which term
+  should be the source term (the one whose ID becomes secondary) and
+  which is the target term (the one that lives on).
+  <li>Any term can be merged with any other term. However, some merges
+  could result in a horrible mess of cycles, because the merged term
+  gets all the parents and children of the source term&nbsp;(for
+  example, if a term was merged with a grandchild, a cycle is
+  certain). Therefore, OBO-Edit will simply remove any cyclic links
+  when a merge occurs. Since potential cycles can be very hard for
+  humans to detect, you may be surprised that certain relationships
+  from the source term have not carried over to the merged
+  term. Always check to make sure no critical links have disappeared
+  after a merge! (The good news: OBO-Edit will never delete a link
+  from the target term; it will only choose to not copy some links
+  from the source term).</li></ul>
 <div class="sidebar">
 <h1>Diagnosing Disappearing Links</h1>
 <hr>
-<p>You merged two terms, but OBO-Edit keeps refusing to 
-copy a certain link from the source term! You hit Undo, but you can't figure out what's going on! Here's a technique to figure out why OBO-Edit is&nbsp;discarding a link when you merge...</p>
+<p>You merged two terms, but OBO-Edit keeps refusing to copy a certain
+link from the source term! You hit Undo, but you can't figure out
+what's going on! Here's a technique to figure out why OBO-Edit
+is&nbsp;discarding a link when you merge...</p>
 <p>First, do a search for all the&nbsp;descendants of your target term, and 
 leave the search results on screen. Then, do a search for all the ancestors of 
 your target term, and leave those results on screen too. Now look at the parents 
