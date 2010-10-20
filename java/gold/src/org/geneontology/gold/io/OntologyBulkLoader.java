@@ -51,6 +51,7 @@ public class OntologyBulkLoader {
 		TableDumper clsDumper = new TableDumper("cls");
 		for (OWLClass cls : getOwlOntology().getClassesInSignature()) {
 			String label = graphWrapper.getLabel(cls);
+			String def = graphWrapper.getDef(cls);
 			// textdef TODO
 			//clsDumper.dumpRow(id, label, ...); TODO
 		}
@@ -91,6 +92,7 @@ public class OntologyBulkLoader {
 		for (OWLEquivalentClassesAxiom sca : getOwlOntology().getAxioms(AxiomType.EQUIVALENT_CLASSES)) {
 			//
 		}
+		// TODO - disjoint_with
 		
 	}
 	
