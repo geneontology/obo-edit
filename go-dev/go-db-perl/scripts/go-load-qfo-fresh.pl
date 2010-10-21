@@ -35,6 +35,7 @@ my $dry_run = 1000;
 my $match_only;
 my $fetch_dir;
 my $clean_p = 0;
+my $sensitive_p;
 
 #my $download_dir = "$ENV{HOME}/tmp"; # change to tempdir
 my %ftp_opt = ( Passive => 1 ); # In doubt use passive, it's what
@@ -54,6 +55,7 @@ GetOptions
    'match-only!'      => \$match_only,
    'dry-run!'         => \$dry_run,
    'fetch:s'          => \$fetch_dir,
+   'sensitive!'       => \$sensitive_p,
   ) or die;
 
 my $fasta_match;
@@ -78,7 +80,7 @@ sub ftp_connect{
 my @file;
 
 if (defined $fetch_dir) {
-    $fetch_dir = tmpdir(CLEANUP => $clean_p) if (!$fetch_dir);
+    $fetch_dir = tempdir(CLEANUP => $clean_p) if (!$fetch_dir);
 
     sub okp{
 	my $check = shift;
@@ -236,17 +238,30 @@ while (@file) {
 		die Dumper $guesser;
 	    }
 
-	    $guesser->{guessed}->{dbxref_id} = create_id
+	    my $worked = $guesser->{guessed}->{dbxref_id} = create_id
 	      ($sth{insert_dbxref},
-	       $guesser->{guessed}->{xref_dbname}, $guesser->{guessed}->{xref_key})
-		or die Dumper $guesser;
+	       $guesser->{guessed}->{xref_dbname},
+	       $guesser->{guessed}->{xref_key});
+	    if (!$worked) {
+		if ($sensitive_p) {
+		    local $Data::Dumper::Varname = 'IDX';
+		    die Dumper $guesser;
+		} else {
+		    # DBD shold of returned a warning
+		    next;
+		}
+	    }
 
 	}
 
-	$guesser->{guessed}->{gene_product_id} = create_id
+	my $worked = $guesser->{guessed}->{gene_product_id} = create_id
 	  ($sth{insert_gene_product}, ($guesser->{tagval}->{GN} || ''),
 	   $guesser->{guessed}->{dbxref_id}, $guesser->species_id,
-	   $type_id) or die Dumper $guesser;
+	   $type_id);
+	if (!$worked) {
+	    local $Data::Dumper::Varname = 'IGP';
+	    die Dumper $guesser;
+	}
 
 	# replace stuff in sequence table here.  Use
 	# go-load-qfo-seqs.pl's store_seq() subroutine.

@@ -453,7 +453,7 @@ sub pretty{
 
     if ($s->{guessed}) {
 	$out .= ($s->{guessed}->{gene_product_id} ? '=> ' : '~> ') .
-	  $s->{guessed}->{xref_dbname} . $s->{guessed}->{xref_key};
+	  $s->{guessed}->{xref_dbname} . ' ' . $s->{guessed}->{xref_key};
     } else {
 	$out .= '=> ?';
     }
