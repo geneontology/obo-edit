@@ -853,7 +853,7 @@ public class OWLGraphWrapper {
 	 * @param c
 	 * @return
 	 */
-	public String[] getSynonym(OWLObject c) {
+	public String[] getSynonymStrings(OWLObject c) {
 		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_0000118")); 
 		Set<OWLAnnotation>anns = null;
 		if (c instanceof OWLEntity) {
