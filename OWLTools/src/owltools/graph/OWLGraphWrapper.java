@@ -847,6 +847,24 @@ public class OWLGraphWrapper {
 		return null;
 	}
 	
+	/**
+	 * Return the names of the asserted subClasses of the cls (Class) 
+	 * passed in the argument
+	 * @param cls
+	 * @return
+	 */
+	public String[] getSubClassesNames(OWLClass cls){
+		Set<OWLClassExpression> st = cls.getSubClasses(ontology);
+		
+
+		ArrayList<String> ar = new ArrayList<String>();
+		for(OWLClassExpression ce: st){
+			if(ce instanceof OWLNamedObject)
+				ar.add(getLabel(ce)); 
+		}
+
+		return ar.toArray(new String[ar.size()]);
+	}
 
 	/**
 	 * It returns array of synonyms (is encoded as synonym in obo format and IAO_0000118 annotation property in OWL format) of a class

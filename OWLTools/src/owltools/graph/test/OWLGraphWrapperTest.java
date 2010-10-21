@@ -2,6 +2,7 @@ package owltools.graph.test;
 
 import java.io.File;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -30,6 +31,16 @@ public class OWLGraphWrapperTest extends TestCase {
 		assertTrue(s != null);
 	}
 
+	public static void testSubClassesNames() throws Exception{
+		OWLGraphWrapper  wrapper =  getOntologyWrapper();
+		
+		OWLClass cls =(OWLClass) wrapper.getOWLClass(OWLGraphWrapper.DEFAULT_IRI_PREFIX + "CHEBI_33429");
+		
+		String s[] = wrapper.getSubClassesNames(cls);
+		assertTrue(s.length>0);
+	}
+
+	
 	private static OWLGraphWrapper getOntologyWrapper() throws OWLOntologyCreationException{
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		return new OWLGraphWrapper( 
