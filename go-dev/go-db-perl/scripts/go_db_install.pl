@@ -61,7 +61,9 @@ use vars qw(
 	    $opt_z
 	    $opt_D
 	    $opt_M
+	    $opt_F
 	   );
+# Remove opt_F after go-load-qfo-fresh.pl is default
 
 ## Sane and easy to modify defaults.
 my %local = (
@@ -93,7 +95,8 @@ my %local = (
 	     DATE => '98765432'
 	    );
 
-getopts('hvzijxng:m:a:s:f:l:d:u:p:P:t:e:D:M:');
+# Remove F after go-load-qfo-fresh.pl is default
+getopts('hvzijxng:m:a:s:f:l:d:u:p:P:t:e:D:M:F:');
 
 ## Hunt down the paths and let's try and get all of the likely
 ## libraries in. Trying "use lib" didn't work so well, so got hacky
@@ -800,8 +803,36 @@ sub gunzip_file{
 sub load_qfo {
 
   ll("Load QfO...");
-  my $retval = 0;
 
+  if ($opt_F) {
+      my $qfo_script = "go-db-perl/scripts/go-load-qfo-fresh.pl";
+
+      my @args =
+	(
+	 $go_dev_path . $qfo_script,
+	 '-dbname', $local{EXTENSION},
+	 '-dbhost', $local{DB_HOST}
+	);
+      push @args, ('-dbuser', $local{DB_USER}) if $local{DB_USER};
+      push @args, ('-dbauth', $local{DB_PASS}) if $local{DB_PASS};
+      push @args, ('-dbport', $local{DB_PORT}) if $local{DB_PORT};
+      #push @args, '-noseq';
+      #push @args, $tmp_dl_file; 
+      push @args, qw/--fetch --panther --no-dry-run/;
+
+      ll("[SYSTEM] \"@args\"");
+      eval {
+	system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_x;
+      };
+      if( $@ ){
+	ww("WARNING: Could not load properly.");
+	return undef;
+      }
+
+      return 1;
+  }
+
+  my $retval = 0;
   ###
   ### Setup environment.
   ###
@@ -815,7 +846,6 @@ sub load_qfo {
   my $qfo_script = "go-db-perl/scripts/go-load-qfo-seqs.pl";
   my $qfo_site = 'ftp.ebi.ac.uk';
   my $qfo_dir = '/pub/contrib/qfo/';
-  #my $qfo_dir = '/pub/databases/reference_proteomes/';
 
   ###
   ### Go to site and get a listing of all of the qfo fasta files.
