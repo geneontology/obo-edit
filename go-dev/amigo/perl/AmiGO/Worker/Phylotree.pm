@@ -419,13 +419,13 @@ sub species_dist{
 
     my @out = map {
 	my $ncbi = $_->get_column('ncbi');
-	my $aid = $ncbi{$ncbi};
+	my $color = $ncbi{$ncbi} ? $ncbi{$ncbi}->color() : undef;
 	my $species = $_->get_column('species');
 	{
 	    ncbi => $ncbi,
 	    genus => $_->get_column('genus'),
 	    species => $species,
-	    color => $aid->color,
+	    color => $color,
 	    count => $_->get_column('count'),
 	};
     } @results;
