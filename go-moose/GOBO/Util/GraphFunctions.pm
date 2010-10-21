@@ -4,6 +4,7 @@ use strict;
 use Moose;
 use Carp;
 use Data::Dumper;
+use Storable;
 
 use GOBO::Graph;
 use GOBO::Parsers::OBOParserDispatchHash;
@@ -12,308 +13,7 @@ use GOBO::Parsers::QuickGAFParser;
 use GOBO::InferenceEngine::CustomEngine;
 use GOBO::InferenceEngine;
 use Class::MOP;
-
-
 use GOBO::DataArray;
-
-#use Storable qw(dclone);
-
-=head2 slim_annotations_old
-
-expects a graph, a subset, options{ga_input} => GAF file
-
- input:  hash of the form
-          graph => $graph
-          subset => hashref with subset IDs as keys
-          options =>
-          { ga_input => '/path/to/GAF_file',
-            mode => 'rewrite' } ## optional; the script doesn't create extra
-                                ## indexes with this option on
- output: hashref containing { graph => $graph, assoc_data => $assoc_data }
-
-The graph will have the following indexes:
- - direct_annotations
- - all_annotations
- - direct_ontology_links
- - transitive_closure
- - transitive_reduction
-
-=cut
-
-sub slim_annotations_old {
-	my %args = (@_);
-
-	my $options = $args{options};
-	my $graph = $args{graph};
-	my $subset = $args{subset};
-
-	## get the GA data
-	my $gaf_parser = GOBO::Parsers::QuickGAFParser->new(fh=>$options->{ga_input});
-
-	my $assoc_data = $gaf_parser->parse;
-	#print STDERR "assoc data: " . Dumper($assoc_data) . "\n\n";
-
-	if (! $assoc_data )
-	{	die "No annotations were found! Dying";
-	}
-
-	print STDERR "Finished parsing annotations!\n" if $options->{verbose};
-
-=cut
-my $annot = new GOBO::RelationNode( id => 'annotated_to', label => 'annotated to' );
-my $not_annot = new GOBO::RelationNode( id => 'annotated_to_NOT', label => 'annotated to NOT' );
-$graph->add_relation($annot);
-$graph->add_relation($not_annot);
-## should there be any other relationships for annotated_to?
-$annot->transitive_over( $graph->relation_noderef('part_of') );
-$not_annot->propagates_over_is_a(0);
-=cut
-
-	## this file contains the 'annotated_to' and 'annotated_to_NOT' relations
-	my $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>'t/data/annotation_relations.obo',
-		graph => new GOBO::Graph,
-		body => { parse_only => { typedef => '*' } },
-	);
-	$parser->parse;
-	foreach (@{$parser->graph->relations})
-	{	$graph->add_relation($_);
-	}
-
-	## check that we have an overlap between the terms in the graph and those in
-	## the GAF file
-	my @terms = map {$_->id} @{$graph->terms};
-	my @errs;
-	foreach my $t (keys %{$assoc_data->{by_t}})
-	{	next if grep { $t eq $_ } @terms;
-		## otherwise, this term was not in the graph.
-		push @errs, $t;
-	}
-
-	if (@errs)
-	{	
-		if (scalar @errs == scalar keys %{$assoc_data->{by_t}})
-		{	## crap! No matching terms!
-			die "None of the terms in the annotation file matched those in the ontology file. Dying";
-		}
-		else
-		{	warn "The following terms were not found in the ontology file: " . join(", ", sort @errs);
-		}
-	}
-	
-	
-	
-
-# we're going to do a slight hack here because we didn't bother to parse the
-# annotations properly; we're adding the association data as DataArray objects,
-# a subclass of GOBO::Gene (to trick the InfEng into thinking we're dealing with
-# proper annotations).
-
-	undef @errs;
-	my $a_ids;
-	foreach my $a (keys %{$assoc_data->{by_a}})
-	{	my $a_node = new GOBO::DataArray( id => $a, data_arr => $assoc_data->{by_a}{$a}{arr} );
-		$graph->add_node($a_node);
-		foreach my $t (@{$assoc_data->{by_a}{$a}{terms}})
-		{	## check the term exists in the graph
-			my $t_obj = $graph->get_term($t);
-			if (! $t_obj)
-			{	push @errs, $t unless grep { $_ eq $t } @errs;
-				next;
-			}
-			elsif ($t_obj->obsolete)
-			{	push @errs, $t unless grep { $_ eq $t } @errs;
-				next;
-			}
-			
-			$a_ids->{$a}++;
-			my $link;
-			# check for a NOT annotation
-			if ($assoc_data->{by_a}{$a}{arr}[4] && $assoc_data->{by_a}{$a}{arr}[4] =~ /NOT/)
-			{	$link = new GOBO::Annotation(node=>$a_node, relation=>$graph->get_relation('annotated_to_NOT'), target=>$graph->get_term($t));
-			}
-			else
-			{	$link = new GOBO::Annotation(node=>$a_node, relation=>$graph->get_relation('annotated_to'), target=>$graph->get_term($t));
-			}
-			$graph->add_annotation($link);
-		}
-	}
-
-	$graph->update_graph;
-	
-
-	if (@errs)
-	{	if (scalar @errs == scalar keys %{$assoc_data->{by_t}})
-		{	die "None of the terms in the annotation file matched those in the ontology file. Dying";
-		}
-		else
-		{	warn "The following terms were not found in the ontology file: " . join(", ", @errs);
-		}
-	}
-
-	print STDERR "Added associations to the graph!\n" if $options->{verbose};
-
-	$graph->duplicate_statement_ix('statements', 'asserted_links');
-
-	## find the root nodes in the graph
-	my $roots = $graph->get_connected_roots;
-
-	## OK, we have our graph with the annotations attached. Let's get slimming!
-	# the input set is any terms with an annotation connected to them
-	# get the links between the nodes
-	my $ie = new GOBO::InferenceEngine::CustomEngine( graph => $graph );
-
-	$ie->get_closest_and_ancestral( subset_ids => [ keys %$subset ], input_ids => [ keys %$subset, keys %$a_ids ], from_ix => 'asserted_links', all_ix => 'transitive_closure', closest_ix => 'transitive_reduction' );
-
-	print STDERR "Finished slimming; performing error checks\n" if $options->{verbose};
-
-#	print STDERR "graph terms: " . join(", ", @{$ie->graph->terms}) . "\n";
-#	print STDERR "statements:\n" . join("\n", @{$ie->graph->statements}) . "\n";
-	
-#	print STDERR "Closest links:\n" . join("\n", @{$ie->graph->get_all_statements_in_ix('transitive_reduction')} )
-#	. "\nAll links\n" . join("\n", @{$ie->graph->get_all_statements_in_ix('transitive_closure')} ) . "\n\n";
-
-	## lots and lots of error checks!
-
-	## check for missing annotations, and transfer annotation info
-	undef @errs;
-	my $n_annots = scalar keys %$a_ids;
-
-	my $n_ix = $ie->graph->statement_ix_node_index('transitive_closure');
-	my $t_ix = $ie->graph->statement_ix_target_index('transitive_closure');
-	my $ol_ix = [ @{$ie->graph->statement_ix_target_index('ontology_links')}, @{$ie->graph->statement_ix_node_index('ontology_links')} ];
-
-	## Do some checks.
-	## Look for missing terms:
-	foreach my $t (keys %$subset)
-	{	if (! grep { $t eq $_ } @$t_ix)
-		{	# this term has been lost from the graph!
-			# shall we just forget about it?
-			push @errs, $t;
-			print STDERR "Looking at $t... no links at all!\n";
-		}
-		elsif (! grep { $t eq $_ } @$ol_ix)
-		{	# this term is not attached to any other ontology terms!
-			push @errs, $t;
-			print STDERR "Looking at $t... no ontology links!\n";
-			## delete the term unless we are keeping orphans
-			if (! $options->{keep_orphans})
-			{	print STDERR "deleting node $t\n";
-				$ie->graph->remove_node($t, 1);
-			}
-		}
-		else
-		{	#print STDERR "Looking at $t... found some links!\n";
-		}
-	}
-
-	if (@errs)
-	{	if (scalar @errs == scalar keys %$subset)
-		{	die "All terms were lost during slimming! Dying";
-		}
-		else
-		{	warn "The following terms were lost during slimming:\n" . join(", ", sort @errs);
-		}
-	}
-	
-	## look for missing annotations
-	foreach my $a (keys %$a_ids)
-	{	if (! grep { $a eq $_ } @$n_ix)
-		{	# this annotation has been lost from the graph!
-			push @errs, $a;
-		}
-	}
-
-	if (@errs)
-	{	if (scalar @errs == $n_annots)
-		{	die "All annotations were lost during slimming! Dying";
-		}
-		else
-		{	warn "The following annotations were lost during slimming:\n" . join(", ", sort @errs);
-		}
-	}
-
-	undef @errs;
-
-	if ($options->{delete_new_roots})
-	{	
-		## check our roots... have we got some mysterious new root nodes?
-		my $new_roots = $ie->graph->get_connected_roots_in_ix('transitive_closure');
-		my $root_h;
-		my $new;
-		foreach (@$roots)
-		{	$root_h->{$_->id} = $_;
-		}
-		foreach (@$new_roots)
-		{	if ($root_h->{$_->id})
-			{	delete $root_h->{$_->id};
-				next;
-			}
-			## this is a new root!
-			$new->{$_->id} = $_;
-		}
-	
-		if (keys %$root_h)
-		{	print STDERR "The following root nodes were lost:\n" . join(", ", keys %$root_h) . "\n";
-		}
-		if (keys %$new)
-		{	print STDERR "The following terms are now root nodes:\n" . join(", ", keys %$new) . "\n";
-		}
-
-		my $to_delete;
-		%$to_delete = %$new;
-		foreach my $r (keys %$new)
-		{	## get all the children of this term and delete the whole blimmin' lot!
-			foreach (  # @{$ie->graph->get_outgoing_statements($r)}, 
-			@{$ie->graph->get_incoming_statements($r)})
-			{	# $to_delete->{$_->target->id} = 1;
-				$to_delete->{$_->node->id} = 1;
-			}
-		}
-		
-		foreach (keys %$to_delete)
-		{	$ie->graph->remove_node($_, 1);
-		}
-	}
-
-	## if we're doing a rewrite of the GAF file, we don't need any more fancy
-	## trimmings
-	if ($options->{mode} && $options->{mode} eq 'rewrite')
-	{	return { graph => $ie->graph, assoc_data => $assoc_data };
-	}
-
-	print STDERR "Creating extra indexes\n" if $options->{verbose};
-
-	## otherwise, sort the statements into direct annotations, direct ontology
-	## links and inferred annotations
-
-	my $a_refs = $ie->graph->get_statement_ix_by_name('annotations')->get_all_references;
-	my $o_refs = $ie->graph->get_statement_ix_by_name('ontology_links')->get_all_references;
-	my $t_red = $ie->graph->get_statement_ix_by_name('transitive_reduction')->get_all_references;
-
-	## sort out direct annotations and direct ontology links
-	foreach my $r (@$t_red)
-	{	if ( grep { $r eq $_ } @$a_refs )
-		{	## direct annotation
-			$ie->graph->add_statements_to_ix(ix=>'direct_annotations', statements=>[$$r]);
-		}
-		elsif (grep { $r eq $_ } @$o_refs)
-		{	## ontology link
-			$ie->graph->add_statements_to_ix(ix=>'direct_ontology_links', statements=>[$$r]);
-		}
-	}
-
-	## add inferred annotations to 'all_annotations' and label them as 'inferred'
-	foreach my $r (@{$ie->graph->get_statement_ix_by_name('transitive_closure')->get_all_references})
-	{	if ( grep { $r eq $_ } @$a_refs) # && ! grep { $r eq $_ } @$t_red)
-		{	$$r->inferred(1) if ! grep { $r eq $_ } @$t_red;
-			$ie->graph->add_statements_to_ix(ix=>'all_annotations', statements=>[$$r]);
-		}
-	}
-
-	return { graph => $ie->graph, assoc_data => $assoc_data };
-}
-
-
 
 =head2 slim_annotations
 
@@ -321,7 +21,8 @@ expects a graph, a subset, options{ga_input} => GAF file
 
  input:  hash of the form
           graph => $graph
-          subset => hashref with subset IDs as keys
+          subset_ids => arrayref of subset IDs OR
+              subset => [ $subset_name ]
           options =>
           { ga_input => '/path/to/GAF_file',
             mode => 'rewrite' } ## optional; the script doesn't create extra
@@ -343,7 +44,29 @@ sub slim_annotations {
 
 	my $options = $args{options};
 	my $graph = $args{graph};
-	my $subset = $args{subset};
+	my $subset_ids = $args{subset_ids};
+
+	## subset IDs not specified...
+	if (! $args{subset_ids} && $args{subset})
+	{	my $data = get_subset_nodes(graph=>$graph, options => { subset => $args{subset} } );
+		if ($data->{subset}{ $args{subset} })
+		{	$subset_ids = [ keys %{$data->{subset}{ $args{subset}} } ];
+		}
+		else
+		{	die "No terms could be found in the specified subset " . $args{subset};
+		}
+	}
+
+	if ($options->{buckets})
+	{	## create the buckets
+		my $results = add_bucket_terms_to_graph( graph=>$graph, subset_ids=>$subset_ids, );
+		$graph = $results->{graph};
+		$subset_ids = $results->{subset_ids};
+
+#		print STDERR "graph indexes: " . join(", ", sort $graph->get_statement_ix_h_names) . "\n";
+#		print STDERR "subset ids: " . join(", ", sort @$subset_ids) . "\n\n";
+
+	}
 
 	## get the GA data
 	my $gaf_parser = GOBO::Parsers::QuickGAFParser->new(fh=>$options->{ga_input});
@@ -391,7 +114,7 @@ sub slim_annotations {
 	}
 
 	if (@errs)
-	{	
+	{
 		if (scalar @errs == $n_terms)
 		{	## crap! No matching terms!
 			die "None of the terms in the annotation file matched those in the ontology file. Dying";
@@ -401,7 +124,8 @@ sub slim_annotations {
 
 	## copy the ontology links into a new index...
 	$graph->duplicate_statement_ix('ontology_links', 'asserted_links');
-	
+	my $roots = $graph->get_connected_roots;
+
 # we're going to do a slight hack here because we didn't bother to parse the
 # annotations properly; we're adding the association data as DataArray objects,
 # a subclass of GOBO::Gene (to trick the InfEng into thinking we're dealing with
@@ -421,8 +145,13 @@ sub slim_annotations {
 		{	$err_count++;
 			next;
 		}
+
+		if ($ENV{REMOVE_ROOT_ASSOCS})
+		{	next if grep { $_->id eq $t } @$roots;
+		}
+
 		my ($annots, $nots);
-		map { 
+		map {
 #			$a_ids->{$_}++;
 			## the association data is in $assoc_data->{by_a}{$a}{arr}
 			## check for a NOT annotation
@@ -433,7 +162,7 @@ sub slim_annotations {
 			{	push @$annots, { id => $_, data => $assoc_data->{by_a}{$_}{arr} };
 			}
 		} @{$assoc_data->{by_t}{$t}};
-		
+
 		if ($annots)
 		{	#my $a_node = new GOBO::DataArray( id=> $t_obj->id . "_x_" . $annotated_to->id . "_$count", data_arr=>$annot );
 			my $a_node = new GOBO::DataArray( id=>"annot_data_$count", data_arr=>$annots );
@@ -451,34 +180,36 @@ sub slim_annotations {
 		}
 	}
 
-	$graph->add_statements_to_ix(ix=>'asserted_links', statements=>[@statements]);
-
-	$graph->update_graph;
-	
-	my $roots = $graph->get_connected_roots;
-
+	my $summary;
+	$summary->{term_list} = [ keys %{$assoc_data->{by_t}} ];
+	$summary->{gp_list}   = [ keys %{$assoc_data->{by_gp}} ];
+	$summary->{assoc_ids} = [ keys %{$assoc_data->{by_a}} ];
+	$summary->{gp_x_term} = $assoc_data->{gp_x_t};
 	if ($err_count)
 	{	warn "$err_count annotations were not added to the graph (terms could not be found or were obsolete)";
 	}
 
+	$graph->add_statements_to_ix(ix=>'asserted_links', statements=>[@statements]);
+
+	$graph->update_graph;
+
+=cut experimental
+	Storable::store $graph, '/Users/gwg/Downloads/pombe_data/original_graph';
+	Storable::store $assoc_data, '/Users/gwg/Downloads/pombe_data/assoc_data';
+	Storable::store $summary, '/Users/gwg/Downloads/pombe_data/assoc_data_summary';
+=cut
 	print STDERR "Added associations to the graph!\n" if $options->{verbose};
+
 	## OK, we have our graph with the annotations attached. Let's get slimming!
 	# the input set is any terms with an annotation connected to them
 	# get the links between the nodes
 	my $ie = new GOBO::InferenceEngine::CustomEngine( graph => $graph );
 
-	$ie->get_closest_and_ancestral( subset_ids => [ keys %$subset ], input_ids => [ keys %$subset, keys %$ada_ids ], from_ix => 'asserted_links', all_ix => 'transitive_closure', closest_ix => 'transitive_reduction' );
+	$ie->get_closest_and_ancestral( subset_ids => $subset_ids, input_ids => [ @$subset_ids, keys %$ada_ids ], from_ix => 'asserted_links', all_ix => 'transitive_closure', closest_ix => 'transitive_reduction' );
 
 	print STDERR "Finished slimming; performing error checks\n" if $options->{verbose};
 
-#	print STDERR "graph terms: " . join(", ", @{$ie->graph->terms}) . "\n";
-#	print STDERR "statements:\n" . join("\n", @{$ie->graph->statements}) . "\n";
-	
-#	print STDERR "Closest links:\n" . join("\n", @{$ie->graph->get_all_statements_in_ix('transitive_reduction')} )
-#	. "\nAll links\n" . join("\n", @{$ie->graph->get_all_statements_in_ix('transitive_closure')} ) . "\n\n";
-
 	## lots and lots of error checks!
-
 	## check for missing annotations, and transfer annotation info
 	undef @errs;
 	my $n_annots = scalar keys %$ada_ids;
@@ -490,22 +221,22 @@ sub slim_annotations {
 	## Do some checks.
 	## Look for missing terms:
 
-	foreach my $t (keys %$subset)
-	{	if (! grep { $t eq $_ } @$t_ix)
-		{	# this term has been lost from the graph!
-			# shall we just forget about it?
-			push @errs, $t;
-			print STDERR "Looking at $t... no links at all!\n";
-		}
-		elsif (! grep { $t eq $_ } @$ol_ix)
+	foreach my $t (@$subset_ids)
+	{	if (! grep { $t eq $_ } @$ol_ix)
 		{	# this term is not attached to any other ontology terms!
 			push @errs, $t;
-			print STDERR "Looking at $t... no ontology links!\n";
+#			print STDERR "Looking at $t... no ontology links!\n";
 			## delete the term unless we are keeping orphans
 #			if (! $options->{keep_orphans})
 #			{	print STDERR "deleting node $t\n";
 #				$ie->graph->remove_node($t, 1);
 #			}
+		}
+		elsif (! grep { $t eq $_ } @$t_ix)
+		{	# this term has no incoming links (ontology or annotations)
+			# shall we just forget about it?
+			push @errs, $t;
+#			print STDERR "Looking at $t... no incoming links!\n";
 		}
 		else
 		{	#print STDERR "Looking at $t... found some links!\n";
@@ -513,7 +244,7 @@ sub slim_annotations {
 	}
 
 	if (@errs)
-	{	if (scalar @errs == scalar keys %$subset)
+	{	if (scalar @errs == scalar @$subset_ids)
 		{	die "All terms were lost during slimming! Dying";
 		}
 		else
@@ -530,8 +261,8 @@ sub slim_annotations {
 		}
 	}
 
-	if (@errs)
-	{	if (scalar @errs == $n_annots)
+	if ($err_count)
+	{	if ($err_count == $n_annots)
 		{	die "All annotations were lost during slimming! Dying";
 		}
 		else
@@ -542,7 +273,7 @@ sub slim_annotations {
 	undef @errs;
 
 	if ($options->{delete_new_roots})
-	{	
+	{
 		## check our roots... have we got some mysterious new root nodes?
 		my $new_roots = $ie->graph->get_connected_roots_in_ix('transitive_closure');
 		my $root_h;
@@ -558,25 +289,25 @@ sub slim_annotations {
 			## this is a new root!
 			$new->{$_->id} = $_;
 		}
-	
-		if (keys %$root_h)
-		{	print STDERR "The following root nodes were lost:\n" . join(", ", keys %$root_h) . "\n";
-		}
-		if (keys %$new)
-		{	print STDERR "The following terms are now root nodes:\n" . join(", ", keys %$new) . "\n";
-		}
+
+#		if (keys %$root_h)
+#		{	print STDERR "The following root nodes were lost:\n" . join(", ", keys %$root_h) . "\n";
+#		}
+#		if (keys %$new)
+#		{	print STDERR "The following terms are now root nodes:\n" . join(", ", keys %$new) . "\n";
+#		}
 
 		my $to_delete;
 		%$to_delete = %$new;
 		foreach my $r (keys %$new)
 		{	## get all the children of this term and delete the whole blimmin' lot!
-			foreach (  # @{$ie->graph->get_outgoing_statements($r)}, 
+			foreach (  # @{$ie->graph->get_outgoing_statements($r)},
 			@{$ie->graph->get_incoming_statements($r)})
 			{	# $to_delete->{$_->target->id} = 1;
 				$to_delete->{$_->node->id} = 1;
 			}
 		}
-		
+
 		foreach (keys %$to_delete)
 		{	$ie->graph->remove_node($_, 1);
 		}
@@ -633,7 +364,7 @@ input:  graph   => Graph object
         options => option_h
           options may be:
           get_all_subsets => 1
-          subset => { subset_name => 1, subset_2_name => 1 }
+          subset => [ subset_name, subset_2_name, ... ]
           # subset_regexp => regular expression
 
           exclude_roots => 1  # set this is you DON'T want the root nodes included
@@ -653,8 +384,6 @@ sub get_subset_nodes {
 	my $data = $args{data};
 
 	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless defined $graph && $options;
-
-#	print STDERR "options: " . Dumper($options) . "\n";
 
 	## create the subroutine to filter out the desired subset nodes
 	my $sub_test;
@@ -676,40 +405,56 @@ sub get_subset_nodes {
 			}
 		};
 	}
-	else
-	{	$sub_test = sub {
+	elsif ($options->{subset})
+	{	## make sure it's in the right format!
+		if (! ref $options->{subset})
+		{	$options->{subset} = [ $options->{subset} ];
+		}
+		elsif ( ref $options->{subset} eq 'HASH' )
+		{	$options->{subset} = [ keys %{$options->{subset}} ];
+		}
+
+		$sub_test = sub {
 			my $node = shift;
 			if ($node->subsets)
 			{	foreach my $s (map { $_->id } @{$node->subsets})
-				{	$data->{subset}{$s}{$node->id} = $node if defined $options->{subset}{$s};
+				{	#print STDERR "node: " . $node->id . "; s: $s\n" if $ENV{DEBUG};
+					$data->{subset}{$s}{$node->id} = $node if grep { $s eq $_ } @{$options->{subset}};
 				}
 			}
 		};
 	}
 
+#	$data->{roots}{$n->id} = $n;
+	my $roots = $graph->get_connected_roots;
+	map { $data->{roots}{$_->id} = $_ } @$roots;
+
 	foreach ( @{$graph->terms} )
 	{	next if $_->obsolete;
-		my $n = $_;
 		# make sure that we have all the root nodes
-		if (!@{$graph->get_outgoing_statements(node=>$n, ix=>'ontology_links')}) {
-			$data->{roots}{$n->id} = $n;
-		}
+		next if $data->{roots}{ $_->id };
+		my $n = $_;
+		#print STDERR "looking at $n\n";
+#		if (!@{$graph->get_outgoing_statements(node=>$n, ix=>'ontology_links')}) {
+#			$data->{roots}{$n->id} = $n;
+#		}
 		## if it's in a subset, save the mofo.
-		else
-		{	&$sub_test($n);
-		}
+#		else
+#		{
+			&$sub_test($n);
+#		}
 	}
 
 	#	check that we have nodes in our subsets
 	if ($options->{subset})
 	{	my $no_nodes;
-		foreach (keys %{$options->{subset}})
+		foreach (@{$options->{subset}})
 		{	if (! $data->{subset}{$_})
 			{	push @$no_nodes, $_;
 			}
 		}
 		if ($no_nodes)
-		{	if (scalar @$no_nodes == scalar keys %{$options->{subset}})
+		{	if (scalar @$no_nodes == scalar @{$options->{subset}})
 			{	die "Error: no nodes were found in any of the subsets specified. Dying";
 			}
 			else
@@ -980,6 +725,102 @@ else
 ## Graph cloning stuff ##
 
 
+=head2 copy_attributes
+
+Duplicate attributes from one Object to another. The 'to' object should be of the
+same class or a subclass of the 'from' object.
+
+If 'include' is specified, only the attributes in the 'include' array will be
+copied.
+If 'ignore' is specified, all attributes except those in the 'ignore' array will
+be copied.
+If neither are specified, all attributes will be duplicated. Specifying both
+'ignore' and 'include' is an error.
+
+WARNING: this is a bit of a hack!!
+
+input:  hash containing
+        from => Object to copy attribute(s) from
+        to   => Object to copy attribute(s) to
+        ## The following are optional; only ONE can be specified
+        include => [ attrib, attrib, ... ]  ## only copy attribs in this array
+        ignore  => [ attrib, attrib, ... ]  ## do not copy attribs in this array
+output: the 'to' object will have values
+
+=cut
+
+sub copy_attributes {
+	my %args = (@_);
+	my $from = $args{from};
+	my $to = $args{to};
+
+	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless defined $from && defined $to;
+	confess( (caller(0))[3] . ": cannot specify 'ignore' and 'include'! Dying" ) if $args{include} && $args{ignore};
+	confess( (caller(0))[3] . ": \$args{to} must be the same class or a subclass of \$args{from}. Dying" ) unless $to->isa( ref $from );
+
+	## get the object attributes and compare them
+	my $meta = Class::MOP::Class->initialize( ref($from) );
+	my @attrs = $meta->get_all_attributes;
+
+#	print STDERR "attributes: " . join(", ", sort map { $_->name } @attrs ) . "\n";
+
+	my $todo;
+
+	foreach my $a (@attrs)
+	{	if ($args{include})
+		{	next unless grep { $a->name eq $_ } @{$args{include}};
+		}
+		if ($args{ignore})
+		{	next if grep { $a->name eq $_ } @{$args{ignore}};
+		}
+		$todo->{$a->name} = $a;
+	}
+
+	## try to minimise the hackiness...
+	if ($from->isa('GOBO::Graph'))
+	{	if ($todo->{term_h} && $todo->{relation_h} && $todo->{instance_h} && $todo->{node_index})
+		{	## they're all there, so no need to do anything
+		}
+		else
+		{	## term_h, instance_h or relation_h affect the content of the node_index,
+			## so generate them separately
+			if ($todo->{term_h})
+			{	delete $todo->{term_h};
+				foreach (@{$from->terms})
+				{	$to->add_term($_);
+				}
+			}
+			if ($todo->{relation_h})
+			{	delete $todo->{relation_h};
+				foreach (@{$from->relations})
+				{	$to->add_relation($_);
+				}
+			}
+			if ($todo->{instance_h})
+			{	delete $todo->{instance_h};
+				foreach (@{$from->instances})
+				{	$to->add_instance($_);
+				}
+			}
+			delete $todo->{node_index};
+		}
+	}
+
+
+#	print STDERR "todo: " . join(", ", map { $_->name } sort { $a->name cmp $b->name } values %$todo) . "\n";
+
+	foreach my $x (sort { $a->name cmp $b->name } values %$todo) {
+		my $r = $x->get_read_method;
+		my $w = $x->get_write_method;
+		warn ref($from) . " lacks read AND write methods for " . $x->name && next unless defined $r && defined $w;
+
+		my $from_val = $from->$r;
+		$to->$w( $from_val ) if defined $from_val;
+	}
+}
+
+
+
 =head2 add_referenced_nodes_to_graph
 
 input:  old_g => old Graph object
@@ -1193,100 +1034,6 @@ sub add_extra_stuff_to_graph {
 }
 =cut
 
-=head2 copy_attributes
-
-Duplicate attributes from one Object to another. The 'to' object should be of the
-same class or a subclass of the 'from' object.
-
-If 'include' is specified, only the attributes in the 'include' array will be
-copied.
-If 'ignore' is specified, all attributes except those in the 'ignore' array will
-be copied.
-If neither are specified, all attributes will be duplicated. Specifying both
-'ignore' and 'include' is an error.
-
-WARNING: this is a bit of a hack!!
-
-input:  hash containing
-        from => Object to copy attribute(s) from
-        to   => Object to copy attribute(s) to
-        ## The following are optional; only ONE can be specified
-        include => [ attrib, attrib, ... ]  ## only copy attribs in this array
-        ignore  => [ attrib, attrib, ... ]  ## do not copy attribs in this array
-output: the 'to' object will have values
-
-=cut
-
-sub copy_attributes {
-	my %args = (@_);
-	my $from = $args{from};
-	my $to = $args{to};
-
-	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless defined $from && defined $to;
-	confess( (caller(0))[3] . ": cannot specify 'ignore' and 'include'! Dying" ) if $args{include} && $args{ignore};
-	confess( (caller(0))[3] . ": \$args{to} must be the same class or a subclass of \$args{from}. Dying" ) unless $to->isa( ref $from );
-
-	## get the object attributes and compare them
-	my $meta = Class::MOP::Class->initialize( ref($from) );
-	my @attrs = $meta->get_all_attributes;
-
-#	print STDERR "attributes: " . join(", ", sort map { $_->name } @attrs ) . "\n";
-
-	my $todo;
-
-	foreach my $a (@attrs)
-	{	if ($args{include})
-		{	next unless grep { $a->name eq $_ } @{$args{include}};
-		}
-		if ($args{ignore})
-		{	next if grep { $a->name eq $_ } @{$args{ignore}};
-		}
-		$todo->{$a->name} = $a;
-	}
-
-	## try to minimise the hackiness...
-	if ($from->isa('GOBO::Graph'))
-	{	if ($todo->{term_h} && $todo->{relation_h} && $todo->{instance_h} && $todo->{node_index})
-		{	## they're all there, so no need to do anything
-		}
-		else
-		{	## term_h, instance_h or relation_h affect the content of the node_index,
-			## so generate them separately
-			if ($todo->{term_h})
-			{	delete $todo->{term_h};
-				foreach (@{$from->terms})
-				{	$to->add_term($_);
-				}
-			}
-			if ($todo->{relation_h})
-			{	delete $todo->{relation_h};
-				foreach (@{$from->relations})
-				{	$to->add_relation($_);
-				}
-			}
-			if ($todo->{instance_h})
-			{	delete $todo->{instance_h};
-				foreach (@{$from->instances})
-				{	$to->add_instance($_);
-				}
-			}
-			delete $todo->{node_index};
-		}
-	}
-
-
-#	print STDERR "todo: " . join(", ", map { $_->name } sort { $a->name cmp $b->name } values %$todo) . "\n";
-
-	foreach my $x (sort { $a->name cmp $b->name } values %$todo) {
-		my $r = $x->get_read_method;
-		my $w = $x->get_write_method;
-		warn ref($from) . " lacks read AND write methods for " . $x->name && next unless defined $r && defined $w;
-
-		my $from_val = $from->$r;
-		$to->$w( $from_val ) if defined $from_val;
-	}
-}
-
 
 =head2 add_nodes_and_links_to_graph
 
@@ -1428,11 +1175,11 @@ sub trim_inferred_graph {
 				#	descendent list
 #				$new_d->{graph}{$id}{$rel}{$a} = $d->{node_rel_target}{$id}{$rel}{$a};
 
-				if (! $graph->get_term($id) || ! $graph->get_term($a) || ! $graph->get_relation($rel) )
-				{	print STDERR "id : $id " . Dumper( $graph->get_node($id) ) .
-					"relation: $rel " . Dumper( $graph->get_node($rel) ) .
-					"target: $a " . Dumper( $graph->get_node($a) ) . "\n";
-				}
+#				if (! $graph->get_term($id) || ! $graph->get_term($a) || ! $graph->get_relation($rel) )
+#				{	print STDERR "id : $id " . Dumper( $graph->get_node($id) ) .
+#					"relation: $rel " . Dumper( $graph->get_node($rel) ) .
+#					"target: $a " . Dumper( $graph->get_node($a) ) . "\n";
+#				}
 				my $l = new GOBO::LinkStatement( node => $graph->get_term($id), relation => $graph->get_relation($rel), target => $graph->get_term($a) );
 				push @links, $l;
 				#	if we have a list2_by_rel, transfer it back to @list_by_rel
@@ -1457,49 +1204,290 @@ sub trim_inferred_graph {
 
 =head2 create_bucket_terms
 
-input:  graph
-        subset terms
+input:  graph => Graph object
+        ix => statement_ix
+        subset_ids => ArrayRef of subset terms
 
-
-
-output:
+output: a hash containing expressions representing "other" terms, with keys
+        being the parent term and values being the expressions.
 
 =cut
 
 sub create_bucket_terms {
 	my %args = (@_);
 	my $graph = $args{graph};
-	my $subset = $args{subset};
+	my $ix_name = $args{ix};
+	my @subset_ids = map { if (ref $_) { $_->id } else { $_ } } @{$args{subset_ids}};
 
-	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless $subset && defined $graph;
+	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless @subset_ids && defined $graph;
 
-	my $p_seen;
-	foreach (@$subset)
-	{	my $t = $graph->get_term($_);
+#	my $p_seen;
+	my $p_nodes;
+	my $other_h;
+	foreach (@subset_ids)
+	{	## get the parent nodes for the term
+		foreach my $l (@{$graph->get_matching_statements(ix=>$ix_name, node_id=>$_)})
+		{	$p_nodes->{ $l->target->id } = $l->target;
+		}
+		warn "Could not find any parents for $_!" && next unless keys %$p_nodes;
+	}
+
+	foreach my $parent (values %$p_nodes)
+	{	## we've already done this node
+#		next if defined $p_seen->{$parent->id};
+#		$p_seen->{$parent->id}++;
+		my $child_nodes;
+		my $to_replace;
+		## get the children of the term
+		foreach my $l (@{$graph->get_matching_statements(ix => $ix_name, target => $parent)})
+		{	## keep a tally of the subset terms we've seen
+			if (grep { $l->node->id eq $_ } @subset_ids)
+			{	$child_nodes->{ss}{$l->node->id} = $l->node;
+				next;
+			}
+			## the node is a non-subset term
+			## this link will have to be removed
+			push @$to_replace, $l;
+			## see if we've already looked at the node
+			next if $child_nodes->{non_ss}{$l->node->id};
+			## save the node ID
+			$child_nodes->{non_ss}{$l->node->id} = $l->node;
+		}
+
+		## make sure that we actually have some non-subset terms...
+		## if not, we don't need to do anything
+		if ($child_nodes->{non_ss})
+		{	#print STDERR "children of $parent that are not in a subset: " . join(", ", values %{$child_nodes->{non_ss}}) . "\n\n";
+			## our boolean expression should cover terms that are children of X
+			## but are not subset terms. Hmmm...
+			## parent($t) = X but annotation NOT to X
+			my $comp;
+			if (scalar values %{$child_nodes->{ss}} == 1)
+			{	$comp = new GOBO::ClassExpression::Complement( arguments => [ values %{$child_nodes->{ss}} ] );
+
+			}
+			else
+			{	my $bool = new GOBO::ClassExpression::Union( arguments => [ values %{$child_nodes->{ss}} ] );
+				$comp = new GOBO::ClassExpression::Complement( arguments => [ $bool ] );
+			}
+			#print STDERR "complement: $comp\n";
+
+			if ($graph->get_node($comp))
+			{	#print STDERR "Node $comp already exists!\n";
+			}
+			else
+			{	$graph->add_node($comp);
+			}
+
+			$other_h->{$parent->id} = { class_expr => $comp, replaces => $to_replace, parent => $parent };
+		}
+	}
+	return $other_h;
+}
+
+
+=head2 add_bucket_terms_to_graph
+
+Adds a set of bucket terms to the graph. Differs from create_bucket_terms in that
+the buckets are integrated into the graph
+
+input:  graph => $graph
+        ix => $statement_ix
+        subset_ids => [ ArrayRef of terms in subset ]
+        subset => $id_of_subset
+
+output: bucket terms integrated into the graph
+
+=cut
+
+sub add_bucket_terms_to_graph {
+	my %args = (
+		ix => 'ontology_links',
+		@_
+	);
+	my $graph = $args{graph};
+	my $ix_name = $args{ix};
+	my $subset = $args{subset_name};
+	my @subset_ids = map { if (ref $_) { $_->id } else { $_ } } @{$args{subset_ids}};
+
+	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless @subset_ids && defined $graph;
+
+	my $ie = new GOBO::InferenceEngine(graph=>$graph);
+
+	my $p_nodes;
+	my $stts;
+	my $other_h;
+	foreach (@subset_ids)
+	{	## get the parent nodes for the term
+		foreach my $l (@{$graph->get_matching_statements(ix=>$ix_name, node_id=>$_)})
+		{	$p_nodes->{ $l->target->id } = $l->target;
+		}
+		warn "Could not find any parents for $_!" && next unless keys %$p_nodes;
+	}
+	foreach my $parent (values %$p_nodes)
+	{	## we've already done this node
+		my $child_nodes;
+		my $to_replace;
+		my $to_add;
+		## get the children of the term
+		foreach my $l (@{$graph->get_matching_statements(ix => $ix_name, target => $parent)})
+		{	## keep a tally of the subset terms we've seen
+			if (grep { $l->node->id eq $_ } @subset_ids)
+			{	$child_nodes->{ss}{$l->node->id} = $l->node;
+				next;
+			}
+			## the node is a non-subset term
+			## this link will have to be removed
+			push @$to_replace, $l;
+			## see if we've already looked at the node
+			next if $child_nodes->{non_ss}{$l->node->id};
+			## save the node ID
+			$child_nodes->{non_ss}{$l->node->id} = $l->node;
+		}
+
+		## make sure that we actually have some non-subset terms...
+		## if not, we don't need to do anything
+		if ($child_nodes->{non_ss})
+		{	#print STDERR "children of $parent that are not in a subset: " . join(", ", values %{$child_nodes->{non_ss}}) . "\n\n";
+			## our boolean expression should cover terms that are children of X
+			## but are not subset terms. Hmmm...
+			## parent($t) = X but annotation NOT to X
+			my $comp;
+			if (scalar values %{$child_nodes->{ss}} == 1)
+			{	$comp = new GOBO::ClassExpression::Complement( arguments => [ values %{$child_nodes->{ss}} ] );
+			}
+			else
+			{	my $bool = new GOBO::ClassExpression::Union( arguments => [ values %{$child_nodes->{ss}} ] );
+				$comp = new GOBO::ClassExpression::Complement( arguments => [ $bool ] );
+			}
+			#print STDERR "complement: $comp\n";
+
+			if ($graph->get_node($comp))
+			{	warn "Node $comp already exists!\n";
+				$comp = $graph->get_node($comp);
+			}
+			else
+			{	$graph->add_node($comp);
+			}
+			push @subset_ids, $comp->id;
+
+#			$other_h->{$parent->id} = { class_expr => $comp, replaces => $to_replace, parent => $parent };
+			## replace the links
+			foreach (@$to_replace)
+			{	my %args;
+				foreach my $x qw(node relation)
+				{	$args{$x} = $graph->get_node( $_->$x );
+				}
+				$args{type} = ref $_;
+				$args{target} = $comp;
+				my $new_stt = GOBO::Statement->create(%args);
+				push @$to_add, $new_stt;
+			}
+			## add a link between the parent node and this node
+			my $l = GOBO::Statement->create( node => $comp, relation => $graph->get_node('is_a'), target => $parent);
+
+			$graph->add_statements_to_ix(ix=>$args{ix}, statements => [ $l, @$to_add ]);
+			$graph->remove_statements($to_replace);
+		}
+	}
+
+=cut
+
+	foreach my $parent_vals (values %$other_h)
+	{		}
+
+
+	foreach (@subset_ids)
+	{	my $t = $graph->get_node($_);
 		if (! $t )
-		{	print STDERR "Could not find term $t in graph!\n";
+		{	print STDERR "Could not find node $_ in graph!\n";
 			next;
 		}
-		my $parent_nodes = $graph->get_outgoing_links(node=>$t);
-		# this is a root node. Next!
-		next if ! $parent_nodes;
-		foreach my $p (@$parent_nodes)
-		{	next if $p_seen->{$p->id};
+		## get the parent nodes for the term
+		my $p_nodes;
+		foreach (@{$graph->get_matching_statements(ix=>$ix_name, node=>$t)})
+		{	## we've already done this node
+			next if defined $p_seen->{$_->target->id};
+
+			## p is the target (parent) node
+			my $p = $_->target;
 			$p_seen->{$p->id}++;
+
+			my $bool;
+			my $k_nodes;
 			## get the children of the term
-			my @kids;
-			foreach my $id (map { $_->id } @{$graph->get_incoming_links($p->id)})
-			{	push @kids, $_ if ! grep { $id eq $_ } @$subset;
+			foreach my $l (@{$graph->get_matching_statements(ix => $ix_name, target => $p)})
+			{	## ignore subset terms
+				$k_nodes->{ss}{$l->node->id} = $l->node && next if grep { $l->node->id eq $_ } @subset_ids;
+				## this link will have to be removed
+				push @{$stts->{remove}{$p->id}}, $l;
+				## see if we've already looked at the node
+				next if $k_nodes->{non_ss}{$l->node->id};
+				## save the node ID
+				$k_nodes->{non_ss}{$l->node->id} = $l->node;
 			}
-			if (@kids)
-			{	print STDERR "Other " . $p->label . " term: " . join(", ", @kids) . "\n";
+
+			if ($k_nodes->{ss})
+			{	print STDERR "children of $p that are in a subset: " . join(", ", values %{$k_nodes->{ss}}) . "\n\n";
+
+				my $complement;
+				if (scalar values %{$k_nodes->{ss}} == 1)
+				{
+					$complement = new GOBO::ClassExpression::Complement( arguments => [ values %{$k_nodes->{ss}} ] );
+				}
+				else
+				{	my $union = new GOBO::ClassExpression::Union( arguments => [ values %{$k_nodes->{ss}} ] );
+					$complement = new GOBO::ClassExpression::Complement( arguments => [ $union ] );
+				}
+
+				print STDERR "complement: $complement\n";
+				$complement->add_subsets($subset);
+				push @subset_ids, $complement->id;
+				$graph->add_node($complement);
+				$bool = $complement;
+			}
+
+
+			if (values %{$k_nodes->{non_ss}})
+			{	print STDERR "Other " . $p->id . " term: " . join(", ", values %{$k_nodes->{non_ss}}) . "\n";
+				if (scalar values %{$k_nodes->{non_ss}} == 1)
+				{	## we only have one node in our boolean set!
+					##
+
+
+				}
+
+				if (! defined $bool)
+				{	## our boolean expression should be
+				## parent($t) = X but annotation NOT to X
+				$bool = new GOBO::ClassExpression::Union( arguments => [ values %{$k_nodes->{non_ss}} ] );
+				## add it to the subset
+				$bool->add_subsets( $subset );
+				push @subset_ids, $bool->id;
+				$graph->add_node($bool);
+				}
+				print STDERR "node id: " . $bool->id . "\n";
+
+				## add a link between the parent node and this node
+				my $l = $ie->create_link_statement( node_id => $bool->id, relation_id => 'is_a', target_id => $p->id);
+					push @{$stts->{add}{$p->id}}, $l;
+				foreach (@{$stts->{remove}{$p->id}})
+				{	my $l2 = $ie->create_link_statement( node_id=>$_->node->id, relation_id=>$_->relation->id, target_id => $bool->id );
+
+					push @{$stts->{add}{$p->id}}, $l2;
+				}
+
+				print STDERR "statements to add for $bool:\n" .  join("\n", @{$stts->{add}{$p->id}}) . "\n\nstatements to remove for $bool:\n" . join("\n", @{$stts->{remove}{$p->id}}) . "\n\n";
+
+				$graph->remove_statements_from_ix(ix=>$ix_name, statements=> $stts->{remove}{$p->id});
+				$graph->add_statements_to_ix( ix => $ix_name, statements => [$l, @{$stts->{add}{$p->id}}] );
 			}
 		}
-
-		## our boolean expression should be
-		## parent($t) = X but annotation NOT to X
-		##
 	}
+
+=cut
+	return { graph => $graph, subset_ids => \@subset_ids };
+
 }
 
 
@@ -1564,7 +1552,7 @@ sub load_mapping {
 							$data->{subset_term}{$target}++;
 						}
 						else
-						{	print STDERR "Doesn't match pattern! $_\n";
+						{	warn "Doesn't match pattern! $_\n";
 						}
 					}
 				}
@@ -1641,7 +1629,7 @@ sub load_mapping_as_graph {
 							$graph->add_statements_to_ix(ix=>$k, statements=>[$stt]);
 						}
 						else
-						{	print STDERR "Doesn't match pattern! $_\n";
+						{	warn "Doesn't match pattern! $_\n";
 						}
 					}
 				}

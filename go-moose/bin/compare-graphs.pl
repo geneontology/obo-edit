@@ -168,7 +168,8 @@ foreach my $f ('f1', 'f2')
 	# remove and parse the header
 	my @arr = split("\n", <FH> );
 	$data->{$f}{header} = tag_val_arr_to_hash( \@arr );
-	$data->{$f}{graph_header} = $parser->parse_header_from_array( array => [@arr] );
+	$parser->parse_header_from_array( array => [@arr] );
+	$data->{$f}{graph_header} = $parser->graph;
 
 #	print STDERR "graph header: " . Dumper($data->{$f}{graph_header}) . "\n\n";
 
@@ -199,7 +200,7 @@ foreach my $f ('f1', 'f2')
 			if ($1 eq 'Term')
 			{	## get stuff for stats
 				$data->{$f . "_stats"}{total}++;
-				
+
 				if ($data->{$f."_hash"}{Term}{$2}{is_obsolete})
 				{	$data->{$f."_stats"}{obs}++;
 				}
@@ -246,10 +247,11 @@ foreach my $f ('f1', 'f2')
 	close FH;
 	print STDERR "Finished parsing $f body\n" if $options->{verbose};
 
-	$data->{$f}{graph} = $parser->parse_body_from_array( array => [ @lines ] ) if $ss;
 	print STDERR "Generating graph of $f\n";
 	if ($ss)
-	{	my $results = GOBO::Util::GraphFunctions::get_subset_nodes(graph=>$data->{$f}{graph}, options => { subset => $ss } );
+	{	$parser->parse_body_from_array( array => [ @lines ] );
+		$data->{$f}{graph} = $parser->graph;
+		my $results = GOBO::Util::GraphFunctions::get_subset_nodes(graph=>$data->{$f}{graph}, options => { subset => $ss } );
 		if ($results->{subset}{ $ss })
 		{	$data->{$f}{subset_ids} = [ keys %{$results->{subset}{$ss} } ];
 		}
@@ -399,7 +401,7 @@ if ($ss)
 			next;
 		}
 #		else
-#		{	
+#		{
 		if (@{$g1->statements_in_ix_by_target_id('ontology_links', $t)})
 		{	# links from target $t in the graph for f1
 			foreach (@{$g1->statements_in_ix_by_target_id('ontology_links', $t)})
@@ -785,7 +787,7 @@ sub generate_stats {
 	$vars->{f2_stats} = $d->{f2_stats};
 	$vars->{f1_stats} = $d->{f1_stats};
 	map { $vars->{ontology_list}{$_}++ } (keys %{$vars->{f1_stats}{by_ns}}, keys %{$vars->{f2_stats}{by_ns}});
-	
+
 	foreach my $f qw( f1 f2 )
 	{	foreach my $o (keys %{$vars->{$f . "_stats"}{by_ns}})
 		{	## we have def => n terms defined
@@ -919,7 +921,7 @@ sub tag_val_arr_to_hash {
 		{	push @{$h->{$k}}, $v;
 		}
 	}
-	
+
 #	map { $h->{$_} = [ sort @{$h->{$_}} ] } keys %$h;
 
 	return $h;
@@ -959,7 +961,7 @@ sub block_to_hash {
 		{	push @{$h->{$k}}, $v;
 		}
 	}
-	
+
 	map { $h->{$_} = [ sort @{$h->{$_}} ] } keys %$h;
 
 	return $h;

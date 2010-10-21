@@ -1,9 +1,10 @@
 package GOBO::Evidence;
 use Moose;
-use strict;
+use Moose::Util::TypeConstraints;
+use GOBO::Types;
 extends 'GOBO::Node';
 
-has type => (is=>'rw', isa=>'GOBO::ClassNode', coerce=>1);
+has ev_type => (is=>'rw', isa=>'GOBO::ClassNode', coerce=>1);
 has supporting_entities => (is=>'rw', isa=>'ArrayRef[GOBO::Node]');
 
 sub with_str {
@@ -12,11 +13,11 @@ sub with_str {
 
 sub as_string {
     my $self = shift;
-    return $self->type . '-' . $self->with_str;
+    return $self->ev_type . '-' . $self->with_str;
 }
 
 sub is_IEA {
-    return shift->type->id eq 'IEA';
+    return shift->ev_type->id eq 'IEA';
 }
 
 1;

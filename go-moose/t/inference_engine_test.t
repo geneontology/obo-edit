@@ -74,8 +74,8 @@ sub check {
     ok(grep {$_->matches(relation=>'develops_from', target=>'CL:0000133')} @$links);
 }
 
-my $clear = `clear`;
-print $clear;
+#my $clear = `clear`;
+#print $clear;
 $parser = new GOBO::Parsers::OBOParser(file=>"t/data/obo_file.obo");
 $parser->parse;
 $g = $parser->graph;
@@ -93,8 +93,10 @@ foreach (@{$ie->graph->terms})
 }
 $g2 = $ie->graph;
 ## check we get the same results from reasoning up or reasoning down the graph
-ok( join("||", sort { $a->node->id cmp $b->node->id || $a->relation->id cmp $b->relation->id || $a->target->id cmp $b->target->id } @{$g1->statements}) eq join("||", sort { $a->node->id cmp $b->node->id || $a->relation->id cmp $b->relation->id || $a->target->id cmp $b->target->id } @{$g2->statements}));
+ok( join("||", sort { $a->node->id cmp $b->node->id || $a->relation->id cmp $b->relation->id || $a->target->id cmp $b->target->id } @{$g1->statements}) eq join("||", sort { $a->node->id cmp $b->node->id || $a->relation->id cmp $b->relation->id || $a->target->id cmp $b->target->id } @{$g2->statements}), "Reasoning up is the same as reasoning down");
 
+exit(0);
+=cut
 
 $parser = new GOBO::Parsers::OBOParserDispatchHash( file => 't/data/slimmer_test_3.obo');
 $parser->parse;
@@ -106,8 +108,6 @@ $ie->__trim_edge_matrix;
 
 
 
-exit(0);
-
 ## let's checking the fetching of cached links works correctly...
 $g1 = Storable::dclone $g;
 $ie = new GOBO::InferenceEngine(graph=>$g1);
@@ -115,9 +115,6 @@ $ie = new GOBO::InferenceEngine(graph=>$g1);
 sleep 5;
 
 $ie->get_inferred_outgoing_edges(node=>$g1->get_term('GO:0000008'));
-
-exit(0);
-
 $ie->get_inferred_outgoing_edges(node=> $g1->get_term('GO:0000013') );
 $ie->get_inferred_outgoing_edges(node=> $g1->get_term('GO:0000015') );
 #print STDERR "child links: " . join("\n", @kids) . "\n";
@@ -134,10 +131,6 @@ my @more_kids2 = sort map { $_->as_string } @{$ie->get_inferred_outgoing_edges( 
 print STDERR "kids, no caching:\n" . join("\n", @more_kids2) . "\n\n";
 
 
-
-exit(0);
-
-
 $ie = new GOBO::InferenceEngine( graph => $g );
 #my $ie->generate_simple_combined_rel_h;
 
@@ -145,7 +138,6 @@ print STDERR "Combined rel_h:\n";
 $ie->print_relation_composition;
 print STDERR "indir regs: " . Dumper($ie->graph->get_relation('indirectly_regulates')) . "\n";
 
-=cut
 
 $ie->__create_edge_matrix;
 $ie->__populate_all_edge_matrices;
@@ -161,13 +153,9 @@ print STDERR "\n";
 $ie->__trim_edge_matrix;
 $ie->dump_edge_matrix(key => 'trimmed');
 
+my $gene = new GOBO::Gene( label => 'test_gene', id => 'geneious' );
+$g->add_node($gene);
 
-=cut
-#my $gene = new GOBO::Gene( label => 'test_gene', id => 'geneious' );
-#$g->add_node($gene);
-
-
-=cut
 
 ## OK, let's test the custom engine a bit...
 my $link_h;
@@ -256,7 +244,7 @@ sub get_inferred_graph_leaves {
 }
 
 
-
+=cut
 
 
 #use Moose::Autobox;

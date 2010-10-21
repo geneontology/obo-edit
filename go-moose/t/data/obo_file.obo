@@ -16,6 +16,7 @@ remark: cvs version: $Revision: 1.239 $
 [Term]
 id: GO:0000001
 name: test term GO:0000001
+def: "This is a definition for GO:0000001." [db:me]
 subset: test_goslim
 subset: test_next_goslim
 is_a: GO:0000008 ! test term GO:0000008
@@ -25,6 +26,7 @@ relationship: regulates GO:0000008 ! test term GO:0000008
 [Term]
 id: GO:0000002
 name: test term GO:0000002
+def: "This is a definition for GO:0000002." [db:me]
 subset: test_goslim
 subset: test_next_goslim
 is_a: GO:0000006 ! test term GO:0000006
@@ -33,6 +35,7 @@ is_a: GO:0000007 ! test term GO:0000007
 [Term]
 id: GO:0000003
 name: test term GO:0000003
+def: "This is a definition for GO:0000003." [db:me]
 subset: test_goslim
 subset: test_next_goslim
 relationship: part_of GO:0000007 ! test term GO:0000007
@@ -40,6 +43,7 @@ relationship: part_of GO:0000007 ! test term GO:0000007
 [Term]
 id: GO:0000004
 name: test term GO:0000004
+def: "This is a definition for GO:0000004." [db:me]
 subset: test_goslim
 is_a: GO:0000012 ! test term GO:0000012
 relationship: positively_regulates GO:0000015 ! test term GO:0000015
@@ -48,6 +52,7 @@ relationship: negatively_regulates GO:0000016 ! test term GO:0000016
 [Term]
 id: GO:0000005
 name: test term GO:0000005
+def: "This is a definition for GO:0000005." [db:me]
 subset: test_goslim
 subset: test_next_goslim
 relationship: regulates GO:0000008 ! test term GO:0000008
@@ -55,13 +60,17 @@ relationship: regulates GO:0000008 ! test term GO:0000008
 [Term]
 id: GO:0000006
 name: test term GO:0000006
+def: "This is a definition for GO:0000006." [db:me]
 subset: test_goslim
+synonym: "Exact synonym for GO:06" EXACT []
 is_a: GO:0000009 ! test term GO:0000009
 
 [Term]
 id: GO:0000007
 name: test term GO:0000007
+def: "The name is Bond, test term GO:0000007 Bond." [00:seven]
 subset: test_goslim
+xref: ID:007
 relationship: part_of GO:0000011 ! test term GO:0000011
 
 [Term]
@@ -89,6 +98,7 @@ is_a: GO:0000010 ! test term GO:0000010
 [Term]
 id: GO:0000012
 name: test term GO:0000012
+def: "GO:0000012's receptions are noted in society for their host's exquisite taste." [db:me]
 is_a: GO:0000013 ! test term GO:0000013
 
 [Term]
@@ -100,6 +110,7 @@ is_a: GO:0000014 ! test term GO:0000014
 [Term]
 id: GO:0000014
 name: test term GO:0000014
+comment: Let's give this term a merry little comment\!
 subset: test_goslim
 is_a: GO:0000018 ! test term GO:0000018
 
@@ -117,16 +128,17 @@ is_a: GO:0000014 ! test term GO:0000014
 [Term]
 id: GO:0000017
 name: test term GO:0000017
-is_a: GO:0000019 ! test_ontology
+is_a: GO:0000019 ! test_ontology term GO:0000019
 
 [Term]
 id: GO:0000018
 name: test term GO:0000018
-is_a: GO:0000019 ! test_ontology
+is_a: GO:0000019 ! test_ontology term GO:0000019
 
 [Term]
 id: GO:0000019
-name: test_ontology
+name: test_ontology term GO:0000019
+def: "Ready or not, here's GO:0000019!\n" [db:me]
 subset: goslim_generic
 subset: goslim_goa
 subset: goslim_pir
@@ -142,20 +154,27 @@ is_obsolete: true
 id: GO:0000021
 name: test term GO:0000021
 subset: test_next_goslim
+subset: goslim_pir
 is_a: GO:0000019
 
 [Term]
 id: GO:0000022
 name: test term GO:0000022
+synonym: "Related synonym for GO:22" RELATED []
+synonym: "Broad synonym for GO:22" BROAD []
+synonym: "Narrow synonym for GO:22" NARROW []
 is_a: GO:0000021
 
 [Term]
 id: GO:0000023
+alt_id: GO:0000027
 name: test term GO:0000023
+def: "GO:0000023 has a splitting headache." [db:me]
 is_a: GO:0000022
 
 [Term]
 id: GO:0000024
+alt_id: GO:0000028
 name: test term GO:0000024
 subset: test_goslim
 is_a: GO:0000023
@@ -165,8 +184,7 @@ relationship: part_of GO:0000025 ! test term GO:0000025
 id: GO:0000025
 name: test term GO:0000025
 subset: test_goslim
-relationship: part_of GO:0000019 ! test term GO:0000019
-
+relationship: part_of GO:0000019 ! test_ontology term GO:0000019
 
 [Typedef]
 id: negatively_regulates

@@ -1,15 +1,15 @@
 package GOBO::RelationNode;
 use Moose;
-use strict;
+use Moose::Util::TypeConstraints;
+use GOBO::Types;
 extends 'GOBO::Node';
 with 'GOBO::Definable';
-use Moose::Util::TypeConstraints;
 
-coerce 'GOBO::RelationNode'
-    => from 'GOBO::Node'
-    => via { bless $_, 'GOBO::RelationNode' }
-    => from 'Str'
-    => via { my $rel = new GOBO::RelationNode(id=>$_); $rel->post_init;return $rel; };  # TODO -- is there a more elegant way of doing this?
+#coerce 'GOBO::RelationNode'
+#    => from 'GOBO::Node'
+#    => via { bless $_, 'GOBO::RelationNode' }
+#    => from 'Str'
+#    => via { my $rel = new GOBO::RelationNode(id=>$_); $rel->post_init;return $rel; };  # TODO -- is there a more elegant way of doing this?
 
 has transitive => ( is=>'rw', isa=>'Bool' );
 has symmetric => ( is=>'rw', isa=>'Bool' );

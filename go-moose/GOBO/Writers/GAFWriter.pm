@@ -29,12 +29,12 @@ sub write_annotation {
          '',         # qualifier
          $ann->target->id,
          join('|',map { $_ } (@{$ann->provenance->xrefs || []}, $ann->provenance->id)),
-         $ann->evidence->type->id,
+         $ann->evidence->ev_type->id,
          $ann->evidence->with_str, # with,
          _aspect($ann->target), # aspect
          '', # gene name
          '', # gene syn
-         $gene->type->id, #
+         $gene->gp_type->id, #
          $gene->taxon->id, #
          $ann->date_compact,
          $ann->source->id,

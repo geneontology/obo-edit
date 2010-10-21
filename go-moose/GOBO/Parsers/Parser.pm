@@ -1,18 +1,19 @@
 package GOBO::Parsers::Parser;
 use Moose;
 use Moose::Util::TypeConstraints;
+use GOBO::Types;
+
 use FileHandle;
 use Carp;
 
-subtype 'GOBO::Parsers::Parser::ProtoFileHandle' => as class_type('FileHandle');
+#coerce 'GOBO::Parsers::Parser::ProtoFileHandle'
+#	=> from 'Str'
+#		=> via { FileHandle->new( $_ ) }
+#	=> from 'FileHandle'
+#		=> via { $_ };
 
-coerce 'GOBO::Parsers::Parser::ProtoFileHandle'
-	=> from 'Str'
-		=> via { FileHandle->new( $_ ) }
-	=> from 'FileHandle'
-		=> via { $_ };
-
-has data => (is=>'rw', isa => 'HashRef', clearer => 'clear_data');
+has verbose => (is=>'rw', isa=>'Bool');
+has input_record_separator => (is=>'rw', isa=>'Str', default => "\n");
 
 has fh => (is=>'rw', isa=>'GOBO::Parsers::Parser::ProtoFileHandle', clearer=>'clear_fh', predicate=>'has_fh', writer=>'_set_fh', coerce => 1, init_arg => 'file', trigger => \&reset_temporary_variables );
 has lines => (is=>'rw', isa=>'ArrayRef',default=>sub{[]});
@@ -22,10 +23,10 @@ has stalled => (is=>'rw', isa=>'Bool');
 
 has max_chunk => (is=>'rw', isa=>'Int', init_arg => 'size', clearer=>'clear_max_chunk');
 
-has options => (is => 'rw', isa => 'HashRef', clearer => 'clear_all_options', trigger => \&reset_checked_options );
+has data => (is=>'rw', isa => 'HashRef', clearer => 'clear_data');
+
+has options => (is => 'rw', isa => 'HashRef|Undef', clearer => 'clear_all_options', trigger => \&check_options );
 has checked_options => (is => 'rw', isa => 'Bool');
-has header_parser_options => (is => 'rw', isa => 'HashRef', clearer => 'clear_header_parser_options', predicate => 'has_header_parser_options', writer => 'set_header_parser_options');
-has body_parser_options => (is => 'rw', isa => 'HashRef', clearer => 'clear_body_parser_options', predicate => 'has_body_parser_options', writer => 'set_body_parser_options');
 
 has liberal_mode => (is=>'rw', isa=>'Bool',default=>sub{1});
 has verbose => (is=>'rw', isa=>'Bool',default=>sub{0});
@@ -42,7 +43,7 @@ sub BUILDARGS {
 	if ( $arg_h{file} )
 	{	die "The file $arg_h{file} could not be found! " if ! -e $arg_h{file};
 	}
-	
+
 	return \%arg_h;
 }
 
@@ -185,7 +186,7 @@ sub create {
 	if ($fmt) {
 		my $pc;
 		if ($fmt eq 'obo') {
-			$pc = 'GOBO::Parsers::OBOParserDispatchHash';
+			$pc = 'GOBO::Parsers::OBOParser';
 		}
 		#require $pc;
 		return $pc->new(%argh);
@@ -219,7 +220,7 @@ sub set_file {
 	}
 	elsif (! ref $f)
 	{	die "The file $f could not be found! " if ! -e $f;
-		
+
 		my $fh;
 		if ($f =~ /\.gz$/) {
 			$fh = FileHandle->new("gzip -dc $f |") or confess "Could not create a filehandle for $f: $! ";
@@ -238,7 +239,6 @@ sub set_file {
 
 sub next_line {
 	my $self = shift;
-	my $fh = $self->fh;
 	my $max_chunk = $self->max_chunk;
 	my $line_no = $self->line_no + 1;
 	$self->line_no($line_no);
@@ -254,8 +254,12 @@ sub next_line {
 		return shift @$lines;
 	}
 
-	my $line = <$fh>;
-	return $line;
+	if ($self->fh)
+	{	my $fh = $self->fh;
+		my $line = <$fh>;
+		return $line;
+	}
+	return undef;
 }
 
 
@@ -316,7 +320,7 @@ sub set_all_options {
 	{	return;
 	}
 
-	$self->options($o);
+	$self->set_options($o);
 
 }
 

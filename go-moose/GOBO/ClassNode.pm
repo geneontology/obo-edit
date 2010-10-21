@@ -1,13 +1,8 @@
 package GOBO::ClassNode;
 use Moose;
-use strict;
-extends 'GOBO::Node';
-
 use Moose::Util::TypeConstraints;
-
-coerce 'GOBO::ClassNode'
-      => from 'Str'
-      => via { new GOBO::ClassNode(id=>$_) };
+use GOBO::Types;
+extends 'GOBO::Node';
 
 has disjoint_from_list => (is => 'rw', isa => 'ArrayRef[GOBO::ClassNode]');
 

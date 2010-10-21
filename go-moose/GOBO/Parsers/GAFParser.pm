@@ -56,7 +56,7 @@ sub parse_body {
             $genetaxa,
             $assocdate,
             $source_db,
-            $annotxp,   # experimental! 
+            $annotxp,   # experimental!
             $geneproduct
             ) = @vals;
 
@@ -75,7 +75,7 @@ sub parse_body {
             $gene->add_synonyms(split(/\|/,$genesyn));
             # TODO; split
             $gene->taxon($g->noderef($taxon));
-            $gene->type($g->noderef($genetype));
+            $gene->gp_type($g->noderef($genetype));
         }
         my $cnode = $g->term_noderef($termacc);
         if (!$cnode->namespace) {
@@ -83,7 +83,7 @@ sub parse_body {
         }
 
         my %qualh = map {lc($_)=>1} (split(/[\|]\s*/,$qualifier || ''));
-        my $ev = new GOBO::Evidence(type=>$g->term_noderef($evcode));
+        my $ev = new GOBO::Evidence(ev_type=>$g->term_noderef($evcode));
         # TODO: discriminate between pipes and commas
         # (semicolon is there for legacy reasons - check if this can be removed)
         my @with_objs = map {$g->noderef($_)} split(/\s*[\|\;\,]\s*/, $with);
@@ -91,7 +91,7 @@ sub parse_body {
         my @refs = split(/\|/,$ref);
         my $provenance = $g->noderef(pop @refs); # last is usually PMID
         $provenance->add_xrefs([@refs]);
-        my $annot = 
+        my $annot =
             new GOBO::Annotation(node=>$gene,
                                 target=>$cnode,
                                 provenance=>$provenance,
@@ -106,11 +106,11 @@ sub parse_body {
         }
         # if >1 taxon supplied, additional taxon specifies target species
         if (@taxa) {
-            my $xp = 
+            my $xp =
                 GOBO::ClassExpression::RelationalExpression->new(relation=>'target_taxon',
                                                                  target=>$g->noderef($taxon));
             $annot->add_target_differentia($xp);
-            
+
         }
         $annot->evidence($ev);
         foreach my $qk (keys %qualh) {
@@ -120,7 +120,7 @@ sub parse_body {
             $annot->negated(1);
         }
         if ($annotxp) {
-            $annotxp =~ s/\s+//g; 
+            $annotxp =~ s/\s+//g;
             if ($annotxp) {
                 my $xp = GOBO::ClassExpression->parse_idexpr($g,$annotxp);
                 $annot->add_target_differentia($xp);

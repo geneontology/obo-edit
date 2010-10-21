@@ -3,8 +3,10 @@ use Moose;
 use strict;
 extends 'GOBO::LinkStatement';
 use GOBO::Evidence;
+use GOBO::AnnotationSubject;
 
 # cardinality?
+has node => ( is=>'rw', isa=>'GOBO::AnnotationSubject', coerce=>1 );
 has evidence => ( is=>'rw', isa=>'GOBO::Evidence');
 has specific_node => ( is=>'rw', isa=>'GOBO::Node');
 has qualifier_list => ( is=>'rw', isa=>'ArrayRef[GOBO::Node]');
@@ -38,7 +40,7 @@ sub add_qualifier {
 
 sub as_string {
     my $self = shift;
-    return $self->SUPER::as_string() . " ev:" . $self->evidence;
+    return $self->SUPER::as_string() . " ev:" . ($self->evidence || "none");
 }
 
 =head1 NAME
@@ -56,7 +58,7 @@ An GOBO::LinkStatement that has GOBO::Evidence attached
 Annotations need not be stored in the main ontology GOBO::Graph, but this is possible
 
 =head2 Use in GO
- 
+
 In GO, annotations are also thought of as associations between genes
 and GOBO::TermNode objects. The statement is 'about' a gene, i.e. geneG
 has_function termF, so the node points to a gene and the target points

@@ -1,10 +1,9 @@
 package GOBO::Indexes::StatementIndexHelper;
 use Moose;
-use Carp;
-
+use Moose::Util::TypeConstraints;
+use GOBO::Types;
 use Data::Dumper;
 
-use Moose::Util::TypeConstraints;
 use GOBO::Statement;
 use GOBO::LinkStatement;
 use GOBO::Annotation;
@@ -18,8 +17,6 @@ use GOBO::ClassExpression;
 use Carp qw(cluck);
 
 #around qr/\S+/ => sub { my $orig = shift; my $self = shift; my $m_name = Sub::Identify::sub_name($orig); print STDERR "running " . ref($self) . "->" . $m_name . "\n" if $ENV{VERBOSE}; $self->$orig(@_); };
-
-type 'GOBO::Indexes::StatementIx' => where { $_->isa('GOBO::Indexes::StatementRefIndex') || $_->isa('GOBO::Indexes::StatementObjectIndex') };
 
 has 'indexes' => (
 	is => 'rw',
@@ -79,7 +76,7 @@ sub sync_statement_indexes {
 	my $all = $self->get_statement_ix_by_name('statements')->get_all_statements;
 	my $add_h;
 	foreach my $s (@$all)
-	{	map { push @{$add_h->{$_}}, \$s } @{$self->_get_statement_type( $s )};
+	{	map { push @{$add_h->{$_}}, \$s } @{$self->_get_indexes_for_statement( $s )};
 	}
 	if ($add_h)
 	{
@@ -258,11 +255,15 @@ sub add_statements_to_ix {
 	my $ref_arr = $self->get_statement_ix_by_name('statements')->get_statement_refs(statements=>$args{statements}, add=>1);
 
 	my $add_h;
+
 	## see if we should add these statements to our stt indexes
 	foreach my $r (@$ref_arr)
-	{	map { push @{$add_h->{$_}}, $r->{ref} } @{$self->_get_statement_type( ${$r->{ref}} ) };
+	{	#print STDERR "r: $r " . Dumper($r) . "\n";
+		map { push @{$add_h->{$_}}, $r->{ref} } @{$self->_get_indexes_for_statement( ${$r->{ref}} ) };
 #		map { push @{$add_h->{$_}}, $r->{ref} } @{$r->{ix}} if $r->{ix};
 	}
+
+	#print STDERR "add_h: " . join(", ", keys %$add_h ) . "\n\n";
 
 	if ($add_h)
 	{	map { $self->get_statement_ix_by_name($_,1)->add_statements( $add_h->{$_} ) } keys %$add_h;
@@ -627,32 +628,28 @@ sub annotation_target_index {
 	return $self->get_statement_ix_by_name('annotations', 1)->statement_target_index;
 }
 
+## work out which indexes this statement should be added to
 
-sub _get_statement_type {
+sub _get_indexes_for_statement {
 	my $self = shift;
 	my $s = shift;
-	my @types = ();
 
-	## add to the edge index
-	if ($s->isa("GOBO::LinkStatement"))
-	{
-#		print STDERR "looking at " .
-#		ref($s->node) . " " . $s->node->id . " --- " .
-#		ref($s->relation) . " " . $s->relation->id . " --> " .
-#		ref($s->target) . " " . $s->target->id . "\n";
-
-		if ($s->isa("GOBO::Annotation"))
-		{	@types = qw( annotations edges );
-		}
-		## add to ontology_links
-		elsif ($s->node->isa("GOBO::TermNode") && $s->target->isa("GOBO::TermNode"))
-		{	@types = qw( ontology_links edges );
-		}
-		else
-		{	@types = qw( edges );
-		}
+	my $type = $s->get_statement_type;
+	if ($type eq 'GOBO::Annotation')
+	{	return [ 'annotations', 'edges' ];
 	}
-	return \@types;
+	elsif ($type eq 'GOBO::OntologyLinkStatement')
+	{	return [ 'ontology_links', 'edges' ];
+	}
+	elsif ($type eq 'GOBO::LinkStatement')
+	{	return [ 'edges' ];
+	}
+	elsif ($type eq 'GOBO::Statement')
+	{	return [];
+	}
+
+	warn "Unknown statement type! $s\n";
+	return [];
 }
 
 
@@ -927,11 +924,11 @@ sub _check_args_get_in_out {
 
 	if (! $args{ix})
 	{
-		cluck "No index specified! Args in: $n_type; " . ( $ix || "undef" ) . "; " . join("; ", map { defined $_ 
-		? ( ref($_) || 'scalar' ) . " $_" 
+		cluck "No index specified! Args in: $n_type; " . ( $ix || "undef" ) . "; " . join("; ", map { defined $_
+		? ( ref($_) || 'scalar' ) . " $_"
 		: "undef" } @saved )
 		. "\nloop type: $l_type\n";
-	
+
 	};
 
 #	print STDERR "args now: " . Dumper(\%args) . "\n\n" if $ENV{VERBOSE};

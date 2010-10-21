@@ -83,9 +83,9 @@ sub write_stanza {
     $self->tagval('comment',$node->comment);
     $self->tagval('subset',$_->id) foreach sort { $a->id cmp $b->id || $a->label cmp $b->label } @{$node->subsets || []};
     $self->ntagval('synonym',
-        _quote($_->label),$_->scope || 'RELATED',$_->type,$_->xrefs || []) foreach sort { $a->label cmp $b->label } @{$node->synonyms || []};
+        _quote($_->label),$_->scope || 'RELATED',$_->synonym_type,$_->xrefs || []) foreach sort { $a->label cmp $b->label } @{$node->synonyms || []};
 
-    $self->tagval('xref',$_) foreach (sort @{$node->xrefs || []});
+    $self->tagval('xref',$_) foreach (sort  { $a->id cmp $b->id || $a->label cmp $b->label } @{$node->xrefs || []});
 
     if ($node->isa('GOBO::RelationNode')) {
         $self->tagval('domain', $node->domain);

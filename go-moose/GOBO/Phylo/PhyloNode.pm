@@ -1,22 +1,17 @@
 package GOBO::Phylo::PhyloNode;
 use Moose;
-use strict;
+use Moose::Util::TypeConstraints;
+use GOBO::Types;
 extends 'GOBO::Node';
 
-use Moose::Util::TypeConstraints;
-
-coerce 'GOBO::Phylo::PhyloNode'
-    => from 'GOBO::Node'
-    => via { new GOBO::Phylo::PhyloNode(represents=>$_) };
+#coerce 'GOBO::Phylo::PhyloNode'
+#    => from 'GOBO::Node'
+#    => via { new GOBO::Phylo::PhyloNode(represents=>$_) };
 
 #has 'represents' => (is=>'ro', isa=>'GOBO::Statement',handles=>qr/.*/);
 has 'represents' => (is=>'ro', isa=>'GOBO::Statement');
 has 'parent' => (is=>'ro', isa=>'GOBO::Phylo::PhyloNode');
 has 'tree' => (is=>'ro', isa=>'GOBO::Phylo::PhyloTree');
-
-coerce 'GOBO::PhyloNode'
-      => from 'Str'
-      => via { new GOBO::PhyloNode(id=>$_) };
 
 1;
 

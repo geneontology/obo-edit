@@ -50,11 +50,12 @@ GOBO::LinkStatement
 
 package GOBO::Graph;
 use Moose;
+use Moose::Util::TypeConstraints;
+use GOBO::Types;
+
 with 'GOBO::Attributed';
-use strict;
+
 use GOBO::Annotation;
-use GOBO::ClassExpression::Union;
-use GOBO::ClassExpression;
 use GOBO::Formula;
 use GOBO::Indexes::NodeIndex;
 use GOBO::Indexes::StatementIndexHelper;
@@ -70,12 +71,22 @@ use GOBO::Subset;
 use GOBO::Synonym;
 use GOBO::TermNode;
 
+use GOBO::ClassExpression;
+use GOBO::ClassExpression::RelationalExpression;
+use GOBO::ClassExpression::BooleanExpression;
+use GOBO::ClassExpression::Complement;
+use GOBO::ClassExpression::Intersection;
+use GOBO::ClassExpression::Union;
+
+use Carp;
+
 use Data::Dumper;
 
 use overload ('""' => 'as_string');
 
-has 'relation_h' => (is => 'rw', isa => 'HashRef[GOBO::RelationNode]', default=>sub{{}});
+#has 'term_h' => (is => 'rw', isa => 'HashRef[GOBO::TermNode]', traits => ['Hash'], handles => { get_term => 'get', has_terms => 'count' }, default=>sub{{}});
 has 'term_h' => (is => 'rw', isa => 'HashRef[GOBO::TermNode]', default=>sub{{}});
+has 'relation_h' => (is => 'rw', isa => 'HashRef[GOBO::RelationNode]', default=>sub{{}});
 has 'instance_h' => (is => 'rw', isa => 'HashRef[GOBO::InstanceNode]', default=>sub{{}});
 #has 'node_index' => (is => 'rw', isa => 'HashRef[GOBO::Node]', default=>sub{{}});
 has 'node_index' => (is => 'ro', isa => 'GOBO::Indexes::NodeIndex',
@@ -514,7 +525,9 @@ sub noderef {
 	}
 	else {
 		if ($id =~ /\s/) {
-			confess("attempted to noderef '$id' -- no whitespace allowed in ID.");
+			carp("$id has space in it: converting to underscores");
+			$id =~ s/\s/_/g;
+#			confess("attempted to noderef '$id' -- no whitespace allowed in ID.");
 		}
 	}
 
@@ -660,9 +673,6 @@ sub parse_idexprs {
 # logical definitions can be directly attached to TermNodes, or they can be
 # present in the graph as intersection links
 # TBD : move to utility class?
-use GOBO::ClassExpression::RelationalExpression;
-use GOBO::ClassExpression::Intersection;
-use GOBO::ClassExpression::Union;
 sub convert_intersection_links_to_logical_definitions {
 	my $self = shift;
 	my @xplinks = ();
@@ -692,7 +702,7 @@ sub convert_intersection_links_to_logical_definitions {
 					}
 			} @{$xpnodeh{$nid}};
 			if (@exprs < 2) {
-				$self->throw("invalid intersection links for $nid. Need at least 2, you have @exprs");
+				$self->throw("invalid intersection links for $nid. Need at least two, you have @exprs");
 			}
 			$n->logical_definition(new GOBO::ClassExpression::Intersection(arguments=>\@exprs));
 		}
@@ -825,7 +835,7 @@ categorised correctly and that the nodes are those in the graph's node index.
 
 sub sync_statement_indexes {
 	my $self = shift;
-	print STDERR "Starting sync_statement_indexes\n";
+	print STDERR "Starting sync_statement_indexes\n" if $ENV{VERBOSE};
 	my $all = $self->get_statement_ix_by_name('statements')->get_all_statements;
 	my $add_h;
 	foreach my $s (@$all)
@@ -835,7 +845,7 @@ sub sync_statement_indexes {
 				$s->$c( $c_obj ) if defined $c_obj;
 			}
 		}
-		map { push @{$add_h->{$_}}, $s } @{$self->statement_ix_h->_get_statement_type( $s )};
+		map { push @{$add_h->{$_}}, $s } @{$self->statement_ix_h->_get_indexes_for_statement( $s )};
 	}
 	if ($add_h)
 	{	map {
@@ -909,7 +919,7 @@ Shortcut for get_outgoing_edges
 
 Retrieve all terms that are attached to an annotation
 
- input:   
+ input:
  output:  ArrayRef[GOBO::TermNode]
 
 =head2 get_annotated_terms_in_ix
@@ -1063,6 +1073,9 @@ sub get_connected_roots_in_ix {
 
 	foreach (keys %$node_h)
 	{	my $t = $self->get_term($_);
+		if (! $t)
+		{	warn "$_ could not be found in the term index!";
+		}
 		if ($t->obsolete)
 		{	delete $node_h->{$_} && next;
 		}
@@ -1079,7 +1092,7 @@ Find nodes connected to the graph which have no incoming ontology links
 
  input:  [none]
  output: ArrayRef[GOBO::TermNode]
- 
+
 =head2 get_leaves_in_ix
 
 Find nodes in a statement index that are connected to the graph but have no
@@ -1087,7 +1100,7 @@ incoming links
 
  input:  $ix_name  ## the name of the statement index in which to look for roots
  output: ArrayRef[GOBO::TermNode]
- 
+
 =cut
 
 sub get_leaves {

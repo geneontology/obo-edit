@@ -13,7 +13,7 @@ $parser->parse;
 my $graph = $parser->graph;
 my $ie = new GOBO::InferenceEngine(graph=>$graph);
 
-my $verbose = 1;
+my $verbose = 0;
 
 # key: GO:00000XY
 # X and Y encode the relations; graph structure is term1 X term2 Y GO:0000000

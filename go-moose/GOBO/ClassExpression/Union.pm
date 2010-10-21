@@ -1,7 +1,10 @@
 package GOBO::ClassExpression::Union;
 use Moose;
-use strict;
+use Moose::Util::TypeConstraints;
+use GOBO::Types;
 extends 'GOBO::ClassExpression::BooleanExpression';
+
+has '+arguments' => (isa => 'GOBO::Types::TwoPlusNodeArray', coerce=>1);
 
 sub operator { ' OR ' }
 sub operator_symbol { '|' }
@@ -49,7 +52,7 @@ In the above example the following all hold if $prok is the class with the above
   grep { $_->id eq 'bacteria' } @{$prok->logical_definion->arguments};
   grep { $_->id eq 'archaea' } @{$prok->logical_definion->arguments};
 
-unions could also be used in defining GO slims  
+unions could also be used in defining GO slims
 
 =head2 OWL Translation
 
@@ -60,4 +63,4 @@ http://www.w3.org/TR/2008/WD-owl2-syntax-20081202/#Union_of_Class_Expressions
 
 =cut
 
-1; 
+1;
