@@ -129,10 +129,10 @@ our %species =
    MONDO => { prefer => [ 'ENSEMBL' ] },
    MOUSE => { prefer => [ 'MGI', 'UniProtKB', 'ENSEMBL' ],
 	      id_filter => sub {
-		  if ($_[0] eq 'MGI') {
-		      $_[1] =~ s/^(\d)/MGI:$1/;
-		  }
-		  return @_;
+	      	  if ($_[0] eql 'MGI') {
+	      	      $_[1] =~ s/^(\d)/MGI:$1/;
+	      	  }
+	      	  return @_;
 	      }
 	    },
 
