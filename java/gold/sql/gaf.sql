@@ -3,7 +3,7 @@
 -- ****************************************
 
 -- todo - better name
-CREATE TABLE annotated (
+CREATE TABLE bioentity (
   id VARCHAR PRIMARY KEY, -- e.g. FB:FBgn00000001
   symbol VARCHAR NOT NULL,
   full_name VARCHAR NOT NULL,
@@ -11,12 +11,14 @@ CREATE TABLE annotated (
   ncbi_taxon_id INT
 );
 
-
+-- requirement:
+--  support complexes?
 CREATE TABLE gene_annotation (
   -- GAF: col1:col2
-  gene VARCHAR NOT NULL,
+  bioentity VARCHAR NOT NULL,
 
   -- GAF: col4
+  -- note: negative annotations to go in separate table
   qualifier_expression VARCHAR,
 
   -- ontology class
@@ -61,6 +63,12 @@ CREATE TABLE evidence_expression (
   UNIQUE (evidence_cls,with_expression),
 
   with_xref VARCHAR
+);
+
+CREATE TABLE bioentity_relationship (
+       bioentity VARCHAR,
+       relation VARCHAR,
+       parent_bioentity VARCHAR
 );
 
 CREATE TABLE id_mapping (
