@@ -1,6 +1,7 @@
 package GOBO::InferenceEngine::CustomEngine;
 use Moose;
 use Data::Dumper;
+use Storable;
 extends 'GOBO::InferenceEngine';
 
 
@@ -105,35 +106,6 @@ override 'get_inferred_outgoing_edges' => sub {
 			#	}
 			}
 		}
-
-=cut
-		# otherwise, check out the parents of this mofo!
-		my @x_link_arr;
-		my $i;
-		## see if we already have any inferred links...
-			if ($args{recursive})
-			{	@x_link_arr = @{$self->get_inferred_outgoing_statements_recursive( (%args, node => $link->target ) )};
-			}
-			else
-			{
-				@x_link_arr = @{$g->get_outgoing_statements(node => $link->target, ix => $args{from_ix})};
-			}
-		}
-
-		foreach my $xlink (@x_link_arr)
-		{	my $combined = $self->_combine_statements($link, $xlink);
-			if ($combined && @$combined)
-			{	if (! $i )
-				{	push(@links, @$combined);
-				}
-				else
-				{	## otherwise, we've already done this node
-					$outlink_h{$_} = $_ foreach @$combined;
-				}
-			}
-		}
-=cut
-
 	}
 
 	return [] unless values %outlink_h;
@@ -249,7 +221,8 @@ override 'get_inferred_incoming_edges' => sub {
 Concatenates the various sub-functions involved in slimming
 
  input: graph      => Graph object
-        subset_ids => arrayref of terms to slim to
+        subset_ids => arrayref of terms to slim to OR
+          subset   => arrayref of subset name(s)
         input_ids  => arrayref of term IDs to slim 'from' (all terms in graph
                       if not specified)
         from_ix    => $name_of_from_ix  ## optional; which statements to use to
@@ -262,8 +235,6 @@ Concatenates the various sub-functions involved in slimming
 
  output:
         with option 'return_as_graph' on: a slimmed Graph object in $self->graph
-        otherwise, data hash in the form
-        {graph}{ node_id }{ relation_id }{ target_id }
 
 Note: if returned as a graph object, only terms that are connected to other terms
 will be in the graph. Orphaned terms will not feature in the graph.
@@ -285,8 +256,7 @@ sub slim_graph {
 
 	warn( (caller(0))[3] . ": warning: save_ix, all_ix and from_ix contain " ) if $args{save_ix} eq $args{all_ix} || $args{all_ix} eq $args{from_ix} || $args{from_ix} eq $args{save_ix};
 
-	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless defined $args{subset_ids};
-
+	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless defined $args{subset_ids} || defined $args{subset};
 
 	if ($args{save_ix})
 	{	$self->save_ix( $args{save_ix} );
@@ -298,6 +268,16 @@ sub slim_graph {
 	# no input: use all the terms in the graph as input
 	if (! $args{input_ids})
 	{	$args{input_ids} = [ map { $_->id } @{$self->graph->terms} ];
+	}
+
+	if (! $args{subset_ids} && $args{subset})
+	{	my $data = GOBO::Util::GraphFunctions::get_subset_nodes(graph=>$self->graph, options => { subset => $args{subset} } );
+		if ($data->{subset}{ $args{subset} })
+		{	$args{subset_ids} = [ keys %{$data->{subset}{ $args{subset}} } ];
+		}
+		else
+		{	die "No terms could be found in the specified subset";
+		}
 	}
 
 	if (! $self->graph->get_statement_ix_by_name($self->from_ix))
@@ -357,7 +337,7 @@ Slims a graph, and finds the closest linked node and all the ancestors for each 
                                  ## defaults to 'all'
 
  output: the new Graph object in $self->graph
-        
+
 
 Note: if returned as a graph object, only terms that are connected to other terms
 will be in the graph. Orphaned terms will not feature in the graph.
@@ -375,13 +355,23 @@ sub get_closest_and_ancestral {
 		@_
 	);
 
-	print STDERR 'get_closest_and_ancestral args: ' . Dumper( \@_ ) . "\n\n\n" if $ENV{VERBOSE};
+#	print STDERR 'get_closest_and_ancestral args: ' . Dumper( \@_ ) . "\n\n\n" if $ENV{VERBOSE};
 
-	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless defined $args{subset_ids};
+	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless defined $args{subset_ids} || defined $args{subset};
 
 	# no input: use all the terms in the graph as input
 	if (! $args{input_ids})
 	{	$args{input_ids} = [ map { $_->id } @{$self->graph->terms} ];
+	}
+
+	if (! $args{subset_ids} && $args{subset})
+	{	my $data = GOBO::Util::GraphFunctions::get_subset_nodes(graph=>$self->graph, options => { subset => $args{subset} } );
+		if ($data->{subset}{ $args{subset} })
+		{	$args{subset_ids} = [ keys %{$data->{subset}{ $args{subset}} } ];
+		}
+		else
+		{	die "No terms could be found in the specified subset";
+		}
 	}
 
 	if (! $self->graph->get_statement_ix_by_name($self->from_ix))
@@ -406,6 +396,17 @@ sub get_closest_and_ancestral {
 	## convert the links in $self->edge_matrix->{N_R_T} into LinkStatements
 	$self->__convert_matrix_to_edges(matrix => 'N_R_T', from => $self->graph, to => $new_graph, save_ix => $args{all_ix});
 
+=cut experimental?
+	Storable::store $new_graph, '/Users/gwg/Downloads/pombe_data/transitive_closure';
+
+	my $root_assocs;
+	## get the assoc IDs attached to each root
+	foreach (@{$self->graph->get_roots})
+	{	foreach my $a (@{$self->graph->get_matching_statements( target_id => $_->id, ix=>'annotations' )})
+		{	push @{$root_assocs->{$_->id}}, $a->node;
+		}
+	}
+=cut
 	print STDERR "done __convert_matrix_to_edges\n" if $ENV{VERBOSE};
 
 #	# copy the matrix
@@ -419,7 +420,7 @@ sub get_closest_and_ancestral {
 	$self->__trim_edge_matrix( trim_relations => 1 );
 
 	print STDERR "done __trim_edge_matrix!\n" if $ENV{VERBOSE};
-	
+
 	$self->dump_edge_matrix(key=>'N_R_T');
 	$self->__convert_matrix_to_edges(matrix => 'N_R_T', from => $self->graph, to => $new_graph, save_ix => $args{closest_ix});
 
@@ -502,7 +503,7 @@ sub get_closest_ancestral_edges_from_matrix {
 		## target_list contains all the terms connected to $n_id
 		my @target_list = grep { $self->test($_) } keys %{$matrix->{N_T_R}{$n_id}};
 
-		print STDERR "n_id: $n_id; targets: " . join(", ", sort @target_list) . "\n";
+#		print STDERR "n_id: $n_id; targets: " . join(", ", sort @target_list) . "\n";
 
 		REL_SLIMDOWN_LOOP:
 		while (@target_list)
@@ -624,56 +625,6 @@ If passed one argument, returns the value of the specified key. If passed two ar
 #}
 
 
-=cut
-
-combining two links
-
-link_a = X -- rel_a --> Y
-
-link_b = Y -- rel_b --> Z
-
-X -- rel_a --> Y -- rel_b --> Z
-
-=>  X -- rel_x --> Z
-
-
-sub _combine_statements {
-	my $self = shift;
-	my ($stt_a, $stt_b) = (@_);
-
-	my @rels;
-	## see if we already have this combo or not
-
-	if (defined $self->relation_composition_h->{$stt_a->relation->id} && defined $self->relation_composition_h->{$stt_a->relation->id}{$stt_b->relation->id})
-	{	@rels = @{$self->relation_composition_h->{$stt_a->relation->id}{$stt_b->relation->id}};
-#		print STDERR "retrieving cached results for " . $stt_a->relation->id . "." . $stt_b->relation->id . ": " . join(", ", @rels) . "\n";
-	}
-	else
-	{	my $rel_h;
-		foreach my $rel_a (@{$self->get_subrelation_reflexive_closure($stt_a->relation)} )
-		{	my @temp;
-			#print STDERR "  XLINK: $xlink\n";
-			my $rel_b = $stt_b->relation;
-			@temp = $self->relation_composition($rel_a, $rel_b);
-			# R1 subrelation_of R2, x R1 y => x R2 y
-			@temp = map { @{$self->get_subrelation_reflexive_closure($_)} } @temp;
-			map { $rel_h->{ $_->id } = $_ } @temp;
-		}
-		@rels = values %$rel_h;
-		$self->relation_composition_h->{$stt_a->relation->id}{$stt_b->relation->id} = [ @rels ];
-	}
-
-#	return undef if ! @rels;
-	my $statements;
-	foreach my $rel (@rels)
-	{	my $new_stt = new GOBO::LinkStatement(node => $stt_a->node, relation => $rel, target => $stt_b->target);
-		# todo - provenance/evidence of statement
-		push(@$statements, $new_stt);
-	}
-	return $statements;
-}
-
-=cut
 
 =head2 get_inferred_graph
 

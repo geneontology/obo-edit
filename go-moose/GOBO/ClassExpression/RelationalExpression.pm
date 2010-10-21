@@ -1,6 +1,7 @@
 package GOBO::ClassExpression::RelationalExpression;
 use Moose;
-use strict;
+use Moose::Util::TypeConstraints;
+use GOBO::Types;
 extends 'GOBO::ClassExpression';
 use GOBO::Statement;
 use GOBO::RelationNode;
@@ -16,12 +17,44 @@ has max_cardinality => (is=>'ro', isa=>'Int');
 has min_cardinality => (is=>'ro', isa=>'Int');
 
 use overload ('""' => 'as_string');
+
+sub id {
+	my $self = shift;
+	return sprintf('%s(%s)', $self->relation->id, $self->target->id);
+}
+
 sub as_string {
     my $self = shift;
     return sprintf('%s(%s)',$self->relation,$self->target);
 }
 
-1; 
+sub get_expr_type {
+	my $self = shift;
+	my %hash = (@_);
+	if ($self->target)
+	{	if ($self->target->isa('GOBO::ClassExpression'))
+		{	my $results = $self->target->get_expr_type(%hash);
+			foreach (keys %$results)
+			{	$hash{$_} += $results->{$_};
+			}
+		}
+		else
+		{	my $got;
+			foreach my $type qw( GOBO::TermNode GOBO::Gene GOBO::RelationNode GOBO::InstanceNode)
+			{	if ($self->target->isa($type))
+				{	$hash{$type}++;
+					$got++ && last;
+				}
+			}
+			$hash{ ref $_ }++ if ! $got;
+		}
+	}
+	return \%hash;
+}
+
+
+
+1;
 
 =head1 NAME
 

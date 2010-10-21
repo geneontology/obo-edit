@@ -127,8 +127,11 @@ use GOBO::Writers::QuickGAFWriter;
 my $options = parse_options(\@ARGV);
 
 my $data;
-my $subset;
+my $subset_ids;
 my $graph;
+
+$ENV{VERBOSE} = 1;
+$ENV{REMOVE_ROOT_ASSOCS} = 1;
 
 # parse the input file and check we get a graph
 
@@ -146,7 +149,7 @@ if ($options->{mapping_file})
 
 	# check we have enough subset terms
 	test_subset( $data->{subset_term}, $options );
-	map { $subset->{$_} = 1 } keys %{$data->{subset_term}};
+	map { $subset_ids->{$_} = 1 } keys %{$data->{subset_term}};
 
 	my $p_options = {
 		body => { parse_only => {
@@ -178,7 +181,7 @@ if ($options->{mapping_file})
 else
 {	# before we check out the graph, let's see if the file actually contains any terms...
 	if ($options->{termlist})
-	{	$data->{to_find} = GOBO::Util::Misc::read_term_file($options);
+	{	$data->{to_find} = GOBO::Util::Misc::read_term_file(%$options);
 		test_subset( [keys %{$data->{to_find}}], $options );
 	}
 
@@ -193,32 +196,32 @@ else
 		options => $p_options, graph => new GOBO::Graph );
 	$parser->parse;
 	$graph = $parser->graph;
-	
+
 	print STDERR "Parsed the ontology file\n" if $options->{verbose};
-	
+
 	# get the nodes matching our subset criteria
 	if ($options->{subset})
 	{	$data = GOBO::Util::GraphFunctions::get_subset_nodes( graph => $graph, options => $options );
 		print STDERR "Done GOBO::Util::GraphFunctions::get_subset_nodes!\n" if $options->{verbose};
 
-		# move the subset to $subset
+		# move the subset to $subset_ids
 		foreach my $s (keys %{$data->{subset}})
-		{	map { $subset->{$_} = 1 } keys %{$data->{subset}{$s}};
+		{	map { $subset_ids->{$_} = 1 } keys %{$data->{subset}{$s}};
 		}
-		test_subset( [keys %$subset], $options );
+		test_subset( [keys %$subset_ids], $options );
 	}
 	else
 	{	my @fail;
 		# we got the terms from a file. Check that they exist in our graph!
 		foreach (keys %{$data->{to_find}})
 		{	if ($graph->get_term($_) && ! $graph->get_term($_)->obsolete)
-			{	$subset->{$_} = 1;
+			{	$subset_ids->{$_} = 1;
 			}
 			else
 			{	push @fail, $_;
 			}
 		}
-		if (! $subset || ! keys %$subset)
+		if (! $subset_ids || ! keys %$subset_ids)
 		{	my $msg = "None of the terms specified in " . $options->{termlist} . " were found in the ontology file.";
 			if ($options->{verbose})
 			{	die "$msg go_slim_annotations was looking for the following terms:\n" . join(", ", sort keys %{$options->{termlist}}) . "\nPlease try again.\nDying";
@@ -228,16 +231,16 @@ else
 			}
 		}
 
-		test_subset( [keys %$subset], $options );
+		test_subset( [keys %$subset_ids], $options );
 
 		## make sure that we have the root nodes
-		map { $subset->{ $_->id }++ } @{$graph->get_roots};
+		map { $subset_ids->{ $_->id }++ } @{$graph->get_roots};
 	}
 }
 
-print STDERR "Ready to slim annotations!\n" if $options->{verbose};
+print STDERR "Got the graph and subset terms!\n" if $options->{verbose};
 
-my $results = GOBO::Util::GraphFunctions::slim_annotations(options => $options, subset => $subset, graph => $graph );
+my $results = GOBO::Util::GraphFunctions::slim_annotations(options => $options, subset_ids => [keys %$subset_ids], graph => $graph );
 
 print STDERR "Got our results!\n" if $options->{verbose};
 
@@ -430,7 +433,7 @@ sub check_options {
 					last;
 				}
 				warn "More than one subset was specified; using $ss";
-				$opt->{subset} = { $ss => 1 };
+				$opt->{subset} = [ $ss ];
 			}
 		}
 	}
@@ -451,6 +454,10 @@ sub check_options {
 
 	if ($errs && @$errs)
 	{	die "Error: please correct the following parameters to run the script:\n" . ( join("\n", map { " - " . $_ } @$errs ) ) . "\nThe help documentation can be accessed with the command\n\tgo-slim-annotations.pl --help\n" . Dumper($opt);
+	}
+
+	if ($opt->{subset} && ref $opt->{subset} eq 'HASH')
+	{	$opt->{subset} = [ keys %{$opt->{subset}} ];
 	}
 
 	return $opt;

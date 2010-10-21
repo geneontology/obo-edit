@@ -12,19 +12,23 @@ An alternate label for an GOBO::Labeled object
 
 package GOBO::Synonym;
 use Moose;
-use strict;
-use GOBO::Node;
+use Moose::Util::TypeConstraints;
+use GOBO::Types;
+
 with 'GOBO::Attributed';
 
-use Moose::Util::TypeConstraints;
-
-coerce 'GOBO::Synonym'
-      => from 'Str'
-      => via { new GOBO::Synonym(label=>$_) };
-
 has label => (is=>'rw',isa=>'Str');
-has scope => (is=>'rw',isa=>'Str');
-has type => (is=>'rw',isa=>'GOBO::Node', coerce=>1);
+has scope => (is=>'rw',isa=>'GOBO::Synonym::Scope');
+has synonym_type => (is=>'rw',isa=>'GOBO::Node', coerce=>1);
 has lang => (is=>'rw',isa=>'Str');
+
+sub is_valid_synonym_scope {
+	my $self = shift;
+	my $scope = shift;
+	if (grep { $scope eq $_ } qw( EXACT BROAD NARROW RELATED ))
+	{	return 1;
+	}
+	return undef;
+}
 
 1;

@@ -162,7 +162,7 @@ my $output = new FileHandle($options->{output}, "w") or die "Could not create ou
 
 # before we check out the graph, let's see if the file actually contains any terms...
 if ($options->{termlist})
-{	$data->{to_find} = GOBO::Util::Misc::read_term_file($options);
+{	$data->{to_find} = GOBO::Util::Misc::read_term_file(%$options);
 }
 
 # parse the input file and check we get a graph
@@ -219,6 +219,7 @@ else
 
 	## make sure that we have the root nodes
 	map { $subset->{ $_->id }++ } @{$graph->get_roots};
+	print STDERR "Finished collating subset nodes!\n" if $options->{verbose};
 }
 
 if (! $subset || scalar keys %$subset == 0)
@@ -234,8 +235,10 @@ if (scalar keys %$subset < 5 && ! $options->{force_continue})
 
 $graph->duplicate_statement_ix('ontology_links', 'asserted_links');
 my $ie = new GOBO::InferenceEngine::CustomEngine( graph => $graph );
+print STDERR "Duplicating statement ix... done!\n" if $options->{verbose};
 
 $ie->get_closest_and_ancestral( subset_ids => [ keys %$subset ], from_ix => 'asserted_links', all_ix => 'transitive_closure', closest_ix => 'transitive_reduction' );
+print STDERR "Got closest and ancestral nodes. Phew!\n" if $options->{verbose};
 
 $graph = $ie->graph;
 
@@ -243,7 +246,7 @@ $graph = $ie->graph;
 ## print out the file header material
 
 if ($options->{subset})
-{	print $output "! Mapping file of terms to subset " . join(", ", keys %{$options->{subset}}) . "\n"
+{	print $output "! Mapping file of terms to subset " . join(", ", @{$options->{subset}}) . "\n"
 }
 else
 {	print $output "! Mapping file of terms to user subset\n";
@@ -452,10 +455,15 @@ sub check_options {
 				last;
 			}
 			warn "More than one subset was specified; using $ss";
-			$opt->{subset} = { $ss => 1 };
+			$opt->{subset} = [ $ss ];
 
 		}
 	}
+
+	if ($opt->{subset} && ref $opt->{subset} eq 'HASH')
+	{	$opt->{subset} = [ keys %{$opt->{subset}} ];
+	}
+
 
 	$opt->{verbose} = 1 if ! $opt->{verbose} && $ENV{VERBOSE};
 

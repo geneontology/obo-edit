@@ -1,10 +1,10 @@
 package GOBO::Gene;
 use Moose;
-use strict;
-extends 'GOBO::Node';
-use GOBO::Node;
+use Moose::Util::TypeConstraints;
+use GOBO::Types;
+extends 'GOBO::AnnotationSubject';
 
-has type => (is=>'rw', isa=>'GOBO::Node', coerce=>1);
+has gp_type => (is=>'rw', isa=>'GOBO::Node', coerce=>1);
 has taxon => (is=>'rw', isa=>'GOBO::Node', coerce=>1);
 
 1;
@@ -15,7 +15,7 @@ GOBO::Gene
 
 =head1 SYNOPSIS
 
-  printf '%s "%s" %s %s', $n->id, $n->label, $n->type, $n->taxon;
+  printf '%s "%s" %s %s', $n->id, $n->label, $n->gp_type, $n->taxon;
 
 =head1 DESCRIPTION
 

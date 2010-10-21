@@ -1,7 +1,11 @@
 package GOBO::ClassExpression::Intersection;
 use Moose;
-use strict;
+use Moose::Util::TypeConstraints;
+use GOBO::Types;
 extends 'GOBO::ClassExpression::BooleanExpression';
+
+has '+arguments' => (isa => 'GOBO::Types::TwoPlusNodeArray', coerce=>1);
+#has 'arguments' => (isa => 'GOBO::Types::TwoPlusNodeArray');
 
 sub operator { ' AND ' }
 sub operator_symbol { '^' }
@@ -97,4 +101,4 @@ intersection link
 
 =cut
 
-1; 
+1;

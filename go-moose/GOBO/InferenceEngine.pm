@@ -149,14 +149,10 @@ output: arrayref of inferred statements
 
 sub get_inferred_outgoing_edges {
 	my $self = shift;
-	my @in = @_;
-	if (scalar(@in) == 1) {
-	    @in = (node_id=>$in[0]);
-	}
 	my %args = (
 		from_ix => $self->from_ix, ## default
 		save_ix => $self->save_ix, ## default || 'inferred_outgoing_edges',
-		@in
+		$self->__check_args('get_inferred_outgoing_edges', @_),
 	);
 
 	confess( (caller(0))[3]  . ": no node specified! " ) unless $args{node} || $args{node_id};
@@ -294,7 +290,7 @@ sub get_inferred_incoming_edges {
 	my %args = (
 		from_ix => $self->from_ix,  ## default
 		save_ix => $self->save_ix,  ## default || 'inferred_incoming_edges'
-		@_
+		$self->__check_args('get_inferred_incoming_edges', @_),
 	);
 	my $g = $self->graph;
 
@@ -362,6 +358,39 @@ sub get_inferred_incoming_edges {
 	return [values %inlink_h];
 }
 
+
+=head2 __check_args
+
+input:  subr name, @_
+output: @_, altered if appropriate
+
+Gets the arguments for various methods into ship-shape order.
+
+=cut
+
+
+sub __check_args {
+	my $self = shift;
+	my $s_name = shift;
+	my @args = (@_);
+	if ($s_name =~ /get_inferred_outgoing/ && scalar @args == 1)
+	{	if (! ref $args[0])
+		{	return ( node_id => $args[0] );
+		}
+		else
+		{	return ( node => $args[0] );
+		}
+	}
+	if ($s_name =~ /get_inferred_incoming/ && scalar @args == 1)
+	{	if (! ref $args[0])
+		{	return ( target_id => $args[0] );
+		}
+		else
+		{	return ( target => $args[0] );
+		}
+	}
+	return @args;
+}
 
 =head2 get_subrelation_closure
 
@@ -462,6 +491,7 @@ extend_link will return all the edges between node 1 and node 3
 
 =cut
 
+## deprecate me
 sub extend_link {
 	my $self = shift;
 	my %args = (
@@ -765,74 +795,258 @@ if c2 = <r y> AND c1 r y THEN c1 is subsumed by c2
 
 sub subsumed_by {
 	my $self = shift;
-	my $child = shift; # GOBO::Class
-	my $parent = shift; # GOBO::Class
+	my $c1 = shift; # GOBO::Class
+	my $c2 = shift; # GOBO::Class
 	my $subsumes = 0;
 
-	# reflexivity of subsumption relation
-	if ($child->equals($parent)) {
-		return 1;
+	print STDERR "input: c1: " . ref($c1) . " $c1; c2: " . ref($c2) . " $c2\n" if $ENV{VERBOSE};
+
+	my $c1_not;
+	my $c2_not;
+
+	if ($c1->isa('GOBO::ClassExpression::Complement'))
+	{	$c1 = $c1->arguments->[0];
+		$c1_not++;
+	}
+	if ($c2->isa('GOBO::ClassExpression::Complement'))
+	{	$c2 = $c2->arguments->[0];
+		$c2_not++;
 	}
 
-#	print STDERR "input: child: " . ref($child) . " $child; parent: " . ref($parent) . " $parent\n";
+	if ($c1_not && $c2_not)
+	{	print STDERR "c1 and c2 are both complements!\n" if $ENV{VERBOSE};
+		undef $c1_not;
+		undef $c2_not;
+	}
+
+	my $return_subsumes = sub {
+		my $s_value = shift;
+		print STDERR "s_value: $s_value; c1_not: " . ( $c1_not || "X" ) . "; c2_not: " . ( $c2_not || "X" ) . "\n" if $ENV{VERBOSE};
+		if ($c1_not || $c2_not)
+		{	return 0 if $s_value == 1;
+			return 1;
+		}
+		return $s_value;
+	};
+
+
+	# reflexivity of subsumption relation
+	if ($c1->equals($c2)) {
+		print STDERR "c1 equals c2\n" if $ENV{VERBOSE};
+		return &$return_subsumes(1);
+	}
+
+	# c2 is not itself a class expression, but may have an equivalence relation to a class expression
+	if ($self->graph->get_node($c2) && ! $c2->isa('GOBO::ClassExpression')) {
+		# TODO: equiv test for roles?
+		if ( $c2->can('logical_definition') && $c2->logical_definition) {
+#			print STDERR "c2 has a logical definition\n" if $ENV{VERBOSE};
+			return &$return_subsumes($self->subsumed_by($c1,$c2->logical_definition));
+		}
+		if ( $c2->can('union_definition') && $c2->union_definition) {
+#			print STDERR "c2 has a union definition\n" if $ENV{VERBOSE};
+			return &$return_subsumes($self->subsumed_by($c1,$c2->union_definition));
+		}
+	}
+
 
 	# check is_a closure
-	if (grep {$_->id eq $parent->id} @{$self->get_inferred_outgoing_nodes(ix=>'statements', node => $child, relation_id => 'is_a')}) {
-#		print STDERR "Parent ID is in inferred outgoing nodes\n";
-		return 1;
+	if (! $c1->isa('GOBO::ClassExpression') && ! $c2->isa("GOBO::ClassExpression") )
+	{	print STDERR "inf'd outgoing nodes from $c1: " . join(", ", @{$self->get_inferred_outgoing_nodes(ix=>'statements', node=>$c1, relation_id=>'is_a')}) . "\n" if $ENV{VERBOSE};
+
+		if (grep {$_->id eq $c2->id} @{$self->get_inferred_outgoing_nodes(ix=>'statements', node => $c1, relation_id => 'is_a')}) {
+			print STDERR "c2 ID is in inferred outgoing nodes\n" if $ENV{VERBOSE};
+			return &$return_subsumes( 1 );
+		}
+
+		## ok, it looks like these aren't related
+		warn "Looks like $c1 isn't a subset of $c2\n" if $ENV{VERBOSE};
+		return &$return_subsumes( 0 );
+
 	}
 
-	# parent is not itself a class expression, but may have an equivalence relation to a class expression
-#	if ($parent->isa('GOBO::TermNode')) {
-	if ($self->graph->get_node($parent) && $self->graph->get_node($parent)->isa('GOBO::TermNode')) {
-		# TODO: equiv test for roles?
-		if ( $parent->logical_definition) {
-#			print STDERR "parent has a logical definition\n";
-			return $self->subsumed_by($child,$parent->logical_definition);
-		}
-		if ( $parent->union_definition) {
-#			print STDERR "parent has a union definition\n";
-			return $self->subsumed_by($child,$parent->union_definition);
-		}
-	}
 
 	### CHECK THIS!! ###
 	# class subsumption over boolean expressions
-	if ($parent->isa('GOBO::ClassExpression')) {
-		if ($parent->isa('GOBO::ClassExpression::RelationalExpression')) {
-			if (grep {$_->id eq $parent->target} @{$self->get_inferred_outgoing_edges(ix=>'statements', node => $child, relation => $parent->relation)}) {
-				return 1;
-			}
+	if ($c1->isa('GOBO::ClassExpression')) {
+		if ($c1->isa('GOBO::ClassExpression::RelationalExpression')) {
+			warn "Don't know what to do with a relational expression... help!!";
+#			if (grep {$_->id eq $c2->target} @{$self->get_inferred_outgoing_edges(ix=>'statements', node => $c1, relation => $c2->relation)}) {
+#				return 1;
+#			}
 		}
-		elsif ($parent->isa('GOBO::ClassExpression::BooleanExpression')) {
-			my $args = $parent->arguments;
-			if ($parent->isa('GOBO::ClassExpression::Intersection')) {
-				$subsumes = 1;
-				foreach my $arg (@$args) {
-					if (!$self->subsumed_by($child, $arg)) {
-						$subsumes = 0;
-						last;
+		elsif ($c1->isa('GOBO::ClassExpression::BooleanExpression')) {
+
+#=cut
+			if ($c2->isa('GOBO::ClassExpression::BooleanExpression'))
+			{	my %arguments = ( args_A => $c1->arguments, args_B => $c2->arguments, test => sub { my ($a, $b) = (shift, shift); return $self->subsumed_by($a, $b) } );
+				if ($c1->isa('GOBO::ClassExpression::Intersection'))
+				{	if ($c2->isa('GOBO::ClassExpression::Intersection'))
+					{	$arguments{t_type} = 'AND_AND';
+					}
+					elsif ($c2->isa('GOBO::ClassExpression::Union'))
+					{	$arguments{t_type} = 'AND_OR';
 					}
 				}
+				elsif ($c1->isa('GOBO::ClassExpression::Union'))
+				{	if ($c2->isa('GOBO::ClassExpression::Intersection'))
+					{	$arguments{t_type} = 'OR_AND';
+					}
+					elsif ($c2->isa('GOBO::ClassExpression::Union'))
+					{	$arguments{t_type} = 'OR_OR';
+					}
+				}
+				else
+				{	warn "Not really sure what to do with " . ref($c1) . " and " . ref($c2) . "\n";
+				}
+				$subsumes = $self->__test_runner(%arguments);
+				print STDERR "t_type: " . $arguments{t_type} . "; reasoning over c1: $c1; c2: $c2\nreturning $subsumes\n" if $ENV{VERBOSE};
+				return &$return_subsumes($subsumes);
 			}
-			elsif ($parent->isa('GOBO::ClassExpression::Union')) {
-				foreach my $arg (@$args) {
-					if ($self->subsumed_by($child, $arg)) {
-						$subsumes = 1;
-						last;
-					}
-				}
+
+#=cut
+			my %arguments = ( arg_list => $c1->arguments, test => sub { my $x = shift; return $self->subsumed_by($x, $c2) } );
+			if ($c1->isa('GOBO::ClassExpression::Intersection')) {
+
+				$subsumes = $self->__test_runner(%arguments, t_type => 'OR');
+				print STDERR "reasoning over c1 Intersection; c1: $c1; c2: $c2\nreturning $subsumes\n" if $ENV{VERBOSE};
+			}
+			elsif ($c1->isa('GOBO::ClassExpression::Union')) {
+
+				$subsumes = $self->__test_runner(%arguments, t_type=>'AND');
+				print STDERR "reasoning over c1 Union; c1: $c1; c2: $c2\nreturning $subsumes\n" if $ENV{VERBOSE};
 			}
 			else {
-				$self->throw("cannot infer with $parent");
+				$self->throw("cannot infer with $c1");
 			}
 		}
 		else {
-
+			warn "No method known for dealing with ClassExpression $c1\n";
 		}
 	}
-	return $subsumes;
+	elsif ($c2->isa('GOBO::ClassExpression')) {
+		if ($c2->isa('GOBO::ClassExpression::RelationalExpression')) {
+			if (grep {$_->id eq $c2->target} @{$self->get_inferred_outgoing_edges(ix=>'statements', node => $c1, relation => $c2->relation)}) {
+				$subsumes = 1;
+			}
+		}
+		elsif ($c2->isa('GOBO::ClassExpression::BooleanExpression')) {
+
+			my %arguments = ( arg_list => $c2->arguments, test => sub { my $x = shift; return $self->subsumed_by($c1, $x) } );
+
+			if ($c2->isa('GOBO::ClassExpression::Intersection')) {
+				$subsumes = $self->__test_runner(%arguments, t_type => 'AND');
+				print STDERR "reasoning over c2 Intersection; c1: $c1; c2: $c2\nreturning $subsumes\n" if $ENV{VERBOSE};
+			}
+			elsif ($c2->isa('GOBO::ClassExpression::Union')) {
+				$subsumes = $self->__test_runner(%arguments, t_type => 'OR');
+				print STDERR "reasoning over c2 Union; c1: $c1; c2: $c2\nreturning $subsumes\n" if $ENV{VERBOSE};
+			}
+			else {
+				$self->throw("cannot infer with $c2");
+			}
+		}
+		else {
+			warn "No method known for dealing with ClassExpression $c2\n" if $ENV{VERBOSE};
+		}
+	}
+	else {
+		print STDERR "Help! Don't know what to do about $c1 and $c2!\n" if $ENV{VERBOSE};
+	}
+	return &$return_subsumes( $subsumes );
 }
+
+
+sub __test_runner {
+	my $self = shift;
+	my %args = (@_);
+	my $test = $args{test};
+
+	if ($args{t_type} eq 'AND')
+	{	## all results must be positive
+		foreach (@{$args{arg_list}})
+		{	return 0 if &$test($_) == 0;
+		}
+		return 1;
+	}
+	elsif ($args{t_type} eq 'OR')
+	{	## one positive result
+		foreach (@{$args{arg_list}})
+		{	return 1 if &$test($_) == 1;
+		}
+		return 0;
+	}
+	elsif ($args{t_type} eq 'NOR')
+	{	## one negative result
+		foreach (@{$args{arg_list}})
+		{	return 1 if &$test($_) == 0;
+		}
+		return 0;
+	}
+	elsif ($args{t_type} eq 'NAND')
+	{	## all results must be negative
+		foreach (@{$args{arg_list}})
+		{	return 0 if &$test($_) == 1;
+		}
+		return 1;
+	}
+	elsif ($args{t_type} eq 'AND_OR')
+	{	## isect, union  e.g. a AND b, a OR b
+		## one of A must be in B
+		foreach my $a (@{$args{args_A}})
+		{	foreach my $b (@{$args{args_B}})
+			{	return 1 if &$test($a, $b) == 1;
+			}
+		}
+	}
+	elsif ($args{t_type} eq 'AND_AND')
+	{	## isect, isect  e.g a AND b AND c, a AND b
+		## all members of B must be in A
+		## IS THIS CODE CORRECT?!
+		foreach my $b (@{$args{args_B}})
+		{	my $bool = 0;
+			foreach my $a (@{$args{args_A}})
+			{	if (&$test($a, $b))
+				{	$bool = 1;
+					last;
+				}
+			}
+			return 0 unless $bool == 1;
+		}
+		return 1;
+	}
+	elsif ($args{t_type} eq 'OR_OR')
+	{	## union, union  e.g. a OR b, a OR b OR c
+		## ALL a must be a subset of one of B
+		foreach my $a (@{$args{args_A}})
+		{	my $bool = 0;
+			foreach my $b (@{$args{args_B}})
+			{	if (&$test($a, $b) == 1)
+				{	$bool = 1;
+					last;
+				}
+			}
+			return 0 unless $bool == 1;
+		}
+		return 1;
+	}
+	elsif ($args{t_type} eq 'OR_AND')
+	{	## union, isect  e.g. a OR b, a AND b AND c
+		## everything in A must be a subset of B
+		foreach my $a (@{$args{args_A}})
+		{	foreach my $b (@{$args{args_B}})
+			{	return 0 if &$test($a, $b) == 0;
+			}
+		}
+		return 1;
+	}
+
+	return 666;
+
+}
+
+
+
 
 # TODO
 #sub disjoint_from_violations {
@@ -869,22 +1083,7 @@ sub create_link_statement {
 		}
 	}
 
-#	print STDERR "node ref: " . ref($args{node}) . "\n";
-
-	if (! $args{type})
-	{	if (! $args{target})
-		{	$args{type} = 'GOBO::Statement';
-		}
-		elsif ($args{node}->isa('GOBO::Gene'))
-		{	$args{type} = 'GOBO::Annotation';
-		}
-		else
-		{	$args{type} = 'GOBO::LinkStatement';
-		}
-	}
-	my $link = $args{type}->new( %args );
-
-	return $link;
+	return GOBO::Statement->create(%args);
 }
 
 
@@ -1238,11 +1437,11 @@ sub __convert_matrix_to_edges {
 	{	warn "Edge matrix not specified or no values defined";
 		return;
 	}
-	
+
 	my $matrix = $self->get_edge_matrix($args{matrix});
-	
+
 	$self->dump_edge_matrix(matrix => $matrix);
-	
+
 	my $to_add;
 	my $h;
 	## add any nodes required and create link statements
@@ -1250,7 +1449,7 @@ sub __convert_matrix_to_edges {
 	{	if (! $args{to}->get_node($n))
 		{	$args{to}->add_node($args{from}->get_node($n));
 		}
-		
+
 		foreach my $r (keys %{$matrix->{$n}})
 		{	if (! $args{to}->get_node($r))
 			{	$args{to}->add_relation($args{from}->get_node($r));
@@ -1376,6 +1575,7 @@ sub dump_edge_matrix {
 		}
 	}
 }
+
 
 
 =head1 NAME

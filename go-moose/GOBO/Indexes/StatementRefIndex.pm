@@ -7,7 +7,7 @@ use GOBO::LinkStatement;
 use GOBO::RelationNode;
 use GOBO::Util::Misc;
 
-use Sub::Identify;
+#use Sub::Identify;
 use Data::Dumper;
 
 #if ($ENV{VERBOSE})
