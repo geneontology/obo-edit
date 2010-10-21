@@ -94,6 +94,13 @@ MAPPINGS:
  API: getDef()
 ';
 
+COMMENT ON COLUMN cls.is_obsolete IS 'True if this is an obsolete/deprecated class
+MAPPINGS:
+ OBO: term.is_obsolete
+ OWL: AnnotationProperty(owl:deprecated cls true) [TBD: obo obsoletion may be stronger]
+ LEAD: term.is_obsolete
+';
+
 -- ****************************************
 -- relation
 -- ****************************************
@@ -397,6 +404,7 @@ CREATE TABLE cls_intersection_of (
 
        ontology VARCHAR
 );
+
 COMMENT ON TABLE cls_intersection_of IS 'A shorthand for stating necessary and sufficient definitions.
 For any cls, the set of all_intersection_of tuples are collected. This constitutes a conjunctive expression that is equivalent to cls.
 E.g.
@@ -410,6 +418,8 @@ cls_intersection_of(blue_car,has_color,blue)
 ==> [owl]
 EquivalentTo (blue_car IntersectionOf(car SomeValuesFrom(has_color blue)))
 //
+Limitation: only a single such equivalence relation is allowed per class
+//
 Note that there should never be a cls that only has a single cls_intersection_of.
 MAPPINGS:
  OBO: intersection_of
@@ -417,6 +427,33 @@ MAPPINGS:
  LEAD: term2term[completes=1]
 ';
 
+CREATE TABLE cls_union_of (
+       cls VARCHAR,
+       target_cls VARCHAR,
+
+       ontology VARCHAR
+);
+COMMENT ON TABLE cls_union_of IS 'A shorthand declaring a class to be equivalent to a union of other classes.
+For any cls, the set of all_union_of tuples are collected. This constitutes a conjunctive expression that is equivalent to cls.
+E.g.
+[Term]
+id: prokaryote
+union_of: eubacteria
+union_of: archaea
+==> [gold]
+cls_union_of(prokaryote,eubacteria)
+cls_union_of(prokaryote,archaea)
+==> [owl]
+EquivalentTo (prokaryote UnionOf(eubacteria archaea))
+//
+Limitation: only a single such equivalence relation is allowed per class
+//
+Note that there should never be a cls that only has a single cls_union_of.
+MAPPINGS:
+ OBO: union_of
+ OWL: EquivalentTo(cls UnionOf( {...} ) -- see obo2owl doc
+ LEAD: n/a
+';
 
 -- ****************************************
 -- Inferred Relationships
