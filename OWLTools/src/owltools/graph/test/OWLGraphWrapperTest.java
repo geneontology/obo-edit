@@ -17,7 +17,7 @@ public class OWLGraphWrapperTest extends TestCase {
 		
 		OWLObject cls = wrapper.getOWLClass(OWLGraphWrapper.DEFAULT_IRI_PREFIX + "CHEBI_15355");
 		
-		String s[] = wrapper.getSynonym(cls);
+		String s[] = wrapper.getSynonymStrings(cls);
 		assertTrue(s.length>0);
 	}
 	
