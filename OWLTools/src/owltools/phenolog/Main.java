@@ -71,7 +71,6 @@ public class Main {
      */
     public static void main(String[] args) {
 
-
         HashSet<GenePheno> gpset = new HashSet<GenePheno>();
         HashMap<String, Individual> hm_ind;
         HashSet<IndividualPair> hs_indpair;
@@ -503,7 +502,26 @@ public class Main {
 
             ph1 = nph1;
 
+            nph1 = null;
+            nph1 = new HashSet<Pheno>();
+            it = ph1.iterator();
+            while(it.hasNext()){
+                p = (Pheno) it.next();
+                if (((p.getIndividuals().size() / hm_indpair1.size()) <= 0.1) && (owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId())) != null)) {
+                    nph1.add(p);
+                } else {
+                    if (owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId())) == null) {
+                        System.out.println("SP1(Removing) No Ancestors: ID# " + p.getId() + " Label# " + p.getLabel());
+                    } else {
+                        System.out.println("SP1(Removing): ID# " + p.getId() + " Label# " + p.getLabel() + " Size# " + p.getIndividuals().size() + " Orthologs# " + hm_indpair1.size());
+                    }
+                }
+            }
+
+            ph1 = nph1;
+
         } catch (Exception e) {
+            System.out.println("EXCEPTION SP1 GRAPH");
         }
 
         System.out.println("Done with PH1 Graph");
@@ -535,14 +553,38 @@ public class Main {
                         }
                     }
                 }
+
+            }
+
+            ph2 = nph2;
+
+            nph2 = null;
+            nph2 = new HashSet<Pheno>();
+            it = ph2.iterator();
+            while (it.hasNext()) {
+                p = (Pheno) it.next();
+                if (((p.getIndividuals().size() / hm_indpair1.size()) <= 0.1) && (owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId())) != null)) {
+                    nph2.add(p);
+                } else {
+                    if (owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId())) == null) {
+                        System.out.println("SP2(Removing) No Ancestors: ID# " + p.getId() + " Label# " + p.getLabel());
+                    } else {
+                        System.out.println("SP2(Removing): ID# " + p.getId() + " Label# " + p.getLabel() + " Size# " + p.getIndividuals().size() + " Orthologs# " + hm_indpair1.size());
+                    }
+                }
             }
 
             ph2 = nph2;
 
         } catch (Exception e) {
+            System.out.println("EXCEPTION SP2 GRAPH");
         }
 
         System.out.println("Done with PH2 Graph");
+
+
+        System.out.println("SP1 size="+ph1.size()+" , SP2 size="+ph2.size());
+        System.out.println("Total orthologs: "+hs_indpair1.size());
 
 
         //For each Phenotype in Species I
