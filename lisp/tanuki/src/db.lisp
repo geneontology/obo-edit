@@ -118,8 +118,8 @@ page is defined (with no hits)."
   (with-connection
    (parameters tdb)
    ;;(connect-repl)
-   (clear-database)
-   (create-database)
+   (clear-database tdb)
+   (create-database tdb)
    (let* ((first-page-id (sequence-next 'page-id-seq))
 	  (new-meta (make-instance 'meta 
 				   :start (bb-time:timestamp)

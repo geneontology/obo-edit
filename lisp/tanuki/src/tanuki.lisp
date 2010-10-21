@@ -10,7 +10,7 @@
 ;;;;    (require 'tanuki)
 ;;;;    (in-package :tanuki)
 ;;;;    (setf t1 (make-tanuki-system :start-url "http://localhost/cgi-bin/amigo/amigo" :data-location "/tmp" :dbname "tanuki" :dbuser "tanuki_user" :dbpass "tanuki_pass" :dbhost "localhost"))
-;;;;    (initialize-database t1) ; TODO: untested
+;;;;    (initialize-database t1) ; seems to work now
 ;;;;    (start-a-tanuki t1 'no-argument-set)
 ;;;;    (start-a-tanuki t1 'random-undone-argument-set)
 ;;;;    (stop-tanukis)
