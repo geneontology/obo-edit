@@ -214,6 +214,10 @@ sub check_options {
 			delete $opt->{basename};
 		}
 	}
+	
+	if ($opt->{subset} && ref $opt->{subset} eq 'HASH')
+	{	$opt->{subset} = [ keys %{$opt->{subset}} ];
+	}
 
 	if ($errs && @$errs)
 	{	die "Error: please correct the following parameters to run the script:\n" . ( join("\n", map { " - " . $_ } @$errs ) ) . "\nThe help documentation can be accessed with the command\n\tgo-slimdown.pl --help\n";

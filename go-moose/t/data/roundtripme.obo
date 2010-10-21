@@ -27,13 +27,13 @@ name: name-x
 namespace: ns-x
 alt_id: id-x-alt1
 alt_id: id-x-alt2
-def: "foo" [PMID:1, foo:bar "bleh"]
+def: "Ready or not, here I come!!" [PMID:1, foo:bar "bleh", DB:key "Encyclopaedia, isn't it?"]
 comment: hjkjh
 subset: ss1
 subset: ss2
 synonym: "s1-exact" EXACT []
-synonym: "s1-exact-cited" EXACT [PMID:2]
-synonym: "s1-exact-t" EXACT st2 [PMID:2]
+synonym: "s1-exact-cited" EXACT [PMID:2 "My favourite paper"]
+synonym: "s1-exact-t" EXACT st2 [XREF:1, XREF:2 "My \"favourite\" database", XREF:3]
 xref: X:1
 xref: CL:1
 xref: GO:2
@@ -55,7 +55,7 @@ creation_date: 2009-04-28T04:41:16Z
 [Term]
 id: id-y
 name: name-y
-def: "foo" []
+def: "His name was "Skippy" the bush kangaroo. Fancy that." [REF:100 "The 100th Ref"]
 is_a: y-p1
 is_a: y-p2 {implied="true",method="reasoner-1"}
 union_of: yu1
@@ -67,6 +67,7 @@ id: obs-1
 is_obsolete: true
 replaced_by: obs-1-r1
 replaced_by: obs-1-r2
+formula: "Que sera, sera" Italian [ ISBN:0123456789 "That ol' book o' tricks", SO:cjm ]
 
 [Term]
 id: obs-2
@@ -88,15 +89,15 @@ xref: Y:1
 domain: a
 range: a
 is_anti_symmetric: true
-is_cyclic: true 
-is_reflexive: true 
-is_irreflexive: true 
-is_symmetric: true 
-is_transitive: true 
-is_functional: true 
-is_inverse_functional: true 
+is_cyclic: true
+is_reflexive: true
+is_irreflexive: true
+is_symmetric: true
+is_transitive: true
+is_functional: true
+is_inverse_functional: true
 is_metadata_tag: false
-is_a: r1-p1  
+is_a: r1-p1
 intersection_of: r1i1
 intersection_of: r1i2
 union_of: r1u1

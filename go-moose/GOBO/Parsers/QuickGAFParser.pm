@@ -69,9 +69,13 @@ override 'parse_body' => sub {
 			}
 		}
 
+		$data->{by_a}{$a_id}{arr} = [@arr] if ! $data->{by_a}{$a_id}{arr};
 		push @{$data->{by_a}{$a_id}{terms}}, $t_id;
 		push @{$data->{by_t}{$t_id}}, $a_id;
-		$data->{by_a}{$a_id}{arr} = [@arr] if ! $data->{by_a}{$a_id}{arr};
+		## may not need this:
+		push @{$data->{gp_x_t}{ $arr[1] . ":" . $arr[2] }{ $t_id }}, $a_id;
+		push @{$data->{by_gp}{ $arr[1] . ":" . $arr[2] }}, $a_id;
+
 	}
 
 	if (@errs)
@@ -97,19 +101,30 @@ we should ensure that we don't get any duplicated annotations by keeping
 a tally of what we've seen as we go along
 to generate a unique "ID" for each annotation, we should save the following:
 
-1  - DB
-2  - DB_Object_ID
-4  - Qualifier
-6  - DB:Reference (|DB:Reference)
-7  - Evidence code
-8  - With (or) From
-13 - taxon(|taxon)
-14 - Date
-15 - Assigned_by
-16 - Annotation XPs
+1	DB
+2	DB_Object_ID
+4	Qualifier
+6	DB:Reference (|DB:Reference)
+7	Evidence code
+8	With (or) From
+13	taxon(|taxon)
+14	Date
+15	Assigned_by
+16	Annotation XPs*
+17	Gene product form ID*
+
+*not yet widely implemented
 
 col 5, GO ID, is the data we want for slimming purposes
 
+gp data:
+
+3	DB Object Symbol
+10	DB Object Name
+11	DB Object Synonym (|Synonym)
+12	DB Object Type
+13	Taxon(|taxon)
+17	Gene Product Form ID
 =cut
 
 sub _create_assoc_id {

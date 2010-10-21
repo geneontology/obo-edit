@@ -1,9 +1,12 @@
 package GOBO::Parsers::OBOParser;
 use Moose;
-use strict;
+use Moose::Util::TypeConstraints;
+use GOBO::Types;
+
 extends 'GOBO::Parsers::Parser';
 with 'GOBO::Parsers::GraphParser';
 
+use Data::Dumper;
 use GOBO::Graph;
 =cut
 use GOBO::Node;
@@ -16,50 +19,454 @@ use GOBO::LiteralStatement;
 use GOBO::ClassExpression;
 use GOBO::ClassExpression::Union;
 =cut
-use Data::Dumper;
 
 has default_namespace => (is=>'rw', isa=>'Str');
 has format_version => (is=>'rw', isa=>'Str');
 
+#has '+options' => (trigger => \&check_options, handles => { 'header_parser_options' => 'header', 'body_parser_options' => 'body' });
+
+#has header_parser_options => (is => 'rw', isa => 'HashRef|Undef', clearer => 'clear_header_parser_options', predicate => 'has_header_parser_options', writer => 'set_header_parser_options'); #, init_arg => 'options');
+#has body_parser_options => (is => 'rw', isa => 'HashRef|Undef', clearer => 'clear_body_parser_options', predicate => 'has_body_parser_options', writer => 'set_body_parser_options');#, init_arg => 'options');
+
+#has '+header_parser_options' => (isa => 'GOBO::Parsers::OBOParser::OBOParserHeaderOptionsHash', coerce => 1);
+#has '+body_parser_options' => (isa => 'GOBO::Parsers::OBOParser::OBOParserBodyOptionsHash', coerce => 1);
+
+has header_check_sub => (is=>'rw', isa=>'CodeRef', default=>sub{ return sub { return 1 }; }, writer => 'set_header_check_sub', reader => 'get_header_check_sub');
+has stanza_check_sub => (is=>'rw', isa=>'CodeRef', default=>sub{ return sub { return 1 }; }, writer => 'set_stanza_check_sub', reader => 'get_stanza_check_sub');
+has tag_check_sub    => (is=>'rw', isa=>'CodeRef', default=>sub{ return sub { return 1 }; }, writer => 'set_tag_check_sub', reader => 'get_tag_check_sub');
+
+## how much gubbins to allow during parsing
+has strict_mode => (is=>'rw', isa=>'Bool', default => 1);
+
+## whether to use the dispatch hash or the if/else parser
+has parse_method => (is=>'rw', isa=>'GOBO::Parsers::ParserMode', default=>'dispatch_hash');
+
+before 'get_header_check_sub' => sub {
+	my $self = shift;
+	$self->check_options if ! $self->checked_options;
+};
+
+before 'get_stanza_check_sub' => sub {
+	my $self = shift;
+	$self->check_options if ! $self->checked_options;
+};
+
+before 'get_tag_check_sub' => sub {
+	my $self = shift;
+	$self->check_options if ! $self->checked_options;
+};
+
+#=cut
+override 'set_options' => sub {
+	my $self = shift;
+	my $o = shift;
+
+	if ($o->{header} || $o->{body})
+	{	$self->check_options($o);
+	}
+	$self->SUPER::set_options($o);
+
+};
+#=cut
+
+## validate the options that we have
+
+sub check_options {
+	my $self = shift;
+	my $options = $self->options;
+#	print STDERR "OBOParser check options: " . Dumper($options);
+	if ($options && values %$options)
+	{	# get rid of any existing options
+		my $hpo = _check_header_parser_options($options);
+		if (! $hpo)
+		{	delete $options->{header};
+		}
+		else
+		{	$options->{header} = $hpo;
+			if ($hpo->{parse_only})
+			{	my $arr = $hpo->{parse_only};
+				my $code =
+				$self->set_header_check_sub( sub {
+					my $t = lc(shift);
+					return 1 if grep { $t eq $_ } @$arr;
+					return undef;
+				} );
+			}
+			elsif ($hpo->{ignore})
+			{	my $arr = $hpo->{ignore};
+				$self->set_header_check_sub( sub {
+					my $t = lc(shift);
+					return 1 unless grep { $t eq $_ } @$arr;
+					return undef;
+				} );
+			}
+			elsif ($hpo->{ignore_all})
+			{	$self->set_header_check_sub( sub { return undef; } );
+			}
+		}
+
+		my $bpo = _check_body_parser_options($options);
+		if (! $bpo)
+		{	delete $options->{body};
+		}
+		else
+		{	$options->{body} = $bpo;
+			if ($bpo->{parse_only})
+			{	my $b_hash = $bpo->{parse_only};
+				# parse this stanza if the stanza type exists in the parse_only set
+				# otherwise, go to the next stanza
+				$self->set_stanza_check_sub( sub {
+					my $s = lc(shift);
+					return 1 if $b_hash->{$s};
+					$self->next_stanza([ keys %$b_hash ]);
+					return undef;
+				} );
+
+				# if the stanza type exists and the tag exists, we're good
+				# otherwise, go to the next stanza
+				$self->set_tag_check_sub( sub {
+					my ($s, $t) = @_;
+					if ($b_hash->{$s})
+					{	if ( $b_hash->{$s}[0] eq '*' || grep { $t eq $_ } @{$b_hash->{$s}} )
+						{	return 1;
+						}
+						return undef;
+					}
+					# we should have already caught incorrect stanzas, but n'mind...
+					warn "Incorrect stanza type!\n";
+					$self->next_stanza([ keys %$b_hash ]);
+					return undef;
+				} );
+			}
+			elsif ($bpo->{ignore})
+			{	my $b_hash = $bpo->{ignore};
+				my @ignore_all = grep { $b_hash->{$_}[0] eq '*' } keys %$b_hash;
+				if (@ignore_all)
+				{	# ignore this stanza if the stanza type exists in the ignore all set
+					$self->set_stanza_check_sub( sub {
+						my $s = lc(shift);
+						if (grep { $s eq $_ } @ignore_all)
+						{	$self->next_stanza(\@ignore_all, 'ignore');
+							return undef;
+						}
+						return 1;
+					} );
+				}
+
+				# ignore the stanza if the stanza type exists in the ignore set
+				# skip the line if the line type exists or the full stanza is to be ignored
+				$self->set_tag_check_sub( sub {
+					my ($s, $t) = @_;
+	#				print STDERR "\n$s_type $t";
+					return 1 if ! $b_hash->{$s};
+					return undef if ( $b_hash->{$s}[0] eq '*' || grep { /^$t$/i } @{$b_hash->{$s}} );
+	#				print STDERR "=> OK\n";
+					return 1;
+				} );
+			}
+		}
+	}
+#	$options->{checked} = 1;
+	$self->options($options);
+	$self->checked_options(1);
+#	print STDERR "OBOParser post-check options: " . Dumper($self->options);
+}
+
+sub _check_header_parser_options {
+	my $o = shift;
+	return undef if ( ! $o || ! values %$o || ! $o->{header} );
+	my $h = $o->{header};
+	if (! ref $h)
+	{	if ($h eq 'ignore_all')
+		{ return { ignore_all => 1 }; }
+		else
+		{ return undef; }
+	}
+	return { ignore_all => 1 } if $h->{ignore_all};
+	return undef unless $h->{ignore} || $h->{parse_only};
+
+	if ($h->{ignore} && $h->{parse_only})
+	{	warn "Warning: both ignore and parse_only specified in header parsing options; using setting in parse_only";
+		delete $h->{ignore};
+	}
+
+	foreach my $x qw(ignore parse_only)
+	{	next unless $h->{$x};
+		if (! ref $h->{$x})
+		{	if ($h->{$x} eq '*')
+			{	return undef if $x eq 'parse_only';
+				return { ignore_all => 1 };
+			}
+			else
+			{	return { $x => [ $h->{ lc($x) } ] };
+			}
+		}
+		elsif (ref $h->{$x} eq 'ARRAY')
+		{	my %hash;
+			map { $hash{lc($_)}++ } @{$h->{$x}};
+			return { $x => [ keys %hash ] };
+		}
+		elsif (ref $h->{$x} eq 'HASH')
+		{	## convert the keys into the ARRAY
+			return { $x => [ map { lc($_) } keys %{$h->{$x}} ] };
+		}
+		else
+		{	warn "wrong header options format";
+		}
+	}
+=cut
+			elsif ($h->{ignore})
+			{	if (! ref $h->{ignore})
+				{	if ($h->{ignore} eq '*')
+					{	return { ignore_all => 1 };
+					}
+					else
+					{	return { ignore => [ $h->{ignore} ] };
+					}
+				}
+				elsif (ref $h->{ignore} && ref $h->{ignore} eq 'ARRAY')
+				{	my %hash;
+					map { $hash{$_}++ } @{$h->{ignore}};
+					return { ignore => [ keys %hash ] };
+				}
+				elsif (ref $h->{ignore} eq 'HASH')
+				{	## convert the keys into the ARRAY
+					return { ignore => [ keys %{$h->{ignore}} ] };
+				}
+				else
+				{	warn "wrong header options format";
+				}
+			}
+=cut
+	return undef;
+}
+
+sub _check_body_parser_options {
+	my $o = shift;
+	return undef if ( ! $o || ! values %$o || ! $o->{body} );
+	my $h = $o->{body};
+	if (! ref $h)
+	{	if ($h eq 'ignore_all')
+		{ return { ignore_all => 1 }; }
+		else
+		{ return undef; }
+	}
+	if ($h->{ignore} && $h->{parse_only})
+	{	warn "Warning: both ignore and parse_only specified in header parsing options; using setting in parse_only";
+		delete $h->{ignore};
+	}
+	my $b_hash;
+	foreach my $x qw(ignore parse_only)
+	{	next unless $h->{$x};
+		if (! ref $h->{$x})
+		{	if ($h->{$x} eq '*')  ## i.e. either ignore_all or parse_only
+			{	if ($x eq 'ignore')
+				{	return { ignore_all => 1 };
+				}
+				else
+				{	return undef;
+				}
+			}
+			else
+			{	$b_hash->{ $h->{$x} } = ['*'];
+			}
+		}
+		elsif (ref $h->{$x} eq 'ARRAY')
+		{	my %hash;  ## make sure we don't have dupes
+			map { $hash{$_}++ } @{$h->{$x}};
+			map { $b_hash->{$_} = ['*'] } keys %hash;
+		}
+		elsif (ref $h->{$x} eq 'HASH')
+		{	## stanza types
+			foreach my $s_type (keys %{$h->{$x}})
+			{	if (! ref $h->{$x}{$s_type})
+				{	$b_hash->{$s_type} = [ $h->{$x}{$s_type} ];
+				}
+				elsif (ref $h->{$x}{$s_type} eq 'ARRAY')
+				{	my %hash;
+					map { $hash{$_}++ } @{$h->{$x}{$s_type}};
+					$b_hash->{$s_type} = [ keys %hash ];
+				}
+				elsif (ref $h->{$x}{$s_type} eq 'HASH')
+				{	$b_hash->{$s_type} = [ keys %{$h->{$x}{$s_type}} ];
+				}
+				else
+				{	warn "wrong body options format";
+				}
+			}
+		}
+		else
+		{	warn "wrong body options format";
+		}
+
+		if ($b_hash)
+		{	return { $x => $b_hash };
+		}
+	}
+	return undef;
+}
+
+
+=head2 parse_from_array
+
+Parse from an array of lines
+
+input:  self, args with $args->{array} being the array of lines in question
+output: the Graph object
+
+=cut
+
+sub parse_from_array {
+	my $self = shift;
+	my %args = (@_);
+	confess( (caller(0))[3] . ": missing required arguments" ) unless defined $args{array} && @{$args{array}};
+	$self->lines( $args{array} );
+	$self->parse_header;
+	$self->parse_body;
+}
+
+=head2 parse_header_from_array
+
+Get a header from an array of lines, rather than passing in a file
+
+input:  self, args with $args->{array} being the array of lines in question
+output: the Graph object
+
+=cut
+
+sub parse_header_from_array {
+	my $self = shift;
+	my %args = (@_);
+	confess( (caller(0))[3] . ": missing required arguments" ) unless defined $args{array} && @{$args{array}};
+	$self->lines( $args{array} );
+	$self->parse_header;
+}
+
+
+=head2 parse_body_from_array
+
+Get a graph from an array of lines, rather than passing in a file
+
+input:  self, args with $args->{array} being the array of lines in question
+output: the Graph object
+
+=cut
+
+sub parse_body_from_array {
+	my $self = shift;
+	my %args = (@_);
+	confess( (caller(0))[3] . ": missing required arguments" ) unless defined $args{array} && @{$args{array}};
+	$self->lines( $args{array} );
+	$self->parse_body;
+}
+
+
+my $header_subs = {
+	'data-version' => sub {
+		my ($self, $args) = @_;
+		$args->{graph}->version($args->{value});
+	},
+	'date' => sub {
+		my ($self, $args) = @_;
+		$args->{graph}->date($args->{value});
+	},
+	'default' => sub {
+		my ($self, $args) = @_;
+		$args->{graph}->set_property_value($args->{tag},$args->{value});
+	},
+	'default-namespace' => sub {
+		my ($self, $args) = @_;
+		$self->default_namespace($args->{value});
+	},
+	'format-version' => sub {
+		my ($self, $args) = @_;
+		$self->format_version($args->{value});
+	},
+	'remark' => sub {
+		my ($self, $args) = @_;
+		$args->{graph}->comment($args->{value});
+	},
+	'subsetdef' => sub {
+		my ($self, $args) = @_;
+		# subsetdef: gosubset_prok "Prokaryotic GO subset"
+		if ($args->{value} =~ /^(\S+)\s+\"(.*)\"/)
+		{	my ($id,$label) = ($1,$2);
+			my $ss = new GOBO::Subset(id=>$id, label=>$label);
+			$args->{graph}->subset_index->{$id} = $ss;
+		}
+		else {
+			warn "Uh-oh... subset value " . $args->{value};
+		}
+	},
+#	'synonymtypedef' => {
+#	## TODO!
+#	},
+};
+
 
 sub parse_header {
 	my $self = shift;
-	my $g = $self->graph;
-	my $header_check = sub { return 1; };
-
-	if ($self->has_header_parser_options)
-	{	if ($self->header_parser_options->{ignore_all})
-		{	$header_check = sub {
-				return undef;
-			};
-		}
-		elsif ($self->header_parser_options->{ignore})
-		{	my $arr = $self->header_parser_options->{ignore};
-			$header_check = sub {
-				my $t = shift;
-				return 1 unless grep { $t eq $_ } @$arr;
-				return undef;
-			};
-		}
-		else
-		{	my $arr = $self->header_parser_options->{parse_only};
-			$header_check = sub {
-				my $t = shift;
-				return 1 if grep { $t eq $_ } @$arr;
-				return undef;
-			};
-		}
+	if ($self->parse_method eq 'if_else')
+	{	#warn "Parsing in if/else mode!";
+		return $self->parse_header_ie;
 	}
+	else
+	{	return $self->parse_header_dh;
+	}
+}
+
+
+sub parse_header_dh {
+	my $self = shift;
+	my $g = $self->graph;
+	my $header_check = $self->get_header_check_sub;
+
 
 	$/ = "\n";
 	while($_ = $self->next_line) {
 		next unless /\S/;
 
+#		print STDERR "DH line: $_\n";
+
+		if (/^\[/) {
+#			print STDERR "Content starts here!\n";
+			$self->unshift_line($_);
+			last;
+		}
+
+		if (/^(\S+):\s*(.*?)$/) {
+			next unless &$header_check($1);
+			if ($header_subs->{$1})
+			{	$header_subs->{$1}->($self, { tag => $1, value => $2, graph => $g });
+			}
+			else
+			{	$header_subs->{default}->($self, { tag => $1, value => $2, graph => $g });
+			}
+		}
+	}
+
+	# set the parse_header to 1
+	$self->parsed_header(1);
+	return;
+};
+
+
+sub parse_header_ie {
+	my $self = shift;
+	my $g = $self->graph;
+#	my $header_check = sub { return 1; };
+	my $header_check = $self->get_header_check_sub;
+
+	$/ = "\n";
+	while($_ = $self->next_line) {
+		next unless /\S/;
+
+#		print STDERR "IE line: $_\n";
+
+
 		if (/^\[/) {
 			$self->unshift_line($_);
-			# set the parse_header to 1
-			$self->parsed_header(1);
-			return;
+			last;
 		}
 
 		if (/^(\S+):\s*(.*?)$/) {
@@ -97,81 +504,565 @@ sub parse_header {
 			}
 		}
 	}
+	# set the parse_header to 1
+	$self->parsed_header(1);
 	return;
 }
+
+
+
+my $body_subs = {
+	"id" => sub {
+		my ($self, $args) = @_;
+#		print STDERR "node before: " . Dumper(${$args->{node}}) . "\n";
+		if ($args->{stanzaclass} eq 'term') {
+#			$args->{node} = $args->{graph}->add_term($args->{value});
+			${$args->{node}} = ${$args->{graph}}->add_term($args->{value});
+		}
+		elsif ($args->{stanzaclass} eq 'typedef') {
+#			$args->{node} = $args->{graph}->add_relation($args->{value});
+			${$args->{node}} = ${$args->{graph}}->add_relation($args->{value});
+		}
+		elsif ($args->{stanzaclass} eq 'instance') {
+#			$args->{node} = $args->{graph}->add_instance($args->{value});
+			${$args->{node}} = ${$args->{graph}}->instance_noderef($args->{value});
+			${$args->{graph}}->add_instance(${$args->{node}});
+		}
+		elsif ($args->{stanzaclass} eq 'annotation') {
+			# TODO
+#			print STDERR "got an annotation!\n";
+		}
+		else {
+			warn "Unknown stanza class " . $args->{stanzaclass};
+		}
+
+#		if (! $args->{node} ) {
+		if (!${$args->{node}}) {
+			die "cannot parse: $_";
+		}
+
+#		$args->{node}->namespace($self->default_namespace) if ! $args->{node}->namespace && $self->default_namespace;
+
+		${$args->{node}}->namespace($self->default_namespace) if (!${$args->{node}}->namespace && $self->default_namespace);
+	},
+	"name" => sub {
+		my ($self, $args) = @_;
+		$args->{node}->label($args->{value});
+	},
+	"namespace" => sub {
+		my ($self, $args) = @_;
+		$args->{node}->namespace($args->{value});
+	},
+	"alt_id" => sub {
+		my ($self, $args) = @_;
+		$args->{node}->add_alt_ids($args->{value});
+	},
+
+	"def" => sub {
+		my ($self, $args) = @_;
+
+			my $d = $args->{value};
+			if ($d =~ /^\"(.*)\"\s*(\[.*)/) {
+				$args->{node}->definition($1);
+				my $refs = $2;
+				## parse the xrefs
+				my $print;
+				## turn print boolean on if we have some refs
+				if ($refs =~ /\"[^\"]+\"/)
+				{	$print++;
+#					print STDERR "def xrefs: $refs\n";
+				}
+				my $vals = {};
+				$self->_parse_xrefs($refs, $vals);
+#				print STDERR "post parse xrefs: vals: " . Dumper($vals);
+				if ($vals->{xrefs}) {
+					$args->{node}->definition_xrefs( [ map { $_ = new GOBO::Node($_) } @{$vals->{xrefs}} ]);
+#					print STDERR "xrefs now: " . Dumper($args->{node}->definition_xrefs) . "\n" if $print;
+				}
+			}
+			else {
+				warn "check def format: $d";
+		#		die "Parse error: $s\nDying!";
+			}
+
+
+
+#		my $vals = [];
+#		_parse_vals($args->{value},$vals);
+#		$args->{node}->definition($vals->[0]); # TODO
+#		if ($vals->[1] && @{$vals->[1]}) {
+#			$args->{node}->definition_xrefs( [ map { $_ = new GOBO::Node({ id => $_ }) } @{$vals->[1]} ]);
+#		}
+	},
+	"is_obsolete" => sub {
+		my ($self, $args) = @_;
+		if ($args->{value} eq 'true')
+		{	$args->{node}->obsolete(1);
+		}
+	},
+	"property_value" => sub {
+		my ($self, $args) = @_;
+		## format:
+		## property_value: relation value
+		## value == node ID OR
+		## "string" datatype_ID
+#		print STDERR "value: " . $args->{value} . "\n";
+		my ($prop, $val) = split(' ', $args->{value}, 2);
+#		print STDERR "node: " . $args->{node} . "; property: $prop; val: $val\n";
+		$args->{node}->add_property_value(prop => $prop, value => $val);
+	},
+	"comment" => sub {
+		my ($self, $args) = @_;
+		$args->{node}->comment($args->{value});
+	},
+	"subset" => sub {
+		my ($self, $args) = @_;
+		my $ss = $args->{graph}->subset_noderef($args->{value});
+		$args->{node}->add_subsets($ss);
+
+		if ($self->liberal_mode && ! $args->{graph}->subset_index->{$ss->id})
+		{	print STDERR $args->{value} . " was not in the subset index. Crap!\n";
+			$args->{graph}->subset_index->{$args->{value}} = $ss;
+		}
+	},
+	"consider" => sub {
+		my ($self, $args) = @_;
+		$args->{node}->add_considers($args->{value});
+	},
+	"replaced_by" => sub {
+		my ($self, $args) = @_;
+		$args->{node}->add_replaced_bys($args->{value});
+	},
+	"created_by" => sub {
+		my ($self, $args) = @_;
+		$args->{node}->created_by($args->{value});
+	},
+	"creation_date" => sub {
+		my ($self, $args) = @_;
+		$args->{node}->creation_date($args->{value});
+	},
+	"synonym" => sub {
+		my ($self, $args) = @_;
+#		print STDERR "found a synonym! " . $args->{value} . "\n";
+		my $vals = {};
+		$self->_parse_vals($args->{value},$vals);
+#		print STDERR "now: " . Dumper($vals) . "\n";
+		my $syn = new GOBO::Synonym(label=>$vals->{quoted}[0]);
+		$args->{node}->add_synonym($syn);
+		if ($vals->{atoms} && @{$vals->{atoms}})
+		{	if ($syn->is_valid_synonym_scope($vals->{atoms}[0]))
+			{	$syn->scope(shift @{$vals->{atoms}});
+			}
+			else {
+				warn "no scope specified for " . $args->{node}->id . " synonym $syn";
+			}
+			while (@{$vals->{atoms}})
+			{	$syn->synonym_type(shift @{$vals->{atoms}});
+			}
+		}
+
+		if ($vals->{xrefs}) {
+			$syn->xrefs( [ map { $_ = new GOBO::Node($_) } @{$vals->{xrefs}} ]);
+#			print STDERR "xrefs now: " . Dumper($syn->xrefs) . "\n";
+		}
+#		print STDERR "Synonym now: " . Dumper($syn) . "\n";
+	},
+	"xref" => sub {
+		my ($self, $args) = @_;
+#		if ($args->{value} =~ /^(.*?):(.*)\s?"?(.*?)\"?/
+		my $vals = {};
+		$self->_parse_xrefs($args->{value}, $vals);
+		$args->{node}->add_xrefs($vals->{xrefs}[0]);
+	},
+	"is_a" => sub {
+		my ($self, $args) = @_;
+		if ($args->{value} =~ /^(\S+)(.*)/) {
+			#	my $tn = $self->getnode($1, $args->{stanzaclass} eq 'typedef' ? 'r' : 'c');
+			my $tn;
+			my $rn = $args->{graph}->relation_noderef('is_a');
+#			my $rn = 'is_a';
+			if ($args->{stanzaclass} eq 'typedef')
+			{	$tn = $args->{graph}->relation_noderef($1);
+			}
+			else
+			{	$tn = $args->{graph}->term_noderef($1);
+			}
+			my $s = new GOBO::LinkStatement(node=>$args->{node},relation=>$rn,target=>$tn);
+			$self->add_metadata($s,$2);
+			$args->{graph}->add_statement($s);
+			if ($args->{stanzaclass} eq 'typedef') {
+				$args->{node}->add_subrelation_of($tn);
+			}
+		}
+	},
+	"relationship" => sub {
+		my ($self, $args) = @_;
+		if ($args->{value} =~ /(\S+)\s+(\S+)(.*)/) {
+			my $rn = $args->{graph}->relation_noderef($1);
+			#	my $tn = $self->getnode($2, $args->{stanzaclass} eq 'typedef' ? 'r' : 'c');
+			my $tn;
+			if ($args->{stanzaclass} eq 'typedef')
+			{	$tn = $args->{graph}->relation_noderef($2);
+			}
+			else
+			{	$tn = $args->{graph}->term_noderef($2);
+			}
+			my $s = new GOBO::LinkStatement(node=>$args->{node},relation=>$rn,target=>$tn);
+			$self->add_metadata($s,$3);
+			$args->{graph}->add_statement($s);
+		}
+	},
+	"complement_of" => sub {
+		my ($self, $args) = @_;
+		#	my $tn = $self->getnode($args->{value}, $args->{stanzaclass} eq 'typedef' ? 'r' : 'c');
+		my $tn;
+		if ($args->{stanzaclass} eq 'typedef')
+		{	$tn = $args->{graph}->relation_noderef($args->{value});
+		}
+		else
+		{	$tn = $args->{graph}->term_noderef($args->{value});
+		}
+		$args->{node}->complement_of($tn);
+	},
+	"negation_of" => sub {
+		my ($self, $args) = @_;
+		my $tn = $args->{graph}->relation_noderef($args->{value});
+		$args->{node}->add_negation_of($tn);
+	},
+	"disjoint_from" => sub {
+		my ($self, $args) = @_;
+		#	my $tn = $self->getnode($args->{value}, $args->{stanzaclass} eq 'typedef' ? 'r' : 'c');
+		my $tn;
+		if ($args->{stanzaclass} eq 'typedef')
+		{	$tn = $args->{graph}->relation_noderef($args->{value});
+		}
+		else
+		{	$tn = $args->{graph}->term_noderef($args->{value});
+		}
+		$args->{node}->add_disjoint_from($tn);
+	},
+	"domain" => sub {
+		my ($self, $args) = @_;
+#		my $tn = $self->getnode($args->{value}, 'c');
+		my $tn = $args->{graph}->term_noderef($args->{value});
+		$args->{node}->domain($tn);
+	},
+	"range" => sub {
+		my ($self, $args) = @_;
+#		my $tn = $self->getnode($args->{value}, 'c');
+		my $tn = $args->{graph}->term_noderef($args->{value});
+		$args->{node}->range($tn);
+	},
+	"disjoint_over" => sub {
+		my ($self, $args) = @_;
+#		my $tn = $self->getnode($args->{value}, 'r');
+		my $tn = $args->{graph}->relation_noderef($args->{value});
+		$args->{node}->add_disjoint_over($tn);
+	},
+	"inverse_of" => sub {
+		my ($self, $args) = @_;
+#		my $tn = $self->getnode($args->{value}, 'r');
+		my $tn = $args->{graph}->relation_noderef($args->{value});
+		$args->{node}->add_inverse_of($tn);
+	},
+	"inverse_of_on_instance_level" => sub {
+		my ($self, $args) = @_;
+#		my $tn = $self->getnode($args->{value}, 'r');
+		my $tn = $args->{graph}->relation_noderef($args->{value});
+		$args->{node}->add_inverse_of_on_instance_level($tn);
+	},
+	"instance_of" => sub {
+		my ($self, $args) = @_;
+		if ($args->{value} =~ /^(\S+)/)
+		{	#my $tn = $self->getnode($1, 'c');
+			my $tn = $args->{graph}->term_noderef($1);
+			$args->{node}->add_type($tn);
+		}
+	},
+	"equivalent_to" => sub {
+		my ($self, $args) = @_;
+		#	my $tn = $self->getnode($args->{value}, $args->{stanzaclass} eq 'typedef' ? 'r' : 'c');
+		my $tn;
+		if ($args->{stanzaclass} eq 'typedef')
+		{	$tn = $args->{graph}->relation_noderef($args->{value});
+		}
+		else
+		{	$tn = $args->{graph}->term_noderef($args->{value});
+		}
+		$args->{node}->add_equivalent_to($tn);
+	},
+
+	"intersection_of" => sub {
+		my ($self, $args) = @_;
+		# TODO: generalize
+		if ($args->{value} =~ /^(\S+)\s+(\S+)/) {
+			my $rn = $args->{graph}->relation_noderef($1);
+			#	my $tn = $self->getnode($2, $args->{stanzaclass} eq 'typedef' ? 'r' : 'c');
+			my $tn;
+			if ($args->{stanzaclass} eq 'typedef')
+			{	$tn = $args->{graph}->relation_noderef($2);
+			}
+			else
+			{	$tn = $args->{graph}->term_noderef($2);
+			}
+			my $s = new GOBO::LinkStatement(node=>$args->{node},relation=>$rn,target=>$tn, is_intersection=>1);
+			$args->{graph}->add_ontology_link($s);
+		}
+		elsif ($args->{value} =~ /^(\S+)/) {
+			#	my $tn = $self->getnode($1, $args->{stanzaclass} eq 'typedef' ? 'r' : 'c');
+			my $tn;
+			my $rn = $args->{graph}->relation_noderef('is_a');
+#			my $rn = 'is_a';
+			if ($args->{stanzaclass} eq 'typedef')
+			{	$tn = $args->{graph}->relation_noderef($1);
+			}
+			else
+			{	$tn = $args->{graph}->term_noderef($1);
+			}
+			my $s = new GOBO::LinkStatement(node=>$args->{node},relation=>$rn,target=>$tn, is_intersection=>1);
+			$args->{graph}->add_ontology_link($s);
+		}
+		else {
+			$self->throw("badly formatted intersection: $_");
+		}
+	},
+	"union_of" => sub {
+		my ($self, $args) = @_;
+		#	my $u = $self->getnode($args->{value}, $args->{stanzaclass} eq 'typedef' ? 'r' : 'c');
+		my $u;
+		if ($args->{stanzaclass} eq 'typedef')
+		{	$u = $args->{graph}->relation_noderef($args->{value});
+		}
+		else
+		{	$u = $args->{graph}->term_noderef($args->{value});
+		}
+		my $ud = $args->{node}->union_definition;
+		if (!$ud) {
+			$ud = new GOBO::ClassExpression::Union;
+			$args->{node}->union_definition($ud);
+		}
+		$ud->add_argument($u);
+	},
+	"transitive_over" => sub {
+		my ($self, $args) = @_;
+
+			if ($args->{node}->isa('GOBO::RelationNode'))
+			{	my $rn = $args->{graph}->relation_noderef($args->{value});
+				$args->{node}->transitive_over($rn);
+			}
+			else
+			{	warn "transitive_over is not a valid attribute for " . ref($args->{node}) . " " . $args->{node};
+			}
+	},
+	"holds_over_chain" => sub {
+		my ($self, $args) = @_;
+#		my @rels  = map { $self->getnode($_,'r') } split(' ',$args->{value});
+		my @rels  = map { $args->{graph}->relation_noderef($_) } split(' ',$args->{value});
+		$args->{node}->add_holds_over_chain(\@rels);
+	},
+	"equivalent_to_chain" => sub {
+		my ($self, $args) = @_;
+#		my @rels  = map { $self->getnode($_,'r') } split(' ',$args->{value});
+		my @rels  = map { $args->{graph}->relation_noderef($_) } split(' ',$args->{value});
+		$args->{node}->add_equivalent_to_chain(\@rels);
+	},
+	"is_" => sub {
+		my ($self, $args) = @_;
+		my $att = $args->{tag};
+		if ($args->{value} eq 'true' && $args->{node}->can($att))
+		{	$args->{node}->$att( 1 );
+		}
+		elsif (! $args->{node}->can($att))
+		{	warn "is_$att is not a valid attribute for " . ref($args->{node}) . " " . $args->{node};
+		}
+		# TODO: check!
+	},
+	# following for annotation stanzas only
+	"subject" => sub {
+		my ($self, $args) = @_;
+#		$args->{node}->node($self->getnode($args->{value}));
+		$args->{node}->node($args->{graph}->noderef($args->{value}));
+#		print STDERR "subject: $args->{value}; noderef type: " . ref($args->{graph}->noderef($args->{value})) . "\n";
+	},
+	"relation" => sub {
+		my ($self, $args) = @_;
+#		$args->{node}->relation($self->getnode($args->{value},'r'));
+		$args->{node}->relation($args->{graph}->relation_noderef($args->{value}));
+	},
+	"object" => sub {
+		my ($self, $args) = @_;
+#		$args->{node}->target($self->getnode($args->{value}));
+		$args->{node}->target($args->{graph}->noderef($args->{value}));
+	},
+	"description" => sub {
+		my ($self, $args) = @_;
+		$args->{node}->description($args->{value});
+	},
+	"source" => sub {
+		my ($self, $args) = @_;
+#		$args->{node}->provenance($self->getnode($args->{value}));
+		$args->{node}->provenance($args->{graph}->noderef($args->{value}));
+	},
+	"assigned_by" => sub {
+		my ($self, $args) = @_;
+#		$args->{node}->source($self->getnode($args->{value}));
+		$args->{node}->source($args->{graph}->noderef($args->{value}));
+	},
+	"formula" => sub {
+		my ($self, $args) = @_;
+		my $vals = {};
+		$self->_parse_vals($args->{value},$vals);
+### TO COMPLETE / CHECK ###
+		if (! $vals->{quoted})
+		{	warn $args->{node}->id . ": no formula text found in " . $args->{value} . "\n";
+		}
+		else
+		{	my $f = new GOBO::Formula(text=>$vals->{quoted}[0]);
+			if ($vals->{atom})
+			{	$f->language($vals->{atom}[0]);
+			}
+			if ($vals->{xrefs})
+			{	$f->add_xrefs($vals->{xrefs});
+			}
+			$f->associated_with($args->{node});
+			$args->{graph}->add_formula($f);
+		}
+	},
+## obo 1.0 stuff
+	"obo_1_0_synonym" => sub {
+		my ($self, $args) = @_;
+		my $vals = {};
+		$self->_parse_vals($args->{value},$vals);
+		my $syn = new GOBO::Synonym(label=>$vals->{quoted}[0]);
+		$args->{node}->add_synonym($syn);
+		$syn->scope($args->{scope});
+		while ($vals->{atoms} && @{$vals->{atoms}})
+		{	$syn->type(shift @{$vals->{atoms}});
+		}
+		if ($vals->{xrefs}) {
+			$syn->xrefs( [ map { $_ = new GOBO::Node($_) } @{$vals->{xrefs}} ]);
+#			print STDERR "xrefs now: " . Dumper($syn->xrefs) . "\n";
+		}
+	},
+#		print STDERR "Synonym now: " . Dumper($syn) . "\n";
+
+
+
+};
 
 
 sub parse_body {
 	my $self = shift;
 
-	my $stanza_check = sub { return 1; };
-	my $tag_check = sub { return 1; };
-
-	if ($self->has_body_parser_options)
-	{	if ($self->body_parser_options->{ignore_all})
-		{	# ignore the whole thing
-			# no more body parsing required
-		#	warn "Found that I don't have to parse the body. Returning!";
-			return;
+	## the graph header has not been parsed but we must carry on regardless!
+	if (! $self->parsed_header )
+	{	while ($_ = $self->next_line)
+		{	next unless /^\[/;
+#			print STDERR "Content starts here!\n";
+			$self->unshift_line($_);
+			last;
 		}
-		elsif ($self->body_parser_options->{ignore})
-		{	my $h = $self->body_parser_options->{ignore};
+	}
+	if ($self->parse_method eq 'if_else')
+	{	#warn "Parsing in if/else mode!";
+		return $self->parse_body_ie;
+	}
+	else
+	{	return $self->parse_body_dh;
+	}
+}
 
-			my @ignore_all = grep { $h->{$_}[0] eq '*' } keys %$h;
 
-			if (@ignore_all)
-			{	# ignore this stanza if the stanza type exists in the ignore all set
-				$stanza_check = sub {
-					my $s_type = shift;
-					if (grep { $s_type eq $_ } @ignore_all)
-					{	$self->next_stanza(\@ignore_all, 'ignore');
-						return undef;
-					}
-					return 1;
-				};
+sub parse_body_dh {
+	my $self = shift;
+
+	my $stanza_check = $self->get_stanza_check_sub;
+	my $tag_check = $self->get_tag_check_sub;
+
+	if ($self->options && $self->options->{body} && $self->options->{body}{ignore_all})
+	{	# ignore the whole thing
+		# no more body parsing required
+	#	warn "Found that I don't have to parse the body. Returning!";
+		return;
+	}
+
+	my $stanzaclass;
+	my $n;
+	my @anns = ();
+	my $g = $self->graph;
+
+	while($_ = $self->next_line) {
+		next unless /\S/;
+
+		if (/^\[(\S+)\]/) {
+			undef $n;
+			$stanzaclass = lc($1);
+			next unless &$stanza_check( $stanzaclass );
+#			print STDERR "passed the stanza check!\n";
+			if ($stanzaclass eq 'annotation') {
+				$n = new GOBO::Annotation;
+				push(@anns, $n);
 			}
-
-			# ignore the stanza if the stanza type exists in the ignore set
-			# skip the line if the line type exists or the full stanza is to be ignored
-			$tag_check = sub {
-				my ($s_type, $t) = @_;
-#				print STDERR "\n$s_type $t";
-				return 1 if ! $h->{$s_type};
-				return undef if ( $h->{$s_type}[0] eq '*' || grep { /^$t$/i } @{$h->{$s_type}} );
-#				print STDERR "=> OK\n";
-				return 1;
-			};
+			next;
 		}
-		elsif ($self->body_parser_options->{parse_only})
-		{	my $h = $self->body_parser_options->{parse_only};
 
-		#	print STDERR "h: " . Dumper($h) . "\n";
+		s/\s\!\s.*//; # TODO
+		s/\s+$//;
 
-			# parse this stanza if the stanza type exists in the parse_only set
-			# otherwise, go to the next stanza
-			$stanza_check = sub {
-				my $s_type = shift;
-				return 1 if $h->{$s_type};
-				$self->next_stanza([ keys %$h ]);
-				return undef;
-			};
-
-			# if the stanza type exists and the tag exists, we're good
-			# otherwise, go to the next stanza
-			$tag_check = sub {
-				my ($s_type, $t) = @_;
-				if ($h->{$s_type})
-				{	if ( $h->{$s_type}[0] eq '*' || grep { $t eq $_ } @{$h->{$s_type}} )
-					{	return 1;
-					}
-					return undef;
-				}
-				# we should have already caught incorrect stanzas, but n'mind...
-				warn "Incorrect stanza type!\n";
-				$self->next_stanza([ keys %$h ]);
-				return undef;
-			};
+		if (/^id:\s*(.*)\s*$/) {
+#			print STDERR "id: $1; stanzaclass: $stanzaclass; node: " . Dumper($n) . "\n";
+			$body_subs->{id}->($self, { value => $1, graph => \$g, node => \$n, stanzaclass => $stanzaclass });
+#			print STDERR "node: $1\n";
+			next;
 		}
+
+		if (/^(.*?):\s*/) {
+			next unless &$tag_check( $stanzaclass, $1 );
+#			print STDERR "passed the tag check!\n";
+		}
+
+		if (/^(.*?):\s*(.*)\s*$/) {
+			if ($body_subs->{$1}) {
+				$body_subs->{$1}->($self, { tag => $1, value => $2, graph => $g, node => $n, stanzaclass => $stanzaclass });
+				next;
+			}
+			elsif (/^is_(\w+):\s*(\w+)/) {
+				$body_subs->{'is_'}->($self, { tag => $1, value => $2, graph => $g, node => $n } );
+				next;
+			}
+			elsif (/^(broad|narrow|exact|related)_synonym:\s*(.*)/)
+			{	$body_subs->{obo_1_0_synonym}->($self, { scope => uc($1), value => $2, graph => $g, node => $n } );
+				next;
+			}
+			elsif (! $self->strict_mode)
+			{	$body_subs->{'property_value'}->($self, { tag => $1, value => $1." ".$2, graph => $g, node => $n, stanzaclass => $stanzaclass });
+				next;
+			}
+		}
+
+		# we don't know what's going on here!
+		warn "ignored: $_" if /\w/;
+	}
+	if (@anns) {
+		$g->add_annotations(\@anns);
+	}
+	return;
+};
+
+
+sub parse_body_ie {
+	my $self = shift;
+
+#	my $stanza_check = sub { return 1; };
+#	my $tag_check = sub { return 1; };
+	my $stanza_check = $self->get_stanza_check_sub;
+	my $tag_check = $self->get_tag_check_sub;
+
+	if ($self->options && $self->options->{body} && $self->options->{body}{ignore_all})
+	{	# ignore the whole thing
+		# no more body parsing required
+	#	warn "Found that I don't have to parse the body. Returning!";
+		return;
 	}
 
 	my $stanzaclass;
@@ -203,7 +1094,7 @@ sub parse_body {
 		}
 
 		chomp;
-		s/\!.*//; # TODO
+		s/\s\!\s.*//; # TODO
 		s/\s+$//;
 		if (/^id:\s*(.*)\s*$/) {
 			$id = $1;
@@ -226,7 +1117,8 @@ sub parse_body {
 			}
 
 			if (!$n) {
-				die "cannot parse: $_";
+				warn "cannot parse $_";
+#				die "cannot parse: $_";
 			}
 
 			$n->namespace($self->default_namespace)
@@ -235,7 +1127,6 @@ sub parse_body {
 			next;
 		}
 
-		my $vals = [];
 		if (/^name:\s*(.*)/) {
 			$n->label($1);
 		}
@@ -246,15 +1137,30 @@ sub parse_body {
 			$n->add_alt_ids($1);
 		}
 		elsif (/^def:\s*(.*)/) {
-			_parse_vals($1,$vals);
-			$n->definition($vals->[0]); # TODO
-				if ($vals->[1] && @{$vals->[1]}) {
-					$n->definition_xrefs( [ map { $_ = new GOBO::Node({ id => $_ }) } @{$vals->[1]} ]);
-				}
+			$body_subs->{'def'}->($self, { tag => 'def', value => $1, graph => $g, node => $n, stanzaclass => $stanzaclass });
+
+#			my $d = $1;
+#			if ($d =~ /^\"(.*)\"\s*(\[.*)/) {
+#				$n->definition($1);
+#				my $refs = $2;
+#				## parse the xrefs
+#				my $vals = {};
+#				_parse_xrefs($refs, $vals);
+#				if ($vals->{xrefs}) {
+#					$n->definition_xrefs( [ map { $_ = new GOBO::Node($_) } @{$vals->{xrefs}} ]);
+#				}
+#			}
+#			else {
+#				warn "check def format: $d";
+#			}
 		}
 		elsif (/^property_value:\s*(.*)/) {
-			_parse_vals($1,$vals);
-			$n->add_property_value($vals->[0], $vals->[1]); # TODO
+			my ($prop, $val) = split(' ', $1, 2);
+#		print STDERR "node: " . $args->{node} . "; property: $prop; val: $val\n";
+			$n->add_property_value(prop => $prop, value => $val);
+## TO FIX
+## 		$n->add_property_value($vals->[0], $vals->[1]); # TODO
+## 		$n->add_property_value($vals->{quoted}[0], $vals->[1]); # TODO
 		}
 		elsif (/^comment:\s*(.*)/) {
 			$n->comment($1);
@@ -264,7 +1170,7 @@ sub parse_body {
 			$n->add_subsets($ss);
 
 			if ($self->liberal_mode && ! $g->subset_index->{$ss->id})
-			{	print STDERR "$1 was not in the subset index. Crap!\n";
+			{	#print STDERR "$1 was not in the subset index. Crap!\n";
 				$g->subset_index->{$1} = $ss;
 			}
 		}
@@ -281,23 +1187,28 @@ sub parse_body {
 			$n->creation_date($1);
 		}
 		elsif (/^synonym:\s*(.*)/) {
-			_parse_vals($1,$vals);
-			my $syn = new GOBO::Synonym(label=>shift @$vals);
-			$n->add_synonym($syn);
-			my $xrefs = pop @$vals;
-			if (@$vals) {
-				$syn->scope(shift @$vals);
-			}
-			else {
-				warn "no scope specified: $_";
-			}
-			if ($vals->[0] && !ref($vals->[0])) {
-				$syn->type(shift @$vals);
-			}
-			$syn->xrefs($xrefs);
+			$body_subs->{'synonym'}->($self, { tag => 'synonym', value => $1, graph => $g, node => $n, stanzaclass => $stanzaclass });
+#			my $vals = {};
+#			_parse_vals($1,$vals);
+#			my $syn = new GOBO::Synonym(label=>shift @{$vals->{quoted}});
+#			$n->add_synonym($syn);
+#			if ($vals->{atoms} && @{$vals->{atoms}})
+#			{	if ($syn->is_valid_synonym_scope($vals->{atoms}[0]))
+#				{	$syn->scope(shift @{$vals->{atoms}});
+#				}
+#				else {
+#					warn "no scope specified for $n synonym $syn";
+#				}
+#				while (@{$vals->{atoms}})
+#				{	$syn->type(shift @{$vals->{atoms}});
+#				}
+#			}
+#			if ($vals->{xrefs}) {
+#				$syn->xrefs( [ map { $_ = new GOBO::Node($_) } @{$vals->{xrefs}} ]);
+#			}
 		}
 		elsif (/^xref:\s*(\S+)/) {
-			$n->add_xrefs($1);
+			$body_subs->{'xref'}->($self, { tag => 'xref', value => $1, graph => $g, node => $n, stanzaclass => $stanzaclass });
 		}
 		elsif (/^is_a:\s*(\S+)(.*)/) {
 			#my $tn = $stanzaclass eq 'typedef' ? $g->relation_noderef($1) : $g->term_noderef($1);
@@ -307,8 +1218,8 @@ sub parse_body {
 			my $s = new GOBO::LinkStatement(node=>$n,relation=>$rn,target=>$tn);
 			$self->add_metadata($s,$2);
 			$g->add_statement($s);
-			if ($stanzaclass eq 'typedef') {
-                            $n->add_subrelation_of($tn);
+			if ($stanzaclass eq 'typedef')
+			{	$n->add_subrelation_of($tn);
 			}
 		}
 		elsif (/^relationship:\s*(\S+)\s+(\S+)(.*)/) {
@@ -394,12 +1305,22 @@ sub parse_body {
 		}
 		elsif (/^is_(\w+):\s*(\w+)/) {
 			my $att = $1;
-			$n->$att(1) if $2 eq 'true';
 			#$n->{$att} = $val; # TODO : check
+			if ($n->can($att) && $2 eq 'true')
+			{	$n->$att(1);
+			}
+			elsif (! $n->can($att) )
+			{	warn "is_$att is not a valid attribute for " . ref($n) . " $n";
+			}
 		}
 		elsif (/^transitive_over:\s*(\w+)/) {
-			my $rn = $g->relation_noderef($1);
-			$n->transitive_over($rn);
+			if ($n->isa('GOBO::RelationNode'))
+			{	my $rn = $g->relation_noderef($1);
+				$n->transitive_over($rn);
+			}
+			else
+			{	warn "transitive_over is not a valid attribute for " . ref($n) . " $n";
+			}
 		}
 		elsif (/^(holds_over_chain|equivalent_to_chain):\s*(.*)/) {
 			my $ct = $1;
@@ -426,15 +1347,34 @@ sub parse_body {
 			$n->source($self->getnode($1));
 		}
 		elsif (/^formula:\s*(.*)/) {
-			_parse_vals($1,$vals);
-			my $f = new GOBO::Formula(text=>$vals->[0],
-									  language=>$vals->[1]);
-			$f->associated_with($n);
-			$g->add_formula($f);
+			$body_subs->{'formula'}->($self, { tag => 'formula', value => $1, graph => $g, node => $n, stanzaclass => $stanzaclass });
+#			my $vals = {};
+#			_parse_vals($1,$vals);
+### TO COMPLETE / CHECK ###
+#			if (! $vals->{quoted})
+#			{	warn "$n: no formula text found in $1\n";
+#			}
+#			else
+#			{	my $f = new GOBO::Formula(text=>$vals->{quoted}[0]);
+#				if ($vals->{atom})
+#				{	$f->language($vals->{atom}[0]);
+#				}
+#				if ($vals->{xrefs})
+#				{	$f->add_xrefs($vals->{xrefs});
+#				}
+#				$f->associated_with($n);
+#				$g->add_formula($f);
+#			}
 		}
-		else {
-#			warn "ignored: $_";
-			# ...
+		elsif (! $self->strict_mode)
+		{	if (/^(\S+?):\s?(.*)/)
+			{	## in non-strict mode, add unknown things as tag-val pairs
+				$body_subs->{'property_value'}->($self, { tag => $1, value => $1." ".$2, graph => $g, node => $n, stanzaclass => $stanzaclass });
+				next;
+			}
+		}
+		else
+		{	warn "ignored: $_" if /\w/;
 		}
 	}
 	if (@anns) {
@@ -442,8 +1382,6 @@ sub parse_body {
 	}
 	return;
 }
-
-
 
 sub getnode {
 	my $self = shift;
@@ -506,7 +1444,9 @@ sub add_metadata {
 	return;
 }
 
+
 sub _parse_vals {
+	my $self = shift;
 	my $s = shift;
 	my $vals = shift;
 
@@ -514,141 +1454,101 @@ sub _parse_vals {
 #
 	# optionally leads with quoted sections
 	if ($s =~ /^(\".*)/) {
-		$s = _parse_quoted($s,$vals);
+		$s = $self->_parse_quoted($s,$vals);
 	}
 
 	# follows with optional list of atoms
 	while ($s =~ /^([^\{\[]\S*)\s*(.*)/) {
-		push(@$vals,$1);
+		push @{$vals->{atoms}}, $1;
+#		push(@$vals,$1);
 		$s = $2;
 	}
 
 	# option xrefs
 	if ($s =~ /^(\[)/) {
-		$s = _parse_xrefs($s,$vals);
+		$s = $self->_parse_xrefs($s,$vals);
 	}
 #	print STDERR "now: s: $s\nvals: ". Dumper($vals);
 #
 }
 
+
 sub _parse_quoted {
+	my $self = shift;
 	my $s = shift;
 	my $vals = shift;
 	if ($s =~ /^\"(([^\"\\]|\\.)*)\"\s*(.*)/) {
-		push(@$vals,$1);
+#		push(@$vals,$1);
+		push @{$vals->{quoted}}, $1;
 		return $3;
 	}
 	else {
-		die "$s";
+		warn "Parse error in _parse_quoted: $s";
 	}
+}
+
+
+sub _parse_xrefs_OLD {
+	my $self = shift;
+	my $s = shift;
+	my $vals = shift;
+#	print STDERR "input: s: $s; vals: " . Dumper($vals) . "\n";
+	if ($s =~ /^\[(([^\]\\]|\\.)*)\]\s*(.*)/) {
+		$s = $2;
+		push @{$vals->{xrefs}}, map {{ id => $_ }} split(/,\*/,$1);
+#		push(@$vals, [split(/,\s*/,$1)]); # TODO
+	}
+	else {
+		warn "Parse error in _parse_xrefs: $s";
+	}
+#	print STDERR "output: s: $s; vals: " . Dumper($vals) . "\n";
 }
 
 sub _parse_xrefs {
-	my $s = shift;
-	my $vals = shift;
-	if ($s =~ /^\[(([^\]\\]|\\.)*)\]\s*(.*)/) {
-		$s = $2;
-		push(@$vals, [split(/,\s*/,$1)]); # TODO
-	}
-	else {
-		die "$s";
-	}
-}
-
-
-## validate the options that we have
-
-sub check_options {
 	my $self = shift;
-	my $options = $self->options;
-	if ($options && values %$options)
-	{	# get rid of any existing options
-		$self->clear_header_parser_options;
-		$self->clear_body_parser_options;
-		## see if we have any settings for parsing the header
-		if ($options->{header} && keys %{$options->{header}})
-		{
-			if ($options->{header}{ignore} && $options->{header}{parse_only})
-			{	warn "Warning: both ignore and parse_only specified in header parsing options; using setting in parse_only";
-			}
+	my ($s, $vals) = @_;
+	if ($s =~ /^\[(([^\]\\]|\\.)*)\]\s*(.*)/) {
+		$s = $1;
+	}
+	$s =~ s/\s*$//;
+#	if ($s =~ /"/)
+#	{	$self->verbose(1);
+#		print STDERR "input: $s\n";
+#	}
+	##
 
-			# parse_only takes priority
-			if ($options->{header}{parse_only})
-			{	if (ref $options->{header}{parse_only} && ref $options->{header}{parse_only} eq 'ARRAY')
-				{	$self->set_header_parser_options({ parse_only => $options->{header}{parse_only} });
-				}
-				else
-				{	warn "wrong header options format";
-				}
+	if ($s =~ /wikipedia/i)
+	{	$self->verbose(1);
+	}
+
+	while ($s =~ /\S/)
+	{	#print STDERR "s: $s\n";
+		if ($s =~ /^\s*(\S.*?)(, | ".*?"|$)(.*|$)?/)
+		{	my $ref = $1;
+			my $before = $s;
+			$s =~ s/^\s*\Q$ref\E,? ?//;
+			if ($s eq $before)
+			{	warn "search/replace did not work!\n";
+				last;
 			}
-			elsif ($options->{header}{ignore})
-			{	if (! ref $options->{header}{ignore} && $options->{header}{ignore} eq '*')
-				{	$self->set_header_parser_options({ ignore_all => 1 });
-				}
-				elsif (ref $options->{header}{ignore} && ref $options->{header}{ignore} eq 'ARRAY')
-				{	$self->set_header_parser_options({ ignore => $options->{header}{ignore} });
-				}
-				else
-				{	warn "wrong header options format";
-				}
+			if ($s =~ /^"(.*?)"(, (.*)|$)/)
+			{	push @{$vals->{xrefs}}, { id => $ref, label => $1 };
+				$s = $3 || "";
 			}
+			else
+			{	push @{$vals->{xrefs}}, { id => $ref };
+			}
+#			print STDERR "vals: " . Dumper($vals->{xrefs}[-1]) . "$s\n" if $self->verbose;
 		}
-
-		## check the body parsing options
-		if ($options->{body} && keys %{$options->{body}})
-		{	my $b_hash;
-
-			if ($options->{body}{ignore} && $options->{body}{parse_only})
-			{	warn "Warning: both ignore and parse_only specified in body parsing options; using setting in parse_only";
-			}
-
-			# parse_only takes priority
-			if ($options->{body}{parse_only})
-			{	if (ref $options->{body}{parse_only} && ref $options->{body}{parse_only} eq 'HASH')
-				{	## stanza types
-					foreach my $s_type (keys %{$options->{body}{parse_only}})
-					{	# s_type = '*'
-						if (! ref $options->{body}{parse_only}{$s_type} && $options->{body}{parse_only}{$s_type} eq '*')
-						{	$b_hash->{$s_type} = ['*'];
-						}
-						# s_type = [ tag, tag, tag ]
-						elsif (ref $options->{body}{parse_only}{$s_type} && ref $options->{body}{parse_only}{$s_type} eq 'ARRAY')
-						{	$b_hash->{$s_type} = $options->{body}{parse_only}{$s_type};
-						}
-					}
-
-#					print STDERR "b hash: " . Dumper($b_hash);
-					$self->set_body_parser_options({ parse_only => $b_hash }) if $b_hash;
-				}
-				else
-				{	warn "wrong body options format";
-				}
-			}
-			elsif ($options->{body}{ignore})
-			{	if (ref $options->{body}{ignore} && ref $options->{body}{ignore} eq 'HASH')
-				{	## stanza types
-					foreach my $s_type (keys %{$options->{body}{ignore}})
-					{	# s_type = '*'
-						if (! ref $options->{body}{ignore}{$s_type} && $options->{body}{ignore}{$s_type} eq '*')
-						{	$b_hash->{$s_type} = ['*'];
-						}
-						# s_type = [ tag, tag, tag ]
-						elsif (ref $options->{body}{ignore}{$s_type} && ref $options->{body}{ignore}{$s_type} eq 'ARRAY')
-						{	$b_hash->{$s_type} = $options->{body}{ignore}{$s_type};
-						}
-					}
-					$self->set_body_parser_options({ ignore => $b_hash }) if $b_hash;
-				}
-				elsif (! ref $options->{body}{ignore} && $options->{body}{ignore} eq '*')
-				{	$self->set_body_parser_options({ ignore_all => 1 });
-				}
-				else
-				{	warn "wrong body options format";
-				}
-			}
+		else {
+			warn "Parse error in _parse_xrefs while loop: $s";
+			last;
+	#		die "$s";
 		}
 	}
-	$self->checked_options(1);
+#	push(@$vals, [split(/,\s*/,$1)]); # TODO
+#	print STDERR "vals: " . Dumper($vals) . "\n";
+	$self->verbose(0);
 }
 
 =head2 next_stanza
@@ -695,8 +1595,14 @@ sub next_stanza {
 }
 
 
+## alter the reset_parser function so that the check subs are reset
 
-
+after 'reset_parser' => sub {
+	my $self = shift;
+	$self->set_header_check_sub( sub { return 1 } );
+	$self->set_stanza_check_sub( sub { return 1 } );
+	$self->set_tag_check_sub( sub { return 1 } );
+};
 
 1;
 

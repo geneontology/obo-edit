@@ -4,7 +4,7 @@ use GOBO::Graph;
 use FileHandle;
 
 has fh => (is=>'rw', isa=>'FileHandle', clearer=>'clear_fh', predicate=>'has_fh'); #, coerce=>1);
-has file => (is=>'rw', isa=>'Str');
+has file => (is=>'rw', isa=>'Str', trigger => \&init_fh);
 has graph => (is=>'rw', isa=>'GOBO::Graph');
 
 ## indexes to use for the different types of statement
@@ -12,6 +12,12 @@ has 'statement_ix' => (is=>'rw', isa=>'Str', default=>sub { 'statements' } );
 has 'annotation_ix' => (is=>'rw', isa=>'Str', default=>sub { 'annotations' } );
 has 'edge_ix' => (is=>'rw', isa=>'Str', default=>sub { 'edges' } );
 has 'ontology_link_ix' => (is=>'rw', isa=>'Str', default=>sub { 'ontology_links' } );
+
+## set up output; 
+sub BUILD {
+	my $self = shift;
+	$self->init_fh;
+}
 
 sub create {
     my $proto = shift;
@@ -66,7 +72,7 @@ sub write {
     if ($ah{graph}) {
         $self->graph($ah{graph});
     }
-    $self->init_fh;
+#    $self->init_fh;
     $self->write_header;
     $self->write_body;
 }

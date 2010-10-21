@@ -8,7 +8,7 @@ use GOBO::Evidence;
 use GOBO::Annotation;
 
 has delimiter => ( is=>'rw', isa=>'Str', default=>sub{"\t"});
-has column_writer_index => ( is=>'rw', isa=>'HashRef', 
+has column_writer_index => ( is=>'rw', isa=>'HashRef',
                             default=>sub{{}});
 
 sub write_header {
@@ -42,7 +42,7 @@ sub fmt_obj {
     }
     else {
         if ($obj->isa('GOBO::Evidence')) {
-            return $obj->type .' '. join('|', map {$self->fmt_obj('with',$_)} @{$obj->supporting_entities || []});
+            return $obj->ev_type .' '. join('|', map {$self->fmt_obj('with',$_)} @{$obj->supporting_entities || []});
         }
         if ($obj->isa('GOBO::Node')) {
             return $obj->label ?

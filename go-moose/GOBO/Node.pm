@@ -1,15 +1,15 @@
 package GOBO::Node;
 use Moose;
-use strict;
+use Moose::Util::TypeConstraints;
+use GOBO::Types;
 extends 'GOBO::Base';
 with 'GOBO::Identified';
 with 'GOBO::Labeled';
 with 'GOBO::Attributed';
-use Moose::Util::TypeConstraints;
 
-coerce 'GOBO::Node'
-      => from 'Str'
-      => via { new GOBO::Node(id=>$_) };
+#coerce 'GOBO::Node'
+#      => from 'Str'
+#      => via { new GOBO::Node(id=>$_) };
 
 has 'source' => (is => 'rw', isa => 'GOBO::Node');
 has 'full_name' => (is => 'rw', isa => 'Str');  # e.g. for genes. TBD - make this wrap to synonyms?

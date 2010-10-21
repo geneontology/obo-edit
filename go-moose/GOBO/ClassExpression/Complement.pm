@@ -1,10 +1,34 @@
 package GOBO::ClassExpression::Complement;
 use Moose;
-use strict;
+use Moose::Util::TypeConstraints;
+use GOBO::Types;
 extends 'GOBO::ClassExpression::BooleanExpression';
 
-sub operator { ' NOT ' }
+has '+arguments' => (isa => 'GOBO::Types::SingleNodeArray', coerce=>1);
+
+sub operator { 'NOT ' }
 sub operator_symbol { '-' }
+
+override 'id' => sub {
+	my $self = shift;
+
+	if ($self->arguments->[0]->isa("GOBO::ClassExpression"))
+	{	return $self->operator_symbol . "(" . $self->arguments->[0]->id . ")";
+	}
+	return $self->operator_symbol . $self->arguments->[0]->id;
+
+};
+
+use overload ('""' => 'as_string');
+
+override 'as_string' => sub {
+	my $self = shift;
+	if ($self->arguments->[0]->isa("GOBO::ClassExpression"))
+	{	return $self->operator . "(" . $self->arguments->[0]->as_string . ")";
+	}
+	return $self->operator . $self->arguments->[0]->as_string;
+};
+
 
 =head1 NAME
 
@@ -22,4 +46,4 @@ equivalent to complementOf
 
 =cut
 
-1; 
+1;

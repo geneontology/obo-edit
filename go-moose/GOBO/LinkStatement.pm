@@ -1,11 +1,12 @@
 package GOBO::LinkStatement;
 use Moose;
-use strict;
+use Moose::Util::TypeConstraints;
+use GOBO::Types;
 extends 'GOBO::Statement';
 #use GOBO::Node;
 
 has 'target' => ( is=>'rw', isa=>'GOBO::Node', coerce=>1 );
-has 'distance_index' => ( is=>'rw', isa=>'HashRef[Number]', coerce=>1 );
+has 'distance_index' => ( is=>'rw', isa=>'HashRef[Number]'); #, coerce=>1 );
 
 sub equals {
     my $self = shift;

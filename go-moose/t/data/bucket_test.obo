@@ -1,0 +1,72 @@
+format-version: 1.2
+date: 14:07:2009 13:33
+subsetdef: goslim_test "Test GO slim"
+default-namespace: test_ontology
+
+[Term]
+id: GO:0000001
+name: test term GO:0000001
+is_a: GO:0000006
+
+[Term]
+id: GO:0000002
+name: test term GO:0000002
+is_a: GO:0000006
+
+[Term]
+id: GO:0000003
+name: test term GO:0000003
+is_a: GO:0000006
+
+[Term]
+id: GO:0000004
+name: test term GO:0000004
+subset: goslim_test
+is_a: GO:0000006
+
+[Term]
+id: GO:0000005
+name: test term GO:0000005
+subset: goslim_test
+is_a: GO:0000006
+
+[Term]
+id: GO:0000006
+name: test term GO:0000006
+is_a: GO:0000007
+
+[Term]
+id: GO:0000007
+name: test term GO:0000007
+subset: goslim_test
+is_a: GO:0000008
+
+[Term]
+id: GO:0000008
+name: test term GO:0000008
+subset: goslim_test
+
+[Typedef]
+id: negatively_regulates
+name: negatively_regulates
+is_a: regulates ! regulates
+
+[Typedef]
+id: positively_regulates
+name: positively_regulates
+is_a: regulates ! regulates
+
+[Typedef]
+id: part_of
+name: part of
+is_transitive: true
+
+[Typedef]
+id: regulates
+name: regulates
+transitive_over: part_of ! part_of
+
+[Typedef]
+id: has_part
+name: has part
+is_transitive: true
