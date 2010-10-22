@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Oct 22, 2010 9:25:52 AM by Hibernate Tools 3.4.0.Beta1 -->
+<hibernate-mapping>
+    <class name="org.geneontology.gold.hibernate.model.InferredRelationship" table="inferred_relationship">
+        <comment>A path between cls and target_cls</comment>
+        <composite-id name="id" class="org.geneontology.gold.hibernate.model.InferredRelationshipId">
+            <key-property name="cls" type="string">
+                <column name="cls" />
+            </key-property>
+            <key-property name="targetCls" type="string">
+                <column name="target_cls" />
+            </key-property>
+            <key-property name="relation" type="string">
+                <column name="relation" />
+            </key-property>
+            <key-property name="isDirect" type="java.lang.Boolean">
+                <column name="is_direct" />
+            </key-property>
+            <key-property name="isReflexive" type="java.lang.Boolean">
+                <column name="is_reflexive" />
+            </key-property>
+            <key-property name="ontology" type="string">
+                <column name="ontology" />
+            </key-property>
+        </composite-id>
+    </class>
+</hibernate-mapping>

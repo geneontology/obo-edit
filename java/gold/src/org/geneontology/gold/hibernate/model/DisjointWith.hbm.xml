@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Oct 22, 2010 9:25:52 AM by Hibernate Tools 3.4.0.Beta1 -->
+<hibernate-mapping>
+    <class name="org.geneontology.gold.hibernate.model.DisjointWith" table="disjoint_with">
+        <comment>Two classes are disjoint if they share no instances or subclasses in common. MAPPINGS: OBO: Term.disjoint_from OWL: DisjointClasses(cls disjoint_cls) LEAD:
+        n/a</comment>
+        <composite-id name="id" class="org.geneontology.gold.hibernate.model.DisjointWithId">
+            <key-property name="cls" type="string">
+                <column name="cls" />
+            </key-property>
+            <key-property name="disjointCls" type="string">
+                <column name="disjoint_cls" />
+            </key-property>
+            <key-property name="ontology" type="string">
+                <column name="ontology" />
+            </key-property>
+        </composite-id>
+    </class>
+</hibernate-mapping>
