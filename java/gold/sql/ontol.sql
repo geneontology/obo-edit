@@ -1,4 +1,4 @@
--- ****************************************
+﻿-- ****************************************
 -- ontology
 -- ****************************************
 
@@ -217,7 +217,7 @@ EXAMPLE: PMID:123456
 EXAMPLE: http://en/wikipedia.org/wiki/Transcription
  OBO: term.def.xrefs
  OWL: see obo2owl spec
- LEAD: term_dbxref[is_for_definition=1].dbxref.{xref_dbname+':'+xref_key}
+ LEAD: term_dbxref[is_for_definition=1].dbxref.{xref_dbname:xref_key}
 ';
 
 -- ****************************************
@@ -228,7 +228,7 @@ CREATE TABLE obj_alternate_label (
        obj VARCHAR,
        label VARCHAR,
        synonym_scope VARCHAR,
-       synonym_type VARCHAR
+       synonym_type VARCHAR,
        synonym_xref VARCHAR
 );
 
@@ -369,7 +369,7 @@ MAPPINGS:
  LEAD: n/a
 ';
 
-COMMENT ON COLUMN relation_chain.is_bidrectional IS 'True if the implication is bidirectional.
+COMMENT ON COLUMN relation_chain.is_bidirectional IS 'True if the implication is bidirectional.
 MAPPINGS:
  OBO: true for typedef.equivalent_to_chain, false for typedef.holds_over_chain
  OWL: n/a
