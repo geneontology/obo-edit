@@ -79,8 +79,14 @@ sub ftp_connect{
 
 my @file;
 
+
 if (defined $fetch_dir) {
-    $fetch_dir = tempdir(CLEANUP => $clean_p) if (!$fetch_dir);
+    if (!$fetch_dir) {
+	$fetch_dir                    =
+	  $ENV{QFO_CACHE}             ?
+	  $ENV{QFO_CACHE}             :
+	  tempdir(CLEANUP => $clean_p);
+    }
 
     sub okp{
 	my $check = shift;
@@ -254,8 +260,9 @@ while (@file) {
 
 	}
 
+	my $symbol = $guesser->{tagval}->{GN} || $guesser->{guessed}->{xref_key};
 	my $worked = $guesser->{guessed}->{gene_product_id} = create_id
-	  ($sth{insert_gene_product}, ($guesser->{tagval}->{GN} || ''),
+	  ($sth{insert_gene_product}, $symbol,
 	   $guesser->{guessed}->{dbxref_id}, $guesser->species_id,
 	   $type_id);
 	if (!$worked) {
