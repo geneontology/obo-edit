@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Oct 22, 2010 9:25:52 AM by Hibernate Tools 3.4.0.Beta1 -->
+<hibernate-mapping>
+    <class name="org.geneontology.gold.hibernate.model.AnnotationAssertion" table="annotation_assertion">
+        <comment>A non-logical relationship between two objects (classes or relations). When an obo consider tag is being used, relation=consider When an obo replaced_by tag is
+        being used, relation=replaced_by MAPPINGS: OBO: property_value (also: consider, replaced_by) OWL: AnnotationAssertion(relation obj target_obj) LEAD:
+        term2term_metadata</comment>
+        <composite-id name="id" class="org.geneontology.gold.hibernate.model.AnnotationAssertionId">
+            <key-property name="relation" type="string">
+                <column name="relation" />
+            </key-property>
+            <key-property name="obj" type="string">
+                <column name="obj" />
+            </key-property>
+            <key-property name="targetObj" type="string">
+                <column name="target_obj" />
+            </key-property>
+            <key-property name="ontology" type="string">
+                <column name="ontology" />
+            </key-property>
+        </composite-id>
+    </class>
+</hibernate-mapping>

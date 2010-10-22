@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Oct 22, 2010 9:25:52 AM by Hibernate Tools 3.4.0.Beta1 -->
+<hibernate-mapping>
+    <class name="org.geneontology.gold.hibernate.model.RelationChain" table="relation_chain">
+        <comment>A rule defining how two relations are composed. EXAMPLE: has_part o part_of --&gt; overlaps EXAMPLE: regulates o part_of --&gt; regulates MAPPINGS: OBO:
+        typedef.holds_over_chain OWL: SubObjectPropertyOf(inferred_relation PropertyChain(relation1 relation2)) LEAD: n/a</comment>
+        <composite-id name="id" class="org.geneontology.gold.hibernate.model.RelationChainId">
+            <key-property name="inferredRelation" type="string">
+                <column name="inferred_relation" />
+            </key-property>
+            <key-property name="relation1" type="string">
+                <column name="relation1" />
+            </key-property>
+            <key-property name="relation2" type="string">
+                <column name="relation2" />
+            </key-property>
+            <key-property name="isBidirectional" type="java.lang.Boolean">
+                <column name="is_bidirectional" />
+            </key-property>
+        </composite-id>
+    </class>
+</hibernate-mapping>

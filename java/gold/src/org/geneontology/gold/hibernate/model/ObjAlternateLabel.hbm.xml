@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Oct 22, 2010 9:25:52 AM by Hibernate Tools 3.4.0.Beta1 -->
+<hibernate-mapping>
+    <class name="org.geneontology.gold.hibernate.model.ObjAlternateLabel" table="obj_alternate_label">
+        <comment>Synonyms and alternative labels. MAPPINGS: OBO: synonym OWL: see obo2owl spec LEAD: term_synonym</comment>
+        <composite-id name="id" class="org.geneontology.gold.hibernate.model.ObjAlternateLabelId">
+            <key-property name="obj" type="string">
+                <column name="obj" />
+            </key-property>
+            <key-property name="label" type="string">
+                <column name="label" />
+            </key-property>
+            <key-property name="synonymScope" type="string">
+                <column name="synonym_scope" />
+            </key-property>
+            <key-property name="synonymType" type="string">
+                <column name="synonym_type" />
+            </key-property>
+            <key-property name="synonymXref" type="string">
+                <column name="synonym_xref" />
+            </key-property>
+        </composite-id>
+    </class>
+</hibernate-mapping>

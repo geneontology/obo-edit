@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Oct 22, 2010 9:25:52 AM by Hibernate Tools 3.4.0.Beta1 -->
+<hibernate-mapping>
+    <class name="org.geneontology.gold.hibernate.model.AnnotationProperty" table="annotation_property">
+        <comment>A non-logical relation/tag that can connect objects or objects and values. TYPICAL ENTRIES: consider, replaced_by MAPPINGS: OBO: Typedef[is_metadata_tag=true]
+        OWL: AnnotationProperty LEAD: term (overloaded)</comment>
+        <id name="id" type="string">
+            <column name="id" />
+            <generator class="assigned" />
+        </id>
+        <property name="label" type="string">
+            <column name="label" />
+        </property>
+        <property name="ontology" type="string">
+            <column name="ontology" />
+        </property>
+        <property name="oboNamespace" type="string">
+            <column name="obo_namespace" />
+        </property>
+        <property name="textComment" type="string">
+            <column name="text_comment" />
+        </property>
+        <property name="textDefinition" type="string">
+            <column name="text_definition" />
+        </property>
+        <property name="isObsolete" type="java.lang.Boolean">
+            <column name="is_obsolete" />
+        </property>
+    </class>
+</hibernate-mapping>

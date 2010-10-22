@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Oct 22, 2010 9:25:52 AM by Hibernate Tools 3.4.0.Beta1 -->
+<hibernate-mapping>
+    <class name="org.geneontology.gold.hibernate.model.ObjAlternateId" table="obj_alternate_id">
+        <comment>An alternive identifier for a class or relation, typically arising from class merges. MAPPINGS: OBO: alt_id OWL: see obo2owl spec LEAD: term_synonym
+        (overloaded)</comment>
+        <composite-id name="id" class="org.geneontology.gold.hibernate.model.ObjAlternateIdId">
+            <key-property name="obj" type="string">
+                <column name="obj" />
+            </key-property>
+            <key-property name="id" type="string">
+                <column name="id" />
+            </key-property>
+        </composite-id>
+    </class>
+</hibernate-mapping>
