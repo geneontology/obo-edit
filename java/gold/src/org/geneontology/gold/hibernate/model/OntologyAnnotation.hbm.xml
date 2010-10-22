@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<!-- Generated Oct 22, 2010 9:25:52 AM by Hibernate Tools 3.4.0.Beta1 -->
+<hibernate-mapping>
+
+<class
+    name="org.geneontology.gold.hibernate.model.OntologyAnnotation"
+    table="ontology_annotation"
+>
+
+ <comment>A property of an ontology
+Example properties: saved_by
+MAPPINGS: 
+ OBO: header.<property>
+ OWL: OntologyAnnotation(ontology property value)
+ LEAD: n/a</comment>
+    <composite-id
+		name="id"
+        class="org.geneontology.gold.hibernate.model.OntologyAnnotationId"
+    >		
+	        <key-property name="ontology" type="string">
+<column name="ontology" />
+	        </key-property>
+	        <key-property name="property" type="string">
+<column name="property" />
+	        </key-property>
+	        <key-property name="annotationValue" type="string">
+<column name="annotation_value" />
+	        </key-property>
+    </composite-id>	
+
+
+
+
+
+</class>
+
+</hibernate-mapping>

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Oct 22, 2010 9:25:52 AM by Hibernate Tools 3.4.0.Beta1 -->
+<hibernate-mapping>
+    <class name="org.geneontology.gold.hibernate.model.ObjXref" table="obj_xref">
+        <composite-id name="id" class="org.geneontology.gold.hibernate.model.ObjXrefId">
+            <key-property name="obj" type="string">
+                <column name="obj" />
+            </key-property>
+            <key-property name="xref" type="string">
+                <column name="xref" />
+            </key-property>
+            <key-property name="xrefDescription" type="string">
+                <column name="xref_description" />
+            </key-property>
+        </composite-id>
+    </class>
+</hibernate-mapping>

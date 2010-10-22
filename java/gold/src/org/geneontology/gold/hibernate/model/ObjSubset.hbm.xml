@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Oct 22, 2010 9:25:52 AM by Hibernate Tools 3.4.0.Beta1 -->
+<hibernate-mapping>
+    <class name="org.geneontology.gold.hibernate.model.ObjSubset" table="obj_subset">
+        <comment>Relates an ontology class or relation to an ontology_subset. MAPPINGS: OBO: term.subset OWL: see obo2owl spec LEAD: term_subset</comment>
+        <composite-id name="id" class="org.geneontology.gold.hibernate.model.ObjSubsetId">
+            <key-property name="obj" type="string">
+                <column name="obj" />
+            </key-property>
+            <key-property name="ontologySubset" type="string">
+                <column name="ontology_subset" />
+            </key-property>
+        </composite-id>
+    </class>
+</hibernate-mapping>

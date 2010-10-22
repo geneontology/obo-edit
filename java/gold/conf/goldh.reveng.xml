@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd" >
+
+<hibernate-reverse-engineering>
+
+
+	<table-filter match-name="all_only_relationship"></table-filter>
+	<table-filter match-name="all_some_relationship"></table-filter>
+	<table-filter match-name="annotation_assertion"></table-filter>
+	<table-filter match-name="annotation_property"></table-filter>
+	<table-filter match-name="cls"></table-filter>
+	<table-filter match-name="cls_intersection_of"></table-filter>
+	<table-filter match-name="cls_union_of"></table-filter>
+	<table-filter match-name="disjoint_with"></table-filter>
+	<table-filter match-name="equivalent_to"></table-filter>
+	<table-filter match-name="inferred_relationship"></table-filter>
+	<table-filter match-name="never_some_relationship"></table-filter>
+	<table-filter match-name="obj_alternate_id"></table-filter>
+	<table-filter match-name="obj_alternate_label"></table-filter>
+	<table-filter match-name="obj_definition_xref"></table-filter>
+	<table-filter match-name="obj_subset"></table-filter>
+	<table-filter match-name="obj_xref"></table-filter>
+	<table-filter match-name="ontology"></table-filter>
+	<table-filter match-name="ontology_annotation"></table-filter>
+	<table-filter match-name="ontology_imports"></table-filter>
+	<table-filter match-name="ontology_subset"></table-filter>
+	<table-filter match-name="relation"></table-filter>
+	<table-filter match-name="relation_chain"></table-filter>
+	<table-filter match-name="subclass_of"></table-filter>
+	<table-filter match-name="subrelation_of"></table-filter>
+</hibernate-reverse-engineering>
