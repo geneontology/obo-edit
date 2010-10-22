@@ -1,0 +1,3 @@
+TODO:overlaps	overlaps	null	null	null	null	null	null	null	null
+TODO_part:of	part_of	null	null	null	null	null	null	null	null
+TODO_has:quality	has_quality	null	null	null	null	null	null	null	null
