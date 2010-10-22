@@ -1,5 +1,6 @@
 package org.geneontology.gold.io;
 
+import java.io.IOException;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.AxiomType;
@@ -15,7 +16,9 @@ import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
+import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
+import owltools.graph.OWLQuantifiedProperty;
 
 /**
  * Loads ontology into Gold database.
@@ -35,37 +38,89 @@ public class OntologyBulkLoader {
 	 */
 	private OWLGraphWrapper graphWrapper;
 	
+	private String path = ".";
+	
 	public OWLOntology getOwlOntology() {
 		return graphWrapper.getOntology();
+	}
+	
+	public OntologyBulkLoader(OWLGraphWrapper graphWrapper, String path){
+		this.graphWrapper = graphWrapper;
+		this.path = path;
 	}
 	
 	/**
 	 * 
 	 */
-	public void dumpBulkLoadTables() {
+	public void dumpBulkLoadTables() throws IOException{
 		dumpDeclarationsAndMetadata();
 		dumpLogicalAxioms();
 	}
 
-	public void dumpDeclarationsAndMetadata() {
-		TableDumper clsDumper = new TableDumper("cls");
+	public void dumpDeclarationsAndMetadata() throws IOException {
+		TableDumper clsDumper = new TableDumper("cls", this.path);
+		
+		
+		TableDumper obj_alternate_labelDumper = new TableDumper("obj_alternate_label", this.path);
+	//	TableDumper subclass_ofDumper = new TableDumper("subclass_of");
+		//TableDumper allSomeRelationship = new TableDumper("all_some_relationship");
+		
+		
 		for (OWLClass cls : getOwlOntology().getClassesInSignature()) {
 			String label = graphWrapper.getLabel(cls);
 			String def = graphWrapper.getDef(cls);
+			String id = graphWrapper.getIdentifier(cls);
 			// textdef TODO
-			//clsDumper.dumpRow(id, label, ...); TODO
+			clsDumper.dumpRow(id, label, null, null, null, def, null);
+			
+			
+			for(String l: graphWrapper.getSynonymStrings(cls)){
+				obj_alternate_labelDumper.dumpRow(id, l, null, null, null);
+			}
+			
+			
+/*			for(String sc: graphWrapper.getSubClassesNames(cls)){
+				subclass_ofDumper.dumpRow(sc, label, null);
+			}
+			
+			
+			for(OWLGraphEdge ed: graphWrapper.getOutgoingEdges(cls)){
+				String prop = null;
+				for(OWLQuantifiedProperty qp: ed.getQuantifiedPropertyList()){
+					if(qp.isSomeValuesFrom())
+						prop  = qp.getPropertyId();
+				}
+				
+				if(prop != null){
+					allSomeRelationship.dumpRow(ed.getSourceId(), prop, ed.getTargetId(), null);
+				}
+			}*/
 		}
-		TableDumper relDumper = new TableDumper("relation");
+		TableDumper relDumper = new TableDumper("relation", path);
 		for (OWLObjectProperty op : getOwlOntology().getObjectPropertiesInSignature()) {
 			String label = graphWrapper.getLabel(op);
+			String def = graphWrapper.getDef(op);
+			String id = graphWrapper.getIdentifier(op);
 			// textdef TODO
-			//relDumper.dumpRow(id, label, ...); TODO
+			relDumper.dumpRow(id, label, null, null, null, def, null, null, null, null);
+			
+			for(String l: graphWrapper.getSynonymStrings(op)){
+				obj_alternate_labelDumper.dumpRow(id, l, null, null, null);
+			}
+			
+			
 		}
+		
+		
+		clsDumper.close();
+		relDumper.close();
+		obj_alternate_labelDumper.close();
+		
 	}
 	
-	public void dumpLogicalAxioms() {
-		TableDumper subClassOfDumper = new TableDumper("subclass_of");
-		TableDumper allSomeRelationshipDumper = new TableDumper("all_some_relationship");
+	public void dumpLogicalAxioms() throws IOException {
+		TableDumper subClassOfDumper = new TableDumper("subclass_of", path);
+		TableDumper allSomeRelationshipDumper = new TableDumper("all_some_relationship", path);
 		
 		Set<OWLSubClassOfAxiom> axioms = getOwlOntology().getAxioms(AxiomType.SUBCLASS_OF);
 		for (OWLSubClassOfAxiom sca : axioms) {
@@ -74,7 +129,7 @@ public class OntologyBulkLoader {
 			OWLClassExpression subcls = sca.getSubClass();
 			OWLClassExpression supercls = sca.getSuperClass();
 			if (subcls instanceof OWLClass && supercls instanceof OWLClass) {
-				subClassOfDumper.dumpRow(oboId(subcls),oboId(supercls));
+				subClassOfDumper.dumpRow(oboId(subcls),oboId(supercls), null);
 			}		
 			else if (subcls instanceof OWLClass && supercls instanceof OWLObjectSomeValuesFrom) {
 				OWLObjectSomeValuesFrom restr = (OWLObjectSomeValuesFrom) supercls;
@@ -83,7 +138,7 @@ public class OntologyBulkLoader {
 				allSomeRelationshipDumper.dumpRow(
 						oboId(subcls),
 						oboId(p),
-						oboId(filler));
+						oboId(filler), null);
 			}
 			else {
 				// TODO
@@ -94,6 +149,9 @@ public class OntologyBulkLoader {
 		}
 		// TODO - disjoint_with
 		
+		
+		allSomeRelationshipDumper.close();
+		subClassOfDumper.close();
 	}
 	
 	private String oboId(OWLObject ob) {

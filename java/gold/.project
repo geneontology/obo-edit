@@ -14,16 +14,4 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>classes</name>
-			<type>2</type>
-			<location>/Users/cjm/cvs/go-java/gold/classes</location>
-		</link>
-		<link>
-			<name>src</name>
-			<type>2</type>
-			<location>/Users/cjm/cvs/go-java/gold/src</location>
-		</link>
-	</linkedResources>
 </projectDescription>

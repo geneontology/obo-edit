@@ -1,5 +1,6 @@
 package org.geneontology.gold.io;
 
+import java.io.IOException;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.AxiomType;
@@ -40,14 +41,15 @@ public class OntologyLoader {
 	}
 	
 	/**
+	 * @throws IOException 
 	 * 
 	 */
-	public void dumpBulkLoadTables() {
+	public void dumpBulkLoadTables() throws IOException {
 		dumpDeclarationsAndMetadata();
 		dumpLogicalAxioms();
 	}
 
-	public void dumpDeclarationsAndMetadata() {
+	public void dumpDeclarationsAndMetadata() throws IOException {
 		TableDumper clsDumper = new TableDumper("cls");
 		for (OWLClass cls : getOwlOntology().getClassesInSignature()) {
 			String label = graphWrapper.getLabel(cls);
@@ -62,7 +64,7 @@ public class OntologyLoader {
 		}
 	}
 	
-	public void dumpLogicalAxioms() {
+	public void dumpLogicalAxioms() throws IOException {
 		TableDumper subClassOfDumper = new TableDumper("subclass_of");
 		TableDumper allSomeRelationshipDumper = new TableDumper("all_some_relationship");
 		
