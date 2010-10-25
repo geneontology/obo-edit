@@ -10,5 +10,13 @@
         <property name="hibernate.connection.username">postgres</property>
         <property name="hibernate.default_schema">public</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+    
+        <!-- Enable Hibernate's automatic session context management -->
+        <property name="current_session_context_class">thread</property>
+
+		<!-- Load up the basic GO Object Hibernate Mapping Files -->
+        <mapping resource="org/geneontology/gold/hibernate/model/Cls.hbm.xml"/>
+
+    
     </session-factory>
 </hibernate-configuration>

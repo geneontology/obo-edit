@@ -31,18 +31,38 @@ public class TableDumper {
 	}
 	
 	public void dumpRow(String v1) throws IOException {
+		if(v1 == null)
+			v1 = "";
 		write(v1);
 	}
 	public void dumpRow(String v1, String v2) throws IOException {
+		if(v1 == null)
+			v1 = "";
+		
+		if(v2 == null)
+			v2 = "";
+		
 		write(v1+"\t"+v2);		
 	}
 	public void dumpRow(String v1, String v2, String v3) throws IOException {
+		if(v1 == null)
+			v1 = "";
+		
+		if(v2 == null)
+			v2 = "";
+		
+		if(v3 == null)
+			v3 = "";
+		
 		write(v1+"\t"+v2+"\t"+v3);					
 	}
 	
 	public void dumpRow(String... args) throws IOException {
 		StringBuffer b = null;
 		for (String v : args) {
+			if(v == null)
+				v = "";
+			
 			if (b==null)
 				b = new StringBuffer(v);
 			else
