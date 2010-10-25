@@ -1,3 +1,0 @@
-TODO:overlaps	overlaps								
-TODO_part:of	part_of								
-TODO_has:quality	has_quality								

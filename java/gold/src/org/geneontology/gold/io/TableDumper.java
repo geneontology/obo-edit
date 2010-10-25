@@ -20,39 +20,46 @@ public class TableDumper {
 	private String table;
 	
 	private FileWriter writer;
+	
+	private String nullString;
+	
 	public TableDumper(String table) throws IOException {
 		this(table, ".");
 	}
 	
 	public TableDumper(String table, String path) throws IOException{
+		this(table, path, "\\N");
+	}
+	
+	public TableDumper(String table, String path, String nullString) throws IOException{
 		this.table = table;
-		
+		this.nullString = nullString;
 		writer = new FileWriter(new File(path, table+".txt"));
 	}
 	
 	public void dumpRow(String v1) throws IOException {
 		if(v1 == null)
-			v1 = "";
+			v1 = nullString;
 		write(v1);
 	}
 	public void dumpRow(String v1, String v2) throws IOException {
 		if(v1 == null)
-			v1 = "";
+			v1 = nullString;
 		
 		if(v2 == null)
-			v2 = "";
+			v2 = nullString;
 		
 		write(v1+"\t"+v2);		
 	}
 	public void dumpRow(String v1, String v2, String v3) throws IOException {
 		if(v1 == null)
-			v1 = "";
+			v1 = nullString;
 		
 		if(v2 == null)
-			v2 = "";
+			v2 = nullString;
 		
 		if(v3 == null)
-			v3 = "";
+			v3 = nullString;
 		
 		write(v1+"\t"+v2+"\t"+v3);					
 	}
@@ -61,7 +68,7 @@ public class TableDumper {
 		StringBuffer b = null;
 		for (String v : args) {
 			if(v == null)
-				v = "";
+				v = nullString;
 			
 			if (b==null)
 				b = new StringBuffer(v);

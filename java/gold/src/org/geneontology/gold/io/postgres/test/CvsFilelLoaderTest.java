@@ -24,7 +24,7 @@ public class CvsFilelLoaderTest extends TestCase {
 	private static Connection getConnection() throws ClassNotFoundException, SQLException{
 		Class.forName("org.postgresql.Driver");
 		
-		return  DriverManager.getConnection("jdbc:postgresql://localhost/gold", "postgres", "postgres");
+		return  DriverManager.getConnection("jdbc:postgresql://localhost/temp12", "postgres", "postgres");
 		
 		
 	}
