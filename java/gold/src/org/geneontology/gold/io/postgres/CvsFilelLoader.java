@@ -1,6 +1,7 @@
 package org.geneontology.gold.io.postgres;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -19,12 +20,12 @@ import org.postgresql.core.BaseConnection;
 public class CvsFilelLoader {
 
 	
-	private BaseConnection connection;
+	//private BaseConnection connection;
 	
 	private CopyManager copyManager;
 	
 	public CvsFilelLoader(BaseConnection connection) throws SQLException{
-		this.connection = connection;
+	//	this.connection = connection;
 		
 		this.copyManager = new CopyManager(connection);
 	}
@@ -47,7 +48,7 @@ public class CvsFilelLoader {
 		
 		String table = fileName.substring(0, fileName.indexOf('.'));
 		
-		copyManager.copyIn("COPY "+ table + " FROM STDIN WITH DELIMITER AS '\t' CSV", new FileInputStream(file));
+		copyManager.copyIn("COPY "+ table + " FROM STDIN WITH DELIMITER AS '\t'", new FileInputStream(file));
 	}
 	
 	
@@ -62,10 +63,15 @@ public class CvsFilelLoader {
 		
 		File data = new File("data");
 		
-		String[] tables = data.list();
+		File[] tables = data.listFiles(new FileFilter() {
+			
+			public boolean accept(File pathname) {
+				return !pathname.isDirectory() && pathname.getName().endsWith(".txt");
+			}
+		});
 		
-		for(String table: tables){
-			loadTable(table);
+		for(File table: tables){
+			loadTable(table.getName());
 		}
 	}
 	

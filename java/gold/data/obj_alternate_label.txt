@@ -1,5 +1,0 @@
-CARO:0000029	dioecious organism			
-CARO:0001001	nerve fiber bundle			
-CARO:0000048	monoecious organism			
-CARO:0000045	consecutive hermaphroditic organism			
-CARO:0000046	serially hermaphroditic organism			
