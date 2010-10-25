@@ -42,5 +42,6 @@
 	<classpathentry kind="lib" path="lib/javassist-3.12.0.GA.jar"/>
 	<classpathentry kind="lib" path="lib/jta-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/ejb3-persistence.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
