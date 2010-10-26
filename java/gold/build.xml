@@ -17,6 +17,7 @@
 	<property name="tagprefix" value="${projectname}-" />
 	<property name="warfile" location="${runtimedir}/admin.war" />
 	<property name="webxml" location="conf/web.xml" />
+	<property name="webcontents" location="webcontents" />
 
 	
 	<property name="main_jar_manifest_template" location="templates/jar_manifest.template" />
@@ -177,6 +178,7 @@
 	-->
 	<target name="make-war" depends="classes">
 		<war destfile="${warfile}" webxml="${webxml}">
+			<fileset dir="${webcontents}"/>
 			<lib dir="lib" />
 			<classes dir="${outputdir}" />
 		</war>
