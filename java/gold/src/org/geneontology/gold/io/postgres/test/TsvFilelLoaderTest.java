@@ -5,18 +5,18 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import org.geneontology.gold.io.postgres.CvsFilelLoader;
+import org.geneontology.gold.io.postgres.TsvFilelLoader;
 import org.postgresql.core.BaseConnection;
 
 import junit.framework.TestCase;
 
-public class CvsFilelLoaderTest extends TestCase {
+public class TsvFilelLoaderTest extends TestCase {
 
 	
 	public static void testLoadTabes() throws ClassNotFoundException, SQLException, IOException{
 		BaseConnection bc = (BaseConnection)getConnection();
 		
-		CvsFilelLoader loader = new CvsFilelLoader(bc);
+		TsvFilelLoader loader = new TsvFilelLoader(bc);
 		
 		loader.loadTables();
 	}
