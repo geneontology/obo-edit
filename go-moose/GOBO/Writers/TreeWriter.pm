@@ -309,4 +309,6 @@ sub create_r_abbrev {
 	return $rel_h->{$r}
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;

@@ -13,4 +13,6 @@ sub write {
     print $json;
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;

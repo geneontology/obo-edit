@@ -1126,5 +1126,7 @@ sub get_leaves_in_ix {
 
 
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 

@@ -18,4 +18,6 @@ sub write_stanza {
     system(@cmd);
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;

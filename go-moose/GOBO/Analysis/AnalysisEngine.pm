@@ -72,6 +72,8 @@ sub calculate_simJ {
     return $iv->size / $uv->size;
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 =head1 SEE ALSO

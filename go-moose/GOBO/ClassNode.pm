@@ -12,6 +12,8 @@ sub add_disjoint_from {
     push(@{$self->disjoint_from_list},@_);
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 

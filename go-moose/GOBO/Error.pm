@@ -11,6 +11,8 @@ has line       => ( isa => "Int",                    is => "ro" );
 has file       => ( isa => "Str",                    is => "ro" );
 has last_error => ( isa => "Any",                    is => "ro" );
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

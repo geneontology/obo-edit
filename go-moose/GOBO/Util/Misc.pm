@@ -189,4 +189,6 @@ sub __compare_objects {
 	return 1;
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;

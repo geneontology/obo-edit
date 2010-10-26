@@ -7,6 +7,8 @@ extends 'GOBO::AnnotationSubject';
 has gp_type => (is=>'rw', isa=>'GOBO::Node', coerce=>1);
 has taxon => (is=>'rw', isa=>'GOBO::Node', coerce=>1);
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 =head1 NAME

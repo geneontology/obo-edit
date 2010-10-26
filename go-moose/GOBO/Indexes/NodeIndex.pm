@@ -142,6 +142,8 @@ sub update_label_index {
 	}
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 

@@ -43,4 +43,6 @@ override 'write_body' => sub {
 
 };
 
+__PACKAGE__->meta->make_immutable;
+
 1;

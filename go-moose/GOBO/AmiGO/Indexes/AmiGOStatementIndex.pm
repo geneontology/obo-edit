@@ -78,6 +78,8 @@ sub convert {
                       target=>$rs->object->acc);
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 

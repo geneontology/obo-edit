@@ -196,6 +196,8 @@ sub get_matching_statements {
 	return \@sl;
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 

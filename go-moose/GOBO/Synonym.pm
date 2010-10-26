@@ -31,4 +31,6 @@ sub is_valid_synonym_scope {
 	return undef;
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;

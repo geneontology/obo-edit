@@ -57,4 +57,6 @@ etc for phylogenetic trees
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
+
 1;

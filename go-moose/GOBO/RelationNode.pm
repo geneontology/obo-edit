@@ -133,4 +133,6 @@ http://obofoundry.org/ro
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
+
 1;

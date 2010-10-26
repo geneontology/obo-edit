@@ -127,4 +127,6 @@ sub write_annotation_stanza {
 
 
 
+__PACKAGE__->meta->make_immutable;
+
 1;

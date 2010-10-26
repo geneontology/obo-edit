@@ -30,6 +30,8 @@ L<GOBO::Parsers::OBOParser>
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 
