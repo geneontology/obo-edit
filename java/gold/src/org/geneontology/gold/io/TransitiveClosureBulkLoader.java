@@ -10,7 +10,7 @@ import owltools.graph.OWLGraphWrapper;
  * - distances
  * 
  */
-public class TransitiveClosureLoader {
+public class TransitiveClosureBulkLoader {
 
 	/**
 	 * Ontologies are accessed via GraphWrappers
