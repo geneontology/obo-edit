@@ -54,6 +54,8 @@ sub get_expr_type {
 
 
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 =head1 NAME

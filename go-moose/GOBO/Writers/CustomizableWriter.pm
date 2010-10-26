@@ -62,4 +62,6 @@ sub write_body {
 }
 
 
+__PACKAGE__->meta->make_immutable;
+
 1;

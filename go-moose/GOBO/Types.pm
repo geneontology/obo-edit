@@ -127,4 +127,6 @@ subtype 'GOBO::Parsers::ParserMode'
 	=> where { lc($_) eq 'dispatch_hash' || lc($_) eq 'if_else' }
 	=> message { "Parser mode can only be dispatch_hash or if_else" };
 
+__PACKAGE__->meta->make_immutable;
+
 1;

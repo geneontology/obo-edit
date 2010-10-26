@@ -162,4 +162,6 @@ statement and when.
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
+
 1;

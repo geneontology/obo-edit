@@ -138,4 +138,6 @@ or GOBO::ClassExpression::Complement)
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
+
 1;

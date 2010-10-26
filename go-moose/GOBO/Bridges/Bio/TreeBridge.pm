@@ -5,6 +5,8 @@ extends 'GOBO::Bridges::Bridge';
 
 
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 =head1 NAME

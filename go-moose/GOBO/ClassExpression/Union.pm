@@ -63,4 +63,6 @@ http://www.w3.org/TR/2008/WD-owl2-syntax-20081202/#Union_of_Class_Expressions
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
+
 1;

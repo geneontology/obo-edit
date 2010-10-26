@@ -148,6 +148,8 @@ sub validate_annotations {
 	return \@invalid_annots;
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 =head1 SEE ALSO

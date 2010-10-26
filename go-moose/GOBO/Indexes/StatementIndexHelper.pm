@@ -967,6 +967,8 @@ sub _check_args {
 
 
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 

@@ -7,7 +7,7 @@ use Data::Dumper;
 use Storable;
 
 use GOBO::Graph;
-use GOBO::Parsers::OBOParserDispatchHash;
+use GOBO::Parsers::OBOParser;
 use GOBO::Writers::OBOWriter;
 use GOBO::Parsers::QuickGAFParser;
 use GOBO::InferenceEngine::CustomEngine;
@@ -90,7 +90,7 @@ sub slim_annotations {
 
 =insert
 	## this file contains the 'annotated_to' and 'annotated_to_NOT' relations
-	my $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>'t/data/annotation_relations.obo',
+	my $parser = new GOBO::Parsers::OBOParser(file=>'t/data/annotation_relations.obo',
 		graph => new GOBO::Graph,
 		body => { parse_only => { typedef => '*' } },
 	);
@@ -1662,5 +1662,7 @@ sub select_terms {
 
 
 
+
+__PACKAGE__->meta->make_immutable;
 
 1;

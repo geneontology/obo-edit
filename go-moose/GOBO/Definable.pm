@@ -41,6 +41,5 @@ sub add_equivalent_to {
     push(@{$self->equivalent_to_list},@_);
 }
 
-
 1;
 

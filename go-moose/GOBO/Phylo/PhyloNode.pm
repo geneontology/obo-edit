@@ -13,6 +13,8 @@ has 'represents' => (is=>'ro', isa=>'GOBO::Statement');
 has 'parent' => (is=>'ro', isa=>'GOBO::Phylo::PhyloNode');
 has 'tree' => (is=>'ro', isa=>'GOBO::Phylo::PhyloTree');
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 =head1 NAME
