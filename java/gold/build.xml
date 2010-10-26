@@ -3,7 +3,7 @@
 
 	<!-- project variables -->
 	<property name="projectname" value="gold" />
-	<property name="runtimedir_name" value="lib" />
+	<property name="runtimedir_name" value="dist" />
 	<property name="runtimedir" location="${runtimedir_name}" />
 	<property name="release_path" location="releases" />
 	<property name="jarfile" location="${runtimedir}/${projectname}.jar" />
@@ -15,7 +15,10 @@
 	<property name="releasenotes" location="CHANGES" />
 	<property name="svn_repository_url" value="https://geneontology.svn.sourceforge.net/svnroot/geneontology/java/${projectname}" />
 	<property name="tagprefix" value="${projectname}-" />
+	<property name="warfile" location="${runtimedir}/admin.war" />
+	<property name="webxml" location="conf/web.xml" />
 
+	
 	<property name="main_jar_manifest_template" location="templates/jar_manifest.template" />
 
 	<!-- install4j specific properties; these can be deleted if you don't intend to create install4j installers -->
@@ -167,5 +170,17 @@
 		<delete file="release_resources/README" />
 	</target>
 
-
+	<!--
+		This target builds web war file. The ware is to be deployed the project
+		in a servlet container (e,g  tomcat). After deployment the web application is 
+		accessable via link http://<hostname>:<port>/admin/AdminServlet  
+	-->
+	<target name="make-war" depends="classes">
+		<war destfile="${warfile}" webxml="${webxml}">
+			<lib dir="lib" />
+			<classes dir="${outputdir}" />
+		</war>
+	</target>
+	
+	
 </project>
