@@ -120,8 +120,6 @@ sub get_uriprefix {
     return "http://purl.org/obo/owl/$s";
 }
 
-
-
 1;
 
 

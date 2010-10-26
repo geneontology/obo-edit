@@ -20,4 +20,6 @@ An edge in a Phylogenetic tree. Extends GOBO::LinkStatement with distances
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
+
 1;

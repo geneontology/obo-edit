@@ -3,6 +3,7 @@ use Moose;
 use strict;
 extends 'GOBO::Parsers::Parser';
 with 'GOBO::Parsers::GraphParser';
+with 'GOBO::Parsers::ChunkParser';
 
 use GOBO::Node;
 use GOBO::Gene;
@@ -139,5 +140,7 @@ sub _aspect2ns {
     return 'biological_process' if $aspect eq 'P';
     return 'cellular_component' if $aspect eq 'C';
 }
+
+__PACKAGE__->meta->make_immutable;
 
 1;

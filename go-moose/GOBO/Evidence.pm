@@ -20,4 +20,6 @@ sub is_IEA {
     return shift->ev_type->id eq 'IEA';
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;

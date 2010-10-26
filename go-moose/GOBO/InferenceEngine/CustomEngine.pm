@@ -2,6 +2,7 @@ package GOBO::InferenceEngine::CustomEngine;
 use Moose;
 use Data::Dumper;
 use Storable;
+use Time::HiRes qw(gettimeofday);
 extends 'GOBO::InferenceEngine';
 
 
@@ -37,7 +38,8 @@ override 'get_inferred_outgoing_edges' => sub {
 	my %args = (
 		from_ix => $self->from_ix,  ## default
 		save_ix => $self->save_ix,  ## default
-		@_
+		$self->__check_args('get_inferred_outgoing_edges', @_),
+#		@_
 	);
 
 	confess( (caller(0))[3]  . ": no node specified! " ) unless $args{node} || $args{node_id};
@@ -133,7 +135,8 @@ override 'get_inferred_incoming_edges' => sub {
 	my %args = (
 		from_ix => $self->from_ix,  ## default
 		save_ix => $self->save_ix,  ## default
-		@_
+		$self->__check_args('get_inferred_incoming_edges', @_),
+#		@_
 	);
 
 	confess( (caller(0))[3]  . ": no node specified! " ) unless $args{target} || $args{target_id};
@@ -254,6 +257,8 @@ sub slim_graph {
 		@_
 	);
 
+	print STDERR gettimeofday() . ": starting slim_graph!\n" if $ENV{VERBOSE};
+
 	warn( (caller(0))[3] . ": warning: save_ix, all_ix and from_ix contain " ) if $args{save_ix} eq $args{all_ix} || $args{all_ix} eq $args{from_ix} || $args{from_ix} eq $args{save_ix};
 
 	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless defined $args{subset_ids} || defined $args{subset};
@@ -279,6 +284,7 @@ sub slim_graph {
 		{	die "No terms could be found in the specified subset";
 		}
 	}
+	print STDERR gettimeofday() . ": got subset IDs!\n" if $ENV{VERBOSE};
 
 	if (! $self->graph->get_statement_ix_by_name($self->from_ix))
 	{	## make sure we've copied the asserted ontology links to a new index
@@ -298,10 +304,14 @@ sub slim_graph {
 
 	# get the links between the nodes
 	$self->__create_edge_matrix( %args, save_ix => 'subset_transitive_closure' );
+	print STDERR gettimeofday() . ": done __create_edge_matrix!\n" if $ENV{VERBOSE};
+
 	# populate the node look up hashes
 	$self->__populate_all_edge_matrices;
+	print STDERR gettimeofday() . ": done __populate_all_edge_matrices!\n" if $ENV{VERBOSE};
 
 	$self->__trim_edge_matrix( trim_relations => 1 );
+	print STDERR gettimeofday() . ": done __trim_edge_matrix!\n" if $ENV{VERBOSE};
 
 #	$self->dump_edge_matrix(key => 'N_R_T');
 
@@ -311,9 +321,11 @@ sub slim_graph {
 
 		## copy the graph metadata and relations
 		GOBO::Util::GraphFunctions::copy_attributes(from => $self->graph, to => $new_graph, ignore => [ qw( statement_ix_h term_h ) ]);
+		print STDERR gettimeofday() . ": done copy_attributes!\n" if $ENV{VERBOSE};
 
 		## convert the links in $self->edge_matrix->{N_T_R} into LinkStatements
 		$self->__convert_matrix_to_edges(matrix => 'N_R_T', from => $self->graph, to => $new_graph, save_ix => $args{save_ix});
+		print STDERR gettimeofday() . ": done __convert_matrix_to_edges!\n" if $ENV{VERBOSE};
 
 		## replace the graph in $self->graph with the new graph
 		$self->graph($new_graph);
@@ -354,6 +366,7 @@ sub get_closest_and_ancestral {
 		all_ix => 'all',
 		@_
 	);
+	print STDERR gettimeofday() . ": starting get_closest_and_ancestral!\n" if $ENV{VERBOSE};
 
 #	print STDERR 'get_closest_and_ancestral args: ' . Dumper( \@_ ) . "\n\n\n" if $ENV{VERBOSE};
 
@@ -386,12 +399,12 @@ sub get_closest_and_ancestral {
 	## copy the graph metadata and relations
 	GOBO::Util::GraphFunctions::copy_attributes(from => $self->graph, to => $new_graph, ignore => [ qw( statement_ix_h term_h) ]);
 
-	print STDERR "done copy_attributes!\n" if $ENV{VERBOSE};
+	print STDERR gettimeofday() . ": done copy_attributes!\n" if $ENV{VERBOSE};
 
 	# get the links between the nodes
 	$self->__create_edge_matrix( %args, save_ix => 'subset_transitive_closure' );
 
-	print STDERR "done __create_edge_matrix\n" if $ENV{VERBOSE};
+	print STDERR gettimeofday() . ": done __create_edge_matrix\n" if $ENV{VERBOSE};
 
 	## convert the links in $self->edge_matrix->{N_R_T} into LinkStatements
 	$self->__convert_matrix_to_edges(matrix => 'N_R_T', from => $self->graph, to => $new_graph, save_ix => $args{all_ix});
@@ -407,7 +420,7 @@ sub get_closest_and_ancestral {
 		}
 	}
 =cut
-	print STDERR "done __convert_matrix_to_edges\n" if $ENV{VERBOSE};
+	print STDERR gettimeofday() . ": done __convert_matrix_to_edges\n" if $ENV{VERBOSE};
 
 #	# copy the matrix
 #	$self->set_edge_matrix( 'N_R_T_copy' => $self->get_edge_matrix('N_R_T') );
@@ -415,17 +428,17 @@ sub get_closest_and_ancestral {
 	# populate the node look up hashes
 	$self->__populate_all_edge_matrices;
 
-	print STDERR "done __populate_all_edge_matrices\n" if $ENV{VERBOSE};
+	print STDERR gettimeofday() . ": done __populate_all_edge_matrices\n" if $ENV{VERBOSE};
 
 	$self->__trim_edge_matrix( trim_relations => 1 );
 
-	print STDERR "done __trim_edge_matrix!\n" if $ENV{VERBOSE};
+	print STDERR gettimeofday() . ": done __trim_edge_matrix!\n" if $ENV{VERBOSE};
 
 	$self->dump_edge_matrix(key=>'N_R_T');
 	$self->__convert_matrix_to_edges(matrix => 'N_R_T', from => $self->graph, to => $new_graph, save_ix => $args{closest_ix});
 
 
-	print STDERR "done __convert_matrix_to_edges!\n" if $ENV{VERBOSE};
+	print STDERR gettimeofday() . ": done __convert_matrix_to_edges!\n" if $ENV{VERBOSE};
 
 	$self->graph($new_graph);
 }
@@ -1108,5 +1121,7 @@ sub _get_reduction_matrix_rel_independent {
 
 
 
+
+__PACKAGE__->meta->make_immutable;
 
 1;

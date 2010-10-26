@@ -1,6 +1,7 @@
 package GOBO::Parsers::QuickGAFParser;
 use Moose;
 extends 'GOBO::Parsers::GAFParser';
+with 'GOBO::Parsers::ChunkParser';
 
 use Data::Dumper;
 
@@ -22,14 +23,14 @@ override 'parse_body' => sub {
 	my $data;
 	my @errs;
 
-	
+
 	while (my $line = $self->next_line) {
 		next if $line =~ /^!/;
 		chomp $line;
 		my @arr = split("\t", $line);
 		## make sure we have enough columns! This ensures we have a term col
 		## at the very least.
-		next unless scalar @arr > 5; 
+		next unless scalar @arr > 5;
 		## add an extra array item to make it easier to work out which column is which
 		unshift @arr, " ";
 		#	association ID
@@ -45,7 +46,7 @@ override 'parse_body' => sub {
 			{	## ok, we have this annotation already. Next!
 				next;
 			}
-			
+
 			my @arr2 = @{$data->{by_a}{$a_id}{arr}};
 			if ( join("\t", @arr[1..4], @arr[6..8], @arr[10..$#arr]) ne join("\t", @arr2[1..4], @arr2[6..8], @arr2[10..$#arr2]) )
 			{	warn "Error: association ID $a_id already exists with different association data. Keeping old data.";
@@ -166,5 +167,7 @@ the annotation data.
 =cut
 
 
+
+__PACKAGE__->meta->make_immutable;
 
 1;

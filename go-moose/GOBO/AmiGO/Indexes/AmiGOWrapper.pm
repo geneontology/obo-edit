@@ -5,7 +5,6 @@ use GOBO::DBIC::GODBModel::Query;
 #has schema => (is=>'rw', isa=>'AmiGO::Model::Schema');
 has query => (is=>'rw', isa=>'GOBO::DBIC::GODBModel::Query');
 
-
 1;
 
 

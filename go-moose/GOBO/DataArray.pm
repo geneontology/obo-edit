@@ -11,4 +11,6 @@ sub get_annotation_data {
 	return [ map { $_->{data} } @{$self->data_arr} ];
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;

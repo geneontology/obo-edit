@@ -59,4 +59,6 @@ between both...?
 =cut
 
 
+__PACKAGE__->meta->make_immutable;
+
 1;

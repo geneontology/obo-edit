@@ -9,6 +9,8 @@ has graph => (is=>'rw', isa=>'GOBO::Graph', default=>sub{new GOBO::Graph});
 
 
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 

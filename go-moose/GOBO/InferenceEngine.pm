@@ -189,11 +189,6 @@ sub get_inferred_outgoing_edges {
 		$outlink_h{$link} = $link;
 #		print STDERR "new to me!\n";
 
-#		my $extlinks = $self->extend_link(%args, link => $link);
-#		if (@$extlinks) {
-#			push(@links,@$extlinks);
-#		}
-
 		foreach my $srel (@{$self->get_subrelation_closure($link->relation)}) {
 			my $newlink = $self->create_link_statement(
 				node=>$link->node, relation=>$srel, target=>$link->target);
@@ -202,8 +197,7 @@ sub get_inferred_outgoing_edges {
 #			push(@links,$newlink);
 		}
 
-		my $more_links;
-		$more_links = $self->graph->get_matching_statements(node=>$link->target, ix=>$args{save_ix}); # if $self->use_cache;
+		my $more_links = $self->graph->get_matching_statements(node=>$link->target, ix=>$args{save_ix}); # if $self->use_cache;
 		if ($more_links && @$more_links)
 		{	#print STDERR "more links:\n". join("\n", @$more_links) . "\n\n";
 			## we had cached links. We don't need to look at any of the child links
@@ -215,6 +209,8 @@ sub get_inferred_outgoing_edges {
 			}
 			next;
 		}
+
+		## no cached links. Let's find ourselves some links from the graph!
 		foreach my $xlink (@{$self->graph->get_matching_statements(node=>$link->target, ix=>$args{from_ix})})
 		{	my $combined = $self->_combine_statements($link, $xlink);
 			if ($combined && @$combined)
@@ -292,7 +288,6 @@ sub get_inferred_incoming_edges {
 		save_ix => $self->save_ix,  ## default || 'inferred_incoming_edges'
 		$self->__check_args('get_inferred_incoming_edges', @_),
 	);
-	my $g = $self->graph;
 
 	confess( (caller(0))[3]  . ": no node specified! " ) unless $args{target} || $args{target_id};
 	if (! $args{target})
@@ -301,16 +296,30 @@ sub get_inferred_incoming_edges {
 
 	#print STDERR "doing get_inferred_incoming_statements with " . $n->id . "!\n";
 
-	my $tlinks = $g->get_matching_statements(target=>$args{target}, ix => $args{save_ix});
-	if ($tlinks && @$tlinks) {
-		# cached
-		return $tlinks;
+	## make sure we have the index in question...
+	if ($self->graph->exists_statement_ix($args{save_ix}))
+	{	my $tlinks = $self->graph->get_matching_statements(target=>$args{target}, ix => $args{save_ix});
+		if (@$tlinks) {
+			# cached
+			return $tlinks;
+		}
+	}
+	else
+	{	## add the save index if it doesn't exist
+		$self->graph->add_statement_ix($args{save_ix});
 	}
 
 	# initialize link set based on input node;
 	# we will iteratively extend upwards
-	my @links = @{$g->get_matching_statements(target=>$args{target}, ix=>$args{from_ix})};
+	my @links = @{$self->graph->get_matching_statements(target=>$args{target}, ix=>$args{from_ix})};
 #	printf STDERR "looking at $n => @links\n";
+
+#	my $g = $self->graph;
+#	my $tlinks = $g->get_matching_statements(target=>$args{target}, ix => $args{save_ix});
+#	if ($tlinks && @$tlinks) {
+#		# cached
+#		return $tlinks;
+#	}
 
 	my %inlink_h = ();
 
@@ -326,7 +335,7 @@ sub get_inferred_incoming_edges {
 			push(@links,$newlink);
 		}
 
-		my $more_links = $g->get_matching_statements(target=>$link->node, ix=>$args{save_ix});
+		my $more_links = $self->graph->get_matching_statements(target=>$link->node, ix=>$args{save_ix});
 		if ($more_links && @$more_links)
 		{	## we had cached links. We don't need to look at any of the child links
 			foreach my $xlink (@$more_links)
@@ -338,7 +347,7 @@ sub get_inferred_incoming_edges {
 			next;
 		}
 
-		foreach my $xlink (@{$g->get_matching_statements(target => $link->node, ix => $args{from_ix})})
+		foreach my $xlink (@{$self->graph->get_matching_statements(target => $link->node, ix => $args{from_ix})})
 		{	my $combined = $self->_combine_statements($xlink, $link);
 			if ($combined && @$combined)
 			{	push(@links, @$combined);
@@ -353,7 +362,9 @@ sub get_inferred_incoming_edges {
 		}
 	}
 
-	$g->add_statements(statements => [values %inlink_h], ix => $args{save_ix});
+	return [] unless values %inlink_h;
+
+	$self->graph->add_statements(statements => [values %inlink_h], ix => $args{save_ix});
 
 	return [values %inlink_h];
 }
@@ -1678,5 +1689,7 @@ until no new statements are added.
 PRE-ALPHA!!!
 
 =cut
+
+__PACKAGE__->meta->make_immutable;
 
 1;
