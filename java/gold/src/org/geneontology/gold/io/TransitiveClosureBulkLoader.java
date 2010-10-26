@@ -1,5 +1,11 @@
 package org.geneontology.gold.io;
 
+import java.io.IOException;
+
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLOntology;
+
+import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 
 /**
@@ -15,6 +21,33 @@ public class TransitiveClosureBulkLoader {
 	/**
 	 * Ontologies are accessed via GraphWrappers
 	 */
+	// TODO - abstract this
 	private OWLGraphWrapper graphWrapper;
 
+	// TODO - abstract this
+	private String path = ".";
+
+	// TODO - abstract this
+	public OWLOntology getOwlOntology() {
+		return graphWrapper.getOntology();
+	}
+
+	public void dumpBulkLoadTables() throws IOException{
+		
+		
+		TableDumper dumper = new TableDumper("inferred_relationship", this.path);
+	//	TableDumper subclass_ofDumper = new TableDumper("subclass_of");
+		//TableDumper allSomeRelationship = new TableDumper("all_some_relationship");
+		
+		
+		for (OWLClass cls : getOwlOntology().getClassesInSignature()) {
+			String id = graphWrapper.getIdentifier(cls);
+			for (OWLGraphEdge ge : graphWrapper.getOutgoingEdgesClosure(cls)) {
+				String pid = ge.getSingleQuantifiedProperty().getPropertyId();
+				boolean isDirect = false; // todo
+				boolean isReflexive = pid.equals(id);
+				dumper.dumpRow(id, ge.getTargetId(), pid, isDirect ? "t" : "f", isReflexive ? "t" : "f");
+			}
+		}
+	}
 }
