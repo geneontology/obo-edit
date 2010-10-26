@@ -13,17 +13,18 @@ import junit.framework.TestCase;
 public class TsvFilelLoaderTest extends TestCase {
 
 	
-	public static void testLoadTabes() throws ClassNotFoundException, SQLException, IOException{
+	public static void testLoadTables() throws ClassNotFoundException, SQLException, IOException{
 		BaseConnection bc = (BaseConnection)getConnection();
 		
 		TsvFilelLoader loader = new TsvFilelLoader(bc);
 		
+		System.out.println("loading...");
 		loader.loadTables();
 	}
 	
 	private static Connection getConnection() throws ClassNotFoundException, SQLException{
 		Class.forName("org.postgresql.Driver");
-		
+		System.out.println("connecting...");
 		return  DriverManager.getConnection("jdbc:postgresql://localhost/temp12", "postgres", "postgres");
 		
 		
