@@ -71,7 +71,7 @@ public class OntologyBulkLoader {
 			String def = graphWrapper.getDef(cls);
 			String id = graphWrapper.getIdentifier(cls);
 			// textdef TODO
-			clsDumper.dumpRow(id, label, null, null, null, def, null);
+			clsDumper.dumpRow(id, label, getOwlOntology().getOntologyID().toString(), null, null, def, null);
 			
 			
 			for(String l: graphWrapper.getSynonymStrings(cls)){
