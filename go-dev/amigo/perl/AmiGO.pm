@@ -1184,7 +1184,7 @@ sub get_interlink {
        die "interlink mode 'term-subset' requires args" if ! defined $args;
        my $acc = $args->{acc} || '';
        my $sid = $args->{session_id} || '';
-       $ilink = 'term-details?term=' .
+       $ilink = 'term-details.cgi?term=' .
 	 #$self->html_safe($acc) . '&session_id=' . $sid;
 	 $acc . '&session_id=' . $sid;
      },
