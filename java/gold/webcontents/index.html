@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gene Ontology Web Admin</title>
+
+<script type="text/javascript">
+function bulkLoad(){
+	var yes = confirm("This activilty will be executed only when GOLD database is empty." +
+			"\n Are you are sure you want to create an GOLD database?\n" +
+					"Database configurations are located in the installation directory of this web application, i.e in tomcat it is located at webapps/admin");
+
+	if(yes){
+		window.location="AdminServlet?command=bulk-load"
+	}
+}
+</script>
+</head>
+<body>
+<h1>Welcome to the Admin site of the Gene Ontology project</h1>
+
+<p>Activities:</p>
+<ul>
+<li><a href="javascript:bulkLoad(); return false;">Bulk load of the Empty gene ontology</a></li>
+<li>Update Gene Ontology</li>
+<li>Last Update of Gold database</li>
+<li>Built Solr indexer from Scratch</li>
+<li>Delta update of the indexer</li>
+<li>Last Update date of Solr</li>
+</ul>
+
+</body>
+</html>
