@@ -16,21 +16,21 @@ import owltools.graph.OWLGraphWrapper;
  * - distances
  * 
  */
-public class TransitiveClosureBulkLoader {
+public class TransitiveClosureBulkLoader extends AbstractBulkLoader{
 
+	public TransitiveClosureBulkLoader(OWLGraphWrapper wrapper) {
+		super(wrapper);
+	}
+
+	public TransitiveClosureBulkLoader(OWLGraphWrapper wrapper, String path) {
+		super(wrapper, path);
+	}
+	
+	
 	/**
 	 * Ontologies are accessed via GraphWrappers
 	 */
-	// TODO - abstract this
-	private OWLGraphWrapper graphWrapper;
 
-	// TODO - abstract this
-	private String path = ".";
-
-	// TODO - abstract this
-	public OWLOntology getOwlOntology() {
-		return graphWrapper.getOntology();
-	}
 
 	public void dumpBulkLoadTables() throws IOException{
 		
