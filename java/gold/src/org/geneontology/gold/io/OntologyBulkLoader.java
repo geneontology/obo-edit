@@ -31,24 +31,16 @@ import owltools.graph.OWLQuantifiedProperty;
  * - uses sql insert/update/delete commands to sync main tables from bulk_*  
  *
  */
-public class OntologyBulkLoader {
+public class OntologyBulkLoader extends AbstractBulkLoader{
 	
-	/**
-	 * Ontologies are accessed via GraphWrappers
-	 */
-	private OWLGraphWrapper graphWrapper;
-	
-	private String path = ".";
-	
-	public OWLOntology getOwlOntology() {
-		return graphWrapper.getOntology();
+	public OntologyBulkLoader(OWLGraphWrapper wrapper, String path) {
+		super(wrapper, path);
 	}
-	
-	public OntologyBulkLoader(OWLGraphWrapper graphWrapper, String path){
-		this.graphWrapper = graphWrapper;
-		this.path = path;
+
+	public OntologyBulkLoader(OWLGraphWrapper wrapper) {
+		super(wrapper);
 	}
-	
+
 	/**
 	 * 
 	 */
