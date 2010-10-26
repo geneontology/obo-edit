@@ -16,18 +16,9 @@ use Data::Dumper;
 my $gaf_parser;
 my $obo_parser;
 my $dh_parser;
-=cut
-open(FH, '< t/data/obo_file_2.obo') or die "Could not open test file";
-while (<FH>)
-{	print STDERR "$_";
-	if ($_ !~ /\w/)
-	{	print STDERR "reached header end. Changing separator!\n";
-		$/ = "\n\n";
-	}
-}
-exit(0);
 
 =cut
+
 my $tags = {
 	has_x => [ qw( nodes terms relations statements edges ontology_links annotations declared_subsets instances formulae) ],
 	body_only => [ qw( nodes terms relations statements edges ontology_links annotations instances formulae ) ],
@@ -103,22 +94,22 @@ is_deeply($g_AT1G, $g2_AT1G, "parse_file: GAF parsers returned the same results"
 
 ## testing the OBO parsers...
 
-eval { $obo_parser = new GOBO::Parsers::OBOParser(file=>'/a/load/of/bollox'); };
+eval { $obo_parser = new GOBO::Parsers::OBOParser(file=>'/a/load/of/bollox'); }; # 19
 ok( defined $@ );
 
 #check the OBOParser quickly...
 $obo_parser = new GOBO::Parsers::OBOParser(file=>'t/data/gtp.obo', parse_method => 'if_else');
 $dh_parser = new GOBO::Parsers::OBOParserDispatchHash(file=>'t/data/gtp.obo');
-ok($obo_parser->has_fh && $dh_parser->has_fh);
+ok($obo_parser->has_fh && $dh_parser->has_fh); # 20
 $obo_parser->parse;
 $dh_parser->parse;
-ok( $obo_parser->graph->has_terms && $dh_parser->graph->has_terms, "Checking there are terms in the graph");
+ok( $obo_parser->graph->has_terms && $dh_parser->graph->has_terms, "Checking there are terms in the graph"); # 21
 cmp_deeply( $obo_parser->graph, $dh_parser->graph, "Comparing OBO and DH parser graphs");
 
 ## OK, basics done. Let's try a bit of parsing...
 # this is a graph with everything in the known (obo) world in it.
 $obo_parser = new GOBO::Parsers::OBOParser(file=>'t/data/obo_file_2.obo', parse_method => 'if_else');
-$dh_parser =
+#$dh_parser =
 
 my $create_p_sub = {
 	dh => sub { return new GOBO::Parsers::OBOParserDispatchHash(file=>'t/data/obo_file_2.obo'); },
@@ -340,38 +331,25 @@ if ($errs && @$errs)
 # 49
 cmp_deeply($dh_parser->graph, $obo_parser->graph, "Checking the dispatch hash parser");
 
-## let's try parse_header_from_arr
-my @header_arr;
-my @body_arr;
-{	local $/ = "\n[";
-	open(FH, "<" . 't/data/obo_file_2.obo') or die("Could not open t/data/obo_file_2.obo: $!");
-	@header_arr = split("\n", <FH> );
+=cut
+
+## Prepare some arrays to test the parse_xxx_from_array subs
+my @arr;
+{	open(FH, "<" . 't/data/obo_file_2.obo') or die("Could not open t/data/obo_file_2.obo: $!");
+	{	local $/;
+		@arr = split("\n", <FH> );
+	}
 	close FH;
-
-	local $/ = "\n";
-	open(FH, "<" . 't/data/obo_file_2.obo') or die("Could not open t/data/obo_file_2.obo: $!");
-
-	while (<FH>)
-	{	push @body_arr, $_;
-	}
-
-
-	my $i = 1;
-	while ($i == 1)
-	{	if ( $body_arr[0] =~ /^\[\S+/ )
-		{	$i = 0;
-			last;
-		}
-		shift @body_arr;
-	}
-#	print STDERR "first in array body_arr: " . $body_arr[0] . "\n";
 }
+
+## try parse_header_from_arr
 my $new_parser = new GOBO::Parsers::OBOParser;
-$new_parser->parse_header_from_array( array => [ @header_arr ] );
+$new_parser->parse_header_from_array( array => [ @arr ] );
 
 $dh_parser = new GOBO::Parsers::OBOParser( file=>'t/data/obo_file_2.obo' );
 $dh_parser->parse_header;
 
+# 50
 cmp_deeply($new_parser->graph, $dh_parser->graph, "Checking parse_header_from_array");
 
 ## let's try parse_body_from_arr
@@ -380,7 +358,7 @@ $dh_parser = new GOBO::Parsers::OBOParser( file=>'t/data/obo_file_2.obo' );
 $dh_parser->parse_body;
 
 $new_parser = new GOBO::Parsers::OBOParser;
-$new_parser->parse_body_from_array( array => [ @body_arr ] );
+$new_parser->parse_body_from_array( array => [ @arr ] );
 
 cmp_deeply($new_parser->graph, $dh_parser->graph, "Checking parse_body_from_array");
 
@@ -389,17 +367,36 @@ $dh_parser = new GOBO::Parsers::OBOParser( file=>'t/data/obo_file_2.obo' );
 $dh_parser->parse;
 
 $new_parser = new GOBO::Parsers::OBOParser;
-$new_parser->parse_from_array( array => [ @header_arr, @body_arr ] );
+$new_parser->parse_from_array( array => [ @arr ] );
 
+#52
 cmp_deeply($new_parser->graph, $dh_parser->graph, "Checking parse_from_array");
+
+## check the ignore_obsoletes option
+$dh_parser = new GOBO::Parsers::OBOParser( file=>'t/data/obo_file_2.obo', options => { ignore_obsoletes => 1 } );
+$dh_parser->parse;
+
+foreach my $id qw(GO:0000020 obs-1 obs-2)
+{	my $t = $dh_parser->graph->get_node($id);
+	ok( ! defined $t, "Obsolete term missing from graph" );
+}
+foreach my $id qw(r1 GO:0000023)
+{	my $t = $dh_parser->graph->get_node($id);
+	if (! $t)
+	{	warn "could not find $t in the graph!";
+	}
+	else
+	{	ok( ! $t->obsolete, "node is not obsolete");
+	}
+}
 
 undef $dh_parser;
 #=cut
-
 $dh_parser = new GOBO::Parsers::OBOParser( file => 't/data/roundtripme.obo' );
 $dh_parser->strict_mode(0);
 print STDERR "strict mode is " . ( $dh_parser->strict_mode ? "ON\n" : "OFF\n" );
 $dh_parser->parse;
+
 
 # id: id-x
 # def: "Ready or not, here I come!!" [PMID:1, foo:bar "bleh", DB:key "Encyclopaedia, isn't it?"]
@@ -416,20 +413,21 @@ ok(join("ZZZ", map { $h->{$_} } sort keys %$h) eq 'ID: DB:key; LABEL: Encyclopae
 # synonym: "s1-exact" EXACT []
 # synonym: "s1-exact-cited" EXACT [PMID:2 "My favourite paper"]
 # synonym: "s1-exact-t" EXACT st2 [XREF:1, XREF:2 "My \"favourite\" database", XREF:3]
-=cut
 foreach (@{$t->synonyms})
 {	if ($_->label eq 's1-exact')
-	{	ok(scalar @{$_->xrefs} == 0, "Synonym with no xrefs");
+	{	## no xrefs, scope is EXACT, type is undef
+		ok(($_->scope eq 'EXACT' && ! defined $_->synonym_type && scalar @{$_->xrefs} == 0), "Exact synonym with no xrefs or type");
 	}
 	elsif ($_->label eq 's1-exact-cited')
-	{	ok(scalar @{$_->xrefs} == 1 && @{$_->xrefs}[0]
-
-
+	{	ok(($_->scope eq 'EXACT' && ! defined $_->synonym_type &&
+		scalar @{$_->xrefs} == 1 && $_->xrefs->[0]->id eq 'PMID:2' && $_->xrefs->[0]->label eq 'My favourite paper'), "Exact synonym with no type, one xref with a label");
 	}
 	elsif ($_->label eq 's1-exact-t')
-	{
+	{	ok(($_->scope eq 'EXACT' && $_->synonym_type->id eq 'st2' &&
+		scalar @{$_->xrefs} == 3), "Exact synonym with no type, three xrefs with a label");
+	}
+}
 
-=cut
 foreach (@{$dh_parser->graph->terms})
 {	## check that funny def has been parsed correctly
 	if ($_->definition)
