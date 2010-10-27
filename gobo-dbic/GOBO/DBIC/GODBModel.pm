@@ -55,7 +55,7 @@ sub new {
 
   my $args = shift || {};
 
-  ## Logging verbosity.
+  ## Logging verbosity defaults to 0.
   $self->{VERBOSE} = 0;
 
   ## Complete the arg set with the environment if possible.
@@ -168,7 +168,14 @@ sub verbose {
     }
   }
 
-  return $self->{VERBOSE};
+  ##
+  my $retval = 0;
+  my $external_verbose = $self->pull_env('VERBOSE');
+  if( $self->{VERBOSE} || $external_verbose ){
+    $retval = 1;
+  }
+
+  return $retval;
 }
 
 
