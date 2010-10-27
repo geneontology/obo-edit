@@ -168,7 +168,11 @@
        </li>
        <li>
 	 <a href="#display-out"
-	    class="override"><span>Links and Downloads</span></a>
+	    class="override"><span>Other Views</span></a>
+       </li>
+       <li>
+	 <a href="#display-down"
+	    class="override"><span>Downloads</span></a>
        </li>
      </ul>
 
@@ -367,34 +371,34 @@
 	[% END %]
       </div>
 
-     <div id="display-out">
-       <p>
-	 <ul>
-	   <li><b>Actions...</b></li>
-	   <!-- TODO: do this with breadcrumbsy string (taken from REST URL) --> 
-	   <!-- <li>Last action: [% last_action || 'unknown' %]</li> -->
-	   <li><a href="browse.cgi?action=set-tree&amp;[% vbridge %]&amp;session_id=[% session_id %]" title="View tree in GO browser">View in tree browser</a></li>
-	 
-	   <li><a href="[% VIZ_STATIC_LINK %]"
-		  title="View the tree in graph form as a static PNG image">Graphical view (PNG)</a></li>
-	   <li><a href="[% VIZ_DYNAMIC_LINK %]"
-		  title="View the tree in graph form as an interactive SVG+JS document">Graphical view (SVG)</a></li>
-	   <!-- One day this will be out of experimental. -->
-	   <!-- <li><a href="[% NAVIGATION_LINK %]" -->
-		<!-- 	      title="Navigate the GO, using the current term as a seed">GO Navigation</a></li> -->
-	 </ul>
-       </p>
-       
-       <p>
-	 <ul>
-	   <li><b>Downloads...</b></li>
-	   <li><a href="[% cgi %].cgi?[% vbridge %]&amp;format=obo" title="Download the tree in OBO text format">OBO</a></li>
-	   <li><a href="[% cgi %].cgi?[% vbridge %]&amp;format=rdfxml" title="Download the tree in RDF-XML format">RDF-XML</a></li>
-	   <li><a href="[% cgi %].cgi?[% vbridge %]&amp;format=dot" title="Download the tree in GraphViz dot format">GraphViz dot</a></li>
-	 </ul>
-       </p>
-       
-     </div>
+      <div id="display-out">
+	<p>
+	  <ul>
+	    <li><b>Additional viewing options...</b></li>
+	    <!-- TODO: do this with breadcrumbsy string (taken from REST URL) --> 
+	    <!-- <li>Last action: [% last_action || 'unknown' %]</li> -->
+	    <li><a href="browse.cgi?action=set-tree&amp;[% vbridge %]&amp;session_id=[% session_id %]" title="View tree in GO browser">View in tree browser</a></li>
+	    <li><a href="[% VIZ_STATIC_LINK %]"
+		   title="View the tree in graph form as a static PNG image">Graphical view (PNG)</a></li>
+	    <li><a href="[% VIZ_DYNAMIC_LINK %]"
+		   title="View the tree in graph form as an interactive SVG+JS document">Graphical view (SVG)</a></li>
+	    <!-- One day this will be out of experimental. -->
+	    <!-- <li><a href="[% NAVIGATION_LINK %]" -->
+		 <!-- 	      title="Navigate the GO, using the current term as a seed">GO Navigation</a></li> -->
+	  </ul>
+	</p>       
+      </div>
+
+      <div id="display-down">
+	<p>
+	  <ul>
+	    <li><b>Downloads in...</b></li>
+	    <li><a href="[% cgi %].cgi?[% vbridge %]&amp;format=obo" title="Download the tree in OBO text format">OBO</a></li>
+	    <li><a href="[% cgi %].cgi?[% vbridge %]&amp;format=rdfxml" title="Download the tree in RDF-XML format">RDF-XML</a></li>
+	    <li><a href="[% cgi %].cgi?[% vbridge %]&amp;format=dot" title="Download the tree in GraphViz dot format">GraphViz dot</a></li>
+	  </ul>
+	</p>       
+      </div>
 
 </div>
 
