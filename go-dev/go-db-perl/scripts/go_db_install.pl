@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+go_db_install.pl#!/usr/bin/perl -w
 ####
 #### This will install the latest version of the GO database onto your
 #### server and remove previous versions installed by this script. If
@@ -96,7 +96,7 @@ my %local = (
 	    );
 
 # Remove F after go-load-qfo-fresh.pl is default
-getopts('hvzijxng:m:a:s:f:l:d:u:p:P:t:e:D:M:F:');
+getopts('Fhvzijxng:m:a:s:f:l:d:u:p:P:t:e:D:M:');
 
 ## Hunt down the paths and let's try and get all of the likely
 ## libraries in. Trying "use lib" didn't work so well, so got hacky
