@@ -1,4 +1,4 @@
-go_db_install.pl#!/usr/bin/perl -w
+#!/usr/bin/perl -w
 ####
 #### This will install the latest version of the GO database onto your
 #### server and remove previous versions installed by this script. If
