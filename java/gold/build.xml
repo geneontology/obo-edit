@@ -179,10 +179,21 @@
 	<target name="make-war" depends="classes">
 		<war destfile="${warfile}" webxml="${webxml}">
 			<fileset dir="${webcontents}"/>
+			<!--
+			<fileset dir="./">
+				<include name="**/gold.properties"/>
+			</fileset>
+			-->
+			
 			<lib dir="lib" />
 			<classes dir="${outputdir}" />
+			<classes dir="./">
+				<include name="conf/gold.properties"/>
+				<include name="sql/ontol.sql"/>
+			</classes>
 		</war>
 	</target>
+	
 	
 	
 </project>

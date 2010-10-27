@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import org.postgresql.copy.CopyManager;
@@ -23,11 +24,15 @@ public class TsvFilelLoader {
 	//private BaseConnection connection;
 	
 	private CopyManager copyManager;
+
+	public TsvFilelLoader(String username, String password, String host, String dbName) throws SQLException, ClassNotFoundException{
 	
-	public TsvFilelLoader(BaseConnection connection) throws SQLException{
+	//public TsvFilelLoader(BaseConnection connection) throws SQLException{
 	//	this.connection = connection;
+		Class.forName("org.postgresql.Driver");
 		
-		this.copyManager = new CopyManager(connection);
+		
+		this.copyManager = new CopyManager((BaseConnection) DriverManager.getConnection("jdbc:postgresql://"+host+"/"+dbName, username, password));
 	}
 	
 	
@@ -38,15 +43,15 @@ public class TsvFilelLoader {
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	public void loadTable(String fileName) throws IOException, SQLException{
+	public void loadTable(File file) throws IOException, SQLException{
 		
-		File file = new File("data/"+fileName);
+		//File file = new File("data/"+fileName);
 		
 		if(!file.exists())
-			throw new IOException("The data file at 'data/"+ fileName + "' does not exist" );
+			throw new IOException("The data file at '"+ file.getPath() + "' does not exist" );
 		
 		
-		String table = fileName.substring(0, fileName.indexOf('.'));
+		String table = file.getName().substring(0, file.getName().indexOf('.'));
 		
 		copyManager.copyIn("COPY "+ table + " FROM STDIN WITH DELIMITER AS '\t'", new FileInputStream(file));
 	}
@@ -59,9 +64,9 @@ public class TsvFilelLoader {
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	public void loadTables() throws IOException, SQLException{
+	public void loadTables(String tsvFilesDir) throws IOException, SQLException{
 		
-		File data = new File("data");
+		File data = new File(tsvFilesDir);
 		
 		File[] tables = data.listFiles(new FileFilter() {
 			
@@ -71,7 +76,7 @@ public class TsvFilelLoader {
 		});
 		
 		for(File table: tables){
-			loadTable(table.getName());
+			loadTable(table);
 		}
 	}
 	
