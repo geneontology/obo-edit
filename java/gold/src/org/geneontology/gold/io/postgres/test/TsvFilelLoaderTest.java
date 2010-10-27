@@ -14,21 +14,22 @@ public class TsvFilelLoaderTest extends TestCase {
 
 	
 	public static void testLoadTables() throws ClassNotFoundException, SQLException, IOException{
-		BaseConnection bc = (BaseConnection)getConnection();
+	//	BaseConnection bc = (BaseConnection)getConnection();
 		
-		TsvFilelLoader loader = new TsvFilelLoader(bc);
+		TsvFilelLoader loader = new TsvFilelLoader("postgres", "postgres", "localhost", "temp123");
 		
 		System.out.println("loading...");
-		loader.loadTables();
+		loader.loadTables("data");
 	}
 	
-	private static Connection getConnection() throws ClassNotFoundException, SQLException{
+	
+/*	private static Connection getConnection() throws ClassNotFoundException, SQLException{
 		Class.forName("org.postgresql.Driver");
 		System.out.println("connecting...");
 		return  DriverManager.getConnection("jdbc:postgresql://localhost/temp12", "postgres", "postgres");
 		
 		
 	}
-	
+*/	
 	
 }
