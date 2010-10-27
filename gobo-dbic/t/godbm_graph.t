@@ -1,5 +1,6 @@
 use strict;
 use Test::More 'no_plan';
+use Data::Dumper;
 
 use GOBO::DBIC::GODBModel::Graph;
 
@@ -26,4 +27,44 @@ if( ! $ENV{GO_DBNAME} || ! $ENV{GO_DBHOST} ){
     ok($g->is_root_p($r), $r . " is a root");
   }
 
+  ## Get a couple lineage sets.
+  my($lnodes1, $lnode_rel1, $lnode_rel_inf1, $lnode_depth1, $max_ldepth1) =
+    $g->lineage('GO:0022008');
+  my($lnodes2, $lnode_rel2, $lnode_rel_inf2, $lnode_depth2, $max_ldepth2) =
+    $g->lineage('GO:0007399');
+  # $g->kvetch('lnode_depth1: ' . Dumper($lnode_depth1));
+  # $g->kvetch('lnode_depth2: ' . Dumper($lnode_depth2));
+
+  ## Get a list of depths for each term.
+  my $cache = {};
+  my $fold_in = sub {
+    my $inhash = shift || {};
+    foreach my $k (keys %$inhash){
+      if( ! $cache->{$k} ){ $cache->{$k} = []; }
+      push @{$cache->{$k}}, $inhash->{$k};
+    }
+  };
+  &$fold_in($lnode_depth1);
+  &$fold_in($lnode_depth2);
+  # $g->kvetch('folded: ' . Dumper($cache));
+
+  ## Examine lists of length two, and see who has the highest
+  ## collected depth.
+  my $sums = {};
+  foreach my $k (keys %$cache){
+    if( scalar(@{$cache->{$k}}) == 2 ){
+      $sums->{$k} = $cache->{$k}[0] + $cache->{$k}[1];
+    }
+  }
+  # $g->kvetch('sums: ' . Dumper($sums));
+
+  ## Sort according to accumulated depth.
+  my @done = sort { $sums->{$b} <=> $sums->{$a} } keys(%$sums);
+  # $g->kvetch('done: ' . Dumper(\@done));
+
+  ## Ancestor deepest sums.
+  ok( $done[0] eq 'GO:0007399', "GO:0007399 is accu highest");
+  ok( $done[1] eq 'GO:0048731', "GO:0048731 is accu next");
 }
+
+
