@@ -420,6 +420,31 @@ sub e_prod {
         }
         $self->fact($pred,
                     [$aid,$id,'has_role',$term_acc]);
+
+        my $aspect = $assoc->sget_aspect;
+        if ($aspect) {
+            if (!$self->{_written_aspect}) {
+                $self->{_written_aspect} = {};
+            }
+            if (!$self->{_written_aspect}->{$term_acc}) {
+                $self->{_written_aspect}->{$term_acc} = 1;
+                my $ont = '';
+                if ($aspect eq 'F') {
+                    $ont = 'molecular_function';
+                }
+                elsif ($aspect eq 'P') {
+                    $ont = 'biological_process';
+                }
+                elsif ($aspect eq 'C') {
+                    $ont = 'cellular_component';
+                }
+                if ($ont) {
+                    $self->fact('metadata_db:entity_resource',[$term_acc,$ont]);
+                }
+            }
+            
+        }
+
         my @evs = $assoc->get_evidence;
         my $ne=0;
         foreach my $ev (@evs) {
@@ -525,9 +550,9 @@ sub e_annotation {
 sub e_instance {
     my ($self, $inst) = @_; 
     my $id = $inst->get_id;
-    my $class = $inst->get_instance_of;
     $self->factq('inst', [$id]);
-    $self->factq('inst_of',[$id,$class]);
+    $self->factq('inst_of',[$id,$_])
+        foreach $inst->get_instance_of;
     my $name = $inst->sget_name;
     $self->factq('metadata_db:entity_label', [$id, $name]) if $name;
     $self->export_tags($inst);
