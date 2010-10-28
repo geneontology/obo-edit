@@ -9,7 +9,6 @@ import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.util.ExplanationUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.*;
 import org.oboedit.gui.event.*;
 
 import java.util.Collection;
@@ -23,7 +22,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JCheckBox;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
-import java.util.Iterator;
 
 import org.apache.log4j.*;
 
@@ -119,20 +117,16 @@ public class ExplanationComponent extends AbstractGUIComponent {
 		listener.setLinkDatabase(SessionManager.getManager().getReasoner());
 		if (resetExpansionState)
 			subExplanations = new LinkedList<Link>();
-		Collection links = SelectionManager.getGlobalSelection().getLinks();
+		Collection<Link> links = SelectionManager.getGlobalSelection().getLinks();
 		field.setText(getExplanation(links, subExplanations));
 	}
 
-	protected String getExplanation(Collection links, Collection subExplanations) {
+	protected String getExplanation(Collection<Link> links, Collection subExplanations) {
 		StringBuffer out = new StringBuffer();
-		ReasonedLinkDatabase reasoner = SessionManager.getManager()
-				.getReasoner();
+		ReasonedLinkDatabase reasoner = SessionManager.getManager().getReasoner();
 		Map cache = new HashMap();
-		Iterator it = links.iterator();
-		while (it.hasNext()) {
-			Link link = (Link) it.next();
-			out
-					.append(ExplanationUtil.getDescriptionReasoned(reasoner,
+		for(Link link : links){
+			out.append(ExplanationUtil.getDescriptionReasoned(reasoner,
 							SelectionManager.getGlobalSelection().getLinkDatabase(),
 							link, subExplanations, cache, documentationCheckbox
 									.isSelected()));
