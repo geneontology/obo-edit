@@ -166,9 +166,9 @@ public class AutocompleteBox<T> extends JComboBox {
 			} else if (allowNonModelValues) {
 				setSelectedItem(autocompleteModel.createValue(getText()));
 			}
-			
+
 			ActionEvent e = new ActionEvent(AutocompleteBox.this, (int) (Math.random()), "commit");
-			
+
 			for (ActionListener listener : commitListeners) {
 				listener.actionPerformed(e);
 			}
@@ -385,6 +385,7 @@ public class AutocompleteBox<T> extends JComboBox {
 
 	public T getValue() {
 		Object selected = getSelectedItem();
+
 		logger.debug("AutocompleteBox.getValue() -- selected: " + selected);
 		// for a simple straightforward one term autocomplete selected always has a value.
 
@@ -406,8 +407,13 @@ public class AutocompleteBox<T> extends JComboBox {
 
 			//fix for committing multiple items while editing cross-products in the TextEditor...
 			//getSelectedItem looks for items selected in the autocomplete JComboBox and returns null for genus as it picks up the second item while adding discriminating relations 
-			if(getItemAt(0) != null)
-				selected = getItemAt(0);
+			if(getItemAt(0) != null){
+				logger.debug("stop.. ");
+//				selected = getItemAt(0);
+				
+				return null;
+			}
+				
 		}
 
 
@@ -417,9 +423,7 @@ public class AutocompleteBox<T> extends JComboBox {
 				return (T) autocompleteModel.getOutputValue(autocompleteModel.createValue(s));
 		}
 
-
 		return (T) autocompleteModel.getOutputValue(selected);
-
 	}
 
 
@@ -505,15 +509,8 @@ public class AutocompleteBox<T> extends JComboBox {
 		addFocusListener(focusListener);
 		super.setUI(new MetalComboBoxUI() {
 
-			/*
-			 * @Override protected void installComponents() { arrowButton =
-			 * null;
-			 * 
-			 * if (comboBox.isEditable()) { addEditor(); }
-			 * 
-			 * comboBox.add(currentValuePane); }
-			 */
-			@Override
+
+
 			protected ComboPopup createPopup() {
 				return new BasicComboPopup(AutocompleteBox.this) {
 
@@ -536,8 +533,7 @@ public class AutocompleteBox<T> extends JComboBox {
 								list.addAll(getAutocompleteModel().getAllValues());
 								setDisplayResults(list);
 							} else {
-								TimerTask task = createTimerTask(
-										text.getText(), false);
+								TimerTask task = createTimerTask(text.getText(), false);
 								task.run();
 							}
 						}
