@@ -12,12 +12,12 @@
 ;;;;    (setf t1 (make-tanuki-system :start-url "http://localhost/cgi-bin/amigo/amigo" :data-location "/tmp" :dbname "tanuki" :dbuser "tanuki_user" :dbpass "tanuki_pass" :dbhost "localhost"))
 ;;;;    (initialize-database t1) ; seems to work now
 ;;;;    (start-a-tanuki t1 'no-argument-set)
-;;;;    (start-a-tanuki t1 'random-undone-argument-set)
+;;;;    (start-a-tanuki t1 'get-aset-weighed)
 ;;;;    (stop-tanukis)
 ;;;;
 ;;;; Continue:
 ;;;;    (setf t1 (make-tanuki-system :start-url "http://localhost/cgi-bin/amigo/amigo" :data-location "/tmp" :dbname "tanuki" :dbuser "tanuki_user" :dbpass "tanuki_pass" :dbhost "localhost"))
-;;;;    (start-a-tanuki 'distant-undone-argument-set)
+;;;;    (start-a-tanuki t1 'get-distant-aset-internal)
 ;;;;    (stop-tanukis)
 ;;;;
 ;;;; WISHLIST:
@@ -94,10 +94,6 @@
     :documentation "The internal database connection."
     :accessor db
     :initform nil)   
-   (random-type
-    :documentation "The type of random generation to be used: 'weighed, 'internal, 'external, and 'random."
-    :accessor random-type
-    :initform 'weighed)
    (sample-size
     :documentation "The size of the random sample in the database for each iteration."
     :accessor sample-size
@@ -246,60 +242,52 @@ number of unvisited URLs."
      (%report-plists qlist))))
 
 ;;;
-;;; Functions for target selection.
+;;; Internal functions for target selection.
 ;;;
 
-;;
-(defmethod no-argument-set ((ts tanuki-system))
-  "Returns nothing. Can be used for testing tanuki controls."
-  nil)
-
 ;; select * from argument_set inner join page on (argument_set.page_id = page.id) where argument_set.todo = 1 and page.internal = 1;
-(defmethod random-undone-argument-set ((ts tanuki-system) &optional (number-of-sets 1))
-  "Get a random unvisted page as a DAO, otherwise nil. Takes the
-symbols: 'internal, 'external, 'weighed, or 'random."
-  (let* ((rttype (random-type ts))
-         (in-ex (cond
-                 ((eq rttype 'external) 0)
-                 ((eq rttype 'internal) 1)
-                 ((eq rttype 'weighed)
-                  (alexandria:random-elt '(0 1 1 1 1)))
-                 (t (alexandria:random-elt '(0 1)))))
-         (count (query (:select (:count '*)
-                                :from 'argument-set
-                                :inner-join 'page
-                                :on (:= 'argument-set.page-id 'page.id)
-                                :where (:and (:= 'argument-set.todo 1)
-                                             (:= 'page.internal in-ex)))
-                       :single)))
-    (if (not (= 0 count))
-	(let ((plists
-               (loop for d from 1 to number-of-sets
-                     collect
-                     (query (:limit (:select '*
-                                             :from 'argument-set
-                                             :inner-join 'page
-                                             :on (:= 'argument-set.page-id
-                                                     'page.id)
-                                             :where (:and (:= 'argument-set.todo
-                                                              1)
-                                                          (:= 'page.internal
-                                                              in-ex)))
-                                    1 (random count))
-                            :plist))))
-	  (when plists
-            (let ((sets (mapcar (lambda (plist)
-                                  (get-dao 'tanuki-schema:argument-set
-                                           (getf plist :id)))
-                                plists)))
-              (if (= number-of-sets 1) (car sets) sets)))))))
+(defmethod random-undone-argument-set ((ts tanuki-system) deciding-function
+				       &key (number-of-sets 1))
+  "For internal use. Get a random unvisted page as a DAO, otherwise nil."
+  (with-db-from ts
+    (let* ((in-ex (funcall deciding-function))
+	   (count (query (:select (:count '*)
+				  :from 'argument-set
+				  :inner-join 'page
+				  :on (:= 'argument-set.page-id 'page.id)
+				  :where (:and (:= 'argument-set.todo 1)
+					       (:= 'page.internal in-ex)))
+			 :single)))
+      (if (not (= 0 count)) ; nil otherwise
+	  (let ((plists
+		 (loop for d from 1 to number-of-sets
+		    collect
+		      (query (:limit (:select '*
+					      :from 'argument-set
+					      :inner-join 'page
+					      :on (:= 'argument-set.page-id
+						      'page.id)
+					      :where (:and (:= 'argument-set.todo
+							       1)
+							   (:= 'page.internal
+							       in-ex)))
+				     1 (random count))
+			     :plist))))
+	    (when plists
+	      (let ((sets (mapcar (lambda (plist)
+				    (get-dao 'tanuki-schema:argument-set
+					     (getf plist :id)))
+				  plists)))
+		(if (= number-of-sets 1) (car sets) sets))))))))
 
 ;; Built on top of random-undone-argument-set.
-(defmethod distant-undone-argument-set ((ts tanuki-system))
+(defmethod distant-undone-argument-set ((ts tanuki-system) deciding-function)
+  "For internal use. "
   ;; Get a sample and remove the dupes.
   (let* ((sample-set 
           (remove-duplicates
-           (random-undone-argument-set ts (sample-size ts))
+           (random-undone-argument-set ts deciding-function
+				       :number-of-sets (sample-size ts))
            :test (lambda (x y)
                    (equal (tanuki-schema:clean-url x)
                           (tanuki-schema:clean-url y)))))
@@ -311,6 +299,51 @@ symbols: 'internal, 'external, 'weighed, or 'random."
     ;; url.
     (find-if (lambda (x) (equal wanted-url (tanuki-schema:clean-url x)))
              sample-set)))
+
+;;;
+;;; User functions for target selection.
+;;;
+
+(defmethod get-no-aset ((ts tanuki-system))
+  "Returns nothing. Can be used for testing tanuki controls."
+  ;; (declare (ignore tanuki-system))
+  nil)
+
+(defmethod get-aset-external ((ts tanuki-system))
+  "Only get undone external sets."
+  (random-undone-argument-set ts (lambda () 0)))
+
+(defmethod get-aset-internal ((ts tanuki-system))
+  "Only get undone internal sets."
+  (random-undone-argument-set ts (lambda () 1)))
+
+(defmethod get-aset-weighed ((ts tanuki-system))
+  "Get external and internal sets, but 4/5 internal."
+  (random-undone-argument-set
+   ts (lambda () (alexandria:random-elt '(0 1 1 1 1)))))
+
+(defmethod get-aset-random ((ts tanuki-system))
+  "Get external and internal sets, 50-50 split."
+  (random-undone-argument-set
+   ts (lambda () (alexandria:random-elt '(0 1)))))
+
+(defmethod get-distant-aset-external ((ts tanuki-system))
+  "Only get distant (i.e. more unique) undone external sets."
+  (distant-undone-argument-set ts (lambda () 0)))
+
+(defmethod get-distant-aset-internal ((ts tanuki-system))
+  "Only get distant (i.e. more unique) undone internal sets."
+  (distant-undone-argument-set ts (lambda () 1)))
+
+(defmethod get-distant-aset-weighed ((ts tanuki-system))
+  "Get distant (i.e. more unique) external and internal sets, but 4/5 internal."
+  (distant-undone-argument-set
+   ts (lambda () (alexandria:random-elt '(0 1 1 1 1)))))
+
+(defmethod get-distant-aset-random ((ts tanuki-system))
+  "Get distant (i.e. more unique) external and internal sets, 50-50 split."
+  (distant-undone-argument-set
+   ts (lambda () (alexandria:random-elt '(0 1)))))
 
 ;;;
 ;;; Controlling agents and agents' threads.
