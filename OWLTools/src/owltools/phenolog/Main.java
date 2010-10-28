@@ -71,6 +71,32 @@ public class Main {
      */
     public static void main(String[] args) {
 
+/**
+
+        try {
+            ParserWrapper pw = new ParserWrapper();
+            OWLGraphWrapper owlg = pw.parseToOWLGraph("http://purl.org/obo/obo/MP.obo");
+            Set<OWLObject> ancs = null;
+
+            ancs = owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier("MP:0001293"));
+
+            for (OWLObject c : ancs) {
+                if (owlg.getIdentifier(c).contains("MP:")) {
+                    System.out.println("ID: " + owlg.getIdentifier(c) + " ,Label: " + owlg.getLabel(c));
+                }
+            }
+
+
+
+        } catch (Exception e) {
+            System.out.println("EXCEPTION SP2 GRAPH");
+        }
+
+        if (1 == 1) {
+            return;
+        }
+**/
+
         HashSet<GenePheno> gpset = new HashSet<GenePheno>();
         HashMap<String, Individual> hm_ind;
         HashSet<IndividualPair> hs_indpair;
@@ -535,6 +561,7 @@ public class Main {
 
             Iterator it = ph2.iterator();
             HashSet<Pheno> nph2 = (HashSet<Pheno>) ph2.clone();
+            HashSet<Individual> tmpi = null;
             Pheno p = null;
             Pheno tmp = null;
             while (it.hasNext()) {
@@ -542,19 +569,39 @@ public class Main {
                 ancs = owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId()));
 
                 for (OWLObject c : ancs) {
-                    if (owlg.getIdentifier(c).contains("MP:")) {
+                    if (owlg.getIdentifier(c).contains("MP:") && !(owlg.getIdentifier(c).equals(p.getId()))) {
                         if (hm2.get(owlg.getIdentifier(c)) == null) {
+                            tmp = null;
                             tmp = new Pheno(owlg.getIdentifier(c), owlg.getLabel(c), p.getIndividuals());
                             nph2.add(tmp);
                             hm2.put(tmp.getId(), tmp);
                         } else {
+                            tmp = null;
                             tmp = hm2.get(owlg.getIdentifier(c));
-                            tmp.getIndividuals().addAll(p.getIndividuals());
+                            if(owlg.getIdentifier(c).equals("MP:0000001") && p.getId().equals("MP:0001292")){
+                                System.out.println("1292 and 0000001 is here :"+tmp.getId()+"size="+hm2.get("MP:0001293").getIndividuals().size());
+                            }
+                            tmpi = (HashSet<Individual>)tmp.getIndividuals();
+                            tmpi.addAll(p.getIndividuals());
+                            tmp.setIndividuals(tmpi);                            
                         }
+                        System.out.println("Pheno: "+p.getId()+" ANC: "+owlg.getIdentifier(c)+" , "+hm2.get("MP:0001293").getIndividuals().size());
                     }
+       //            if (p.getId().equals("MP:0001293")) {
+       //                 System.out.println("After P: " + p.getIndividuals().size());
+       //                 System.out.println("After P: HASHMAP: size: "+hm2.get("MP:0001293").getIndividuals().size());
+       //            }
+       //             if (owlg.getIdentifier(c).equals("MP:0001293")) {
+       //                 tmp = hm2.get(owlg.getIdentifier(c));
+       //                 System.out.println("After ANC: " + tmp.getIndividuals().size());
+       //                 System.out.println("After ANC: HASHMAP: size: "+hm2.get("MP:0001293").getIndividuals().size());
+       //             }
+                    
                 }
-
             }
+
+            tmp = hm2.get("MP:0001293");
+            System.out.println("FROM HASHMAP: ID: "+tmp.getId()+" ,Label: "+tmp.getLabel()+" Size: "+tmp.getIndividuals().size());
 
             ph2 = nph2;
 
@@ -582,6 +629,10 @@ public class Main {
 
         System.out.println("Done with PH2 Graph");
 
+
+
+        if(1==1)
+            return;
 
         System.out.println("SP1 size="+ph1.size()+" , SP2 size="+ph2.size());
         System.out.println("Total orthologs: "+hs_indpair1.size());
@@ -648,6 +699,12 @@ public class Main {
                         t_ph1.setClosestOverlap(overlap);
                         t_ph1.setClosestOverlapPairs(clpair);
                     }
+                    if (pvalue < t_ph2.getClosestDistance()) {
+                        t_ph2.setClosest(t_ph1);
+                        t_ph2.setClosestDistance(pvalue);
+                        t_ph2.setClosestOverlap(overlap);
+                        t_ph2.setClosestOverlapPairs(clpair);
+                    }
                 }
             }
         }
@@ -664,7 +721,7 @@ public class Main {
             Iterator it = phenolist.iterator();
             Iterator pi;
             Pheno p;
-            BufferedWriter out = new BufferedWriter(new FileWriter("result.csv"));
+            BufferedWriter out = new BufferedWriter(new FileWriter("result_sp1.csv"));
             out.write("Pheno1 ID(Label),Pheno2 ID(Label), p-Value, Overlap\n");
             while (it.hasNext()) {
                 p = (Pheno) it.next();
@@ -676,6 +733,37 @@ public class Main {
                         indpair = (IndividualPair)pi.next();
                         out.write("\n"+indpair.getMember1().getId()+" ("+indpair.getMember1().getLabel()+") "+",");
                         out.write(indpair.getMember2().getId()+" ("+indpair.getMember2().getLabel()+") ");
+                    }
+                    out.write("\n\n\n\n\n");
+                }
+            }
+            out.close();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+
+        phenolist = new ArrayList<Pheno>(ph2);
+        distancecompare = new DistanceCompare();
+        Collections.sort(phenolist, distancecompare);
+
+        try {
+            Iterator it = phenolist.iterator();
+            Iterator pi;
+            Pheno p;
+            BufferedWriter out = new BufferedWriter(new FileWriter("result_sp2.csv"));
+            out.write("Pheno1 ID(Label),Pheno2 ID(Label), p-Value, Overlap\n");
+            while (it.hasNext()) {
+                p = (Pheno) it.next();
+                if (p.getClosest() != null) {
+                    out.write(p.getId() + " (" + p.getLabel() + ") ," + p.getClosest().getId() + " (" + p.getClosest().getLabel() + ") ," + p.getClosestDistance() + "," + p.getClosestOverlap());
+                    pi = p.getClosestOverlapPairs().iterator();
+                    out.write("\n\nGene1 ID(Label),Gene2 ID(Label)");
+                    while (pi.hasNext()) {
+                        indpair = (IndividualPair)pi.next();
+                        out.write("\n"+indpair.getMember2().getId()+" ("+indpair.getMember2().getLabel()+") "+",");
+                        out.write(indpair.getMember1().getId()+" ("+indpair.getMember1().getLabel()+") ");
                     }
                     out.write("\n\n\n\n\n");
                 }
@@ -721,9 +809,12 @@ public class Main {
                 }
             }
 
+            HashSet<Individual> hsg = null;
             sp1 = ph1.iterator();
             pvalue = 0;
+            int iteration = 0;
             while (sp1.hasNext()) {
+                iteration++;
                 sp2 = ph2.iterator();
                 t_ph1 = (Pheno) sp1.next();
 
@@ -732,7 +823,7 @@ public class Main {
 
                 // Permute for Set 1 ;
                 if (t_ph1.getIndividuals() != null) {
-                    HashSet<Individual> hsg = (HashSet<Individual>) getpermutedgenes(t_ph1.getIndividuals().size(), ls_ind1.size(), ls_ind1);
+                    hsg = (HashSet<Individual>) getpermutedgenes(t_ph1.getIndividuals().size(), ls_ind1.size(), ls_ind1);
                     t_ph1.setIndividuals(hsg);
                 }
 
@@ -740,6 +831,10 @@ public class Main {
                     overlap = 0;
                     clpair = null;
                     t_ph2 = (Pheno) sp2.next();
+                    if (iteration == 1) {
+                        hsg = (HashSet<Individual>) getpermutedgenes(t_ph2.getIndividuals().size(), ls_ind2.size(), ls_ind2);
+                        t_ph2.setIndividuals(hsg);
+                    }
 
                     if ((t_ph1.getIndividuals() != null) && (t_ph2.getIndividuals() != null)) {
                         overlap = calculate_overlap(t_ph1, t_ph2, hm_indpair1).getClosestOverlap();
