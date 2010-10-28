@@ -19,16 +19,16 @@ amigo/bbop's amigo and ajax.
 
 General goals are:
 
-* Retool to operate with Rhino in addition to Spidermonkey
+* Retool to operate with Rhino in addition to Spidermonkey [DONE]
 
-As support for Spidermonkey has always been marginal and the possible
-possible usefulness Rhino increasing, the libraries should be retooled
-to not collide with its namespeces. Development and debugging will
-mostly occur with Rhino, occasional spot-checking in
+As support for Spidermonkey has always been marginal in packages and
+the possible usefulness Rhino increasing, the libraries should be
+retooled to not collide with its namespeces. Development and debugging
+will mostly occur with Rhino, occasional spot-checking in
 Spidermonkey. This will likely mean a general flattening of the
 library namespace.
 
-* Light reimplementation of the graph/model based on the last amigo code
+* Light reimplementation of the graph/model based on the last amigo code [DONE]
 
 We'll start there, but strip out a lot of the unecessary OBD frippery.
 
@@ -43,3 +43,9 @@ Graph code should be completely separate from layout (sugiyama) and
 render (rendermonkey) code. However, the graph model should contain
 implicit relations code, and either embedded or parallel meta
 information (to allow things like arc length in phylo trees).
+
+Abstract objects will take the plain graph (and possibly additional
+information) and turn them into an intermediate form for the final
+rendering target. For example: GO hierarchical, GO planar,
+phylo. These forms would then be fed into renders; example:
+hierarchical -> text, phylo -> HTML.
