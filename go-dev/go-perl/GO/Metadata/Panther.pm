@@ -130,7 +130,7 @@ our %species =
    MOUSE => { prefer => [ 'MGI', 'UniProtKB', 'ENSEMBL' ],
 	      id_filter => sub {
 	      	  if ($_[0] eq 'MGI') {
-	      	      $_[1] =~ s/^(\d)/MGI:$1/;
+	      	      return ('MGI', "MGI:$_[1]");
 	      	  }
 	      	  return @_;
 	      }
@@ -349,13 +349,22 @@ sub prefers{
     return qw/UniProtKB/;
 }
 
+# sub prefered{
+#     my $s = shift;
+#     my $v = shift
+
+#     return first { $v eq $_ } $s->preferes();
+# }
+
 sub id_filter{
     my $s = shift;
+    my ($k, $v) = (shift, shift);
+    $k = 'UniProtKB' if ($k =~ m/UniProt/i);
 
     if ($s->{id_filter}) {
-	return ${ $s->{id_filter} }(@_);
+	return &{ $s->{id_filter} }($k, $v);
     }
-    @_;
+    return ($k, $v);
 }
 
 
