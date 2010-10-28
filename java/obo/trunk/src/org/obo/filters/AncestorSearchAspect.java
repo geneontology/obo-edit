@@ -34,11 +34,7 @@ public class AncestorSearchAspect implements SearchAspect {
 		return c;
 	}
 
-	public String getID() {
-		return "ancestor";
-	}
 
-	@Override
 	public boolean equals(Object o) {
 		return o.getClass().equals(getClass());
 	}
@@ -46,6 +42,10 @@ public class AncestorSearchAspect implements SearchAspect {
 	@Override
 	public int hashCode() {
 		return getClass().hashCode();
+	}
+	
+	public String getID() {
+		return "ancestor";
 	}
 
 	@Override
