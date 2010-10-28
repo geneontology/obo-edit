@@ -15,8 +15,8 @@ public class Pheno implements Comparable<Pheno>{
 
 	private String id;
 	private String label;
-        private Pheno closest;
-        private double closestdistance;
+        private Pheno closest=null;
+        private double closestdistance=1;
         private int closestoverlap;
         private HashSet<IndividualPair> closestoverlappairs;
 	//private OWLObject owlObject; // for future use
