@@ -207,21 +207,9 @@ while (@file) {
     while (my $seq = $seqIO->next_seq()) {
 	my $guesser = GO::MatchID->new(ncbi_taxa_id => $ncbi_taxa_id);
 	$stats{$basename}->{count}++;
-	$guesser->ids( $seq->primary_id() );
-
-	my $parse_me = $seq->desc();
-	$parse_me =~ s/\s+Description:\s*(.*)$//;
-	$guesser->description($1);
-
-	my ($id, @tagval) = split(m/\s+/, $parse_me);
-	$guesser->ids($id);
-	undef $id;
-	$guesser->tagval(@tagval);
-	undef @tagval;
-
+	$guesser->seqIO($seq);
 
 	my ($gene_product_id, $dbxref_id) = $guesser->guess(1);
-	#warn $guesser->guessed. "\n";
 	if ($gene_product_id) {
 	    $stats{$basename}->{gene_product}++;
 	    next;
@@ -230,12 +218,14 @@ while (@file) {
 	} else {
 	    $stats{$basename}->{missing}++;
 	}
+	#die Dumper $guesser;
 
 	next if ($match_only);
 
 	##########
 	# Here is the bit that inserts new dbxref and gene_product
 	# entries.
+
 
 	if (!$dbxref_id) {
 
@@ -260,9 +250,9 @@ while (@file) {
 
 	}
 
-	my $symbol = $guesser->{tagval}->{GN} || $guesser->{guessed}->{xref_key};
+	#my $symbol = $guesser->{tagval}->{GN} || $guesser->{guessed}->{xref_key};
 	my $worked = $guesser->{guessed}->{gene_product_id} = create_id
-	  ($sth{insert_gene_product}, $symbol,
+	  ($sth{insert_gene_product}, $guesser->symbol(),
 	   $guesser->{guessed}->{dbxref_id}, $guesser->species_id,
 	   $type_id);
 	if (!$worked) {
@@ -274,8 +264,9 @@ while (@file) {
 	# go-load-qfo-seqs.pl's store_seq() subroutine.
 	##########
 
+	#local $Data::Dumper::Varname = "LINE$.";
+	#die Dumper $guesser;
     }
-
 }
 warn Dumper \%stats;
 
