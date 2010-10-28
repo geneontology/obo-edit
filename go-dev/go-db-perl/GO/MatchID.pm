@@ -126,18 +126,24 @@ sub _scalar{
 }
 
 sub _hash{
-    my $s      = shift;
-    my $key    = shift;
+    my $s   = shift;
+    my $key = shift;
+    my $smd = $s->species_metadata();
 
     while (@_) {
 	my $kv = shift @_;
+
 	die 'Trivial kv' if (_trivial($kv));
-	if ($kv !~ m/:/) {
-	    warn "Skipping '$kv'" unless ($quiet);
-	    next;
-	}
+	# if ($kv !~ m/:/) {
+	#     warn "Skipping '$kv'" unless ($quiet);
+	#     next;
+	# }
 	my ($k, $v) = split(m/:/, $kv, 2);
-	$s->{$key}->{$k} = $v;
+	if (exists $s->{$key}->{$v}) {
+	    warn "Trying to reset $k" if ($debug);
+	} else {
+	    $s->{$key}->{$k} = $v;
+	}
     }
     return $s->{$key};
 }
@@ -145,6 +151,11 @@ sub _hash{
 sub tagval{
     return shift()->_hash('tagval', @_);
 }
+
+
+# sub ids{
+#     return shift()->_hash('ids', @_);
+# }
 
 sub _trivial{
     my $test = shift;
@@ -173,46 +184,54 @@ sub _dbname_filter{
 }
 
 sub ids{
-    my $s = shift;
-    my $f = $s->species_metadata->{id_filter};
+    my $s   = shift;
+    my $smd = $s->species_metadata();
 
     while (@_) {
-	my @id = split(m/:/, shift @_, 2);
-	#$id[0] = 'UniProtKB' if ($id[0] =~ m/UniProt/i);
-	$id[0] = _dbname_filter($id[0]);
-	@id = &$f(@id) if ($f);
-
+	my @id = $smd->id_filter(split(m/:/, shift @_, 2));
 	push @{ $s->{ids} }, \@id;
     }
-
     return @{ $s->{ids} };
 }
 
-sub unique_ids{
-    my $s = shift;
-    my @id = $s->ids;
-    return @id if (1 >= scalar(@id));
+# sub have_dbname{
+#     my $s = shift;
+#     my $dbname = shift;
+#     my @id = $s->ids();
+
+#     while (@id) {
+# 	my $id = shift @id;
+# 	return 1 if ($dbname eq $id->[0]);
+#     }
+#     return undef;
+# }
+
+# sub unique_ids{
+#     my $s = shift;
+#     my @id = $s->ids;
+#     return @id if (1 >= scalar(@id));
 
 
-    if (scalar(@id) > 2) {
-	die "We don't yet suppert more then 2 ids, sorry";
-    }
+#     if (scalar(@id) > 2) {
+# 	warn Dumper $s;
+# 	die "We don't yet suppert more then 2 ids, sorry";
+#     }
 
-    if ($id[0]->[1] eq $id[1]->[1]) {
-	my @p = $s->species_metadata()->prefers();
+#     if ($id[0]->[1] eq $id[1]->[1]) {
+# 	my @p = $s->species_metadata()->prefers();
 
-	for my $id (@id) {
-	    if (first { $id->[0] eq $_ } @p) {
-		local $Data::Dumper::Varname = 'BLA';
-		return ( $id );
-	    }
-	}
-    } else {
-	return @id;
-    }
-    local $Data::Dumper::Varname = 'UNIQ';
-    die Dumper $s;
-}
+# 	for my $id (@id) {
+# 	    if (first { $id->[0] eq $_ } @p) {
+# 		local $Data::Dumper::Varname = 'BLA';
+# 		return ( $id );
+# 	    }
+# 	}
+#     } else {
+# 	return @id;
+#     }
+#     local $Data::Dumper::Varname = 'UNIQ';
+#     die Dumper $s;
+# }
 
 
 sub pick_id{
@@ -230,7 +249,8 @@ sub pick_id{
 		  {
 		   xref_dbname => $id->[0],
 		   xref_key    => $id->[1],
-		  }
+		  };
+		last;
 	    }
 	}
     }
@@ -362,10 +382,9 @@ sub guess{
 
     # If we made it here we didn't find a gene_product.
     ##########
-    # Lets seek a matching dbxref entry, for now lets only look for
-    # UniProt IDs
+    # Lets seek a matching dbxref entry
 
-    my @id = $s->unique_ids();
+    my @id = $s->ids(); #unique_ids();
 
     if (scalar @id) {
 
@@ -376,16 +395,17 @@ sub guess{
 	    } @guess_dbxref;
 	}
 
-	# my %sort_by;
-	# my @sort_by = $s->species_metadata()->prefers();
-	# for (my $loop = 0; $loop < scalar @sort_by; $loop++) {
-	#     $sort_by{$sort_by[$loop]} = $loop;
-	# }
-	# @id = sort {
-	#     my $A = $sort_by{$a->[0]} || 1000000;
-	#     my $B = $sort_by{$b->[0]} || 1000000;
-	#     $B <=> $B;
-	# } @id;
+	my %sort_by;
+	my @sort_by = $s->species_metadata()->prefers();
+	for (my $loop = 0; $loop < scalar @sort_by; $loop++) {
+	    $sort_by{$sort_by[$loop]} = $loop;
+	}
+	@id = sort {
+	    my $A = $sort_by{$a->[0]} || 1000000;
+	    my $B = $sort_by{$b->[0]} || 1000000;
+	    $B <=> $A;
+	} @id;
+
 
 	for my $id (@id) {
 	    my ($xref_dbname, $xref_key) = @$id;
@@ -413,7 +433,6 @@ sub guess{
 		    warn <<TXT;
 Matched $matched dbxref entries for $xref_key, using $matched[0]->[2]
 TXT
-		    #die Dumper $s, \@id;
 		}
 
 		$s->{guessed} =
@@ -445,6 +464,65 @@ sub panther_id{
     return '~' . join('|', $s->species_metadata()->code(), map {
 	join(':', @$_);
     } $s->ids());
+}
+
+sub seqIO{
+    my $s = shift;
+    my $seq = shift;
+
+    $s->ids($seq->primary_id());
+
+    my $kv = $seq->desc();
+    $kv =~ s/\s+Description:\s*(.*)$//;
+    $s->description($1);
+
+    my @skip;
+    my @kv = map {
+	if (m/:/) {
+	    $_;
+	} else {
+	    push @skip, $_;
+	    ();
+	}
+    } split(m/\s+/, $kv);
+    $s->ids(shift @kv);
+    if ($debug and scalar(@skip)) {
+	warn 'skipping from seqIO->desc(): ' . join(' ', @skip);
+    }
+    undef @skip;
+
+    my @prefer = map {
+	my $qm = quotemeta($_);
+	qr/^$qm:/;
+    } $s->species_metadata()->prefers();
+
+  KV:
+    while (@kv) {
+	my $kv = shift @kv;
+	for my $prefer (@prefer) {
+	    if ($kv =~ m/$prefer/) {
+		$s->ids($kv);
+		next KV;
+	    }
+	}
+	$s->tagval($kv);
+    }
+
+}
+
+sub symbol{
+    my $s = shift;
+    if (!$s->{symbol}) {
+	$s->{symbol} = $s->{tagval}->{GN};
+	if (!$s->{symbol}) {
+	    $s->{symbol} = 'n/a';
+	    if ($debug) {
+		local $Data::Dumper::Varname = 'SYM';
+		die Dumper $s;
+	    }
+	}
+    }
+    return $s->{symbol};
 }
 
 sub pretty{
