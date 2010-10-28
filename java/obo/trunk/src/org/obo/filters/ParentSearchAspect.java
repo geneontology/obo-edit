@@ -6,6 +6,7 @@ import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.reasoner.ReasonedLinkDatabase;
+import org.obo.reasoner.impl.OnTheFlyReasoner;
 import org.obo.reasoner.impl.TrimmedLinkDatabase;
 import org.obo.util.TermUtil;
 
@@ -21,14 +22,16 @@ public class ParentSearchAspect implements SearchAspect {
 
 	public Collection getObjects(Collection c, ReasonedLinkDatabase reasoner,
 			Filter traversalFilter, Object o) {
-		if (reasoner != null && o instanceof LinkedObject) {
-			LinkDatabase trimmedReasoner = new TrimmedLinkDatabase(reasoner);
-			for (Link link : trimmedReasoner.getParents((LinkedObject) o))
-				if(traversalFilter == null || traversalFilter.satisfies(link))
-			c.add(link.getParent());
-
-		} else if(o instanceof LinkedObject) {
-			c.addAll(TermUtil.getParents((LinkedObject) o, false, (LinkFilter) traversalFilter));
+		if(o instanceof LinkedObject){
+			if(reasoner != null && !(reasoner instanceof OnTheFlyReasoner)){
+				LinkDatabase trimmedReasoner = new TrimmedLinkDatabase(reasoner);
+				for (Link link : trimmedReasoner.getParents((LinkedObject) o))
+					if(traversalFilter == null || traversalFilter.satisfies(link))
+						c.add(link.getParent());
+			}
+			else{
+				c.addAll(TermUtil.getParents((LinkedObject) o, false, (LinkFilter) traversalFilter));
+			}
 		}
 		return c;
 	}

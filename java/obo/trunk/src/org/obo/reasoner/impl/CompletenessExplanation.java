@@ -2,7 +2,6 @@ package org.obo.reasoner.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;

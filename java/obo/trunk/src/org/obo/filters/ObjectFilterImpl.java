@@ -95,7 +95,7 @@ public class ObjectFilterImpl implements ObjectFilter {
 	// checking object's compliance to filter conditions
 	public boolean satisfies(Object object) {
           if (criterion == null) {
-            logger.debug("satisfies(" +  object+ "): criterion is null"); // DEL
+            logger.debug("satisfies(" +  object+ "): criterion is null"); 
             return false;
           }
 //          logger.debug("ObjectFilterImpl.satisfies -- input type = " + criterion.getInputType() + "; evaluating object: " + object); // DEL
@@ -104,10 +104,12 @@ public class ObjectFilterImpl implements ObjectFilter {
 		else {
 			String matchVal = value;
 			try {
-				matchVal = ExpressionUtil.resolveBacktickExpression(value,
-						context);
-			} catch (ExpressionException e) {
+				matchVal = ExpressionUtil.resolveBacktickExpression(value, context);
+			} 
+			catch (ExpressionException e) {
+				logger.debug("ObjectFilterImpl -- matchVal error");
 			}
+			
 			List os = new LinkedList();
 			aspect.getObjects(os, getReasoner(), traversalFilter, object);
 			criterion.setReasoner(getReasoner());
@@ -134,11 +136,11 @@ public class ObjectFilterImpl implements ObjectFilter {
 
 				/*//if (b || object.getClass().getName().contains("OBOProperty")){
 				 * Removing condition for OBOProperty objects getting a green flag through a set filter.
-				 * This causes all relations to show up in the search results irrespective of their relavance to the set filter.
-				 * If relations need to pass for certain conditions to hold..eveluate situation and set this at the higher level, not so late in the filtering process.
+				 * This causes all relations to show up in the search results irrespective of their relevance to the set filter.
+				 * If relations need to pass for certain conditions to hold..evaluate situation and set this at the higher level, not so late in the filtering process.
 				 * */
 				
-				if(b){
+				if(b || object.getClass().getName().contains("OBOProperty")){
 					matches = !negate;
 					break;
 				}
