@@ -2,7 +2,6 @@ package org.obo.util;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.obo.datamodel.Link;
@@ -31,10 +30,8 @@ public class ExplanationUtil {
 	}
 
 	public static boolean isGiven(ReasonedLinkDatabase reasoner, Link link) {
-		Collection explanations = reasoner.getExplanations(link);
-		Iterator it2 = explanations.iterator();
-		while (it2.hasNext()) {
-			Explanation e = (Explanation) it2.next();
+		Collection<Explanation> explanations = reasoner.getExplanations(link);
+		for(Explanation e : explanations){
 			if (e.getExplanationType() == ExplanationType.GIVEN) {
 				return true;
 			}
@@ -58,7 +55,7 @@ public class ExplanationUtil {
 		    return "";
 		}
 
-		Collection explanations = reasoner.getExplanations(link);
+		Collection<Explanation> explanations = reasoner.getExplanations(link);
 		out.append("<a name='" + link.getChild().getID().replace(':', '_')
 				+ "-" + link.getType().getID().replace(':', '_') + "-"
 				+ link.getParent().getID().replace(':', '_') + "'></a>");
@@ -81,9 +78,7 @@ public class ExplanationUtil {
 		}
 		if (explanations.size() > 1)
 			out.append("<ol>\n");
-		Iterator it2 = explanations.iterator();
-		while (it2.hasNext()) {
-			Explanation e = (Explanation) it2.next();
+		for(Explanation e : explanations){
 			if (explanations.size() > 1) {
 				out.append("<li>");
 			}
@@ -94,9 +89,7 @@ public class ExplanationUtil {
 						+ " because:");
 				CompletenessExplanation ce = (CompletenessExplanation) e;
 				out.append("<ol>\n");
-				Iterator it3 = ce.getMatches().iterator();
-				while (it3.hasNext()) {
-					CompletenessMatch me = (CompletenessMatch) it3.next();
+				for(CompletenessMatch me : ce.getMatches()){
 					// 
 					/*
 					 * out.append("<li>" +
@@ -156,9 +149,7 @@ public class ExplanationUtil {
 								+ HTMLUtil.getHTMLLink(link.getParent(), true)
 								+ " has a cross-product definition that says any term with the following relationships:");
 				out.append("<ol>\n");
-				it3 = ce.getMatches().iterator();
-				while (it3.hasNext()) {
-					CompletenessMatch me = (CompletenessMatch) it3.next();
+				for(CompletenessMatch me : ce.getMatches()){
 					out.append("<li><b>"
 							+ me.getCompletenessLink().getType().getID()
 							+ "</b> "
@@ -177,9 +168,8 @@ public class ExplanationUtil {
 								+ HTMLUtil.getHTMLLink(link.getParent(), true)
 								+ " because of transitivity. This new link is the result of applying the rules of transitivity to the following links:");
 				out.append("<ol>");
-				Iterator it3 = ((AbstractExplanation) e).getEvidence().iterator();
-				while (it3.hasNext()) {
-					Link ev = (Link) it3.next();
+				
+				for(Link ev : ((AbstractExplanation) e).getEvidence()){
 					out.append("<li>"
 							+ (TermUtil.isImplied(ev) ? "<i>" : "")
 							+ HTMLUtil.getHTMLLink(ev, !hasBeenTrimmed(

@@ -4,7 +4,6 @@ import org.bbop.dataadapter.*;
 import org.bbop.expression.JexlContext;
 import org.bbop.io.SafeFileOutputStream;
 import org.bbop.util.*;
-import org.hsqldb.SessionManager;
 import org.obo.annotation.dataadapter.AnnotationParserExtension;
 import org.obo.dataadapter.OBOConstants.StanzaMapping;
 import org.obo.dataadapter.OBOConstants.TagMapping;
@@ -61,7 +60,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		protected boolean doLinkFilter = false;
 
-		// set Tag filtering FALSE by default
+		// set Tag filtering TRUE by default
 		protected boolean doTagFilter = false;
 
 		protected boolean allowDangling = false;
@@ -1195,12 +1194,18 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		setProgressString("Collecting objects to write to file: " + path);
 		Collection writeList = new ArrayList();
 		Collection filteredObjects = database.getObjects();
+		logger.debug("filteredObjects.size(): " + filteredObjects.size());
 
 		for(Object o : filteredObjects){
 			writeList.add(o);
 		}
 
 		// Include is_a closure for cross referenced terms
+		
+		//set linkFilter to get is_a relations only: Select links where "child" that "have" a "Has is_a parent" 
+		//LinkFilter lfilter = Link child has Has is_a parent
+		
+		
 		//List of all referenced objects that are not present in the original writeList (will contain duplicate entries -- adding to a HashSet later to remove redundant objects)
 		Collection allRefsList = new ArrayList();
 		//		logger.debug("database equals FilteredLinkDatabse? : " + database.getClass().getSimpleName().equals("FilteredLinkDatabase"));
@@ -1213,13 +1218,15 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				if(TermUtil.isIntersection(lo)){
 					for(Link link : lo.getParents()){
 						//check if this is an  intersection link
-						if(TermUtil.isIntersection(link)){
+//						if(TermUtil.isIntersection(link) && link.getType().equals("OBO_REL:is_a")){
+							if(TermUtil.isIntersection(link)){
 							//get ancestors of cross referenced parent term
 							for(Object o : TermUtil.getAncestors(link.getParent(), null)){
 								IdentifiedObject refParent = (IdentifiedObject) o;
 								//get ancestors of cross referenced child term
 								for(Object co : TermUtil.getAncestors(link.getChild(), null)){
 									IdentifiedObject refChild = (IdentifiedObject) co;
+									
 									//check if terms exists in filteredObjects. filo: filtered object, filio: filtered identified object
 									boolean pexists = false;
 									boolean cexists = false;

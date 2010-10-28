@@ -87,9 +87,7 @@ public class OBOSessionImpl implements OBOSession {
 	public Namespace getNamespace(String id) {
 		if (id == null)
 			return null;
-		Iterator it = namespaces.iterator();
-		while (it.hasNext()) {
-			Namespace ns = (Namespace) it.next();
+		for(Namespace ns : namespaces){
 			if (ns.getID().equals(id))
 				return ns;
 		}
@@ -309,9 +307,7 @@ public class OBOSessionImpl implements OBOSession {
 	}
 
 	public TermSubset getCategory(String name) {
-		Iterator it = categories.iterator();
-		while (it.hasNext()) {
-			TermSubset cat = (TermSubset) it.next();
+		for(TermSubset cat : categories){
 			if (cat.getName().equals(name))
 				return cat;
 		}
@@ -331,9 +327,7 @@ public class OBOSessionImpl implements OBOSession {
 	}
 
 	public SynonymType getSynonymType(String id) {
-		Iterator it = synonymCategories.iterator();
-		while (it.hasNext()) {
-			SynonymType cat = (SynonymType) it.next();
+		for(SynonymType cat : synonymCategories){
 			if (cat.getID().equals(id))
 				return cat;
 		}
