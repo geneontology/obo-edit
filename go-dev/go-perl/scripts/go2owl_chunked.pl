@@ -2,7 +2,7 @@
 use FileHandle;
 use strict;
 
-my $chunksize = 10;
+my $chunksize = 500;
 my $base = 'foo';
 if (scalar(@ARGV) && $ARGV[0] =~ /^\-./) {
     my $opt = shift @ARGV;
