@@ -503,12 +503,9 @@ public class Main {
             OWLObject owl = null;
             Set<OWLObject> ancs = null;
 
-            Iterator it = ph1.iterator();
             HashSet<Pheno> nph1 = (HashSet<Pheno>) ph1.clone();
-            Pheno p = null;
             Pheno tmp = null;
-            while (it.hasNext()) {
-                p = (Pheno) it.next();
+            for ( Pheno p : nph1) {
                 owl = owlg.getOWLObjectByIdentifier(p.getId());
                 ancs = owlg.getAncestorsReflexive(owl);
 
@@ -530,10 +527,8 @@ public class Main {
 
             nph1 = null;
             nph1 = new HashSet<Pheno>();
-            it = ph1.iterator();
-            while(it.hasNext()){
-                p = (Pheno) it.next();
-                if (((p.getIndividuals().size() / hm_indpair1.size()) <= 0.1) && (owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId())) != null)) {
+            for ( Pheno p : ph1) {
+                 if (((p.getIndividuals().size() / hm_indpair1.size()) <= 0.1) && (owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId())) != null)) {
                     nph1.add(p);
                 } else {
                     if (owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId())) == null) {
@@ -570,7 +565,9 @@ public class Main {
 
                 for (OWLObject c : ancs) {
                     if (owlg.getIdentifier(c).contains("MP:") && !(owlg.getIdentifier(c).equals(p.getId()))) {
-                        if (hm2.get(owlg.getIdentifier(c)) == null) {
+                    	
+                       	Pheno testP = hm2.get("MP:0001293");
+                       	if (hm2.get(owlg.getIdentifier(c)) == null) {
                             tmp = null;
                             tmp = new Pheno(owlg.getIdentifier(c), owlg.getLabel(c), p.getIndividuals());
                             nph2.add(tmp);
@@ -578,7 +575,7 @@ public class Main {
                         } else {
                             tmp = null;
                             tmp = hm2.get(owlg.getIdentifier(c));
-                            if(owlg.getIdentifier(c).equals("MP:0000001") && p.getId().equals("MP:0001292")){
+                          	if(owlg.getIdentifier(c).equals("MP:0000001") && p.getId().equals("MP:0001292")){
                                 System.out.println("1292 and 0000001 is here :"+tmp.getId()+"size="+hm2.get("MP:0001293").getIndividuals().size());
                             }
                             tmpi = (HashSet<Individual>)tmp.getIndividuals();
