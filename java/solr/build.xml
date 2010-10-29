@@ -17,4 +17,19 @@
 		       basedir="./build/classes"
 		  />		
 	</target>
+
+	<target name="dist" depends="make-jar">
+
+	<copy todir="dist">
+		<fileset dir="./">
+			<include name="solr/**"/>
+			<include name="lib/*.jar"/>
+		</fileset>
+	</copy>
+
+		
+	<copy todir="dist/lib" file="geneontology-solr.jar"/>
+		
+	</target>
+	
 </project>
