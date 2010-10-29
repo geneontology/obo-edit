@@ -140,17 +140,12 @@ public class Main {
                 
         HashSet<Attribute> gp_at;
         HashSet<Individual> ind1;
-        Individual tmp2_ind;
-        GenePheno tmp2_gp;
-
+        
         ind1 = null;
         hm_ind = null;
-        tmp2_gp = null;
-        tmp2_ind = null;
-
-        Iterator gp_it = gpset.iterator(); // For each Gene ID - Phenotype
-        while (gp_it.hasNext()) {
-            tmp2_gp = (GenePheno) gp_it.next();
+                
+        for (GenePheno tmp2_gp : gpset) {
+            Individual tmp2_ind;
             if (ind1 == null){
                 ind1 = new HashSet<Individual>();
                 hm_ind = new HashMap<String, Individual>();
@@ -284,12 +279,9 @@ public class Main {
         HashSet<Individual> ind2;
 
         ind2 = null;        
-        tmp2_gp = null;
-        tmp2_ind = null;
-
-        gp_it = gpset.iterator(); // For each Gene ID - Phenotype
-        while (gp_it.hasNext()) {
-            tmp2_gp = (GenePheno) gp_it.next();
+  
+        for (GenePheno tmp2_gp : gpset) {
+            Individual tmp2_ind;
             if (ind2 == null){
                 ind2 = new HashSet<Individual>();
             }
@@ -367,13 +359,9 @@ public class Main {
 
 
         // Loop through Ortholog pairs and create a new hashset of 1:1 individual pairs
-        Iterator it1 = hs_indpair.iterator();
-        HashMap<String, IndividualPair> hm_indpair1 = new HashMap<String, IndividualPair>();
-        IndividualPair indpair;
-        indpair = null;
-        HashSet<IndividualPair> hs_indpair1 = new HashSet<IndividualPair>();
-        while (it1.hasNext()) {
-            indpair = (IndividualPair) it1.next();
+         HashMap<String, IndividualPair> hm_indpair1 = new HashMap<String, IndividualPair>();
+         HashSet<IndividualPair> hs_indpair1 = new HashSet<IndividualPair>();
+         for (IndividualPair indpair : hs_indpair) {
             if ((indpair.getMember1().getOrthologs() == 1) && (indpair.getMember2().getOrthologs() == 1) &&
                     (indpair.getMember1().getAttributes().size() > 0) && (indpair.getMember2().getAttributes().size() > 0)) {
                 hs_indpair1.add(indpair);
@@ -392,9 +380,8 @@ public class Main {
         // Calculate distance between each phenotype in Species 1 vs. each phenotype in Species 2
         // To do this, create a hashset for Species I and II, Phenotype -> Set of associated Individuals
 
-        it1 = hs_indpair1.iterator();
-        HashSet<Pheno> ph1;
-        HashSet<Pheno> ph2;
+        HashSet<Pheno> ph1; // phenotypes in set 1
+        HashSet<Pheno> ph2; // phenotypes in set 2
         HashMap<String, Pheno> hm1 = new HashMap<String, Pheno>();
         HashMap<String, Pheno> hm2 = new HashMap<String, Pheno>();
         HashSet<Individual> hs_ind;
@@ -412,25 +399,17 @@ public class Main {
         ph = null;
 
         long start, end, total;
-        IndividualPair itmp2;
         Individual mem1;
         Individual mem2;
-        Iterator mem1_it;
-        Iterator mem2_it;
-        Attribute at;
-        
-        itmp2 = null;
+                
         hs_ind = null;
         start = System.currentTimeMillis();
-        while (it1.hasNext()) {
-            itmp2 = (IndividualPair) it1.next();
-            mem1 = itmp2.getMember1();
-            mem2 = itmp2.getMember2();
+        for (IndividualPair itmp2 : hs_indpair1) {
+             mem1 = itmp2.getMember1();
+             mem2 = itmp2.getMember2();
 
             // Species I
-            mem1_it = mem1.getAttributes().iterator();
-            while (mem1_it.hasNext()) {
-                at = (Attribute) mem1_it.next();
+             for (Attribute at : mem1.getAttributes()) {
                 if (ph1 == null) {
                     ph1 = new HashSet<Pheno>();
                 }
@@ -455,10 +434,8 @@ public class Main {
 
 
             // Species II
-            mem2_it = mem2.getAttributes().iterator();
-            while (mem2_it.hasNext()) {
-                at = (Attribute) mem2_it.next();
-                if (ph2 == null) {
+             for (Attribute at : mem2.getAttributes()) {
+            	 if (ph2 == null) {
                     ph2 = new HashSet<Pheno>();
                 }
                 //if Phenotype Set does not consist of the current phenotype
@@ -554,14 +531,11 @@ public class Main {
 
             Set<OWLObject> ancs = null;
 
-            Iterator it = ph2.iterator();
             HashSet<Pheno> nph2 = (HashSet<Pheno>) ph2.clone();
             HashSet<Individual> tmpi = null;
-            Pheno p = null;
             Pheno tmp = null;
-            while (it.hasNext()) {
-                p = (Pheno) it.next();
-                ancs = owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId()));
+            for (Pheno p : ph2) {
+            	ancs = owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId()));
 
                 for (OWLObject c : ancs) {
                     if (owlg.getIdentifier(c).contains("MP:") && !(owlg.getIdentifier(c).equals(p.getId()))) {
@@ -604,9 +578,7 @@ public class Main {
 
             nph2 = null;
             nph2 = new HashSet<Pheno>();
-            it = ph2.iterator();
-            while (it.hasNext()) {
-                p = (Pheno) it.next();
+            for (Pheno p : ph2) {
                 if (((p.getIndividuals().size() / hm_indpair1.size()) <= 0.1) && (owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId())) != null)) {
                     nph2.add(p);
                 } else {
@@ -727,7 +699,7 @@ public class Main {
                     pi = p.getClosestOverlapPairs().iterator();
                     out.write("\n\nGene1 ID(Label),Gene2 ID(Label)");
                     while (pi.hasNext()) {
-                        indpair = (IndividualPair)pi.next();
+                    	IndividualPair indpair = (IndividualPair)pi.next();
                         out.write("\n"+indpair.getMember1().getId()+" ("+indpair.getMember1().getLabel()+") "+",");
                         out.write(indpair.getMember2().getId()+" ("+indpair.getMember2().getLabel()+") ");
                     }
@@ -758,7 +730,7 @@ public class Main {
                     pi = p.getClosestOverlapPairs().iterator();
                     out.write("\n\nGene1 ID(Label),Gene2 ID(Label)");
                     while (pi.hasNext()) {
-                        indpair = (IndividualPair)pi.next();
+                    	IndividualPair indpair = (IndividualPair)pi.next();
                         out.write("\n"+indpair.getMember2().getId()+" ("+indpair.getMember2().getLabel()+") "+",");
                         out.write(indpair.getMember1().getId()+" ("+indpair.getMember1().getLabel()+") ");
                     }
