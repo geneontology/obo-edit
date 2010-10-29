@@ -163,7 +163,9 @@ sub term_information {
 	sort { lc($a->{id}) cmp lc($b->{id}) }
 	  @{$term_hash{$term->acc}{dbxrefs}};
 
-      ## Term and acc synonyms.
+      ## Term and acc synonyms. Prevent dupes, even if they shouldn't
+      ## be in there.
+      my $syn_dupe_check = {};
       foreach my $syn ($term->term_synonym->all) {
 
 	## Dig out scope if we can first.
@@ -172,19 +174,29 @@ sub term_information {
 	  $scope = $syn->synonym_type->acc;
 	 }
 
+	## Dig out the acc.
+	my $syn_acc = undef;
 	if( $syn->term_synonym ){
-	  push @{$term_hash{$term->acc}{synonyms}},
-	    {
-	     acc => $syn->term_synonym,
-	     scope => $scope,
-	    };
+	  $syn_acc = $syn->term_synonym;
+	}elsif( $syn->acc_synonym ){
+	  $syn_acc = $syn->acc_synonym;
 	}
-	if( $syn->acc_synonym ){
-	  push @{$term_hash{$term->acc}{synonyms}},
-	    {
-	     acc => $syn->acc_synonym,
-	     scope => $scope,
-	    };
+
+	## Dupe check and add.
+	if( defined $syn_acc and $syn_acc ){
+
+	  my $syn_str = $syn_acc;
+	  my $tmp = { acc => $syn_acc };
+
+	  if( defined $scope and $scope ){
+	    $tmp->{scope} = $scope;
+	    $syn_str .= '<>' . $scope;
+	  }
+
+	  if( ! $syn_dupe_check->{$syn_str} ){
+	    $syn_dupe_check->{$syn_str} = 1;
+	    push @{$term_hash{$term->acc}{synonyms}}, $tmp;
+	  }
 	}
       }
 
