@@ -79,7 +79,7 @@ our %species =
    # D
    #
 
-   DANRE => { prefer => [ 'ZFIN', 'UniProtKB', 'ENSEMBL' ] },
+   DANRE => { prefer => [ 'ZFIN', 'ENSEMBL', 'UniProtKB' ] },
    DEIRA => {},
    DICDI => {},
    DROME => { prefer => [ 'FB' ],
@@ -129,7 +129,7 @@ our %species =
    MONDO => { prefer => [ 'ENSEMBL' ] },
    MOUSE => { prefer => [ 'MGI', 'UniProtKB', 'ENSEMBL' ],
 	      id_filter => sub {
-	      	  if ($_[0] eq 'MGI') {
+	      	  if (($_[0] eq 'MGI') and ($_[1] !~ m/^MGI:/)) {
 	      	      return ('MGI', "MGI:$_[1]");
 	      	  }
 	      	  return @_;

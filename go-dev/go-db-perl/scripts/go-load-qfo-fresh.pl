@@ -210,6 +210,10 @@ while (@file) {
 	$guesser->seqIO($seq);
 
 	my ($gene_product_id, $dbxref_id) = $guesser->guess(1);
+
+	#local $Data::Dumper::Varname = "LINE$.";
+	#die Dumper $guesser;
+
 	if ($gene_product_id) {
 	    $stats{$basename}->{gene_product}++;
 	    next;
@@ -218,7 +222,6 @@ while (@file) {
 	} else {
 	    $stats{$basename}->{missing}++;
 	}
-	#die Dumper $guesser;
 
 	next if ($match_only);
 
@@ -264,8 +267,6 @@ while (@file) {
 	# go-load-qfo-seqs.pl's store_seq() subroutine.
 	##########
 
-	#local $Data::Dumper::Varname = "LINE$.";
-	#die Dumper $guesser;
     }
 }
 warn Dumper \%stats;
