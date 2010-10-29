@@ -465,143 +465,11 @@ public class Main {
         System.out.println("Total Time Taken: "+ total+" SP1 size="+ph1.size()+" , SP2 size="+ph2.size());
         System.out.println("Total orthologs: "+hs_indpair1.size());
 
-
-        /*int chk_overlap = 0;
-        chk_overlap = calculate_overlap(hm1.get("FBbt:00005089"), hm2.get("MP:0005621"), hm_indpair1);
-        System.out.println("Overlap : "+chk_overlap);
-        System.out.println("Lets check ortho. "+hm_indpair1.get("FBgn0020440"));*/
-
-
-        try {
-            ParserWrapper pw = new ParserWrapper();
-            OWLGraphWrapper owlg = pw.parseToOWLGraph("http://purl.org/obo/obo/FBbt.obo");
-            //OWLOntology ont = g.getOntology();
-
-            OWLObject owl = null;
-            Set<OWLObject> ancs = null;
-
-            HashSet<Pheno> nph1 = (HashSet<Pheno>) ph1.clone();
-            Pheno tmp = null;
-            for ( Pheno p : nph1) {
-                owl = owlg.getOWLObjectByIdentifier(p.getId());
-                ancs = owlg.getAncestorsReflexive(owl);
-
-                for (OWLObject c : ancs) {
-                    if (owlg.getIdentifier(c).contains("FBbt:")) {
-                        if (hm1.get(owlg.getIdentifier(c)) == null) {
-                            tmp = new Pheno(owlg.getIdentifier(c), owlg.getLabel(c), p.getIndividuals());
-                            nph1.add(tmp);
-                            hm1.put(tmp.getId(), tmp);
-                        } else {
-                            tmp = hm1.get(owlg.getIdentifier(c));
-                            tmp.getIndividuals().addAll(p.getIndividuals());
-                        }
-                    }
-                }
-            }
-
-            ph1 = nph1;
-
-            nph1 = null;
-            nph1 = new HashSet<Pheno>();
-            for ( Pheno p : ph1) {
-                 if (((p.getIndividuals().size() / hm_indpair1.size()) <= 0.1) && (owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId())) != null)) {
-                    nph1.add(p);
-                } else {
-                    if (owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId())) == null) {
-                        System.out.println("SP1(Removing) No Ancestors: ID# " + p.getId() + " Label# " + p.getLabel());
-                    } else {
-                        System.out.println("SP1(Removing): ID# " + p.getId() + " Label# " + p.getLabel() + " Size# " + p.getIndividuals().size() + " Orthologs# " + hm_indpair1.size());
-                    }
-                }
-            }
-
-            ph1 = nph1;
-
-        } catch (Exception e) {
-            System.out.println("EXCEPTION SP1 GRAPH");
-        }
-
-        System.out.println("Done with PH1 Graph");
-
-        try {
-            ParserWrapper pw = new ParserWrapper();
-            OWLGraphWrapper owlg = pw.parseToOWLGraph("http://purl.org/obo/obo/MP.obo");
-            //OWLOntology ont = g.getOntology();
-
-            Set<OWLObject> ancs = null;
-
-            HashSet<Pheno> nph2 = (HashSet<Pheno>) ph2.clone();
-            HashSet<Individual> tmpi = null;
-            Pheno tmp = null;
-            for (Pheno p : ph2) {
-            	ancs = owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId()));
-
-                for (OWLObject c : ancs) {
-                    if (owlg.getIdentifier(c).contains("MP:") && !(owlg.getIdentifier(c).equals(p.getId()))) {
-                    	
-                       	Pheno testP = hm2.get("MP:0001293");
-                       	if (hm2.get(owlg.getIdentifier(c)) == null) {
-                            tmp = null;
-                            tmp = new Pheno(owlg.getIdentifier(c), owlg.getLabel(c), p.getIndividuals());
-                            nph2.add(tmp);
-                            hm2.put(tmp.getId(), tmp);
-                        } else {
-                            tmp = null;
-                            tmp = hm2.get(owlg.getIdentifier(c));
-                          	if(owlg.getIdentifier(c).equals("MP:0000001") && p.getId().equals("MP:0001292")){
-                                System.out.println("1292 and 0000001 is here :"+tmp.getId()+"size="+hm2.get("MP:0001293").getIndividuals().size());
-                            }
-                            tmpi = (HashSet<Individual>)tmp.getIndividuals();
-                            tmpi.addAll(p.getIndividuals());
-                            tmp.setIndividuals(tmpi);                            
-                        }
-                        System.out.println("Pheno: "+p.getId()+" ANC: "+owlg.getIdentifier(c)+" , "+hm2.get("MP:0001293").getIndividuals().size());
-                    }
-       //            if (p.getId().equals("MP:0001293")) {
-       //                 System.out.println("After P: " + p.getIndividuals().size());
-       //                 System.out.println("After P: HASHMAP: size: "+hm2.get("MP:0001293").getIndividuals().size());
-       //            }
-       //             if (owlg.getIdentifier(c).equals("MP:0001293")) {
-       //                 tmp = hm2.get(owlg.getIdentifier(c));
-       //                 System.out.println("After ANC: " + tmp.getIndividuals().size());
-       //                 System.out.println("After ANC: HASHMAP: size: "+hm2.get("MP:0001293").getIndividuals().size());
-       //             }
-                    
-                }
-            }
-
-            tmp = hm2.get("MP:0001293");
-            System.out.println("FROM HASHMAP: ID: "+tmp.getId()+" ,Label: "+tmp.getLabel()+" Size: "+tmp.getIndividuals().size());
-
-            ph2 = nph2;
-
-            nph2 = null;
-            nph2 = new HashSet<Pheno>();
-            for (Pheno p : ph2) {
-                if (((p.getIndividuals().size() / hm_indpair1.size()) <= 0.1) && (owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId())) != null)) {
-                    nph2.add(p);
-                } else {
-                    if (owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId())) == null) {
-                        System.out.println("SP2(Removing) No Ancestors: ID# " + p.getId() + " Label# " + p.getLabel());
-                    } else {
-                        System.out.println("SP2(Removing): ID# " + p.getId() + " Label# " + p.getLabel() + " Size# " + p.getIndividuals().size() + " Orthologs# " + hm_indpair1.size());
-                    }
-                }
-            }
-
-            ph2 = nph2;
-
-        } catch (Exception e) {
-            System.out.println("EXCEPTION SP2 GRAPH");
-        }
+        PhenoTransitiveClosure ptc = new PhenoTransitiveClosure();
+        ph1 = ptc.performtransiviteclosure("http://purl.org/obo/obo/FBbt.obo", "FBbt:", ph1, hm1, hm_indpair1);
+        ph2 = ptc.performtransiviteclosure("http://purl.org/obo/obo/MP.obo", "MP:", ph2, hm2, hm_indpair1);
 
         System.out.println("Done with PH2 Graph");
-
-
-
-        if(1==1)
-            return;
 
         System.out.println("SP1 size="+ph1.size()+" , SP2 size="+ph2.size());
         System.out.println("Total orthologs: "+hs_indpair1.size());
@@ -752,6 +620,7 @@ public class Main {
         Iterator it = hs_indpair1.iterator();
         ind1 = new HashSet<Individual>();
         ind2 = new HashSet<Individual>();
+        Pheno p = null;
 
         while (it.hasNext()) {
             ip1 = (IndividualPair) it.next();
@@ -762,21 +631,10 @@ public class Main {
         ArrayList<Individual> ls_ind1 = new ArrayList<Individual>(ind1);
         ArrayList<Individual> ls_ind2 = new ArrayList<Individual>(ind2);
 
-        for (int iter = 1; iter <= 2; iter++) {
+        for (int iter = 1; iter <= 10; iter++) {
             //For each Phenotype in Species I
             //  For each Phenotype in Species II
             //    Calculate distance using hypergeometric probability
-
-            /* For each phenotype, permute the associated gene from the ortholog set */
-            // Permute for Set 2 ;
-            sp2 = ph2.iterator();
-            while (sp2.hasNext()) {
-                Pheno tmp2 = (Pheno) sp2.next();
-                if (tmp2.getIndividuals() != null) {
-                    HashSet<Individual> hsg = (HashSet<Individual>) getpermutedgenes(tmp2.getIndividuals().size(), ls_ind2.size(), ls_ind2);
-                    tmp2.setIndividuals(hsg);
-                }
-            }
 
             HashSet<Individual> hsg = null;
             sp1 = ph1.iterator();
@@ -806,8 +664,9 @@ public class Main {
                     }
 
                     if ((t_ph1.getIndividuals() != null) && (t_ph2.getIndividuals() != null)) {
-                        overlap = calculate_overlap(t_ph1, t_ph2, hm_indpair1).getClosestOverlap();
-                        clpair = calculate_overlap(t_ph1, t_ph2, hm_indpair1).getClosestOverlapPairs();
+                        p = calculate_overlap(t_ph1, t_ph2, hm_indpair1);
+                        overlap = p.getClosestOverlap();
+                        clpair = p.getClosestOverlapPairs();
                     } else {
                         overlap = 0;
                     }
@@ -847,7 +706,7 @@ public class Main {
                 BufferedWriter out = new BufferedWriter(new FileWriter("result" + Integer.toString(iter) + ".csv"));
                 out.write("Pheno1 ID,Pheno1 Label, Pheno2 ID, Pheno2 Label, Distance, Overlap\n");
                 while (it.hasNext()) {
-                    Pheno p = (Pheno) it.next();
+                    p = (Pheno) it.next();
                     if (p.getClosest() != null) {
                         out.write(p.getId() + "," + p.getLabel() + "," + p.getClosest().getId() + "," + p.getClosest().getLabel() + "," + p.getClosestDistance() + "," + p.getClosestOverlap()+"\n");
                     }
@@ -858,4 +717,4 @@ public class Main {
             }
         } // end of iterator for 1 to 1000 bootstrap samples
     } // end of main method
-} // end of main clss
+} // end of main class
