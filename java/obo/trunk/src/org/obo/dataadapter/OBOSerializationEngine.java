@@ -1202,12 +1202,11 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		// Include is_a closure for cross referenced terms
 		
-		//set linkFilter to get is_a relations only: Select links where "child" that "have" a "Has is_a parent" 
-		//LinkFilter lfilter = Link child has Has is_a parent
+		//set linkFilter to get is_a relations only: Select links where "child" that "have" a "Has is_a parent"  
+		// Link child has Has is_a parent
 		
-		
-		//List of all referenced objects that are not present in the original writeList (will contain duplicate entries -- adding to a HashSet later to remove redundant objects)
-		Collection allRefsList = new ArrayList();
+		//Set of all referenced objects that are not present in the original writeList
+		HashSet allRefsSet = new HashSet();
 		//		logger.debug("database equals FilteredLinkDatabse? : " + database.getClass().getSimpleName().equals("FilteredLinkDatabase"));
 		if( database.getClass().getSimpleName().equals("FilteredLinkDatabase") && (((FilteredLinkDatabase) database).getFollowIsaClosure()) ){
 			for(Object obj : writeList){
@@ -1221,26 +1220,13 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 //						if(TermUtil.isIntersection(link) && link.getType().equals("OBO_REL:is_a")){
 							if(TermUtil.isIntersection(link)){
 							//get ancestors of cross referenced parent term
-							for(Object o : TermUtil.getAncestors(link.getParent(), null)){
+							for(Object o : TermUtil.getisaAncestors(link.getParent())){
 								IdentifiedObject refParent = (IdentifiedObject) o;
 								//get ancestors of cross referenced child term
-								for(Object co : TermUtil.getAncestors(link.getChild(), null)){
-									IdentifiedObject refChild = (IdentifiedObject) co;
-									
-									//check if terms exists in filteredObjects. filo: filtered object, filio: filtered identified object
-									boolean pexists = false;
-									boolean cexists = false;
-									for(Object filo : writeList){
-										IdentifiedObject filio = (IdentifiedObject) filo;
-										if(filio.getName().equals(refParent.getName()))
-											pexists = true;		
-										if(filio.getName().equals(refChild.getName()))
-											cexists = true;
-									}								
-									if(!pexists)
-										allRefsList.add(refParent);
-									if(!cexists)
-										allRefsList.add(refChild);
+								for(Object co : TermUtil.getisaAncestors(link.getChild())){
+									IdentifiedObject refChild = (IdentifiedObject) co;					
+									allRefsSet.add(refChild);
+									allRefsSet.add(refParent);
 								}
 							}
 						}// isIntersection(link)
@@ -1248,9 +1234,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				} 
 			}
 
-			//remove duplicate objects from allRefsList
-			HashSet refshs = new HashSet(allRefsList);
-			for(Object o : refshs){
+			for(Object o : allRefsSet){
 				writeList.add(o);
 			}
 
