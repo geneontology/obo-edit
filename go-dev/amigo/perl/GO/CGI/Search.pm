@@ -1968,33 +1968,32 @@ sub _obsolete_check {
 	my $apph = $self->apph;
 	my $dbh = $apph->dbh;
 
-	if (@$obs)
-	{	#	get the comments for the term;
-		#	return only comments with GO IDs in them
-		my @terms_in_comments;
-		my %not_in_results;
-		my $comments;
-		my $comment_id_to_term_acc;
-		my $comment_id_to_term_id;
+	if (@$obs){
+	  # get the comments for the term;
+	  # return only comments with GO IDs in them
+	  my @terms_in_comments = ();
+	  my %not_in_results = ();
+	  my $comments = {};
+	  my $comment_id_to_term_acc = {};
+	  my $comment_id_to_term_id = {};
 
-		if (get_environment_param("term2term_metadata_loaded"))
-		{	#print STDERR "term2term_metadata is loaded!\n" if $verbose;
-			my $rels = $dbh->selectall_arrayref("SELECT id FROM term WHERE acc IN (". join(", ", map { sql_quote($_) } qw(replaced_by consider) ).")");
+	  if (get_environment_param("term2term_metadata_loaded")){
+	    #print STDERR "term2term_metadata is loaded!\n" if $verbose;
+	    my $rels = $dbh->selectall_arrayref("SELECT id FROM term WHERE acc IN (". join(", ", map { sql_quote($_) } qw(replaced_by consider) ).")");
 
-			my $sql = "SELECT term2_id, term1_id, relationship_type_id FROM term2term_metadata WHERE term2_id IN ("
-			.join(", ", @$obs)
-			.") AND relationship_type_id IN ("
-			.join(",", map { $_->[0] } @$rels).")";
+	    my $sql = "SELECT term2_id, term1_id, relationship_type_id FROM term2term_metadata WHERE term2_id IN ("
+	      .join(", ", @$obs)
+		.") AND relationship_type_id IN ("
+		  .join(",", map { $_->[0] } @$rels).")";
 
-			my $cons_repl = $dbh->selectall_arrayref($sql);
-			# group the consider/replaced by terms by the ID of the obsolete term
-			foreach (@$cons_repl)
-			{	push @{$comments->{$_->[0]}}, $_->[1];
-			}
-			%$comment_id_to_term_id = %$comments;
-		}
-		else
-		{	
+	    my $cons_repl = $dbh->selectall_arrayref($sql);
+	    # group the consider/replaced by terms by the
+	    # ID of the obsolete term
+	    foreach (@$cons_repl){
+	      push @{$comments->{$_->[0]}}, $_->[1];
+	    }
+	    %$comment_id_to_term_id = %$comments;
+	  }else{
 			my $sql =
 					"SELECT term_id, term_comment FROM term_definition WHERE term_id IN ("
 					.join(", ", @$obs).") AND term_comment REGEXP ".sql_quote(".*GO:[0-9]{7}.*");
