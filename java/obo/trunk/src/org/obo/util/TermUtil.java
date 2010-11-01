@@ -45,7 +45,18 @@ import org.obo.datamodel.impl.DanglingLinkImpl;
 import org.obo.datamodel.impl.DanglingPropertyImpl;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
 import org.obo.datamodel.impl.OBORestrictionImpl;
+import org.obo.filters.ChildSearchAspect;
+import org.obo.filters.EqualsComparison;
+import org.obo.filters.Filter;
+import org.obo.filters.HasIsaParentCriterion;
+import org.obo.filters.IDSearchCriterion;
 import org.obo.filters.LinkFilter;
+import org.obo.filters.LinkFilterFactory;
+import org.obo.filters.LinkFilterImpl;
+import org.obo.filters.ObjectFilter;
+import org.obo.filters.ObjectFilterFactory;
+import org.obo.filters.ObjectFilterImpl;
+import org.obo.filters.SelfSearchAspect;
 import org.obo.history.CompletesHistoryItem;
 import org.obo.history.CreateLinkHistoryItem;
 import org.obo.history.TermMacroHistoryItem;
@@ -361,6 +372,59 @@ public class TermUtil {
 		detectRoots(outSet, linkDatabase, linkDatabase.getObjects(),
 				rootAlgorithm);
 	}
+	
+	
+	/**
+	 * Returns all is_a ancestors of the given term.
+	 */
+	public static Collection<LinkedObject> getisaAncestors(LinkedObject term) {
+		return getisaAncestors(term, false);
+	}
+
+	/**
+	 * Returns all is_a ancestors of the given term. If the includeSelf parameter is
+	 * true, the given term itself is also included in the returned collection.
+	 * 
+	 * @param term
+	 *            the term whose ancestors most be found
+	 * @param includeSelf
+	 *            whether or not the given term should be included in the output
+	 *            collection
+	 */
+	public static Collection<LinkedObject> getisaAncestors(LinkedObject term, boolean includeSelf) {
+		return getisaAncestors(term, null, includeSelf);
+	}
+	
+	/**
+	 * Returns all is_a ancestors of the given term.
+	 * 
+	 * @param term
+	 *            the term whose ancestors must be found
+	 * @param linkDatabase
+	 *            provides the parent links
+	 * @param includeSelf
+	 *            whether or not the given term itself should be included in the
+	 *            output collection
+	 */
+	public static Collection<LinkedObject> getisaAncestors(LinkedObject term,
+			LinkDatabase linkDatabase, boolean includeSelf) {
+		//LinkFilter = Link child has Has is_a parent
+		
+		ObjectFilter typeFilter = new ObjectFilterImpl();
+		typeFilter.setCriterion(new HasIsaParentCriterion());
+		LinkFilter lf = new LinkFilterImpl();
+		lf.setFilter(typeFilter);
+		lf.setAspect(1);
+		
+		AncestorTask task = getAncestors(term, linkDatabase, lf);
+		task.execute();
+		Collection<LinkedObject> out = task.getResults();
+
+		if (includeSelf)
+			out.add(term);
+		return out;
+	}
+
 
 	/**
 	 * Returns all ancestors of the given term.
@@ -382,6 +446,7 @@ public class TermUtil {
 	public static Collection<LinkedObject> getAncestors(LinkedObject term, boolean includeSelf, LinkFilter lf) {
 		return getAncestors(term, null, includeSelf, lf);
 	}
+
 
 	/**
 	 * Returns all ancestors of the given term.
