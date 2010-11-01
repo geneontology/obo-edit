@@ -1,3 +1,31 @@
+* There are two installation methods described 
+* in this document. 
+
+*************METHOD ONE FOR INSTALLATION**************************
+This method can be used in all OS platforms, i.e Ubuntu, OSX and Windows. 
+This method is suitable for developers. 
+
+- Step 1: Download Jetty from http://dist.codehaus.org/jetty/
+- Step 2: Extract the downloaded jetty compress file and move the contents of 
+			the root directory to {USER.HOME}/jetty. The USER.HOME is the home
+			directory of a user in a OS. The directory path {USER.HOME}/jetty in this 
+			documentation is referred as jetty.home.
+- Step 3: Run the 'ant dist' (from this project source directory) command on shell to 
+			build distribution of this solr project. 
+- Step 4: Copy dist/solr.war file (from this project source) to jetty.home/webapps directory.
+- Step 5: Cop dit/sorl (from this project source) directory to jetty.home director
+- Step 6: Change the jetty.home/sorl/conf/go-data-config.xml file to update the location of the obo file
+			in your computer.
+- Step 6: run the command 'java -jar start.jar' from the jetty.home
+- Step 7: Visit the 'http://localhost:8080/solr/dataimport?command=full-import' from  a web browser.
+			This command index the obo ontology file in solr.
+- Step 8: Visit the 'http://localhost:8080/solr/admin' for searching in the solr index.
+
+
+
+
+*************METHOD TWO FOR INSTALLATION**************************
+
 * Installation instructions for Ubuntu 10.04.
 ** Get the necessary libraries and installations.
 
