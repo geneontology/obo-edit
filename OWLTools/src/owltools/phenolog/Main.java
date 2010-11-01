@@ -5,9 +5,6 @@ import java.io.*;
 import java.util.*;
 import org.apache.commons.math.distribution.*;
 
-import owltools.graph.OWLGraphWrapper;
-import owltools.io.ParserWrapper;
-import org.semanticweb.owlapi.model.OWLObject;
 /**
  *
  * Author        : Neeral Beladia
@@ -373,7 +370,6 @@ public class Main {
 
         System.out.println("Size of Original Orthologs: "+hs_indpair.size());
         System.out.println("Size of New 1:1 Orthologs: "+hs_indpair1.size());
-        //hs_indpair.clear();
 
  
 
@@ -466,6 +462,12 @@ public class Main {
         System.out.println("Total orthologs: "+hs_indpair1.size());
 
         PhenoTransitiveClosure ptc = new PhenoTransitiveClosure();
+        HashSet<Pheno> oldph1 = new HashSet<Pheno>();
+        HashSet<Pheno> oldph2 = new HashSet<Pheno>();
+
+        /* Backup Pheno hashsets for each species to be used in bootstrap later on */
+        oldph1.addAll(ph1);
+        oldph2.addAll(ph2);
         ph1 = ptc.performtransiviteclosure("http://purl.org/obo/obo/FBbt.obo", "FBbt:", ph1, hm1, hm_indpair1);
         ph2 = ptc.performtransiviteclosure("http://purl.org/obo/obo/MP.obo", "MP:", ph2, hm2, hm_indpair1);
 
@@ -479,40 +481,30 @@ public class Main {
         //  For each Phenotype in Species II
         //    Calculate distance using hypergeometric probability
 
-        Iterator sp1 = ph1.iterator();
-        Iterator sp2;
         double pvalue = 0;
-        Pheno t_ph1;
-        Pheno t_ph2;
+
         HypergeometricDistributionImpl hg = new HypergeometricDistributionImpl(100, 20, 10);
         IndividualPair ip1 = new IndividualPair();
         HashSet<IndividualPair> clpair = null;
 
-        t_ph1 = null;
-        t_ph2 = null;
         int i;
         start = System.currentTimeMillis();
-        while (sp1.hasNext()) {
-            sp2 = ph2.iterator();
-            t_ph1 = (Pheno) sp1.next();
-
+        for (Pheno t_ph1 : ph1) {
             t_ph1.setClosest(null);
             t_ph1.setClosestDistance(1);
 
-            while (sp2.hasNext()) {
+            for (Pheno t_ph2 : ph2) {
                 overlap = 0;
                 clpair = null;
-                t_ph2 = (Pheno) sp2.next();
-
+ 
                 if ((t_ph1.getIndividuals() != null) && (t_ph2.getIndividuals() != null)) {
                     overlap = calculate_overlap(t_ph1, t_ph2, hm_indpair1).getClosestOverlap();
                     clpair = calculate_overlap(t_ph1, t_ph2, hm_indpair1).getClosestOverlapPairs();
-                    //System.out.println("Ph1: "+t_ph1.getId()+"size="+t_ph1.getIndividuals().size()+", Ph2: "+t_ph2.getId()+"size="+t_ph2.getIndividuals().size()+" , Overlap = "+overlap);
                 } else {
                     overlap = 0;
                 }               
 
-                if (overlap > 0) {
+                if (overlap > 1) {
                     mval = t_ph1.getIndividuals().size();
                     nval = t_ph2.getIndividuals().size();
 
@@ -550,12 +542,12 @@ public class Main {
         total = end - start;
         System.out.println("2) Total Time Taken: "+ total);
 
-        ArrayList<Pheno> phenolist = new ArrayList<Pheno>(ph1);
+        ArrayList<Pheno> overall_list1 = new ArrayList<Pheno>(ph1);
         DistanceCompare distancecompare = new DistanceCompare();
-        Collections.sort(phenolist, distancecompare);
+        Collections.sort(overall_list1, distancecompare);
 
         try {
-            Iterator it = phenolist.iterator();
+            Iterator it = overall_list1.iterator();
             Iterator pi;
             Pheno p;
             BufferedWriter out = new BufferedWriter(new FileWriter("result_sp1.csv"));
@@ -581,12 +573,12 @@ public class Main {
         }
 
 
-        phenolist = new ArrayList<Pheno>(ph2);
+        ArrayList<Pheno> overall_list2 = new ArrayList<Pheno>(ph2);
         distancecompare = new DistanceCompare();
-        Collections.sort(phenolist, distancecompare);
+        Collections.sort(overall_list2, distancecompare);
 
         try {
-            Iterator it = phenolist.iterator();
+            Iterator it = overall_list2.iterator();
             Iterator pi;
             Pheno p;
             BufferedWriter out = new BufferedWriter(new FileWriter("result_sp2.csv"));
@@ -611,9 +603,6 @@ public class Main {
             ex.printStackTrace();
         }
 
-        if (1==1)
-            return;
-
 
         /* CODE FOR BOOTSTRAPING */
         /* Get list of distinct genes from Individual pair : ls_ind1 ls_ind2 for Species1 and Species2 respectively */
@@ -621,6 +610,10 @@ public class Main {
         ind1 = new HashSet<Individual>();
         ind2 = new HashSet<Individual>();
         Pheno p = null;
+        ArrayList<Double> phenolist1 = new ArrayList<Double>();
+        ArrayList<Double> phenolist2 = new ArrayList<Double>();
+        double[] cutoff1 = new double[1000];
+        double[] cutoff2 = new double[1000];
 
         while (it.hasNext()) {
             ip1 = (IndividualPair) it.next();
@@ -630,91 +623,157 @@ public class Main {
 
         ArrayList<Individual> ls_ind1 = new ArrayList<Individual>(ind1);
         ArrayList<Individual> ls_ind2 = new ArrayList<Individual>(ind2);
+        HashSet<Individual> hsg;
+        
+        for (int iter = 1; iter <= 1000; iter++) {
 
-        for (int iter = 1; iter <= 10; iter++) {
+            phenolist1.clear();
+            phenolist2.clear();
             //For each Phenotype in Species I
             //  For each Phenotype in Species II
             //    Calculate distance using hypergeometric probability
 
-            HashSet<Individual> hsg = null;
-            sp1 = ph1.iterator();
+            hsg = null;
             pvalue = 0;
-            int iteration = 0;
-            while (sp1.hasNext()) {
-                iteration++;
-                sp2 = ph2.iterator();
-                t_ph1 = (Pheno) sp1.next();
 
-                t_ph1.setClosest(null);
-                t_ph1.setClosestDistance(1);
-
-                // Permute for Set 1 ;
+            for (Pheno t_ph1 : oldph1) {
+                // Permute Genese for Species I - Phenotypes
                 if (t_ph1.getIndividuals() != null) {
                     hsg = (HashSet<Individual>) getpermutedgenes(t_ph1.getIndividuals().size(), ls_ind1.size(), ls_ind1);
                     t_ph1.setIndividuals(hsg);
                 }
+            }
+            for (Pheno t_ph2 : oldph2) {
+                // Permute Genese for Species II - Phenotypes
+                if (t_ph2.getIndividuals() != null) {
+                    hsg = (HashSet<Individual>) getpermutedgenes(t_ph2.getIndividuals().size(), ls_ind2.size(), ls_ind2);
+                    t_ph2.setIndividuals(hsg);
+                }
+            }
 
-                while (sp2.hasNext() && t_ph1.getIndividuals() != null) {
-                    overlap = 0;
-                    clpair = null;
-                    t_ph2 = (Pheno) sp2.next();
-                    if (iteration == 1) {
-                        hsg = (HashSet<Individual>) getpermutedgenes(t_ph2.getIndividuals().size(), ls_ind2.size(), ls_ind2);
-                        t_ph2.setIndividuals(hsg);
-                    }
+            /* Perform transitive closure on the phenotypes for Species I & II (Genes were permuted in the previous step) */
+            ph1 = ptc.performtransiviteclosure("http://purl.org/obo/obo/FBbt.obo", "FBbt:", oldph1, hm1, hm_indpair1);
+            ph2 = ptc.performtransiviteclosure("http://purl.org/obo/obo/MP.obo", "MP:", oldph2, hm2, hm_indpair1);
 
-                    if ((t_ph1.getIndividuals() != null) && (t_ph2.getIndividuals() != null)) {
-                        p = calculate_overlap(t_ph1, t_ph2, hm_indpair1);
-                        overlap = p.getClosestOverlap();
-                        clpair = p.getClosestOverlapPairs();
-                    } else {
+            for (Pheno t_ph1 : ph1) {
+                
+                t_ph1.setClosest(null);
+                t_ph1.setClosestDistance(1);
+
+                if (t_ph1.getIndividuals().size() > 0) {
+                    for (Pheno t_ph2 : oldph2) {
                         overlap = 0;
-                    }
-
-                    if (overlap > 0) {
-                        mval = t_ph1.getIndividuals().size();
-                        nval = t_ph2.getIndividuals().size();
-
-                        bigN = hs_indpair1.size();
-
-                        hg.setPopulationSize(bigN);
-                        hg.setNumberOfSuccesses(mval);
-                        hg.setSampleSize(nval);
-
-                        // Calculate HyperGeometric probability between t_ph1 and t_ph2
-                        pvalue = 0;
-                        for (i = overlap; i <= Math.min(mval, nval); i++) {
-                            pvalue += hg.probability(overlap);
+                        clpair = null;
+                        t_ph2.setClosest(null);
+                        t_ph2.setClosestDistance(1);
+                        
+                        if ((t_ph1.getIndividuals() != null) && (t_ph2.getIndividuals() != null)) {
+                            p = calculate_overlap(t_ph1, t_ph2, hm_indpair1);
+                            overlap = p.getClosestOverlap();
+                            clpair = p.getClosestOverlapPairs();
+                        } else {
+                            overlap = 0;
                         }
 
-                        if (pvalue < t_ph1.getClosestDistance()) {
-                            t_ph1.setClosest(t_ph2);
-                            t_ph1.setClosestDistance(pvalue);
-                            t_ph1.setClosestOverlap(overlap);
-                            t_ph1.setClosestOverlapPairs(clpair);
-                        }
-                    } // end of (overlap > 0)
-                } // end of looping through each phenotype of species 2
-            } // end of looping through each phenotype of species 1
+                        if (overlap > 1) {
+                            mval = t_ph1.getIndividuals().size();
+                            nval = t_ph2.getIndividuals().size();
 
+                            bigN = hs_indpair1.size();
 
-            phenolist = new ArrayList<Pheno>(ph1);
-            distancecompare = new DistanceCompare();
-            Collections.sort(phenolist, distancecompare);
-            try {
-                it = phenolist.iterator();
-                BufferedWriter out = new BufferedWriter(new FileWriter("result" + Integer.toString(iter) + ".csv"));
-                out.write("Pheno1 ID,Pheno1 Label, Pheno2 ID, Pheno2 Label, Distance, Overlap\n");
-                while (it.hasNext()) {
-                    p = (Pheno) it.next();
-                    if (p.getClosest() != null) {
-                        out.write(p.getId() + "," + p.getLabel() + "," + p.getClosest().getId() + "," + p.getClosest().getLabel() + "," + p.getClosestDistance() + "," + p.getClosestOverlap()+"\n");
+                            hg.setPopulationSize(bigN);
+                            hg.setNumberOfSuccesses(mval);
+                            hg.setSampleSize(nval);
+
+                            // Calculate HyperGeometric probability between t_ph1 and t_ph2
+                            pvalue = 0;
+                            for (i = overlap; i <= Math.min(mval, nval); i++) {
+                                pvalue += hg.probability(overlap);
+                            }
+
+                            if (pvalue < t_ph1.getClosestDistance()) {
+                                t_ph1.setClosest(t_ph2);
+                                t_ph1.setClosestDistance(pvalue);
+                                t_ph1.setClosestOverlap(overlap);
+                                t_ph1.setClosestOverlapPairs(clpair);
+                            }
+                            if (pvalue < t_ph2.getClosestDistance()) {
+                                t_ph2.setClosest(t_ph1);
+                                t_ph2.setClosestDistance(pvalue);
+                                t_ph2.setClosestOverlap(overlap);
+                                t_ph2.setClosestOverlapPairs(clpair);
+                            }
+                        } // end of (overlap > 0)
+                    } // end of looping through each phenotype of species 2
+                    if(t_ph1.getClosestOverlap() > 1)
+                        phenolist1.add(t_ph1.getClosestDistance());
+                }
+
+                for (Pheno t_ph2 : ph2) {
+                    if (t_ph2.getClosestOverlap() > 1) {
+                        phenolist2.add(t_ph2.getClosestDistance());
                     }
                 }
-                out.close();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+                                
+                Collections.sort(phenolist1);
+                Collections.sort(phenolist2);
+
+                cutoff1[iter] = phenolist1.get((int)Math.round(phenolist1.size() * 0.05));
+                cutoff2[iter] = phenolist2.get((int)Math.round(phenolist2.size() * 0.05));
+            } // end of looping through each phenotype of species 1
         } // end of iterator for 1 to 1000 bootstrap samples
+
+        double avgcutoff1, avgcutoff2;
+
+        avgcutoff1 = 0;
+        avgcutoff2 = 0;
+        for(int iter=1;iter<=1000;iter++){
+            avgcutoff1 = avgcutoff1 + cutoff1[iter];
+            avgcutoff2 = avgcutoff2 + cutoff2[iter];
+        }
+        avgcutoff1 = avgcutoff1 / 1000;
+        avgcutoff2 = avgcutoff2 / 1000;
+
+
+        try {
+            BufferedWriter out = new BufferedWriter(new FileWriter("mresult_sp1.csv"));
+            out.write("Pheno1 ID(Label),Pheno2 ID(Label), p-Value, Overlap\n");
+            for (Pheno mp : overall_list1) {
+                if (mp.getClosest() != null && mp.getClosestDistance() <= avgcutoff1) {
+                    out.write(mp.getId() + " (" + mp.getLabel() + ") ," + mp.getClosest().getId() + " (" + mp.getClosest().getLabel() + ") ," + mp.getClosestDistance() + "," + mp.getClosestOverlap());
+                    
+                    out.write("\n\nGene1 ID(Label),Gene2 ID(Label)");
+                    for (IndividualPair indpair : mp.getClosestOverlapPairs()) {
+                        out.write("\n" + indpair.getMember1().getId() + " (" + indpair.getMember1().getLabel() + ") " + ",");
+                        out.write(indpair.getMember2().getId() + " (" + indpair.getMember2().getLabel() + ") ");
+                    }
+                    out.write("\n\n\n\n\n");
+                }
+            }
+            out.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        try {
+            BufferedWriter out = new BufferedWriter(new FileWriter("mresult_sp2.csv"));
+            out.write("Pheno1 ID(Label),Pheno2 ID(Label), p-Value, Overlap\n");
+            for (Pheno mp : overall_list2) {
+                if (mp.getClosest() != null && mp.getClosestDistance() <= avgcutoff1) {
+                    out.write(mp.getId() + " (" + mp.getLabel() + ") ," + mp.getClosest().getId() + " (" + mp.getClosest().getLabel() + ") ," + mp.getClosestDistance() + "," + mp.getClosestOverlap());
+
+                    out.write("\n\nGene1 ID(Label),Gene2 ID(Label)");
+                    for (IndividualPair indpair : mp.getClosestOverlapPairs()) {
+                        out.write("\n" + indpair.getMember1().getId() + " (" + indpair.getMember1().getLabel() + ") " + ",");
+                        out.write(indpair.getMember2().getId() + " (" + indpair.getMember2().getLabel() + ") ");
+                    }
+                    out.write("\n\n\n\n\n");
+                }
+            }
+            out.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
     } // end of main method
 } // end of main class
