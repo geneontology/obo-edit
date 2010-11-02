@@ -28,4 +28,9 @@
 	<table-filter match-name="relation_chain"></table-filter>
 	<table-filter match-name="subclass_of"></table-filter>
 	<table-filter match-name="subrelation_of"></table-filter>
+	<table name="subclass_of">
+		<column name="cls"></column>
+		<column name="super_cls"></column>
+		<column name="ontology"></column>
+	</table>
 </hibernate-reverse-engineering>

@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Oct 22, 2010 9:25:52 AM by Hibernate Tools 3.4.0.Beta1 -->
+<!-- Generated Nov 2, 2010 12:18:56 PM by Hibernate Tools 3.4.0.Beta1 -->
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.OntologySubset" table="ontology_subset">
-        <comment>A named subset of the ontology EXAMPLE: goslim_prok MAPPINGS: OBO: header.subsetdef OWL: see obo2owl spec LEAD: term (term table is overloaded)</comment>
+        <comment>A named subset of the ontologyEXAMPLE: goslim_prokMAPPINGS:OBO: header.subsetdefOWL: see obo2owl specLEAD: term (term table is overloaded)</comment>
         <id name="id" type="string">
             <column name="id" />
             <generator class="assigned" />

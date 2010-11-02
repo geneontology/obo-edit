@@ -312,7 +312,11 @@ CREATE TABLE subclass_of (
        cls VARCHAR,
        super_cls VARCHAR,
 
-       ontology VARCHAR
+       ontology VARCHAR,
+       
+	   FOREIGN KEY (cls) REFERENCES cls(id),  --This is to test hibernte layer
+	   FOREIGN KEY (super_cls) REFERENCES cls(id),  --This is to test hibernte layer
+
 );
 
 -- holds iff: cls SubClassOf rel Some tgt
