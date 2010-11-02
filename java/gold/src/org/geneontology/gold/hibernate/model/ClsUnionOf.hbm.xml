@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Nov 2, 2010 12:18:56 PM by Hibernate Tools 3.4.0.Beta1 -->
+<!-- Generated Nov 2, 2010 3:53:51 PM by Hibernate Tools 3.4.0.Beta1 -->
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.ClsUnionOf" table="cls_union_of">
-        <comment>A shorthand declaring a class to be equivalent to a union of other classes.For any cls, the set of all_union_of tuples are collected. This constitutes a
-        conjunctive expression that is equivalent to cls.E.g.[Term]id: prokaryoteunion_of: eubacteriaunion_of: archaea==&gt;
-        [gold]cls_union_of(prokaryote,eubacteria)cls_union_of(prokaryote,archaea)==&gt; [owl]EquivalentTo (prokaryote UnionOf(eubacteria archaea))//Limitation: only a single such
-        equivalence relation is allowed per class//Note that there should never be a cls that only has a single cls_union_of.MAPPINGS:OBO: union_ofOWL: EquivalentTo(cls UnionOf(
-        {...} ) LEAD: n/a</comment>
+        <comment>A shorthand declaring a class to be equivalent to a union of other classes. For any cls, the set of all_union_of tuples are collected. This constitutes a
+        conjunctive expression that is equivalent to cls. E.g. [Term] id: prokaryote union_of: eubacteria union_of: archaea ==&gt; [gold] cls_union_of(prokaryote,eubacteria)
+        cls_union_of(prokaryote,archaea) ==&gt; [owl] EquivalentTo (prokaryote UnionOf(eubacteria archaea)) // Limitation: only a single such equivalence relation is allowed per
+        class // Note that there should never be a cls that only has a single cls_union_of. MAPPINGS: OBO: union_of OWL: EquivalentTo(cls UnionOf( {...} ) -- see obo2owl doc LEAD:
+        n/a</comment>
         <composite-id name="id" class="org.geneontology.gold.hibernate.model.ClsUnionOfId">
             <key-property name="cls" type="string">
                 <column name="cls" />

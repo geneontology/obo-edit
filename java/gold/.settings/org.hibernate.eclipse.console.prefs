@@ -1,4 +1,4 @@
-#Fri Oct 22 08:48:56 PDT 2010
-default.configuration=
+#Tue Nov 02 13:27:44 EDT 2010
+default.configuration=hgold
 eclipse.preferences.version=1
-hibernate3.enabled=false
+hibernate3.enabled=true

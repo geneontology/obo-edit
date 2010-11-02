@@ -3,7 +3,7 @@
 	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
-<!-- Generated Nov 2, 2010 12:18:56 PM by Hibernate Tools 3.4.0.Beta1 -->
+<!-- Generated Nov 2, 2010 3:53:51 PM by Hibernate Tools 3.4.0.Beta1 -->
 <hibernate-mapping>
 
 <class
@@ -11,7 +11,12 @@
     table="ontology_annotation"
 >
 
- <comment>A property of an ontologyExample properties: saved_byMAPPINGS:OBO: header.<property>OWL: OntologyAnnotation(ontology property value)LEAD: n/a</comment>
+ <comment>A property of an ontology
+Example properties: saved_by
+MAPPINGS: 
+ OBO: header.<property>
+ OWL: OntologyAnnotation(ontology property value)
+ LEAD: n/a</comment>
     <composite-id
 		name="id"
         class="org.geneontology.gold.hibernate.model.OntologyAnnotationId"
