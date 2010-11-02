@@ -1,7 +1,13 @@
 package org.geneontology.gold.hibernate.factory;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.geneontology.gold.hibernate.model.Cls;
+import org.geneontology.gold.hibernate.model.SubclassOf;
+import org.geneontology.gold.hibernate.model.SubclassOfMapping;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -40,10 +46,19 @@ public class GoldObjectFactory {
 		return (Cls)session.createQuery("from Cls where id = ?").setString(0, id).uniqueResult();
 	}
 	
-	/*public synchronized Cls getSubClassOfAssertion(String cls){
+	public synchronized List<SubclassOf> getSubClassOfAssertions(String cls){
 		Session session = getSession();
-		return (Cls)session.createQuery("from  where id = ?").setString(0, id).uniqueResult();
-	}*/
+		List<SubclassOfMapping> results =session.createQuery("from SubclassOfMapping where cls = ?").setString(0, cls).list();
+		List<SubclassOf> list = new ArrayList<SubclassOf>();
+		
+		for(SubclassOfMapping scm: results){
+			list.add(new SubclassOf(scm.getClsByCls(), scm.getClsBySuperCls(), scm.getId().getOntology()));
+		}
+		
+		return list;
+		
+		
+	}
 
 	
 }
