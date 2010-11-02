@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Nov 2, 2010 12:18:56 PM by Hibernate Tools 3.4.0.Beta1 -->
+<!-- Generated Nov 2, 2010 3:53:51 PM by Hibernate Tools 3.4.0.Beta1 -->
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.ObjDefinitionXref" table="obj_definition_xref">
-        <comment>Provenance for a class or relation textual definitionMAPPINGS:OBO: term.def.xrefsOWL: see obo2owl specLEAD: term_dbxref[is_for_definition=1]</comment>
+        <comment>Provenance for a class or relation textual definition MAPPINGS: OBO: term.def.xrefs OWL: see obo2owl spec LEAD: term_dbxref[is_for_definition=1]</comment>
         <composite-id name="id" class="org.geneontology.gold.hibernate.model.ObjDefinitionXrefId">
             <key-property name="obj" type="string">
                 <column name="obj" />
