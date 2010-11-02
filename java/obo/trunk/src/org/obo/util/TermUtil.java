@@ -45,7 +45,8 @@ import org.obo.datamodel.impl.DanglingLinkImpl;
 import org.obo.datamodel.impl.DanglingPropertyImpl;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
 import org.obo.datamodel.impl.OBORestrictionImpl;
-import org.obo.filters.HasIsaParentCriterion;
+import org.obo.filters.EqualsComparison;
+import org.obo.filters.IDSearchCriterion;
 import org.obo.filters.LinkFilter;
 import org.obo.filters.LinkFilterImpl;
 import org.obo.filters.ObjectFilter;
@@ -401,13 +402,21 @@ public class TermUtil {
 	 */
 	public static Collection<LinkedObject> getisaAncestors(LinkedObject term,
 			LinkDatabase linkDatabase, boolean includeSelf) {
-		//LinkFilter = Link child has Has is_a parent
-		
+		//LinkFilter set through interface = Select links where "Type" that "have" a "ID" that "equals" the value "OBO_REL:is_a"
+		// LinkFilter translation = Link type has ID equals "OBO_REL:is_a"
 		ObjectFilter typeFilter = new ObjectFilterImpl();
-		typeFilter.setCriterion(new HasIsaParentCriterion());
+		typeFilter.setCriterion(new IDSearchCriterion());
+		
+		//Initialize equals comparison e = equals
+		EqualsComparison e = new EqualsComparison();
+		typeFilter.setComparison(e);
+		
+		typeFilter.setValue("OBO_REL:is_a");
+		
 		LinkFilter lf = new LinkFilterImpl();
 		lf.setFilter(typeFilter);
-		lf.setAspect(1);
+		// aspect 2 = Type
+		lf.setAspect(2);
 		
 		AncestorTask task = getAncestors(term, linkDatabase, lf);
 		task.execute();
