@@ -1,29 +1,29 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Oct 22, 2010 9:25:52 AM by Hibernate Tools 3.4.0.Beta1 -->
+<!-- Generated Nov 2, 2010 12:18:56 PM by Hibernate Tools 3.4.0.Beta1 -->
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.Relation" table="relation">
-        <comment>An ontology relation. MAPPINGS: OBO: Typedef stanza. OWL: ObjectProperty LEAD: term (the term table is overloaded)</comment>
+        <comment>An ontology relation.MAPPINGS:OBO: Typedef stanza.OWL: ObjectPropertyLEAD: term (the term table is overloaded)</comment>
         <id name="id" type="string">
             <column name="id" />
             <generator class="assigned" />
         </id>
         <property name="label" type="string">
             <column name="label">
-                <comment>A descriptive label for this relation. Should be unique within the ontology, but this is not enforced. Example: "is part of" MAPPINGS: OBO: term.name OWL:
-                rdfs:label LEAD: term.name</comment>
+                <comment>A descriptive label for this relation.Should be unique within the ontology, but this is not enforced.Example: "is part of"MAPPINGS:OBO: term.nameOWL:
+                rdfs:labelLEAD: term.name</comment>
             </column>
         </property>
         <property name="ontology" type="string">
             <column name="ontology">
-                <comment>The ontology to which this relation belongs. Examples: "RO", "GO". References ontology.id MAPPINGS: OBO: the idspace for the term id OWL: ontology LEAD:
+                <comment>The ontology to which this relation belongs.Examples: "RO", "GO". References ontology.idMAPPINGS:OBO: the idspace for the term idOWL: ontologyLEAD:
                 n/a</comment>
             </column>
         </property>
         <property name="oboNamespace" type="string">
             <column name="obo_namespace">
-                <comment>See comments for cls.namespace MAPPINGS: OBO: term.namespace OWL: n/a LEAD: term.term_type Example: "biological_process".</comment>
+                <comment>See comments for cls.namespaceMAPPINGS:OBO: term.namespaceOWL: n/aLEAD: term.term_typeExample: "biological_process".</comment>
             </column>
         </property>
         <property name="textComment" type="string">
@@ -31,7 +31,7 @@
         </property>
         <property name="textDefinition" type="string">
             <column name="text_definition">
-                <comment>A textual definition uniquely defining the relation. MAPPINGS: OBO: term.definition OWL: see obo2owl guide LEAD: term_definition.term_definition</comment>
+                <comment>A textual definition uniquely defining the relation.MAPPINGS:OBO: term.definitionOWL: see obo2owl guideLEAD: term_definition.term_definition</comment>
             </column>
         </property>
         <property name="isTransitive" type="java.lang.Boolean">
