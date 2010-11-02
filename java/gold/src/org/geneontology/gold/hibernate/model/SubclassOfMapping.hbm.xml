@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Nov 2, 2010 5:17:06 PM by Hibernate Tools 3.4.0.Beta1 -->
+<hibernate-mapping>
+    <class name="org.geneontology.gold.hibernate.model.SubclassOfMapping" table="subclass_of">
+        <composite-id name="id" class="org.geneontology.gold.hibernate.model.SubclassOfMappingId">
+            <key-property name="cls" type="string">
+                <column name="cls" />
+            </key-property>
+            <key-property name="superCls" type="string">
+                <column name="super_cls" />
+            </key-property>
+            <key-property name="ontology" type="string">
+                <column name="ontology" />
+            </key-property>
+        </composite-id>
+        <many-to-one name="clsByCls" class="org.geneontology.gold.hibernate.model.Cls" update="false" insert="false" fetch="select">
+            <column name="cls" not-null="true" />
+        </many-to-one>
+        <many-to-one name="clsBySuperCls" class="org.geneontology.gold.hibernate.model.Cls" update="false" insert="false" fetch="select">
+            <column name="super_cls" not-null="true" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

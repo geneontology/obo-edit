@@ -25,6 +25,7 @@
 
 		<!-- Load up the basic GO Object Hibernate Mapping Files -->
         <mapping resource="org/geneontology/gold/hibernate/model/Cls.hbm.xml"/>
+        <mapping resource="org/geneontology/gold/hibernate/model/SubclassOfMapping.hbm.xml"/>
 
     
     </session-factory>
