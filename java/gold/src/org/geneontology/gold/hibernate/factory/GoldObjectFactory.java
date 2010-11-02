@@ -37,6 +37,13 @@ public class GoldObjectFactory {
 	
 	public synchronized Cls getClassById(String id){
 		Session session = getSession();
-		return (Cls)session.createQuery("from cls where id = ?").setString(0, id).uniqueResult();
+		return (Cls)session.createQuery("from Cls where id = ?").setString(0, id).uniqueResult();
 	}
+	
+	/*public synchronized Cls getSubClassOfAssertion(String cls){
+		Session session = getSession();
+		return (Cls)session.createQuery("from  where id = ?").setString(0, id).uniqueResult();
+	}*/
+
+	
 }

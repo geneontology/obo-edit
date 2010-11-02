@@ -1,30 +1,30 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Oct 22, 2010 9:25:52 AM by Hibernate Tools 3.4.0.Beta1 -->
+<!-- Generated Nov 2, 2010 12:18:56 PM by Hibernate Tools 3.4.0.Beta1 -->
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.Cls" table="cls">
-        <comment>An ontology class. MAPPINGS: OBO: Term stanza. OWL: Class LEAD: term</comment>
+        <comment>An ontology class.MAPPINGS:OBO: Term stanza.OWL: ClassLEAD: term</comment>
         <id name="id" type="string">
             <column name="id" />
             <generator class="assigned" />
         </id>
         <property name="label" type="string">
             <column name="label">
-                <comment>A descriptive label for this class. Should be unique within the ontology, but this is not enforced. Example: "lung development" MAPPINGS: OBO: term.name
-                OWL: rdfs:label LEAD: term.name</comment>
+                <comment>A descriptive label for this class.Should be unique within the ontology, but this is not enforced.Example: "lung development"MAPPINGS:OBO: term.nameOWL:
+                rdfs:labelLEAD: term.name</comment>
             </column>
         </property>
         <property name="ontology" type="string">
             <column name="ontology">
-                <comment>The ontology to which this class belongs. Examples: "GO", "CL". References ontology.id MAPPINGS: OBO: the idspace for the term id OWL: ontology LEAD:
+                <comment>The ontology to which this class belongs.Examples: "GO", "CL". References ontology.idMAPPINGS:OBO: the idspace for the term idOWL: ontologyLEAD:
                 n/a</comment>
             </column>
         </property>
         <property name="oboNamespace" type="string">
             <column name="obo_namespace">
-                <comment>An obo namespace is similar to an ontology. The GO is split into 3 namespaces. Most ontologies have a 1:1 association between ontology and obo_namespace.
-                MAPPINGS: OBO: term.namespace OWL: n/a LEAD: term.term_type Example: "biological_process".</comment>
+                <comment>An obo namespace is similar to an ontology.The GO is split into 3 namespaces. Most ontologies have a 1:1 association betweenontology and
+                obo_namespace.MAPPINGS:OBO: term.namespaceOWL: n/aLEAD: term.term_typeExample: "biological_process".</comment>
             </column>
         </property>
         <property name="textComment" type="string">
@@ -32,14 +32,14 @@
         </property>
         <property name="textDefinition" type="string">
             <column name="text_definition">
-                <comment>A textual definition uniquely defining the class. MAPPINGS: OBO: term.definition OWL: see obo2owl guide LEAD: term_definition.term_definition API:
+                <comment>A textual definition uniquely defining the class.MAPPINGS:OBO: term.definitionOWL: see obo2owl guideLEAD: term_definition.term_definitionAPI:
                 getDef()</comment>
             </column>
         </property>
         <property name="isObsolete" type="java.lang.Boolean">
             <column name="is_obsolete">
-                <comment>True if this is an obsolete/deprecated class MAPPINGS: OBO: term.is_obsolete OWL: AnnotationProperty(owl:deprecated cls true) [TBD: obo obsoletion may be
-                stronger] LEAD: term.is_obsolete</comment>
+                <comment>True if this is an obsolete/deprecated classMAPPINGS:OBO: term.is_obsoleteOWL: AnnotationProperty(owl:deprecated cls true) [TBD: obo obsoletion may be
+                stronger]LEAD: term.is_obsolete</comment>
             </column>
         </property>
     </class>

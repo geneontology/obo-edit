@@ -6,13 +6,22 @@
     <session-factory>
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
         <property name="hibernate.connection.password">postgres</property>
-        <property name="hibernate.connection.url">jdbc:postgresql:gold</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost/gold</property>
         <property name="hibernate.connection.username">postgres</property>
         <property name="hibernate.default_schema">public</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
     
         <!-- Enable Hibernate's automatic session context management -->
         <property name="current_session_context_class">thread</property>
+
+        <!-- Disable the second-level cache  -->
+        <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+
+        <!-- Echo all executed SQL to stdout -->
+		<property name="show_sql">false</property>
+		<property name="format_sql">false</property>
+
+
 
 		<!-- Load up the basic GO Object Hibernate Mapping Files -->
         <mapping resource="org/geneontology/gold/hibernate/model/Cls.hbm.xml"/>
