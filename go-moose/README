@@ -8,7 +8,7 @@ Goals:
 
 Current status:
 
-- parsers partially implemented
+- parsers mostly implemented
 - DB interface TODO
 - Export OBO-XML (to utilize xslts)
 
