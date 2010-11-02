@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Nov 2, 2010 12:18:56 PM by Hibernate Tools 3.4.0.Beta1 -->
+<!-- Generated Nov 2, 2010 3:53:51 PM by Hibernate Tools 3.4.0.Beta1 -->
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.ClsIntersectionOf" table="cls_intersection_of">
-        <comment>A shorthand for stating necessary and sufficient definitions.For any cls, the set of all_intersection_of tuples are collected. This constitutes a conjunctive
-        expression that is equivalent to cls.E.g.[Term]id: blue_carintersection_of: carintersection_of: has_color blue==&gt;
-        [gold]cls_intersection_of(blue_car,null,car)cls_intersection_of(blue_car,has_color,blue)==&gt; [owl]EquivalentTo (blue_car IntersectionOf(car SomeValuesFrom(has_color
-        blue)))//Limitation: only a single such equivalence relation is allowed per class//Note that there should never be a cls that only has a single
-        cls_intersection_of.MAPPINGS:OBO: intersection_ofOWL: EquivalentTo(cls IntersectionOf( {...} ) LEAD: term2term[completes=1]</comment>
+        <comment>A shorthand for stating necessary and sufficient definitions. For any cls, the set of all_intersection_of tuples are collected. This constitutes a conjunctive
+        expression that is equivalent to cls. E.g. [Term] id: blue_car intersection_of: car intersection_of: has_color blue ==&gt; [gold] cls_intersection_of(blue_car,null,car)
+        cls_intersection_of(blue_car,has_color,blue) ==&gt; [owl] EquivalentTo (blue_car IntersectionOf(car SomeValuesFrom(has_color blue))) // Limitation: only a single such
+        equivalence relation is allowed per class // Note that there should never be a cls that only has a single cls_intersection_of. MAPPINGS: OBO: intersection_of OWL:
+        EquivalentTo(cls IntersectionOf( {...} ) -- see obo2owl doc LEAD: term2term[completes=1]</comment>
         <composite-id name="id" class="org.geneontology.gold.hibernate.model.ClsIntersectionOfId">
             <key-property name="cls" type="string">
                 <column name="cls" />

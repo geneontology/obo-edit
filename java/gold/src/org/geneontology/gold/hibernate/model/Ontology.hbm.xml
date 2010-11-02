@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Nov 2, 2010 12:18:56 PM by Hibernate Tools 3.4.0.Beta1 -->
+<!-- Generated Nov 2, 2010 3:53:51 PM by Hibernate Tools 3.4.0.Beta1 -->
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.Ontology" table="ontology">
-        <comment>A collection of classes, relations and relationships.MAPPINGS:OBO: header.ontology (introduced in obof1.4)OWL: OntologyLEAD: n/a</comment>
+        <comment>A collection of classes, relations and relationships. MAPPINGS: OBO: header.ontology (introduced in obof1.4) OWL: Ontology LEAD: n/a</comment>
         <id name="id" type="string">
             <column name="id" />
             <generator class="assigned" />
