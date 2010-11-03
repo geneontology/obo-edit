@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.io.OntologyBulkLoader;
 import org.geneontology.gold.io.postgres.SchemaManager;
-import org.geneontology.gold.io.postgres.TsvFilelLoader;
+import org.geneontology.gold.io.postgres.TsvFileLoader;
 import org.obolibrary.obo2owl.Obo2Owl;
 import org.obolibrary.oboformat.model.OBODoc;
 import org.obolibrary.oboformat.parser.OBOFormatParser;
@@ -114,7 +114,7 @@ public class AdminServlet extends HttpServlet {
 		
 		//load TSV files into database
 		try{
-			TsvFilelLoader tsvLoader = new TsvFilelLoader(manager.getGolddbUserName(),
+			TsvFileLoader tsvLoader = new TsvFileLoader(manager.getGolddbUserName(),
 					manager.getGolddbUserPassword(), manager.getGolddbHostName(), 
 					manager.getGolddbName());
 			
