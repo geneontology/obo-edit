@@ -18,14 +18,14 @@ import org.postgresql.core.BaseConnection;
  * It loads comma separated sql data files into the GOLD database. 
  *
  */
-public class TsvFilelLoader {
+public class TsvFileLoader {
 
 	
 	//private BaseConnection connection;
 	
 	private CopyManager copyManager;
 
-	public TsvFilelLoader(String username, String password, String host, String dbName) throws SQLException, ClassNotFoundException{
+	public TsvFileLoader(String username, String password, String host, String dbName) throws SQLException, ClassNotFoundException{
 	
 	//public TsvFilelLoader(BaseConnection connection) throws SQLException{
 	//	this.connection = connection;
