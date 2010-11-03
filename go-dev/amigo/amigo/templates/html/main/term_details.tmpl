@@ -174,6 +174,10 @@
 	 <a href="#display-down"
 	    class="override"><span>Downloads</span></a>
        </li>
+       <li>
+	 <a href="#display-xref"
+	    class="override"><span>Mappings</span></a>
+       </li>
      </ul>
 
      <!-- -->
@@ -400,6 +404,64 @@
 	</p>       
       </div>
 
+      <div id="display-xref">
+	<!-- <p> -->
+	<!--   <ul> -->
+	<!--     <li><b>External references...</b></li> -->
+	<!--     <li>...</li> -->
+	<!--   </ul> -->
+	<!-- </p>        -->
+	
+	<!-- XRefs -->
+	<!-- <div class="block" id="xrefs"> -->
+	<!--   <h2>External References</h2> -->
+	  [% IF TERM_INFO.dbxrefs && TERM_INFO.dbxrefs.size > 0 %]
+	  [% xref_hash = {} %]
+	  [% FOREACH xref = TERM_INFO.dbxrefs;
+          db = xref.dbname;
+          IF xref_hash.$db;
+          xref_list = xref_hash.$db;
+          xref_list.push(xref);
+          xref_hash.$db = xref_list;
+          ELSE;
+          xref_list = [];
+          xref_list.push(xref);
+          xref_hash.$db = xref_list;
+          END;
+	  END %]
+	  <dl class="ext-ref">
+	    [% FOREACH db =  xref_hash.keys.sort %]
+	    <dt>
+	      <a class="img"
+		 href="#[% db %]"><img src="[% image_dir %]/toggle-open.gif"
+				       alt="toggle" id="[% db %]Img"></a>
+	      [% db %] ([% xref_hash.$db.size %])
+	    </dt>
+	    <dd id="[% db %]"><ul>
+		[% FOREACH xref_item = xref_hash.$db %]
+		<li>
+		  [% xref_key = xref_item.key;
+		  db_link = xref_item.link;
+		  IF db_link %]
+		  <a href="[% db_link %]"
+		     title="View [% xref_key %] in [% db %]">[% xref_key %]</a>
+		  [% ELSE %]
+		  [%    xref_key %]
+		  [% END;
+		  IF xref_item.xref_desc %] [% xref_item.xref_desc %][% END %]
+		</li>
+		[% END %]
+	    </ul></dd>
+	    [% END %]
+	  </dl>
+
+	  [% ELSE %]
+	  <p>None.</p>
+	  [% END %]
+	<!-- </div> -->
+
+      </div>
+
 </div>
 
    <!-- <div class="filters"> -->
@@ -412,53 +474,6 @@
  </div>
  [% END %]
  
- <!-- XRefs -->
- <div class="block" id="xrefs">
-   <h2>External References</h2>
-   [% IF TERM_INFO.dbxrefs && TERM_INFO.dbxrefs.size > 0 %]
-   [% xref_hash = {} %]
-   [% FOREACH xref = TERM_INFO.dbxrefs;
-         db = xref.dbname;
-         IF xref_hash.$db;
-            xref_list = xref_hash.$db;
-            xref_list.push(xref);
-            xref_hash.$db = xref_list;
-         ELSE;
-            xref_list = [];
-            xref_list.push(xref);
-            xref_hash.$db = xref_list;
-         END;
-      END %]
-   <dl class="ext-ref">
-     [% FOREACH db =  xref_hash.keys.sort %]
-     <dt>
-       <a class="img" href="#[% db %]"><img src="[% image_dir %]/toggle-open.gif" alt="toggle" id="[% db %]Img"></a>
-       [% db %] ([% xref_hash.$db.size %])
-     </dt>
-     <dd id="[% db %]"><ul>
-	 [% FOREACH xref_item = xref_hash.$db %]
-	 <li>
-	   [% xref_key = xref_item.key;
-              db_link = xref_item.link;
-	   IF db_link %]
-	   <a href="[% db_link %]" title="View [% xref_key %] in [% db %]">[% xref_key %]</a>
-	   [% ELSE %]
-	   [%    xref_key %]
-	   [% END;
-	   IF xref_item.xref_desc %] [% xref_item.xref_desc %][% END %]
-	 </li>
-	 [% END %]
-     </ul></dd>
-     [% END %]
-   </dl>
-
-   <p class="toTop">
-     <a href="#top" title="Back to the top of the page">Back to top</a> 
-   </p>
-   [% ELSE %]
-   <p>None.</p>
-   [% END %]
- </div>
  [% END %]
 </div>
 <!-- END template: term_details.tmpl -->
