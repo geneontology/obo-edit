@@ -102,8 +102,8 @@ if( $do_remove ){
     my $retval = 0;
 
     ## One day in seconds
-    my $lifespan_limit_one_day = 1; # for debug
-    #my $lifespan_limit_one_day = 86400;
+    #my $lifespan_limit_one_day = 1; # for debug
+    my $lifespan_limit_one_day = 86400;
 
     ## Calc. time.
     my $now = time;
@@ -351,7 +351,8 @@ sub make_misc {
 
 ## Places for the new speed caches and clean out the old ones.
 sub reinit_caches {
-  my @args = ("perl", "./scripts/reinit_caches.pl");
+  my @args = ("perl",
+	      $core->amigo_env('GO_ROOT') . "/amigo/scripts/reinit_caches.pl");
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
   ll("Finished removing/initing(?) runtime caches.");
@@ -372,7 +373,8 @@ sub make_dblinks {
 
 ## Generated JS meta-data.
 sub make_go_meta_js {
-  my @args = ("perl", "./scripts/make_go_meta_js.pl",
+  my @args = ("perl",
+	      $core->amigo_env('GO_ROOT') . "/amigo/scripts/make_go_meta_js.pl",
 	      $core->amigo_env('AMIGO_HTDOCS_ROOT_DIR') .
 	      '/js/org/bbop/amigo/go_meta.js');
   $core->kvetch("System: \"@args\"");
