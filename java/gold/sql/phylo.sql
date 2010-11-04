@@ -20,3 +20,15 @@ CREATE TABLE family_ancestry (
 
        family VARCHAR
 );
+
+CREATE TABLE family_member (
+       family VARCHAR,
+       bioentity VARCHAR
+);
+
+CREATE TABLE family_data_dump (
+       family VARCHAR,
+       data_source TEXT,
+       data_dump TEXT,
+       data_format VARCHAR, -- e.g. nhx
+);
