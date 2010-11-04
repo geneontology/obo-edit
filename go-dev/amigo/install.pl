@@ -715,6 +715,17 @@ if ( $opt_G ) {
   ll("Will try to install *only* GOOSE.");
 }
 
+## First check that we are in the proper directory. Installation
+## should only occur in the top directory.
+if ( ! -f "./version.pl" ||
+     ! -f "./simulate.pl" ||
+     ! -f "./refresh.pl" ||
+     ! -f "./install.pl" ) {
+  ll("This does not seem to be the base AmiGO directory!");
+  ll("Please install from the base AmiGO directory.");
+  exit 0;
+}
+
 ## Check to see if there is a config file or an
 ## config.pl file.
 if ( $opt_f && -f $opt_f ) {
