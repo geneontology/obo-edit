@@ -28,5 +28,4 @@
 	<table-filter match-name="relation_chain"></table-filter>
 	<table-filter match-name="subclass_of"></table-filter>
 	<table-filter match-name="subrelation_of"></table-filter>
-	<table name="subclass_of" class="org.geneontology.gold.hibernate.model.SubclassOfMapping"></table>
 </hibernate-reverse-engineering>

@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Nov 2, 2010 3:53:51 PM by Hibernate Tools 3.4.0.Beta1 -->
+<!-- Generated Nov 4, 2010 4:36:17 PM by Hibernate Tools 3.4.0.Beta1 -->
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.SubclassOf" table="subclass_of">
-        <composite-id name="id" class="org.geneontology.gold.hibernate.model.SubclassOfId">
+      <!--    <composite-id name="id" class="org.geneontology.gold.hibernate.model.SubclassOfId">-->
+<!--  -      <composite-id>
             <key-property name="cls" type="string">
                 <column name="cls" />
             </key-property>
@@ -15,11 +16,22 @@
                 <column name="ontology" />
             </key-property>
         </composite-id>
-        <many-to-one name="clsByCls" class="org.geneontology.gold.hibernate.model.Cls" update="false" insert="false" fetch="select">
-            <column name="cls" not-null="true" />
+        <many-to-one name="ontologyObject" class="org.geneontology.gold.hibernate.model.Ontology" update="false" insert="false" fetch="select">
+            <column name="ontology" not-null="true" />
         </many-to-one>
         <many-to-one name="clsBySuperCls" class="org.geneontology.gold.hibernate.model.Cls" update="false" insert="false" fetch="select">
             <column name="super_cls" not-null="true" />
         </many-to-one>
+        <many-to-one name="clsByCls" class="org.geneontology.gold.hibernate.model.Cls" update="false" insert="false" fetch="select">
+            <column name="cls" not-null="true" />
+        </many-to-one>
+        -->
+        
+      	<composite-id>
+	       <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
+	       <key-many-to-one name="superCls" class="org.geneontology.gold.hibernate.model.Cls" column="super_cls" />
+	       <key-many-to-one name="cls" class="org.geneontology.gold.hibernate.model.Cls" column="cls" />
+    	</composite-id>
+        
     </class>
 </hibernate-mapping>

@@ -25,8 +25,11 @@
 
 		<!-- Load up the basic GO Object Hibernate Mapping Files -->
         <mapping resource="org/geneontology/gold/hibernate/model/Cls.hbm.xml"/>
-        <mapping resource="org/geneontology/gold/hibernate/model/SubclassOfMapping.hbm.xml"/>
-
+        <mapping resource="org/geneontology/gold/hibernate/model/SubclassOf.hbm.xml"/>
+        <mapping resource="org/geneontology/gold/hibernate/model/Ontology.hbm.xml"/>
+        <mapping resource="org/geneontology/gold/hibernate/model/ObjAlternateLabel.hbm.xml"/>
+        <mapping resource="org/geneontology/gold/hibernate/model/Relation.hbm.xml"/>
+        <mapping resource="org/geneontology/gold/hibernate/model/AllSomeRelationship.hbm.xml"/>
     
     </session-factory>
 </hibernate-configuration>
