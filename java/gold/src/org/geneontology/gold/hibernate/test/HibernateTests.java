@@ -53,6 +53,7 @@ public class HibernateTests extends TestCase {
 		//System.out.println(list);
 		
 		for(ObjAlternateLabel label: list){
+			
 			System.out.println(label.getObj() + ", " + label.getLabel());
 		}
 		
