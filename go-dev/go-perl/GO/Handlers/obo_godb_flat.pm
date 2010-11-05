@@ -150,12 +150,16 @@ sub e_prod {
 	# now evidence and evidence dbxref
 	for my $ev ($assoc->get_evidence) {
 	    
-
+            # prioritize PMIDs
+            my ($ref) = grep {$_ =~ /^PMID/} $ev->get_ref();
+            if (!$ref) {
+                $ref = $ev->sget_ref;
+            }
 	    $self->dump_table('evidence', [
 					   ++$self->{pk}{evidence},
 					   $ev->sget_evcode,
 					   $self->{pk}{association},
-					   $self->get_dbxref_id($ev->sget_ref), # only the first one here
+					   $self->get_dbxref_id($ref), # only the first one here
 					   $ev->sget_with || "",  # put only the first one here, I dunno why
 					   ]);
 
