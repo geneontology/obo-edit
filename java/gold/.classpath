@@ -45,6 +45,5 @@
 	<classpathentry kind="lib" path="lib/commons-configuration-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.5.jar"/>
 	<classpathentry kind="lib" path="lib/postgresql-9.0-801.jdbc4.jar"/>
-	<classpathentry kind="lib" path="lib/hibernate-tools.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
