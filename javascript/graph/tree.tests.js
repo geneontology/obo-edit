@@ -1,0 +1,88 @@
+////
+//// Some unit testing for tree.js; it should easily pass most of the
+//// model.js tests while we're at it...
+////
+//// Usage:
+////    Command line: "js -f tree.tests.js"
+////    Interactive: "js -f tree.tests.js -f -"
+////
+
+
+// Load testing.
+load('test.js');
+var mr_t = new bbop.test();
+
+// Correct environment.
+load('core.js');
+load('model.js');
+load('tree.js');
+
+
+//(function(){
+     // Create distance tree as described:
+     //
+     //	    	 c
+     //	       	/2.2
+     //	       /
+     //       b
+     //   1.1/ \3.3
+     //     /  	\
+     //    a   	 d
+     //  4.4\  	  \ 5.5
+     //      \	   \
+     //       e	    f
+     //
+     var n_a = new bbop.model.tree.node('a');
+     var n_b = new bbop.model.tree.node('b');
+     var n_c = new bbop.model.tree.node('c');
+     var n_d = new bbop.model.tree.node('d');
+     var n_e = new bbop.model.tree.node('e');
+     var n_f = new bbop.model.tree.node('f');
+     var e1 = new bbop.model.tree.edge(n_a, n_b, 1.1);
+     var e2 = new bbop.model.tree.edge(n_b, n_c, 2.2);
+     var e3 = new bbop.model.tree.edge(n_b, n_d, 3.3);
+     var e4 = new bbop.model.tree.edge(n_a, n_e, 4.4);
+     var e5 = new bbop.model.tree.edge(n_d, n_f, 5.5);
+     var t = new bbop.model.tree.graph();
+     t.add_node(n_a);
+     t.add_node(n_b);
+     t.add_node(n_c);
+     t.add_node(n_d);
+     t.add_node(n_e);
+     t.add_node(n_f);
+     t.add_edge(e1);
+     t.add_edge(e2);
+     t.add_edge(e3);
+     t.add_edge(e4);
+     t.add_edge(e5);
+
+     // Test edge distance.
+     mr_t.is_same_atom(4.4, e4.distance(), 'simple distance');
+
+     // Graph props.
+     mr_t.is_same_atom(3, t.get_leaf_nodes().length, 'tree leaves');
+     mr_t.is_same_atom('a', t.get_root_nodes()[0].id(), 'tree root');
+     mr_t.is_same_atom(1, t.get_parent_nodes('b').length, '1 b parent');
+     mr_t.is_same_atom('a', t.get_parent_nodes('b')[0].id(),'b under a');
+     mr_t.is_same_atom(2, t.get_child_nodes('a').length, 'a has 2');
+     mr_t.is_same_atom(2, t.get_child_nodes('b').length, 'b has 2');
+     mr_t.is_same_atom(0, t.get_child_nodes('e').length, 'e has 0');
+
+     // Ancestor subgraph props.
+     var d_sub = t.get_ancestor_subgraph('d');
+     mr_t.is_same_atom('d', d_sub.get_leaf_nodes()[0].id(), '1 tree leaf');
+     mr_t.is_same_atom('a', d_sub.get_root_nodes()[0].id(), 'same tree root');
+     mr_t.is_same_atom(1, d_sub.get_parent_nodes('b').length, '1 b parent');
+     mr_t.is_same_atom('a', d_sub.get_parent_nodes('b')[0].id(),'b under a');
+     mr_t.is_same_atom(1, d_sub.get_child_nodes('a').length, 'a has 1');
+     mr_t.is_same_atom(1, d_sub.get_child_nodes('b').length, 'b has 1');
+     mr_t.is_same_atom(0, d_sub.get_child_nodes('d').length, 'd has 0');
+
+// })();
+
+///
+/// End unit testing.
+///
+
+// Final report.
+mr_t.report();
