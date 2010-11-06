@@ -30,6 +30,7 @@ happy.bar.prop = true;
 mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
 
 
+
 ///
 /// End unit testing.
 ///
