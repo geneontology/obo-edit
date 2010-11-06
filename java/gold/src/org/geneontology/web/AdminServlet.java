@@ -52,7 +52,14 @@ public class AdminServlet extends HttpServlet {
 				// return;
 				executeBulkLoad(writer);
 				return;
+			}else if ("delta-update".equals(command)) {
+
+				// writer.write("<h1>Bulk load is command is provided. This ia temporary message. This message will be replaced as soon as this service is implemented.</h1>");
+				// return;
+				executeDeltaUpdate(writer);
+				return;
 			}
+
 		}
 
 		writer.write("<h1>No valid parameters are provided. Please call this page with valid parameters</h1>");
@@ -60,26 +67,13 @@ public class AdminServlet extends HttpServlet {
 	}
 
 	private void executeBulkLoad(Writer writer) throws IOException {
-		/**
-		 * The following code creates schema (database, tables) in the RDMBS if
-		 * it is not created yet.
-		 */
 
 		//this object write exceptions as output on browser screen
 		PrintWriter pw = new PrintWriter(writer);
 		
-		GeneOntologyManager manager = null;
-		
-		try{
-			manager = GeneOntologyManager.getInstance();
-		}catch(Exception ex){
-			printFetalError(writer, "An Fetal Error Occured.");
-			ex.printStackTrace(pw);
-			
-			return;
-		}
-		
-		try {
+		GeneOntologyManager	manager = GeneOntologyManager.getInstance();
+		executeBulkLoad(manager.getGolddbName(), pw, manager, false);
+		/*try {
 			SchemaManager sm = new SchemaManager();
 			sm.loadSchemaSQL(manager.getGolddbHostName(),
 					manager.getGolddbUserName(),
@@ -128,10 +122,93 @@ public class AdminServlet extends HttpServlet {
 			
 			return;
 			
-		}
+		}*/
 
 	}
 
+	
+	private void executeDeltaUpdate(Writer writer) throws IOException {
+
+		//this object write exceptions as output on browser screen
+		PrintWriter pw = new PrintWriter(writer);
+		
+		GeneOntologyManager	manager = GeneOntologyManager.getInstance();
+		executeBulkLoad(manager.getGoldDetlaDb(), pw, manager, false);
+		
+		
+		
+	}	
+	
+	/**
+	 * TODO: Must delete the existing dump tables .txt files before dumping the new ones. 
+	 * @param dbName
+	 * @param pw
+	 * @param manager
+	 * @param printErrorsOnly
+	 * @throws IOException
+	 */
+	private void executeBulkLoad(String dbName, PrintWriter pw,
+			GeneOntologyManager manager , boolean printErrorsOnly) throws IOException {
+		/**
+		 * The following code creates schema (database, tables) in the RDMBS if
+		 * it is not created yet.
+		 */
+		
+		try {
+			SchemaManager sm = new SchemaManager();
+			sm.loadSchemaSQL(manager.getGolddbHostName(),
+					manager.getGolddbUserName(),
+					manager.getGolddbUserPassword(), dbName,
+					manager.getOntSqlSchemaFileLocation());
+
+			if(!printErrorsOnly)
+				printSucessMessage(pw, "Database schema is created successfully");
+		} catch (Exception ex) {
+			printWarning(pw, "Warning: If database already created then ignore the following exceptions");
+			ex.printStackTrace(pw);
+		}
+
+		// transform obo files to tsv format
+		String oboFile = null;
+		try {
+
+			oboFile = manager.getDefaultOboFile();
+			OWLGraphWrapper wrapper = getGraphWrapper(oboFile);
+			OntologyBulkLoader loader = new OntologyBulkLoader(wrapper, manager.getTsvFilesDir());
+			loader.dumpBulkLoadTables();
+
+			
+			if(!printErrorsOnly)
+				printSucessMessage(pw, "OBO file is dumped into TSV files successfully");
+		} catch (Exception ex) {
+			printFetalError(pw, "An error occured dumping OBO file '" +  oboFile + "' into TSV format");
+			ex.printStackTrace(pw);
+			
+			return;
+		}
+		
+		//load TSV files into database
+		try{
+			TsvFileLoader tsvLoader = new TsvFileLoader(manager.getGolddbUserName(),
+					manager.getGolddbUserPassword(), manager.getGolddbHostName(), 
+					manager.getGolddbName());
+			
+			tsvLoader.loadTables(manager.getTsvFilesDir());
+			
+			if(!printErrorsOnly)
+				printSucessMessage(pw, "Bulk load of TSV files is succesful");
+
+		}catch(Exception ex){
+			printFetalError(pw, "An error occured during bulk load into the RDMBS");
+			ex.printStackTrace(pw);
+			
+			return;
+			
+		}
+
+	}
+	
+	
 	
 	private void printFetalError(Writer writer, String message) throws IOException{
 		writer.write("<hr /> <br />");
