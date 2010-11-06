@@ -23,14 +23,14 @@ bbop.core.global_object = this;
 
 // Clone an object (or return the valued atom).
 // Two returns--missing them is very bad. 
-bbop.core.clone = function clone(obj){
+bbop.core.clone = function(obj){
 
     if(obj == null || typeof(obj) != 'object'){
         return obj;	
     }else{
 	var temp = obj.constructor();
 	for( var key in obj ){
-            temp[key] = clone(obj[key]);	
+            temp[key] = bbop.core.clone(obj[key]);
 	}
 	return temp;
     }
@@ -40,7 +40,7 @@ bbop.core.clone = function clone(obj){
 
 // This function extends the global object for easy namespace
 // creation.
-bbop.core.namespace = function() {
+bbop.core.namespace = function(){
 
     // Go through the arguments and add them to the namespace,
     // starting at global.
@@ -58,7 +58,7 @@ bbop.core.namespace = function() {
 
 // Checks to make sure that the requested namespace is extant
 // (checking to see if our libraries are loaded).
-bbop.core.require = function() {
+bbop.core.require = function(){
 
     // Walk through from global namespace, checking.
     var current_object = bbop.core.global_object;
@@ -73,7 +73,16 @@ bbop.core.require = function() {
 };
 
 
-// // bbop.core.require = function clone(obj){
+// Extend an object properly.
+bbop.core.extend = function(kid, sup){  
+    for (var property in sup.prototype) {  
+	if (typeof kid.prototype[property] == "undefined")  
+            kid.prototype[property] = sup.prototype[property];  
+    }  
+    return kid;
+};
+
+
 // bbop.core.addGS = function(object, name){
 //     print(object);
 //     print(object.prototype);
