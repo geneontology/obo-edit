@@ -98,9 +98,13 @@ public class GeneOntologyManager {
 	}
 
 	public static GeneOntologyManager getInstance()
-			throws ConfigurationException {
-		if (instance == null) {
-			instance = new GeneOntologyManager();
+			{
+		try{
+			if (instance == null) {
+				instance = new GeneOntologyManager();
+			}
+		}catch(Exception ex){
+			throw new RuntimeException("Cann't create instance of OntologyManager", ex);
 		}
 
 		return instance;
@@ -169,4 +173,18 @@ public class GeneOntologyManager {
 
 	}
 
+	
+	/**
+	 * 
+	 * @return It returns the vlaue of the geneontology.gold.deltadb
+	 *         property
+	 */
+	public String getGoldDetlaDb() {
+
+		return guessAbsolutePath(config
+				.getString("geneontology.gold.deltadb"));
+
+	}
+	
+	
 }
