@@ -672,7 +672,7 @@ if( $opt_j ){
       $ENV{GO_DBNAME} = $local{EXTENSION};
       $ENV{GO_DBHOST} = $local{DB_HOST} if defined $local{DB_HOST};
       $ENV{GO_DBUSER} = $local{DB_USER} if defined $local{DB_USER};
-      $ENV{GO_DBPASS} = $local{DB_PASS} if defined $local{DB_PASS};
+      $ENV{GO_DBAUTH} = $local{DB_PASS} if defined $local{DB_PASS};
       $ENV{GO_DBPORT} = $local{DB_PORT} if defined $local{DB_PORT};
       my $script = "go-db-perl/scripts/load-phylotree-properties.pl";
       my @args = ($go_dev_path . $script,
