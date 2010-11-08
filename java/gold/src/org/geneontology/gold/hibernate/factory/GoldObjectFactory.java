@@ -2,12 +2,12 @@ package org.geneontology.gold.hibernate.factory;
 
 import java.io.File;
 import java.util.List;
-
 import org.geneontology.gold.hibernate.model.AllSomeRelationship;
 import org.geneontology.gold.hibernate.model.Cls;
 import org.geneontology.gold.hibernate.model.ObjAlternateLabel;
 import org.geneontology.gold.hibernate.model.Relation;
 import org.geneontology.gold.hibernate.model.SubclassOf;
+import org.geneontology.gold.io.postgres.DeltaQueryInterceptor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -25,6 +25,8 @@ public class GoldObjectFactory {
 	
 	private static SessionFactory buildFactory(){
 		Configuration c = new Configuration().configure(new File("conf/hibernate.cfg.xml"));
+	//	c.setInterceptor(new DeltaQueryInterceptor());
+		
 		SessionFactory sessionFactory = c.buildSessionFactory();
 		return sessionFactory;
 	}
@@ -40,10 +42,30 @@ public class GoldObjectFactory {
 		return session;
 	}
 	
+	/**
+	 * This method is only called when a delta update of GOLD is processed.
+	 * During delta update temporary tables are created. With the help of this
+	 * session the Objects can be built from temporary tables
+	 * @return
+	 */
+	public synchronized Session getDeltaInterceptorSession() {
+		Session session = sf.openSession(new DeltaQueryInterceptor());
+		sf.openSession();//This again sets a new default session for the rest of the application which
+							//current session from the getSession metho.
+		session.beginTransaction();
+		
+		return session;
+	}
+	
+	
+	public synchronized Cls getClassById(String id, Session session){
+		return (Cls)session.createQuery("from Cls where id = ?").setString(0, id).uniqueResult();
+	}
 	
 	public synchronized Cls getClassById(String id){
-		Session session = getSession();
-		return (Cls)session.createQuery("from Cls where id = ?").setString(0, id).uniqueResult();
+		return  getClassById(id, getSession());
+		//Session session = getSession();
+		//return (Cls)session.createQuery("from Cls where id = ?").setString(0, id).uniqueResult();
 	}
 	
 	public synchronized List<SubclassOf> getSubClassOfAssertions(String cls){

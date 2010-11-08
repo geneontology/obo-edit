@@ -9,6 +9,7 @@ import java.net.URL;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.geneontology.gold.io.DatabaseDialect;
 
 import sun.tools.tree.ThisExpression;
 
@@ -176,15 +177,31 @@ public class GeneOntologyManager {
 	
 	/**
 	 * 
-	 * @return It returns the vlaue of the geneontology.gold.deltadb
+	 * @return It returns the vlaue of the geneontology.gold.deltatableprefix
 	 *         property
 	 */
-	public String getGoldDetlaDb() {
+	public String getGoldDetlaTablePrefix() {
 
-		return guessAbsolutePath(config
-				.getString("geneontology.gold.deltadb"));
+		return config
+				.getString("geneontology.gold.deltatableprefix");
 
 	}
 	
-	
+	/**
+	 * It builds the instance of the class referenced in the geneontology.gold.dialect property
+	 * @return
+	 * @throws Exception
+	 */
+	public DatabaseDialect buildDatabaseDialect() throws Exception{
+		String clsName = config.getString("geneontology.gold.dialect");
+		
+		System.out.println(clsName);
+		DatabaseDialect db = null;
+		if(clsName != null && clsName.trim().length()>0){
+			//db = (DatabaseDialect) this.getClass().getClassLoader().loadClass(clsName).newInstance();
+			db = (DatabaseDialect)Class.forName("org.geneontology.gold.io.postgres.PostgresDialect").newInstance();
+		}
+		
+		return db;
+	}
 }

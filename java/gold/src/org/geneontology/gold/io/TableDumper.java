@@ -34,7 +34,7 @@ public class TableDumper {
 	public TableDumper(String table, String path, String nullString) throws IOException{
 		this.table = table;
 		this.nullString = nullString;
-		writer = new FileWriter(new File(path, table+".txt"));
+		writer = new FileWriter(new File(path,this.table+".txt"));
 	}
 	
 	public void dumpRow(String v1) throws IOException {
@@ -87,6 +87,10 @@ public class TableDumper {
 	public void close() throws IOException{
 		writer.flush();
 		writer.close();
+	}
+	
+	public String getTable(){
+		return this.table;
 	}
 
 }

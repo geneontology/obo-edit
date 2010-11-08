@@ -17,7 +17,7 @@ public class OntologyBulkLoaderTest extends TestCase {
 	public static void testLoad() throws Exception{
 		OWLGraphWrapper wrapper = getGraphWrapper();
 		
-		OntologyBulkLoader loader = new OntologyBulkLoader(wrapper, "test_resources");
+		OntologyBulkLoader loader = new OntologyBulkLoader(wrapper, "test_resources", "");
 		
 		loader.dumpBulkLoadTables();
 	}
