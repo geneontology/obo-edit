@@ -2,6 +2,8 @@ package org.geneontology.gold.io.postgres;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.io.DatabaseDialect;
@@ -20,7 +22,7 @@ public class PostgresDialect implements DatabaseDialect {
 			try{
 				Class.forName("org.postgresql.Driver");
 				GeneOntologyManager manager = GeneOntologyManager.getInstance();
-				connection = DriverManager.getConnection("jdbc:postgresql://"+ manager.getGolddbHostName() +"/"+manager.getGoldDetlaDb(), 
+				connection = DriverManager.getConnection("jdbc:postgresql://"+ manager.getGolddbHostName() +"/"+manager.getGolddbName(), 
 						manager.getGolddbUserName(), manager.getGolddbUserPassword());
 			}catch(Exception ex){
 				
@@ -33,10 +35,28 @@ public class PostgresDialect implements DatabaseDialect {
 	@Override
 	public String getDeltaQuery(String tableName) {
 		if("cls".equals(tableName)){
-			return "SELECT * from cls1 EXCEPT SELECT * form cls";
+			return "SELECT * from " + GeneOntologyManager.getInstance().getGoldDetlaTablePrefix() + tableName +" EXCEPT SELECT * from "+tableName;
 		}
 		
 		return null;
 	}
+
+	@Override
+	public ResultSet getDelaData(String tableName)  throws SQLException{
+		String query =  getDeltaQuery(tableName);
+		if(query == null)
+			return null;
+
+		return executeQuery(query);
+	
+	}
+	
+	
+	private ResultSet executeQuery(String query) throws SQLException{
+		getConnect();
+		return connection.createStatement().executeQuery(query);
+		
+	}
+	
 
 }

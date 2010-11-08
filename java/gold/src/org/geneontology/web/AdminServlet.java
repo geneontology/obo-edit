@@ -133,7 +133,7 @@ public class AdminServlet extends HttpServlet {
 		PrintWriter pw = new PrintWriter(writer);
 		
 		GeneOntologyManager	manager = GeneOntologyManager.getInstance();
-		executeBulkLoad(manager.getGoldDetlaDb(), pw, manager, false);
+		executeBulkLoad(manager.getGoldDetlaTablePrefix(), pw, manager, false);
 		
 		
 		
@@ -147,7 +147,7 @@ public class AdminServlet extends HttpServlet {
 	 * @param printErrorsOnly
 	 * @throws IOException
 	 */
-	private void executeBulkLoad(String dbName, PrintWriter pw,
+	private void executeBulkLoad(String tablePrefix, PrintWriter pw,
 			GeneOntologyManager manager , boolean printErrorsOnly) throws IOException {
 		/**
 		 * The following code creates schema (database, tables) in the RDMBS if
@@ -158,7 +158,7 @@ public class AdminServlet extends HttpServlet {
 			SchemaManager sm = new SchemaManager();
 			sm.loadSchemaSQL(manager.getGolddbHostName(),
 					manager.getGolddbUserName(),
-					manager.getGolddbUserPassword(), dbName,
+					manager.getGolddbUserPassword(), manager.getGolddbName(),
 					manager.getOntSqlSchemaFileLocation());
 
 			if(!printErrorsOnly)
@@ -174,7 +174,7 @@ public class AdminServlet extends HttpServlet {
 
 			oboFile = manager.getDefaultOboFile();
 			OWLGraphWrapper wrapper = getGraphWrapper(oboFile);
-			OntologyBulkLoader loader = new OntologyBulkLoader(wrapper, manager.getTsvFilesDir());
+			OntologyBulkLoader loader = new OntologyBulkLoader(wrapper, manager.getTsvFilesDir(), tablePrefix);
 			loader.dumpBulkLoadTables();
 
 			

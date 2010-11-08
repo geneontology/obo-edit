@@ -1,13 +1,17 @@
 package org.geneontology.gold.hibernate.test;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.geneontology.gold.hibernate.factory.GoldDeltaFactory;
 import org.geneontology.gold.hibernate.factory.GoldObjectFactory;
 import org.geneontology.gold.hibernate.model.AllSomeRelationship;
 import org.geneontology.gold.hibernate.model.Cls;
 import org.geneontology.gold.hibernate.model.ObjAlternateLabel;
 import org.geneontology.gold.hibernate.model.Relation;
 import org.geneontology.gold.hibernate.model.SubclassOf;
+import org.hibernate.Session;
 
 import junit.framework.TestCase;
 
@@ -86,6 +90,18 @@ public class HibernateTests extends TestCase {
 		System.out.println(r.getId());
 	}
 	
-	
+	public static void testDeltaClsObjects() throws Exception{
+		GoldDeltaFactory gdf = new GoldDeltaFactory();
+		List<Cls> list = gdf.buildClsDelta();
+	//	gdf.getSession().getTransaction().commit();
+		GoldObjectFactory gof = new GoldObjectFactory();
+		Session s = gof.getSession();
+		for(Cls c:list){
+			s.merge(c);
+			//s.saveOrUpdate(c);
+			System.out.println("c:************ " + c.getId());
+		}
+		s.getTransaction().commit();
+	}
 	
 }

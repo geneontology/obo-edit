@@ -33,8 +33,11 @@ import owltools.graph.OWLQuantifiedProperty;
  */
 public class OntologyBulkLoader extends AbstractBulkLoader{
 	
-	public OntologyBulkLoader(OWLGraphWrapper wrapper, String path) {
-		super(wrapper, path);
+	
+	public OntologyBulkLoader(OWLGraphWrapper wrapper, String path, String dumpFilePrefix) {
+		super(wrapper, path, dumpFilePrefix);
+		
+		
 	}
 
 	public OntologyBulkLoader(OWLGraphWrapper wrapper) {
@@ -50,10 +53,10 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 	}
 
 	public void dumpDeclarationsAndMetadata() throws IOException {
-		TableDumper clsDumper = new TableDumper("cls", this.path);
+		TableDumper clsDumper = new TableDumper(this.dumpFilePrefix + "cls", this.path);
 		
 		
-		TableDumper obj_alternate_labelDumper = new TableDumper("obj_alternate_label", this.path);
+		TableDumper obj_alternate_labelDumper = new TableDumper(this.dumpFilePrefix + "obj_alternate_label", this.path);
 	//	TableDumper subclass_ofDumper = new TableDumper("subclass_of");
 		//TableDumper allSomeRelationship = new TableDumper("all_some_relationship");
 		
@@ -88,7 +91,7 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 				}
 			}*/
 		}
-		TableDumper relDumper = new TableDumper("relation", path);
+		TableDumper relDumper = new TableDumper(this.dumpFilePrefix + "relation", path);
 		for (OWLObjectProperty op : getOwlOntology().getObjectPropertiesInSignature()) {
 			String label = graphWrapper.getLabel(op);
 			String def = graphWrapper.getDef(op);
@@ -111,8 +114,8 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 	}
 	
 	public void dumpLogicalAxioms() throws IOException {
-		TableDumper subClassOfDumper = new TableDumper("subclass_of", path);
-		TableDumper allSomeRelationshipDumper = new TableDumper("all_some_relationship", path);
+		TableDumper subClassOfDumper = new TableDumper(this.dumpFilePrefix + "subclass_of", path);
+		TableDumper allSomeRelationshipDumper = new TableDumper(this.dumpFilePrefix + "all_some_relationship", path);
 		
 		Set<OWLSubClassOfAxiom> axioms = getOwlOntology().getAxioms(AxiomType.SUBCLASS_OF);
 		for (OWLSubClassOfAxiom sca : axioms) {

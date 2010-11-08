@@ -18,6 +18,10 @@ public abstract class AbstractBulkLoader {
 	 */
 	protected OWLGraphWrapper graphWrapper;
 
+	//This variable is used as prefix of each dump file created through this loader
+	protected String dumpFilePrefix;
+	
+	
 	/**
 	 * the default path where the Tsv file is written
 	 */
@@ -35,10 +39,15 @@ public abstract class AbstractBulkLoader {
 	
 	
 	public AbstractBulkLoader(OWLGraphWrapper wrapper, String path){
-		this.graphWrapper = wrapper;
-		this.path = path;
+		this(wrapper, path, "");
 	}
 	
+	public AbstractBulkLoader(OWLGraphWrapper wrapper, String path, String dumpFilePrefix){
+		this.graphWrapper = wrapper;
+		this.path = path;
+		this.dumpFilePrefix = dumpFilePrefix == null ? "" : dumpFilePrefix.trim();
+	}
+
 	
 	public abstract void dumpBulkLoadTables() throws IOException;	
 	
