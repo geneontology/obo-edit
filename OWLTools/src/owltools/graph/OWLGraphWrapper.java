@@ -124,8 +124,8 @@ public class OWLGraphWrapper {
 	
 	private Map<OWLObject,Set<OWLGraphEdge>> edgeBySource;
 	private Map<OWLObject,Set<OWLGraphEdge>> edgeByTarget;
-	private Map<OWLObject,Set<OWLGraphEdge>> inferredEdgeBySource;
-	private Map<OWLObject,Set<OWLGraphEdge>> inferredEdgeByTarget;
+	private Map<OWLObject,Set<OWLGraphEdge>> inferredEdgeBySource = null;
+	private Map<OWLObject,Set<OWLGraphEdge>> inferredEdgeByTarget = null;
 
 	// used to store mappings child->parent, where
 	// parent = UnionOf( ..., child, ...)
@@ -431,6 +431,13 @@ public class OWLGraphWrapper {
 	 */
 	public Set<OWLGraphEdge> getOutgoingEdgesClosure(OWLObject s) {
 		
+		if (config.isCacheClosure) {
+			if (inferredEdgeBySource == null)
+				inferredEdgeBySource = new HashMap<OWLObject,Set<OWLGraphEdge>>();
+			if (inferredEdgeBySource.containsKey(s)) {
+				return inferredEdgeBySource.get(s);
+			}
+		}
 		Stack<OWLGraphEdge> edgeStack = new Stack<OWLGraphEdge>();
 		Set<OWLGraphEdge> closureSet = new HashSet<OWLGraphEdge>();
 		Set<OWLGraphEdge> visitedSet = new HashSet<OWLGraphEdge>();
@@ -491,6 +498,10 @@ public class OWLGraphWrapper {
 					
 				}
 			}
+		}
+		
+		if (config.isCacheClosure) {
+			inferredEdgeBySource.put(s, closureSet);
 		}
 		return closureSet;
 	}
