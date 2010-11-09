@@ -8,12 +8,13 @@
 --   need a bioentity.data_source column too.
 
 -- * I don't think the same family can have different trees, do we
---   want a single family to be able to have multiple trees?
+--   want a single family to be able to have multiple trees?  Perhaps
+--   an algorithm column added to family_branch & family_data_dump.
 
--- * As family branch implies a direction, do we want to be able to
---   mark the thee unrooted?
+-- * As family_branch implies a direction, do we want to be able to
+--   mark the tree unrooted?
 
--- One ontry per family
+-- One entry per family
 CREATE TABLE family (
        id VARCHAR PRIMARY KEY, -- internal reference
        label VARCHAR,          -- name to display?
@@ -30,7 +31,7 @@ CREATE TABLE family_branch (
        family VARCHAR
 );
 
--- meta branches that may span arcoss multiple members, for
+-- Meta branches that may span arcoss multiple members, for
 -- convenience?
 CREATE TABLE family_ancestry (
        bioentity VARCHAR,          -- descent
