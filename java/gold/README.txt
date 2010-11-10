@@ -1,5 +1,10 @@
 ###For installation please refer to INSTALL.txt file
 
+####Command Line Interace (CLI)
+For the project home directory run the following command to find
+the help about the usage of the command line interface
+java -jar gold.jar
+
 ###Hibernate documentation
 
 Following steps are for the hibernate reverse engineering (generating java class from the database schema):

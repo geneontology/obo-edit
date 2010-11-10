@@ -205,5 +205,14 @@ public class GeneOntologyManager {
 		return db;
 	}
 	
+	public String getProperty(String prop){
+		return config.getString(prop);
+				
+	}
+	
+	public void setProperty(String prop, String value){
+		config.setProperty(prop, value);
+	}
+	
 	
 }
