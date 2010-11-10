@@ -13,6 +13,9 @@
         <Class IRI="http://purl.obolibrary.org/obo/CHEBI_15355"/>
     </Declaration>
     <Declaration>
+        <Class IRI="http://purl.obolibrary.org/obo/CHEBI_33429"/>
+    </Declaration>
+     <Declaration>
         <Class IRI="http://purl.obolibrary.org/obo/CHEBI_30151"/>
     </Declaration>
     <Declaration>
