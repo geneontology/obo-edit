@@ -6,7 +6,12 @@ import java.util.List;
 import java.util.Vector;
 
 import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.gold.hibernate.model.AllSomeRelationship;
 import org.geneontology.gold.hibernate.model.Cls;
+import org.geneontology.gold.hibernate.model.GOModel;
+import org.geneontology.gold.hibernate.model.ObjAlternateLabel;
+import org.geneontology.gold.hibernate.model.Relation;
+import org.geneontology.gold.hibernate.model.SubclassOf;
 import org.geneontology.gold.io.DatabaseDialect;
 import org.geneontology.gold.io.postgres.DeltaQueryInterceptor;
 import org.geneontology.gold.io.postgres.PostgresDialect;
@@ -62,5 +67,102 @@ public class GoldDeltaFactory {
 		session.flush();
 		return list;
 	}
+
+	public List<Relation> buildRelationDelta() throws SQLException{
+		Vector<Relation> list = new Vector<Relation>();
+
+		Session session = getSession();
+		
+		ResultSet rs = db.getDelaData("relation");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			String id = rs.getString("id");
+			//list.add(goldObjFactory.getRelation(id, session) );
+			Relation r = (Relation) session.load(Relation.class, id);
+			list.add(r);
+		}
+		
+		
+		session.getTransaction().commit();
+		session.flush();
+		return list;
+	}
+	
+
+	public List<SubclassOf> buildSubclassOfDelta() throws SQLException{
+		Vector<SubclassOf> list = new Vector<SubclassOf>();
+
+		Session session = getSession();
+		
+		ResultSet rs = db.getDelaData("subclass_of");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			SubclassOf subc= goldObjFactory.getSubClassOfAssertion(rs.getString("ontology"), 
+					rs.getString("super_cls"), rs.getString("cls"));
+			list.add(subc);
+		}
+		
+		
+		session.getTransaction().commit();
+		session.flush();
+		return list;
+	}
+	
+	public List<ObjAlternateLabel> buildObjAlternateLabels() throws SQLException{
+		Vector<ObjAlternateLabel> list = new Vector<ObjAlternateLabel>();
+
+		Session session = getSession();
+		
+		ResultSet rs = db.getDelaData("obj_alternate_label");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			ObjAlternateLabel al = goldObjFactory.getObjAlternateLabelByPk(rs.getString("obj"), 
+					rs.getString("label"));
+			list.add(al);
+		}
+		
+		
+		session.getTransaction().commit();
+		session.flush();
+		return list;
+
+		
+	}
+	
+
+	public List<AllSomeRelationship> buildAllSomeRelationships() throws SQLException{
+		Vector<AllSomeRelationship> list = new Vector<AllSomeRelationship>();
+
+		Session session = getSession();
+		
+		ResultSet rs = db.getDelaData("all_some_relationship");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			AllSomeRelationship asr = goldObjFactory.getAllSomeRelationshipByPk(rs.getString("ontology"), 
+					rs.getString("target_cl"), rs.getString("cls"), rs.getString("relation"));
+			list.add(asr);
+		}
+		
+		
+		session.getTransaction().commit();
+		session.flush();
+		return list;
+
+		
+	}
+	
+	
 	
 }

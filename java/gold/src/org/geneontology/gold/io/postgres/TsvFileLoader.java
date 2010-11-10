@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.postgresql.copy.CopyManager;
 import org.postgresql.core.BaseConnection;
@@ -79,5 +80,13 @@ public class TsvFileLoader {
 			loadTable(table);
 		}
 	}
+	
+	public void loadTables(String tsvFilesDir, List<String> list) throws IOException, SQLException{
+		File dir = new File(tsvFilesDir);
+		for(String table: list){
+			loadTable(new File(dir, table + ".txt"));
+		}
+	}
+
 	
 }

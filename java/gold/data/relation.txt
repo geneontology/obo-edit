@@ -1,3 +1,3 @@
-TODO:overlaps	overlaps	\N	\N	\N	\N	\N	\N	\N	\N
-TODO_part:of	part_of	\N	\N	\N	\N	\N	\N	\N	\N
-TODO_has:quality	has_quality	\N	\N	\N	\N	\N	\N	\N	\N
+TODO:overlaps	overlaps	CARO	\N	\N	\N	\N	\N	\N	\N
+TODO_part:of	part_of	CARO	\N	\N	\N	\N	\N	\N	\N
+TODO_has:quality	has_quality	CARO	\N	\N	\N	\N	\N	\N	\N
