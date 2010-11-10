@@ -13,7 +13,7 @@ public class SchemaManagerTest extends TestCase {
 	public static void testLoadSchema() throws ClassNotFoundException, SQLException, FileNotFoundException{
 		SchemaManager sm = new SchemaManager();
 
-		sm.loadSchemaSQL("localhost", "postgres", "postgres", "temp12", "sql/ontol.sql");
+		sm.loadSchemaSQL("localhost", "postgres", "postgres", "temp12", "sql/ontol.sql", "", false);
 	}
 	
 }
