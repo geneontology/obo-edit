@@ -903,6 +903,11 @@ public class OWLGraphWrapper {
 	}
 	
 	
+	public String getOntologyId(){
+		return getIdentifier(ontology.getOntologyID().getOntologyIRI()).replace(".owl","");
+	}
+	
+	
 	public String getIdentifier(OWLObject owlObject) {
 		if (owlObject instanceof OWLNamedObject) {
 			String iri = ((OWLNamedObject)owlObject).getIRI().toString();
@@ -919,6 +924,22 @@ public class OWLGraphWrapper {
 		}
 		return "";
 	}
+	
+
+	public String getIdentifier(IRI iriId) {
+			String iri = iriId.toString();
+			if (iri.startsWith("http://purl.obolibrary.org/obo/")) {
+				iri = iri.replace("http://purl.obolibrary.org/obo/", "");
+				int p = iri.lastIndexOf('_');
+				if (p >= 0) {
+					iri = iri.substring(0, p) + ":" + iri.substring(p+1);
+				}
+			}
+			
+			return iri;
+
+	}
+	
 
 
 
