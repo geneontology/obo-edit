@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -32,7 +34,7 @@ public class SchemaManager {
 	 * @throws FileNotFoundException
 	 *
 	 */
-	public void loadSchemaSQL(String host, String username, String password, String db, String file) throws ClassNotFoundException, SQLException, FileNotFoundException{
+	public void loadSchemaSQL(String host, String username, String password, String db, String file, String tablePrefix, boolean force) throws ClassNotFoundException, SQLException, FileNotFoundException{
 		Class.forName("org.postgresql.Driver");
 		
 		
@@ -58,25 +60,31 @@ public class SchemaManager {
 			
 		}
 		
-		loadSchemaSQL(connection, file);
+		loadSchemaSQL(connection, file, tablePrefix, force);
 		
 	}
 	
-	public void loadSchemaSQL(Connection connection, String file) throws FileNotFoundException{
-		executeScript(new FileReader(file), connection);
+	public void loadSchemaSQL(Connection connection, String file, String tablePrefix, boolean force) throws FileNotFoundException{
+		executeScript(new FileReader(file), connection, tablePrefix, force);
 	}
 	
 	
-	private void executeScript(Reader r, Connection connection){
+	
+	private void executeScript(Reader r, Connection connection, String tablePrefix, boolean force){
 		if(connection == null)
 			throw new RuntimeException("Can not perform operation as connection is establed with the RDBMS");
 
+		tablePrefix = tablePrefix == null ? "" : tablePrefix.trim();
+		
 		try{
 			//BufferedReader reader =new BufferedReader( new FileReader(new File(scriptFile)) );
                         BufferedReader reader =new BufferedReader(r);
 			String line = null;
 
 			StringBuffer buf = new StringBuffer();
+			Pattern pattern = Pattern.compile("TABLE\\s*\\w+", Pattern.CASE_INSENSITIVE);
+			Pattern Refspattern = Pattern.compile("REFERENCES\\s*\\w+", Pattern.CASE_INSENSITIVE);
+
 			while((line = reader.readLine()) != null){
 				
 				
@@ -97,14 +105,38 @@ public class SchemaManager {
 				if(line.endsWith(";")){
 
 					try{
-						System.out.println(buf.toString());
 						Statement stmt = connection.createStatement();
-						stmt.executeUpdate(buf.toString());
+						
+						String sql = buf.toString();
+						
+						if(tablePrefix.length()>0){
+							Matcher matcher = pattern.matcher(sql);
+							if(matcher.find()){
+								String tableName = matcher.group().trim();
+								String s[] = tableName.split(" ");
+								String repacelement = " TABLE " + tablePrefix +s[s.length-1];
+								sql = sql.replace(tableName, repacelement);
+							}
+							
+							matcher = Refspattern.matcher(sql);
+							
+							while(matcher.find()){
+								String tableName = matcher.group().trim();
+								String s[] = tableName.split(" ");
+								String replacement = " REFERENCES "+ tablePrefix + s[s.length-1];
+								sql = sql.replace(tableName, replacement);
+							}
+						}
+
+						System.out.println(sql);
+						stmt.executeUpdate(sql);
 					}catch(Exception ex){
 						ex.printStackTrace();
 					}finally{
 						buf = new StringBuffer();
 					}
+					
+					
 				}
 				//stmt.executeUpdate("SCRIPT '" + file + "'");
 				//return true;

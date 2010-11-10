@@ -1,6 +1,7 @@
 package org.geneontology.gold.io;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -48,7 +49,11 @@ public abstract class AbstractBulkLoader {
 		this.dumpFilePrefix = dumpFilePrefix == null ? "" : dumpFilePrefix.trim();
 	}
 
-	
-	public abstract void dumpBulkLoadTables() throws IOException;	
+	/**
+	 * It returns the array of the table names dumped into TSV files
+	 * @return
+	 * @throws IOException
+	 */
+	public abstract List<String> dumpBulkLoadTables() throws IOException;	
 	
 }

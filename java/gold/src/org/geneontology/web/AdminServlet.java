@@ -159,7 +159,7 @@ public class AdminServlet extends HttpServlet {
 			sm.loadSchemaSQL(manager.getGolddbHostName(),
 					manager.getGolddbUserName(),
 					manager.getGolddbUserPassword(), manager.getGolddbName(),
-					manager.getOntSqlSchemaFileLocation());
+					manager.getOntSqlSchemaFileLocation(), "", false);
 
 			if(!printErrorsOnly)
 				printSucessMessage(pw, "Database schema is created successfully");
@@ -237,11 +237,12 @@ public class AdminServlet extends HttpServlet {
 	private OWLGraphWrapper getGraphWrapper(String oboFile) throws IOException,
 			OWLOntologyCreationException {
 
-		OBOFormatParser p = new OBOFormatParser();
-		OBODoc obodoc = p.parse(oboFile);
+	/*	OBOFormatParser p = new OBOFormatParser();
+		
+		OBODoc obodoc = p.parse(oboFile);*/
 
 		Obo2Owl bridge = new Obo2Owl();
-		OWLOntology ontology = bridge.convert(obodoc);
+		OWLOntology ontology = bridge.convert(oboFile);
 
 		return new OWLGraphWrapper(ontology);
 	}

@@ -1,6 +1,8 @@
 package org.geneontology.gold.io;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -32,7 +34,7 @@ public class TransitiveClosureBulkLoader extends AbstractBulkLoader{
 	 */
 
 
-	public void dumpBulkLoadTables() throws IOException{
+	public List<String> dumpBulkLoadTables() throws IOException{
 		
 		
 		TableDumper dumper = new TableDumper("inferred_relationship", this.path);
@@ -49,5 +51,11 @@ public class TransitiveClosureBulkLoader extends AbstractBulkLoader{
 				dumper.dumpRow(id, ge.getTargetId(), pid, isDirect ? "t" : "f", isReflexive ? "t" : "f");
 			}
 		}
+		
+		List<String> list = new ArrayList<String>();
+		
+		list.add(dumper.getTable());
+		
+		return list;
 	}
 }

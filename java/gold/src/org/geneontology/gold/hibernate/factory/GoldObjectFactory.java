@@ -75,7 +75,17 @@ public class GoldObjectFactory {
 		return results;
 	}
 
+	public synchronized SubclassOf getSubClassOfAssertion(String ontology, String superCls, String cls){
+		Session session = getSession();
+		SubclassOf results = (SubclassOf)session.createQuery("from SubclassOf where ontology = ? and super_cls=? cls = ?")
+		.setString(0, ontology)
+		.setString(1, superCls)
+		.setString(2, cls).uniqueResult();
+		
+		return results;
+	}
 
+	
 	public synchronized List<ObjAlternateLabel> getObjAlternateLabel(String obj){
 		Session session = getSession();
 		List<ObjAlternateLabel> results =session.createQuery("from ObjAlternateLabel where obj = ?").setString(0, obj).list();
@@ -83,13 +93,38 @@ public class GoldObjectFactory {
 		return results;
 	}
 	
+	public synchronized ObjAlternateLabel getObjAlternateLabelByPk(String obj, String label){
+		Session session = getSession();
+		ObjAlternateLabel result =(ObjAlternateLabel)session.createQuery("from ObjAlternateLabel where obj = ? and label = ?")
+		.setString(0, obj)
+		.setString(1, label)
+		.uniqueResult();
+		
+		return result;
+	}
 
+
+	public synchronized AllSomeRelationship getAllSomeRelationshipByPk(String ontology, String targetCls, String cls, String relation){
+		Session session = getSession();
+		AllSomeRelationship result  = (AllSomeRelationship)session.createQuery("from AllSomeRelationship where ontology = ? and target_cls = ? and cls = ? and relation = ?")
+		.setString(0, ontology)
+		.setString(1, targetCls)
+		.setString(2, cls)
+		.setString(3, relation)
+		.uniqueResult();
+		
+		return result;
+	}
+	
+	
 	public synchronized List<AllSomeRelationship> getAllSomeRelationship(String cls){
 		Session session = getSession();
 		List<AllSomeRelationship> results =session.createQuery("from AllSomeRelationship where cls = ?").setString(0, cls).list();
 		
 		return results;
 	}
+	
+
 	
 	
 	public synchronized Relation getRelation(String id){
