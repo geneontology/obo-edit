@@ -6,7 +6,7 @@
 	<property name="runtimedir_name" value="dist" />
 	<property name="runtimedir" location="${runtimedir_name}" />
 	<property name="release_path" location="releases" />
-	<property name="jarfile" location="${runtimedir}/${projectname}.jar" />
+	<property name="jarfile" location="${projectname}.jar" />
 	<property name="main_jar_manifest" location="jar_manifest" />
 	<property name="outputdir" value="classes" />
 	<property name="sourcedir" value="src" />
@@ -67,7 +67,7 @@
 	</target>
 
 	<!-- classes that should appear in the main jar file -->
-	<fileset id="main_jar_contents" dir="${outputdir}" includes="**/*.class,**/resources/**" excludes="**/.svn/*" />
+	<fileset id="main_jar_contents" dir="${outputdir}" includes="**/*.class,**/resources/**,**/*.hbm.xml" excludes="**/.svn/*" />
 
 	<target name="all" depends="clean, classes, jar, apidocs" description="Cleans and rebuilds from scratch">
 	</target>
@@ -102,7 +102,7 @@
 		</copy>
 	</target>
 		
-	<target name="library_jars" depends="buildowltools, buildoboformat">
+	<target name="library_jars">
 		<mkdir dir="${runtimedir}" />
 		<sync todir="${runtimedir}">
 			<fileset refid="library_jars" />
@@ -135,16 +135,16 @@
 		</javac>
 	</target>
 
-	<target name="jarmanifest" depends="library_jars, checkjar, buildnum" unless="main_jar_current">
+	<target name="jarmanifest" depends="checkjar, buildnum" unless="main_jar_current">
 			<echo message="Rebuilding jar manifest" />
 			<copy file="${main_jar_manifest_template}" tofile="${main_jar_manifest}" overwrite="true" />
 			<pathconvert property="runtime_classpath" pathsep=" ">
 				<path>
-					<fileset dir="${runtimedir}">
+					<fileset dir="${librarydir}">
 						<include name="*.jar" />
 					</fileset>
 				</path>
-				<map from="${runtimedir}/" to="" />
+				<!--<map from="${runtimedir}/" to="lib" />-->
 			</pathconvert>
 			<replace file="${main_jar_manifest}">
 				<replacefilter token="$BUILDNUM$" value="${build.number}" />
@@ -160,6 +160,27 @@
 	</target>
 
 
+	<!--
+	<target name="jar" depends="classes" description="Generate jar file">
+		
+		 <path id="classpath">
+		    <fileset dir="lib" includes="*.jar"/>
+			 <fileset dir="lib" includes="**/*.jar"/>
+		  </path>
+		
+		<jar destfile="${jarfile}">
+		 	<manifest>
+				<attribute name="Class-Path" value="${class-path}" />
+				<attribute name="Main-Class" value="org.geneontology.cli.GoldCommandLine" />
+				<attribute name="Main-Class" value="org.geneontology.cli.GoldCommandLine" />
+		 		
+		 		
+		 	</manifest>
+			<fileset refid="main_jar_contents" />
+		</jar>
+	</target>
+	-->
+	
 	<target name="clean" description="Delete all rebuildable resources">
 		<echo message="Deleting build directories..." />
 		<delete dir="${outputdir}" />
