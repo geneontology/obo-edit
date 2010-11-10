@@ -38,7 +38,7 @@ our %species =
    # A
    #
 
-   ANOGA => { prefer => [ 'UniProtKB',  'ENSEMBL' ] },
+   ANOGA => { prefer => [ qw/ENSEMBL UniProtKB/ ] },
    ARATH => { id_filter => sub {
 		  if ($_[0] eq 'gene') {
 		      return ('TAIR', "locus:$_[1]");
@@ -47,7 +47,7 @@ our %species =
 	      }
 	    },
    AQUAE => {},
-   ASHGO => {},
+   ASHGO => { also_node => [ 284811 ] },
 
    #
    # B
