@@ -30,7 +30,7 @@ public class DbOperations {
 		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
 	}
 	
-	private List<String> dumpFiles(String tablePrefix, String oboFile) throws Exception{
+	public List<String> dumpFiles(String tablePrefix, String oboFile) throws Exception{
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
 	//	String oboFile = manager.getDefaultOboFile();
 		OWLGraphWrapper wrapper = new OWLGraphWrapper( 	
