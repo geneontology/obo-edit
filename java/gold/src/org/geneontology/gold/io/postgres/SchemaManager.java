@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -84,15 +85,17 @@ public class SchemaManager {
 			StringBuffer buf = new StringBuffer();
 			Pattern pattern = Pattern.compile("TABLE\\s*\\w+", Pattern.CASE_INSENSITIVE);
 			Pattern Refspattern = Pattern.compile("REFERENCES\\s*\\w+", Pattern.CASE_INSENSITIVE);
-
+			
+			//this list maintains all sql statements to be executed
+			//extracted from  the Reader r
+			ArrayList<String> listSQLStatements = new ArrayList<String>();
+			//if force is true then it contains drop tables statements
+			ArrayList<String> listDelete = new ArrayList<String>();
+			
 			while((line = reader.readLine()) != null){
-				
 				
 				line = line.trim();
 
-				//if(line.startsWith("--"))
-					//continue;
-				
 				int index = line.indexOf("--");
 				if(index==0){//start of line
 					continue;
@@ -116,6 +119,10 @@ public class SchemaManager {
 								String s[] = tableName.split(" ");
 								String repacelement = " TABLE " + tablePrefix +s[s.length-1];
 								sql = sql.replace(tableName, repacelement);
+								
+								/*if(force){
+									listDelete.add("DROP ")
+								}*/
 							}
 							
 							matcher = Refspattern.matcher(sql);

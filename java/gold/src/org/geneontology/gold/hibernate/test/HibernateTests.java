@@ -19,7 +19,7 @@ public class HibernateTests extends TestCase {
 
 	
 	public static void testGetClass(){
-		GoldObjectFactory f = new GoldObjectFactory();
+		GoldObjectFactory f = GoldObjectFactory.buildDefaultFactory();
 		
 		String id = "CARO:0000055";
 		
@@ -31,7 +31,7 @@ public class HibernateTests extends TestCase {
 	}
 	
 	public static void testGetSubClassOfAssertions(){
-		GoldObjectFactory f = new GoldObjectFactory();
+		GoldObjectFactory f = GoldObjectFactory.buildDefaultFactory();
 
 		
 		String cls = "CARO:0000055";
@@ -47,7 +47,7 @@ public class HibernateTests extends TestCase {
 	
 	
 	public static void testGetObjAlternateLabel(){
-		GoldObjectFactory f = new GoldObjectFactory();
+		GoldObjectFactory f = GoldObjectFactory.buildDefaultFactory();
 
 		
 		String obj = "CARO:0000045";
@@ -64,7 +64,7 @@ public class HibernateTests extends TestCase {
 	}
 
 	public static void testGetAllSomeRelationship(){
-		GoldObjectFactory f = new GoldObjectFactory();
+		GoldObjectFactory f = GoldObjectFactory.buildDefaultFactory();
 
 		
 		String cls = "CARO:0000014";
@@ -81,7 +81,7 @@ public class HibernateTests extends TestCase {
 
 	
 	public static void testgetRelation(){
-		GoldObjectFactory f = new GoldObjectFactory();
+		GoldObjectFactory f = GoldObjectFactory.buildDefaultFactory();
 		
 		String id = "TODO_part:of";
 		
@@ -94,7 +94,7 @@ public class HibernateTests extends TestCase {
 		GoldDeltaFactory gdf = new GoldDeltaFactory();
 		List<Cls> list = gdf.buildClsDelta();
 	//	gdf.getSession().getTransaction().commit();
-		GoldObjectFactory gof = new GoldObjectFactory();
+		GoldObjectFactory gof = GoldObjectFactory.buildDefaultFactory();
 		Session s = gof.getSession();
 		for(Cls c:list){
 			s.merge(c);
