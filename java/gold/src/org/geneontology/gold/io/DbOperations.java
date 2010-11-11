@@ -75,39 +75,49 @@ public class DbOperations {
 		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
 		
 		GoldDeltaFactory gdf = new GoldDeltaFactory();
-		
+
+		List<SubclassOf> subclassList = gdf.buildSubclassOfDelta();
 		List<Cls> clsList = gdf.buildClsDelta();
 		List<Relation> relationList = gdf.buildRelationDelta();
-		List<SubclassOf> subclassList = gdf.buildSubclassOfDelta();
 		List<AllSomeRelationship> asmList = gdf.buildAllSomeRelationships();
 		List<ObjAlternateLabel> oalList = gdf.buildObjAlternateLabels();
 		
-		GoldObjectFactory gof = new GoldObjectFactory();
+		GoldObjectFactory gof = GoldObjectFactory.buildDefaultFactory();
 		Session session = gof.getSession();
-		
-		
 		for(Cls cls: clsList){
 			session.merge(cls);
 		}
-		
+//		session.getTransaction().commit();
+
+		//
+	//	session = gof.getSession();
 		for(Relation r: relationList){
 			session.merge(r);
 		}
+	//	session.getTransaction().commit();
 		
+		//
+	//	session = gof.getSession();
 		for(SubclassOf sc: subclassList){
 			session.merge(sc);
 		}
+	//	session.getTransaction().commit();
 
-	
+		//
+	//	session = gof.getSession();
 		for(AllSomeRelationship asm: asmList){
 			session.merge(asm);
 		}
+	//	session.getTransaction().commit();
+
 		
+		//
+	//	session = gof.getSession();
 		for(ObjAlternateLabel oa: oalList){
 			session.merge(oa);
 		}
+	//	session.getTransaction().commit();
 		
-		session.getTransaction().commit();
 	}
 	
 	public static void main(String args[]){

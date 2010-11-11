@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.io.DatabaseDialect;
@@ -13,7 +14,20 @@ public class PostgresDialect implements DatabaseDialect {
 	
 	private Connection connection;
 	
+	private static HashSet<String> tables = buildTables();
 	
+	private static HashSet<String> buildTables(){
+		HashSet<String> tables = new HashSet<String>();
+
+		tables.add("cls");
+		tables.add("relation");
+		tables.add("subclass_of");
+		tables.add("obj_alternate_label");
+		tables.add("all_some_relationship");
+		
+		
+		return tables;
+	}
 	
 	@Override
 	public Connection getConnect() {
@@ -34,7 +48,7 @@ public class PostgresDialect implements DatabaseDialect {
 	
 	@Override
 	public String getDeltaQuery(String tableName) {
-		if("cls".equals(tableName)){
+		if(tables.contains(tableName)){
 			return "SELECT * from " + GeneOntologyManager.getInstance().getGoldDetlaTablePrefix() + tableName +" EXCEPT SELECT * from "+tableName;
 		}
 		

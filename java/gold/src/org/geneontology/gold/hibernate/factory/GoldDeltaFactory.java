@@ -31,26 +31,26 @@ public class GoldDeltaFactory {
 	private DatabaseDialect db;
 	
 	//this session is created with DeltaQueryInterceptor object.
-	private Session session;
+	//private Session session;
 	
 	private GoldObjectFactory goldObjFactory;
 	
 	
-	public Session getSession(){
+	/*public Session getSession(){
 		session.beginTransaction();
 		return session;
-	}
+	}*/
 	
 	public GoldDeltaFactory()throws Exception{
 		db = GeneOntologyManager.getInstance().buildDatabaseDialect();
-		this.session = new GoldObjectFactory().getDeltaInterceptorSession();
-		goldObjFactory = new GoldObjectFactory();
+		//this.session = new GoldObjectFactory().getDeltaInterceptorSession();
+		goldObjFactory = GoldObjectFactory.buildDeltaObjectFactory();
 	}
 	
 	public List<Cls> buildClsDelta() throws SQLException{
 		Vector<Cls> list = new Vector<Cls>();
 
-		Session session = getSession();
+		Session session = goldObjFactory.getSession();
 		
 		ResultSet rs = db.getDelaData("cls");
 		
@@ -59,19 +59,17 @@ public class GoldDeltaFactory {
 		
 		while(rs.next()){
 			String id = rs.getString("id");
-			list.add(goldObjFactory.getClassById(id, session) );
+			list.add(goldObjFactory.getClassById(id) );
 		}
 		
-		
 		session.getTransaction().commit();
-		session.flush();
 		return list;
 	}
 
 	public List<Relation> buildRelationDelta() throws SQLException{
 		Vector<Relation> list = new Vector<Relation>();
 
-		Session session = getSession();
+		Session session = goldObjFactory.getSession();
 		
 		ResultSet rs = db.getDelaData("relation");
 		
@@ -95,7 +93,7 @@ public class GoldDeltaFactory {
 	public List<SubclassOf> buildSubclassOfDelta() throws SQLException{
 		Vector<SubclassOf> list = new Vector<SubclassOf>();
 
-		Session session = getSession();
+		Session session = goldObjFactory.getSession();
 		
 		ResultSet rs = db.getDelaData("subclass_of");
 		
@@ -117,7 +115,7 @@ public class GoldDeltaFactory {
 	public List<ObjAlternateLabel> buildObjAlternateLabels() throws SQLException{
 		Vector<ObjAlternateLabel> list = new Vector<ObjAlternateLabel>();
 
-		Session session = getSession();
+		Session session = goldObjFactory.getSession();
 		
 		ResultSet rs = db.getDelaData("obj_alternate_label");
 		
@@ -142,7 +140,7 @@ public class GoldDeltaFactory {
 	public List<AllSomeRelationship> buildAllSomeRelationships() throws SQLException{
 		Vector<AllSomeRelationship> list = new Vector<AllSomeRelationship>();
 
-		Session session = getSession();
+		Session session = goldObjFactory.getSession();
 		
 		ResultSet rs = db.getDelaData("all_some_relationship");
 		
