@@ -51,7 +51,7 @@ bbop.model.tree.graph = function(){
 
     var max_dist = 0.0;
     var all_dists = {};
-    //var  = {};
+    //var matrix = {};
     function kid_info_up(node_id){
 	
 	var nid = node_id;
