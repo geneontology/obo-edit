@@ -136,14 +136,19 @@ public class GeneProduct extends GOModel {
 		this.getAssociations().add(assoc);
 	}
 
-	public Association removeAssociation(Term term, String from_db) {
-		Association removal = null;
-		for (Iterator<Association> it = associations.iterator(); it.hasNext() && removal == null;) {
+	public Association findAssociation(Term term, String from_db) {
+		Association found = null;
+		for (Iterator<Association> it = associations.iterator(); it.hasNext() && found == null;) {
 			Association assoc = it.next();
 			if (assoc.getTerm() == term && assoc.getSource_db().getName().equals(from_db)) {
-				removal = assoc;
+				found = assoc;
 			}
 		}
+		return found;
+	}
+	
+	public Association removeAssociation(Term term, String from_db) {
+		Association removal = findAssociation (term, from_db);
 		if (removal != null) {
 			associations.remove(removal);
 		}
