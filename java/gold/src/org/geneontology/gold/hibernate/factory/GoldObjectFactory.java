@@ -17,11 +17,31 @@ public class GoldObjectFactory {
 	/** The local {@link SessionFactory} object used to retrieve data. */
 	private static SessionFactory sf;
 	
-	public GoldObjectFactory(){
+	private Session session;
+	
+	private boolean isDeltaFactory;
+	
+	private GoldObjectFactory(){
 		if(sf == null){
 			sf = buildFactory();
 		}
+		session = sf.getCurrentSession();
 	}
+	
+	public static GoldObjectFactory buildDefaultFactory(){
+		return new GoldObjectFactory();
+	}
+	
+	
+	public static GoldObjectFactory buildDeltaObjectFactory(){
+		GoldObjectFactory factory = new GoldObjectFactory();
+		
+		factory.session = sf.openSession(new DeltaQueryInterceptor());
+		factory.isDeltaFactory = true;
+		
+		return factory;
+	}
+
 	
 	private static SessionFactory buildFactory(){
 		Configuration c = new Configuration().configure(new File("conf/hibernate.cfg.xml"));
@@ -37,8 +57,20 @@ public class GoldObjectFactory {
 	 * @return {@link SessionFactory} object
 	 */
 	public synchronized Session getSession() {
-		Session session = sf.getCurrentSession();
+		//Session session = sf.getCurrentSession();
+		//if(session.isOpen())
+		//	session.beginTransaction();
+		
+		if(!session.isOpen()){
+			if(isDeltaFactory)
+				session = sf.openSession(new DeltaQueryInterceptor());
+			else{
+				session = sf.getCurrentSession();
+			}
+		}
+	
 		session.beginTransaction();
+		
 		return session;
 	}
 	
@@ -48,24 +80,18 @@ public class GoldObjectFactory {
 	 * session the Objects can be built from temporary tables
 	 * @return
 	 */
-	public synchronized Session getDeltaInterceptorSession() {
+	/*public synchronized Session getDeltaInterceptorSession() {
 		Session session = sf.openSession(new DeltaQueryInterceptor());
-		sf.openSession();//This again sets a new default session for the rest of the application which
+	//	sf.openSession();//This again sets a new default session for the rest of the application which
 							//current session from the getSession metho.
 		session.beginTransaction();
 		
 		return session;
-	}
+	}*/
 	
-	
-	public synchronized Cls getClassById(String id, Session session){
-		return (Cls)session.createQuery("from Cls where id = ?").setString(0, id).uniqueResult();
-	}
 	
 	public synchronized Cls getClassById(String id){
-		return  getClassById(id, getSession());
-		//Session session = getSession();
-		//return (Cls)session.createQuery("from Cls where id = ?").setString(0, id).uniqueResult();
+		return (Cls)session.createQuery("from Cls where id = ?").setString(0, id).uniqueResult();
 	}
 	
 	public synchronized List<SubclassOf> getSubClassOfAssertions(String cls){
@@ -77,7 +103,7 @@ public class GoldObjectFactory {
 
 	public synchronized SubclassOf getSubClassOfAssertion(String ontology, String superCls, String cls){
 		Session session = getSession();
-		SubclassOf results = (SubclassOf)session.createQuery("from SubclassOf where ontology = ? and super_cls=? cls = ?")
+		SubclassOf results = (SubclassOf)session.createQuery("from SubclassOf where ontology = ? and super_cls=? and cls = ?")
 		.setString(0, ontology)
 		.setString(1, superCls)
 		.setString(2, cls).uniqueResult();
