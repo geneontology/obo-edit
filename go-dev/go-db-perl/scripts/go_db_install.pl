@@ -817,8 +817,8 @@ sub load_qfo {
       push @args, ('-dbauth', $local{DB_PASS}) if $local{DB_PASS};
       push @args, ('-dbport', $local{DB_PORT}) if $local{DB_PORT};
       #push @args, '-noseq';
-      #push @args, $tmp_dl_file; 
-      push @args, qw/--fetch --panther --no-dry-run/;
+      #push @args, $tmp_dl_file;
+      push @args, qw/--unannotated-report --fetch --panther --no-dry-run/;
 
       ll("[SYSTEM] \"@args\"");
       eval {

@@ -42,20 +42,19 @@ my %ftp_opt = ( Passive => 1 ); # In doubt use passive, it's what
                                 # wget(1) does
 my $ftp_host = 'ftp.ebi.ac.uk';
 my $ftp_dir = '/pub/databases/reference_proteomes/';
-
-
+my $unannotated_report_p;
 my $apph = GO::AppHandle->connect(\@ARGV);
-
 
 GetOptions
   (
-   'panther-species!' => \$panther,
-   'quiet!'           => \$GO::MatchID::quiet,
-   'debug!'           => \$GO::MatchID::debug,
-   'match-only!'      => \$match_only,
-   'dry-run!'         => \$dry_run,
-   'fetch:s'          => \$fetch_dir,
-   'sensitive!'       => \$sensitive_p,
+   'panther-species!'    => \$panther,
+   'quiet!'              => \$GO::MatchID::quiet,
+   'debug!'              => \$GO::MatchID::debug,
+   'match-only!'         => \$match_only,
+   'dry-run!'            => \$dry_run,
+   'fetch:s'             => \$fetch_dir,
+   'sensitive!'          => \$sensitive_p,
+   'unannotated-report!' => \$unannotated_report_p,
   ) or die;
 
 my $fasta_match;
@@ -269,8 +268,33 @@ while (@file) {
 
     }
 }
-warn Dumper \%stats;
+warn Dumper \%stats if ($GO::MatchID::debug);
+print unannotated_report() if ($unannotated_report_p);
 
+
+sub unannotated_report{
+    my $r = $apph->dbh()->selectall_arrayref(<<SQL);
+SELECT
+ x.xref_dbname,
+ COUNT(*) AS num_unannotated
+FROM gene_product AS g
+ INNER JOIN dbxref AS x ON (g.dbxref_id=x.id)
+WHERE g.id NOT IN
+   (SELECT DISTINCT gene_product_id FROM association)
+GROUP BY
+ x.xref_dbname
+SQL
+
+    my @head = qw/xref_dbname num_unannotated/;
+    my $fmt = '%' . length($head[0]) . 's %' . length($head[1]);
+    my $out = sprintf $fmt . "s\n", @head;
+    $fmt .= "d\n";
+    while (scalar @$r) {
+	my $d = shift @$r;
+	$out .= sprintf $fmt, $d->[0], $d->[1];
+    }
+    return $out;
+}
 
 
 sub create_id{
