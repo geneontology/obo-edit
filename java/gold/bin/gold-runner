@@ -1,0 +1,5 @@
+#!/bin/sh
+PATH_TO_ME=`which $0`;
+CMD="java -Xmx1024M -jar $PATH_TO_ME../gold.jar";
+sh -c $CMD;
+
