@@ -65,10 +65,13 @@ public class GOobjectFactory {
 		Session session = getSession();
 		Iterator<Term> results = session.createQuery("from Term where name = ?").setString(0, name).iterate();
 		Term term = null;
+		int cnt = 0;
 		while (results.hasNext()) {
 			term = results.next();
-			System.out.println("Got term " + term.getCv() + ":" + term.getAcc() + " = " + term.getName());
+			cnt++;
 		}
+		if (cnt > 1)
+			System.out.println("Retrieved " + cnt + " terms with name " + name);
 		return term;
 	}
 

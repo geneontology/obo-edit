@@ -52,10 +52,16 @@ public class Association extends GOModel {
 
 	/**
 	 * This field is not yet in the database, but I think it needs to be
-	 * It indicates that this particular association of gene to term has
-	 * inherited from an ancestral protein
+	 * It indicates that this particular association of gene to term was
+	 * a directly annotated ancestral protein
 	 */
-	protected boolean is_inherited;
+	protected boolean is_MRC;
+	
+	/*
+	 * Similarly to is_MRC, this boolean indicates that this NODE has been
+	 * directly annotated by a curator as a NOT
+	 */
+	protected boolean is_DirectNot;
 	
 	public Association(){
 		String[] uniqueConstraintFields = {"assoc_id", "term", "gene_product"};
@@ -155,12 +161,21 @@ public class Association extends GOModel {
   		setDate(Integer.valueOf(date_str));
 	}
 
-	public boolean isInherited() {
-		return is_inherited;
+	public boolean isMRC() {
+		return is_MRC;
 	}
 
-	public void setInherited(boolean is_inherited) {
-		this.is_inherited = is_inherited;
+	public void setDirectMRC(boolean is_MRC) {
+		this.is_MRC = is_MRC;
 	}
+
+	public boolean isDirectNot() {
+		return is_DirectNot;
+	}
+
+	public void setDirectNot(boolean isDirectNot) {
+		is_DirectNot = isDirectNot;
+	}
+
 
 }
