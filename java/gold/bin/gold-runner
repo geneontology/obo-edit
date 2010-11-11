@@ -1,6 +1,6 @@
 #!/bin/sh
 DIRNAME=`dirname $0`
 #PATH_TO_ME=`which $0`;
-java -Xmx1024M -jar $DIRNAME/../gold.jar "$0"
+java -Xmx1024M -jar $DIRNAME/../gold.jar "$@"
 
 
