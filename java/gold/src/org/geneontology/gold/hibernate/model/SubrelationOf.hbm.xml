@@ -4,16 +4,12 @@
 <!-- Generated Nov 2, 2010 3:53:51 PM by Hibernate Tools 3.4.0.Beta1 -->
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.SubrelationOf" table="subrelation_of">
-        <composite-id name="id" class="org.geneontology.gold.hibernate.model.SubrelationOfId">
-            <key-property name="relation" type="string">
-                <column name="relation" />
-            </key-property>
-            <key-property name="superRelation" type="string">
-                <column name="super_relation" />
-            </key-property>
-            <key-property name="ontology" type="string">
-                <column name="ontology" />
-            </key-property>
+        <composite-id>
+        
+	       <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
+	       <key-many-to-one name="superRelation" class="org.geneontology.gold.hibernate.model.Relation" column="super_relation" />
+	       <key-many-to-one name="relation" class="org.geneontology.gold.hibernate.model.Relation" column="relation" />
+         
         </composite-id>
     </class>
 </hibernate-mapping>

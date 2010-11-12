@@ -4,16 +4,10 @@
 <!-- Generated Nov 2, 2010 3:53:51 PM by Hibernate Tools 3.4.0.Beta1 -->
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.EquivalentTo" table="equivalent_to">
-        <composite-id name="id" class="org.geneontology.gold.hibernate.model.EquivalentToId">
-            <key-property name="cls" type="string">
-                <column name="cls" />
-            </key-property>
-            <key-property name="equivalentCls" type="string">
-                <column name="equivalent_cls" />
-            </key-property>
-            <key-property name="ontology" type="string">
-                <column name="ontology" />
-            </key-property>
+        <composite-id>
+  	       <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
+	       <key-many-to-one name="equivalentCls" class="org.geneontology.gold.hibernate.model.Cls" column="equivalent_cls" />
+	       <key-many-to-one name="cls" class="org.geneontology.gold.hibernate.model.Cls" column="cls" />
         </composite-id>
     </class>
 </hibernate-mapping>
