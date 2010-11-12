@@ -14,18 +14,20 @@ public class ObjAlternateLabel extends GOModel implements java.io.Serializable {
 	private String synonymXref;
 
 	public ObjAlternateLabel() {
+		System.out.println("CCCCCCCCCCCCCCCCCCCCCCCC");
+		String[] uniqueConstaintFields = {"obj", "label"};
+		this.initUniqueConstraintFields(ObjAlternateLabel.class, uniqueConstaintFields);
 	}
 
 	public ObjAlternateLabel(String obj, String label, String synonymScope,
 			String synonymType, String synonymXref) {
+		this();
 		this.obj = obj;
 		this.label = label;
 		this.synonymScope = synonymScope;
 		this.synonymType = synonymType;
 		this.synonymXref = synonymXref;
 		
-		String[] uniqueConstaintFields = {"obj", "label"};
-		this.initUniqueConstraintFields(ObjAlternateLabel.class, uniqueConstaintFields);
 	}
 
 	public String getObj() {
@@ -41,6 +43,7 @@ public class ObjAlternateLabel extends GOModel implements java.io.Serializable {
 	}
 
 	public void setLabel(String label) {
+		System.out.println("label.................." + label);
 		this.label = label;
 	}
 
@@ -68,12 +71,14 @@ public class ObjAlternateLabel extends GOModel implements java.io.Serializable {
 		this.synonymXref = synonymXref;
 	}
 
-	/*public boolean equals(Object other) {
+	public boolean equals(Object other) {
+		System.out.println("***********************");
+		
 		if ((this == other))
 			return true;
 		if ((other == null))
 			return false;
-		if (!(other instanceof ObjAlternateLabelId))
+		if (!(other instanceof ObjAlternateLabel))
 			return false;
 		ObjAlternateLabel castOther = (ObjAlternateLabel) other;
 
@@ -98,6 +103,9 @@ public class ObjAlternateLabel extends GOModel implements java.io.Serializable {
 	}
 
 	public int hashCode() {
+		System.out.println("============================== " + getLabel() + ", " + getObj());
+
+		
 		int result = 17;
 
 		result = 37 * result
@@ -117,7 +125,7 @@ public class ObjAlternateLabel extends GOModel implements java.io.Serializable {
 				+ (getSynonymXref() == null ? 0 : this.getSynonymXref()
 						.hashCode());
 		return result;
-	}*/
+	}
 
 	
 	/*	private ObjAlternateLabelId id;

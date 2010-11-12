@@ -307,6 +307,22 @@ def: "A fasciculated bundle of neuron projections (GO:0043005), largely or compl
 synonym: "nerve fiber bundle" EXACT [FBC:DOS]
 is_a: CARO:0001000 ! multi-cell-component structure
 
+
+[Term]
+id: CARO:0001040
+name: Dummy to test incremental update
+def: "A fasciculated bundle of neuron projections (GO:0043005), largely or completely lacking synapses." [FBC:DOS]
+synonym: "nerve fiber bundle" EXACT [FBC:DOS]
+is_a: CARO:0001000 ! multi-cell-component structure
+
+[Term]
+id: CARO:0002080
+name: Dummy to test incremental update
+def: "A fasciculated bundle of neuron projections (GO:0043005), largely or completely lacking synapses." [FBC:DOS]
+synonym: "nerve fiber bundle" EXACT [FBC:DOS]
+is_a: CARO:0001000 ! multi-cell-component structure
+
+
 [Typedef]
 id: has_quality
 name: has_quality
