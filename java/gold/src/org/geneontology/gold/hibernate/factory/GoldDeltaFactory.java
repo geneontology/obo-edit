@@ -36,10 +36,11 @@ public class GoldDeltaFactory {
 	private GoldObjectFactory goldObjFactory;
 	
 	
-	/*public Session getSession(){
-		session.beginTransaction();
-		return session;
-	}*/
+	public Session getSession(){
+	//	session.beginTransaction();
+		//return session;
+		return goldObjFactory.getSession();
+	}
 	
 	public GoldDeltaFactory()throws Exception{
 		db = GeneOntologyManager.getInstance().buildDatabaseDialect();
@@ -63,6 +64,7 @@ public class GoldDeltaFactory {
 		}
 		
 		session.getTransaction().commit();
+		session.close();
 		return list;
 	}
 
@@ -84,8 +86,9 @@ public class GoldDeltaFactory {
 		}
 		
 		
-		session.getTransaction().commit();
-		session.flush();
+	//	session.getTransaction().commit();
+		//session.close();
+	//	session.flush();
 		return list;
 	}
 	
@@ -107,8 +110,9 @@ public class GoldDeltaFactory {
 		}
 		
 		
-		session.getTransaction().commit();
-		session.flush();
+	//	session.getTransaction().commit();
+		//session.close();
+	//	session.flush();
 		return list;
 	}
 	
@@ -129,8 +133,12 @@ public class GoldDeltaFactory {
 		}
 		
 		
-		session.getTransaction().commit();
-		session.flush();
+	//	session.getTransaction().commit();
+	//	session.close();
+	//	session.flush();
+		//session.clear();
+		//session.close();
+		//session.flush();
 		return list;
 
 		
@@ -154,8 +162,8 @@ public class GoldDeltaFactory {
 		}
 		
 		
-		session.getTransaction().commit();
-		session.flush();
+//		session.getTransaction().commit();
+		//session.flush();
 		return list;
 
 		

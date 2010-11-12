@@ -17,19 +17,45 @@ import org.obolibrary.obo2owl.Obo2Owl;
 
 import owltools.graph.OWLGraphWrapper;
 
+/**
+ * This class provides adminstrative operations for the GOLD database.
+ * @author Shahid Manzoor
+ *
+ */
 public class DbOperations {
 
 
+	/**
+	 * Loads the contents of the obo file whose path is supplied 
+	 * the geneontology.gold.obofil property.
+	 * @param force
+	 * @throws Exception
+	 */
 	public void bulkLoad(boolean force) throws Exception{
 		bulkLoad(GeneOntologyManager.getInstance().getDefaultOboFile(), force);
 	}
 	
+	/**
+	 * Load the contents of the obo file into GOLD
+	 * @param oboFile: The path of the obo file
+	 * @param The true value of the force parameter drops all the existing tables
+	 * 			creates new ones.
+	 * @throws Exception
+	 */
 	public void bulkLoad(String oboFile, boolean force) throws Exception{
 		List<String> list = dumpFiles("", oboFile);
 		buildSchema(force, "");
 		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
 	}
 	
+	/**
+	 * This method dumps the obo file (oboFile) as tab separated files
+	 * for GOLD database to be used for bulk loading 
+	 * @param tablePrefix
+	 * @param oboFile
+	 * @return It returns the name of the tables for which the files are dumped
+	 * @throws Exception
+	 */
 	public List<String> dumpFiles(String tablePrefix, String oboFile) throws Exception{
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
 	//	String oboFile = manager.getDefaultOboFile();
@@ -41,7 +67,13 @@ public class DbOperations {
 		
 	}
 	
-	
+	/**
+	 * It creates schema of GOLD database.
+	 * @param force: The true value of this parameter drop of all existing tables and
+	 * 			creates new ones.
+	 * @param tablePrefix This prefix is used as prefix of each table created in the database.
+	 * @throws Exception
+	 */
 	public void buildSchema(boolean force, String tablePrefix) throws Exception{
 		SchemaManager sm = new SchemaManager();
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
@@ -52,6 +84,13 @@ public class DbOperations {
 		
 	}
 	
+	/**
+	 * It loads the TSV files in the GOLD database.
+	 * @param tsvFilesDir The directory where TSV files are residing
+	 * @param list It is list of the names (without extension) of the files 
+	 * 		to be loaded in the GOLD database
+	 * @throws Exception
+	 */
 	public void loadTsvFiles(String tsvFilesDir, List<String> list) throws Exception{
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
 		TsvFileLoader tsvLoader = new TsvFileLoader(manager.getGolddbUserName(),
@@ -62,10 +101,21 @@ public class DbOperations {
 		
 	}
 
+	/**
+	 * Incrementa update of the GOLD database from the contents of the obo file
+	 * located the default location.
+	 * @throws Exception
+	 */
 	public void updateGold() throws Exception{
 		updateGold(GeneOntologyManager.getInstance().getDefaultOboFile());
 	}	
 	
+	/**
+	 * Incrementa update of the GOLD database from the contents of the obo file
+	 * located at the path supplied in the parameter
+	 * @param oboFile
+	 * @throws Exception
+	 */
 	public void updateGold(String oboFile) throws Exception{
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
 		
@@ -77,50 +127,43 @@ public class DbOperations {
 		GoldDeltaFactory gdf = new GoldDeltaFactory();
 
 		List<SubclassOf> subclassList = gdf.buildSubclassOfDelta();
-		List<Cls> clsList = gdf.buildClsDelta();
 		List<Relation> relationList = gdf.buildRelationDelta();
 		List<AllSomeRelationship> asmList = gdf.buildAllSomeRelationships();
+		List<Cls> clsList = gdf.buildClsDelta();
 		List<ObjAlternateLabel> oalList = gdf.buildObjAlternateLabels();
+		
+		
+		//close the session associated with the tables prefixed with 
+		// the value of the geneontology.gold.deltatableprefix property
+		gdf.getSession().close();
 		
 		GoldObjectFactory gof = GoldObjectFactory.buildDefaultFactory();
 		Session session = gof.getSession();
+		session.clear();
+
 		for(Cls cls: clsList){
-			session.merge(cls);
+			session.saveOrUpdate(cls);
 		}
-//		session.getTransaction().commit();
 
-		//
-	//	session = gof.getSession();
 		for(Relation r: relationList){
-			session.merge(r);
+			session.saveOrUpdate(r);
 		}
-	//	session.getTransaction().commit();
 		
-		//
-	//	session = gof.getSession();
 		for(SubclassOf sc: subclassList){
-			session.merge(sc);
+			session.saveOrUpdate(sc);
 		}
-	//	session.getTransaction().commit();
 
-		//
-	//	session = gof.getSession();
 		for(AllSomeRelationship asm: asmList){
-			session.merge(asm);
+			session.saveOrUpdate(asm);
 		}
-	//	session.getTransaction().commit();
 
 		
-		//
-	//	session = gof.getSession();
-		for(ObjAlternateLabel oa: oalList){
-			session.merge(oa);
-		}
-	//	session.getTransaction().commit();
 		
-	}
-	
-	public static void main(String args[]){
+		for(ObjAlternateLabel oa: oalList){
+			session.saveOrUpdate(oa);
+		}
+
+		session.getTransaction().commit();
 		
 	}
 	

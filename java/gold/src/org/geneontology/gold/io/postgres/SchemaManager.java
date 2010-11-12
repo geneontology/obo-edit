@@ -83,14 +83,14 @@ public class SchemaManager {
 			String line = null;
 
 			StringBuffer buf = new StringBuffer();
-			Pattern pattern = Pattern.compile("TABLE\\s*\\w+", Pattern.CASE_INSENSITIVE);
+			Pattern pattern = Pattern.compile("CREATE\\s*TABLE\\s*\\w+", Pattern.CASE_INSENSITIVE);
 			Pattern Refspattern = Pattern.compile("REFERENCES\\s*\\w+", Pattern.CASE_INSENSITIVE);
 			
 			//this list maintains all sql statements to be executed
 			//extracted from  the Reader r
-			ArrayList<String> listSQLStatements = new ArrayList<String>();
+	//		ArrayList<String> listSQLStatements = new ArrayList<String>();
 			//if force is true then it contains drop tables statements
-			ArrayList<String> listDelete = new ArrayList<String>();
+		//	ArrayList<String> listDelete = new ArrayList<String>();
 			
 			while((line = reader.readLine()) != null){
 				
@@ -112,27 +112,37 @@ public class SchemaManager {
 						
 						String sql = buf.toString();
 						
-						if(tablePrefix.length()>0){
+						if(tablePrefix.length()>0 || force){
 							Matcher matcher = pattern.matcher(sql);
 							if(matcher.find()){
 								String tableName = matcher.group().trim();
 								String s[] = tableName.split(" ");
-								String repacelement = " TABLE " + tablePrefix +s[s.length-1];
-								sql = sql.replace(tableName, repacelement);
 								
-								/*if(force){
-									listDelete.add("DROP ")
-								}*/
+								if(tablePrefix.length()>0){
+									String repacelement = "CREATE TABLE " + tablePrefix +s[s.length-1];
+									sql = sql.replace(tableName, repacelement);
+									
+									matcher = Refspattern.matcher(sql);
+									
+									while(matcher.find()){
+										tableName = matcher.group().trim();
+										s = tableName.split(" ");
+										String replacement = " REFERENCES "+ tablePrefix + s[s.length-1];
+										sql = sql.replace(tableName, replacement);
+									}									
+								}
+								
+								if(force){
+									try{
+										String drop = "DROP TABLE IF EXISTS " + tablePrefix+ s[s.length-1] +"  CASCADE";
+										stmt.executeUpdate(drop);
+									}catch(Exception ex){
+										//ignore this
+									}
+								}
 							}
 							
-							matcher = Refspattern.matcher(sql);
 							
-							while(matcher.find()){
-								String tableName = matcher.group().trim();
-								String s[] = tableName.split(" ");
-								String replacement = " REFERENCES "+ tablePrefix + s[s.length-1];
-								sql = sql.replace(tableName, replacement);
-							}
 						}
 
 						System.out.println(sql);
