@@ -26,15 +26,11 @@ import org.apache.commons.math.distribution.*;
 public class Main {
 
     public static Pheno calculate_overlap(Pheno p1, Pheno p2, HashMap<String, IndividualPair> hm) {
-        //System.out.println("P1: "+p1.getId()+", #g = "+p1.getIndividuals().size()+", P2: "+p2.getId()+", #g = "+p2.getIndividuals().size());
-        Iterator i1 = p1.getIndividuals().iterator();
-        Individual g1;
         HashSet<IndividualPair> ip = new HashSet<IndividualPair>();
         Pheno p = new Pheno();
         
         int overlap = 0;
-        while(i1.hasNext()){
-            g1 = (Individual) i1.next();
+        for (Individual g1 : p1.getIndividuals()){
             if (p2.getIndividuals().contains(hm.get(g1.getId()).getMember2())) {
                 overlap = overlap + 1;                
                 ip.add(hm.get(g1.getId()));
@@ -47,14 +43,14 @@ public class Main {
         return p;
     }
 
-    public static HashSet<Individual> getpermutedgenes(int sampsz, int pop_size, ArrayList<Individual> ls_ind1) {
+    public static HashSet<Individual> getpermutedgenes(int sampsz, int pop_size, ArrayList<Individual> ls_ind) {
         HashSet<Individual> hsg = new HashSet<Individual>();
         Random rand = new Random(System.currentTimeMillis());
         int newIndex;
 
         while (hsg.size() <= sampsz) {
             newIndex = rand.nextInt(pop_size);
-            Individual ind = (Individual) ls_ind1.get(newIndex);
+            Individual ind = (Individual) ls_ind.get(newIndex);
             hsg.add(new Individual(ind.getId(), ind.getLabel(), ind.getOrthologs()));
         }
         return hsg;
@@ -67,32 +63,6 @@ public class Main {
      * or through functionality offered through methods residing within other classes.
      */
     public static void main(String[] args) {
-
-/**
-
-        try {
-            ParserWrapper pw = new ParserWrapper();
-            OWLGraphWrapper owlg = pw.parseToOWLGraph("http://purl.org/obo/obo/MP.obo");
-            Set<OWLObject> ancs = null;
-
-            ancs = owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier("MP:0001293"));
-
-            for (OWLObject c : ancs) {
-                if (owlg.getIdentifier(c).contains("MP:")) {
-                    System.out.println("ID: " + owlg.getIdentifier(c) + " ,Label: " + owlg.getLabel(c));
-                }
-            }
-
-
-
-        } catch (Exception e) {
-            System.out.println("EXCEPTION SP2 GRAPH");
-        }
-
-        if (1 == 1) {
-            return;
-        }
-**/
 
         HashSet<GenePheno> gpset = new HashSet<GenePheno>();
         HashMap<String, Individual> hm_ind;
@@ -161,11 +131,6 @@ public class Main {
             }
         }// End of Gene-Phenotype loop.
 
-        //Output elements of Species-I Individual hashset
-        //printhash(ind1);
-
-
-
 
         //STEP 3: Read Mice Gene ID - Phenotype ID data
         gpset.clear();
@@ -233,10 +198,6 @@ public class Main {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
-
-        System.out.println("HERO-2");
-
 
         //STEP 5: Read Mice Phenotype ID - Phenotype Label data in a HashMap
         HashMap<String, String> hm_pheno = new HashMap<String, String>();
@@ -414,7 +375,7 @@ public class Main {
                 if (hm1.get(at.getId()) == null) {
                     hs_ind = new HashSet<Individual>();
                     hs_ind.add(new Individual(mem1.getId(), mem1.getLabel(), mem1.getOrthologs()));
-                    ph = new Pheno(at.getId(), at.getLabel(), hs_ind);
+                    ph = new Pheno(at.getId(), at.getLabel(), hs_ind, false);
                     ph1.add(ph);
                     hm1.put(at.getId(), ph);
                 } //else if phonotype id already exists in the set
@@ -439,7 +400,7 @@ public class Main {
                 if (hm2.get(at.getId()) == null) {
                     hs_ind = new HashSet<Individual>();
                     hs_ind.add(new Individual(mem2.getId(), mem2.getLabel(), mem2.getOrthologs()));
-                    ph = new Pheno(at.getId(), at.getLabel(), hs_ind);
+                    ph = new Pheno(at.getId(), at.getLabel(), hs_ind, false);
                     ph2.add(ph);
                     hm2.put(at.getId(), ph);
                 } //else if phonotype id already exists in the set
@@ -468,6 +429,13 @@ public class Main {
         /* Backup Pheno hashsets for each species to be used in bootstrap later on */
         oldph1.addAll(ph1);
         oldph2.addAll(ph2);
+        
+        for(Pheno t_ph1 : ph1){
+            t_ph1.setNonTCIndividualSize(t_ph1.getIndividuals().size());
+        }
+        for(Pheno t_ph2 : ph2){
+            t_ph2.setNonTCIndividualSize(t_ph2.getIndividuals().size());
+        }
         ph1 = ptc.performtransiviteclosure("http://purl.org/obo/obo/FBbt.obo", "FBbt:", ph1, hm1, hm_indpair1);
         ph2 = ptc.performtransiviteclosure("http://purl.org/obo/obo/MP.obo", "MP:", ph2, hm2, hm_indpair1);
 
@@ -484,7 +452,6 @@ public class Main {
         double pvalue = 0;
 
         HypergeometricDistributionImpl hg = new HypergeometricDistributionImpl(100, 20, 10);
-        IndividualPair ip1 = new IndividualPair();
         HashSet<IndividualPair> clpair = null;
 
         int i;
@@ -606,7 +573,6 @@ public class Main {
 
         /* CODE FOR BOOTSTRAPING */
         /* Get list of distinct genes from Individual pair : ls_ind1 ls_ind2 for Species1 and Species2 respectively */
-        Iterator it = hs_indpair1.iterator();
         ind1 = new HashSet<Individual>();
         ind2 = new HashSet<Individual>();
         Pheno p = null;
@@ -615,8 +581,7 @@ public class Main {
         double[] cutoff1 = new double[1000];
         double[] cutoff2 = new double[1000];
 
-        while (it.hasNext()) {
-            ip1 = (IndividualPair) it.next();
+        for (IndividualPair ip1 : hs_indpair1) {
             ind1.add(ip1.getMember1());
             ind2.add(ip1.getMember2());
         }
@@ -626,6 +591,7 @@ public class Main {
         HashSet<Individual> hsg;
         
         for (int iter = 1; iter <= 1000; iter++) {
+            start = System.currentTimeMillis();
 
             phenolist1.clear();
             phenolist2.clear();
@@ -636,24 +602,40 @@ public class Main {
             hsg = null;
             pvalue = 0;
 
-            for (Pheno t_ph1 : oldph1) {
+            for (Pheno t_ph1 : ph1) {
+                t_ph1.getIndividuals().clear();
+            }
+            for (Pheno t_ph2 : ph2) {
+                t_ph2.getIndividuals().clear();
+            }
+
+            for (Pheno t_ph1 : ph1) {
                 // Permute Genese for Species I - Phenotypes
-                if (t_ph1.getIndividuals() != null) {
-                    hsg = (HashSet<Individual>) getpermutedgenes(t_ph1.getIndividuals().size(), ls_ind1.size(), ls_ind1);
+                if (t_ph1.getIndividuals() != null && t_ph1.getisFromTC() == false) {
+                    hsg = (HashSet<Individual>) getpermutedgenes(t_ph1.getNonTCIndividualSize(), ls_ind1.size(), ls_ind1);
                     t_ph1.setIndividuals(hsg);
+
+                    for (Pheno anc : t_ph1.getancestors()) {
+                        hsg = anc.getIndividuals();
+                        hsg.addAll(t_ph1.getIndividuals());
+                        anc.setIndividuals(hsg);
+                    }
                 }
             }
-            for (Pheno t_ph2 : oldph2) {
+            for (Pheno t_ph2 : ph2) {
                 // Permute Genese for Species II - Phenotypes
-                if (t_ph2.getIndividuals() != null) {
-                    hsg = (HashSet<Individual>) getpermutedgenes(t_ph2.getIndividuals().size(), ls_ind2.size(), ls_ind2);
+                if (t_ph2.getIndividuals() != null && t_ph2.getisFromTC() == false) {
+                    hsg = (HashSet<Individual>) getpermutedgenes(t_ph2.getNonTCIndividualSize(), ls_ind2.size(), ls_ind2);
                     t_ph2.setIndividuals(hsg);
+
+                    for(Pheno anc : t_ph2.getancestors()){
+                        hsg = anc.getIndividuals();
+                        hsg.addAll(t_ph2.getIndividuals());
+                        anc.setIndividuals(hsg);
+                    }
                 }
             }
 
-            /* Perform transitive closure on the phenotypes for Species I & II (Genes were permuted in the previous step) */
-            ph1 = ptc.performtransiviteclosure("http://purl.org/obo/obo/FBbt.obo", "FBbt:", oldph1, hm1, hm_indpair1);
-            ph2 = ptc.performtransiviteclosure("http://purl.org/obo/obo/MP.obo", "MP:", oldph2, hm2, hm_indpair1);
 
             for (Pheno t_ph1 : ph1) {
                 
@@ -661,7 +643,7 @@ public class Main {
                 t_ph1.setClosestDistance(1);
 
                 if (t_ph1.getIndividuals().size() > 0) {
-                    for (Pheno t_ph2 : oldph2) {
+                    for (Pheno t_ph2 : ph2) {
                         overlap = 0;
                         clpair = null;
                         t_ph2.setClosest(null);
@@ -703,7 +685,7 @@ public class Main {
                                 t_ph2.setClosestOverlap(overlap);
                                 t_ph2.setClosestOverlapPairs(clpair);
                             }
-                        } // end of (overlap > 0)
+                        } // end of (overlap > 1)
                     } // end of looping through each phenotype of species 2
                     if(t_ph1.getClosestOverlap() > 1)
                         phenolist1.add(t_ph1.getClosestDistance());
@@ -719,8 +701,12 @@ public class Main {
                 Collections.sort(phenolist2);
 
                 cutoff1[iter] = phenolist1.get((int)Math.round(phenolist1.size() * 0.05));
-                cutoff2[iter] = phenolist2.get((int)Math.round(phenolist2.size() * 0.05));
+                cutoff2[iter] = phenolist2.get((int) Math.round(phenolist2.size() * 0.05));
             } // end of looping through each phenotype of species 1
+
+            end = System.currentTimeMillis();
+            total = end - start;
+            System.out.println("Iteration "+iter+") Total Time Taken in seconds: " + total/1000);
         } // end of iterator for 1 to 1000 bootstrap samples
 
         double avgcutoff1, avgcutoff2;
