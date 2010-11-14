@@ -20,7 +20,10 @@ public class Pheno implements Comparable<Pheno>{
         private int closestoverlap;
         private HashSet<IndividualPair> closestoverlappairs;
 	//private OWLObject owlObject; // for future use
-	private Set<Individual> individuals = new HashSet<Individual>();
+	private HashSet<Individual> individuals = new HashSet<Individual>();
+        private boolean isFromTC = true;
+        private HashSet<Pheno> ancestors = null;
+        private int NonTCIndividualSize = 0;
 
 
 //        @Override
@@ -43,10 +46,16 @@ public class Pheno implements Comparable<Pheno>{
         public Pheno(String id){
             this.id = id;
         }
-        public Pheno(String id, String label, Set<Individual> individuals){
+        public Pheno(String id, String label, HashSet<Individual> individuals){
             this.id = id;
             this.label = label;
             this.individuals = individuals;
+        }
+        public Pheno(String id, String label, HashSet<Individual> individuals, boolean isFromTC){
+            this.id = id;
+            this.label = label;
+            this.individuals = individuals;
+            this.isFromTC = isFromTC;
         }
 
 	public String getId() {
@@ -90,19 +99,34 @@ public class Pheno implements Comparable<Pheno>{
         public HashSet<IndividualPair> getClosestOverlapPairs(){
             return closestoverlappairs;
         }
-    /*public OWLObject getOwlObject() {
-    return owlObject;
-    }
-    public void setOwlObject(OWLObject owlObject) {
-    this.owlObject = owlObject;
-    }*/
 
-
-	public Set<Individual> getIndividuals() {
+	public HashSet<Individual> getIndividuals() {
 		return individuals;
 	}
 
-	public void setIndividuals(Set<Individual> individuals) {
+	public void setIndividuals(HashSet<Individual> individuals) {
 		this.individuals = individuals;
 	}
+
+        public void setisFromTC(boolean isFromTC){
+            this.isFromTC = isFromTC;
+        }
+        public boolean getisFromTC(){
+            return this.isFromTC;
+        }
+
+        public HashSet<Pheno> getancestors(){
+            return this.ancestors;
+        }
+
+	public void setancestors(HashSet<Pheno> ancestors) {
+		this.ancestors = ancestors;
+	}
+
+        public void setNonTCIndividualSize(int NonTCIndividualSize){
+            this.NonTCIndividualSize = NonTCIndividualSize;
+        }
+        public int getNonTCIndividualSize(){
+            return this.NonTCIndividualSize;
+        }
 }
