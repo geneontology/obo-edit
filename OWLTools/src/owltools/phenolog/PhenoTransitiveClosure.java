@@ -54,16 +54,21 @@ public class PhenoTransitiveClosure {
     }
 
     private HashSet<Pheno> ptc(String obolink, String prefix, HashSet<Pheno> hsp, HashMap<String, Pheno> hmp, HashMap<String, IndividualPair> hmpair) {
+        HashSet<Pheno> aux = new HashSet<Pheno>();
         try {
             ParserWrapper pw = new ParserWrapper();
             OWLGraphWrapper owlg = pw.parseToOWLGraph(obolink);
 
             Set<OWLObject> ancs = null;
 
-            HashSet<Pheno> chsp = (HashSet<Pheno>) hsp.clone();
+            HashSet<Pheno> chsp = new HashSet<Pheno>();
+            HashSet<Pheno> tset = null;
+            chsp.addAll(hsp);
             HashSet<Individual> tmpi = null;
             Pheno tmp = null;
             for (Pheno p : hsp) {
+                p.setancestors(new HashSet<Pheno>());
+                tset = p.getancestors();
                 ancs = owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId()));
 
                 for (OWLObject c : ancs) {
@@ -71,41 +76,37 @@ public class PhenoTransitiveClosure {
                         if (hmp.get(owlg.getIdentifier(c)) == null) {
                             tmpi = new HashSet<Individual>();
                             tmpi.addAll(p.getIndividuals());
-                            tmp = new Pheno(owlg.getIdentifier(c), owlg.getLabel(c), tmpi);
+                            tmp = new Pheno(owlg.getIdentifier(c), owlg.getLabel(c), tmpi, true);
                             chsp.add(tmp);
                             hmp.put(tmp.getId(), tmp);
+                            tset.add(tmp);
+                            p.setancestors(tset);
                         } else {
-                            tmp = null;
                             tmp = hmp.get(owlg.getIdentifier(c));
                             tmpi = (HashSet<Individual>) tmp.getIndividuals();
                             tmpi.addAll(p.getIndividuals());
                             tmp.setIndividuals(tmpi);
+                            tset.add(tmp);
+                            p.setancestors(tset);
                         }
                     }
                 }
             }
 
-            hsp = chsp;
+            aux.addAll(chsp);
 
-            chsp = new HashSet<Pheno>();
-            for (Pheno p : hsp) {
+            chsp.clear();
+            for (Pheno p : aux) {
                 if (((p.getIndividuals().size() / hmpair.size()) <= 0.1) && (owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId())).size() > 1)) {
                     chsp.add(p);
-                } else {
-                    if (owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId())).size() == 1) {
-                        System.out.println("Removing No Ancestors: ID# " + p.getId() + " Label# " + p.getLabel());
-                    } else {
-                        System.out.println("Removing: ID# " + p.getId() + " Label# " + p.getLabel() + " Size# " + p.getIndividuals().size() + " Orthologs# " + hmpair.size());
-                    }
-                }
+                } 
             }
-
-            hsp = chsp;                        
+                        
         } catch (Exception e) {
             System.out.println("EXCEPTION IN OWL GRAPH");
         }
 
-        return hsp;
+        return aux;
     }
 
     public HashSet<Pheno> performtransiviteclosure(){
