@@ -11,7 +11,9 @@ use GO::Metadata::Panther;
 
 our $dbh;
 our $debug;
+our $sensitive;
 our $quiet;
+
 
 # If a query returns more then one row it will croak.  If the query
 # returns zero rows, it returns undef.  If the query only returns one
@@ -152,11 +154,6 @@ sub tagval{
     return shift()->_hash('tagval', @_);
 }
 
-
-# sub ids{
-#     return shift()->_hash('ids', @_);
-# }
-
 sub _trivial{
     my $test = shift;
 
@@ -289,6 +286,19 @@ SQL
 
   );
 
+
+my @get_dbxref =
+  (
+   <<SQL,
+SELECT id,xref_key,xref_dbname
+FROM dbxref
+WHERE xref_key=? AND xref_dbname=?
+AND id NOT IN (SELECT dbxref_id FROM gene_product)
+AND id NOT IN (SELECT dbxref_id FROM gene_product_dbxref)
+ORDER BY id
+SQL
+  );
+
 my @guess_dbxref =
   (
    <<SQL,
@@ -335,7 +345,11 @@ sub guess{
 		       xref_key        => $matched->[$row]->[2],
 		       xref_dbname     => $matched->[$row]->[3],
 		      );
-		    push @maybe, \%maybe;
+		    if (not first {
+			$_->{dbxref_id} == $maybe{dbxref_id};
+		    } @maybe) {
+			push @maybe, \%maybe;
+		    }
 		}
 	    }
 	}
@@ -395,6 +409,12 @@ sub guess{
 	    } @guess_dbxref;
 	}
 
+	if (!ref($get_dbxref[0])) {
+	    @get_dbxref = map {
+		$dbh->prepare($_);
+	    } @get_dbxref;
+	}
+
 	my %sort_by;
 	my @sort_by = $s->species_metadata()->prefers();
 	for (my $loop = 0; $loop < scalar @sort_by; $loop++) {
@@ -409,41 +429,23 @@ sub guess{
 
 	for my $id (@id) {
 	    my ($xref_dbname, $xref_key) = @$id;
+
+	    for my $get (@get_dbxref) {
+		$get->execute($xref_key, $xref_dbname);
+		$s->_guessing($get, $xref_dbname, $xref_key);
+		if ($s->{guessed}) {
+		    return (undef, $s->{guessed}->{dbxref_id});
+		}
+	    }
+
 	    next if ($xref_key =~ m/^\d+$/); # skip ids that are all numbers
 
 	    for my $guess (@guess_dbxref){
 		$guess->execute($xref_key);
-		my $matched = $guess->fetchall_arrayref();
-		next if ($guess->rows == 0);
-
-		my @matched;
-
-		if ($xref_dbname eq 'UniProtKB') {
-		    @matched = map {
-			($_->[2] =~ m/\bUniProt(KB)?\b/i) ? $_ : ();
-			# There is a lot of rif raf in the database
-		    } @{ $matched };
-		} else {
-		    @matched = @$matched
+		$s->_guessing($guess, $xref_dbname, $xref_key);
+		if ($s->{guessed}) {
+		    return (undef, $s->{guessed}->{dbxref_id});
 		}
-
-		$matched = scalar @matched;
-		next if (0 == $matched);
-		if ((1 < $matched) && not($quiet)) {
-		    warn <<TXT;
-Matched $matched dbxref entries for $xref_key, using $matched[0]->[2]
-TXT
-		}
-
-		$s->{guessed} =
-		  {
-		   dbxref_id   => $matched[0]->[0],
-		   xref_key    => $matched[0]->[1],
-		   xref_dbname => $matched[0]->[2],
-		  };
-
-		warn $s->pretty if ($debug);
-		return (undef, $matched[0]->[0]);
 	    }
 	}
     }
@@ -453,6 +455,46 @@ TXT
 
     warn $s->pretty if ($debug);
     return (undef, undef);
+}
+
+sub _guessing{
+    my $s      = shift;
+    my $sth    = shift;
+
+    my $dbname = shift;
+    my $key    = shift;
+
+
+    my $matched = $sth->fetchall_arrayref();
+    return if ($sth->rows == 0);
+
+    my @matched;
+    if ($dbname eq 'UniProtKB') {
+	@matched = map {
+	    ($_->[2] =~ m/\bUniProt(KB)?\b/i) ? $_ : ();
+	    # There is a lot of rif raf in the database
+	} @{ $matched };
+    } else {
+	@matched = @$matched;
+    }
+
+    $matched = scalar @matched;
+    return if (0 == $matched);
+    if ((1 < $matched) && not($quiet)) {
+	warn <<TXT;
+Matched $matched dbxref entries for $key, using $matched[0]->[2]
+TXT
+    }
+
+    $s->{guessed} =
+      {
+       dbxref_id   => $matched[0]->[0],
+       xref_key    => $matched[0]->[1],
+       xref_dbname => $matched[0]->[2],
+      };
+
+    warn $s->pretty if ($debug);
+    #return (undef, $matched[0]->[0]);
 }
 
 sub panther_id{

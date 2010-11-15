@@ -35,7 +35,6 @@ my $dry_run = 1000;
 my $match_only;
 my $fetch_dir;
 my $clean_p = 0;
-my $sensitive_p;
 
 #my $download_dir = "$ENV{HOME}/tmp"; # change to tempdir
 my %ftp_opt = ( Passive => 1 ); # In doubt use passive, it's what
@@ -49,11 +48,11 @@ GetOptions
   (
    'panther-species!'    => \$panther,
    'quiet!'              => \$GO::MatchID::quiet,
+   'sensitive!'          => \$GO::MatchID::sensitive,
    'debug!'              => \$GO::MatchID::debug,
    'match-only!'         => \$match_only,
    'dry-run!'            => \$dry_run,
    'fetch:s'             => \$fetch_dir,
-   'sensitive!'          => \$sensitive_p,
    'unannotated-report!' => \$unannotated_report_p,
   ) or die;
 
@@ -241,7 +240,7 @@ while (@file) {
 	       $guesser->{guessed}->{xref_dbname},
 	       $guesser->{guessed}->{xref_key});
 	    if (!$worked) {
-		if ($sensitive_p) {
+		if ($GO::MatchID::sensitive) {
 		    local $Data::Dumper::Varname = 'IDX';
 		    die Dumper $guesser;
 		} else {

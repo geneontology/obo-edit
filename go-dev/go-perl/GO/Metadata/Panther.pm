@@ -349,6 +349,16 @@ sub prefers{
     return qw/UniProtKB/;
 }
 
+# this is not fully in use.
+sub reject{
+    my $s = shift;
+
+    if ($s->{reject}) {
+	return @{ $s->{reject} };
+    }
+    return qw/GeneID/;
+}
+
 # sub prefered{
 #     my $s = shift;
 #     my $v = shift
