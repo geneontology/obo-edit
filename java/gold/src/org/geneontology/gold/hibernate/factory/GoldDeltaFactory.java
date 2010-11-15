@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.hibernate.model.AllSomeRelationship;
 import org.geneontology.gold.hibernate.model.Cls;
@@ -28,30 +29,33 @@ import org.hibernate.Session;
  */
 public class GoldDeltaFactory {
 
-	private DatabaseDialect db;
+	private static Logger LOG = Logger.getLogger(GoldDeltaFactory.class);
 	
-	//this session is created with DeltaQueryInterceptor object.
-	//private Session session;
+	private DatabaseDialect db;
 	
 	private GoldObjectFactory goldObjFactory;
 	
 	
 	public Session getSession(){
-	//	session.beginTransaction();
-		//return session;
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
 		return goldObjFactory.getSession();
 	}
 	
 	public GoldDeltaFactory()throws Exception{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
 		db = GeneOntologyManager.getInstance().buildDatabaseDialect();
-		//this.session = new GoldObjectFactory().getDeltaInterceptorSession();
 		goldObjFactory = GoldObjectFactory.buildDeltaObjectFactory();
 	}
 	
 	public List<Cls> buildClsDelta() throws SQLException{
-		Vector<Cls> list = new Vector<Cls>();
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
 
-		Session session = goldObjFactory.getSession();
+		Vector<Cls> list = new Vector<Cls>();
 		
 		ResultSet rs = db.getDelaData("cls");
 		
@@ -63,12 +67,13 @@ public class GoldDeltaFactory {
 			list.add(goldObjFactory.getClassById(id) );
 		}
 		
-		session.getTransaction().commit();
-		session.close();
 		return list;
 	}
 
 	public List<Relation> buildRelationDelta() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
 		Vector<Relation> list = new Vector<Relation>();
 
 		Session session = goldObjFactory.getSession();
@@ -85,19 +90,16 @@ public class GoldDeltaFactory {
 			list.add(r);
 		}
 		
-		
-	//	session.getTransaction().commit();
-		//session.close();
-	//	session.flush();
 		return list;
 	}
 	
 
 	public List<SubclassOf> buildSubclassOfDelta() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
 		Vector<SubclassOf> list = new Vector<SubclassOf>();
 
-		Session session = goldObjFactory.getSession();
-		
 		ResultSet rs = db.getDelaData("subclass_of");
 		
 		if(rs == null)
@@ -110,17 +112,15 @@ public class GoldDeltaFactory {
 		}
 		
 		
-	//	session.getTransaction().commit();
-		//session.close();
-	//	session.flush();
 		return list;
 	}
 	
 	public List<ObjAlternateLabel> buildObjAlternateLabels() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
 		Vector<ObjAlternateLabel> list = new Vector<ObjAlternateLabel>();
 
-		Session session = goldObjFactory.getSession();
-		
 		ResultSet rs = db.getDelaData("obj_alternate_label");
 		
 		if(rs == null)
@@ -132,13 +132,6 @@ public class GoldDeltaFactory {
 			list.add(al);
 		}
 		
-		
-	//	session.getTransaction().commit();
-	//	session.close();
-	//	session.flush();
-		//session.clear();
-		//session.close();
-		//session.flush();
 		return list;
 
 		
@@ -146,10 +139,12 @@ public class GoldDeltaFactory {
 	
 
 	public List<AllSomeRelationship> buildAllSomeRelationships() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		
 		Vector<AllSomeRelationship> list = new Vector<AllSomeRelationship>();
 
-		Session session = goldObjFactory.getSession();
-		
 		ResultSet rs = db.getDelaData("all_some_relationship");
 		
 		if(rs == null)
@@ -162,13 +157,7 @@ public class GoldDeltaFactory {
 		}
 		
 		
-//		session.getTransaction().commit();
-		//session.flush();
 		return list;
-
-		
 	}
-	
-	
 	
 }

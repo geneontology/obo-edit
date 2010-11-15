@@ -7,6 +7,8 @@ import junit.framework.TestCase;
 public class OntologyBulkLoaderTest extends TestCase {
 
 	public static void testLoad() throws Exception{
+
+		GeneOntologyManager.getInstance().setProperty("geneontology.gold.db", "goldtest");
 		
 		DbOperations gold = new DbOperations();
 		
@@ -15,9 +17,10 @@ public class OntologyBulkLoaderTest extends TestCase {
 
 	
 	public static void testIncrementalUpdate() throws Exception{
+		GeneOntologyManager.getInstance().setProperty("geneontology.gold.db", "goldtest");
+
 		DbOperations gold = new DbOperations();
 		
-		GeneOntologyManager.getInstance().setProperty("geneontology.gold.db", "goldtest");
 		gold.updateGold("test_resources/caro_update.obo");
 	}
 	

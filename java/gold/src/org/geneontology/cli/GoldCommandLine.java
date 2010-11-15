@@ -3,6 +3,9 @@ package org.geneontology.cli;
 import java.util.HashSet;
 import java.util.Hashtable;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.io.DbOperations;
 
@@ -29,6 +32,7 @@ public class GoldCommandLine {
 		options.put("-obo", new String[]{"=filepatht\t\tPath of the OBO file to updated", "geneontology.gold.obofile"});
 		options.put("-prefix", new String[]{"=text\t\tPrefix of the table names to be used in delta updte", "geneontology.gold.deltatableprefix"});
 		options.put("-force", new String[]{"\t\t\tDrop exsiting schema and create new one", ""});
+		options.put("-debug", new String[]{"\t\t\tEnabling log4j output", ""});
 		
 		
 		return options;
@@ -79,12 +83,15 @@ public class GoldCommandLine {
 
 				if("-force".equals(tokens[0])){
 					force =true;
+				}else if("-debug".equals(tokens[0])){
+					Logger.getRootLogger().setLevel(Level.DEBUG);
 				}else{
 					if ("-prefix".equals(tokens[0]) )
 						tableprefix = tokens[1];
 					manager.setProperty(v[1], tokens[1]);
 				}
 			}
+			
 			
 			//perform the operations
 			DbOperations db = new DbOperations();
@@ -97,9 +104,9 @@ public class GoldCommandLine {
 				db.buildSchema(force, tableprefix);
 			}else if("buildtsv".equals(operation)){
 				db.dumpFiles(tableprefix, manager.getDefaultOboFile());
-			}/*else if ("loadtsv".equals(operation)){
-				db.loadTsvFiles(tsvFilesDir, list)
-			}*/
+			}else if ("loadtsv".equals(operation)){
+				db.loadTsvFiles(manager.getTsvFilesDir());
+			}
 		
 		}else
 			exit("Not valid arguments are passed. Please the usage");

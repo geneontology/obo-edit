@@ -1,7 +1,11 @@
 package org.geneontology.gold.io;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.hibernate.factory.GoldDeltaFactory;
 import org.geneontology.gold.hibernate.factory.GoldObjectFactory;
@@ -24,7 +28,7 @@ import owltools.graph.OWLGraphWrapper;
  */
 public class DbOperations {
 
-
+	private static Logger LOG = Logger.getLogger(DbOperations.class);
 	/**
 	 * Loads the contents of the obo file whose path is supplied 
 	 * the geneontology.gold.obofil property.
@@ -32,6 +36,9 @@ public class DbOperations {
 	 * @throws Exception
 	 */
 	public void bulkLoad(boolean force) throws Exception{
+		if(LOG.isDebugEnabled()){
+			LOG.debug("-");
+		}
 		bulkLoad(GeneOntologyManager.getInstance().getDefaultOboFile(), force);
 	}
 	
@@ -43,6 +50,10 @@ public class DbOperations {
 	 * @throws Exception
 	 */
 	public void bulkLoad(String oboFile, boolean force) throws Exception{
+		if(LOG.isDebugEnabled()){
+			LOG.debug("-");
+		}
+
 		List<String> list = dumpFiles("", oboFile);
 		buildSchema(force, "");
 		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
@@ -57,8 +68,11 @@ public class DbOperations {
 	 * @throws Exception
 	 */
 	public List<String> dumpFiles(String tablePrefix, String oboFile) throws Exception{
+		if(LOG.isDebugEnabled()){
+			LOG.debug("-");
+		}
+
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
-	//	String oboFile = manager.getDefaultOboFile();
 		OWLGraphWrapper wrapper = new OWLGraphWrapper( 	
 			new Obo2Owl().convert(oboFile));
 		
@@ -75,6 +89,10 @@ public class DbOperations {
 	 * @throws Exception
 	 */
 	public void buildSchema(boolean force, String tablePrefix) throws Exception{
+		if(LOG.isDebugEnabled()){
+			LOG.debug("-");
+		}
+
 		SchemaManager sm = new SchemaManager();
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
 		sm.loadSchemaSQL(manager.getGolddbHostName(),
@@ -92,6 +110,10 @@ public class DbOperations {
 	 * @throws Exception
 	 */
 	public void loadTsvFiles(String tsvFilesDir, List<String> list) throws Exception{
+		if(LOG.isDebugEnabled()){
+			LOG.debug(list + " files being loaded");
+		}
+
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
 		TsvFileLoader tsvLoader = new TsvFileLoader(manager.getGolddbUserName(),
 				manager.getGolddbUserPassword(), manager.getGolddbHostName(), 
@@ -102,11 +124,47 @@ public class DbOperations {
 	}
 
 	/**
+	 * Loads all files with extension .txt specified at the path tsvFilesDir
+	 * @param tsvFilesDir
+	 * @throws Exception
+	 */
+	public void loadTsvFiles(String tsvFilesDir) throws Exception{
+		if(LOG.isDebugEnabled()){
+			LOG.debug("-");
+		}
+
+		File dir = new File(tsvFilesDir);
+		
+		File[] files = dir.listFiles(new FileFilter() {
+			
+			@Override
+			public boolean accept(File file) {
+				return file.getName().endsWith(".txt");
+			}
+		});
+		
+		List<String> list = new ArrayList<String>();
+		
+		for(File f: files){
+			list.add(f.getName().subSequence(0, f.getName().length()-4).toString());
+		}
+		
+		loadTsvFiles(tsvFilesDir, list);
+		
+	}
+
+
+	
+	/**
 	 * Incrementa update of the GOLD database from the contents of the obo file
 	 * located the default location.
 	 * @throws Exception
 	 */
 	public void updateGold() throws Exception{
+		if(LOG.isDebugEnabled()){
+			LOG.debug("-");
+		}
+
 		updateGold(GeneOntologyManager.getInstance().getDefaultOboFile());
 	}	
 	
@@ -117,6 +175,10 @@ public class DbOperations {
 	 * @throws Exception
 	 */
 	public void updateGold(String oboFile) throws Exception{
+		if(LOG.isDebugEnabled()){
+			LOG.debug("-");
+		}
+
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
 		
 		List<String> list = dumpFiles(manager.getGoldDetlaTablePrefix(), oboFile);
@@ -126,6 +188,10 @@ public class DbOperations {
 		
 		GoldDeltaFactory gdf = new GoldDeltaFactory();
 
+		if(LOG.isDebugEnabled()){
+			LOG.debug("Extracting delt hibernate objects from prefixed temporary tables");
+		}
+		
 		List<SubclassOf> subclassList = gdf.buildSubclassOfDelta();
 		List<Relation> relationList = gdf.buildRelationDelta();
 		List<AllSomeRelationship> asmList = gdf.buildAllSomeRelationships();
@@ -136,6 +202,11 @@ public class DbOperations {
 		//close the session associated with the tables prefixed with 
 		// the value of the geneontology.gold.deltatableprefix property
 		gdf.getSession().close();
+		
+		if(LOG.isDebugEnabled()){
+			LOG.debug("Merging the the delta objects in the GOLD database");
+		}
+		
 		
 		GoldObjectFactory gof = GoldObjectFactory.buildDefaultFactory();
 		Session session = gof.getSession();
