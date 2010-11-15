@@ -2,6 +2,8 @@ package org.geneontology.gold.hibernate.factory;
 
 import java.io.File;
 import java.util.List;
+
+import org.apache.log4j.Logger;
 import org.geneontology.gold.hibernate.model.AllSomeRelationship;
 import org.geneontology.gold.hibernate.model.Cls;
 import org.geneontology.gold.hibernate.model.ObjAlternateLabel;
@@ -14,6 +16,8 @@ import org.hibernate.cfg.Configuration;
 
 public class GoldObjectFactory {
 
+	private static Logger LOG = Logger.getLogger(GoldObjectFactory.class);
+	
 	/** The local {@link SessionFactory} object used to retrieve data. */
 	private static SessionFactory sf;
 	
@@ -34,6 +38,9 @@ public class GoldObjectFactory {
 	
 	
 	public static GoldObjectFactory buildDeltaObjectFactory(){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
 		GoldObjectFactory factory = new GoldObjectFactory();
 		
 		factory.session = sf.openSession(new DeltaQueryInterceptor());
@@ -44,6 +51,8 @@ public class GoldObjectFactory {
 
 	
 	private static SessionFactory buildFactory(){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
 		Configuration c = new Configuration().configure(new File("conf/hibernate.cfg.xml"));
 	//	c.setInterceptor(new DeltaQueryInterceptor());
 		
@@ -57,10 +66,9 @@ public class GoldObjectFactory {
 	 * @return {@link SessionFactory} object
 	 */
 	public synchronized Session getSession() {
-		//Session session = sf.getCurrentSession();
-		//if(session.isOpen())
-		//	session.beginTransaction();
-		
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
 		if(!session.isOpen()){
 			if(isDeltaFactory)
 				session = sf.openSession(new DeltaQueryInterceptor());
@@ -74,27 +82,17 @@ public class GoldObjectFactory {
 		return session;
 	}
 	
-	/**
-	 * This method is only called when a delta update of GOLD is processed.
-	 * During delta update temporary tables are created. With the help of this
-	 * session the Objects can be built from temporary tables
-	 * @return
-	 */
-	/*public synchronized Session getDeltaInterceptorSession() {
-		Session session = sf.openSession(new DeltaQueryInterceptor());
-	//	sf.openSession();//This again sets a new default session for the rest of the application which
-							//current session from the getSession metho.
-		session.beginTransaction();
-		
-		return session;
-	}*/
-	
-	
 	public synchronized Cls getClassById(String id){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
 		return (Cls)session.createQuery("from Cls where id = ?").setString(0, id).uniqueResult();
 	}
 	
 	public synchronized List<SubclassOf> getSubClassOfAssertions(String cls){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
 		Session session = getSession();
 		List<SubclassOf> results =session.createQuery("from SubclassOf where cls = ?").setString(0, cls).list();
 		
@@ -102,6 +100,9 @@ public class GoldObjectFactory {
 	}
 
 	public synchronized SubclassOf getSubClassOfAssertion(String ontology, String superCls, String cls){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
 		Session session = getSession();
 		SubclassOf results = (SubclassOf)session.createQuery("from SubclassOf where ontology = ? and super_cls=? and cls = ?")
 		.setString(0, ontology)
@@ -113,6 +114,9 @@ public class GoldObjectFactory {
 
 	
 	public synchronized List<ObjAlternateLabel> getObjAlternateLabel(String obj){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
 		Session session = getSession();
 		List<ObjAlternateLabel> results =session.createQuery("from ObjAlternateLabel where obj = ?").setString(0, obj).list();
 		
@@ -120,6 +124,9 @@ public class GoldObjectFactory {
 	}
 	
 	public synchronized ObjAlternateLabel getObjAlternateLabelByPk(String obj, String label){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
 		Session session = getSession();
 		ObjAlternateLabel result =(ObjAlternateLabel)session.createQuery("from ObjAlternateLabel where obj = ? and label = ?")
 		.setString(0, obj)
@@ -131,6 +138,9 @@ public class GoldObjectFactory {
 
 
 	public synchronized AllSomeRelationship getAllSomeRelationshipByPk(String ontology, String targetCls, String cls, String relation){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
 		Session session = getSession();
 		AllSomeRelationship result  = (AllSomeRelationship)session.createQuery("from AllSomeRelationship where ontology = ? and target_cls = ? and cls = ? and relation = ?")
 		.setString(0, ontology)
@@ -144,6 +154,9 @@ public class GoldObjectFactory {
 	
 	
 	public synchronized List<AllSomeRelationship> getAllSomeRelationship(String cls){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
 		Session session = getSession();
 		List<AllSomeRelationship> results =session.createQuery("from AllSomeRelationship where cls = ?").setString(0, cls).list();
 		
@@ -151,9 +164,10 @@ public class GoldObjectFactory {
 	}
 	
 
-	
-	
 	public synchronized Relation getRelation(String id){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
 		Session session = getSession();
 		return (Relation)session.createQuery("from Relation where id = ?").setString(0, id).uniqueResult();
 	}
