@@ -1,0 +1,53 @@
+format-version: 1.4
+date: 15:11:2010 12:33
+default-namespace: test14
+pairwise-disjoint: true
+treat-xrefs-as-equivalent: GO
+ontology: test14
+
+[Term]
+id: test14:t1
+name: t1 name
+
+[Term]
+id: test14:t2
+name: t2 name
+is_a: test14:t1
+
+
+[Term]
+id: test14:t3
+name: t3 name
+is_a: test14:t1
+relationship: r1 test14:t2
+
+[Term]
+id: test14:t4
+name: t4 name
+intersection_of: test14:t3
+intersection_of: r2 test14:t2
+
+[Term]
+id: test14:t5
+name: t5 name
+relationship: r3 test14:t1
+
+[Term]
+id: test14:t6
+name: t6 name
+union_of: test14:t3
+
+
+[Typedef]
+id: r1
+name: r1
+
+[Typedef]
+id: r2
+name: r2
+
+[Typedef]
+id: r3
+name: r3
+is_transitive: true
+
