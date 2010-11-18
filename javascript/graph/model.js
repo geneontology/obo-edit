@@ -116,14 +116,14 @@ bbop.model.edge.prototype.object_id = function(){
     return this._object_id; };
 bbop.model.edge.prototype.predicate_id = function(){
     return this._predicate_id; };
-bbop.model.node.prototype.type = function(value){
+bbop.model.edge.prototype.type = function(value){
     if(value) this._type = value; return this._type; };
-bbop.model.node.prototype.metadata = function(value){
+bbop.model.edge.prototype.metadata = function(value){
     if(value) this._metadata = value; return this._metadata; };
 
 // Clone, using bbop.core.clone for metadata object.
 bbop.model.edge.prototype.clone = function(){
-    var tmp_clone = new bbop.model.node(this.subject_id(),
+    var tmp_clone = new bbop.model.edge(this.subject_id(),
 					this.object_id(),
 					this.predicate_id());
     tmp_clone.metadata(bbop.core.clone(this.metadata()));
@@ -223,7 +223,8 @@ bbop.model.graph.prototype.add_edge = function(edge){
 	this._sop_table[ sub_id ] = {}; }
     if( ! this._sop_table[ sub_id ][ obj_id ] ){
 	this._sop_table[ sub_id ][obj_id] = {}; }
-    this._sop_table[ sub_id ][ obj_id ][ pred_id ] = true;
+    //this._sop_table[ sub_id ][ obj_id ][ pred_id ] = true;
+    this._sop_table[ sub_id ][ obj_id ][ pred_id ] = edge;
 
     // If this is a new predicate add it to all of the necessary data
     // structures.
@@ -317,13 +318,15 @@ bbop.model.graph.prototype.get_edge = function(sub_id, obj_id, pred){
 
     if( ! pred ){ pred = bbop.model.default_predicate; }
 
-    var retval = null;
+    var ret_edge = null;
     if( this._sop_table[sub_id] &&
 	this._sop_table[sub_id][obj_id] &&
 	this._sop_table[sub_id][obj_id][pred] ){
-	    retval = new bbop.model.edge(sub_id, obj_id, pred);
+	    // retval = new bbop.model.edge(sub_id, obj_id, pred);
+	    var tmp_edge = this._sop_table[sub_id][obj_id][pred];
+	    ret_edge = tmp_edge.clone();
 	}
-    return retval; 
+    return ret_edge; 
 };
 
 
