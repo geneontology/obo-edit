@@ -90,7 +90,7 @@ foreach my $key (keys %$data){
       my $insert =
 	{
 	 phylotree_id => $ptree_id,
-	 property_key => $xref,
+	 property_key => 'newick',
 	 property_val => $blob,
 	};
 
