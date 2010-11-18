@@ -24,6 +24,76 @@ go-load-qfo-fresh.pl - Load QFO files into GO database
 Don't use this yet!  This will replace F<go-load-qfo-seq.pl>, right
 now it it a work in progress.
 
+=head1 SYNOPSIS
+
+seq2pthr2phylotree.pl -dbname I<db> [-dbsocket I<sock>]
+[ I<path_specification> ]
+[--panther]
+[--[no-]dry-run]
+[--sensitive]
+[--match-only]
+[--unannotated-report]
+[--debug]
+[--quiet]
+
+Plus other L<GO::AppHandle> options.
+
+I<path_specification> = --fetch[=I<cache>] | I<fa1> [ I<fa2> [ I<..> ] ]
+
+=head1 DESCRIPTION
+
+=over
+
+=item C<--fetch[=I<qfo_cache>]>
+
+Fetch QFO files from
+L<ftp://ftp.ebi.ac.uk/pub/databases/reference_proteomes/> and loads
+them.  When I<qfo_cache> is not specified it will read the
+I<QFO_CACHE> environmental variable.
+
+If I<qfo_cache> has a false value it will load the files to a
+temporary location and delete them when done.  Otherwise the files
+will cached at I<qfo_cache> and save for next run.
+
+If the <--fetch> option is not specified at all it will try to load
+Fasta files specified on the command line. It expects the start of the
+base name of the file to be the NCBI taxa id.
+
+No matter where it gets the file from it opens them with the
+L<IO::Uncompress::AnyUncompress> module.
+
+=item C<--panther>
+
+By default it will try to load all Fasta files found.  With this
+option it will only load Fasta files that are in the Panther clusters.q
+
+=item C<--[no-]dry-run>
+
+By default it only does a dry run.  Use C<--no-dry-run> to actualy do the work.
+
+=item C<--sensitive]
+
+This will cause same warning statements to die.
+
+=item C<--match-only>
+
+Only matches ids, doesn't load them in to the database.
+
+=item --unannotated-report
+
+Print a report of C<gene_product>'s C<dbxref.xref_dbname> count when
+fisinhed.
+
+=item --quiet
+
+Set L<GO::MatchID::quiet> to true.
+
+=item --debug
+
+Set L<GO::MatchID::debug> to true.
+
+=back
+
 =cut
 
 # Only load QFO files that are used in panther clusters.  I wanted an
@@ -46,14 +116,16 @@ my $apph = GO::AppHandle->connect(\@ARGV);
 
 GetOptions
   (
+   'fetch:s'             => \$fetch_dir,
+
    'panther-species!'    => \$panther,
-   'quiet!'              => \$GO::MatchID::quiet,
    'sensitive!'          => \$GO::MatchID::sensitive,
-   'debug!'              => \$GO::MatchID::debug,
    'match-only!'         => \$match_only,
    'dry-run!'            => \$dry_run,
-   'fetch:s'             => \$fetch_dir,
    'unannotated-report!' => \$unannotated_report_p,
+
+   'quiet!'              => \$GO::MatchID::quiet,
+   'debug!'              => \$GO::MatchID::debug,
   ) or die;
 
 my $fasta_match;
@@ -317,3 +389,9 @@ sub create_id{
     }
     return $out->[0];
 }
+
+=head1 AUTHOR
+
+Sven Heinice E<lt>sven@genomics.princeton.eduE<gt>.
+
+=cut
