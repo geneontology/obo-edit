@@ -68,6 +68,16 @@ load('tree.js');
      mr_t.is_same_atom(2, t.get_child_nodes('b').length, 'b has 2');
      mr_t.is_same_atom(0, t.get_child_nodes('e').length, 'e has 0');
 
+     // Layout equivalence testing.
+     var lo = t.layout();
+     for( var p in lo.parent_distances ){
+	 for( var c in lo.parent_distances[p] ){
+	     mr_t.is_same_atom(lo.parent_distances[p][c],
+			       lo.child_distances[c][p],
+			       c + ' == ' + p);
+	 }
+     }
+
      // Ancestor subgraph props.
      var d_sub = t.get_ancestor_subgraph('d');
      mr_t.is_same_atom('d', d_sub.get_leaf_nodes()[0].id(), '1 tree leaf');

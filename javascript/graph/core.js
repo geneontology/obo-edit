@@ -21,7 +21,8 @@ if ( typeof bbop.core == "undefined" ){ bbop.core = {}; }
 bbop.core.global_object = this;
 
 
-// Clone an object (or return the valued atom).
+// Clone an object (or return the valued atom). Only for shallow
+// (basic object) copying.
 // Two returns--missing them is very bad. 
 bbop.core.clone = function(obj){
 

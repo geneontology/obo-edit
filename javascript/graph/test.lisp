@@ -43,13 +43,15 @@
   (add-graph-static "core.js")
   (add-graph-static "model.js")
   (add-graph-static "tree.js")
+  (add-graph-static "render/phylo.js")
   (add-external-static "raphael-min.js")
+  (add-external-static "graffle.js")
   (hunchentoot:define-easy-handler (main-test-page :uri "/test.html") ()
     (setf (hunchentoot:content-type*) "text/html")
     (test-html))
-  ;; (hunchentoot:define-easy-handler (what-is-this-2 :uri "/godot.js") ()
-  ;;   (setf (hunchentoot:content-type*) "application/javascript")
-  ;;   (godot-js))
+  (hunchentoot:define-easy-handler (main-graffle-page :uri "/graph.html") ()
+    (setf (hunchentoot:content-type*) "text/html")
+    (graffle-html))
   (setf *server* (make-instance 'hunchentoot:acceptor :port 4242))
   (hunchentoot:start *server*))
 
@@ -75,7 +77,40 @@
 	    (:script :type "text/javascript" :src (ccat +base+ "core.js"))
 	    (:script :type "text/javascript" :src (ccat +base+ "model.js"))
 	    (:script :type "text/javascript" :src (ccat +base+ "tree.js"))
-	    (:script :type "text/javascript" :src (ccat +base+ "raphael-min.js")))
+	    (:script :type "text/javascript" :src (ccat +base+ "raphael-min.js"))
+	    (:script :type "text/javascript" :src (ccat +base+ "render/phylo.js")))
 	   (:body
 	    (:div :id "test1")))))
 
+;; Take a look at the online demo in a closed environment.
+(defun graffle-html ()
+  "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">
+<html lang=\"en\">
+    <head>
+        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">
+        <title>Test</title>
+        <script src=\"http://localhost:4242/core.js\" type=\"text/javascript\" charset=\"utf-8\"></script>
+        <script src=\"http://localhost:4242/model.js\" type=\"text/javascript\" charset=\"utf-8\"></script>
+        <script src=\"http://localhost:4242/tree.js\" type=\"text/javascript\" charset=\"utf-8\"></script>
+        <script src=\"http://localhost:4242/raphael-min.js\" type=\"text/javascript\" charset=\"utf-8\"></script>
+        <script src=\"http://localhost:4242/render/phylo.js\" type=\"text/javascript\" charset=\"utf-8\"></script>
+
+        <style type=\"text/css\" media=\"screen\">
+            \#holder \{
+                -moz-border-radius: 10px;
+                -webkit-border-radius: 10px;
+                border: solid 1px \#333;
+    height: 480px;
+    left: 50%;
+    margin: -240px 0 0 -320px;
+    position: absolute;
+    top: 50%;
+    width: 640px;
+
+            \}
+        </style>
+    </head>
+    <body>
+        <div id=\"holder\"></div>
+    </body>
+</html>")
