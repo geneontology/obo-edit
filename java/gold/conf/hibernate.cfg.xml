@@ -30,6 +30,12 @@
         <mapping resource="org/geneontology/gold/hibernate/model/ObjAlternateLabel.hbm.xml"/>
         <mapping resource="org/geneontology/gold/hibernate/model/Relation.hbm.xml"/>
         <mapping resource="org/geneontology/gold/hibernate/model/AllSomeRelationship.hbm.xml"/>
+        <mapping resource="org/geneontology/gold/hibernate/model/ObjXref.hbm.xml"/>
+        <mapping resource="org/geneontology/gold/hibernate/model/ObjDefinitionXref.hbm.xml"/>
+        <mapping resource="org/geneontology/gold/hibernate/model/EquivalentTo.hbm.xml"/>
+        <mapping resource="org/geneontology/gold/hibernate/model/DisjointWith.hbm.xml"/>
+        <mapping resource="org/geneontology/gold/hibernate/model/ClsUnionOf.hbm.xml"/>
+        <mapping resource="org/geneontology/gold/hibernate/model/ClsIntersectionOf.hbm.xml"/>
     
     </session-factory>
 </hibernate-configuration>

@@ -5,7 +5,7 @@
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.ObjDefinitionXref" table="obj_definition_xref">
         <comment>Provenance for a class or relation textual definition MAPPINGS: OBO: term.def.xrefs OWL: see obo2owl spec LEAD: term_dbxref[is_for_definition=1]</comment>
-        <composite-id name="id" class="org.geneontology.gold.hibernate.model.ObjDefinitionXrefId">
+        <composite-id>
             <key-property name="obj" type="string">
                 <column name="obj" />
             </key-property>
