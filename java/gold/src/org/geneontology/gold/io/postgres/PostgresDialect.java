@@ -14,7 +14,7 @@ public class PostgresDialect implements DatabaseDialect {
 	
 	private Connection connection;
 	
-	private static HashSet<String> tables = buildTables();
+	/*private static HashSet<String> tables = buildTables();
 	
 	private static HashSet<String> buildTables(){
 		HashSet<String> tables = new HashSet<String>();
@@ -27,7 +27,7 @@ public class PostgresDialect implements DatabaseDialect {
 		
 		
 		return tables;
-	}
+	}*/
 	
 	@Override
 	public Connection getConnect() {
@@ -48,11 +48,11 @@ public class PostgresDialect implements DatabaseDialect {
 	
 	@Override
 	public String getDeltaQuery(String tableName) {
-		if(tables.contains(tableName)){
+		//if(tables.contains(tableName)){
 			return "SELECT * from " + GeneOntologyManager.getInstance().getGoldDetlaTablePrefix() + tableName +" EXCEPT SELECT * from "+tableName;
-		}
+	//	}
 		
-		return null;
+		//return null;
 	}
 
 	@Override

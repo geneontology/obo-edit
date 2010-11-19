@@ -9,7 +9,7 @@
         cls_union_of(prokaryote,archaea) ==&gt; [owl] EquivalentTo (prokaryote UnionOf(eubacteria archaea)) // Limitation: only a single such equivalence relation is allowed per
         class // Note that there should never be a cls that only has a single cls_union_of. MAPPINGS: OBO: union_of OWL: EquivalentTo(cls UnionOf( {...} ) -- see obo2owl doc LEAD:
         n/a</comment>
-        <composite-id name="id">
+        <composite-id>
 	       <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
 	       <key-many-to-one name="targetCls" class="org.geneontology.gold.hibernate.model.Cls" column="target_cls" />
 	       <key-many-to-one name="cls" class="org.geneontology.gold.hibernate.model.Cls" column="cls" />

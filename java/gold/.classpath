@@ -12,7 +12,6 @@
 	<classpathentry kind="lib" path="lib/oboformat.jar"/>
 	<classpathentry kind="lib" path="lib/org.semanticweb.HermiT.jar"/>
 	<classpathentry kind="lib" path="lib/owlapi-bin.jar"/>
-	<classpathentry kind="lib" path="lib/owltools.jar"/>
 	<classpathentry kind="lib" path="lib/pellet-cli.jar"/>
 	<classpathentry kind="lib" path="lib/pellet-core.jar"/>
 	<classpathentry kind="lib" path="lib/pellet-datatypes.jar"/>
@@ -45,5 +44,6 @@
 	<classpathentry kind="lib" path="lib/commons-configuration-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.5.jar"/>
 	<classpathentry kind="lib" path="lib/postgresql-9.0-801.jdbc4.jar"/>
+	<classpathentry kind="lib" path="lib/owltools.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -11,7 +11,13 @@ import org.geneontology.gold.hibernate.factory.GoldDeltaFactory;
 import org.geneontology.gold.hibernate.factory.GoldObjectFactory;
 import org.geneontology.gold.hibernate.model.AllSomeRelationship;
 import org.geneontology.gold.hibernate.model.Cls;
+import org.geneontology.gold.hibernate.model.ClsIntersectionOf;
+import org.geneontology.gold.hibernate.model.ClsUnionOf;
+import org.geneontology.gold.hibernate.model.DisjointWith;
+import org.geneontology.gold.hibernate.model.EquivalentTo;
 import org.geneontology.gold.hibernate.model.ObjAlternateLabel;
+import org.geneontology.gold.hibernate.model.ObjDefinitionXref;
+import org.geneontology.gold.hibernate.model.ObjXref;
 import org.geneontology.gold.hibernate.model.Relation;
 import org.geneontology.gold.hibernate.model.SubclassOf;
 import org.geneontology.gold.io.postgres.SchemaManager;
@@ -51,7 +57,7 @@ public class DbOperations {
 	 */
 	public void bulkLoad(String oboFile, boolean force) throws Exception{
 		if(LOG.isDebugEnabled()){
-			LOG.debug("-");
+			LOG.debug("Bulk Load for: " + oboFile);
 		}
 
 		List<String> list = dumpFiles("", oboFile);
@@ -197,6 +203,12 @@ public class DbOperations {
 		List<AllSomeRelationship> asmList = gdf.buildAllSomeRelationships();
 		List<Cls> clsList = gdf.buildClsDelta();
 		List<ObjAlternateLabel> oalList = gdf.buildObjAlternateLabels();
+		List<ObjXref> xrefList = gdf.buildObjXrefs();
+		List<ObjDefinitionXref> defXrefList = gdf.buildObjDefinitionXref();
+		List<EquivalentTo> eqList = gdf.buildEquivalentTo();
+		List<DisjointWith> djList = gdf.buildDisjointWith();
+		List<ClsUnionOf> unList = gdf.buildClsUnionOf();
+		List<ClsIntersectionOf> intList = gdf.buildClsIntersectionOf();
 		
 		
 		//close the session associated with the tables prefixed with 
@@ -212,7 +224,33 @@ public class DbOperations {
 		Session session = gof.getSession();
 		session.clear();
 
-		for(Cls cls: clsList){
+		saveList(session, clsList);
+		
+		saveList(session, relationList);
+		
+		saveList(session, asmList);
+		
+		saveList(session, clsList);
+
+		saveList(session, subclassList);
+		
+		saveList(session, oalList);
+		
+		saveList(session, xrefList);
+		
+		saveList(session, defXrefList);
+		
+		saveList(session, eqList);
+		
+//		saveList(session, djList);
+		
+		saveList(session, unList);
+		
+		saveList(session, intList);
+		
+		
+		
+		/*for(Cls cls: clsList){
 			session.saveOrUpdate(cls);
 		}
 
@@ -228,14 +266,31 @@ public class DbOperations {
 			session.saveOrUpdate(asm);
 		}
 
-		
-		
 		for(ObjAlternateLabel oa: oalList){
 			session.saveOrUpdate(oa);
 		}
 
+
+		for(ObjXref xref: xrefList){
+			session.saveOrUpdate(xref);
+		}
+		
+		for(ObjDefinitionXref defXref: defXrefList){
+			session.saveOrUpdate(defXref);
+		}*/
+		
+		
+		
+		
 		session.getTransaction().commit();
 		
+	}
+	
+	
+	private void saveList(Session session, List list){
+		for(Object obj: list){
+			session.saveOrUpdate(obj);
+		}
 	}
 	
 }

@@ -6,7 +6,13 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.geneontology.gold.hibernate.model.AllSomeRelationship;
 import org.geneontology.gold.hibernate.model.Cls;
+import org.geneontology.gold.hibernate.model.ClsIntersectionOf;
+import org.geneontology.gold.hibernate.model.ClsUnionOf;
+import org.geneontology.gold.hibernate.model.DisjointWith;
+import org.geneontology.gold.hibernate.model.EquivalentTo;
 import org.geneontology.gold.hibernate.model.ObjAlternateLabel;
+import org.geneontology.gold.hibernate.model.ObjDefinitionXref;
+import org.geneontology.gold.hibernate.model.ObjXref;
 import org.geneontology.gold.hibernate.model.Relation;
 import org.geneontology.gold.hibernate.model.SubclassOf;
 import org.geneontology.gold.io.postgres.DeltaQueryInterceptor;
@@ -172,5 +178,76 @@ public class GoldObjectFactory {
 		return (Relation)session.createQuery("from Relation where id = ?").setString(0, id).uniqueResult();
 	}
 	
+	public synchronized ObjXref getObjXref(String obj, String xref){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		return (ObjXref)session.createQuery("from ObjXref where obj = ? and xref=?")
+			.setString(0, obj)
+			.setString(1, xref)
+			.uniqueResult();
+	}
+
+	public synchronized ObjDefinitionXref getObjDefinitionXref(String obj, String xref){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		return (ObjDefinitionXref)session.createQuery("from ObjDefinitionXref where obj = ? and xref=?")
+			.setString(0, obj)
+			.setString(1, xref)
+			.uniqueResult();
+	}
+	
+	public synchronized EquivalentTo getEquivalentTo(String cls, String equivalent_cls, String ontology){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		return (EquivalentTo)session.createQuery("from EquivalentTo where cls = ? and equivalent_cls = ? and ontology = ?")
+			.setString(0, cls)
+			.setString(1, equivalent_cls)
+			.setString(2, ontology)
+			.uniqueResult();
+	}
+
+	public synchronized DisjointWith getDisjointWith(String cls, String disjoint_cls, String ontology){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		return (DisjointWith)session.createQuery("from DisjointWith where cls = ? and disjoint_cls = ? and ontology = ?")
+			.setString(0, cls)
+			.setString(1, disjoint_cls)
+			.setString(2, ontology)
+			.uniqueResult();
+	}
+
+
+	public synchronized ClsUnionOf getClsUnionOf(String cls, String target_cls, String ontology){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		return (ClsUnionOf)session.createQuery("from ClsUnionOf where cls = ? and target_cls = ? and ontology = ?")
+			.setString(0, cls)
+			.setString(1, target_cls)
+			.setString(2, ontology)
+			.uniqueResult();
+	}
+	
+	public synchronized ClsIntersectionOf getClsIntersectionOf(String cls, String target_cls, String ontology){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		return (ClsIntersectionOf)session.createQuery("from ClsIntersectionOf where cls = ? and target_cls = ? and ontology = ?")
+			.setString(0, cls)
+			.setString(1, target_cls)
+			.setString(2, ontology)
+			.uniqueResult();
+	}
+
 	
 }

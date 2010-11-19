@@ -4,16 +4,18 @@
 <!-- Generated Nov 2, 2010 3:53:51 PM by Hibernate Tools 3.4.0.Beta1 -->
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.ObjXref" table="obj_xref">
-        <composite-id name="id" class="org.geneontology.gold.hibernate.model.ObjXrefId">
+        <composite-id>
             <key-property name="obj" type="string">
                 <column name="obj" />
             </key-property>
             <key-property name="xref" type="string">
                 <column name="xref" />
             </key-property>
-            <key-property name="xrefDescription" type="string">
-                <column name="xref_description" />
-            </key-property>
         </composite-id>
+
+            <property name="xrefDescription" type="string">
+                <column name="xref_description" />
+            </property>
+
     </class>
 </hibernate-mapping>
