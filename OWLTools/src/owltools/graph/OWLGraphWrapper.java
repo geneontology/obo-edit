@@ -13,6 +13,7 @@ import java.util.Vector;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -849,7 +850,10 @@ public class OWLGraphWrapper {
 		else {
 			return null;
 		}
+		
 		for (OWLAnnotation a : anns) {
+			
+			
 			if (a.getValue() instanceof OWLLiteral) {
 				OWLLiteral val = (OWLLiteral) a.getValue();
 				return val.getLiteral(); // return first - todo - check zero or one
@@ -857,6 +861,59 @@ public class OWLGraphWrapper {
 		}
 		return null;
 	}
+	
+	/**
+	 * 
+	 * @param c
+	 * @return It returns null if no xref annotation is found.
+	 */
+	
+	public List<String> getXref(OWLObject c){
+		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_xref")); 
+		Set<OWLAnnotation>anns = null;
+		if (c instanceof OWLEntity) {
+			anns = ((OWLEntity) c).getAnnotations(ontology,lap);
+		}
+		else {
+			return null;
+		}
+		List<String> list = new ArrayList<String>();
+		for (OWLAnnotation a : anns) {
+			
+			
+			if (a.getValue() instanceof OWLLiteral) {
+				OWLLiteral val = (OWLLiteral) a.getValue();
+				list.add( val.getLiteral()) ;
+			}
+		}
+		return list;
+	}
+	
+
+	public List<String> getDefXref(OWLObject c){
+		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_0000115")); 
+		OWLAnnotationProperty xap = dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_xref")); 
+
+		List<String> list = new ArrayList<String>();
+		
+		if(c instanceof OWLEntity){
+			for (OWLAnnotationAssertionAxiom oaax :((OWLEntity) c).getAnnotationAssertionAxioms(ontology)){
+				
+				if(lap.equals(oaax.getProperty())){
+				
+					for(OWLAnnotation a: oaax.getAnnotations(xap)){
+						if(a.getValue() instanceof OWLLiteral){
+							list.add( ((OWLLiteral)a.getValue()).getLiteral() );
+						}
+					}
+				}
+				
+			}
+		}
+		
+		return list;
+	}
+	
 	
 	/**
 	 * Return the names of the asserted subClasses of the cls (Class) 
@@ -910,14 +967,18 @@ public class OWLGraphWrapper {
 	
 	public String getIdentifier(OWLObject owlObject) {
 		if (owlObject instanceof OWLNamedObject) {
-			String iri = ((OWLNamedObject)owlObject).getIRI().toString();
-			if (iri.startsWith("http://purl.obolibrary.org/obo/")) {
+			String iri = getIdentifier(
+					((OWLNamedObject)owlObject).getIRI()
+					);
+			/*if (iri.startsWith("http://purl.obolibrary.org/obo/")) {
 				iri = iri.replace("http://purl.obolibrary.org/obo/", "");
 				int p = iri.lastIndexOf('_');
 				if (p >= 0) {
 					iri = iri.substring(0, p) + ":" + iri.substring(p+1);
 				}
-			}
+			}*/
+			
+			
 			
 			return iri;
 
