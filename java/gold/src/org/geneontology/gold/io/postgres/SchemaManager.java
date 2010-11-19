@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 
 /**
  * 
@@ -21,6 +23,9 @@ import java.util.regex.Pattern;
  */
 public class SchemaManager {
 
+	private static Logger LOG = Logger.getLogger(SchemaManager.class);
+	
+	private static boolean DEBUG = LOG.isDebugEnabled();
 	
 	/**
 	 * 
@@ -36,6 +41,9 @@ public class SchemaManager {
 	 *
 	 */
 	public void loadSchemaSQL(String host, String username, String password, String db, String file, String tablePrefix, boolean force) throws ClassNotFoundException, SQLException, FileNotFoundException{
+		if(DEBUG)
+			LOG.debug("--");
+		
 		Class.forName("org.postgresql.Driver");
 		
 		
@@ -66,12 +74,20 @@ public class SchemaManager {
 	}
 	
 	public void loadSchemaSQL(Connection connection, String file, String tablePrefix, boolean force) throws FileNotFoundException{
+		if(DEBUG)
+			LOG.debug("--");
+		
+		
 		executeScript(new FileReader(file), connection, tablePrefix, force);
 	}
 	
 	
 	
 	private void executeScript(Reader r, Connection connection, String tablePrefix, boolean force){
+		if(DEBUG)
+			LOG.debug("--");
+		
+		
 		if(connection == null)
 			throw new RuntimeException("Can not perform operation as connection is establed with the RDBMS");
 
@@ -85,12 +101,6 @@ public class SchemaManager {
 			StringBuffer buf = new StringBuffer();
 			Pattern pattern = Pattern.compile("CREATE\\s*TABLE\\s*\\w+", Pattern.CASE_INSENSITIVE);
 			Pattern Refspattern = Pattern.compile("REFERENCES\\s*\\w+", Pattern.CASE_INSENSITIVE);
-			
-			//this list maintains all sql statements to be executed
-			//extracted from  the Reader r
-	//		ArrayList<String> listSQLStatements = new ArrayList<String>();
-			//if force is true then it contains drop tables statements
-		//	ArrayList<String> listDelete = new ArrayList<String>();
 			
 			while((line = reader.readLine()) != null){
 				
@@ -135,6 +145,10 @@ public class SchemaManager {
 								if(force){
 									try{
 										String drop = "DROP TABLE IF EXISTS " + tablePrefix+ s[s.length-1] +"  CASCADE";
+										
+										if(DEBUG)
+											LOG.debug(drop);
+										
 										stmt.executeUpdate(drop);
 									}catch(Exception ex){
 										//ignore this
@@ -145,7 +159,9 @@ public class SchemaManager {
 							
 						}
 
-						System.out.println(sql);
+						if(DEBUG)
+							LOG.debug(sql);
+						
 						stmt.executeUpdate(sql);
 					}catch(Exception ex){
 						ex.printStackTrace();
@@ -160,10 +176,10 @@ public class SchemaManager {
 			}
 
 		}catch(Exception e){
-			System.out.println("Warning:*******************");
-			e.printStackTrace();
+			LOG.error("An Error occured while creating database schema", e);
 		}
 
+		LOG.info("DB schema created successfully");
 
 	}
 	

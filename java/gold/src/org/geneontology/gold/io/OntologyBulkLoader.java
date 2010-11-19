@@ -91,7 +91,7 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 		
 		//	TableDumper subclass_ofDumper = new TableDumper("subclass_of");
 		//TableDumper allSomeRelationship = new TableDumper("all_some_relationship");
-		
+		boolean f = true;
 		String ontologyId = graphWrapper.getOntologyId();
 		for (OWLClass cls : getOwlOntology().getClassesInSignature()) {
 			String label = graphWrapper.getLabel(cls);
@@ -127,14 +127,16 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 				}
 			}
 
-			
-			for(OWLObject ec: cls.getDisjointClasses(graphWrapper.getOntology())){
-				String id2 = graphWrapper.getIdentifier(ec);
-				if(id2 != null){
-					disjoint_withDumper.dumpRow(id, id2, ontologyId);
+			if(f){
+				for(OWLObject ec: cls.getDisjointClasses(graphWrapper.getOntology())){
+					String id2 = graphWrapper.getIdentifier(ec);
+					if(id2 != null){
+						disjoint_withDumper.dumpRow(id, id2, ontologyId);
+					}
 				}
+				f = false;
 			}
-			
+				
 		}
 		TableDumper relDumper = new TableDumper(this.dumpFilePrefix + "relation", path);
 		for (OWLObjectProperty op : getOwlOntology().getObjectPropertiesInSignature()) {
