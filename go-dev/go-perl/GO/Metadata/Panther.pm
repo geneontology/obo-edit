@@ -95,7 +95,7 @@ our %species =
 
    EMENI => {},
    ENTHI => {},
-   ECOLI => { also_node => [ 511145 ],
+   ECOLI => { also_node => [ 562, 511145 ],
 	      prefer    => [ 'EcoCyc', 'UniProtKB' ] },
 
    #
