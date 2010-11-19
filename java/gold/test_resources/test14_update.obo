@@ -38,7 +38,7 @@ id: test14:t6
 name: t6 name
 is_a: test14:t1
 union_of: test14:t3
-disjoint_from: CARO:123
+disjoint_from: test14:t1
 equivalent_to: CARO:456
 
 
