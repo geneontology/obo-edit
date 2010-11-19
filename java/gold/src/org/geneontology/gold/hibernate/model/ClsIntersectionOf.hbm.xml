@@ -9,14 +9,19 @@
         cls_intersection_of(blue_car,has_color,blue) ==&gt; [owl] EquivalentTo (blue_car IntersectionOf(car SomeValuesFrom(has_color blue))) // Limitation: only a single such
         equivalence relation is allowed per class // Note that there should never be a cls that only has a single cls_intersection_of. MAPPINGS: OBO: intersection_of OWL:
         EquivalentTo(cls IntersectionOf( {...} ) -- see obo2owl doc LEAD: term2term[completes=1]</comment>
-        <composite-id name="id">
+        <composite-id>
           
 	       <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
 	       <key-many-to-one name="targetCls" class="org.geneontology.gold.hibernate.model.Cls" column="target_cls" />
 	       <key-many-to-one name="cls" class="org.geneontology.gold.hibernate.model.Cls" column="cls" />
-	       <key-many-to-one name="relation" class="org.geneontology.gold.hibernate.model.Relation" column="relation" />
           
           
         </composite-id>
+        
+	     <many-to-one name="relation" class="org.geneontology.gold.hibernate.model.Relation" fetch="select" not-null="false">
+	     	<column name="relation"></column>
+	     </many-to-one>
+
+
     </class>
 </hibernate-mapping>

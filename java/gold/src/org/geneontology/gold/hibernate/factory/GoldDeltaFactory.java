@@ -9,8 +9,14 @@ import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.hibernate.model.AllSomeRelationship;
 import org.geneontology.gold.hibernate.model.Cls;
+import org.geneontology.gold.hibernate.model.ClsIntersectionOf;
+import org.geneontology.gold.hibernate.model.ClsUnionOf;
+import org.geneontology.gold.hibernate.model.DisjointWith;
+import org.geneontology.gold.hibernate.model.EquivalentTo;
 import org.geneontology.gold.hibernate.model.GOModel;
 import org.geneontology.gold.hibernate.model.ObjAlternateLabel;
+import org.geneontology.gold.hibernate.model.ObjDefinitionXref;
+import org.geneontology.gold.hibernate.model.ObjXref;
 import org.geneontology.gold.hibernate.model.Relation;
 import org.geneontology.gold.hibernate.model.SubclassOf;
 import org.geneontology.gold.io.DatabaseDialect;
@@ -159,5 +165,138 @@ public class GoldDeltaFactory {
 		
 		return list;
 	}
+	
+	
+	public List<ObjXref> buildObjXrefs() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		
+		Vector<ObjXref> list = new Vector<ObjXref>();
+
+		ResultSet rs = db.getDelaData("obj_xref");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			ObjXref objxref = goldObjFactory.getObjXref(rs.getString("obj"), 
+					rs.getString("xref"));
+			list.add(objxref);
+		}
+		return list;
+		
+	}
+	
+	
+	public List<ObjDefinitionXref> buildObjDefinitionXref() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		
+		Vector<ObjDefinitionXref> list = new Vector<ObjDefinitionXref>();
+
+		ResultSet rs = db.getDelaData("obj_definition_xref");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			ObjDefinitionXref objxref = goldObjFactory.getObjDefinitionXref(rs.getString("obj"), 
+					rs.getString("xref"));
+			list.add(objxref);
+		}
+		return list;
+		
+	}
+
+	
+	public List<EquivalentTo> buildEquivalentTo() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		
+		Vector<EquivalentTo> list = new Vector<EquivalentTo>();
+
+		ResultSet rs = db.getDelaData("equivalent_to");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			EquivalentTo equiv = goldObjFactory.getEquivalentTo(rs.getString("cls"), 
+					rs.getString("equivalent_cls"), 
+					rs.getString("ontology"));
+			list.add(equiv);
+		}
+		return list;
+		
+	}
+	
+	public List<DisjointWith> buildDisjointWith() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+		
+		Vector<DisjointWith> list = new Vector<DisjointWith>();
+
+		ResultSet rs = db.getDelaData("disjoint_with");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			DisjointWith disjoint = goldObjFactory.getDisjointWith(rs.getString("cls"), 
+					rs.getString("disjoint_cls"), 
+					rs.getString("ontology"));
+			list.add(disjoint);
+		}
+		return list;
+		
+	}
+	
+
+	public List<ClsUnionOf> buildClsUnionOf() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+		
+		Vector<ClsUnionOf> list = new Vector<ClsUnionOf>();
+
+		ResultSet rs = db.getDelaData("cls_union_of");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			ClsUnionOf disjoint = goldObjFactory.getClsUnionOf(rs.getString("cls"), 
+					rs.getString("target_cls"), 
+					rs.getString("ontology"));
+			list.add(disjoint);
+		}
+		return list;
+		
+	}
+	
+
+	public List<ClsIntersectionOf> buildClsIntersectionOf() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+		
+		Vector<ClsIntersectionOf> list = new Vector<ClsIntersectionOf>();
+
+		ResultSet rs = db.getDelaData("cls_intersection_of");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			ClsIntersectionOf disjoint = goldObjFactory.getClsIntersectionOf(rs.getString("cls"), 
+					rs.getString("target_cls"), 
+					rs.getString("ontology"));
+			list.add(disjoint);
+		}
+		return list;
+		
+	}
+	
 	
 }

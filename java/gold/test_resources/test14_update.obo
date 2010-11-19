@@ -7,12 +7,14 @@ ontology: test14
 
 [Term]
 id: test14:t1
+def: "test14 def" [test14:ABC, test14:XYZ]
 name: t1 name
 
 [Term]
 id: test14:t2
 name: t2 name
 is_a: test14:t1
+xref: test14:LMNO
 
 [Term]
 id: test14:t3
@@ -30,6 +32,16 @@ intersection_of: r2 test14:t2
 id: test14:t5
 name: t5 name
 relationship: r3 test14:t1
+
+[Term]
+id: test14:t6
+name: t6 name
+is_a: test14:t1
+union_of: test14:t3
+disjoint_from: CARO:123
+equivalent_to: CARO:456
+
+
 
 [Typedef]
 id: r1
