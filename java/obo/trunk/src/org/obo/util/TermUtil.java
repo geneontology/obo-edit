@@ -223,7 +223,7 @@ public class TermUtil {
 		}
 	}
 
-	private TermUtil() {
+	protected TermUtil() {
 	}
 
 	/**
