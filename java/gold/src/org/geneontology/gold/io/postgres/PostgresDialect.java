@@ -29,7 +29,7 @@ public class PostgresDialect implements DatabaseDialect {
 		return tables;
 	}*/
 	
-	@Override
+//	@Override
 	public Connection getConnect() {
 		
 		if(connection == null){
@@ -46,7 +46,7 @@ public class PostgresDialect implements DatabaseDialect {
 		return connection;
 	}
 	
-	@Override
+//	@Override
 	public String getDeltaQuery(String tableName) {
 		//if(tables.contains(tableName)){
 			return "SELECT * from " + GeneOntologyManager.getInstance().getGoldDetlaTablePrefix() + tableName +" EXCEPT SELECT * from "+tableName;
@@ -55,7 +55,7 @@ public class PostgresDialect implements DatabaseDialect {
 		//return null;
 	}
 
-	@Override
+//	@Override
 	public ResultSet getDelaData(String tableName)  throws SQLException{
 		String query =  getDeltaQuery(tableName);
 		if(query == null)
