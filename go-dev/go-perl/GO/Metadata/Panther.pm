@@ -153,7 +153,7 @@ our %species =
    # P
    #
 
-   PANTR => { prefer => [ 'ENSEMBL' ] },
+   PANTR => { prefer => [ 'ENSEMBL', 'UniProtKB' ] },
    PLAYO => {},
    PSEA7 => {},
 
