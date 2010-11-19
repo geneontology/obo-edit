@@ -79,7 +79,6 @@ public class GeneOntologyManager {
 
 		File[] files = confDir.getParentFile().listFiles(new FileFilter() {
 
-			@Override
 			public boolean accept(File pathname) {
 				// TODO Auto-generated method stub
 				return pathname.getName().endsWith(".properties");
