@@ -313,8 +313,6 @@ CREATE TABLE subclass_of (
        super_cls VARCHAR,
 
        ontology VARCHAR
-       
-
 );
 
 -- holds iff: cls SubClassOf rel Some tgt
@@ -355,6 +353,11 @@ CREATE TABLE subrelation_of (
        ontology VARCHAR
 );
 
+-- SEMANTICS: SubObjectPropertyOf(inferred_relation PropertyChain(relation1 relation2))
+-- note this table cannot be used for property chains of length >2, GO should not have these.
+-- if this is desired then the property chain should be broken into pairs.
+-- EXAMPLE: SubObjectPropertOf(regulates PropertyChain(regulates part_of))
+-- (in obof, this is encoded using transitive_over).
 CREATE TABLE relation_chain (
        inferred_relation VARCHAR,
        relation1 VARCHAR,
@@ -471,5 +474,5 @@ CREATE TABLE inferred_relationship (
        ontology VARCHAR
 );
 
-COMMENT ON TABLE inferred_relationship IS 'A path between cls and target_cls
+COMMENT ON TABLE inferred_relationship IS 'A path between cls and target_cls. The values for this table can be filled in by running a reasoner. The recommended method is getOutgoingEdgesClosureReflexive(cls).
 ';
