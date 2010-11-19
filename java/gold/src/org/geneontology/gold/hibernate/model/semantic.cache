@@ -1,0 +1,15 @@
+;; Object model/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "model/"
+  :tables (list 
+   (semanticdb-table "SubclassOf.java"
+    :major-mode 'java-mode
+    :tags '(("org.geneontology.gold.hibernate.model" package nil nil [1 47]) ("java.io.Serializable" include nil (dependency-file none) [49 77]) ("SubclassOf" type (:typemodifiers ("public") :interfaces ("Serializable") :members (("cls" variable (:typemodifiers ("private") :type "Cls") (reparse-symbol class_member_declaration) [131 147]) ("superCls" variable (:typemodifiers ("private") :type "Cls") (reparse-symbol class_member_declaration) [149 170]) ("ontology" variable (:typemodifiers ("private") :type "String") (reparse-symbol class_member_declaration) [172 196]) ("SubclassOf" function (:constructor-flag t :typemodifiers ("public")) (reparse-symbol class_member_declaration) [202 226]) ("SubclassOf" function (:constructor-flag t :typemodifiers ("public") :arguments (("cls" variable (:type "Cls") (reparse-symbol formal_parameters) [248 255]) ("superCls" variable (:type "Cls") (reparse-symbol formal_parameters) [257 269]) ("ontology" variable (:type "String") (reparse-symbol formal_parameters) [271 286]))) (reparse-symbol class_member_declaration) [230 366]) ("getCls" function (:typemodifiers ("public") :type "Cls") (reparse-symbol class_member_declaration) [372 410]) ("setCls" function (:typemodifiers ("public") :arguments (("cls" variable (:type "Cls") (reparse-symbol formal_parameters) [431 438])) :type "void") (reparse-symbol class_member_declaration) [412 462]) ("getSuperCls" function (:typemodifiers ("public") :type "Cls") (reparse-symbol class_member_declaration) [464 512]) ("setSuperCls" function (:typemodifiers ("public") :arguments (("superCls" variable (:type "Cls") (reparse-symbol formal_parameters) [538 550])) :type "void") (reparse-symbol class_member_declaration) [514 584]) ("getOntology" function (:typemodifiers ("public") :type "String") (reparse-symbol class_member_declaration) [586 637]) ("setOntology" function (:typemodifiers ("public") :arguments (("ontology" variable (:type "String") (reparse-symbol formal_parameters) [663 678])) :type "void") (reparse-symbol class_member_declaration) [639 712])) :type "class") nil [79 720]))
+    :file "SubclassOf.java"
+    :pointmax 721
+    )
+   )
+  :file "semantic.cache"
+  :semantic-tag-version "2.0pre4"
+  :semanticdb-version "2.0pre4"
+  )
