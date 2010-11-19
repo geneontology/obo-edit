@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
+
 /**
  * TO BE IMPLEMENTED
  * 
@@ -17,6 +19,11 @@ import java.io.IOException;
  * http://docs.jboss.org/hibernate/core/3.3/reference/en/html/batch.html
  */
 public class TableDumper {
+	
+	private static Logger LOG = Logger.getLogger(TableDumper.class);
+	
+	private static boolean DEBUG = LOG.isDebugEnabled();
+	
 	private String table;
 	
 	private FileWriter writer;
@@ -80,7 +87,10 @@ public class TableDumper {
 	// TODO
 	
 	private void write(String s) throws IOException {
-		System.out.println(s+"\n");
+		if(DEBUG)
+			LOG.debug(s);
+		
+		
 		writer.write(s+ "\n");
 	}
 	

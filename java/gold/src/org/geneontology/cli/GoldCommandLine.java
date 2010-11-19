@@ -61,6 +61,12 @@ public class GoldCommandLine {
 	public static void main(String args[]) throws Exception{
 		boolean force = false;
 		String tableprefix = "";
+
+		Logger.getRootLogger().setLevel(Level.INFO);
+		
+		
+		System.out.println("****************GOLD DB*******************");
+		
 		//atleast two arguments are required
 		if(args.length>1){
 			//last argument is the operation name that to be peforme by this program. 
@@ -91,7 +97,6 @@ public class GoldCommandLine {
 					manager.setProperty(v[1], tokens[1]);
 				}
 			}
-			
 			
 			//perform the operations
 			DbOperations db = new DbOperations();
@@ -136,7 +141,7 @@ public class GoldCommandLine {
 			System.out.println("\t" + option + options.get(option)[0]);
 		}
 
-		System.out.println("OPERATION:");
+		System.out.println("OPERATIONS:");
 		for(String operation: operations){
 			System.out.println("\t"+operation);
 		}

@@ -63,6 +63,8 @@ public class DbOperations {
 		List<String> list = dumpFiles("", oboFile);
 		buildSchema(force, "");
 		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
+		
+		LOG.info("Bulk Load completed successfully");
 	}
 	
 	/**
@@ -83,7 +85,12 @@ public class DbOperations {
 			new Obo2Owl().convert(oboFile));
 		
 		OntologyBulkLoader loader = new OntologyBulkLoader(wrapper, manager.getTsvFilesDir(), tablePrefix);
-		return loader.dumpBulkLoadTables();
+		
+		List<String> list = loader.dumpBulkLoadTables();
+		
+		LOG.info("Tables dump completed");
+		
+		return list;
 		
 	}
 	
@@ -127,6 +134,8 @@ public class DbOperations {
 		
 		tsvLoader.loadTables(tsvFilesDir, list);
 		
+		
+		LOG.info("TSV files load completed");
 	}
 
 	/**
@@ -242,7 +251,7 @@ public class DbOperations {
 		
 		saveList(session, eqList);
 		
-//		saveList(session, djList);
+		saveList(session, djList);
 		
 		saveList(session, unList);
 		
@@ -280,7 +289,7 @@ public class DbOperations {
 		}*/
 		
 		
-		
+		LOG.info("Database update is completed");
 		
 		session.getTransaction().commit();
 		
