@@ -84,6 +84,57 @@ bbop.core.extend = function(kid, sup){
 };
 
 
+// Generalizer console (or whatever) printing.
+bbop.core.DEBUG = false;
+bbop.core.logger = function(){};
+
+// We'll start with print because we're doing stuff from the
+// command line in smjs, but we'll work our way out and see if we
+// have a browser environment.
+// Check for: Opera, FF, Safari, etc.
+if( typeof(opera) != 'undefined' && typeof(opera.postError) != 'undefined' ){
+    bbop.core.logger = function(msg){ opera.postError(msg + "\n"); };
+}else if( typeof(window) != 'undefined' && typeof(window.dump) != 'undefined' ){
+    // From developer.mozilla.org: To see the dump output you have
+    // to enable it by setting the preference
+    // browser.dom.window.dump.enabled to true. You can set the
+    // preference in about:config or in a user.js file. Note: this
+    // preference is not listed in about:config by default, you
+    // may need to create it (right-click the content area -> New
+    // -> Boolean).
+    bbop.core.logger = function(msg){ dump( msg + "\n"); };
+}else if( typeof(window) != 'undefined' &&
+	  typeof(window.console) != 'undefined' &&
+	  typeof(window.console.log) != 'undefined' ){
+    // From developer.apple.com: Safari's "Debug" menu allows you to
+    // turn on the logging of JavaScript errors. To display the
+    // debug menu in Mac OS X, open a Terminal window and type:
+    // "defaults write com.apple.Safari IncludeDebugMenu 1"
+    // Need the wrapper function because safari has personality
+    // problems.
+    bbop.core.logger = function(msg){ window.console.log(msg + "\n"); };
+}else if( typeof(console) != 'undefined' &&
+	  typeof(console.log) != 'undefined' ){
+    // This may be okay for Chrome...
+    bbop.core.logger = function(msg){ console.log(msg + "\n"); };
+}else if( typeof(build) == 'function' &&
+	  typeof(getpda) == 'function' &&
+	  typeof(pc2line) == 'function' &&
+	  typeof(print) == 'function' ){
+    // This may detect SpiderMonkey on
+    // the comand line.
+    bbop.core.logger = function(msg){ print(msg); };
+}else if( typeof(Packages) !=  'undefined' &&
+	  typeof(Packages.java) !=  'undefined' ){
+    // This could be a Rhino environment.
+    bbop.core.logger = function(msg){ print(msg); };
+}
+bbop.core.kvetch = function(string){
+    if( bbop.core.DEBUG == true ){
+	bbop.core.logger(string);
+    }
+};
+
 // bbop.core.addGS = function(object, name){
 //     print(object);
 //     print(object.prototype);
