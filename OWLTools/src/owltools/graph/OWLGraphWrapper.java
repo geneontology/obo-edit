@@ -508,6 +508,17 @@ public class OWLGraphWrapper {
 	}
 	
 	/**
+	 * as getOutgoingEdgesClosure(s), but also includes an identity edge
+	 * @param s
+	 * @return
+	 */
+	public Set<OWLGraphEdge> getOutgoingEdgesClosureReflexive(OWLObject s) {
+		Set<OWLGraphEdge> edges = getOutgoingEdgesClosure(s);
+		edges.add(new OWLGraphEdge(s,s,null,Quantifier.IDENTITY,ontology));
+		return edges;
+	}
+	
+	/**
 	 * find the set of classes or class expressions subsuming source, using the graph closure.
 	 * 
 	 * this is just the composition of getOutgoingEdgesClosure and edgeToTargetExpression -- the
