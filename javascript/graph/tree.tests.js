@@ -27,10 +27,10 @@ load('tree.js');
      //       b
      //   1.1/ \3.3
      //     /  	\
-     //    a   	 d
-     //  4.4\  	  \ 5.5
-     //      \	   \
-     //       e	    f
+     //    a   	 d--f
+     //  4.4\  	  5.5
+     //      \
+     //       e
      //
      var n_a = new bbop.model.tree.node('a');
      var n_b = new bbop.model.tree.node('b');

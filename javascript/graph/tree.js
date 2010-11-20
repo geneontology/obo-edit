@@ -51,20 +51,40 @@ bbop.model.tree.edge.prototype.clone = function(){
 ///  Graph sub-object.
 ///
 
+bbop.core.DEBUG = true;
+
+
 // Needs somemore functionality...
 bbop.model.tree.graph = function(){
     bbop.model.graph.call(this);
 
+    // Useful for making sure that certain recursive functions keep
+    // the desired notion of "this"ness.
     var anchor = this;
 
+    // Default comparator for ordering the brackets. Alphabetical down.
+    // a and b are bracket items.
+    this.default_sort = function(a, b){
+	var sort_val = 0;
+	if( a.id < b.id ){
+	    sort_val = -1;
+	}else if( a.id > b.id ){
+	    sort_val = 1;
+	}
+	//bbop.core.kvetch('sort: ' + a.id + ' <?> ' + b.id + ' = ' + sort_val);
+	return sort_val;
+    };
+
+
+    // Get information on kids, relations, and distances working our
+    // way up from the leaves.
     var max_dist = 0.0;
     var all_dists_parent = {};
     var all_dists_child = {};
-    //var matrix = {};
-    function kid_info_up(node_id){
+    function info_up(node_id){
 	
 	var nid = node_id;
-	//print("working on: " + nid);
+	bbop.core.kvetch("info_up: working on: " + nid);
 
 	// Can only have at most one parent.
 	var node_parent = anchor.get_parent_nodes(nid);
@@ -73,7 +93,7 @@ bbop.model.tree.graph = function(){
 	    var pid = node_parent.id();
 
 	    // Add new data to globals.
-	    //print(" seems to have parent: " + pid);
+	    bbop.core.kvetch(" info_up: seems to have parent: " + pid);
 	    if( ! all_dists_parent[pid]){
 		all_dists_parent[pid] = {};
 	    }
@@ -107,78 +127,134 @@ bbop.model.tree.graph = function(){
 	    }
 
 	    // Recur on parent.
-	    kid_info_up(pid);
+	    info_up(pid);
 	}
     }
 
+
+    // Recursive comb down (give partitioned ordering).
+    // A bracket looks like: "[{id:a, brackets: [...]}, ...]".
+    var brackets = new Array();
+    var max_depth = 0;
+    function bracket_down(in_node, lvl, parent_node_id){
+	    
+	// Bootstrap lvl to 1.
+	if( ! lvl ){ lvl = 1; }
+	if( ! parent_node_id ){ parent_node_id = null; }
+
+	var in_node_id = in_node.id();
+	bbop.core.kvetch(' bracket_down: ' + in_node_id);
+
+	// 
+	var child_bracket = new Array();
+	var child_nodes = anchor.get_child_nodes(in_node_id);
+	for( var cb = 0; cb < child_nodes.length; cb++ ){
+	    var child_node = child_nodes[cb];
+	    bbop.core.kvetch('  bracket_down: pushing: ' + child_node.id());
+	    child_bracket.push(bracket_down(child_node, lvl + 1, in_node_id));
+	}
+
+	// Sort the children.
+	child_bracket.sort(anchor.default_sort);
+
+	// Grab max depth.
+	if( lvl > max_depth ){ max_depth = lvl;	}
+
+	//
+	bbop.core.kvetch(' bracket_down: found kids: ' + child_bracket.length);
+	return {
+	    id: in_node_id,
+	    routing_node: false,
+	    level: lvl,
+	    parent_id: parent_node_id,
+	    brackets: child_bracket
+	};
+    }
+
+
     // Return a layout that can be trivially rendered
     // by...something...
-    var brackets = new Array();
     var max_width = 0;
-    this.layout = function (){
+    var cohort_list = new Array(); // will reinit
+    this.layout = function (){ // TODO: layout should take bracket ordering func
 
-	// Collect distance between every direct relative. Start by
-	// walking up from the leaves. (needed?)
-	// Also supply an intereger coord for every leaf (by def. widest).
-	var found_node = {};
-	var leaves = this.get_leaf_nodes();
-	for( var li = 0; li < leaves.length; li++){
-	    var leaf = leaves[li];
-	    var leaf_id = leaf.id();
-	    kid_info_up(leaf_id);
-
-	    found_node[leaf_id] = li + 1;
+	// Pass one:
+	// Collect all of our bracketing information, also order the
+	// brackets to some function.
+	brackets = new Array(); // refresh lexical brackets
+	var base_bracket_nodes = anchor.get_root_nodes();
+	for( var bb = 0; bb < base_bracket_nodes.length; bb++ ){
+	    bbop.core.kvetch('bracket_down: start: ' +
+			     base_bracket_nodes[bb].id());
+	    brackets.push(bracket_down(base_bracket_nodes[bb]));
 	}
-	
-	// // TODO: 
-	// var pig_pen = {};
-	// for( li = 0; li < leaves.length; li++){
-	//     // Get leaf nodes (with arbitrary order).
+	// The children are ordered--make the top-level one ordered as
+	// well.
+	brackets.sort(anchor.default_sort);
 
-	//     // Check to see if any have same parent.
-
-	//     // Check if parent is root.
-	// }
-
-	// Bracketing and store a cumulative list of all children as
-	// we walk down the tree.
-	var current_bracket = this.get_root_nodes();
-	while( current_bracket.length > 0 ){
-	    
-	    //print("Current seed: " + current_bracket.length);
-
-	    // Find max width.
-	    if( max_width < current_bracket.length ){
-		max_width = current_bracket.length;
+	// Pass one:
+	// Essentially walk the brackets, find brackets that end early
+	// (above max_depth) and add routing nodes down.
+	function dangle_routing(in_item){
+	    if( in_item.level < max_depth ){
+		in_item.brackets.push({id: in_item.id,
+				       routing_node: true,
+				       level: in_item.level + 1,
+				       parent_id: in_item.id,
+				       brackets: []
+				      });
+		dangle_routing(in_item.brackets[0]);
 	    }
+	    return in_item;
+	}
+	function add_routing(in_brackets){
 
 	    //
-	    var new_bracket = new Array();
-	    var next_bracket = new Array();
-	    for( var ni = 0; ni < current_bracket.length; ni++ ){
+	    for( var i = 0; i < in_brackets.length; i++ ){
+		var item = in_brackets[i];
 
-		//print(" Starting bracket: " + ni);
-
-		// Add ids.
-		var node = current_bracket[ni];
-		var node_id = node.id();
-		new_bracket.push(node_id);
-		//print(" Pushing: " + node_id);
-
-		// Find the kids and repeat.
-		var cnodes = this.get_child_nodes(node_id);
-		for( var ci = 0; ci < cnodes.length; ci++ ){
-		    var cnode = cnodes[ci];
-		    var cnode_id = cnode.id();
-		    next_bracket.push(cnode);
-		    //print(" Readying: " + cnode_id);
+		//
+		if( item.brackets.length == 0 && item.level < max_depth ){
+		    bbop.core.kvetch(' add_routing: dangle: ' + item.id);
+		    dangle_routing(item);
+		}else if( item.brackets.length != 0 ){
+		    bbop.core.kvetch(' add_routing: descend: ' + item.id);
+		    add_routing(item.brackets);
 		}
 	    }
+	}
+	add_routing(brackets);
 
-	    brackets.push(new_bracket);
+	// Pass three:
+	// Collect global cohort information into a matrix (cohort_list).
+	cohort_list = new Array(max_depth);
+	for( cli = 0; cli < cohort_list.length; cli++ ){
+	    cohort_list[cli] = new Array();
+	}
+	// Walk down and stack up.
+	function order_cohort(in_brackets){	    
+	    // Push into global cohort list list.
+	    for( var i = 0; i < in_brackets.length; i++ ){
+		var bracket_item = in_brackets[i];
+		//
+		bbop.core.kvetch(' order_cohort: i: ' + i);
+		bbop.core.kvetch(' order_cohort: lvl: ' + bracket_item.level);
+		cohort_list[bracket_item.level -1].push(bracket_item);
+		// Drill down.
+		if( bracket_item.brackets.length > 0 ){
+		    bbop.core.kvetch(' order_cohort: down: ' +
+				     bracket_item.brackets.length);
+		    order_cohort(bracket_item.brackets);
+		}
+	    }
+	}
+	order_cohort(brackets);
 
-	    // Get ready to repeat if there were kids.
-	    current_bracket = next_bracket;
+	// Gather distance info up from leaves.
+	var base_info_nodes = anchor.get_leaf_nodes();
+	max_width = base_info_nodes.length; // by def, leaves are widest
+	for( var bi = 0; bi < base_info_nodes.length; bi++ ){
+	    info_up(base_info_nodes[bi].id());
 	}
 
 	//
@@ -186,24 +262,58 @@ bbop.model.tree.graph = function(){
 	    parent_distances: all_dists_parent,
 	    child_distances: all_dists_child,
 	    max_distance: max_dist,
-	    brackets: brackets,
-	    max_width: max_width
+	    max_depth: max_depth,
+	    max_width: max_width,
+	    cohorts: cohort_list,
+	    //routing: routing_list,
+	    brackets: brackets
 	};
     };
 
-    this.dump_dist = function(){
-	for( var n_id in all_dists_parent ){
-	    for( var k_id in all_dists_parent[n_id] ){
-		//print(n_id + ' : '+ k_id + ' => ' + all_dists_parent[n_id][k_id]);
+    this.dump_cohorts = function(){
+    	for( var i = 0; i < cohort_list.length; i++ ){
+    	    for( var j = 0; j < cohort_list[i].length; j++ ){
+    		var item = cohort_list[i][j];
+    		bbop.core.kvetch(item.id + ' ' + i + ':' + j +
+				 ', ' + item.routing_node);
+    	    }
+    	}
+    };
+
+    this.dump_dist = function(in_arg){
+
+	bbop.core.kvetch(' in ');
+
+	// Argument selection.
+	var dists = all_dists_parent;
+	if( in_arg == "child" ){
+	    dists = all_dists_child;
+	}
+
+	// Dump selected dist.
+	for( var n_id in dists ){
+	    for( var k_id in dists[n_id] ){
+		bbop.core.kvetch(n_id +' : '+ k_id +' => '+ dists[n_id][k_id]);
 	    }
 	}
     };
 
-    this.dump_brackets = function(){
-	for( var i = 0; i < brackets.length; i++ ){
-	    for( var j = 0; j < brackets[i].length; j++ ){
-		//print(brackets[i][j] + ' : ' + i);
-	    }
+    this.dump_brackets = function(brack){
+
+	// Bootstrap if just starting.
+	if( ! brack ){ brack = brackets; }
+	//if( ! lvl ){ lvl = 1; }
+
+	// Printer.
+	for( var i = 0; i < brack.length; i++ ){
+
+	    var pid = '(null)';
+	    if( brack[i].parent_id ){ pid = brack[i].parent_id; }
+
+	    bbop.core.kvetch('id: ' + brack[i].id +
+			     ', parent: ' + pid +
+			     ', level: ' + brack[i].level);
+	    this.dump_brackets(brack[i].brackets);
 	}
     };
 
