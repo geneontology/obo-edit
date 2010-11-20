@@ -102,7 +102,7 @@ our %species =
    # G
    #
 
-   CHICK => { prefer => [ 'UniProtKB', 'ENSEMBL' ] },
+   CHICK => { prefer => [ 'UniProtKB', 'ENSEMBL', 'NCBI' ] },
    GEOSL => {},
    GLOVI => { also_node => [ 251221 ] },
 
