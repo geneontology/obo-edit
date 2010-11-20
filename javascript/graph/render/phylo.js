@@ -7,7 +7,7 @@
 //// Taken name spaces:
 ////    bbop.render.phylo.*
 ////
-//// TODO: see: http://raphaeljs.com/graffle.html
+//// TODO: looks top-level; make functional for application use.
 ////
 //// Required:
 ////    bbop.core
@@ -120,13 +120,72 @@ t.add_edge(e2);
 t.add_edge(e3);
 t.add_edge(e4);
 t.add_edge(e5);
-
-var fudge_x = 50;
-var fudge_y = 50;
-//var 
 var layout = t.layout();
-//var r = Raphael("test1", 640, 480);
 
+///
+/// Decide relative y positions by walking backwards through the
+/// cohorts.
+///
+
+// Walk backwards through the cohorts to find a base Y position. for
+// the final cohort.
+var position_y = {};
+var final_cohort = layout.cohorts[layout.max_depth -1];
+bbop.core.kvetch('look at final cohort: ' + layout.max_depth -1);
+for( var j = 0; j < final_cohort.length; j++ ){
+    var item = final_cohort[j];
+    position_y[item.id] = j + 1.0;
+    bbop.core.kvetch('position_y: ' + item.id + ', ' + (j + 1.0));
+}
+// Walk backwards through the remaining cohorts to find the best Y
+// positions.
+for( var i = layout.cohorts.length -1; i > 0; i-- ){
+    //
+    var cohort = layout.cohorts[i -1];
+    bbop.core.kvetch('look at cohort: ' + (i -1));
+    for( var j = 0; j < cohort.length; j++ ){
+	var item = cohort[j];
+
+	// Deeper placements always take precedence.
+	if( ! position_y[item.id] ){
+
+	    // If you have one parent, they have the same Y as you.
+	    // This generalizes to: the parent has the average Y of
+	    // it's children.
+	    // This is easy then, once we start, but how to get the
+	    // initial leaf placement?
+	    // Get item's children and take their average (by
+	    // definition, they must already be in the placed list
+	    // (even if it was just a routing node)).
+	    var c_nodes = t.get_child_nodes(item.id);
+	    var position_acc = 0.0;
+	    for( var ci = 0; ci < c_nodes.length; ci++ ){
+		var node = c_nodes[ci];
+		position_acc = position_acc + position_y[node.id()];
+	    }
+	    var avg = position_acc / (c_nodes.length * 1.0);
+	    position_y[item.id] = avg;
+	    bbop.core.kvetch('position_y:: ' + item.id + ', ' + avg);
+	}
+    }
+}
+
+///
+/// Decide final x positions walking from top to bottom. Already done
+/// with parent distance, so just get roots. and walk.
+///
+
+var position_x = {};
+var parent_dist = layout.parent_distances;
+var roots = t.get_root_nodes();
+for( var r = 0; r < roots.length; r++ ){
+	var root = root[r];
+
+	if( item.routing_node == false ){
+	    // Get kids and their
+	}
+    }
+}
 
 
 // Render out.
