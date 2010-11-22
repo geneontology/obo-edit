@@ -374,6 +374,7 @@ sub guess{
 	    if (!$s->{guessed}) {
 		local $Data::Dumper::Varname = 'MULT';
 		warn Dumper $s, \@maybe;
+		next;
 	    }
 	}
 
