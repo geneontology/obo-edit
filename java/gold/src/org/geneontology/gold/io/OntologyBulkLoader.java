@@ -6,10 +6,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
 import org.semanticweb.owlapi.model.OWLObject;
@@ -20,7 +24,10 @@ import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
+import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
+import owltools.graph.OWLQuantifiedProperty;
+import owltools.graph.OWLQuantifiedProperty.Quantifier;
 
 /**
  * Loads ontology into Gold database.
@@ -52,20 +59,56 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 	public List<String> dumpBulkLoadTables() throws IOException{
 		List<String> list = new Vector<String>();
 		
+		list.addAll(dumpOntologyTable());
 		list.addAll(dumpDeclarationsAndMetadata());
 		list.addAll(dumpLogicalAxioms());
 		
 		return list;
 	}
 	
-	public String dumpOntologyTable() throws IOException{
-		TableDumper ontologyDumper = new TableDumper(this.dumpFilePrefix + "cls", this.path);
+	public List<String> dumpOntologyTable() throws IOException{
+		List<String> arrayList = new ArrayList<String>();
+		
+		TableDumper ontologyDumper = new TableDumper(this.dumpFilePrefix + "ontology", this.path);
+		TableDumper ontology_annotationDumper = new TableDumper(this.dumpFilePrefix + "ontology_annotation", this.path);
 	
-		ontologyDumper.dumpRow(graphWrapper.getOntologyId(), null, null, null);
+		String id = graphWrapper.getOntologyId();
+		Set<OWLAnnotationAssertionAxiom> anns = graphWrapper.getOntology().getAnnotationAssertionAxioms(graphWrapper.getOntology().getOntologyID().getOntologyIRI());
+		
+		String dt = null;
+		for(OWLAnnotationAssertionAxiom ann: anns){
+			
+			if(ann.getValue() instanceof OWLLiteral){
+				String value = ((OWLLiteral) ann.getValue()).getLiteral();
+				String prop = graphWrapper.getIdentifier(ann.getProperty());
+				if(prop.endsWith(":date")){
+					dt = value;
+				}else{
+
+					ontology_annotationDumper.dumpRow(id, prop, 
+							value);
+				}
+				
+			}
+			
+		}
+
+		IRI version = graphWrapper.getOntology().getOntologyID().getVersionIRI();
+		String versionString = null;
+		if(version != null)
+			versionString = version.toString();
+		ontologyDumper.dumpRow(id, id,  versionString,
+				dt);
+
+		
 		ontologyDumper.close();
+		ontology_annotationDumper.close();
 		
 		
-		return ontologyDumper.getTable();
+		arrayList.add(ontologyDumper.getTable());
+		arrayList.add(ontology_annotationDumper.getTable());
+		
+		return arrayList;
 	}
 
 	public List<String> dumpDeclarationsAndMetadata() throws IOException {
@@ -88,6 +131,9 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 		
 		TableDumper disjoint_withDumper = new TableDumper(this.dumpFilePrefix + "disjoint_with", this.path);
 		
+
+		TableDumper inferred_relationshipDumper = new TableDumper(this.dumpFilePrefix + "inferred_relationship", this.path);
+		
 		
 		//	TableDumper subclass_ofDumper = new TableDumper("subclass_of");
 		//TableDumper allSomeRelationship = new TableDumper("all_some_relationship");
@@ -97,8 +143,10 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 			String label = graphWrapper.getLabel(cls);
 			String def = graphWrapper.getDef(cls);
 			String id = graphWrapper.getIdentifier(cls);
+			String comment = graphWrapper.getComment(cls);
+			String namespace = graphWrapper.getNamespace(cls);
 			// textdef TODO
-			clsDumper.dumpRow(id, label, ontologyId, null, null, def, null);
+			clsDumper.dumpRow(id, label, ontologyId, namespace, comment, def, null);
 			
 			//dump synonms
 			for(String l: graphWrapper.getSynonymStrings(cls)){
@@ -136,15 +184,57 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 				}
 				f = false;
 			}
-				
+			
+			
+			Set<OWLGraphEdge> outgoing = graphWrapper.getOutgoingEdges(cls);
+			System.out.println("Outputoing: " + outgoing); 
+			for(OWLGraphEdge edge: outgoing){
+				String targetId = graphWrapper.getIdentifier( edge.getTarget() );
+				for(OWLQuantifiedProperty prop: edge.getQuantifiedPropertyList()){
+					String propId = graphWrapper.getDef(prop.getProperty());
+					
+					inferred_relationshipDumper.dumpRow(id, targetId, propId, "true" , "false", ontologyId);
+				}
+			}
+			
+			
+			Set<OWLGraphEdge> reflexsive = graphWrapper.getOutgoingEdgesClosureReflexive(cls);
+			System.out.println("Reflesive: " + reflexsive); 
+			
+			reflexsive.removeAll(outgoing);
+
+			for(OWLGraphEdge edge: reflexsive){
+				String targetId = graphWrapper.getIdentifier( edge.getTarget() );
+				for(OWLQuantifiedProperty prop: edge.getQuantifiedPropertyList()){
+					String propId = graphWrapper.getDef(prop.getProperty());
+					inferred_relationshipDumper.dumpRow(id, targetId, propId, "false" , "true", ontologyId);
+				}
+			}
+			
 		}
+		
+		
 		TableDumper relDumper = new TableDumper(this.dumpFilePrefix + "relation", path);
+		TableDumper annotation_propertyDumper = new TableDumper(this.dumpFilePrefix + "annotation_property", path);
+		
+		
 		for (OWLObjectProperty op : getOwlOntology().getObjectPropertiesInSignature()) {
 			String label = graphWrapper.getLabel(op);
 			String def = graphWrapper.getDef(op);
 			String id = graphWrapper.getIdentifier(op);
+			String comment = graphWrapper.getComment(op);
+			String namespace = graphWrapper.getNamespace(op);
+
+			boolean isTransitive = graphWrapper.getIsTransitive(op);
+			boolean isReflexive = graphWrapper.getIsReflexive(op);
+			boolean isSymmetric = graphWrapper.getIsSymmetric(op);
+			
+			
 			// textdef TODO
-			relDumper.dumpRow(id, label, ontologyId , null, null, def, null, null, null, null);
+		
+			
+			relDumper.dumpRow(id, label, ontologyId , namespace, comment, def, isTransitive + "", 
+					isSymmetric + "", isReflexive + "", null);
 			
 			for(String l: graphWrapper.getSynonymStrings(op)){
 				obj_alternate_labelDumper.dumpRow(id, l, null, null, null);
@@ -159,6 +249,8 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 				obj_xref.dumpRow(id, xref, null);
 			}
 			
+			
+			
 		}
 		
 		clsDumper.close();
@@ -171,6 +263,8 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 		cls_intersection_ofDumper.close();
 		cls_union_ofDumper.close();
 		disjoint_withDumper.close();
+		
+		inferred_relationshipDumper.close();
 	
 		
 		List<String> list = new ArrayList<String>();
@@ -185,6 +279,9 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 		list.add(cls_union_ofDumper.getTable());
 		list.add(equivalent_toDumper.getTable());
 		list.add(disjoint_withDumper.getTable());
+		
+		list.add(inferred_relationshipDumper.getTable());
+		
 		
 		return list;
 		

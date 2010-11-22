@@ -7,18 +7,14 @@
         <comment>A non-logical relationship between two objects (classes or relations). When an obo consider tag is being used, relation=consider When an obo replaced_by tag is
         being used, relation=replaced_by MAPPINGS: OBO: property_value (also: consider, replaced_by) OWL: AnnotationAssertion(relation obj target_obj) LEAD:
         term2term_metadata</comment>
-        <composite-id name="id" class="org.geneontology.gold.hibernate.model.AnnotationAssertionId">
-            <key-property name="relation" type="string">
-                <column name="relation" />
-            </key-property>
+        <composite-id>
+	       <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
+	       <key-many-to-one name="relation" class="org.geneontology.gold.hibernate.model.Relation" column="relation" />
             <key-property name="obj" type="string">
                 <column name="obj" />
             </key-property>
             <key-property name="targetObj" type="string">
                 <column name="target_obj" />
-            </key-property>
-            <key-property name="ontology" type="string">
-                <column name="ontology" />
             </key-property>
         </composite-id>
     </class>

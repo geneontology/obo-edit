@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="lib" path="lib/owlapi-bin.jar"/>
 	<classpathentry kind="src" output="classes" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="lib/aterm-java-1.6.jar"/>
@@ -9,9 +10,8 @@
 	<classpathentry kind="lib" path="lib/GraphDraw.jar"/>
 	<classpathentry kind="lib" path="lib/HermiT.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
-	<classpathentry kind="lib" path="lib/oboformat.jar"/>
+	<classpathentry kind="lib" path="lib/oboformat.jar" sourcepath="/oboformat/src"/>
 	<classpathentry kind="lib" path="lib/org.semanticweb.HermiT.jar"/>
-	<classpathentry kind="lib" path="lib/owlapi-bin.jar"/>
 	<classpathentry kind="lib" path="lib/pellet-cli.jar"/>
 	<classpathentry kind="lib" path="lib/pellet-core.jar"/>
 	<classpathentry kind="lib" path="lib/pellet-datatypes.jar"/>
@@ -44,6 +44,6 @@
 	<classpathentry kind="lib" path="lib/commons-configuration-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.5.jar"/>
 	<classpathentry kind="lib" path="lib/postgresql-9.0-801.jdbc4.jar"/>
-	<classpathentry kind="lib" path="lib/owltools.jar"/>
+	<classpathentry kind="lib" path="lib/owltools.jar" sourcepath="/OWLTools/src"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
