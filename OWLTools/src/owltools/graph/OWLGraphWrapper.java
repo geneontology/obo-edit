@@ -30,14 +30,18 @@ import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectHasValue;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLReflexiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLRestriction;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 import owltools.graph.OWLQuantifiedProperty.Quantifier;
@@ -829,6 +833,33 @@ public class OWLGraphWrapper {
 	 */
 	public String getLabel(OWLObject c) {
 		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()); 
+		/*Set<OWLAnnotation>anns = null;
+		if (c instanceof OWLEntity) {
+			anns = ((OWLEntity) c).getAnnotations(ontology,lap);
+		}
+		else {
+			return null;
+		}
+		for (OWLAnnotation a : anns) {
+			if (a.getValue() instanceof OWLLiteral) {
+				OWLLiteral val = (OWLLiteral) a.getValue();
+				return val.getLiteral(); // return first - todo - check zero or one
+			}
+		}
+		return null;*/
+		
+		return getAnnotationValue(c, lap);
+	}
+
+
+	public String getComment(OWLObject c) {
+		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_COMMENT.getIRI()); 
+
+		return getAnnotationValue(c, lap);
+	}
+	
+	
+	public String getAnnotationValue(OWLObject c, OWLAnnotationProperty lap) {
 		Set<OWLAnnotation>anns = null;
 		if (c instanceof OWLEntity) {
 			anns = ((OWLEntity) c).getAnnotations(ontology,lap);
@@ -844,7 +875,7 @@ public class OWLGraphWrapper {
 		}
 		return null;
 	}
-
+	
 	
 	/**
 	 * assumes zero or one def
@@ -854,7 +885,7 @@ public class OWLGraphWrapper {
 	 */
 	public String getDef(OWLObject c) {
 		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_0000115")); 
-		Set<OWLAnnotation>anns = null;
+		/*Set<OWLAnnotation>anns = null;
 		if (c instanceof OWLEntity) {
 			anns = ((OWLEntity) c).getAnnotations(ontology,lap);
 		}
@@ -870,8 +901,41 @@ public class OWLGraphWrapper {
 				return val.getLiteral(); // return first - todo - check zero or one
 			}
 		}
-		return null;
+		return null;*/
+		
+		return getAnnotationValue(c, lap);
 	}
+	
+	/**
+	 * It returns the value of the namespace tag in term and typedef frames in the oboformat
+	 * @param c
+	 * @return
+	 */
+	public String getNamespace(OWLObject c) {
+		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_namespace")); 
+		
+		return getAnnotationValue(c, lap);
+	}
+
+
+	public boolean getIsTransitive(OWLObjectProperty c) {
+		Set<OWLTransitiveObjectPropertyAxiom> ax = ontology.getTransitiveObjectPropertyAxioms(c);
+		
+		return ax.size()>0;
+	}
+	
+	public boolean getIsReflexive(OWLObjectProperty c) {
+		Set<OWLReflexiveObjectPropertyAxiom> ax = ontology.getReflexiveObjectPropertyAxioms(c);
+		
+		return ax.size()>0;
+	}
+
+	public boolean getIsSymmetric(OWLObjectProperty c) {
+		Set<OWLSymmetricObjectPropertyAxiom> ax = ontology.getSymmetricObjectPropertyAxioms(c);
+		
+		return ax.size()>0;
+	}
+
 	
 	/**
 	 * 
