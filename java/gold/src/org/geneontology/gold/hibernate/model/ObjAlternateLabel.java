@@ -14,7 +14,6 @@ public class ObjAlternateLabel extends GOModel implements java.io.Serializable {
 	private String synonymXref;
 
 	public ObjAlternateLabel() {
-		System.out.println("CCCCCCCCCCCCCCCCCCCCCCCC");
 		String[] uniqueConstaintFields = {"obj", "label"};
 		this.initUniqueConstraintFields(ObjAlternateLabel.class, uniqueConstaintFields);
 	}
