@@ -59,11 +59,10 @@ sub get_tree {
 
     $ret = [];
     foreach my $ptree (@$query_results){
-      my $props = $ptree->phylotree_property;
+      my $props = $ptree->phylotree_property({'property_key' => 'newick'});
       if( defined $props ){
 	foreach my $prop ($props->all){
 	  my $name = $prop->property_key;
-	  next if ($name eq 'missing');
 	  my $tree = $prop->property_val;
 	  # $self->kvetch("name: " . $name);
 	  # $self->kvetch("tree: " . $tree);
