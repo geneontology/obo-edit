@@ -117,11 +117,13 @@ public class OWLGraphEdge {
 	}
 	
 	public OWLQuantifiedProperty getLastQuantifiedProperty() {
-		OWLQuantifiedProperty lqp = null;
+		/*OWLQuantifiedProperty lqp = null;
 		for (OWLQuantifiedProperty qp : quantifiedPropertyList) {
 			lqp = qp;
 		}
-		return lqp;
+		return lqp;*/
+		
+		return (OWLQuantifiedProperty)quantifiedPropertyList.get(quantifiedPropertyList.size()-1);
 	}
 
 	public void setSingleQuantifiedProperty(OWLQuantifiedProperty qp) {
@@ -157,8 +159,15 @@ public class OWLGraphEdge {
 	}
 	
 	public boolean equals(Object e) {
-		return ((OWLGraphEdge) e).getSourceId().equals(getSourceId()) &&
-		((OWLGraphEdge) e).getTargetId().equals(getTargetId());
+		
+		if(e == null && !(e instanceof OWLGraphEdge))
+			return false;
+		
+		OWLGraphEdge other = (OWLGraphEdge) e;
+		
+		return other.getSourceId().equals(getSourceId()) &&
+			other.getTargetId().equals(getTargetId())
+			&& quantifiedPropertyList.containsAll(other.getQuantifiedPropertyList());
 		
 	}
 
