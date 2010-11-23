@@ -13,7 +13,7 @@
 <dd>[% cluster.dbname %]::[% cluster.key %][% IF viz_link %]&nbsp;&nbsp;<a title="View the interactive tree page" href="[% viz_link %]"><img src=[% viz_img %] /></a>[% END %]</dd>
 
 <h4>2. Date selected for concurrent annotation</h4>
-<p>Not in DB</p>
+<p>[% IF concurrent ; concurrent ; ELSE %]not supplied[% END %]</p> 
 
 [% IF paint_ajax %]
 <script type="text/javascript">

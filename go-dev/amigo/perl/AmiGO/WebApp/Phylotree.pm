@@ -188,6 +188,9 @@ sub mode_cluster{
     $c->set_template_parameter(cluster => $o);
     $c->set_template_parameter(gene_products => [ $o->gene_products() ]);
     $c->set_template_parameter(page_title => $pid);
+    $c->set_template_parameter(concurrent => join(', ', map {
+	$_->property_val;
+    } $o->properties('concurrent')));
     $c->set_template_parameter(missing => [ sort {
 	$a->property_val cmp $b->property_val;
     } $o->properties('missing') ]);
