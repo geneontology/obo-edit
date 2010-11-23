@@ -173,6 +173,8 @@ info_dump();
 var a_width = 800;
 var a_height = 600;
 var edge_buffer = 100;
+//var edge_buffer = 0;
+var edge_shift = edge_buffer / 2.0;
 
 // Adjust scales.
 x_scale = a_width / layout.max_distance;
@@ -205,52 +207,39 @@ window.onload = function () {
         this.animate({"fill-opacity": 0}, 100);
     };
 
+    // Create context.
     var r = Raphael("test1", a_width + edge_buffer, a_height + edge_buffer);
-    var connections = [];
-    // var shapes = [
-    // 	//r.ellipse(190, 100, 30, 20),
-    // 	r.rect(190, 100, 60, 40, 2),
-    //     r.rect(290, 80, 60, 40, 2),
-    //     r.rect(290, 180, 60, 40, 2),
-    //     //r.ellipse(450, 100, 20, 20),
-    //     r.rect(450, 100, 60, 40, 2),
-    //     r.rect(450, 180, 60, 40, 2),
-    //     r.rect(190, 180, .1, .1, 0)
-    // ];
+
+    // Add shapes and create lookup (hash) for use with connections.
     var shape_hash = {};
     var shapes = new Array();
     for( var nidi = 0; nidi < layout.node_list.length; nidi++ ){
 	var node_id = layout.node_list[nidi];
 	shape_hash[node_id] = nidi;
-	//var origin_x = a_width / 2.0;
-	//var origin_y = a_height / 2.0;
-        shapes.push(r.rect((layout.position_x[node_id] * x_scale),
-			   (layout.position_y[node_id] * y_scale),
-			   60, 40, 2));
+        shapes.push(r.rect((layout.position_x[node_id] * x_scale) + edge_shift,
+			   (layout.position_y[node_id] * y_scale) + edge_shift,
+			   50, 30, 2));
     }
 
     // Shape definition.
     for (var i = 0, ii = shapes.length; i < ii; i++) {
-        var color = Raphael.getColor();
-        shapes[i].attr({fill: color,
-			stroke: color,
-			"fill-opacity": .25,
+        //var color = Raphael.getColor();
+        shapes[i].attr({fill: "blue",
+			stroke: "blue",
+			//"fill-opacity": .25,
+			"fill-opacity": 0.0,
 			"stroke-width": 2,
 			cursor: "move"});
         shapes[i].drag(move, dragger, up);
     }
 
-    // 
-    // connections.push(r.connection(shapes[0], shapes[1], "#00f"));
-    // connections.push(r.connection(shapes[1], shapes[2], "#0f0", "#fff|5"));
-    // connections.push(r.connection(shapes[1], shapes[3], "#f00", "#fff"));
-    // connections.push(r.connection(shapes[4], shapes[2], "#f00", "#fff"));
-    // connections.push(r.connection(shapes[5], shapes[0], "#f0f", "#fff"));
+    // Add stored connections.
+    var connections = new Array();
     for( var ei = 0; ei < layout.edge_list.length; ei++ ){
 	var edge = layout.edge_list[ei];
 	connections.push(r.connection(shapes[shape_hash[edge[0]]],
 				      shapes[shape_hash[edge[1]]],
-				      "#0f0", "#f0f"));
+				      "#000", "#f00|2"));
     }
 
 };
