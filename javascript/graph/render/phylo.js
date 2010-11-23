@@ -96,97 +96,89 @@ Raphael.fn.connection = function (obj1, obj2, line, bg) {
 };
 
 
-// Example graph.
-var n_a = new bbop.model.tree.node('a');
-var n_b = new bbop.model.tree.node('b');
-var n_c = new bbop.model.tree.node('c');
-var n_d = new bbop.model.tree.node('d');
-var n_e = new bbop.model.tree.node('e');
-var n_f = new bbop.model.tree.node('f');
-var e1 = new bbop.model.tree.edge(n_a, n_b, 1.1);
-var e2 = new bbop.model.tree.edge(n_b, n_c, 2.2);
-var e3 = new bbop.model.tree.edge(n_b, n_d, 3.3);
-var e4 = new bbop.model.tree.edge(n_a, n_e, 4.4);
-var e5 = new bbop.model.tree.edge(n_d, n_f, 5.5);
+// Example graph hand loaded from:
+// (http://amigo.berkeleybop.org/amigo/panther/PTHR10004.tree).
+// AN0(AN1(AN2(XP_800359:0.687,XP_790652:0.774,XP_800360:0.695):0.473,AN6(Q7RKB3:1.366,Q7RBF2:1.208):0.223):1.0,Q747I8:1.0);
+var an0 = new bbop.model.tree.node('AN0', 'AN0');
+var an1 = new bbop.model.tree.node('AN1', 'AN1');
+var an2 = new bbop.model.tree.node('AN2', 'AN2');
+var an6 = new bbop.model.tree.node('AN6', 'AN6');
+var xp9 = new bbop.model.tree.node('XP_800359', 'XP_800359');
+var xp2 = new bbop.model.tree.node('XP_790652', 'XP_790652');
+var xp0 = new bbop.model.tree.node('XP_800360', 'XP_800360');
+var q7rk = new bbop.model.tree.node('Q7RKB3', 'Q7RKB3');
+var q7rb = new bbop.model.tree.node('Q7RBF2', 'Q7RBF2');
+var q747 = new bbop.model.tree.node('Q747I8', 'Q747I8');
+
+var e0 = new bbop.model.tree.edge(an0, an1, 1.0);
+var e1 = new bbop.model.tree.edge(an0, q747, 1.0);
+var e2 = new bbop.model.tree.edge(an1, an2, 0.473);
+var e3 = new bbop.model.tree.edge(an1, an6, 0.223);
+var e4 = new bbop.model.tree.edge(an2, xp9, 0.687);
+var e5 = new bbop.model.tree.edge(an2, xp2, 0.774);
+var e6 = new bbop.model.tree.edge(an2, xp0, 0.695);
+var e7 = new bbop.model.tree.edge(an6, q7rk, 1.366);
+var e8 = new bbop.model.tree.edge(an6, q7rb, 1.208);
+
 var t = new bbop.model.tree.graph();
-t.add_node(n_a);
-t.add_node(n_b);
-t.add_node(n_c);
-t.add_node(n_d);
-t.add_node(n_e);
-t.add_node(n_f);
+t.add_node(an0);
+t.add_node(an1);
+t.add_node(an2);
+t.add_node(an6);
+t.add_node(xp9);
+t.add_node(xp2);
+t.add_node(xp0);
+t.add_node(q7rk);
+t.add_node(q7rb);
+t.add_node(q747);
+t.add_edge(e0);
 t.add_edge(e1);
 t.add_edge(e2);
 t.add_edge(e3);
 t.add_edge(e4);
 t.add_edge(e5);
+t.add_edge(e6);
+t.add_edge(e7);
+t.add_edge(e8);
 var layout = t.layout();
 
-///
-/// Decide relative y positions by walking backwards through the
-/// cohorts.
-///
+// Explicit info dump.
+var x_scale = 1.0;
+var y_scale = 1.0;
 
-// Walk backwards through the cohorts to find a base Y position. for
-// the final cohort.
-var position_y = {};
-var final_cohort = layout.cohorts[layout.max_depth -1];
-bbop.core.kvetch('look at final cohort: ' + layout.max_depth -1);
-for( var j = 0; j < final_cohort.length; j++ ){
-    var item = final_cohort[j];
-    position_y[item.id] = j + 1.0;
-    bbop.core.kvetch('position_y: ' + item.id + ', ' + (j + 1.0));
-}
-// Walk backwards through the remaining cohorts to find the best Y
-// positions.
-for( var i = layout.cohorts.length -1; i > 0; i-- ){
+function info_dump(){
+    //   
+    for( var ni = 0; ni < layout.node_list.length; ni++ ){
+	var noid = layout.node_list[ni];
+	bbop.core.kvetch('info(node): (' + noid +
+			 ') x:' + (layout.position_x[noid] * x_scale) +
+			 ', y:' + (layout.position_y[noid] * y_scale));
+    }
+    // 
+    for( var ei = 0; ei < layout.edge_list.length; ei++ ){
+	var edge = layout.edge_list[ei];
+	bbop.core.kvetch('info(edge): (' + edge[0] + ', ' + edge[1] + '): ' +
+			 (layout.parent_distances[edge[0]][edge[1]]) * y_scale);
+    }
     //
-    var cohort = layout.cohorts[i -1];
-    bbop.core.kvetch('look at cohort: ' + (i -1));
-    for( var j = 0; j < cohort.length; j++ ){
-	var item = cohort[j];
-
-	// Deeper placements always take precedence.
-	if( ! position_y[item.id] ){
-
-	    // If you have one parent, they have the same Y as you.
-	    // This generalizes to: the parent has the average Y of
-	    // it's children.
-	    // This is easy then, once we start, but how to get the
-	    // initial leaf placement?
-	    // Get item's children and take their average (by
-	    // definition, they must already be in the placed list
-	    // (even if it was just a routing node)).
-	    var c_nodes = t.get_child_nodes(item.id);
-	    var position_acc = 0.0;
-	    for( var ci = 0; ci < c_nodes.length; ci++ ){
-		var node = c_nodes[ci];
-		position_acc = position_acc + position_y[node.id()];
-	    }
-	    var avg = position_acc / (c_nodes.length * 1.0);
-	    position_y[item.id] = avg;
-	    bbop.core.kvetch('position_y:: ' + item.id + ', ' + avg);
-	}
-    }
+    bbop.core.kvetch('info(width): ' + layout.max_width * y_scale);
+    //bbop.core.kvetch('info(depth): ' + layout.max_depth);
+    bbop.core.kvetch('info(distance): ' + layout.max_distance * x_scale);
 }
 
-///
-/// Decide final x positions walking from top to bottom. Already done
-/// with parent distance, so just get roots. and walk.
-///
+info_dump();
 
-var position_x = {};
-var parent_dist = layout.parent_distances;
-var roots = t.get_root_nodes();
-for( var r = 0; r < roots.length; r++ ){
-	var root = root[r];
+// Let's play with arbitrary dimensions. Evrything should be
+// packed/spread within these bounds (eventually tied to eindow size?).
+var a_width = 800;
+var a_height = 600;
+var edge_buffer = 100;
 
-	if( item.routing_node == false ){
-	    // Get kids and their
-	}
-    }
-}
+// Adjust scales.
+x_scale = a_width / layout.max_distance;
+y_scale = a_height / layout.max_width;
 
+info_dump();
 
 // Render out.
 window.onload = function () {
@@ -213,19 +205,30 @@ window.onload = function () {
         this.animate({"fill-opacity": 0}, 100);
     };
 
-    var r = Raphael("test1", 640, 480);
+    var r = Raphael("test1", a_width + edge_buffer, a_height + edge_buffer);
     var connections = [];
-    var shapes = [
-	//r.ellipse(190, 100, 30, 20),
-	r.rect(190, 100, 60, 40, 2),
-        r.rect(290, 80, 60, 40, 2),
-        r.rect(290, 180, 60, 40, 2),
-        //r.ellipse(450, 100, 20, 20),
-        r.rect(450, 100, 60, 40, 2),
-        r.rect(450, 180, 60, 40, 2),
-        r.rect(190, 180, .1, .1, 0)
-    ];
-    
+    // var shapes = [
+    // 	//r.ellipse(190, 100, 30, 20),
+    // 	r.rect(190, 100, 60, 40, 2),
+    //     r.rect(290, 80, 60, 40, 2),
+    //     r.rect(290, 180, 60, 40, 2),
+    //     //r.ellipse(450, 100, 20, 20),
+    //     r.rect(450, 100, 60, 40, 2),
+    //     r.rect(450, 180, 60, 40, 2),
+    //     r.rect(190, 180, .1, .1, 0)
+    // ];
+    var shape_hash = {};
+    var shapes = new Array();
+    for( var nidi = 0; nidi < layout.node_list.length; nidi++ ){
+	var node_id = layout.node_list[nidi];
+	shape_hash[node_id] = nidi;
+	//var origin_x = a_width / 2.0;
+	//var origin_y = a_height / 2.0;
+        shapes.push(r.rect((layout.position_x[node_id] * x_scale),
+			   (layout.position_y[node_id] * y_scale),
+			   60, 40, 2));
+    }
+
     // Shape definition.
     for (var i = 0, ii = shapes.length; i < ii; i++) {
         var color = Raphael.getColor();
@@ -238,9 +241,16 @@ window.onload = function () {
     }
 
     // 
-    connections.push(r.connection(shapes[0], shapes[1], "#00f"));
-    connections.push(r.connection(shapes[1], shapes[2], "#0f0", "#fff|5"));
-    connections.push(r.connection(shapes[1], shapes[3], "#f00", "#fff"));
-    connections.push(r.connection(shapes[4], shapes[2], "#f00", "#fff"));
-    connections.push(r.connection(shapes[5], shapes[0], "#f0f", "#fff"));
+    // connections.push(r.connection(shapes[0], shapes[1], "#00f"));
+    // connections.push(r.connection(shapes[1], shapes[2], "#0f0", "#fff|5"));
+    // connections.push(r.connection(shapes[1], shapes[3], "#f00", "#fff"));
+    // connections.push(r.connection(shapes[4], shapes[2], "#f00", "#fff"));
+    // connections.push(r.connection(shapes[5], shapes[0], "#f0f", "#fff"));
+    for( var ei = 0; ei < layout.edge_list.length; ei++ ){
+	var edge = layout.edge_list[ei];
+	connections.push(r.connection(shapes[shape_hash[edge[0]]],
+				      shapes[shape_hash[edge[1]]],
+				      "#0f0", "#f0f"));
+    }
+
 };
