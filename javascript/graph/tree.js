@@ -296,7 +296,8 @@ bbop.model.tree.graph = function(){
 	bbop.core.kvetch('look at final cohort: ' + max_depth -1);
 	for( var j = 0; j < final_cohort.length; j++ ){
 	    var item = final_cohort[j];
-	    position_y[item.id] = j + 1.0;
+	    //position_y[item.id] = j + 1.0;
+	    position_y[item.id] = j + 0.0;
 	    bbop.core.kvetch('position_y: ' + item.id + ', ' + (j + 1.0));
 	}
 	// Walk backwards through the remaining cohorts to find the best Y
@@ -333,7 +334,7 @@ bbop.model.tree.graph = function(){
 	}
  
 	//
-	var x_offset = 1.0;
+	var x_offset = 0.0;
 	var position_x = {};
 	var roots = anchor.get_root_nodes();
 	for( var r = 0; r < roots.length; r++ ){
