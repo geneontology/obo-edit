@@ -81,16 +81,34 @@ bbop.model.tree.graph = function(){
     var max_dist = 0.0;
     var all_dists_parent = {};
     var all_dists_child = {};
+    var node_list = new Array();
+    var node_hash = {};
+    var edge_list = new Array();
+    var edge_hash = {};
     function info_up(node_id){
 	
 	var nid = node_id;
 	bbop.core.kvetch("info_up: working on: " + nid);
+
+	// Node bookkeeping.
+	if( ! node_hash[nid] ){
+	    node_hash[nid] = true;
+	    node_list.push(nid);
+	}
 
 	// Can only have at most one parent.
 	var node_parent = anchor.get_parent_nodes(nid);
 	if( node_parent && node_parent.length ){
 	    node_parent = node_parent[0];
 	    var pid = node_parent.id();
+
+	    // Edge bookkeeping.
+	    var edge_uid = pid + '_!muNge!_' + node_id;
+	    if( ! edge_hash[edge_uid] ){
+		edge_hash[edge_uid] = true;
+		edge_list.push([pid, node_id]);
+		bbop.core.kvetch('bracket_down: indexing: ' + edge_uid);
+	    }
 
 	    // Add new data to globals.
 	    bbop.core.kvetch(" info_up: seems to have parent: " + pid);
@@ -150,7 +168,8 @@ bbop.model.tree.graph = function(){
 	var child_nodes = anchor.get_child_nodes(in_node_id);
 	for( var cb = 0; cb < child_nodes.length; cb++ ){
 	    var child_node = child_nodes[cb];
-	    bbop.core.kvetch('  bracket_down: pushing: ' + child_node.id());
+	    child_node_id = child_node.id();
+	    bbop.core.kvetch('  bracket_down: pushing: ' + child_node_id);
 	    child_bracket.push(bracket_down(child_node, lvl + 1, in_node_id));
 	}
 
@@ -178,15 +197,22 @@ bbop.model.tree.graph = function(){
     var cohort_list = new Array(); // will reinit
     this.layout = function (){ // TODO: layout should take bracket ordering func
 
+	// Refresh scope on new layout call.
+	brackets = new Array();
+	node_list = new Array();
+	node_hash = {};
+	edge_list = new Array();
+	edge_hash = {};
+	cohort_list = new Array(); // token--now also reset and sized below
+
 	// Pass one:
 	// Collect all of our bracketing information, also order the
 	// brackets to some function.
-	brackets = new Array(); // refresh lexical brackets
-	var base_bracket_nodes = anchor.get_root_nodes();
-	for( var bb = 0; bb < base_bracket_nodes.length; bb++ ){
+	var base_nodes = anchor.get_root_nodes();
+	for( var bb = 0; bb < base_nodes.length; bb++ ){
 	    bbop.core.kvetch('bracket_down: start: ' +
-			     base_bracket_nodes[bb].id());
-	    brackets.push(bracket_down(base_bracket_nodes[bb]));
+			     base_nodes[bb].id());
+	    brackets.push(bracket_down(base_nodes[bb]));
 	}
 	// The children are ordered--make the top-level one ordered as
 	// well.
@@ -257,6 +283,76 @@ bbop.model.tree.graph = function(){
 	    info_up(base_info_nodes[bi].id());
 	}
 
+	///
+	/// Decide relative y positions by walking backwards through
+	/// the cohorts.
+	///
+
+
+	// Walk backwards through the cohorts to find a base Y position. for
+	// the final cohort.
+	var position_y = {};
+	var final_cohort = cohort_list[max_depth -1];
+	bbop.core.kvetch('look at final cohort: ' + max_depth -1);
+	for( var j = 0; j < final_cohort.length; j++ ){
+	    var item = final_cohort[j];
+	    position_y[item.id] = j + 1.0;
+	    bbop.core.kvetch('position_y: ' + item.id + ', ' + (j + 1.0));
+	}
+	// Walk backwards through the remaining cohorts to find the best Y
+	// positions.
+	for( var i = cohort_list.length -1; i > 0; i-- ){
+	    //
+	    var cohort = cohort_list[i -1];
+	    bbop.core.kvetch('look at cohort: ' + (i -1));
+	    for( var j = 0; j < cohort.length; j++ ){
+		var item = cohort[j];
+
+		// Deeper placements always take precedence.
+		if( ! position_y[item.id] ){
+
+		    // If you have one parent, they have the same Y as you.
+		    // This generalizes to: the parent has the average Y of
+		    // it's children. This is easy then, once we
+		    // start, but how to get the initial leaf
+		    // placement? Get item's children and take their
+		    // average (by definition, they must already be in
+		    // the placed list (even if it was just a routing
+		    // node)).
+		    var c_nodes = anchor.get_child_nodes(item.id);
+		    var position_acc = 0.0;
+		    for( var ci = 0; ci < c_nodes.length; ci++ ){
+			var node = c_nodes[ci];
+			position_acc = position_acc + position_y[node.id()];
+		    }
+		    var avg = position_acc / (c_nodes.length * 1.0);
+		    position_y[item.id] = avg;
+		    bbop.core.kvetch('position_y:: ' + item.id + ', ' + avg);
+		}
+	    }
+	}
+ 
+	//
+	var x_offset = 1.0;
+	var position_x = {};
+	var roots = anchor.get_root_nodes();
+	for( var r = 0; r < roots.length; r++ ){
+
+	    var root_id = roots[r].id();
+	    position_x[root_id] = x_offset;
+	    bbop.core.kvetch('position_x:: ' + root_id + ', '
+			     + position_x[root_id]);
+    
+	    if( item.routing_node == false ){
+		// Get kids and their x distance (for placement).
+		for( var nid in all_dists_parent[root_id] ){
+		    var dist = all_dists_parent[root_id][nid] + x_offset;
+		    position_x[nid] = dist;
+		    bbop.core.kvetch('position_x:: ' + nid + ', ' + dist);
+		}
+	    }
+	}
+
 	//
 	return {
 	    parent_distances: all_dists_parent,
@@ -266,7 +362,11 @@ bbop.model.tree.graph = function(){
 	    max_width: max_width,
 	    cohorts: cohort_list,
 	    //routing: routing_list,
-	    brackets: brackets
+	    brackets: brackets,
+	    node_list: node_list,
+	    edge_list: edge_list,
+	    position_x: position_x,
+	    position_y: position_y
 	};
     };
 
