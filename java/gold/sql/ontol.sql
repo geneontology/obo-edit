@@ -362,6 +362,14 @@ CREATE TABLE relation_disjoint_with (
        ontology VARCHAR
 );
 
+-- holds iff: EquivalentObjectProperties(relation equivalent_relation)
+CREATE TABLE relation_equivalent_to (
+       relation VARCHAR,
+       equivalent_relation VARCHAR,
+
+       ontology VARCHAR
+);
+
 
 -- SEMANTICS: SubObjectPropertyOf(inferred_relation PropertyChain(relation1 relation2))
 -- note this table cannot be used for property chains of length >2, GO should not have these.
