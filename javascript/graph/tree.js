@@ -8,6 +8,7 @@
 ////    bbop.model.tree.*
 ////
 //// TODO: see: http://raphaeljs.com/graffle.html
+//// TODO: subtree calculation during bracket_down
 ////
 //// Required:
 ////    bbop.core
@@ -152,6 +153,7 @@ bbop.model.tree.graph = function(){
 
     // Recursive comb down (give partitioned ordering).
     // A bracket looks like: "[{id:a, brackets: [...]}, ...]".
+    // TODO: subtree calculation during.
     var brackets = new Array();
     var max_depth = 0;
     function bracket_down(in_node, lvl, parent_node_id){
