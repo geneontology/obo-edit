@@ -482,7 +482,41 @@ MAPPINGS:
 -- Inferred Relationships
 -- ****************************************
 
-CREATE TABLE inferred_relationship (
+CREATE TABLE inferred_subclass_of (
+       cls VARCHAR,
+       super_cls VARCHAR,
+       is_direct BOOLEAN,
+       is_reflexive BOOLEAN,
+
+       ontology VARCHAR
+);
+
+-- holds iff: cls SubClassOf rel Some tgt
+CREATE TABLE inferred_all_some_relationship (
+       cls VARCHAR,
+       relation VARCHAR,
+       target_cls VARCHAR,
+       is_direct BOOLEAN,
+       is_reflexive BOOLEAN,
+
+       ontology VARCHAR
+);
+
+-- holds iff: cls SubClassOf rel Only tgt
+-- EXAMPLE: lactation only_in_taxon Mammalia ==> lactation SubClassOf in_taxon only Mammalia
+CREATE TABLE inferred_all_only_relationship (
+       cls VARCHAR,
+       relation VARCHAR,
+       target_cls VARCHAR,
+       is_direct BOOLEAN,
+       is_reflexive BOOLEAN,
+
+       ontology VARCHAR
+);
+
+-- holds iff: cls SubClassOf ComplementOf(rel Some tgt)
+-- EXAMPLE: odontogenesis never_in_taxon Aves ==> odontogenesis SubClassOf ComplementOf(in_taxon some Aves) [taxon_go_triggers]
+CREATE TABLE inferred_never_some_relationship (
        cls VARCHAR,
        target_cls VARCHAR,
        relation VARCHAR,
@@ -492,4 +526,14 @@ CREATE TABLE inferred_relationship (
        ontology VARCHAR
 );
 
-COMMENT ON TABLE inferred_relationship IS 'A path between cls and target_cls. The values for this table can be filled in by running a reasoner. The recommended method is getOutgoingEdgesClosureReflexive(cls).';
+-- holds iff: cls SubObjectPropertyOf super_cls
+-- 
+CREATE TABLE inferred_subrelation_of (
+       relation VARCHAR,
+       super_relation VARCHAR,
+       is_direct BOOLEAN,
+       is_reflexive BOOLEAN,
+
+       ontology VARCHAR
+);
+
