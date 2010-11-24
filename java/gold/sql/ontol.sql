@@ -354,6 +354,15 @@ CREATE TABLE subrelation_of (
        ontology VARCHAR
 );
 
+-- holds iff: DisjointObjectProperties(relation disjoint_relation)
+CREATE TABLE relation_disjoint_with (
+       relation VARCHAR,
+       disjoint_relation VARCHAR,
+
+       ontology VARCHAR
+);
+
+
 -- SEMANTICS: SubObjectPropertyOf(inferred_relation PropertyChain(relation1 relation2))
 -- note this table cannot be used for property chains of length >2, GO should not have these.
 -- if this is desired then the property chain should be broken into pairs.
