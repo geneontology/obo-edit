@@ -279,8 +279,9 @@ MAPPINGS:
 CREATE TABLE obj_xref (
        obj VARCHAR,
        xref VARCHAR,
+       xref_description VARCHAR,
 
-       xref_description VARCHAR
+       UNIQUE(obj,xref)
 );
 
 CREATE TABLE annotation_assertion (
@@ -474,5 +475,4 @@ CREATE TABLE inferred_relationship (
        ontology VARCHAR
 );
 
-COMMENT ON TABLE inferred_relationship IS 'A path between cls and target_cls. The values for this table can be filled in by running a reasoner. The recommended method is getOutgoingEdgesClosureReflexive(cls).
-';
+COMMENT ON TABLE inferred_relationship IS 'A path between cls and target_cls. The values for this table can be filled in by running a reasoner. The recommended method is getOutgoingEdgesClosureReflexive(cls).';
