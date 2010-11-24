@@ -8,6 +8,10 @@
 ////    bbop.render.phylo.*
 ////
 //// TODO: looks top-level; make functional for application use.
+//// TODO: move whole subtrees (see text movement)
+//// TODO: hide whole subtrees on double-click
+//// TODO: better text alignment.
+//// TODO: floating right-hand text (see PAINT)
 ////
 //// Required:
 ////    bbop.core
@@ -24,12 +28,6 @@ bbop.core.require('bbop', 'model', 'tree');
 bbop.core.namespace('bbop', 'render', 'phylo');
 
 
-// // Same same.
-// bbop.model.tree.node = function(new_id){
-//     bbop.model.node.call(this, new_id);
-// };
-// bbop.model.tree.node.prototype = new bbop.model.node;
-
 // Start experimenting with this.
 Raphael.fn.connection = function (obj1, obj2, line, bg) {
     if (obj1.line && obj1.from && obj1.to) {
@@ -39,6 +37,11 @@ Raphael.fn.connection = function (obj1, obj2, line, bg) {
     }
     var bb1 = obj1.getBBox();
     var bb2 = obj2.getBBox();
+
+    //bbop.core.kvetch("bb1.width: " + bb1.width);
+    //bbop.core.kvetch("bb1.x: " + bb1.x + ", bb1.y: " + bb1.y);
+    //bbop.core.kvetch("bb1.width: " + bb1.width +", bb1.height: "+ bb1.height);
+
     var p = [{x: bb1.x + bb1.width / 2, y: bb1.y - 1},
              {x: bb1.x + bb1.width / 2, y: bb1.y + bb1.height + 1},
              {x: bb1.x - 1, y: bb1.y + bb1.height / 2},
@@ -75,12 +78,17 @@ Raphael.fn.connection = function (obj1, obj2, line, bg) {
     var y4 = p[res[1]].y;
     var dx = Math.max(Math.abs(x1 - x4) / 2, 10);
     var dy = Math.max(Math.abs(y1 - y4) / 2, 10);
-    var x2 = [x1, x1, x1 - dx, x1 + dx][res[0]].toFixed(3),
-    y2 = [y1 - dy, y1 + dy, y1, y1][res[0]].toFixed(3),
-    x3 = [0, 0, 0, 0, x4, x4, x4 - dx, x4 + dx][res[1]].toFixed(3),
-    y3 = [0, 0, 0, 0, y1 + dy, y1 - dy, y4, y4][res[1]].toFixed(3);
-    var path = ["M", x1.toFixed(3), y1.toFixed(3),
-		"C", x2, y2, x3, y3, x4.toFixed(3), y4.toFixed(3)].join(",");
+    //var x2 = [x1, x1, x1 - dx, x1 + dx][res[0]].toFixed(3),
+    //y2 = [y1 - dy, y1 + dy, y1, y1][res[0]].toFixed(3),
+    //x3 = [0, 0, 0, 0, x4, x4, x4 - dx, x4 + dx][res[1]].toFixed(3),
+    //y3 = [0, 0, 0, 0, y1 + dy, y1 - dy, y4, y4][res[1]].toFixed(3);
+    // var path = ["M", x1.toFixed(3), y1.toFixed(3),
+    // 		"C", x2, y2, x3, y3, x4.toFixed(3), y4.toFixed(3)].join(",");
+    var path = [
+	"M", x1.toFixed(3), y1.toFixed(3),
+	"L", x1.toFixed(3), y4.toFixed(3),
+	"L", x4.toFixed(3), y4.toFixed(3)
+    ].join(",");
     if (line && line.line) {
         line.bg && line.bg.attr({path: path});
         line.line.attr({path: path});
@@ -164,6 +172,9 @@ function info_dump(){
     bbop.core.kvetch('info(width): ' + layout.max_width * y_scale);
     //bbop.core.kvetch('info(depth): ' + layout.max_depth);
     bbop.core.kvetch('info(distance): ' + layout.max_distance * x_scale);
+
+    bbop.core.kvetch('info(x_scale): ' + x_scale);
+    bbop.core.kvetch('info(y_scale): ' + y_scale);
 }
 
 info_dump();
@@ -173,6 +184,11 @@ info_dump();
 var a_width = 800;
 var a_height = 600;
 var edge_buffer = 100;
+var box_width = 50;
+var box_height = 30;
+var text_offset_x = box_width / 2.0;
+var text_offset_y = box_height / 2.0;
+var animation_time = 100;
 //var edge_buffer = 0;
 var edge_shift = edge_buffer / 2.0;
 
@@ -187,38 +203,82 @@ window.onload = function () {
 
     // Dragging animation (color dimming).
     var dragger = function () {
+
+	// New position.
         this.ox = this.attr("x");
         this.oy = this.attr("y");
-        this.animate({"fill-opacity": .2}, 100);
+
+	// Update this (box).
+        this.animate({"fill-opacity": .2}, animation_time);
+
+	// Find text and fade it.
+	var tindex = shape_id_to_index[this.id];
+	var mtxt = texts[tindex];
+        mtxt.animate({"fill-opacity": .2}, animation_time);
     };
 
     // Movement animation (redo line).
     var move = function (dx, dy) {
-        var att = {x: this.ox + dx, y: this.oy + dy};
+
+	// Update position (don't allow movement on the x-axis).
+        var att = {x: this.ox, y: this.oy + dy};
+
+	// Update this (box) location.
         this.attr(att);
+
+	// Find text and move it as well.
+	var tindex = shape_id_to_index[this.id];
+	var mtxt = texts[tindex];
+        var txt_att = {
+	    x: this.ox + text_offset_x,
+	    y: this.oy + dy + text_offset_y
+	};
+        mtxt.attr(txt_att);
+
+	// Update connections.
         for (var i = connections.length; i--;) {
-            r.connection(connections[i]);
+            paper.connection(connections[i]);
         }
-        r.safari();
+        paper.safari();
     };
 
     // Undrag animation.
     var up = function () {
-        this.animate({"fill-opacity": 0}, 100);
+	// Fade this (box).
+        this.animate({"fill-opacity": 0}, animation_time);
+	// Find text and darken.
+	var tindex = shape_id_to_index[this.id];
+	var mtxt = texts[tindex];
+        mtxt.animate({"fill-opacity": 1.0}, animation_time);
     };
 
     // Create context.
-    var r = Raphael("test1", a_width + edge_buffer, a_height + edge_buffer);
+    var paper = Raphael("test1", a_width + edge_buffer, a_height + edge_buffer);
 
     // Add shapes and create lookup (hash) for use with connections.
-    var shape_hash = {};
     var shapes = new Array();
+    var shape_hash = {};
+    var texts = new Array();
+    var shape_id_to_index = new Array();
     for( var nidi = 0; nidi < layout.node_list.length; nidi++ ){
+
+	// Calculate position.
 	var node_id = layout.node_list[nidi];
+	var lpx = (layout.position_x[node_id] * x_scale) + edge_shift;
+	var lpy = (layout.position_y[node_id] * y_scale) + edge_shift;
+
+	// Indexing for later (edge) use.
 	shape_hash[node_id] = nidi;
-        shapes.push(r.rect((layout.position_x[node_id] * x_scale) + edge_shift,
-			   (layout.position_y[node_id] * y_scale) + edge_shift,
-			   50, 30, 2));
+
+	// NOTE: text is *centered* at this point.
+	var text = paper.text(lpx+ text_offset_x, lpy+ text_offset_y, node_id);
+	text.toBack(); // make sure it's behind the boxes
+        texts.push(text);
+
+	var shape = paper.rect(lpx, lpy, box_width, box_height, 2);
+        shapes.push(shape);
+
+	shape_id_to_index[shape.id] = (shapes.length -1);
     }
 
     // Shape definition.
@@ -227,6 +287,7 @@ window.onload = function () {
         shapes[i].attr({fill: "blue",
 			stroke: "blue",
 			//"fill-opacity": .25,
+			title: "foo",
 			"fill-opacity": 0.0,
 			"stroke-width": 2,
 			cursor: "move"});
@@ -237,9 +298,14 @@ window.onload = function () {
     var connections = new Array();
     for( var ei = 0; ei < layout.edge_list.length; ei++ ){
 	var edge = layout.edge_list[ei];
-	connections.push(r.connection(shapes[shape_hash[edge[0]]],
-				      shapes[shape_hash[edge[1]]],
-				      "#000", "#f00|2"));
+	connections.push(paper.connection(shapes[shape_hash[edge[0]]],
+					  shapes[shape_hash[edge[1]]],
+					  "#0f0", "#000|3"));	
     }
 
+    // See: https://github.com/sorccu/cufon/wiki/about
+    // See: http://raphaeljs.com/reference.html#getFont
+    // var txt = paper.print(100, 100, "print", paper.getFont("Museo"), 30).attr({fill: "#00f"});
+    //paper.print(100, 100, "Test string", paper.getFont("Times", 800), 30);
+    //txt[0].attr({fill: "#f00"});
 };
