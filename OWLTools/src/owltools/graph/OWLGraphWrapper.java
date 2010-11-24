@@ -22,7 +22,10 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLFunctionalObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLInverseFunctionalObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLNamedObject;
@@ -831,28 +834,14 @@ public class OWLGraphWrapper {
 	 * @param c
 	 * @return
 	 */
-	public String getLabel(OWLObject c) {
+	public String getLabelAnnotationValue(OWLObject c) {
 		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()); 
-		/*Set<OWLAnnotation>anns = null;
-		if (c instanceof OWLEntity) {
-			anns = ((OWLEntity) c).getAnnotations(ontology,lap);
-		}
-		else {
-			return null;
-		}
-		for (OWLAnnotation a : anns) {
-			if (a.getValue() instanceof OWLLiteral) {
-				OWLLiteral val = (OWLLiteral) a.getValue();
-				return val.getLiteral(); // return first - todo - check zero or one
-			}
-		}
-		return null;*/
 		
 		return getAnnotationValue(c, lap);
 	}
 
 
-	public String getComment(OWLObject c) {
+	public String getCommentAnnotationValue(OWLObject c) {
 		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_COMMENT.getIRI()); 
 
 		return getAnnotationValue(c, lap);
@@ -883,46 +872,219 @@ public class OWLGraphWrapper {
 	 * @param c
 	 * @return
 	 */
-	public String getDef(OWLObject c) {
+	public String getDefAnnotationValue(OWLObject c) {
 		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_0000115")); 
-		/*Set<OWLAnnotation>anns = null;
-		if (c instanceof OWLEntity) {
-			anns = ((OWLEntity) c).getAnnotations(ontology,lap);
-		}
-		else {
-			return null;
-		}
-		
-		for (OWLAnnotation a : anns) {
-			
-			
-			if (a.getValue() instanceof OWLLiteral) {
-				OWLLiteral val = (OWLLiteral) a.getValue();
-				return val.getLiteral(); // return first - todo - check zero or one
-			}
-		}
-		return null;*/
 		
 		return getAnnotationValue(c, lap);
 	}
 	
 	/**
-	 * It returns the value of the namespace tag in term and typedef frames in the oboformat
-	 * @param c
+	 * It returns the value of the is_metadata_tag tag.
+	 * @param c could OWLClass or OWLObjectProperty
 	 * @return
 	 */
-	public String getNamespace(OWLObject c) {
-		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_namespace")); 
+	public String getIsMetaTagAnnotationValue(OWLObject c) {
+		OWLAnnotationProperty lap = getAnnotationProperty("is_metadata_tag");
+		
+		return getAnnotationValue(c, lap);
+	}
+	
+	/**
+	 * It returns the value of the subset tag.
+	 * @param c could OWLClass or OWLObjectProperty
+	 * @return
+	 */
+	public String getSubsetAnnotationValue(OWLObject c) {
+		OWLAnnotationProperty lap = getAnnotationProperty("subset");
 		
 		return getAnnotationValue(c, lap);
 	}
 
+	/**
+	 * It returns the value of the domain tag
+	 * @param prop
+	 * @return
+	 */
+	public String getDomain(OWLObjectProperty prop){
+		Set<OWLClassExpression> domains = prop.getDomains(ontology);
+		
+		for(OWLClassExpression ce: domains){
+			return getIdentifier(ce);
+		}
+		
+		return null;
+	}
+	
 
+	/**
+	 * It returns the value of the range tag
+	 * @param prop
+	 * @return
+	 */
+	public String getRange(OWLObjectProperty prop){
+		Set<OWLClassExpression> domains = prop.getRanges(ontology);
+		
+		for(OWLClassExpression ce: domains){
+			return getIdentifier(ce);
+		}
+		
+		return null;
+	}
+	
+	
+	/**
+	 * It returns the value of the replaced_by tag or IAO_0100001 annotation.
+	 * @param c could OWLClass or OWLObjectProperty
+	 * @return
+	 */
+	public String getReplacedByAnnotationValue(OWLObject c) {
+		OWLAnnotationProperty lap = getAnnotationProperty("0100001");
+		
+		return getAnnotationValue(c, lap);
+	}
+
+	/**
+	 * It returns the value of the replaced_by tag.
+	 * @param c could OWLClass or OWLObjectProperty
+	 * @return
+	 */
+	public String getConsiderAnnotationValue(OWLObject c) {
+		OWLAnnotationProperty lap = getAnnotationProperty("consider");
+		
+		return getAnnotationValue(c, lap);
+	}
+
+	
+		
+	
+	/**
+	 * It returns the value of the is-obsolete tag.
+	 * @param c could OWLClass or OWLObjectProperty
+	 * @return
+	 */
+	public String getIsObsoleteAnnotationValue(OWLObject c) {
+		OWLAnnotationProperty lap = getAnnotationProperty("is-obsolete"); 
+		
+		return getAnnotationValue(c, lap);
+	}
+	
+	
+	
+	/**
+	 * It returns the value of the alt_id tag
+	 * @param c
+	 * @return
+	 */
+	public String getAltIdAnnotationValue(OWLObject c) {
+		OWLAnnotationProperty lap = getAnnotationProperty("alt_id");
+		
+		return getAnnotationValue(c, lap);
+	}
+
+	/**
+	 * It returns the value of the builtin tag
+	 * @param c
+	 * @return
+	 */
+	public String getBuiltinAnnotationValue(OWLObject c) {
+		OWLAnnotationProperty lap = getAnnotationProperty("builtin");
+		
+		return getAnnotationValue(c, lap);
+	}
+	
+	/**
+	 * It returns the value of the is_anonymous tag
+	 * @param c
+	 * @return
+	 */
+	public String getIsAnonymousAnnotationValue(OWLObject c) {
+		OWLAnnotationProperty lap = getAnnotationProperty("is_anonymous");
+		
+		return getAnnotationValue(c, lap);
+	}
+
+	
+	
+	
+	
+	/**
+	 * It translates a oboformat tag into an OWL annotation property
+	 * @param tag
+	 * @return
+	 */
+	public OWLAnnotationProperty getAnnotationProperty(String tag){
+		return dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_"+ tag)); 
+		
+	}
+	
+	
+	/**
+	 * It returns the value of the namespace tag
+	 * @param c
+	 * @return
+	 */
+	public String getNamespaceAnnotationValue(OWLObject c) {
+		OWLAnnotationProperty lap = getAnnotationProperty("namespace");
+			
+		return getAnnotationValue(c, lap);
+	}
+	
+
+	/**
+	 * It returns the value of the created_by tag
+	 * @param c
+	 * @return
+	 */
+	public String getCreatedByAnnotationValue(OWLObject c) {
+		OWLAnnotationProperty lap = getAnnotationProperty("created_by"); 
+		
+		return getAnnotationValue(c, lap);
+	}
+	
+
+	/**
+	 * It returns the value of the is_anti_symmetric tag or IAO_0000427 annotation
+	 * @param c
+	 * @return
+	 */
+	public String getIsAntiSymmetricAnnotationValue(OWLObject c) {
+		OWLAnnotationProperty lap = getAnnotationProperty("0000427"); 
+		
+		return getAnnotationValue(c, lap);
+	}
+	
+
+	/**
+	 * It returns the value of the is_cyclic tag 
+	 * @param c
+	 * @return
+	 */
+	public String getIsCyclicAnnotationValue(OWLObject c) {
+		OWLAnnotationProperty lap = getAnnotationProperty("is_cyclic"); 
+		
+		return getAnnotationValue(c, lap);
+	}
+	
+	
 	public boolean getIsTransitive(OWLObjectProperty c) {
 		Set<OWLTransitiveObjectPropertyAxiom> ax = ontology.getTransitiveObjectPropertyAxioms(c);
 		
 		return ax.size()>0;
 	}
+
+	public boolean getIsFunctional(OWLObjectProperty c) {
+		Set<OWLFunctionalObjectPropertyAxiom> ax = ontology.getFunctionalObjectPropertyAxioms(c);
+		
+		return ax.size()>0;
+	}
+	
+	public boolean getIsInverseFunctional(OWLObjectProperty c) {
+		Set<OWLInverseFunctionalObjectPropertyAxiom> ax = ontology.getInverseFunctionalObjectPropertyAxioms(c);
+		
+		return ax.size()>0;
+	}
+
+	
 	
 	public boolean getIsReflexive(OWLObjectProperty c) {
 		Set<OWLReflexiveObjectPropertyAxiom> ax = ontology.getReflexiveObjectPropertyAxioms(c);
@@ -944,7 +1106,8 @@ public class OWLGraphWrapper {
 	 */
 	
 	public List<String> getXref(OWLObject c){
-		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_xref")); 
+		OWLAnnotationProperty lap = getAnnotationProperty("xref");
+			
 		Set<OWLAnnotation>anns = null;
 		if (c instanceof OWLEntity) {
 			anns = ((OWLEntity) c).getAnnotations(ontology,lap);
@@ -967,8 +1130,8 @@ public class OWLGraphWrapper {
 
 	public List<String> getDefXref(OWLObject c){
 		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_0000115")); 
-		OWLAnnotationProperty xap = dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_xref")); 
-
+		OWLAnnotationProperty xap = getAnnotationProperty("xref");
+			
 		List<String> list = new ArrayList<String>();
 		
 		if(c instanceof OWLEntity){
@@ -1003,7 +1166,7 @@ public class OWLGraphWrapper {
 		ArrayList<String> ar = new ArrayList<String>();
 		for(OWLClassExpression ce: st){
 			if(ce instanceof OWLNamedObject)
-				ar.add(getLabel(ce)); 
+				ar.add(getLabelAnnotationValue(ce)); 
 		}
 
 		return ar.toArray(new String[ar.size()]);
