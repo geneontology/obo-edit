@@ -8,20 +8,23 @@
 ////    bbop.render.phylo.*
 ////
 //// TODO: looks top-level; make functional for application use.
-//// TODO: move whole subtrees (see text movement)
-//// TODO: hide whole subtrees on double-click
-//// TODO: better text alignment.
+//// STARTED: hide whole subtrees on double-click
+//// TODO: trace up path on hover
+//// TODO: font and text placement
+//// TODO: better text alignment
 //// TODO: floating right-hand text (see PAINT)
+//// TODO: switch between fixed-height and fill-height?
 ////
 //// Required:
 ////    bbop.core
 ////    bbop.model
+////    bbop.model.tree
 ////
 //////////
 
 
 // Module and namespace checking.
-//bbop.core.require('Raphael');
+bbop.core.require('Raphael');
 bbop.core.require('bbop', 'core');
 bbop.core.require('bbop', 'model');
 bbop.core.require('bbop', 'model', 'tree');
@@ -154,6 +157,7 @@ var layout = t.layout();
 var x_scale = 1.0;
 var y_scale = 1.0;
 
+// DEBUG
 function info_dump(){
     //   
     for( var ni = 0; ni < layout.node_list.length; ni++ ){
@@ -177,6 +181,7 @@ function info_dump(){
     bbop.core.kvetch('info(y_scale): ' + y_scale);
 }
 
+// DEBUG
 info_dump();
 
 // Let's play with arbitrary dimensions. Evrything should be
@@ -196,44 +201,121 @@ var edge_shift = edge_buffer / 2.0;
 x_scale = a_width / layout.max_distance;
 y_scale = a_height / layout.max_width;
 
+// DEBUG
 info_dump();
+
 
 // Render out.
 window.onload = function () {
 
+    // Create context.
+    var paper = Raphael("test1", a_width + edge_buffer, a_height + edge_buffer);
+    bbop.core.kvetch('onload: made paper');
+
+    ///
+    /// Graph helper function definitions.
+    /// 
+
+    // Subtree list, including self.
+    function gather_list_from_hash(nid, hash){
+    	var retlist = new Array();
+    	retlist.push(nid);
+    	// Get all nodes cribbing from distances.
+    	for( vt in hash[nid] ){
+    	    //bbop.core.kvetch("id: " + id + ", v: " + ct);
+    	    retlist.push(vt);
+    	}
+    	return retlist;	
+    }
+
+    // Subtree list, including self.
+    function get_subtree_list(nid){
+	return gather_list_from_hash(nid, layout.parent_distances);
+    }
+
+    // Ancestor list, including self.
+    function get_ancestor_list(nid){
+	return gather_list_from_hash(id, layout.child_distances);
+    }
+
+    //
+    function get_associated(shape_id, index_kept){
+
+    	var retlist = new Array();
+	
+    	var node_id = shape_id_to_node_id[shape_id];
+    	var subtree_node_list = get_subtree_list(node_id);
+    	for( var si = 0; si < subtree_node_list.length; si++ ){
+
+    	    var subnode_id = subtree_node_list[si];
+    	    var sindex = node_id_to_index[subnode_id];
+
+    	    var thing = index_kept[sindex];
+    	    retlist.push(thing);
+    	}
+
+    	return retlist;
+    }
+
+    function get_associated_shapes(shape_id){
+    	return get_associated(shape_id, shapes);
+    }
+
+    function get_associated_texts(shape_id){
+    	return get_associated(shape_id, texts);
+    }
+
+    ///
+    /// Shape manipulation function definitions.
+    /// 
+
     // Dragging animation (color dimming).
     var dragger = function () {
 
-	// New position.
-        this.ox = this.attr("x");
-        this.oy = this.attr("y");
+    	var shape_id = this.id;
 
-	// Update this (box).
-        this.animate({"fill-opacity": .2}, animation_time);
+	// Darken boxes and update current position before dragging.
+    	var assoc_shapes = get_associated_shapes(shape_id);
+    	for( var si = 0; si < assoc_shapes.length; si++ ){
+	    var shape = assoc_shapes[si];
+            shape.animate({"fill-opacity": .2}, animation_time);
+            shape.oy = shape.attr("y");
+    	}
 
-	// Find text and fade it.
-	var tindex = shape_id_to_index[this.id];
-	var mtxt = texts[tindex];
-        mtxt.animate({"fill-opacity": .2}, animation_time);
+	// Fade text and update current position before dragging.
+    	var assoc_texts = get_associated_texts(shape_id);
+    	for( var ti = 0; ti < assoc_texts.length; ti++ ){
+            var text = assoc_texts[ti];
+            text.animate({"fill-opacity": .2}, animation_time);
+            text.oy = text.attr("y");
+    	}
     };
 
-    // Movement animation (redo line).
+    // Movement animation (don't allow movement on the x-axis) and
+    // redo lines.
     var move = function (dx, dy) {
 
-	// Update position (don't allow movement on the x-axis).
-        var att = {x: this.ox, y: this.oy + dy};
+    	var shape_id = this.id;
 
-	// Update this (box) location.
-        this.attr(att);
+	// Move box positions.
+    	var assoc_shapes = get_associated_shapes(shape_id);
+    	for( var si = 0; si < assoc_shapes.length; si++ ){
+	    var mshp = assoc_shapes[si];
+            var shp_att = { y: mshp.oy + dy };
+            mshp.attr(shp_att);
+	    bbop.core.kvetch('mshp[' + si + ']: y:' + mshp.y + 
+			     ', oy: ' + mshp.oy +
+			     ', dy: ' + dy);
+	    //mshp.y = mshp.oy + dy;
+    	}
 
-	// Find text and move it as well.
-	var tindex = shape_id_to_index[this.id];
-	var mtxt = texts[tindex];
-        var txt_att = {
-	    x: this.ox + text_offset_x,
-	    y: this.oy + dy + text_offset_y
-	};
-        mtxt.attr(txt_att);
+	// Move text as well.
+    	var assoc_texts = get_associated_texts(shape_id);
+    	for( var ti = 0; ti < assoc_texts.length; ti++ ){
+	    var mtxt = assoc_texts[ti];
+            var txt_att = { y: mtxt.oy + dy };
+            mtxt.attr(txt_att);
+    	}
 
 	// Update connections.
         for (var i = connections.length; i--;) {
@@ -244,22 +326,35 @@ window.onload = function () {
 
     // Undrag animation.
     var up = function () {
-	// Fade this (box).
-        this.animate({"fill-opacity": 0}, animation_time);
+
+    	var shape_id = this.id;
+
+	// Fade boxes.
+    	var assoc_shapes = get_associated_shapes(shape_id);
+    	for( var si = 0; si < assoc_shapes.length; si++ ){
+            var mshp = assoc_shapes[si];
+            mshp.animate({"fill-opacity": 0.0}, animation_time);
+    	}
+
 	// Find text and darken.
-	var tindex = shape_id_to_index[this.id];
-	var mtxt = texts[tindex];
-        mtxt.animate({"fill-opacity": 1.0}, animation_time);
+    	var assoc_texts = get_associated_texts(shape_id);
+    	for( var ti = 0; ti < assoc_texts.length; ti++ ){
+	    var mtxt = assoc_texts[ti];
+	    mtxt.animate({"fill-opacity": 1.0}, animation_time);
+    	}
     };
 
-    // Create context.
-    var paper = Raphael("test1", a_width + edge_buffer, a_height + edge_buffer);
+    ///
+    /// Shape creation and placement.
+    /// 
 
     // Add shapes and create lookup (hash) for use with connections.
     var shapes = new Array();
     var shape_hash = {};
     var texts = new Array();
-    var shape_id_to_index = new Array();
+    var shape_id_to_index = {};
+    var shape_id_to_node_id = {};
+    var node_id_to_index = {};
     for( var nidi = 0; nidi < layout.node_list.length; nidi++ ){
 
 	// Calculate position.
@@ -278,7 +373,22 @@ window.onload = function () {
 	var shape = paper.rect(lpx, lpy, box_width, box_height, 2);
         shapes.push(shape);
 
-	shape_id_to_index[shape.id] = (shapes.length -1);
+    	// Add to the object the initial position.
+        shape.ox = shape.attr("x");
+        shape.oy = shape.attr("y");
+        text.ox = text.attr("x");
+        text.oy = text.attr("y");
+
+	// Indexing.
+	var ref_index = shapes.length -1;
+	var shape_id = shape.id;
+	shape_id_to_index[shape_id] = ref_index;
+	shape_id_to_node_id[shape_id] = node_id;
+	node_id_to_index[node_id] = ref_index;
+
+	bbop.core.kvetch('onload: indexed: node_id: ' + node_id +
+			 ', shape_id: ' + shape_id +
+			 ', ref_index: ' + ref_index);
     }
 
     // Shape definition.
@@ -292,6 +402,12 @@ window.onload = function () {
 			"stroke-width": 2,
 			cursor: "move"});
         shapes[i].drag(move, dragger, up);
+
+	// Experiment with dblclk.
+	function dbl_event_handler(event){
+	    this.attr({fill: "red"});
+	}
+	shapes[i].dblclick(dbl_event_handler);
     }
 
     // Add stored connections.
