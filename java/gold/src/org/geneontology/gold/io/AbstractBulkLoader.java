@@ -1,10 +1,9 @@
 package org.geneontology.gold.io;
 
 import java.io.IOException;
+import java.util.Hashtable;
 import java.util.List;
-
 import org.semanticweb.owlapi.model.OWLOntology;
-
 import owltools.graph.OWLGraphWrapper;
 
 /**
@@ -28,11 +27,18 @@ public abstract class AbstractBulkLoader {
 	 */
 	protected String path;
 	
+	protected Hashtable<String, TableDumper> tables;
+	
 	// TODO - abstract this
 	public OWLOntology getOwlOntology() {
 		return graphWrapper.getOntology();
 	}
 	
+	protected void flushTables() throws IOException{
+		for(TableDumper table: tables.values()){
+			table.close();
+		}
+	}
 	
 	public AbstractBulkLoader(OWLGraphWrapper wrapper){
 		this(wrapper, "./data");
@@ -47,6 +53,7 @@ public abstract class AbstractBulkLoader {
 		this.graphWrapper = wrapper;
 		this.path = path;
 		this.dumpFilePrefix = dumpFilePrefix == null ? "" : dumpFilePrefix.trim();
+		tables = new Hashtable<String, TableDumper>();
 	}
 
 	/**
