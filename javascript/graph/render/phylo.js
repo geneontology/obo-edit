@@ -8,8 +8,8 @@
 ////    bbop.render.phylo.*
 ////
 //// TODO: looks top-level; make functional for application use.
+//// STARTED: trace up path on hover
 //// STARTED: hide whole subtrees on double-click
-//// TODO: trace up path on hover
 //// TODO: font and text placement
 //// TODO: better text alignment
 //// TODO: floating right-hand text (see PAINT)
@@ -235,16 +235,16 @@ window.onload = function () {
 
     // Ancestor list, including self.
     function get_ancestor_list(nid){
-	return gather_list_from_hash(id, layout.child_distances);
+	return gather_list_from_hash(nid, layout.child_distances);
     }
 
     //
-    function get_associated(shape_id, index_kept){
+    function get_associated(shape_id, index_kept, getter){
 
     	var retlist = new Array();
 	
     	var node_id = shape_id_to_node_id[shape_id];
-    	var subtree_node_list = get_subtree_list(node_id);
+    	var subtree_node_list = getter(node_id);
     	for( var si = 0; si < subtree_node_list.length; si++ ){
 
     	    var subnode_id = subtree_node_list[si];
@@ -258,11 +258,15 @@ window.onload = function () {
     }
 
     function get_associated_shapes(shape_id){
-    	return get_associated(shape_id, shapes);
+    	return get_associated(shape_id, shapes, get_subtree_list);
     }
 
     function get_associated_texts(shape_id){
-    	return get_associated(shape_id, texts);
+    	return get_associated(shape_id, texts, get_subtree_list);
+    }
+
+    function get_ancestor_shapes(shape_id){
+    	return get_associated(shape_id, shapes, get_ancestor_list);
     }
 
     ///
@@ -403,11 +407,45 @@ window.onload = function () {
 			cursor: "move"});
         shapes[i].drag(move, dragger, up);
 
-	// Experiment with dblclk.
-	function dbl_event_handler(event){
+	// Experiment with double click.
+	function dblclick_event_handler(event){
 	    this.attr({fill: "red"});
 	}
-	shapes[i].dblclick(dbl_event_handler);
+	shapes[i].dblclick(dblclick_event_handler);
+
+	// Experiment with hover.
+	// TODO: merge functions
+	// TODO: highlight connections
+	function mouseover_event_handler(event){
+
+    	    var shape_id = this.id;
+
+	    // Green boxes.
+    	    var anc_shapes = get_ancestor_shapes(shape_id);
+    	    for( var ai = 0; ai < anc_shapes.length; ai++ ){
+		var ashp = anc_shapes[ai];
+		ashp.animate({//"fill": "green",
+			      "fill-opacity": 0.5},
+			     animation_time);
+		ashp.attr({fill: "green"});
+    	    }
+	}
+	function mouseout_event_handler(event){
+
+    	    var shape_id = this.id;
+
+	    // Green boxes.
+    	    var anc_shapes = get_ancestor_shapes(shape_id);
+    	    for( var ai = 0; ai < anc_shapes.length; ai++ ){
+		var ashp = anc_shapes[ai];
+		ashp.animate({//"fill": "blue",
+			      "fill-opacity": 0.0},
+			     animation_time);
+		ashp.attr({fill: "green"});
+    	    }
+	}
+	shapes[i].mouseover(mouseover_event_handler);
+	shapes[i].mouseout(mouseout_event_handler);
     }
 
     // Add stored connections.
