@@ -16,6 +16,7 @@ import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
@@ -63,7 +64,10 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 		tables.put("disjoint_with",   new TableDumper(this.dumpFilePrefix + "disjoint_with", this.path));
 		
 
-		//tables.put("inferred_relationship",   new TableDumper(this.dumpFilePrefix + "inferred_relationship", this.path));
+		tables.put("inferred_subclass_of",   new TableDumper(this.dumpFilePrefix + "inferred_subclass_of", this.path));
+		tables.put("inferred_all_some_relationship",   new TableDumper(this.dumpFilePrefix + "inferred_all_some_relationship", this.path));
+		tables.put("inferred_all_only_relationship",   new TableDumper(this.dumpFilePrefix + "inferred_all_only_relationship", this.path));
+		tables.put("inferred_never_some_relationship",   new TableDumper(this.dumpFilePrefix + "inferred_never_some_relationship", this.path));
 		
 
 		tables.put("annotation_assertion",   new TableDumper(this.dumpFilePrefix + "annotation_assertion", this.path));
@@ -84,6 +88,7 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 	
 		tables.put("annotation_property",   new TableDumper(this.dumpFilePrefix + "annotation_property", this.path));
 		
+		tables.put("relation_chain",   new TableDumper(this.dumpFilePrefix + "relation_chain", this.path));
 		
 	}
 	
@@ -404,17 +409,35 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 				f = false;
 			}
 			
+		
+			TableDumper inferred_subclass_ofDumper = tables.get("inferred_subclass_of");
+			TableDumper inferred_all_some_relationshipDumper= tables.get("inferred_all_some_relationship");
+			TableDumper inferred_all_only_relationshipDumper =tables.get("inferred_all_only_relationship");
+			TableDumper inferred_never_some_relationshipDumper=tables.get("inferred_never_some_relationship");
 			
-			/*
+			
 			//TODO: Inferred relationship
 			Set<OWLGraphEdge> outgoing = graphWrapper.getOutgoingEdges(cls);
 			for(OWLGraphEdge edge: outgoing){
 				String targetId = graphWrapper.getIdentifier( edge.getTarget() );
+				OWLObject target = edge.getTarget();
+				
 				for(OWLQuantifiedProperty prop: edge.getQuantifiedPropertyList()){
-					String propId = graphWrapper.getDef(prop.getProperty());
-					
-					inferred_relationshipDumper.dumpRow(id, targetId, propId, "true" , "false", ontologyId);
+					String propId = graphWrapper.getIdentifier(prop.getProperty());
+					if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.SOME ||
+							target instanceof OWLObjectSomeValuesFrom){
+
+						inferred_all_some_relationshipDumper.dumpRow(id, propId,  targetId, "true" , "false", ontologyId);
+					}else if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.ONLY ||
+							target instanceof OWLObjectAllValuesFrom){
+
+						inferred_all_only_relationshipDumper.dumpRow(id, propId,  targetId, "true" , "false", ontologyId);
+					}else if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.SUBCLASS_OF && targetId != null && targetId.length()>0)
+						//TODO target UnionOf and IntersectionOf cases
+						inferred_subclass_ofDumper.dumpRow(id, targetId, "true" , "false", ontologyId);
+				
 				}
+				
 			}
 			
 			
@@ -424,11 +447,23 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 
 			for(OWLGraphEdge edge: reflexive){
 				String targetId = graphWrapper.getIdentifier( edge.getTarget() );
+				OWLObject target = edge.getTarget();
 				for(OWLQuantifiedProperty prop: edge.getQuantifiedPropertyList()){
-					String propId = graphWrapper.getDef(prop.getProperty());
-					inferred_relationshipDumper.dumpRow(id, targetId, propId, "false" , "true", ontologyId);
+					String propId = graphWrapper.getIdentifier(prop.getProperty());
+					if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.SOME || 
+							target instanceof OWLObjectSomeValuesFrom){
+					
+						inferred_all_some_relationshipDumper.dumpRow(id, propId,  targetId, "true" , "false", ontologyId);
+					}
+					else if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.ONLY ||
+						target instanceof OWLObjectAllValuesFrom){
+
+						inferred_all_only_relationshipDumper.dumpRow(id, propId,  targetId, "true" , "false", ontologyId);
+					}else if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.SUBCLASS_OF && targetId != null && targetId.length()>0)
+						//TODO target UnionOf and IntersectionOf cases
+						inferred_subclass_ofDumper.dumpRow(id, targetId, "true" , "false", ontologyId);
 				}
-			}*/
+			}
 			
 		}
 		
@@ -510,9 +545,10 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 
 			String prop1 = null;
 			for(OWLObjectPropertyExpression prop :   ax.getProperties()){
-				if(!first)
+				if(!first){
 					prop1 = graphWrapper.getIdentifier(prop);
-				else{
+					first = true;
+				}else{
 					if(prop1 != null){
 						String prop2 = graphWrapper.getIdentifier(prop);
 						relation_disjoint_withDumper.dumpRow(prop1, prop2, ontologyId);
@@ -530,9 +566,10 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 
 			String prop1 = null;
 			for(OWLObjectPropertyExpression prop :   ax.getProperties()){
-				if(!first)
+				if(!first){
 					prop1 = graphWrapper.getIdentifier(prop);
-				else{
+					first = true;
+				}else{
 					if(prop1 != null){
 						String prop2 = graphWrapper.getIdentifier(prop);
 						relation_equivalent_toDumper.dumpRow(prop1, prop2, ontologyId);
@@ -549,9 +586,10 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 			String supr = graphWrapper.getIdentifier(ax.getSuperProperty());
 			String prop1 = null;
 			for(OWLObjectPropertyExpression prop :   ax.getPropertyChain()){
-				if(!first)
+				if(!first){
 					prop1 = graphWrapper.getIdentifier(prop);
-				else{
+					first = true;
+				}else{
 					if(prop1 != null){
 						String prop2 = graphWrapper.getIdentifier(prop);
 						relation_chainDumper.dumpRow(supr, prop1, prop2, null);
