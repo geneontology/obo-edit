@@ -63,7 +63,7 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 		tables.put("disjoint_with",   new TableDumper(this.dumpFilePrefix + "disjoint_with", this.path));
 		
 
-		tables.put("inferred_relationship",   new TableDumper(this.dumpFilePrefix + "inferred_relationship", this.path));
+		//tables.put("inferred_relationship",   new TableDumper(this.dumpFilePrefix + "inferred_relationship", this.path));
 		
 
 		tables.put("annotation_assertion",   new TableDumper(this.dumpFilePrefix + "annotation_assertion", this.path));
@@ -348,7 +348,7 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 		TableDumper disjoint_withDumper = tables.get("disjoint_with");
 			//new TableDumper(this.dumpFilePrefix + "disjoint_with", this.path);
 		
-		TableDumper inferred_relationshipDumper = tables.get("inferred_relationship");
+	////	TableDumper inferred_relationshipDumper = tables.get("inferred_relationship");
 		
 		//	TableDumper subclass_ofDumper = new TableDumper("subclass_of");
 		//TableDumper allSomeRelationship = new TableDumper("all_some_relationship");
