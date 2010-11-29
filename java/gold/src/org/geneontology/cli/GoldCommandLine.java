@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.io.DbOperations;
+import org.geneontology.gold.io.DbOperationsListenerToReportTime;
 
 /**
  * The class provides command line interface to users to run the db operations from
@@ -100,7 +101,7 @@ public class GoldCommandLine {
 			
 			//perform the operations
 			DbOperations db = new DbOperations();
-			
+			db.addDbOperationsListener(new DbOperationsListenerToReportTime());
 			if("bulkload".equals(operation)){
 				db.bulkLoad(force);
 			}else if("update".equals(operation)){

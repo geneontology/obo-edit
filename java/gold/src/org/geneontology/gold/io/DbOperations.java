@@ -34,7 +34,15 @@ import owltools.graph.OWLGraphWrapper;
  */
 public class DbOperations {
 
+	
+	private List<DbOperationsListener> listeners;
+	
 	private static Logger LOG = Logger.getLogger(DbOperations.class);
+
+	public DbOperations(){
+		listeners = new ArrayList<DbOperationsListener>();
+	}
+	
 	/**
 	 * Loads the contents of the obo file whose path is supplied 
 	 * the geneontology.gold.obofil property.
@@ -56,15 +64,25 @@ public class DbOperations {
 	 * @throws Exception
 	 */
 	public void bulkLoad(String oboFile, boolean force) throws Exception{
+		for(DbOperationsListener listener: listeners){
+			listener.bulkLoadStart();
+		}
+ 		
 		if(LOG.isDebugEnabled()){
 			LOG.debug("Bulk Load for: " + oboFile);
 		}
+		
 
 		List<String> list = dumpFiles("", oboFile);
 		buildSchema(force, "");
 		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
 		
 		LOG.info("Bulk Load completed successfully");
+
+		for(DbOperationsListener listener: listeners){
+			listener.bulkLoadEnd();
+		}
+	
 	}
 	
 	/**
@@ -76,6 +94,10 @@ public class DbOperations {
 	 * @throws Exception
 	 */
 	public List<String> dumpFiles(String tablePrefix, String oboFile) throws Exception{
+		for(DbOperationsListener listener: listeners){
+			listener.dumpFilesStart();
+		}
+		
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
@@ -90,6 +112,10 @@ public class DbOperations {
 		
 		LOG.info("Tables dump completed");
 		
+		for(DbOperationsListener listener: listeners){
+			listener.dumpFilesEnd();
+		}
+		
 		return list;
 		
 	}
@@ -102,6 +128,10 @@ public class DbOperations {
 	 * @throws Exception
 	 */
 	public void buildSchema(boolean force, String tablePrefix) throws Exception{
+		for(DbOperationsListener listener: listeners){
+			listener.buildSchemaStart();
+		}
+		
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
@@ -113,6 +143,11 @@ public class DbOperations {
 				manager.getGolddbUserPassword(), manager.getGolddbName(),
 				manager.getOntSqlSchemaFileLocation(), tablePrefix, force);
 		
+		
+		for(DbOperationsListener listener: listeners){
+			listener.buildSchemaEnd();
+		}
+		
 	}
 	
 	/**
@@ -123,6 +158,11 @@ public class DbOperations {
 	 * @throws Exception
 	 */
 	public void loadTsvFiles(String tsvFilesDir, List<String> list) throws Exception{
+		for(DbOperationsListener listener: listeners){
+			listener.loadTsvFilesStart();
+		}
+	
+		
 		if(LOG.isDebugEnabled()){
 			LOG.debug(list + " files being loaded");
 		}
@@ -136,6 +176,11 @@ public class DbOperations {
 		
 		
 		LOG.info("TSV files load completed");
+		
+		for(DbOperationsListener listener: listeners){
+			listener.loadTsvFilesEnd();
+		}
+		
 	}
 
 	/**
@@ -144,6 +189,7 @@ public class DbOperations {
 	 * @throws Exception
 	 */
 	public void loadTsvFiles(String tsvFilesDir) throws Exception{
+		
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
@@ -190,6 +236,10 @@ public class DbOperations {
 	 * @throws Exception
 	 */
 	public void updateGold(String oboFile) throws Exception{
+		for(DbOperationsListener listener: listeners){
+			listener.updateStart();
+		}
+		
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
@@ -257,44 +307,25 @@ public class DbOperations {
 		
 		saveList(session, intList);
 		
-		
-		
-		/*for(Cls cls: clsList){
-			session.saveOrUpdate(cls);
-		}
-
-		for(Relation r: relationList){
-			session.saveOrUpdate(r);
-		}
-		
-		for(SubclassOf sc: subclassList){
-			session.saveOrUpdate(sc);
-		}
-
-		for(AllSomeRelationship asm: asmList){
-			session.saveOrUpdate(asm);
-		}
-
-		for(ObjAlternateLabel oa: oalList){
-			session.saveOrUpdate(oa);
-		}
-
-
-		for(ObjXref xref: xrefList){
-			session.saveOrUpdate(xref);
-		}
-		
-		for(ObjDefinitionXref defXref: defXrefList){
-			session.saveOrUpdate(defXref);
-		}*/
-		
-		
 		LOG.info("Database update is completed");
 		
 		session.getTransaction().commit();
 		
+		for(DbOperationsListener listener: listeners){
+			listener.updateEnd();
+		}
+		
+		
 	}
 	
+	
+	public void addDbOperationsListener(DbOperationsListener listener){
+		listeners.add(listener);
+	}
+
+	public void removeDbOperationsListener(DbOperationsListener listener){
+		listeners.remove(listener);
+	}
 	
 	private void saveList(Session session, List list){
 		for(Object obj: list){
