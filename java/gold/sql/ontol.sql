@@ -45,9 +45,10 @@ CREATE TABLE cls (
        text_comment TEXT,
        text_definition TEXT,
 
-       is_obsolete BOOLEAN -- TODO: use separate table?
+       is_obsolete BOOLEAN 
 );
 COMMENT ON TABLE cls IS 'An ontology class.
+TODO: use separate table?
 MAPPINGS: 
  OBO: Term stanza.
  OWL: Class
@@ -115,10 +116,11 @@ CREATE TABLE relation (
        is_symmetric BOOLEAN,
        is_reflexive BOOLEAN,
 
-       is_obsolete BOOLEAN -- TODO: use separate table?
+       is_obsolete BOOLEAN 
 );
 
 COMMENT ON TABLE relation IS 'An ontology relation.
+TODO: use separate table?
 MAPPINGS: 
  OBO: Typedef stanza.
  OWL: ObjectProperty
@@ -223,7 +225,6 @@ EXAMPLE: http://en/wikipedia.org/wiki/Transcription
 -- ****************************************
 -- obj_alternate_label
 -- ****************************************
--- TODO - denormalize synonym_xrefs
 CREATE TABLE obj_alternate_label (
        obj VARCHAR,
        label VARCHAR,
@@ -233,6 +234,7 @@ CREATE TABLE obj_alternate_label (
 );
 
 COMMENT ON TABLE obj_alternate_label IS 'Synonyms and alternative labels.
+TODO - denormalize synonym_xrefs
 MAPPINGS:
  OBO: synonym
  OWL: see obo2owl spec
@@ -250,11 +252,12 @@ CREATE TABLE annotation_property (
        text_comment TEXT,
        text_definition TEXT,
 
-       is_obsolete BOOLEAN -- TODO: use separate table?
+       is_obsolete BOOLEAN 
 );
 
 COMMENT ON TABLE annotation_property IS 'A non-logical relation/tag that can connect objects or objects and values.
 TYPICAL ENTRIES: consider, replaced_by
+TODO: use separate table?
 MAPPINGS:
  OBO: Typedef[is_metadata_tag=true]
  OWL: AnnotationProperty
@@ -307,16 +310,14 @@ MAPPINGS:
 -- the semantics of each of these is specified via
 -- a mapping to OWL
 
--- holds iff: cls SubClassOf super_cls
--- 
 CREATE TABLE subclass_of (
        cls VARCHAR,
        super_cls VARCHAR,
 
        ontology VARCHAR
 );
+COMMENT ON TABLE subclass_of IS 'holds iff: cls SubClassOf super_cls';
 
--- holds iff: cls SubClassOf rel Some tgt
 CREATE TABLE all_some_relationship (
        cls VARCHAR,
        relation VARCHAR,
@@ -324,9 +325,8 @@ CREATE TABLE all_some_relationship (
 
        ontology VARCHAR
 );
+COMMENT ON TABLE all_some_relationship IS 'holds iff: cls SubClassOf rel Some tgt';
 
--- holds iff: cls SubClassOf rel Only tgt
--- EXAMPLE: lactation only_in_taxon Mammalia ==> lactation SubClassOf in_taxon only Mammalia
 CREATE TABLE all_only_relationship (
        cls VARCHAR,
        relation VARCHAR,
@@ -334,9 +334,10 @@ CREATE TABLE all_only_relationship (
 
        ontology VARCHAR
 );
+COMMENT ON TABLE all_only_relationship IS 'holds iff: cls SubClassOf rel Only tgt
+EXAMPLE: lactation only_in_taxon Mammalia ==> lactation SubClassOf in_taxon only Mammalia
+';
 
--- holds iff: cls SubClassOf ComplementOf(rel Some tgt)
--- EXAMPLE: odontogenesis never_in_taxon Aves ==> odontogenesis SubClassOf ComplementOf(in_taxon some Aves) [taxon_go_triggers]
 CREATE TABLE never_some_relationship (
        cls VARCHAR,
        target_cls VARCHAR,
@@ -344,17 +345,19 @@ CREATE TABLE never_some_relationship (
 
        ontology VARCHAR
 );
-
--- holds iff: cls SubObjectPropertyOf super_cls
--- 
+COMMENT ON TABLE never_some_relationship IS 'holds iff: cls SubClassOf ComplementOf(rel Some tgt)
+EXAMPLE: odontogenesis never_in_taxon Aves ==> odontogenesis SubClassOf ComplementOf(in_taxon some Aves) [taxon_go_triggers]
+';
+ 
 CREATE TABLE subrelation_of (
        relation VARCHAR,
        super_relation VARCHAR,
 
        ontology VARCHAR
 );
+COMMENT ON TABLE subrelation_of IS 'holds iff: cls SubObjectPropertyOf super_cls
+'; 
 
--- holds iff: DisjointObjectProperties(relation disjoint_relation)
 CREATE TABLE relation_disjoint_with (
        relation VARCHAR,
        disjoint_relation VARCHAR,
@@ -362,20 +365,18 @@ CREATE TABLE relation_disjoint_with (
        ontology VARCHAR
 );
 
--- holds iff: EquivalentObjectProperties(relation equivalent_relation)
+COMMENT ON TABLE relation_disjoint_with IS 'holds iff: DisjointObjectProperties(relation disjoint_relation)
+';
+
 CREATE TABLE relation_equivalent_to (
        relation VARCHAR,
        equivalent_relation VARCHAR,
 
        ontology VARCHAR
 );
+COMMENT ON TABLE relation_equivalent_to IS 'holds iff: EquivalentObjectProperties(relation equivalent_relation)
+';
 
-
--- SEMANTICS: SubObjectPropertyOf(inferred_relation PropertyChain(relation1 relation2))
--- note this table cannot be used for property chains of length >2, GO should not have these.
--- if this is desired then the property chain should be broken into pairs.
--- EXAMPLE: SubObjectPropertOf(regulates PropertyChain(regulates part_of))
--- (in obof, this is encoded using transitive_over).
 CREATE TABLE relation_chain (
        inferred_relation VARCHAR,
        relation1 VARCHAR,
@@ -384,6 +385,11 @@ CREATE TABLE relation_chain (
 );
 
 COMMENT ON TABLE relation_chain IS 'A rule defining how two relations are composed.
+SEMANTICS: SubObjectPropertyOf(inferred_relation PropertyChain(relation1 relation2))
+note this table cannot be used for property chains of length >2, GO should not have these.
+if this is desired then the property chain should be broken into pairs.
+EXAMPLE: SubObjectPropertOf(regulates PropertyChain(regulates part_of))
+(in obof, this is encoded using transitive_over).
 EXAMPLE: has_part o part_of --> overlaps
 EXAMPLE: regulates o part_of --> regulates
 MAPPINGS:
@@ -491,7 +497,7 @@ CREATE TABLE inferred_subclass_of (
        ontology VARCHAR
 );
 
--- holds iff: cls SubClassOf rel Some tgt
+
 CREATE TABLE inferred_all_some_relationship (
        cls VARCHAR,
        relation VARCHAR,
@@ -501,9 +507,8 @@ CREATE TABLE inferred_all_some_relationship (
 
        ontology VARCHAR
 );
+COMMENT ON TABLE inferred_all_some_relationship IS 'holds iff: cls SubClassOf rel Some tgt';
 
--- holds iff: cls SubClassOf rel Only tgt
--- EXAMPLE: lactation only_in_taxon Mammalia ==> lactation SubClassOf in_taxon only Mammalia
 CREATE TABLE inferred_all_only_relationship (
        cls VARCHAR,
        relation VARCHAR,
@@ -513,9 +518,11 @@ CREATE TABLE inferred_all_only_relationship (
 
        ontology VARCHAR
 );
+COMMENT ON TABLE inferred_all_only_relationship IS 'holds iff: cls SubClassOf rel Only tgt
+EXAMPLE: lactation only_in_taxon Mammalia ==> lactation SubClassOf in_taxon only Mammalia
+';
 
--- holds iff: cls SubClassOf ComplementOf(rel Some tgt)
--- EXAMPLE: odontogenesis never_in_taxon Aves ==> odontogenesis SubClassOf ComplementOf(in_taxon some Aves) [taxon_go_triggers]
+
 CREATE TABLE inferred_never_some_relationship (
        cls VARCHAR,
        target_cls VARCHAR,
@@ -525,9 +532,11 @@ CREATE TABLE inferred_never_some_relationship (
 
        ontology VARCHAR
 );
+COMMENT ON TABLE inferred_never_some_relationship IS 'holds iff: cls SubClassOf ComplementOf(rel Some tgt)
+EXAMPLE: odontogenesis never_in_taxon Aves ==> odontogenesis SubClassOf ComplementOf(in_taxon some Aves) [taxon_go_triggers]
+';
 
--- holds iff: cls SubObjectPropertyOf super_cls
--- 
+
 CREATE TABLE inferred_subrelation_of (
        relation VARCHAR,
        super_relation VARCHAR,
@@ -536,4 +545,5 @@ CREATE TABLE inferred_subrelation_of (
 
        ontology VARCHAR
 );
-
+COMMENT ON TABLE inferred_subrelation_of IS 'holds iff: cls SubObjectPropertyOf super_cls
+';
