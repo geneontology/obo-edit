@@ -809,6 +809,37 @@ public class OWLGraphWrapper {
 		}
 		return edges;
 	}
+	
+	/**
+	 * returns all named superclasses of a named class.
+	 * 
+	 * Currently this is implemented via graph traversal - any path in which the
+	 * intermediate notes are solely subclass edges (and including the reflexive case)
+	 * 
+	 * (corresponds to inferred_subclass_of in gold)
+	 * 
+	 * @param cls
+	 * @return list of named classes
+	 */
+	public Set<OWLClass> getInferredSuperclasses(OWLClass c) {
+		// TODO
+		return null;
+	}
+
+	/**
+	 * returns all outgoing edges that consist of a [some-R] inferred link.
+	 * also includes edge chains in which all the quantifiers are 'some], e.g.
+	 * [some-R1,some-R2]
+	 * 
+	 * (corresponds to inferred_all_some_relationship in gold)
+	 * 
+	 * @param cls
+	 * @return list of named classes
+	 */
+	public Set<OWLGraphEdge> getInferredAllSomeRelationships(OWLClass c) {
+		// TODO
+		return null;
+	}
 
 	
 	// ----------------------------------------
