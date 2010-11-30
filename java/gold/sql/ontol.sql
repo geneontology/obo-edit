@@ -490,10 +490,11 @@ MAPPINGS:
 
 CREATE TABLE inferred_subclass_of (
        cls VARCHAR,
-       super_cls VARCHAR,
+       target_cls VARCHAR,
        is_direct BOOLEAN,
        is_reflexive BOOLEAN,
-
+	   relation VARCHAR,
+	   quantifier VARCHAR,
        ontology VARCHAR
 );
 
@@ -504,7 +505,7 @@ CREATE TABLE inferred_all_some_relationship (
        target_cls VARCHAR,
        is_direct BOOLEAN,
        is_reflexive BOOLEAN,
-
+	   quantifier VARCHAR,
        ontology VARCHAR
 );
 COMMENT ON TABLE inferred_all_some_relationship IS 'holds iff: cls SubClassOf rel Some tgt';
@@ -515,7 +516,7 @@ CREATE TABLE inferred_all_only_relationship (
        target_cls VARCHAR,
        is_direct BOOLEAN,
        is_reflexive BOOLEAN,
-
+	   quantifier VARCHAR,
        ontology VARCHAR
 );
 COMMENT ON TABLE inferred_all_only_relationship IS 'holds iff: cls SubClassOf rel Only tgt
@@ -529,7 +530,7 @@ CREATE TABLE inferred_never_some_relationship (
        relation VARCHAR,
        is_direct BOOLEAN,
        is_reflexive BOOLEAN,
-
+	   quantifier VARCHAR,
        ontology VARCHAR
 );
 COMMENT ON TABLE inferred_never_some_relationship IS 'holds iff: cls SubClassOf ComplementOf(rel Some tgt)
