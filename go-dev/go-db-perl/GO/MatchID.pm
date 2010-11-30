@@ -180,12 +180,15 @@ sub _dbname_filter{
     return $dbname;
 }
 
+
+my @skip_ids = qw/ENTREZ/;
 sub ids{
     my $s   = shift;
     my $smd = $s->species_metadata();
 
     while (@_) {
 	my @id = $smd->id_filter(split(m/:/, shift @_, 2));
+	next if (first {$id[0] eq $_} @skip_ids);
 	push @{ $s->{ids} }, \@id;
     }
     return @{ $s->{ids} };
