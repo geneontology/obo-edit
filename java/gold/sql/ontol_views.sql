@@ -1,3 +1,4 @@
+/*
 CREATE VIEW named_entity AS
  SELECT *
  FROM
@@ -10,16 +11,16 @@ CREATE VIEW named_entity AS
  SELECT *
  FROM
   annotation_property;
+*/
 
-
-CREATE TABLE inferred_relationship
+CREATE VIEW inferred_relationship
  AS
   SELECT
    cls,
    target_cls,
    is_direct,
    is_reflexive,
-   CAST('is_a' AS VARCHAR) AS relation,
+   relation,
    NULL AS quantifier,
    ontology
   FROM
@@ -30,11 +31,33 @@ CREATE TABLE inferred_relationship
    target_cls,
    is_direct,
    is_reflexive,
-   CAST('is_a' AS VARCHAR) AS relation,
-   CAST('some' AS VARCHAR) AS quantifier,
+   relation,
+   quantifier,
    ontology
   FROM
-   inferred_all_some_relationship;
+   inferred_all_some_relationship
+  UNION
+  SELECT
+   cls,
+   target_cls,
+   is_direct,
+   is_reflexive,
+   relation,
+   quantifier,
+   ontology
+  FROM
+   inferred_all_only_relationship
+   UNION
+  SELECT
+   cls,
+   target_cls,
+   is_direct,
+   is_reflexive,
+   relation,
+   quantifier,
+   ontology
+  FROM
+   inferred_all_only_relationship;
 
 COMMENT ON VIEW inferred_relationship IS 'A path between cls and target_cls. The values for this table can be filled in by running a reasoner. The recommended method is getOutgoingEdgesClosureReflexive(cls).';
 
