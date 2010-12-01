@@ -2,6 +2,7 @@ package org.geneontology.gold.io;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,8 @@ import org.geneontology.gold.hibernate.model.ClsIntersectionOf;
 import org.geneontology.gold.hibernate.model.ClsUnionOf;
 import org.geneontology.gold.hibernate.model.DisjointWith;
 import org.geneontology.gold.hibernate.model.EquivalentTo;
+import org.geneontology.gold.hibernate.model.InferredAllSomeRelationship;
+import org.geneontology.gold.hibernate.model.InferredSubclassOf;
 import org.geneontology.gold.hibernate.model.ObjAlternateLabel;
 import org.geneontology.gold.hibernate.model.ObjDefinitionXref;
 import org.geneontology.gold.hibernate.model.ObjXref;
@@ -53,7 +56,14 @@ public class DbOperations {
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
-		bulkLoad(GeneOntologyManager.getInstance().getDefaultOboFile(), force);
+		String oboFile = GeneOntologyManager.getInstance().getDefaultOboFile();
+		
+		if(oboFile == null){
+			throw new FileNotFoundException("Obo File not Found at the path '" + 
+					GeneOntologyManager.getInstance().getProperty("geneontology.gold.obofile") + "'");
+		}
+		
+		bulkLoad(oboFile, force);
 	}
 	
 	/**
@@ -82,7 +92,7 @@ public class DbOperations {
 		for(DbOperationsListener listener: listeners){
 			listener.bulkLoadEnd();
 		}
-	
+	 
 	}
 	
 	/**
@@ -101,7 +111,8 @@ public class DbOperations {
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
-
+		
+		
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
 		OWLGraphWrapper wrapper = new OWLGraphWrapper( 	
 			new Obo2Owl().convert(oboFile));
@@ -265,10 +276,11 @@ public class DbOperations {
 		List<ObjXref> xrefList = gdf.buildObjXrefs();
 		List<ObjDefinitionXref> defXrefList = gdf.buildObjDefinitionXref();
 		List<EquivalentTo> eqList = gdf.buildEquivalentTo();
-		List<DisjointWith> djList = gdf.buildDisjointWith();
 		List<ClsUnionOf> unList = gdf.buildClsUnionOf();
 		List<ClsIntersectionOf> intList = gdf.buildClsIntersectionOf();
-		
+		List<InferredSubclassOf> infSubList = gdf.buildInferredSubclassOf();
+		List<InferredAllSomeRelationship> infSomeList = gdf.buildInferredAllSomeRelationship();
+//		List<DisjointWith> djList = gdf.buildDisjointWith();
 		
 		//close the session associated with the tables prefixed with 
 		// the value of the geneontology.gold.deltatableprefix property
@@ -301,11 +313,15 @@ public class DbOperations {
 		
 		saveList(session, eqList);
 		
-		saveList(session, djList);
+	//	saveList(session, djList);
 		
 		saveList(session, unList);
 		
 		saveList(session, intList);
+		
+		saveList(session, infSubList);
+		
+		saveList(session, infSomeList);
 		
 		LOG.info("Database update is completed");
 		

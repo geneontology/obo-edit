@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.geneontology.gold.hibernate.model.RelationDisjointWith" table="relation_disjoint_with">
+        <composite-id>
+        
+	       <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
+	       <key-many-to-one name="disjointRelation" class="org.geneontology.gold.hibernate.model.Relation" column="disjoint_relation" />
+	       <key-many-to-one name="relation" class="org.geneontology.gold.hibernate.model.Relation" column="relation" />
+         
+        </composite-id>
+    </class>
+</hibernate-mapping>

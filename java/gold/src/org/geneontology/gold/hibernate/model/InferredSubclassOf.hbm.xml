@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Nov 2, 2010 3:53:51 PM by Hibernate Tools 3.4.0.Beta1 -->
 <hibernate-mapping>
-    <class name="org.geneontology.gold.hibernate.model.InferredRelationship" table="inferred_relationship">
-        <comment>A path between cls and target_cls</comment>
+	<union-subclass extends="org.geneontology.gold.hibernate.model.InferredRelationship" name="org.geneontology.gold.hibernate.model.InferredSubclassOf" table="inferred_subclass_of">
+	</union-subclass>
+
+<!--  
+    <class name="org.geneontology.gold.hibernate.model.InferredSubclassOf" table="inferred_subclass_of">
         <composite-id>
  	       <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
 	       <key-many-to-one name="targetCls" class="org.geneontology.gold.hibernate.model.Cls" column="target_cls" />
 	       <key-many-to-one name="cls" class="org.geneontology.gold.hibernate.model.Cls" column="cls" />
-	       <key-many-to-one name="relation" class="org.geneontology.gold.hibernate.model.Relation" column="relation" />
         </composite-id>
         
         
@@ -21,11 +22,7 @@
             <column name="is_reflexive" />
         </property>
 
-
-          <property name="quantifier" type="string">
-            <column name="quantifier" />
-        </property>
-
         
     </class>
+    -->
 </hibernate-mapping>
