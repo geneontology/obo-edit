@@ -4,9 +4,7 @@
 <!-- Generated Nov 2, 2010 3:53:51 PM by Hibernate Tools 3.4.0.Beta1 -->
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.ObjAlternateId" table="obj_alternate_id">
-        <comment>An alternive identifier for a class or relation, typically arising from class merges. MAPPINGS: OBO: alt_id OWL: see obo2owl spec LEAD: term_synonym
-        (overloaded)</comment>
-        <composite-id name="id" class="org.geneontology.gold.hibernate.model.ObjAlternateIdId">
+        <composite-id>
             <key-property name="obj" type="string">
                 <column name="obj" />
             </key-property>

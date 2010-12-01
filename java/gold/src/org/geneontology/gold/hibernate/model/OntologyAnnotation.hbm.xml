@@ -11,31 +11,15 @@
     table="ontology_annotation"
 >
 
- <comment>A property of an ontology
-Example properties: saved_by
-MAPPINGS: 
- OBO: header.<property>
- OWL: OntologyAnnotation(ontology property value)
- LEAD: n/a</comment>
-    <composite-id
-		name="id"
-        class="org.geneontology.gold.hibernate.model.OntologyAnnotationId"
-    >		
-	        <key-property name="ontology" type="string">
-<column name="ontology" />
-	        </key-property>
+    <composite-id>		
+	       <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
 	        <key-property name="property" type="string">
-<column name="property" />
+				<column name="property" />
 	        </key-property>
 	        <key-property name="annotationValue" type="string">
-<column name="annotation_value" />
+				<column name="annotation_value" />
 	        </key-property>
     </composite-id>	
-
-
-
-
-
 </class>
 
 </hibernate-mapping>

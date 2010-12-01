@@ -14,6 +14,8 @@ import org.geneontology.gold.hibernate.model.ClsUnionOf;
 import org.geneontology.gold.hibernate.model.DisjointWith;
 import org.geneontology.gold.hibernate.model.EquivalentTo;
 import org.geneontology.gold.hibernate.model.GOModel;
+import org.geneontology.gold.hibernate.model.InferredAllSomeRelationship;
+import org.geneontology.gold.hibernate.model.InferredSubclassOf;
 import org.geneontology.gold.hibernate.model.ObjAlternateLabel;
 import org.geneontology.gold.hibernate.model.ObjDefinitionXref;
 import org.geneontology.gold.hibernate.model.ObjXref;
@@ -298,5 +300,49 @@ public class GoldDeltaFactory {
 		
 	}
 	
+	
+	public List<InferredSubclassOf> buildInferredSubclassOf() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+		
+		Vector<InferredSubclassOf> list = new Vector<InferredSubclassOf>();
+
+		ResultSet rs = db.getDelaData("inferred_subclass_of");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			InferredSubclassOf inferred = goldObjFactory.getInferredSubclassOf(rs.getString("cls"), 
+					rs.getString("target_cls"), 
+					rs.getString("ontology"));
+			list.add(inferred);
+		}
+		return list;
+		
+	}
+	
+	public List<InferredAllSomeRelationship> buildInferredAllSomeRelationship() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+		
+		Vector<InferredAllSomeRelationship> list = new Vector<InferredAllSomeRelationship>();
+
+		ResultSet rs = db.getDelaData("inferred_all_some_relationship");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			InferredAllSomeRelationship inferred = goldObjFactory.getInferredAllSomeRelationship(rs.getString("cls"), 
+					rs.getString("target_cls"), 
+					rs.getString("relation"),
+					rs.getString("ontology"));
+			list.add(inferred);
+		}
+		return list;
+		
+	}
+
 	
 }
