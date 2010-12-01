@@ -3,19 +3,11 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.DisjointWith" table="disjoint_with">
-         <composite-id>
-
-	       <key-many-to-one name="cls" class="org.geneontology.gold.hibernate.model.Cls" column="cls" />
-	       <key-many-to-one name="disjointCls" class="org.geneontology.gold.hibernate.model.Cls" column="disjoint_cls" />
+      	<composite-id>
 	       <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
-</composite-id>
-<!--  
-         <composite-id>
-
-
+	       <key-many-to-one name="superCls" class="org.geneontology.gold.hibernate.model.Cls" column="disjoint_cls" />
 	       <key-many-to-one name="cls" class="org.geneontology.gold.hibernate.model.Cls" column="cls" />
-	       <key-many-to-one name="disjointCls" class="org.geneontology.gold.hibernate.model.Cls" column="disjoint_cls" />
-	       <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
-        </composite-id>-->
+    	</composite-id>
+        
     </class>
 </hibernate-mapping>

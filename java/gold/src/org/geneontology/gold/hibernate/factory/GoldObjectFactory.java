@@ -215,15 +215,18 @@ public class GoldObjectFactory {
 	}
 
 	public synchronized DisjointWith getDisjointWith(String cls, String disjoint_cls, String ontology){
+		
 		if(LOG.isDebugEnabled())
 			LOG.debug("-");
 
 		Session session = getSession();
-		return (DisjointWith)session.createQuery("from DisjointWith where cls = ? and disjoint_cls = ? and ontology = ?")
-			.setString(0, cls)
-			.setString(1, disjoint_cls)
-			.setString(2, ontology)
-			.uniqueResult();
+		DisjointWith results = (DisjointWith)session.createQuery("from DisjointWith where ontology = ? and disjoint_cls=? and cls = ?")
+		.setString(0, ontology)
+		.setString(1, disjoint_cls)
+		.setString(2, cls).uniqueResult();
+		
+		return results;
+		
 	}
 
 
