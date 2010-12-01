@@ -160,7 +160,7 @@ public class GoldDeltaFactory {
 		
 		while(rs.next()){
 			AllSomeRelationship asr = goldObjFactory.getAllSomeRelationshipByPk(rs.getString("ontology"), 
-					rs.getString("target_cl"), rs.getString("cls"), rs.getString("relation"));
+					rs.getString("target_cls"), rs.getString("cls"), rs.getString("relation"));
 			list.add(asr);
 		}
 		

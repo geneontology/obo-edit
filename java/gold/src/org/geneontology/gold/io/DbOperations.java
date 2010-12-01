@@ -280,7 +280,7 @@ public class DbOperations {
 		List<ClsIntersectionOf> intList = gdf.buildClsIntersectionOf();
 		List<InferredSubclassOf> infSubList = gdf.buildInferredSubclassOf();
 		List<InferredAllSomeRelationship> infSomeList = gdf.buildInferredAllSomeRelationship();
-//		List<DisjointWith> djList = gdf.buildDisjointWith();
+		List<DisjointWith> djList = gdf.buildDisjointWith();
 		
 		//close the session associated with the tables prefixed with 
 		// the value of the geneontology.gold.deltatableprefix property
@@ -313,7 +313,7 @@ public class DbOperations {
 		
 		saveList(session, eqList);
 		
-	//	saveList(session, djList);
+		saveList(session, djList);
 		
 		saveList(session, unList);
 		

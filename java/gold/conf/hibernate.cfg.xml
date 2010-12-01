@@ -19,6 +19,7 @@
   <!-- Load up the basic GO Object Hibernate Mapping Files -->
   <mapping resource="org/geneontology/gold/hibernate/model/Cls.hbm.xml"/>
   <mapping resource="org/geneontology/gold/hibernate/model/SubclassOf.hbm.xml"/>
+  <mapping resource="org/geneontology/gold/hibernate/model/DisjointWith.hbm.xml"/>
   <mapping resource="org/geneontology/gold/hibernate/model/Ontology.hbm.xml"/>
   <mapping resource="org/geneontology/gold/hibernate/model/ObjAlternateLabel.hbm.xml"/>
   <mapping resource="org/geneontology/gold/hibernate/model/Relation.hbm.xml"/>
@@ -26,7 +27,6 @@
   <mapping resource="org/geneontology/gold/hibernate/model/ObjXref.hbm.xml"/>
   <mapping resource="org/geneontology/gold/hibernate/model/ObjDefinitionXref.hbm.xml"/>
   <mapping resource="org/geneontology/gold/hibernate/model/EquivalentTo.hbm.xml"/>
-  <mapping resource="org/geneontology/gold/hibernate/model/DisjointWith.hbm.xml"/>
   <mapping resource="org/geneontology/gold/hibernate/model/ClsUnionOf.hbm.xml"/>
   <mapping resource="org/geneontology/gold/hibernate/model/ClsIntersectionOf.hbm.xml"/>
   <mapping resource="org/geneontology/gold/hibernate/model/InferredRelationship.hbm.xml"/>
