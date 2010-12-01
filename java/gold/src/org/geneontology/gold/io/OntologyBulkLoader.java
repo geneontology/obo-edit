@@ -109,8 +109,10 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 		initTables();
 		
 		List<String> list = new Vector<String>();
-		list.addAll(tables.keySet());
 		
+		for(TableDumper table: tables.values()){
+			list.add(table.getTable());
+		}
 		
 		dumpOntologyTable();
 		dumpTermFrameAndMetaData();
@@ -420,21 +422,21 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 			Set<OWLGraphEdge> outgoing = graphWrapper.getOutgoingEdges(cls);
 			for(OWLGraphEdge edge: outgoing){
 				String targetId = graphWrapper.getIdentifier( edge.getTarget() );
-				OWLObject target = edge.getTarget();
+
+				if(targetId == null || targetId.length()==0)
+					continue;
 				
 				for(OWLQuantifiedProperty prop: edge.getQuantifiedPropertyList()){
 					String propId = graphWrapper.getIdentifier(prop.getProperty());
-					if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.SOME ||
-							target instanceof OWLObjectSomeValuesFrom){
+					if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.SOME){
 
-						inferred_all_some_relationshipDumper.dumpRow(id, propId,  targetId, "true" , "false", ontologyId);
-					}else if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.ONLY ||
-							target instanceof OWLObjectAllValuesFrom){
+						inferred_all_some_relationshipDumper.dumpRow(id, propId,  targetId, "true" , "false", "some" ,ontologyId);
+					}else if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.ONLY){
 
-						inferred_all_only_relationshipDumper.dumpRow(id, propId,  targetId, "true" , "false", ontologyId);
-					}else if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.SUBCLASS_OF && targetId != null && targetId.length()>0)
+						inferred_all_only_relationshipDumper.dumpRow(id, propId,  targetId, "true" , "false", "only" ,ontologyId);
+					}else if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.SUBCLASS_OF)
 						//TODO target UnionOf and IntersectionOf cases
-						inferred_subclass_ofDumper.dumpRow(id, targetId, "true" , "false", ontologyId);
+						inferred_subclass_ofDumper.dumpRow(id, targetId, "true" , "false", "is_a", null ,ontologyId);
 				
 				}
 				
@@ -447,21 +449,21 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 
 			for(OWLGraphEdge edge: reflexive){
 				String targetId = graphWrapper.getIdentifier( edge.getTarget() );
-				OWLObject target = edge.getTarget();
+				if(targetId == null || targetId.length()==0)
+					continue;
+
 				for(OWLQuantifiedProperty prop: edge.getQuantifiedPropertyList()){
 					String propId = graphWrapper.getIdentifier(prop.getProperty());
-					if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.SOME || 
-							target instanceof OWLObjectSomeValuesFrom){
+					if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.SOME){
 					
-						inferred_all_some_relationshipDumper.dumpRow(id, propId,  targetId, "true" , "false", ontologyId);
+						inferred_all_some_relationshipDumper.dumpRow(id, propId,  targetId, "true"  ,"false", "some",ontologyId);
 					}
-					else if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.ONLY ||
-						target instanceof OWLObjectAllValuesFrom){
+					else if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.ONLY){
 
-						inferred_all_only_relationshipDumper.dumpRow(id, propId,  targetId, "true" , "false", ontologyId);
-					}else if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.SUBCLASS_OF && targetId != null && targetId.length()>0)
+						inferred_all_only_relationshipDumper.dumpRow(id, propId,  targetId, "true" , "false", "only", ontologyId);
+					}else if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.SUBCLASS_OF)
 						//TODO target UnionOf and IntersectionOf cases
-						inferred_subclass_ofDumper.dumpRow(id, targetId, "true" , "false", ontologyId);
+						inferred_subclass_ofDumper.dumpRow(id, targetId, "true" , "false", "is_a", null, ontologyId);
 				}
 			}
 			

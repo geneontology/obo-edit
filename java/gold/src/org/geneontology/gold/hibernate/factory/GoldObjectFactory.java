@@ -10,6 +10,8 @@ import org.geneontology.gold.hibernate.model.ClsIntersectionOf;
 import org.geneontology.gold.hibernate.model.ClsUnionOf;
 import org.geneontology.gold.hibernate.model.DisjointWith;
 import org.geneontology.gold.hibernate.model.EquivalentTo;
+import org.geneontology.gold.hibernate.model.InferredAllSomeRelationship;
+import org.geneontology.gold.hibernate.model.InferredSubclassOf;
 import org.geneontology.gold.hibernate.model.ObjAlternateLabel;
 import org.geneontology.gold.hibernate.model.ObjDefinitionXref;
 import org.geneontology.gold.hibernate.model.ObjXref;
@@ -249,5 +251,32 @@ public class GoldObjectFactory {
 			.uniqueResult();
 	}
 
+
+	public synchronized InferredSubclassOf getInferredSubclassOf(String cls, String target_cls, String ontology){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		return (InferredSubclassOf)session.createQuery("from InferredSubclassOf where cls = ? and target_cls = ? and ontology = ?")
+			.setString(0, cls)
+			.setString(1, target_cls)
+			.setString(2, ontology)
+			.uniqueResult();
+	}
+	
+
+	public synchronized InferredAllSomeRelationship getInferredAllSomeRelationship(String cls, String target_cls, String relation, String ontology){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		return (InferredAllSomeRelationship)session.createQuery("from InferredAllSomeRelationship where cls = ? and target_cls = ? and relation = ? and ontology = ?")
+			.setString(0, cls)
+			.setString(1, target_cls)
+			.setString(2, relation)
+			.setString(3, ontology)
+			.uniqueResult();
+	}
+	
 	
 }

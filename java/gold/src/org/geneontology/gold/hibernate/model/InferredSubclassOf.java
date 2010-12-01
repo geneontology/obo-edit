@@ -1,45 +1,41 @@
 package org.geneontology.gold.hibernate.model;
 
+import java.io.Serializable;
 
-/**
- * 
- * @author Shahid Manzoor
- *
- */
-public class InferredRelationship extends GOModel implements java.io.Serializable {
+public class InferredSubclassOf extends InferredRelationship implements Serializable {
 
-	private Cls cls;
+	public InferredSubclassOf() {
+		super();
+	}
+
+	public InferredSubclassOf(Cls cls, Cls targetCls, Relation relation,
+			Boolean isDirect, Boolean isReflexive, Ontology ontology,
+			String quantifier) {
+		super(cls, targetCls, relation, isDirect, isReflexive, ontology, quantifier);
+	}
+
+	
+	
+	/*private Cls cls;
 	private Cls targetCls;
-	private Relation relation;
 	private Boolean isDirect;
 	private Boolean isReflexive;
 	private Ontology ontology;
-	private String quantifier;
-	
-	public InferredRelationship() {
-		String uniqueKeys[] = {"cls", "targetCls", "relation", "ontology"};
+
+	public InferredSubclassOf() {
+		String uniqueKeys[] = {"cls", "targetCls",  "ontology"};
 		this.initUniqueConstraintFields(InferredRelationship.class, uniqueKeys);
 	}
 
-	public InferredRelationship(Cls cls, Cls targetCls,
-			Relation relation, Boolean isDirect, Boolean isReflexive,
-			Ontology ontology, String quantifier) {
+	public InferredSubclassOf(Cls cls, Cls targetCls,
+			Boolean isDirect, Boolean isReflexive,
+			Ontology ontology) {
 		this();
 		this.cls = cls;
 		this.targetCls = targetCls;
-		this.relation = relation;
 		this.isDirect = isDirect;
 		this.isReflexive = isReflexive;
 		this.ontology = ontology;
-		this.quantifier = quantifier;
-	}
-
-	public String getQuantifier() {
-		return quantifier;
-	}
-
-	public void setQuantifier(String quantifier) {
-		this.quantifier = quantifier;
 	}
 
 	public Cls getCls() {
@@ -56,14 +52,6 @@ public class InferredRelationship extends GOModel implements java.io.Serializabl
 
 	public void setTargetCls(Cls targetCls) {
 		this.targetCls = targetCls;
-	}
-
-	public Relation getRelation() {
-		return this.relation;
-	}
-
-	public void setRelation(Relation relation) {
-		this.relation = relation;
 	}
 
 	public Boolean getIsDirect() {
@@ -88,6 +76,7 @@ public class InferredRelationship extends GOModel implements java.io.Serializabl
 
 	public void setOntology(Ontology ontology) {
 		this.ontology = ontology;
-	}
-
+	}*/
+	
+	
 }

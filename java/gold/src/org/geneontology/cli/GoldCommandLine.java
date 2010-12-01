@@ -30,7 +30,7 @@ public class GoldCommandLine {
 		options.put("-p",new String[]{"=password", "geneontology.gold.password"});
 		options.put("-h", new String[]{"=host", "geneontology.gold.host"});
 		options.put("-tsv=", new String[]{"directorypath\t\tPath of the TSV files", "geneontology.gold.tsvfiles"});
-		options.put("-obo", new String[]{"=filepatht\t\tPath of the OBO file to updated", "geneontology.gold.obofile"});
+		options.put("-obo", new String[]{"=filepath\t\tPath of the OBO file to updated", "geneontology.gold.obofile"});
 		options.put("-prefix", new String[]{"=text\t\tPrefix of the table names to be used in delta updte", "geneontology.gold.deltatableprefix"});
 		options.put("-force", new String[]{"\t\t\tDrop exsiting schema and create new one", ""});
 		options.put("-debug", new String[]{"\t\t\tEnabling log4j output", ""});
