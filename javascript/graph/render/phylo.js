@@ -9,6 +9,7 @@
 ////
 //// STARTED: looks top-level; make functional for application use.
 //// STARTED: hide whole subtrees on double-click
+//// TODO: togglable visability on nodes and edges
 //// TODO: font and text placement
 //// TODO: better text alignment
 //// TODO: floating right-hand text (see PAINT)
@@ -434,21 +435,21 @@ window.onload = function () {
 	// 	     2000);
 	// // this.attr({fill: "red"});
 	var shape_id = this.id;
-	var subtree_nodes = get_descendant_shapes(shape_id);
-	var subtree_edges = get_descendant_connections(shape_id);
 
-	// 
+	// "Vanish" edges.
+	var subtree_edges = get_descendant_connections(shape_id);
+	for( var se = 0; se < subtree_edges.length; se++ ){
+	    var ste = subtree_edges[se];
+	    ste.update("#000", "0");
+	}
+
+	// TODO: Nodes and text.
+	var subtree_nodes = get_descendant_shapes(shape_id);
 	for( var sn = 0; sn < subtree_nodes.length; sn++ ){
 	    var stn = subtree_nodes[sn];
 	    stn.attr({fill: "red"});
 	}
 	//bbop.core.kvetch('dblclick: ' + subtree_list.join(', '));
-
-	// Okay.
-	for( var se = 0; se < subtree_edges.length; se++ ){
-	    var ste = subtree_edges[se];
-	    ste.update("#000", "0");
-	}
     }
 
     // Experiment with hover.
