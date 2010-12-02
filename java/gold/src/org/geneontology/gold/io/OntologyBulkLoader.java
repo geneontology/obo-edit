@@ -10,7 +10,9 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLDisjointObjectPropertiesAxiom;
+import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLEquivalentObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedObject;
@@ -342,26 +344,7 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 	
 	private void dumpTermFrameAndMetaData() throws IOException {
 		TableDumper clsDumper = tables.get("cls");
-			//new TableDumper(this.dumpFilePrefix + "cls", this.path);
-		
-		
-		TableDumper cls_intersection_ofDumper = tables.get("cls_intersection_of");
 
-		TableDumper cls_union_ofDumper = tables.get("cls_union_of");
-		
-			//new TableDumper(this.dumpFilePrefix + "cls_union_of", this.path);
-		
-		TableDumper equivalent_toDumper = tables.get("equivalent_to");
-			//new TableDumper(this.dumpFilePrefix + "equivalent_to", this.path);
-		
-		TableDumper disjoint_withDumper = tables.get("disjoint_with");
-			//new TableDumper(this.dumpFilePrefix + "disjoint_with", this.path);
-		
-	////	TableDumper inferred_relationshipDumper = tables.get("inferred_relationship");
-		
-		//	TableDumper subclass_ofDumper = new TableDumper("subclass_of");
-		//TableDumper allSomeRelationship = new TableDumper("all_some_relationship");
-		boolean f = true;
 		String ontologyId = graphWrapper.getOntologyId();
 		for (OWLClass cls : getOwlOntology().getClassesInSignature()) {
 			String label = graphWrapper.getLabel(cls);
@@ -390,30 +373,6 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 			
 			dumpAnnotations(cls, id, ontologyId);
 			
-			//dump intersection of and union_of	
-			for(OWLObject ec: cls.getEquivalentClasses(graphWrapper.getOntology())){
-				if(ec instanceof OWLObjectIntersectionOf){
-					dumpNaryBooleanExpression(cls_intersection_ofDumper, id, ontologyId, (OWLNaryBooleanClassExpression)ec);
-				}else if(ec instanceof OWLObjectUnionOf){
-					dumpNaryBooleanExpression(cls_union_ofDumper, id, ontologyId,(OWLNaryBooleanClassExpression) ec);
-				}else if(ec instanceof OWLNamedObject){
-					String id2 = graphWrapper.getIdentifier(ec);
-					if(id != null)
-						equivalent_toDumper.dumpRow(id, id2 , ontologyId);
-				}
-			}
-
-			if(f){
-				for(OWLObject ec: cls.getDisjointClasses(graphWrapper.getOntology())){
-					String id2 = graphWrapper.getIdentifier(ec);
-					if(id2 != null){
-						disjoint_withDumper.dumpRow(id, id2, ontologyId);
-					}
-				}
-				f = false;
-			}
-			
-		
 			TableDumper inferred_subclass_ofDumper = tables.get("inferred_subclass_of");
 			TableDumper inferred_all_some_relationshipDumper= tables.get("inferred_all_some_relationship");
 			TableDumper inferred_all_only_relationshipDumper =tables.get("inferred_all_only_relationship");
@@ -601,69 +560,38 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 			}
 		}
 		
+		TableDumper disjoint_withDumper = tables.get("disjoint_with");
+		for(OWLDisjointClassesAxiom ax: getOwlOntology().getAxioms(AxiomType.DISJOINT_CLASSES)){
+			List<OWLClassExpression> list= ax.getClassExpressionsAsList();
+			String id1 = graphWrapper.getIdentifier(list.get(0));
+			String id2= graphWrapper.getIdentifier(list.get(1));
+			
+			disjoint_withDumper.dumpRow(id1, id2, ontologyId);
+		}
 		
-		/*for (OWLEquivalentClassesAxiom sca : getOwlOntology().getAxioms(AxiomType.EQUIVALENT_CLASSES)) {
+	
+		TableDumper cls_intersection_ofDumper = tables.get("cls_intersection_of");
+		TableDumper cls_union_ofDumper = tables.get("cls_union_of");
+		TableDumper equivalent_toDumper = tables.get("equivalent_to");
 		
-			System.out.println("----");
-			OWLObject obj = null;
-			for(OWLClassExpression ce: sca.getClassExpressionsAsList()){
-				if(obj == null)
-					obj = ce;
-				else if(ce instanceof OWLNaryBooleanClassExpression){
-					
-					String id = graphWrapper.getIdentifier(obj);
-					if(id != null){
-						if(ce instanceof OWLObjectIntersectionOf){
-							dumpNaryBooleanExpression(cls_intersection_ofDumper, id, ontologyId, (OWLNaryBooleanClassExpression)ce);
-						}else if(ce instanceof OWLObjectUnionOf){
-							dumpNaryBooleanExpression(cls_union_ofDumper, id, ontologyId,(OWLNaryBooleanClassExpression) ce);
-						}
-					}
-				
-					
-					break;
-				}else{
-					String id = graphWrapper.getIdentifier(obj);
-					String id2 = graphWrapper.getIdentifier(ce);
+		for(OWLEquivalentClassesAxiom ax: getOwlOntology().getAxioms(AxiomType.EQUIVALENT_CLASSES)){
+			List<OWLClassExpression> list= ax.getClassExpressionsAsList();
+			String id = graphWrapper.getIdentifier(list.get(0));
 
-					if(id != null && id2 != null){
-						equivalent_toDumper.dumpRow(id, id2, ontologyId);
-					}
-					break;
-				}
+			OWLObject ec  = list.get(1);
+
+			if(ec instanceof OWLObjectIntersectionOf){
+				dumpNaryBooleanExpression(cls_intersection_ofDumper, id, ontologyId, (OWLNaryBooleanClassExpression)ec);
+			}else if(ec instanceof OWLObjectUnionOf){
+				dumpNaryBooleanExpression(cls_union_ofDumper, id, ontologyId,(OWLNaryBooleanClassExpression) ec);
+			}else if(ec instanceof OWLNamedObject){
+				String id2 = graphWrapper.getIdentifier(ec);
+				if(id != null)
+					equivalent_toDumper.dumpRow(id, id2 , ontologyId);
 			}
-		}*/
-		
-		/*Set<OWLDisjointClassesAxiom> disjoint_axioms = getOwlOntology().getAxioms(AxiomType.DISJOINT_CLASSES);
-		
-		for(OWLDisjointClassesAxiom disjoint: disjoint_axioms){
-			String id1 = null;
-			String id2 = null;
-			for(OWLClassExpression ce: disjoint.getClassExpressionsAsList()){
-				if(id1 == null)
-					id1 = graphWrapper.getIdentifier(ce);
-				else if(id1 != null && id2 == null){
-					id2 = graphWrapper.getIdentifier(ce);
-					if(id2 != null){
-						disjoint_withDumper.dumpRow(id1, id2, ontologyId);
-					}
-				}
-			}
-		}*/
-		
-		// TODO - disjoint_with
-		
-		
-		/*allSomeRelationshipDumper.close();
-		subClassOfDumper.close();
-		
-		List<String> list = new ArrayList<String>();
-		
-		
-		list.add(allSomeRelationshipDumper.getTable());
-		list.add(subClassOfDumper.getTable());
-		
-		return list;*/
+			
+			
+		}
 	}
 	
 	private String oboId(OWLObject ob) {
