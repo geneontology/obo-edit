@@ -266,12 +266,12 @@ window.onload = function () {
     }
 
     // Subtree list, including self.
-    function get_subtree_list(nid){
+    function get_descendant_node_list(nid){
 	return gather_list_from_hash(nid, layout.parent_distances);
     }
 
     // Ancestor list, including self.
-    function get_ancestor_list(nid){
+    function get_ancestor_node_list(nid){
 	return gather_list_from_hash(nid, layout.child_distances);
     }
 
@@ -294,41 +294,55 @@ window.onload = function () {
     	return retlist;
     }
 
-    function get_associated_shapes(shape_id){
-    	return get_associated(shape_id, shapes, get_subtree_list);
+    function get_descendant_shapes(shape_id){
+    	return get_associated(shape_id, shapes, get_descendant_node_list);
     }
 
-    function get_associated_texts(shape_id){
-    	return get_associated(shape_id, texts, get_subtree_list);
+    function get_descendant_texts(shape_id){
+    	return get_associated(shape_id, texts, get_descendant_node_list);
     }
 
     function get_ancestor_shapes(shape_id){
-    	return get_associated(shape_id, shapes, get_ancestor_list);
+    	return get_associated(shape_id, shapes, get_ancestor_node_list);
     }
 
-    function get_ancestor_connections(shape_id){
+    // General func.
+    function get_connections(shape_id, shape_getter, conn_hash){
 
 	var retlist = new Array();
 
 	// Fish in the connection ancestor hash for edges.
-	var anc_shapes = get_associated(shape_id, shapes, get_ancestor_list);
-	for( var ai = 0; ai < anc_shapes.length; ai++ ){
-	    var ashp = anc_shapes[ai];
-	    var anid_desc = shape_id_to_node_id[ashp.id];
-	    if( anid_desc && conn_hash_ancestor[anid_desc] ){
-		for( var anid_anc in conn_hash_ancestor[anid_desc] ){
-		    var conn_index = conn_hash_ancestor[anid_desc][anid_anc];
+	var tmp_shapes = shape_getter(shape_id);
+	for( var si = 0; si < tmp_shapes.length; si++ ){
+	    var tshp = tmp_shapes[si];
+	    var tnid = shape_id_to_node_id[tshp.id];
+	    if( tnid && conn_hash[tnid] ){
+		for( var anid in conn_hash[tnid] ){
+		    var conn_index = conn_hash[tnid][anid];
 		    var conn = connections[conn_index];
-		    
-		    bbop.core.kvetch('conn: found: [' + conn_index +
-				     '] ' + anid_anc + ' => ' + anid_desc +
-				    ' ... ' + conn);
+		    bbop.core.kvetch('get_conn: found: [' + conn_index +
+				     '] ' + anid + ' <=> ' + tnid +
+				     ' ... ' + conn);
 		    retlist.push(conn);
 		}
 	    }
 	}
 	return retlist;
     };
+
+    //
+    function get_ancestor_connections(shape_id){
+	return get_connections(shape_id,
+			       get_ancestor_shapes,
+			       conn_hash_ancestor);
+    }
+
+    //
+    function get_descendant_connections(shape_id){
+	return get_connections(shape_id,
+			       get_descendant_shapes,
+			       conn_hash_descendant);
+    }
 
     ///
     /// Shape manipulation function definitions.
@@ -340,7 +354,7 @@ window.onload = function () {
     	var shape_id = this.id;
 
 	// Darken boxes and update current position before dragging.
-    	var assoc_shapes = get_associated_shapes(shape_id);
+    	var assoc_shapes = get_descendant_shapes(shape_id);
     	for( var si = 0; si < assoc_shapes.length; si++ ){
 	    var shape = assoc_shapes[si];
             shape.animate({"fill-opacity": .2}, animation_time);
@@ -348,7 +362,7 @@ window.onload = function () {
     	}
 
 	// Fade text and update current position before dragging.
-    	var assoc_texts = get_associated_texts(shape_id);
+    	var assoc_texts = get_descendant_texts(shape_id);
     	for( var ti = 0; ti < assoc_texts.length; ti++ ){
             var text = assoc_texts[ti];
             text.animate({"fill-opacity": .2}, animation_time);
@@ -363,7 +377,7 @@ window.onload = function () {
     	var shape_id = this.id;
 
 	// Move box positions.
-    	var assoc_shapes = get_associated_shapes(shape_id);
+    	var assoc_shapes = get_descendant_shapes(shape_id);
     	for( var si = 0; si < assoc_shapes.length; si++ ){
 	    var mshp = assoc_shapes[si];
             var shp_att = { y: mshp.oy + dy };
@@ -375,7 +389,7 @@ window.onload = function () {
     	}
 
 	// Move text as well.
-    	var assoc_texts = get_associated_texts(shape_id);
+    	var assoc_texts = get_descendant_texts(shape_id);
     	for( var ti = 0; ti < assoc_texts.length; ti++ ){
 	    var mtxt = assoc_texts[ti];
             var txt_att = { y: mtxt.oy + dy };
@@ -395,14 +409,14 @@ window.onload = function () {
     	var shape_id = this.id;
 
 	// Fade boxes.
-    	var assoc_shapes = get_associated_shapes(shape_id);
+    	var assoc_shapes = get_descendant_shapes(shape_id);
     	for( var si = 0; si < assoc_shapes.length; si++ ){
             var mshp = assoc_shapes[si];
             mshp.animate({"fill-opacity": 0.0}, animation_time);
     	}
 
 	// Find text and darken.
-    	var assoc_texts = get_associated_texts(shape_id);
+    	var assoc_texts = get_descendant_texts(shape_id);
     	for( var ti = 0; ti < assoc_texts.length; ti++ ){
 	    var mtxt = assoc_texts[ti];
 	    mtxt.animate({"fill-opacity": 1.0}, animation_time);
@@ -411,13 +425,30 @@ window.onload = function () {
 
     // Experiment with double click.
     function dblclick_event_handler(event){
-	this.animate({"fill": "red",
-		      "fill-opacity": 0.5},
-		     animation_time);
-	this.animate({"fill": "green",
-		      "fill-opacity": 0.5},
-		     animation_time);
-	// this.attr({fill: "red"});
+	// this.animate({"fill": "green",
+	// 	      "fill-opacity": 0.5},
+	// 	     2000);
+	// //sleep(2000);
+	// this.animate({"fill": base_node_color,
+	// 	      "fill-opacity": 0.0},
+	// 	     2000);
+	// // this.attr({fill: "red"});
+	var shape_id = this.id;
+	var subtree_nodes = get_descendant_shapes(shape_id);
+	var subtree_edges = get_descendant_connections(shape_id);
+
+	// 
+	for( var sn = 0; sn < subtree_nodes.length; sn++ ){
+	    var stn = subtree_nodes[sn];
+	    stn.attr({fill: "red"});
+	}
+	//bbop.core.kvetch('dblclick: ' + subtree_list.join(', '));
+
+	// Okay.
+	for( var se = 0; se < subtree_edges.length; se++ ){
+	    var ste = subtree_edges[se];
+	    ste.update("#000", "0");
+	}
     }
 
     // Experiment with hover.
@@ -534,8 +565,8 @@ window.onload = function () {
     // Add stored connections.
     // TODO: add connections to indexing hash for later access.
     var connections = new Array();
-    var conn_index_hash = {};
     var conn_hash_ancestor = {};
+    var conn_hash_descendant = {};
     for( var ei = 0; ei < layout.edge_list.length; ei++ ){
 
 	//
@@ -551,11 +582,9 @@ window.onload = function () {
 						   base_edge_width));
 
 	// Index edge index for later recall.
-	if( ! conn_index_hash[e0] ){ conn_index_hash[e0] = {}; }
-	if( ! conn_index_hash[e1] ){ conn_index_hash[e1] = {}; }
+	if( ! conn_hash_descendant[e0] ){ conn_hash_descendant[e0] = {}; }
+	conn_hash_descendant[e0][e1] = ei;
 	if( ! conn_hash_ancestor[e1] ){ conn_hash_ancestor[e1] = {}; }
-	conn_index_hash[e0][e1] = ei;
-	conn_index_hash[e1][e0] = ei;
 	conn_hash_ancestor[e1][e0] = ei;
 
 	bbop.core.kvetch('onload: indexed (edge): e0: ' + e0 +
