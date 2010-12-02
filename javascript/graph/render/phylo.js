@@ -7,13 +7,13 @@
 //// Taken name spaces:
 ////    bbop.render.phylo.*
 ////
-//// TODO: looks top-level; make functional for application use.
-//// STARTED: trace up path on hover
+//// STARTED: looks top-level; make functional for application use.
 //// STARTED: hide whole subtrees on double-click
 //// TODO: font and text placement
 //// TODO: better text alignment
 //// TODO: floating right-hand text (see PAINT)
 //// TODO: switch between fixed-height and fill-height?
+//// TODO: add distances at AmiGO-level?
 ////
 //// Required:
 ////    bbop.core
@@ -31,15 +31,63 @@ bbop.core.require('bbop', 'model', 'tree');
 bbop.core.namespace('bbop', 'render', 'phylo');
 
 
-// Start experimenting with this.
-Raphael.fn.connection = function (obj1, obj2, line, bg) {
-    if (obj1.line && obj1.from && obj1.to) {
-        line = obj1;
-        obj1 = line.from;
-        obj2 = line.to;
+// Init: shape, shape, color, color
+Raphael.fn.connection = function(context, obj1, obj2,
+				 line_color, line_width){
+
+    //this.context = context;
+
+    // These need to be set right away for path calculation.    
+    this.from = obj1;
+    this.to = obj2;
+
+    // Get path.
+    var path = this.get_path_between();
+
+    // // BG first.
+    // this.bg_color = bg_color || "#000";
+    // this.bg_width = bg_width || 3;
+    // this.bg = context.path(path).attr({"stroke": this.bg_color,
+    // 				       "fill": "none",
+    // 				       "stroke-width": this.bg_width});
+    // Colors and lines.
+    this.color = line_color || "#000";
+    this.line_width = line_width || 3;
+    this.line = context.path(path).attr({"stroke": this.color,
+					 "fill": "none",
+     					 "stroke-width": this.line_width});
+};
+// Update line graphic.
+Raphael.fn.connection.prototype.update = function(line_color, line_width){
+
+    // Get path.
+    var path = this.get_path_between();
+
+    // Update line.
+    //this.bg.attr({path: path});
+    this.line.attr({path: path});
+
+    // // Update line color if changed.
+    // if( bg_color || bg_width ){
+    // 	this.bg_color = bg_color || this.bg_color;
+    // 	this.bg_width = bg_width || this.bg_width;
+    // 	this.bg.attr({"stroke": this.bg_color,
+    // 		      "fill": "none",
+    // 		      "stroke-width": this.bg_width});
+    // }
+    if( line_color || line_width ){
+	this.color = line_color || this.color;
+	this.line_width = line_width || this.line_width;
+	this.line.attr({"stroke": this.color,
+			"fill": "none",
+     			"stroke-width": this.line_width});
     }
-    var bb1 = obj1.getBBox();
-    var bb2 = obj2.getBBox();
+};
+// Generate path from between the two internally stored objects.
+Raphael.fn.connection.prototype.get_path_between = function(){
+
+    var bb1 = this.from.getBBox();
+    var bb2 = this.to.getBBox();
 
     //bbop.core.kvetch("bb1.width: " + bb1.width);
     //bbop.core.kvetch("bb1.x: " + bb1.x + ", bb1.y: " + bb1.y);
@@ -60,10 +108,10 @@ Raphael.fn.connection = function (obj1, obj2, line, bg) {
             var dx = Math.abs(p[i].x - p[j].x);
             var dy = Math.abs(p[i].y - p[j].y);
             if ((i == j - 4) ||
-		(((i != 3 && j != 6) || p[i].x < p[j].x) &&
-		 ((i != 2 && j != 7) || p[i].x > p[j].x) &&
-		 ((i != 0 && j != 5) || p[i].y > p[j].y) &&
-		 ((i != 1 && j != 4) || p[i].y < p[j].y))) {
+    		(((i != 3 && j != 6) || p[i].x < p[j].x) &&
+    		 ((i != 2 && j != 7) || p[i].x > p[j].x) &&
+    		 ((i != 0 && j != 5) || p[i].y > p[j].y) &&
+    		 ((i != 1 && j != 4) || p[i].y < p[j].y))) {
                 dis.push(dx + dy);
                 d[dis[dis.length - 1]] = [i, j];
             }
@@ -77,35 +125,16 @@ Raphael.fn.connection = function (obj1, obj2, line, bg) {
     }
     var x1 = p[res[0]].x;
     var y1 = p[res[0]].y;
-    var x4 = p[res[1]].x;
-    var y4 = p[res[1]].y;
-    var dx = Math.max(Math.abs(x1 - x4) / 2, 10);
-    var dy = Math.max(Math.abs(y1 - y4) / 2, 10);
-    //var x2 = [x1, x1, x1 - dx, x1 + dx][res[0]].toFixed(3),
-    //y2 = [y1 - dy, y1 + dy, y1, y1][res[0]].toFixed(3),
-    //x3 = [0, 0, 0, 0, x4, x4, x4 - dx, x4 + dx][res[1]].toFixed(3),
-    //y3 = [0, 0, 0, 0, y1 + dy, y1 - dy, y4, y4][res[1]].toFixed(3);
-    // var path = ["M", x1.toFixed(3), y1.toFixed(3),
-    // 		"C", x2, y2, x3, y3, x4.toFixed(3), y4.toFixed(3)].join(",");
-    var path = [
-	"M", x1.toFixed(3), y1.toFixed(3),
-	"L", x1.toFixed(3), y4.toFixed(3),
-	"L", x4.toFixed(3), y4.toFixed(3)
+    var x2 = p[res[1]].x;
+    var y2 = p[res[1]].y;
+    var dx = Math.max(Math.abs(x1 - x2) / 2, 10);
+    var dy = Math.max(Math.abs(y1 - y2) / 2, 10);
+    return [
+    	"M", x1.toFixed(3), y1.toFixed(3),
+    	"L", x1.toFixed(3), y2.toFixed(3),
+    	"L", x2.toFixed(3), y2.toFixed(3)
     ].join(",");
-    if (line && line.line) {
-        line.bg && line.bg.attr({path: path});
-        line.line.attr({path: path});
-    }else{
-        var color = typeof line == "string" ? line : "#000";
-        return {
-            bg: bg && bg.split && this.path(path).attr({stroke: bg.split("|")[0], fill: "none", "stroke-width": bg.split("|")[1] || 3}),
-            line: this.path(path).attr({stroke: color, fill: "none"}),
-            from: obj1,
-            to: obj2
-        };
-    }
 };
-
 
 // Example graph hand loaded from:
 // (http://amigo.berkeleybop.org/amigo/panther/PTHR10004.tree).
@@ -197,9 +226,17 @@ var animation_time = 100;
 //var edge_buffer = 0;
 var edge_shift = edge_buffer / 2.0;
 
+// Color definitions.
+var base_node_color = "#00f";
+var base_edge_color = "#030";
+var base_edge_width = "3";
+var hilite_edge_color = "#00f";
+var hilite_edge_width = "5";
+
 // Adjust scales.
 x_scale = a_width / layout.max_distance;
-y_scale = a_height / layout.max_width;
+y_scale = a_height / layout.max_width; // screen-variable y-scale
+// y_scale = box_height * 2.5; // fixed y-scale
 
 // DEBUG
 info_dump();
@@ -269,6 +306,30 @@ window.onload = function () {
     	return get_associated(shape_id, shapes, get_ancestor_list);
     }
 
+    function get_ancestor_connections(shape_id){
+
+	var retlist = new Array();
+
+	// Fish in the connection ancestor hash for edges.
+	var anc_shapes = get_associated(shape_id, shapes, get_ancestor_list);
+	for( var ai = 0; ai < anc_shapes.length; ai++ ){
+	    var ashp = anc_shapes[ai];
+	    var anid_desc = shape_id_to_node_id[ashp.id];
+	    if( anid_desc && conn_hash_ancestor[anid_desc] ){
+		for( var anid_anc in conn_hash_ancestor[anid_desc] ){
+		    var conn_index = conn_hash_ancestor[anid_desc][anid_anc];
+		    var conn = connections[conn_index];
+		    
+		    bbop.core.kvetch('conn: found: [' + conn_index +
+				     '] ' + anid_anc + ' => ' + anid_desc +
+				    ' ... ' + conn);
+		    retlist.push(conn);
+		}
+	    }
+	}
+	return retlist;
+    };
+
     ///
     /// Shape manipulation function definitions.
     /// 
@@ -307,8 +368,8 @@ window.onload = function () {
 	    var mshp = assoc_shapes[si];
             var shp_att = { y: mshp.oy + dy };
             mshp.attr(shp_att);
-	    bbop.core.kvetch('mshp[' + si + ']: y:' + mshp.y + 
-			     ', oy: ' + mshp.oy +
+	    bbop.core.kvetch('mshp[' + si + ']:' + 
+			     ' oy: ' + mshp.oy +
 			     ', dy: ' + dy);
 	    //mshp.y = mshp.oy + dy;
     	}
@@ -323,7 +384,7 @@ window.onload = function () {
 
 	// Update connections.
         for (var i = connections.length; i--;) {
-            paper.connection(connections[i]);
+            connections[i].update();
         }
         paper.safari();
     };
@@ -347,6 +408,65 @@ window.onload = function () {
 	    mtxt.animate({"fill-opacity": 1.0}, animation_time);
     	}
     };
+
+    // Experiment with double click.
+    function dblclick_event_handler(event){
+	this.animate({"fill": "red",
+		      "fill-opacity": 0.5},
+		     animation_time);
+	this.animate({"fill": "green",
+		      "fill-opacity": 0.5},
+		     animation_time);
+	// this.attr({fill: "red"});
+    }
+
+    // Experiment with hover.
+    // TODO: merge functions
+    // TODO: highlight connections
+    function mouseover_event_handler(event){
+
+    	var shape_id = this.id;
+
+	// Cycle through ancestro shapes.
+    	var anc_shapes = get_ancestor_shapes(shape_id);
+    	for( var ai = 0; ai < anc_shapes.length; ai++ ){
+	    // Change boxes opacity (darken).
+	    var ashp = anc_shapes[ai];
+	    //ashp.attr({fill: "green"});
+	    ashp.animate({"fill-opacity": 0.5},
+			 animation_time);
+	}
+
+	// See if we can fish any edges out and highlight them.
+    	var anc_edges = get_ancestor_connections(shape_id);
+    	for( var ac = 0; ac < anc_edges.length; ac++ ){
+	    var aconn = anc_edges[ac];
+	    aconn.update(hilite_edge_color, hilite_edge_width);
+	}
+	paper.safari();
+    }
+    function mouseout_event_handler(event){
+
+    	var shape_id = this.id;
+
+	// Cycle through ancestor shapes.
+    	var anc_shapes = get_ancestor_shapes(shape_id);
+    	for( var ai = 0; ai < anc_shapes.length; ai++ ){
+	    // Change boxes opacity (lighten).
+	    var ashp = anc_shapes[ai];
+	    ashp.animate({"fill-opacity": 0.0},
+			 animation_time);
+	    // ashp.attr({fill: "green"});
+    	}
+
+	// See if we can fish any edges out and unhighlight them.
+    	var anc_edges = get_ancestor_connections(shape_id);
+    	for( var ac = 0; ac < anc_edges.length; ac++ ){
+	    var aconn = anc_edges[ac];
+	    aconn.update(base_edge_color, base_edge_width);
+	}
+	paper.safari();
+    }
 
     ///
     /// Shape creation and placement.
@@ -390,71 +510,57 @@ window.onload = function () {
 	shape_id_to_node_id[shape_id] = node_id;
 	node_id_to_index[node_id] = ref_index;
 
-	bbop.core.kvetch('onload: indexed: node_id: ' + node_id +
+	bbop.core.kvetch('onload: indexed (node): node_id: ' + node_id +
 			 ', shape_id: ' + shape_id +
 			 ', ref_index: ' + ref_index);
     }
 
-    // Shape definition.
+    // Shape definition, and add listeners.
     for (var i = 0, ii = shapes.length; i < ii; i++) {
         //var color = Raphael.getColor();
-        shapes[i].attr({fill: "blue",
-			stroke: "blue",
+        shapes[i].attr({fill: base_node_color,
+			stroke: base_node_color,
 			//"fill-opacity": .25,
 			title: "foo",
 			"fill-opacity": 0.0,
 			"stroke-width": 2,
 			cursor: "move"});
         shapes[i].drag(move, dragger, up);
-
-	// Experiment with double click.
-	function dblclick_event_handler(event){
-	    this.attr({fill: "red"});
-	}
 	shapes[i].dblclick(dblclick_event_handler);
-
-	// Experiment with hover.
-	// TODO: merge functions
-	// TODO: highlight connections
-	function mouseover_event_handler(event){
-
-    	    var shape_id = this.id;
-
-	    // Green boxes.
-    	    var anc_shapes = get_ancestor_shapes(shape_id);
-    	    for( var ai = 0; ai < anc_shapes.length; ai++ ){
-		var ashp = anc_shapes[ai];
-		ashp.animate({//"fill": "green",
-			      "fill-opacity": 0.5},
-			     animation_time);
-		ashp.attr({fill: "green"});
-    	    }
-	}
-	function mouseout_event_handler(event){
-
-    	    var shape_id = this.id;
-
-	    // Green boxes.
-    	    var anc_shapes = get_ancestor_shapes(shape_id);
-    	    for( var ai = 0; ai < anc_shapes.length; ai++ ){
-		var ashp = anc_shapes[ai];
-		ashp.animate({//"fill": "blue",
-			      "fill-opacity": 0.0},
-			     animation_time);
-		ashp.attr({fill: "green"});
-    	    }
-	}
 	shapes[i].mouseover(mouseover_event_handler);
 	shapes[i].mouseout(mouseout_event_handler);
     }
 
     // Add stored connections.
+    // TODO: add connections to indexing hash for later access.
     var connections = new Array();
+    var conn_index_hash = {};
+    var conn_hash_ancestor = {};
     for( var ei = 0; ei < layout.edge_list.length; ei++ ){
+
+	//
 	var edge = layout.edge_list[ei];
-	connections.push(paper.connection(shapes[shape_hash[edge[0]]],
-					  shapes[shape_hash[edge[1]]],
-					  "#0f0", "#000|3"));	
+	var e0 = edge[0];
+	var e1 = edge[1];
+
+	// Push edge onto array.
+	connections.push(new Raphael.fn.connection(paper,
+						   shapes[shape_hash[e0]],
+						   shapes[shape_hash[e1]],
+						   base_edge_color,
+						   base_edge_width));
+
+	// Index edge index for later recall.
+	if( ! conn_index_hash[e0] ){ conn_index_hash[e0] = {}; }
+	if( ! conn_index_hash[e1] ){ conn_index_hash[e1] = {}; }
+	if( ! conn_hash_ancestor[e1] ){ conn_hash_ancestor[e1] = {}; }
+	conn_index_hash[e0][e1] = ei;
+	conn_index_hash[e1][e0] = ei;
+	conn_hash_ancestor[e1][e0] = ei;
+
+	bbop.core.kvetch('onload: indexed (edge): e0: ' + e0 +
+			 ', e1: ' + e1 +
+			 ', ei: ' + ei);
     }
 
     // See: https://github.com/sorccu/cufon/wiki/about
