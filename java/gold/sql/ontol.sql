@@ -412,7 +412,7 @@ CREATE TABLE disjoint_with (
        ontology VARCHAR
 );
 
-COMMENT ON TABLE cls_disjoint_with IS 'Two classes are disjoint if they share no instances or subclasses in common.
+COMMENT ON TABLE disjoint_with IS 'Two classes are disjoint if they share no instances or subclasses in common.
 MAPPINGS:
  OBO: Term.disjoint_from
  OWL: DisjointClasses(cls disjoint_cls)

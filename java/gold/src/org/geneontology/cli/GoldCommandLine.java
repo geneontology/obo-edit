@@ -5,7 +5,6 @@ import java.util.Hashtable;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.io.DbOperationsListenerToReportTime;
@@ -69,7 +68,7 @@ public class GoldCommandLine {
 		System.out.println("****************GOLD DB*******************");
 		
 		//atleast two arguments are required
-		if(args.length>1){
+		if(args.length>0){
 			//last argument is the operation name that to be peforme by this program. 
 			String operation = args[args.length-1];
 			if(!operations.contains(operation)){
@@ -79,7 +78,7 @@ public class GoldCommandLine {
 			//validate the options
 			//update properties in the GeneOntologyManager at the system level with the
 			//options provided through command line arguments
-			for(int i=1;i<args.length-1;i++){
+			for(int i=0;i<args.length-1;i++){
 				String option = args[i].trim();
 				String[] tokens = option.split("=");
 				String v[] = options.get(tokens[0]);

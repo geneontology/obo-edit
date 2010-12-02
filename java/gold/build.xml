@@ -142,6 +142,7 @@
 				<path>
 					<fileset dir="${librarydir}">
 						<include name="*.jar" />
+						<include name="**/*.jar" />
 					</fileset>
 				</path>
 				<!--<map from="${runtimedir}/" to="lib" />-->
