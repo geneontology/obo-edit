@@ -10,10 +10,14 @@ import java.net.Socket;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.geneontology.web.AdminServlet;
+import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
+import org.mortbay.jetty.handler.DefaultHandler;
+import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
+import org.mortbay.jetty.webapp.WebAppContext;
 
 public class JettyStarter {
 
@@ -27,20 +31,31 @@ public class JettyStarter {
 
 	public void start() throws Exception {
 		server = new Server(8080);
-
+		WebAppContext files = new WebAppContext("webcontents", "/");
+		
 		ContextHandlerCollection contexts = new ContextHandlerCollection();
-		server.setHandler(contexts);
+	
+	//	server.setHandler(contexts);
 
-		Context root = new Context(contexts, "/admin", Context.SESSIONS);
+		
+		
+		Context root = new Context(contexts, "/gold", Context.SESSIONS);
 		root.addServlet(new ServletHolder(new AdminServlet()), "/*");
 
+	      HandlerCollection handlers = new HandlerCollection();
+	      handlers.setHandlers(new Handler[]{contexts,files, new DefaultHandler()});		
+		
+		server.setHandler(handlers);
 		ShutdownMonitor monitor = new ShutdownMonitor();
+		
+		
 		monitor.start();
 		
 		server.start();
 
 		LOG.info("Jetty Server is started");
-
+		LOG.info("Please visit the web application at the url : http://localhost:8080/");
+		
 		server.join();
 	}
 
@@ -88,6 +103,8 @@ public class JettyStarter {
 			new JettyStarter().start();
 		}else if ("stop".equals(command)){
 			new JettyStarter().stop();
+		}else{
+			exit("Invalid options");
 		}
 		
 	}
