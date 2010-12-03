@@ -2,8 +2,16 @@
 
 ####Command Line Interace (CLI)
 For the project home directory run the following command to find
-the help about the usage of the command line interface
-java -jar gold.jar
+the help about the usage of the command line interface by running the following cammands:
+
+1) bin/gold-runner
+2) bin/jetty-runner
+3) java -jar gold.jar
+
+####Web Application Interface
+The application contains the pre-configured jetty server. The jetty server can
+be run by the 'bin/jetty-runner start' command. The main web application interface is located at
+http://localhost:8080
 
 ###Hibernate documentation
 

@@ -36,6 +36,20 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 			}finally{
 				running = false;
 			}
+		}else if ("update".equals(opName)){
+			DbOperations db = new DbOperations();
+			db.addDbOperationsListener(this);
+			try {
+				db.updateGold();
+			} catch (Exception e) {
+				running = false;
+				this.exception = e;
+				e.printStackTrace();
+				LOG.error("DB Operation failed " + opName, e);
+			}finally{
+				running = false;
+			}
+			
 		}
 		running = false;
 	}

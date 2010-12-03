@@ -46,6 +46,9 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 
 	
 	private void initTables() throws IOException{
+	
+		tables.put("cls",   new TableDumper(this.dumpFilePrefix + "cls", this.path));
+		tables.put("relation",   new TableDumper(this.dumpFilePrefix + "relation", this.path));
 		tables.put("ontology",  new TableDumper(this.dumpFilePrefix + "ontology", this.path));
 		tables.put("ontology_annotation",  new TableDumper(this.dumpFilePrefix + "ontology_annotation", this.path));
 		
@@ -84,9 +87,6 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 		
 		tables.put("relation_equivalent_to",   new TableDumper(this.dumpFilePrefix + "relation_equivalent_to", this.path));
 		
-		tables.put("cls",   new TableDumper(this.dumpFilePrefix + "cls", this.path));
-		
-		tables.put("relation",   new TableDumper(this.dumpFilePrefix + "relation", this.path));
 	
 		tables.put("annotation_property",   new TableDumper(this.dumpFilePrefix + "annotation_property", this.path));
 		
