@@ -7,13 +7,13 @@
 //// Taken name spaces:
 ////    bbop.render.phylo.*
 ////
+//// FIX: text animation
+//// TODO: togglable visability on nodes
 //// STARTED: looks top-level; make functional for application use.
 //// STARTED: hide whole subtrees on double-click
-//// TODO: togglable visability on nodes and edges
 //// TODO: font and text placement
 //// TODO: better text alignment
 //// TODO: floating right-hand text (see PAINT)
-//// TODO: switch between fixed-height and fill-height?
 //// TODO: add distances at AmiGO-level?
 ////
 //// Required:
@@ -31,10 +31,84 @@ bbop.core.require('bbop', 'model');
 bbop.core.require('bbop', 'model', 'tree');
 bbop.core.namespace('bbop', 'render', 'phylo');
 
+// Init: context, label, x-coord, y-coord.
+Raphael.fn.pnode = function(context, label, px, py){
 
-// Init: shape, shape, color, color
-Raphael.fn.connection = function(context, obj1, obj2,
-				 line_color, line_width){
+    // Color and size definitions.
+    var base_node_color = "#00f";
+    var text_offset_x = box_width / 2.0;
+    var text_offset_y = box_height / 2.0;
+    var animation_time = 100;
+    
+    // Draw out initial node.
+    this._context = context;
+
+    this._text = // NOTE: text is *centered* at this point.
+	this._context.text(px + text_offset_x, py + text_offset_y, label);
+    this._text.toBack(); // make sure it's behind the boxes
+    this._shape = this._context.rect(px, py, box_width, box_height, 2);
+
+    // Proxy properties and functions.
+    // This is so wrong, but feels so good...proxy most things through
+    // shape.
+    this.id = this._shape.id; // Use the shape's UID as our UID.
+    this.getBBox = function(){
+	return this._shape.getBBox.call(this._shape);
+    };
+    // Semi-proxy.
+    this.shape_attr = function(arg){
+	return this._shape.attr.call(this._shape, arg);
+    };
+    // Event handlers.
+    this.drag = function(move_handler, start_handler, stop_handler){
+	this._shape.drag(move_handler, start_handler, stop_handler);
+    };
+    this.dblclick = function(handler){
+	this._shape.dblclick.call(this._shape, handler);
+    };
+    this.mouseover = function(handler){
+	this._shape.mouseover.call(this._shape, handler);
+    };
+    this.mouseout = function(handler){
+	this._shape.mouseout.call(this._shape, handler);
+    };
+
+    //this.text_attr = this._text.attr;
+    this.update = function(attr){
+	return this._shape.animate.call(this._shape, attr, animation_time);
+    };
+
+    // Add to the object the initial position.
+    //this.ox = this._shape.attr("x");
+    this._start_shape_y = this._shape.attr("y");
+    this._start_text_y = this._text.attr("y");
+    this.init_move = function(){
+	this._start_shape_y = this._shape.attr("y");
+	this._start_text_y = this._text.attr("y");
+    };
+    this.move_y = function(arg){
+	var d_shape = this._start_shape_y + arg;
+	var d_text = this._start_text_y + arg;
+	this._shape.attr.call(this._shape, {"y": d_shape});
+	this._text.attr.call(this._text, {"y": d_text});
+	//return this._shape.attr.call(this._shape, {"y": arg});
+    };
+    //this.text_ox = this._text.attr("x");
+    //this.text_oy = this._text.attr("y");
+
+    // Setup shape attributes.
+    this._shape.attr({fill: base_node_color,
+		      stroke: base_node_color,
+		      //"fill-opacity": .25,
+		      title: "This is " + label,
+		      "fill-opacity": 0.0,
+		      "stroke-width": 2,
+		      cursor: "move"});
+};
+
+
+// Init: context, shape, shape.
+Raphael.fn.connection = function(context, obj1, obj2){
 
     //this.context = context;
 
@@ -45,48 +119,73 @@ Raphael.fn.connection = function(context, obj1, obj2,
     // Get path.
     var path = this.get_path_between();
 
-    // // BG first.
-    // this.bg_color = bg_color || "#000";
-    // this.bg_width = bg_width || 3;
-    // this.bg = context.path(path).attr({"stroke": this.bg_color,
-    // 				       "fill": "none",
-    // 				       "stroke-width": this.bg_width});
+    // Future visibility.
+    this.visible = true;
+
+    var base_edge_color = "#030";
+    var base_edge_width = "3";
+    var hilite_edge_color = "#00f";
+    var hilite_edge_width = "5";
+    var invisible_edge_color = "#000";
+    var invisible_edge_width = "0";
+
+    this.base_attr = {
+	"stroke": base_edge_color,
+	"fill": "none",
+     	"stroke-width": base_edge_width
+    };
+
+    this.base_attr = {
+	"stroke": base_edge_color,
+	"fill": "none",
+     	"stroke-width": base_edge_width
+    };
+
+    this.hilite_attr = {
+	"stroke": hilite_edge_color,
+	"fill": "none",
+     	"stroke-width": hilite_edge_width
+    };
+
+    this.invisible_attr = {
+	"stroke": invisible_edge_color,
+	"fill": "none",
+     	"stroke-width": invisible_edge_width
+    };
+
     // Colors and lines.
-    this.color = line_color || "#000";
-    this.line_width = line_width || 3;
-    this.line = context.path(path).attr({"stroke": this.color,
-					 "fill": "none",
-     					 "stroke-width": this.line_width});
+    this.line = context.path(path);
+    this.line.attr(this.base_attr);
 };
 // Update line graphic.
-Raphael.fn.connection.prototype.update = function(line_color, line_width){
+Raphael.fn.connection.prototype.update = function(message){
 
     // Get path.
     var path = this.get_path_between();
 
     // Update line.
-    //this.bg.attr({path: path});
     this.line.attr({path: path});
 
-    // // Update line color if changed.
-    // if( bg_color || bg_width ){
-    // 	this.bg_color = bg_color || this.bg_color;
-    // 	this.bg_width = bg_width || this.bg_width;
-    // 	this.bg.attr({"stroke": this.bg_color,
-    // 		      "fill": "none",
-    // 		      "stroke-width": this.bg_width});
-    // }
-    if( line_color || line_width ){
-	this.color = line_color || this.color;
-	this.line_width = line_width || this.line_width;
+    // 
+    if( this.visible == false ){
 	this.line.attr({"stroke": this.color,
 			"fill": "none",
-     			"stroke-width": this.line_width});
+     			"stroke-width": this.line_width});	
+    }else if( message == 'highlight' ){
+	this.line.attr(this.hilite_attr);
+	//}else if( message == 'highlight' ){
+	//this.line.attr(this.hilite_attr);
+    }else{
+	this.line.attr(this.base_attr);
     }
 };
 // Generate path from between the two internally stored objects.
 Raphael.fn.connection.prototype.get_path_between = function(){
 
+    // bbop.core.kvetch('1: ' + this);
+    // bbop.core.kvetch('2: ' + this.from);
+    // bbop.core.kvetch('3: ' + this.from.id);
+    // bbop.core.kvetch('4: ' + this.from.getBBox);
     var bb1 = this.from.getBBox();
     var bb2 = this.to.getBBox();
 
@@ -216,35 +315,36 @@ info_dump();
 
 // Let's play with arbitrary dimensions. Evrything should be
 // packed/spread within these bounds (eventually tied to eindow size?).
-var a_width = 800;
-var a_height = 600;
-var edge_buffer = 100;
 var box_width = 50;
 var box_height = 30;
-var text_offset_x = box_width / 2.0;
-var text_offset_y = box_height / 2.0;
-var animation_time = 100;
 //var edge_buffer = 0;
+var edge_buffer = 100;
 var edge_shift = edge_buffer / 2.0;
 
-// Color definitions.
-var base_node_color = "#00f";
-var base_edge_color = "#030";
-var base_edge_width = "3";
-var hilite_edge_color = "#00f";
-var hilite_edge_width = "5";
-
 // Adjust scales.
+var a_width = 800; // TODO: pick that out of Raphael
 x_scale = a_width / layout.max_distance;
-y_scale = a_height / layout.max_width; // screen-variable y-scale
-// y_scale = box_height * 2.5; // fixed y-scale
-
-// DEBUG
-info_dump();
-
+//y_scale = a_height / layout.max_width; // screen-variable y-scale
+y_scale = box_height * 2.0; // fixed y-scale
+var a_height = layout.max_width * y_scale;
 
 // Render out.
 window.onload = function () {
+
+    // Do a screen width calc.
+    // Adjust for box width and other extras as well.
+    if( window && window.innerWidth ){
+	a_width = window.innerWidth - box_width - edge_buffer;
+	x_scale = a_width / layout.max_distance;
+    }else if( document && document.body && document.body.offsetWidth ){
+	a_width = document.body.offsetWidth - box_width - edge_buffer;
+	x_scale = a_width / layout.max_distance;
+    }
+    a_width = a_width + 1; // Get that last pixel column on board.
+    bbop.core.kvetch('width: ' + a_width);
+
+    // DEBUG
+    info_dump();
 
     // Create context.
     var paper = Raphael("test1", a_width + edge_buffer, a_height + edge_buffer);
@@ -277,11 +377,11 @@ window.onload = function () {
     }
 
     //
-    function get_associated(shape_id, index_kept, getter){
+    function get_associated(phynode_id, index_kept, getter){
 
     	var retlist = new Array();
 	
-    	var node_id = shape_id_to_node_id[shape_id];
+    	var node_id = phynode_id_to_node_id[phynode_id];
     	var subtree_node_list = getter(node_id);
     	for( var si = 0; si < subtree_node_list.length; si++ ){
 
@@ -295,28 +395,28 @@ window.onload = function () {
     	return retlist;
     }
 
-    function get_descendant_shapes(shape_id){
-    	return get_associated(shape_id, shapes, get_descendant_node_list);
+    function get_descendant_phynodes(phynode_id){
+    	return get_associated(phynode_id, phynodes, get_descendant_node_list);
     }
 
-    function get_descendant_texts(shape_id){
-    	return get_associated(shape_id, texts, get_descendant_node_list);
+    function get_descendant_texts(phynode_id){
+    	return get_associated(phynode_id, texts, get_descendant_node_list);
     }
 
-    function get_ancestor_shapes(shape_id){
-    	return get_associated(shape_id, shapes, get_ancestor_node_list);
+    function get_ancestor_phynodes(phynode_id){
+    	return get_associated(phynode_id, phynodes, get_ancestor_node_list);
     }
 
     // General func.
-    function get_connections(shape_id, shape_getter, conn_hash){
+    function get_connections(phynode_id, phynode_getter, conn_hash){
 
 	var retlist = new Array();
 
 	// Fish in the connection ancestor hash for edges.
-	var tmp_shapes = shape_getter(shape_id);
-	for( var si = 0; si < tmp_shapes.length; si++ ){
-	    var tshp = tmp_shapes[si];
-	    var tnid = shape_id_to_node_id[tshp.id];
+	var tmp_phynodes = phynode_getter(phynode_id);
+	for( var si = 0; si < tmp_phynodes.length; si++ ){
+	    var tshp = tmp_phynodes[si];
+	    var tnid = phynode_id_to_node_id[tshp.id];
 	    if( tnid && conn_hash[tnid] ){
 		for( var anid in conn_hash[tnid] ){
 		    var conn_index = conn_hash[tnid][anid];
@@ -332,42 +432,38 @@ window.onload = function () {
     };
 
     //
-    function get_ancestor_connections(shape_id){
-	return get_connections(shape_id,
-			       get_ancestor_shapes,
+    function get_ancestor_connections(phynode_id){
+	return get_connections(phynode_id,
+			       get_ancestor_phynodes,
 			       conn_hash_ancestor);
     }
 
     //
-    function get_descendant_connections(shape_id){
-	return get_connections(shape_id,
-			       get_descendant_shapes,
+    function get_descendant_connections(phynode_id){
+	return get_connections(phynode_id,
+			       get_descendant_phynodes,
 			       conn_hash_descendant);
     }
 
     ///
-    /// Shape manipulation function definitions.
+    /// Phynode manipulation function definitions.
     /// 
 
     // Dragging animation (color dimming).
-    var dragger = function () {
+    var start = function () {
 
-    	var shape_id = this.id;
+    	var phynode_id = this.id;
 
 	// Darken boxes and update current position before dragging.
-    	var assoc_shapes = get_descendant_shapes(shape_id);
-    	for( var si = 0; si < assoc_shapes.length; si++ ){
-	    var shape = assoc_shapes[si];
-            shape.animate({"fill-opacity": .2}, animation_time);
-            shape.oy = shape.attr("y");
-    	}
-
-	// Fade text and update current position before dragging.
-    	var assoc_texts = get_descendant_texts(shape_id);
-    	for( var ti = 0; ti < assoc_texts.length; ti++ ){
-            var text = assoc_texts[ti];
-            text.animate({"fill-opacity": .2}, animation_time);
-            text.oy = text.attr("y");
+    	var assoc_phynodes = get_descendant_phynodes(phynode_id);
+    	for( var si = 0; si < assoc_phynodes.length; si++ ){
+	    var phynode = assoc_phynodes[si];
+            //phynode.start_y = phynode.current_y();
+	    phynode.init_move();
+            phynode.update({"fill-opacity": 0.2});
+            //phynode.text_oy = phynode.text_attr("y");
+            //     var text = assoc_texts[ti];
+            //     text.animate({"fill-opacity": .2}, animation_time);
     	}
     };
 
@@ -375,26 +471,14 @@ window.onload = function () {
     // redo lines.
     var move = function (dx, dy) {
 
-    	var shape_id = this.id;
+    	var phynode_id = this.id;
 
 	// Move box positions.
-    	var assoc_shapes = get_descendant_shapes(shape_id);
-    	for( var si = 0; si < assoc_shapes.length; si++ ){
-	    var mshp = assoc_shapes[si];
-            var shp_att = { y: mshp.oy + dy };
-            mshp.attr(shp_att);
-	    bbop.core.kvetch('mshp[' + si + ']:' + 
-			     ' oy: ' + mshp.oy +
-			     ', dy: ' + dy);
-	    //mshp.y = mshp.oy + dy;
-    	}
-
-	// Move text as well.
-    	var assoc_texts = get_descendant_texts(shape_id);
-    	for( var ti = 0; ti < assoc_texts.length; ti++ ){
-	    var mtxt = assoc_texts[ti];
-            var txt_att = { y: mtxt.oy + dy };
-            mtxt.attr(txt_att);
+    	var assoc_phynodes = get_descendant_phynodes(phynode_id);
+    	for( var si = 0; si < assoc_phynodes.length; si++ ){
+	    var mshp = assoc_phynodes[si];
+	    mshp.move_y(dy);
+	    //bbop.core.kvetch('mshp['+si+']:'+' oy: '+mshp.start_y+', dy:'+dy);
     	}
 
 	// Update connections.
@@ -405,22 +489,17 @@ window.onload = function () {
     };
 
     // Undrag animation.
-    var up = function () {
+    var stop = function () {
 
-    	var shape_id = this.id;
+    	var phynode_id = this.id;
 
 	// Fade boxes.
-    	var assoc_shapes = get_descendant_shapes(shape_id);
-    	for( var si = 0; si < assoc_shapes.length; si++ ){
-            var mshp = assoc_shapes[si];
-            mshp.animate({"fill-opacity": 0.0}, animation_time);
-    	}
-
-	// Find text and darken.
-    	var assoc_texts = get_descendant_texts(shape_id);
-    	for( var ti = 0; ti < assoc_texts.length; ti++ ){
-	    var mtxt = assoc_texts[ti];
-	    mtxt.animate({"fill-opacity": 1.0}, animation_time);
+    	var assoc_phynodes = get_descendant_phynodes(phynode_id);
+    	for( var si = 0; si < assoc_phynodes.length; si++ ){
+            var mshp = assoc_phynodes[si];
+            mshp.update({"fill-opacity": 0.0});
+	    // TODO: text darken
+	    //mshp.animate({"fill-opacity": 1.0});
     	}
     };
 
@@ -434,82 +513,77 @@ window.onload = function () {
 	// 	      "fill-opacity": 0.0},
 	// 	     2000);
 	// // this.attr({fill: "red"});
-	var shape_id = this.id;
+	var phynode_id = this.id;
 
 	// "Vanish" edges.
-	var subtree_edges = get_descendant_connections(shape_id);
+	var subtree_edges = get_descendant_connections(phynode_id);
 	for( var se = 0; se < subtree_edges.length; se++ ){
 	    var ste = subtree_edges[se];
-	    ste.update("#000", "0");
+	    ste.visible = false;
+	    ste.update();
 	}
 
 	// TODO: Nodes and text.
-	var subtree_nodes = get_descendant_shapes(shape_id);
+	var subtree_nodes = get_descendant_phynodes(phynode_id);
 	for( var sn = 0; sn < subtree_nodes.length; sn++ ){
 	    var stn = subtree_nodes[sn];
-	    stn.attr({fill: "red"});
+	    stn.update({fill: "red"});
 	}
 	//bbop.core.kvetch('dblclick: ' + subtree_list.join(', '));
     }
 
     // Experiment with hover.
-    // TODO: merge functions
-    // TODO: highlight connections
     function mouseover_event_handler(event){
 
-    	var shape_id = this.id;
+    	var phynode_id = this.id;
 
-	// Cycle through ancestro shapes.
-    	var anc_shapes = get_ancestor_shapes(shape_id);
-    	for( var ai = 0; ai < anc_shapes.length; ai++ ){
+	// Cycle through ancestro phynodes.
+    	var anc_phynodes = get_ancestor_phynodes(phynode_id);
+    	for( var ai = 0; ai < anc_phynodes.length; ai++ ){
 	    // Change boxes opacity (darken).
-	    var ashp = anc_shapes[ai];
-	    //ashp.attr({fill: "green"});
-	    ashp.animate({"fill-opacity": 0.5},
-			 animation_time);
+	    var ashp = anc_phynodes[ai];
+	    ashp.update({"fill-opacity": 0.5});
 	}
 
 	// See if we can fish any edges out and highlight them.
-    	var anc_edges = get_ancestor_connections(shape_id);
+    	var anc_edges = get_ancestor_connections(phynode_id);
     	for( var ac = 0; ac < anc_edges.length; ac++ ){
 	    var aconn = anc_edges[ac];
-	    aconn.update(hilite_edge_color, hilite_edge_width);
+	    aconn.update("highlight");
 	}
 	paper.safari();
     }
     function mouseout_event_handler(event){
 
-    	var shape_id = this.id;
+    	var phynode_id = this.id;
 
-	// Cycle through ancestor shapes.
-    	var anc_shapes = get_ancestor_shapes(shape_id);
-    	for( var ai = 0; ai < anc_shapes.length; ai++ ){
+	// Cycle through ancestor phynodes.
+    	var anc_phynodes = get_ancestor_phynodes(phynode_id);
+    	for( var ai = 0; ai < anc_phynodes.length; ai++ ){
 	    // Change boxes opacity (lighten).
-	    var ashp = anc_shapes[ai];
-	    ashp.animate({"fill-opacity": 0.0},
-			 animation_time);
-	    // ashp.attr({fill: "green"});
+	    var ashp = anc_phynodes[ai];
+	    ashp.update({"fill-opacity": 0.0});
     	}
 
 	// See if we can fish any edges out and unhighlight them.
-    	var anc_edges = get_ancestor_connections(shape_id);
+    	var anc_edges = get_ancestor_connections(phynode_id);
     	for( var ac = 0; ac < anc_edges.length; ac++ ){
 	    var aconn = anc_edges[ac];
-	    aconn.update(base_edge_color, base_edge_width);
+	    aconn.update();
 	}
 	paper.safari();
     }
 
     ///
-    /// Shape creation and placement.
+    /// Phynode creation and placement.
     /// 
 
-    // Add shapes and create lookup (hash) for use with connections.
-    var shapes = new Array();
-    var shape_hash = {};
+    // Add phynodes and create lookup (hash) for use with connections.
+    var phynodes = new Array();
+    var phynode_hash = {};
     var texts = new Array();
-    var shape_id_to_index = {};
-    var shape_id_to_node_id = {};
+    var phynode_id_to_index = {};
+    var phynode_id_to_node_id = {};
     var node_id_to_index = {};
     for( var nidi = 0; nidi < layout.node_list.length; nidi++ ){
 
@@ -519,48 +593,30 @@ window.onload = function () {
 	var lpy = (layout.position_y[node_id] * y_scale) + edge_shift;
 
 	// Indexing for later (edge) use.
-	shape_hash[node_id] = nidi;
+	phynode_hash[node_id] = nidi;
 
-	// NOTE: text is *centered* at this point.
-	var text = paper.text(lpx+ text_offset_x, lpy+ text_offset_y, node_id);
-	text.toBack(); // make sure it's behind the boxes
-        texts.push(text);
-
-	var shape = paper.rect(lpx, lpy, box_width, box_height, 2);
-        shapes.push(shape);
-
-    	// Add to the object the initial position.
-        shape.ox = shape.attr("x");
-        shape.oy = shape.attr("y");
-        text.ox = text.attr("x");
-        text.oy = text.attr("y");
+	// 
+	var phynode = new Raphael.fn.pnode(paper, node_id, lpx, lpy);
+        phynodes.push(phynode);
 
 	// Indexing.
-	var ref_index = shapes.length -1;
-	var shape_id = shape.id;
-	shape_id_to_index[shape_id] = ref_index;
-	shape_id_to_node_id[shape_id] = node_id;
+	var ref_index = phynodes.length -1;
+	var phynode_id = phynode.id;
+	phynode_id_to_index[phynode_id] = ref_index;
+	phynode_id_to_node_id[phynode_id] = node_id;
 	node_id_to_index[node_id] = ref_index;
 
 	bbop.core.kvetch('onload: indexed (node): node_id: ' + node_id +
-			 ', shape_id: ' + shape_id +
+			 ', phynode_id: ' + phynode_id +
 			 ', ref_index: ' + ref_index);
     }
 
-    // Shape definition, and add listeners.
-    for (var i = 0, ii = shapes.length; i < ii; i++) {
-        //var color = Raphael.getColor();
-        shapes[i].attr({fill: base_node_color,
-			stroke: base_node_color,
-			//"fill-opacity": .25,
-			title: "foo",
-			"fill-opacity": 0.0,
-			"stroke-width": 2,
-			cursor: "move"});
-        shapes[i].drag(move, dragger, up);
-	shapes[i].dblclick(dblclick_event_handler);
-	shapes[i].mouseover(mouseover_event_handler);
-	shapes[i].mouseout(mouseout_event_handler);
+    // Add listeners.
+    for (var i = 0, ii = phynodes.length; i < ii; i++) {
+	phynodes[i].dblclick(dblclick_event_handler);
+        phynodes[i].drag(move, start, stop);
+	phynodes[i].mouseover(mouseover_event_handler);
+	phynodes[i].mouseout(mouseout_event_handler);
     }
 
     // Add stored connections.
@@ -577,10 +633,8 @@ window.onload = function () {
 
 	// Push edge onto array.
 	connections.push(new Raphael.fn.connection(paper,
-						   shapes[shape_hash[e0]],
-						   shapes[shape_hash[e1]],
-						   base_edge_color,
-						   base_edge_width));
+						   phynodes[phynode_hash[e0]],
+						   phynodes[phynode_hash[e1]]));
 
 	// Index edge index for later recall.
 	if( ! conn_hash_descendant[e0] ){ conn_hash_descendant[e0] = {}; }
