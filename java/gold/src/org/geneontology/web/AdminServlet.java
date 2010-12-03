@@ -7,7 +7,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.gold.io.DbOperations;
+import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.io.OntologyBulkLoader;
 import org.geneontology.gold.io.postgres.SchemaManager;
 import org.geneontology.gold.io.postgres.TsvFileLoader;
@@ -21,7 +25,7 @@ import owltools.graph.OWLGraphWrapper;
 /**
  * Servlet implementation class AdminServlet
  */
-public class AdminServlet extends HttpServlet {
+public class AdminServlet extends HttpServlet implements DbOperationsListener {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -38,32 +42,90 @@ public class AdminServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 
+		
+		HttpSession session = request.getSession();
+		
+		Object obj = session.getAttribute("task");
+		
 		Writer writer = response.getWriter();
-
+		writer.write("<html>");
+		writer.write("<head");
+		writer.write("GOLD Admin Operation Status");
+		writer.write("</head>");
+		
 		String command = request.getParameter("command");
+		DbOperations db = new DbOperations();
+		db.addDbOperationsListener(this);
+		if (command != null && obj == null) {
 
-		if (command != null) {
+			if ("bulkload".equals(command)) {
 
-			if ("bulk-load".equals(command)) {
-
+				DbOperationsTask task = new DbOperationsTask(command);
+				session.setAttribute("task", task);
+				obj = task;
+				task.start();
+				
+				
 				// writer.write("<h1>Bulk load is command is provided. This ia temporary message. This message will be replaced as soon as this service is implemented.</h1>");
 				// return;
-				executeBulkLoad(writer);
-				return;
-			}else if ("delta-update".equals(command)) {
+				
+			}/*else if ("delta-update".equals(command)) {
 
 				// writer.write("<h1>Bulk load is command is provided. This ia temporary message. This message will be replaced as soon as this service is implemented.</h1>");
 				// return;
 				executeDeltaUpdate(writer);
 				return;
-			}
+			}*/
 
+		}else if(obj == null){
+			writer.write("<h1>No valid parameters are provided. Please call this page with valid parameters</h1>");
+			return;
 		}
-
-		writer.write("<h1>No valid parameters are provided. Please call this page with valid parameters</h1>");
-
+		
+		try{
+			Thread.sleep(100);
+		}catch(Exception ex){
+			
+		}
+		
+		DbOperationsTask task = (DbOperationsTask) obj;
+		
+		if(task.isRunning()){
+			writer.write("<script type='text/javascript'>");
+				writer.write("setTimeout(\"location.reload(true)\", 9000)");
+			writer.write("</script>");
+		}
+		
+		writer.write("<h2>Status report for the running task '" + task.getOperationName() + "' :</h2>");
+		
+		writer.write("<table><tr><th>Operation Name</th><th>Status</th></tr>");
+		
+		 for(String opName: task.getCompletedOperations()){
+			 long stTime = task.getStartTime(opName);
+			 long endTime = task.getEndTime(opName);
+			 
+			 String status = "In progress";
+			 boolean isCompleted = false;
+			 if(endTime>0){
+				 status = (float)(endTime - stTime)/1000 + "";
+				 isCompleted = true;
+			 }
+			 
+			 writer.write("<tr><td>" + opName + "</td><td" + (isCompleted ? " bgcolor='green'" : "") + ">" + status + "</td></tr>");
+		 }
+		 
+		 writer.write("</table>");
+		
+		 
+		 if(task.getException() != null){
+			PrintWriter pw = new PrintWriter(writer);
+			task.getException().printStackTrace(pw);
+		 }
+		 
+		 /*if(!task.isRunning()){
+			 session.removeAttribute("task");
+		 }*/
 	}
 
 	private void executeBulkLoad(Writer writer) throws IOException {
@@ -254,6 +316,46 @@ public class AdminServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+	}
+
+	public void bulkLoadStart() {
+		
+	}
+
+	public void bulkLoadEnd() {
+		
+	}
+
+	public void dumpFilesStart() {
+		
+	}
+
+	public void dumpFilesEnd() {
+		
+	}
+
+	public void buildSchemaStart() {
+		
+	}
+
+	public void buildSchemaEnd() {
+		
+	}
+
+	public void loadTsvFilesStart() {
+		
+	}
+
+	public void loadTsvFilesEnd() {
+		
+	}
+
+	public void updateStart() {
+		
+	}
+
+	public void updateEnd() {
+		
 	}
 
 }
