@@ -14,6 +14,15 @@ function bulkLoad(){
 		window.location="gold?command=bulkload"
 	}
 }
+
+function update(){
+	var yes = confirm("Are you are sure you want to update the GOLD database?");
+
+	if(yes){
+		window.location="gold?command=update"
+	}
+}
+
 </script>
 </head>
 <body>
@@ -22,7 +31,7 @@ function bulkLoad(){
 <p>Activities:</p>
 <ul>
 <li><a href="javascript:bulkLoad(); return false;">Bulk load of the Empty gene ontology</a></li>
-<li>Update Gene Ontology</li>
+<li><a href="javascript:update(); return false;">Update Gene Ontology</a></li>
 <li>Last Update of Gold database</li>
 <li>Built Solr indexer from Scratch</li>
 <li>Delta update of the indexer</li>
