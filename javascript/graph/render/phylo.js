@@ -68,7 +68,7 @@ bbop.render.phylo.pnode = function(context, label, px, py){
     this.shape_base_attr = {
 	"fill": this.base_node_color,
 	"fill-opacity": 0.05,
-	//"opacity": 0.05,
+	"opacity": 1.0,
 	"stroke": this.base_node_color,
 	"stroke-width": 2,
 	"title": "This is " + label,
@@ -77,24 +77,25 @@ bbop.render.phylo.pnode = function(context, label, px, py){
     this.shape_highlight_attr = {
 	"fill": this.base_node_color,
 	"fill-opacity": 0.5,
-	//"opacity": 0.5,
+	"opacity": 1.0,
 	"stroke": this.base_node_color,
 	"stroke-width": 3
     };
     this.shape_dim_attr = {
 	"fill": this.base_node_color,
 	"fill-opacity": 0.0,
-	//"opacity": 0.0,
+	"opacity": 0.5,
 	"stroke": this.base_node_color,
 	"stroke-width": 1
     };
     this.shape_invisible_attr = {
 	"fill": "#000",
 	"fill-opacity": 0.0,
-	//"opacity": 0.0,
+	"opacity": 0.0,
 	"stroke": "#000",
 	"stroke-width": 0
     };
+    // Text in node.
     this.text_base_attr = {
 	//"fill-opacity": 1.0,
 	"opacity" : 1.0,
@@ -247,24 +248,28 @@ bbop.render.phylo.connection = function(context, obj1, obj2, dist_rep){
 	"stroke": base_edge_color,
      	"stroke-width": base_edge_width,
 	"fill": "none",
+	"opacity": 1.0,
 	"fill-opacity": 0.0
     };
     this.edge_highlight_attr = {
 	"stroke": highlight_edge_color,
      	"stroke-width": highlight_edge_width,
 	"fill": "none",
+	"opacity": 1.0,
 	"fill-opacity": 0.0
     };
     this.edge_dim_attr = {
 	"stroke": base_edge_color,
      	"stroke-width": 1,
 	"fill": "none",
+	"opacity": 0.5,
 	"fill-opacity": 0.0
     };
     this.edge_invisible_attr = {
 	"stroke": invisible_edge_color,
      	"stroke-width": invisible_edge_width,
 	"fill": "none",
+	"opacity": 0.0,
 	"fill-opacity": 0.0
     };
     // // As connections.
