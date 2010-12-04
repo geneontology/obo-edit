@@ -4,19 +4,23 @@
 ////
 //// Purpose: Extend the model to be handy for a (phylo)tree.
 //// 
+//// These are properties and functions, not a usable object.
+//// 
 //// Taken name spaces:
 ////    bbop.render.phylo.*
 ////
-//// FIX: text animation
-//// TODO: togglable visability on nodes
-//// STARTED: looks top-level; make functional for application use.
-//// STARTED: hide whole subtrees on double-click
+//// STARTED: opacity/fill-opacity
+//// TODO: *real* cross-platform check
+//// TODO: make things non-interactive during visible == false?
+//// TODO: some "speed-up" refactoring?
 //// TODO: font and text placement
 //// TODO: better text alignment
 //// TODO: floating right-hand text (see PAINT)
-//// TODO: add distances at AmiGO-level?
+////
+//// BUG: Chromium bug with numbers at start/not fading right?
 ////
 //// Required:
+////    Rafael
 ////    bbop.core
 ////    bbop.model
 ////    bbop.model.tree
@@ -31,22 +35,96 @@ bbop.core.require('bbop', 'model');
 bbop.core.require('bbop', 'model', 'tree');
 bbop.core.namespace('bbop', 'render', 'phylo');
 
+///
+/// PNodes (phylonode) object.
+///
+
+// These first two defaults will be overwritten on display.
+bbop.render.phylo.render_width = 800;
+bbop.render.phylo.render_height = 600;
+bbop.render.phylo.box_width = 50;
+bbop.render.phylo.box_height = 30;
+//bbop.render.phylo.animation_time = 100;
+bbop.render.phylo.animation_time = 200;
+//bbop.render.phylo.animation_time = 1000; // for debug
+//bbop.render.phylo.use_animation = true;
+bbop.render.phylo.use_animation = false;
+
 // Init: context, label, x-coord, y-coord.
-Raphael.fn.pnode = function(context, label, px, py){
+bbop.render.phylo.pnode = function(context, label, px, py){
 
     // Color and size definitions.
-    var base_node_color = "#00f";
-    var text_offset_x = box_width / 2.0;
-    var text_offset_y = box_height / 2.0;
-    var animation_time = 100;
+    var text_offset_x = bbop.render.phylo.box_width / 2.0;
+    var text_offset_y = bbop.render.phylo.box_height / 2.0;
+    this.base_node_color = "#00f";
+
+    // Future visibility.    
+    this.visible = true;
     
+    // For advanced tree use.
+    this.open = true;
+    
+    // Coloration and style attributes.
+    this.shape_base_attr = {
+	"fill": this.base_node_color,
+	"fill-opacity": 0.05,
+	//"opacity": 0.05,
+	"stroke": this.base_node_color,
+	"stroke-width": 2,
+	"title": "This is " + label,
+	"cursor": "move"
+    };
+    this.shape_highlight_attr = {
+	"fill": this.base_node_color,
+	"fill-opacity": 0.5,
+	//"opacity": 0.5,
+	"stroke": this.base_node_color,
+	"stroke-width": 3
+    };
+    this.shape_dim_attr = {
+	"fill": this.base_node_color,
+	"fill-opacity": 0.0,
+	//"opacity": 0.0,
+	"stroke": this.base_node_color,
+	"stroke-width": 1
+    };
+    this.shape_invisible_attr = {
+	"fill": "#000",
+	"fill-opacity": 0.0,
+	//"opacity": 0.0,
+	"stroke": "#000",
+	"stroke-width": 0
+    };
+    this.text_base_attr = {
+	//"fill-opacity": 1.0,
+	"opacity" : 1.0,
+	"font-size" : 10
+    };
+    //this.text_highlight_attr = {"fill-opacity": 1.0, "font-size" : 12};
+    this.text_highlight_attr = {
+	//"fill-opacity": 1.0,
+	"opacity" : 1.0,
+	"font-size" : 10
+    };
+    this.text_dim_attr = {
+	//"fill-opacity": 0.2,
+	"opacity" : 0.2,
+	"font-size" : 10
+    };
+    this.text_invisible_attr = {
+	//"fill-opacity": 0.0,
+	"opacity" : 0.0,
+	"font-size" : 10
+    };
+
     // Draw out initial node.
     this._context = context;
 
     this._text = // NOTE: text is *centered* at this point.
 	this._context.text(px + text_offset_x, py + text_offset_y, label);
     this._text.toBack(); // make sure it's behind the boxes
-    this._shape = this._context.rect(px, py, box_width, box_height, 2);
+    this._shape = this._context.rect(px, py, bbop.render.phylo.box_width,
+				     bbop.render.phylo.box_height, 2);
 
     // Proxy properties and functions.
     // This is so wrong, but feels so good...proxy most things through
@@ -59,56 +137,86 @@ Raphael.fn.pnode = function(context, label, px, py){
     this.shape_attr = function(arg){
 	return this._shape.attr.call(this._shape, arg);
     };
-    // Event handlers.
-    this.drag = function(move_handler, start_handler, stop_handler){
-	this._shape.drag(move_handler, start_handler, stop_handler);
-    };
-    this.dblclick = function(handler){
-	this._shape.dblclick.call(this._shape, handler);
-    };
-    this.mouseover = function(handler){
-	this._shape.mouseover.call(this._shape, handler);
-    };
-    this.mouseout = function(handler){
-	this._shape.mouseout.call(this._shape, handler);
-    };
-
-    //this.text_attr = this._text.attr;
-    this.update = function(attr){
-	return this._shape.animate.call(this._shape, attr, animation_time);
-    };
 
     // Add to the object the initial position.
-    //this.ox = this._shape.attr("x");
     this._start_shape_y = this._shape.attr("y");
     this._start_text_y = this._text.attr("y");
-    this.init_move = function(){
-	this._start_shape_y = this._shape.attr("y");
-	this._start_text_y = this._text.attr("y");
-    };
-    this.move_y = function(arg){
-	var d_shape = this._start_shape_y + arg;
-	var d_text = this._start_text_y + arg;
-	this._shape.attr.call(this._shape, {"y": d_shape});
-	this._text.attr.call(this._text, {"y": d_text});
-	//return this._shape.attr.call(this._shape, {"y": arg});
-    };
-    //this.text_ox = this._text.attr("x");
-    //this.text_oy = this._text.attr("y");
 
     // Setup shape attributes.
-    this._shape.attr({fill: base_node_color,
-		      stroke: base_node_color,
-		      //"fill-opacity": .25,
-		      title: "This is " + label,
-		      "fill-opacity": 0.0,
-		      "stroke-width": 2,
-		      cursor: "move"});
+    this._shape.attr(this.shape_base_attr);
+};
+// Call first when you want to move.
+bbop.render.phylo.pnode.prototype.update_position = function(){
+    this._start_shape_y = this._shape.attr("y");
+    this._start_text_y = this._text.attr("y");
+};
+// Move 
+bbop.render.phylo.pnode.prototype.move_y = function(arg){
+    var d_shape = this._start_shape_y + arg;
+    var d_text = this._start_text_y + arg;
+    this._shape.attr.call(this._shape, {"y": d_shape});
+    this._text.attr.call(this._text, {"y": d_text});
+};
+// Event handler proxies for underlying shapes (text ignored).
+bbop.render.phylo.pnode.prototype.drag = function(mv_func,start_func,end_func){
+    this._shape.drag(mv_func, start_func, end_func);
+};
+bbop.render.phylo.pnode.prototype.dblclick = function(handler){
+    this._shape.dblclick.call(this._shape, handler);
+};
+bbop.render.phylo.pnode.prototype.mouseover = function(handler){
+    this._shape.mouseover.call(this._shape, handler);
+};
+bbop.render.phylo.pnode.prototype.mouseout = function(handler){
+    this._shape.mouseout.call(this._shape, handler);
 };
 
+bbop.render.phylo.pnode.prototype.update = function(message){
 
-// Init: context, shape, shape.
-Raphael.fn.connection = function(context, obj1, obj2){
+    //
+    var shape_attr_to_apply = this.shape_base_attr;
+    var text_attr_to_apply = this.text_base_attr;
+
+    // 
+    if( this.visible == false ){
+	shape_attr_to_apply = this.shape_invisible_attr;
+	text_attr_to_apply = this.text_invisible_attr;
+    }else if( message == 'highlight' ){
+	shape_attr_to_apply = this.shape_highlight_attr;
+	text_attr_to_apply = this.text_highlight_attr;
+    }else if( message == 'dim' ){
+	shape_attr_to_apply = this.shape_dim_attr;
+	text_attr_to_apply = this.text_dim_attr;
+    }
+
+    // Change border on whether or not it's "opened".
+    if( this.open == false ){
+	shape_attr_to_apply['stroke'] = "#070";
+    }else{
+    	shape_attr_to_apply['stroke'] = this.base_node_color;	
+    }
+
+    // Render with whatever filtered through.
+    if( bbop.render.phylo.use_animation ){
+	this._shape.animate.call(this._shape,
+				 shape_attr_to_apply,
+				 bbop.render.phylo.animation_time);
+	this._shape.animate.call(this._text,
+				 text_attr_to_apply,
+				 bbop.render.phylo.animation_time);	
+    }else{
+	this._shape.attr(shape_attr_to_apply);
+	this._text.attr(text_attr_to_apply);
+    }
+};
+
+///
+/// Connection (between two pnodes) object.
+///
+
+// Init: context, shape, shape, and "distance" representation
+// (optional).
+bbop.render.phylo.connection = function(context, obj1, obj2, dist_rep){
 
     //this.context = context;
 
@@ -116,76 +224,146 @@ Raphael.fn.connection = function(context, obj1, obj2){
     this.from = obj1;
     this.to = obj2;
 
+    this.id = this.from.id + '_id_invariant_' + this.to.id;
+
     // Get path.
-    var path = this.get_path_between();
+    var path_info = this.get_path_between_info();
+    var path = path_info['path'];
+    var cp = path_info['center_point'];
+
+    // bbop.core.kvetch("conn: cp: (" + cp[0] + ", " + cp[1] + ")");
 
     // Future visibility.
     this.visible = true;
 
     var base_edge_color = "#030";
     var base_edge_width = "3";
-    var hilite_edge_color = "#00f";
-    var hilite_edge_width = "5";
+    var highlight_edge_color = "#00f";
+    var highlight_edge_width = "5";
     var invisible_edge_color = "#000";
     var invisible_edge_width = "0";
 
-    this.base_attr = {
+    this.edge_base_attr = {
 	"stroke": base_edge_color,
+     	"stroke-width": base_edge_width,
 	"fill": "none",
-     	"stroke-width": base_edge_width
+	"fill-opacity": 0.0
     };
-
-    this.base_attr = {
+    this.edge_highlight_attr = {
+	"stroke": highlight_edge_color,
+     	"stroke-width": highlight_edge_width,
+	"fill": "none",
+	"fill-opacity": 0.0
+    };
+    this.edge_dim_attr = {
 	"stroke": base_edge_color,
+     	"stroke-width": 1,
 	"fill": "none",
-     	"stroke-width": base_edge_width
+	"fill-opacity": 0.0
     };
-
-    this.hilite_attr = {
-	"stroke": hilite_edge_color,
-	"fill": "none",
-     	"stroke-width": hilite_edge_width
-    };
-
-    this.invisible_attr = {
+    this.edge_invisible_attr = {
 	"stroke": invisible_edge_color,
+     	"stroke-width": invisible_edge_width,
 	"fill": "none",
-     	"stroke-width": invisible_edge_width
+	"fill-opacity": 0.0
     };
+    // // As connections.
+    // this.text_base_attr = {"fill-opacity": 1.0, "font-size" : 10};
+    // this.text_highlight_attr = {"fill-opacity": 1.0, "font-size" : 10};
+    // this.text_dim_attr = {"fill-opacity": 0.2, "font-size" : 10};
+    // this.text_invisible_attr = {"fill-opacity": 0.0, "font-size" : 10};
+    // Highlight-only.
+    this.text_base_attr = {
+	"opacity": 0.0,
+	"font-size" : 10
+    };
+    //this.text_highlight_attr = {"fill-opacity": 1.0, "font-size" : 12};
+    this.text_highlight_attr = {
+	"opacity": 1.0,
+	"font-size" : 10
+    };
+    this.text_dim_attr = {
+	"opacity": 0.0,
+	"font-size" : 10
+    };
+    this.text_invisible_attr = {
+	"opacity": 0.0,
+	"font-size" : 10
+    };
+
+    // Build up text at path centerpoint.
+    this.text = null;
+    if( dist_rep ){
+	this.text = context.text(cp[0], (cp[1] + 10), dist_rep);
+	this.text.toBack(); // make sure it's behind the boxes
+	this.text.attr(this.text_base_attr);	
+    }
 
     // Colors and lines.
     this.line = context.path(path);
-    this.line.attr(this.base_attr);
+    this.line.attr(this.edge_base_attr);
 };
 // Update line graphic.
-Raphael.fn.connection.prototype.update = function(message){
+bbop.render.phylo.connection.prototype.update = function(message){
 
     // Get path.
-    var path = this.get_path_between();
+    var path_info = this.get_path_between_info();
+    var path = path_info['path'];
 
-    // Update line.
+    // Update line position.
     this.line.attr({path: path});
 
-    // 
+    // Update line graphics on message.
+    var line_attr_to_apply = null;
     if( this.visible == false ){
-	this.line.attr({"stroke": this.color,
-			"fill": "none",
-     			"stroke-width": this.line_width});	
+	line_attr_to_apply = this.edge_invisible_attr;
     }else if( message == 'highlight' ){
-	this.line.attr(this.hilite_attr);
-	//}else if( message == 'highlight' ){
-	//this.line.attr(this.hilite_attr);
+	line_attr_to_apply = this.edge_highlight_attr;
+    }else if( message == 'dim' ){
+	line_attr_to_apply = this.edge_dim_attr;
     }else{
-	this.line.attr(this.base_attr);
+	line_attr_to_apply = this.edge_base_attr;
+    }
+
+    // Render with whatever filtered through.
+    if( bbop.render.phylo.use_animation ){	
+	this.line.animate.call(this.line,
+			       line_attr_to_apply,
+			       bbop.render.phylo.animation_time);
+    }else{
+	this.line.attr(line_attr_to_apply);
+    }
+
+    // Update text position.
+    var text_attr_to_apply = null;
+    if( this.text ){
+	var cp = path_info['center_point'];
+	this.text.attr({"x": cp[0], "y": (cp[1] + 10)});
+
+	// Update graphics graphics on message.
+	if( this.visible == false ){
+	    text_attr_to_apply = this.text_invisible_attr;
+	}else if( message == 'highlight' ){
+	    text_attr_to_apply = this.text_highlight_attr;
+	}else if( message == 'dim' ){
+	    text_attr_to_apply = this.text_dim_attr;
+	}else{
+	    text_attr_to_apply = this.text_base_attr;
+	}
+
+	// Render with whatever filtered through.
+	if( bbop.render.phylo.use_animation ){	
+	    this.text.animate.call(this.text,
+				   text_attr_to_apply,
+				   bbop.render.phylo.animation_time);
+	}else{
+	    this.text.attr(text_attr_to_apply);
+	}
     }
 };
 // Generate path from between the two internally stored objects.
-Raphael.fn.connection.prototype.get_path_between = function(){
+bbop.render.phylo.connection.prototype.get_path_between_info = function(){
 
-    // bbop.core.kvetch('1: ' + this);
-    // bbop.core.kvetch('2: ' + this.from);
-    // bbop.core.kvetch('3: ' + this.from.id);
-    // bbop.core.kvetch('4: ' + this.from.getBBox);
     var bb1 = this.from.getBBox();
     var bb2 = this.to.getBBox();
 
@@ -229,130 +407,65 @@ Raphael.fn.connection.prototype.get_path_between = function(){
     var y2 = p[res[1]].y;
     var dx = Math.max(Math.abs(x1 - x2) / 2, 10);
     var dy = Math.max(Math.abs(y1 - y2) / 2, 10);
-    return [
-    	"M", x1.toFixed(3), y1.toFixed(3),
-    	"L", x1.toFixed(3), y2.toFixed(3),
-    	"L", x2.toFixed(3), y2.toFixed(3)
-    ].join(",");
+    return {"path": [
+    		"M", x1.toFixed(3), y1.toFixed(3),
+    		"L", x1.toFixed(3), y2.toFixed(3),
+    		"L", x2.toFixed(3), y2.toFixed(3)
+	    ].join(","),
+	    // "center_point": [(x1.toFixed(3) + x1.toFixed(3)),
+	    // 		     (y1.toFixed(3) + y2.toFixed(3))]
+	    "center_point": [(x1 + x2) / 2.0, (y2)]
+	   };
 };
 
-// Example graph hand loaded from:
-// (http://amigo.berkeleybop.org/amigo/panther/PTHR10004.tree).
-// AN0(AN1(AN2(XP_800359:0.687,XP_790652:0.774,XP_800360:0.695):0.473,AN6(Q7RKB3:1.366,Q7RBF2:1.208):0.223):1.0,Q747I8:1.0);
-var an0 = new bbop.model.tree.node('AN0', 'AN0');
-var an1 = new bbop.model.tree.node('AN1', 'AN1');
-var an2 = new bbop.model.tree.node('AN2', 'AN2');
-var an6 = new bbop.model.tree.node('AN6', 'AN6');
-var xp9 = new bbop.model.tree.node('XP_800359', 'XP_800359');
-var xp2 = new bbop.model.tree.node('XP_790652', 'XP_790652');
-var xp0 = new bbop.model.tree.node('XP_800360', 'XP_800360');
-var q7rk = new bbop.model.tree.node('Q7RKB3', 'Q7RKB3');
-var q7rb = new bbop.model.tree.node('Q7RBF2', 'Q7RBF2');
-var q747 = new bbop.model.tree.node('Q747I8', 'Q747I8');
-
-var e0 = new bbop.model.tree.edge(an0, an1, 1.0);
-var e1 = new bbop.model.tree.edge(an0, q747, 1.0);
-var e2 = new bbop.model.tree.edge(an1, an2, 0.473);
-var e3 = new bbop.model.tree.edge(an1, an6, 0.223);
-var e4 = new bbop.model.tree.edge(an2, xp9, 0.687);
-var e5 = new bbop.model.tree.edge(an2, xp2, 0.774);
-var e6 = new bbop.model.tree.edge(an2, xp0, 0.695);
-var e7 = new bbop.model.tree.edge(an6, q7rk, 1.366);
-var e8 = new bbop.model.tree.edge(an6, q7rb, 1.208);
-
-var t = new bbop.model.tree.graph();
-t.add_node(an0);
-t.add_node(an1);
-t.add_node(an2);
-t.add_node(an6);
-t.add_node(xp9);
-t.add_node(xp2);
-t.add_node(xp0);
-t.add_node(q7rk);
-t.add_node(q7rb);
-t.add_node(q747);
-t.add_edge(e0);
-t.add_edge(e1);
-t.add_edge(e2);
-t.add_edge(e3);
-t.add_edge(e4);
-t.add_edge(e5);
-t.add_edge(e6);
-t.add_edge(e7);
-t.add_edge(e8);
-var layout = t.layout();
-
-// Explicit info dump.
-var x_scale = 1.0;
-var y_scale = 1.0;
-
-// DEBUG
-function info_dump(){
-    //   
-    for( var ni = 0; ni < layout.node_list.length; ni++ ){
-	var noid = layout.node_list[ni];
-	bbop.core.kvetch('info(node): (' + noid +
-			 ') x:' + (layout.position_x[noid] * x_scale) +
-			 ', y:' + (layout.position_y[noid] * y_scale));
-    }
-    // 
-    for( var ei = 0; ei < layout.edge_list.length; ei++ ){
-	var edge = layout.edge_list[ei];
-	bbop.core.kvetch('info(edge): (' + edge[0] + ', ' + edge[1] + '): ' +
-			 (layout.parent_distances[edge[0]][edge[1]]) * y_scale);
-    }
-    //
-    bbop.core.kvetch('info(width): ' + layout.max_width * y_scale);
-    //bbop.core.kvetch('info(depth): ' + layout.max_depth);
-    bbop.core.kvetch('info(distance): ' + layout.max_distance * x_scale);
-
-    bbop.core.kvetch('info(x_scale): ' + x_scale);
-    bbop.core.kvetch('info(y_scale): ' + y_scale);
-}
-
-// DEBUG
-info_dump();
-
-// Let's play with arbitrary dimensions. Evrything should be
-// packed/spread within these bounds (eventually tied to eindow size?).
-var box_width = 50;
-var box_height = 30;
-//var edge_buffer = 0;
-var edge_buffer = 100;
-var edge_shift = edge_buffer / 2.0;
-
-// Adjust scales.
-var a_width = 800; // TODO: pick that out of Raphael
-x_scale = a_width / layout.max_distance;
-//y_scale = a_height / layout.max_width; // screen-variable y-scale
-y_scale = box_height * 2.0; // fixed y-scale
-var a_height = layout.max_width * y_scale;
-
 // Render out.
-window.onload = function () {
+bbop.render.phylo.display = function (elt_id, layout) {
 
-    // Do a screen width calc.
-    // Adjust for box width and other extras as well.
+    var edge_buffer = 100;
+    var edge_shift = edge_buffer / 2.0;
+
+    // Adjust vertical scales and display.
+    var y_scale = bbop.render.phylo.box_height * 2.0; // fixed y-scale
+    bbop.render.phylo.render_height = layout.max_width * y_scale;
+
+    // Adjust for render width based on platform.
+    var x_scale = 1.0;
     if( window && window.innerWidth ){
-	a_width = window.innerWidth - box_width - edge_buffer;
-	x_scale = a_width / layout.max_distance;
+	bbop.render.phylo.render_width =
+	    window.innerWidth
+	    - bbop.render.phylo.box_width
+	    - edge_buffer;
     }else if( document && document.body && document.body.offsetWidth ){
-	a_width = document.body.offsetWidth - box_width - edge_buffer;
-	x_scale = a_width / layout.max_distance;
+	bbop.render.phylo.render_width =
+	    document.body.offsetWidth
+	    - bbop.render.phylo.box_width
+	    - edge_buffer;
+    }else{
+	bbop.core.kvetch("UFI: Unidentified Failing Platform.");
     }
-    a_width = a_width + 1; // Get that last pixel column on board.
-    bbop.core.kvetch('width: ' + a_width);
-
-    // DEBUG
-    info_dump();
+    // Recalculate x-scale.
+    x_scale = bbop.render.phylo.render_width / layout.max_distance;
+    // Get that last pixel column on board.
+    bbop.render.phylo.render_width = bbop.render.phylo.render_width + 1;
+    bbop.core.kvetch('width: ' + bbop.render.phylo.render_width);
 
     // Create context.
-    var paper = Raphael("test1", a_width + edge_buffer, a_height + edge_buffer);
-    bbop.core.kvetch('onload: made paper');
+    var paper = Raphael(elt_id,
+			bbop.render.phylo.render_width + edge_buffer,
+			bbop.render.phylo.render_height + edge_buffer);
+    bbop.core.kvetch('display: made paper');
 
     ///
     /// Graph helper function definitions.
     /// 
+
+    function get_pnode_from_phynode_id(phynode_id){
+	var ret = null;
+	if( phynode_id_to_index[phynode_id] ){
+	    ret = phynodes[phynode_id_to_index[phynode_id]];
+	}
+	return ret;
+    }
 
     // Subtree list, including self.
     function gather_list_from_hash(nid, hash){
@@ -458,13 +571,16 @@ window.onload = function () {
     	var assoc_phynodes = get_descendant_phynodes(phynode_id);
     	for( var si = 0; si < assoc_phynodes.length; si++ ){
 	    var phynode = assoc_phynodes[si];
-            //phynode.start_y = phynode.current_y();
-	    phynode.init_move();
-            phynode.update({"fill-opacity": 0.2});
-            //phynode.text_oy = phynode.text_attr("y");
-            //     var text = assoc_texts[ti];
-            //     text.animate({"fill-opacity": .2}, animation_time);
+	    phynode.update_position();
+            phynode.update("dim");
     	}
+
+	// "Dim" edges.
+	var subtree_edges = get_descendant_connections(phynode_id);
+	for( var se = 0; se < subtree_edges.length; se++ ){
+	    var ste = subtree_edges[se];
+	    ste.update("dim");
+	}
     };
 
     // Movement animation (don't allow movement on the x-axis) and
@@ -481,9 +597,22 @@ window.onload = function () {
 	    //bbop.core.kvetch('mshp['+si+']:'+' oy: '+mshp.start_y+', dy:'+dy);
     	}
 
-	// Update connections.
+	// Collect subtree edges for next bit.
+	var dimmable_subtree = {};
+	var subtree_edges = get_descendant_connections(phynode_id);
+	for( var se = 0; se < subtree_edges.length; se++ ){
+	    var ste = subtree_edges[se];
+	    dimmable_subtree[ste.id] = true;
+	}
+
+	// Update connections; keep subtree dimmed while in transit.
         for (var i = connections.length; i--;) {
-            connections[i].update();
+	    var conn = connections[i];
+	    if( dimmable_subtree[conn.id] ){
+		conn.update('dim');		
+	    }else{
+		conn.update();		
+	    }
         }
         paper.safari();
     };
@@ -497,39 +626,65 @@ window.onload = function () {
     	var assoc_phynodes = get_descendant_phynodes(phynode_id);
     	for( var si = 0; si < assoc_phynodes.length; si++ ){
             var mshp = assoc_phynodes[si];
-            mshp.update({"fill-opacity": 0.0});
-	    // TODO: text darken
-	    //mshp.animate({"fill-opacity": 1.0});
+            mshp.update();
     	}
+
+	// Update connections; bring them all back to normal.
+        for (var i = connections.length; i--;) {
+		connections[i].update();		
+        }
+        paper.safari();
     };
 
     // Experiment with double click.
     function dblclick_event_handler(event){
-	// this.animate({"fill": "green",
-	// 	      "fill-opacity": 0.5},
-	// 	     2000);
-	// //sleep(2000);
-	// this.animate({"fill": base_node_color,
-	// 	      "fill-opacity": 0.0},
-	// 	     2000);
-	// // this.attr({fill: "red"});
+
 	var phynode_id = this.id;
 
-	// "Vanish" edges.
-	var subtree_edges = get_descendant_connections(phynode_id);
-	for( var se = 0; se < subtree_edges.length; se++ ){
-	    var ste = subtree_edges[se];
-	    ste.visible = false;
-	    ste.update();
-	}
+	// If this is the first double click here...
+	var pn = get_pnode_from_phynode_id(phynode_id);
+	if( pn.open == true ){
+	    
+	    // "Vanish" edges.
+	    var subtree_edges = get_descendant_connections(phynode_id);
+	    for( var se = 0; se < subtree_edges.length; se++ ){
+		var ste = subtree_edges[se];
+		ste.visible = false;
+		ste.update();
+	    }
 
-	// TODO: Nodes and text.
-	var subtree_nodes = get_descendant_phynodes(phynode_id);
-	for( var sn = 0; sn < subtree_nodes.length; sn++ ){
-	    var stn = subtree_nodes[sn];
-	    stn.update({fill: "red"});
+	    // "Vanish" nodes and text; not this node though...
+	    var subtree_nodes = get_descendant_phynodes(phynode_id);
+	    for( var sn = 0; sn < subtree_nodes.length; sn++ ){
+		var stn = subtree_nodes[sn];
+		if( stn.id != phynode_id ){
+		    // Turn of visibilty for children.
+		    stn.visible = false;
+		}else{
+		    // Mark self as closed.
+		    stn.open = false;
+		}
+		stn.update();
+	    }
+	}else{ //Otherwise...
+	    
+	    // Reestablish edges.
+	    var subtree_edges = get_descendant_connections(phynode_id);
+	    for( var se = 0; se < subtree_edges.length; se++ ){
+		var ste = subtree_edges[se];
+		ste.visible = true;
+		ste.update();
+	    }
+
+	    // Restablish pnodes; clear all history.
+	    var subtree_nodes = get_descendant_phynodes(phynode_id);
+	    for( var sn = 0; sn < subtree_nodes.length; sn++ ){
+		var stn = subtree_nodes[sn];
+		stn.open = true;
+		stn.visible = true;
+		stn.update();
+	    }
 	}
-	//bbop.core.kvetch('dblclick: ' + subtree_list.join(', '));
     }
 
     // Experiment with hover.
@@ -537,12 +692,19 @@ window.onload = function () {
 
     	var phynode_id = this.id;
 
-	// Cycle through ancestro phynodes.
+	// Cycle through ancestor phynodes.
     	var anc_phynodes = get_ancestor_phynodes(phynode_id);
     	for( var ai = 0; ai < anc_phynodes.length; ai++ ){
 	    // Change boxes opacity (darken).
 	    var ashp = anc_phynodes[ai];
-	    ashp.update({"fill-opacity": 0.5});
+	    ashp.update("highlight");
+	}
+	// Cycle through descendant phynodes.
+    	var desc_phynodes = get_descendant_phynodes(phynode_id);
+    	for( var di = 0; di < desc_phynodes.length; di++ ){
+	    // Change boxes opacity (darken).
+	    var dshp = desc_phynodes[di];
+	    dshp.update("highlight");
 	}
 
 	// See if we can fish any edges out and highlight them.
@@ -550,6 +712,11 @@ window.onload = function () {
     	for( var ac = 0; ac < anc_edges.length; ac++ ){
 	    var aconn = anc_edges[ac];
 	    aconn.update("highlight");
+	}
+    	var desc_edges = get_descendant_connections(phynode_id);
+    	for( var dc = 0; dc < desc_edges.length; dc++ ){
+	    var dconn = desc_edges[dc];
+	    dconn.update("highlight");
 	}
 	paper.safari();
     }
@@ -562,7 +729,14 @@ window.onload = function () {
     	for( var ai = 0; ai < anc_phynodes.length; ai++ ){
 	    // Change boxes opacity (lighten).
 	    var ashp = anc_phynodes[ai];
-	    ashp.update({"fill-opacity": 0.0});
+	    ashp.update();
+    	}
+	// Cycle through descendant phynodes.
+    	var desc_phynodes = get_descendant_phynodes(phynode_id);
+    	for( var di = 0; di < desc_phynodes.length; di++ ){
+	    // Change boxes opacity (lighten).
+	    var dshp = desc_phynodes[di];
+	    dshp.update();
     	}
 
 	// See if we can fish any edges out and unhighlight them.
@@ -570,6 +744,11 @@ window.onload = function () {
     	for( var ac = 0; ac < anc_edges.length; ac++ ){
 	    var aconn = anc_edges[ac];
 	    aconn.update();
+	}
+    	var desc_edges = get_descendant_connections(phynode_id);
+    	for( var dc = 0; dc < desc_edges.length; dc++ ){
+	    var dconn = desc_edges[dc];
+	    dconn.update();
 	}
 	paper.safari();
     }
@@ -592,21 +771,21 @@ window.onload = function () {
 	var lpx = (layout.position_x[node_id] * x_scale) + edge_shift;
 	var lpy = (layout.position_y[node_id] * y_scale) + edge_shift;
 
+	// Create node at place. 
+	var phynode = new bbop.render.phylo.pnode(paper, node_id, lpx, lpy);
+        phynodes.push(phynode);
+
 	// Indexing for later (edge) use.
 	phynode_hash[node_id] = nidi;
 
-	// 
-	var phynode = new Raphael.fn.pnode(paper, node_id, lpx, lpy);
-        phynodes.push(phynode);
-
-	// Indexing.
+	// More indexing.
 	var ref_index = phynodes.length -1;
 	var phynode_id = phynode.id;
 	phynode_id_to_index[phynode_id] = ref_index;
 	phynode_id_to_node_id[phynode_id] = node_id;
 	node_id_to_index[node_id] = ref_index;
 
-	bbop.core.kvetch('onload: indexed (node): node_id: ' + node_id +
+	bbop.core.kvetch('display: indexed (node): node_id: ' + node_id +
 			 ', phynode_id: ' + phynode_id +
 			 ', ref_index: ' + ref_index);
     }
@@ -620,7 +799,6 @@ window.onload = function () {
     }
 
     // Add stored connections.
-    // TODO: add connections to indexing hash for later access.
     var connections = new Array();
     var conn_hash_ancestor = {};
     var conn_hash_descendant = {};
@@ -632,9 +810,12 @@ window.onload = function () {
 	var e1 = edge[1];
 
 	// Push edge onto array.
-	connections.push(new Raphael.fn.connection(paper,
-						   phynodes[phynode_hash[e0]],
-						   phynodes[phynode_hash[e1]]));
+	var n0_pnode = phynodes[phynode_hash[e0]];
+	var n1_pnode = phynodes[phynode_hash[e1]];
+	var d_label = layout.parent_distances[e0][e1] + '';
+	var nconn = new bbop.render.phylo.connection(paper, n0_pnode, n1_pnode,
+						     d_label);
+	connections.push(nconn);
 
 	// Index edge index for later recall.
 	if( ! conn_hash_descendant[e0] ){ conn_hash_descendant[e0] = {}; }
@@ -642,14 +823,39 @@ window.onload = function () {
 	if( ! conn_hash_ancestor[e1] ){ conn_hash_ancestor[e1] = {}; }
 	conn_hash_ancestor[e1][e0] = ei;
 
-	bbop.core.kvetch('onload: indexed (edge): e0: ' + e0 +
+	bbop.core.kvetch('display: indexed (edge): e0: ' + e0 +
 			 ', e1: ' + e1 +
 			 ', ei: ' + ei);
     }
 
     // See: https://github.com/sorccu/cufon/wiki/about
     // See: http://raphaeljs.com/reference.html#getFont
-    // var txt = paper.print(100, 100, "print", paper.getFont("Museo"), 30).attr({fill: "#00f"});
+    // var txt = paper.print(100, 100, "print",
+    //  paper.getFont("Museo"), 30).attr({fill: "#00f"});
     //paper.print(100, 100, "Test string", paper.getFont("Times", 800), 30);
     //txt[0].attr({fill: "#f00"});
 };
+
+// // Debugging info.
+// bbop.render.phylo.dump_info = function(layout){
+//     //   
+//     for( var ni = 0; ni < layout.node_list.length; ni++ ){
+// 	var noid = layout.node_list[ni];
+// 	bbop.core.kvetch('info(node): (' + noid +
+// 			 ') x:' + (layout.position_x[noid] * x_scale) +
+// 			 ', y:' + (layout.position_y[noid] * y_scale));
+//     }
+//     // 
+//     for( var ei = 0; ei < layout.edge_list.length; ei++ ){
+// 	var edge = layout.edge_list[ei];
+// 	bbop.core.kvetch('info(edge): (' + edge[0] + ', ' + edge[1] + '): ' +
+// 			 (layout.parent_distances[edge[0]][edge[1]]) * y_scale);
+//     }
+//     //
+//     bbop.core.kvetch('info(width): ' + layout.max_width * y_scale);
+//     //bbop.core.kvetch('info(depth): ' + layout.max_depth);
+//     bbop.core.kvetch('info(distance): ' + layout.max_distance * x_scale);
+    
+//     bbop.core.kvetch('info(x_scale): ' + x_scale);
+//     bbop.core.kvetch('info(y_scale): ' + y_scale);
+// };
