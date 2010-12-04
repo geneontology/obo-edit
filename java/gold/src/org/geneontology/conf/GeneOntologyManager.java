@@ -213,5 +213,9 @@ public class GeneOntologyManager {
 		config.setProperty(prop, value);
 	}
 	
+	public String getDefaultGafFile(){
+		return null;
+	}
+	
 	
 }

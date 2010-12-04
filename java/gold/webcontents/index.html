@@ -3,7 +3,6 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Gene Ontology Web Admin</title>
-
 <script type="text/javascript">
 function bulkLoad(){
 	var yes = confirm("This activilty will be executed only when GOLD database is empty." +
@@ -21,6 +20,7 @@ function update(){
 	if(yes){
 		window.location="gold?command=update"
 	}
+	
 }
 
 </script>
@@ -30,8 +30,8 @@ function update(){
 
 <p>Activities:</p>
 <ul>
-<li><a href="javascript:bulkLoad(); return false;">Bulk load of the Empty gene ontology</a></li>
-<li><a href="javascript:update(); return false;">Update Gene Ontology</a></li>
+<li><a href="javascript:bulkLoad();">Bulk load of the Empty gene ontology</a></li>
+<li><a href="javascript:update();">Update Gene Ontology</a></li>
 <li>Last Update of Gold database</li>
 <li>Built Solr indexer from Scratch</li>
 <li>Delta update of the indexer</li>
