@@ -9,15 +9,13 @@
 //// Taken name spaces:
 ////    bbop.render.phylo.*
 ////
-//// STARTED: opacity/fill-opacity
-//// TODO: *real* cross-platform check
+//// TODO: get parser so we can start really checking/use.
+//// TODO: *real* cross-platform check (DONE all but safari and ie)
 //// TODO: make things non-interactive during visible == false?
-//// TODO: some "speed-up" refactoring?
 //// TODO: font and text placement
 //// TODO: better text alignment
 //// TODO: floating right-hand text (see PAINT)
-////
-//// BUG: Chromium bug with numbers at start/not fading right?
+//// TODO: some "speed-up" refactoring?
 ////
 //// Required:
 ////    Rafael
