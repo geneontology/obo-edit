@@ -82,7 +82,8 @@
 	    (:script :type "text/javascript" :src (ccat +base+ "render/phylo.js"))
 	    (:script :type "text/javascript" :src (ccat +base+ "render/test1.js")))
 	   (:body
-	    (:div :id "test1")))))
+	    (:div :id "test1")
+	    (:div :id "test2")))))
 
 ;; Take a look at the online demo in a closed environment.
 (defun graffle-html ()
