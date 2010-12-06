@@ -9,6 +9,7 @@
 //// Taken name spaces:
 ////    bbop.render.phylo.*
 ////
+//// TODO: better selection of displayable text
 //// TODO: get parser so we can start really checking/use.
 //// TODO: *real* cross-platform check (DONE all but safari and ie)
 //// TODO: make things non-interactive during visible == false?
@@ -38,8 +39,6 @@ bbop.core.namespace('bbop', 'render', 'phylo');
 ///
 
 // These first two defaults will be overwritten on display.
-bbop.render.phylo.render_width = 800;
-bbop.render.phylo.render_height = 600;
 bbop.render.phylo.box_width = 50;
 bbop.render.phylo.box_height = 30;
 //bbop.render.phylo.animation_time = 100;
@@ -47,6 +46,7 @@ bbop.render.phylo.animation_time = 200;
 //bbop.render.phylo.animation_time = 1000; // for debug
 //bbop.render.phylo.use_animation = true;
 bbop.render.phylo.use_animation = false;
+
 
 // Init: context, label, x-coord, y-coord.
 bbop.render.phylo.pnode = function(context, label, px, py){
@@ -120,7 +120,7 @@ bbop.render.phylo.pnode = function(context, label, px, py){
     this._context = context;
 
     this._text = // NOTE: text is *centered* at this point.
-	this._context.text(px + text_offset_x, py + text_offset_y, label);
+    this._context.text(px + text_offset_x, py + text_offset_y, label);
     this._text.toBack(); // make sure it's behind the boxes
     this._shape = this._context.rect(px, py, bbop.render.phylo.box_width,
 				     bbop.render.phylo.box_height, 2);
@@ -422,443 +422,498 @@ bbop.render.phylo.connection.prototype.get_path_between_info = function(){
 };
 
 // Render out.
-bbop.render.phylo.display = function (elt_id, layout) {
+// Actually, use this to wrap graph abstraction.
+bbop.render.phylo.renderer = function (element_id){
 
-    var edge_buffer = 100;
-    var edge_shift = edge_buffer / 2.0;
+    var elt_id = element_id;
 
-    // Adjust vertical scales and display.
-    var y_scale = bbop.render.phylo.box_height * 2.0; // fixed y-scale
-    bbop.render.phylo.render_height = layout.max_width * y_scale;
-
-    // Adjust for render width based on platform.
-    var x_scale = 1.0;
-    if( window && window.innerWidth ){
-	bbop.render.phylo.render_width =
-	    window.innerWidth
-	    - bbop.render.phylo.box_width
-	    - edge_buffer;
-    }else if( document && document.body && document.body.offsetWidth ){
-	bbop.render.phylo.render_width =
-	    document.body.offsetWidth
-	    - bbop.render.phylo.box_width
-	    - edge_buffer;
-    }else{
-	bbop.core.kvetch("UFI: Unidentified Failing Platform.");
-    }
-    // Recalculate x-scale.
-    x_scale = bbop.render.phylo.render_width / layout.max_distance;
-    // Get that last pixel column on board.
-    bbop.render.phylo.render_width = bbop.render.phylo.render_width + 1;
-    bbop.core.kvetch('width: ' + bbop.render.phylo.render_width);
-
-    // Create context.
-    var paper = Raphael(elt_id,
-			bbop.render.phylo.render_width + edge_buffer,
-			bbop.render.phylo.render_height + edge_buffer);
-    bbop.core.kvetch('display: made paper');
+    // Internal-only variables.
+    this._render_width = 800;
+    this._render_height = 600;
+    this._node_labels = {};
+    this._node_hover_labels = {};
+    this._edge_labels = {};
+    this._floating_labels = {};
 
     ///
-    /// Graph helper function definitions.
-    /// 
-
-    function get_pnode_from_phynode_id(phynode_id){
-	var ret = null;
-	if( phynode_id_to_index[phynode_id] ){
-	    ret = phynodes[phynode_id_to_index[phynode_id]];
-	}
-	return ret;
-    }
-
-    // Subtree list, including self.
-    function gather_list_from_hash(nid, hash){
-    	var retlist = new Array();
-    	retlist.push(nid);
-    	// Get all nodes cribbing from distances.
-    	for( vt in hash[nid] ){
-    	    //bbop.core.kvetch("id: " + id + ", v: " + ct);
-    	    retlist.push(vt);
-    	}
-    	return retlist;	
-    }
-
-    // Subtree list, including self.
-    function get_descendant_node_list(nid){
-	return gather_list_from_hash(nid, layout.parent_distances);
-    }
-
-    // Ancestor list, including self.
-    function get_ancestor_node_list(nid){
-	return gather_list_from_hash(nid, layout.child_distances);
-    }
+    /// Functions to handle internal graph management.
+    ///
+    
+    var node_cache_hash = {};
+    this._graph = new bbop.model.tree.graph();
 
     //
-    function get_associated(phynode_id, index_kept, getter){
+    this.add_node = function(unique_id){
+	var new_node = new bbop.model.tree.node(unique_id, unique_id);
+	node_cache_hash[unique_id] = new_node;
+	this._graph.add_node(new_node);
+    };	
 
-    	var retlist = new Array();
-	
-    	var node_id = phynode_id_to_node_id[phynode_id];
-    	var subtree_node_list = getter(node_id);
-    	for( var si = 0; si < subtree_node_list.length; si++ ){
+    //
+    this.add_edge = function(nid1, nid2, dist){
 
-    	    var subnode_id = subtree_node_list[si];
-    	    var sindex = node_id_to_index[subnode_id];
+	var retval = false;
 
-    	    var thing = index_kept[sindex];
-    	    retlist.push(thing);
-    	}
-
-    	return retlist;
-    }
-
-    function get_descendant_phynodes(phynode_id){
-    	return get_associated(phynode_id, phynodes, get_descendant_node_list);
-    }
-
-    function get_descendant_texts(phynode_id){
-    	return get_associated(phynode_id, texts, get_descendant_node_list);
-    }
-
-    function get_ancestor_phynodes(phynode_id){
-    	return get_associated(phynode_id, phynodes, get_ancestor_node_list);
-    }
-
-    // General func.
-    function get_connections(phynode_id, phynode_getter, conn_hash){
-
-	var retlist = new Array();
-
-	// Fish in the connection ancestor hash for edges.
-	var tmp_phynodes = phynode_getter(phynode_id);
-	for( var si = 0; si < tmp_phynodes.length; si++ ){
-	    var tshp = tmp_phynodes[si];
-	    var tnid = phynode_id_to_node_id[tshp.id];
-	    if( tnid && conn_hash[tnid] ){
-		for( var anid in conn_hash[tnid] ){
-		    var conn_index = conn_hash[tnid][anid];
-		    var conn = connections[conn_index];
-		    bbop.core.kvetch('get_conn: found: [' + conn_index +
-				     '] ' + anid + ' <=> ' + tnid +
-				     ' ... ' + conn);
-		    retlist.push(conn);
-		}
-	    }
+	var n1 = node_cache_hash[nid1];
+	var n2 = node_cache_hash[nid2];
+	if( n1 && n2 ){
+	    var new_edge = new bbop.model.tree.edge(n1, n2, dist);
+	    this._graph.add_edge(new_edge);
+	    retval = true;	    
 	}
-	return retlist;
+
+	return retval;
     };
-
-    //
-    function get_ancestor_connections(phynode_id){
-	return get_connections(phynode_id,
-			       get_ancestor_phynodes,
-			       conn_hash_ancestor);
-    }
-
-    //
-    function get_descendant_connections(phynode_id){
-	return get_connections(phynode_id,
-			       get_descendant_phynodes,
-			       conn_hash_descendant);
-    }
 
     ///
-    /// Phynode manipulation function definitions.
+    /// Define the edges to be used for drawing.
     /// 
-
-    // Dragging animation (color dimming).
-    var start = function () {
-
-    	var phynode_id = this.id;
-
-	// Darken boxes and update current position before dragging.
-    	var assoc_phynodes = get_descendant_phynodes(phynode_id);
-    	for( var si = 0; si < assoc_phynodes.length; si++ ){
-	    var phynode = assoc_phynodes[si];
-	    phynode.update_position();
-            phynode.update("dim");
-    	}
-
-	// "Dim" edges.
-	var subtree_edges = get_descendant_connections(phynode_id);
-	for( var se = 0; se < subtree_edges.length; se++ ){
-	    var ste = subtree_edges[se];
-	    ste.update("dim");
-	}
-    };
-
-    // Movement animation (don't allow movement on the x-axis) and
-    // redo lines.
-    var move = function (dx, dy) {
-
-    	var phynode_id = this.id;
-
-	// Move box positions.
-    	var assoc_phynodes = get_descendant_phynodes(phynode_id);
-    	for( var si = 0; si < assoc_phynodes.length; si++ ){
-	    var mshp = assoc_phynodes[si];
-	    mshp.move_y(dy);
-	    //bbop.core.kvetch('mshp['+si+']:'+' oy: '+mshp.start_y+', dy:'+dy);
-    	}
-
-	// Collect subtree edges for next bit.
-	var dimmable_subtree = {};
-	var subtree_edges = get_descendant_connections(phynode_id);
-	for( var se = 0; se < subtree_edges.length; se++ ){
-	    var ste = subtree_edges[se];
-	    dimmable_subtree[ste.id] = true;
-	}
-
-	// Update connections; keep subtree dimmed while in transit.
-        for (var i = connections.length; i--;) {
-	    var conn = connections[i];
-	    if( dimmable_subtree[conn.id] ){
-		conn.update('dim');		
-	    }else{
-		conn.update();		
-	    }
-        }
-        paper.safari();
-    };
-
-    // Undrag animation.
-    var stop = function () {
-
-    	var phynode_id = this.id;
-
-	// Fade boxes.
-    	var assoc_phynodes = get_descendant_phynodes(phynode_id);
-    	for( var si = 0; si < assoc_phynodes.length; si++ ){
-            var mshp = assoc_phynodes[si];
-            mshp.update();
-    	}
-
-	// Update connections; bring them all back to normal.
-        for (var i = connections.length; i--;) {
-		connections[i].update();		
-        }
-        paper.safari();
-    };
-
-    // Experiment with double click.
-    function dblclick_event_handler(event){
-
-	var phynode_id = this.id;
-
-	// If this is the first double click here...
-	var pn = get_pnode_from_phynode_id(phynode_id);
-	if( pn.open == true ){
-	    
-	    // "Vanish" edges.
-	    var subtree_edges = get_descendant_connections(phynode_id);
-	    for( var se = 0; se < subtree_edges.length; se++ ){
-		var ste = subtree_edges[se];
-		ste.visible = false;
-		ste.update();
-	    }
-
-	    // "Vanish" nodes and text; not this node though...
-	    var subtree_nodes = get_descendant_phynodes(phynode_id);
-	    for( var sn = 0; sn < subtree_nodes.length; sn++ ){
-		var stn = subtree_nodes[sn];
-		if( stn.id != phynode_id ){
-		    // Turn of visibilty for children.
-		    stn.visible = false;
-		}else{
-		    // Mark self as closed.
-		    stn.open = false;
-		}
-		stn.update();
-	    }
-	}else{ //Otherwise...
-	    
-	    // Reestablish edges.
-	    var subtree_edges = get_descendant_connections(phynode_id);
-	    for( var se = 0; se < subtree_edges.length; se++ ){
-		var ste = subtree_edges[se];
-		ste.visible = true;
-		ste.update();
-	    }
-
-	    // Restablish pnodes; clear all history.
-	    var subtree_nodes = get_descendant_phynodes(phynode_id);
-	    for( var sn = 0; sn < subtree_nodes.length; sn++ ){
-		var stn = subtree_nodes[sn];
-		stn.open = true;
-		stn.visible = true;
-		stn.update();
-	    }
-	}
-    }
-
-    // Experiment with hover.
-    function mouseover_event_handler(event){
-
-    	var phynode_id = this.id;
-
-	// Cycle through ancestor phynodes.
-    	var anc_phynodes = get_ancestor_phynodes(phynode_id);
-    	for( var ai = 0; ai < anc_phynodes.length; ai++ ){
-	    // Change boxes opacity (darken).
-	    var ashp = anc_phynodes[ai];
-	    ashp.update("highlight");
-	}
-	// Cycle through descendant phynodes.
-    	var desc_phynodes = get_descendant_phynodes(phynode_id);
-    	for( var di = 0; di < desc_phynodes.length; di++ ){
-	    // Change boxes opacity (darken).
-	    var dshp = desc_phynodes[di];
-	    dshp.update("highlight");
-	}
-
-	// See if we can fish any edges out and highlight them.
-    	var anc_edges = get_ancestor_connections(phynode_id);
-    	for( var ac = 0; ac < anc_edges.length; ac++ ){
-	    var aconn = anc_edges[ac];
-	    aconn.update("highlight");
-	}
-    	var desc_edges = get_descendant_connections(phynode_id);
-    	for( var dc = 0; dc < desc_edges.length; dc++ ){
-	    var dconn = desc_edges[dc];
-	    dconn.update("highlight");
-	}
-	paper.safari();
-    }
-    function mouseout_event_handler(event){
-
-    	var phynode_id = this.id;
-
-	// Cycle through ancestor phynodes.
-    	var anc_phynodes = get_ancestor_phynodes(phynode_id);
-    	for( var ai = 0; ai < anc_phynodes.length; ai++ ){
-	    // Change boxes opacity (lighten).
-	    var ashp = anc_phynodes[ai];
-	    ashp.update();
-    	}
-	// Cycle through descendant phynodes.
-    	var desc_phynodes = get_descendant_phynodes(phynode_id);
-    	for( var di = 0; di < desc_phynodes.length; di++ ){
-	    // Change boxes opacity (lighten).
-	    var dshp = desc_phynodes[di];
-	    dshp.update();
-    	}
-
-	// See if we can fish any edges out and unhighlight them.
-    	var anc_edges = get_ancestor_connections(phynode_id);
-    	for( var ac = 0; ac < anc_edges.length; ac++ ){
-	    var aconn = anc_edges[ac];
-	    aconn.update();
-	}
-    	var desc_edges = get_descendant_connections(phynode_id);
-    	for( var dc = 0; dc < desc_edges.length; dc++ ){
-	    var dconn = desc_edges[dc];
-	    dconn.update();
-	}
-	paper.safari();
-    }
 
     ///
-    /// Phynode creation and placement.
-    /// 
+    /// Functions and sub-functions for display.
+    ///
 
-    // Add phynodes and create lookup (hash) for use with connections.
-    var phynodes = new Array();
-    var phynode_hash = {};
-    var texts = new Array();
-    var phynode_id_to_index = {};
-    var phynode_id_to_node_id = {};
-    var node_id_to_index = {};
-    for( var nidi = 0; nidi < layout.node_list.length; nidi++ ){
+    //
+    this.display = function () {
 
-	// Calculate position.
-	var node_id = layout.node_list[nidi];
-	var lpx = (layout.position_x[node_id] * x_scale) + edge_shift;
-	var lpy = (layout.position_y[node_id] * y_scale) + edge_shift;
+	var layout = this._graph.layout();
 
-	// Create node at place. 
-	var phynode = new bbop.render.phylo.pnode(paper, node_id, lpx, lpy);
-        phynodes.push(phynode);
+	var edge_buffer = 100;
+	var edge_shift = edge_buffer / 2.0;
 
-	// Indexing for later (edge) use.
-	phynode_hash[node_id] = nidi;
+	// Adjust vertical scales and display.
+	var y_scale = bbop.render.phylo.box_height * 2.0; // fixed y-scale
+	this._render_height = layout.max_width * y_scale;
 
-	// More indexing.
-	var ref_index = phynodes.length -1;
-	var phynode_id = phynode.id;
-	phynode_id_to_index[phynode_id] = ref_index;
-	phynode_id_to_node_id[phynode_id] = node_id;
-	node_id_to_index[node_id] = ref_index;
+	// Adjust for render width based on platform.
+	var x_scale = 1.0;
+	if( window && window.innerWidth ){
+	    this._render_width =
+		window.innerWidth
+		- bbop.render.phylo.box_width
+		- edge_buffer;
+	}else if( document && document.body && document.body.offsetWidth ){
+	    this._render_width =
+		document.body.offsetWidth
+		- bbop.render.phylo.box_width
+		- edge_buffer;
+	}else{
+	    bbop.core.kvetch("UFI: Unidentified Failing Platform.");
+	}
+	// Recalculate x-scale.
+	x_scale = this._render_width / layout.max_distance;
+	// Get that last pixel column on board.
+	this._render_width = this._render_width + 1;
+	bbop.core.kvetch('width: ' + this._render_width);
 
-	bbop.core.kvetch('display: indexed (node): node_id: ' + node_id +
-			 ', phynode_id: ' + phynode_id +
-			 ', ref_index: ' + ref_index);
-    }
+	// Create context.
+	var paper = Raphael(elt_id,
+			    this._render_width + edge_buffer,
+			    this._render_height + edge_buffer);
+	bbop.core.kvetch('display: made paper');
 
-    // Add listeners.
-    for (var i = 0, ii = phynodes.length; i < ii; i++) {
-	phynodes[i].dblclick(dblclick_event_handler);
-        phynodes[i].drag(move, start, stop);
-	phynodes[i].mouseover(mouseover_event_handler);
-	phynodes[i].mouseout(mouseout_event_handler);
-    }
+	///
+	/// Graph helper function definitions.
+	/// 
 
-    // Add stored connections.
-    var connections = new Array();
-    var conn_hash_ancestor = {};
-    var conn_hash_descendant = {};
-    for( var ei = 0; ei < layout.edge_list.length; ei++ ){
+	function get_pnode_from_phynode_id(phynode_id){
+	    var ret = null;
+	    if( phynode_id_to_index[phynode_id] ){
+		ret = phynodes[phynode_id_to_index[phynode_id]];
+	    }
+	    return ret;
+	}
+
+	// Subtree list, including self.
+	function gather_list_from_hash(nid, hash){
+    	    var retlist = new Array();
+    	    retlist.push(nid);
+    	    // Get all nodes cribbing from distances.
+    	    for( vt in hash[nid] ){
+    		//bbop.core.kvetch("id: " + id + ", v: " + ct);
+    		retlist.push(vt);
+    	    }
+    	    return retlist;	
+	}
+
+	// Subtree list, including self.
+	function get_descendant_node_list(nid){
+	    return gather_list_from_hash(nid, layout.parent_distances);
+	}
+
+	// Ancestor list, including self.
+	function get_ancestor_node_list(nid){
+	    return gather_list_from_hash(nid, layout.child_distances);
+	}
 
 	//
-	var edge = layout.edge_list[ei];
-	var e0 = edge[0];
-	var e1 = edge[1];
+	function get_associated(phynode_id, index_kept, getter){
 
-	// Push edge onto array.
-	var n0_pnode = phynodes[phynode_hash[e0]];
-	var n1_pnode = phynodes[phynode_hash[e1]];
-	var d_label = layout.parent_distances[e0][e1] + '';
-	var nconn = new bbop.render.phylo.connection(paper, n0_pnode, n1_pnode,
-						     d_label);
-	connections.push(nconn);
+    	    var retlist = new Array();
+	    
+    	    var node_id = phynode_id_to_node_id[phynode_id];
+    	    var subtree_node_list = getter(node_id);
+    	    for( var si = 0; si < subtree_node_list.length; si++ ){
 
-	// Index edge index for later recall.
-	if( ! conn_hash_descendant[e0] ){ conn_hash_descendant[e0] = {}; }
-	conn_hash_descendant[e0][e1] = ei;
-	if( ! conn_hash_ancestor[e1] ){ conn_hash_ancestor[e1] = {}; }
-	conn_hash_ancestor[e1][e0] = ei;
+    		var subnode_id = subtree_node_list[si];
+    		var sindex = node_id_to_index[subnode_id];
 
-	bbop.core.kvetch('display: indexed (edge): e0: ' + e0 +
-			 ', e1: ' + e1 +
-			 ', ei: ' + ei);
-    }
+    		var thing = index_kept[sindex];
+    		retlist.push(thing);
+    	    }
 
-    // See: https://github.com/sorccu/cufon/wiki/about
-    // See: http://raphaeljs.com/reference.html#getFont
-    // var txt = paper.print(100, 100, "print",
-    //  paper.getFont("Museo"), 30).attr({fill: "#00f"});
-    //paper.print(100, 100, "Test string", paper.getFont("Times", 800), 30);
-    //txt[0].attr({fill: "#f00"});
-};
+    	    return retlist;
+	}
 
-// // Debugging info.
-// bbop.render.phylo.dump_info = function(layout){
-//     //   
-//     for( var ni = 0; ni < layout.node_list.length; ni++ ){
-// 	var noid = layout.node_list[ni];
-// 	bbop.core.kvetch('info(node): (' + noid +
-// 			 ') x:' + (layout.position_x[noid] * x_scale) +
-// 			 ', y:' + (layout.position_y[noid] * y_scale));
-//     }
-//     // 
-//     for( var ei = 0; ei < layout.edge_list.length; ei++ ){
-// 	var edge = layout.edge_list[ei];
-// 	bbop.core.kvetch('info(edge): (' + edge[0] + ', ' + edge[1] + '): ' +
-// 			 (layout.parent_distances[edge[0]][edge[1]]) * y_scale);
-//     }
-//     //
-//     bbop.core.kvetch('info(width): ' + layout.max_width * y_scale);
-//     //bbop.core.kvetch('info(depth): ' + layout.max_depth);
-//     bbop.core.kvetch('info(distance): ' + layout.max_distance * x_scale);
+	function get_descendant_phynodes(phynode_id){
+    	    return get_associated(phynode_id, phynodes, get_descendant_node_list);
+	}
+
+	function get_descendant_texts(phynode_id){
+    	    return get_associated(phynode_id, texts, get_descendant_node_list);
+	}
+
+	function get_ancestor_phynodes(phynode_id){
+    	    return get_associated(phynode_id, phynodes, get_ancestor_node_list);
+	}
+
+	// General func.
+	function get_connections(phynode_id, phynode_getter, conn_hash){
+
+	    var retlist = new Array();
+
+	    // Fish in the connection ancestor hash for edges.
+	    var tmp_phynodes = phynode_getter(phynode_id);
+	    for( var si = 0; si < tmp_phynodes.length; si++ ){
+		var tshp = tmp_phynodes[si];
+		var tnid = phynode_id_to_node_id[tshp.id];
+		if( tnid && conn_hash[tnid] ){
+		    for( var anid in conn_hash[tnid] ){
+			var conn_index = conn_hash[tnid][anid];
+			var conn = connections[conn_index];
+			bbop.core.kvetch('get_conn: found: [' + conn_index +
+					 '] ' + anid + ' <=> ' + tnid +
+					 ' ... ' + conn);
+			retlist.push(conn);
+		    }
+		}
+	    }
+	    return retlist;
+	};
+
+	//
+	function get_ancestor_connections(phynode_id){
+	    return get_connections(phynode_id,
+				   get_ancestor_phynodes,
+				   conn_hash_ancestor);
+	}
+
+	//
+	function get_descendant_connections(phynode_id){
+	    return get_connections(phynode_id,
+				   get_descendant_phynodes,
+				   conn_hash_descendant);
+	}
+
+	///
+	/// Phynode manipulation function definitions.
+	/// 
+
+	// Dragging animation (color dimming).
+	var start = function () {
+
+    	    var phynode_id = this.id;
+
+	    // Darken boxes and update current position before dragging.
+    	    var assoc_phynodes = get_descendant_phynodes(phynode_id);
+    	    for( var si = 0; si < assoc_phynodes.length; si++ ){
+		var phynode = assoc_phynodes[si];
+		phynode.update_position();
+		phynode.update("dim");
+    	    }
+
+	    // "Dim" edges.
+	    var subtree_edges = get_descendant_connections(phynode_id);
+	    for( var se = 0; se < subtree_edges.length; se++ ){
+		var ste = subtree_edges[se];
+		ste.update("dim");
+	    }
+	};
+
+	// Movement animation (don't allow movement on the x-axis) and
+	// redo lines.
+	var move = function (dx, dy) {
+
+    	    var phynode_id = this.id;
+
+	    // Move box positions.
+    	    var assoc_phynodes = get_descendant_phynodes(phynode_id);
+    	    for( var si = 0; si < assoc_phynodes.length; si++ ){
+		var mshp = assoc_phynodes[si];
+		mshp.move_y(dy);
+		//bbop.core.kvetch('mshp['+si+']:'+' oy: '+mshp.start_y+', dy:'+dy);
+    	    }
+
+	    // Collect subtree edges for next bit.
+	    var dimmable_subtree = {};
+	    var subtree_edges = get_descendant_connections(phynode_id);
+	    for( var se = 0; se < subtree_edges.length; se++ ){
+		var ste = subtree_edges[se];
+		dimmable_subtree[ste.id] = true;
+	    }
+
+	    // Update connections; keep subtree dimmed while in transit.
+            for (var i = connections.length; i--;) {
+		var conn = connections[i];
+		if( dimmable_subtree[conn.id] ){
+		    conn.update('dim');		
+		}else{
+		    conn.update();		
+		}
+            }
+            paper.safari();
+	};
+
+	// Undrag animation.
+	var stop = function () {
+
+    	    var phynode_id = this.id;
+
+	    // Fade boxes.
+    	    var assoc_phynodes = get_descendant_phynodes(phynode_id);
+    	    for( var si = 0; si < assoc_phynodes.length; si++ ){
+		var mshp = assoc_phynodes[si];
+		mshp.update();
+    	    }
+
+	    // Update connections; bring them all back to normal.
+            for (var i = connections.length; i--;) {
+		connections[i].update();		
+            }
+            paper.safari();
+	};
+
+	// Experiment with double click.
+	function dblclick_event_handler(event){
+
+	    var phynode_id = this.id;
+
+	    // If this is the first double click here...
+	    var pn = get_pnode_from_phynode_id(phynode_id);
+	    if( pn.open == true ){
+		
+		// "Vanish" edges.
+		var subtree_edges = get_descendant_connections(phynode_id);
+		for( var se = 0; se < subtree_edges.length; se++ ){
+		    var ste = subtree_edges[se];
+		    ste.visible = false;
+		    ste.update();
+		}
+
+		// "Vanish" nodes and text; not this node though...
+		var subtree_nodes = get_descendant_phynodes(phynode_id);
+		for( var sn = 0; sn < subtree_nodes.length; sn++ ){
+		    var stn = subtree_nodes[sn];
+		    if( stn.id != phynode_id ){
+			// Turn of visibilty for children.
+			stn.visible = false;
+		    }else{
+			// Mark self as closed.
+			stn.open = false;
+		    }
+		    stn.update();
+		}
+	    }else{ //Otherwise...
+		
+		// Reestablish edges.
+		var subtree_edges = get_descendant_connections(phynode_id);
+		for( var se = 0; se < subtree_edges.length; se++ ){
+		    var ste = subtree_edges[se];
+		    ste.visible = true;
+		    ste.update();
+		}
+
+		// Restablish pnodes; clear all history.
+		var subtree_nodes = get_descendant_phynodes(phynode_id);
+		for( var sn = 0; sn < subtree_nodes.length; sn++ ){
+		    var stn = subtree_nodes[sn];
+		    stn.open = true;
+		    stn.visible = true;
+		    stn.update();
+		}
+	    }
+	}
+
+	// Experiment with hover.
+	function mouseover_event_handler(event){
+
+    	    var phynode_id = this.id;
+
+	    // Cycle through ancestor phynodes.
+    	    var anc_phynodes = get_ancestor_phynodes(phynode_id);
+    	    for( var ai = 0; ai < anc_phynodes.length; ai++ ){
+		// Change boxes opacity (darken).
+		var ashp = anc_phynodes[ai];
+		ashp.update("highlight");
+	    }
+	    // Cycle through descendant phynodes.
+    	    var desc_phynodes = get_descendant_phynodes(phynode_id);
+    	    for( var di = 0; di < desc_phynodes.length; di++ ){
+		// Change boxes opacity (darken).
+		var dshp = desc_phynodes[di];
+		dshp.update("highlight");
+	    }
+
+	    // See if we can fish any edges out and highlight them.
+    	    var anc_edges = get_ancestor_connections(phynode_id);
+    	    for( var ac = 0; ac < anc_edges.length; ac++ ){
+		var aconn = anc_edges[ac];
+		aconn.update("highlight");
+	    }
+    	    var desc_edges = get_descendant_connections(phynode_id);
+    	    for( var dc = 0; dc < desc_edges.length; dc++ ){
+		var dconn = desc_edges[dc];
+		dconn.update("highlight");
+	    }
+	    paper.safari();
+	}
+	function mouseout_event_handler(event){
+
+    	    var phynode_id = this.id;
+
+	    // Cycle through ancestor phynodes.
+    	    var anc_phynodes = get_ancestor_phynodes(phynode_id);
+    	    for( var ai = 0; ai < anc_phynodes.length; ai++ ){
+		// Change boxes opacity (lighten).
+		var ashp = anc_phynodes[ai];
+		ashp.update();
+    	    }
+	    // Cycle through descendant phynodes.
+    	    var desc_phynodes = get_descendant_phynodes(phynode_id);
+    	    for( var di = 0; di < desc_phynodes.length; di++ ){
+		// Change boxes opacity (lighten).
+		var dshp = desc_phynodes[di];
+		dshp.update();
+    	    }
+
+	    // See if we can fish any edges out and unhighlight them.
+    	    var anc_edges = get_ancestor_connections(phynode_id);
+    	    for( var ac = 0; ac < anc_edges.length; ac++ ){
+		var aconn = anc_edges[ac];
+		aconn.update();
+	    }
+    	    var desc_edges = get_descendant_connections(phynode_id);
+    	    for( var dc = 0; dc < desc_edges.length; dc++ ){
+		var dconn = desc_edges[dc];
+		dconn.update();
+	    }
+	    paper.safari();
+	}
+
+	///
+	/// Phynode creation and placement.
+	/// 
+
+	// Add phynodes and create lookup (hash) for use with connections.
+	var phynodes = new Array();
+	var phynode_hash = {};
+	var texts = new Array();
+	var phynode_id_to_index = {};
+	var phynode_id_to_node_id = {};
+	var node_id_to_index = {};
+	for( var nidi = 0; nidi < layout.node_list.length; nidi++ ){
+
+	    // Calculate position.
+	    var node_id = layout.node_list[nidi];
+	    var lpx = (layout.position_x[node_id] * x_scale) + edge_shift;
+	    var lpy = (layout.position_y[node_id] * y_scale) + edge_shift;
+
+	    // Create node at place. 
+	    var phynode = new bbop.render.phylo.pnode(paper, node_id, lpx, lpy);
+            phynodes.push(phynode);
+
+	    // Indexing for later (edge) use.
+	    phynode_hash[node_id] = nidi;
+
+	    // More indexing.
+	    var ref_index = phynodes.length -1;
+	    var phynode_id = phynode.id;
+	    phynode_id_to_index[phynode_id] = ref_index;
+	    phynode_id_to_node_id[phynode_id] = node_id;
+	    node_id_to_index[node_id] = ref_index;
+
+	    bbop.core.kvetch('display: indexed (node): node_id: ' + node_id +
+			     ', phynode_id: ' + phynode_id +
+			     ', ref_index: ' + ref_index);
+	}
+
+	// Add listeners.
+	for (var i = 0, ii = phynodes.length; i < ii; i++) {
+	    phynodes[i].dblclick(dblclick_event_handler);
+            phynodes[i].drag(move, start, stop);
+	    phynodes[i].mouseover(mouseover_event_handler);
+	    phynodes[i].mouseout(mouseout_event_handler);
+	}
+
+	// Add stored connections.
+	var connections = new Array();
+	var conn_hash_ancestor = {};
+	var conn_hash_descendant = {};
+	for( var ei = 0; ei < layout.edge_list.length; ei++ ){
+
+	    //
+	    var edge = layout.edge_list[ei];
+	    var e0 = edge[0];
+	    var e1 = edge[1];
+
+	    // Push edge onto array.
+	    var n0_pnode = phynodes[phynode_hash[e0]];
+	    var n1_pnode = phynodes[phynode_hash[e1]];
+	    var d_label = layout.parent_distances[e0][e1] + '';
+	    var nconn = new bbop.render.phylo.connection(paper, n0_pnode, n1_pnode,
+							 d_label);
+	    connections.push(nconn);
+
+	    // Index edge index for later recall.
+	    if( ! conn_hash_descendant[e0] ){ conn_hash_descendant[e0] = {}; }
+	    conn_hash_descendant[e0][e1] = ei;
+	    if( ! conn_hash_ancestor[e1] ){ conn_hash_ancestor[e1] = {}; }
+	    conn_hash_ancestor[e1][e0] = ei;
+
+	    bbop.core.kvetch('display: indexed (edge): e0: ' + e0 +
+			     ', e1: ' + e1 +
+			     ', ei: ' + ei);
+	}
+
+	// See: https://github.com/sorccu/cufon/wiki/about
+	// See: http://raphaeljs.com/reference.html#getFont
+	// var txt = paper.print(100, 100, "print",
+	//  paper.getFont("Museo"), 30).attr({fill: "#00f"});
+	//paper.print(100, 100, "Test string", paper.getFont("Times", 800), 30);
+	//txt[0].attr({fill: "#f00"});
+    };
+
+    // // Debugging info.
+    // bbop.render.phylo.dump_info = function(layout){
+    //     //   
+    //     for( var ni = 0; ni < layout.node_list.length; ni++ ){
+    // 	var noid = layout.node_list[ni];
+    // 	bbop.core.kvetch('info(node): (' + noid +
+    // 			 ') x:' + (layout.position_x[noid] * x_scale) +
+    // 			 ', y:' + (layout.position_y[noid] * y_scale));
+    //     }
+    //     // 
+    //     for( var ei = 0; ei < layout.edge_list.length; ei++ ){
+    // 	var edge = layout.edge_list[ei];
+    // 	bbop.core.kvetch('info(edge): (' + edge[0] + ', ' + edge[1] + '): ' +
+    // 			 (layout.parent_distances[edge[0]][edge[1]]) * y_scale);
+    //     }
+    //     //
+    //     bbop.core.kvetch('info(width): ' + layout.max_width * y_scale);
+    //     //bbop.core.kvetch('info(depth): ' + layout.max_depth);
+    //     bbop.core.kvetch('info(distance): ' + layout.max_distance * x_scale);
     
-//     bbop.core.kvetch('info(x_scale): ' + x_scale);
-//     bbop.core.kvetch('info(y_scale): ' + y_scale);
-// };
+    //     bbop.core.kvetch('info(x_scale): ' + x_scale);
+    //     bbop.core.kvetch('info(y_scale): ' + y_scale);
+    // };
+};
