@@ -9,6 +9,7 @@
 //// Taken name spaces:
 ////    bbop.render.phylo.*
 ////
+//// TODO: Redo some layout to support wider boxes
 //// TODO: better selection of displayable text
 //// TODO: get parser so we can start really checking/use.
 //// TODO: *real* cross-platform check (DONE all but safari and ie)
@@ -38,394 +39,24 @@ bbop.core.namespace('bbop', 'render', 'phylo');
 /// PNodes (phylonode) object.
 ///
 
-// These first two defaults will be overwritten on display.
-bbop.render.phylo.box_width = 50;
-bbop.render.phylo.box_height = 30;
-//bbop.render.phylo.animation_time = 100;
-bbop.render.phylo.animation_time = 200;
-//bbop.render.phylo.animation_time = 1000; // for debug
-//bbop.render.phylo.use_animation = true;
-bbop.render.phylo.use_animation = false;
-
-
-// Init: context, label, x-coord, y-coord.
-bbop.render.phylo.pnode = function(context, label, px, py){
-
-    // Color and size definitions.
-    var text_offset_x = bbop.render.phylo.box_width / 2.0;
-    var text_offset_y = bbop.render.phylo.box_height / 2.0;
-    this.base_node_color = "#00f";
-
-    // Future visibility.    
-    this.visible = true;
-    
-    // For advanced tree use.
-    this.open = true;
-    
-    // Coloration and style attributes.
-    this.shape_base_attr = {
-	"fill": this.base_node_color,
-	"fill-opacity": 0.05,
-	"opacity": 1.0,
-	"stroke": this.base_node_color,
-	"stroke-width": 2,
-	"title": "This is " + label,
-	"cursor": "move"
-    };
-    this.shape_highlight_attr = {
-	"fill": this.base_node_color,
-	"fill-opacity": 0.5,
-	"opacity": 1.0,
-	"stroke": this.base_node_color,
-	"stroke-width": 3
-    };
-    this.shape_dim_attr = {
-	"fill": this.base_node_color,
-	"fill-opacity": 0.0,
-	"opacity": 0.5,
-	"stroke": this.base_node_color,
-	"stroke-width": 1
-    };
-    this.shape_invisible_attr = {
-	"fill": "#000",
-	"fill-opacity": 0.0,
-	"opacity": 0.0,
-	"stroke": "#000",
-	"stroke-width": 0
-    };
-    // Text in node.
-    this.text_base_attr = {
-	//"fill-opacity": 1.0,
-	"opacity" : 1.0,
-	"font-size" : 10
-    };
-    //this.text_highlight_attr = {"fill-opacity": 1.0, "font-size" : 12};
-    this.text_highlight_attr = {
-	//"fill-opacity": 1.0,
-	"opacity" : 1.0,
-	"font-size" : 10
-    };
-    this.text_dim_attr = {
-	//"fill-opacity": 0.2,
-	"opacity" : 0.2,
-	"font-size" : 10
-    };
-    this.text_invisible_attr = {
-	//"fill-opacity": 0.0,
-	"opacity" : 0.0,
-	"font-size" : 10
-    };
-
-    // Draw out initial node.
-    this._context = context;
-
-    this._text = // NOTE: text is *centered* at this point.
-    this._context.text(px + text_offset_x, py + text_offset_y, label);
-    this._text.toBack(); // make sure it's behind the boxes
-    this._shape = this._context.rect(px, py, bbop.render.phylo.box_width,
-				     bbop.render.phylo.box_height, 2);
-
-    // Proxy properties and functions.
-    // This is so wrong, but feels so good...proxy most things through
-    // shape.
-    this.id = this._shape.id; // Use the shape's UID as our UID.
-    this.getBBox = function(){
-	return this._shape.getBBox.call(this._shape);
-    };
-    // Semi-proxy.
-    this.shape_attr = function(arg){
-	return this._shape.attr.call(this._shape, arg);
-    };
-
-    // Add to the object the initial position.
-    this._start_shape_y = this._shape.attr("y");
-    this._start_text_y = this._text.attr("y");
-
-    // Setup shape attributes.
-    this._shape.attr(this.shape_base_attr);
-};
-// Call first when you want to move.
-bbop.render.phylo.pnode.prototype.update_position = function(){
-    this._start_shape_y = this._shape.attr("y");
-    this._start_text_y = this._text.attr("y");
-};
-// Move 
-bbop.render.phylo.pnode.prototype.move_y = function(arg){
-    var d_shape = this._start_shape_y + arg;
-    var d_text = this._start_text_y + arg;
-    this._shape.attr.call(this._shape, {"y": d_shape});
-    this._text.attr.call(this._text, {"y": d_text});
-};
-// Event handler proxies for underlying shapes (text ignored).
-bbop.render.phylo.pnode.prototype.drag = function(mv_func,start_func,end_func){
-    this._shape.drag(mv_func, start_func, end_func);
-};
-bbop.render.phylo.pnode.prototype.dblclick = function(handler){
-    this._shape.dblclick.call(this._shape, handler);
-};
-bbop.render.phylo.pnode.prototype.mouseover = function(handler){
-    this._shape.mouseover.call(this._shape, handler);
-};
-bbop.render.phylo.pnode.prototype.mouseout = function(handler){
-    this._shape.mouseout.call(this._shape, handler);
-};
-
-bbop.render.phylo.pnode.prototype.update = function(message){
-
-    //
-    var shape_attr_to_apply = this.shape_base_attr;
-    var text_attr_to_apply = this.text_base_attr;
-
-    // 
-    if( this.visible == false ){
-	shape_attr_to_apply = this.shape_invisible_attr;
-	text_attr_to_apply = this.text_invisible_attr;
-    }else if( message == 'highlight' ){
-	shape_attr_to_apply = this.shape_highlight_attr;
-	text_attr_to_apply = this.text_highlight_attr;
-    }else if( message == 'dim' ){
-	shape_attr_to_apply = this.shape_dim_attr;
-	text_attr_to_apply = this.text_dim_attr;
-    }
-
-    // Change border on whether or not it's "opened".
-    if( this.open == false ){
-	shape_attr_to_apply['stroke'] = "#070";
-    }else{
-    	shape_attr_to_apply['stroke'] = this.base_node_color;	
-    }
-
-    // Render with whatever filtered through.
-    if( bbop.render.phylo.use_animation ){
-	this._shape.animate.call(this._shape,
-				 shape_attr_to_apply,
-				 bbop.render.phylo.animation_time);
-	this._shape.animate.call(this._text,
-				 text_attr_to_apply,
-				 bbop.render.phylo.animation_time);	
-    }else{
-	this._shape.attr(shape_attr_to_apply);
-	this._text.attr(text_attr_to_apply);
-    }
-};
-
-///
-/// Connection (between two pnodes) object.
-///
-
-// Init: context, shape, shape, and "distance" representation
-// (optional).
-bbop.render.phylo.connection = function(context, obj1, obj2, dist_rep){
-
-    //this.context = context;
-
-    // These need to be set right away for path calculation.    
-    this.from = obj1;
-    this.to = obj2;
-
-    this.id = this.from.id + '_id_invariant_' + this.to.id;
-
-    // Get path.
-    var path_info = this.get_path_between_info();
-    var path = path_info['path'];
-    var cp = path_info['center_point'];
-
-    // bbop.core.kvetch("conn: cp: (" + cp[0] + ", " + cp[1] + ")");
-
-    // Future visibility.
-    this.visible = true;
-
-    var base_edge_color = "#030";
-    var base_edge_width = "3";
-    var highlight_edge_color = "#00f";
-    var highlight_edge_width = "5";
-    var invisible_edge_color = "#000";
-    var invisible_edge_width = "0";
-
-    this.edge_base_attr = {
-	"stroke": base_edge_color,
-     	"stroke-width": base_edge_width,
-	"fill": "none",
-	"opacity": 1.0,
-	"fill-opacity": 0.0
-    };
-    this.edge_highlight_attr = {
-	"stroke": highlight_edge_color,
-     	"stroke-width": highlight_edge_width,
-	"fill": "none",
-	"opacity": 1.0,
-	"fill-opacity": 0.0
-    };
-    this.edge_dim_attr = {
-	"stroke": base_edge_color,
-     	"stroke-width": 1,
-	"fill": "none",
-	"opacity": 0.5,
-	"fill-opacity": 0.0
-    };
-    this.edge_invisible_attr = {
-	"stroke": invisible_edge_color,
-     	"stroke-width": invisible_edge_width,
-	"fill": "none",
-	"opacity": 0.0,
-	"fill-opacity": 0.0
-    };
-    // // As connections.
-    // this.text_base_attr = {"fill-opacity": 1.0, "font-size" : 10};
-    // this.text_highlight_attr = {"fill-opacity": 1.0, "font-size" : 10};
-    // this.text_dim_attr = {"fill-opacity": 0.2, "font-size" : 10};
-    // this.text_invisible_attr = {"fill-opacity": 0.0, "font-size" : 10};
-    // Highlight-only.
-    this.text_base_attr = {
-	"opacity": 0.0,
-	"font-size" : 10
-    };
-    //this.text_highlight_attr = {"fill-opacity": 1.0, "font-size" : 12};
-    this.text_highlight_attr = {
-	"opacity": 1.0,
-	"font-size" : 10
-    };
-    this.text_dim_attr = {
-	"opacity": 0.0,
-	"font-size" : 10
-    };
-    this.text_invisible_attr = {
-	"opacity": 0.0,
-	"font-size" : 10
-    };
-
-    // Build up text at path centerpoint.
-    this.text = null;
-    if( dist_rep ){
-	this.text = context.text(cp[0], (cp[1] + 10), dist_rep);
-	this.text.toBack(); // make sure it's behind the boxes
-	this.text.attr(this.text_base_attr);	
-    }
-
-    // Colors and lines.
-    this.line = context.path(path);
-    this.line.attr(this.edge_base_attr);
-};
-// Update line graphic.
-bbop.render.phylo.connection.prototype.update = function(message){
-
-    // Get path.
-    var path_info = this.get_path_between_info();
-    var path = path_info['path'];
-
-    // Update line position.
-    this.line.attr({path: path});
-
-    // Update line graphics on message.
-    var line_attr_to_apply = null;
-    if( this.visible == false ){
-	line_attr_to_apply = this.edge_invisible_attr;
-    }else if( message == 'highlight' ){
-	line_attr_to_apply = this.edge_highlight_attr;
-    }else if( message == 'dim' ){
-	line_attr_to_apply = this.edge_dim_attr;
-    }else{
-	line_attr_to_apply = this.edge_base_attr;
-    }
-
-    // Render with whatever filtered through.
-    if( bbop.render.phylo.use_animation ){	
-	this.line.animate.call(this.line,
-			       line_attr_to_apply,
-			       bbop.render.phylo.animation_time);
-    }else{
-	this.line.attr(line_attr_to_apply);
-    }
-
-    // Update text position.
-    var text_attr_to_apply = null;
-    if( this.text ){
-	var cp = path_info['center_point'];
-	this.text.attr({"x": cp[0], "y": (cp[1] + 10)});
-
-	// Update graphics graphics on message.
-	if( this.visible == false ){
-	    text_attr_to_apply = this.text_invisible_attr;
-	}else if( message == 'highlight' ){
-	    text_attr_to_apply = this.text_highlight_attr;
-	}else if( message == 'dim' ){
-	    text_attr_to_apply = this.text_dim_attr;
-	}else{
-	    text_attr_to_apply = this.text_base_attr;
-	}
-
-	// Render with whatever filtered through.
-	if( bbop.render.phylo.use_animation ){	
-	    this.text.animate.call(this.text,
-				   text_attr_to_apply,
-				   bbop.render.phylo.animation_time);
-	}else{
-	    this.text.attr(text_attr_to_apply);
-	}
-    }
-};
-// Generate path from between the two internally stored objects.
-bbop.render.phylo.connection.prototype.get_path_between_info = function(){
-
-    var bb1 = this.from.getBBox();
-    var bb2 = this.to.getBBox();
-
-    //bbop.core.kvetch("bb1.width: " + bb1.width);
-    //bbop.core.kvetch("bb1.x: " + bb1.x + ", bb1.y: " + bb1.y);
-    //bbop.core.kvetch("bb1.width: " + bb1.width +", bb1.height: "+ bb1.height);
-
-    var p = [{x: bb1.x + bb1.width / 2, y: bb1.y - 1},
-             {x: bb1.x + bb1.width / 2, y: bb1.y + bb1.height + 1},
-             {x: bb1.x - 1, y: bb1.y + bb1.height / 2},
-             {x: bb1.x + bb1.width + 1, y: bb1.y + bb1.height / 2},
-             {x: bb2.x + bb2.width / 2, y: bb2.y - 1},
-             {x: bb2.x + bb2.width / 2, y: bb2.y + bb2.height + 1},
-             {x: bb2.x - 1, y: bb2.y + bb2.height / 2},
-             {x: bb2.x + bb2.width + 1, y: bb2.y + bb2.height / 2}];
-    var d = {};
-    var dis = [];
-    for (var i = 0; i < 4; i++) {
-        for (var j = 4; j < 8; j++) {
-            var dx = Math.abs(p[i].x - p[j].x);
-            var dy = Math.abs(p[i].y - p[j].y);
-            if ((i == j - 4) ||
-    		(((i != 3 && j != 6) || p[i].x < p[j].x) &&
-    		 ((i != 2 && j != 7) || p[i].x > p[j].x) &&
-    		 ((i != 0 && j != 5) || p[i].y > p[j].y) &&
-    		 ((i != 1 && j != 4) || p[i].y < p[j].y))) {
-                dis.push(dx + dy);
-                d[dis[dis.length - 1]] = [i, j];
-            }
-        }
-    }
-    var res = null;
-    if (dis.length == 0) {
-        res = [0, 4];
-    }else{
-        res = d[Math.min.apply(Math, dis)];
-    }
-    var x1 = p[res[0]].x;
-    var y1 = p[res[0]].y;
-    var x2 = p[res[1]].x;
-    var y2 = p[res[1]].y;
-    var dx = Math.max(Math.abs(x1 - x2) / 2, 10);
-    var dy = Math.max(Math.abs(y1 - y2) / 2, 10);
-    return {"path": [
-    		"M", x1.toFixed(3), y1.toFixed(3),
-    		"L", x1.toFixed(3), y2.toFixed(3),
-    		"L", x2.toFixed(3), y2.toFixed(3)
-	    ].join(","),
-	    // "center_point": [(x1.toFixed(3) + x1.toFixed(3)),
-	    // 		     (y1.toFixed(3) + y2.toFixed(3))]
-	    "center_point": [(x1 + x2) / 2.0, (y2)]
-	   };
-};
-
 // Render out.
 // Actually, use this to wrap graph abstraction.
 bbop.render.phylo.renderer = function (element_id){
 
     var elt_id = element_id;
+
+    var renderer_context = this;
+
+    // Properties that can be manipulated externally.
+    //this.animation_time = 100;
+    this.animation_time = 200;
+    //this.animation_time = 1000; // for debug
+    //this.use_animation = true;
+    this.use_animation = false;
+
+    // These first two defaults will be overwritten on display.
+    this.box_width = 50;
+    this.box_height = 30;
 
     // Internal-only variables.
     this._render_width = 800;
@@ -466,8 +97,383 @@ bbop.render.phylo.renderer = function (element_id){
     };
 
     ///
-    /// Define the edges to be used for drawing.
-    /// 
+    /// ...
+    ///
+
+    // Init: context, label, x-coord, y-coord.
+    graph_pnode = function(context, label, px, py){
+
+	// Color and size definitions.
+	var text_offset_x = renderer_context.box_width / 2.0;
+	var text_offset_y = renderer_context.box_height / 2.0;
+	this.base_node_color = "#00f";
+
+	// Future visibility.    
+	this.visible = true;
+	
+	// For advanced tree use.
+	this.open = true;
+	
+	// Coloration and style attributes.
+	this.shape_base_attr = {
+	    "fill": this.base_node_color,
+	    "fill-opacity": 0.05,
+	    "opacity": 1.0,
+	    "stroke": this.base_node_color,
+	    "stroke-width": 2,
+	    "title": "This is " + label,
+	    "cursor": "move"
+	};
+	this.shape_highlight_attr = {
+	    "fill": this.base_node_color,
+	    "fill-opacity": 0.5,
+	    "opacity": 1.0,
+	    "stroke": this.base_node_color,
+	    "stroke-width": 3
+	};
+	this.shape_dim_attr = {
+	    "fill": this.base_node_color,
+	    "fill-opacity": 0.0,
+	    "opacity": 0.5,
+	    "stroke": this.base_node_color,
+	    "stroke-width": 1
+	};
+	this.shape_invisible_attr = {
+	    "fill": "#000",
+	    "fill-opacity": 0.0,
+	    "opacity": 0.0,
+	    "stroke": "#000",
+	    "stroke-width": 0
+	};
+	// Text in node.
+	this.text_base_attr = {
+	    //"fill-opacity": 1.0,
+	    "opacity" : 1.0,
+	    "font-size" : 10
+	};
+	//this.text_highlight_attr = {"fill-opacity": 1.0, "font-size" : 12};
+	this.text_highlight_attr = {
+	    //"fill-opacity": 1.0,
+	    "opacity" : 1.0,
+	    "font-size" : 10
+	};
+	this.text_dim_attr = {
+	    //"fill-opacity": 0.2,
+	    "opacity" : 0.2,
+	    "font-size" : 10
+	};
+	this.text_invisible_attr = {
+	    //"fill-opacity": 0.0,
+	    "opacity" : 0.0,
+	    "font-size" : 10
+	};
+
+	// Draw out initial node.
+	this._context = context;
+
+	this._text = // NOTE: text is *centered* at this point.
+	this._context.text(px + text_offset_x, py + text_offset_y, label);
+	this._text.toBack(); // make sure it's behind the boxes
+	this._shape = this._context.rect(px, py, renderer_context.box_width,
+					 renderer_context.box_height, 2);
+
+	// Proxy properties and functions.
+	// This is so wrong, but feels so good...proxy most things through
+	// shape.
+	this.id = this._shape.id; // Use the shape's UID as our UID.
+	this.getBBox = function(){
+	    return this._shape.getBBox.call(this._shape);
+	};
+	// Semi-proxy.
+	this.shape_attr = function(arg){
+	    return this._shape.attr.call(this._shape, arg);
+	};
+
+	// Add to the object the initial position.
+	this._start_shape_y = this._shape.attr("y");
+	this._start_text_y = this._text.attr("y");
+
+	// Setup shape attributes.
+	this._shape.attr(this.shape_base_attr);
+    };
+    // Call first when you want to move.
+    graph_pnode.prototype.update_position = function(){
+	this._start_shape_y = this._shape.attr("y");
+	this._start_text_y = this._text.attr("y");
+    };
+    // Move 
+    graph_pnode.prototype.move_y = function(arg){
+	var d_shape = this._start_shape_y + arg;
+	var d_text = this._start_text_y + arg;
+	this._shape.attr.call(this._shape, {"y": d_shape});
+	this._text.attr.call(this._text, {"y": d_text});
+    };
+    // Event handler proxies for underlying shapes (text ignored).
+    graph_pnode.prototype.drag = function(mv_func,start_func,end_func){
+	this._shape.drag(mv_func, start_func, end_func);
+    };
+    graph_pnode.prototype.dblclick = function(handler){
+	this._shape.dblclick.call(this._shape, handler);
+    };
+    graph_pnode.prototype.mouseover = function(handler){
+	this._shape.mouseover.call(this._shape, handler);
+    };
+    graph_pnode.prototype.mouseout = function(handler){
+	this._shape.mouseout.call(this._shape, handler);
+    };
+
+    graph_pnode.prototype.update = function(message){
+
+	//
+	var shape_attr_to_apply = this.shape_base_attr;
+	var text_attr_to_apply = this.text_base_attr;
+
+	// 
+	if( this.visible == false ){
+	    shape_attr_to_apply = this.shape_invisible_attr;
+	    text_attr_to_apply = this.text_invisible_attr;
+	}else if( message == 'highlight' ){
+	    shape_attr_to_apply = this.shape_highlight_attr;
+	    text_attr_to_apply = this.text_highlight_attr;
+	}else if( message == 'dim' ){
+	    shape_attr_to_apply = this.shape_dim_attr;
+	    text_attr_to_apply = this.text_dim_attr;
+	}
+
+	// Change border on whether or not it's "opened".
+	if( this.open == false ){
+	    shape_attr_to_apply['stroke'] = "#070";
+	}else{
+    	    shape_attr_to_apply['stroke'] = this.base_node_color;	
+	}
+
+	// Render with whatever filtered through.
+	if( renderer_context.use_animation ){
+	    this._shape.animate.call(this._shape,
+				     shape_attr_to_apply,
+				     renderer_context.animation_time);
+	    this._shape.animate.call(this._text,
+				     text_attr_to_apply,
+				     renderer_context.animation_time);	
+	}else{
+	    this._shape.attr(shape_attr_to_apply);
+	    this._text.attr(text_attr_to_apply);
+	}
+    };
+
+
+    ///
+    /// Define the edges (connections) to be used for drawing.
+    /// Connection (between two pnodes) object.
+    ///
+
+    // Init: context, shape, shape, and "distance" representation
+    // (optional).
+    graph_connection = function(context, obj1, obj2, dist_rep){
+
+	//this.context = context;
+
+	// These need to be set right away for path calculation.    
+	this.from = obj1;
+	this.to = obj2;
+
+	this.id = this.from.id + '_id_invariant_' + this.to.id;
+
+	// Get path.
+	var path_info = this.get_path_between_info();
+	var path = path_info['path'];
+	var cp = path_info['center_point'];
+
+	// bbop.core.kvetch("conn: cp: (" + cp[0] + ", " + cp[1] + ")");
+
+	// Future visibility.
+	this.visible = true;
+
+	var base_edge_color = "#030";
+	var base_edge_width = "3";
+	var highlight_edge_color = "#00f";
+	var highlight_edge_width = "5";
+	var invisible_edge_color = "#000";
+	var invisible_edge_width = "0";
+
+	this.edge_base_attr = {
+	    "stroke": base_edge_color,
+     	    "stroke-width": base_edge_width,
+	    "fill": "none",
+	    "opacity": 1.0,
+	    "fill-opacity": 0.0
+	};
+	this.edge_highlight_attr = {
+	    "stroke": highlight_edge_color,
+     	    "stroke-width": highlight_edge_width,
+	    "fill": "none",
+	    "opacity": 1.0,
+	    "fill-opacity": 0.0
+	};
+	this.edge_dim_attr = {
+	    "stroke": base_edge_color,
+     	    "stroke-width": 1,
+	    "fill": "none",
+	    "opacity": 0.5,
+	    "fill-opacity": 0.0
+	};
+	this.edge_invisible_attr = {
+	    "stroke": invisible_edge_color,
+     	    "stroke-width": invisible_edge_width,
+	    "fill": "none",
+	    "opacity": 0.0,
+	    "fill-opacity": 0.0
+	};
+	// // As connections.
+	// this.text_base_attr = {"fill-opacity": 1.0, "font-size" : 10};
+	// this.text_highlight_attr = {"fill-opacity": 1.0, "font-size" : 10};
+	// this.text_dim_attr = {"fill-opacity": 0.2, "font-size" : 10};
+	// this.text_invisible_attr = {"fill-opacity": 0.0, "font-size" : 10};
+	// Highlight-only.
+	this.text_base_attr = {
+	    "opacity": 0.0,
+	    "font-size" : 10
+	};
+	//this.text_highlight_attr = {"fill-opacity": 1.0, "font-size" : 12};
+	this.text_highlight_attr = {
+	    "opacity": 1.0,
+	    "font-size" : 10
+	};
+	this.text_dim_attr = {
+	    "opacity": 0.0,
+	    "font-size" : 10
+	};
+	this.text_invisible_attr = {
+	    "opacity": 0.0,
+	    "font-size" : 10
+	};
+
+	// Build up text at path centerpoint.
+	this.text = null;
+	if( dist_rep ){
+	    this.text = context.text(cp[0], (cp[1] + 10), dist_rep);
+	    this.text.toBack(); // make sure it's behind the boxes
+	    this.text.attr(this.text_base_attr);	
+	}
+
+	// Colors and lines.
+	this.line = context.path(path);
+	this.line.attr(this.edge_base_attr);
+    };
+    // Update line graphic.
+    graph_connection.prototype.update = function(message){
+
+	// Get path.
+	var path_info = this.get_path_between_info();
+	var path = path_info['path'];
+
+	// Update line position.
+	this.line.attr({path: path});
+
+	// Update line graphics on message.
+	var line_attr_to_apply = null;
+	if( this.visible == false ){
+	    line_attr_to_apply = this.edge_invisible_attr;
+	}else if( message == 'highlight' ){
+	    line_attr_to_apply = this.edge_highlight_attr;
+	}else if( message == 'dim' ){
+	    line_attr_to_apply = this.edge_dim_attr;
+	}else{
+	    line_attr_to_apply = this.edge_base_attr;
+	}
+
+	// Render with whatever filtered through.
+	if( renderer_context.use_animation ){	
+	    this.line.animate.call(this.line,
+				   line_attr_to_apply,
+				   renderer_context.animation_time);
+	}else{
+	    this.line.attr(line_attr_to_apply);
+	}
+
+	// Update text position.
+	var text_attr_to_apply = null;
+	if( this.text ){
+	    var cp = path_info['center_point'];
+	    this.text.attr({"x": cp[0], "y": (cp[1] + 10)});
+
+	    // Update graphics graphics on message.
+	    if( this.visible == false ){
+		text_attr_to_apply = this.text_invisible_attr;
+	    }else if( message == 'highlight' ){
+		text_attr_to_apply = this.text_highlight_attr;
+	    }else if( message == 'dim' ){
+		text_attr_to_apply = this.text_dim_attr;
+	    }else{
+		text_attr_to_apply = this.text_base_attr;
+	    }
+
+	    // Render with whatever filtered through.
+	    if( renderer_context.use_animation ){	
+		this.text.animate.call(this.text,
+				       text_attr_to_apply,
+				       renderer_context.animation_time);
+	    }else{
+		this.text.attr(text_attr_to_apply);
+	    }
+	}
+    };
+    // Generate path from between the two internally stored objects.
+    graph_connection.prototype.get_path_between_info = function(){
+
+	var bb1 = this.from.getBBox();
+	var bb2 = this.to.getBBox();
+
+	//bbop.core.kvetch("bb1.width: " + bb1.width);
+	//bbop.core.kvetch("bb1.x: " + bb1.x + ", bb1.y: " + bb1.y);
+	//bbop.core.kvetch("bb1.width: " + bb1.width +", bb1.height: "+ bb1.height);
+
+	var p = [{x: bb1.x + bb1.width / 2, y: bb1.y - 1},
+		 {x: bb1.x + bb1.width / 2, y: bb1.y + bb1.height + 1},
+		 {x: bb1.x - 1, y: bb1.y + bb1.height / 2},
+		 {x: bb1.x + bb1.width + 1, y: bb1.y + bb1.height / 2},
+		 {x: bb2.x + bb2.width / 2, y: bb2.y - 1},
+		 {x: bb2.x + bb2.width / 2, y: bb2.y + bb2.height + 1},
+		 {x: bb2.x - 1, y: bb2.y + bb2.height / 2},
+		 {x: bb2.x + bb2.width + 1, y: bb2.y + bb2.height / 2}];
+	var d = {};
+	var dis = [];
+	for (var i = 0; i < 4; i++) {
+            for (var j = 4; j < 8; j++) {
+		var dx = Math.abs(p[i].x - p[j].x);
+		var dy = Math.abs(p[i].y - p[j].y);
+		if ((i == j - 4) ||
+    		    (((i != 3 && j != 6) || p[i].x < p[j].x) &&
+    		     ((i != 2 && j != 7) || p[i].x > p[j].x) &&
+    		     ((i != 0 && j != 5) || p[i].y > p[j].y) &&
+    		     ((i != 1 && j != 4) || p[i].y < p[j].y))) {
+                    dis.push(dx + dy);
+                    d[dis[dis.length - 1]] = [i, j];
+		}
+            }
+	}
+	var res = null;
+	if (dis.length == 0) {
+            res = [0, 4];
+	}else{
+            res = d[Math.min.apply(Math, dis)];
+	}
+	var x1 = p[res[0]].x;
+	var y1 = p[res[0]].y;
+	var x2 = p[res[1]].x;
+	var y2 = p[res[1]].y;
+	var dx = Math.max(Math.abs(x1 - x2) / 2, 10);
+	var dy = Math.max(Math.abs(y1 - y2) / 2, 10);
+	return {"path": [
+    		    "M", x1.toFixed(3), y1.toFixed(3),
+    		    "L", x1.toFixed(3), y2.toFixed(3),
+    		    "L", x2.toFixed(3), y2.toFixed(3)
+		].join(","),
+		// "center_point": [(x1.toFixed(3) + x1.toFixed(3)),
+		// 		     (y1.toFixed(3) + y2.toFixed(3))]
+		"center_point": [(x1 + x2) / 2.0, (y2)]
+	       };
+    };
 
     ///
     /// Functions and sub-functions for display.
@@ -482,7 +488,7 @@ bbop.render.phylo.renderer = function (element_id){
 	var edge_shift = edge_buffer / 2.0;
 
 	// Adjust vertical scales and display.
-	var y_scale = bbop.render.phylo.box_height * 2.0; // fixed y-scale
+	var y_scale = renderer_context.box_height * 2.0; // fixed y-scale
 	this._render_height = layout.max_width * y_scale;
 
 	// Adjust for render width based on platform.
@@ -490,12 +496,12 @@ bbop.render.phylo.renderer = function (element_id){
 	if( window && window.innerWidth ){
 	    this._render_width =
 		window.innerWidth
-		- bbop.render.phylo.box_width
+		- renderer_context.box_width
 		- edge_buffer;
 	}else if( document && document.body && document.body.offsetWidth ){
 	    this._render_width =
 		document.body.offsetWidth
-		- bbop.render.phylo.box_width
+		- renderer_context.box_width
 		- edge_buffer;
 	}else{
 	    bbop.core.kvetch("UFI: Unidentified Failing Platform.");
@@ -829,7 +835,7 @@ bbop.render.phylo.renderer = function (element_id){
 	    var lpy = (layout.position_y[node_id] * y_scale) + edge_shift;
 
 	    // Create node at place. 
-	    var phynode = new bbop.render.phylo.pnode(paper, node_id, lpx, lpy);
+	    var phynode = new graph_pnode(paper, node_id, lpx, lpy);
             phynodes.push(phynode);
 
 	    // Indexing for later (edge) use.
@@ -870,8 +876,8 @@ bbop.render.phylo.renderer = function (element_id){
 	    var n0_pnode = phynodes[phynode_hash[e0]];
 	    var n1_pnode = phynodes[phynode_hash[e1]];
 	    var d_label = layout.parent_distances[e0][e1] + '';
-	    var nconn = new bbop.render.phylo.connection(paper, n0_pnode, n1_pnode,
-							 d_label);
+	    var nconn = new graph_connection(paper, n0_pnode, n1_pnode,
+					     d_label);
 	    connections.push(nconn);
 
 	    // Index edge index for later recall.
@@ -893,27 +899,4 @@ bbop.render.phylo.renderer = function (element_id){
 	//txt[0].attr({fill: "#f00"});
     };
 
-    // // Debugging info.
-    // bbop.render.phylo.dump_info = function(layout){
-    //     //   
-    //     for( var ni = 0; ni < layout.node_list.length; ni++ ){
-    // 	var noid = layout.node_list[ni];
-    // 	bbop.core.kvetch('info(node): (' + noid +
-    // 			 ') x:' + (layout.position_x[noid] * x_scale) +
-    // 			 ', y:' + (layout.position_y[noid] * y_scale));
-    //     }
-    //     // 
-    //     for( var ei = 0; ei < layout.edge_list.length; ei++ ){
-    // 	var edge = layout.edge_list[ei];
-    // 	bbop.core.kvetch('info(edge): (' + edge[0] + ', ' + edge[1] + '): ' +
-    // 			 (layout.parent_distances[edge[0]][edge[1]]) * y_scale);
-    //     }
-    //     //
-    //     bbop.core.kvetch('info(width): ' + layout.max_width * y_scale);
-    //     //bbop.core.kvetch('info(depth): ' + layout.max_depth);
-    //     bbop.core.kvetch('info(distance): ' + layout.max_distance * x_scale);
-    
-    //     bbop.core.kvetch('info(x_scale): ' + x_scale);
-    //     bbop.core.kvetch('info(y_scale): ' + y_scale);
-    // };
 };
