@@ -422,3 +422,4 @@ bbop.model.tree.graph = function(){
 
 };
 bbop.model.tree.graph.prototype = new bbop.model.graph;
+// Overload add_node to add label information to new object.
