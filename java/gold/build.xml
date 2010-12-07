@@ -43,9 +43,9 @@
 	</fileset>
 
 	<path id="classpath">
-		<fileset refid="library_jars" />
 		<fileset dir="${librarydir}">
 			<include name="*.jar" />
+			<include name="**/*.jar" />
 		</fileset>
 	</path>
 
