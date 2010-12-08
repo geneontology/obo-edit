@@ -47,6 +47,9 @@
 			<include name="*.jar" />
 			<include name="**/*.jar" />
 		</fileset>
+		<fileset dir=".">
+			<include name="gold.jar"/>
+		</fileset>
 	</path>
 
 	<fileset dir="${sourcedir}" id="resource_files">
@@ -161,7 +164,29 @@
 		</jar>
 	</target>
 
+	<target name="startjetty" depends="jar">
+		<java classname="org.geneontology.cli.CLI">
+			<arg value="jetty"></arg>
+			<arg value="start"></arg>
+			<classpath>
+				<path refid="classpath" />
+			</classpath>
+		</java>
 
+	</target>
+
+	<target name="stopjetty" depends="jar">
+		<java classname="org.geneontology.cli.CLI">
+			<arg value="jetty"></arg>
+			<arg value="stop"></arg>
+			<classpath>
+				<path refid="classpath" />
+			</classpath>
+		</java>
+
+	</target>
+	
+	
 	<!--
 	<target name="jar" depends="classes" description="Generate jar file">
 		
