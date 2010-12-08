@@ -1,3 +1,11 @@
+####TODO
+1) store log4j in a log file in the logs directory
+2) admin servlet display 'failed' message instead of 'in progress' when an operation is failed 
+3) In admin servlet status headig is replaced by 'status/completion time'
+4) replace varchar type with timestamp type
+5) implement delta update of the missing tables
+
+
 ###For installation please refer to INSTALL.txt file
 
 ####Command Line Interace (CLI)
