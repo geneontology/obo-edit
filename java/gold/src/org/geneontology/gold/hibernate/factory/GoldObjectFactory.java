@@ -15,6 +15,7 @@ import org.geneontology.gold.hibernate.model.InferredSubclassOf;
 import org.geneontology.gold.hibernate.model.ObjAlternateLabel;
 import org.geneontology.gold.hibernate.model.ObjDefinitionXref;
 import org.geneontology.gold.hibernate.model.ObjXref;
+import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.hibernate.model.Relation;
 import org.geneontology.gold.hibernate.model.SubclassOf;
 import org.geneontology.gold.io.postgres.DeltaQueryInterceptor;
@@ -32,7 +33,7 @@ public class GoldObjectFactory {
 	private Session session;
 	
 	private boolean isDeltaFactory;
-	
+	 
 	private GoldObjectFactory(){
 		if(sf == null){
 			sf = buildFactory();
@@ -96,6 +97,37 @@ public class GoldObjectFactory {
 
 		return (Cls)session.createQuery("from Cls where id = ?").setString(0, id).uniqueResult();
 	}
+	
+	
+	public synchronized List<Ontology> getOntologies(){
+
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		List<Ontology> list =session.createQuery("from Ontology")
+							.list();
+		
+		session.getTransaction().commit();
+		
+		return list;
+	}
+	
+	public synchronized Ontology getOntology(String id){
+
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		Ontology ont =(Ontology)session.createQuery("from Ontology where id = ?")
+						.setString(0, id)
+						.uniqueResult();
+		
+		session.getTransaction().commit();
+		
+		return ont;
+	}
+
 	
 	public synchronized List<SubclassOf> getSubClassOfAssertions(String cls){
 		if(LOG.isDebugEnabled())

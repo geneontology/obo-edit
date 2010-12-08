@@ -19,6 +19,7 @@ import org.geneontology.gold.hibernate.model.InferredSubclassOf;
 import org.geneontology.gold.hibernate.model.ObjAlternateLabel;
 import org.geneontology.gold.hibernate.model.ObjDefinitionXref;
 import org.geneontology.gold.hibernate.model.ObjXref;
+import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.hibernate.model.Relation;
 import org.geneontology.gold.hibernate.model.SubclassOf;
 import org.geneontology.gold.io.DatabaseDialect;
@@ -234,6 +235,26 @@ public class GoldDeltaFactory {
 		return list;
 		
 	}
+	
+	public List<Ontology> buildOntology() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+		
+		Vector<Ontology> list = new Vector<Ontology>();
+
+		ResultSet rs = db.getDelaData("ontology");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			Ontology ont = goldObjFactory.getOntology(rs.getString("id"));
+			list.add(ont);
+		}
+		return list;
+		
+	}
+	
 	
 	public List<DisjointWith> buildDisjointWith() throws SQLException{
 		if(LOG.isDebugEnabled())
