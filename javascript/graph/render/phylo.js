@@ -4,12 +4,11 @@
 ////
 //// Purpose: Extend the model to be handy for a (phylo)tree.
 //// 
-//// These are properties and functions, not a usable object.
+//// Width is determined by used dic width.
 //// 
 //// Taken name spaces:
 ////    bbop.render.phylo.*
 ////
-//// TODO: Redo some layout to support wider boxes
 //// TODO: better selection of displayable text
 //// TODO: get parser so we can start really checking/use.
 //// TODO: *real* cross-platform check (DONE all but safari and ie)
@@ -59,12 +58,14 @@ bbop.render.phylo.renderer = function (element_id){
     this.box_height = 30;
 
     // Internal-only variables.
-    this._render_width = 800;
-    this._render_height = 600;
-    this._node_labels = {};
-    this._node_hover_labels = {};
-    this._edge_labels = {};
-    this._floating_labels = {};
+    this._render_frame_width = 800;
+    this._render_interal_width = this._render_frame_width;
+    this._render_frame_height = 600;
+    this._render_internal_height = this._render_height;
+    //this._node_labels = {};
+    //this._node_hover_labels = {};
+    //this._edge_labels = {};
+    //this._floating_labels = {};
 
     ///
     /// Functions to handle internal graph management.
@@ -479,43 +480,48 @@ bbop.render.phylo.renderer = function (element_id){
     /// Functions and sub-functions for display.
     ///
 
-    //
+    // TODO: later, allow display to take args to force size.
     this.display = function () {
 
 	var layout = this._graph.layout();
+	var elt = document.getElementById(elt_id);
 
-	var edge_buffer = 100;
-	var edge_shift = edge_buffer / 2.0;
-
+	var edge_shift = 1.0; // fudge to allow the last little bit on screen
+	var absolute_pull = 15.0; // there seems to be a misjudgement
+				  // in width by about this much
 	// Adjust vertical scales and display.
 	var y_scale = renderer_context.box_height * 2.0; // fixed y-scale
-	this._render_height = layout.max_width * y_scale;
+	this._render_frame_height = (layout.max_width * y_scale);
+	this._render_internal_height = this._render_frame_height - edge_shift;
 
 	// Adjust for render width based on platform.
+	// TODO: later, allow display to take args to force size.
 	var x_scale = 1.0;
-	if( window && window.innerWidth ){
-	    this._render_width =
-		window.innerWidth
-		- renderer_context.box_width
-		- edge_buffer;
-	}else if( document && document.body && document.body.offsetWidth ){
-	    this._render_width =
-		document.body.offsetWidth
-		- renderer_context.box_width
-		- edge_buffer;
+	//if( window && window.innerWidth && 1 == 2){
+	    //this._render_frame_width = window.innerWidth;
+	//}else 
+	if( elt.clientWidth ){
+	    this._render_frame_width = elt.clientWidth;
 	}else{
 	    bbop.core.kvetch("UFI: Unidentified Failing Platform.");
 	}
+	// Now adjust the drawing width to make sure that the boxes
+	// fit.
+	this._render_internal_width =
+	    this._render_frame_width
+	    - (1.0 * renderer_context.box_width)
+	    - absolute_pull;
+	//this._render_internal_width = this._render_frame_width;
 	// Recalculate x-scale.
-	x_scale = this._render_width / layout.max_distance;
+	x_scale = this._render_internal_width / layout.max_distance;
 	// Get that last pixel column on board.
-	this._render_width = this._render_width + 1;
-	bbop.core.kvetch('width: ' + this._render_width);
+	bbop.core.kvetch('internal width: ' + this._render_internal_width);
+	bbop.core.kvetch('frame width: ' + this._render_frame_width);
 
 	// Create context.
 	var paper = Raphael(elt_id,
-			    this._render_width + edge_buffer,
-			    this._render_height + edge_buffer);
+			    this._render_frame_width,
+			    this._render_frame_height);
 	bbop.core.kvetch('display: made paper');
 
 	///
