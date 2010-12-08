@@ -9,6 +9,7 @@ import java.net.URL;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.log4j.PropertyConfigurator;
 import org.geneontology.gold.io.DatabaseDialect;
 
 import sun.tools.tree.ThisExpression;
@@ -94,6 +95,13 @@ public class GeneOntologyManager {
 			PropertiesConfiguration pc = new PropertiesConfiguration(f);
 
 			config.append(pc);
+		}
+		
+		try{
+			PropertyConfigurator.configure("conf/log4j.properties");
+		}catch(Exception ex){
+			//ignore this
+			ex.printStackTrace();
 		}
 	}
 
