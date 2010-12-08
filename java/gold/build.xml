@@ -51,6 +51,7 @@
 
 	<fileset dir="${sourcedir}" id="resource_files">
 		<include name="**/resources/**" />
+		<include name="**/*.hbm.xml" />
 	</fileset>
 
 	<target name="checkjar">
