@@ -40,12 +40,35 @@ window.onload = function(){
 
     //
     var r2 = new bbop.render.phylo.renderer('test2');
-    r2.add_node('AN0');
-    r2.add_node('AN1');
-    r2.add_node('AN2');
-    r2.add_edge('AN0', 'AN1', 1.0);
-    r2.add_edge('AN0', 'AN2', 1.0);
+    r2.add_node('A0');
+    r2.add_node('D0');
+    r2.add_node('D1');
+    r2.add_node('D2');
+    r2.add_node('D3');
+    r2.add_node('D4');
+    r2.add_edge('A0', 'D0', 1.0);
+    r2.add_edge('A0', 'D1', 1.5);
+    r2.add_edge('A0', 'D2', 2.0);
+    r2.add_edge('A0', 'D3', 2.5);
+    r2.add_edge('A0', 'D4', 3.0);
     r2.box_width = 100;
-    r2.box_height = 20;
+    r2.box_height = 20;    
     r2.display();
+
+    //
+    var r3 = new bbop.render.phylo.renderer('test3');
+    r3.add_node('A0');
+    r3.add_node('D0');
+    r3.add_node('D1');
+    r3.add_node('D2');
+    r3.add_node('D3');
+    r3.add_node('D4');
+    r3.add_edge('A0', 'D0', 1.0);
+    r3.add_edge('A0', 'D1', 1.5);
+    r3.add_edge('A0', 'D2', 2.0);
+    r3.add_edge('A0', 'D3', 2.5);
+    r3.add_edge('A0', 'D4', 3.0);
+    r3.box_width = 20;
+    r3.box_height = 20;    
+    r3.display();
 };
