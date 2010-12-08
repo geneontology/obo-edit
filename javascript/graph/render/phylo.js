@@ -4,19 +4,21 @@
 ////
 //// Purpose: Extend the model to be handy for a (phylo)tree.
 //// 
-//// Width is determined by used dic width.
+//// Width is determined by used div width (style).
 //// 
 //// Taken name spaces:
 ////    bbop.render.phylo.*
 ////
 //// TODO: better selection of displayable text
 //// TODO: get parser so we can start really checking/use.
-//// TODO: *real* cross-platform check (DONE all but safari and ie)
 //// TODO: make things non-interactive during visible == false?
 //// TODO: font and text placement
 //// TODO: better text alignment
 //// TODO: floating right-hand text (see PAINT)
 //// TODO: some "speed-up" refactoring?
+////
+//// OKAY: FF, Safari, Chrome, Opera
+//// TODO: IE a little wonky, but not too bad--easy fix?
 ////
 //// Required:
 ////    Rafael
@@ -54,7 +56,7 @@ bbop.render.phylo.renderer = function (element_id){
     this.use_animation = false;
 
     // These first two defaults will be overwritten on display.
-    this.box_width = 50;
+    this.box_width = 60;
     this.box_height = 30;
 
     // Internal-only variables.
