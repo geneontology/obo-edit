@@ -548,3 +548,16 @@ CREATE TABLE inferred_subrelation_of (
 );
 COMMENT ON TABLE inferred_subrelation_of IS 'holds iff: cls SubObjectPropertyOf super_cls
 ';
+
+CREATE TABLE changes_history(
+	table_name VARCHAR,
+	col VARCHAR,
+	ontology VARCHAR,
+	versionIRI VARCHAR,
+	new_value VARCHAR
+);
+
+COMMENT ON TABLE changes_history IS 'This table maintains history of chages of an ontology when the
+ontology is updated preiodically.
+This table is on experimental basis. Its structure can be changed in future. 
+';

@@ -10,7 +10,7 @@ function bulkLoad(){
 					"Database configurations are located in the installation directory of this web application, i.e in tomcat it is located at webapps/admin");
 
 	if(yes){
-		window.location="gold?command=bulkload"
+		window.location="gold?command=bulkload";
 	}
 }
 
@@ -18,10 +18,16 @@ function update(){
 	var yes = confirm("Are you are sure you want to update the GOLD database?");
 
 	if(yes){
-		window.location="gold?command=update"
+		window.location="gold?command=update";
 	}
 	
 }
+
+function getLastUpdateDate(){
+	window.location="gold?command=getlastupdate";
+}
+
+
 
 </script>
 </head>
@@ -32,7 +38,7 @@ function update(){
 <ul>
 <li><a href="javascript:bulkLoad();">Bulk load of the Empty gene ontology</a></li>
 <li><a href="javascript:update();">Update Gene Ontology</a></li>
-<li>Last Update of Gold database</li>
+<li><a href="javascript:getLastUpdateDate()">Last Update of Gold database</a></li>
 <li>Built Solr indexer from Scratch</li>
 <li>Delta update of the indexer</li>
 <li>Last Update date of Solr</li>

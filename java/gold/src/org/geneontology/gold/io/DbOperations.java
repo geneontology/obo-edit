@@ -21,6 +21,7 @@ import org.geneontology.gold.hibernate.model.InferredSubclassOf;
 import org.geneontology.gold.hibernate.model.ObjAlternateLabel;
 import org.geneontology.gold.hibernate.model.ObjDefinitionXref;
 import org.geneontology.gold.hibernate.model.ObjXref;
+import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.hibernate.model.Relation;
 import org.geneontology.gold.hibernate.model.SubclassOf;
 import org.geneontology.gold.io.postgres.SchemaManager;
@@ -45,6 +46,13 @@ public class DbOperations {
 	public DbOperations(){
 		listeners = new ArrayList<DbOperationsListener>();
 	}
+	
+	public List<Ontology> getLastUpdateStatus(){
+		GoldObjectFactory factory = GoldObjectFactory.buildDefaultFactory();
+		
+		return factory.getOntologies();
+	}
+	
 	
 	/**
 	 * Loads the contents of the obo file whose path is supplied 
@@ -281,6 +289,7 @@ public class DbOperations {
 		List<InferredSubclassOf> infSubList = gdf.buildInferredSubclassOf();
 		List<InferredAllSomeRelationship> infSomeList = gdf.buildInferredAllSomeRelationship();
 		List<DisjointWith> djList = gdf.buildDisjointWith();
+		List<Ontology> ontList = gdf.buildOntology();
 		
 		//close the session associated with the tables prefixed with 
 		// the value of the geneontology.gold.deltatableprefix property
@@ -322,6 +331,8 @@ public class DbOperations {
 		saveList(session, infSubList);
 		
 		saveList(session, infSomeList);
+		
+		saveList(session, ontList);
 		
 		LOG.info("Database update is completed");
 		
