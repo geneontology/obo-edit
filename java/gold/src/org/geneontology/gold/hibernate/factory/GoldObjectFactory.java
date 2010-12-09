@@ -4,7 +4,10 @@ import java.io.File;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.geneontology.gold.hibernate.model.AllOnlyRelationship;
 import org.geneontology.gold.hibernate.model.AllSomeRelationship;
+import org.geneontology.gold.hibernate.model.AnnotationAssertion;
+import org.geneontology.gold.hibernate.model.AnnotationProperty;
 import org.geneontology.gold.hibernate.model.Cls;
 import org.geneontology.gold.hibernate.model.ClsIntersectionOf;
 import org.geneontology.gold.hibernate.model.ClsUnionOf;
@@ -12,12 +15,22 @@ import org.geneontology.gold.hibernate.model.DisjointWith;
 import org.geneontology.gold.hibernate.model.EquivalentTo;
 import org.geneontology.gold.hibernate.model.InferredAllSomeRelationship;
 import org.geneontology.gold.hibernate.model.InferredSubclassOf;
+import org.geneontology.gold.hibernate.model.NeverSomeRelationship;
+import org.geneontology.gold.hibernate.model.ObjAlternateId;
 import org.geneontology.gold.hibernate.model.ObjAlternateLabel;
 import org.geneontology.gold.hibernate.model.ObjDefinitionXref;
+import org.geneontology.gold.hibernate.model.ObjSubset;
 import org.geneontology.gold.hibernate.model.ObjXref;
 import org.geneontology.gold.hibernate.model.Ontology;
+import org.geneontology.gold.hibernate.model.OntologyAnnotation;
+import org.geneontology.gold.hibernate.model.OntologyImports;
+import org.geneontology.gold.hibernate.model.OntologySubset;
 import org.geneontology.gold.hibernate.model.Relation;
+import org.geneontology.gold.hibernate.model.RelationChain;
+import org.geneontology.gold.hibernate.model.RelationDisjointWith;
+import org.geneontology.gold.hibernate.model.RelationEquivalenTo;
 import org.geneontology.gold.hibernate.model.SubclassOf;
+import org.geneontology.gold.hibernate.model.SubrelationOf;
 import org.geneontology.gold.io.postgres.DeltaQueryInterceptor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -128,6 +141,147 @@ public class GoldObjectFactory {
 		return ont;
 	}
 
+
+	public synchronized OntologyAnnotation getOntologyAnnotation(String ontology, String property, String annotationValue){
+
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		OntologyAnnotation ont =(OntologyAnnotation)session.createQuery("from OntologyAnnotation where ontology = ?" +
+				" and property=? and annotation_value=?")
+						.setString(0, ontology)
+						.setString(1, property)
+						.setString(1, annotationValue)
+						.uniqueResult();
+		
+		session.getTransaction().commit();
+		
+		return ont;
+	}
+
+	public synchronized ObjAlternateId getObjAlternateId(String obj, String id){
+
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		ObjAlternateId ret =(ObjAlternateId)session.createQuery("from ObjAlternateId where obj = ? and id=?")
+						.setString(0, obj)
+						.setString(1, id)
+						.uniqueResult();
+		
+		session.getTransaction().commit();
+		
+		return ret;
+	}
+
+
+	public synchronized RelationChain getRelationChain(String inferredRelation, String relation1, 
+			String relation2){
+
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		RelationChain ret =(RelationChain)session.createQuery("from RelationChain where inferred_relation = ? and relation1=?"
+				+ " and relation2 = ?")
+						.setString(0, inferredRelation)
+						.setString(1, relation1)
+						.setString(2, relation2)
+						.uniqueResult();
+		
+		session.getTransaction().commit();
+		
+		return ret;
+	}
+	
+	
+	public synchronized AnnotationProperty getAnnotationProperty(String id){
+
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		AnnotationProperty ret =(AnnotationProperty)session.createQuery("from AnnotationProperty where id = ?")
+						.setString(0, id)
+						.uniqueResult();
+		
+		session.getTransaction().commit();
+		
+		return ret;
+	}
+
+	public synchronized AnnotationAssertion getAnnotationAssertion(String ontolgy, String obj, 
+			String targetObj, String relation){
+
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		AnnotationAssertion ret =(AnnotationAssertion)session.createQuery("from AnnotationAssertion where ontology = ?"
+				+ " and obj = ? and target_obj=? and relation=?")
+						.setString(0, ontolgy)
+						.setString(1, obj)
+						.setString(2, targetObj)
+						.setString(3, relation)
+						.uniqueResult();
+		
+		session.getTransaction().commit();
+		
+		return ret;
+	}
+	
+	
+	public synchronized OntologyImports getOntologyImports(String ontology, String importsOntology){
+
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		OntologyImports ont =(OntologyImports)session.createQuery("from OntologyImports where ontology = ?" +
+				" and imports_ontology=?")
+						.setString(0, ontology)
+						.setString(1, importsOntology)
+						.uniqueResult();
+		
+		session.getTransaction().commit();
+		
+		return ont;
+	}
+	
+	public synchronized OntologySubset getOntologySubset(String id){
+
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		OntologySubset ont =(OntologySubset)session.createQuery("from OntologySubset where id = ?")
+						.setString(0, id)
+						.uniqueResult();
+		
+		session.getTransaction().commit();
+		
+		return ont;
+	}
+
+	public synchronized ObjSubset getObjSubset(String obj, String ontologySubset){
+
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		ObjSubset ont =(ObjSubset)session.createQuery("from ObjSubset where obj = ? and ontology_subset=?")
+						.setString(0, obj)
+						.setString(1, ontologySubset)
+						.uniqueResult();
+		
+		session.getTransaction().commit();
+		
+		return ont;
+	}
+	
+	
 	
 	public synchronized List<SubclassOf> getSubClassOfAssertions(String cls){
 		if(LOG.isDebugEnabled())
@@ -139,7 +293,7 @@ public class GoldObjectFactory {
 		return results;
 	}
 
-	public synchronized SubclassOf getSubClassOfAssertion(String ontology, String superCls, String cls){
+	public synchronized SubclassOf getSubClassOf(String ontology, String superCls, String cls){
 		if(LOG.isDebugEnabled())
 			LOG.debug("-");
 
@@ -148,6 +302,19 @@ public class GoldObjectFactory {
 		.setString(0, ontology)
 		.setString(1, superCls)
 		.setString(2, cls).uniqueResult();
+		
+		return results;
+	}
+
+	public synchronized SubrelationOf getSubrelationOf(String ontology, String superRelation, String relation){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		SubrelationOf results = (SubrelationOf)session.createQuery("from SubrelationOf where ontology = ? and super_relation=? and relation = ?")
+		.setString(0, ontology)
+		.setString(1, superRelation)
+		.setString(2, relation).uniqueResult();
 		
 		return results;
 	}
@@ -176,8 +343,39 @@ public class GoldObjectFactory {
 		return result;
 	}
 
+	public synchronized NeverSomeRelationship getNeverSomeRelationship(String ontology, String targetCls, String cls, String relation){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
 
-	public synchronized AllSomeRelationship getAllSomeRelationshipByPk(String ontology, String targetCls, String cls, String relation){
+		Session session = getSession();
+		NeverSomeRelationship result  = (NeverSomeRelationship)session.createQuery("from NeverSomeRelationship where ontology = ? and target_cls = ? and cls = ? and relation = ?")
+		.setString(0, ontology)
+		.setString(1, targetCls)
+		.setString(2, cls)
+		.setString(3, relation)
+		.uniqueResult();
+		
+		return result;
+	}
+	
+	
+	public synchronized AllOnlyRelationship getAllOnlyRelationship(String ontology, String targetCls, String cls, String relation){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		AllOnlyRelationship result  = (AllOnlyRelationship)session.createQuery("from AllOnlyRelationship where ontology = ? and target_cls = ? and cls = ? and relation = ?")
+		.setString(0, ontology)
+		.setString(1, targetCls)
+		.setString(2, cls)
+		.setString(3, relation)
+		.uniqueResult();
+		
+		return result;
+	}
+
+	
+	public synchronized AllSomeRelationship getAllSomeRelationship(String ontology, String targetCls, String cls, String relation){
 		if(LOG.isDebugEnabled())
 			LOG.debug("-");
 
@@ -246,6 +444,39 @@ public class GoldObjectFactory {
 			.uniqueResult();
 	}
 
+
+	public synchronized RelationEquivalenTo getRelationEquivalenTo(String relation, 
+			String equivalent_relation, String ontology){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		return (RelationEquivalenTo)session.createQuery("from RelationEquivalenTo where relation = ? " +
+				"and equivalent_relation = ? and ontology = ?")
+			.setString(0, relation)
+			.setString(1, equivalent_relation)
+			.setString(2, ontology)
+			.uniqueResult();
+	}
+	
+	
+	public synchronized RelationDisjointWith getRelationDisjointWith(String relation, String disjoint_relation, 
+			String ontology){
+		
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		RelationDisjointWith results = (RelationDisjointWith)session.createQuery("from RelationDisjointWith where ontology = ? and disjoint_relation=? and relation = ?")
+		.setString(0, ontology)
+		.setString(1, disjoint_relation)
+		.setString(2, relation).uniqueResult();
+		
+		return results;
+		
+	}
+	
+	
 	public synchronized DisjointWith getDisjointWith(String cls, String disjoint_cls, String ontology){
 		
 		if(LOG.isDebugEnabled())

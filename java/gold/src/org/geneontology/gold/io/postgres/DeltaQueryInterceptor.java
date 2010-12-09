@@ -17,7 +17,6 @@ public class DeltaQueryInterceptor extends EmptyInterceptor {
 	@Override
 	public String onPrepareStatement(String sql) {
 		sql = sql.replaceAll("public\\.", "public."+GeneOntologyManager.getInstance().getGoldDetlaTablePrefix());
-		System.out.println("sql is : "+ sql);
 		return super.onPrepareStatement(sql);
 	}
 

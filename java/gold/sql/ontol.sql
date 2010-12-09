@@ -549,7 +549,7 @@ CREATE TABLE inferred_subrelation_of (
 COMMENT ON TABLE inferred_subrelation_of IS 'holds iff: cls SubObjectPropertyOf super_cls
 ';
 
-CREATE TABLE changes_history(
+CREATE TABLE ontology_changes_history(
 	table_name VARCHAR,
 	col VARCHAR,
 	ontology VARCHAR,
