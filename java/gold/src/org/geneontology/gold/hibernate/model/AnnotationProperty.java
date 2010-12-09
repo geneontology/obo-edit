@@ -29,6 +29,7 @@ public class AnnotationProperty extends GOModel implements java.io.Serializable 
 	public AnnotationProperty(String id, String label, Ontology ontology,
 			String oboNamespace, String textComment, String textDefinition,
 			Boolean isObsolete) {
+		this();
 		this.id = id;
 		this.label = label;
 		this.ontology = ontology;

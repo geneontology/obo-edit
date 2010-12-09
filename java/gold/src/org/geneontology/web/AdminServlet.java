@@ -51,7 +51,7 @@ public class AdminServlet extends HttpServlet{
 
 		
 		writer.write("<h2>Status report for the running task '" + task.getOperationName() + "' :</h2>");
-		writer.write("<table><tr><th>Operation Name</th><th>Status</th></tr>");
+		writer.write("<table><tr><th>Operation Name</th><th>Status/Completion Time</th></tr>");
 		Exception ex = task.getException();
 		 for(String opName: task.getCompletedOperations()){
 			 long stTime = task.getStartTime(opName);
@@ -133,6 +133,14 @@ public class AdminServlet extends HttpServlet{
 					
 				}
 			}
+			
+			
+			try{
+				Thread.sleep(1000);
+			}catch(Exception ex){
+				
+			}
+			
 
 		}else if(obj == null){
 			writer.write("<h1>No valid parameters are provided. Please call this page with valid parameters</h1>");
@@ -142,13 +150,6 @@ public class AdminServlet extends HttpServlet{
 		DbOperationsTask task = (DbOperationsTask) obj;
 		
 		if(task != null){
-
-			try{
-				Thread.sleep(1000);
-			}catch(Exception ex){
-				
-			}
-		
 			printTaskStatus(task, writer, session, addReload);
 		}
 		

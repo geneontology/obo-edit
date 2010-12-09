@@ -10,7 +10,10 @@ import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.hibernate.factory.GoldDeltaFactory;
 import org.geneontology.gold.hibernate.factory.GoldObjectFactory;
+import org.geneontology.gold.hibernate.model.AllOnlyRelationship;
 import org.geneontology.gold.hibernate.model.AllSomeRelationship;
+import org.geneontology.gold.hibernate.model.AnnotationAssertion;
+import org.geneontology.gold.hibernate.model.AnnotationProperty;
 import org.geneontology.gold.hibernate.model.Cls;
 import org.geneontology.gold.hibernate.model.ClsIntersectionOf;
 import org.geneontology.gold.hibernate.model.ClsUnionOf;
@@ -18,12 +21,22 @@ import org.geneontology.gold.hibernate.model.DisjointWith;
 import org.geneontology.gold.hibernate.model.EquivalentTo;
 import org.geneontology.gold.hibernate.model.InferredAllSomeRelationship;
 import org.geneontology.gold.hibernate.model.InferredSubclassOf;
+import org.geneontology.gold.hibernate.model.NeverSomeRelationship;
+import org.geneontology.gold.hibernate.model.ObjAlternateId;
 import org.geneontology.gold.hibernate.model.ObjAlternateLabel;
 import org.geneontology.gold.hibernate.model.ObjDefinitionXref;
+import org.geneontology.gold.hibernate.model.ObjSubset;
 import org.geneontology.gold.hibernate.model.ObjXref;
 import org.geneontology.gold.hibernate.model.Ontology;
+import org.geneontology.gold.hibernate.model.OntologyAnnotation;
+import org.geneontology.gold.hibernate.model.OntologyImports;
+import org.geneontology.gold.hibernate.model.OntologySubset;
 import org.geneontology.gold.hibernate.model.Relation;
+import org.geneontology.gold.hibernate.model.RelationChain;
+import org.geneontology.gold.hibernate.model.RelationDisjointWith;
+import org.geneontology.gold.hibernate.model.RelationEquivalenTo;
 import org.geneontology.gold.hibernate.model.SubclassOf;
+import org.geneontology.gold.hibernate.model.SubrelationOf;
 import org.geneontology.gold.io.postgres.SchemaManager;
 import org.geneontology.gold.io.postgres.TsvFileLoader;
 import org.hibernate.Session;
@@ -290,6 +303,21 @@ public class DbOperations {
 		List<InferredAllSomeRelationship> infSomeList = gdf.buildInferredAllSomeRelationship();
 		List<DisjointWith> djList = gdf.buildDisjointWith();
 		List<Ontology> ontList = gdf.buildOntology();
+		List<OntologyAnnotation> ontAnnotationList = gdf.buildOntologyAnnotation();
+		List<OntologyImports> ontImportsList = gdf.buildOntologyImports();
+		List<OntologySubset> ontSubsetList = gdf.buildOntologySubset();
+		List<ObjSubset> objSubsetList = gdf.buildObjSubset();
+		List<AnnotationProperty> annPropList = gdf.buildAnnotationProperty();
+		List<ObjAlternateId> objAltIdList = gdf.buildObjAlternateId();
+		List<AllOnlyRelationship> allOnlyList = gdf.buildAllOnlyRelationships();
+		List<NeverSomeRelationship> neverSomeList = gdf.buildNeverSomeRelationship();
+		List<SubrelationOf> subRelationList = gdf.buildSubrelationOf();
+		List<RelationDisjointWith> relDisjointList = gdf.buildRelationDisjointWith();
+		List<RelationChain> rcList = gdf.buildRelationChain();
+		List<AnnotationAssertion> annAssertionList = gdf.buildAnnotationAssertion();
+		List<RelationEquivalenTo> relEqList = gdf.buildRelationEquivalenTo();
+
+		System.out.println("Hello Wolrd");
 		
 		//close the session associated with the tables prefixed with 
 		// the value of the geneontology.gold.deltatableprefix property
@@ -333,6 +361,32 @@ public class DbOperations {
 		saveList(session, infSomeList);
 		
 		saveList(session, ontList);
+		
+		saveList(session, ontAnnotationList);
+		
+		saveList(session, ontImportsList);
+	
+		saveList(session, ontSubsetList);
+		
+		saveList(session, objSubsetList);
+		
+		saveList(session, annPropList);
+		
+		saveList(session, objAltIdList);
+
+		saveList(session, annAssertionList);
+		
+		saveList(session, allOnlyList);
+
+		saveList(session, neverSomeList);
+
+		saveList(session, subRelationList);
+		
+		saveList(session, relDisjointList);
+
+		saveList(session, relEqList);
+		
+		saveList(session, rcList);
 		
 		LOG.info("Database update is completed");
 		

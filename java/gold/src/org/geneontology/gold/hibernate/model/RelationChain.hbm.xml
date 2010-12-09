@@ -8,9 +8,11 @@
 	       <key-many-to-one name="inferredRelation" class="org.geneontology.gold.hibernate.model.Relation" column="inferred_relation" />
 	       <key-many-to-one name="relation1" class="org.geneontology.gold.hibernate.model.Relation" column="relation1" />
 	       <key-many-to-one name="relation2" class="org.geneontology.gold.hibernate.model.Relation" column="relation2" />
-            <key-property name="isBidirectional" type="java.lang.Boolean">
-                <column name="is_bidirectional" />
-            </key-property>
         </composite-id>
+        
+        <property name="isBidirectional" type="java.lang.Boolean">
+            <column name="is_bidirectional" />
+        </property>
+        
     </class>
 </hibernate-mapping>

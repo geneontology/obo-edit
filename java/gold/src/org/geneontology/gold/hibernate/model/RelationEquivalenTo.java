@@ -10,7 +10,7 @@ public class RelationEquivalenTo extends GOModel implements Serializable {
 	
 	public RelationEquivalenTo(){
 		String keys[] = {"relation", "equivalentRelation", "ontology"};
-		this.initUniqueConstraintFields(RelationDisjointWith.class, keys);
+		this.initUniqueConstraintFields(RelationEquivalenTo.class, keys);
 	}
 	
 	
