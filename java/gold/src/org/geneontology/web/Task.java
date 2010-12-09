@@ -13,12 +13,15 @@ public abstract class Task extends Thread {
 	
 	private Hashtable<String, long[]> completedOperations;
 	
+	private Collection<String> opsOrder;
+	
 	private String currentRunningOperation;
 	
 	protected Exception exception;
 	
 	public Task(){
 		completedOperations = new Hashtable<String, long[]>();
+		opsOrder = new ArrayList<String>();
 	}
 	
 	
@@ -31,8 +34,11 @@ public abstract class Task extends Thread {
 	}
 	
 	public Collection<String> getCompletedOperations(){
-		return completedOperations.keySet();
+		//return completedOperations.keySet();
+		return opsOrder;
 	}
+
+	
 	
 	public String getCurrentRunningOperation(){
 		return this.currentRunningOperation;
@@ -41,6 +47,7 @@ public abstract class Task extends Thread {
 	protected void addInProgress(String opName){
 		currentRunningOperation = opName;
 		completedOperations.put(opName, new long[]{Calendar.getInstance().getTimeInMillis(),0});
+		opsOrder.add(opName);
 	}
 	
 	protected boolean addCompleted(String opName){
