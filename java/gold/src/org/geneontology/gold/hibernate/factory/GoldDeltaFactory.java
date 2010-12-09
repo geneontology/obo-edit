@@ -7,7 +7,10 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.gold.hibernate.model.AllOnlyRelationship;
 import org.geneontology.gold.hibernate.model.AllSomeRelationship;
+import org.geneontology.gold.hibernate.model.AnnotationAssertion;
+import org.geneontology.gold.hibernate.model.AnnotationProperty;
 import org.geneontology.gold.hibernate.model.Cls;
 import org.geneontology.gold.hibernate.model.ClsIntersectionOf;
 import org.geneontology.gold.hibernate.model.ClsUnionOf;
@@ -16,12 +19,22 @@ import org.geneontology.gold.hibernate.model.EquivalentTo;
 import org.geneontology.gold.hibernate.model.GOModel;
 import org.geneontology.gold.hibernate.model.InferredAllSomeRelationship;
 import org.geneontology.gold.hibernate.model.InferredSubclassOf;
+import org.geneontology.gold.hibernate.model.NeverSomeRelationship;
+import org.geneontology.gold.hibernate.model.ObjAlternateId;
 import org.geneontology.gold.hibernate.model.ObjAlternateLabel;
 import org.geneontology.gold.hibernate.model.ObjDefinitionXref;
+import org.geneontology.gold.hibernate.model.ObjSubset;
 import org.geneontology.gold.hibernate.model.ObjXref;
 import org.geneontology.gold.hibernate.model.Ontology;
+import org.geneontology.gold.hibernate.model.OntologyAnnotation;
+import org.geneontology.gold.hibernate.model.OntologyImports;
+import org.geneontology.gold.hibernate.model.OntologySubset;
 import org.geneontology.gold.hibernate.model.Relation;
+import org.geneontology.gold.hibernate.model.RelationChain;
+import org.geneontology.gold.hibernate.model.RelationDisjointWith;
+import org.geneontology.gold.hibernate.model.RelationEquivalenTo;
 import org.geneontology.gold.hibernate.model.SubclassOf;
+import org.geneontology.gold.hibernate.model.SubrelationOf;
 import org.geneontology.gold.io.DatabaseDialect;
 import org.geneontology.gold.io.postgres.DeltaQueryInterceptor;
 import org.geneontology.gold.io.postgres.PostgresDialect;
@@ -115,7 +128,7 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			SubclassOf subc= goldObjFactory.getSubClassOfAssertion(rs.getString("ontology"), 
+			SubclassOf subc= goldObjFactory.getSubClassOf(rs.getString("ontology"), 
 					rs.getString("super_cls"), rs.getString("cls"));
 			list.add(subc);
 		}
@@ -123,6 +136,30 @@ public class GoldDeltaFactory {
 		
 		return list;
 	}
+	
+
+	public List<SubrelationOf> buildSubrelationOf() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Vector<SubrelationOf> list = new Vector<SubrelationOf>();
+
+		ResultSet rs = db.getDelaData("subrelation_of");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			SubrelationOf subc= goldObjFactory.getSubrelationOf(rs.getString("ontology"), 
+					rs.getString("super_relation"), rs.getString("relation"));
+			list.add(subc);
+		}
+		
+		
+		return list;
+	}
+	
+		
 	
 	public List<ObjAlternateLabel> buildObjAlternateLabels() throws SQLException{
 		if(LOG.isDebugEnabled())
@@ -147,6 +184,54 @@ public class GoldDeltaFactory {
 	}
 	
 
+		
+
+	public List<NeverSomeRelationship> buildNeverSomeRelationship() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		
+		Vector<NeverSomeRelationship> list = new Vector<NeverSomeRelationship>();
+
+		ResultSet rs = db.getDelaData("never_some_relationship");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			NeverSomeRelationship asr = goldObjFactory.getNeverSomeRelationship(rs.getString("ontology"), 
+					rs.getString("target_cls"), rs.getString("cls"), rs.getString("relation"));
+			list.add(asr);
+		}
+		
+		
+		return list;
+	}
+	
+	
+	public List<AllOnlyRelationship> buildAllOnlyRelationships() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		
+		Vector<AllOnlyRelationship> list = new Vector<AllOnlyRelationship>();
+
+		ResultSet rs = db.getDelaData("all_only_relationship");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			AllOnlyRelationship asr = goldObjFactory.getAllOnlyRelationship(rs.getString("ontology"), 
+					rs.getString("target_cls"), rs.getString("cls"), rs.getString("relation"));
+			list.add(asr);
+		}
+		
+		
+		return list;
+	}
+	
+	
 	public List<AllSomeRelationship> buildAllSomeRelationships() throws SQLException{
 		if(LOG.isDebugEnabled())
 			LOG.debug("-");
@@ -160,7 +245,7 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			AllSomeRelationship asr = goldObjFactory.getAllSomeRelationshipByPk(rs.getString("ontology"), 
+			AllSomeRelationship asr = goldObjFactory.getAllSomeRelationship(rs.getString("ontology"), 
 					rs.getString("target_cls"), rs.getString("cls"), rs.getString("relation"));
 			list.add(asr);
 		}
@@ -214,6 +299,30 @@ public class GoldDeltaFactory {
 	}
 
 	
+		
+	
+	public List<RelationEquivalenTo> buildRelationEquivalenTo() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		
+		Vector<RelationEquivalenTo> list = new Vector<RelationEquivalenTo>();
+
+		ResultSet rs = db.getDelaData("relation_equivalent_to");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			RelationEquivalenTo equiv = goldObjFactory.getRelationEquivalenTo(rs.getString("relation"), 
+					rs.getString("equivalent_relation"), 
+					rs.getString("ontology"));
+			list.add(equiv);
+		}
+		return list;
+		
+	}
+	
 	public List<EquivalentTo> buildEquivalentTo() throws SQLException{
 		if(LOG.isDebugEnabled())
 			LOG.debug("-");
@@ -250,6 +359,194 @@ public class GoldDeltaFactory {
 		while(rs.next()){
 			Ontology ont = goldObjFactory.getOntology(rs.getString("id"));
 			list.add(ont);
+		}
+		return list;
+		
+	}
+	
+		
+	
+	public List<ObjAlternateId> buildObjAlternateId() throws SQLException{
+		
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+		
+		Vector<ObjAlternateId> list = new Vector<ObjAlternateId>();
+
+		ResultSet rs = db.getDelaData("obj_alternate_id");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			ObjAlternateId ret = goldObjFactory.getObjAlternateId(rs.getString("obj"), rs.getString("id") );
+			list.add(ret);
+		}
+		return list;
+		
+	}
+	
+	
+
+	public List<RelationChain> buildRelationChain() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+		
+		Vector<RelationChain> list = new Vector<RelationChain>();
+
+		ResultSet rs = db.getDelaData("relation_chain");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			RelationChain ret = goldObjFactory.getRelationChain(rs.getString("inferred_relation"),
+					rs.getString("relation1"), rs.getString("relation2"));
+			list.add(ret);
+		}
+		return list;
+		
+	}
+	
+	
+	public List<AnnotationAssertion> buildAnnotationAssertion() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+		
+		Vector<AnnotationAssertion> list = new Vector<AnnotationAssertion>();
+
+		ResultSet rs = db.getDelaData("annotation_assertion");
+		
+		if(rs == null)
+		 	return list;
+		
+		while(rs.next()){
+			AnnotationAssertion ret = goldObjFactory.getAnnotationAssertion(rs.getString("ontology"),
+					rs.getString("obj"), rs.getString("target_obj"), rs.getString("relation"));
+			list.add(ret);
+		}
+		return list;
+		
+	}
+	
+	
+	public List<AnnotationProperty> buildAnnotationProperty() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+		
+		Vector<AnnotationProperty> list = new Vector<AnnotationProperty>();
+
+		ResultSet rs = db.getDelaData("annotation_property");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			AnnotationProperty ret = goldObjFactory.getAnnotationProperty(rs.getString("id"));
+			list.add(ret);
+		}
+		return list;
+		
+	}
+	
+	
+	public List<OntologyAnnotation> buildOntologyAnnotation() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+		
+		Vector<OntologyAnnotation> list = new Vector<OntologyAnnotation>();
+
+		ResultSet rs = db.getDelaData("ontology_annotation");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			OntologyAnnotation ont = goldObjFactory.getOntologyAnnotation(rs.getString("ontology"), 
+					rs.getString("property"), rs.getString("annotation_value"));
+			list.add(ont);
+		}
+		return list;
+		
+	}
+	
+	public List<OntologyImports> buildOntologyImports() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+		
+		Vector<OntologyImports> list = new Vector<OntologyImports>();
+
+		ResultSet rs = db.getDelaData("ontology_imports");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			OntologyImports ont = goldObjFactory.getOntologyImports(rs.getString("ontology"), 
+					rs.getString("imports_ontology"));
+			list.add(ont);
+		}
+		return list;
+		
+	}
+	
+	public List<OntologySubset> buildOntologySubset() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+		
+		Vector<OntologySubset> list = new Vector<OntologySubset>();
+
+		ResultSet rs = db.getDelaData("ontology_subset");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			OntologySubset ont = goldObjFactory.getOntologySubset(rs.getString("id"));
+			list.add(ont);
+		}
+		return list;
+		
+	}
+
+
+	public List<ObjSubset> buildObjSubset() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+		
+		Vector<ObjSubset> list = new Vector<ObjSubset>();
+
+		ResultSet rs = db.getDelaData("obj_subset");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			ObjSubset ont = goldObjFactory.getObjSubset(rs.getString("obj"), rs.getString("ontology_subset"));
+			list.add(ont);
+		}
+		return list;
+		
+	}
+	
+		
+
+	public List<RelationDisjointWith> buildRelationDisjointWith() throws SQLException{
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+		
+		Vector<RelationDisjointWith> list = new Vector<RelationDisjointWith>();
+
+		ResultSet rs = db.getDelaData("relation_disjoint_with");
+		
+		if(rs == null)
+			return list;
+		
+		while(rs.next()){
+			RelationDisjointWith disjoint = goldObjFactory.getRelationDisjointWith(rs.getString("relation"), 
+					rs.getString("disjoint_relation"), 
+					rs.getString("ontology"));
+			list.add(disjoint);
 		}
 		return list;
 		

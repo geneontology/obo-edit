@@ -13,7 +13,7 @@ public class AnnotationAssertion extends GOModel implements java.io.Serializable
 	private Ontology ontology;
 
 	public AnnotationAssertion() {
-		String keys[] = {"relation", "obj", "target", "ontology"};
+		String keys[] = {"relation", "obj", "targetObj", "ontology"};
 		this.initUniqueConstraintFields(AnnotationAssertion.class, keys);
 	}
 
