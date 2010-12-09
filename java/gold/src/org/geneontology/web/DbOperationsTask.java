@@ -67,11 +67,11 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 	}
 	
 	public void bulkLoadStart() {
-		reportStartTime("BulkLoad");
+		reportStartTime("BulkLoad/TotalTime");
 	}
 
 	public void bulkLoadEnd() {
-		reportEndTime("BulkLoad");
+		reportEndTime("BulkLoad/TotalTime");
 	}
 
 	public void dumpFilesStart() {
@@ -100,11 +100,11 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 	}
 
 	public void updateStart() {
-		reportStartTime("Update");
+		reportStartTime("Update/TotalTime");
 	}
 
 	public void updateEnd() {
-		reportEndTime("Update");
+		reportEndTime("Update/TotalTime");
 	}
 	
 	

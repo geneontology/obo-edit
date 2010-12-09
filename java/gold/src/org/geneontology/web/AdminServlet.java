@@ -3,6 +3,8 @@ package org.geneontology.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -53,7 +55,7 @@ public class AdminServlet extends HttpServlet{
 		writer.write("<h2>Status report for the running task '" + task.getOperationName() + "' :</h2>");
 		writer.write("<table><tr><th>Operation Name</th><th>Status/Completion Time</th></tr>");
 		Exception ex = task.getException();
-		 for(String opName: task.getCompletedOperations()){
+		for(String opName: task.getCompletedOperations()){
 			 long stTime = task.getStartTime(opName);
 			 long endTime = task.getEndTime(opName);
 			 
