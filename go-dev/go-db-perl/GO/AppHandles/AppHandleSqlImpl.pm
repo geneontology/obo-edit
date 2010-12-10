@@ -1453,7 +1453,7 @@ sub fast_get_enriched_term_hash {
 
   #require AmiGO;
   #my $core = AmiGO->new();
-  #$core->kvetch('_start:_fast_get_enriched_term_hash_');
+  #$core->kvetch('_start_');
 
   my $self = shift; # apph
   my $sample_prods = shift || []; # gene product sample set
@@ -1669,19 +1669,21 @@ sub fast_get_enriched_term_hash {
   my $correction_factor = 0;
   foreach my $term_id (keys %sample_gp_count_by_term_id) {
 
-    #$core->kvetch('_fgeth_: mark (j:1)');
+    my $term = $self->get_term({id=>$term_id});
+    my $term_acc = $term->acc;
 
     my $total = -1;
-    my $term = $self->get_term({id=>$term_id});
+    #$core->kvetch('get gp count: ' . $term_acc);
     if( $use_all ){
       ## Again, the filter-as-db case would only work if we could use
       ## an IEA flag here, but it's not and the database doesn't
       ## support it yet.
-      #$core->kvetch('_fgeth_: mark (j:2)');
       $total = $self->get_deep_product_count({term=>$term, is_not=>0});
+      #$core->kvetch(' get_deep_gp_count = ' . $total);
+      ##$total = 1 if $total == 0;
     }else{
-      #$core->kvetch('_fgeth_: mark (j:3)');
       $total = $background_gp_count_by_term_id{$term_id};
+      #$core->kvetch(' bg_gp_count = ' . $total);
     }
 
     # And increment the correction factor if that node has more
@@ -1695,8 +1697,6 @@ sub fast_get_enriched_term_hash {
     my $n = $n_gps_in_sample;
     my $M = $total;
     my $N = $n_gps_in_background;
-
-    my $term_acc = $term->acc;
 
     # $core->kvetch('_fgeth_: mark (j:9): ' . $term_acc);
     # $core->kvetch('_fgeth_: mark (j:9k): ' . $k);
@@ -1775,7 +1775,7 @@ sub fast_get_enriched_term_hash {
     $hyp->{corrected_p_value} = $correction_factor * $hyp->{p_value};
   }
 
-  #$core->kvetch('_end:_fast_get_enriched_term_hash_');
+  #$core->kvetch('_end_');
 
   return \%stats_by_term_acc;
 }
