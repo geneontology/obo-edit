@@ -59,4 +59,8 @@ public interface DbOperationsListener {
 	 */
 	public void updateEnd();
 	
+	public void startOboToOWL();
+	
+	public void endOboToOWL();
+	
 }

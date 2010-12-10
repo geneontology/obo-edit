@@ -49,4 +49,12 @@ public class DbOperationsListenerAdapter implements DbOperationsListener {
 
 	}
 
+	public void startOboToOWL() {
+		
+	}
+
+	public void endOboToOWL() {
+		
+	}
+
 }

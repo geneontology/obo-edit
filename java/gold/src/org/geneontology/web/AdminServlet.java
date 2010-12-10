@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperations;
@@ -31,17 +32,36 @@ import owltools.graph.OWLGraphWrapper;
 public class AdminServlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 
+	private static final Logger LOG = Logger.getLogger(AdminServlet.class);
+	private static final boolean DEBUG = LOG.isDebugEnabled();
+	
+	//only task can be running at one time
+	//task is not null then it means there 
+	//is a task running;
+	private DbOperationsTask task;
+	
+
+	//global reference of the OWLGraphWrapper
+	private OWLGraphWrapper graph;
+	
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public AdminServlet() {
 		super();
-		// TODO Auto-generated constructor stub
+		task = null;
 	}
 
 	
-	private void printTaskStatus(DbOperationsTask task, Writer writer, HttpSession session, boolean addReload) 
+	private void printTaskStatus(Writer writer, boolean addReload) 
 		throws IOException{
+		
+		if(DEBUG){
+			LOG.debug("addReload variable: " + addReload);
+			LOG.debug("Is Tasking Running: " + task != null ? task.isRunning() : null);
+		}
+		
+		
 		if(task.isRunning() || addReload){
 			writer.write("<script type='text/javascript'>");
 				writer.write("setTimeout(\"location.reload(true)\", 9000)");
@@ -75,14 +95,23 @@ public class AdminServlet extends HttpServlet{
 		
 		 
 		 if(task.getException() != null){
+			LOG.error("", task.getException());
 			PrintWriter pw = new PrintWriter(writer);
 			task.getException().printStackTrace(pw);
 		 }
 		 
 		 if(!task.isRunning() && !addReload){
-			 session.removeAttribute("task");
+			 this.task = null;
 		 }
 		
+	}
+	
+	private OWLGraphWrapper buildOWLGraphWrapper() throws IOException{
+		try{
+			return new DbOperations().buildOWLGraphWrapper();
+		}catch(Exception ex){
+			throw new IOException("An error ocurred while building OWLGraphWrapper object reference", ex);
+		}
 	}
 	
 	/**
@@ -93,10 +122,6 @@ public class AdminServlet extends HttpServlet{
 			HttpServletResponse response) throws ServletException, IOException {
 
 		
-		HttpSession session = request.getSession();
-		
-		Object obj = session.getAttribute("task");
-		
 		Writer writer = response.getWriter();
 		writer.write("<html>");
 		writer.write("<head><title>");
@@ -105,22 +130,19 @@ public class AdminServlet extends HttpServlet{
 		
 		String command = request.getParameter("command");
 		
+		if(DEBUG){
+			LOG.debug("Command parameter = " + command);
+		}
 		
 		boolean addReload = false;
-		if (command != null && obj == null) {
-			if ("bulkload".equals(command)) {
+		if (command != null && task == null) {
+			if ("bulkload".equals(command) || "update".equals(command)) {
+				this.graph = buildOWLGraphWrapper();
 				addReload = true;
-				DbOperationsTask task = new DbOperationsTask(command);
-				session.setAttribute("task", task);
-				obj = task;
+				task = new DbOperationsTask(command, this.graph, 
+						false, "", "");
 				task.start();
 				 
-			}else if ("update".equals(command)) {
-				addReload = true;
-				DbOperationsTask task = new DbOperationsTask(command);
-				session.setAttribute("task", task);
-				obj = task;
-				task.start();
 			}else if ("getlastupdate".equals(command)){
 				DbOperations db = new DbOperations();
 
@@ -144,15 +166,15 @@ public class AdminServlet extends HttpServlet{
 			}
 			
 
-		}else if(obj == null){
+		}else if(task == null){
 			writer.write("<h1>No valid parameters are provided. Please call this page with valid parameters</h1>");
 			return;
 		}
 		
-		DbOperationsTask task = (DbOperationsTask) obj;
+	//	DbOperationsTask task = (DbOperationsTask) obj;
 		
 		if(task != null){
-			printTaskStatus(task, writer, session, addReload);
+			printTaskStatus(writer, addReload);
 		}
 		
 

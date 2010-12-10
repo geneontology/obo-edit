@@ -2,7 +2,9 @@ package org.geneontology.conf;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
@@ -11,6 +13,13 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.PropertyConfigurator;
 import org.geneontology.gold.io.DatabaseDialect;
+import org.obolibrary.obo2owl.Obo2Owl;
+import org.obolibrary.oboformat.model.OBODoc;
+import org.obolibrary.oboformat.parser.OBOFormatParser;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+
+import owltools.graph.OWLGraphWrapper;
 
 import sun.tools.tree.ThisExpression;
 
@@ -224,6 +233,7 @@ public class GeneOntologyManager {
 	public String getDefaultGafFile(){
 		return null;
 	}
+	
 	
 	
 }
