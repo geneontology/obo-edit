@@ -152,18 +152,10 @@ sub __compare_objects {
 		}
 		return 1;
 	}
-	elsif (ref $o1 eq 'HASH')
-	{	return 0 if scalar keys %$o1 ne scalar keys %$o2;
-		return 0 if join("\0", sort keys %$o1) ne join("\0", sort keys %$o2);
-		foreach (keys %$o1)
-		{	my $result = __compare_objects( $o1->{$_}, $o2->{$_} );
-			return 0 unless $result;
-		}
-		return 1;
-	}
 	# if they both have IDs, do a quick comparison...
-	elsif ($o1->isa('GOBO::Base'))
-	{	if($o1->can('id') && defined $o1->id && defined $o2->id)
+	elsif ($o1->isa('GOBO::Base') || ref($o1) =~ /^GOBO::/)
+	{	#warn "Running GOBO::Base tests";
+		if($o1->can('id') && defined $o1->id && defined $o2->id)
 		{	if ($o1->id eq $o2->id)
 			{	return 1;
 			}
@@ -184,6 +176,16 @@ sub __compare_objects {
 			next if $result;
 			return 0;
 		}
+	}
+	elsif (ref $o1 eq 'HASH')
+	{	#warn "Running hash tests";
+		return 0 if scalar keys %$o1 ne scalar keys %$o2;
+		return 0 if join("\0", sort keys %$o1) ne join("\0", sort keys %$o2);
+		foreach (keys %$o1)
+		{	my $result = __compare_objects( $o1->{$_}, $o2->{$_} );
+			return 0 unless $result;
+		}
+		return 1;
 	}
 	## other tests...?
 	return 1;
