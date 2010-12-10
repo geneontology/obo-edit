@@ -352,13 +352,14 @@
       <div id="display-qg">
 	[% IF QUICKGO_ENGINE_P %]
 	<p>
-	  Click on the image to view this term's page in
-	  <a href="http://www.ebi.ac.uk/QuickGO">QuickGO</a>.
+	  View this term in
+	  <a href="[% QUICKGO_TERM_LINK %]"
+	     title="Go to the QuickGO term page for [% TERM_INFO.acc %]">QuickGO</a>.
 	</p>
 	<p>
 	  <a class="override"
 	     href="[% QUICKGO_TERM_LINK %]"
-	     title="Go to QuickGO term page for [% TERM_INFO.acc %]">
+	     title="Go to the QuickGO term page for [% TERM_INFO.acc %]">
 	    <img src="[% VIZ_QUICKGO_LINK %]"
 		 alt="Graph of [% TERM_INFO.acc %] from QuickGO" />
 	  </a>
