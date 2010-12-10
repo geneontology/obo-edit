@@ -3,6 +3,7 @@ package org.geneontology.gold.io;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +42,10 @@ import org.geneontology.gold.io.postgres.SchemaManager;
 import org.geneontology.gold.io.postgres.TsvFileLoader;
 import org.hibernate.Session;
 import org.obolibrary.obo2owl.Obo2Owl;
+import org.obolibrary.oboformat.model.OBODoc;
+import org.obolibrary.oboformat.parser.OBOFormatParser;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
 import owltools.graph.OWLGraphWrapper;
 
@@ -95,16 +100,22 @@ public class DbOperations {
 	 * @throws Exception
 	 */
 	public void bulkLoad(String oboFile, boolean force) throws Exception{
+
+		bulkLoad(buildOWLGraphWrapper(oboFile), force);
+	}
+	
+
+	public void bulkLoad(OWLGraphWrapper wrapper, boolean force) throws Exception{
 		for(DbOperationsListener listener: listeners){
 			listener.bulkLoadStart();
 		}
  		
 		if(LOG.isDebugEnabled()){
-			LOG.debug("Bulk Load for: " + oboFile);
+			LOG.debug("Bulk Load for: " + wrapper.getOntologyId());
 		}
 		
 
-		List<String> list = dumpFiles("", oboFile);
+		List<String> list = dumpFiles("", wrapper);
 		buildSchema(force, "");
 		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
 		
@@ -116,6 +127,7 @@ public class DbOperations {
 	 
 	}
 	
+	
 	/**
 	 * This method dumps the obo file (oboFile) as tab separated files
 	 * for GOLD database to be used for bulk loading 
@@ -125,6 +137,51 @@ public class DbOperations {
 	 * @throws Exception
 	 */
 	public List<String> dumpFiles(String tablePrefix, String oboFile) throws Exception{
+		return dumpFiles(tablePrefix, buildOWLGraphWrapper(oboFile));
+	}
+	
+	/**
+	 * 
+	 * @return This method build a new instance of the {@link OWLGraphWrapper} class
+	 * @throws IOException 
+	 * @throws OWLOntologyCreationException 
+	 */
+	public OWLGraphWrapper buildOWLGraphWrapper() throws IOException, OWLOntologyCreationException{
+		
+		String oboFile = GeneOntologyManager.getInstance().getProperty("geneontology.gold.obofile");
+		
+		return buildOWLGraphWrapper(oboFile);
+		
+	}
+
+	public OWLGraphWrapper buildOWLGraphWrapper(String oboFile) throws IOException, OWLOntologyCreationException{
+		if(oboFile == null)
+			throw new FileNotFoundException("The file is not found");
+		
+
+		for(DbOperationsListener listener: listeners){
+			listener.startOboToOWL();
+		}
+		
+		OBOFormatParser parser = new OBOFormatParser();
+		
+		OBODoc doc = parser.parse(oboFile);
+		
+		Obo2Owl obo2owl = new Obo2Owl();
+		
+		OWLOntology ontology = obo2owl.convert(doc);
+		
+		OWLGraphWrapper wrapper = new OWLGraphWrapper(ontology);
+
+		
+		for(DbOperationsListener listener: listeners){
+			listener.endOboToOWL();
+		}
+		
+		return wrapper;
+	}	
+	
+	public List<String> dumpFiles(String tablePrefix, OWLGraphWrapper wrapper) throws Exception{
 		for(DbOperationsListener listener: listeners){
 			listener.dumpFilesStart();
 		}
@@ -135,9 +192,9 @@ public class DbOperations {
 		
 		
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
-		OWLGraphWrapper wrapper = new OWLGraphWrapper( 	
+		/*OWLGraphWrapper wrapper = new OWLGraphWrapper( 	
 			new Obo2Owl().convert(oboFile));
-		
+		*/
 		OntologyBulkLoader loader = new OntologyBulkLoader(wrapper, manager.getTsvFilesDir(), tablePrefix);
 		
 		List<String> list = loader.dumpBulkLoadTables();
@@ -151,6 +208,7 @@ public class DbOperations {
 		return list;
 		
 	}
+	
 	
 	/**
 	 * It creates schema of GOLD database.
@@ -268,6 +326,12 @@ public class DbOperations {
 	 * @throws Exception
 	 */
 	public void updateGold(String oboFile) throws Exception{
+		
+		updateGold(buildOWLGraphWrapper(oboFile));
+		
+	}
+	
+	public void updateGold(OWLGraphWrapper wrapper) throws Exception{
 		for(DbOperationsListener listener: listeners){
 			listener.updateStart();
 		}
@@ -278,7 +342,7 @@ public class DbOperations {
 
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
 		
-		List<String> list = dumpFiles(manager.getGoldDetlaTablePrefix(), oboFile);
+		List<String> list = dumpFiles(manager.getGoldDetlaTablePrefix(), wrapper);
 		buildSchema(true, manager.getGoldDetlaTablePrefix());
 
 		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
@@ -317,8 +381,6 @@ public class DbOperations {
 		List<AnnotationAssertion> annAssertionList = gdf.buildAnnotationAssertion();
 		List<RelationEquivalenTo> relEqList = gdf.buildRelationEquivalenTo();
 
-		System.out.println("Hello Wolrd");
-		
 		//close the session associated with the tables prefixed with 
 		// the value of the geneontology.gold.deltatableprefix property
 		gdf.getSession().close();
@@ -401,7 +463,8 @@ public class DbOperations {
 	
 	
 	public void addDbOperationsListener(DbOperationsListener listener){
-		listeners.add(listener);
+		if(!listeners.contains(listener))
+			listeners.add(listener);
 	}
 
 	public void removeDbOperationsListener(DbOperationsListener listener){

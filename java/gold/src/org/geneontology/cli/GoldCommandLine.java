@@ -9,6 +9,8 @@ import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.io.DbOperationsListenerToReportTime;
 
+import owltools.graph.OWLGraphWrapper;
+
 /**
  * The class provides command line interface to users to run the db operations from
  * the shell prompt.
@@ -98,20 +100,21 @@ public class GoldCommandLine {
 				}
 			}
 			
-			//perform the operations
-			DbOperations db = new DbOperations();
-			db.addDbOperationsListener(new DbOperationsListenerToReportTime());
-			if("bulkload".equals(operation)){
-				db.bulkLoad(force);
-			}else if("update".equals(operation)){
-				db.updateGold();
-			}else if("buildschema".equals(operation)){
-				db.buildSchema(force, tableprefix);
-			}else if("buildtsv".equals(operation)){
-				db.dumpFiles(tableprefix, manager.getDefaultOboFile());
-			}else if ("loadtsv".equals(operation)){
-				db.loadTsvFiles(manager.getTsvFilesDir());
+			//perform operations
+			if("loadtsv".equals(operation) || "buildschema".equals(operation)){
+				DbOperationsListenerToReportTime db = new DbOperationsListenerToReportTime(operation, null, force, tableprefix, manager.getTsvFilesDir());
+				db.run();
+			}else if("bulkload".equals(operation) || "update".equals(operation) 
+					|| "buildtsv".equals(operation)){
+
+				DbOperationsListenerToReportTime db = new DbOperationsListenerToReportTime(operation, 
+						new DbOperations().buildOWLGraphWrapper(), 
+						force, tableprefix, manager.getTsvFilesDir());
+				
+				db.run();
+				
 			}
+			
 		
 		}else
 			exit("Not valid arguments are passed. Please the usage");

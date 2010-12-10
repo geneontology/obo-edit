@@ -557,7 +557,7 @@ CREATE TABLE ontology_changes_history(
 	new_value VARCHAR
 );
 
-COMMENT ON TABLE changes_history IS 'This table maintains history of chages of an ontology when the
+COMMENT ON TABLE ontology_changes_history IS 'This table maintains history of chages of an ontology when the
 ontology is updated preiodically.
 This table is on experimental basis. Its structure can be changed in future. 
 ';

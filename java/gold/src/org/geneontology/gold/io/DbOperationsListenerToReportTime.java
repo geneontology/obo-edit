@@ -1,13 +1,31 @@
 package org.geneontology.gold.io;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
+import org.geneontology.web.DbOperationsTask;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
-public class DbOperationsListenerToReportTime implements DbOperationsListener {
+import owltools.graph.OWLGraphWrapper;
+
+public class DbOperationsListenerToReportTime extends DbOperationsTask {
+
+	public DbOperationsListenerToReportTime(String op) throws OWLOntologyCreationException, IOException {
+		super(op);
+	}
+
+	
+	
+	public DbOperationsListenerToReportTime(String op, OWLGraphWrapper graph,
+			boolean force, String tablePrefix, String tsvFilesDir) {
+		super(op, graph, force, tablePrefix, tsvFilesDir);
+	}
+
+
 
 	private static Logger LOG = Logger.getLogger(DbOperationsListenerToReportTime.class);
 
@@ -15,7 +33,7 @@ public class DbOperationsListenerToReportTime implements DbOperationsListener {
 	
 	private Hashtable<String, Date> timeLogs = new Hashtable<String, Date>();
 	
-	private void reportStartTime(String name){
+	protected void reportStartTime(String name){
 		Date dt = Calendar.getInstance().getTime();
 		timeLogs.put(name, dt);
 		
@@ -23,7 +41,7 @@ public class DbOperationsListenerToReportTime implements DbOperationsListener {
 		
 	}
 	
-	private void reportEndTime(String name){
+	protected void reportEndTime(String name){
 		Date dt = Calendar.getInstance().getTime();
 		System.out.println(name + " - end time\t\t" + dtFormat.format(dt));
 
@@ -35,45 +53,4 @@ public class DbOperationsListenerToReportTime implements DbOperationsListener {
 		
 	}
 	
-	public void bulkLoadStart() {
-		reportStartTime("BulkLoad");
-	}
-
-	public void bulkLoadEnd() {
-		reportEndTime("BulkLoad");
-	}
-
-	public void dumpFilesStart() {
-		reportStartTime("DumpFiles");
-	}
-
-	public void dumpFilesEnd() {
-		reportEndTime("DumpFiles");
-
-	}
-
-	public void buildSchemaStart() {
-		reportStartTime("BuildSchema");
-	}
-
-	public void buildSchemaEnd() {
-		reportEndTime("BuildSchema");
-	}
-
-	public void loadTsvFilesStart() {
-		reportStartTime("LoadTsvFiles");
-	}
-
-	public void loadTsvFilesEnd() {
-		reportEndTime("LoadTsvFiles");
-	}
-
-	public void updateStart() {
-		reportStartTime("Update");
-	}
-
-	public void updateEnd() {
-		reportEndTime("Update");
-	}
-
 }

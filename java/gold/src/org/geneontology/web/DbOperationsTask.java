@@ -1,9 +1,14 @@
 package org.geneontology.web;
 
 
+import java.io.IOException;
+
 import org.apache.log4j.Logger;
 import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.io.DbOperationsListener;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+
+import owltools.graph.OWLGraphWrapper;
 
 public class DbOperationsTask extends Task implements DbOperationsListener{
 
@@ -11,58 +16,69 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 	
 	private String opName;
 	
-	public DbOperationsTask(String op){
+//	private DbOperations db;
+	
+	private OWLGraphWrapper graph;
+	
+	private boolean force;
+	
+	private String tablePrefix;
+	
+	private String tsvFileDir;
+	
+	public DbOperationsTask(String op, OWLGraphWrapper graph, boolean force, String tablePrefix, String tsvFilesDir){
 		super();
+		
 		this.opName =op;
+		this.graph = graph;
+		this.force = force;
+		this.tsvFileDir = tsvFilesDir;
 	}
 	
-	
+	public DbOperationsTask(String op) throws OWLOntologyCreationException, IOException{
+		this(op, new DbOperations().buildOWLGraphWrapper(), false, "", "");
+	}	
 	@Override
 	public void run(){
 		LOG.info("Running Db operation : " + opName);
 	
+		
 		this.exception = null; 
 		running = true;
-		if("bulkload".equals(opName)){
-			DbOperations db = new DbOperations();
-			db.addDbOperationsListener(this);
-			try {
-				db.bulkLoad(false);
-			} catch (Exception e) {
-				running = false;
-				this.exception = e;
-				e.printStackTrace();
-				LOG.error("DB Operation failed " + opName, e);
-			}finally{
-				running = false;
+		DbOperations db = new DbOperations();
+		db.addDbOperationsListener(this);
+		try{
+			if("bulkload".equals(opName)){
+					db.bulkLoad(graph, force);
+			}else if ("update".equals(opName)){
+					db.updateGold(graph);
+			}else if ("buildschema".equals(opName)){
+					db.buildSchema(force, tablePrefix);
+			}else if ("buildtsv".equals(opName)){
+				db.dumpFiles(tablePrefix, graph);
+			}else if ("loadtsv".equals(opName)){
+				db.loadTsvFiles(tsvFileDir);
 			}
-		}else if ("update".equals(opName)){
-			DbOperations db = new DbOperations();
-			db.addDbOperationsListener(this);
-			try {
-				db.updateGold();
-			} catch (Exception e) {
-				running = false;
-				this.exception = e;
-				e.printStackTrace();
-				LOG.error("DB Operation failed " + opName, e);
-			}finally{
-				running = false;
-			}
-			
+		} catch (Exception e) {
+			running = false;
+			this.exception = e;
+			e.printStackTrace();
+			LOG.error("DB Operation failed " + opName, e);
+		}finally{
+			running = false;
 		}
-		running = false;
+
 	}
 	
 	public String getOperationName(){
 		return opName;
 	}
 	
-	private void reportStartTime(String name){
+	protected void reportStartTime(String name){
 		this.addInProgress(name);
 	}
 	
-	private void reportEndTime(String name){
+	protected void reportEndTime(String name){
 		this.addCompleted(name);
 	}
 	
@@ -105,6 +121,17 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 
 	public void updateEnd() {
 		reportEndTime("Update/TotalTime");
+	}
+
+
+	public void startOboToOWL() {
+		reportStartTime("Obo To OWL Conversion");
+	}
+
+
+	public void endOboToOWL() {
+		reportEndTime("Obo To OWL Conversion");
+		
 	}
 	
 	
