@@ -69,6 +69,7 @@ public class AutocompleteBox<T> extends JComboBox {
 	protected final static Logger logger = Logger.getLogger(AutocompleteBox.class);
 
 	protected class AutoTextField extends JTextField implements ComboBoxEditor {
+
 		protected boolean updating = false;
 
 		protected Runnable updateRunnable = new Runnable() {
@@ -96,13 +97,25 @@ public class AutocompleteBox<T> extends JComboBox {
 			}
 		};
 
+		/*
+		 * KeyListener keyListener = new KeyListener() {
+		 * 
+		 * public void keyPressed(KeyEvent e) { if (e.getKeyCode() ==
+		 * KeyEvent.VK_ENTER) commit(); else if (!e.isActionKey()) update(); }
+		 * 
+		 * public void keyReleased(KeyEvent e) { if (e.getKeyCode() ==
+		 * KeyEvent.VK_ENTER) return; else if (!e.isActionKey()) update(); }
+		 * 
+		 * public void keyTyped(KeyEvent e) { } };
+		 */
+
 		protected KeyListener keyListener = new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_SPACE
 						&& ((e.getModifiers() & Toolkit.getDefaultToolkit()
 								.getMenuShortcutKeyMask()) > 0
-								&& e.isShiftDown() || e.isControlDown())) {
+						&& e.isShiftDown() || e.isControlDown())) {
 					autocompleteSingleWord();
 				} else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					boolean isVisible = isPopupVisible();
@@ -132,12 +145,13 @@ public class AutocompleteBox<T> extends JComboBox {
 			}
 		};
 
+		//aa
 		protected FocusListener focusListener = new FocusListener() {
 			public void focusLost(FocusEvent e) {
 				if (allowNonModelValues
 						|| (AutocompleteBox.this.getSelectedItem() == null
 								&& getText().length() >= getMinLength() && getItemCount() > 0)) {
-					// setSelectedIndex(0);
+					setSelectedIndex(0);
 					commit(true);
 				} else if (getSelectedItem() != null) {
 					String s = autocompleteModel.toString(getSelectedItem());
@@ -153,33 +167,41 @@ public class AutocompleteBox<T> extends JComboBox {
 			getDocument().addDocumentListener(docListener);
 			addKeyListener(keyListener);
 			addFocusListener(focusListener);
+
+			/*
+			 * getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
+			 * KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "commit");
+			 * getActionMap().put("commit", new AbstractAction() {
+			 * 
+			 * public void actionPerformed(ActionEvent e) { commit(); } });
+			 */
 		}
 
-		// autocomplete commit
+		/**
+		 * Autocompletebox.commit() called on term completion and selection of term from autocomplete options list
+		 * */
 		public void commit(boolean focusCommit) {
 			killPendingTasks();
 			if (getText().length() == 0)
 				setSelectedItem(null);
-			else if ((!focusCommit || !allowNonModelValues) && termHits != null
-					&& termHits.size() > 0) {
+			else if ((!focusCommit || !allowNonModelValues) && lastHits != null && lastHits.size() > 0) {
 				setSelectedItem(list.getSelectedValue());
 			} else if (allowNonModelValues) {
 				setSelectedItem(autocompleteModel.createValue(getText()));
 			}
-
-			ActionEvent e = new ActionEvent(AutocompleteBox.this, (int) (Math.random()), "commit");
-
+			// What's this big random number for??
+			ActionEvent e = new ActionEvent(AutocompleteBox.this, (int) (Math.random()* Integer.MAX_VALUE), "commit");
 			for (ActionListener listener : commitListeners) {
 				listener.actionPerformed(e);
 			}
 			fireUpdateEvent();
 			hidePopup();
 			list.setSelectedIndex(-1);
-			list.removeAll();
 		}
 
 		protected void update() {
 			updating = true;
+			// removeKeyListener(keyListener);
 			getDocument().removeDocumentListener(docListener);
 			try {
 				String text = getDocument().getText(0,
@@ -189,6 +211,7 @@ public class AutocompleteBox<T> extends JComboBox {
 				ex.printStackTrace();
 			}
 			fireUpdateEvent();
+			// addKeyListener(keyListener);
 			getDocument().addDocumentListener(docListener);
 			updating = false;
 		}
@@ -199,8 +222,8 @@ public class AutocompleteBox<T> extends JComboBox {
 
 		public Object getItem() {
 			Object out = null;
-			if (termHits != null)
-				out = termHits.size() == 0 ? null : termHits.get(0).getVal();
+			if (lastHits != null)
+				out = lastHits.size() == 0 ? null : lastHits.get(0).getVal();
 			return out;
 		}
 
@@ -260,7 +283,7 @@ public class AutocompleteBox<T> extends JComboBox {
 			} else
 				label.setOpaque(false);
 
-			MatchPair pair = termHits.get(index);
+			MatchPair pair = lastHits.get(index);
 			String s = "<html>" + formatHTML(pair) + "</html>";
 			label.setText(s);
 			return label;
@@ -384,84 +407,56 @@ public class AutocompleteBox<T> extends JComboBox {
 	}
 
 	public T getValue() {
-		Object selected = getSelectedItem();
+		if (getSelectedItem() == null)
+			return null;
+		else {
+			Object selected = getSelectedItem();
+			if (allowNonModelValues) {
+				String s = ((JTextComponent) editor).getText();
 
-		logger.debug("AutocompleteBox.getValue() -- selected: " + selected);
-		// for a simple straightforward one term autocomplete selected always has a value.
-
-		// getItemCount gets datamodel size from the previous autocomplete task performed. This is misleading.
-		// TODO: clear lastHits cache - leaving this as is at the moment
-		logger.debug("> selected: " + selected);
-		logger.debug("> this.getItemCount(): " + this.getItemCount());
-		logger.debug("> getItemAt(0): " + getItemAt(0));
-
-		//		if(selected == null){
-		//			logger.debug("stop");
-		//			return null;
-		//		}
-
-		if(selected == null){
-			// true in the initial case while autocompleting on a single field and first iteration for defining xps
-			if (this.getItemCount() == 0)
-				return null;
-
-			//fix for committing multiple items while editing cross-products in the TextEditor...
-			//getSelectedItem looks for items selected in the autocomplete JComboBox and returns null for genus as it picks up the second item while adding discriminating relations 
-			if(getItemAt(0) != null){
-				logger.debug("stop.. ");
-//				selected = getItemAt(0);
-				
-				return null;
+				if (!autocompleteModel.toString(getSelectedItem()).equals(s))
+					return (T) autocompleteModel
+							.getOutputValue(autocompleteModel.createValue(s));
 			}
-				
+			return (T) autocompleteModel.getOutputValue(selected);
 		}
-
-
-		else if(allowNonModelValues){
-			String s = ((JTextComponent) editor).getText();
-			if (!autocompleteModel.toString(getSelectedItem()).equals(s))
-				return (T) autocompleteModel.getOutputValue(autocompleteModel.createValue(s));
-		}
-
-		return (T) autocompleteModel.getOutputValue(selected);
 	}
-
 
 	@Override
 	/* Before I added this, it was tending to select the first thing in the list even if user selected a different one. */
 	public void actionPerformed(ActionEvent e) {
 	}
 
-	@Override
+	
+	/* (non-Javadoc)
+	 * @see javax.swing.JComboBox#setSelectedItem(java.lang.Object)
+	 * set autocompleted object as selected item
+	 */
 	public void setSelectedItem(Object anObject) {
-		//	    if (anObject != null) {
-		//			logger.info("AutocompleteBox.setSelectedItem: TRYING to select " + anObject + ", type = "
-		//					+ anObject.getClass());
-		//	    }
+	    if (anObject != null) {
+			logger.info("AutocompleteBox.setSelectedItem: TRYING to select " + anObject + ", type = " + anObject.getClass());
+	    }
 		if (anObject == null) {
 			doSetSelectedItem(null);
-		} 
-		else if (autocompleteModel.getDisplayType().isAssignableFrom(anObject.getClass())) {
+		} else if (autocompleteModel.getDisplayType().isAssignableFrom(anObject.getClass())) {
 			doSetSelectedItem(anObject);
 			Object selected = getSelectedItem();
-		} 
-		else if (autocompleteModel.getOutputType().isAssignableFrom(anObject.getClass())) {
+		} else if (autocompleteModel.getOutputType().isAssignableFrom(anObject.getClass())) {
 			List values = autocompleteModel.getDisplayValues(anObject);
 			if (values.size() > 0)
 				doSetSelectedItem(values.get(0));
 			else
 				doSetSelectedItem(null);
-		}
-		else if (anObject instanceof String)
+		} else if (anObject instanceof String)
 			doSetSelectedItem(autocompleteModel.createValue((String) anObject));
 
 		if (isEditable() && getEditor() != null) {
 			configureEditor(getEditor(), getSelectedItem());
 		}
-
 	}
 
 	protected void doSetSelectedItem(Object o) {
+		logger.debug("Autocompletebox.doSetSelectedItem");
 		if (o == null)
 			super.setSelectedItem(null);
 		else if (allowNonModelValues || autocompleteModel.isLegal(o))
@@ -475,7 +470,6 @@ public class AutocompleteBox<T> extends JComboBox {
 	protected JList createList() {
 		if (list == null) {
 			list = new JList(getModel()) {
-				@Override
 				public void processMouseEvent(MouseEvent e) {
 					if (e.isControlDown()) {
 						// Fix for 4234053. Filter out the Control Key from the
@@ -483,9 +477,9 @@ public class AutocompleteBox<T> extends JComboBox {
 						// ie., don't allow CTRL key deselection.
 						e = new MouseEvent((Component) e.getSource(),
 								e.getID(), e.getWhen(), e.getModifiers()
-								^ InputEvent.CTRL_MASK, e.getX(), e
-								.getY(), e.getClickCount(), e
-								.isPopupTrigger());
+										^ InputEvent.CTRL_MASK, e.getX(), e
+										.getY(), e.getClickCount(), e
+										.isPopupTrigger());
 					}
 					super.processMouseEvent(e);
 				}
@@ -509,8 +503,15 @@ public class AutocompleteBox<T> extends JComboBox {
 		addFocusListener(focusListener);
 		super.setUI(new MetalComboBoxUI() {
 
-
-
+			/*
+			 * @Override protected void installComponents() { arrowButton =
+			 * null;
+			 * 
+			 * if (comboBox.isEditable()) { addEditor(); }
+			 * 
+			 * comboBox.add(currentValuePane); }
+			 */
+			@Override
 			protected ComboPopup createPopup() {
 				return new BasicComboPopup(AutocompleteBox.this) {
 
@@ -521,7 +522,6 @@ public class AutocompleteBox<T> extends JComboBox {
 						return AutocompleteBox.this.createList();
 					}
 
-					@Override
 					public void show(Component invoker, int x, int y) {
 						if (poppingUp)
 							return;
@@ -530,21 +530,22 @@ public class AutocompleteBox<T> extends JComboBox {
 							JTextComponent text = (JTextComponent) AutocompleteBox.this.editor;
 							if (text.getText().length() == 0) {
 								ArrayList list = new ArrayList();
-								list.addAll(getAutocompleteModel().getAllValues());
+								list.addAll(getAutocompleteModel()
+										.getAllValues());
 								setDisplayResults(list);
 							} else {
-								TimerTask task = createTimerTask(text.getText(), false);
+								TimerTask task = createTimerTask(
+										text.getText(), false);
 								task.run();
 							}
 						}
-						setPopupSize(AutocompleteBox.this.getWidth(),
+						setPopupSize((int) AutocompleteBox.this.getWidth(),
 								getPopupHeightForRowCount(getMaximumRowCount()));
 						super.show(invoker, x, y);
 						poppingUp = false;
 					}
 
 				};
-
 			}
 
 			@Override
@@ -552,7 +553,6 @@ public class AutocompleteBox<T> extends JComboBox {
 				return super.createArrowButton();
 			}
 
-			@Override
 			public void configureArrowButton() {
 				super.configureArrowButton();
 				if (arrowButton != null) {
@@ -561,7 +561,6 @@ public class AutocompleteBox<T> extends JComboBox {
 				}
 			}
 
-			@Override
 			public void unconfigureArrowButton() {
 				super.unconfigureArrowButton();
 				if (arrowButton != null) {
@@ -581,28 +580,28 @@ public class AutocompleteBox<T> extends JComboBox {
 				if (buttonListener == null)
 					buttonListener = new MouseListener() {
 
-					public void mouseClicked(MouseEvent e) {
-						popup.getMouseListener().mouseClicked(e);
-					}
+						public void mouseClicked(MouseEvent e) {
+							popup.getMouseListener().mouseClicked(e);
+						}
 
-					public void mouseEntered(MouseEvent e) {
-						popup.getMouseListener().mouseEntered(e);
-					}
+						public void mouseEntered(MouseEvent e) {
+							popup.getMouseListener().mouseEntered(e);
+						}
 
-					public void mouseExited(MouseEvent e) {
-						popup.getMouseListener().mouseExited(e);
-					}
+						public void mouseExited(MouseEvent e) {
+							popup.getMouseListener().mouseExited(e);
+						}
 
-					public void mousePressed(MouseEvent e) {
-						userRequestedPopup = true;
-						popup.getMouseListener().mousePressed(e);
-						userRequestedPopup = false;
-					}
+						public void mousePressed(MouseEvent e) {
+							userRequestedPopup = true;
+							popup.getMouseListener().mousePressed(e);
+							userRequestedPopup = false;
+						}
 
-					public void mouseReleased(MouseEvent e) {
-						popup.getMouseListener().mouseReleased(e);
-					}
-				};
+						public void mouseReleased(MouseEvent e) {
+							popup.getMouseListener().mouseReleased(e);
+						}
+					};
 				return buttonListener;
 			}
 
@@ -612,7 +611,6 @@ public class AutocompleteBox<T> extends JComboBox {
 			 * 
 			 * @see #addEditor
 			 */
-			@Override
 			public void configureEditor() {
 				super.configureEditor();
 				editor.removeFocusListener(super.createFocusListener());
@@ -633,11 +631,10 @@ public class AutocompleteBox<T> extends JComboBox {
 		super.setFocusTraversalKeysEnabled(focusTraversalKeysEnabled);
 		if (getEditor() instanceof Component)
 			((Component) getEditor())
-			.setFocusTraversalKeysEnabled(focusTraversalKeysEnabled);
+					.setFocusTraversalKeysEnabled(focusTraversalKeysEnabled);
 	}
 
-	// termHits: auto complete hits generated for the term in context
-	protected List<MatchPair> termHits;
+	protected List<MatchPair> lastHits;
 	protected Timer timer = new Timer(true);
 	protected TimerTask currentTask = null;
 	protected int updateInterval = 100;
@@ -706,18 +703,30 @@ public class AutocompleteBox<T> extends JComboBox {
 				cursorPos, cursorPos);
 		String currentWord = text.substring(replaceIndices[0],
 				replaceIndices[1]);
-		for (MatchPair matchPair : termHits) {
+		for (MatchPair matchPair : lastHits) {
 			int[] indices = (int[]) matchPair.getMatch().get(currentWord);
 			if (indices != null) {
 				int index = indices[0];
 				String match = StringUtil.getWordSurrounding(matchPair
 						.getString(), index, index);
 				text = text.substring(0, replaceIndices[0]) + match
-				+ text.substring(replaceIndices[1], text.length());
+						+ text.substring(replaceIndices[1], text.length());
 				field.setText(text);
 				return;
 			}
 		}
+		// List<MatchPair> matches = getMatches(currentWord);
+		// if (matches.size() > 0) {
+		// MatchPair matchPair = matches.get(0);
+		// int[] indices = (int[]) matchPair.getMatch().get(currentWord);
+		// int index = indices[0];
+		// String match = StringUtil.getWordSurrounding(matchPair.getString(),
+		// index, index);
+		// text = text.substring(0,
+		// replaceIndices[0])+match+text.substring(replaceIndices[1],
+		// text.length());
+		// field.setText(text);
+		// }
 	}
 
 	protected TimerTask createTimerTask(final String str,
@@ -817,20 +826,19 @@ public class AutocompleteBox<T> extends JComboBox {
 	}
 
 	protected void setResults(List results) {
-		termHits = results;
+		lastHits = results;
 		((AutocompleteListModel) getModel()).update();
-		if (termHits == null || termHits.size() == 0)
+		if (lastHits == null || lastHits.size() == 0)
 			super.setSelectedItem(null);
 		else {
-			Object val = termHits.get(0).getVal();
-			//			logger.debug("setResults: SELECTING: " + val);
+			Object val = lastHits.get(0).getVal();
+//			System.out.println("setResults: SELECTING: " + val);
 			super.setSelectedItem(null);
 			if (isShowing() && hasMeaningfulFocus()) {
 				// hidePopup();
 				showPopup();
 			}
 		}
-
 	}
 
 	public boolean hasMeaningfulFocus() {
@@ -861,28 +869,19 @@ public class AutocompleteBox<T> extends JComboBox {
 				listener.contentsChanged(event);
 			}
 			updating = false;
-
 		}
 
 		public Object getElementAt(int index) {
-			if (termHits == null)
-				return 0;
-			else 
-				return termHits.get(index).getVal();
+			return lastHits.get(index).getVal();
 		}
 
 		public int getSize() {
-			if(termHits != null)
-				logger.debug("termHits.size(): " + termHits.size());
-			if (termHits == null)
+			if (lastHits == null)
 				return 0;
 			if (getMaxResults() < 0)
-				return termHits.size();
-			else{
-				logger.debug(">> Math.min(getMaxResults(), termHits.size()): " + Math.min(getMaxResults(), termHits.size()));
-				return Math.min(getMaxResults(), termHits.size());
-			}
-
+				return lastHits.size();
+			else
+				return Math.min(getMaxResults(), lastHits.size());
 		}
 
 		public void removeListDataListener(ListDataListener l) {
