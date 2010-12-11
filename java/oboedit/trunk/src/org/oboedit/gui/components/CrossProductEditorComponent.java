@@ -36,6 +36,7 @@ import org.apache.log4j.*;
  * Text Editor -> Cross Product Tab interface
  * */
 public class CrossProductEditorComponent extends AbstractTextEditComponent {
+	private static final long serialVersionUID = 1L;
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(CrossProductEditorComponent.class);
@@ -63,14 +64,12 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 	protected ActionListener selectGenusActionListener;	
 
 	protected AutocompleteBox<IdentifiedObject> genusField = new AutocompleteBox<IdentifiedObject>(new TermAutocompleteModel());
-
+	
 	protected CrossProductPanelFocusPolicy focusPolicy = new CrossProductPanelFocusPolicy();
 
 	protected class CrossProductPanelFocusPolicy extends LayoutFocusTraversalPolicy {
 		public boolean accept(Component aComponent) {
-			if (aComponent instanceof JComboBox
-					|| SwingUtilities.getAncestorOfClass(
-							AutocompleteBox.class, aComponent) != null)
+			if (aComponent instanceof JComboBox || SwingUtilities.getAncestorOfClass(AutocompleteBox.class, aComponent) != null)
 				return super.accept(aComponent);
 			else
 				return false;
@@ -88,8 +87,11 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 	public CrossProductEditorComponent(boolean showNameFields) {
 		this.showNameFields = showNameFields;
 		setCreateNewObject(false);
+		
 		genusField.setFocusTraversalKeysEnabled(false);
 		genusField.addCommitListener(commitListener);
+		genusField.setMinLength(1);
+		
 		addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent e) {
 				Component firstComponent = focusPolicy
@@ -122,6 +124,8 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			}
 		});
 	}
+	
+	
 
 
 	/** 
@@ -138,7 +142,9 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		protected Icon selectDifferentiaIcon = Preferences.loadLibraryIcon("selector.gif");
 		JButton selectDifferentiaButton = new JButton(selectDifferentiaIcon);
 
-		protected AutocompleteBox<IdentifiedObject> parentBox = new AutocompleteBox<IdentifiedObject>(new TermAutocompleteModel());
+		// parentField for discriminating relation
+		protected AutocompleteBox<IdentifiedObject> parentField = new AutocompleteBox<IdentifiedObject>(new TermAutocompleteModel());
+		
 		protected JComboBox propertyBox = new JComboBox();
 		protected ActionListener selectDifferentiaActionListener;
 
@@ -160,8 +166,11 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			propertyBox.getInputMap().put(
 					KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "commit");
 			propertyBox.getActionMap().put("commit", commitListener);
-			parentBox.setFocusTraversalKeysEnabled(false);
-			parentBox.addCommitListener(commitListener);
+			
+
+			parentField.setMinLength(1);
+			parentField.setFocusTraversalKeysEnabled(false);
+			parentField.addCommitListener(commitListener);
 
 			deleteRelationButton.setPreferredSize(new Dimension(20, 18));
 			deleteRelationButton.setToolTipText("Delete relation");
@@ -185,14 +194,14 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			add(Box.createHorizontalStrut(30));
 			add(propertyBox);
 			add(Box.createHorizontalStrut(10));
-			add(parentBox);
+			add(parentField);
 			add(Box.createHorizontalStrut(10));
 			add(selectDifferentiaButton);
 			add(deleteRelationButton);
 		}
 
 		public OBOClass getParentTerm() {
-			return (OBOClass) parentBox.getValue();
+			return (OBOClass) parentField.getValue();
 		}
 
 		public OBOProperty getProperty() {
@@ -209,7 +218,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		 * setParentTerm: setting value for parent term and action listener for -> Go to differentia term
 		 * */
 		public void setParentTerm(final OBOClass parentTerm) {
-			parentBox.setValue(parentTerm);
+			parentField.setValue(parentTerm);
 			if (selectDifferentiaActionListener != null)
 				selectDifferentiaButton.removeActionListener(selectDifferentiaActionListener);
 			selectDifferentiaActionListener = new ActionListener() {
@@ -336,17 +345,26 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		&& !selection.getTermSubSelection().equals(oboClass);
 	}
 
+	/**
+	 * CPEC - called when user hits commit button or upon editing completion in autocommit mode
+	 * (completion in auto commit mode == selection of another term)
+	 */
 	public void commit() {
 		ActionEvent e = new ActionEvent(this, (int) Math.random() * Integer.MAX_VALUE, "commit");
 		for (ActionListener listener : actionListeners) {
+			logger.debug(">>> CPEC.commit - listener: " + listener);
 			listener.actionPerformed(e);
 		}
 	}
 
+	/**
+	 * change reporter for CPEC
+	 * called by AbstractTextEditComponent.hasChanges()
+	 * */
 	public List getChanges() {
 		List<HistoryItem> historyList = new LinkedList<HistoryItem>();
 
-		if (currentObject instanceof LinkedObject && !(currentObject.getClass().getSimpleName().toString().equalsIgnoreCase("OBOPropertyImpl")) ) {
+		if (currentObject instanceof LinkedObject && !(currentObject instanceof OBOPropertyImpl)) {
 			//get existing differentia
 			Collection<Link> differentia = ReasonerUtil.getDifferentia((OBOClass) currentObject);
 			
@@ -410,7 +428,14 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		}
 		return (RelationshipLinePanel) lastComp;
 	}
-
+	
+	/**
+	 * @return list of Link objects representing the state of the genusField and linkListPanel.
+	 * This will be one genus link and 0 or more differentia relationships.
+	 * TODO - disallow the situation where a logical definition has 0 relationships
+	 * 
+	 * this is called on commit (or change of focus in autocommit mode)
+	 */
 	public Collection<Link> getRelationshipList() {
 		LinkedList<Link> out = new LinkedList<Link>();
 		Object intersectionGenus = genusField.getValue();
@@ -425,7 +450,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		for (int i = 0; i < linkListPanel.getComponentCount(); i++) {
 			if (linkListPanel.getComponent(i) instanceof RelationshipLinePanel) {
 				RelationshipLinePanel panel = (RelationshipLinePanel) linkListPanel.getComponent(i);
-//				logger.debug("CPEC: panel.getParentTerm(): " + panel.getParentTerm());
+				logger.debug("CPEC: panel.getParentTerm(): " + panel.getParentTerm());
 				if (panel.getParentTerm() == null || panel.getProperty() == null)
 					continue;
 				OBORestriction discLink = new OBORestrictionImpl(oboClass, panel.getProperty(), panel.getParentTerm());
@@ -471,7 +496,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		genusField.setMinimumSize(new Dimension(0, font.getSize() + 5));
 		genusField.setFont(font);
 
-		//cotton ball - button to go to genus term
+		//fuzzy cotton ball - button to go to genus term
 		Icon selectGenusIcon = Preferences.loadLibraryIcon("selector.gif");
 		selectGenusButton = new JButton(selectGenusIcon);
 		selectGenusButton.setPreferredSize(new Dimension(20, 20));
