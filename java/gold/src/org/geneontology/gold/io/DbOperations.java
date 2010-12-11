@@ -4,7 +4,12 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -41,6 +46,7 @@ import org.geneontology.gold.hibernate.model.SubrelationOf;
 import org.geneontology.gold.io.postgres.SchemaManager;
 import org.geneontology.gold.io.postgres.TsvFileLoader;
 import org.hibernate.Session;
+import org.hibernate.jdbc.Work;
 import org.obolibrary.obo2owl.Obo2Owl;
 import org.obolibrary.oboformat.model.OBODoc;
 import org.obolibrary.oboformat.parser.OBOFormatParser;
@@ -61,6 +67,8 @@ public class DbOperations {
 	
 	private static Logger LOG = Logger.getLogger(DbOperations.class);
 
+	private static boolean DEBUG = LOG.isDebugEnabled();
+	
 	public DbOperations(){
 		listeners = new ArrayList<DbOperationsListener>();
 	}
@@ -390,10 +398,15 @@ public class DbOperations {
 		}
 		
 		
+		
 		GoldObjectFactory gof = GoldObjectFactory.buildDefaultFactory();
 		Session session = gof.getSession();
 		session.clear();
 
+		//delete the removed assertions
+		DeleteUtility du = new DeleteUtility(manager.getGoldDetlaTablePrefix());
+		session.doWork(du);
+		
 		saveList(session, clsList);
 		
 		saveList(session, relationList);
@@ -475,6 +488,108 @@ public class DbOperations {
 		for(Object obj: list){
 			session.saveOrUpdate(obj);
 		}
+	}
+	
+	/**
+	 * This class delete corresponding records of
+	 *  the removed assertions in the obo file during the update process
+	 * @author Shahid Manzoor
+	 *
+	 */
+	private static class DeleteUtility implements Work{
+		
+		
+		private static Hashtable<String, String[]> tables = buildTable();
+		
+		private String tablePrefix;
+		
+		private static Hashtable<String, String[]> buildTable(){
+			Hashtable<String, String[]> tables = new Hashtable<String, String[]>();
+			
+			tables.put("cls", new String[]{"id"});
+			tables.put("relation", new String[]{"id"});
+			tables.put("ontology_annotation", new String[]{"ontology", "property", "annotation_value"});
+
+			tables.put("all_only_relationship", new String[]{"ontology", "target_cls", "cls", "relation"});
+			tables.put("all_some_relationship", new String[]{"ontology", "target_cls", "cls", "relation"});
+			tables.put("annotation_assertion", new String[]{"ontology", "target_obj", "obj", "relation"});
+			tables.put("annotation_property", new String[]{"id"});
+			tables.put("cls_intersection_of", new String[]{"ontology", "target_cls", "cls"});
+			tables.put("cls_union_of", new String[]{"ontology", "target_cls", "cls"});
+			tables.put("disjoint_with", new String[]{"ontology", "disjoint_cls", "cls"});
+			tables.put("equivalent_to", new String[]{"ontology", "equivalent_cls", "cls"});
+			tables.put("inferred_all_some_relationship", new String[]{"ontology", "target_cls", "cls", "relation"});
+			tables.put("inferred_subclass_of", new String[]{"ontology", "target_cls", "cls", "relation"});
+			tables.put("never_some_relationship", new String[]{"ontology", "target_cls", "cls", "relation"});
+			tables.put("obj_alternate_id", new String[]{"obj", "id"});
+			tables.put("obj_alternate_label", new String[]{"obj", "label"});
+			tables.put("obj_definition_xref", new String[]{"obj", "xref"});
+			tables.put("obj_subset", new String[]{"obj", "ontology_subset"});
+			tables.put("obj_xref", new String[]{"obj", "xref"});
+			tables.put("ontology_imports", new String[]{"ontology", "imports_ontology"});
+			tables.put("ontology_subset", new String[]{"id"});
+			tables.put("relation_chain", new String[]{"inferred_relation", "relation1", "relation2"});
+			tables.put("relation_disjoint_with", new String[]{"ontology", "disjoint_relation", "relation"});
+			tables.put("relation_equivalent_to", new String[]{"ontology", "equivalent_relation", "relation"});
+			tables.put("subclass_of", new String[]{"ontology", "super_cls", "cls"});
+			tables.put("subrelation_of", new String[]{"ontology", "super_relation", "relation"});
+
+			
+			
+			
+			return tables;
+		}
+		
+		public DeleteUtility(String tablePrefix){
+			//tables = new java.util.Hashtable<String, String[]>();
+			
+			this.tablePrefix = tablePrefix;
+			
+		}
+		
+		public void execute(Connection connecion) throws SQLException {
+
+			Collection<String> keysSet = tables.keySet();
+			for(String table: keysSet){
+				String keys[] = tables.get(table);
+				
+				String cols = "";
+				for(String key: keys){
+					cols += key + ", ";
+				}
+				
+				cols = cols.substring(0, cols.length()-2);
+				
+				String deltaQuery = "SELECT " + cols + " FROM " + table  
+				+ " EXCEPT SELECT " + cols + " FROM " + tablePrefix+table;
+				
+				if(DEBUG)
+					LOG.debug("Find delete delta " + deltaQuery);
+				
+				ResultSet rs = connecion.createStatement().executeQuery(deltaQuery);
+				
+				while(rs.next()){
+					String deleteQuery = "DELETE FROM " + table;
+					String whereClause = " WHERE ";
+					
+					for(String key: keys){
+						whereClause += key + " = '" + rs.getString(key) + "' and ";
+					}
+					
+					whereClause = whereClause.substring(0, whereClause.length()-4);
+					
+					deleteQuery += whereClause;
+					
+					if(DEBUG)
+						LOG.debug("Deleting delta " + deleteQuery);
+					
+					connecion.createStatement().executeUpdate(deleteQuery);
+				}
+				
+			}
+			
+		}
+		
 	}
 	
 }
