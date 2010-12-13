@@ -38,6 +38,17 @@ public class Individual implements Comparable<Individual>{
         this.attributes = attributes;
     }
 
+    public Individual(String id, Set<Attribute> attributes) {
+        this.id = id;
+        this.label = label;
+        this.attributes = attributes;
+    }
+
+    public Individual(String id, String label) {
+        this.id = id;
+        this.label = label;
+    }
+
     public Individual(String id, String label, int orthologs) {
         this.id = id;
         this.label = label;
