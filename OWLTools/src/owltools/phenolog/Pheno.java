@@ -46,6 +46,10 @@ public class Pheno implements Comparable<Pheno>{
         public Pheno(String id){
             this.id = id;
         }
+        public Pheno(String id, String label){
+            this.id = id;
+            this.label = label;
+        }
         public Pheno(String id, String label, HashSet<Individual> individuals){
             this.id = id;
             this.label = label;
