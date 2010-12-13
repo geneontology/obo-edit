@@ -18,6 +18,11 @@ public class Attribute {
             this.label = label;
         }
 
+        public Attribute(String id){
+            this.id = id;
+            this.label = label;
+        }
+
 	public String getId() {
 		return id;
 	}
