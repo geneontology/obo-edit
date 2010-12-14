@@ -111,5 +111,21 @@ public class OWLQuantifiedProperty {
 		return quantifier != null && quantifier == Quantifier.CARDINALITY;
 	}
 
+	
+	public boolean equals(Object e) {
+		if(e == null && !(e instanceof OWLQuantifiedProperty))
+			return false;
+		
+		OWLQuantifiedProperty other = (OWLQuantifiedProperty) e;
+		
+		boolean qb = quantifier == other.getQuantifier();
+		
+		if(qb && getProperty() == other.getProperty()){
+			return true;
+		}
+		
+		return qb &&  (getProperty() != null && getProperty().equals(other.getProperty()));
+			
+	}
 
 }
