@@ -17,7 +17,8 @@ MAPPINGS:
 CREATE TABLE ontology_annotation (
        ontology VARCHAR,
        property VARCHAR,
-       annotation_value VARCHAR
+       annotation_value VARCHAR,
+       PRIMARY KEY (ontology, property, annotation_value)
 );
 COMMENT ON TABLE ontology_annotation IS 'A property of an ontology
 Example properties: saved_by
@@ -28,7 +29,8 @@ MAPPINGS:
 
 CREATE TABLE ontology_imports (
        ontology VARCHAR,
-       imports_ontology VARCHAR
+       imports_ontology VARCHAR,
+       PRIMARY KEY (ontology, imports_ontology)
 );
 
 -- ****************************************
@@ -189,7 +191,8 @@ MAPPINGS:
 -- ****************************************
 CREATE TABLE obj_subset (
        obj VARCHAR,
-       ontology_subset VARCHAR
+       ontology_subset VARCHAR,
+       PRIMARY KEY (obj, ontology_subset)
 );
 
 COMMENT ON TABLE obj_subset IS 'Relates an ontology class or relation to an ontology_subset.
@@ -204,7 +207,8 @@ MAPPINGS:
 -- ****************************************
 CREATE TABLE obj_definition_xref (
        obj VARCHAR,
-       xref VARCHAR
+       xref VARCHAR,
+       PRIMARY KEY (obj, xref)
 );
 
 COMMENT ON TABLE obj_definition_xref IS 'Provenance for a class or relation textual definition
@@ -230,7 +234,8 @@ CREATE TABLE obj_alternate_label (
        label VARCHAR,
        synonym_scope VARCHAR,
        synonym_type VARCHAR,
-       synonym_xref VARCHAR
+       synonym_xref VARCHAR,
+       PRIMARY KEY (obj, label)
 );
 
 COMMENT ON TABLE obj_alternate_label IS 'Synonyms and alternative labels.
@@ -269,7 +274,8 @@ MAPPINGS:
 -- ****************************************
 CREATE TABLE obj_alternate_id (
        obj VARCHAR,
-       id VARCHAR
+       id VARCHAR,
+       PRIMARY KEY (obj, id)
 );
 
 COMMENT ON TABLE obj_alternate_id IS 'An alternive identifier for a class or relation, typically arising from class merges.
@@ -284,7 +290,7 @@ CREATE TABLE obj_xref (
        xref VARCHAR,
        xref_description VARCHAR,
 
-       UNIQUE(obj,xref)
+       PRIMARY KEY(obj,xref)
 );
 
 CREATE TABLE annotation_assertion (
@@ -292,7 +298,8 @@ CREATE TABLE annotation_assertion (
        obj VARCHAR,
        target_obj VARCHAR,
 
-       ontology VARCHAR
+       ontology VARCHAR,
+       PRIMARY KEY (relation, obj, target_obj, ontology)
 );
 COMMENT ON TABLE annotation_assertion IS 'A non-logical relationship between two objects (classes or relations).
 When an obo consider tag is being used, relation=consider
@@ -314,7 +321,8 @@ CREATE TABLE subclass_of (
        cls VARCHAR,
        super_cls VARCHAR,
 
-       ontology VARCHAR
+       ontology VARCHAR,
+       PRIMARY KEY (cls, super_cls, ontology)
 );
 COMMENT ON TABLE subclass_of IS 'holds iff: cls SubClassOf super_cls';
 
@@ -323,7 +331,8 @@ CREATE TABLE all_some_relationship (
        relation VARCHAR,
        target_cls VARCHAR,
 
-       ontology VARCHAR
+       ontology VARCHAR,
+       PRIMARY KEY (cls, relation, target_cls, ontology)
 );
 COMMENT ON TABLE all_some_relationship IS 'holds iff: cls SubClassOf rel Some tgt';
 
@@ -332,7 +341,9 @@ CREATE TABLE all_only_relationship (
        relation VARCHAR,
        target_cls VARCHAR,
 
-       ontology VARCHAR
+       ontology VARCHAR,
+       PRIMARY KEY (cls, relation, target_cls, ontology)
+       
 );
 COMMENT ON TABLE all_only_relationship IS 'holds iff: cls SubClassOf rel Only tgt
 EXAMPLE: lactation only_in_taxon Mammalia ==> lactation SubClassOf in_taxon only Mammalia
@@ -343,7 +354,8 @@ CREATE TABLE never_some_relationship (
        target_cls VARCHAR,
        relation VARCHAR,
 
-       ontology VARCHAR
+       ontology VARCHAR,
+       PRIMARY KEY (cls, relation, target_cls, ontology)
 );
 COMMENT ON TABLE never_some_relationship IS 'holds iff: cls SubClassOf ComplementOf(rel Some tgt)
 EXAMPLE: odontogenesis never_in_taxon Aves ==> odontogenesis SubClassOf ComplementOf(in_taxon some Aves) [taxon_go_triggers]
@@ -353,7 +365,8 @@ CREATE TABLE subrelation_of (
        relation VARCHAR,
        super_relation VARCHAR,
 
-       ontology VARCHAR
+       ontology VARCHAR,
+       PRIMARY KEY (relation, super_relation, ontology)
 );
 COMMENT ON TABLE subrelation_of IS 'holds iff: cls SubObjectPropertyOf super_cls
 '; 
@@ -362,7 +375,9 @@ CREATE TABLE relation_disjoint_with (
        relation VARCHAR,
        disjoint_relation VARCHAR,
 
-       ontology VARCHAR
+       ontology VARCHAR,
+       
+       PRIMARY KEY (relation, disjoint_relation, ontology)
 );
 
 COMMENT ON TABLE relation_disjoint_with IS 'holds iff: DisjointObjectProperties(relation disjoint_relation)
@@ -372,7 +387,8 @@ CREATE TABLE relation_equivalent_to (
        relation VARCHAR,
        equivalent_relation VARCHAR,
 
-       ontology VARCHAR
+       ontology VARCHAR,
+       PRIMARY KEY (relation, equivalent_relation, ontology)
 );
 COMMENT ON TABLE relation_equivalent_to IS 'holds iff: EquivalentObjectProperties(relation equivalent_relation)
 ';
@@ -381,7 +397,8 @@ CREATE TABLE relation_chain (
        inferred_relation VARCHAR,
        relation1 VARCHAR,
        relation2 VARCHAR,
-       is_bidirectional BOOLEAN
+       is_bidirectional BOOLEAN,
+       PRIMARY KEY (inferred_relation, relation1, relation2)
 );
 
 COMMENT ON TABLE relation_chain IS 'A rule defining how two relations are composed.
@@ -409,7 +426,9 @@ CREATE TABLE disjoint_with (
        cls VARCHAR,
        disjoint_cls VARCHAR,
 
-       ontology VARCHAR
+       ontology VARCHAR,
+       PRIMARY KEY (cls, disjoint_cls, ontology)
+       
 );
 
 COMMENT ON TABLE disjoint_with IS 'Two classes are disjoint if they share no instances or subclasses in common.
@@ -423,7 +442,8 @@ CREATE TABLE equivalent_to (
        cls VARCHAR,
        equivalent_cls VARCHAR,
 
-       ontology VARCHAR
+       ontology VARCHAR,
+       PRIMARY KEY (cls, equivalent_cls, ontology)
 );
 
 CREATE TABLE cls_intersection_of (
@@ -431,7 +451,8 @@ CREATE TABLE cls_intersection_of (
        relation VARCHAR,
        target_cls VARCHAR,
 
-       ontology VARCHAR
+       ontology VARCHAR,
+       UNIQUE (cls, relation, target_cls, ontology)
 );
 
 COMMENT ON TABLE cls_intersection_of IS 'A shorthand for stating necessary and sufficient definitions.
@@ -460,7 +481,8 @@ CREATE TABLE cls_union_of (
        cls VARCHAR,
        target_cls VARCHAR,
 
-       ontology VARCHAR
+       ontology VARCHAR,
+       PRIMARY KEY (cls, target_cls, ontology)
 );
 COMMENT ON TABLE cls_union_of IS 'A shorthand declaring a class to be equivalent to a union of other classes.
 For any cls, the set of all_union_of tuples are collected. This constitutes a conjunctive expression that is equivalent to cls.
@@ -495,7 +517,8 @@ CREATE TABLE inferred_subclass_of (
        is_reflexive BOOLEAN,
 	   relation VARCHAR,
 	   quantifier VARCHAR,
-       ontology VARCHAR
+       ontology VARCHAR,
+       PRIMARY KEY (cls, target_cls, ontology)
 );
 
 
@@ -507,6 +530,8 @@ CREATE TABLE inferred_all_some_relationship (
        is_reflexive BOOLEAN,
 	   quantifier VARCHAR,
        ontology VARCHAR
+--  TODO      PRIMARY KEY (cls, target_cls, ontology, relation)
+       
 );
 COMMENT ON TABLE inferred_all_some_relationship IS 'holds iff: cls SubClassOf rel Some tgt';
 
@@ -517,7 +542,9 @@ CREATE TABLE inferred_all_only_relationship (
        is_direct BOOLEAN,
        is_reflexive BOOLEAN,
 	   quantifier VARCHAR,
-       ontology VARCHAR
+       ontology VARCHAR,
+        PRIMARY KEY (cls, target_cls, ontology, relation)
+       
 );
 COMMENT ON TABLE inferred_all_only_relationship IS 'holds iff: cls SubClassOf rel Only tgt
 EXAMPLE: lactation only_in_taxon Mammalia ==> lactation SubClassOf in_taxon only Mammalia
@@ -531,7 +558,9 @@ CREATE TABLE inferred_never_some_relationship (
        is_direct BOOLEAN,
        is_reflexive BOOLEAN,
 	   quantifier VARCHAR,
-       ontology VARCHAR
+       ontology VARCHAR,
+       PRIMARY KEY (cls, target_cls, ontology, relation)
+
 );
 COMMENT ON TABLE inferred_never_some_relationship IS 'holds iff: cls SubClassOf ComplementOf(rel Some tgt)
 EXAMPLE: odontogenesis never_in_taxon Aves ==> odontogenesis SubClassOf ComplementOf(in_taxon some Aves) [taxon_go_triggers]
@@ -544,7 +573,8 @@ CREATE TABLE inferred_subrelation_of (
        is_direct BOOLEAN,
        is_reflexive BOOLEAN,
 
-       ontology VARCHAR
+       ontology VARCHAR,
+       PRIMARY KEY (relation, super_relation, ontology)
 );
 COMMENT ON TABLE inferred_subrelation_of IS 'holds iff: cls SubObjectPropertyOf super_cls
 ';
