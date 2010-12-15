@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -404,7 +405,8 @@ public class DbOperations {
 		session.clear();
 
 		//delete the removed assertions
-		DeleteUtility du = new DeleteUtility(manager.getGoldDetlaTablePrefix());
+		//TODO: implement it for mult ontologies
+		DeleteUtility du = new DeleteUtility(manager.getGoldDetlaTablePrefix(), wrapper.getOntologyId());
 		session.doWork(du);
 		
 		saveList(session, clsList);
@@ -498,22 +500,55 @@ public class DbOperations {
 	 */
 	private static class DeleteUtility implements Work{
 		
+		//delete operation is executed for this table in the first pass
+		private static Hashtable<String, String[]> tables = buildTables();
+		//delete operation is executed for this table in the second pass
+		private static Hashtable<String, String[]> dependentTables = buildTDependentables();
 		
-		private static Hashtable<String, String[]> tables = buildTable();
+		private static Hashtable<String, String[]> objTablesDependency = buildObjTablesDependency();
 		
+		
+		//the ontology which is being updated
+		private String ontology;
 		private String tablePrefix;
-		
-		private static Hashtable<String, String[]> buildTable(){
+
+		private static Hashtable<String, String[]> buildObjTablesDependency(){
 			Hashtable<String, String[]> tables = new Hashtable<String, String[]>();
 			
-			tables.put("cls", new String[]{"id"});
-			tables.put("relation", new String[]{"id"});
+			tables.put("obj_subset", new String[]{"cls", "relation", "annotation_property"});
+			tables.put("obj_xref", new String[]{"cls", "relation", "annotation_property"});
+			tables.put("obj_alternate_id", new String[]{"cls", "relation", "annotation_property"});
+			tables.put("obj_alternate_label", new String[]{"cls", "relation", "annotation_property"});
+			tables.put("obj_definition_xref", new String[]{"cls", "relation", "annotation_property"});
+			
+			return tables;
+		}
+		
+		private static Hashtable<String, String[]> buildTDependentables(){
+			Hashtable<String, String[]> tables = new Hashtable<String, String[]>();
+		
+			tables.put("obj_subset", new String[]{"obj", "ontology_subset"});
+			tables.put("obj_xref", new String[]{"obj", "xref"});
+			tables.put("obj_alternate_id", new String[]{"obj", "id"});
+			tables.put("obj_alternate_label", new String[]{"obj", "label"});
+			tables.put("obj_definition_xref", new String[]{"obj", "xref"});
+		
+			
+			return tables;
+		}		
+		
+		
+		private static Hashtable<String, String[]> buildTables(){
+			Hashtable<String, String[]> tables = new Hashtable<String, String[]>();
+			
+			tables.put("cls", new String[]{"id", "ontology"});
+			tables.put("relation", new String[]{"id", "ontology"});
 			tables.put("ontology_annotation", new String[]{"ontology", "property", "annotation_value"});
 
 			tables.put("all_only_relationship", new String[]{"ontology", "target_cls", "cls", "relation"});
 			tables.put("all_some_relationship", new String[]{"ontology", "target_cls", "cls", "relation"});
 			tables.put("annotation_assertion", new String[]{"ontology", "target_obj", "obj", "relation"});
-			tables.put("annotation_property", new String[]{"id"});
+			tables.put("annotation_property", new String[]{"id", "ontology"});
 			tables.put("cls_intersection_of", new String[]{"ontology", "target_cls", "cls"});
 			tables.put("cls_union_of", new String[]{"ontology", "target_cls", "cls"});
 			tables.put("disjoint_with", new String[]{"ontology", "disjoint_cls", "cls"});
@@ -521,33 +556,30 @@ public class DbOperations {
 			tables.put("inferred_all_some_relationship", new String[]{"ontology", "target_cls", "cls", "relation"});
 			tables.put("inferred_subclass_of", new String[]{"ontology", "target_cls", "cls", "relation"});
 			tables.put("never_some_relationship", new String[]{"ontology", "target_cls", "cls", "relation"});
-			tables.put("obj_alternate_id", new String[]{"obj", "id"});
-			tables.put("obj_alternate_label", new String[]{"obj", "label"});
-			tables.put("obj_definition_xref", new String[]{"obj", "xref"});
-			tables.put("obj_subset", new String[]{"obj", "ontology_subset"});
-			tables.put("obj_xref", new String[]{"obj", "xref"});
+			
+			//TODO: TBD
 			tables.put("ontology_imports", new String[]{"ontology", "imports_ontology"});
+			//TODO: special case of deletion
 			tables.put("ontology_subset", new String[]{"id"});
+			//TODO: TBD
 			tables.put("relation_chain", new String[]{"inferred_relation", "relation1", "relation2"});
 			tables.put("relation_disjoint_with", new String[]{"ontology", "disjoint_relation", "relation"});
 			tables.put("relation_equivalent_to", new String[]{"ontology", "equivalent_relation", "relation"});
 			tables.put("subclass_of", new String[]{"ontology", "super_cls", "cls"});
 			tables.put("subrelation_of", new String[]{"ontology", "super_relation", "relation"});
 
-			
-			
-			
 			return tables;
 		}
 		
-		public DeleteUtility(String tablePrefix){
-			//tables = new java.util.Hashtable<String, String[]>();
-			
+		public DeleteUtility(String tablePrefix, String ontology){
 			this.tablePrefix = tablePrefix;
+			this.ontology= ontology;
 			
 		}
 		
-		public void execute(Connection connecion) throws SQLException {
+		//It deletes records from the tables 
+		//which don't jave ontology column
+		private void executeDependentTables(Connection connecion, Hashtable<String, String[]> tables) throws SQLException {
 
 			Collection<String> keysSet = tables.keySet();
 			for(String table: keysSet){
@@ -555,13 +587,78 @@ public class DbOperations {
 				
 				String cols = "";
 				for(String key: keys){
-					cols += key + ", ";
+					cols +=  table + "." + key + ", ";
 				}
 				
 				cols = cols.substring(0, cols.length()-2);
 				
-				String deltaQuery = "SELECT " + cols + " FROM " + table  
-				+ " EXCEPT SELECT " + cols + " FROM " + tablePrefix+table;
+				for(String onDep: objTablesDependency.get(table)){
+				
+					String deltaQuery = "SELECT " +  cols + " FROM " + table  + ", " + onDep
+					 + " WHERE  obj = " + onDep + ".id and ontology = '" + this.ontology + "'"  +
+					 " EXCEPT SELECT " +  cols + " FROM " + tablePrefix + table  + " as " + table
+					 + ", " + tablePrefix + onDep
+					 + " WHERE  obj = " + tablePrefix + onDep + ".id and ontology = '" + this.ontology + "'";
+					
+					if(DEBUG)
+						LOG.debug("Find delete delta " + deltaQuery);
+					
+					ResultSet rs = connecion.createStatement().executeQuery(deltaQuery);
+					
+					while(rs.next()){
+						String deleteQuery = "DELETE FROM " + table;
+						String whereClause = " WHERE ";
+						
+						for(String key: keys){
+							String value = rs.getString(key);
+							whereClause += key + " = '" + value + "' and ";
+						}
+	
+						whereClause = whereClause.substring(0, whereClause.length()-4);
+						
+						deleteQuery += whereClause;
+						
+						if(DEBUG)
+							LOG.debug("Deleting delta " + deleteQuery);
+						
+						connecion.createStatement().executeUpdate(deleteQuery);
+						
+					}
+					
+					
+					}
+				
+			}
+			
+		}
+		
+		//This method deletes records from the tables which
+		//have ontology column
+		private void execute(Connection connecion, Hashtable<String, String[]> tables) throws SQLException {
+
+			Collection<String> keysSet = tables.keySet();
+			for(String table: keysSet){
+				String keys[] = tables.get(table);
+				
+				String cols = "";
+				boolean containsOntologyColumn = false;
+				for(String key: keys){
+					cols += key + ", ";
+					
+					if("ontology".equals(key)){
+						containsOntologyColumn = true;
+					}
+				}
+				
+				cols = cols.substring(0, cols.length()-2);
+				
+				String where = "";
+				
+				if(containsOntologyColumn)
+					where = " WHERE ontology = '" + this.ontology + "' ";
+				
+				String deltaQuery = "SELECT " + cols + " FROM " + table  + where
+				+ " EXCEPT SELECT " + cols + " FROM " + tablePrefix+table + where;
 				
 				if(DEBUG)
 					LOG.debug("Find delete delta " + deltaQuery);
@@ -573,9 +670,10 @@ public class DbOperations {
 					String whereClause = " WHERE ";
 					
 					for(String key: keys){
-						whereClause += key + " = '" + rs.getString(key) + "' and ";
+						String value = rs.getString(key);
+						whereClause += key + " = '" + value + "' and ";
 					}
-					
+
 					whereClause = whereClause.substring(0, whereClause.length()-4);
 					
 					deleteQuery += whereClause;
@@ -584,9 +682,19 @@ public class DbOperations {
 						LOG.debug("Deleting delta " + deleteQuery);
 					
 					connecion.createStatement().executeUpdate(deleteQuery);
+					
 				}
 				
 			}
+			
+		}
+		
+		public void execute(Connection connecion) throws SQLException {
+
+			//run first pass
+			execute(connecion, tables);
+			//run second pass
+			executeDependentTables(connecion, dependentTables);
 			
 		}
 		

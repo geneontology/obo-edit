@@ -16,7 +16,6 @@ import org.geneontology.gold.hibernate.model.ClsIntersectionOf;
 import org.geneontology.gold.hibernate.model.ClsUnionOf;
 import org.geneontology.gold.hibernate.model.DisjointWith;
 import org.geneontology.gold.hibernate.model.EquivalentTo;
-import org.geneontology.gold.hibernate.model.GOModel;
 import org.geneontology.gold.hibernate.model.InferredAllSomeRelationship;
 import org.geneontology.gold.hibernate.model.InferredSubclassOf;
 import org.geneontology.gold.hibernate.model.NeverSomeRelationship;

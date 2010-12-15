@@ -11,7 +11,7 @@ public class OntologyImports extends GOModel implements java.io.Serializable {
 	private String importsOntology;
 
 	public OntologyImports() {
-		String keys[] = {"ontology", "importsOntology"};
+		String keys[] = {"ontology"};
 		this.initUniqueConstraintFields(OntologyImports.class, keys);
 	}
 

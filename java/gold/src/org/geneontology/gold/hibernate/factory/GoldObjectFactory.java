@@ -152,7 +152,7 @@ public class GoldObjectFactory {
 				" and property=? and annotation_value=?")
 						.setString(0, ontology)
 						.setString(1, property)
-						.setString(1, annotationValue)
+						.setString(2, annotationValue)
 						.uniqueResult();
 		
 		session.getTransaction().commit();
