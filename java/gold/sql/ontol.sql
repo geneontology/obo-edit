@@ -28,9 +28,8 @@ MAPPINGS:
  LEAD: n/a';
 
 CREATE TABLE ontology_imports (
-       ontology VARCHAR,
-       imports_ontology VARCHAR,
-       PRIMARY KEY (ontology, imports_ontology)
+       ontology VARCHAR PRIMARY KEY,
+       imports_ontology VARCHAR
 );
 
 -- ****************************************

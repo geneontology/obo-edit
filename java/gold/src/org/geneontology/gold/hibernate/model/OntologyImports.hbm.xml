@@ -3,11 +3,13 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.OntologyImports" table="ontology_imports">
-        <composite-id>
-	       <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
-            <key-property name="importsOntology" type="string">
-                <column name="imports_ontology" />
-            </key-property>
-        </composite-id>
+
+	    <composite-id>
+	    	<key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
+		</composite-id>
+       <property name="importsOntology" type="string">
+            <column name="imports_ontology">
+            </column>
+        </property>
     </class>
 </hibernate-mapping>
