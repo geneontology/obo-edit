@@ -529,8 +529,8 @@ CREATE TABLE inferred_all_some_relationship (
        is_direct BOOLEAN,
        is_reflexive BOOLEAN,
 	   quantifier VARCHAR,
-       ontology VARCHAR
---  TODO      PRIMARY KEY (cls, target_cls, ontology, relation)
+       ontology VARCHAR,
+	   PRIMARY KEY (cls, target_cls, ontology, relation)
        
 );
 COMMENT ON TABLE inferred_all_some_relationship IS 'holds iff: cls SubClassOf rel Some tgt';
