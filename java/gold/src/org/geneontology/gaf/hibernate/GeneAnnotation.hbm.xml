@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.geneontology.gaf.hibernate.Bioentity.GeneAnnotation" table="gene_annotation">
+        <composite-id>
+            <key-property name="bioentity" type="string">
+                <column name="bioentity" />
+            </key-property>
+            <key-property name="cls" type="string">
+                <column name="cls" />
+            </key-property>
+            <key-property name="referenceId" type="string">
+                <column name="reference_id" />
+            </key-property>
+            <key-property name="evidenceCls" type="string">
+                <column name="evidence_cls" />
+            </key-property>
+
+
+        </composite-id>
+
+            <property name="qualifierExpression" type="string">
+                <column name="qualifier_expression" />
+            </property>
+            <property name="isContributesTo" type="java.lang.Boolean">
+                <column name="is_contributes_to" />
+            </property>
+
+            <property name="isIntegralTo" type="java.lang.Boolean">
+                <column name="is_integral_to" />
+            </property>
+
+            <property name="referenceId" type="string">
+                <column name="reference_id" />
+            </property>
+            <property name="withExpression" type="string">
+                <column name="with_expression" />
+            </property>
+            <property name="actsOnTaxonId" type="integer">
+                <column name="acts_on_taxon_id" />
+            </property>
+            <property name="lastUpdateDate" type="string">
+                <column name="last_update_date" />
+            </property>
+            <property name="assignedBy" type="string">
+                <column name="assigned_by" />
+            </property>
+           <property name="extension_expression" type="string">
+                <column name="extension_expression" />
+            </property>
+           <property name="geneProductForm" type="string">
+                <column name="gene_product_form" />
+            </property>
+
+    </class>
+</hibernate-mapping>

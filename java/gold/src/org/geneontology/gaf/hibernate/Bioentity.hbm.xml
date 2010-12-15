@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.geneontology.gaf.hibernate.Bioentity" table="bioentity">
+        <id name="id" type="string">
+            <column name="id" />
+            <generator class="assigned" />
+        </id>
+        <property name="symbol" type="string">
+            <column name="symbol">
+            </column>
+        </property>
+
+        <property name="fullName" type="string">
+            <column name="full_name">
+            </column>
+        </property>
+
+        <property name="typeCls" type="string">
+            <column name="type_cls">
+            </column>
+        </property>
+
+        <property name="ncbiTaxonId" type="string">
+            <column name="ncbi_taxon_id">
+            </column>
+        </property>
+
+       <property name="db" type="string">
+            <column name="db">
+            </column>
+        </property>
+
+        </class>
+ </hibernate-mapping>

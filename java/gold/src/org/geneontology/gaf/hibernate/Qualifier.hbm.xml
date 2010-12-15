@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.geneontology.gaf.hibernate.Bioentity.Qualifier" table="qualifier">
+        <composite-id>
+            <key-property name="qualifierExpression" type="string">
+                <column name="qualifier_expression" />
+            </key-property>
+            <key-property name="cls" type="string">
+                <column name="cls" />
+            </key-property>
+        </composite-id>
+
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.geneontology.gaf.hibernate.Bioentity.IdMapping" table="id_mapping">
+        <composite-id>
+            <key-property name="sourceId" type="string">
+                <column name="source_id" />
+            </key-property>
+            <key-property name="targetId" type="string">
+                <column name="target_id" />
+            </key-property>
+            <key-property name="relationship" type="string">
+                <column name="relationship" />
+            </key-property>
+            <key-property name="mappingSource" type="string">
+                <column name="mapping_source" />
+            </key-property>
+        </composite-id>
+
+    </class>
+</hibernate-mapping>
