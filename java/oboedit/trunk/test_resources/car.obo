@@ -1,0 +1,30 @@
+[Term]
+id: TEST:0000001
+name: car
+
+[Term]
+id: TEST:0000002
+name: blue
+
+[Term]
+id: TEST:0000003
+name: blue car
+
+[Term]
+id: TEST:0000004
+name: blue VW
+
+[Term]
+id: TEST:0000005
+name: VW
+
+[Typedef]
+id: has_color
+name: has_color
+
+[Typedef]
+id: has_make
+name: has_make
+
+
+
