@@ -393,19 +393,41 @@ public class AutocompleteBox<T> extends JComboBox {
 		return false;
 	}
 
+	
+	/**
+	 * @param object
+	 * set object as selected item
+	 */
 	public void setValue(T object) {
-		if (object == null)
+		logger.debug(">> ACB.setValue");
+		if (object == null){
+			logger.debug("ACB.setValue - received null object - setting selected object to NULL");
 			setSelectedItem(null);
+		}
+			
 		else {
+			logger.debug(">> ACB.getValue - getting list of values from autocompleteModel.getDisplayValues");
 			List values = autocompleteModel.getDisplayValues(object);
-			if (values.size() > 0)
+			if (values.size() > 0){
+				logger.debug("values.size() > 0");
 				setSelectedItem(values.get(0));
-			else
+			}		
+			else{
+				logger.debug(">> got no values from autocompleteModel.getDisplayValues - setting selected item to null ");
 				setSelectedItem(null);
+			}
+				
+			
+			
 		}
 	}
 
+	/**
+	 * @return selected
+	 * gets selected item from the JComboBox data model and returns selected value
+	 */
 	public T getValue() {
+		logger.debug(">> ACB.getValue");
 		// original code before forcefully applying the genus term
 		//		if (getSelectedItem() == null)
 		//			return null;
@@ -414,7 +436,6 @@ public class AutocompleteBox<T> extends JComboBox {
 		//		logger.debug("> this.getItemCount(): " + this.getItemCount());
 		//		logger.debug(">> getItemAt(0): " + getItemAt(0));
 		Object selected;
-
 		if(getSelectedItem() == null){
 			return null;
 //			if(lastHits == null)
@@ -455,15 +476,21 @@ public class AutocompleteBox<T> extends JComboBox {
 	 * set autocompleted object as selected item
 	 */
 	public void setSelectedItem(Object anObject) {
+		logger.debug(">> ACB.setSelectedItem");
 		if (anObject != null) {
-			logger.info("AutocompleteBox.setSelectedItem: TRYING to select " + anObject + ", type = " + anObject.getClass());
+			logger.debug(" anObject is not null - TRYING to select " + anObject + ", type = " + anObject.getClass());
 		}
+		
 		if (anObject == null) {
+			logger.debug(">> anObject is null - setting doSetSelected to null");
 			doSetSelectedItem(null);
-		} else if (autocompleteModel.getDisplayType().isAssignableFrom(anObject.getClass())) {
+		} 
+		else if (autocompleteModel.getDisplayType().isAssignableFrom(anObject.getClass())) {
+			logger.debug("got an assignable object from autoCompleteModel - sending anObject");
 			doSetSelectedItem(anObject);
 			Object selected = getSelectedItem();
-		} else if (autocompleteModel.getOutputType().isAssignableFrom(anObject.getClass())) {
+		} 
+		else if (autocompleteModel.getOutputType().isAssignableFrom(anObject.getClass())) {
 			List values = autocompleteModel.getDisplayValues(anObject);
 			if (values.size() > 0)
 				doSetSelectedItem(values.get(0));
