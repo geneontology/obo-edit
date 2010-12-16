@@ -6,7 +6,7 @@
 ####
 #### Note: Test::WWW::Mechanize::CGIApp seems very handy for
 #### auto-testing...but in this case, we're just stealing some of the
-#### mechanism to get our data with depending on silly ol' apache.
+#### mechanism to get our data without depending on silly ol' apache.
 ####
 
 BEGIN { require "config.pl"; }
@@ -19,7 +19,7 @@ use lib $ENV{GO_SVN_ROOT} . '/gobo-dbic';
 use utf8;
 use strict;
 use Data::Dumper;
-#use Test::More qw(no_plan);
+use Test::More qw(no_plan);
 use Test::WWW::Mechanize::CGIApp;
 use AmiGO::WebApp::HTMLClient;
 use Getopt::Std;
