@@ -150,6 +150,7 @@ public class AutocompleteBox<T> extends JComboBox {
 				if (allowNonModelValues
 						|| (AutocompleteBox.this.getSelectedItem() == null
 								&& getText().length() >= getMinLength() && getItemCount() > 0)) {
+					// setSelectedIndex(0);
 					commit(true);
 				} else if (getSelectedItem() != null) {
 					String s = autocompleteModel.toString(getSelectedItem());
@@ -415,18 +416,19 @@ public class AutocompleteBox<T> extends JComboBox {
 		Object selected;
 
 		if(getSelectedItem() == null){
-			if(lastHits == null)
-				return null;
-			if(lastHits !=null && getItemAt(0) == null)
-				return null;
-			if(lastHits != null && getItemAt(0)!=null){
-				selected = getItemAt(0);
-				return (T) autocompleteModel.getOutputValue(selected);
-			}
-			
-			if(lastHits != null && getItemAt(1)!=null){
-				logger.debug("ACB.getValue() `: " + getItemAt(1));
-			}
+			return null;
+//			if(lastHits == null)
+//				return null;
+//			if(lastHits !=null && getItemAt(0) == null)
+//				return null;
+//			if(lastHits != null && getItemAt(0)!=null){
+//				selected = getItemAt(0);
+//				return (T) autocompleteModel.getOutputValue(selected);
+//			}
+//			
+//			if(lastHits != null && getItemAt(1)!=null){
+//				logger.debug("ACB.getValue(): " + getItemAt(1));
+//			}
 				
 		} else{
 			selected = getSelectedItem();
@@ -439,7 +441,7 @@ public class AutocompleteBox<T> extends JComboBox {
 			}
 			return (T) autocompleteModel.getOutputValue(selected);
 		}
-		return null;
+//		return null;
 	}
 
 	@Override
