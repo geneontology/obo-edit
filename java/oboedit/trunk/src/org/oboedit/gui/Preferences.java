@@ -303,6 +303,9 @@ public class Preferences {
 		return new File(getOBOEditPrefsDir()+"/dict", "allowedrepeats.dict");
 	}
 
+	/**
+	 * @return true if user is in autocommit mode
+	 */
 	public boolean getAutoCommitTextEdits() {
 		return autoCommitTextEdits;
 	}
