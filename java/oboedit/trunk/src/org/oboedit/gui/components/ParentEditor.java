@@ -315,7 +315,11 @@ public class ParentEditor extends AbstractGUIComponent {
 
 			boolean first = true;
 			for (int i = 0; i < sortedList.size(); i++) {
-				final OBORestriction tr = (OBORestriction) sortedList.get(i);
+				// previous expected this to be an OBORestriction, but this is not true
+				// for reasoner links. I believe this was introduced to support cardinality.
+				// I have changed this to be a Link, and only the cardinality-specific code
+				// below does the cast, after checking the class
+				final Link tr = sortedList.get(i);
 //				logger.debug("tr: " + tr);
 				final LinkedObject parent = tr.getParent();
 
@@ -438,32 +442,33 @@ public class ParentEditor extends AbstractGUIComponent {
 				controlsPanel.add(topBox);
 
 				Box bottomBox = Box.createHorizontalBox();
-				if (!TermUtil.isProperty(parent)) {
+				if (!TermUtil.isProperty(parent) && tr instanceof OBORestriction) {
+					final OBORestriction rtr = (OBORestriction)tr;
 					JButton cardinalityButton = new JButton();
 					cardinalityButton.setFont(font);
 					cardinalityButton.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							editCardinality(tr);
+							editCardinality(rtr);
 						}
 					});
 					cardinalityButton.setEnabled(enabled);
 
 					String label = null;
-					if (tr.getCardinality() != null) {
-						label = tr.getCardinality() + "";
-					} else if (tr.getMinCardinality() == null
-							&& tr.getMaxCardinality() == null) {
+					if (rtr.getCardinality() != null) {
+						label = rtr.getCardinality() + "";
+					} else if (rtr.getMinCardinality() == null
+							&& rtr.getMaxCardinality() == null) {
 						label = "[*,*]";
 					} else {
-						if (tr.getMinCardinality() != null) {
-							label = "[" + tr.getMinCardinality() + ",";
+						if (rtr.getMinCardinality() != null) {
+							label = "[" + rtr.getMinCardinality() + ",";
 						}
 
-						if (tr.getMaxCardinality() != null) {
+						if (rtr.getMaxCardinality() != null) {
 							if (label == null)
-								label = "[*," + tr.getMaxCardinality() + "]";
+								label = "[*," + rtr.getMaxCardinality() + "]";
 							else
-								label = label + tr.getMaxCardinality() + "]";
+								label = label + rtr.getMaxCardinality() + "]";
 						} else if (label != null) {
 							label = label + "*]";
 						}
