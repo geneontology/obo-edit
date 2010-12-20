@@ -1277,8 +1277,7 @@ public class DefaultOBOParser implements OBOParser {
 			
 			if (type == null) {
 				if (allowDanglingParents) {
-					type = (OBOProperty) objectFactory.createDanglingObject(rs
-							.getType(), true);
+					type = (OBOProperty) objectFactory.createDanglingObject(rs.getType(), true);
 					logger.info("No type for " + child + "--added dangling type object " + type);
 				} else {
 					throw new OBOParseException("Unrecognized type "

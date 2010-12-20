@@ -14,7 +14,6 @@ import org.obo.identifier.IDProfile;
 import org.obo.identifier.IDRule;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.ReasonerFactory;
-import org.obo.reasoner.impl.LinkPileReasonerFactory;
 import org.obo.reasoner.impl.TrimmedLinkDatabase;
 import org.obo.reasoner.rbr.RuleBasedReasonerFactory;
 import org.obo.util.ReasonerUtil;
