@@ -172,6 +172,11 @@ public class OBORestrictionImpl implements OBORestriction {
 		return (metadata == null ? null : metadata.namespace);
 	}
 
+	/**
+	 * Create a restriction object with both type and parent set to null
+	 * 
+	 * @param child
+	 */
 	public OBORestrictionImpl(LinkedObject child) {
 		this(child, (OBOProperty) null, (LinkedObject) null);
 	}
