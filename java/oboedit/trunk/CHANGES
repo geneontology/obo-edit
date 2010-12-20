@@ -3,13 +3,50 @@
 ================================
 What's New in OBO-Edit v2.1-beta7
 ================================
-Bug Fixes: 
+Bug Fixes:
+[ geneontology-Bugs- ]
+
+[ geneontology-Bugs-2514196 ] can't commit with autocommit on
+
+[ geneontology-Bugs-3035322 ] 2.1 betas - GraphViz problem
+
+[ geneontology-Bugs-1960379 ] "Lock View" in OTE not working
+
+[ geneontology-Bugs-3038822 ] Graph Editor not showing all ancestors in beta 5
+
+[ geneontology-Bugs-3039306 ] Cannot execute on Windows 7
+
+[ geneontology-Bugs-2823194 ] severe XP editor flaky-ness returns!
+
+[ geneontology-Bugs-3038713 ] Cross product editor broken in beta 5
+ 
+[ geneontology-Bugs-2971265 ] spontaneously generated genus
+
+[ geneontology-Bugs-2142711 ] 'pending edits' message at odd times incl. dbxref addition
+
+[ geneontology-Bugs-3076730 ] Filter on save problems OE b4
+
 [ geneontology-Bugs-2948445 ] Loss of intersection status on merge
+
 [ geneontology-Bugs-3029689 ] Subset manager - subset name change not saved
+
 [ geneontology-Bugs-2745699 ] 2.0 graph viewer now shows only one parent
+
 [ geneontology-Bugs-3049416 ] Selection from auto-complete search menu flaky
 
-[ geneontology-Bugs- ] 
+[ geneontology-Bugs-2815514 ] overzealous autosave
+
+[ geneontology-Bugs-2722517 ] autocomplete term selection in search panel
+
+[ geneontology-Bugs-2685810 ] Graph Editor - Move option not working for multiple terms
+
+[ geneontology-Bugs-2840516 ] no way to get to genus term while defining xps
+fuzzy purple ball == cotton ball icon == Go To term button. Correct tooltip message added for both genus and differentia terms.
+Spanning to the term in OTE works well now, provided the OTE is in global mode.
+
+[ geneontology-Bugs-2971364 ] b4 - still having problems committing text edits
+
+
 
 
 ================================
