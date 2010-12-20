@@ -189,6 +189,8 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			for (OBOProperty property : TermUtil
 					.getRelationshipTypes(SessionManager.getManager()
 							.getSession())) {
+				if (property.isBuiltIn())
+					continue;
 				propertyBox.addItem(property);
 			}
 			add(Box.createHorizontalStrut(30));
