@@ -163,8 +163,9 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 				}
 			});
 			setOpaque(false);
-			propertyBox.getInputMap().put(
-					KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "commit");
+			// property selection by using return key and mouse click
+			propertyBox.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,Toolkit
+						.getDefaultToolkit().getMenuShortcutKeyMask() ),"commit");
 			propertyBox.getActionMap().put("commit", commitListener);
 			
 
@@ -324,7 +325,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 	protected Action commitListener = new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
-			logger.debug(">> CrossProductEditorComponent commitListener");
+//			logger.debug(">> CrossProductEditorComponent commitListener");
 			//			tabToNext();
 			//			if (e.getSource() instanceof Component) { Component next =
 			//			focusPolicy.getComponentAfter( IntersectionPanel.this,
@@ -440,7 +441,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 	 */
 	public Collection<Link> getRelationshipList() {
 		LinkedList<Link> out = new LinkedList<Link>();
-		Object intersectionGenus = genusField.getValue();
+		Object intersectionGenus = (OBOClass) genusField.getValue();
 		//compute and add genus link to relations list
 		if ( intersectionGenus!= null && intersectionGenus instanceof LinkedObject) {
 			OBORestriction isaLink = new OBORestrictionImpl(oboClass,
