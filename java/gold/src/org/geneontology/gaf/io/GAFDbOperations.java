@@ -236,7 +236,7 @@ public class GAFDbOperations {
 			LOG.debug("-");
 		}
 
-		updateGold(GeneOntologyManager.getInstance().getDefaultOboFile());
+		//updateGold(GeneOntologyManager.getInstance().getDefaultOntologyLocation());
 	}	
 	
 	/**

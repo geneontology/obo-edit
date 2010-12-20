@@ -31,7 +31,7 @@ public class GoldCommandLine {
 		options.put("-p",new String[]{"=password", "geneontology.gold.password"});
 		options.put("-h", new String[]{"=host", "geneontology.gold.host"});
 		options.put("-tsv=", new String[]{"directorypath\t\tPath of the TSV files", "geneontology.gold.tsvfiles"});
-		options.put("-obo", new String[]{"=filepath\t\tPath of the OBO file to updated", "geneontology.gold.obofile"});
+		options.put("-ontologylocation", new String[]{"=filepath\t\tPath of the OBO file to updated", ""});
 		options.put("-prefix", new String[]{"=text\t\tPrefix of the table names to be used in delta updte", "geneontology.gold.deltatableprefix"});
 		options.put("-force", new String[]{"\t\t\tDrop exsiting schema and create new one", ""});
 		options.put("-debug", new String[]{"\t\t\tEnabling log4j output", ""});
@@ -54,8 +54,8 @@ public class GoldCommandLine {
 	}
 	
 	private static void exit(String message){
-		System.err.println(message);
 		usage();
+		System.err.println(message);
 		System.exit(0);
 		
 	}
@@ -80,6 +80,8 @@ public class GoldCommandLine {
 			//validate the options
 			//update properties in the GeneOntologyManager at the system level with the
 			//options provided through command line arguments
+			String ontologyLocation = null;
+
 			for(int i=0;i<args.length-1;i++){
 				String option = args[i].trim();
 				String[] tokens = option.split("=");
@@ -89,7 +91,10 @@ public class GoldCommandLine {
 					exit("The '" + option + "' is not a valid option");
 				}
 
-				if("-force".equals(tokens[0])){
+				
+				if("-ontologylocation".equals(tokens[0])){
+					ontologyLocation = tokens[1];
+				}else if("-force".equals(tokens[0])){
 					force =true;
 				}else if("-debug".equals(tokens[0])){
 					Logger.getRootLogger().setLevel(Level.DEBUG);
@@ -106,9 +111,14 @@ public class GoldCommandLine {
 				db.run();
 			}else if("bulkload".equals(operation) || "update".equals(operation) 
 					|| "buildtsv".equals(operation)){
+				
+				if(ontologyLocation == null){
+					exit("-ontologylocation parameter is missing");
+				}
+					
 
 				DbOperationsListenerToReportTime db = new DbOperationsListenerToReportTime(operation, 
-						new DbOperations().buildOWLGraphWrapper(), 
+						new DbOperations().buildOWLGraphWrapper(ontologyLocation), 
 						force, tableprefix, manager.getTsvFilesDir());
 				
 				db.run();
@@ -129,9 +139,9 @@ public class GoldCommandLine {
 		System.out.println("\tgold [-OPTIONS] OPERATION");
 	
 		System.out.println("Examples:");
-		System.out.println("\tgold bulkload");
-		System.out.println("\tgold update");
-		System.out.println("\tgold -u=user =p=password -h=host.com -force bulkload");
+		System.out.println("\tgold -ontologylocation=path bulkload");
+		System.out.println("\tgold  -ontologylocation=path update");
+		System.out.println("\tgold -ontologylocation=path -u=user =p=password -h=host.com -force bulkload");
 		
 		
 		System.out.println("OPTIONS:");

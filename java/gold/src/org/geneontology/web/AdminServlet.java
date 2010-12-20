@@ -3,6 +3,7 @@ package org.geneontology.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -42,7 +43,7 @@ public class AdminServlet extends HttpServlet{
 	
 
 	//global reference of the OWLGraphWrapper
-	private OWLGraphWrapper graph;
+	private Hashtable<String, OWLGraphWrapper> graphs;
 	
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -50,6 +51,7 @@ public class AdminServlet extends HttpServlet{
 	public AdminServlet() {
 		super();
 		task = null;
+		graphs = new Hashtable<String, OWLGraphWrapper>();
 	}
 
 	
@@ -106,9 +108,9 @@ public class AdminServlet extends HttpServlet{
 		
 	}
 	
-	private OWLGraphWrapper buildOWLGraphWrapper() throws IOException{
+	private OWLGraphWrapper buildOWLGraphWrapper(String ontologylocation) throws IOException{
 		try{
-			return new DbOperations().buildOWLGraphWrapper();
+			return new DbOperations().buildOWLGraphWrapper(ontologylocation);
 		}catch(Exception ex){
 			throw new IOException("An error ocurred while building OWLGraphWrapper object reference", ex);
 		}
@@ -137,11 +139,26 @@ public class AdminServlet extends HttpServlet{
 		boolean addReload = false;
 		if (command != null && task == null) {
 			if ("bulkload".equals(command) || "update".equals(command)) {
-				this.graph = buildOWLGraphWrapper();
-				addReload = true;
-				task = new DbOperationsTask(command, this.graph, 
-						false, "", "");
-				task.start();
+				
+				String ontologylocation = request.getParameter("ontologylocation");
+				
+				if(ontologylocation==null){
+					printOntologySelectionForm(writer, command);
+				}else{
+				
+					String force = request.getParameter("force");
+					OWLGraphWrapper graph = buildOWLGraphWrapper(ontologylocation);
+					
+					if(graph == null){
+						writer.write("<h1>OWLGraphWrapper cannot be built from the ontologylocation at '" + ontologylocation + "'");
+					}else{
+						graphs.put(graph.getOntologyId(), graph);
+						addReload = true;
+						task = new DbOperationsTask(command, graph, 
+								"true".equals(force), "", "");
+						task.start();
+					}
+					}
 				 
 			}else if ("getlastupdate".equals(command)){
 				DbOperations db = new DbOperations();
@@ -177,54 +194,21 @@ public class AdminServlet extends HttpServlet{
 			printTaskStatus(writer, addReload);
 		}
 		
-
-		/*if(task.isRunning() || addReload){
-			writer.write("<script type='text/javascript'>");
-				writer.write("setTimeout(\"location.reload(true)\", 9000)");
-			writer.write("</script>");
-			
-			writer.write("<center><img src=\"../images/progress-indicator.gif\" alt=\"Request is in Progress\" /></center>");
-			writer.write("<p align=\"center\">Your Request is in Progress</p>");
-		}
-
-		
-		writer.write("<h2>Status report for the running task '" + task.getOperationName() + "' :</h2>");
-		writer.write("<table><tr><th>Operation Name</th><th>Status</th></tr>");
-		Exception ex = task.getException();
-		 for(String opName: task.getCompletedOperations()){
-			 long stTime = task.getStartTime(opName);
-			 long endTime = task.getEndTime(opName);
-			 
-			 String status = "In progress";
-			 boolean isCompleted = false;
-			 if(endTime>0){
-				 status = (float)(endTime - stTime)/1000 + "";
-				 isCompleted = true;
-			 }else if (ex != null){
-				 status = "failed";
-			 }
-			 
-			 writer.write("<tr><td>" + opName + "</td><td" + (isCompleted ? " bgcolor='green'" : "") + ">" + status + "</td></tr>");
-		 }
-		 
-		 writer.write("</table>");
-		
-		 
-		 if(task.getException() != null){
-			PrintWriter pw = new PrintWriter(writer);
-			task.getException().printStackTrace(pw);
-		 }
-		 
-		 if(!task.isRunning() && !addReload){
-			 session.removeAttribute("task");
-		 }*/
-		
 		writer.write("</body></html>");
 	}
 
-	
-	
-	
-	
+	private void printOntologySelectionForm(Writer writer, String command) throws IOException{
+		writer.write("<h1>Gene Ontology Admin</h1>");
+		writer.write("<form action='.'>");
+		writer.write("<input type='hidden' name='command' value='" + command + "' />");
+		writer.write("<label>Please select ontology</label><br />");
+		for(Object obj: GeneOntologyManager.getInstance().getDefaultOntologyLocations() ){
+			writer.write("<input type='radio' name='ontologylocation' value='" + obj + "' />"+ obj +"<br />");
+		}
+		writer.write("<br /><label>Force to recreate the database</label>");
+		writer.write("<input type='checkbox' name='force' value='true' /><br /><br />");
+		writer.write("<input type='submit' /><br />");
+		writer.write("</form>");
+	}
 
 }
