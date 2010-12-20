@@ -272,8 +272,9 @@ public class RuleBasedReasoner extends AbstractReasoner {
 					continue;
 				for (Explanation expl : expls) {
 					Link link = (Link) expl.getExplainedObject();
+
 					if (link.getChild().equals(link.getParent())) {
-						// no reflexive links
+						// we never materialize no reflexive links
 					}
 					else {
 						Link existingLink = hasRelationship(link.getChild(), link.getType(), link.getParent());
