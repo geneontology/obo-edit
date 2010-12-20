@@ -568,6 +568,8 @@ public class OBO2OBO {
 				parseObsoleteComments = true;
 			} else if (args[i].equals("-allowdangling")) {
 				logger.info("Please note: allowdangling is already set to true by default for both input and output files.");
+			} else if (args[i].equals("-disallowdangling")) {
+				readConfig.setAllowDangling(false);
 			} else if (args[i].equals("-fixdbxrefs")) {
 				fixDbxrefs = true;
 			} else if (args[i].equals("-writecomments")) {
