@@ -28,11 +28,9 @@ public class HasIsaParentCriterion extends AbstractBooleanCriterion {
 	protected boolean hasIsaParent(LinkedObject lo) {
 		if (lo.getParents().size() == 0)
 			return false;
-		Iterator it = lo.getParents().iterator();
-		while (it.hasNext()) {
-			Link link = (Link) it.next();
+		for(Link link : lo.getParents()){
 			if (link.getType().equals(OBOProperty.IS_A)) {
-					return true;
+				return true;
 			}
 		}
 		return false;
