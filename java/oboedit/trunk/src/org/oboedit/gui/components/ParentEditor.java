@@ -428,7 +428,9 @@ public class ParentEditor extends AbstractGUIComponent {
 						SessionManager.getManager().apply(ditem);
 						// Just re-select currently selected term (not all instances of it, as with the paths thing)
 						GUIUtil.setPostSelection(ditem, SelectionManager.getManager().getSelection());
-						
+						// once a change has been made in the parent editor, signal
+						// this to all other components -- CJM && AA
+						Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 					}
 				});
 				deleteRelationIcon.setEnabled(enabled && tr.getChild().getParents().size() >= 1);
