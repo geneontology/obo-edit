@@ -189,9 +189,15 @@ public class IntersectionRule extends AbstractRule {
 
 			// find candidates based on one of the N+S conditions
 			Collection<Link> rchildren = reasoner.getChildren(bestLink.getParent());
+			Link reflexiveLink = null;
 			if (bestLink.getType().equals(OBOProperty.IS_A) || bestLink.getType().isReflexive()) {
-				rchildren.add(new OBORestrictionImpl(bestLink.getParent(),
-						bestLink.getParent(), bestLink.getType()));
+				// add reflexive link.
+				// reasoner.getChildren() does NOT return a clone.
+				// we want to TEMPORARILY add the relfexive link
+				reflexiveLink = 
+					new OBORestrictionImpl(bestLink.getParent(),
+							bestLink.getParent(), bestLink.getType());
+				rchildren.add(reflexiveLink);
 			}
 			for (Link candidateLink : rchildren) {
 				OBOProperty prop = candidateLink.getType();
@@ -218,15 +224,18 @@ public class IntersectionRule extends AbstractRule {
 						candidateSubClasses.add(candidateSubClass);
 				}
 			}
+			// reasoner.getChildren() does NOT return a clone
+			if (reflexiveLink != null)
+				rchildren.remove(reflexiveLink);
 
 			for (LinkedObject candidate : candidateSubClasses) {
 				Link out = createLink(candidate, OBOProperty.IS_A, xp);
 				CompletenessExplanation exp;
-				exp = new CompletenessExplanation(); // TODO
+				exp = new CompletenessExplanation(); 
 				exp.setExplainedLink(out);
 				for (Link nsLink : intersectionMap.get(xp)) {
 					Link matchLink = createLink(candidate, nsLink.getType(), nsLink.getParent());
-					//IntersectionMatch m = new IntersectionMatch(matchLink, nsLink); // TODO
+					//IntersectionMatch m = new IntersectionMatch(matchLink, nsLink); 
 					CompletenessMatch m = new CompletenessMatch(matchLink, nsLink); 
 					exp.addMatch(m);
 				}
