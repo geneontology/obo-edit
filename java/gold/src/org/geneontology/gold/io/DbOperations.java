@@ -51,8 +51,11 @@ import org.hibernate.jdbc.Work;
 import org.obolibrary.obo2owl.Obo2Owl;
 import org.obolibrary.oboformat.model.OBODoc;
 import org.obolibrary.oboformat.parser.OBOFormatParser;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import owltools.graph.OWLGraphWrapper;
 
@@ -69,6 +72,8 @@ public class DbOperations {
 	private static Logger LOG = Logger.getLogger(DbOperations.class);
 
 	private static boolean DEBUG = LOG.isDebugEnabled();
+	
+	private boolean dbCreate;
 	
 	public DbOperations(){
 		listeners = new ArrayList<DbOperationsListener>();
@@ -91,14 +96,19 @@ public class DbOperations {
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
-		String oboFile = GeneOntologyManager.getInstance().getDefaultOboFile();
+		List files = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
 		
-		if(oboFile == null){
-			throw new FileNotFoundException("Obo File not Found at the path '" + 
-					GeneOntologyManager.getInstance().getProperty("geneontology.gold.obofile") + "'");
+		if(files == null || files.size()==0){
+			throw new Exception("Ontology File Location is not Found specified in the geneontology.gold.ontologylocation property" );
 		}
 		
-		bulkLoad(oboFile, force);
+		dbCreate = false;
+		
+		for(Object obj: files){
+			System.out.println("_______________________" + obj);
+			
+			bulkLoad(obj.toString(), force);
+		}
 	}
 	
 	/**
@@ -108,9 +118,11 @@ public class DbOperations {
 	 * 			creates new ones.
 	 * @throws Exception
 	 */
-	public void bulkLoad(String oboFile, boolean force) throws Exception{
-
-		bulkLoad(buildOWLGraphWrapper(oboFile), force);
+	public void bulkLoad(String ontologyLocation, boolean force) throws Exception{
+		if(DEBUG)
+			LOG.debug(ontologyLocation);
+		
+		bulkLoad(buildOWLGraphWrapper(ontologyLocation), force);
 	}
 	
 
@@ -125,7 +137,11 @@ public class DbOperations {
 		
 
 		List<String> list = dumpFiles("", wrapper);
-		buildSchema(force, "");
+		
+		if(!dbCreate)
+			buildSchema(force, "");
+		
+		dbCreate = true;
 		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
 		
 		LOG.info("Bulk Load completed successfully");
@@ -155,16 +171,23 @@ public class DbOperations {
 	 * @throws IOException 
 	 * @throws OWLOntologyCreationException 
 	 */
-	public OWLGraphWrapper buildOWLGraphWrapper() throws IOException, OWLOntologyCreationException{
+	public OWLGraphWrapper[] buildOWLGraphWrappers() throws IOException, OWLOntologyCreationException{
 		
-		String oboFile = GeneOntologyManager.getInstance().getProperty("geneontology.gold.obofile");
+		List  list = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
 		
-		return buildOWLGraphWrapper(oboFile);
+		OWLGraphWrapper graph[] = new OWLGraphWrapper[list.size()];
+		
+		for(int i=0;i<list.size();i++){
+			graph[i] = buildOWLGraphWrapper(list.get(i).toString());
+		}
+	
+		
+		return graph;
 		
 	}
 
-	public OWLGraphWrapper buildOWLGraphWrapper(String oboFile) throws IOException, OWLOntologyCreationException{
-		if(oboFile == null)
+	public OWLGraphWrapper buildOWLGraphWrapper(String ontologyLocation) throws IOException, OWLOntologyCreationException{
+		if(ontologyLocation == null)
 			throw new FileNotFoundException("The file is not found");
 		
 
@@ -172,13 +195,23 @@ public class DbOperations {
 			listener.startOboToOWL();
 		}
 		
-		OBOFormatParser parser = new OBOFormatParser();
-		
-		OBODoc doc = parser.parse(oboFile);
-		
-		Obo2Owl obo2owl = new Obo2Owl();
-		
-		OWLOntology ontology = obo2owl.convert(doc);
+		OWLOntology ontology = null;
+		if(ontologyLocation.endsWith(".obo")){
+			OBOFormatParser parser = new OBOFormatParser();
+			
+			OBODoc doc = parser.parse(ontologyLocation);
+			
+			Obo2Owl obo2owl = new Obo2Owl();
+			
+			ontology = obo2owl.convert(doc);
+		}else{
+			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+			if(ontologyLocation.startsWith("http:"))
+				ontology = manager.loadOntologyFromOntologyDocument(IRI.create(ontologyLocation));
+			else
+				ontology = manager.loadOntologyFromOntologyDocument(new File(ontologyLocation));
+				
+		}
 		
 		OWLGraphWrapper wrapper = new OWLGraphWrapper(ontology);
 
@@ -325,7 +358,14 @@ public class DbOperations {
 			LOG.debug("-");
 		}
 
-		updateGold(GeneOntologyManager.getInstance().getDefaultOboFile());
+		List list = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
+		
+		if(list == null || list.size()==0){
+			throw new Exception("Ontology File Location is not Found specified in the geneontology.gold.ontologylocation property" );
+		}
+		
+		for(Object obj: list)
+			updateGold(obj.toString());
 	}	
 	
 	/**
