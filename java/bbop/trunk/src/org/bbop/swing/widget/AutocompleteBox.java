@@ -145,10 +145,10 @@ public class AutocompleteBox<T> extends JComboBox {
 			}
 		};
 
-		//aa
+		
 		protected FocusListener focusListener = new FocusListener() {
 			public void focusLost(FocusEvent e) {
-				logger.info("focus lost");
+//				logger.debug("focus lost");
 				if (allowNonModelValues
 						|| (AutocompleteBox.this.getSelectedItem() == null
 								&& getText().length() >= getMinLength() && getItemCount() > 0)) {
@@ -183,7 +183,7 @@ public class AutocompleteBox<T> extends JComboBox {
 		 * */
 		public void commit(boolean focusCommit) {
 			killPendingTasks();
-			logger.info("committing.. getText()="+getText());
+//			logger.debug("committing.. getText()="+getText());
 			if (getText().length() == 0) {
 				setSelectedItem(null);
 			}
@@ -232,7 +232,7 @@ public class AutocompleteBox<T> extends JComboBox {
 
 		@Override
 		public void setText(String t) {
-			logger.info(getId() + "**setText:"+t);
+//			logger.debug(getId() + "**setText:"+t);
 			if (((AutocompleteListModel) getModel()).isUpdating() || updating)
 				return;
 			updating = true;
@@ -241,7 +241,7 @@ public class AutocompleteBox<T> extends JComboBox {
 		}
 
 		public void setItem(Object anObject) {
-			logger.info(getId() + "**setItem:" + anObject == null ? "NULL" : anObject);
+//			logger.debug(getId() + "**setItem:" + anObject == null ? "NULL" : anObject);
 			getDocument().removeDocumentListener(docListener);
 			if (anObject == null)
 				setText("");
@@ -400,17 +400,17 @@ public class AutocompleteBox<T> extends JComboBox {
 	}
 
 	public void setValue(T object) {
-		logger.info("setValue current ACBox: "+getId());
+		logger.debug("setValue current ACBox: "+getId());
 		if (object == null) {
 			if (getSelectedItem() != null) {
-				logger.info("current: = " + getSelectedItem());
+//				logger.info("current: = " + getSelectedItem());
 			}
 			setSelectedItem(null);
-			logger.info("setValue: NULL");
+//			logger.debug("setValue: NULL");
 		}
 		else {
 			List values = autocompleteModel.getDisplayValues(object);
-			logger.info("setValue: values= " + values);
+//			logger.debug("setValue: values= " + values);
 			if (values.size() > 0)
 				setSelectedItem(values.get(0));
 			else
@@ -419,7 +419,7 @@ public class AutocompleteBox<T> extends JComboBox {
 	}
 
 	public T getValue () {
-		logger.info("getValue current ACBox: "+getId());
+//		logger.debug("getValue current ACBox: "+getId());
 		/*
 		 * at some undetermined point, the selected item in the JComboBox is being lost.
 		 * to get around this we keep track of the selected item ourselves, and ensure that the JCB has the correct
@@ -427,18 +427,18 @@ public class AutocompleteBox<T> extends JComboBox {
 		 * -- CJM 2010-12-16
 		 */
 		if (cachedSelectedItem != null) {
-			logger.info("reinstated:"+cachedSelectedItem);
+//			logger.debug("reinstated:"+cachedSelectedItem);
 			setSelectedItem(cachedSelectedItem);
 		}
 		
 		
 		if (getSelectedItem() == null) {
-			logger.info("getSelectedItem() == null");
+//			logger.debug("getSelectedItem() == null");
 			return null;
 		}
 		else {
 			Object selected = getSelectedItem();
-			logger.info("select="+selected);
+//			logger.debug("select="+selected);
 		
 			if (allowNonModelValues) {
 				String s = ((JTextComponent) editor).getText();
@@ -462,27 +462,27 @@ public class AutocompleteBox<T> extends JComboBox {
 	 * set autocompleted object as selected item
 	 */
 	public void setSelectedItem(Object anObject) {
-		logger.info("setSelectedItem:"+getId());
+		logger.debug("setSelectedItem:"+getId());
 	    if (anObject != null) {
-			logger.info("AutocompleteBox.setSelectedItem: TRYING to select " + anObject + ", type = " + anObject.getClass());
+			logger.debug("AutocompleteBox.setSelectedItem: TRYING to select " + anObject + ", type = " + anObject.getClass());
 	    }
 		if (anObject == null) {
-			logger.info("  AutocompleteBox.setSelectedItem: NULL");
+			logger.debug("  AutocompleteBox.setSelectedItem: NULL");
 			doSetSelectedItem(null);
 		} else if (autocompleteModel.getDisplayType().isAssignableFrom(anObject.getClass())) {
 			doSetSelectedItem(anObject);
-			logger.info("  isAssignableFrom: "+anObject);
+			logger.debug("  isAssignableFrom: "+anObject);
 			Object selected = getSelectedItem();
-			logger.info("  selected: "+selected);
+			logger.debug("  selected: "+selected);
 		} else if (autocompleteModel.getOutputType().isAssignableFrom(anObject.getClass())) {
 			List values = autocompleteModel.getDisplayValues(anObject);
-			logger.info("  values: "+values);
+			logger.debug("  values: "+values);
 			if (values.size() > 0)
 				doSetSelectedItem(values.get(0));
 			else
 				doSetSelectedItem(null);
 		} else if (anObject instanceof String) {
-			logger.info("  string: "+anObject);
+//			logger.debug("  string: "+anObject);
 			doSetSelectedItem(autocompleteModel.createValue((String) anObject));
 		}
 		if (isEditable() && getEditor() != null) {
@@ -491,7 +491,7 @@ public class AutocompleteBox<T> extends JComboBox {
 	}
 
 	protected void doSetSelectedItem(Object o) {
-		logger.debug("Autocompletebox.doSetSelectedItem: "+ o == null ? "NULL" : o);
+//		logger.debug("Autocompletebox.doSetSelectedItem: "+ o == null ? "NULL" : o);
 		/*
 		 * we keep track of the selected item ourselves as a "backup", because for some reason
 		 * the JCB loses the value
@@ -540,13 +540,13 @@ public class AutocompleteBox<T> extends JComboBox {
 	}
 	public AutocompleteBox(AutocompleteModel model, String id) {
 		this(model);
-		logger.info("setting id:"+id);
+//		logger.debug("setting id:"+id);
 
 		this.setId(id);
 	}
 		
 	public AutocompleteBox(AutocompleteModel model) {
-		logger.info("Creating new AC Box");
+//		logger.debug("Creating new AC Box");
 		setEditor(new AutoTextField());
 		setAutocompleteModel(model);
 		setModel(new AutocompleteListModel());
@@ -900,7 +900,7 @@ public class AutocompleteBox<T> extends JComboBox {
 		lastHits = results;
 		((AutocompleteListModel) getModel()).update();
 		if (lastHits == null) {
-			logger.info("setResults lastHits == null // ACID: "+getId());
+//			logger.debug("setResults lastHits == null // ACID: "+getId());
 		}
 		else if (lastHits.size() == 0)
 			super.setSelectedItem(null);
@@ -963,12 +963,12 @@ public class AutocompleteBox<T> extends JComboBox {
 		}
 
 		public Object getSelectedItem() {
-			logger.info("MODEL: getSelectedItem:"+ selected == null ? "NULL" : selected);
+//			logger.debug("MODEL: getSelectedItem:"+ selected == null ? "NULL" : selected);
 			return selected;
 		}
 
 		public void setSelectedItem(Object anItem) {
-			logger.info("MODEL: setSelectedItem:"+ anItem == null ? "NULL" : anItem);
+//			logger.debug("MODEL: setSelectedItem:"+ anItem == null ? "NULL" : anItem);
 			selected = anItem;
 		}
 
