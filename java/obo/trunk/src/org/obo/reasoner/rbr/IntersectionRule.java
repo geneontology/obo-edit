@@ -18,6 +18,7 @@ import org.obo.datamodel.OBORestriction;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.reasoner.Explanation;
 import org.obo.reasoner.ReasonedLinkDatabase;
+import org.obo.reasoner.impl.CompletenessExplanation;
 import org.obo.reasoner.impl.CompletenessMatch;
 import org.obo.util.TermUtil;
 
@@ -220,12 +221,13 @@ public class IntersectionRule extends AbstractRule {
 
 			for (LinkedObject candidate : candidateSubClasses) {
 				Link out = createLink(candidate, OBOProperty.IS_A, xp);
-				IntersectionExplanation exp;
-				exp = new IntersectionExplanation(); // TODO
+				CompletenessExplanation exp;
+				exp = new CompletenessExplanation(); // TODO
 				exp.setExplainedLink(out);
 				for (Link nsLink : intersectionMap.get(xp)) {
 					Link matchLink = createLink(candidate, nsLink.getType(), nsLink.getParent());
-					IntersectionMatch m = new IntersectionMatch(matchLink, nsLink); // TODO
+					//IntersectionMatch m = new IntersectionMatch(matchLink, nsLink); // TODO
+					CompletenessMatch m = new CompletenessMatch(matchLink, nsLink); 
 					exp.addMatch(m);
 				}
 				expls.add(exp);	
