@@ -462,21 +462,21 @@ public class AutocompleteBox<T> extends JComboBox {
 	 * set autocompleted object as selected item
 	 */
 	public void setSelectedItem(Object anObject) {
-		logger.debug("setSelectedItem:"+getId());
+//		logger.debug("setSelectedItem:"+getId());
 	    if (anObject != null) {
 			logger.debug("AutocompleteBox.setSelectedItem: TRYING to select " + anObject + ", type = " + anObject.getClass());
 	    }
 		if (anObject == null) {
-			logger.debug("  AutocompleteBox.setSelectedItem: NULL");
+//			logger.debug("  AutocompleteBox.setSelectedItem: NULL");
 			doSetSelectedItem(null);
 		} else if (autocompleteModel.getDisplayType().isAssignableFrom(anObject.getClass())) {
 			doSetSelectedItem(anObject);
-			logger.debug("  isAssignableFrom: "+anObject);
+//			logger.debug("  isAssignableFrom: "+anObject);
 			Object selected = getSelectedItem();
-			logger.debug("  selected: "+selected);
+//			logger.debug("  selected: "+selected);
 		} else if (autocompleteModel.getOutputType().isAssignableFrom(anObject.getClass())) {
 			List values = autocompleteModel.getDisplayValues(anObject);
-			logger.debug("  values: "+values);
+//			logger.debug("  values: "+values);
 			if (values.size() > 0)
 				doSetSelectedItem(values.get(0));
 			else
