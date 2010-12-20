@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -58,7 +59,7 @@ public class GeneOntologyManager {
 		init();
 	}
 
-	private String guessAbsolutePath(String relativePath) {
+	public String guessAbsolutePath(String relativePath) {
 
 		if (relativePath == null)
 			return null;
@@ -162,11 +163,10 @@ public class GeneOntologyManager {
 
 	/**
 	 * 
-	 * @return It returns the value of the geneontology.gold.obofile property
+	 * @return It returns the value of the geneontology.gold.ontologylocation property
 	 */
-	public String getDefaultOboFile() {
-		return guessAbsolutePath(
-				config.getString("geneontology.gold.obofile"));
+	public List getDefaultOntologyLocations() {
+		return config.getList("geneontology.gold.ontologylocation");
 	}
 
 	/**

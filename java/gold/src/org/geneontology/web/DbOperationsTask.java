@@ -36,8 +36,10 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 	}
 	
 	public DbOperationsTask(String op) throws OWLOntologyCreationException, IOException{
-		this(op, new DbOperations().buildOWLGraphWrapper(), false, "", "");
-	}	
+		//this(op, new DbOperations().buildOWLGraphWrapper(), false, "", "");
+		this(op, null, false, "", "");
+
+	}
 	@Override
 	public void run(){
 		LOG.info("Running Db operation : " + opName);
