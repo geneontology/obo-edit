@@ -71,8 +71,10 @@ public class TransitivityTest extends AbstractReasonerTest {
 		 */
 		// TODO
 		//testForLink("is_left_of", OBOProperty.INVERSE_OF.toString(), "is_right_of");
+		/*
 		if (!getReasonerFactory().getClass().equals(PelletWrappedReasonerFactory.class))
 			testForLink("is_right_of", OBOProperty.INVERSE_OF.toString(), "is_left_of");
+			*/
 	}
 
 
