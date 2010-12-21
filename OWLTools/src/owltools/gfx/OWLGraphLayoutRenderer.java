@@ -118,9 +118,18 @@ public class OWLGraphLayoutRenderer {
 	 * @throws IOException
 	 */
 	public void renderHTML() throws FileNotFoundException, IOException {
-
 		PrintWriter pw = new PrintWriter(new FileWriter("hierarchicalGraph.html"));
+		FileOutputStream fos = new FileOutputStream("hierarchicalGraph"+orientation+".png");
+		String imageMapString = renderImage("png", fos);
 		pw.println("<html><body>");
+		pw.println("<img src='hierarchicalGraph"+orientation+".png' usemap='#bob' /><map name='bob'>" + imageMapString + "</map>");
+
+		pw.println("</body></html>");
+		pw.close();
+
+	}
+	
+	public String renderImage(String fmt, OutputStream fos) throws FileNotFoundException, IOException {
 
 
 		HierarchicalLayout<OWLGraphLayoutNode, OWLGraphStrokeEdge> layout =
@@ -159,14 +168,9 @@ public class OWLGraphLayoutRenderer {
 			node.render(g2);
 			//sb.append(node.getImageMap());
 		}
+		ImageIO.write(image, fmt, fos);
+		return sb.toString();
 
-		ImageIO.write(image, "png", new FileOutputStream("hierarchicalGraph"+orientation+".png"));
-
-
-		pw.println("<img src='hierarchicalGraph"+orientation+".png' usemap='#bob' /><map name='bob'>" + sb.toString() + "</map>");
-
-		pw.println("</body></html>");
-		pw.close();
 	}
 
 }
