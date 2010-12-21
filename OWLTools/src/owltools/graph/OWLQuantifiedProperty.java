@@ -55,6 +55,10 @@ public class OWLQuantifiedProperty {
 	public void setProperty(OWLObjectProperty property) {
 		this.property = property;
 	}
+	public boolean hasProperty() {
+		return property != null;
+	}
+	
 	public Quantifier getQuantifier() {
 		return quantifier;
 	}
@@ -80,9 +84,10 @@ public class OWLQuantifiedProperty {
 	public String toString() {
 		return getPropertyId()+" "+quantifier;
 	}
+
 	
 	public String getPropertyId() {
-		if (property == null)
+		if (!hasProperty())
 			return "-";
 		return property.getIRI().toString();
 	}
