@@ -55,6 +55,10 @@ public class ExplanationUtil {
 		    return "";
 		}
 
+		logger.info("getting explanations for: "+link);
+		logger.info("  parent: "+link.getParent());
+		if (link.getParent() == null)
+			return "";
 		Collection<Explanation> explanations = reasoner.getExplanations(link);
 		out.append("<a name='" + link.getChild().getID().replace(':', '_')
 				+ "-" + link.getType().getID().replace(':', '_') + "-"
