@@ -1,4 +1,4 @@
-
+Drush has been unreliable, switching back to manual...
 The 12 Steps for a Drupal upgrade:
 
 0) Get and unpack new drupal:
@@ -18,24 +18,26 @@ The 12 Steps for a Drupal upgrade:
    http://go.berkeleybop.org/news4go/admin/settings/site-maintenance
 
 5) Disable contributed modules (may take several passes):
-   Calendar, Date API,  Date Timezone
-   Advanced Help, BUEditor, IMCE, Twitter, Twitter Actions
+   Content, Content Permissions, Text
+   Calendar, Date API, Date Timezone
+   Advanced Help, BUEditor, IMCE, OAuth, Twitter, Twitter Post, Twitter Signin
    CAPTCHA, reCAPTCHA
    Google Analytics
    Views, Views UI
 
 6) Move old drupal directory:
-   mv news4go news4go.old
+   mv news4go news4go.6.YY
 
 7) Move new drupal directory:
    mv drupal-6.XX news4go
 
 8) Move "sites":
    mv news4go/sites news4go/sites.orig
-   mv news4go.old/sites news4go
+   mv news4go.6.YY/sites news4go
 
 9) Move misc.:
-   mv news4go.old/.htaccess news4go
+   mv news4go/.htaccess news4go/.htaccess.orig
+   mv news4go.6.YY/.htaccess news4go
 
 10) Go directly to update.php:
    http://go.berkeleybop.org/news4go/update.php
