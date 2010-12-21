@@ -2,6 +2,8 @@ package org.geneontology.web;
 
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.geneontology.gold.io.DbOperations;
@@ -18,7 +20,9 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 	
 //	private DbOperations db;
 	
-	private OWLGraphWrapper graph;
+	//private OWLGraphWrapper []graphs;
+	
+	private String[] locations;
 	
 	private boolean force;
 	
@@ -26,13 +30,19 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 	
 	private String tsvFileDir;
 	
-	public DbOperationsTask(String op, OWLGraphWrapper graph, boolean force, String tablePrefix, String tsvFilesDir){
+	//id of the current
+	private String currentOntologyBeingProcessed;
+	
+	private List<OWLGraphWrapper> graphs;
+	
+	public DbOperationsTask(String op, String []locations, boolean force, String tablePrefix, String tsvFilesDir){
 		super();
 		
 		this.opName =op;
-		this.graph = graph;
+		this.locations = locations;
 		this.force = force;
 		this.tsvFileDir = tsvFilesDir;
+		graphs = new Vector<OWLGraphWrapper>();
 	}
 	
 	public DbOperationsTask(String op) throws OWLOntologyCreationException, IOException{
@@ -49,17 +59,21 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 		running = true;
 		DbOperations db = new DbOperations();
 		db.addDbOperationsListener(this);
+		
 		try{
-			if("bulkload".equals(opName)){
-					db.bulkLoad(graph, force);
-			}else if ("update".equals(opName)){
-					db.updateGold(graph);
-			}else if ("buildschema".equals(opName)){
-					db.buildSchema(force, tablePrefix);
-			}else if ("buildtsv".equals(opName)){
-				db.dumpFiles(tablePrefix, graph);
-			}else if ("loadtsv".equals(opName)){
-				db.loadTsvFiles(tsvFileDir);
+			for(String location: locations){
+				this.currentOntologyBeingProcessed = location;
+				if("bulkload".equals(opName)){
+						db.bulkLoad(location, force);
+				}else if ("update".equals(opName)){
+						db.updateGold(location);
+				}else if ("buildschema".equals(opName)){
+						db.buildSchema(force, tablePrefix);
+				}else if ("buildtsv".equals(opName)){
+					db.dumpFiles(tablePrefix, location);
+				}else if ("loadtsv".equals(opName)){
+					db.loadTsvFiles(tsvFileDir);
+				}
 			}
 		} catch (Exception e) {
 			running = false;
@@ -85,56 +99,59 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 	}
 	
 	public void bulkLoadStart() {
-		reportStartTime("BulkLoad/TotalTime");
+		reportStartTime("BulkLoad/TotalTime--"+currentOntologyBeingProcessed);
 	}
 
 	public void bulkLoadEnd() {
-		reportEndTime("BulkLoad/TotalTime");
+		reportEndTime("BulkLoad/TotalTime--"+currentOntologyBeingProcessed);
 	}
 
 	public void dumpFilesStart() {
-		reportStartTime("DumpFiles");
+		reportStartTime("DumpFiles--"+currentOntologyBeingProcessed);
 	}
 
 	public void dumpFilesEnd() {
-		reportEndTime("DumpFiles");
+		reportEndTime("DumpFiles--"+currentOntologyBeingProcessed);
 
 	}
 
 	public void buildSchemaStart() {
-		reportStartTime("BuildSchema");
+		reportStartTime("BuildSchema--"+currentOntologyBeingProcessed);
 	}
 
 	public void buildSchemaEnd() {
-		reportEndTime("BuildSchema");
+		reportEndTime("BuildSchema--"+currentOntologyBeingProcessed);
 	}
 
 	public void loadTsvFilesStart() {
-		reportStartTime("LoadTsvFiles");
+		reportStartTime("LoadTsvFiles--"+currentOntologyBeingProcessed);
 	}
 
 	public void loadTsvFilesEnd() {
-		reportEndTime("LoadTsvFiles");
+		reportEndTime("LoadTsvFiles--"+currentOntologyBeingProcessed);
 	}
 
 	public void updateStart() {
-		reportStartTime("Update/TotalTime");
+		reportStartTime("Update/TotalTime--"+currentOntologyBeingProcessed);
 	}
 
 	public void updateEnd() {
-		reportEndTime("Update/TotalTime");
+		reportEndTime("Update/TotalTime--"+currentOntologyBeingProcessed);
 	}
 
 
-	public void startOboToOWL() {
-		reportStartTime("Obo To OWL Conversion");
+	public void startOntologyLoad() {
+		reportStartTime("Obo To OWL Conversion--"+currentOntologyBeingProcessed);
 	}
 
 
-	public void endOboToOWL() {
-		reportEndTime("Obo To OWL Conversion");
-		
+	public void endOntologyLoad(OWLGraphWrapper graph) {
+		reportEndTime("Obo To OWL Conversion--"+currentOntologyBeingProcessed);
+		graphs.add(graph);
 	}
 	
+	public List<OWLGraphWrapper> getGraphs(){
+		return graphs;
+	}
 	
 }

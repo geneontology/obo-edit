@@ -1,5 +1,7 @@
 package org.geneontology.gold.io;
 
+import owltools.graph.OWLGraphWrapper;
+
 /**
  * This class provides empty implementation of {@link DbOperationsListener}.
  * This provides convenience over the implementations of the {@link DbOperationsListener} interface that 
@@ -49,11 +51,11 @@ public class DbOperationsListenerAdapter implements DbOperationsListener {
 
 	}
 
-	public void startOboToOWL() {
+	public void startOntologyLoad() {
 		
 	}
 
-	public void endOboToOWL() {
+	public void endOntologyLoad(OWLGraphWrapper graph) {
 		
 	}
 
