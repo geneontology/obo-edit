@@ -228,31 +228,31 @@ FieldCheck {
 
 	//standard dictionary spell check
 	public SpellChecker getSpellChecker() {
-//		logger.debug("standard spell check... ");
+		logger.debug("standard dict spell check... ");
 		if (stdspellChecker == null) {
-			SpellDictionary dictionary = null;
+			SpellDictionary stddict = null;
 			try {
 				FileUtil.ensureExists(Preferences.getStandardDictionaryFile(), "org/oboedit/resources/standard.dict");
-				dictionary = new SpellDictionaryHashMap(Preferences.getStandardDictionaryFile());
+				stddict = new SpellDictionaryHashMap(Preferences.getStandardDictionaryFile());
 			} catch (IOException e) {
 				logger.debug(e);
 			}
-			stdspellChecker = new SpellChecker(dictionary);
+			stdspellChecker = new SpellChecker(stddict);
 		}
 		return stdspellChecker;
 	}
 	//user-defined (domain specific vocabulary) spell check
 	public SpellChecker getUserDefSpellChecker() {
-//		logger.debug("user-defined dict spell check");
+		logger.debug("user-defined dict spell check... ");
 		if (usrspellChecker == null) {
-			SpellDictionary dictionary = null;
+			SpellDictionary userdict = null;
 			try {
 				FileUtil.ensureExists(Preferences.getUserDefDictionaryFile(), "org/oboedit/resources/user.dict");
-				dictionary = new SpellDictionaryHashMap(Preferences.getUserDefDictionaryFile());
+				userdict = new SpellDictionaryHashMap(Preferences.getUserDefDictionaryFile());
 			} catch (IOException e) {
 				logger.debug(e);
 			}
-			usrspellChecker = new SpellChecker(dictionary);
+			usrspellChecker = new SpellChecker(userdict);
 		}
 		return usrspellChecker;
 	}
@@ -796,8 +796,9 @@ FieldCheck {
 			if (doSpellCheck(condition) && text.length() > 0) {
 //				logger.debug("Doing spell check on " + text); // DEL
 				StringWordTokenizer tokenizer = new StringWordTokenizer(text, wordFinder);
-				SpellCheckListener listener = new SpellCheckListener() {
+				StringWordTokenizer tokenizer2 = new StringWordTokenizer(text, wordFinder);
 
+				SpellCheckListener listener = new SpellCheckListener() {
 					public void spellingError(final SpellCheckEvent arg0) {
 						//logger.debug(arg0.getInvalidWord());
 						QuickFix fixAction1 = new AbstractImmediateQuickFix(
@@ -805,7 +806,7 @@ FieldCheck {
 								+ "\" to user-defined dictionary") {
 
 							public void run() {
-								getSpellChecker().addToDictionary(
+								getUserDefSpellChecker().addToDictionary(
 										arg0.getInvalidWord());
 								// Add this word to the user defined dictionary: user.dict
 								saveWord(arg0.getInvalidWord(), Preferences.getUserDefDictionaryFile());
@@ -867,7 +868,7 @@ FieldCheck {
 				// user-defined dictionary spell check
 				getUserDefSpellChecker().addSpellCheckListener(listener);
 //				logger.debug("tokenizer.getCurrentWordCount(): " + tokenizer.getCurrentWordCount() + " before usr dict check" );
-				getUserDefSpellChecker().checkSpelling(tokenizer);
+				getUserDefSpellChecker().checkSpelling(tokenizer2);
 
 
 				getSpellChecker().removeSpellCheckListener(listener);
