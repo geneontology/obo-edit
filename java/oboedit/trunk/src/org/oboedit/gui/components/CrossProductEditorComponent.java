@@ -355,7 +355,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 	public void commit() {
 		ActionEvent e = new ActionEvent(this, (int) Math.random() * Integer.MAX_VALUE, "commit");
 		for (ActionListener listener : actionListeners) {
-			logger.debug(">>> CPEC.commit - listener: " + listener);
+//			logger.debug(">>> CPEC.commit - listener: " + listener);
 			listener.actionPerformed(e);
 		}
 	}
@@ -397,7 +397,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 						
 					}
 					if (!found){
-						logger.debug("CPEC - deleting link: " + link);
+//						logger.debug("CPEC - deleting link: " + link);
 						historyList.add(new DeleteLinkHistoryItem(link));			
 					}
 				}
@@ -413,7 +413,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 					// always created with completes=false by default
 					// we'll reset the completes flag in a moment
 					completeDefLink.setCompletes(true);
-					logger.debug("CPEC - adding link: " + completeDefLink);
+//					logger.debug("CPEC - adding link: " + completeDefLink);
 					historyList.add(new CreateIntersectionLinkHistoryItem(completeDefLink));
 				}
 			}
@@ -453,7 +453,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		for (int i = 0; i < linkListPanel.getComponentCount(); i++) {
 			if (linkListPanel.getComponent(i) instanceof RelationshipLinePanel) {
 				RelationshipLinePanel panel = (RelationshipLinePanel) linkListPanel.getComponent(i);
-				logger.debug("CPEC: panel.getParentTerm(): " + panel.getParentTerm());
+//				logger.debug("CPEC: panel.getParentTerm(): " + panel.getParentTerm());
 				if (panel.getParentTerm() == null || panel.getProperty() == null)
 					continue;
 				OBORestriction discLink = new OBORestrictionImpl(oboClass, panel.getProperty(), panel.getParentTerm());
