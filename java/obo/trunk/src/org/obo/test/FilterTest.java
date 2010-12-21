@@ -72,6 +72,8 @@ public class FilterTest extends AbstractOBOTest {
 		filter.setCriterion(c);
 		filter.setValue("test");
 		Collection<IdentifiedObject> matches = filterObjects(filter);
+		for (IdentifiedObject io : matches)
+			System.out.println("subset[test]="+io);
 		assertTrue(matches.size() == 2);
 
 	}
@@ -125,6 +127,7 @@ public class FilterTest extends AbstractOBOTest {
 
 	}
 	
+	/* -- this test should be added to a reasoner test
 	public void testIsImpliedFilter() {
 		LinkFilter lfilter = (LinkFilter)lff.createNewFilter();
 		ObjectFilter ofilter = (ObjectFilter)off.createNewFilter();
@@ -139,6 +142,7 @@ public class FilterTest extends AbstractOBOTest {
 		assertTrue(matches.size() > 0);
 
 	}
+	*/
 
 	public void testIsIntersectionFilter() {
 		LinkFilter lfilter = (LinkFilter)lff.createNewFilter();
