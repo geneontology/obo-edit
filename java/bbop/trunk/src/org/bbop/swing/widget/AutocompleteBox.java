@@ -400,7 +400,7 @@ public class AutocompleteBox<T> extends JComboBox {
 	}
 
 	public void setValue(T object) {
-		logger.debug("setValue current ACBox: "+getId());
+//		logger.debug("setValue current ACBox: "+getId());
 		if (object == null) {
 			if (getSelectedItem() != null) {
 //				logger.info("current: = " + getSelectedItem());
@@ -464,7 +464,7 @@ public class AutocompleteBox<T> extends JComboBox {
 	public void setSelectedItem(Object anObject) {
 //		logger.debug("setSelectedItem:"+getId());
 	    if (anObject != null) {
-			logger.debug("AutocompleteBox.setSelectedItem: TRYING to select " + anObject + ", type = " + anObject.getClass());
+//			logger.debug("AutocompleteBox.setSelectedItem: TRYING to select " + anObject + ", type = " + anObject.getClass());
 	    }
 		if (anObject == null) {
 //			logger.debug("  AutocompleteBox.setSelectedItem: NULL");
