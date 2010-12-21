@@ -16,6 +16,11 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import owltools.graph.OWLGraphWrapper;
 
+/**
+ * Convenience class wrapping org.oboformat that abstracts away underlying details of ontology format or location
+ * @author cjm
+ *
+ */
 public class ParserWrapper {
 
 	public OWLGraphWrapper parseToOWLGraph(String iriString) throws OWLOntologyCreationException, IOException {
