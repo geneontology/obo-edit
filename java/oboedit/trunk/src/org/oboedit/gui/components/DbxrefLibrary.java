@@ -8,7 +8,7 @@ import org.obo.datamodel.*;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.gui.*;
-import org.oboedit.gui.components.GeneralDbxrefEditorComponent;
+import org.oboedit.gui.components.GeneralXrefEditorComponent;
 import org.oboedit.gui.widget.DbxrefListEditor;
 
 import javax.swing.*;
@@ -161,7 +161,7 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 		}
 		if (allSelected) {
 			Selection selected = SelectionManager.getManager().getSelection();
-			GeneralDbxrefEditorComponent dbxrefEditor = new GeneralDbxrefEditorComponent();
+			GeneralXrefEditorComponent dbxrefEditor = new GeneralXrefEditorComponent();
 			LinkedObject current = (LinkedObject) dbxrefEditor.getObject();
 //			logger.debug("DbxrefLibrary: selection = " + selected + ", dbxrefEditor.getObject = " + current); // DEL
 			// Do for each selected term

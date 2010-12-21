@@ -12,7 +12,7 @@ import org.oboedit.gui.components.CompleteDefPanel;
 import org.oboedit.gui.components.CrossProductEditorComponent;
 import org.oboedit.gui.components.DefinitionEditorComponent;
 import org.oboedit.gui.components.DomainEditorComponent;
-import org.oboedit.gui.components.GeneralDbxrefEditorComponent;
+import org.oboedit.gui.components.GeneralXrefEditorComponent;
 import org.oboedit.gui.components.IDEditorComponent;
 import org.oboedit.gui.components.NameEditorComponent;
 import org.oboedit.gui.components.NamespaceEditorComponent;
@@ -57,8 +57,8 @@ ComponentNameResolver {
 			out = new DefinitionEditorComponent();
 		} else if (id.equals("CROSSPRODUCT_EDITOR")) {
 			out = new CrossProductEditorComponent();
-		} else if (id.equals("DBXREF_EDITOR")) {
-			out = new GeneralDbxrefEditorComponent();
+		} else if (id.equals("XREF_EDITOR")) {
+			out = new GeneralXrefEditorComponent();
 		} else if (id.equals("SYNONYM_EDITOR")) {
 			out = new SynonymEditorComponent();
 		} else if (id.equals("COMPLETE_DEF_EDITOR")) {
