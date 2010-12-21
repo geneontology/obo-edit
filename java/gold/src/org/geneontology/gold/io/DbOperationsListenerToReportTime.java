@@ -20,9 +20,9 @@ public class DbOperationsListenerToReportTime extends DbOperationsTask {
 
 	
 	
-	public DbOperationsListenerToReportTime(String op, OWLGraphWrapper graph,
+	public DbOperationsListenerToReportTime(String op, String locations[],
 			boolean force, String tablePrefix, String tsvFilesDir) {
-		super(op, graph, force, tablePrefix, tsvFilesDir);
+		super(op, locations, force, tablePrefix, tsvFilesDir);
 	}
 
 

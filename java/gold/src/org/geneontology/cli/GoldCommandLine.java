@@ -2,6 +2,7 @@ package org.geneontology.cli;
 
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -112,13 +113,21 @@ public class GoldCommandLine {
 			}else if("bulkload".equals(operation) || "update".equals(operation) 
 					|| "buildtsv".equals(operation)){
 				
-				if(ontologyLocation == null){
-					exit("-ontologylocation parameter is missing");
-				}
-					
 
+				String ontologyLocations[] = null;
+				
+				if(ontologyLocation != null){
+					ontologyLocations = new String[]{ontologyLocation};
+				}else{
+					List list = manager.getDefaultOntologyLocations();
+					ontologyLocations = new String[list.size()];
+					
+					list.toArray(ontologyLocations);
+					
+				}
+				
 				DbOperationsListenerToReportTime db = new DbOperationsListenerToReportTime(operation, 
-						new DbOperations().buildOWLGraphWrapper(ontologyLocation), 
+						ontologyLocations, 
 						force, tableprefix, manager.getTsvFilesDir());
 				
 				db.run();

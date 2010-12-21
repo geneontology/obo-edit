@@ -122,15 +122,18 @@ public class DbOperations {
 		if(DEBUG)
 			LOG.debug(ontologyLocation);
 		
-		bulkLoad(buildOWLGraphWrapper(ontologyLocation), force);
-	}
-	
-
-	public void bulkLoad(OWLGraphWrapper wrapper, boolean force) throws Exception{
 		for(DbOperationsListener listener: listeners){
 			listener.bulkLoadStart();
 		}
- 		
+		
+		
+		_bulkLoad(buildOWLGraphWrapper(ontologyLocation), force);
+	}
+	
+
+
+	private void _bulkLoad(OWLGraphWrapper wrapper, boolean force) throws Exception{
+
 		if(LOG.isDebugEnabled()){
 			LOG.debug("Bulk Load for: " + wrapper.getOntologyId());
 		}
@@ -149,6 +152,15 @@ public class DbOperations {
 		for(DbOperationsListener listener: listeners){
 			listener.bulkLoadEnd();
 		}
+		
+	}
+	
+	public void bulkLoad(OWLGraphWrapper wrapper, boolean force) throws Exception{
+		for(DbOperationsListener listener: listeners){
+			listener.bulkLoadStart();
+		}
+
+		_bulkLoad(wrapper, force);
 	 
 	}
 	
@@ -192,7 +204,7 @@ public class DbOperations {
 		
 
 		for(DbOperationsListener listener: listeners){
-			listener.startOboToOWL();
+			listener.startOntologyLoad();
 		}
 		
 		OWLOntology ontology = null;
@@ -217,7 +229,7 @@ public class DbOperations {
 
 		
 		for(DbOperationsListener listener: listeners){
-			listener.endOboToOWL();
+			listener.endOntologyLoad(wrapper);
 		}
 		
 		return wrapper;
