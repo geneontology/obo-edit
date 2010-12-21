@@ -211,7 +211,6 @@ public class GeneOntologyManager {
 	public DatabaseDialect buildDatabaseDialect() throws Exception{
 		String clsName = config.getString("geneontology.gold.dialect");
 		
-		System.out.println(clsName);
 		DatabaseDialect db = null;
 		if(clsName != null && clsName.trim().length()>0){
 			//db = (DatabaseDialect) this.getClass().getClassLoader().loadClass(clsName).newInstance();

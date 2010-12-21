@@ -1,5 +1,7 @@
 package org.geneontology.gold.io;
 
+import owltools.graph.OWLGraphWrapper;
+
 /**
  * This class provides listener methods to be called by DbOperations 
  * during the start and end of the each data base operations
@@ -59,8 +61,8 @@ public interface DbOperationsListener {
 	 */
 	public void updateEnd();
 	
-	public void startOboToOWL();
+	public void startOntologyLoad();
 	
-	public void endOboToOWL();
+	public void endOntologyLoad(OWLGraphWrapper graph);
 	
 }
