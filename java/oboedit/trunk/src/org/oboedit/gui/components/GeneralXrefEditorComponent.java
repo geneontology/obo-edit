@@ -13,22 +13,22 @@ import org.obo.history.HistoryItem;
 
 import org.apache.log4j.*;
 
-public class GeneralDbxrefEditorComponent extends AbstractDbxrefEditorComponent {
+public class GeneralXrefEditorComponent extends AbstractDbxrefEditorComponent {
 
 	//initialize logger
-	protected final static Logger logger = Logger.getLogger(GeneralDbxrefEditorComponent.class);
+	protected final static Logger logger = Logger.getLogger(GeneralXrefEditorComponent.class);
 
 	protected final static FieldPathSpec spec = new FieldPathSpec(
 			GeneralDbxrefSearchCriterion.CRITERION);
 
 	@Override
 	protected String getDbxrefTitle() {
-		return "General Dbxrefs";
+		return "General xrefs";
 	}
 	
 	@Override
 	protected String getUserEventType() {
-		return "gui.dbxref.general.add";
+		return "gui.xref.general.add";
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class GeneralDbxrefEditorComponent extends AbstractDbxrefEditorComponent 
 	}
 
 	public String getID() {
-		return "DBXREF_EDITOR";
+		return "XREF_EDITOR";
 	}
 
 	public void populateFields(IdentifiedObject io) {
@@ -64,7 +64,7 @@ public class GeneralDbxrefEditorComponent extends AbstractDbxrefEditorComponent 
 
 	@Override
 	protected Dbxref createNewDbxref() {
-		return new DbxrefImpl("XX", "<new dbxref>");
+		return new DbxrefImpl("XX", "<new xref>");
 	}
 
 }
