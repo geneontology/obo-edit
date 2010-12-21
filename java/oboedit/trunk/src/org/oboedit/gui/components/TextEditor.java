@@ -670,8 +670,8 @@ RootTextEditComponent, SelectionDrivenComponent {
 			+
 
 			"<tabs>"
-			+ "<tab name='Dbxrefs`if (size(TextEditor.getObject().getDbxrefs()) > 0) \" *\"; else \"\";`' selected='`size(TextEditor.getObject().getDbxrefs()) > 0`'>"
-			+ "<component id='DBXREF_EDITOR'/>"
+			+ "<tab name='Xrefs`if (size(TextEditor.getObject().getDbxrefs()) > 0) \" *\"; else \"\";`' selected='`size(TextEditor.getObject().getDbxrefs()) > 0`'>"
+			+ "<component id='XREF_EDITOR'/>"
 			+ "</tab>"
 			+
 
