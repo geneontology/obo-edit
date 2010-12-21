@@ -38,9 +38,9 @@ public class ReasonerRegistry {
 		// IDs or something?
 		defaultReasonerFactory = new ForwardChainingReasonerFactory();  // For now
 		defaultReasonerName = "ForwardChainingReasoner (old, faster)";  // For now
-		registerReasoner("ForwardChainingReasoner (old, faster)", defaultReasonerFactory);
-		registerReasoner("LinkPileReasoner (new, slower)", new LinkPileReasonerFactory());
-		registerReasoner("RuleBasedReasoner (experimental)", new RuleBasedReasonerFactory());
+//		registerReasoner("ForwardChainingReasoner (old, faster)", defaultReasonerFactory);
+//		registerReasoner("LinkPileReasoner (new, slower)", new LinkPileReasonerFactory());
+		registerReasoner("RuleBasedReasoner", new RuleBasedReasonerFactory());
 		/*
 		for (Class cls : ReasonerFactory.class.getClasses()) {
 			try {
