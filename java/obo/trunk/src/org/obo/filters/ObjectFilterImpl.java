@@ -3,6 +3,7 @@ package org.obo.filters;
 import org.bbop.expression.ExpressionException;
 import org.bbop.expression.ExpressionUtil;
 import org.bbop.expression.JexlContext;
+import org.obo.datamodel.OBOProperty;
 import org.obo.reasoner.ReasonedLinkDatabase;
 
 import java.util.*;
@@ -94,11 +95,11 @@ public class ObjectFilterImpl implements ObjectFilter {
 
 	// checking object's compliance to filter conditions
 	public boolean satisfies(Object object) {
-          if (criterion == null) {
-            logger.debug("satisfies(" +  object+ "): criterion is null"); 
-            return false;
-          }
-//          logger.debug("ObjectFilterImpl.satisfies -- input type = " + criterion.getInputType() + "; evaluating object: " + object); // DEL
+		if (criterion == null) {
+			logger.debug("satisfies(" +  object+ "): criterion is null"); 
+			return false;
+		}
+		//          logger.debug("ObjectFilterImpl.satisfies -- input type = " + criterion.getInputType() + "; evaluating object: " + object); // DEL
 		if (!criterion.getInputType().isAssignableFrom(object.getClass()))
 			return false;
 		else {
@@ -109,7 +110,7 @@ public class ObjectFilterImpl implements ObjectFilter {
 			catch (ExpressionException e) {
 				logger.debug("ObjectFilterImpl -- matchVal error");
 			}
-			
+
 			List os = new LinkedList();
 			aspect.getObjects(os, getReasoner(), traversalFilter, object);
 			criterion.setReasoner(getReasoner());
@@ -139,8 +140,10 @@ public class ObjectFilterImpl implements ObjectFilter {
 				 * This causes all relations to show up in the search results irrespective of their relevance to the set filter.
 				 * If relations need to pass for certain conditions to hold..evaluate situation and set this at the higher level, not so late in the filtering process.
 				 * */
-				
-				if(b || object.getClass().getName().contains("OBOProperty")){
+
+				// this is giving all relations a free pass through search even when they dont match any search criterion.
+				//if(b || object instanceof OBOProperty){
+				if(b){
 					matches = !negate;
 					break;
 				}
