@@ -8,11 +8,14 @@ import org.obolibrary.oboformat.model.OBODoc;
 import org.obolibrary.oboformat.model.FrameMergeException;
 import org.obolibrary.oboformat.parser.OBOFormatParser;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyFormat;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
 import owltools.graph.OWLGraphWrapper;
 
@@ -59,7 +62,6 @@ public class ParserWrapper {
 		}
 
 		Obo2Owl bridge = new Obo2Owl();
-		OWLOntologyManager manager = bridge.getManager();
 		OWLOntology ontology = bridge.convert(obodoc);
 		return ontology;		
 	}
@@ -72,10 +74,17 @@ public class ParserWrapper {
 	
 	public OWLOntology parseOWL(IRI iri) throws OWLOntologyCreationException {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager(); // persist?
-		OWLDataFactory df = manager.getOWLDataFactory();
 		OWLOntology ont = manager.loadOntologyFromOntologyDocument(iri);
 		return ont;
 	}
 
+	public void saveOWL(OWLOntology ont, String file) throws OWLOntologyStorageException {
+		OWLOntologyFormat owlFormat = new RDFXMLOntologyFormat();
+		saveOWL(ont, owlFormat, file);
+	}
+	public void saveOWL(OWLOntology ont, OWLOntologyFormat owlFormat, String file) throws OWLOntologyStorageException {
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		manager.saveOntology(ont, owlFormat, IRI.create(file));
+	}
 
 }
