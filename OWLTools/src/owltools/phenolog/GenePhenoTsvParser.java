@@ -37,7 +37,7 @@ public class GenePhenoTsvParser {
 	}
 
 
-	public HashSet<GenePheno> parse (String fileName) throws IOException {
+	public HashSet<GenePheno> parse(String fileName) throws IOException {
 		HashSet<GenePheno> gpset = new HashSet<GenePheno>();
 
 		File myFile = new File(fileName);
