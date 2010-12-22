@@ -42,12 +42,14 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLReflexiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLRestriction;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 import owltools.graph.OWLQuantifiedProperty.Quantifier;
@@ -156,6 +158,10 @@ public class OWLGraphWrapper {
 		public boolean isFollowComplementOfInClosure = false;
 
 		public boolean isCacheClosure = true;
+		
+		// if set to non-null, this constrains graph traversal. TODO
+		public OWLGraphEdge graphEdgeIncludeSet = null;
+		public OWLGraphEdge graphEdgeExcludeSet = null;
 
 	}
 
@@ -169,6 +175,16 @@ public class OWLGraphWrapper {
 		this.ontology = ontology;
 	}
 
+	public OWLGraphWrapper(OWLOntology ontology, boolean isMergeImportClosure) throws UnknownOWLOntologyException, OWLOntologyCreationException {
+		super();
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		dataFactory = manager.getOWLDataFactory();
+		if (isMergeImportClosure)
+			this.ontology = 
+				manager.createOntology(ontology.getOntologyID().getOntologyIRI(), ontology.getImportsClosure());
+		else
+			this.ontology = ontology;
+	}
 
 
 	public OWLOntology getOntology() {
