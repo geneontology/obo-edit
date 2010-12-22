@@ -68,6 +68,16 @@ public class Mireot {
 
 
 
+	public Mireot(OWLGraphWrapper g) {
+		super();
+		this.ontology = g.getOntology();
+		this.manager = OWLManager.createOWLOntologyManager();
+		this.dataFactory = manager.getOWLDataFactory();
+		this.graph = g;
+	}
+
+
+
 	public Set<OWLOntology> getReferencedOntologies() {
 		return referencedOntologies;
 	}
@@ -98,6 +108,16 @@ public class Mireot {
 		allOntologies = null;
 		this.referencedOntologies.add(refOnt);
 	}
+	
+	public void useImportsClosureAsReferencedOntologies() {
+		referencedOntologies = new HashSet<OWLOntology>();
+		for (OWLOntology r : graph.getSourceOntology().getImportsClosure()) {
+			if (r.equals(ontology))
+				continue;
+			referencedOntologies.add(r);
+		}
+	}
+
 
 	public OWLOntologyManager getManager() {
 		return manager;
@@ -224,7 +244,7 @@ public class Mireot {
 	}
 
 	public Set<OWLEntity> getExternalReferencedEntities() {
-		OWLOntology ont = getOntology();
+		OWLOntology ont = graph.getSourceOntology();
 		Set<OWLEntity> objs = ont.getSignature(false);
 		/*
 		Set<OWLEntity> objs = new HashSet<OWLEntity>();
@@ -265,6 +285,9 @@ public class Mireot {
 		Set<OWLObject> objs = getClosure();
 		for (OWLOntology refOnt : getReferencedOntologies()) {
 			for (OWLObject obj : objs) {
+				if (!(obj instanceof OWLEntity))
+					continue;
+				
 				if (obj instanceof OWLClass) {
 					axioms.addAll(refOnt.getAxioms((OWLClass) obj));
 				}
@@ -305,5 +328,16 @@ public class Mireot {
 		}
 		return filteredAxioms;
 	}
+	
+	public void mergeOntologies() {
+		OWLOntology srcOnt = graph.getSourceOntology();
+		Set<OWLAxiom> axioms = getClosureAxioms();
+		for (OWLAxiom a : axioms)
+			System.out.println("Adding:"+a);
+		manager.addAxioms(srcOnt, axioms);
+	}
+
+
+
 
 }

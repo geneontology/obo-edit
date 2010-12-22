@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import com.clarkparsia.pellet.owlapiv3.*;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.profiles.OWL2ELProfile;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
@@ -191,21 +192,21 @@ public class OWLReasonerRunner {
 				System.out.println("Consistent: " + consistent);
 				System.out.println("\n");
 
-				// We can easily get a list of inconsistent classes.  (A class is inconsistent if it
-				// can't possibly have any instances).  Note that the getInconsistentClasses method
+				// We can easily get a list of unsatisfiable classes.  (A class is unsatisfiable if it
+				// can't possibly have any instances).  Note that the getunsatisfiableClasses method
 				// is really just a convenience method for obtaining the classes that are equivalent
 				// to owl:Nothing.
-				Node<OWLClass> inconsistentClasses = reasoner.getUnsatisfiableClasses();
-				if (inconsistentClasses.getSize() > 0) {
-					System.out.println("The following classes are inconsistent: ");
-					for(OWLClass cls : inconsistentClasses) {
+				Node<OWLClass> unsatisfiableClasses = reasoner.getUnsatisfiableClasses();
+				if (unsatisfiableClasses.getSize() > 0) {
+					System.out.println("The following classes are unsatisfiable: ");
+					for(OWLClass cls : unsatisfiableClasses) {
 						if (cls.toString().equals("Nothing"))
 							continue;
-						System.out.println("    INCONSISTENT: " + getLabel(cls,ont,df));
+						System.out.println("    unsatisfiable: " + getLabel(cls,ont,df));
 					}
 				}
 				else {
-					System.out.println("There are no inconsistent classes");
+					System.out.println("There are no unsatisfiable classes");
 				}
 				System.out.println("\n");
 
@@ -220,7 +221,7 @@ public class OWLReasonerRunner {
 					}
 					//System.out.println("  "+cls);
 					//NodeSet<OWLNamedIndividual> l = reasoner.getInstances(cls,false);
-					NodeSet<OWLClass> scs = reasoner.getSuperClasses(cls, false);
+					NodeSet<OWLClass> scs = reasoner.getSuperClasses(cls, true);
 					for (Node<OWLClass> scSet : scs) {
 						for (OWLClass sc : scSet) {
 							if (sc.toString().equals("Thing")) {
@@ -342,6 +343,10 @@ public class OWLReasonerRunner {
 		long mem = tm-fm;
 		System.out.println("Memory total:"+tm+" free:"+fm+" diff:"+mem+" (bytes) diff:"+(mem/1000000)+" (mb)");
 
+	}
+	
+	private void checkEL() {
+		OWL2ELProfile prof = new OWL2ELProfile();
 	}
 	
 	private static OWLReasoner old__createReasoner(OWLOntologyManager man, String reasonerClassName) {

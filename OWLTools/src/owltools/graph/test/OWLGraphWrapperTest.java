@@ -47,7 +47,7 @@ public class OWLGraphWrapperTest extends TestCase {
 				manager.loadOntologyFromOntologyDocument(
 						new File("test_resources/test.owl")));
 	}
-	
+
 	
 	
 }
