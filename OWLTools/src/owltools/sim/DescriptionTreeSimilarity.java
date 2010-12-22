@@ -108,11 +108,15 @@ public class DescriptionTreeSimilarity extends Similarity {
 	 * if a branch is hit, branch the subsuming tree.
 	 * at the end we prune branches that do not lead to a subsumer.
 	 * 
-	 * 
+	 * this method traverses the 'a' tree
 	 */
-	public OWLClassExpression buildDescription(OWLGraphWrapper g, OWLObject a, OWLObject b, Set<OWLObject> subsumers) {
+	public OWLClassExpression buildDescription(SimEngine se, OWLGraphWrapper g, OWLObject a, OWLObject b, Set<OWLObject> subsumers) {
 		// candidate expression
 		OWLClassExpression x = null;
+		
+		if (a.equals(b)) {
+			return (OWLClassExpression) a;
+		}
 		
 		if (subsumers.size() == 1) {
 			// dual path up from here is linear, no intersections to be made.
@@ -123,21 +127,28 @@ public class DescriptionTreeSimilarity extends Similarity {
 		// also - restrict subsumers
 		// TODO
 		OWLObject bNext = b;
+		for (OWLObject candidate : g.getAncestorsReflexive(b)) {
+			se.getLeastCommonSubsumers(a, candidate);
+		}
+		Set<OWLGraphEdge> bEdges = g.getEdgesBetween(b, bNext);
 		
-		Set<OWLGraphEdge> edges = g.getOutgoingEdges(a);
-		for (OWLGraphEdge e : edges) {
+		// jump down a single step
+		Set<OWLClassExpression> subExprs = new HashSet<OWLClassExpression>();
+		Set<OWLGraphEdge> aEdges = g.getOutgoingEdges(a);
+		for (OWLGraphEdge e : aEdges) {
 			OWLObject t = e.getTarget();
+			
 			Set<OWLObject> ancs = g.getAncestorsReflexive(t);
 			ancs.retainAll(subsumers);
 			if (ancs.size() == 0) {
 				continue;
 			}
 			else {
-				Set<OWLClassExpression> subExprs = new HashSet<OWLClassExpression>();
 				for (OWLObject anc : ancs) {
-					subExprs.add(buildDescription(g,anc,bNext,subsumers));
+					subExprs.add(buildDescription(se, g,anc,bNext,subsumers));
 				}
 				if (subExprs.size() == 1) {
+					// TODO - path
 					x = subExprs.iterator().next();
 				}
 				else {
@@ -145,6 +156,8 @@ public class DescriptionTreeSimilarity extends Similarity {
 				}
 			}
 		}
+		x = g.getDataFactory().getOWLObjectIntersectionOf(subExprs);
+
 		return x;
 		
 	}

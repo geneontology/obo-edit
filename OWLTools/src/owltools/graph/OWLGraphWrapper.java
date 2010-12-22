@@ -130,7 +130,8 @@ public class OWLGraphWrapper {
 	public static final String DEFAULT_IRI_PREFIX = "http://purl.obolibrary.org/obo/";
 	
 	
-	OWLOntology ontology;
+	OWLOntology ontology; // this is the ontology used for querying. may be the merge of sourceOntology+closure
+	OWLOntology sourceOntology; // graph is seeded from this ontology.
 	OWLDataFactory dataFactory;
 	OWLOntologyManager manager;
 	Config config = new Config();
@@ -167,23 +168,27 @@ public class OWLGraphWrapper {
 
 	/**
 	 * Create a new wrapper for an OWLOntology
+	 * @throws OWLOntologyCreationException 
+	 * @throws UnknownOWLOntologyException 
 	 */
-	public OWLGraphWrapper(OWLOntology ontology) {
-		super();
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		dataFactory = manager.getOWLDataFactory();
-		this.ontology = ontology;
+	public OWLGraphWrapper(OWLOntology ontology) throws UnknownOWLOntologyException, OWLOntologyCreationException {
+		this(ontology, false);
 	}
 
 	public OWLGraphWrapper(OWLOntology ontology, boolean isMergeImportClosure) throws UnknownOWLOntologyException, OWLOntologyCreationException {
 		super();
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		dataFactory = manager.getOWLDataFactory();
-		if (isMergeImportClosure)
+		if (isMergeImportClosure) {
+			this.sourceOntology = ontology;
+			// the query ontology is the source ontology plus the imports closure
 			this.ontology = 
 				manager.createOntology(ontology.getOntologyID().getOntologyIRI(), ontology.getImportsClosure());
-		else
+		}
+		else {
+			this.sourceOntology = ontology;
 			this.ontology = ontology;
+		}
 	}
 
 
@@ -196,8 +201,15 @@ public class OWLGraphWrapper {
 	public void setOntology(OWLOntology ontology) {
 		this.ontology = ontology;
 	}
-
 	
+	public OWLOntology getSourceOntology() {
+		return sourceOntology;
+	}
+
+	public void setSourceOntology(OWLOntology sourceOntology) {
+		this.sourceOntology = sourceOntology;
+	}
+
 	public OWLDataFactory getDataFactory() {
 		return dataFactory;
 	}

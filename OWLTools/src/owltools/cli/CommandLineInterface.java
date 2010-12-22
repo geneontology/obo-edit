@@ -8,15 +8,18 @@ import java.util.List;
 import java.util.Set;
 
 import org.obolibrary.oboformat.model.FrameMergeException;
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
 import owltools.gfx.OWLGraphLayoutRenderer;
 import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 import owltools.io.GraphClosureWriter;
 import owltools.io.ParserWrapper;
+import owltools.mireot.Mireot;
 import owltools.sim.SimEngine;
 import owltools.sim.JaccardSimilarity;
 import owltools.sim.SimEngine.SimilarityAlgorithmException;
@@ -34,8 +37,11 @@ public class CommandLineInterface {
 			this.args = args;
 		}
 		
-		public boolean hasOpts() {
+		public boolean hasArgs() {
 			return i < args.length;
+		}
+		public boolean hasOpts() {
+			return hasArgs() && args[i].startsWith("-");
 		}
 		
 		public String nextOpt() {
@@ -45,7 +51,7 @@ public class CommandLineInterface {
 		}
 	}
 	
-	public static void main(String[] args) throws OWLOntologyCreationException, IOException, FrameMergeException, SimilarityAlgorithmException {
+	public static void main(String[] args) throws OWLOntologyCreationException, IOException, FrameMergeException, SimilarityAlgorithmException, OWLOntologyStorageException {
 
 		List<String> paths = new ArrayList<String>();
 		//Integer i=0;
@@ -64,7 +70,7 @@ public class CommandLineInterface {
 		
 		Opts opts = new Opts(args);
 		
-		while (opts.hasOpts()) {
+		while (opts.hasArgs()) {
 			String opt = opts.nextOpt();
 			System.out.println("processing arg: "+opt);
 			if (opt.equals("--pellet")) {
@@ -95,7 +101,7 @@ public class CommandLineInterface {
 				merge = true;
 			}
 			else if (opt.equals("-m") || opt.equals("--mireot")) {
-				args = runMireot(args);
+				mergeOntologies(g,opts);
 			}
 			else if (opt.equals("--save-closure")) {
 				GraphClosureWriter gcw = new GraphClosureWriter(opts.nextOpt());
@@ -174,8 +180,11 @@ public class CommandLineInterface {
 				//System.out.println(metric+" = "+r);
 				metric.print();
 			}
+			else if (opt.equals("-o") || opt.equals("--output")) {
+				pw.saveOWL(g.getSourceOntology(), opts.nextOpt());
+			}
 			else {
-				g =	pw.parseToOWLGraph(opt);
+				g =	pw.parseToOWLGraph(opt,true);
 				System.out.println("parsed "+g);
 				//paths.add(opt);
 			}
@@ -202,6 +211,33 @@ public class CommandLineInterface {
 		}
 		*/
 		
+	}
+
+	private static void mergeOntologies(OWLGraphWrapper g, Opts opts) throws OWLOntologyCreationException, IOException {
+		Mireot m = new Mireot(g);
+		ParserWrapper pw = new ParserWrapper();
+		if (opts.hasOpts()) {
+			String opt = opts.nextOpt();
+			if (opt.equals("-r") || opt.equals("--ref-ont")) {
+				String f = opts.nextOpt();
+				m.addReferencedOntology(pw.parseOWL(f));
+			}
+			else if (opt.equals("-s") || opt.equals("--src-ont")) {
+				m.setOntology(pw.parseOWL(opts.nextOpt()));
+			}
+			else if (opt.equals("-i") || opt.equals("--use-imports")) {
+				System.out.println("using everything in imports closure");
+				m.useImportsClosureAsReferencedOntologies();
+			}
+			else {
+				// TODO
+			}
+		}
+		for (OWLAxiom ax : m.getClosureAxioms()) {
+			System.out.println("M_AX:"+ax);
+		}
+
+		m.mergeOntologies();
 	}
 
 	private static void showEdges(Set<OWLGraphEdge> edges) {
