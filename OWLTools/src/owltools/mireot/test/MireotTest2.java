@@ -13,6 +13,7 @@ import org.semanticweb.owlapi.io.OWLXMLOntologyFormat;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -28,7 +29,7 @@ import owltools.mireot.Mireot;
 
 import junit.framework.TestCase;
 
-public class MireotTest extends TestCase {
+public class MireotTest2 extends TestCase {
 
 	public static void testMireot() throws IOException, OWLOntologyCreationException, OWLOntologyStorageException {
 		ParserWrapper pw = new ParserWrapper();
@@ -42,12 +43,15 @@ public class MireotTest extends TestCase {
 		OWLOntology refOnt = rg.getOntology();
 		
 		Mireot m = new Mireot(ont);
+		
 		m.addReferencedOntology(refOnt);
-		OWLOntology mOnt = m.mireot(ont);
-		for (OWLClass cls : mOnt.getClassesInSignature()) {
-			System.out.println("M:"+cls);
+		for (OWLEntity e : m.getExternalReferencedEntities()) {
+			System.out.println("e="+e);
 		}
-		for (OWLAxiom ax : mOnt.getAxioms()) {
+		for (OWLObject e : m.getClosure()) {
+			System.out.println("c="+e);
+		}
+		for (OWLAxiom ax : m.getClosureAxioms()) {
 			System.out.println("M_AX:"+ax);
 		}
 	}
