@@ -11,6 +11,7 @@ import org.obolibrary.oboformat.model.FrameMergeException;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
@@ -19,7 +20,7 @@ import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 import owltools.io.GraphClosureWriter;
 import owltools.io.ParserWrapper;
-import owltools.mireot.Mireot;
+import owltools.mooncat.Mooncat;
 import owltools.sim.SimEngine;
 import owltools.sim.JaccardSimilarity;
 import owltools.sim.SimEngine.SimilarityAlgorithmException;
@@ -97,8 +98,10 @@ public class CommandLineInterface {
 					System.out.println(c);
 				}
 			}
-			else if (opt.equals("-merge")) {
-				merge = true;
+			else if (opt.equals("--merge")) {
+				g.mergeOntology(pw.parse(opts.nextOpt()));
+				//g.getSourceOntology().pw.parseOWL(opts.nextOpt()).getAxioms();
+				//merge = true;
 			}
 			else if (opt.equals("-m") || opt.equals("--mireot")) {
 				mergeOntologies(g,opts);
@@ -183,9 +186,21 @@ public class CommandLineInterface {
 			else if (opt.equals("-o") || opt.equals("--output")) {
 				pw.saveOWL(g.getSourceOntology(), opts.nextOpt());
 			}
+			else if (opt.equals("--list-axioms")) {
+				for (OWLAxiom a : g.getOntology().getAxioms()) {
+					System.out.println("AX:"+a);
+				}
+			}
 			else {
-				g =	pw.parseToOWLGraph(opt,true);
-				System.out.println("parsed "+g);
+				OWLOntology ont = pw.parse(opt);
+				
+				if (g == null)
+					g =	new OWLGraphWrapper(ont);
+				else {
+					System.out.println("adding support ont "+ont);
+					g.addSupportOntology(ont);
+				}
+
 				//paths.add(opt);
 			}
 		}
@@ -214,7 +229,7 @@ public class CommandLineInterface {
 	}
 
 	private static void mergeOntologies(OWLGraphWrapper g, Opts opts) throws OWLOntologyCreationException, IOException {
-		Mireot m = new Mireot(g);
+		Mooncat m = new Mooncat(g);
 		ParserWrapper pw = new ParserWrapper();
 		if (opts.hasOpts()) {
 			String opt = opts.nextOpt();
@@ -227,12 +242,13 @@ public class CommandLineInterface {
 			}
 			else if (opt.equals("-i") || opt.equals("--use-imports")) {
 				System.out.println("using everything in imports closure");
-				m.useImportsClosureAsReferencedOntologies();
+				g.addSupportOntologiesFromImportsClosure();
 			}
 			else {
 				// TODO
 			}
 		}
+		g.useImportClosureForQueries();
 		for (OWLAxiom ax : m.getClosureAxioms()) {
 			System.out.println("M_AX:"+ax);
 		}
