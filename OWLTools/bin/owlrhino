@@ -1,10 +1,16 @@
 #!/bin/sh
-DIRNAME=`dirname $0`
-#PATH_TO_ME=`which $0`;
+# Set the classname of the Java class to execute
+CLASSNAME=org.mozilla.javascript.tools.shell.Main
+
+# Rhino classpath
+CLASSPATH_RHINO=$HOME/src/rhino/js.jar
+
+OBDAPI_LIB=../
+
 # Give a space-separated list of classpath items RELATIVE TO THE CURRENT SCRIPT
 # These will be resolved into absolute pathnames
 # Wildcards are allowed
-CLASSPATH_RELATIVE=../runtime/*.jar
+CLASSPATH_RELATIVE=../runtime/*jar
 
 # If literal classpath values are needed, uncomment the line below
 # This can be useful if the classpath contains URLs
@@ -25,6 +31,41 @@ CMDARGS=" "
 
 PATH_TO_ME=`which $0`;
 
+#Now see if the path is actually a symbolic link. If it is, set TEMP
+#to true
+TEMP=`ls -l $PATH_TO_ME | sed -e "s/.* -> \(.*\)/true/g"`
+if [ -z "$TEMP" ]
+then
+   TEMP='false';
+fi
+
+#While we keep finding symbolic links...
+while [ "$TEMP" = "true" ]
+do
+   #Parse the ls output and set PATH_TO_ME to the actual location of the
+   #symbolic link
+   PATH_TO_ME=`ls -l $PATH_TO_ME | sed -e "s/.* -> \(.*\)/\1/g"`
+
+   TEMP=`ls -l $PATH_TO_ME | sed -e "s/.* -> \(.*\)/true/g"`
+   if [ -z "$TEMP" ]
+   then
+      TEMP='false'
+   fi
+done
+
+#If PATH_TO_ME is a relative link, set TEMP to true, otherwise set
+#TEMP to false
+TEMP=`echo $PATH_TO_ME | sed -e "s/^\/.*/true/g"`
+if [ -z "$TEMP" ]
+then
+   TEMP='false'
+fi
+
+#If PATH_TO_ME was a relative link, change it to an absolute reference
+if [ $TEMP != 'true' ]
+then
+   PATH_TO_ME="$PWD/$PATH_TO_ME"
+fi
 
 SCRIPTNAME=`echo $PATH_TO_ME | sed -e "s/.*\/\(.*\)/\1/g"`
 
@@ -57,7 +98,6 @@ do
 	
 done
 
-CLASSPATH=""
 for ARG in "$CLASSPATH_RELATIVE"
 do
 	DEREFERENCED_CLASSPATH=`ls -1 -L $PATH_TO_ME/$ARG`
@@ -99,5 +139,9 @@ then
 	fi
 fi
 
-CMD="$JAVAPATH -Xmx2048M -Xms2048M -Djava.library.path=$PATH_TO_ME/../lib -classpath $CLASSPATH:gold.jar -DlauncherDir=$PATH_TO_ME $JAVAARGS owltools.cli.CommandLineInterface $CMDARGS"
-sh -c "$CMD"
+echo $CLASSPATH:$CLASSPATH_RHINO
+
+[ "$1" = "-f" ] || { RLWRAP="/opt/local/bin/rlwrap -C js" ;}
+#sh -c "$JAVAPATH -Xmx1024m -classpath $CLASSPATH:$CLASSPATH_RHINO -DlauncherDir=$PATH_TO_ME $JAVAARGS $CLASSNAME $CMDARGS"
+echo $RLWRAP
+sh -c "$RLWRAP -C owlrhino $JAVAPATH -Xmx1024m -classpath $CLASSPATH:$CLASSPATH_RHINO -DlauncherDir=$PATH_TO_ME $JAVAARGS $CLASSNAME $CMDARGS"
