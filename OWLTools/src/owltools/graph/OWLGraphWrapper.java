@@ -113,8 +113,8 @@ public class OWLGraphWrapper {
 		public boolean isCacheClosure = true;
 
 		// if set to non-null, this constrains graph traversal. TODO
-		public OWLGraphEdge graphEdgeIncludeSet = null;
-		public OWLGraphEdge graphEdgeExcludeSet = null;
+		public Set<OWLQuantifiedProperty> graphEdgeIncludeSet = null;
+		public Set<OWLQuantifiedProperty> graphEdgeExcludeSet = null;
 
 	}
 
@@ -239,11 +239,21 @@ public class OWLGraphWrapper {
 	public void setDataFactory(OWLDataFactory dataFactory) {
 		this.dataFactory = dataFactory;
 	}
+	
+
+
+	public Config getConfig() {
+		return config;
+	}
+
+	public void setConfig(Config config) {
+		this.config = config;
+	}
+	
 
 	// ----------------------------------------
 	// BASIC GRAPH EDGE TRAVERSAL
 	// ----------------------------------------
-
 
 
 
@@ -350,9 +360,45 @@ public class OWLGraphWrapper {
 				// do nothing in this direction
 			}
 		}
+		
+		filterEdges(edges);
 		return edges;
 	}
 
+	/**
+	 * only include those edges that match user constraints
+	 * @param edges
+	 */
+	private void filterEdges(Set<OWLGraphEdge> edges) {
+		Set<OWLGraphEdge> rmEdges = new HashSet<OWLGraphEdge>();
+		if (config.graphEdgeIncludeSet != null) {
+			for (OWLGraphEdge e : edges) {
+				if (!edgeSatisfiesOneOf(e, config.graphEdgeIncludeSet)) {
+					rmEdges.add(e);
+				}
+			}
+		}
+		if (config.graphEdgeExcludeSet != null) {
+			for (OWLGraphEdge e : edges) {
+				if (edgeSatisfiesOneOf(e, config.graphEdgeExcludeSet)) {
+					rmEdges.add(e);
+				}
+			}
+		}
+		edges.removeAll(rmEdges);
+	}
+
+	private boolean edgeSatisfiesOneOf(OWLGraphEdge e, Set<OWLQuantifiedProperty> graphEdgeIncludeSet) {
+		for (OWLQuantifiedProperty c : graphEdgeIncludeSet) {
+			if (edgeSatisfies(e, c))
+				return true;
+		}
+		return false;
+	}
+
+	private boolean edgeSatisfies(OWLGraphEdge e, OWLQuantifiedProperty c) {
+		return e.getSingleQuantifiedProperty().equals(c);
+	}
 
 	// e.g. R-some-B ==> <R-some-B,R,B>
 	private OWLGraphEdge restrictionToPrimitiveEdge(OWLRestriction s) {
