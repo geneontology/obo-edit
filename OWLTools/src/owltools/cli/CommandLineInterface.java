@@ -103,8 +103,8 @@ public class CommandLineInterface {
 				//g.getSourceOntology().pw.parseOWL(opts.nextOpt()).getAxioms();
 				//merge = true;
 			}
-			else if (opt.equals("-m") || opt.equals("--mireot")) {
-				mergeOntologies(g,opts);
+			else if (opt.equals("-m") || opt.equals("--mcat")) {
+				catOntologies(g,opts);
 			}
 			else if (opt.equals("--save-closure")) {
 				GraphClosureWriter gcw = new GraphClosureWriter(opts.nextOpt());
@@ -228,7 +228,7 @@ public class CommandLineInterface {
 		
 	}
 
-	private static void mergeOntologies(OWLGraphWrapper g, Opts opts) throws OWLOntologyCreationException, IOException {
+	private static void catOntologies(OWLGraphWrapper g, Opts opts) throws OWLOntologyCreationException, IOException {
 		Mooncat m = new Mooncat(g);
 		ParserWrapper pw = new ParserWrapper();
 		if (opts.hasOpts()) {
@@ -248,7 +248,7 @@ public class CommandLineInterface {
 				// TODO
 			}
 		}
-		g.useImportClosureForQueries();
+		//g.useImportClosureForQueries();
 		for (OWLAxiom ax : m.getClosureAxioms()) {
 			System.out.println("M_AX:"+ax);
 		}
