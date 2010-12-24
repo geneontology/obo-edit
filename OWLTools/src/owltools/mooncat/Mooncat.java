@@ -150,6 +150,9 @@ public class Mooncat {
 
 
 
+	/**
+	 * @return set of entities that belong to a support ontology that are referenced in the source ontology
+	 */
 	public Set<OWLEntity> getExternalReferencedEntities() {
 		OWLOntology ont = graph.getSourceOntology();
 		Set<OWLEntity> objs = ont.getSignature(false);
