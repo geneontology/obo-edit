@@ -1,4 +1,4 @@
-package owltools.mireot;
+package owltools.mooncat;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -37,7 +37,7 @@ import owltools.graph.OWLGraphWrapper;
  * @author cjm
  *
  */
-public class Mireot {
+public class Mooncat {
 
 	OWLOntologyManager manager;
 	OWLDataFactory dataFactory;
@@ -47,7 +47,7 @@ public class Mireot {
 	Set<OWLOntology> allOntologies = null;
 	OWLGraphWrapper graph;
 
-	public Mireot(OWLOntologyManager manager, OWLDataFactory dataFactory,
+	public Mooncat(OWLOntologyManager manager, OWLDataFactory dataFactory,
 			OWLOntology ontology) {
 		super();
 		this.manager = manager;
@@ -57,7 +57,7 @@ public class Mireot {
 
 
 
-	public Mireot(OWLOntology ontology) throws UnknownOWLOntologyException, OWLOntologyCreationException {
+	public Mooncat(OWLOntology ontology) throws UnknownOWLOntologyException, OWLOntologyCreationException {
 		super();
 		this.ontology = ontology;
 		manager = OWLManager.createOWLOntologyManager();
@@ -68,9 +68,9 @@ public class Mireot {
 
 
 
-	public Mireot(OWLGraphWrapper g) {
+	public Mooncat(OWLGraphWrapper g) {
 		super();
-		this.ontology = g.getOntology();
+		this.ontology = g.getSourceOntology();
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.dataFactory = manager.getOWLDataFactory();
 		this.graph = g;
@@ -79,43 +79,34 @@ public class Mireot {
 
 
 	public Set<OWLOntology> getReferencedOntologies() {
-		return referencedOntologies;
+		return graph.getSupportOntologySet();
 	}
 
 	/**
 	 * @return union of referenced ontologies and source ontology
 	 */
 	public Set<OWLOntology> getAllOntologies() {
-		if (allOntologies == null) {
-			allOntologies = new HashSet<OWLOntology>();
-			allOntologies.addAll(getReferencedOntologies());
-			allOntologies.add(ontology);
-		}
-		return allOntologies;
+		return graph.getAllOntologies();
 	}
 
 
 	public void setReferencedOntologies(Set<OWLOntology> referencedOntologies) {
-		allOntologies = null;
 		this.referencedOntologies = referencedOntologies;
 	}
 
 	/**
 	 * 
 	 * @param refOnt
+	 * @throws OWLOntologyCreationException 
 	 */
-	public void addReferencedOntology(OWLOntology refOnt) {
-		allOntologies = null;
-		this.referencedOntologies.add(refOnt);
+	public void addReferencedOntology(OWLOntology refOnt) throws OWLOntologyCreationException {
+				// TODO - imports
+		graph.addSupportOntology(refOnt);
 	}
 	
+	@Deprecated
 	public void useImportsClosureAsReferencedOntologies() {
-		referencedOntologies = new HashSet<OWLOntology>();
-		for (OWLOntology r : graph.getSourceOntology().getImportsClosure()) {
-			if (r.equals(ontology))
-				continue;
-			referencedOntologies.add(r);
-		}
+		graph.addSupportOntologiesFromImportsClosure();
 	}
 
 
@@ -149,99 +140,15 @@ public class Mireot {
 		this.ontology = ontology;
 	}
 
+	@Deprecated
 	public void addImport(String importedIRIString) {
 		OWLImportsDeclaration iax = dataFactory.getOWLImportsDeclaration(IRI.create(importedIRIString));
 		AddImport addAx = new AddImport(ontology, iax);
 		manager.applyChange(addAx);
 	}
 
-	public OWLOntology mireot() throws OWLOntologyCreationException {
-		Stack<OWLObject> objs = new Stack<OWLObject>();
-		return mireot(objs);
-	}
-
-	/**
-	 * create a new ontology that includes everything from the source ontology, plus
-	 * selected axioms from referenced ontologies.
-	 * 
-	 * @param ont -- source ontology
-	 * @return
-	 * @throws OWLOntologyCreationException
-	 */
-	public OWLOntology mireot(OWLOntology ont) throws OWLOntologyCreationException {
-		Set<OWLClass> classes = ont.getClassesInSignature(false);
-		Stack<OWLObject> objs = new Stack<OWLObject>();
-		objs.addAll(classes);
-		return mireot(objs);
-	}
 
 
-	/**
-	 * note: only use this in client code if fine-grained control of merging is required.
-	 * 
-	 * @param objs -- source objects (typically all objects declared in source ontology)
-	 * @return
-	 * @throws OWLOntologyCreationException
-	 */
-	public OWLOntology mireot(Stack<OWLObject> objs) throws OWLOntologyCreationException {
-		OWLOntology ont = getOntology();
-
-
-		Set<OWLObject> visitedObjs = new HashSet<OWLObject>();
-
-		// keep track of all axioms to be included
-		while (objs.size() > 0) {
-			OWLObject nextObj = objs.pop();
-			for (OWLOntology refOnt : getAllOntologies()) {
-
-				// Step 1: find all axioms connected to the source object
-				//  that satisfy the traversal constraints
-				Set nextAxioms;
-				//System.out.println(nextObj);
-				if (nextObj instanceof OWLClass) {
-					// both subclasses and superclasses
-					nextAxioms = refOnt.getAxioms((OWLClass)nextObj);
-				}
-				else if (nextObj instanceof OWLObjectProperty) {
-					nextAxioms = refOnt.getAxioms((OWLObjectProperty)nextObj);
-				}
-				else if (nextObj instanceof OWLDataProperty) {
-					nextAxioms = refOnt.getAxioms((OWLDataProperty)nextObj);
-				}
-				else if (nextObj instanceof OWLClassExpression) {
-					//((OWLClassExpression)nextObj).getClassesInSignature();
-
-					continue;
-				}
-				else {
-					continue;
-				}
-
-				// Step 2: for all axioms to be included, ensure all objects
-				//  referenced in axiom are included
-				//  (this is a little backwards right now - should find objects first then axioms)
-				for (Object x : nextAxioms) {
-					OWLAxiom axiom = (OWLAxiom)x;
-					mAxioms.add(axiom);
-
-					Set<OWLObject> newObjs = new HashSet<OWLObject>();
-					newObjs.addAll(axiom.getClassesInSignature());
-					newObjs.addAll(axiom.getObjectPropertiesInSignature());
-					newObjs.addAll(axiom.getDataPropertiesInSignature());
-					newObjs.removeAll(visitedObjs);
-					objs.addAll(newObjs);
-					visitedObjs.addAll(newObjs);
-				}
-			}
-		}
-
-		OWLOntology mOnt = manager.createOntology();
-		for (OWLAxiom axiom : mAxioms) {
-			AddAxiom addAx = new AddAxiom(mOnt, axiom);
-			manager.applyChange(addAx);
-		}
-		return mOnt;
-	}
 
 	public Set<OWLEntity> getExternalReferencedEntities() {
 		OWLOntology ont = graph.getSourceOntology();
