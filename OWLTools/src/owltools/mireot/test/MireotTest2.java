@@ -25,7 +25,7 @@ import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 import owltools.io.ParserWrapper;
-import owltools.mireot.Mireot;
+import owltools.mooncat.Mooncat;
 
 import junit.framework.TestCase;
 
@@ -36,15 +36,11 @@ public class MireotTest2 extends TestCase {
 		
 		// this test ontology has a class defined using a caro class, and imports caro_local
 		OWLGraphWrapper g =
-			pw.parseToOWLGraph("file:test_resources/caro_mireot_test.owl");
-		OWLOntology ont = g.getOntology();
-		OWLGraphWrapper rg =
-			pw.parseToOWLGraph("file:test_resources/caro_local.owl");
-		OWLOntology refOnt = rg.getOntology();
+			pw.parseToOWLGraph("file:test_resources/caro_mireot_test_noimport.owl");
 		
-		Mireot m = new Mireot(ont);
+		Mooncat m = new Mooncat(g);
+		m.addReferencedOntology(pw.parseOWL("file:test_resources/caro_local.owl"));
 		
-		m.addReferencedOntology(refOnt);
 		for (OWLEntity e : m.getExternalReferencedEntities()) {
 			System.out.println("e="+e);
 		}

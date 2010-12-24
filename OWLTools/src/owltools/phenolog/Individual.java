@@ -27,8 +27,7 @@ public class Individual implements Comparable<Individual>{
         return id.hashCode();
     }
 
-     @Override
-    public int compareTo(Individual ind) {
+     public int compareTo(Individual ind) {
         return id.compareTo(ind.getId());
     }
 
