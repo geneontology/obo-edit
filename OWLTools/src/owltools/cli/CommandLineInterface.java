@@ -8,9 +8,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.obolibrary.oboformat.model.FrameMergeException;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -24,13 +27,18 @@ import owltools.graph.OWLQuantifiedProperty;
 import owltools.graph.OWLQuantifiedProperty.Quantifier;
 import owltools.io.GraphClosureWriter;
 import owltools.io.ParserWrapper;
+import owltools.io.TableToAxiomConverter;
 import owltools.mooncat.Mooncat;
+import owltools.sim.DescriptionTreeSimilarity;
 import owltools.sim.SimEngine;
 import owltools.sim.JaccardSimilarity;
 import owltools.sim.SimEngine.SimilarityAlgorithmException;
 import owltools.sim.Similarity;
 
 public class CommandLineInterface {
+	
+	private static Logger LOG = Logger.getLogger(DescriptionTreeSimilarity.class);
+
 
 	private static class Opts {
 		int i = 0;
@@ -257,7 +265,7 @@ public class CommandLineInterface {
 				//System.out.println(metric+" = "+r);
 				metric.print();
 			}
-			else if (opts.nextEq("-o") || opts.nextEq("--output")) {
+			else if (opts.nextEq("-o|--output")) {
 				opts.info("FILE", "writes ontology -- specified as IRI, e.g. file://`pwd`/foo.owl");
 				pw.saveOWL(g.getSourceOntology(), opts.nextOpt());
 			}
@@ -282,6 +290,39 @@ public class CommandLineInterface {
 					g.getConfig().graphEdgeIncludeSet = new HashSet<OWLQuantifiedProperty>();
 
 				g.getConfig().graphEdgeIncludeSet.add(new OWLQuantifiedProperty(p, null));	
+			}
+			else if (opts.nextEq("--exclude-metaclass")) {
+				opts.info("METACLASS-LABEL", "exclude classes of this type in graph traversal.\n"+
+						"     default is to follow ALL classes");
+				OWLClass c = (OWLClass) resolveEntity(g, opts);
+
+				g.getConfig().excludeMetaClass = c;	
+			}
+			else if (opts.nextEq("--parse-tsv")) {
+				opts.info("[-s] FILE", "parses a tabular file to OWL axioms");
+				TableToAxiomConverter ttac = new TableToAxiomConverter(g);
+				ttac.config.axiomType = AxiomType.CLASS_ASSERTION;
+				while (opts.hasOpts()) {
+					if (opts.nextEq("-s")) {
+						ttac.config.isSwitchSubjectObject = true;
+					}
+					else if (opts.nextEq("-l|--label")) {
+						ttac.config.setPropertyToLabel();
+						ttac.config.axiomType = AxiomType.ANNOTATION_ASSERTION;
+					}
+					else if (opts.nextEq("-p|--prop")) {
+						ttac.config.property = ((OWLNamedObject) resolveEntity(g, opts)).getIRI();
+					}
+					else if (opts.nextEq("-a|--axiom-type")) {
+						ttac.config.axiomType = AxiomType.getAxiomType(opts.nextOpt());
+					}
+					else {
+						// TODO - other options
+					}
+				}
+				String f = opts.nextOpt();
+				System.out.println("tabfile: "+f);
+				ttac.parse(f);
 			}
 			else if (opts.hasArgs()) {
 				OWLOntology ont = pw.parse(opts.nextOpt());

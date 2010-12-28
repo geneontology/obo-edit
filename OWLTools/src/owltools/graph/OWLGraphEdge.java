@@ -24,9 +24,7 @@ public class OWLGraphEdge {
 	private OWLObject target;
 	private OWLOntology ontology;
 	private int distance = 1;
-	private List<OWLQuantifiedProperty> quantifiedPropertyList;
-	
-
+	private List<OWLQuantifiedProperty> quantifiedPropertyList = new Vector<OWLQuantifiedProperty>();
 	
 	public OWLGraphEdge(OWLObject source, OWLObject target,
 			OWLOntology ontology, OWLQuantifiedProperty qp) {
@@ -46,6 +44,13 @@ public class OWLGraphEdge {
 		setSingleQuantifiedProperty(el);
 	}
 
+	public OWLGraphEdge(OWLObject source, OWLObject target, List<OWLQuantifiedProperty> qpl, OWLOntology ontology) {
+		super();
+		this.source = source;
+		this.target = target;
+		this.ontology = ontology;
+		this.quantifiedPropertyList = qpl;
+	}
 
 	
 	public OWLGraphEdge(OWLObject source, OWLObject target, OWLOntology ontology) {
@@ -74,6 +79,14 @@ public class OWLGraphEdge {
 		setSingleQuantifiedProperty(el);
 	}
 
+
+	public OWLGraphEdge(OWLObject s, OWLObject t, Quantifier q) {
+		super();
+		OWLQuantifiedProperty el = new OWLQuantifiedProperty(null,q);
+		this.source = s;
+		this.target = t;
+		setSingleQuantifiedProperty(el);
+	}
 
 	public OWLObject getSource() {
 		return source;
