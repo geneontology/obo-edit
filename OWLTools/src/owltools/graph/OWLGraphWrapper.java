@@ -420,6 +420,7 @@ public class OWLGraphWrapper {
 		
 		for (OWLGraphEdge e : edges) {
 			OWLObject t = e.getTarget();
+			// TODO - use this: dataFactory.getOWLThing();
 			if (t instanceof OWLNamedObject &&
 					((OWLNamedObject) t).getIRI().equals(OWLRDFVocabulary.OWL_THING.getIRI())) {
 				rmEdges.add(e);
@@ -759,6 +760,20 @@ public class OWLGraphWrapper {
 		ancs.add(x);
 		return ancs;
 	}
+	public Set<OWLObject> getNamedAncestors(OWLObject x) {
+		Set<OWLObject> ancs = new HashSet<OWLObject>();
+		for (OWLGraphEdge e : getOutgoingEdgesClosure(x)) {
+			if (e.getTarget() instanceof OWLNamedObject)
+				ancs.add(e.getTarget());
+		}
+		return ancs;
+	}
+	public Set<OWLObject> getNamedAncestorsReflexive(OWLObject x) {
+		Set<OWLObject> ancs = getNamedAncestors(x);
+		ancs.add(x);
+		return ancs;
+	}
+
 	/**
 	 * see getAncestors()
 	 * @param x
