@@ -99,6 +99,10 @@ public class OWLQuantifiedProperty {
 	public boolean isInstanceOf() {
 		return quantifier != null && quantifier == Quantifier.INSTANCE_OF;
 	}
+	public boolean isIdentity() {
+		return quantifier != null && quantifier == Quantifier.IDENTITY;
+	}
+
 
 	public boolean isSomeValuesFrom() {
 		return quantifier != null && quantifier == Quantifier.SOME;
@@ -132,5 +136,6 @@ public class OWLQuantifiedProperty {
 		return qb &&  (getProperty() != null && getProperty().equals(other.getProperty()));
 			
 	}
+
 
 }
