@@ -98,6 +98,7 @@ public class SimEngine {
 		Class[] ms = {
 				JaccardSimilarity.class,
 				OverlapSimilarity.class,
+				DescriptionTreeSimilarity.class,
 				MaximumInformationContentSimilarity.class,
 				AvgInformationContentBestMatchesSimilarity.class
 		};

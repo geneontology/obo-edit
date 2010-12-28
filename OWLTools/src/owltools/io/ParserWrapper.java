@@ -3,6 +3,7 @@ package owltools.io;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.obolibrary.obo2owl.Obo2Owl;
 import org.obolibrary.oboformat.model.OBODoc;
 import org.obolibrary.oboformat.model.FrameMergeException;
@@ -18,6 +19,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
 import owltools.graph.OWLGraphWrapper;
+import owltools.sim.DescriptionTreeSimilarity;
 
 /**
  * Convenience class wrapping org.oboformat that abstracts away underlying details of ontology format or location
@@ -25,6 +27,9 @@ import owltools.graph.OWLGraphWrapper;
  *
  */
 public class ParserWrapper {
+	
+	private static Logger LOG = Logger.getLogger(DescriptionTreeSimilarity.class);
+
 
 	public OWLGraphWrapper parseToOWLGraph(String iriString) throws OWLOntologyCreationException, IOException {
 		return new OWLGraphWrapper(parse(iriString));		
@@ -73,6 +78,7 @@ public class ParserWrapper {
 	}
 	
 	public OWLOntology parseOWL(IRI iri) throws OWLOntologyCreationException {
+		LOG.info("parsing"+iri.toString());
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager(); // persist?
 		OWLOntology ont = manager.loadOntologyFromOntologyDocument(iri);
 		return ont;
