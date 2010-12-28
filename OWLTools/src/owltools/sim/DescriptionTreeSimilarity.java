@@ -10,6 +10,7 @@ import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
@@ -75,7 +76,10 @@ public class DescriptionTreeSimilarity extends Similarity {
 		graph = simEngine.getGraph();
 		ConvergentPath cp = buildDescription(a,b);
 		lcs = combinePathsToMakeExpression(cp);
-		score = 1.0; // TODO
+		if (cp == null)
+			score = 0.0;
+		else
+			score = cp.score;
 	}
 
 	private class ObjectPair {
@@ -115,6 +119,7 @@ public class DescriptionTreeSimilarity extends Similarity {
 		OWLClassExpression x;
 		OWLGraphEdge ea;
 		OWLGraphEdge eb;
+		double score = 0;
 
 		public String toString() {
 			return x.toString()+" EA:"+ea+" EB:"+eb;
@@ -149,7 +154,9 @@ public class DescriptionTreeSimilarity extends Similarity {
 		// convergence
 		if (a.equals(b)) {
 			System.out.println("   IDENTICAL");
-			cp.x = (OWLClassExpression) a;
+			// TODO - move this to graphwrapper
+			cp.x = makeClassExpression(a);
+			cp.score = 1;
 			return cp;
 			//return combinePathsToMakeExpression(a, ea, eb);
 		}
@@ -187,7 +194,9 @@ public class DescriptionTreeSimilarity extends Similarity {
 
 			Set<OWLObject> lcsl = se.getCommonSubsumers(aNext, bNext);
 			System.out.println("    lcsl: "+lcsl);
-			lcsl.retainAll(fullLCSs);
+			System.out.println("    current full size: "+fullLCSs.size());
+			// cloning not necessary - TODO
+			lcsl.retainAll(new HashSet<OWLObject>(fullLCSs));
 			System.out.println("    lcsl, full: "+lcsl);
 
 			if (lcsl.size() == 0)
@@ -202,18 +211,23 @@ public class DescriptionTreeSimilarity extends Similarity {
 			//OWLGraphEdge ebNew = graph.combineEdgePair(eb.getSource(), eb,
 			//		bEdges.iterator().next(), 1);
 
-			// TODO - reset edges if we make an intersection below
-			OWLClassExpression nextExpr;
 			ConvergentPath nextCp;
 			if (lcsl.size() == 1) {
 				// convergence; no need to recurse further
 				nextCp = new ConvergentPath();
-				nextCp.x = (OWLClassExpression) lcsl.iterator().next();
-				OWLGraphEdge extEdge = graph.getEdgesBetween(aNext, nextCp.x).iterator().next();
-				nextCp.ea = graph.combineEdgePair(e.getSource(), e, extEdge, 1);
+				nextCp.x = makeClassExpression(lcsl.iterator().next());
+				Set<OWLGraphEdge> extEdges = graph.getEdgesBetween(aNext, nextCp.x);
+				if (extEdges.size() == 0) {
+					nextCp.ea = e;
+				}
+				else {
+					OWLGraphEdge extEdge = extEdges.iterator().next();
+					nextCp.ea = graph.combineEdgePair(e.getSource(), e, extEdge, 1);
+					//System.out.println(" CONVERGE:"+nextCp.x+" combine:"+e+" * "+extEdge+" = "+nextCp.ea);
+				}
 				nextCp.eb = bEdge;
-				System.out.println(" CONVERGE:"+nextCp.x+" combine:"+e+" * "+extEdge+" = "+nextCp.ea);
 				//nextExpr = combinePathsToMakeExpression(lcsl.iterator().next(),e,bEdge);
+				nextCp.score = best;
 			}
 			else {
 				nextCp = buildDescription(aNext, bNext, lcsl);
@@ -229,11 +243,10 @@ public class DescriptionTreeSimilarity extends Similarity {
 				else 
 					nextCp.eb = graph.combineEdgePair(b, bEdge, nextCp.eb, 1); // TODO
 			}
-
 			subCps.add(nextCp);
-			//subExprs.add(nextExpr);
 		}
 
+		cp.score = 0;
 		if (subCps.size() == 0) {
 			return null;
 
@@ -251,17 +264,21 @@ public class DescriptionTreeSimilarity extends Similarity {
 			for (ConvergentPath subCp : subCps) {
 				System.out.println("  sub-CP:"+subCp);
 				subExprs.add(combinePathsToMakeExpression(subCp));
+				cp.score += subCp.score;
 			}
 			cp.x = graph.getDataFactory().getOWLObjectIntersectionOf(subExprs);
 			cp.ea = null;
 			cp.eb = null;
 		}
-
+		
 		return cp;
 	}
 
 	private OWLClassExpression combinePathsToMakeExpression(ConvergentPath cp) {
-		// todo - null edges - treat as identity
+		System.out.println("COMBINE:"+cp);
+		if (cp == null) {
+			return graph.getDataFactory().getOWLNothing();
+		}
 		return combinePathsToMakeExpression(cp.x, cp.ea, cp.eb);
 	}
 
@@ -286,54 +303,25 @@ public class DescriptionTreeSimilarity extends Similarity {
 		System.out.println("making Union of "+ea+" and "+eb);
 		ea.setTarget(x);
 		eb.setTarget(x);
-		return makeUnion3(ea,eb);
-		/*
-		OWLClassExpression xa;
-		OWLClassExpression xb;
-		if (ea == null)
-			xa = (OWLClassExpression) x;
-		else {
-			ea.setTarget(x);
-			xa = (OWLClassExpression) graph.edgeToTargetExpression(ea);
-		}
-		if (eb == null)
-			xb = (OWLClassExpression) x;
-		else {
-			eb.setTarget(x);
-			xb = (OWLClassExpression) graph.edgeToTargetExpression(eb);
-		}
-		System.out.println("  XA="+xa+" XB="+xb);
-		boolean ia = xa.equals(x);
-		boolean ib = xb.equals(x);
-		if (ia && ib) {
-			return xa;
-		}
-		else if (ia) {
-			return makeUnion2(x,xb);
-			//return makeUnion(x, eb);
-		}
-		else if (ib) {
-			return makeUnion2(x,xa);
-			//return makeUnion(x, ea);
-		}
-		else {
-			return makeUnion(xa, xb);			
-		}
-		 */
+		return makeUnion(ea,eb);
+
 	}
 
-	private OWLClassExpression makeUnion3(OWLGraphEdge ea, OWLGraphEdge eb) {
+	private OWLClassExpression makeUnion(OWLGraphEdge ea, OWLGraphEdge eb) {
 		OWLClassExpression xa = (OWLClassExpression)graph.edgeToTargetExpression(ea);
 		OWLClassExpression xb = (OWLClassExpression)graph.edgeToTargetExpression(eb);
-		return makeUnionUsingClever(xa,xb);
+		return makeUnionWithReduction(xa,xb);
 	}
 
-	private OWLClassExpression makeUnionUsingClever(OWLClassExpression xa, OWLClassExpression xb) {
+	private OWLClassExpression makeUnionWithReduction(OWLClassExpression xa, OWLClassExpression xb) {
+		if (xa.equals(xb))
+			return xa;
 		OWLClassExpression rx = makeUnionUsingReflexiveProperty(xa,xb);
+			
 		if (rx == null)
 			rx = makeUnionUsingReflexiveProperty(xb,xa);
 		if (rx == null) {
-			rx = makeUnion(xa,xb);
+			rx = makeUnionBasic(xa,xb);
 		}
 		return rx;		
 	}
@@ -351,7 +339,20 @@ public class DescriptionTreeSimilarity extends Similarity {
 		return null;
 	}
 
-	// todo: (has some sn) OR (has some part_of some sn) 
+	/**
+	 * makes a reduced union expression.
+	 * 
+	 * Uses the following two reduction rules:
+	 * 
+	 * (r1 some X) U (r2 some Y) ==> lcs(r1,r2) some MakeUnionOf(X,Y)
+	 * (r1 some X) U X ==> reflexive-version-of-r1 some X
+	 *  
+	 * if a reduced form cannot be made, returns null
+	 * 
+	 * @param xa
+	 * @param xb
+	 * @return
+	 */
 	private OWLClassExpression makeUnionUsingReflexiveProperty(OWLClassExpression xa, OWLClassExpression xb) {
 		System.out.println("testing if there is a more compact union expression for "+xa+" ++ "+xb);
 		OWLDataFactory df = graph.getDataFactory();
@@ -365,7 +366,7 @@ public class DescriptionTreeSimilarity extends Similarity {
 				
 				if (p2 != null) {
 					OWLClassExpression xbRest = (OWLClassExpression) ((OWLQuantifiedRestriction)xb).getFiller();
-					OWLClassExpression x = makeUnionUsingClever(xaRest,xbRest);
+					OWLClassExpression x = makeUnionWithReduction(xaRest,xbRest);
 					// todo - mixing some and all
 					if (xa instanceof OWLObjectSomeValuesFrom)
 						return df.getOWLObjectSomeValuesFrom(p2,x);
@@ -404,40 +405,16 @@ public class DescriptionTreeSimilarity extends Similarity {
 	}
 
 
-	@Deprecated
-	private OWLClassExpression makeUnion2(OWLObject x, OWLClassExpression rx) {
-		System.out.println("Union: "+x+" OR "+rx);
-		if (rx instanceof OWLQuantifiedRestriction) {
-			OWLQuantifiedRestriction qx = (OWLQuantifiedRestriction)rx;
-			if (qx.getFiller().equals(x)) {
-				OWLObjectProperty prop = (OWLObjectProperty) qx.getProperty();
-				OWLObjectProperty rprop = null;
-				OWLDataFactory df = graph.getDataFactory();
-				if (graph.getIsReflexive(prop)) {
-					rprop = prop;
-				}
-				if (forceReflexivePropertyCreation) {
-					OWLOntologyManager manager = graph.getManager();
-					OWLOntology ont = graph.getSourceOntology();
-					rprop = 
-						df.getOWLObjectProperty(IRI.create(prop.getIRI().toString()+"_reflexive"));
-					manager.applyChange(new AddAxiom(ont, df.getOWLSubObjectPropertyOfAxiom(prop, rprop)));
-					manager.applyChange(new AddAxiom(ont, df.getOWLTransitiveObjectPropertyAxiom(rprop)));
-					System.out.println("  reflexive prop:"+rprop);
-
-				}
-				if (rprop != null) {
-					if (qx instanceof OWLObjectSomeValuesFrom)
-						return df.getOWLObjectSomeValuesFrom(rprop, (OWLClassExpression) x);
-					else if (qx instanceof OWLObjectAllValuesFrom)
-						return df.getOWLObjectAllValuesFrom(rprop, (OWLClassExpression) x);
-				}
-			}
-		}
-		return makeUnion((OWLClassExpression)x, rx);
-	}
-
-	private OWLClassExpression makeUnion(OWLClassExpression xa, OWLClassExpression xb) {
+	/**
+	 * combines two class expressions to a UnionOf expression.
+	 * if both are identical, returns the expression.
+	 * does not attempt to reduce the union expression
+	 * 
+	 * @param xa
+	 * @param xb
+	 * @return
+	 */
+	private OWLClassExpression makeUnionBasic(OWLClassExpression xa, OWLClassExpression xb) {
 		if (xa.equals(xb)) {
 			return xa;
 		}
@@ -448,9 +425,24 @@ public class DescriptionTreeSimilarity extends Similarity {
 			return graph.getDataFactory().getOWLObjectUnionOf(args);
 		}
 	}
+	
+	private OWLClassExpression makeClassExpression(OWLObject x) {
+		if (x instanceof OWLClassExpression)
+			return (OWLClassExpression) x;
+		else if (x instanceof OWLNamedIndividual) {
+			// TODO - move this to graphwrapper
+			Set<OWLNamedIndividual> nis = new HashSet<OWLNamedIndividual>();
+			nis.add((OWLNamedIndividual) x);
+			return graph.getDataFactory().getOWLObjectOneOf(nis);
+		}
+		else {
+			System.err.println("cannot make CE from:"+x);
+		}
+		return null;
+	}
 
 	public void print(PrintStream s) {
-		s.println("LCS:");
+		s.println("LCS: "+score);
 		printX(s,lcs);
 	}
 
@@ -459,7 +451,7 @@ public class DescriptionTreeSimilarity extends Similarity {
 		s.print("\n");
 	}
 
-
+	// TODO - move to make this reusable
 	public void printX(PrintStream s, OWLObject x, int depth) {
 		tab(s,depth);
 		if (x instanceof OWLObjectIntersectionOf) {
