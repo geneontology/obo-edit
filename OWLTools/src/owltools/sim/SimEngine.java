@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
@@ -137,8 +138,8 @@ public class SimEngine {
 	}
 
 	public Set<OWLObject> getCommonSubsumers(OWLObject a, OWLObject b) {
-		Set<OWLObject> s1 = getGraph().getAncestorsReflexive(a);
-		s1.retainAll(getGraph().getAncestorsReflexive(b));
+		Set<OWLObject> s1 = getGraph().getNamedAncestorsReflexive(a);
+		s1.retainAll(getGraph().getNamedAncestorsReflexive(b));
 		return s1;
 	}
 	public int getCommonSubsumersSize(OWLObject a, OWLObject b) {
@@ -236,11 +237,24 @@ public class SimEngine {
 	// TODO
 	public void calculateSimilarityAllByAll(Similarity m) throws SimilarityAlgorithmException {
 		for (OWLObject a : graph.getAllOWLObjects()) {
+			if (excludeObjectFromComparison(a))
+				continue;
 			for (OWLObject b : graph.getAllOWLObjects()) {
-				Double s = calculateSimilarityScore(m,a,b);
+				if (a.equals(b))
+					continue;
+				if (excludeObjectFromComparison(b))
+					continue;
+				calculateSimilarity(m,a,b);
+				Double s = m.score;
 				System.out.println(a+" "+b+" = "+s);
+				m.print();
 			}
 		}
+	}
+
+	private boolean excludeObjectFromComparison(OWLObject a) {
+		// TODO configurable
+		return !(a instanceof OWLNamedIndividual);
 	}
 
 	public OWLObject createUnionExpression(OWLObject a, OWLObject b, OWLObject c) {
