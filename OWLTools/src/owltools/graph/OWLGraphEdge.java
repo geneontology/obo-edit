@@ -117,8 +117,11 @@ public class OWLGraphEdge {
 	}
 
 
+	/**
+	 * @return copy of QPL
+	 */
 	public List<OWLQuantifiedProperty> getQuantifiedPropertyList() {
-		return quantifiedPropertyList;
+		return new Vector<OWLQuantifiedProperty>(quantifiedPropertyList);
 	}
 
 	public void setQuantifiedPropertyList(List<OWLQuantifiedProperty> qps) {
@@ -126,16 +129,10 @@ public class OWLGraphEdge {
 	}
 
 	public OWLQuantifiedProperty getSingleQuantifiedProperty() {
-		return quantifiedPropertyList.iterator().next();
+		return quantifiedPropertyList.get(0);
 	}
 	
 	public OWLQuantifiedProperty getLastQuantifiedProperty() {
-		/*OWLQuantifiedProperty lqp = null;
-		for (OWLQuantifiedProperty qp : quantifiedPropertyList) {
-			lqp = qp;
-		}
-		return lqp;*/
-		
 		return (OWLQuantifiedProperty)quantifiedPropertyList.get(quantifiedPropertyList.size()-1);
 	}
 

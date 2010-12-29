@@ -154,7 +154,7 @@ public class SimEngine {
 		return getLeastCommonSubsumers(a,b).size();		
 	}
 
-	private Set<OWLObject> makeNonRedundant(Set<OWLObject> objs) {
+	public Set<OWLObject> makeNonRedundant(Set<OWLObject> objs) {
 		Set<OWLObject> rs = new HashSet<OWLObject>();
 		for (OWLObject obj : objs) {
 			Set<OWLObject> ancs = getAncestors(obj);

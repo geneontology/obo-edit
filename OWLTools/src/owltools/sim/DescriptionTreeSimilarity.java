@@ -27,6 +27,7 @@ import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
 import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 import owltools.graph.OWLQuantifiedProperty;
+import owltools.graph.OWLQuantifiedProperty.Quantifier;
 import owltools.sim.SimEngine.SimilarityAlgorithmException;
 
 /**
@@ -138,6 +139,57 @@ public class DescriptionTreeSimilarity extends Similarity {
 		return buildDescription(a,b,fullLCSs);
 	}
 
+	/*
+	public void testMe() {
+		OWLObject obj = graph.getOWLObject("http://ccdb.ucsd.edu/PKB/1.0/PKB.owl#PATO_0001555_251");
+		OWLObject a1 = graph.getOWLObject("http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-Subcellular.owl#sao120573470");
+		OWLObject a2 = 
+			graph.getOWLIndividual("http://ccdb.ucsd.edu/PKB/1.0/PKB.owl#sao120573470_7");
+		System.out.println("##TESTING: "+a1+a1.getClass()+" and "+a2+a2.getClass());
+		Set<OWLObject> ancs = graph.getAncestorsReflexive(obj);
+		boolean ok1 = false;
+		boolean ok2 = true;
+		boolean ok3 = false;
+		boolean ok4 = true;
+		for (OWLObject a : ancs) {
+			Set<OWLGraphEdge> edges = graph.getEdgesBetween(obj, a);
+			//System.out.println(" CHECK:"+a+" "+a.getClass());
+			for (OWLGraphEdge e : edges) {
+				//System.out.println("  CHECK EDGE:"+e);
+			}
+			OWLGraphEdge edge = edges.iterator().next();
+			if (a.equals(a1)) {
+				if (edge.getQuantifiedPropertyList().size() == 2) {
+					ok1 = true;
+				}
+				else {
+					System.out.println("##bad path1:"+edge);
+					ok2 = false;
+				}
+			}
+			if (a.equals(a2)) {
+				System.out.println("##match; checking:"+edge);
+				if (edge.getQuantifiedPropertyList().size() == 1) {
+					ok3 = true;
+				}
+				else {
+					System.out.println("##bad path2:"+edge);
+					ok4 = false;
+				}
+			}
+		}
+		if (!ok1) {
+			System.out.println("##NO PATH1");
+		}
+		if (!ok3) {
+			System.out.println("##NO PATH2");
+		}
+		if (ok1 && ok2 && ok3 && ok4) {
+			System.out.println("##ALL OK!");
+		}
+	}
+	*/
+	
 	public ConvergentPath buildDescription(OWLObject a, OWLObject b, Set<OWLObject> fullLCSs) {
 
 		if (visited.contains(a))
@@ -167,30 +219,52 @@ public class DescriptionTreeSimilarity extends Similarity {
 		Set<ConvergentPath> subCps = new HashSet<ConvergentPath>();
 		Set<OWLGraphEdge> aEdges = graph.getOutgoingEdges(a);
 		for (OWLGraphEdge e : aEdges) {
-			System.out.println("  edge: "+e);
 			//OWLGraphEdge eaNew = graph.combineEdgePair(ea.getSource(), ea, e, 1);
 			OWLObject aNext = e.getTarget();
-
-
+			if (visited.contains(aNext))
+				continue;
+			
+			System.out.println("  edge: "+e);
+			System.out.println("  fetching best match (bNext) under: "+b);
 			// get best match for a in {b, desc-of-b}
 			// also - restrict subsumers
 			// TODO
 			OWLObject bNext = b;
+			OWLGraphEdge bEdge = null;
 			double best = 0;
 			for (OWLObject candidate : graph.getAncestorsReflexive(b)) {
 				// TODO - optimize - we only need to calculate aNext's subsumers once
-				Set<OWLObject> csl = se.getCommonSubsumers(aNext, candidate);
+				Set<OWLObject> csl = se.getCommonSubsumers(aNext, candidate);			
 				Set<OWLObject> usl = se.getUnionSubsumers(aNext, candidate);
-				double score = (double) csl.size() / usl.size();
-				//System.out.println("    candidate: "+candidate+" score:"+score);
+				
+				//Set<OWLObject> lcsl = se.makeNonRedundant(csl);
+
+				// we don't want to weight heavily against mismatches; the b tree
+				// may be much 'bushier'
+				// (see for example 'substantia nigra degenerates' vs 'Substantia nigra 291' in PKB
+				//  - the latter has axon, dendrite and neuropil all degenerate)
+				double score = (double) (csl.size() * 2) / usl.size();
+				//score *= lcsl.size(); // assume LCSs independent
+				//double score = csl.size();
+				Set<OWLGraphEdge> bEdges = graph.getEdgesBetween(b, candidate);
+				OWLGraphEdge candidateEdge = bEdges.iterator().next();
+				// todo - better edge comparison
+				if (candidateEdge.getQuantifiedPropertyList().equals(e.getQuantifiedPropertyList())) {
+					System.out.println("      **edge match");
+					score += 1;
+				}
+				//System.out.println("    bEdges: "+bEdges);
+				//OWLGraphEdge bEdge = bEdges.iterator().next();
+				System.out.println("    candidate: "+candidate+" score:"+score+" candidateEdge:"+candidateEdge);
 				if (score > best) {
 					best = score;
 					bNext = candidate;
+					bEdge = candidateEdge;
 				}
 			}
 			if (best == 0)
 				continue;
-			System.out.println("  bNext: "+bNext);
+			System.out.println("  bNext: "+bNext+" sc:"+best+" EDGE:"+bEdge);
 
 			Set<OWLObject> lcsl = se.getCommonSubsumers(aNext, bNext);
 			System.out.println("    lcsl: "+lcsl);
@@ -205,9 +279,9 @@ public class DescriptionTreeSimilarity extends Similarity {
 			// what do we do about multiple edges?
 			// ideally choose the one closest to ea.
 			// for now choose arbitrary one
-			Set<OWLGraphEdge> bEdges = graph.getEdgesBetween(b, bNext);
-			System.out.println("    bEdges: "+bEdges);
-			OWLGraphEdge bEdge = bEdges.iterator().next();
+			//Set<OWLGraphEdge> bEdges = graph.getEdgesBetween(b, bNext);
+			//System.out.println("    bEdges: "+bEdges);
+			//OWLGraphEdge bEdge = bEdges.iterator().next();
 			//OWLGraphEdge ebNew = graph.combineEdgePair(eb.getSource(), eb,
 			//		bEdges.iterator().next(), 1);
 
@@ -225,7 +299,16 @@ public class DescriptionTreeSimilarity extends Similarity {
 					nextCp.ea = graph.combineEdgePair(e.getSource(), e, extEdge, 1);
 					//System.out.println(" CONVERGE:"+nextCp.x+" combine:"+e+" * "+extEdge+" = "+nextCp.ea);
 				}
-				nextCp.eb = bEdge;
+				Set<OWLGraphEdge> bExtEdges = graph.getEdgesBetween(bNext, nextCp.x);
+				if (bExtEdges.size() == 0) {
+					nextCp.eb = bEdge;
+				}
+				else {
+					OWLGraphEdge extEdge = bExtEdges.iterator().next();
+					nextCp.eb = graph.combineEdgePair(b, bEdge, extEdge, 1);
+					//System.out.println(" CONVERGE:"+nextCp.x+" combine:"+e+" * "+extEdge+" = "+nextCp.ea);
+				}
+				//nextCp.eb = bEdge;
 				//nextExpr = combinePathsToMakeExpression(lcsl.iterator().next(),e,bEdge);
 				nextCp.score = best;
 			}
@@ -238,10 +321,11 @@ public class DescriptionTreeSimilarity extends Similarity {
 					nextCp.ea = e;
 				else 
 					nextCp.ea = graph.combineEdgePair(a, e, nextCp.ea, 1);
+				
 				if (nextCp.eb == null)
 					nextCp.eb = bEdge;
 				else 
-					nextCp.eb = graph.combineEdgePair(b, bEdge, nextCp.eb, 1); // TODO
+					nextCp.eb = graph.combineEdgePair(b, bEdge, nextCp.eb, 1);
 			}
 			subCps.add(nextCp);
 		}
@@ -267,8 +351,15 @@ public class DescriptionTreeSimilarity extends Similarity {
 				cp.score += subCp.score;
 			}
 			cp.x = graph.getDataFactory().getOWLObjectIntersectionOf(subExprs);
-			cp.ea = null;
-			cp.eb = null;
+			if (a instanceof OWLNamedIndividual)
+				cp.ea = new OWLGraphEdge(a,cp.x,Quantifier.INSTANCE_OF);
+			else
+				cp.ea = new OWLGraphEdge(a,cp.x,Quantifier.SUBCLASS_OF);
+			if (b instanceof OWLNamedIndividual)
+				cp.eb = new OWLGraphEdge(b,cp.x,Quantifier.INSTANCE_OF);
+			else
+				cp.eb = new OWLGraphEdge(b,cp.x,Quantifier.SUBCLASS_OF);
+
 		}
 		
 		return cp;
@@ -296,13 +387,19 @@ public class DescriptionTreeSimilarity extends Similarity {
 		Set<OWLClassExpression> args = new HashSet<OWLClassExpression>();
 		if (ea == null) {
 			ea = new OWLGraphEdge(null,x,new Vector<OWLQuantifiedProperty>(),null);
+			ea.setTarget(x);
 		}
 		if (eb == null) {
 			eb = new OWLGraphEdge(null,x,new Vector<OWLQuantifiedProperty>(),null);
+			eb.setTarget(x);
 		}
 		System.out.println("making Union of "+ea+" and "+eb);
-		ea.setTarget(x);
-		eb.setTarget(x);
+		if (!ea.getTarget().equals(x)) {
+			System.out.println("##EA no match!!");
+		}
+		if (!eb.getTarget().equals(x)) {
+			System.out.println("##EB no match!!");
+		}
 		return makeUnion(ea,eb);
 
 	}
