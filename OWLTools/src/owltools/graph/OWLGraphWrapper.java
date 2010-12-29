@@ -31,6 +31,7 @@ import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLFunctionalObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLInverseFunctionalObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLNamedObject;
@@ -130,6 +131,7 @@ public class OWLGraphWrapper {
 		this(ontology, false);
 	}
 
+	@Deprecated
 	public OWLGraphWrapper(OWLOntology ontology, boolean isMergeImportClosure) throws UnknownOWLOntologyException, OWLOntologyCreationException {
 		super();
 		manager = OWLManager.createOWLOntologyManager();
@@ -145,6 +147,7 @@ public class OWLGraphWrapper {
 			this.sourceOntology = ontology;
 			this.ontology = ontology;
 		}
+		manager.getOntologyFormat(ontology);
 	}
 
 	public void addImport(OWLOntology extOnt) {
@@ -300,7 +303,7 @@ public class OWLGraphWrapper {
 		if (extraSubClassOfEdges == null)
 			cacheReverseUnionMap();
 		if (extraSubClassOfEdges.containsKey(child)) 
-			return extraSubClassOfEdges.get(child);
+			return new HashSet<OWLObject>(extraSubClassOfEdges.get(child));
 		else
 			return new HashSet<OWLObject>();
 	}
@@ -518,10 +521,10 @@ public class OWLGraphWrapper {
 	 * @param t
 	 * @return all edges that have t as a direct target
 	 */
-	public  Set<OWLGraphEdge> getIncomingEdges(OWLObject t) {
+	public Set<OWLGraphEdge> getIncomingEdges(OWLObject t) {
 		ensureEdgesCached();
 		if (edgeByTarget.containsKey(t)) {
-			return edgeByTarget.get(t);
+			return new HashSet<OWLGraphEdge>(edgeByTarget.get(t));
 		}
 		return new HashSet<OWLGraphEdge>();
 	}
@@ -579,6 +582,16 @@ public class OWLGraphWrapper {
 				return dataFactory.getOWLObjectAllValuesFrom(qp.getProperty(), 
 						(OWLClassExpression) t2);
 			}
+			else if (qp.isHasValue()) {
+				if (t2 instanceof OWLNamedObject)
+					return dataFactory.getOWLObjectHasValue(qp.getProperty(), 
+							dataFactory.getOWLNamedIndividual(((OWLNamedObject) t2).getIRI()));
+				else {
+					System.err.println("warning: treating "+t2+" as allvaluesfrom");
+					return dataFactory.getOWLObjectAllValuesFrom(qp.getProperty(), 
+							(OWLClassExpression) t2);
+				}
+			}
 			else {
 				System.err.println("cannot handle:"+qp);
 				// TODO
@@ -614,16 +627,19 @@ public class OWLGraphWrapper {
 	public Set<OWLGraphEdge> getOutgoingEdgesClosure(OWLObject s) {
 
 		if (config.isCacheClosure) {
+			//System.out.println("@@checking cache for:"+s+" cache:"+inferredEdgeBySource == null ? "NULL" : "SET");
 			if (inferredEdgeBySource == null)
 				inferredEdgeBySource = new HashMap<OWLObject,Set<OWLGraphEdge>>();
 			if (inferredEdgeBySource.containsKey(s)) {
-				return inferredEdgeBySource.get(s);
+				//System.out.println("@@cache:"+s+" -->"+inferredEdgeBySource.get(s).size());
+				return new HashSet<OWLGraphEdge>(inferredEdgeBySource.get(s));
 			}
 		}
 		Stack<OWLGraphEdge> edgeStack = new Stack<OWLGraphEdge>();
 		Set<OWLGraphEdge> closureSet = new HashSet<OWLGraphEdge>();
 		Set<OWLGraphEdge> visitedSet = new HashSet<OWLGraphEdge>();
 		Set<OWLObject> visitedObjs = new HashSet<OWLObject>();
+		visitedObjs.add(s);
 
 		// initialize. we seed the search with a reflexive identity edge DEPR
 		//edgeStack.add(new OWLGraphEdge(s,s,null,Quantifier.IDENTITY,ontology));
@@ -632,7 +648,7 @@ public class OWLGraphWrapper {
 		edgeStack.addAll(getPrimitiveOutgoingEdges(s));
 		closureSet.addAll(edgeStack);
 		while (!edgeStack.isEmpty()) {
-			OWLGraphEdge ne = edgeStack.pop();
+			OWLGraphEdge ne = edgeStack.remove(0);
 			//System.out.println("NEXT: "+ne+" //stack: "+edgeStack);
 			int nextDist = ne.getDistance() + 1;
 			Set<OWLGraphEdge> extSet = getPrimitiveOutgoingEdges(ne.getTarget());
@@ -684,7 +700,7 @@ public class OWLGraphWrapper {
 		}
 
 		if (config.isCacheClosure) {
-			inferredEdgeBySource.put(s, closureSet);
+			inferredEdgeBySource.put(s, new HashSet<OWLGraphEdge>(closureSet));
 		}
 		return closureSet;
 	}
@@ -805,7 +821,7 @@ public class OWLGraphWrapper {
 			if (inferredEdgeByTarget == null)
 				inferredEdgeByTarget = new HashMap<OWLObject,Set<OWLGraphEdge>>();
 			if (inferredEdgeByTarget.containsKey(t)) {
-				return inferredEdgeByTarget.get(t);
+				return new HashSet<OWLGraphEdge>(inferredEdgeByTarget.get(t));
 			}
 		}
 
@@ -850,7 +866,7 @@ public class OWLGraphWrapper {
 		}
 
 		if (config.isCacheClosure) {
-			inferredEdgeByTarget.put(t, closureSet);
+			inferredEdgeByTarget.put(t, new HashSet<OWLGraphEdge>(closureSet));
 		}
 
 		return closureSet;
@@ -914,6 +930,8 @@ public class OWLGraphWrapper {
 			if (combinedQP == null)
 				break;
 			qpl1.set(qpl1.size()-1, combinedQP);
+			if (combinedQP.isIdentity())
+				qpl1.subList(qpl1.size()-1,qpl1.size()).clear();
 			qpl2.subList(0, 1).clear();
 		}
 		qpl1.addAll(qpl2);
@@ -924,6 +942,7 @@ public class OWLGraphWrapper {
 
 	private OWLGraphEdge combineEdgePairDown(OWLGraphEdge ne, OWLObject t, OWLGraphEdge extEdge, int nextDist) {
 		// fill in edge label later
+		// todo
 		OWLGraphEdge nu = new OWLGraphEdge(extEdge.getSource(), t);
 		nu.setDistance(nextDist);
 		Vector<OWLQuantifiedProperty> qps = new Vector<OWLQuantifiedProperty>();
@@ -974,15 +993,21 @@ public class OWLGraphWrapper {
 				y.isSomeValuesFrom() &&
 				x.getProperty() != null && 
 				x.getProperty().equals(y.getProperty()) && 
-				x.getProperty().isTransitive(ontology)) {
+				x.getProperty().isTransitive(ontology)) { // todo
 			return new OWLQuantifiedProperty(x.getProperty(),Quantifier.SOME);
 		}
 		else if (x.isPropertyAssertion() &&
 				y.isPropertyAssertion() &&
 				x.getProperty() != null && 
 				x.getProperty().equals(y.getProperty()) && 
-				x.getProperty().isTransitive(ontology)) {
+				x.getProperty().isTransitive(ontology)) { // todo
 			return new OWLQuantifiedProperty(x.getProperty(),Quantifier.PROPERTY_ASSERTION);
+		}
+		else if (x.isPropertyAssertion() &&
+				y.isPropertyAssertion() &&
+				x.getProperty() != null && 
+				isInverseOfPair(x.getProperty(),y.getProperty())) { // todo
+			return new OWLQuantifiedProperty(Quantifier.IDENTITY); // TODO - doesnt imply identity
 		}
 		else if (x.isSubClassOf() && y.isAllValuesFrom()) {
 			return new OWLQuantifiedProperty(y.getProperty(),Quantifier.ONLY);
@@ -996,6 +1021,17 @@ public class OWLGraphWrapper {
 		}
 	}
 
+	private boolean isInverseOfPair(OWLObjectProperty p1, OWLObjectProperty p2) {
+		for (OWLOntology ont : getAllOntologies()) {
+			for (OWLInverseObjectPropertiesAxiom a : ont.getInverseObjectPropertyAxioms(p1)) {
+				if (a.getFirstProperty().equals(p2) ||
+						a.getSecondProperty().equals(p2)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Find all edges of the form <i INST c> in the graph closure.

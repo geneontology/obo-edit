@@ -36,7 +36,7 @@ import owltools.sim.SimEngine.SimilarityAlgorithmException;
 import owltools.sim.Similarity;
 
 public class CommandLineInterface {
-	
+
 	private static Logger LOG = Logger.getLogger(DescriptionTreeSimilarity.class);
 
 
@@ -110,7 +110,7 @@ public class CommandLineInterface {
 
 		public void fail() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		public void info(String params, String desc) {
@@ -141,12 +141,12 @@ public class CommandLineInterface {
 		Opts opts = new Opts(args);
 
 		while (opts.hasArgs()) {
-			
+
 			if (opts.nextArgIsHelp()) {
 				help();
 				opts.helpMode = true;
 			}
-			
+
 			//String opt = opts.nextOpt();
 			//System.out.println("processing arg: "+opt);
 			if (opts.nextEq("--pellet")) {
@@ -192,6 +192,18 @@ public class CommandLineInterface {
 				System.out.println(obj+ " "+obj.getClass());
 				Set<OWLGraphEdge> edges = g.getOutgoingEdgesClosureReflexive(obj);
 				showEdges(edges);
+			}
+			else if (opts.nextEq("--test")) {
+				opts.info("LABEL", "list edges in graph closureto root nodes");
+				//System.out.println("i= "+i);
+				OWLObject obj = resolveEntity(g, opts);
+				Set<OWLObject> ancs = g.getAncestorsReflexive(obj);
+				for (OWLObject a : ancs) {
+					System.out.println(a);
+					for (OWLGraphEdge e : g.getEdgesBetween(obj, a)) {
+						System.out.println("  EL"+e);
+					}
+				}
 			}
 			else if (opts.nextEq("--descendant-edges")) {
 				opts.info("LABEL", "list edges in graph closure to leaf nodes");
@@ -250,14 +262,29 @@ public class CommandLineInterface {
 			}
 			else if (opts.nextEq("--sim")) {
 				opts.info("[-m metric] A B", "calculates similarity between A and B");
-				String a = opts.nextOpt();
-				if (a.equals("-m")) {
-					similarityAlgorithmName = opts.nextOpt();
-					a = opts.nextOpt();
+				boolean nr = false;
+				if (opts.hasOpts()) {
+					System.out.println("sub-opts for --sim");
+					if (opts.nextEq("-m")) {
+						similarityAlgorithmName = opts.nextOpt();
+					}
+					else if (opts.nextEq("--no-create-reflexive")) {
+						nr = true;
+					}
+					else {
+						System.err.println("???"+opts);
+					}
 				}
+				String a = opts.nextOpt();
+				//if (a.equals("-m")) {
+				//				a = opts.nextOpt();
+				//}
 				String b = opts.nextOpt();
 				SimEngine se = new SimEngine(g);
 				Similarity metric = se.getSimilarityAlgorithm(similarityAlgorithmName);
+				if (nr) {
+					((DescriptionTreeSimilarity)metric).forceReflexivePropertyCreation = false;
+				}
 				OWLObject oa = resolveEntity(g,a);
 				OWLObject ob = resolveEntity(g,b);
 				System.out.println("comparing: "+oa+" vs "+ob);
@@ -276,7 +303,7 @@ public class CommandLineInterface {
 			}
 			else if (opts.nextEq("--follow-subclass")) {
 				opts.info("", "follow subclass axioms (and also equivalence axioms) in graph traversal.\n"+
-						"     default is to follow ALL. if this is specified then only explicitly specified edges followed");
+				"     default is to follow ALL. if this is specified then only explicitly specified edges followed");
 				if (g.getConfig().graphEdgeIncludeSet == null)
 					g.getConfig().graphEdgeIncludeSet = new HashSet<OWLQuantifiedProperty>();
 
@@ -284,7 +311,7 @@ public class CommandLineInterface {
 			}
 			else if (opts.nextEq("--follow-property")) {
 				opts.info("PROP-LABEL", "follow object properties of this type in graph traversal.\n"+
-						"     default is to follow ALL. if this is specified then only explicitly specified edges followed");
+				"     default is to follow ALL. if this is specified then only explicitly specified edges followed");
 				OWLObjectProperty p = (OWLObjectProperty) resolveEntity(g, opts);
 				if (g.getConfig().graphEdgeIncludeSet == null)
 					g.getConfig().graphEdgeIncludeSet = new HashSet<OWLQuantifiedProperty>();
@@ -293,7 +320,7 @@ public class CommandLineInterface {
 			}
 			else if (opts.nextEq("--exclude-metaclass")) {
 				opts.info("METACLASS-LABEL", "exclude classes of this type in graph traversal.\n"+
-						"     default is to follow ALL classes");
+				"     default is to follow ALL classes");
 				OWLClass c = (OWLClass) resolveEntity(g, opts);
 
 				g.getConfig().excludeMetaClass = c;	
@@ -323,6 +350,9 @@ public class CommandLineInterface {
 				String f = opts.nextOpt();
 				System.out.println("tabfile: "+f);
 				ttac.parse(f);
+			}
+			else if (opts.nextEq("--no-cache")) {
+				g.getConfig().isCacheClosure = false;
 			}
 			else if (opts.hasArgs()) {
 				OWLOntology ont = pw.parse(opts.nextOpt());
@@ -368,7 +398,7 @@ public class CommandLineInterface {
 
 	private static void catOntologies(OWLGraphWrapper g, Opts opts) throws OWLOntologyCreationException, IOException {
 		opts.info("[-r|--ref-ont ONT] [-i|--use-imports]", "Catenate ontologies taking only referenced subsets of supporting onts.\n"+
-				"        See Mooncat docs");
+		"        See Mooncat docs");
 		Mooncat m = new Mooncat(g);
 		ParserWrapper pw = new ParserWrapper();
 		if (opts.hasOpts()) {
@@ -426,7 +456,7 @@ public class CommandLineInterface {
 		System.out.println("Commands/Options");
 		System.out.println("  (type 'owltools COMMAND -h' for more info)");
 	}
-	
+
 	public static void helpFooter() {
 		System.out.println("\nOntologies:");
 		System.out.println("  These are specified as IRIs. The IRI is typically  'file:PATH' or a URL");
