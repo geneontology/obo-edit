@@ -120,6 +120,9 @@ public class OWLQuantifiedProperty {
 		return quantifier != null && quantifier == Quantifier.CARDINALITY;
 	}
 
+	public boolean isHasValue() {
+		return quantifier != null && quantifier == Quantifier.VALUE;
+	}
 	
 	public boolean equals(Object e) {
 		if(e == null && !(e instanceof OWLQuantifiedProperty))
@@ -136,6 +139,8 @@ public class OWLQuantifiedProperty {
 		return qb &&  (getProperty() != null && getProperty().equals(other.getProperty()));
 			
 	}
+
+
 
 
 }
