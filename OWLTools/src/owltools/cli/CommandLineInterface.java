@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.obolibrary.oboformat.model.FrameMergeException;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -167,6 +168,9 @@ public class CommandLineInterface {
 			else if (opts.nextEq("-i") || opts.nextEq("--inst")) {
 				createDefaultInstances = true;
 			}
+			else if (opts.nextEq("--log-info")) {
+				Logger.getRootLogger().setLevel(Level.INFO);
+			}
 			else if (opts.nextEq("--list-classes")) {
 				Set<OWLClass> clss = g.getOntology().getClassesInSignature();
 				for (OWLClass c : clss) {
@@ -193,16 +197,13 @@ public class CommandLineInterface {
 				Set<OWLGraphEdge> edges = g.getOutgoingEdgesClosureReflexive(obj);
 				showEdges(edges);
 			}
-			else if (opts.nextEq("--test")) {
-				opts.info("LABEL", "list edges in graph closureto root nodes");
+			else if (opts.nextEq("--subsumers")) {
+				opts.info("LABEL", "list named subsumers and subsuming expressions");
 				//System.out.println("i= "+i);
 				OWLObject obj = resolveEntity(g, opts);
-				Set<OWLObject> ancs = g.getAncestorsReflexive(obj);
+				Set<OWLObject> ancs = g.getSubsumersFromClosure(obj);
 				for (OWLObject a : ancs) {
 					System.out.println(a);
-					for (OWLGraphEdge e : g.getEdgesBetween(obj, a)) {
-						System.out.println("  EL"+e);
-					}
 				}
 			}
 			else if (opts.nextEq("--descendant-edges")) {
@@ -254,11 +255,20 @@ public class CommandLineInterface {
 			}
 			else if (opts.nextEq("--sim-all")) {
 				opts.info("", "calculates similarity between all pairs");
+				Double minScore = null;
 				SimEngine se = new SimEngine(g);
-				Similarity metric = se.getSimilarityAlgorithm(similarityAlgorithmName);
+				if (opts.hasOpts()) {
+					if (opts.nextEq("-m|--min")) {
+						minScore = Double.valueOf(opts.nextOpt());
+					}
+					else if (opts.nextEq("-s|--subclass-of")) {
+						se.comparisonSuperclass = resolveEntity(g,opts);
+					}
+				}
+				//Similarity metric = se.getSimilarityAlgorithm(similarityAlgorithmName);
 				//SimilarityAlgorithm metric = se.new JaccardSimilarity();
-				se.calculateSimilarityAllByAll(metric);
-				System.out.println(metric.getClass().getName());
+				se.calculateSimilarityAllByAll(similarityAlgorithmName, minScore);
+				//System.out.println(metric.getClass().getName());
 			}
 			else if (opts.nextEq("--sim")) {
 				opts.info("[-m metric] A B", "calculates similarity between A and B");
@@ -425,7 +435,7 @@ public class CommandLineInterface {
 
 		m.mergeOntologies();
 	}
-
+	
 	private static void showEdges(Set<OWLGraphEdge> edges) {
 		for (OWLGraphEdge e : edges) {
 			System.out.println(e);

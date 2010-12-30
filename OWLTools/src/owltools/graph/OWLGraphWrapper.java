@@ -560,7 +560,18 @@ public class OWLGraphWrapper {
 			Iterator<OWLQuantifiedProperty> qpi, OWLObject t) {
 		if (qpi.hasNext()) {
 			OWLQuantifiedProperty qp = qpi.next();
-			OWLClassExpression t2 = (OWLClassExpression) edgeToTargetExpression(qpi,t);
+			OWLObject x = edgeToTargetExpression(qpi,t);
+			OWLClassExpression t2;
+			if (!(x instanceof OWLClassExpression)) {
+				//System.err.println("Not a CE: "+x);
+				HashSet<OWLNamedIndividual> ins = new HashSet<OWLNamedIndividual>();
+				ins.add((OWLNamedIndividual) x);
+				t2 = dataFactory.getOWLObjectOneOf(ins);
+			}
+			else {
+				t2 = (OWLClassExpression) x;
+			}
+
 			if (qp.isSubClassOf()) {
 				return t2;
 			}
@@ -583,13 +594,13 @@ public class OWLGraphWrapper {
 						(OWLClassExpression) t2);
 			}
 			else if (qp.isHasValue()) {
-				if (t2 instanceof OWLNamedObject)
+				if (x instanceof OWLNamedObject)
 					return dataFactory.getOWLObjectHasValue(qp.getProperty(), 
-							dataFactory.getOWLNamedIndividual(((OWLNamedObject) t2).getIRI()));
+							dataFactory.getOWLNamedIndividual(((OWLNamedObject) x).getIRI()));
 				else {
-					System.err.println("warning: treating "+t2+" as allvaluesfrom");
+					System.err.println("warning: treating "+x+" as allvaluesfrom");
 					return dataFactory.getOWLObjectAllValuesFrom(qp.getProperty(), 
-							(OWLClassExpression) t2);
+							(OWLClassExpression) x);
 				}
 			}
 			else {
@@ -648,7 +659,7 @@ public class OWLGraphWrapper {
 		edgeStack.addAll(getPrimitiveOutgoingEdges(s));
 		closureSet.addAll(edgeStack);
 		while (!edgeStack.isEmpty()) {
-			OWLGraphEdge ne = edgeStack.remove(0);
+			OWLGraphEdge ne = edgeStack.pop();
 			//System.out.println("NEXT: "+ne+" //stack: "+edgeStack);
 			int nextDist = ne.getDistance() + 1;
 			Set<OWLGraphEdge> extSet = getPrimitiveOutgoingEdges(ne.getTarget());
