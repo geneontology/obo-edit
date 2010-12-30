@@ -43,6 +43,8 @@ public class SimEngine {
 	// -------------------------------------
 
 	protected OWLGraphWrapper graph;
+	public boolean excludeClassesInComparison = false;
+	public OWLObject comparisonSuperclass = null;
 
 	// -------------------------------------
 	// Constructions
@@ -235,8 +237,14 @@ public class SimEngine {
 
 
 	// TODO
-	public void calculateSimilarityAllByAll(Similarity m) throws SimilarityAlgorithmException {
-		for (OWLObject a : graph.getAllOWLObjects()) {
+	public void calculateSimilarityAllByAll(String similarityAlgorithmName, Double minScore) throws SimilarityAlgorithmException {
+		Set<OWLObject> objs = graph.getAllOWLObjects();
+		if (comparisonSuperclass != null) {
+			System.out.println("finding descendants of :"+comparisonSuperclass);
+			objs = graph.getDescendants(comparisonSuperclass);
+			System.out.println("  descendants  :"+objs.size());
+		}
+		for (OWLObject a : objs) {
 			if (excludeObjectFromComparison(a))
 				continue;
 			for (OWLObject b : graph.getAllOWLObjects()) {
@@ -244,17 +252,37 @@ public class SimEngine {
 					continue;
 				if (excludeObjectFromComparison(b))
 					continue;
-				calculateSimilarity(m,a,b);
-				Double s = m.score;
-				System.out.println(a+" "+b+" = "+s);
-				m.print();
+				System.out.println("COMPARE:"+label(a)+" -vs- "+label(b));
+				Similarity s = this.getSimilarityAlgorithm(similarityAlgorithmName);
+				calculateSimilarity(s,a,b);
+				Double sc = s.score;
+				if (minScore == null || sc > minScore) {
+					System.out.println(a+" "+b+" = "+sc);
+					s.print();
+				}
 			}
 		}
 	}
+	
+	private String label(OWLObject x) {
+		String label = graph.getLabel(x);
+		if (label == null)
+			return x.toString();
+		return x.toString()+" \""+label+"\"";
+	}
 
 	private boolean excludeObjectFromComparison(OWLObject a) {
-		// TODO configurable
-		return !(a instanceof OWLNamedIndividual);
+		System.out.println("TESTING:"+a);
+		//boolean exclude = false;
+		if (excludeClassesInComparison && !(a instanceof OWLNamedIndividual)) {
+			return true;
+		}
+		if (this.comparisonSuperclass != null) {
+			if (!graph.getSubsumersFromClosure(a).contains(comparisonSuperclass)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public OWLObject createUnionExpression(OWLObject a, OWLObject b, OWLObject c) {
