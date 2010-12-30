@@ -77,8 +77,15 @@ CREATE TABLE gene_annotation (
   bioentity VARCHAR NOT NULL,
 
   -- GAF: col4
-  -- note: negative annotations to go in separate table
-  qualifier_expression VARCHAR,
+  -- the value of this column is identical to col 4 in the GAF.
+  -- This can be viewed as a composite expression describing the relationship
+  -- between the bioentity and the GO cls.
+  -- Typically this will be a single qualifier (e.g. 'contributes_to'), but
+  -- may be a pipe-separated list of qualifiers. These are decomposed
+  -- in the composite_qualifier table.
+  --
+  -- note: negative annotations to go in separate table.
+  composite_qualifier VARCHAR,
 
   -- TBD: add to qualifier column?
   is_contributes_to BOOLEAN,
@@ -106,6 +113,7 @@ CREATE TABLE gene_annotation (
   acts_on_taxon_id INT,
 
   -- col 14.
+  -- TODO: change to datetime instead of VARCHAR?
   last_update_date VARCHAR,
 
   -- col 15
@@ -121,15 +129,25 @@ CREATE TABLE gene_annotation (
 
 -- qualifier expression
 -- syntax: QE --> [ Q ]
-CREATE TABLE qualifier (
-  qualifier_expression VARCHAR,
-  cls VARCHAR
+CREATE TABLE composite_qualifier (
+  -- composite pipe-separated ID
+  id VARCHAR, 
+
+  -- cls or relation
+  qualifier_obj VARCHAR 
 );
 
 -- expression representing sum total of evidence WITHs for this assignment
 CREATE TABLE with_info (
   with_expression VARCHAR,
   with_xref VARCHAR
+);
+
+CREATE TABLE extension_expression (
+  -- composite expression
+  id VARCHAR,
+
+  cls VARCHAR
 );
 
 CREATE TABLE bioentity_relationship (
