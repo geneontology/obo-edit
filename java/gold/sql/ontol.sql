@@ -519,6 +519,7 @@ CREATE TABLE inferred_subclass_of (
        ontology VARCHAR,
        PRIMARY KEY (cls, target_cls, ontology)
 );
+COMMENT ON TABLE inferred_subclass_of IS 'holds iff: cls SubClassOf tgt, where both cls and tgt are named classes.';
 
 
 CREATE TABLE inferred_all_some_relationship (
