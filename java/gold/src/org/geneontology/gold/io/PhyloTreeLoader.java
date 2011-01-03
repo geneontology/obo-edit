@@ -7,19 +7,57 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.TreeSet;
 
+import java.util.Map;
+import java.util.TreeMap;
+
+import org.forester.io.parsers.nhx.NHXParser;
+import org.forester.phylogeny.Phylogeny;
+
 /**
  * loads phylogenetic trees into database
  * 
- *  TBD - directly from NHX file or from Panther
+ *  From NHXish file. Really files output from org.paint.util.PaintScraper
  *
  */
 public class PhyloTreeLoader {
 	private File file;
-
 	private BufferedReader reader;
+	private Phylogeny tree;
+	Map<String,String> leaves;
 	
-	PhyloTreeLoader(File file) {
+	static NHXParser parser = null;
+	
+	PhyloTreeLoader(File file) throws IOException {
 		this.file = file;
+		this.open();
+		
+		if (parser == null) {
+			parser = new NHXParser();
+		}
+		
+		// get the title and remove the prefix "[title:" and "]"
+		String line = reader.readLine().substring(7).replaceFirst(".$", "");
+
+		parser.setSource(reader.readLine());
+		Phylogeny oneTree[] = parser.parse();
+		tree = oneTree[0];
+		tree.setName(line);
+
+		leaves = new TreeMap<String,String>();
+		while ((line = reader.readLine()) != null) {
+			String[] kv = line.replaceFirst(".$", "").split(":", 2);
+			leaves.put(kv[0], kv[1].replace('=', ':'));
+		}
+		
+		for (Map.Entry<String,String> kv : leaves.entrySet()) {
+			tree.getNode(kv.getKey()).setName(kv.getValue());
+		}
+		
+		this.close();
+	}
+	
+	public String toString() {
+		return "[title:" + tree.getName() + ']' + tree.toString();
 	}
 	
 	boolean gzipped()
@@ -67,8 +105,7 @@ public class PhyloTreeLoader {
 		
 		for (File file : files) {
 			PhyloTreeLoader tree = new PhyloTreeLoader(file);
-			tree.open();
-			tree.close();
+			System.out.println(tree.toString());
 		}
 		
 		System.err.println("All Done.");

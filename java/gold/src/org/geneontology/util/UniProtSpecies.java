@@ -69,7 +69,7 @@ public class UniProtSpecies
     {
     	Set<String> codeSet = new TreeSet<String>();
     	for (String code : codes) {
-    		codeSet.add(code.toString().toUpperCase());
+    		codeSet.add(code.trim().toUpperCase());
     	}
 
     	BufferedReader br = new BufferedReader(new InputStreamReader(UniProtSpecies.class.getResourceAsStream("/speclist.txt"), "US-ASCII"));
