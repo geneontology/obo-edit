@@ -185,6 +185,13 @@ MAPPINGS:
  LEAD: term (term table is overloaded)
 ';
 
+CREATE TABLE ontology_alternate_label_type (
+       id VARCHAR PRIMARY KEY,
+       description VARCHAR,
+       default_scope VARCHAR
+);
+
+
 -- ****************************************
 -- obj_subset
 -- ****************************************
@@ -228,6 +235,7 @@ EXAMPLE: http://en/wikipedia.org/wiki/Transcription
 -- ****************************************
 -- obj_alternate_label
 -- ****************************************
+
 CREATE TABLE obj_alternate_label (
        obj VARCHAR,
        label VARCHAR,

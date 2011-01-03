@@ -145,7 +145,7 @@ CREATE TABLE with_info (
 
 CREATE TABLE extension_expression (
   -- composite expression
-  id VARCHAR,
+  id VARCHAR PRIMARY KEY,
 
   cls VARCHAR
 );
