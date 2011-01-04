@@ -10,23 +10,30 @@ import java.util.TreeSet;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.geneontology.util.*;
+
 import org.forester.io.parsers.nhx.NHXParser;
 import org.forester.phylogeny.Phylogeny;
 
 /**
  * loads phylogenetic trees into database
  * 
- *  From NHXish file. Really files output from org.paint.util.PaintScraper
+ * From NHXish file. Reads files output from org.paint.util.PaintScraper class.
  *
  */
 public class PhyloTreeLoader {
 	private File file;
 	private BufferedReader reader;
 	private Phylogeny tree;
-	Map<String,String> leaves;
+	Map<String,PantherID> leaves;
 	
 	static NHXParser parser = null;
 	
+	/**
+	 * 
+	 * @param file - File object painting to file produced by org.paint.util.PaintScraper class. Can be gzipped.
+	 * @throws IOException If it has problems accessing the file.
+	 */
 	PhyloTreeLoader(File file) throws IOException {
 		this.file = file;
 		this.open();
@@ -43,15 +50,17 @@ public class PhyloTreeLoader {
 		tree = oneTree[0];
 		tree.setName(line);
 
-		leaves = new TreeMap<String,String>();
+		leaves = new TreeMap<String,PantherID>();
 		while ((line = reader.readLine()) != null) {
 			String[] kv = line.replaceFirst(".$", "").split(":", 2);
-			leaves.put(kv[0], kv[1].replace('=', ':'));
+			leaves.put(kv[0], new PantherID(kv[1].replace('=', ':')));
 		}
 		
-		for (Map.Entry<String,String> kv : leaves.entrySet()) {
-			tree.getNode(kv.getKey()).setName(kv.getValue());
+		/*
+		for (Map.Entry<String,PantherID> kv : leaves.entrySet()) {
+			tree.getNode(kv.getKey()).setName(kv.getValue().toString());
 		}
+		*/
 		
 		this.close();
 	}
@@ -60,11 +69,27 @@ public class PhyloTreeLoader {
 		return "[title:" + tree.getName() + ']' + tree.toString();
 	}
 	
+	/**
+	 * @return The name of the Panther cluster.
+	 */
+	public String getName() {
+		return tree.getName();
+	}
+	
+	/**
+	 * Tells if the file read from is gzipped or not.
+	 * @return True if it thinks the file is compressed, false if not.
+	 */
 	boolean gzipped()
 	{
 		return file.getName().endsWith(".gz");
 	}
 	
+	/**
+	 * 
+	 * @return A BufferedReader class of the file.
+	 * @throws IOException
+	 */
 	BufferedReader open() throws IOException
 	{
 		FileInputStream fis = new FileInputStream(file);
@@ -79,12 +104,25 @@ public class PhyloTreeLoader {
 		return reader;
 	}
 	
+	/**
+	 * Closes the reader opened by open().
+	 * @throws IOException
+	 */
 	void close() throws IOException
 	{
 		reader.close();
 	}
 	
+	/**
+	 * 
+	 * @return a collection of PantherID classes that are the leaves of the Panther tree.
+	 */
+	public Collection<PantherID> getLeaves() {
+		return leaves.values();
+	}
+	
 	public static void main(String[] args) throws IOException {
+		UniProtSpecies.debug = true;
 		TreeFileFilter tff = new TreeFileFilter();
 	
 		Collection<File> files = new TreeSet<File>();
@@ -105,7 +143,11 @@ public class PhyloTreeLoader {
 		
 		for (File file : files) {
 			PhyloTreeLoader tree = new PhyloTreeLoader(file);
-			System.out.println(tree.toString());
+			for (PantherID id : tree.getLeaves()) {
+				//System.out.println(id.toString() + " => " + id.getTaxonNode());
+				id.getTaxonNode();
+			}
+			//System.out.println(tree.toString());
 		}
 		
 		System.err.println("All Done.");
