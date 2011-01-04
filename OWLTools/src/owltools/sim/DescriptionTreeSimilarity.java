@@ -8,6 +8,9 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
@@ -20,9 +23,11 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLPropertyRange;
 import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
@@ -139,56 +144,6 @@ public class DescriptionTreeSimilarity extends Similarity {
 		return buildDescription(a,b,fullLCSs);
 	}
 
-	/*
-	public void testMe() {
-		OWLObject obj = graph.getOWLObject("http://ccdb.ucsd.edu/PKB/1.0/PKB.owl#PATO_0001555_251");
-		OWLObject a1 = graph.getOWLObject("http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-Subcellular.owl#sao120573470");
-		OWLObject a2 = 
-			graph.getOWLIndividual("http://ccdb.ucsd.edu/PKB/1.0/PKB.owl#sao120573470_7");
-		System.out.println("##TESTING: "+a1+a1.getClass()+" and "+a2+a2.getClass());
-		Set<OWLObject> ancs = graph.getAncestorsReflexive(obj);
-		boolean ok1 = false;
-		boolean ok2 = true;
-		boolean ok3 = false;
-		boolean ok4 = true;
-		for (OWLObject a : ancs) {
-			Set<OWLGraphEdge> edges = graph.getEdgesBetween(obj, a);
-			//System.out.println(" CHECK:"+a+" "+a.getClass());
-			for (OWLGraphEdge e : edges) {
-				//System.out.println("  CHECK EDGE:"+e);
-			}
-			OWLGraphEdge edge = edges.iterator().next();
-			if (a.equals(a1)) {
-				if (edge.getQuantifiedPropertyList().size() == 2) {
-					ok1 = true;
-				}
-				else {
-					System.out.println("##bad path1:"+edge);
-					ok2 = false;
-				}
-			}
-			if (a.equals(a2)) {
-				System.out.println("##match; checking:"+edge);
-				if (edge.getQuantifiedPropertyList().size() == 1) {
-					ok3 = true;
-				}
-				else {
-					System.out.println("##bad path2:"+edge);
-					ok4 = false;
-				}
-			}
-		}
-		if (!ok1) {
-			System.out.println("##NO PATH1");
-		}
-		if (!ok3) {
-			System.out.println("##NO PATH2");
-		}
-		if (ok1 && ok2 && ok3 && ok4) {
-			System.out.println("##ALL OK!");
-		}
-	}
-	*/
 	
 	public ConvergentPath buildDescription(OWLObject a, OWLObject b, Set<OWLObject> fullLCSs) {
 
@@ -236,15 +191,15 @@ public class DescriptionTreeSimilarity extends Similarity {
 		// TODO - only extend when no intersection is built
 		Set<OWLClassExpression> subExprs = new HashSet<OWLClassExpression>();
 		Set<ConvergentPath> subCps = new HashSet<ConvergentPath>();
-		Set<OWLGraphEdge> aEdges = graph.getOutgoingEdges(a);
-		for (OWLGraphEdge e : aEdges) {
+		Set<OWLGraphEdge> aEdges = graph.getPrimitiveOutgoingEdges(a);
+		for (OWLGraphEdge aEdge : aEdges) {
 			//OWLGraphEdge eaNew = graph.combineEdgePair(ea.getSource(), ea, e, 1);
-			OWLObject aNext = e.getTarget();
+			OWLObject aNext = aEdge.getTarget();
 			if (visited.contains(aNext))
 				continue;
 			
-			LOG.info("  edge: "+e);
-			LOG.info("  fetching best match (bNext) under: "+b);
+			LOG.info("  edge: "+aEdge);
+			LOG.info("  fetching best match for "+aNext+" under: "+b);
 			// get best match for a in {b, desc-of-b}
 			// also - restrict subsumers
 			// TODO
@@ -257,7 +212,7 @@ public class DescriptionTreeSimilarity extends Similarity {
 			if (bCandidates.contains(aNext)) {
 				bCandidates.clear();
 				bCandidates.add(aNext);
-				LOG.info("optimized - using:"+bCandidates);
+				LOG.info("exact match - optimized - using:"+bCandidates);
 			}
 			for (OWLObject candidate : bCandidates) {
 				// TODO - optimize - we only need to calculate aNext's subsumers once
@@ -270,19 +225,22 @@ public class DescriptionTreeSimilarity extends Similarity {
 				// may be much 'bushier'
 				// (see for example 'substantia nigra degenerates' vs 'Substantia nigra 291' in PKB
 				//  - the latter has axon, dendrite and neuropil all degenerate)
-				double score = (double) (csl.size() * 2) / usl.size();
+				double score = ((double) (csl.size() * csl.size())) / usl.size();
 				//score *= lcsl.size(); // assume LCSs independent
 				//double score = csl.size();
 				Set<OWLGraphEdge> bEdges = graph.getEdgesBetween(b, candidate);
 				OWLGraphEdge candidateEdge = bEdges.iterator().next();
 				// todo - better edge comparison
-				if (candidateEdge.getQuantifiedPropertyList().equals(e.getQuantifiedPropertyList())) {
+				LOG.debug("    candidate: "+candidate+" |CSL|="+csl.size()+" score:"+score+" candidateEdge:"+candidateEdge);
+				// TODO - better way of comparing expressions and named entities.
+				// for now we only give bonues to matching property edges
+				if (candidateEdge.getQuantifiedPropertyList().equals(aEdge.getQuantifiedPropertyList()) &&
+						!aEdge.getSingleQuantifiedProperty().isSubClassOf()) {
 					LOG.debug("      **edge match");
-					score += 1;
+					score *= 1.5;
 				}
 				//LOG.info("    bEdges: "+bEdges);
 				//OWLGraphEdge bEdge = bEdges.iterator().next();
-				LOG.debug("    candidate: "+candidate+" score:"+score+" candidateEdge:"+candidateEdge);
 				if (score > best) {
 					best = score;
 					bNext = candidate;
@@ -297,8 +255,8 @@ public class DescriptionTreeSimilarity extends Similarity {
 			LOG.info("    lcsl: "+lcsl);
 			LOG.info("    current full size: "+fullLCSs.size());
 			// cloning not necessary - TODO
-			lcsl.retainAll(new HashSet<OWLObject>(fullLCSs));
-			LOG.info("    lcsl, full: "+lcsl);
+			//lcsl.retainAll(new HashSet<OWLObject>(fullLCSs));
+			//LOG.info("    lcsl, full: "+lcsl);
 
 			if (lcsl.size() == 0)
 				continue;
@@ -319,11 +277,11 @@ public class DescriptionTreeSimilarity extends Similarity {
 				nextCp.x = makeClassExpression(lcsl.iterator().next());
 				Set<OWLGraphEdge> extEdges = graph.getEdgesBetween(aNext, nextCp.x);
 				if (extEdges.size() == 0) {
-					nextCp.ea = e;
+					nextCp.ea = aEdge;
 				}
 				else {
 					OWLGraphEdge extEdge = extEdges.iterator().next();
-					nextCp.ea = graph.combineEdgePair(e.getSource(), e, extEdge, 1);
+					nextCp.ea = graph.combineEdgePair(aEdge.getSource(), aEdge, extEdge, 1);
 					//LOG.info(" CONVERGE:"+nextCp.x+" combine:"+e+" * "+extEdge+" = "+nextCp.ea);
 				}
 				Set<OWLGraphEdge> bExtEdges = graph.getEdgesBetween(bNext, nextCp.x);
@@ -345,9 +303,9 @@ public class DescriptionTreeSimilarity extends Similarity {
 					continue;
 
 				if (nextCp.ea == null)
-					nextCp.ea = e;
+					nextCp.ea = aEdge;
 				else 
-					nextCp.ea = graph.combineEdgePair(a, e, nextCp.ea, 1);
+					nextCp.ea = graph.combineEdgePair(a, aEdge, nextCp.ea, 1);
 				
 				if (nextCp.eb == null)
 					nextCp.eb = bEdge;
@@ -371,7 +329,7 @@ public class DescriptionTreeSimilarity extends Similarity {
 		else {
 			// TODO - edges combined and reset here
 			subExprs = new HashSet<OWLClassExpression>();
-			LOG.info("combining sub-expressions...");
+			LOG.info("combining sub-expressions for "+a+" vs "+b);
 			for (ConvergentPath subCp : subCps) {
 				LOG.info("  sub-CP:"+subCp);
 				subExprs.add(combinePathsToMakeExpression(subCp));
@@ -470,6 +428,8 @@ public class DescriptionTreeSimilarity extends Similarity {
 	 * 
 	 * (r1 some X) U (r2 some Y) ==> lcs(r1,r2) some MakeUnionOf(X,Y)
 	 * (r1 some X) U X ==> reflexive-version-of-r1 some X
+	 * 
+	 * TODO: test for (r some r some X) u (r some X) cases. needs to be done over final expression.
 	 *  
 	 * if a reduced form cannot be made, returns null
 	 * 
@@ -499,6 +459,8 @@ public class DescriptionTreeSimilarity extends Similarity {
 				}
 			}
 			LOG.info("  test: "+xaRest+" == "+xb);
+			
+
 			if (xaRest.equals(xb)) {
 				LOG.info("     TRUE: "+xaRest+" == "+xb);
 
@@ -564,7 +526,76 @@ public class DescriptionTreeSimilarity extends Similarity {
 		}
 		return null;
 	}
+	
+	public OWLOntology createOWLOntologyFromResults() throws OWLOntologyCreationException {
+		OWLOntology ont = graph.getManager().createOntology();
+		addResultsToOWLOntology(ont);
+		return ont;
+	}
+	
+	public void addResultsToOWLOntology(OWLOntology ont) {
+		for (OWLAxiom axiom: translateResultsToOWLAxioms()) {
+			AddAxiom aa = new AddAxiom(ont, axiom);
+			graph.getManager().applyChange(aa);
+		}
+	}
+	
+	public Set<OWLAxiom> translateResultsToOWLAxioms() {
+		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
+		
+		OWLDataFactory df = graph.getDataFactory();
+		IRI ia = ((OWLNamedObject) a).getIRI();
+		IRI ib = ((OWLNamedObject) b).getIRI();
+		String[] toksA = splitIRI(ia);
+		String[] toksB = splitIRI(ib);
+		String id = toksA[0]+toksA[1]+"-vs-"+toksB[1];
 
+		IRI ic = IRI.create(id);
+		OWLNamedIndividual result = df.getOWLNamedIndividual(ic);
+		OWLClass ac = df.getOWLClass(annotationIRI("similarity_relationship"));
+		OWLAnnotationProperty p = df.getOWLAnnotationProperty(annotationIRI("has_similarity_relationship"));
+		OWLAnnotationProperty sp = df.getOWLAnnotationProperty(annotationIRI("has_score"));
+		OWLAnnotationProperty lcsp = df.getOWLAnnotationProperty(annotationIRI("has_least_common_subsumer"));
+		OWLClass namedLCS = df.getOWLClass(IRI.create(id+"_LCS"));
+		axioms.add(df.getOWLAnnotationAssertionAxiom(df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()),
+				namedLCS.getIRI(), 
+				df.getOWLTypedLiteral("LCS of "+se.label(a)+" and "+se.label(b))));
+		axioms.add(df.getOWLAnnotationAssertionAxiom(df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()),
+				result.getIRI(), 
+				df.getOWLTypedLiteral("Similarity relationship between "+se.label(a)+" and "+se.label(b))));
+		axioms.add(df.getOWLClassAssertionAxiom(ac, result));
+		axioms.add(df.getOWLEquivalentClassesAxiom(namedLCS, this.lcs));
+		axioms.add(df.getOWLAnnotationAssertionAxiom(p, ((OWLNamedObject) a).getIRI(), result.getIRI()));
+		axioms.add(df.getOWLAnnotationAssertionAxiom(p, ((OWLNamedObject) b).getIRI(), result.getIRI()));
+		axioms.add(df.getOWLAnnotationAssertionAxiom(sp, result.getIRI(), df.getOWLTypedLiteral(score)));
+		axioms.add(df.getOWLAnnotationAssertionAxiom(lcsp, result.getIRI(), namedLCS.getIRI()));
+		return axioms;
+	}
+	
+	public String[] splitIRI(IRI x) {
+		String s = x.toString();
+		String id = null;
+		if (s.startsWith("http://purl.obolibrary.org/obo/")) {
+			id = s.replaceAll("http://purl.obolibrary.org/obo/", "");
+			return new String[]{"http://purl.obolibrary.org/obo/",id};
+		}
+		for (String del : new String[]{"#","/",":"}) {
+			if (s.contains(del)) {
+				String[] r = s.split(del,2);
+				r[0] = r[0]+del;
+				return r;
+			}
+
+		}
+		return new String[]{"",s};
+	}
+	
+	public IRI annotationIRI(String name) {
+		return IRI.create("http://purl.obolibrary.org/obo/IAO/score#"+name);
+	}
+
+	// -- I/O - MOVE THIS!
+	
 	public void print(PrintStream s) {
 		s.println("LCS: "+score);
 		printX(s,lcs);

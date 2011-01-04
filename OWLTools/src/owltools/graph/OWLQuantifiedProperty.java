@@ -140,6 +140,15 @@ public class OWLQuantifiedProperty {
 			
 	}
 
+	public boolean subsumes(OWLQuantifiedProperty other) {
+		if ((quantifier == null || quantifier == other.getQuantifier())
+				&&
+				(getProperty() == null ||
+						getProperty().equals(other.getProperty())))
+			return true;
+		return false;
+	}
+
 
 
 
