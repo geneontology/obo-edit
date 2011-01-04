@@ -108,7 +108,7 @@ public class OWLGraphWrapper {
 	 */
 	public class Config {
 		// by default the graph closure includes only named entities
-		public boolean isIncludeClassExpressionsInClosure = false;
+		public boolean isIncludeClassExpressionsInClosure = true;
 
 		// by default we do not follow complement of - TODO
 		public boolean isFollowComplementOfInClosure = false;
@@ -120,6 +120,11 @@ public class OWLGraphWrapper {
 		public Set<OWLQuantifiedProperty> graphEdgeExcludeSet = null;
 		public OWLClass excludeMetaClass = null;
 
+		public void excludeProperty(OWLObjectProperty p) {
+			if (graphEdgeExcludeSet == null)
+				graphEdgeExcludeSet = new HashSet<OWLQuantifiedProperty>();
+			graphEdgeExcludeSet.add(new OWLQuantifiedProperty(p, null));
+		}
 	}
 
 	/**
@@ -432,8 +437,8 @@ public class OWLGraphWrapper {
 		edges.removeAll(rmEdges);
 	}
 
-	private boolean edgeSatisfiesOneOf(OWLGraphEdge e, Set<OWLQuantifiedProperty> graphEdgeIncludeSet) {
-		for (OWLQuantifiedProperty c : graphEdgeIncludeSet) {
+	private boolean edgeSatisfiesOneOf(OWLGraphEdge e, Set<OWLQuantifiedProperty> qps) {
+		for (OWLQuantifiedProperty c : qps) {
 			if (edgeSatisfies(e, c))
 				return true;
 		}
@@ -441,7 +446,7 @@ public class OWLGraphWrapper {
 	}
 
 	private boolean edgeSatisfies(OWLGraphEdge e, OWLQuantifiedProperty c) {
-		return e.getSingleQuantifiedProperty().equals(c);
+		return c.subsumes(e.getSingleQuantifiedProperty());
 	}
 
 	// e.g. R-some-B ==> <R-some-B,R,B>
@@ -486,9 +491,9 @@ public class OWLGraphWrapper {
 		else {
 			// extend
 			OWLObject s = e.getSource();
-			edges = getOutgoingEdges(e.getTarget());
-			for (OWLGraphEdge e2 : edges) {
-				e2.setSource(s);
+			Set<OWLGraphEdge> nextEdges = getOutgoingEdges(e.getTarget());
+			for (OWLGraphEdge e2 : nextEdges) {
+				edges.add(this.combineEdgePair(s, e, e2, 1));
 			}
 		}
 		return edges;
@@ -1699,6 +1704,10 @@ public class OWLGraphWrapper {
 		return getOWLIndividual(iri);
 	}
 	
+	public OWLObjectProperty getOWLObjectProperty(String id) {
+		return dataFactory.getOWLObjectProperty(IRI.create(id));
+	}
+
 
 	// TODO - make this more efficient
 	public OWLObject getOWLObject(String s) {

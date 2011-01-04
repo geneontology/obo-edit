@@ -1,5 +1,6 @@
 package owltools.cli;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,12 +15,16 @@ import org.obolibrary.oboformat.model.FrameMergeException;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLImportsDeclaration;
 import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.util.AutoIRIMapper;
+import org.semanticweb.owlapi.util.SimpleIRIMapper;
 
 import owltools.gfx.OWLGraphLayoutRenderer;
 import owltools.graph.OWLGraphEdge;
@@ -132,7 +137,8 @@ public class CommandLineInterface {
 		boolean createNamedRestrictions = false;
 		boolean createDefaultInstances = false;
 		boolean merge = false;
-
+		OWLOntology simOnt = null;
+		
 		String similarityAlgorithmName = "JaccardSimilarity";
 
 
@@ -171,6 +177,9 @@ public class CommandLineInterface {
 			else if (opts.nextEq("--log-info")) {
 				Logger.getRootLogger().setLevel(Level.INFO);
 			}
+			else if (opts.nextEq("--log-debug")) {
+				Logger.getRootLogger().setLevel(Level.DEBUG);
+			}
 			else if (opts.nextEq("--list-classes")) {
 				Set<OWLClass> clss = g.getOntology().getClassesInSignature();
 				for (OWLClass c : clss) {
@@ -179,8 +188,29 @@ public class CommandLineInterface {
 			}
 			else if (opts.nextEq("--merge")) {
 				g.mergeOntology(pw.parse(opts.nextOpt()));
-				//g.getSourceOntology().pw.parseOWL(opts.nextOpt()).getAxioms();
-				//merge = true;
+			}
+			else if (opts.nextEq("--map-iri")) {
+				//OWLOntologyIRIMapper iriMapper = new SimpleIRIMapper();
+				
+			}
+			else if (opts.nextEq("--auto-iri")) {
+				File file = new File(opts.nextOpt());
+				OWLOntologyIRIMapper iriMapper = new AutoIRIMapper(file, false);
+				pw.getManager().addIRIMapper(iriMapper);
+			}
+			else if (opts.nextEq("--remove-imports-declarations")) {
+				OWLOntology ont = g.getManager().createOntology(g.getSourceOntology().getOntologyID().getOntologyIRI());
+				for (OWLAxiom a : g.getSourceOntology().getAxioms()) {
+					g.getManager().addAxiom(ont, a);
+				}
+				g.setSourceOntology(ont);
+			}
+			else if (opts.nextEq("--merge-support-ontologies")) {
+				for (OWLOntology ont : g.getSupportOntologySet())
+					g.mergeOntology(ont);
+			}
+			else if (opts.nextEq("--add-support-from-imports")) {
+				g.addSupportOntologiesFromImportsClosure();
 			}
 			else if (opts.nextEq("-m") || opts.nextEq("--mcat")) {
 				catOntologies(g,opts);
@@ -190,12 +220,50 @@ public class CommandLineInterface {
 				gcw.saveClosure(g);				
 			}
 			else if (opts.nextEq("-a|--ancestors")) {
-				opts.info("LABEL", "list edges in graph closureto root nodes");
+				opts.info("LABEL", "list edges in graph closure to root nodes");
 				//System.out.println("i= "+i);
 				OWLObject obj = resolveEntity(g, opts);
 				System.out.println(obj+ " "+obj.getClass());
 				Set<OWLGraphEdge> edges = g.getOutgoingEdgesClosureReflexive(obj);
 				showEdges(edges);
+			}
+			else if (opts.nextEq("--ancestor-nodes")) {
+				opts.info("LABEL", "list nodes in graph closure to root nodes");
+				//System.out.println("i= "+i);
+				OWLObject obj = resolveEntity(g, opts);
+				System.out.println(obj+ " "+obj.getClass());
+				for (OWLObject a : g.getAncestors(obj)) 
+					System.out.println(a);
+			}
+			else if (opts.nextEq("--parents-named")) {
+				opts.info("LABEL", "list direct outgoing edges to named classes");
+				//System.out.println("i= "+i);
+				OWLObject obj = resolveEntity(g, opts);
+				System.out.println(obj+ " "+obj.getClass());
+				Set<OWLGraphEdge> edges = g.getOutgoingEdges(obj);
+				showEdges(edges);
+			}
+			else if (opts.nextEq("--parents")) {
+				opts.info("LABEL", "list direct outgoing edges");
+				//System.out.println("i= "+i);
+				OWLObject obj = resolveEntity(g, opts);
+				System.out.println(obj+ " "+obj.getClass());
+				Set<OWLGraphEdge> edges = g.getPrimitiveOutgoingEdges(obj);
+				showEdges(edges);
+			}
+			else if (opts.nextEq("--grandparents")) {
+				opts.info("LABEL", "list direct outgoing edges and their direct outgoing edges");
+				//System.out.println("i= "+i);
+				OWLObject obj = resolveEntity(g, opts);
+				System.out.println(obj+ " "+obj.getClass());
+				Set<OWLGraphEdge> edges = g.getPrimitiveOutgoingEdges(obj);
+				for (OWLGraphEdge e1 : edges) {
+					System.out.println(e1);
+					for (OWLGraphEdge e2 : g.getPrimitiveOutgoingEdges(e1.getTarget())) {
+						System.out.println("    "+e2);
+						
+					}
+				}
 			}
 			else if (opts.nextEq("--subsumers")) {
 				opts.info("LABEL", "list named subsumers and subsuming expressions");
@@ -301,10 +369,22 @@ public class CommandLineInterface {
 				Similarity r = se.calculateSimilarity(metric, oa, ob);
 				//System.out.println(metric+" = "+r);
 				metric.print();
+				if (simOnt == null) {
+					simOnt = g.getManager().createOntology();
+				}
+				((DescriptionTreeSimilarity)metric).addResultsToOWLOntology(simOnt);
 			}
 			else if (opts.nextEq("-o|--output")) {
 				opts.info("FILE", "writes ontology -- specified as IRI, e.g. file://`pwd`/foo.owl");
 				pw.saveOWL(g.getSourceOntology(), opts.nextOpt());
+			}
+			else if (opts.nextEq("--save-sim")) {
+				opts.info("FILE", "saves similarity results as an OWL ontology. Use after --sim or --sim-all");
+				pw.saveOWL(simOnt, opts.nextOpt());
+			}
+			else if (opts.nextEq("--merge-sim")) {
+				opts.info("FILE", "merges similarity results into source OWL ontology. Use after --sim or --sim-all");
+				g.mergeOntology(simOnt);
 			}
 			else if (opts.nextEq("--list-axioms")) {
 				for (OWLAxiom a : g.getSourceOntology().getAxioms()) {
@@ -327,6 +407,16 @@ public class CommandLineInterface {
 					g.getConfig().graphEdgeIncludeSet = new HashSet<OWLQuantifiedProperty>();
 
 				g.getConfig().graphEdgeIncludeSet.add(new OWLQuantifiedProperty(p, null));	
+			}
+			else if (opts.nextEq("--exclude-property")) {
+				opts.info("PROP-LABEL", "exclude object properties of this type in graph traversal.\n"+
+				"     default is to exclude NONE.");
+				OWLObjectProperty p = g.getOWLObjectProperty(opts.nextOpt());
+				System.out.println("Excluding "+p+" "+p.getClass());
+				if (g.getConfig().graphEdgeExcludeSet == null)
+					g.getConfig().graphEdgeExcludeSet = new HashSet<OWLQuantifiedProperty>();
+
+				g.getConfig().graphEdgeExcludeSet.add(new OWLQuantifiedProperty(p, null));	
 			}
 			else if (opts.nextEq("--exclude-metaclass")) {
 				opts.info("METACLASS-LABEL", "exclude classes of this type in graph traversal.\n"+

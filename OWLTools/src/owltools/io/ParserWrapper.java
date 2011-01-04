@@ -29,8 +29,16 @@ import owltools.sim.DescriptionTreeSimilarity;
 public class ParserWrapper {
 	
 	private static Logger LOG = Logger.getLogger(DescriptionTreeSimilarity.class);
+	OWLOntologyManager manager = OWLManager.createOWLOntologyManager(); // persist?
+	
+	
 
-
+	public OWLOntologyManager getManager() {
+		return manager;
+	}
+	public void setManager(OWLOntologyManager manager) {
+		this.manager = manager;
+	}
 	public OWLGraphWrapper parseToOWLGraph(String iriString) throws OWLOntologyCreationException, IOException {
 		return new OWLGraphWrapper(parse(iriString));		
 	}
@@ -79,7 +87,6 @@ public class ParserWrapper {
 	
 	public OWLOntology parseOWL(IRI iri) throws OWLOntologyCreationException {
 		LOG.info("parsing"+iri.toString());
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager(); // persist?
 		OWLOntology ont = manager.loadOntologyFromOntologyDocument(iri);
 		return ont;
 	}
@@ -89,7 +96,6 @@ public class ParserWrapper {
 		saveOWL(ont, owlFormat, file);
 	}
 	public void saveOWL(OWLOntology ont, OWLOntologyFormat owlFormat, String file) throws OWLOntologyStorageException {
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		manager.saveOntology(ont, owlFormat, IRI.create(file));
 	}
 
