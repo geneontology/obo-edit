@@ -140,8 +140,8 @@ public class SimEngine {
 	}
 
 	public Set<OWLObject> getCommonSubsumers(OWLObject a, OWLObject b) {
-		Set<OWLObject> s1 = getGraph().getNamedAncestorsReflexive(a);
-		s1.retainAll(getGraph().getNamedAncestorsReflexive(b));
+		Set<OWLObject> s1 = getGraph().getAncestorsReflexive(a);
+		s1.retainAll(getGraph().getAncestorsReflexive(b));
 		return s1;
 	}
 	public int getCommonSubsumersSize(OWLObject a, OWLObject b) {
@@ -264,7 +264,7 @@ public class SimEngine {
 		}
 	}
 	
-	private String label(OWLObject x) {
+	public String label(OWLObject x) {
 		String label = graph.getLabel(x);
 		if (label == null)
 			return x.toString();
