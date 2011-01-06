@@ -10,6 +10,11 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 
+import org.obolibrary.obo2owl.Obo2OWLConstants;
+import org.obolibrary.obo2owl.Obo2OWLConstants.Obo2OWLVocabulary;
+import org.obolibrary.obo2owl.Obo2Owl;
+import org.obolibrary.obo2owl.Owl2Obo;
+import org.obolibrary.oboformat.parser.OBOFormatConstants.OboFormatTag;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AddImport;
@@ -1198,7 +1203,7 @@ public class OWLGraphWrapper {
 	 * @return
 	 */
 	public String getDef(OWLObject c) {
-		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_0000115")); 
+		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(Obo2OWLVocabulary.IRI_IAO_0000115.getIRI()); 
 
 		return getAnnotationValue(c, lap);
 	}
@@ -1209,7 +1214,7 @@ public class OWLGraphWrapper {
 	 * @return
 	 */
 	public boolean getIsMetaTag(OWLObject c) {
-		OWLAnnotationProperty lap = getAnnotationProperty("is_metadata_tag");
+		OWLAnnotationProperty lap = getAnnotationProperty(OboFormatTag.TAG_IS_METADATA_TAG.getTag());
 
 		String val = getAnnotationValue(c, lap);
 
@@ -1222,7 +1227,7 @@ public class OWLGraphWrapper {
 	 * @return
 	 */
 	public String getSubset(OWLObject c) {
-		OWLAnnotationProperty lap = getAnnotationProperty("subset");
+		OWLAnnotationProperty lap = getAnnotationProperty(OboFormatTag.TAG_SUBSET.getTag());
 
 		return getAnnotationValue(c, lap);
 	}
@@ -1265,7 +1270,7 @@ public class OWLGraphWrapper {
 	 * @return
 	 */
 	public String getReplacedBy(OWLObject c) {
-		OWLAnnotationProperty lap = getAnnotationProperty("0100001");
+		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(Obo2OWLVocabulary.IRI_IAO_0100001.getIRI());
 
 		return getAnnotationValue(c, lap);
 	}
@@ -1276,7 +1281,7 @@ public class OWLGraphWrapper {
 	 * @return
 	 */
 	public String getConsider(OWLObject c) {
-		OWLAnnotationProperty lap = getAnnotationProperty("consider");
+		OWLAnnotationProperty lap = getAnnotationProperty(OboFormatTag.TAG_CONSIDER.getTag());
 
 		return getAnnotationValue(c, lap);
 	}
@@ -1290,7 +1295,7 @@ public class OWLGraphWrapper {
 	 * @return
 	 */
 	public boolean getIsObsolete(OWLObject c) {
-		OWLAnnotationProperty lap = getAnnotationProperty("is-obsolete"); 
+		OWLAnnotationProperty lap = getAnnotationProperty(OboFormatTag.TAG_IS_OBSELETE.getTag()); 
 
 		String val = getAnnotationValue(c, lap);
 
@@ -1305,7 +1310,7 @@ public class OWLGraphWrapper {
 	 * @return
 	 */
 	public String getAltId(OWLObject c) {
-		OWLAnnotationProperty lap = getAnnotationProperty("alt_id");
+		OWLAnnotationProperty lap = getAnnotationProperty(OboFormatTag.TAG_ALT_ID.getTag());
 
 		return getAnnotationValue(c, lap);
 	}
@@ -1316,7 +1321,7 @@ public class OWLGraphWrapper {
 	 * @return
 	 */
 	public boolean getBuiltin(OWLObject c) {
-		OWLAnnotationProperty lap = getAnnotationProperty("builtin");
+		OWLAnnotationProperty lap = getAnnotationProperty(OboFormatTag.TAG_BUILTIN.getTag());
 
 		String val = getAnnotationValue(c, lap);
 
@@ -1329,7 +1334,7 @@ public class OWLGraphWrapper {
 	 * @return
 	 */
 	public boolean getIsAnonymous(OWLObject c) {
-		OWLAnnotationProperty lap = getAnnotationProperty("is_anonymous");
+		OWLAnnotationProperty lap = getAnnotationProperty(OboFormatTag.TAG_IS_ANONYMOUS.getTag());
 
 		String val = getAnnotationValue(c, lap);
 
@@ -1346,8 +1351,8 @@ public class OWLGraphWrapper {
 	 * @return
 	 */
 	public OWLAnnotationProperty getAnnotationProperty(String tag){
-		return dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_"+ tag)); 
-
+		//return dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_"+ tag)); 
+		return dataFactory.getOWLAnnotationProperty(Obo2Owl.trTagToIRI(tag));
 	}
 
 
@@ -1357,7 +1362,7 @@ public class OWLGraphWrapper {
 	 * @return
 	 */
 	public String getNamespace(OWLObject c) {
-		OWLAnnotationProperty lap = getAnnotationProperty("namespace");
+		OWLAnnotationProperty lap = getAnnotationProperty(OboFormatTag.TAG_NAMESPACE.getTag());
 
 		return getAnnotationValue(c, lap);
 	}
@@ -1369,7 +1374,7 @@ public class OWLGraphWrapper {
 	 * @return
 	 */
 	public String getCreatedBy(OWLObject c) {
-		OWLAnnotationProperty lap = getAnnotationProperty("created_by"); 
+		OWLAnnotationProperty lap = getAnnotationProperty(OboFormatTag.TAG_CREATED_BY.getTag()); 
 
 		return getAnnotationValue(c, lap);
 	}
@@ -1381,8 +1386,8 @@ public class OWLGraphWrapper {
 	 * @return
 	 */
 	public boolean getIsAntiSymmetric(OWLObject c) {
-		OWLAnnotationProperty lap = getAnnotationProperty("0000427"); 
-
+		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(Obo2OWLVocabulary.IRI_IAO_0000427.getIRI());
+			
 		String val = getAnnotationValue(c, lap);
 
 		return val == null ? false: Boolean.valueOf(val);
@@ -1395,7 +1400,7 @@ public class OWLGraphWrapper {
 	 * @return
 	 */
 	public boolean getIsCyclic(OWLObject c) {
-		OWLAnnotationProperty lap = getAnnotationProperty("is_cyclic"); 
+		OWLAnnotationProperty lap = getAnnotationProperty(OboFormatTag.TAG_IS_CYCLIC.getTag()); 
 
 		String val = getAnnotationValue(c, lap);
 
@@ -1457,7 +1462,7 @@ public class OWLGraphWrapper {
 	 */
 
 	public List<String> getXref(OWLObject c){
-		OWLAnnotationProperty lap = getAnnotationProperty("xref");
+		OWLAnnotationProperty lap = getAnnotationProperty(OboFormatTag.TAG_XREF.getTag());
 
 		Set<OWLAnnotation>anns = null;
 		if (c instanceof OWLEntity) {
@@ -1480,8 +1485,8 @@ public class OWLGraphWrapper {
 
 
 	public List<String> getDefXref(OWLObject c){
-		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_0000115")); 
-		OWLAnnotationProperty xap = getAnnotationProperty("xref");
+		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(Obo2OWLVocabulary.IRI_IAO_0000115.getIRI()); 
+		OWLAnnotationProperty xap = getAnnotationProperty(OboFormatTag.TAG_XREF.getTag());
 
 		List<String> list = new ArrayList<String>();
 
@@ -1531,6 +1536,7 @@ public class OWLGraphWrapper {
 	 * @param c
 	 * @return
 	 */
+	@Deprecated
 	public String[] getSynonymStrings(OWLObject c) {
 		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(IRI.create(DEFAULT_IRI_PREFIX + "IAO_0000118")); 
 		Set<OWLAnnotation>anns = null;
@@ -1553,52 +1559,20 @@ public class OWLGraphWrapper {
 
 
 	public String getOntologyId(){
-		return getIdentifier(getSourceOntology().getOntologyID().getOntologyIRI()).replace(".owl","");
+		return Owl2Obo.getOntologyId(this.ontology);
 	}
 
 
 	public String getIdentifier(OWLObject owlObject) {
-		if (owlObject instanceof OWLNamedObject) {
-			String iri = getIdentifier(
-					((OWLNamedObject)owlObject).getIRI()
-			);
-			/*if (iri.startsWith("http://purl.obolibrary.org/obo/")) {
-				iri = iri.replace("http://purl.obolibrary.org/obo/", "");
-				int p = iri.lastIndexOf('_');
-				if (p >= 0) {
-					iri = iri.substring(0, p) + ":" + iri.substring(p+1);
-				}
-			}*/
-
-
-
-			return iri;
-
-		}
-		return "";
+		return Owl2Obo.getIdentifier(owlObject);
 	}
 
 
 	public String getIdentifier(IRI iriId) {
-		String iri = iriId.toString();
-		if (iri.startsWith("http://purl.obolibrary.org/obo/")) {
-			iri = iri.replace("http://purl.obolibrary.org/obo/", "");
-			//				int p = iri.lastIndexOf('_');
-			int p = iri.indexOf('_');
-
-			if (p >= 0) {
-				iri = iri.substring(0, p) + ":" + iri.substring(p+1);
-			}
-		}
-
-		return iri;
-
+		return Owl2Obo.getIdentifier(iriId);
 	}
 
-
-
-
-
+	@Deprecated
 	public IRI getIRIByIdentifier(String id) {
 		String[] parts = id.split(":", 2);
 		String s;
