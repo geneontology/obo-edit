@@ -21,27 +21,65 @@ import org.forester.phylogeny.Phylogeny;
  * From NHXish file. Reads files output from org.paint.util.PaintScraper class.
  *
  */
-public class PhyloTreeLoader {
+public class PhyloTreeLoader implements Loader {
 	private File file;
 	private BufferedReader reader;
 	private Phylogeny tree;
-	Map<String,PantherID> leaves;
+	private Map<String,PantherID> leaves;
 	
 	static NHXParser parser = null;
+	
+	PhyloTreeLoader() {
+		reader = null;
+		if (parser == null) {
+			parser = new NHXParser();
+		}
+	}
+
+	/**
+	 * 
+	 * @param pathname Pathname is used to create a File object, and then sent to the other setSourc().
+	 */
+	public void setSource(String pathname) {
+		setSource(new File(pathname));
+	}
+	
+	/**
+	 * Clears data and sets new file.
+	 * @param file File object to be loaded
+	 */
+	public void setSource(File file) {
+		this.file = file;
+		reader = null;
+		tree = null;
+		leaves = new TreeMap<String,PantherID>();
+	
+	}
+	
+	public boolean isLoadRequired() {
+		// TODO: compare file.lastModifiet() to family.creation_date
+		
+		return true;
+	}
+	
+	public void load() {
+		try {
+			loadFromFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		// writeToGold();
+	}
 	
 	/**
 	 * 
 	 * @param file - File object painting to file produced by org.paint.util.PaintScraper class. Can be gzipped.
 	 * @throws IOException If it has problems accessing the file.
 	 */
-	PhyloTreeLoader(File file) throws IOException {
-		this.file = file;
-		this.open();
-		
-		if (parser == null) {
-			parser = new NHXParser();
-		}
-		
+	public void loadFromFile() throws IOException {
+		open();
+			
 		// get the title and remove the prefix "[title:" and "]"
 		String line = reader.readLine().substring(7).replaceFirst(".$", "");
 
@@ -50,7 +88,6 @@ public class PhyloTreeLoader {
 		tree = oneTree[0];
 		tree.setName(line);
 
-		leaves = new TreeMap<String,PantherID>();
 		while ((line = reader.readLine()) != null) {
 			String[] kv = line.replaceFirst(".$", "").split(":", 2);
 			leaves.put(kv[0], new PantherID(kv[1].replace('=', ':')));
@@ -141,9 +178,11 @@ public class PhyloTreeLoader {
 			System.err.println("Will load " + files.size() + " files");
 		}
 		
+		PhyloTreeLoader ptl = new PhyloTreeLoader();
 		for (File file : files) {
-			PhyloTreeLoader tree = new PhyloTreeLoader(file);
-			for (PantherID id : tree.getLeaves()) {
+			ptl.setSource(file);
+			ptl.loadFromFile();
+			for (PantherID id : ptl.getLeaves()) {
 				//System.out.println(id.toString() + " => " + id.getTaxonNode());
 				id.getTaxonNode();
 			}
