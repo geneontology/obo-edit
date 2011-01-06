@@ -163,12 +163,10 @@ unless ($daily) {
               (['load_seqs',  # Now has IEAs
                'CHECK'=>sub{shift->guess_release_type eq 'seqdb'}]
               ) :
-              (['load_seqs', ARG=>$bulkload,
-              'CHECK'=>sub{shift->guess_release_type eq 'seqdb'}]
-              )
+	     ()
           ),
 
- 	  # SEQDB DONE
+ 	  # SEQDB DONE ONLY WEEKLY
 
 	  ));
 }
@@ -176,8 +174,6 @@ unless ($daily) {
 if ($monthly) {	 
     push(@steps, 
             (
-             ['make_release_tarballs', ARG=>'seqdb'],
-             ['dumpseq', ARG=>'seqdb'],
              ['dumprdfxml', ARG=>'assocdb']      # XML has no seqs
          ));
 }  
