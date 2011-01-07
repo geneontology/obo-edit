@@ -168,6 +168,14 @@ public class OWLGraphEdge {
 		return toString().hashCode();
 	}
 	
+	public boolean isEq(Object a, Object b) {
+		if (a == null && b == null)
+			return true;
+		if (a == null || b == null)
+			return false;
+		return a.equals(b);
+	}
+	
 	public boolean equals(Object e) {
 		
 		if(e == null && !(e instanceof OWLGraphEdge))
@@ -175,9 +183,10 @@ public class OWLGraphEdge {
 		
 		OWLGraphEdge other = (OWLGraphEdge) e;
 		
-		return other.getSourceId().equals(getSourceId()) &&
-			other.getTargetId().equals(getTargetId())
-			&& quantifiedPropertyList.containsAll(other.getQuantifiedPropertyList());
+		return 
+		isEq(other.getSource(),getSource()) &&
+		isEq(other.getTarget(),getTarget()) &&
+		isEq(quantifiedPropertyList,other.getQuantifiedPropertyList());
 		
 	}
 
