@@ -32,7 +32,7 @@ public class OWLGraphLayoutRenderer {
 
 	private OWLGraphWrapper owlGraphWrapper;
 
-	private StandardGraph<OWLGraphLayoutNode, OWLGraphStrokeEdge> g = 
+	protected StandardGraph<OWLGraphLayoutNode, OWLGraphStrokeEdge> g = 
 		new StandardGraph<OWLGraphLayoutNode, OWLGraphStrokeEdge>();
 	GraphStyle style;
 	HierarchicalLayout.Orientation orientation = HierarchicalLayout.Orientation.TOP;
@@ -52,7 +52,6 @@ public class OWLGraphLayoutRenderer {
 	public OWLGraphLayoutNode getNode(OWLObject ob) {
 		if (nodemap.containsKey(ob))
 			return nodemap.get(ob);
-		String label = owlGraphWrapper.getLabel(ob);
 		//IRI iri = ((OWLNamedObject)ob).getIRI();
 		OWLGraphLayoutNode node = 
 			new OWLGraphLayoutNode(owlGraphWrapper, ob, style);
