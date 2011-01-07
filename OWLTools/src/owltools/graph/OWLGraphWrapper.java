@@ -52,6 +52,8 @@ import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLPropertyRange;
+import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
 import org.semanticweb.owlapi.model.OWLReflexiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLRestriction;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
@@ -263,7 +265,7 @@ public class OWLGraphWrapper {
 	public void setDataFactory(OWLDataFactory dataFactory) {
 		this.dataFactory = dataFactory;
 	}
-	
+
 
 
 	public OWLOntologyManager getManager() {
@@ -281,7 +283,7 @@ public class OWLGraphWrapper {
 	public void setConfig(Config config) {
 		this.config = config;
 	}
-	
+
 
 	// ----------------------------------------
 	// BASIC GRAPH EDGE TRAVERSAL
@@ -374,10 +376,10 @@ public class OWLGraphWrapper {
 				// need to define semantics here
 				//System.err.println("getting individual axioms");
 				for (OWLClassAssertionAxiom a : o.getClassAssertionAxioms((OWLIndividual) s)) {
-					edges.add(new OWLGraphEdge(s,a.getClassExpression(),null,Quantifier.INSTANCE_OF,ontology));
+					edges.add(new OWLGraphEdge(s,a.getClassExpression(),null,Quantifier.INSTANCE_OF,getSourceOntology()));
 				}
 				for (OWLObjectPropertyAssertionAxiom a : o.getObjectPropertyAssertionAxioms((OWLIndividual) s)) {
-					edges.add(new OWLGraphEdge(s,a.getObject(),a.getProperty(),Quantifier.PROPERTY_ASSERTION,ontology));
+					edges.add(new OWLGraphEdge(s,a.getObject(),a.getProperty(),Quantifier.PROPERTY_ASSERTION,getSourceOntology()));
 				}
 			}
 			else if (s instanceof OWLRestriction<?>) {
@@ -392,7 +394,7 @@ public class OWLGraphWrapper {
 				// do nothing in this direction
 			}
 		}
-		
+
 		filterEdges(edges);
 		return edges;
 	}
@@ -419,18 +421,18 @@ public class OWLGraphWrapper {
 		}
 		//TODO
 		//if (config.excludeMetaClass != null) {
-			for (OWLGraphEdge e : edges) {
-				OWLObject t = e.getTarget();
-				if (t instanceof OWLNamedObject) {
-					OWLNamedObject nt = (OWLNamedObject) t;
-					// TODO
-					if (nt.getIRI().toString().startsWith("http://www.ifomis.org/bfo"))
-						rmEdges.add(e);
-				}
+		for (OWLGraphEdge e : edges) {
+			OWLObject t = e.getTarget();
+			if (t instanceof OWLNamedObject) {
+				OWLNamedObject nt = (OWLNamedObject) t;
+				// TODO
+				if (nt.getIRI().toString().startsWith("http://www.ifomis.org/bfo"))
+					rmEdges.add(e);
 			}
-			
+		}
+
 		//}
-		
+
 		for (OWLGraphEdge e : edges) {
 			OWLObject t = e.getTarget();
 			// TODO - use this: dataFactory.getOWLThing();
@@ -760,6 +762,77 @@ public class OWLGraphWrapper {
 		return ts;
 	}
 
+	public Set<OWLObject> queryDescendants(OWLGraphEdge e) {
+		Set<OWLObject> results = new HashSet<OWLObject>();
+		// reflexivity
+		results.add(this.edgeToTargetExpression(e));
+		List<OWLQuantifiedProperty> eqpl = e.getQuantifiedPropertyList();
+		// todo - cast
+		for (OWLObject d1 : queryDescendants((OWLClassExpression)e.getTarget())) {
+			Set<OWLGraphEdge> dEdges = this.getIncomingEdgesClosure(d1);
+			for (OWLGraphEdge dEdge : dEdges) {
+				OWLGraphEdge newEdge = combineEdgePair(e.getTarget(), 
+						new OWLGraphEdge(null, null, Quantifier.SUBCLASS_OF), dEdge, 1);
+				List<OWLQuantifiedProperty> dqpl = newEdge.getQuantifiedPropertyList();
+				if (dqpl.equals(eqpl)) {
+					results.add(dEdge.getSource());
+				}
+			}
+		}
+		return results;
+	}
+
+	public Set<OWLObject> queryDescendants(OWLClassExpression t) {
+		Set<OWLObject> results = new HashSet<OWLObject>();
+		results.add(t);
+
+
+		// transitivity and link composition
+		Set<OWLGraphEdge> dEdges = this.getIncomingEdgesClosure(t);
+		for (OWLGraphEdge dEdge : dEdges) {
+			OWLQuantifiedProperty qp = dEdge.getSingleQuantifiedProperty();
+			if (qp.isInstanceOf() || qp.isSubClassOf())
+				results.add(dEdge.getTarget());
+		}
+
+		if (t instanceof OWLObjectIntersectionOf) {
+			Set<OWLObject> iresults = null;
+			for (OWLClassExpression y : ((OWLObjectIntersectionOf)t).getOperands()) {
+				if (iresults == null) {
+					iresults = queryDescendants(y);
+				}
+				else {
+					iresults.retainAll(queryDescendants(y));
+				}
+				results.addAll(iresults);
+			}
+		}
+		else if (t instanceof OWLObjectUnionOf) {
+			Set<OWLObject> iresults = null;
+			for (OWLClassExpression y : ((OWLObjectUnionOf)t).getOperands()) {
+				results.addAll(queryDescendants(y));
+			}
+		}
+		else if (t instanceof OWLRestriction) {
+			results.addAll(queryDescendants(restrictionToPrimitiveEdge((OWLRestriction) t)));
+		}
+
+		// equivalent classes - substitute a named class in the query for an expression
+		if (t instanceof OWLClass) {
+			for (OWLOntology ont : this.getAllOntologies()) {
+				for (OWLEquivalentClassesAxiom ax : ont.getEquivalentClassesAxioms((OWLClass)t)) {
+					for (OWLClassExpression y : ax.getClassExpressions()) {
+						if (y instanceof OWLClass)
+							continue;
+						results.addAll(queryDescendants(y));
+					}
+				}
+			}
+		}
+
+		return results;
+	}
+
 	/**
 	 * @param source
 	 * @param target
@@ -945,7 +1018,7 @@ public class OWLGraphWrapper {
 		OWLGraphEdge nu = new OWLGraphEdge(s, extEdge.getTarget());
 		List<OWLQuantifiedProperty> qpl1 = new Vector<OWLQuantifiedProperty>(ne.getQuantifiedPropertyList());
 		List<OWLQuantifiedProperty> qpl2 = new Vector<OWLQuantifiedProperty>(extEdge.getQuantifiedPropertyList());
-		
+
 		while (qpl1.size() > 0 && qpl2.size() > 0) {
 			OWLQuantifiedProperty combinedQP = combinedQuantifiedPropertyPair(qpl1.get(qpl1.size()-1),qpl2.get(0));
 			if (combinedQP == null)
@@ -1670,14 +1743,14 @@ public class OWLGraphWrapper {
 			}
 		}
 		return null;
-		*/
+		 */
 		return c;
 	}
 	public OWLObject getOWLIndividual(String s) {
 		IRI iri = IRI.create(s);
 		return getOWLIndividual(iri);
 	}
-	
+
 	public OWLObjectProperty getOWLObjectProperty(String id) {
 		return dataFactory.getOWLObjectProperty(IRI.create(id));
 	}

@@ -36,6 +36,7 @@ import owltools.io.ParserWrapper;
 import owltools.io.TableToAxiomConverter;
 import owltools.mooncat.Mooncat;
 import owltools.sim.DescriptionTreeSimilarity;
+import owltools.sim.MultiSimilarity;
 import owltools.sim.SimEngine;
 import owltools.sim.JaccardSimilarity;
 import owltools.sim.SimEngine.SimilarityAlgorithmException;
@@ -341,10 +342,22 @@ public class CommandLineInterface {
 			else if (opts.nextEq("--sim")) {
 				opts.info("[-m metric] A B", "calculates similarity between A and B");
 				boolean nr = false;
+				OWLObjectProperty attProp = null;
+				boolean isAll = false;
+				SimEngine se = new SimEngine(g);
 				if (opts.hasOpts()) {
 					System.out.println("sub-opts for --sim");
 					if (opts.nextEq("-m")) {
 						similarityAlgorithmName = opts.nextOpt();
+					}
+					else if (opts.nextEq("-p")) {
+						attProp = g.getOWLObjectProperty(opts.nextOpt());
+					}
+					else if (opts.nextEq("-a|--all")) {
+						isAll = true;
+					}
+					else if (opts.nextEq("-s|--subclass-of")) {
+						se.comparisonSuperclass = resolveEntity(g,opts);
 					}
 					else if (opts.nextEq("--no-create-reflexive")) {
 						nr = true;
@@ -353,16 +366,22 @@ public class CommandLineInterface {
 						System.err.println("???"+opts);
 					}
 				}
+				if (isAll) {
+					// TODO
+					se.calculateSimilarityAllByAll(similarityAlgorithmName, 0.0);
+				}
 				String a = opts.nextOpt();
 				//if (a.equals("-m")) {
 				//				a = opts.nextOpt();
 				//}
 				String b = opts.nextOpt();
-				SimEngine se = new SimEngine(g);
 				Similarity metric = se.getSimilarityAlgorithm(similarityAlgorithmName);
 				if (nr) {
 					((DescriptionTreeSimilarity)metric).forceReflexivePropertyCreation = false;
 				}
+				if (attProp != null)
+					((MultiSimilarity)metric).comparisonProperty = attProp;
+				
 				OWLObject oa = resolveEntity(g,a);
 				OWLObject ob = resolveEntity(g,b);
 				System.out.println("comparing: "+oa+" vs "+ob);
@@ -372,7 +391,7 @@ public class CommandLineInterface {
 				if (simOnt == null) {
 					simOnt = g.getManager().createOntology();
 				}
-				((DescriptionTreeSimilarity)metric).addResultsToOWLOntology(simOnt);
+				metric.addResultsToOWLOntology(simOnt);
 			}
 			else if (opts.nextEq("-o|--output")) {
 				opts.info("FILE", "writes ontology -- specified as IRI, e.g. file://`pwd`/foo.owl");
