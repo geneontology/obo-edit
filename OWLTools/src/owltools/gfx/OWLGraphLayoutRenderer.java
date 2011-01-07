@@ -30,7 +30,7 @@ import uk.ac.ebi.interpro.graphdraw.*;
  */
 public class OWLGraphLayoutRenderer {
 
-	private OWLGraphWrapper owlGraphWrapper;
+	protected OWLGraphWrapper owlGraphWrapper;
 
 	protected StandardGraph<OWLGraphLayoutNode, OWLGraphStrokeEdge> g = 
 		new StandardGraph<OWLGraphLayoutNode, OWLGraphStrokeEdge>();
