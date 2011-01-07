@@ -1,5 +1,5 @@
 /**
- * <h2>Mooncat -- Multiple OWL Ontology Catenation</h2>
+ * <h2>Mooncat -- Multiple OWL ONtology Catenation</h2>
  * 
  * Command Line Use:
  * <p>

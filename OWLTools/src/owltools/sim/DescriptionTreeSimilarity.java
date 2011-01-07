@@ -33,6 +33,7 @@ import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 import owltools.graph.OWLQuantifiedProperty;
 import owltools.graph.OWLQuantifiedProperty.Quantifier;
+import owltools.sim.OWLObjectPair;
 import owltools.sim.SimEngine.SimilarityAlgorithmException;
 
 /**
@@ -75,51 +76,27 @@ public class DescriptionTreeSimilarity extends Similarity {
 	// move to config?
 	public boolean forceReflexivePropertyCreation = true;
 	Set<OWLObject> visited = new HashSet<OWLObject>();
-
+	Set<OWLObjectPair> visitedPairs = new HashSet<OWLObjectPair>();
+	
 	@Override
 	public void calculate(SimEngine simEngine, OWLObject a, OWLObject b) throws SimilarityAlgorithmException {
-		se = simEngine;
+		this.a = a;
+		this.b = b;
+		this.simEngine = simEngine;
+		se = simEngine; // TODO - fix
 		graph = simEngine.getGraph();
 		ConvergentPath cp = buildDescription(a,b);
 		lcs = combinePathsToMakeExpression(cp);
 		if (cp == null)
 			score = 0.0;
-		else
-			score = cp.score;
+		else {
+			Set<OWLObject> csl = graph.getAncestorsReflexive(lcs);
+			Set<OWLObject> usl = se.getUnionSubsumers(a,b);
+			
+			score = ((double)csl.size()) / usl.size();
+		}
 	}
 
-	private class ObjectPair {
-		private final OWLObject a;
-		private final OWLObject b;
-		private transient final int hash;
-
-		public ObjectPair(OWLObject a, OWLObject b) {
-			super();
-			this.a = a;
-			this.b = b;
-			hash = (a == null? 0 : a.hashCode() * 31)+(b == null? 0 : b.hashCode());
-		}
-		@Override
-		public int hashCode()
-		{
-			return hash;
-		}
-		public boolean equals(Object x) {
-			if (!(x instanceof ObjectPair))
-				return false;
-			return ((ObjectPair)x).getA().equals(a) &&
-			((ObjectPair)x).getA().equals(a);
-
-		}
-		public OWLObject getA() {
-			return a;
-		}
-		public OWLObject getB() {
-			return b;
-		} 
-
-
-	}
 
 	private class ConvergentPath {
 		OWLClassExpression x;
@@ -130,6 +107,15 @@ public class DescriptionTreeSimilarity extends Similarity {
 		public String toString() {
 			return x.toString()+" EA:"+ea+" EB:"+eb;
 		}
+	}
+	
+	public double quickScore(Set<OWLObject> csl, Set<OWLObject> usl) {
+		// we don't want to weight heavily against mismatches; the b tree
+		// may be much 'bushier'
+		// (see for example 'substantia nigra degenerates' vs 'Substantia nigra 291' in PKB
+		//  - the latter has axon, dendrite and neuropil all degenerate)
+		return ((double) (csl.size() * csl.size())) / usl.size();
+
 	}
 
 	/**
@@ -147,10 +133,9 @@ public class DescriptionTreeSimilarity extends Similarity {
 	
 	public ConvergentPath buildDescription(OWLObject a, OWLObject b, Set<OWLObject> fullLCSs) {
 
-		if (visited.contains(a))
-			return null;
-
-		visited.add(a);
+		//if (visited.contains(a))
+		//	return null;
+		
 
 		LOG.info("building:"+a+" vs "+b);
 		
@@ -167,11 +152,16 @@ public class DescriptionTreeSimilarity extends Similarity {
 			if (bExtEdges.size() > 0) {
 				nextCp.eb = bExtEdges.iterator().next();
 			}
-			nextCp.score = 1;
+			Set<OWLObject> csl = se.getCommonSubsumers(a, b);			
+			Set<OWLObject> usl = se.getUnionSubsumers(a, b);
+
+			// TODO
+			nextCp.score = quickScore(csl,usl) * 10;
 			nextCp.x = (OWLClassExpression) x;
 			return nextCp;
 		}
-		
+
+
 		// candidate expression
 		OWLClassExpression x = null;
 
@@ -187,16 +177,28 @@ public class DescriptionTreeSimilarity extends Similarity {
 			//return combinePathsToMakeExpression(a, ea, eb);
 		}
 
+		// TODO - cache results
+		OWLObjectPair pair = new OWLObjectPair(a,b);
+		if (visitedPairs.contains(pair)) {
+			LOG.info("already visited: "+pair);
+			return null;
+		}
+
+		//visited.add(a);
+		visitedPairs.add(pair);
+
 		// iterate through all edges leading from a
 		// TODO - only extend when no intersection is built
 		Set<OWLClassExpression> subExprs = new HashSet<OWLClassExpression>();
 		Set<ConvergentPath> subCps = new HashSet<ConvergentPath>();
 		Set<OWLGraphEdge> aEdges = graph.getPrimitiveOutgoingEdges(a);
+		LOG.info("  num edges to explore:"+aEdges.size());
 		for (OWLGraphEdge aEdge : aEdges) {
 			//OWLGraphEdge eaNew = graph.combineEdgePair(ea.getSource(), ea, e, 1);
 			OWLObject aNext = aEdge.getTarget();
-			if (visited.contains(aNext))
-				continue;
+			//if (visited.contains(aNext))
+			//	continue;
+			//if (visitedPairs.contains(new OWLObjectPair(aNext,b)))
 			
 			LOG.info("  edge: "+aEdge);
 			LOG.info("  fetching best match for "+aNext+" under: "+b);
@@ -215,6 +217,9 @@ public class DescriptionTreeSimilarity extends Similarity {
 				LOG.info("exact match - optimized - using:"+bCandidates);
 			}
 			for (OWLObject candidate : bCandidates) {
+				Set<OWLGraphEdge> bEdges = graph.getEdgesBetween(b, candidate);
+				OWLGraphEdge candidateEdge = bEdges.iterator().next();
+
 				// TODO - optimize - we only need to calculate aNext's subsumers once
 				Set<OWLObject> csl = se.getCommonSubsumers(aNext, candidate);			
 				Set<OWLObject> usl = se.getUnionSubsumers(aNext, candidate);
@@ -225,11 +230,10 @@ public class DescriptionTreeSimilarity extends Similarity {
 				// may be much 'bushier'
 				// (see for example 'substantia nigra degenerates' vs 'Substantia nigra 291' in PKB
 				//  - the latter has axon, dendrite and neuropil all degenerate)
-				double score = ((double) (csl.size() * csl.size())) / usl.size();
+				double score = quickScore(csl, usl);
+
 				//score *= lcsl.size(); // assume LCSs independent
 				//double score = csl.size();
-				Set<OWLGraphEdge> bEdges = graph.getEdgesBetween(b, candidate);
-				OWLGraphEdge candidateEdge = bEdges.iterator().next();
 				// todo - better edge comparison
 				LOG.debug("    candidate: "+candidate+" |CSL|="+csl.size()+" score:"+score+" candidateEdge:"+candidateEdge);
 				// TODO - better way of comparing expressions and named entities.
@@ -299,8 +303,11 @@ public class DescriptionTreeSimilarity extends Similarity {
 			}
 			else {
 				nextCp = buildDescription(aNext, bNext, lcsl);
-				if (nextCp == null)
+				if (nextCp == null) {
+					LOG.info("no description for "+aNext+" vs "+bNext);
 					continue;
+				}
+				nextCp.score += best;
 
 				if (nextCp.ea == null)
 					nextCp.ea = aEdge;
@@ -312,9 +319,11 @@ public class DescriptionTreeSimilarity extends Similarity {
 				else 
 					nextCp.eb = graph.combineEdgePair(b, bEdge, nextCp.eb, 1);
 			}
+			LOG.info("adding sub-CP "+nextCp);
 			subCps.add(nextCp);
 		}
 
+		LOG.info("finished edges "+a+" vs "+b+" subCps.size=="+subCps.size());
 		cp.score = 0;
 		if (subCps.size() == 0) {
 			return null;
@@ -527,18 +536,8 @@ public class DescriptionTreeSimilarity extends Similarity {
 		return null;
 	}
 	
-	public OWLOntology createOWLOntologyFromResults() throws OWLOntologyCreationException {
-		OWLOntology ont = graph.getManager().createOntology();
-		addResultsToOWLOntology(ont);
-		return ont;
-	}
+	// ----
 	
-	public void addResultsToOWLOntology(OWLOntology ont) {
-		for (OWLAxiom axiom: translateResultsToOWLAxioms()) {
-			AddAxiom aa = new AddAxiom(ont, axiom);
-			graph.getManager().applyChange(aa);
-		}
-	}
 	
 	public Set<OWLAxiom> translateResultsToOWLAxioms() {
 		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
