@@ -84,7 +84,10 @@ public class OWLGraphLayoutRenderer {
 //		new OWLGraphStrokeEdge(n1, n2, color, fatStroke,parent,child);	
 		return ge;
 	}
-	
+
+        public void addEdge(OWLGraphEdge e) {
+            g.edges.add(makeEdge(e));
+        }
 
 	public void addAllObjects() {
 		for (OWLObject ob : owlGraphWrapper.getAllOWLObjects()) {
