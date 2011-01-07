@@ -58,7 +58,7 @@ public class OWLGraphEdge {
 		this.source = source;
 		this.target = target;
 		this.ontology = ontology;
-		setSingleQuantifiedProperty(new OWLQuantifiedProperty()); // defaults to subclass
+		setSingleQuantifiedProperty(new OWLQuantifiedProperty(Quantifier.SUBCLASS_OF)); // defaults to subclass
 	}
 
 
