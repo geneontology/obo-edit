@@ -64,8 +64,14 @@ public class OWLGraphLayoutNode implements Node, LayoutNode {
         }
         */
     }
+    
+    
+    public OWLObject getOwlObject() {
+		return owlObject;
+	}
 
-    public int getWidth() {return width;}
+	
+	public int getWidth() {return width;}
     public int getHeight() {return height;}
     public void setLocation(int x, int y) {
         this.x = x;
