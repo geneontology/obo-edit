@@ -1,6 +1,5 @@
 package owltools.gfx;
 
-
 import javax.imageio.*;
 
 import org.semanticweb.owlapi.model.IRI;
@@ -19,6 +18,7 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import uk.ac.ebi.interpro.graphdraw.*;
 
@@ -33,9 +33,10 @@ public class OWLGraphvizRenderer extends OWLGraphLayoutRenderer {
 	public String renderDot() {
 		StringBuilder s = new StringBuilder();
 		s.append("digraph g {\n");
-		
+
 		for (OWLGraphLayoutNode node : g.nodes) {
 			s.append("  "+safe(node)+" [");
+			s.append(props(node));
 			s.append("];\n");
 		}
 		for (OWLGraphStrokeEdge edge : g.edges) {
@@ -43,20 +44,73 @@ public class OWLGraphvizRenderer extends OWLGraphLayoutRenderer {
 			s.append("];\n");
 		}
 
-		
+
 		s.append("}\n");
-		
-		
-		
+
+
+
 		return s.toString();
 	}
-	
+
 	private String safe(OWLGraphLayoutNode node) {
-		return node.getOwlObject().toString().replaceAll("[^a-ZA-Z_]", "");
+		return node.getOwlObject().toString().replaceAll("[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_]", "");
+	}
+
+	private String props(OWLGraphLayoutNode n) {
+		Vector<String> ps = new Vector<String>();
+		OWLObject ob = n.getOwlObject();
+		ps.add(prop("label",owlGraphWrapper.getLabel(ob)));
+		StringBuilder s = new StringBuilder();
+		for (String p : ps) {
+			s.append(p+", ");
+		}
+
+		return s.toString();
+	}
+
+	private String props(OWLGraphStrokeEdge se) {
+		Vector<String> ps = new Vector<String>();
+		OWLGraphEdge e = se.owlGraphEdge;
+		//ps.add(prop("label",owlGraphWrapper.getLabel(e.getSingleQuantifiedProperty().)));
+		StringBuilder s = new StringBuilder();
+		for (String p : ps) {
+			s.append(p+", ");
+		}
+
+		return s.toString();
 	}
 
 
-	public String renderImage(String fmt, OutputStream fos) throws FileNotFoundException, IOException {
+	private String prop(String p, String v) {
+		return p+"=\""+ (v==null?"":v) + "\"";
+	}
+
+
+	public String renderImage(String fmt, OutputStream fos) {
+		String dot = renderDot();
+
+		String dotpath = "dot";
+		try {
+			File tmp = File.createTempFile("img", "dot");
+			String infile = tmp.getAbsolutePath();
+			String cmd = "dot -T"+fmt+" -Grankdir=BT "+infile;
+			Process p = Runtime.getRuntime().exec(cmd);
+
+			p.waitFor();
+			BufferedReader reader = new BufferedReader(
+					new InputStreamReader(p.getInputStream()));
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// TODO
+
+
+
 
 
 		return "TODO";
