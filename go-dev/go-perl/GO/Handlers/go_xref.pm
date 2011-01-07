@@ -33,10 +33,11 @@ use strict;
 sub e_term {
     my $self = shift;
     my $t = shift;
-    my ($name, $id) = $t->lget(qw(name id));
-    foreach ($t->get_dbxref) {
-	$self->printf("%s:%s > $name ; $acc\n",
-		      $_->sget_db, $_->sget_acc);
+    my $name = $t->sget_name;
+    my $id = $t->sget_id;
+    foreach ($t->get_xref_analog) {
+	$self->printf("%s:%s > $name ; $id\n",
+		      $_->sget_dbname, $_->sget_acc);
     }
     return;
 }
