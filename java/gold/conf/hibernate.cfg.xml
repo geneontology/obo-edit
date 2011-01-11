@@ -32,7 +32,6 @@
   <mapping resource="org/geneontology/gold/hibernate/model/InferredRelationship.hbm.xml"/>
   <mapping resource="org/geneontology/gold/hibernate/model/InferredSubclassOf.hbm.xml"/>
   <mapping resource="org/geneontology/gold/hibernate/model/InferredAllSomeRelationship.hbm.xml"/>
-  
   <mapping resource="org/geneontology/gold/hibernate/model/AllOnlyRelationship.hbm.xml"/>
   <mapping resource="org/geneontology/gold/hibernate/model/AnnotationAssertion.hbm.xml"/>
   <mapping resource="org/geneontology/gold/hibernate/model/AnnotationProperty.hbm.xml"/>
@@ -46,7 +45,8 @@
   <mapping resource="org/geneontology/gold/hibernate/model/RelationEquivalenTo.hbm.xml"/>
   <mapping resource="org/geneontology/gold/hibernate/model/SubrelationOf.hbm.xml"/>
   <mapping resource="org/geneontology/gold/hibernate/model/RelationChain.hbm.xml"/>
-
+  <mapping resource="org/geneontology/gold/hibernate/model/OntologyAlternateLabelType.hbm.xml"/>
+  
   
  </session-factory>
 </hibernate-configuration>

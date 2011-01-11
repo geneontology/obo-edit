@@ -22,6 +22,7 @@ import org.geneontology.gold.hibernate.model.ObjDefinitionXref;
 import org.geneontology.gold.hibernate.model.ObjSubset;
 import org.geneontology.gold.hibernate.model.ObjXref;
 import org.geneontology.gold.hibernate.model.Ontology;
+import org.geneontology.gold.hibernate.model.OntologyAlternateLabelType;
 import org.geneontology.gold.hibernate.model.OntologyAnnotation;
 import org.geneontology.gold.hibernate.model.OntologyImports;
 import org.geneontology.gold.hibernate.model.OntologySubset;
@@ -328,6 +329,18 @@ public class GoldObjectFactory {
 		List<ObjAlternateLabel> results =session.createQuery("from ObjAlternateLabel where obj = ?").setString(0, obj).list();
 		
 		return results;
+	}
+	
+	public synchronized OntologyAlternateLabelType getOntologyAlternateLabelType(String id){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		OntologyAlternateLabelType result =(OntologyAlternateLabelType)session.createQuery("from OntologyAlternateLabelType where id = ?")
+		.setString(0, id)
+		.uniqueResult();
+		
+		return result;
 	}
 	
 	public synchronized ObjAlternateLabel getObjAlternateLabelByPk(String obj, String label){
