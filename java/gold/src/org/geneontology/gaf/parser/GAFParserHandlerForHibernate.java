@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.geneontology.gaf.hibernate.Bioentity;
+import org.geneontology.gaf.hibernate.GeneAnnotation;
 import org.geneontology.gold.hibernate.model.GOModel;
+
+import sun.nio.cs.ext.ISCII91;
 
 
 /**
@@ -37,12 +40,13 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 
 
 	public void handleColumns(String[] cols) {
-		addBioEntity(cols);
+		Bioentity entity = addBioEntity(cols);
+		GeneAnnotation ga = addGeneAnnotation(cols, entity);
 		
 	}
 	
 	
-	private void addBioEntity(String[] cols){
+	private Bioentity addBioEntity(String[] cols){
 		String id = cols[1];
 		String symbol = cols[2];
 		String fullName = cols[9];
@@ -50,23 +54,40 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 		int ncbiTaxonId = Integer.parseInt( cols[12] );
 		String db = cols[10];
 		
-		list.add(new Bioentity(id, symbol, fullName, typeCls, ncbiTaxonId, db));
+		Bioentity entity = new Bioentity(id, symbol, fullName, typeCls, ncbiTaxonId, db);
+		
+		list.add(entity);
+
+		return entity;
 	}
 
-	private void addGeneAnnotation(String cols[]){
-		String bioentity = cols[1];
+	private GeneAnnotation addGeneAnnotation(String cols[], Bioentity entity){
 		String qualifierExpression = cols[3].trim();
 	
 		
-		boolean toContributesTo = false;
-		boolean toIntegeralTo = false;
+		boolean isContributesTo = false;
+		boolean isIntegeralTo = false;
 		
-		/*
-		 TODO: TBD
-		if(qualifierExpression.length()>0){
-			
-		}*/
+	
+		String cls = cols[4];
+		String evidenceCls = cols[6];
+		String withExpression = cols[7];
+
+		int actsOnTaxonId = Integer.parseInt(cols[12]);
 		
+		String assignedBy = cols[14];
+		String extensionExpression = cols[15];
+		String geneProductForm = cols[16];
+		String lastUpdateDate = cols[13];
+		
+		GeneAnnotation ga = new GeneAnnotation(entity, qualifierExpression,
+				isContributesTo, isIntegeralTo, 
+				cls, null, evidenceCls, withExpression, actsOnTaxonId, 
+				lastUpdateDate, assignedBy, extensionExpression, geneProductForm);
+
+		list.add(ga);
+		
+		return ga;
 	}
 	
 
