@@ -25,13 +25,9 @@ import org.geneontology.gold.hibernate.model.Relation;
 import org.geneontology.gold.hibernate.model.SubclassOf;
 import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.io.DbOperationsListener;
-import org.geneontology.gold.io.OntologyBulkLoader;
 import org.geneontology.gold.io.postgres.SchemaManager;
 import org.geneontology.gold.io.postgres.TsvFileLoader;
 import org.hibernate.Session;
-import org.obolibrary.obo2owl.Obo2Owl;
-
-import owltools.graph.OWLGraphWrapper;
 
 public class GAFDbOperations {
 
