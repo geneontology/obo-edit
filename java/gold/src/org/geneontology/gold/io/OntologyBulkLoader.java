@@ -7,16 +7,27 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.mortbay.log.Log;
+import org.obolibrary.obo2owl.Obo2OWLConstants;
+import org.obolibrary.obo2owl.Owl2Obo;
+import org.obolibrary.oboformat.model.Clause;
+import org.obolibrary.oboformat.model.Frame;
+import org.obolibrary.oboformat.parser.OBOFormatConstants;
+import org.obolibrary.oboformat.parser.OBOFormatConstants.OboFormatTag;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLDisjointObjectPropertiesAxiom;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLEquivalentObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
 import org.semanticweb.owlapi.model.OWLObject;
@@ -53,6 +64,8 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 		tables.put("relation",   new TableDumper(this.dumpFilePrefix + "relation", this.path));
 		tables.put("ontology",  new TableDumper(this.dumpFilePrefix + "ontology", this.path));
 		tables.put("ontology_annotation",  new TableDumper(this.dumpFilePrefix + "ontology_annotation", this.path));
+		tables.put("ontology_subset",  new TableDumper(this.dumpFilePrefix + "ontology_subset", this.path));
+		tables.put("ontology_alternate_label_type",  new TableDumper(this.dumpFilePrefix + "ontology_alternate_label_type", this.path));
 		
 		tables.put("obj_alternate_label",  new TableDumper(this.dumpFilePrefix + "obj_alternate_label", this.path));
 
@@ -131,7 +144,9 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 	public void dumpOntologyTable() throws IOException{
 		TableDumper ontologyDumper = tables.get("ontology");
 		TableDumper ontology_annotationDumper = tables.get("ontology_annotation");
-	
+		TableDumper ontology_subsetDumper = tables.get("ontology_subset");
+		TableDumper ontology_alternate_label_typeDumper = tables.get("ontology_alternate_label_type");
+		
 		String id = graphWrapper.getOntologyId();
 		Set<OWLAnnotationAssertionAxiom> anns = graphWrapper.getOntology().getAnnotationAssertionAxioms(graphWrapper.getOntology().getOntologyID().getOntologyIRI());
 		
@@ -140,16 +155,74 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 			
 			if(ann.getValue() instanceof OWLLiteral){
 				String value = ((OWLLiteral) ann.getValue()).getLiteral();
-				String prop = graphWrapper.getIdentifier(ann.getProperty());
-				if(prop.endsWith(":date")){
-					dt = value;
-				}else{
+				//String prop = graphWrapper.getIdentifier(ann.getProperty());
+				OboFormatTag tag = 	OBOFormatConstants.getTag(Owl2Obo.owlObjectToTag(ann.getProperty()));
 
-					ontology_annotationDumper.dumpRow(id, prop, 
+				if( tag == OboFormatTag.TAG_DATE){
+					dt = value;
+				}else if(tag != null){
+
+					ontology_annotationDumper.dumpRow(id, tag.getTag(), 
 							value);
 				}
 				
 			}
+			
+		}
+		
+		for(OWLClassAssertionAxiom ax: graphWrapper.getOntology().getAxioms(AxiomType.CLASS_ASSERTION)){
+
+			
+			//String clsId = graphWrapper.getIdentifier(ax.getClassExpression());
+			
+			OboFormatTag tag = OBOFormatConstants.getTag(Owl2Obo.owlObjectToTag(ax.getClassExpression()));
+			
+			if(tag == OboFormatTag.TAG_SYNONYMTYPEDEF){
+	
+				OWLNamedIndividual indv =(OWLNamedIndividual) ax.getIndividual();
+				String indvId = graphWrapper.getIdentifier(indv);
+				
+				String nameValue = "";
+				String scopeValue = null;
+				for(OWLAnnotation ann: indv.getAnnotations(graphWrapper.getOntology())){
+				//	String propId =graphWrapper.getIdentifier(ann.getProperty());
+					//String propId = Owl2Obo.owlObjectToTag(ann.getProperty());
+					
+					OboFormatTag propTag = OBOFormatConstants.getTag( Owl2Obo.owlObjectToTag(ann.getProperty()) );
+					
+					String value = ((OWLLiteral) ann.getValue()).getLiteral();
+
+					if(propTag == OboFormatTag.TAG_NAME){
+						nameValue = "\"" +value + "\"";
+					}else
+						scopeValue = value;
+				}
+				
+
+				ontology_alternate_label_typeDumper.dumpRow(indvId, nameValue, scopeValue);
+					
+				
+			}else if(tag == OboFormatTag.TAG_SUBSETDEF ){
+
+				OWLNamedIndividual indv =(OWLNamedIndividual) ax.getIndividual();
+				String indvId = graphWrapper.getIdentifier(indv);
+				
+				String nameValue = "";
+				for(OWLAnnotation ann: indv.getAnnotations(graphWrapper.getOntology())){
+				//	String propId = Owl2Obo.owlObjectToTag(ann.getProperty());
+					OboFormatTag propTag = OBOFormatConstants.getTag( Owl2Obo.owlObjectToTag(ann.getProperty()) );
+					
+					String value = ((OWLLiteral) ann.getValue()).getLiteral();
+
+					if(propTag == OboFormatTag.TAG_NAME){
+						nameValue = "\"" +value + "\"";
+					}
+					
+					ontology_subsetDumper.dumpRow(indvId, nameValue);
+				}
+				
+			}			
+			
 			
 		}
 
@@ -171,60 +244,60 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 		
 		boolean builtin = graphWrapper.getBuiltin(obj);
 		if(builtin){
-			dumpAnnotation("builtin",  objId, builtin + "", ontology);
+			dumpAnnotation(OboFormatTag.TAG_BUILTIN.getTag(),  objId, builtin + "", ontology);
 		}
 
 		String createdBy = graphWrapper.getCreatedBy(obj);
 		if(createdBy != null)
-			dumpAnnotation("created_by",  objId, createdBy, ontology);
+			dumpAnnotation(OboFormatTag.TAG_CREATED_BY.getTag(),  objId, createdBy, ontology);
 		
 		
-		boolean isObselete = graphWrapper.getIsObsolete(obj);
-		if(isObselete)
-			dumpAnnotation("is-obsolete",  objId, isObselete + "", ontology);
+	//	boolean isObselete = graphWrapper.getIsObsolete(obj);
+	//	if(isObselete)
+	//		dumpAnnotation(OboFormatTag.TAG_IS_OBSELETE.getTag(),  objId, isObselete + "", ontology);
 
 			
 		String replacedBy = graphWrapper.getReplacedBy(obj);
 		if(replacedBy != null)
-			dumpAnnotation("replaced_by",  objId, replacedBy, ontology);
+			dumpAnnotation(OboFormatTag.TAG_REPLACED_BY.getTag(),  objId, replacedBy, ontology);
 			
 
 		String consider = graphWrapper.getConsider(obj);
 		if(consider != null)
-			dumpAnnotation("consider",  objId, consider, ontology);
+			dumpAnnotation(OboFormatTag.TAG_CONSIDER.getTag(),  objId, consider, ontology);
 		
 
 		boolean isAnonymous = graphWrapper.getIsAnonymous(obj);
 		if(isAnonymous)
-			dumpAnnotation("is_anonymous",  objId, isAnonymous + "", ontology);
+			dumpAnnotation(OboFormatTag.TAG_IS_ANONYMOUS.getTag(),  objId, isAnonymous + "", ontology);
 		
 		if(obj instanceof OWLObjectProperty){
 			OWLObjectProperty prop = (OWLObjectProperty)obj;
 		
 			String domain = graphWrapper.getDomain(prop);
 			if(domain != null)
-				dumpAnnotation("domain",  objId, domain, ontology);
+				dumpAnnotation(OboFormatTag.TAG_DOMAIN.getTag(),  objId, domain, ontology);
 	
 			String range = graphWrapper.getRange(prop);
 			if(range != null)
-				dumpAnnotation("range",  objId, range, ontology);
+				dumpAnnotation(OboFormatTag.TAG_RANGE.getTag(),  objId, range, ontology);
 			
 
 			boolean isAntiSymmetric = graphWrapper.getIsAntiSymmetric(obj);
 			if(isAntiSymmetric)
-				dumpAnnotation("is_anti_symmetric",  objId, isAntiSymmetric + "", ontology);
+				dumpAnnotation(OboFormatTag.TAG_IS_ANTI_SYMMETRIC.getTag(),  objId, isAntiSymmetric + "", ontology);
 				
 			boolean isCyclic = graphWrapper.getIsCyclic(obj);
 			if(isCyclic)
-				dumpAnnotation("is_cyclic",  objId, isCyclic + "", ontology);
+				dumpAnnotation(OboFormatTag.TAG_IS_CYCLIC.getTag(),  objId, isCyclic + "", ontology);
 
 			boolean isFunctional = graphWrapper.getIsFunctional(prop);
 			if(isFunctional)
-				dumpAnnotation("is_functional",  objId, isFunctional + "", ontology);
+				dumpAnnotation(OboFormatTag.TAG_IS_FUNCTIONAL.getTag(),  objId, isFunctional + "", ontology);
 
 			boolean isInverseFunctional = graphWrapper.getIsInverseFunctional(prop);
 			if(isInverseFunctional)
-				dumpAnnotation("is_inverse_functional",  objId, isInverseFunctional + "", ontology);
+				dumpAnnotation(OboFormatTag.TAG_IS_INVERSE_FUNCTIONAL.getTag(),  objId, isInverseFunctional + "", ontology);
 			
 			
 		}
@@ -256,11 +329,36 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 	private void dumpObjAlternateLabel(OWLObject obj, String id)
 			throws IOException{
 		
+
 		TableDumper obj_alternate_labelDumper = tables.get("obj_alternate_label");
 		
-		for(String l: graphWrapper.getSynonymStrings(obj)){
-			obj_alternate_labelDumper.dumpRow(id, l, null, null, null);
+		
+		OWLEntity entity = (OWLEntity) obj;
+		
+		for(OWLAnnotationAssertionAxiom ax: entity.getAnnotationAssertionAxioms(this.getOwlOntology())){
+			//String prop = graphWrapper.getIdentifier(ax.getProperty().getIRI());
+			OboFormatTag tag = OBOFormatConstants.getTag(Owl2Obo.owlObjectToTag(ax.getProperty()));
+			if(tag == OboFormatTag.TAG_SYNONYM){
+				String synonym = ((OWLLiteral)ax.getValue()).getLiteral();
+				String type = null;
+				String scope = null;
+				String xref = null;
+				for(OWLAnnotation ann: ax.getAnnotations()){
+					//String annProp = graphWrapper.getIdentifier(ann.getProperty().getIRI());
+					String annProp = Owl2Obo.owlObjectToTag(ann.getProperty());
+					if("xref".equals(annProp)){
+						xref =  ((OWLLiteral)ann.getValue()).getLiteral();
+					}else if("scope".equals(annProp)){
+						scope =  ((OWLLiteral)ann.getValue()).getLiteral();
+					}else if ("type".equals(annProp)){
+						type =  ((OWLLiteral)ann.getValue()).getLiteral();
+					}
+				}
+				
+				obj_alternate_labelDumper.dumpRow(id, synonym, scope, type, xref);
+			}
 		}
+		
 	}
 
 	
@@ -314,7 +412,9 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 			String id = graphWrapper.getIdentifier(op);
 			String comment = graphWrapper.getComment(op);
 			String namespace = graphWrapper.getNamespace(op);
+			boolean isObselete = graphWrapper.getIsObsolete(op);
 
+			
 			boolean isTransitive = graphWrapper.getIsTransitive(op);
 			boolean isReflexive = graphWrapper.getIsReflexive(op);
 			boolean isSymmetric = graphWrapper.getIsSymmetric(op);
@@ -322,10 +422,10 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 			boolean isMetaTag = graphWrapper.getIsMetaTag(op);
 			
 			if(isMetaTag){
-				annotation_propertyDumper.dumpRow(id, label, ontologyId , namespace, comment, def, null);
+				annotation_propertyDumper.dumpRow(id, label, ontologyId , namespace, comment, def, isObselete + "");
 			}else{
 				relDumper.dumpRow(id, label, ontologyId , namespace, comment, def, isTransitive + "", 
-					isSymmetric + "", isReflexive + "", null);
+					isSymmetric + "", isReflexive + "", isObselete + "");
 			}
 			
 			dumpObjAlternateLabel(op, id);
@@ -354,8 +454,10 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 			String id = graphWrapper.getIdentifier(cls);
 			String comment = graphWrapper.getComment(cls);
 			String namespace = graphWrapper.getNamespace(cls);
+			boolean isObselete = graphWrapper.getIsObsolete(cls);
+			
 			// textdef TODO
-			clsDumper.dumpRow(id, label, ontologyId, namespace, comment, def, null);
+			clsDumper.dumpRow(id, label, ontologyId, namespace, comment, def, isObselete + "");
 			
 			//dump synonms
 			dumpObjAlternateLabel(cls, id);
