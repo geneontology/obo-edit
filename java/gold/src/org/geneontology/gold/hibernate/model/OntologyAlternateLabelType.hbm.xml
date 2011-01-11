@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.geneontology.gold.hibernate.model.OntologyAlternateLabelType" table="ontology_alternate_label_type">
+        <id name="id" type="string">
+            <column name="id" />
+            <generator class="assigned" />
+        </id>
+        <property name="description" type="string">
+            <column name="description" />
+        </property>
+        <property name="defaultScope" type="string">
+            <column name="default_scope">
+            </column>
+        </property>
+     </class>
+</hibernate-mapping>
