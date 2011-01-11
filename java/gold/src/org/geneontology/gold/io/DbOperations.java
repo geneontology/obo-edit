@@ -35,6 +35,7 @@ import org.geneontology.gold.hibernate.model.ObjDefinitionXref;
 import org.geneontology.gold.hibernate.model.ObjSubset;
 import org.geneontology.gold.hibernate.model.ObjXref;
 import org.geneontology.gold.hibernate.model.Ontology;
+import org.geneontology.gold.hibernate.model.OntologyAlternateLabelType;
 import org.geneontology.gold.hibernate.model.OntologyAnnotation;
 import org.geneontology.gold.hibernate.model.OntologyImports;
 import org.geneontology.gold.hibernate.model.OntologySubset;
@@ -105,8 +106,6 @@ public class DbOperations {
 		dbCreate = false;
 		
 		for(Object obj: files){
-			System.out.println("_______________________" + obj);
-			
 			bulkLoad(obj.toString(), force);
 		}
 	}
@@ -441,7 +440,7 @@ public class DbOperations {
 		List<RelationChain> rcList = gdf.buildRelationChain();
 		List<AnnotationAssertion> annAssertionList = gdf.buildAnnotationAssertion();
 		List<RelationEquivalenTo> relEqList = gdf.buildRelationEquivalenTo();
-
+		List<OntologyAlternateLabelType> oatList = gdf.buildOntologyAlternateLabelType();
 		//close the session associated with the tables prefixed with 
 		// the value of the geneontology.gold.deltatableprefix property
 		gdf.getSession().close();
@@ -516,6 +515,8 @@ public class DbOperations {
 		saveList(session, relEqList);
 		
 		saveList(session, rcList);
+		
+		saveList(session, oatList);
 		
 		LOG.info("Database update is completed");
 		
