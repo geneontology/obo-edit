@@ -792,7 +792,7 @@ public class OWLGraphWrapper {
 		for (OWLGraphEdge dEdge : dEdges) {
 			OWLQuantifiedProperty qp = dEdge.getSingleQuantifiedProperty();
 			if (qp.isInstanceOf() || qp.isSubClassOf())
-				results.add(dEdge.getTarget());
+				results.add(dEdge.getSource());
 		}
 
 		if (t instanceof OWLObjectIntersectionOf) {

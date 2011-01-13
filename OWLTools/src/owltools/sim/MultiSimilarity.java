@@ -10,7 +10,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 
@@ -57,6 +62,11 @@ public class MultiSimilarity extends Similarity {
 
 	private void calculate(OWLObject a, OWLObject b, Set<OWLObject> aAtts,
 			Set<OWLObject> bAtts) throws SimilarityAlgorithmException {
+		
+		if (aAtts.size() == 0 || bAtts.size() ==0) {
+			isComparable = false;
+			return;
+		}
 		Map<OWLObjectPair,Double> smap = new HashMap<OWLObjectPair,Double>();
 
 		aBest = new HashMap<OWLObject,Similarity>();
@@ -142,6 +152,10 @@ public class MultiSimilarity extends Similarity {
 		s.print(" vs ");
 		print(s,b);
 		s.println();
+		if (!isComparable) {
+			s.println("**not comparable");
+			return;
+		}
 		s.println("AVG-BEST: "+score);
 		s.println("BEST-MATCHES(A): "+aBest.keySet().size());
 		for (OWLObject att : sortMapByScore(aBest)) {
@@ -175,6 +189,48 @@ public class MultiSimilarity extends Similarity {
 		}
 		s.println();
 
+	}
+
+	/**
+	 * adds additional axioms specific to this method.
+	 * Creates a named LCS class equivalent to the generated expression
+	 * 
+	 * @param id
+	 * @param result
+	 * @param axioms
+	 */
+	@Override
+	protected void translateResultsToOWLAxioms(String id, OWLNamedIndividual result, Set<OWLAxiom> axioms) {
+		OWLDataFactory df = simEngine.getGraph().getDataFactory();
+		
+		OWLAnnotationProperty pa = df.getOWLAnnotationProperty(annotationIRI("has_best_match_for_object_1"));
+		OWLAnnotationProperty pb = df.getOWLAnnotationProperty(annotationIRI("has_best_match_for_object_2"));
+
+		for (OWLObject att : aBest.keySet()) {
+			axioms.addAll(aBest.get(att).translateResultsToOWLAxioms());
+			axioms.add(df.getOWLAnnotationAssertionAxiom(pa, result.getIRI(), aBest.get(att).persistentIRI));
+		}
+		for (OWLObject att : bBest.keySet()) {
+			axioms.addAll(bBest.get(att).translateResultsToOWLAxioms());
+			axioms.add(df.getOWLAnnotationAssertionAxiom(pb, result.getIRI(), bBest.get(att).persistentIRI));
+		}
+		/*
+		s.println("BEST-MATCHES(B): "+bBest.keySet().size());
+		for (OWLObject att : sortMapByScore(bBest)) {
+			printX(s,att,bBest,aBest,bBest.get(att).a);
+		}
+
+		// declare a named class for the LCS and make this equivalent to the anonymous expression
+		OWLClass namedLCS = df.getOWLClass(IRI.create(id+"_LCS"));
+		axioms.add(df.getOWLAnnotationAssertionAxiom(df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()),
+				namedLCS.getIRI(), 
+				df.getOWLTypedLiteral("LCS of "+simEngine.label(a)+" and "+simEngine.label(b))));
+		axioms.add(df.getOWLEquivalentClassesAxiom(namedLCS, lcs));
+
+		// link the similarity object to the named LCS
+		OWLAnnotationProperty lcsp = df.getOWLAnnotationProperty(annotationIRI("has_least_common_subsumer"));
+		axioms.add(df.getOWLAnnotationAssertionAxiom(lcsp, result.getIRI(), namedLCS.getIRI()));
+		*/
 	}
 
 

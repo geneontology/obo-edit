@@ -539,59 +539,31 @@ public class DescriptionTreeSimilarity extends Similarity {
 	// ----
 	
 	
-	public Set<OWLAxiom> translateResultsToOWLAxioms() {
-		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
-		
+	/**
+	 * adds additional axioms specific to this method.
+	 * Creates a named LCS class equivalent to the generated expression
+	 * 
+	 * @param id
+	 * @param result
+	 * @param axioms
+	 */
+	@Override
+	protected void translateResultsToOWLAxioms(String id, OWLNamedIndividual result, Set<OWLAxiom> axioms) {
 		OWLDataFactory df = graph.getDataFactory();
-		IRI ia = ((OWLNamedObject) a).getIRI();
-		IRI ib = ((OWLNamedObject) b).getIRI();
-		String[] toksA = splitIRI(ia);
-		String[] toksB = splitIRI(ib);
-		String id = toksA[0]+toksA[1]+"-vs-"+toksB[1];
-
-		IRI ic = IRI.create(id);
-		OWLNamedIndividual result = df.getOWLNamedIndividual(ic);
-		OWLClass ac = df.getOWLClass(annotationIRI("similarity_relationship"));
-		OWLAnnotationProperty p = df.getOWLAnnotationProperty(annotationIRI("has_similarity_relationship"));
-		OWLAnnotationProperty sp = df.getOWLAnnotationProperty(annotationIRI("has_score"));
-		OWLAnnotationProperty lcsp = df.getOWLAnnotationProperty(annotationIRI("has_least_common_subsumer"));
+		
+		// declare a named class for the LCS and make this equivalent to the anonymous expression
 		OWLClass namedLCS = df.getOWLClass(IRI.create(id+"_LCS"));
 		axioms.add(df.getOWLAnnotationAssertionAxiom(df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()),
 				namedLCS.getIRI(), 
-				df.getOWLTypedLiteral("LCS of "+se.label(a)+" and "+se.label(b))));
-		axioms.add(df.getOWLAnnotationAssertionAxiom(df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()),
-				result.getIRI(), 
-				df.getOWLTypedLiteral("Similarity relationship between "+se.label(a)+" and "+se.label(b))));
-		axioms.add(df.getOWLClassAssertionAxiom(ac, result));
-		axioms.add(df.getOWLEquivalentClassesAxiom(namedLCS, this.lcs));
-		axioms.add(df.getOWLAnnotationAssertionAxiom(p, ((OWLNamedObject) a).getIRI(), result.getIRI()));
-		axioms.add(df.getOWLAnnotationAssertionAxiom(p, ((OWLNamedObject) b).getIRI(), result.getIRI()));
-		axioms.add(df.getOWLAnnotationAssertionAxiom(sp, result.getIRI(), df.getOWLTypedLiteral(score)));
-		axioms.add(df.getOWLAnnotationAssertionAxiom(lcsp, result.getIRI(), namedLCS.getIRI()));
-		return axioms;
-	}
-	
-	public String[] splitIRI(IRI x) {
-		String s = x.toString();
-		String id = null;
-		if (s.startsWith("http://purl.obolibrary.org/obo/")) {
-			id = s.replaceAll("http://purl.obolibrary.org/obo/", "");
-			return new String[]{"http://purl.obolibrary.org/obo/",id};
-		}
-		for (String del : new String[]{"#","/",":"}) {
-			if (s.contains(del)) {
-				String[] r = s.split(del,2);
-				r[0] = r[0]+del;
-				return r;
-			}
+				df.getOWLTypedLiteral("LCS of "+simEngine.label(a)+" and "+simEngine.label(b))));
+		axioms.add(df.getOWLEquivalentClassesAxiom(namedLCS, lcs));
 
-		}
-		return new String[]{"",s};
+		// link the similarity object to the named LCS
+		OWLAnnotationProperty lcsp = df.getOWLAnnotationProperty(annotationIRI("has_least_common_subsumer"));
+		axioms.add(df.getOWLAnnotationAssertionAxiom(lcsp, result.getIRI(), namedLCS.getIRI()));
 	}
 	
-	public IRI annotationIRI(String name) {
-		return IRI.create("http://purl.obolibrary.org/obo/IAO/score#"+name);
-	}
+	
 
 	// -- I/O - MOVE THIS!
 	

@@ -35,7 +35,7 @@ An OWLOntology <i>O</i> includes a set of axioms
 <i>A</i>. The <i>signature</i> of an ontology is a set of named
 entities and expressions <i>N</i>, and is equivalent to the union of
 the signature of all axioms in the ontology.  <i>N</i> can be
-partitioned into <i>named entities</i> and <i>expressions</i> -- the
+partitioned into <i>named entities</i> and <i>anonymous expressions</i> -- the
 latter are structures formed recursively from OWL constructs and named
 entities. We omit literals here, but the formalism could be extended
 to cover them.
