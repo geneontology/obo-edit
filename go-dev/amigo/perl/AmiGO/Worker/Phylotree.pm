@@ -318,6 +318,7 @@ C<#I<RRGGBB>> format.
 sub gene_products{
     my $s = shift;
 
+
     my $r = $phylotree_gobo->get_all_results
       ({ xref_dbname => $s->{dbname}, xref_key => $s->{key} });
     if (length(@$r) != 1) {
@@ -326,9 +327,20 @@ sub gene_products{
     $r = $r->[0];
 
     $s->{last_annotated} = $r->associations->get_column('assocdate')->max();
-    $s->{exp} = $r->associations
+
+    # # Number of exidences codes
+    # $s->{exp} = $r->associations
+    #   ({ code => $core->experimental_evidence_codes },
+    #    { prefetch => 'evidence' }
+    #   )->count();
+
+    $s->{exp} = $r->associations()->search
       ({ code => $core->experimental_evidence_codes },
-       { prefetch => 'evidence' })->count();
+        {
+	 join => [ 'evidence' ],
+	 select => ['association.gene_product_id' ],
+	 distinct => 1,
+	})->count();
 
     my @gp; # gene products
     for my $gp ($r->gene_products
