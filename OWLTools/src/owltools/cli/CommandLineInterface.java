@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -37,6 +38,7 @@ import owltools.io.TableToAxiomConverter;
 import owltools.mooncat.Mooncat;
 import owltools.sim.DescriptionTreeSimilarity;
 import owltools.sim.MultiSimilarity;
+import owltools.sim.OWLObjectPair;
 import owltools.sim.SimEngine;
 import owltools.sim.JaccardSimilarity;
 import owltools.sim.SimEngine.SimilarityAlgorithmException;
@@ -139,7 +141,7 @@ public class CommandLineInterface {
 		boolean createDefaultInstances = false;
 		boolean merge = false;
 		OWLOntology simOnt = null;
-		
+
 		String similarityAlgorithmName = "JaccardSimilarity";
 
 
@@ -192,7 +194,7 @@ public class CommandLineInterface {
 			}
 			else if (opts.nextEq("--map-iri")) {
 				//OWLOntologyIRIMapper iriMapper = new SimpleIRIMapper();
-				
+
 			}
 			else if (opts.nextEq("--auto-iri")) {
 				File file = new File(opts.nextOpt());
@@ -262,7 +264,7 @@ public class CommandLineInterface {
 					System.out.println(e1);
 					for (OWLGraphEdge e2 : g.getPrimitiveOutgoingEdges(e1.getTarget())) {
 						System.out.println("    "+e2);
-						
+
 					}
 				}
 			}
@@ -288,6 +290,15 @@ public class CommandLineInterface {
 				OWLObject obj = resolveEntity(g, opts);
 				System.out.println(obj+ " "+obj.getClass());
 				Set<OWLObject> ds = g.getDescendants(obj);
+				for (OWLObject d : ds)
+					System.out.println(d);
+			}
+			else if (opts.nextEq("--subsumed-by")) {
+				opts.info("LABEL", "show all descendant nodes");
+				//System.out.println("i= "+i);
+				OWLObject obj = resolveEntity(g, opts);
+				System.out.println(obj+ " "+obj.getClass());
+				Set<OWLObject> ds = g.queryDescendants((OWLClass)obj);
 				for (OWLObject d : ds)
 					System.out.println(d);
 			}
@@ -343,9 +354,11 @@ public class CommandLineInterface {
 				opts.info("[-m metric] A B", "calculates similarity between A and B");
 				boolean nr = false;
 				OWLObjectProperty attProp = null;
+				Vector<OWLObjectPair> pairs = new Vector<OWLObjectPair>();
+
 				boolean isAll = false;
 				SimEngine se = new SimEngine(g);
-				if (opts.hasOpts()) {
+				while (opts.hasOpts()) {
 					System.out.println("sub-opts for --sim");
 					if (opts.nextEq("-m")) {
 						similarityAlgorithmName = opts.nextOpt();
@@ -355,6 +368,18 @@ public class CommandLineInterface {
 					}
 					else if (opts.nextEq("-a|--all")) {
 						isAll = true;
+						OWLObject anc = resolveEntity(g,opts.nextOpt());
+						Set<OWLObject> objs = g.queryDescendants((OWLClass)anc);
+						for (OWLObject a : objs) {
+							for (OWLObject b : objs) {
+								if (a.compareTo(b) <= 0)
+									continue;
+								OWLObjectPair pair = new OWLObjectPair(a,b);
+								System.out.println("Scheduling:"+pair);
+								pairs.add(pair);
+							}							
+						}
+						
 					}
 					else if (opts.nextEq("-s|--subclass-of")) {
 						se.comparisonSuperclass = resolveEntity(g,opts);
@@ -363,35 +388,41 @@ public class CommandLineInterface {
 						nr = true;
 					}
 					else {
-						System.err.println("???"+opts);
+						// not recognized - end of this block of opts
+						break;
+						//System.err.println("???"+opts.nextOpt());
 					}
 				}
 				if (isAll) {
 					// TODO
-					se.calculateSimilarityAllByAll(similarityAlgorithmName, 0.0);
+					//se.calculateSimilarityAllByAll(similarityAlgorithmName, 0.0);
 				}
-				String a = opts.nextOpt();
-				//if (a.equals("-m")) {
-				//				a = opts.nextOpt();
-				//}
-				String b = opts.nextOpt();
-				Similarity metric = se.getSimilarityAlgorithm(similarityAlgorithmName);
-				if (nr) {
-					((DescriptionTreeSimilarity)metric).forceReflexivePropertyCreation = false;
+				else {
+					pairs.add(new OWLObjectPair(resolveEntity(g,opts.nextOpt()),
+							resolveEntity(g,opts.nextOpt())));
+
 				}
-				if (attProp != null)
-					((MultiSimilarity)metric).comparisonProperty = attProp;
-				
-				OWLObject oa = resolveEntity(g,a);
-				OWLObject ob = resolveEntity(g,b);
-				System.out.println("comparing: "+oa+" vs "+ob);
-				Similarity r = se.calculateSimilarity(metric, oa, ob);
-				//System.out.println(metric+" = "+r);
-				metric.print();
-				if (simOnt == null) {
-					simOnt = g.getManager().createOntology();
+				for (OWLObjectPair pair : pairs) {
+
+					OWLObject oa = pair.getA();
+					OWLObject ob = pair.getB();
+
+					Similarity metric = se.getSimilarityAlgorithm(similarityAlgorithmName);
+					if (nr) {
+						((DescriptionTreeSimilarity)metric).forceReflexivePropertyCreation = false;
+					}
+					if (attProp != null)
+						((MultiSimilarity)metric).comparisonProperty = attProp;
+
+					System.out.println("comparing: "+oa+" vs "+ob);
+					Similarity r = se.calculateSimilarity(metric, oa, ob);
+					//System.out.println(metric+" = "+r);
+					metric.print();
+					if (simOnt == null) {
+						simOnt = g.getManager().createOntology();
+					}
+					metric.addResultsToOWLOntology(simOnt);
 				}
-				metric.addResultsToOWLOntology(simOnt);
 			}
 			else if (opts.nextEq("-o|--output")) {
 				opts.info("FILE", "writes ontology -- specified as IRI, e.g. file://`pwd`/foo.owl");
@@ -474,15 +505,22 @@ public class CommandLineInterface {
 				g.getConfig().isCacheClosure = false;
 			}
 			else if (opts.hasArgs()) {
-				OWLOntology ont = pw.parse(opts.nextOpt());
+				String f  = opts.nextOpt();
+				try {
+					OWLOntology ont = pw.parse(f);
+					if (g == null)
+						g =	new OWLGraphWrapper(ont);
+					else {
+						System.out.println("adding support ont "+ont);
+						g.addSupportOntology(ont);
+					}
 
-				if (g == null)
-					g =	new OWLGraphWrapper(ont);
-				else {
-					System.out.println("adding support ont "+ont);
-					g.addSupportOntology(ont);
+				}
+				catch (Exception e) {
+					System.err.println("could not parse:"+f);
 				}
 
+	
 				//paths.add(opt);
 			}
 			else {
@@ -544,7 +582,7 @@ public class CommandLineInterface {
 
 		m.mergeOntologies();
 	}
-	
+
 	private static void showEdges(Set<OWLGraphEdge> edges) {
 		for (OWLGraphEdge e : edges) {
 			System.out.println(e);
