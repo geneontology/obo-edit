@@ -3,6 +3,8 @@ package owltools.sim;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
 
 public class MaximumInformationContentSimilarity extends Similarity {
@@ -38,5 +40,12 @@ public class MaximumInformationContentSimilarity extends Similarity {
 		setScore(maxIC);
 		this.bestSubsumers = bestSubsumers;
 
+	}
+
+	@Override
+	protected void translateResultsToOWLAxioms(String id,
+			OWLNamedIndividual result, Set<OWLAxiom> axioms) {
+		// TODO Auto-generated method stub
+		
 	}
 }

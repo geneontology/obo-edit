@@ -1,5 +1,9 @@
 package owltools.sim;
 
+import java.util.Set;
+
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
 
 public class JaccardSimilarity extends Similarity {
@@ -9,6 +13,13 @@ public class JaccardSimilarity extends Similarity {
 		double ci = simEngine.getCommonSubsumersSize(a, b);
 		double cu = simEngine.getUnionSubsumersSize(a, b);
 		setScore( ci / cu );
+	}
+
+	@Override
+	protected void translateResultsToOWLAxioms(String id,
+			OWLNamedIndividual result, Set<OWLAxiom> axioms) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -5,9 +5,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLNamedObject;
@@ -20,6 +23,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLPropertyRange;
 import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
@@ -38,6 +42,10 @@ public abstract class Similarity {
 	OWLObject b;
 	Double score;
 	SimEngine simEngine;
+	boolean isComparable = true;
+	
+	// for caching as OWL
+	IRI persistentIRI;
 
 	public Similarity() {
 		super();
@@ -172,7 +180,14 @@ public abstract class Similarity {
 		return ont;
 	}
 
+	/**
+	 * translates similarity results into OWL Axioms and saves axioms into an OWL Ontology
+	 *
+	 * @param ont
+	 */
 	public void addResultsToOWLOntology(OWLOntology ont) {
+		if (!isComparable)
+			return;
 		OWLGraphWrapper graph = simEngine.getGraph();
 		for (OWLAxiom axiom: translateResultsToOWLAxioms()) {
 			AddAxiom aa = new AddAxiom(ont, axiom);
@@ -181,9 +196,65 @@ public abstract class Similarity {
 	}
 
 	public Set<OWLAxiom> translateResultsToOWLAxioms() {
+		
+		System.out.println("TRANSLATING OWL AXIOM:"+this);
+		OWLGraphWrapper graph = simEngine.getGraph();
 		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
-		// todo
+
+		OWLDataFactory df = graph.getDataFactory();
+		IRI ia = ((OWLNamedObject) a).getIRI();
+		IRI ib = ((OWLNamedObject) b).getIRI();
+		String[] toksA = splitIRI(ia);
+		String[] toksB = splitIRI(ib);
+		String id = toksA[0]+toksA[1]+"-vs-"+toksB[1];
+
+		 persistentIRI = IRI.create(id);
+
+		// each similarity is stored as an individual of class similarity_relationship
+		OWLNamedIndividual result = df.getOWLNamedIndividual(persistentIRI);
+		OWLClass ac = df.getOWLClass(annotationIRI("similarity_relationship"));
+		axioms.add(df.getOWLClassAssertionAxiom(ac, result));
+		axioms.add(df.getOWLAnnotationAssertionAxiom(df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()),
+				result.getIRI(), 
+				df.getOWLTypedLiteral("Similarity relationship between "+simEngine.label(a)+" and "+simEngine.label(b))));
+
+		// each object in the pair is connected to the similarity
+		OWLAnnotationProperty p = df.getOWLAnnotationProperty(annotationIRI("has_similarity_relationship"));
+		axioms.add(df.getOWLAnnotationAssertionAxiom(p, ((OWLNamedObject) a).getIRI(), result.getIRI()));
+		axioms.add(df.getOWLAnnotationAssertionAxiom(p, ((OWLNamedObject) b).getIRI(), result.getIRI()));
+
+		// every similarity has a score
+		OWLAnnotationProperty sp = df.getOWLAnnotationProperty(annotationIRI("has_score"));
+		axioms.add(df.getOWLAnnotationAssertionAxiom(sp, result.getIRI(), df.getOWLTypedLiteral(score)));
+
+		translateResultsToOWLAxioms(id, result, axioms);
+		
 		return axioms;
+	}
+
+
+	protected abstract void translateResultsToOWLAxioms(String id, OWLNamedIndividual result, Set<OWLAxiom> axioms);
+
+	protected String[] splitIRI(IRI x) {
+		String s = x.toString();
+		String id = null;
+		if (s.startsWith("http://purl.obolibrary.org/obo/")) {
+			id = s.replaceAll("http://purl.obolibrary.org/obo/", "");
+			return new String[]{"http://purl.obolibrary.org/obo/",id};
+		}
+		for (String del : new String[]{"#","/",":"}) {
+			if (s.contains(del)) {
+				String[] r = s.split(del,2);
+				r[0] = r[0]+del;
+				return r;
+			}
+
+		}
+		return new String[]{"",s};
+	}
+
+	protected IRI annotationIRI(String name) {
+		return IRI.create("http://purl.obolibrary.org/obo/IAO/score#"+name);
 	}
 
 

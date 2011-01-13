@@ -8,7 +8,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
 
 import owltools.graph.OWLGraphEdge;
@@ -97,5 +99,12 @@ public class AvgInformationContentLCSSimilarity extends Similarity {
 			s.println(sim.toString());
 		}
 
+	}
+
+	@Override
+	protected void translateResultsToOWLAxioms(String id,
+			OWLNamedIndividual result, Set<OWLAxiom> axioms) {
+		// TODO Auto-generated method stub
+		
 	}
 }
