@@ -47,8 +47,8 @@ I<path_specification> = --fetch[=I<cache>] | I<fa1> [ I<fa2> [ I<..> ] ]
 =item C<--fetch[=I<qfo_cache>]>
 
 Fetch QFO files from
-L<ftp://ftp.ebi.ac.uk/pub/databases/reference_proteomes/> and loads
-them.  When I<qfo_cache> is not specified it will read the
+L<ftp://ftp.ebi.ac.uk/pub/databases/reference_proteomes/current> and
+loads them.  When I<qfo_cache> is not specified it will read the
 I<QFO_CACHE> environmental variable.
 
 If I<qfo_cache> has a false value it will load the files to a
@@ -110,7 +110,7 @@ my $clean_p = 0;
 my %ftp_opt = ( Passive => 1 ); # In doubt use passive, it's what
                                 # wget(1) does
 my $ftp_host = 'ftp.ebi.ac.uk';
-my $ftp_dir = '/pub/databases/reference_proteomes/';
+my $ftp_dir = '/pub/databases/reference_proteomes/current';
 my $unannotated_report_p;
 my $apph = GO::AppHandle->connect(\@ARGV);
 
