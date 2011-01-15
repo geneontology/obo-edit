@@ -790,6 +790,12 @@ RootTextEditComponent, SelectionDrivenComponent {
 	public void commit() {
 		if (checkComponents()){
 			flushEdits();
+                        // The line below was removed in 2.1-b4 (why??).  That made it look like Commit wasn't
+                        // working, because, for example, if you were editing a synonym and you clicked Commit,
+                        // the Synonym Editor stayed open instead of closing and looking like a finished Synonym.
+                        // I wish there had been some sort of comment or commit message explaining why the line was
+                        // removed.  --NH, 1/14/2011
+ 			Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 //			OBOTermPanel.reload();
 		}
 	}
