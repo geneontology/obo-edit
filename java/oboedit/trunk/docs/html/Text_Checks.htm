@@ -9,12 +9,18 @@
 <H1>Text Checks</H1>
 <P>Comment checks, definition checks, name checks and 
 synonym checks are all very similar, so they are all discussed in this 
-section.</P>
+section.  These text checks are run automatically when you commit a change
+made in the Text Editor.  You can also run text checks on all terms at once
+by going to the Configuration tab in the Verification Manager and clicking
+the button that says "Run manual check now".</P>
 <P>A text check looks for the following:</P>
 <UL>
   <LI><STRONG>Misspelled words</STRONG> 
-    - A warning will appear if the text contains a misspelled word according
-    to the current dictionary file (dictionary.dict, in the OBO-Edit resources).
+    - A warning will appear if the text includes a word that is not found in the
+    the default dictionary file or the user dictionary file, both of which are stored in
+    oboedit_config/dict.  (If you hover your mouse over the supposedly misspelled word,
+    which is shown in red text, you will be given the option to add the word to the
+    default dictionary or your personal user dictionary.)
   <LI><STRONG>Repeated words</STRONG> 
   - A warning will appear if the text contains a repeated word. Of course, some 
   words should be repeated, so OBO-Edit maintains a list of legally repeatable 
