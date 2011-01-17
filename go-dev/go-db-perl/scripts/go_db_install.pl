@@ -948,7 +948,8 @@ sub run_seq2pthr2phylotree {
   # $ENV{GO_DBNAME} = $env_conf{GO_DBNAME}{NEW_VALUE};
   # $ENV{DBI_DRIVER} = "DBI:mysql:database=" . $ENV{GO_DBNAME};
   my $s2p_tmp = $local{FS_DOWNLOAD_DIR};
-  my $s2p2p_script = "go-db-perl/scripts/seq2pthr2phylotree.pl";
+  my $s2p2p_script = 'go-db-perl/scripts/seq2pthr2phylotree.pl';
+  my $loadc_script = 'go-db-perl/scripts/load-phylotree-concurrent.pl';
   my $s2p_site = 'ftp.pantherdb.org';
   my $s2p_dir = '/genome/pthr7.0';
   my $s2p_file = 'seq2pthr.gz';
@@ -991,31 +992,44 @@ sub run_seq2pthr2phylotree {
   ### Run.
   ###
 
-  ## Run final command.
-  my @args =
+  my @auth =
     (
-     $go_dev_path . $s2p2p_script,
-     '--no-dry-run',
-     '--quiet',
-     # '--every=60', # we'd like a little update
      '-dbname', $local{EXTENSION},
      '-dbhost', $local{DB_HOST}
     );
-  push @args, ('-dbuser', $local{DB_USER}) if $local{DB_USER};
-  push @args, ('-dbauth', $local{DB_PASS}) if $local{DB_PASS};
-  push @args, ('-dbport', $local{DB_PORT}) if $local{DB_PORT};
-  push @args, $tmp_gunzip_file;
-  ll("[SYSTEM] \"@args\"");
-  eval {
-    system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_x;
-  };
-  if( $@ ){
-    ww("WARNING: Could not add phylotree tables properly.");
-  }else{
-    $retval = 1;
-  }
+  push @auth, ('-dbuser', $local{DB_USER}) if $local{DB_USER};
+  push @auth, ('-dbauth', $local{DB_PASS}) if $local{DB_PASS};
+  push @auth, ('-dbport', $local{DB_PORT}) if $local{DB_PORT};
 
-  ll("End run of seq2pthr2phylotree.");
+
+  ## Run final command.
+  my @s2p2p =
+    (
+     $s2p2p_script,
+     '--no-dry-run',
+     '--quiet',
+     # '--every=60', # we'd like a little update
+     @auth,
+     $tmp_gunzip_file
+    );
+  my @loadc = ($loadc_script, @auth);
+  for (\@s2p2p, \@loadc) {
+      my @args = @$_;
+      my $err = $args[0];
+      $args[0] = $go_dev_path . $args[0];
+
+      ll("[SYSTEM] \"@args\"");
+      eval {
+	  system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_x;
+      };
+      if( $@ ){
+	  ww("WARNING: $err failed.");
+      }else{
+	  $retval = 1;
+      }
+
+      ll("End run of $err.");
+  }
   return $retval;
 }
 
