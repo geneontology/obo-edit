@@ -61,9 +61,9 @@ use vars qw(
 	    $opt_z
 	    $opt_D
 	    $opt_M
-	    $opt_F
 	   );
 # Remove opt_F after go-load-qfo-fresh.pl is default
+my $opt_F=1;
 
 ## Sane and easy to modify defaults.
 my %local = (
@@ -96,7 +96,8 @@ my %local = (
 	    );
 
 # Remove F after go-load-qfo-fresh.pl is default
-getopts('Fhvzijxng:m:a:s:f:l:d:u:p:P:t:e:D:M:');
+#getopts('Fhvzijxng:m:a:s:f:l:d:u:p:P:t:e:D:M:');
+getopts('hvzijxng:m:a:s:f:l:d:u:p:P:t:e:D:M:');
 
 ## Hunt down the paths and let's try and get all of the likely
 ## libraries in. Trying "use lib" didn't work so well, so got hacky
