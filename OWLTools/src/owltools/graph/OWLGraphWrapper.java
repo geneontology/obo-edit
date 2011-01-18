@@ -162,6 +162,13 @@ public class OWLGraphWrapper {
 		manager.getOntologyFormat(ontology);
 	}
 
+	public OWLGraphWrapper(String iri) throws OWLOntologyCreationException {
+		super();
+		manager = OWLManager.createOWLOntologyManager();
+		dataFactory = manager.getOWLDataFactory();
+		sourceOntology = manager.createOntology(IRI.create(iri));
+	}
+
 	public void addImport(OWLOntology extOnt) {
 		AddImport ai = new AddImport(ontology, dataFactory.getOWLImportsDeclaration(extOnt.getOntologyID().getOntologyIRI()));
 		manager.applyChange(ai);
@@ -783,15 +790,19 @@ public class OWLGraphWrapper {
 	}
 
 	public Set<OWLObject> queryDescendants(OWLClassExpression t) {
+		return queryDescendants(t, true, true);
+	}
+	
+	public Set<OWLObject> queryDescendants(OWLClassExpression t, boolean isInstances, boolean isClasses) {
 		Set<OWLObject> results = new HashSet<OWLObject>();
 		results.add(t);
-
 
 		// transitivity and link composition
 		Set<OWLGraphEdge> dEdges = this.getIncomingEdgesClosure(t);
 		for (OWLGraphEdge dEdge : dEdges) {
 			OWLQuantifiedProperty qp = dEdge.getSingleQuantifiedProperty();
-			if (qp.isInstanceOf() || qp.isSubClassOf())
+			if ((isInstances && qp.isInstanceOf()) || 
+					(isClasses && qp.isSubClassOf()))
 				results.add(dEdge.getSource());
 		}
 
@@ -799,10 +810,10 @@ public class OWLGraphWrapper {
 			Set<OWLObject> iresults = null;
 			for (OWLClassExpression y : ((OWLObjectIntersectionOf)t).getOperands()) {
 				if (iresults == null) {
-					iresults = queryDescendants(y);
+					iresults = queryDescendants(y, isInstances, isClasses);
 				}
 				else {
-					iresults.retainAll(queryDescendants(y));
+					iresults.retainAll(queryDescendants(y, isInstances, isClasses));
 				}
 				results.addAll(iresults);
 			}
@@ -810,7 +821,7 @@ public class OWLGraphWrapper {
 		else if (t instanceof OWLObjectUnionOf) {
 			Set<OWLObject> iresults = null;
 			for (OWLClassExpression y : ((OWLObjectUnionOf)t).getOperands()) {
-				results.addAll(queryDescendants(y));
+				results.addAll(queryDescendants(y, isInstances, isClasses));
 			}
 		}
 		else if (t instanceof OWLRestriction) {
@@ -824,7 +835,7 @@ public class OWLGraphWrapper {
 					for (OWLClassExpression y : ax.getClassExpressions()) {
 						if (y instanceof OWLClass)
 							continue;
-						results.addAll(queryDescendants(y));
+						results.addAll(queryDescendants(y, isInstances, isClasses));
 					}
 				}
 			}
