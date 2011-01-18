@@ -9,7 +9,7 @@ import org.semanticweb.owlapi.profiles.OWL2ELProfile;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerException;
+//import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.io.*;
 import org.semanticweb.owlapi.model.*;
@@ -171,7 +171,8 @@ public class OWLReasonerRunner {
 				}
 
 				long initTime = System.nanoTime();
-				reasoner.prepareReasoner();
+				//reasoner.prepareReasoner();
+			//	reasoner.precomputeInferences(arg0)
 				long totalTime = System.nanoTime() - initTime;
 
 				showMemory();

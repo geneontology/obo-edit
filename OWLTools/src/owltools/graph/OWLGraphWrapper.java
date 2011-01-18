@@ -382,8 +382,8 @@ public class OWLGraphWrapper {
 					edges.add(new OWLGraphEdge(s,a.getObject(),a.getProperty(),Quantifier.PROPERTY_ASSERTION,getSourceOntology()));
 				}
 			}
-			else if (s instanceof OWLRestriction<?>) {
-				edges.add(restrictionToPrimitiveEdge((OWLRestriction<?>) s));
+			else if (s instanceof OWLRestriction<?, ?, ?>) {
+				edges.add(restrictionToPrimitiveEdge((OWLRestriction<?, ?, ?>) s));
 			}
 			else if (s instanceof OWLObjectIntersectionOf) {
 				for (OWLClassExpression ce : ((OWLObjectIntersectionOf)s).getOperands()) {

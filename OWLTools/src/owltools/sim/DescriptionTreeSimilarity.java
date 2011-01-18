@@ -454,8 +454,9 @@ public class DescriptionTreeSimilarity extends Similarity {
 			OWLObjectProperty prop = (OWLObjectProperty) ((OWLQuantifiedRestriction) xa).getProperty();
 			OWLClassExpression xaRest = (OWLClassExpression) ((OWLQuantifiedRestriction)xa).getFiller();
 			if (xb instanceof OWLQuantifiedRestriction) {
-				OWLObjectPropertyExpression p2 = propertySubsumer(prop, 
-						((OWLQuantifiedRestriction<OWLObjectPropertyExpression, OWLClassExpression>) xb).getProperty());
+				OWLObjectPropertyExpression p2 = null;
+					//propertySubsumer(prop, 
+						//((OWLQuantifiedRestriction<OWLObjectPropertyExpression, OWLClassExpression>) xb).getProperty());
 				
 				if (p2 != null) {
 					OWLClassExpression xbRest = (OWLClassExpression) ((OWLQuantifiedRestriction)xb).getFiller();
