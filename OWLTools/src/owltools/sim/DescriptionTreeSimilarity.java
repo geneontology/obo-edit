@@ -196,6 +196,8 @@ public class DescriptionTreeSimilarity extends Similarity {
 		for (OWLGraphEdge aEdge : aEdges) {
 			//OWLGraphEdge eaNew = graph.combineEdgePair(ea.getSource(), ea, e, 1);
 			OWLObject aNext = aEdge.getTarget();
+			if (se.nonSignificantObjects().contains(aNext))
+				continue;
 			//if (visited.contains(aNext))
 			//	continue;
 			//if (visitedPairs.contains(new OWLObjectPair(aNext,b)))
@@ -253,6 +255,7 @@ public class DescriptionTreeSimilarity extends Similarity {
 			}
 			if (best == 0)
 				continue;
+
 			LOG.info("  bNext: "+bNext+" sc:"+best+" EDGE:"+bEdge);
 
 			Set<OWLObject> lcsl = se.getCommonSubsumers(aNext, bNext);

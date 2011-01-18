@@ -124,6 +124,7 @@ public class MultiSimilarity extends Similarity {
 			}
 		}
 		if (comparisonProperty != null) {
+			// todo - rather than closure follow iteratively
 			for (OWLGraphEdge e : g.getOutgoingEdgesClosure(x)) {
 				OWLObject t = e.getTarget();
 				List<OWLQuantifiedProperty> qpl = e.getQuantifiedPropertyList();
@@ -132,8 +133,23 @@ public class MultiSimilarity extends Similarity {
 						ancs.add(t);
 					}
 				}
+				else if (qpl.size() == 2) {
+					if (qpl.get(0).isInstanceOf() &&
+							comparisonProperty.equals(qpl.get(1).getProperty())) {
+						ancs.add(t);
+					}
+				}
 			}
 
+		}
+		if (comparisonProperty == null && comparisonProperty == null) {
+			ancs.addAll(g.getSubsumersFromClosure(x));
+			/*
+			for (OWLGraphEdge e : g.getOutgoingEdges(x)) {
+				OWLObject t = e.getTarget();
+				ancs.add(t);
+			}
+			*/
 		}
 		simEngine.makeNonRedundant(ancs);
 		return ancs;
@@ -207,10 +223,18 @@ public class MultiSimilarity extends Similarity {
 		OWLAnnotationProperty pb = df.getOWLAnnotationProperty(annotationIRI("has_best_match_for_object_2"));
 
 		for (OWLObject att : aBest.keySet()) {
+			if (!(att instanceof OWLNamedObject)) {
+				System.err.println("skipping");
+				continue;
+			}
 			axioms.addAll(aBest.get(att).translateResultsToOWLAxioms());
 			axioms.add(df.getOWLAnnotationAssertionAxiom(pa, result.getIRI(), aBest.get(att).persistentIRI));
 		}
 		for (OWLObject att : bBest.keySet()) {
+			if (!(att instanceof OWLNamedObject)) {
+				System.err.println("skipping");
+				continue;
+			}
 			axioms.addAll(bBest.get(att).translateResultsToOWLAxioms());
 			axioms.add(df.getOWLAnnotationAssertionAxiom(pb, result.getIRI(), bBest.get(att).persistentIRI));
 		}

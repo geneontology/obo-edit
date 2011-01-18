@@ -21,6 +21,7 @@ public class MaximumInformationContentSimilarity extends Similarity {
 
 	@Override
 	public void calculate(SimEngine simEngine, OWLObject a, OWLObject b) {
+		this.simEngine = simEngine;
 		Set<OWLObject> objs = simEngine.getCommonSubsumers(a, b);
 		double maxIC = 0;
 		Set<OWLObject> bestSubsumers = new HashSet<OWLObject>();
