@@ -14,6 +14,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.obolibrary.oboformat.model.FrameMergeException;
 import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLImportsDeclaration;
@@ -324,7 +325,7 @@ public class CommandLineInterface {
 						System.out.println(" IC:"+se.getInformationContent(obj));
 					}
 					else {
-						System.out.println("n/a");
+						System.out.println(" IC:n/a");
 					}
 
 				}
@@ -366,12 +367,26 @@ public class CommandLineInterface {
 					else if (opts.nextEq("-p")) {
 						attProp = g.getOWLObjectProperty(opts.nextOpt());
 					}
+					else if (opts.nextEq("--min-ic")) {
+						se.minimumIC = Double.valueOf(opts.nextOpt());
+					}
 					else if (opts.nextEq("-a|--all")) {
 						isAll = true;
+						boolean isClasses = true;
+						boolean isInstances = true;
+						if (opts.nextEq("-i"))
+							isClasses = false;
+						if (opts.nextEq("-c"))
+							isInstances = false;
 						OWLObject anc = resolveEntity(g,opts.nextOpt());
-						Set<OWLObject> objs = g.queryDescendants((OWLClass)anc);
+						System.out.println("ANC:"+anc+" "+anc.getClass());
+						Set<OWLObject> objs = g.queryDescendants((OWLClass)anc, isInstances, isClasses);
+						Set<OWLObject> objs2 = objs;
+						if (opts.nextEq("--vs")) {
+							 objs2 = g.queryDescendants((OWLClass)resolveEntity(g,opts.nextOpt()), isInstances, isClasses);
+						}
 						for (OWLObject a : objs) {
-							for (OWLObject b : objs) {
+							for (OWLObject b : objs2) {
 								if (a.compareTo(b) <= 0)
 									continue;
 								OWLObjectPair pair = new OWLObjectPair(a,b);
@@ -491,7 +506,11 @@ public class CommandLineInterface {
 						ttac.config.property = ((OWLNamedObject) resolveEntity(g, opts)).getIRI();
 					}
 					else if (opts.nextEq("-a|--axiom-type")) {
-						ttac.config.axiomType = AxiomType.getAxiomType(opts.nextOpt());
+						ttac.config.setAxiomType(opts.nextOpt());
+					}
+					else if (opts.nextEq("-t|--individuals-type")) {
+						System.out.println("setting types");
+						ttac.config.individualsType = resolveClass(g, opts.nextOpt());
 					}
 					else {
 						// TODO - other options
@@ -503,6 +522,11 @@ public class CommandLineInterface {
 			}
 			else if (opts.nextEq("--no-cache")) {
 				g.getConfig().isCacheClosure = false;
+			}
+			else if (opts.nextEq("--create-ontology")) {
+				opts.info("ONT-IRI", "creates a new OWLOntology and makes it the source ontology");
+				g = new OWLGraphWrapper(opts.nextOpt());
+				
 			}
 			else if (opts.hasArgs()) {
 				String f  = opts.nextOpt();
@@ -517,7 +541,7 @@ public class CommandLineInterface {
 
 				}
 				catch (Exception e) {
-					System.err.println("could not parse:"+f);
+					System.err.println("could not parse:"+f+" Exception:"+e);
 				}
 
 	
@@ -606,6 +630,21 @@ public class CommandLineInterface {
 			return obj;		
 		obj = g.getOWLObjectByIdentifier(id);
 		return obj;
+	}
+	
+	public static OWLObjectProperty resolveObjectProperty(OWLGraphWrapper g, String id) {
+		OWLObject obj = null;
+		obj = g.getOWLObjectByLabel(id);
+		if (obj != null)
+			return (OWLObjectProperty) obj;
+		return g.getOWLObjectProperty(id);
+	}
+	public static OWLClass resolveClass(OWLGraphWrapper g, String id) {
+		OWLObject obj = null;
+		obj = g.getOWLObjectByLabel(id);
+		if (obj != null)
+			return (OWLClass) obj;
+		return g.getDataFactory().getOWLClass(IRI.create(id));
 	}
 
 	public static void help() {

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
@@ -45,6 +46,7 @@ public class SimEngine {
 	protected OWLGraphWrapper graph;
 	public boolean excludeClassesInComparison = false;
 	public OWLObject comparisonSuperclass = null;
+	public Double minimumIC = null;
 
 	// -------------------------------------
 	// Constructions
@@ -115,12 +117,26 @@ public class SimEngine {
 
 
 	public int getCorpusSize() {
-		// TODO - add filtering
-		return graph.getAllOWLObjects().size();
+		// TODO - option for individuals; for now this is hardcoded
+		int n = 0;
+		for (OWLObject x : graph.getAllOWLObjects()) {
+			if (x instanceof OWLIndividual) {
+				n++;
+			}
+		}
+		return n;
 	}
 
 	public int getFrequency(OWLObject obj) {
-		return graph.getDescendants(obj).size();	
+		// TODO - option for individuals; for now this is hardcoded
+		int n = 0;
+		for (OWLObject x : graph.getDescendants(obj)) {
+			if (x instanceof OWLIndividual) {
+				n++;
+			}
+		}
+		return n;
+		//return graph.getDescendants(obj).size();	
 	}
 	public Double getInformationContent(OWLObject obj) {
 		return -Math.log(((double) (getFrequency(obj)) / getCorpusSize())) / Math.log(2);
@@ -129,10 +145,28 @@ public class SimEngine {
 		return getFrequency(obj) > 0;
 	}
 
-
+	Set<OWLObject> nonSignificantObjectSet = null;
+	public Set<OWLObject> nonSignificantObjects() {
+		if (minimumIC == null) {
+			return new HashSet<OWLObject>();
+		}
+		if (nonSignificantObjectSet != null ) {
+			return nonSignificantObjectSet;
+		}
+		nonSignificantObjectSet = new HashSet<OWLObject>();
+		for (OWLObject obj : graph.getAllOWLObjects()) {
+			if (this.hasInformationContent(obj) &&
+					this.getInformationContent(obj) < minimumIC) {
+				nonSignificantObjectSet.add(obj);
+			}
+		}
+		return nonSignificantObjectSet;
+	}
+	
 	public Set<OWLObject> getUnionSubsumers(OWLObject a, OWLObject b) {
 		Set<OWLObject> s1 = getGraph().getAncestorsReflexive(a);
 		s1.addAll(getGraph().getAncestorsReflexive(b));
+		s1.removeAll(nonSignificantObjects());
 		return s1;
 	}
 	public int getUnionSubsumersSize(OWLObject a, OWLObject b) {
@@ -142,6 +176,7 @@ public class SimEngine {
 	public Set<OWLObject> getCommonSubsumers(OWLObject a, OWLObject b) {
 		Set<OWLObject> s1 = getGraph().getAncestorsReflexive(a);
 		s1.retainAll(getGraph().getAncestorsReflexive(b));
+		s1.removeAll(nonSignificantObjects());
 		return s1;
 	}
 	public int getCommonSubsumersSize(OWLObject a, OWLObject b) {

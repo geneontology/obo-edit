@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -18,7 +20,10 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLProperty;
@@ -40,10 +45,15 @@ public class TableToAxiomConverter {
 		public boolean isOboIdentifiers = true;
 		public boolean isSwitchSubjectObject = false;
 		public AxiomType axiomType;
-		public IRI property;
+		public OWLClass individualsType = null;
+		public IRI property = null;
 		
 		public void setPropertyToLabel() {
 			property = OWLRDFVocabulary.RDFS_LABEL.getIRI();
+		}
+		
+		public void setAxiomType(String n) {
+			axiomType = AxiomType.getAxiomType(n);
 		}
 	}
 	
@@ -68,7 +78,7 @@ public class TableToAxiomConverter {
 		}
 	}
 
-	public OWLAxiom rowToAxiom(String[] row) {
+	public Set<OWLAxiom> rowToAxioms(String[] row) {
 		OWLDataFactory df = graph.getDataFactory();
 		 String sub = row[0];
 		 String obj = row[1];
@@ -77,12 +87,22 @@ public class TableToAxiomConverter {
 			obj = row[0];
 		}
 		OWLAxiom ax = null;
+		
 		if (config.axiomType.equals(AxiomType.CLASS_ASSERTION)) {
-			ax = df.getOWLClassAssertionAxiom(resolveClass(sub), (OWLIndividual) resolveIndividual(obj));
+			OWLClass c = resolveClass(sub);
+			if (config.property == null) {
+				ax = df.getOWLClassAssertionAxiom(c, (OWLIndividual) resolveIndividual(obj));
+			}
+			else {			
+				OWLObjectProperty p = df.getOWLObjectProperty(config.property);
+				OWLObjectSomeValuesFrom ce = df.getOWLObjectSomeValuesFrom(p, c);
+				//System.out.println("CA :"+ce+" "+obj);
+				ax = df.getOWLClassAssertionAxiom(ce,(OWLIndividual) resolveIndividual(obj));
+			}
 		}
 		else if (config.axiomType.equals(AxiomType.ANNOTATION_ASSERTION)) {
 			ax = df.getOWLAnnotationAssertionAxiom(df.getOWLAnnotationProperty(config.property), 
-					(OWLAnnotationSubject) resolveIndividual(sub), literal(obj));
+					((OWLNamedObject) resolveIndividual(sub)).getIRI(), literal(obj));
 		}
 		else if (config.axiomType.equals(AxiomType.OBJECT_PROPERTY_ASSERTION)) {
 			ax = df.getOWLObjectPropertyAssertionAxiom(df.getOWLObjectProperty(config.property), 
@@ -91,7 +111,12 @@ public class TableToAxiomConverter {
 		else {
 			// TODO
 		}
-		return ax;
+		Set<OWLAxiom> axs = new HashSet<OWLAxiom>();
+		axs.add(ax);
+		if (config.individualsType != null) {
+			axs.add(df.getOWLClassAssertionAxiom(config.individualsType, resolveIndividual(sub)));
+		}
+		return axs;
 	}
 	
 	public void addRow(String[] row) {
@@ -99,7 +124,9 @@ public class TableToAxiomConverter {
 		
 	}
 	public void addRow(OWLOntology ont, String[] row) {
-		 graph.getManager().applyChange(new AddAxiom(ont, rowToAxiom(row)));
+		 for (OWLAxiom ax : rowToAxioms(row)) {
+			 graph.getManager().applyChange(new AddAxiom(ont, ax));
+		 }
 	}
 
 	private OWLAnnotationValue literal(String obj) {

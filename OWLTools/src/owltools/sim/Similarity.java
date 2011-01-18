@@ -202,6 +202,14 @@ public abstract class Similarity {
 		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
 
 		OWLDataFactory df = graph.getDataFactory();
+		if (!(a instanceof OWLNamedObject)) {
+			System.err.println(a+ "not named - cant write OWL results");
+			return axioms;
+		}
+		if (!(b instanceof OWLNamedObject)) {
+			System.err.println(b+ "not named - cant write OWL results");
+			return axioms;
+		}
 		IRI ia = ((OWLNamedObject) a).getIRI();
 		IRI ib = ((OWLNamedObject) b).getIRI();
 		String[] toksA = splitIRI(ia);
