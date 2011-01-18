@@ -318,12 +318,13 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 	
 	private void dumpAnnotation(String tag,String objId, String target_obj,  String ontology)
 		throws IOException{
-		String prop = graphWrapper.getIdentifier(  
+		
+		/*String prop = graphWrapper.getIdentifier(  
 			graphWrapper.getAnnotationProperty(tag)
-			);
+			);*/
 
 		TableDumper table = tables.get("annotation_assertion");
-		table.dumpRow(prop, objId, target_obj, ontology );
+		table.dumpRow(tag, objId, target_obj, ontology );
 	}
 
 	private void dumpObjAlternateLabel(OWLObject obj, String id)
