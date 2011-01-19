@@ -20,7 +20,7 @@ use utf8;
 use strict;
 use Data::Dumper;
 use Test::More qw(no_plan);
-use Test::More;
+#use Test::More;
 use Test::WWW::Mechanize::CGIApp;
 use AmiGO::WebApp::HTMLClient;
 use Getopt::Std;
