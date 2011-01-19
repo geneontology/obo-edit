@@ -161,7 +161,7 @@ public class OWLGraphEdge {
 	}
 
 	public String toString() {
-		return "["+source+" "+getQuantifiedPropertyList()+" "+target+"]";
+		return "["+source+" "+getQuantifiedPropertyList()+" "+distance+" "+target+"]";
 	}
 	
 	public int hashCode() {
