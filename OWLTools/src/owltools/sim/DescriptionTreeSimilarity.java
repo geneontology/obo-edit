@@ -27,6 +27,7 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLPropertyRange;
 import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
+import org.semanticweb.owlapi.model.OWLQuantifiedObjectRestriction;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 import owltools.graph.OWLGraphEdge;
@@ -457,9 +458,9 @@ public class DescriptionTreeSimilarity extends Similarity {
 			OWLObjectProperty prop = (OWLObjectProperty) ((OWLQuantifiedRestriction) xa).getProperty();
 			OWLClassExpression xaRest = (OWLClassExpression) ((OWLQuantifiedRestriction)xa).getFiller();
 			if (xb instanceof OWLQuantifiedRestriction) {
-				OWLObjectPropertyExpression p2 = null;
-					//propertySubsumer(prop, 
-						//((OWLQuantifiedRestriction<OWLObjectPropertyExpression, OWLClassExpression>) xb).getProperty());
+				OWLObjectPropertyExpression p2 =
+					propertySubsumer(prop, 
+						((OWLQuantifiedObjectRestriction) xb).getProperty());
 				
 				if (p2 != null) {
 					OWLClassExpression xbRest = (OWLClassExpression) ((OWLQuantifiedRestriction)xb).getFiller();
