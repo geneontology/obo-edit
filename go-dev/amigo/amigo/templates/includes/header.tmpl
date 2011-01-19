@@ -89,7 +89,7 @@
     [% END %]
 
     [%# Link out to the stuff in the newer framework. %]
-    [% IF page_name == "amigo" %]
+    [% IF page_name == "amigo" && ! amigo_mode %]
     <li class="here">
       <a style="border: 0; background-color: #e9effa; color: #006;"
 	 href="amigo?[% session_id_for_url %]"
