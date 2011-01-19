@@ -1,6 +1,6 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-<xsl:param name="mapfile" select="'/home/jrichter/workspace/OBO-Edit/docs/OBO-Edit.jhm'"/>
+<xsl:param name="mapfile" select="../docs/OBO-Edit.jhm"/>
 
 <xsl:template match="toc">
   <html>
