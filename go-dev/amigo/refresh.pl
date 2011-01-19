@@ -20,6 +20,7 @@ use utf8;
 use strict;
 use Data::Dumper;
 use Test::More qw(no_plan);
+use Test::More;
 use Test::WWW::Mechanize::CGIApp;
 use AmiGO::WebApp::HTMLClient;
 use Getopt::Std;
@@ -30,7 +31,7 @@ use File::stat;
 #use Time::Local;
 use Time::localtime;
 
-#BEGIN { plan tests => 0 }
+#BEGIN { plan tests => 0; }
 
 use vars qw(
 	     $opt_h
@@ -321,6 +322,14 @@ if( $do_lucene ){
 
   $core->kvetch("Finished indexing.");
 }
+
+
+## If we got here, we're good. To make Test::More happy (no tests with
+## no_plan returns an error on some systems), we'll leave with a
+## trivial test. Although, we could use this opportunity to drop some
+## tests in here at some point...
+ll("Exit testing...");
+ok( 1 == 1 );
 
 
 ###
