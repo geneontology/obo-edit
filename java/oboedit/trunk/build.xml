@@ -39,7 +39,7 @@
 	<!-- Note: to make javahelp_indxers, you will need to install javahelp 
 	     (see http://java.sun.com/products/javahelp/download_binary.html)
 	     and you may need to change the path below to point to where you've installed it. -->
-	<property name="javahelp_indexer" location="/opt/jh2.0/javahelp/bin/jhindexer" />
+	<property name="javahelp_indexer" location="/Applications/jh2.0/javahelp/bin/jhindexer" />
 
 	<!-- test to see if optional regular expression targets are available -->
 	<available property="regexp_replace_available" classname="org.apache.tools.ant.taskdefs.optional.ReplaceRegExp" />
@@ -282,6 +282,11 @@
 	</target>
 
 	<target name="-dojhindex" if="javahelp_indexer">
+                <!-- The problem with deleting the whole JavaHelpSearch dir is
+		that then when you try to svn update you get
+                svn: Directory 'docs/JavaHelpSearch/.svn' containing working copy admin area is missing
+                Maybe we could just tell it to delete the fils in the directory rather than the directory itself?
+                Or maybe we need to remove docs/JavaHelpSearch from svn? -->
 		<delete dir="docs/JavaHelpSearch" />
 		<!-- Move docs/html/.svn, docs/.svn, and docs/api out of the
 		way so the files in them don't get indexed -->
@@ -314,10 +319,10 @@
 		</move -->
 	</target>
 
+        <!-- NOTE: To make docindex, you may need to edit docs/OBO-Edit.jhm and docs/OBO-EditTOC.jhm to set the path of your javahelp. -->
 	<target name="docindex" depends="-dojhindex">
 	<!--target name="docindex"-->
 			<xslt out="docs/index.html" in="docs/OBO-EditTOC.xml" style="templates/toc_generator.xsl">
-
 			<param name="mapfile" expression="../docs/OBO-Edit.jhm" />
 		</xslt>
 	</target>
