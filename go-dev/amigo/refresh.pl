@@ -8,6 +8,10 @@
 #### auto-testing...but in this case, we're just stealing some of the
 #### mechanism to get our data without depending on silly ol' apache.
 ####
+#### Note: To cut down on the testing time, pare out most homolsets:
+####    mysql> delete from homolset where id > 1;
+####    mysql> delete from gene_product_homolset where homolset_id > 1;
+####
 
 BEGIN { require "config.pl"; }
 use lib $ENV{GO_ROOT} . '/go-perl';
