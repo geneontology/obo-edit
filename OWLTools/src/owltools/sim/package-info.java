@@ -625,6 +625,22 @@ SimJ-LCS(x,y) :
 
 </p>
 
+<h3>Examples</h3>
+
+<h4>OMIM</h4>
+
+   <pre>
+   <code>
+owltools file:imports.owl --sim-method MultiSimilarity --sim -p http://purl.obolibrary.org/obo/RO_0002200 http://purl.obolibrary.org/obo/MGI_101759 http://purl.obolibrary.org/obo/MGI_101761
+   </code>
+   </pre>
+
+   <pre>
+   <code>
+owltools file:imports.owl --sim-method MultiSimilarity --sim -p 'has phenotype' http://purl.obolibrary.org/obo/MGI_101759 http://purl.obolibrary.org/obo/MGI_101761
+   </code>
+   </pre>
+
 
 
 
