@@ -35,13 +35,19 @@ public class IsaCompleteCriterion extends AbstractBooleanCriterion {
 		if (lo.getParents().size() == 0)
 			return true;
 		Iterator it = lo.getParents().iterator();
+		int n = 0;
 		while (it.hasNext()) {
 			Link link = (Link) it.next();
 			if (link.getType().equals(OBOProperty.IS_A)) {
 				if (isIsaComplete(link.getParent()))
 					return true;
 			}
+			if (!link.getType().equals(OBOProperty.DISJOINT_FROM)) {
+				n++;
+			}
 		}
+		if (n == 0)
+			return true;
 		return false;
 	}
 
