@@ -6,6 +6,7 @@ CLASSNAME=org.oboedit.launcher.OBO2OBO
 # These will be resolved into absolute pathnames
 # Wildcards are allowed
 CLASSPATH_RELATIVE=runtime/*.jar
+# Note: there is no lib/pellet anywhere. --NH, 3/10/2010
 CLASSPATH_PELLET=lib/pellet/*/*.jar
 
 # If literal classpath values are needed, uncomment the line below
