@@ -6,6 +6,14 @@ import java.util.Iterator;
 
 import org.apache.log4j.*;
 
+/**
+ * 
+ * true if the object is a class, and can be traced via an isa path to a class that has parents but no isa parent
+ * AND has one or more of some other kind of parent.
+ * 
+ * here the 'isa path' is reflexive; ie if the tested object has parents and no isa parent then the criteria is true
+ *
+ */
 public class IsaCompleteCriterion extends AbstractBooleanCriterion {
 
 	//initialize logger
