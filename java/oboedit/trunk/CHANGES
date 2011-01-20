@@ -1,12 +1,27 @@
-===  OBO-Edit v2.1 RELEASE NOTES  === 
+===  OBO-Edit v2.1 RELEASE NOTES  ===
+
+=================================
+What's New in OBO-Edit v2.1-beta8 (1/20/11)
+=================================
+Bug Fixes:
+[ geneontology-Bugs-3156488 ] Synonym editor wouldn't close when you committed.
+That made it look like Commit wasn't working, because, for example, if you were editing a synonym and you clicked Commit,
+the Synonym Editor stayed open instead of closing and looking like a finished Synonym.
+
+[ geneontology-Bugs-2791589 ] user.dict not being detected
+[ geneontology-Bugs-2053732 ] can't add words to dictionary
+[ geneontology-Bugs-2504817 ] b52 - Can't save to user-defined dictionary
+All of these bug reports related to the same problem: you could add words to
+user.dict, but they were still flagged as mispelled.  This actually never
+worked (though it was reported "fixed" more than once), due to flawed logic in
+the implementation of the dictionary searches. It should now work correctly.
+
+Fixed docindex creation
 
 ================================
 What's New in OBO-Edit v2.1-beta7
 ================================
-Bug Fixes:
-[ geneontology-Bugs- ]
-
-[ geneontology-Bugs- ]
+Bug Fixes (note: many of these were fixed previously but are being closed out now):
 
 [ geneontology-Bugs-2219331 ] Could we change a tab name?
 
@@ -49,8 +64,6 @@ fuzzy purple ball == cotton ball icon == Go To term button. Correct tooltip mess
 Spanning to the term in OTE works well now, provided the OTE is in global mode.
 
 [ geneontology-Bugs-2971364 ] b4 - still having problems committing text edits
-
-
 
 
 ================================
@@ -102,7 +115,6 @@ Text Editor and Parent Editor are now in sync
 [ geneontology-Bugs-2915594] Not saving
 [ geneontology-Bugs-2968827 ] saving implied links
 [ geneontology-Bugs-2952892 ] Reasoning with union_of terms
-[ geneontology-Bugs-2949754 ] Verification plugin dictionary - problem with quickfixes
 [ geneontology-Bugs-2922331 ] No log file for OE2.1beta2
 [ geneontology-Bugs-2874878 ] Missing log files in Mac
 [ geneontology-Bugs-2610787] disjointness violations not detected
