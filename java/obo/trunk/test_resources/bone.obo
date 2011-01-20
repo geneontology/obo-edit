@@ -18,5 +18,13 @@ id: cartilage
 id: bv_cartilage
 is_a: cartilage
 
+[Term]
+id: non_isa_complete_term
+relationship: develops_from tripus
+
+[Term]
+id: child_of_non_isa_complete_term
+is_a: non_isa_complete_term
+
 [Typedef]
 id: develops_from
