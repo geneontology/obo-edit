@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
+import org.obo.filters.IsaCompleteCriterion;
 import org.obo.filters.SubsetSearchCriterion;
 import org.obo.filters.EqualsComparison;
 import org.obo.filters.Filter;
@@ -77,7 +78,7 @@ public class FilterTest extends AbstractOBOTest {
 		assertTrue(matches.size() == 2);
 
 	}
-	
+
 	public void testSearch() throws Exception {
 		ObjectFilter filter = (ObjectFilter)off.createNewFilter();
 		RegexpComparison c;
@@ -95,7 +96,7 @@ public class FilterTest extends AbstractOBOTest {
 
 		filter = (ObjectFilter)off.createNewFilter();
 		filter.setCriterion(new IsCompleteLinkCriterion());
-		 matches = filterObjects(filter);
+		matches = filterObjects(filter);
 		assertTrue(matches.size() == 0);
 
 		/*
@@ -114,19 +115,49 @@ public class FilterTest extends AbstractOBOTest {
 
 
 	}
+
 	public void testLinkFilter() throws Exception {
 		LinkFilter lfilter = getLinkFilter("CARO:0000003", LinkFilter.PARENT);
 		Collection<Link> matches = filterLinks(lfilter);
 		logger.info(lfilter+" N_matches: "+matches.size());
 		// note: if caro.obo changes, this may need changing
 		assertTrue(matches.size() == 10);
-		
-		
+
+
 		// set both child and parent tags
 
 
 	}
-	
+
+	/**
+	 * also tests negation
+	 */
+	public void testIsaCompleteFilter() throws Exception {
+		ObjectFilter ofilter = (ObjectFilter)off.createNewFilter();
+		IsaCompleteCriterion c = new IsaCompleteCriterion();
+		ofilter.setCriterion(c);
+		ofilter.setNegate(true);
+
+		Collection<IdentifiedObject> matches = this.filterObjects(ofilter);
+		logger.info(ofilter+" N_matches: "+matches.size());
+		for ( IdentifiedObject o : matches) {
+			System.out.println("no isa parent: "+o);
+			if (o instanceof LinkedObject) {
+				for (Link link : ((LinkedObject)o).getParents()) {
+					System.out.println("  "+link);
+				}
+			}
+		}
+
+		// 2 genuine non-isa-complete terms, and 10 builtin objects
+		assertTrue(matches.size() == 2);
+
+
+
+
+	}
+
+
 	/* -- this test should be added to a reasoner test
 	public void testIsImpliedFilter() {
 		LinkFilter lfilter = (LinkFilter)lff.createNewFilter();
@@ -142,7 +173,7 @@ public class FilterTest extends AbstractOBOTest {
 		assertTrue(matches.size() > 0);
 
 	}
-	*/
+	 */
 
 	public void testIsIntersectionFilter() {
 		LinkFilter lfilter = (LinkFilter)lff.createNewFilter();
@@ -161,28 +192,28 @@ public class FilterTest extends AbstractOBOTest {
 	}
 
 
-	
+
 	public void testLinkFilterFindParents() throws Exception {
 		LinkFilter lfilter = getLinkFilter("CARO:0000003", LinkFilter.CHILD);
-		
+
 		Collection<Link> matches = filterLinks(lfilter);
 		logger.info(lfilter+" N_matches: "+matches.size());
 		// note: if caro.obo changes, this may need changing
 		assertTrue(matches.size() == 1);
 
 	}
-	
+
 	public void testLinkFilterConstrainBoth() throws Exception {
 		LinkFilter lfilter1 = getLinkFilter("CARO:0000003", LinkFilter.CHILD);
 		LinkFilter lfilter2 = getLinkFilter("CARO:0000006", LinkFilter.PARENT);
-		 Filter<Link> filter = FilterUtil.mergeFilters(lfilter1, lfilter2);
-		
+		Filter<Link> filter = FilterUtil.mergeFilters(lfilter1, lfilter2);
+
 		Collection<Link> matches = filterLinks(filter);
 		logger.info(filter+" N_matches: "+matches.size());
 		// note: if caro.obo changes, this may need changing
 		assertTrue(matches.size() == 1);
 	}
-	
+
 	private LinkFilter getLinkFilter(String id, int aspect) {
 		LinkFilter lfilter = (LinkFilter)lff.createNewFilter();
 		ObjectFilter ofilter = (ObjectFilter)off.createNewFilter();
