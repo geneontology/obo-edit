@@ -228,7 +228,7 @@ FieldCheck {
 
 	//standard dictionary spell check
 	public SpellChecker getSpellChecker() {
-		logger.debug("standard dict spell check... ");
+//		logger.debug("standard dict getSpellChecker... ");
 		if (stdspellChecker == null) {
 			SpellDictionary stddict = null;
 			try {
@@ -238,24 +238,38 @@ FieldCheck {
 				logger.debug(e);
 			}
 			stdspellChecker = new SpellChecker(stddict);
+
+			// Get user's personal dictionary and add to the spell checker
+			if (usrspellChecker == null) {
+			    SpellDictionary userdict = null;
+			    try {
+				FileUtil.ensureExists(Preferences.getUserDefDictionaryFile(), "org/oboedit/resources/user.dict");
+				logger.debug("user-defined dict: opened dict " + Preferences.getUserDefDictionaryFile());
+				userdict = new SpellDictionaryHashMap(Preferences.getUserDefDictionaryFile());
+			    } catch (IOException e) {
+				logger.error("Couldn't open user dictionary: " + e);
+			    }
+			    stdspellChecker.addDictionary(userdict);
+			}
 		}
 		return stdspellChecker;
 	}
 	//user-defined (domain specific vocabulary) spell check
-	public SpellChecker getUserDefSpellChecker() {
-		logger.debug("user-defined dict spell check... ");
-		if (usrspellChecker == null) {
-			SpellDictionary userdict = null;
-			try {
-				FileUtil.ensureExists(Preferences.getUserDefDictionaryFile(), "org/oboedit/resources/user.dict");
-				userdict = new SpellDictionaryHashMap(Preferences.getUserDefDictionaryFile());
-			} catch (IOException e) {
-				logger.debug(e);
-			}
-			usrspellChecker = new SpellChecker(userdict);
-		}
-		return usrspellChecker;
-	}
+// 	public SpellChecker getUserDefSpellChecker() {
+// 		if (usrspellChecker == null) {
+// 			SpellDictionary userdict = null;
+// 			try {
+// 				FileUtil.ensureExists(Preferences.getUserDefDictionaryFile(), "org/oboedit/resources/user.dict");
+// 				logger.debug("user-defined dict getUserDefSpellChecker: opened dict " + Preferences.getUserDefDictionaryFile());
+// 				userdict = new SpellDictionaryHashMap(Preferences.getUserDefDictionaryFile());
+// 			} catch (IOException e) {
+// 				logger.debug("Couldn't open user dictionary: " + e);
+// 			}
+// 			usrspellChecker = new SpellChecker(userdict);
+// 			logger.debug("userdict = " + usrspellChecker + ", config = " + usrspellChecker.getConfiguration()); // DEL
+// 		}
+// 		return usrspellChecker;
+// 	}
 
 	protected static Set getAllowedRepeats() {
 		if (allowedRepeats == null){
@@ -744,7 +758,7 @@ FieldCheck {
 			boolean allowNewlines, boolean allowBlank, boolean allowExtended,
 			boolean sentenceStructureChecks, final byte condition)
 	throws TooManyWarningsException {
-//		logger.debug("path: " + path);
+//		logger.debug("getWarnings: path = " + path);
 		if (!(path.getLastValue() instanceof String))
 			return new LinkedList();
 		final Collection<CheckWarning> out = new LinkedList<CheckWarning>();
@@ -759,6 +773,7 @@ FieldCheck {
 				int lastPos = -1;
 				while (tokenizer.hasMoreWords()) {  
 					final String word = tokenizer.nextWord();
+//					logger.debug("Repeated word check: next word is " + word); // DEL
 					int start = tokenizer.getCurrentWordPosition();
 					if (last != null) {
 						if (word.equalsIgnoreCase(last)
@@ -800,13 +815,13 @@ FieldCheck {
 
 				SpellCheckListener listener = new SpellCheckListener() {
 					public void spellingError(final SpellCheckEvent arg0) {
-						//logger.debug(arg0.getInvalidWord());
+                                                logger.debug("spelling error: " + arg0.getInvalidWord() + "(" + arg0 + ")"); // DEL
 						QuickFix fixAction1 = new AbstractImmediateQuickFix(
 								"Add \"" + arg0.getInvalidWord()
 								+ "\" to user-defined dictionary") {
 
 							public void run() {
-								getUserDefSpellChecker().addToDictionary(
+								getSpellChecker().addToDictionary(
 										arg0.getInvalidWord());
 								// Add this word to the user defined dictionary: user.dict
 								saveWord(arg0.getInvalidWord(), Preferences.getUserDefDictionaryFile());
@@ -860,19 +875,12 @@ FieldCheck {
 					}
 
 				};
-				// standard system dictionary spell check
+
+				// spell checker now checks both standard and user dictionary
 				getSpellChecker().addSpellCheckListener(listener);
-//				logger.debug("tokenizer.getCurrentWordCount(): " + tokenizer.getCurrentWordCount() + " before std dict check" );
 				getSpellChecker().checkSpelling(tokenizer);
 
-				// user-defined dictionary spell check
-				getUserDefSpellChecker().addSpellCheckListener(listener);
-//				logger.debug("tokenizer.getCurrentWordCount(): " + tokenizer.getCurrentWordCount() + " before usr dict check" );
-				getUserDefSpellChecker().checkSpelling(tokenizer2);
-
-
 				getSpellChecker().removeSpellCheckListener(listener);
-				getUserDefSpellChecker().removeSpellCheckListener(listener);
 			}
 			boolean foundNoCapSentences = false;
 			boolean foundNoSepSentences = false;
