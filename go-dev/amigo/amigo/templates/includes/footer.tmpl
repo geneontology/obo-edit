@@ -18,9 +18,12 @@
   </div>
 
   <p>
+    [% # Remove confusing database date. %]
+    [% UNLESS is_goose_p %]
     GO database release [% release_date %]
     <!-- GO database release [% release_name %] ([% release_type %]) -->
     <br>
+    [% END %]
     <a href="http://www.geneontology.org/GO.cite.shtml#data" title="How to cite AmiGO data">Cite this data</a> &bull; <a href="http://www.geneontology.org/GO.cite.shtml" title="Terms of use for the GO project">Terms of use</a> &bull; <a href="http://www.geneontology.org/GO.contacts.shtml" title="Contact the GO helpdesk">GO helpdesk</a>
  <!--
      How can we improve AmiGO? <a href="http://www.geneontology.org/amigo/suggest.shtml" title="Send us your AmiGO suggestions">Send us your suggestions</a> -->

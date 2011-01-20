@@ -354,6 +354,7 @@ sub mode_goose {
 
     ## Juggle onto absolute version of header template.
     $self->set_template_parameter('page_name', 'amigo'); # menu bar okay
+    $self->set_template_parameter('is_goose_p', '1'); # ...but we are goose
     #$self->set_template_parameter('page_name', 'goose'); # rm menu bar
     $self->add_template_content('includes/public_header.tmpl');
     $self->add_template_content('html/main/goose.tmpl');
