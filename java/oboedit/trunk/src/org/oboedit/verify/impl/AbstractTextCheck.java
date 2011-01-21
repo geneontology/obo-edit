@@ -815,7 +815,7 @@ FieldCheck {
 
 				SpellCheckListener listener = new SpellCheckListener() {
 					public void spellingError(final SpellCheckEvent arg0) {
-                                                logger.debug("spelling error: " + arg0.getInvalidWord() + "(" + arg0 + ")"); // DEL
+//                                                logger.debug("spelling error: " + arg0.getInvalidWord()); // DEL
 						QuickFix fixAction1 = new AbstractImmediateQuickFix(
 								"Add \"" + arg0.getInvalidWord()
 								+ "\" to user-defined dictionary") {
@@ -1184,8 +1184,9 @@ FieldCheck {
 			w.write(word);
 			w.write("\n");
 			w.close();
+                        logger.info("Saved word " + word + " to dictionary " + dictFile);
 		} catch (IOException ex) {
-			logger.info("Error writing to dictionary file");
+			logger.error("Error writing to dictionary file " + dictFile);
 		}
 	}
 }
