@@ -282,12 +282,13 @@
 	</target>
 
 	<target name="-dojhindex" if="javahelp_indexer">
-                <!-- The problem with deleting the whole JavaHelpSearch dir is
-		that then when you try to svn update you get
-                svn: Directory 'docs/JavaHelpSearch/.svn' containing working copy admin area is missing
-                Maybe we could just tell it to delete the fils in the directory rather than the directory itself?
-                Or maybe we need to remove docs/JavaHelpSearch from svn? -->
-		<delete dir="docs/JavaHelpSearch" />
+<!--		<delete dir="docs/JavaHelpSearch" /> -->
+                <delete file="docs/JavaHelpSearch/DOCS" />
+                <delete file="docs/JavaHelpSearch/DOCS.TAB" />
+                <delete file="docs/JavaHelpSearch/OFFSETS" />
+                <delete file="docs/JavaHelpSearch/POSITIONS" />
+                <delete file="docs/JavaHelpSearch/SCHEMA" />
+                <delete file="docs/JavaHelpSearch/TMAP" />
 		<!-- Move docs/html/.svn, docs/.svn, and docs/api out of the
 		way so the files in them don't get indexed -->
 		<!-- move todir="htmlsvntmp">
