@@ -54,7 +54,7 @@ public class CommandLineInterface {
 		int i = 0;
 		String[] args;
 		boolean helpMode = false;
-
+		
 		public Opts(String[] args) {
 			super();
 			this.i = 0;
@@ -184,8 +184,11 @@ public class CommandLineInterface {
 			else if (opts.nextEq("--log-debug")) {
 				Logger.getRootLogger().setLevel(Level.DEBUG);
 			}
+			else if (opts.nextEq("--monitor-memory")) {
+				g.getConfig().isMonitorMemory = true;
+			}
 			else if (opts.nextEq("--list-classes")) {
-				Set<OWLClass> clss = g.getOntology().getClassesInSignature();
+				Set<OWLClass> clss = g.getSourceOntology().getClassesInSignature();
 				for (OWLClass c : clss) {
 					System.out.println(c);
 				}
@@ -219,9 +222,19 @@ public class CommandLineInterface {
 			else if (opts.nextEq("-m") || opts.nextEq("--mcat")) {
 				catOntologies(g,opts);
 			}
+			else if (opts.nextEq("--info")) {
+				opts.info("","show ontology statistics");
+				for (OWLOntology ont : g.getAllOntologies()) {
+					summarizeOntology(ont);
+				}
+			}
 			else if (opts.nextEq("--save-closure")) {
 				GraphClosureWriter gcw = new GraphClosureWriter(opts.nextOpt());
 				gcw.saveClosure(g);				
+			}
+			else if (opts.nextEq("--serialize-closure")) {
+				GraphClosureWriter gcw = new GraphClosureWriter(opts.nextOpt());
+				gcw.serializeClosure(g);
 			}
 			else if (opts.nextEq("-a|--ancestors")) {
 				opts.info("LABEL", "list edges in graph closure to root nodes");
@@ -319,15 +332,12 @@ public class CommandLineInterface {
 				opts.info("", "show calculated Information Content for all classes");
 				SimEngine se = new SimEngine(g);
 				Similarity sa = se.getSimilarityAlgorithm(similarityAlgorithmName);
+				//  no point in caching, as we only check descendants of each object once
+				g.getConfig().isCacheClosure = false;
 				for (OWLObject obj : g.getAllOWLObjects()) {
-					System.out.print(obj);
 					if (se.hasInformationContent(obj)) {
-						System.out.println(" IC:"+se.getInformationContent(obj));
+						System.out.println(obj+"\t"+se.getInformationContent(obj));
 					}
-					else {
-						System.out.println(" IC:n/a");
-					}
-
 				}
 			}
 			else if (opts.nextEq("--sim-method")) {
@@ -381,9 +391,12 @@ public class CommandLineInterface {
 						OWLObject anc = resolveEntity(g,opts.nextOpt());
 						System.out.println("ANC:"+anc+" "+anc.getClass());
 						Set<OWLObject> objs = g.queryDescendants((OWLClass)anc, isInstances, isClasses);
+						objs.remove(anc);
 						Set<OWLObject> objs2 = objs;
 						if (opts.nextEq("--vs")) {
-							 objs2 = g.queryDescendants((OWLClass)resolveEntity(g,opts.nextOpt()), isInstances, isClasses);
+							OWLObject anc2 = resolveEntity(g,opts.nextOpt());
+							 objs2 = g.queryDescendants((OWLClass)anc2, isInstances, isClasses);
+							 objs2.remove(anc2);
 						}
 						for (OWLObject a : objs) {
 							for (OWLObject b : objs2) {
@@ -611,6 +624,14 @@ public class CommandLineInterface {
 		for (OWLGraphEdge e : edges) {
 			System.out.println(e);
 		}
+	}
+	
+	public static void summarizeOntology(OWLOntology ont) {
+		System.out.println("Ontology:"+ont);
+		System.out.println("  Classes:"+ont.getClassesInSignature().size());
+		System.out.println("  Individuals:"+ont.getIndividualsInSignature().size());
+		System.out.println("  ObjectProperties:"+ont.getObjectPropertiesInSignature().size());
+		System.out.println("  AxiomCount:"+ont.getAxiomCount());
 	}
 
 	// todo - move to util

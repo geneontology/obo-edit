@@ -100,7 +100,7 @@ public class OWLGraphWrapper {
 
 	private Map<OWLObject,Set<OWLGraphEdge>> edgeBySource;
 	private Map<OWLObject,Set<OWLGraphEdge>> edgeByTarget;
-	private Map<OWLObject,Set<OWLGraphEdge>> inferredEdgeBySource = null;
+	public Map<OWLObject,Set<OWLGraphEdge>> inferredEdgeBySource = null; // public to serialize
 	private Map<OWLObject,Set<OWLGraphEdge>> inferredEdgeByTarget = null;
 
 	// used to store mappings child->parent, where
@@ -121,6 +121,7 @@ public class OWLGraphWrapper {
 		public boolean isFollowComplementOfInClosure = false;
 
 		public boolean isCacheClosure = true;
+		public boolean isMonitorMemory = true;
 
 		// if set to non-null, this constrains graph traversal. TODO
 		public Set<OWLQuantifiedProperty> graphEdgeIncludeSet = null;
