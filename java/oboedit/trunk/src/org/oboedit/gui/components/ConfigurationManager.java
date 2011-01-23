@@ -1092,9 +1092,9 @@ public class ConfigurationManager extends AbstractGUIComponent {
 	}
 	protected void backupUserDefDict() throws IOException{
 		String confDir = Preferences.getOBOEditPrefsDir().toString();
-		File userDictFile = new File(confDir + "/" + "user.dict");
+		File userDictFile = new File(confDir + "/dict/" + "user.dict");
 		JFileChooser chooser = new JFileChooser(confDir);
-		chooser.setDialogTitle("Save user.dict");
+		chooser.setDialogTitle("Save copy of user.dict");
 		chooser.setSelectedFile(userDictFile);
 		int returnVal = chooser.showSaveDialog(GUIManager.getManager()
 				.getFrame());
