@@ -3,6 +3,8 @@ package owltools.io;
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
@@ -18,6 +20,8 @@ import owltools.graph.OWLQuantifiedProperty;
 public class GraphClosureWriter {
 
 	protected PrintStream stream;
+	
+	
 
 	public GraphClosureWriter(PrintStream stream) {
 		super();
@@ -35,14 +39,36 @@ public class GraphClosureWriter {
 			e.printStackTrace();
 		}
 	}
-
+	
+	public void serializeClosure(OWLGraphWrapper g) throws IOException {
+		//FileOutputStream fos = new FileOutputStream(filename);
+		ObjectOutputStream out = new ObjectOutputStream(stream);
+		for (OWLObject obj : g.getAllOWLObjects()) {
+			g.getOutgoingEdgesClosure(obj);
+		}
+		out.writeObject(g.inferredEdgeBySource);
+	}
 
 	public void saveClosure(OWLGraphWrapper g) {
+		g.getConfig().isCacheClosure = false;
+		int i = 0;
 		for (OWLObject obj : g.getAllOWLObjects()) {
+			if (i % 100 == 0) {
+				if (g.getConfig().isMonitorMemory) {
+					System.gc();
+					System.gc();
+					System.gc();
+					long tm = Runtime.getRuntime().totalMemory();
+					long fm = Runtime.getRuntime().freeMemory();
+					long mem = tm-fm;
+					System.err.println(i+" Memory total:"+tm+" free:"+fm+" diff:"+mem+" (bytes) diff:"+(mem/1000000)+" (mb)");
+				}
+			}
+			i++;
 			//System.err.println(obj);
 			for (OWLGraphEdge e : g.getOutgoingEdgesClosure(obj)) {
 				//System.err.println("  E:"+e);
-				stream.print(g.getIdentifier(obj));
+				print(obj);
 				sep();
 				//stream.print("[");
 				int n = 0;
@@ -64,12 +90,29 @@ public class GraphClosureWriter {
 					//System.err.println("undefined behavior: "+e.getTarget());
 					continue;
 				}
-				stream.print(g.getIdentifier(e.getTarget()));
+				print(e.getTarget());
 				nl();
 			}
 		}
 		stream.close();
 	}
+
+	protected void print(OWLObject obj) {
+		if (obj instanceof OWLNamedObject) {
+			OWLNamedObject nobj = (OWLNamedObject)obj;
+			if (nobj.getIRI().toString() == null || nobj.getIRI().toString().equals("")) {
+				System.err.println("uh oh:"+nobj);
+			}
+			stream.print(nobj.getIRI().toString());
+		}
+		else if (obj instanceof OWLClassExpression) {
+			stream.print(obj.toString());
+		}
+		else {
+
+		}
+	}
+
 
 	protected void print(OWLNamedObject obj) {
 		// TODO: prefixes

@@ -47,6 +47,7 @@ public class SimEngine {
 	public boolean excludeClassesInComparison = false;
 	public OWLObject comparisonSuperclass = null;
 	public Double minimumIC = null;
+	private Map<OWLObject,Double> cacheObjectIC = new HashMap<OWLObject,Double>();
 
 	// -------------------------------------
 	// Constructions
@@ -115,8 +116,10 @@ public class SimEngine {
 	// Statistics
 	// -------------------------------------
 
-
+	private Integer corpusSize = null;
 	public int getCorpusSize() {
+		if (corpusSize != null)
+			return corpusSize;
 		// TODO - option for individuals; for now this is hardcoded
 		int n = 0;
 		for (OWLObject x : graph.getAllOWLObjects()) {
@@ -124,6 +127,7 @@ public class SimEngine {
 				n++;
 			}
 		}
+		corpusSize = n;
 		return n;
 	}
 
@@ -138,11 +142,32 @@ public class SimEngine {
 		return n;
 		//return graph.getDescendants(obj).size();	
 	}
+	
+	/**
+	 * The IC of an OWLObject is
+	 * 
+	 * freq(Obj)/corpusSize
+	 * 
+	 * here the frequency of an object is the number of individuals with a graph path up to the object,
+	 * and the corpus size is the number of individuals in the graph
+	 * 
+	 * @param obj
+	 * @return
+	 */
 	public Double getInformationContent(OWLObject obj) {
-		return -Math.log(((double) (getFrequency(obj)) / getCorpusSize())) / Math.log(2);
+		// caching is always on by default
+		if (cacheObjectIC.containsKey(obj)) {
+			return cacheObjectIC.get(obj);
+		}
+		Double ic = null;
+		if (getFrequency(obj) > 0) {
+			ic = -Math.log(((double) (getFrequency(obj)) / getCorpusSize())) / Math.log(2);
+		}
+		cacheObjectIC.put(obj, ic);
+		return ic;
 	}
 	public boolean hasInformationContent(OWLObject obj) {
-		return getFrequency(obj) > 0;
+		return getInformationContent(obj) != null;
 	}
 
 	Set<OWLObject> nonSignificantObjectSet = null;
