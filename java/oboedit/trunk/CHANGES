@@ -228,41 +228,38 @@ Frequently Asked Questions
 ============================
 
 1. Why has the location of the configuration folder changed?
-In the previous versions the location of the config folder was a characteristic of the operating system used. 
-This led to a lot of confusion and most users could not locate their config folder hence I decided to change it 
+In previous versions of OBO-Edit, the location of the config folder depended on the user's operating system. 
+This led to a lot of confusion and most users could not locate their config folder, so we decided to change it 
 to a standard location in the file system.
 
 2. What can I do to help?
 The success of any software tool is dependent on feedback from the user community.
-Ways in which you can help:
+Here are some ways for you to help improve OBO-Edit:
         * Participate in OBO-Edit Working Group Weekly Meetings held on alternate Tuesday/Thursdays over webex and conference call.
         * You can subscribe to the OEWG meeting calendar here:
 https://www.google.com/calendar/render?cid=cDN1bXNkOG45bDMyYW5kbGR1M2xqcjNuazhAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&invEmailKey=geneontology-oboedit-working-group%40lists.sourceforge.net%3Af41cf4fbc1e0ab381b88e541f31307dd73d92ab1
-        * Email aabdulla [at] berkeleybop [dot] org if you experience issues subscribing to the OEWG meeting calendar.
-        * Join the OBO-Edit Working Group sourceforge mailing list:     
+        * Join the OBO-Edit Working Group sourceforge mailing list:  
 https://sourceforge.net/mailarchive/forum.php?forum_name=geneontology-oboedit-working-group
-        * Program or Report New Features - Let us know your ideas for new features or how we can improve existing features.
-        * Report Bugs
-        * Add Documentation
-        * Write Tutorials and put them up on the OBO-Edit wiki page
+        * Report bugs
+        * Add or request new features: let us know your ideas for new features or how we can improve existing features.
+        * Add documentation
+        * Write tutorials and put them up on the OBO-Edit wiki page
         * Help others learn to use OBO-Edit, etc.
 
 3. How can I file a bug report?
-If you have reproduced a bug in the most recent release and no-one else appears to have reported it, then report it on our sourceforge bug tracker:
+If you have reproduced a bug in the most recent release and no one else appears to have reported it, then report it on our SourceForge bug tracker:
 https://sourceforge.net/tracker/?atid=418257&group_id=36855&func=browse
 
-Effective bug reports are the most likely to be fixed. These guidelines 
-explain how to write such reports.
-    * Reproduce your bug using the most recent release, to see weather it has already been fixed.
-    * Be precise and clear - explain the behavior so others can reproduce the bug
-    * Limit bugs to one per report
-    * No bug is too trivial to report - small bugs may hide big bugs
-    * Clearly separate fact from speculation
-    * Search the Bugs Tracker to check weather your bug has already been reported
-        
+Effective bug reports are the most likely to be fixed.
+    * Search the Bugs Tracker to check whether your bug has already been reported.
+    * Reproduce your bug using the most recent release, to see whether it has already been fixed.
+    * Be precise and clear - explain the behavior so others can reproduce the bug.
+    * Give specific examples (which ontology file you loaded, exactly what you did that caused the bug to appear, etc.).
+    * Report one bug per bug report.
+    * No bug is too trivial to report - small bugs may hide big bugs.
 
-4. Where can I find the source code?
-http://wiki.geneontology.org/index.php/OBO-Edit:_Getting_the_Source_Code
+4. Where can I find the OBO-Edit source code?
+See http://wiki.geneontology.org/index.php/OBO-Edit:_Getting_the_Source_Code
 
 5. Why haven't you responded to the mail I sent you?
 The probability of your question getting answered quickly is the highest 
@@ -270,15 +267,17 @@ when you write to the OBO-Edit Working Group Sourceforge Mailing list:
 https://sourceforge.net/mailarchive/forum.php?forum_name=geneontology-oboedit-working-group
 
 6. Who develops OBO-Edit?
-Amina Abdulla at Berkeley Bioinformatics and Open Source Projects Group (BBOP),LBL,Berkeley,California is the lead OBO-Edit developer.
-You can email her at: aabdulla [at] berkeleybop [dot] org or attend a working group meeting to discuss any questions/comments about the tool.
+Currently, the project manager and lead developer is Nomi Harris of the
+Berkeley Bioinformatics and Open Source Projects Group (BBOP) at Lawrence
+Berkeley National Laboratory, Berkeley, California.  The tool was originally
+developed by John Day-Richter.  Others who have contributed to the code
+include Chris Mungall, Amina Abdulla, and Jennifer Deegan.
 
 
 ============
 To Do
 ============
 Documentation:
-- user.dict usage and backup info
 - Assert Implied Links Component
 - Update Advanced Save interface options
 
@@ -286,6 +285,3 @@ Troubleshooting- add note about:
 https://sourceforge.net/tracker2/index.php?func=detail&aid=2683791&group_id=36855&atid=418257
 
 Known Issues - Upcoming fixes
-Parent Editor and Text Editor not in sync.
-Ontology Tree Editor - Name unnamed terms
-Renaming terms problematic in Text Editor
