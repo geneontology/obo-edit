@@ -7,6 +7,8 @@ Bug Fixes:
 [ geneontology-Bugs-3156488 ] Synonym editor wouldn't close when you committed.
 That made it look like Commit wasn't working, because, for example, if you were editing a synonym and you clicked Commit,
 the Synonym Editor stayed open instead of closing and looking like a finished Synonym.
+Fixing this problem also turned out to fix Harold's problem where an out-of-date perspective made his Text Editor
+complain that there were unsaved changes when there weren't.
 
 [ geneontology-Bugs-2791589 ] user.dict not being detected
 [ geneontology-Bugs-2053732 ] can't add words to dictionary
@@ -19,8 +21,9 @@ the implementation of the dictionary searches. It should now work correctly.
 [ geneontology-Bugs-3024334 ] isa complete check
 Fixed by Chris--exclude disjoint relationships when checking is_a complete.
 
-Fixed docindex creation
+[ geneontology-Bugs-3164119 ] Backup dictionary (option in Config Manager) doesn't work
 
+Fixed docindex creation
 
 ================================
 What's New in OBO-Edit v2.1-beta7
