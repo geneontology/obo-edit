@@ -253,11 +253,6 @@ my $select_last_insert_id_sth = $dbh->prepare(<<SQL);
 SELECT LAST_INSERT_ID()
 SQL
 
-my $insert_gene_product = $dbh->prepare(<<SQL);
-INSERT INTO gene_product(symbol,dbxref_id,species_id,type_id)VALUES(?,?,?,?)
-SQL
-
-
 my $insert_dbxref = $dbh->prepare(<<SQL);
 INSERT INTO dbxref(xref_dbname,xref_key)VALUES(?,?)
 SQL
