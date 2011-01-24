@@ -1,6 +1,7 @@
 [Term]
 id: TEST:0000001
 name: car
+synonym: "automobile" EXACT []
 
 [Term]
 id: TEST:0000002
@@ -17,6 +18,11 @@ name: blue VW
 [Term]
 id: TEST:0000005
 name: VW
+
+[Term]
+id: TEST:0000006
+name: automobile
+is_obsolete: true
 
 [Typedef]
 id: has_color
