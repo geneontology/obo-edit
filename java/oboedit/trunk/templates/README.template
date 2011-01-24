@@ -1,26 +1,23 @@
-OBO-Edit README
-Copyright (C) 2001, Gene Ontology Consortium
-Author:       John Day-Richter (john.richter@aya.yale.edu)
-Version:      $VERSION$
-Release date: $DATE$
+Copyright (C) 2011, Gene Ontology Consortium
+Original author:  John Day-Richter (john.richter@aya.yale.edu)
+Version:      2.1-beta8
+Release date: January 24, 2011
 
 OBO-Edit is an open source tool written in Java for browsing, searching, and
 modifying OBO ontologies.
 
 Contacting us
 -----------
-  Updates, announcements, and other information can be obtained from our
-  sourceforge site at http://sourceforge.net/projects/geneontology
-  or by emailing jmr39@users.sourceforge.net. Copies of this archive are
-  available on our sourceforge site at
-  http://sourceforge.net/project/showfiles.php?group_id=36855
+  Updates, announcements, and other information can be found at http://oboedit.org/
+  The OBO-Edit source code can be found at
+  http://geneontology.svn.sourceforge.net/viewvc/geneontology/java/oboedit/trunk/
 
 How to report bugs:
 -----------
-  Use the bug tracking system on our sourceforge site. Submit a bug by
-  going to
+  Use the bug tracking system on our sourceforge site. Submit a bug by going to
   http://sourceforge.net/tracker/?func=add&group_id=36855&atid=418257
 
 Revision History:
 -----------
-  Version $VERSION$
+  Version 2.1-beta8
+
