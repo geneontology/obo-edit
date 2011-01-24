@@ -21,9 +21,6 @@ use GO::MatchID;
 
 go-load-qfo-fresh.pl - Load QFO files into GO database
 
-Don't use this yet!  This will replace F<go-load-qfo-seq.pl>, right
-now it it a work in progress.
-
 =head1 SYNOPSIS
 
 seq2pthr2phylotree.pl -dbname I<db> [-dbsocket I<sock>]
@@ -53,7 +50,7 @@ I<QFO_CACHE> environmental variable.
 
 If I<qfo_cache> has a false value it will load the files to a
 temporary location and delete them when done.  Otherwise the files
-will cached at I<qfo_cache> and save for next run.
+will cache at I<qfo_cache> and for the next run.
 
 If the <--fetch> option is not specified at all it will try to load
 Fasta files specified on the command line. It expects the start of the
@@ -69,9 +66,10 @@ option it will only load Fasta files that are in the Panther clusters.q
 
 =item C<--[no-]dry-run>
 
-By default it only does a dry run.  Use C<--no-dry-run> to actualy do the work.
+By default it only does a dry run.  Use C<--no-dry-run> to actualy do
+the work.
 
-=item C<--sensitive]
+=item C<[--sensitive]>
 
 This will cause same warning statements to die.
 
@@ -106,7 +104,6 @@ my $match_only;
 my $fetch_dir;
 my $clean_p = 0;
 
-#my $download_dir = "$ENV{HOME}/tmp"; # change to tempdir
 my %ftp_opt = ( Passive => 1 ); # In doubt use passive, it's what
                                 # wget(1) does
 my $ftp_host = 'ftp.ebi.ac.uk';
@@ -147,8 +144,9 @@ sub ftp_connect{
     return $out;
 }
 
-my @file;
 
+# Will hold all files to load
+my @file;
 
 if (defined $fetch_dir) {
     if (!$fetch_dir) {
