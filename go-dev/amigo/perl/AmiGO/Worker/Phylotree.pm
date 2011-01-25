@@ -160,6 +160,8 @@ sub set{
     return $s->_index_display(map { $_->id } @$r);
 }
 
+
+
 sub key2phylotree{
     my $s = shift;
 
@@ -234,7 +236,7 @@ sub _index_display{
 	 'members',
 	 'last_anno',
 	],
-	group_by => 'xref_key', # Not needed in Lucid
+	#group_by => 'xref_key', # Not needed in Lucid
 	order_id => 'xref_key',
        });
 
@@ -249,6 +251,51 @@ sub _index_display{
     } @$r;
 }
 
+
+sub id2{
+    my $s = shift;
+    my $rows = shift;
+    my $page = shift;
+    my $order = shift;
+    #warn Dumper $order;
+
+    my $r = GOBO::DBIC::GODBModel::Query->new({type=>'phylotree_lazy'})->get_all_results
+      ({
+	xref_dbname  => [ $s->{dbname} ],
+       },
+       {
+	join =>
+	[
+	 'dbxref',
+	 { gene_product_phylotree => 'association' },
+	],
+	rows => $rows,
+	page => $page,
+	select =>
+	[
+	 'xref_key',
+	 { count => 'DISTINCT gene_product_phylotree.gene_product_id', -as => 'members' },
+	 { max => 'association.assocdate',                             -as => 'last_anno' },
+	],
+	as =>
+	[
+	 'xref_key',
+	 'members',
+	 'last_anno',
+	],
+	order_by => $order,
+       });
+
+    return map {
+	my %new = %$s;
+	$new{key}               = $_->get_column('xref_key');
+	$new{number_of_members} = $_->get_column('members');
+	$new{last_annotated}    = $_->get_column('last_anno');
+	my $out = __PACKAGE__->new(%new);
+	$out->{dist} = $out->url(mode => 'dist', ref => 1, diameter => 50);
+	$out;
+    } @$r;
+}
 
 =item last_annotated()
 
