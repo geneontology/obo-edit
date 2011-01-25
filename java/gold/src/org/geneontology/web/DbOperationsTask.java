@@ -2,13 +2,25 @@ package org.geneontology.web;
 
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.io.DbOperationsListener;
+import org.obolibrary.obo2owl.Owl2Obo;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.reasoner.Node;
+import org.semanticweb.owlapi.reasoner.NodeSet;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 import owltools.graph.OWLGraphWrapper;
 
@@ -43,6 +55,10 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 		this.force = force;
 		this.tsvFileDir = tsvFilesDir;
 		graphs = new Vector<OWLGraphWrapper>();
+		
+		if("checkconsistency".equals(opName) || "find-inferences".equals(opName))		
+			this.consitancyCheckBuffer = new StringBuffer();
+		
 	}
 	
 	public DbOperationsTask(String op) throws OWLOntologyCreationException, IOException{
@@ -61,6 +77,7 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 		db.addDbOperationsListener(this);
 		
 		try{
+			
 			for(String location: locations){
 				this.currentOntologyBeingProcessed = location;
 				if("bulkload".equals(opName)){
@@ -73,6 +90,11 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 					db.dumpFiles(tablePrefix, location);
 				}else if ("loadtsv".equals(opName)){
 					db.loadTsvFiles(tsvFileDir);
+				}else if("checkconsistency".equals(opName)){
+					performConsistancyCheck(db.buildOWLGraphWrapper(location).getSourceOntology());
+				}else if("find-inferences".equals(opName)){
+					//performConsistancyCheck(db.buildOWLGraphWrapper(location).getSourceOntology());
+					findInferences(db.buildOWLGraphWrapper(location));
 				}
 			}
 		} catch (Exception e) {
@@ -153,5 +175,107 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 	public List<OWLGraphWrapper> getGraphs(){
 		return graphs;
 	}
+	
+	public String getConsistencyCheckResults(){
+		return consitancyCheckBuffer == null ? null : consitancyCheckBuffer.toString();
+	}
+	
+	private StringBuffer consitancyCheckBuffer;
+	
+	private void performConsistancyCheck(OWLOntology ontology){
+		
+		PelletReasonerFactory factory = new PelletReasonerFactory();
+		OWLReasoner reasoner = factory.createReasoner(ontology);
+		
+		consitancyCheckBuffer.append("<h2>Performing Consitancy Check for ontology :" + Owl2Obo.getIdentifier(ontology.getOntologyID().getOntologyIRI()) + "</h2>");
+		
+		boolean isConsistent= reasoner.isConsistent();
+		
+		consitancyCheckBuffer.append("is Consistent: " + isConsistent + "<br />");
+		
+		Node<OWLClass> unsatisfiableClasses = reasoner.getUnsatisfiableClasses();
+		if (unsatisfiableClasses.getSize() > 0) {
+			consitancyCheckBuffer.append("<br /><br /><h3>The following classes are unsatisfiable: </h3><br />");
+			for(OWLClass cls : unsatisfiableClasses) {
+				if (cls.toString().endsWith("Nothing"))
+					continue;
+				consitancyCheckBuffer.append ("&nbsp;&nbsp;&nbsp;-unsatisfiable: " + Owl2Obo.getIdentifier(cls) + "<br />");
+			}
+		}
+		else {
+			consitancyCheckBuffer.append("There are no unsatisfiable classes<br />");
+		}
+		
+	}
+
+	private void findInferences(OWLGraphWrapper graph){
+		OWLOntology ontology = graph.getSourceOntology();
+		PelletReasonerFactory factory = new PelletReasonerFactory();
+		OWLReasoner reasoner = factory.createReasoner(ontology);
+
+		Set<OWLClass> nrClasses = new HashSet<OWLClass>();
+
+		for (OWLClass cls : ontology.getClassesInSignature()) {
+			if (nrClasses.contains(cls))
+				continue; // do not report these
+			
+			// REPORT INFERRED EQUIVALENCE BETWEEN NAMED CLASSES
+			for (OWLClass ec : reasoner.getEquivalentClasses(cls)) {
+				if (nrClasses.contains(ec))
+					continue; // do not report these
+				
+				if(cls.toString().equals(ec.toString()))
+					continue;
+				
+				if (cls.toString().compareTo(ec.toString()) > 0) // equivalence is symmetric: report each pair once
+					consitancyCheckBuffer.append("&nbsp;&nbsp;&nbsp;* INFERRED: equivalent "+getLabel(cls, graph)+" "+ getLabel(ec, graph) + "<br />" );
+			}
+			
+			// REPORT INFERRED SUBCLASSES NOT ALREADY ASSERTED
+
+			NodeSet<OWLClass> scs = reasoner.getSuperClasses(cls, true);
+			for (Node<OWLClass> scSet : scs) {
+				for (OWLClass sc : scSet) {
+					if (sc.toString().endsWith("Thing")) {
+						continue;
+					}
+					if (nrClasses.contains(sc))
+						continue; // do not report subclasses of owl:Thing
+
+					// we do not want to report inferred subclass links
+					// if they are already asserted in the ontology
+					boolean isAsserted = false;
+					for (OWLClassExpression asc : cls.getSuperClasses(ontology)) {
+						if (asc.equals(sc)) {
+							// we don't want to report this
+							isAsserted = true;								
+						}
+					}
+					for (OWLClassExpression ec : cls.getEquivalentClasses(ontology)) {
+						
+						if (ec instanceof OWLObjectIntersectionOf) {
+							OWLObjectIntersectionOf io = (OWLObjectIntersectionOf)ec;
+							for (OWLClassExpression op : io.getOperands()) {
+								if (op.equals(sc)) {
+									isAsserted = true;
+								}
+							}
+						}
+					}
+					if (!isAsserted) {
+						this.consitancyCheckBuffer.append("&nbsp;&nbsp;&nbsp;&nbsp;*INFERRED:  "+getLabel(cls,graph)+" subClassOf "+getLabel(sc, graph) + "<br />");
+					}
+				}
+			}
+		}
+		
+		
+	}
+	
+	private static String getLabel(OWLClass cls,  OWLGraphWrapper graph) {
+		return  "["+cls.toString()+" ! "+ graph.getLabel(cls) +"]";
+	}
+
+	
 	
 }
