@@ -31,6 +31,11 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 	// global reference of the OWLGraphWrapper
 	private Hashtable<String, OWLGraphWrapper> graphs;
 
+	
+	public DbOperationsService(){
+		graphs = new Hashtable<String, OWLGraphWrapper>();
+	}
+	
 	public void handleService(HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 
@@ -199,6 +204,7 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 			throws IOException {
 		writer.write("<h1>Gene Ontology Admin</h1>");
 		writer.write("<form action='.'>");
+		writer.write("<input type='hidden' name='servicename' value='"+ this.getServiceName() +"' />");
 		writer.write("<input type='hidden' name='command' value='" + command
 				+ "' />");
 		writer.write("<label>Please select ontology</label><br />");
