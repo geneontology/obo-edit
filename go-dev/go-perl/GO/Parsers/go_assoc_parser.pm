@@ -405,9 +405,10 @@ sub parse_fh {
 	    # no longer checks for cardinality errors
 
 	}
+        my @refs = split(/\|/, $ref);
 	map {
 	    $self->event(REF, $_)
-	} split(/\|/, $ref);
+        } @refs;
 	$self->end_event(EVIDENCE);
 	#@last = @vals;
         @last =
