@@ -53,6 +53,7 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 
 		boolean addReload = false;
 		if (command != null && task == null) {
+			
 			if ("update".equals(command)) {
 
 				String ontologylocation = request
@@ -78,7 +79,7 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 					// }
 				}
 
-			} else if ("bulkload".equals(command)) {
+			} else if ("bulkload".equals(command) ||  "checkconsistency".equals(command) || "find-inferences".equals(command)) {
 				List list = GeneOntologyManager.getInstance()
 						.getDefaultOntologyLocations();
 				String locations[] = new String[list.size()];
@@ -147,44 +148,52 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 			writer.write("<center><img src=\"../images/progress-indicator.gif\" alt=\"Request is in Progress\" /></center>");
 			writer.write("<p align=\"center\">Your Request is in Progress</p>");
 		}
-
-		writer.write("<h2>Status report for the running task '"
-				+ task.getOperationName() + "' :</h2>");
-		writer.write("<table><tr><th>Operation Name</th><th>Status/Completion Time</th></tr>");
-		Exception ex = task.getException();
-		String ontology = "";
-		for (String opName : task.getCompletedOperations()) {
-			String[] st = opName.split("--");
-			String opLocalName = opName;
-			if (st.length > 1) {
-				if (!ontology.equals(st[1])) {
-					ontology = st[1];
-					writer.write("<tr><td colspan='2'><h4>Loading " + ontology
-							+ "</h4></td></tr>");
+		
+		
+		String consistencyResults = task.getConsistencyCheckResults();
+		if(consistencyResults != null){
+			writer.write("<h2>Consistency Check status</h2>");
+			writer.write(consistencyResults);
+		}else{
+			writer.write("<h2>Status report for the running task '"
+					+ task.getOperationName() + "' :</h2>");
+			writer.write("<table><tr><th>Operation Name</th><th>Status/Completion Time</th></tr>");
+			Exception ex = task.getException();
+			String ontology = "";
+			for (String opName : task.getCompletedOperations()) {
+				String[] st = opName.split("--");
+				String opLocalName = opName;
+				if (st.length > 1) {
+					if (!ontology.equals(st[1])) {
+						ontology = st[1];
+						writer.write("<tr><td colspan='2'><h4>Loading " + ontology
+								+ "</h4></td></tr>");
+					}
+	
+					opLocalName = st[0];
 				}
-
-				opLocalName = st[0];
+	
+				long stTime = task.getStartTime(opName);
+				long endTime = task.getEndTime(opName);
+	
+				String status = "In progress";
+				boolean isCompleted = false;
+				if (endTime > 0) {
+					status = (float) (endTime - stTime) / 1000 + "";
+					isCompleted = true;
+				} else if (ex != null) {
+					status = "failed";
+				}
+	
+				writer.write("<tr><td>" + opLocalName + "</td><td"
+						+ (isCompleted ? " bgcolor='green'" : "") + ">" + status
+						+ "</td></tr>");
 			}
+	
+			writer.write("</table>");
 
-			long stTime = task.getStartTime(opName);
-			long endTime = task.getEndTime(opName);
-
-			String status = "In progress";
-			boolean isCompleted = false;
-			if (endTime > 0) {
-				status = (float) (endTime - stTime) / 1000 + "";
-				isCompleted = true;
-			} else if (ex != null) {
-				status = "failed";
-			}
-
-			writer.write("<tr><td>" + opLocalName + "</td><td"
-					+ (isCompleted ? " bgcolor='green'" : "") + ">" + status
-					+ "</td></tr>");
 		}
-
-		writer.write("</table>");
-
+		
 		if (task.getException() != null) {
 			LOG.error("", task.getException());
 			PrintWriter pw = new PrintWriter(writer);
@@ -200,6 +209,10 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 
 	}
 
+	/*public Collection<OWLOntology> getOntologies(){
+		return graphs.values();
+	}*/
+	
 	private void printOntologySelectionForm(Writer writer, String command)
 			throws IOException {
 		writer.write("<h1>Gene Ontology Admin</h1>");
@@ -218,5 +231,5 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 		writer.write("<input type='submit' value='update' /><br />");
 		writer.write("</form>");
 	}
-
+	
 }
