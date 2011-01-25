@@ -13,8 +13,10 @@ public class ServicesConfig {
 		Hashtable<String, ServiceHandler> table = new Hashtable<String, ServiceHandler>();
 		
 		ServiceHandler service = new DbOperationsService();
+		table.put(service.getServiceName(), service);
 		
 		table.put(service.getServiceName(), service);
+		
 		
 		return table;
 	}
