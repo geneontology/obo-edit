@@ -10,7 +10,7 @@ function bulkLoad(){
 					"Database configurations are located in the installation directory of this web application, i.e in tomcat it is located at webapps/admin");
 
 	if(yes){
-		window.location="gold?command=bulkload";
+		window.location="gold?servicename=db-operations&command=bulkload";
 	}
 }
 
@@ -18,13 +18,13 @@ function update(){
 	var yes = confirm("Are you are sure you want to update the GOLD database?");
 
 	if(yes){
-		window.location="gold?command=update";
+		window.location="gold?servicename=db-operations&command=update";
 	}
 	
 }
 
 function getLastUpdateDate(){
-	window.location="gold?command=getlastupdate";
+	window.location="gold?servicename=db-operations&command=getlastupdate";
 }
 
 
