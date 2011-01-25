@@ -96,6 +96,16 @@ the given value along with some summary information.
 
 =cut
 my $default_dbname = 'PantherDB';
+my %sort =
+  (
+   name_asce => 'xref_key',
+   name_desc => { -desc => 'xref_key' },
+   memb_asce => 'members',
+   memb_desc => { -desc => 'members' },
+   anno_asce => 'last_anno',
+   anno_desc => { -desc => 'last_anno' },
+  );
+
 sub mode_cluster_index{
     my $c = shift;
     my $q = $c->query();
@@ -110,10 +120,31 @@ sub mode_cluster_index{
 	@r = $o->id2phylotree(@id);
 	push @r, $o->key2phylotree(@id);
     } else {
-	my $rows = abs(int($q->param('rows') || 5));
+	my $rows = abs(int($q->param('rows') || 10));
 	my $page = abs(int($q->param('page') || 1));
 
-	@r = $o->set($rows, $page);
+	my $order = $q->param('order') || 'name_asce';
+
+	my $submit = lc($q->param('submit'));
+	if ($submit eq 'next') {
+	    $page++;
+
+
+	} elsif ($submit eq 'prev') {
+	    $page-- if ($page > 1);
+	} elsif ($submit eq 'home') {
+	    $page = 1;
+	} else {
+	    for my $k (keys %sort) {
+		if ($q->param($k)) {
+		    $order = $k;
+		    last;
+		}
+	    }
+	}
+	$c->set_template_parameter(order => $order);
+
+	@r = $o->id2($rows, $page, $sort{$order});
 
 	if ($page > 1){
 	    $c->set_template_parameter
@@ -123,6 +154,10 @@ sub mode_cluster_index{
 	}
 	$c->set_template_parameter
 	  (next => $o->url(rows => $rows, page => ($page+1)));
+
+	$c->set_template_parameter(form => $o->url);
+	$c->set_template_parameter(rows => $rows);
+	$c->set_template_parameter(page => $page);
 
 	$c->set_template_parameter(offset => ($page - 1) * $rows);
     }
