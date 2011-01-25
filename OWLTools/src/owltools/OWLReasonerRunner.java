@@ -211,17 +211,24 @@ public class OWLReasonerRunner {
 				}
 				System.out.println("\n");
 
+				// ------------------
+				// INFERRED SUPERCLASS AND INFERRED EQUIVALENCE REPORT
+				// ------------------
+				
 				for (OWLClass cls : ont.getClassesInSignature()) {
 					if (nrClasses.contains(cls))
 						continue; // do not report these
+					
+					// REPORT INFERRED EQUIVALENCE BETWEEN NAMED CLASSES
 					for (OWLClass ec : reasoner.getEquivalentClasses(cls)) {
 						if (nrClasses.contains(ec))
 							continue; // do not report these
 						if (cls.toString().compareTo(ec.toString()) > 0) // equivalence is symmetric: report each pair once
 							System.out.println("  INFERRED: equivalent "+getLabel(cls,ont,df)+" "+getLabel(ec,ont,df));
 					}
-					//System.out.println("  "+cls);
-					//NodeSet<OWLNamedIndividual> l = reasoner.getInstances(cls,false);
+					
+					// REPORT INFERRED SUBCLASSES NOT ALREADY ASSERTED
+
 					NodeSet<OWLClass> scs = reasoner.getSuperClasses(cls, true);
 					for (Node<OWLClass> scSet : scs) {
 						for (OWLClass sc : scSet) {
@@ -229,15 +236,14 @@ public class OWLReasonerRunner {
 								continue;
 							}
 							if (nrClasses.contains(sc))
-								continue; // do not report these
-							//ont.get
-							//System.out.println("    super: "+sc);
-							Set<OWLClassExpression> ascs = cls.getSuperClasses(ont);
+								continue; // do not report subclasses of owl:Thing
 
+							// we do not want to report inferred subclass links
+							// if they are already asserted in the ontology
 							boolean isAsserted = false;
-							for (OWLClassExpression asc : ascs) {
+							for (OWLClassExpression asc : cls.getSuperClasses(ont)) {
 								if (asc.equals(sc)) {
-									//System.out.println("    ASC: "+asc);
+									// we don't want to report this
 									isAsserted = true;								
 								}
 							}
@@ -258,6 +264,12 @@ public class OWLReasonerRunner {
 						}
 					}
 				}
+				
+				// ------------------
+				// CREATE NEW ONTOLOGY WITH INFERENCES
+				// ------------------
+
+				
 				// To generate an inferred ontology we use implementations of inferred axiom generators
 				// to generate the parts of the ontology we want (e.g. subclass axioms, equivalent classes
 				// axioms, class assertion axiom etc. - see the org.semanticweb.owlapi.util package for more
