@@ -500,12 +500,12 @@ RootTextEditComponent, SelectionDrivenComponent {
 			}
 		}
 		if (fatal) {
-			Object[] options = { "Open Verify perspective to display errors",
+			Object[] options = { "Open Verification Manager to show errors",
 					"Correct errors without changing the display",
 			"Abandon pending edits" };
 			Object choice = JOptionPane.showInputDialog(this,
 					"There are pending text edits that "
-					+ "cannot be autocommitted because of "
+					+ "cannot be committed because of "
 					+ "fatal errors. How do you wish to correct this?",
 					"Fatal errors", JOptionPane.ERROR_MESSAGE, null, options,
 					options[0]);
