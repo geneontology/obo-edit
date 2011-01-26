@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.geneontology.gaf.hibernate.GeneAnnotation;
 import org.obolibrary.oboformat.model.FrameMergeException;
 import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLObject;
@@ -73,7 +74,20 @@ public class AnnotationTaxonCheck {
 		this.taxGraphWrapper = taxGraphWrapper;
 	}
 
+	public Set<RuleViolation> getRuleViolations(GeneAnnotation a) {
+		return getRuleViolations(a.getClsId(), a.getBioentity().getNcbiTaxonId());
+	}
+	public Set<RuleViolation> getRuleViolations(String annotationCls, int ncbiTaxonId) {
+		return getRuleViolations(annotationCls, "NCBITaxon:"+ncbiTaxonId);
+	}
+
 	public boolean check(String annotationCls, String taxonCls) {
+		return getRuleViolations(annotationCls, taxonCls).size() == 0;
+	
+	}
+	
+	public Set<RuleViolation> getRuleViolations(String annotationCls, String taxonCls) {
+		Set<RuleViolation> violations = new HashSet<RuleViolation>();
 		OWLObject cls = graphWrapper.getOWLObjectByIdentifier(annotationCls);
 		OWLObject tax = taxGraphWrapper.getOWLObjectByIdentifier(taxonCls);
 		
@@ -98,6 +112,7 @@ public class AnnotationTaxonCheck {
 				// ONLY
 				if (!taxGraphWrapper.getAncestorsReflexive(tax).contains(p)) {
 					//System.out.println("   ANCESTORS OF "+tax+" DOES NOT CONTAIN "+p);
+					violations.add(new RuleViolation("ANCESTORS OF "+tax+" DOES NOT CONTAIN "+p));
 					isValid = false;
 				}
 			}
@@ -106,15 +121,12 @@ public class AnnotationTaxonCheck {
 				//System.out.println("   NEVER: "+rOnly+" p:"+p);
 				// NEVER
 				if (taxGraphWrapper.getAncestorsReflexive(tax).contains(p)) {
+					violations.add(new RuleViolation("ANCESTORS OF "+tax+" CONTAINS "+p));
 					isValid = false;
 				}
 			}
 		}
-		return isValid;
-		
-	}
-	
-	public boolean check(String annotationCls, int ncbiTaxonId) {
-		return check(annotationCls, "NCBITaxon:"+ncbiTaxonId);
+		return violations;	
 	}
 }
+
