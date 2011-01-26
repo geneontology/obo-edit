@@ -127,7 +127,10 @@ CREATE TABLE gene_annotation (
   extension_expression VARCHAR,
 
   -- col17
-  gene_product_form VARCHAR
+  gene_product_form VARCHAR,
+
+  -- e.g. filename
+  gaf_document
 );
 
 -- qualifier expression
@@ -166,6 +169,13 @@ CREATE TABLE extension_expression (
 
   -- EXAMPLE: "CL:000123"
   cls VARCHAR
+);
+
+CREATE TABLE gaf_document (
+  id VARCHAR PRIMARY KEY,
+
+  document_path VARCHAR   
+   
 );
 
 CREATE TABLE bioentity_relationship (
