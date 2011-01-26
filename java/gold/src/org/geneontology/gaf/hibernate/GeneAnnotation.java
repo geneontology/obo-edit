@@ -2,6 +2,7 @@ package org.geneontology.gaf.hibernate;
 
 import java.io.Serializable;
 
+import org.geneontology.gold.hibernate.model.Cls;
 import org.geneontology.gold.hibernate.model.GOModel;
 
 /**
@@ -15,8 +16,8 @@ public class GeneAnnotation extends GOModel implements Serializable {
 	private String qualifierExpression;
 	private boolean isContributesTo;
 	private boolean isIntegralTo;
-	private String cls; //TODO: should it be a class or string
-	private String referenceId;
+	private Cls cls; //TODO: should it be a class or string
+	private String referenceId;	
 	private String evidenceCls;
 	private String withExpression;
 	private int actsOnTaxonId;
@@ -32,7 +33,7 @@ public class GeneAnnotation extends GOModel implements Serializable {
 	}
 	
 	public GeneAnnotation(Bioentity bioentity, String qualifierExpression,
-			boolean isContributesTo, boolean isIntegralTo, String cls,
+			boolean isContributesTo, boolean isIntegralTo, Cls cls,
 			String referenceId, String evidenceCls, String withExpression,
 			int actsOnTaxonId, String lastUpdateDate, String assignedBy,
 			String extensionExpression, String geneProductForm) {
@@ -84,11 +85,20 @@ public class GeneAnnotation extends GOModel implements Serializable {
 		this.isIntegralTo = isIntegralTo;
 	}
 
-	public String getCls() {
+	/**
+	 * convenience method for getting the Id of the ontology class
+	 * 
+	 * @return id of the ontology class
+	 */
+	public String getClsId() {
+		return cls.getId();
+	}
+	
+	public Cls getCls() {
 		return cls;
 	}
 
-	public void setCls(String cls) {
+	public void setCls(Cls cls) {
 		this.cls = cls;
 	}
 
