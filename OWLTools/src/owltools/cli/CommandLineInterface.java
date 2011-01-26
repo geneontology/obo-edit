@@ -351,7 +351,7 @@ public class CommandLineInterface {
 					e.printStackTrace();
 				}
 
-				stream.println("Ontology Class Labels");
+				stream.println("Label");
 				for (OWLObject obj : g.getAllOWLObjects()) {
 					String label = g.getLabel(obj);
 					if (label != null)
