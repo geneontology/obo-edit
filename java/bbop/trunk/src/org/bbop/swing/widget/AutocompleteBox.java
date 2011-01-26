@@ -225,8 +225,13 @@ public class AutocompleteBox<T> extends JComboBox {
 
 		public Object getItem() {
 			Object out = null;
-			if (lastHits != null)
-				out = lastHits.size() == 0 ? null : lastHits.get(0).getVal();
+                        // This was ALWAYS RETURNING THE FIRST HIT!  No wonder it didn't work right when
+                        // the user moused down the list of autocomplete hits and then hit return to try to
+                        // select one.
+                        // --NH, 26 Jan 2011
+//				out = lastHits.size() == 0 ? null : lastHits.get(0).getVal();
+			if (lastHits != null && lastHits.size() > 0 && list.getSelectedIndex() >= 0)
+                          out = lastHits.get(list.getSelectedIndex()).getVal();
 			return out;
 		}
 
@@ -963,12 +968,12 @@ public class AutocompleteBox<T> extends JComboBox {
 		}
 
 		public Object getSelectedItem() {
-//			logger.debug("MODEL: getSelectedItem:"+ selected == null ? "NULL" : selected);
+//			logger.debug("MODEL: getSelectedItem:"+ (selected == null ? "NULL" : selected));
 			return selected;
 		}
 
 		public void setSelectedItem(Object anItem) {
-//			logger.debug("MODEL: setSelectedItem:"+ anItem == null ? "NULL" : anItem);
+//			logger.debug("MODEL: setSelectedItem:"+ (anItem == null ? "NULL" : anItem));
 			selected = anItem;
 		}
 
