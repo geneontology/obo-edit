@@ -1,8 +1,11 @@
 package owltools.cli;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -47,7 +50,7 @@ import owltools.sim.Similarity;
 
 public class CommandLineInterface {
 
-	private static Logger LOG = Logger.getLogger(DescriptionTreeSimilarity.class);
+	private static Logger LOG = Logger.getLogger(CommandLineInterface.class);
 
 
 	private static class Opts {
@@ -327,6 +330,61 @@ public class CommandLineInterface {
 				r.renderImage("png", new FileOutputStream("tmp.png"));
 				Set<OWLGraphEdge> edges = g.getOutgoingEdgesClosureReflexive(obj);
 				showEdges(edges);
+			}
+			else if (opts.nextEq("--draw-all")) {
+				opts.info("", "draws ALL objects in the ontology (caution: small ontologies only)");
+				//System.out.println("i= "+i);
+				OWLGraphLayoutRenderer r = new OWLGraphLayoutRenderer(g);
+
+				r.addAllObjects();
+				r.renderImage("png", new FileOutputStream("tmp.png"));
+			}
+			else if (opts.nextEq("--dump-node-attributes")) {
+				opts.info("", "dumps all nodes attributes in CytoScape compliant format");
+				FileOutputStream fos;
+				PrintStream stream = null;
+				try {
+					fos = new FileOutputStream(opts.nextOpt());
+					stream = new PrintStream(new BufferedOutputStream(fos));
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				stream.println("Ontology Class Labels");
+				for (OWLObject obj : g.getAllOWLObjects()) {
+					String label = g.getLabel(obj);
+					if (label != null)
+						stream.println(g.getIdentifier(obj)+"\t=\t"+label);
+				}
+				stream.close();
+			}
+			else if (opts.nextEq("--dump-sif")) {
+				opts.info("", "dumps CytoScape compliant sif format");
+				FileOutputStream fos;
+				PrintStream stream = null;
+				try {
+					fos = new FileOutputStream(opts.nextOpt());
+					stream = new PrintStream(new BufferedOutputStream(fos));
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				for (OWLObject x : g.getAllOWLObjects()) {
+					for (OWLGraphEdge e : g.getOutgoingEdges(x)) {
+						OWLQuantifiedProperty qp = e.getSingleQuantifiedProperty();
+						String label;
+						if (qp.getProperty() != null)
+							label = qp.getProperty().toString();
+						else
+							label = qp.getQuantifier().toString();
+						if (label != null)
+							stream.println(g.getIdentifier(x)+"\t"+label+"\t"+g.getIdentifier(e.getTarget()));
+						
+					}
+				}
+				stream.close();
 			}
 			else if (opts.nextEq("--all-class-ic")) {
 				opts.info("", "show calculated Information Content for all classes");
