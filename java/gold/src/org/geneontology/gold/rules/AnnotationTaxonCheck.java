@@ -55,6 +55,7 @@ public class AnnotationTaxonCheck {
 		
 	private void init() throws OWLOntologyCreationException, IOException, FrameMergeException {
 		ParserWrapper pw = new ParserWrapper();
+		System.out.println("ATC PARSING:"+files);
 		OWLOntology ont = pw.parseOBOFiles(files);
 		ParserWrapper tpw = new ParserWrapper();
 		OWLOntology taxOnt = tpw.parseOBOFiles(taxfiles);
