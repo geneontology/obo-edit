@@ -43,6 +43,8 @@
 --- 13     Taxon             gene_product x species.ncbi_taxa_id
 --- 14     Date              association.assocdate
 --- 15     Assigned_by       association.source_db_id x db.name
+--- 16     Annotation Ext    association_property
+--- 17     Gene Product      association_isoform
 
 
 --- @@ species
