@@ -107,6 +107,7 @@ CREATE TABLE gene_annotation (
 
   -- col 8
   -- this should be identical to GAF. references with_info table.
+  -- EXAMPLE VALUE: "CGSC:pabA|CGSC:pabB"
   with_expression VARCHAR,
 
   -- col 13, card>1
@@ -120,7 +121,9 @@ CREATE TABLE gene_annotation (
   assigned_by VARCHAR,
 
   -- col16
-  -- this column gets filled in with the exact value from c16 in the GF
+  -- this column gets filled in with the exact value from c16 in the GF.
+  -- EXAMPLE: "occurs_in(CL:0000123)"
+  -- EXAMPLE: "occurs_in(CL:0000123)|occurs_in(MA:9999999)"
   extension_expression VARCHAR,
 
   -- col17
@@ -137,16 +140,31 @@ CREATE TABLE composite_qualifier (
   qualifier_obj VARCHAR 
 );
 
--- expression representing sum total of evidence WITHs for this assignment
+-- expression representing sum total of evidence WITHs for this assignment.
+-- For example a with expression of "CGSC:pabA|CGSC:pabB" would have two
+-- rows in this table, one with each xref
 CREATE TABLE with_info (
-  with_expression VARCHAR,
+  --- this is the exact value of the expression in col 8 of the GAF.
+  --- EXAMPLE: CGSC:pabA|CGSC:pabB
+  id VARCHAR,
+
+  --- 
+  --- EXAMPLE: CGSC:pabA
   with_xref VARCHAR
 );
 
+-- EXAMPLE: "occurs_in(CL:0000123)"
+--  in this case there would be one row in the table
+-- EXAMPLE: "occurs_in(CL:0000123)|occurs_in(MA:9999999)"
+--  in this case there would be two rows in the table
 CREATE TABLE extension_expression (
   -- composite expression
   id VARCHAR PRIMARY KEY,
 
+  -- EXAMPLE: "occurs_in"
+  relation VARCHAR,
+
+  -- EXAMPLE: "CL:000123"
   cls VARCHAR
 );
 
