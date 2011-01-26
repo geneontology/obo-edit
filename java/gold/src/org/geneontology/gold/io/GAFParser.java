@@ -6,6 +6,7 @@ package org.geneontology.gold.io;
  * the location of this code may move
  *
  */
+@ Deprecated
 public class GAFParser {
 
 }

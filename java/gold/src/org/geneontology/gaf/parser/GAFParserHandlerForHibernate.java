@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.geneontology.gaf.hibernate.Bioentity;
 import org.geneontology.gaf.hibernate.GeneAnnotation;
+import org.geneontology.gold.hibernate.model.Cls;
 import org.geneontology.gold.hibernate.model.GOModel;
 
 import sun.nio.cs.ext.ISCII91;
@@ -68,8 +69,12 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 		boolean isContributesTo = false;
 		boolean isIntegeralTo = false;
 		
-	
-		String cls = cols[4];
+		String clsId = cols[4];
+		
+		// TODO - declare transient
+		Cls cls = new Cls();
+		cls.setId(clsId);
+		
 		String evidenceCls = cols[6];
 		String withExpression = cols[7];
 
