@@ -125,7 +125,7 @@ my @steps = ($norefresh ? () : ['refresh_data_root', ARG=>$dateopt]);
 push(@steps,
    (
 ###   $nocoderel ? () : ['makecoderelease', ARG=>$dateopt],
-   ['makecoderelease', ARG=>$dateopt],
+#   ['makecoderelease', ARG=>$dateopt], dropped from load 1/28/10
    ['newdb'],
    ['load_schema'],
    ['load_termdb', CHECK=>sub{shift->guess_release_type eq 'termdb'}],
