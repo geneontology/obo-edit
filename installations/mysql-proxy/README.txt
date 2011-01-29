@@ -6,5 +6,4 @@ right place. The only thing that needs to be added are:
 *) the lua proxy definition, put into /srv/mysql-proxy
 *) a permissive log file at /srv/mysql-proxy/all.log
 *) a good defaults options file, put into /etc/defaults/mysql-proxy
-
-TODO: log rotation
+*) log rotation with definition into /etc/logrotate.d
