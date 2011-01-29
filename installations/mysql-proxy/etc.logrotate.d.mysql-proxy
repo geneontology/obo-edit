@@ -1,0 +1,12 @@
+/srv/mysql-proxy/all.log {
+	weekly
+	missingok
+	rotate 35600
+	compress
+	delaycompress
+	notifempty
+	create 666 swdev swdev
+	postrotate
+		/etc/init.d/mysql-proxy reload > /dev/null
+	endscript
+}
