@@ -1,2 +1,0 @@
-ENABLED="true"
-OPTIONS="--proxy-lua-script=/srv/mysql-proxy/simple_proxy.lua --proxy-address=:4404 --proxy-backend-addresses=spitz.lbl.gov:3306"
