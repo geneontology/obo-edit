@@ -70,6 +70,9 @@ public class GeneProduct extends GOModel {
 
 	public void setDbxref(DBXref dbxref) {
 		this.dbxref = dbxref;
+		if (dbxref.getAccession().endsWith("010123") || dbxref.getAccession().endsWith("001839")) {
+			System.out.println("Setting gp xref to " + dbxref.getAccession());
+		}
 	}
 
 	public Species getSpecies() {

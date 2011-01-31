@@ -1,5 +1,6 @@
 package org.geneontology.db.factory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -136,16 +137,6 @@ public class GOobjectFactory {
 		}
 		Iterator<GeneProduct> results = query.iterate();
 		return results;
-//		Iterator<?> results = query.iterate();
-//		java.util.List<GeneProduct> geneProducts = new java.util.ArrayList<GeneProduct>();
-//		while (results.hasNext()) {
-//			GeneProduct gp = (GeneProduct)results.next();
-//			java.util.Set<Association> associations = gp.getAssociations();
-//			geneProducts.add(gp);
-//			associations.size();
-//			//geneProducts.add((GeneProduct)results.next());
-//		}
-//		return geneProducts.iterator();
 	}
 	
 	/**
@@ -254,22 +245,22 @@ public class GOobjectFactory {
 	 * @param species name
 	 * @return Species
 	 */
-	public synchronized Species getSpeciesByName(String genus, String species){
+	public synchronized List<Species> getSpeciesByName(String genus, String species){
 		Session session = getSession();
 		Query q;
-		if (species != null && species.length() > 1) {
+		if (species != null) {
 			q = session.createQuery("from Species where genus = ? and species = ?");
 			q.setString(0, genus);
 			q.setString(1, species);
-			return (Species)q.uniqueResult();
+			Species result = (Species)q.uniqueResult();
+			List<Species> specie_list = new ArrayList<Species>();
+			specie_list.add(result);
+			return specie_list;			
 		} else {
 			q = session.createQuery("from Species where genus = ?");
 			q.setString(0, genus);
-			List specie_list = q.list();
-			if (!specie_list.isEmpty())
-				return (Species) specie_list.get(0);
-			else
-				return null;
+			List<Species> specie_list = (List<Species>) q.list();
+			return specie_list;
 		}
 	}
 
