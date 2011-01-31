@@ -1,6 +1,15 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 =================================
+What's New in OBO-Edit v2.1-beta9 (1/26/11)
+=================================
+Bug Fixes:
+ [ geneontology-Bugs-3165309 ] hitting return just selects first term from dropdown list
+ [ geneontology-Bugs-1897960 ] irritating selection bug in autocompletion-searches (b30)
+
+Made release Java-1.5-compatible for users who have older Macs
+
+=================================
 What's New in OBO-Edit v2.1-beta8 (1/20/11)
 =================================
 Bug Fixes:
