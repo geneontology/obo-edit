@@ -45,6 +45,15 @@
 		<javadoc sourcepath="${sourcedir}" classpathref="classpath" defaultexcludes="yes" destdir="${apidoc_dest}" author="true" version="true" use="true" />
 	</target>
 
+	<target name="backward_compatible_classes" depends="resources,clean">
+		<mkdir dir="${outputdir}" />
+		<javac srcdir="${sourcedir}" destdir="${outputdir}" target="1.5" debug="true">
+			<classpath>
+				<path refid="classpath" />
+			</classpath>
+		</javac>
+	</target>
+
 	<target name="classes" depends="resources">
 		<mkdir dir="${outputdir}" />
 		<javac srcdir="${sourcedir}" destdir="${outputdir}" debug="true">
@@ -73,6 +82,12 @@
 		</jar>
 	</target>
 	
+	<target name="backward_compatible_jar" depends="backward_compatible_classes, checkjar" description="Generate backwards-compatible (JDK 1.5) jar file">
+		<jar destfile="${jarfile}" manifest="${main_jar_manifest}">
+			<fileset refid="main_jar_contents" />
+		</jar>
+	</target>
+
 	<target name="commit" description="Run the commit.sh script">
 		<input addproperty="username">Enter SVN Username</input>
 		<input addproperty="PASSWORD">Enter SVN Password</input>
