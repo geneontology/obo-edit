@@ -63,6 +63,16 @@
 
 	</target>
 
+	<target name="backward_compatible_classes" depends="clean, buildbbop, resources">
+		<mkdir dir="${outputdir}" />
+		<javac srcdir="${sourcedir}" destdir="${outputdir}" target="1.5" debug="true">
+			<classpath>
+				<path refid="classpath" />
+			</classpath>
+		</javac>
+
+	</target>
+
 	<target name="checkjar">
 		<condition property="main_jar_current">
 			<and>
@@ -76,12 +86,18 @@
 		</condition>
 	</target>
 
-	<target name="jar" depends="classes, checkjar" unless="main_jar_current" description="Generate jar file">
+	<target name="backward_compatible_jar" depends="backward_compatible_classes, checkjar" description="Generate backwards-compatible (JDK 1.5) jar file">
 		<jar destfile="${jarfile}" manifest="${main_jar_manifest}">
 			<fileset refid="main_jar_contents" />
 		</jar>
 	</target>
 	
+	<target name="jar" depends="classes, checkjar" description="Generate jar file">
+		<jar destfile="${jarfile}" manifest="${main_jar_manifest}">
+			<fileset refid="main_jar_contents" />
+		</jar>
+	</target>
+
 	<target name="commit" description="Run the commit.sh script">
 		<input addproperty="username">Enter SVN Username</input>
 		<input addproperty="PASSWORD">Enter SVN Password</input>
