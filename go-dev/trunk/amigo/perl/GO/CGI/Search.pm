@@ -25,6 +25,10 @@ use GO::Object::GeneProductSearchResult;
 
 use GO::CGI::Query qw(get_gp_details get_term_in_graph get_seqs_for_gps get_gp_count_for_terms get_term_count_for_gps get_consider_and_replaced_by_terms);
 
+## Some new stuff to pile on to help with debugging.
+#use AmiGO;
+#my $core = AmiGO->new();
+
 our $verbose = get_environment_param('verbose');
 
 =head2 new
@@ -1183,6 +1187,8 @@ sub search {
 			},
 			obs_include_commented => sub {
 				my $d = shift;
+				#$core->kvetch('include_commented');
+
 			#	print STDERR "Doing include_commented on ".$d->{id}."...\n" if $verbose;
 				$obs_term_ids{$d->{id}} = 1 if $d->{is_obsolete} == 1;
 			},
