@@ -866,8 +866,8 @@ $synth_vars{AMIGO_SCRATCH_DIR} =
   $synth_vars{AMIGO_CGI_ROOT_DIR} .
   '/' . 'sessions/scratch';
 
-## TODO/BUG: Temporary hach to bridge the CVS to SVN conversion.
-$synth_vars{GO_ROOT} = $env_conf{GO_SVN_ROOT}{NEW_VALUE} . '/go-dev';
+## TODO/BUG: Temporary hack to bridge the CVS to SVN conversion.
+$synth_vars{GO_ROOT} = $env_conf{GO_SVN_ROOT}{NEW_VALUE} . '/go-dev/trunk';
 
 create_synthetic_amigo_environmental_variables();
 ll("Finish setting the installation environment.");
