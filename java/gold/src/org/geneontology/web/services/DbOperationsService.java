@@ -46,7 +46,7 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 		writer.write("</title></head>");
 
 		String command = request.getParameter("command");
-
+		
 		if (DEBUG) {
 			LOG.debug("Command parameter = " + command);
 		}
