@@ -15,12 +15,12 @@
                 n/a</comment>
             </column>
         </many-to-one>
-        <property name="label" type="string">
+          <property name="label" type="string">
             <column name="label">
                 <comment>A descriptive label for this class.Should be unique within the ontology, but this is not enforced.Example: "lung development"MAPPINGS:OBO: term.nameOWL:
                 rdfs:labelLEAD: term.name</comment>
             </column>
-        </property>
+        </property> 
    <!--      <property name="ontology" type="string">
             <column name="ontology">
                 <comment>The ontology to which this class belongs.Examples: "GO", "CL". References ontology.idMAPPINGS:OBO: the idspace for the term idOWL: ontologyLEAD:

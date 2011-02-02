@@ -130,7 +130,7 @@ CREATE TABLE gene_annotation (
   gene_product_form VARCHAR,
 
   -- e.g. filename
-  gaf_document
+  gaf_document VARCHAR
 );
 
 -- qualifier expression
