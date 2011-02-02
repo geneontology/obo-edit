@@ -577,13 +577,12 @@ my %env_conf = (
 
 		AMIGO_OBSOLETE_BEHAVIOUR =>
 		{
-		 DEFAULT => 'include_commented',
+		 DEFAULT => 'include_all',
 		 MESSAGE => "AmiGO term searches may return obsolete terms.\n" . 
 		 "Please choose how AmiGO should handle these terms:\n" .
-		 "\"ignore\": do not include any obsoletes in the results\n" .
-		 "\"include_commented\": include terms with comments that\n" .
-		 "\trefer to terms not in the results list\n" .
-		 "\"include_all\": keep all obsolete terms in the results",
+		 "\"ignore\":all obsolete terms will be excluded from the results \n" .
+		 "\"include_commented\": obsolete terms which have a GO id tucked away in a nearby field will be included; non-GO sites should never use this value as the GO id part is currently hard-coded\n" .
+		 "\"include_all\": no obsolete terms will be excluded from the results",
 		 ERROR => 'not "ignore", "include_commented", or "include_all"',
 		 PARSER => \&is_an_obsolete_behaviour_p,
 		 #DEPENDS => \&is_always_false,
