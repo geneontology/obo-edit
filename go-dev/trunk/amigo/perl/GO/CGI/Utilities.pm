@@ -225,11 +225,11 @@ sub get_n_pages {
 =cut
 
 sub get_environment_param {
-	my $var = shift;
-	if (defined($ENV{uc("AMIGO_$var")})) {
-		return $ENV{uc("AMIGO_$var")};
-	}
-	return;
+  my $var = shift;
+  if (defined($ENV{uc("AMIGO_$var")})) {
+    return $ENV{uc("AMIGO_$var")};
+  }
+  return;
 }
 
 

@@ -26,8 +26,8 @@ use GO::Object::GeneProductSearchResult;
 use GO::CGI::Query qw(get_gp_details get_term_in_graph get_seqs_for_gps get_gp_count_for_terms get_term_count_for_gps get_consider_and_replaced_by_terms);
 
 ## Some new stuff to pile on to help with debugging.
-#use AmiGO;
-#my $core = AmiGO->new();
+use AmiGO;
+my $core = AmiGO->new();
 
 our $verbose = get_environment_param('verbose');
 
@@ -984,288 +984,311 @@ sub get_relevance_of_cached_results {
 }
 
 sub search {
-	my $self = shift;
-	my $subset = shift || undef; # list of IDs to search within
-	my $apph = $self->apph;
+  my $self = shift;
+  my $subset = shift || undef; # list of IDs to search within
+  my $apph = $self->apph;
 
-	my $dbh = $apph->dbh;
-	my $search_fields = $self->get_param('search_fields');
-	my $sc = $self->get_param('search_constraint');
-	my $filters = $self->get_param('filters') || undef;
-	my $exact = $self->get_param('exact_match') || undef;
+  my $dbh = $apph->dbh;
+  my $search_fields = $self->get_param('search_fields');
+  my $sc = $self->get_param('search_constraint');
+  my $filters = $self->get_param('filters') || undef;
+  my $exact = $self->get_param('exact_match') || undef;
 
-	my $to_check = {
-		gp => [ 'full_name', 'symbol'],
-		term => ['name', 'acc'],
-		spp => [],
-	};
+  my $to_check =
+    {
+     gp => [ 'full_name', 'symbol'],
+     term => ['name', 'acc'],
+     spp => [],
+    };
 
-	my @fields = @{$to_check->{$sc}};
+  my @fields = @{$to_check->{$sc}};
 
-	my $extra = '';
-	if ($subset)
-	{	$extra = " AND $sc.id IN (".join ",", @$subset.")";
+  my $extra = '';
+  if ($subset){
+    $extra = " AND $sc.id IN (".join ",", @$subset.")";
+  }
+
+  # hash containing the search phrases for the different search types
+  my $sql_search_strings = $self->_set_sql_search_strings;
+
+  $core->kvetch("SQL search strings: ".Dumper($sql_search_strings));
+
+  # if our search list contains anything *other* than full_name and symbol,
+  # we search for these first
+  my $other_matches;
+  my @names;
+  my @others;
+  my $combo_fields;
+
+  if ($sc eq 'gp' || $sc eq 'term'){
+    foreach my $s (keys %$search_fields){
+      if ( grep { $_ eq $s } @fields){
+	push @names, $s;
+      }else{
+	push @others, $s;
+      }
+    }
+  }
+
+  if ($sc eq 'term'){
+    if ($search_fields->{definition} && $search_fields->{comment}){
+      $combo_fields = 1;
+      $sql_search_strings->{def_comm} =
+	"(".$sql_search_strings->{definition}.
+	  ") OR (". $sql_search_strings->{comment}.")";
+      $search_fields->{def_comm} = 1;
+      delete $search_fields->{definition};
+      delete $search_fields->{comment};
+    }
+    if ($search_fields->{subset}){
+      $combo_fields = 1;
+    }
+  }
+
+  if (@others){
+    $core->kvetch("Checking fields other than name and symbol/acc...");
+    my $base = __search_sql_data($sc, 'base');
+
+    my $sql =
+      join(" UNION ", 
+	   map {
+	     my $data = __search_sql_data($sc, $_);
+	     my $q = 
+	       "SELECT ".$base->{"select_str"}.", ".$data->{"select_str"}.
+		 " FROM ".$base->{tables}.", ".$data->{tables}.
+		   " WHERE ".$data->{table_join_sql}.
+		     " AND (".$sql_search_strings->{$_}.")".$extra;
+	     $_ = $q;
+	   } @others);
+
+    $core->kvetch("sql: $sql");
+    my $sth = $dbh->prepare($sql);
+    $sth->execute();
+
+    if (!$combo_fields){
+      while (my $d = $sth->fetchrow_arrayref) {
+	push @{$other_matches->{$d->[0]}{$d->[1]}}, $d->[2];
+      }
+    }else{
+      while (my $d = $sth->fetchrow_arrayref) {
+	# print STDERR "next: ".Dumper($d)."\n" if $verbose;
+	if ($d->[1] eq 'term_definition_or_comment'){
+	  push @{$other_matches->{$d->[0]}{definition}}, $d->[2] if $d->[2];
+	  push @{$other_matches->{$d->[0]}{comment}}, $d->[3] if $d->[3];
 	}
-
-	#	hash containing the search phrases for the different search types
-	my $sql_search_strings = $self->_set_sql_search_strings;
-	
-	print STDERR "SQL search strings: ".Dumper($sql_search_strings)."\n" if $verbose;
-	
-	#	if our search list contains anything *other* than full_name and symbol,
-	#	we search for these first
-	my $other_matches;
-	my @names;
-	my @others;
-	my $combo_fields;
-
-	if ($sc eq 'gp' || $sc eq 'term')
-	{	foreach my $s (keys %$search_fields)
-		{	if ( grep { $_ eq $s } @fields)
-			{	push @names, $s;
-			}
-			else
-			{	push @others, $s;
-			}
-		}
+	#elsif ($d->[1] eq 'seq'){
+	#push @{$other_matches->{$d->[0]}{seq_name}}, $d->[2] if $d->[2];
+	#push @{$other_matches->{$d->[0]}{seq_xref}}, $d->[3] if $d->[3];
+	#}
+	elsif ($d->[1] eq 'subset'){
+	  push @{$other_matches->{$d->[0]}{subset_acc}}, $d->[2] if $d->[2];
+	  push @{$other_matches->{$d->[0]}{subset_name}}, $d->[3] if $d->[3];
+	}else{
+	  push @{$other_matches->{$d->[0]}{$d->[1]}}, $d->[2];
 	}
-	
-	if ($sc eq 'term')
-	{	if ($search_fields->{definition} && $search_fields->{comment})
-		{	$combo_fields = 1;
-			$sql_search_strings->{def_comm} = "(".$sql_search_strings->{definition}.") OR (". $sql_search_strings->{comment}.")";
-			$search_fields->{def_comm} = 1;
-			delete $search_fields->{definition};
-			delete $search_fields->{comment};
-		}
-		if ($search_fields->{subset})
-		{	$combo_fields = 1;
-		}
+      }
+    }
+
+    if (!keys %$other_matches){
+      $core->kvetch("No results found in other fields.");
+    }
+  }
+
+  # now get the information for what we found in the query above,
+  # and do the name / symbol / acc search
+  # apply filters to this search
+  my @tables = ( __search_sql_data($sc, 'results', 'tables') );
+  my @select = ( __search_sql_data($sc, 'results', 'select_str') );
+  my @where;
+  my @srch;
+
+  #print STDERR "Filters: ".Dumper($filters) if $verbose;
+
+  if ($filters){
+    if ($filters->{tables}){
+      push @tables, @{$filters->{tables}};
+    }
+    if ($filters->{where}){
+      push @where, @{$filters->{where}};
+    }
+  }
+
+  if ($sc eq 'gp'){
+    foreach (@fields){
+      push @srch, $sql_search_strings->{$_} if $sql_search_strings->{$_};
+    }
+    # retrieve species info if the sort parameter is species
+    if( $self->get_param('gpsort') &&
+	$self->get_param('gpsort') eq 'spp'){
+      if (!grep { /species/ } @tables){
+	push @tables, "species";
+	push @where, "species.id = gp.species_id";
+      }
+      push @select, "species.genus, species.species";
+    }
+  }elsif ($sc eq 'term'){
+    foreach (@fields){
+      push @srch, $sql_search_strings->{$_} if $sql_search_strings->{$_};
+    }
+  }elsif ($sc eq 'spp'){ # NEW
+    @srch = map { $sql_search_strings->{$_} } keys %$search_fields;
+    push @select,
+      "CONCAT(genus,' ',species) AS binomial, COUNT(gp.id) AS gp_count";
+    push @tables, 'gene_product gp';
+    $extra .= ' AND gp.species_id=species.id GROUP BY species.id';
+  }
+
+  if (keys %$other_matches){
+    push @srch, $sc.".id IN (".join(",", keys %$other_matches).")";
+  }
+
+  my $results;
+  my %obs_term_ids = ();
+  if (@srch){
+    (scalar @srch > 1)
+      ? push @where, "((".join(") OR (", @srch)."))"
+	: push @where, "(".$srch[0].")";
+
+    my $sql =
+      "SELECT DISTINCT ".join(", ", @select).
+	" FROM ".join(", ", @tables).
+	  " WHERE ".join(" AND ", @where).$extra;
+    $core->kvetch("sql: $sql");
+
+    $core->kvetch("Main search: getting info and searching on full name/sym");
+
+    # my $results = $dbh->selectall_arrayref($sql);
+    my $sth = $dbh->prepare($sql);
+    $sth->execute();
+
+    my $query = $self->{query}{perllist};
+    my $field_list = $self->get_param('field_list');
+
+    #$core->kvetch("fieldlist: ".Dumper($field_list).");
+    if (!$query || !$field_list){
+      $core->kvetch('WARNING! No query or fieldlist found!');
+    }
+
+    my $sub_h =
+      {
+       std =>
+       sub {
+	 my $d = shift;
+	 $results->{$d->{id}} = $d;
+	 if ($other_matches->{$d->{id}}){
+	   while ( my ($key, $val) = each %{$other_matches->{$d->{id}}}){
+	     $results->{$d->{id}}{$key} = $val;
+	   }
+	 }
+       },
+
+       ## NOTE: there is no obs_include_all. See: TAG_001
+
+       obs_ignore =>
+       sub {
+	 my $d = shift;
+	 $core->kvetch("Doing ignore on $d...");
+	 return 1 if $d->{is_obsolete} == 1;
+       },
+
+       obs_include_commented =>
+       sub {
+	 my $d = shift;
+	 $core->kvetch("Doing include_commented on " . $d->{id} . "...");
+	 $obs_term_ids{$d->{id}} = 1 if $d->{is_obsolete} == 1;
+       },
+
+       get_relevance => sub {
+	 my $d = shift;
+	 $core->kvetch("Doing get_relevance on $d...");
+	 my $rel = $self->_get_relevance($results->{$d->{id}}, $sc,
+					 $query, $field_list, $exact);
+	 # $core->kvetch($d->{id}." relevance score = ".Dumper($rel));
+
+	 if (!$rel){
+	   $core->kvetch("Error: no relevance scores for ".$d->{id}."!");
+	   # print STDERR "data: ".Dumper($d)."\n" if $verbose;
+	   delete $results->{$d->{id}};
+	   return 1;
+	 }else{
+	   $results->{$d->{id}}{source} = $rel;
+	 }
+       },
+
+       get_match =>
+       sub {
+	 my $d = shift;
+	 my $match_fields = $self->_get_match($results->{$d->{id}}, $sc,
+					      $query, $field_list);
+	 if (!$match_fields || !keys %$match_fields){
+	   $core->kvetch("Error: no matches returned for ".$d->{id}."!");
+	   # print STDERR "data: ".Dumper($d)."\n" if $verbose;
+	   delete $results->{$d->{id}};
+	   return 1;
+	 }else{
+	   $results->{$d->{id}}{source} = $match_fields;
+	 }
+       }
+      };
+
+    ## Put together the subs to perform on each result.
+    my @subs = ( $sub_h->{std} );
+
+    ## Add on the relevant obsolete behavior subs.
+    ## NOTE: there is no obs_include_all. See: TAG_001
+    my $obs_behaviour = get_environment_param('obsolete_behaviour');
+    $core->kvetch("Our obsolete behavior should be: $obs_behaviour");
+    if ($sc eq 'term' &&
+	( $obs_behaviour eq 'ignore' ||
+	  $obs_behaviour eq 'include_commented' )){
+      $core->kvetch("Adding \"$obs_behaviour\" to the sub list");
+      unshift @subs, $sub_h->{'obs_' . $obs_behaviour};
+    }
+
+    ## 
+    if ($self->{get_relevance}){
+      $core->kvetch("Adding get_relevance to the sub list");
+      push @subs, $sub_h->{get_relevance};
+    }else{
+      $core->kvetch("Adding get_match to the sub list");
+      push @subs, $sub_h->{get_match};
+    }
+
+    ## Process results list using all subs.
+
+    ## NOTE: Because of the way we added the obsoletion functions to
+    ## the array, they will be called first, if an obsolete is called
+    ## "returning 1", we'll not do the rest of the functions.
+    ## NOTE: there is no obs_include_all. We get the appropriate
+    ## behavior by some shifty mechanism of not preventing the
+    ## results from being attached to the hash. TAG_001
+    while (my $d = $sth->fetchrow_hashref) {
+      foreach (@subs){
+	if( $_->($d) && $_->($d) == 1 ){
+	  $core->kvetch('short circut on: ' . $_ . ' with ' . $d);
+	  last;
 	}
+      }
+    }
+  }
 
-	if (@others)
-	{	print STDERR "Checking fields other than name and symbol/acc...\n" if $verbose;
-		my $base = __search_sql_data($sc, 'base');
+  ## DEBUG
+  if (keys %$results){
+    # sort out the data
+    $core->kvetch("Results found; returning data");
+    #.Dumper($results)."\n";
+  }else{
+    $core->kvetch("No results found. Sob!");
+  }
 
-		my $sql =
-			join(" UNION ", 
-				map {
-					my $data = __search_sql_data($sc, $_);
-					my $q = 
-					"SELECT ".$base->{"select_str"}.", ".$data->{"select_str"}.
-					" FROM ".$base->{tables}.", ".$data->{tables}.
-					" WHERE ".$data->{table_join_sql}.
-					" AND (".$sql_search_strings->{$_}.")".$extra;
-					$_ = $q;
-				} @others);
+  ## 
+  if( keys %obs_term_ids ){
+    $core->kvetch("Obsolete terms found: ".Dumper([keys %obs_term_ids]));
+    # if we have terms, we need to check for obsoletes
+    return $self->_obsolete_check($results, [keys %obs_term_ids]);
+  }
 
-		print STDERR "sql: $sql\n" if $verbose;
-		my $sth = $dbh->prepare($sql);
-		$sth->execute();
-
-		if (!$combo_fields)
-		{	while (my $d = $sth->fetchrow_arrayref) {
-				push @{$other_matches->{$d->[0]}{$d->[1]}}, $d->[2];
-			}
-		}
-		else
-		{	while (my $d = $sth->fetchrow_arrayref) {
-			#	print STDERR "next: ".Dumper($d)."\n" if $verbose;
-				if ($d->[1] eq 'term_definition_or_comment')
-				{	push @{$other_matches->{$d->[0]}{definition}}, $d->[2] if $d->[2];
-					push @{$other_matches->{$d->[0]}{comment}}, $d->[3] if $d->[3];
-				}
-			#	elsif ($d->[1] eq 'seq')
-			#	{	push @{$other_matches->{$d->[0]}{seq_name}}, $d->[2] if $d->[2];
-			#		push @{$other_matches->{$d->[0]}{seq_xref}}, $d->[3] if $d->[3];
-			#	}
-				elsif ($d->[1] eq 'subset')
-				{	push @{$other_matches->{$d->[0]}{subset_acc}}, $d->[2] if $d->[2];
-					push @{$other_matches->{$d->[0]}{subset_name}}, $d->[3] if $d->[3];
-				}
-				else
-				{	push @{$other_matches->{$d->[0]}{$d->[1]}}, $d->[2];
-				}
-			}
-		}
-		
-		if (!keys %$other_matches)
-		{	print STDERR "No results found in other fields.\n" if $verbose;
-		}
-	}
-	
-	#	now get the information for what we found in the query above,
-	#	and do the name / symbol / acc search
-	#	apply filters to this search
-	my @tables = ( __search_sql_data($sc, 'results', 'tables') );
-	my @select = ( __search_sql_data($sc, 'results', 'select_str') );
-	my @where;
-	my @srch;
-	
-#	print STDERR "Filters: ".Dumper($filters) if $verbose;
-	
-	if ($filters)
-	{	if ($filters->{tables})
-		{	push @tables, @{$filters->{tables}};
-		}
-		if ($filters->{where})
-		{	push @where, @{$filters->{where}};
-		}
-	}
-	
-	if ($sc eq 'gp')
-	{	foreach (@fields)
-		{	push @srch, $sql_search_strings->{$_} if $sql_search_strings->{$_};
-		}
-		#	retrieve species info if the sort parameter is species
-		if ($self->get_param('gpsort') && $self->get_param('gpsort') eq 'spp')
-		{	if (!grep { /species/ } @tables)
-			{	push @tables, "species";
-				push @where, "species.id = gp.species_id";
-			}
-			push @select, "species.genus, species.species";
-		}
-	}
-	elsif ($sc eq 'term')
-	{	foreach (@fields)
-		{	push @srch, $sql_search_strings->{$_} if $sql_search_strings->{$_};
-		}
-	}
-	# NEW
-	elsif ($sc eq 'spp')
-	{	@srch = map { $sql_search_strings->{$_} } keys %$search_fields;
-		push @select, "CONCAT(genus,' ',species) AS binomial, COUNT(gp.id) AS gp_count";
-		push @tables, 'gene_product gp';
-		$extra .= ' AND gp.species_id=species.id GROUP BY species.id';
-	}
-	
-	if (keys %$other_matches)
-	{	push @srch, $sc.".id IN (".join(",", keys %$other_matches).")";
-	}
-	
-	my $results;
-	my %obs_term_ids;
-	if (@srch)
-	{	(scalar @srch > 1)
-		? push @where, "((".join(") OR (", @srch)."))"
-		: push @where, "(".$srch[0].")";
-	
-		my $sql =
-				"SELECT DISTINCT ".join(", ", @select).
-				" FROM ".join(", ", @tables).
-				" WHERE ".join(" AND ", @where).$extra;
-		print STDERR "sql: $sql\n" if $verbose;
-		
-		print STDERR "Main search: retrieving info and searching on full name/symbol\n" if $verbose;
-		
-#		my $results = $dbh->selectall_arrayref($sql);
-		my $sth = $dbh->prepare($sql);
-		$sth->execute();
-
-		my $query = $self->{query}{perllist};
-		my $field_list = $self->get_param('field_list');
-		
-#		print STDERR "fieldlist: ".Dumper($field_list)."\n" if $verbose;
-		if (!$query || !$field_list)
-		{	print STDERR "WARNING! No query or fieldlist found!\n" if $verbose;
-		}
-
-		my $sub_h = {
-			std => sub {
-				my $d = shift;
-				$results->{$d->{id}} = $d;
-				if ($other_matches->{$d->{id}})
-				{	while ( my ($key, $val) = each %{$other_matches->{$d->{id}}})
-					{	$results->{$d->{id}}{$key} = $val;
-					}
-				}
-			},
-			obs_ignore => sub {
-				my $d = shift;
-			#	print STDERR "Doing ignore on $d...\n" if $verbose;
-				return 1 if $d->{is_obsolete} == 1;
-			},
-			obs_include_commented => sub {
-				my $d = shift;
-				#$core->kvetch('include_commented');
-
-			#	print STDERR "Doing include_commented on ".$d->{id}."...\n" if $verbose;
-				$obs_term_ids{$d->{id}} = 1 if $d->{is_obsolete} == 1;
-			},
-			get_relevance => sub {
-				my $d = shift;
-			#	print STDERR "Doing get_relevance on $d...\n" if $verbose;
-				my $rel = $self->_get_relevance($results->{$d->{id}}, $sc, $query, $field_list, $exact);
-			#	print STDERR $d->{id}." relevance score = ".Dumper($rel)."\n" if $verbose;
-				
-				if (!$rel)
-				{	print STDERR "Error: no relevance scores returned for ".$d->{id}."!\n" if $verbose;
-				#	print STDERR "data: ".Dumper($d)."\n" if $verbose;
-					delete $results->{$d->{id}};
-					return 1;
-				}
-				else
-				{	$results->{$d->{id}}{source} = $rel;
-				}
-			},
-			get_match => sub {
-				my $d = shift;
-				my $match_fields = $self->_get_match($results->{$d->{id}}, $sc, $query, $field_list);
-				if (!$match_fields || !keys %$match_fields)
-				{	print STDERR "Error: no matches returned for ".$d->{id}."!\n" if $verbose;
-				#	print STDERR "data: ".Dumper($d)."\n" if $verbose;
-					delete $results->{$d->{id}};
-					return 1;
-				}
-				else
-				{	$results->{$d->{id}}{source} = $match_fields;
-				}
-			}
-		};
-
-		#	put together the subs to perform on each result
-		my @subs = ( $sub_h->{std} );
-
-		if ($sc eq 'term' && get_environment_param('obsolete_behaviour') eq 'ignore')
-		{	#print STDERR "Adding obs_ignore to the sub list\n" if $verbose;
-			unshift @subs, $sub_h->{obs_ignore};
-		}
-		if ($self->{get_relevance})
-		{	#print STDERR "Adding get_relevance to the sub list\n" if $verbose;
-			push @subs, $sub_h->{get_relevance};
-		}
-		else
-		{	#print STDERR "Adding get_match to the sub list\n" if $verbose;
-			push @subs, $sub_h->{get_match};
-		}
-		if ($sc eq 'term' && get_environment_param('obsolete_behaviour') eq 'include_commented')
-		{	#print STDERR "Adding include commented to the sub list\n" if $verbose;
-			push @subs, $sub_h->{obs_include_commented};
-		}
-
-		while (my $d = $sth->fetchrow_hashref) {
-			foreach (@subs)
-			{	last if $_->($d) && $_->($d) == 1;
-			}
-		}
-	}
-
-	if (keys %$results)
-	{	#	sort out the data
-		print STDERR "Results found; returning data\n" if $verbose; 
-		#.Dumper($results)."\n";
-	}
-	else
-	{	print STDERR "No results found. Sob!\n" if $verbose;
-	}
-
-	if (keys %obs_term_ids)
-	{	print STDERR "Obsolete terms found: ".Dumper([keys %obs_term_ids])."\n" if $verbose;
-	
-		#	if we have terms, we need to check for obsoletes
-		return $self->_obsolete_check($results, [keys %obs_term_ids]);
-	}
-	return [values %$results];
+  return [values %$results];
 }
 
 ## _set_sql_search_strings creates the bits of SQL used to query the DB
@@ -1278,25 +1301,26 @@ sub _set_sql_search_strings {
 	my $exact = $self->get_param('exact_match');
 
 	my %srch_h =
-	(	# gp fields
-		symbol => { table => 'gp', col => ['symbol'] },
-		full_name => { table => 'gp', col => ['full_name'] },
-		product_synonym => { table => 'synonym', col => ['product_synonym'] },
-		seq_name => { table => 'seq', col => ['display_id'] },
-#		gpxref => { table => 'dbxref', col => ['xref_dbname', 'xref_key'] },
-		# term fields
-		name => { table => 'term', col => ['name'] },
-		term_synonym => { table => 'term_synonym', col => ['term_synonym'] },
-		acc => { table => 'term', col => 'acc' },
-		definition => { table => 'term_definition', col => ['term_definition'] },
-		comment => { table => 'term_definition', col => ['term_comment'] },
-		subset => { table => 'subset', col => ['acc', 'name'] },
-		def_comm => { table => 'term_definition', col => ['term_definition', 'term_comment'] },
-#		dbxref => { table => 'dbxref', col => ['xref_dbname', 'xref_key'] },
-#		xref => { table => 'dbxref', col => ['xref_dbname', 'xref_key'] },
-		common_name => { col => ['genus', 'species', 'common_name'] },
-		ncbi_taxa_id => { col => ['ncbi_taxa_id'] },
-#		binomial => { col => ['genus', 'species'] },
+	  (## gp fields
+	   symbol => { table => 'gp', col => ['symbol'] },
+	   full_name => { table => 'gp', col => ['full_name'] },
+	   product_synonym =>{ table => 'synonym', col => ['product_synonym'] },
+	   seq_name => { table => 'seq', col => ['display_id'] },
+	   #gpxref => { table => 'dbxref', col => ['xref_dbname', 'xref_key'] },
+	   ## term fields
+	   name => { table => 'term', col => ['name'] },
+	   term_synonym => { table => 'term_synonym', col => ['term_synonym'] },
+	   acc => { table => 'term', col => 'acc' },
+	   definition =>{table => 'term_definition',col => ['term_definition']},
+	   comment => { table => 'term_definition', col => ['term_comment'] },
+	   subset => { table => 'subset', col => ['acc', 'name'] },
+	   def_comm => { table => 'term_definition',
+			 col => ['term_definition', 'term_comment'] },
+	   # dbxref =>{ table => 'dbxref', col => ['xref_dbname', 'xref_key'] },
+	   # xref => { table => 'dbxref', col => ['xref_dbname', 'xref_key'] },
+	   common_name => { col => ['genus', 'species', 'common_name'] },
+	   ncbi_taxa_id => { col => ['ncbi_taxa_id'] },
+	   # binomial => { col => ['genus', 'species'] },
 	);
 
 	#	fields to apply the regexp search to
@@ -1962,99 +1986,100 @@ sub _hiliter {
 }
 
 sub _obsolete_check {
-	my $self = shift;
-	my $results = shift;
-	my $obs = shift;
-	
-	#	check what our obsoletes behaviour is
-	
-	print STDERR "Starting the obsolete check...\n" if $verbose;
-	print STDERR "obs terms are ".Dumper($obs)."\n" if $verbose;
+  my $self = shift;
+  my $results = shift;
+  my $obs = shift;
 
-	my $apph = $self->apph;
-	my $dbh = $apph->dbh;
+  # check what our obsoletes behaviour is
+  $core->kvetch("Starting the obsolete check...");
+  $core->kvetch("obs terms are ".Dumper($obs));
 
-	if (@$obs){
-	  # get the comments for the term;
-	  # return only comments with GO IDs in them
-	  my @terms_in_comments = ();
-	  my %not_in_results = ();
-	  my $comments = {};
-	  my $comment_id_to_term_acc = {};
-	  my $comment_id_to_term_id = {};
+  my $apph = $self->apph;
+  my $dbh = $apph->dbh;
 
-	  if (get_environment_param("term2term_metadata_loaded")){
-	    #print STDERR "term2term_metadata is loaded!\n" if $verbose;
-	    my $rels = $dbh->selectall_arrayref("SELECT id FROM term WHERE acc IN (". join(", ", map { sql_quote($_) } qw(replaced_by consider) ).")");
+  if (@$obs){
+    # get the comments for the term;
+    # return only comments with GO IDs in them
+    my @terms_in_comments = ();
+    my %not_in_results = ();
+    my $comments = {};
+    my $comment_id_to_term_acc = {};
+    my $comment_id_to_term_id = {};
 
-	    my $sql = "SELECT term2_id, term1_id, relationship_type_id FROM term2term_metadata WHERE term2_id IN ("
-	      .join(", ", @$obs)
-		.") AND relationship_type_id IN ("
-		  .join(",", map { $_->[0] } @$rels).")";
+    if (get_environment_param("term2term_metadata_loaded")){
+      #print STDERR "term2term_metadata is loaded!\n" if $verbose;
+      my $rels = $dbh->selectall_arrayref("SELECT id FROM term WHERE acc IN (". join(", ", map { sql_quote($_) } qw(replaced_by consider) ).")");
 
-	    my $cons_repl = $dbh->selectall_arrayref($sql);
-	    # group the consider/replaced by terms by the
-	    # ID of the obsolete term
-	    foreach (@$cons_repl){
-	      push @{$comments->{$_->[0]}}, $_->[1];
-	    }
-	    %$comment_id_to_term_id = %$comments;
-	  }else{
-			my $sql =
-					"SELECT term_id, term_comment FROM term_definition WHERE term_id IN ("
-					.join(", ", @$obs).") AND term_comment REGEXP ".sql_quote(".*GO:[0-9]{7}.*");
-			print STDERR "sql: $sql\n" if $verbose;
-	
-			$comments = $dbh->selectall_hashref($sql, 'term_id');
-		#	transform into term id and acc (id?) of consider term
+      my $sql = "SELECT term2_id, term1_id, relationship_type_id FROM term2term_metadata WHERE term2_id IN ("
+	.join(", ", @$obs)
+	  .") AND relationship_type_id IN ("
+	    .join(",", map { $_->[0] } @$rels).")";
 
-			print STDERR "Comments: ".Dumper($comments) if $verbose;
+      my $cons_repl = $dbh->selectall_arrayref($sql);
+      # group the consider/replaced by terms by the
+      # ID of the obsolete term
+      foreach (@$cons_repl){
+	push @{$comments->{$_->[0]}}, $_->[1];
+      }
+      %$comment_id_to_term_id = %$comments;
+    }else{
+      my $sql =
+	"SELECT term_id, term_comment FROM term_definition WHERE term_id IN ("
+	  .join(", ", @$obs).") AND term_comment REGEXP ".sql_quote(".*GO:[0-9]{7}.*");
+      $core->kvetch("sql: $sql");
 
-			foreach (keys %$comments)
-			{	my @cterms = grep { s/.*?(GO:\d{7}).*/$1/g } split(/\s/, $comments->{$_}{term_comment});
-				if (@cterms)
-				{	$comment_id_to_term_acc->{$_} = \@cterms;
-				}
-			}
-		#	print STDERR "comments: ".Dumper($comments)."\n" if $verbose;
-		}
+      $comments = $dbh->selectall_hashref($sql, 'term_id');
+      #	transform into term id and acc (id?) of consider term
 
-		foreach my $id (@$obs)
-		{	delete $results->{$id} if !$comments->{$id};
-		}
-		
+      $core->kvetch("found comments: ".Dumper($comments));
 
-		#	REWRITE!
-
-		#	Delete any terms which don't have a comment with a GOID in it
-		COMMENT_LOOP:
-		foreach my $id (keys %$comments)
-		{	if ($comment_id_to_term_acc->{$id} || $comment_id_to_term_id->{$id})
-			{	if ($comment_id_to_term_acc->{$id})
-				{	foreach my $c (@{$comment_id_to_term_acc->{$id}})
-					{	if ($not_in_results{$c} || !grep { /$c/ } map { $results->{$_}{acc} } keys %$results)
-						{	$not_in_results{$c} = 1;
-							next COMMENT_LOOP;
-						}
-					}
-				}
-				elsif ($comment_id_to_term_id->{$id})
-				{	foreach my $c (@{$comment_id_to_term_id->{$id}})
-					{	if ($not_in_results{$c} || !$results->{$c})
-						{	$not_in_results{$c} = 1;
-							next COMMENT_LOOP;
-						}
-					}
-				}
-			}
-			print STDERR "deleting $id\n" if $verbose;
-			delete $results->{$id};
-		}
-	
-
+      foreach (keys %$comments){
+	my @cterms =
+	  grep { s/.*?(GO:\d{7}).*/$1/g }
+	    split(/\s/, $comments->{$_}{term_comment});
+	if (@cterms){
+	  $comment_id_to_term_acc->{$_} = \@cterms;
 	}
-	return [values %$results];
+      }
+      #	print STDERR "comments: ".Dumper($comments)."\n" if $verbose;
+    }
+
+    foreach my $id (@$obs){
+      if( !$comments->{$id} ){
+	$core->kvetch("deleting (no comment): $id");
+	delete $results->{$id}
+      }
+    }
+
+    # REWRITE!
+    # Delete any terms which don't have a comment with a GOID in it
+  COMMENT_LOOP:
+    foreach my $id (keys %$comments){
+      if ($comment_id_to_term_acc->{$id} || $comment_id_to_term_id->{$id}){
+	if ($comment_id_to_term_acc->{$id}){
+	  foreach my $c (@{$comment_id_to_term_acc->{$id}}){
+	    if ($not_in_results{$c} ||
+		!grep { /$c/ } map { $results->{$_}{acc} } keys %$results){
+	      $not_in_results{$c} = 1;
+	      next COMMENT_LOOP;
+	    }
+	  }
+	}elsif ($comment_id_to_term_id->{$id}){
+	  foreach my $c (@{$comment_id_to_term_id->{$id}}){
+	    if ($not_in_results{$c} || !$results->{$c}){
+	      $not_in_results{$c} = 1;
+	      next COMMENT_LOOP;
+	    }
+	  }
+	}
+      }
+      $core->kvetch("deleting (no GO id in comment): $id");
+      delete $results->{$id};
+    }
+  }
+  return [values %$results];
 }
+
 
 sub _sort_results {
 	my $self = shift;
