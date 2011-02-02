@@ -22,7 +22,7 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
 import owltools.graph.OWLGraphWrapper;
 
-import sun.tools.tree.ThisExpression;
+//import sun.tools.tree.ThisExpression; // was causing problems for me--apparently unused(?) -SJC
 
 /**
  * 
@@ -122,7 +122,7 @@ public class GeneOntologyManager {
 				instance = new GeneOntologyManager();
 			}
 		}catch(Exception ex){
-			throw new RuntimeException("Cann't create instance of OntologyManager", ex);
+			throw new RuntimeException("Can't create instance of OntologyManager", ex);
 		}
 
 		return instance;
@@ -171,7 +171,7 @@ public class GeneOntologyManager {
 
 	/**
 	 * 
-	 * @return It returns the vlaue of the geneontology.gold.tsvfiles value
+	 * @return It returns the value of the geneontology.gold.tsvfiles value
 	 */
 	public String getTsvFilesDir() {
 		return guessAbsolutePath(
@@ -180,7 +180,7 @@ public class GeneOntologyManager {
 
 	/**
 	 * 
-	 * @return It returns the vlaue of the geneontology.gold.schemalocation
+	 * @return It returns the value of the geneontology.gold.schemalocation
 	 *         property
 	 */
 	public String getOntSqlSchemaFileLocation() {
@@ -191,9 +191,25 @@ public class GeneOntologyManager {
 	}
 
 	
+	/*
+	 * @return Return the Integer representing the desired to port for Jetty to run on. If finding config fails, return 8080.
+	 */
+	public Integer getJettyPort() {
+		int port = -1;
+		try{
+			port = config.getInt("geneontology.gold.jetty.port");	
+		}catch(Exception ex){
+			// TODO: debug or log here to indicate fallthrough
+			port = 8080;
+		}
+	
+		return port;
+	}
+	
+	
 	/**
 	 * 
-	 * @return It returns the vlaue of the geneontology.gold.deltatableprefix
+	 * @return It returns the value of the geneontology.gold.deltatableprefix
 	 *         property
 	 */
 	public String getGoldDetlaTablePrefix() {

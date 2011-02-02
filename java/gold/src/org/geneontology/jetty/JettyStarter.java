@@ -19,6 +19,8 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.webapp.WebAppContext;
 
+import org.geneontology.conf.GeneOntologyManager;
+
 public class JettyStarter {
 
 	private static Logger LOG = Logger.getLogger(JettyStarter.class);
@@ -30,7 +32,11 @@ public class JettyStarter {
 	}
 
 	public void start() throws Exception {
-		server = new Server(8080);
+		
+		GeneOntologyManager manager = GeneOntologyManager.getInstance();
+		int jetty_port = manager.getJettyPort();
+		
+		server = new Server(jetty_port);
 		WebAppContext files = new WebAppContext("webcontents", "/");
 		
 		ContextHandlerCollection contexts = new ContextHandlerCollection();
@@ -54,7 +60,7 @@ public class JettyStarter {
 		server.start();
 
 		LOG.info("Jetty Server is started");
-		LOG.info("Please visit the web application at the url : http://localhost:8080/");
+		LOG.info("Please visit the web application at the url : http://localhost:" + jetty_port + "/");
 		
 		server.join();
 	}
