@@ -2,11 +2,11 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class name="org.geneontology.gaf.hibernate.Bioentity.GeneAnnotation" table="gene_annotation">
+    <class name="org.geneontology.gaf.hibernate.GeneAnnotation" table="gene_annotation">
         <composite-id>
-            <key-property name="bioentity" type="string">
+          <!--   <key-property name="bioentity" type="string">
                 <column name="bioentity" />
-            </key-property>
+            </key-property>--> 
             <key-property name="cls" type="string">
                 <column name="cls" />
             </key-property>
@@ -20,38 +20,66 @@
 
         </composite-id>
 
-            <property name="qualifierExpression" type="string">
-                <column name="qualifier_expression" />
+  
+           <property name="compositeQualifier" type="string">
+                <column name="composite_qualifier" />
             </property>
-            <property name="isContributesTo" type="java.lang.Boolean">
+ 
+           <property name="isContributesTo" type="boolean">
                 <column name="is_contributes_to" />
             </property>
-
-            <property name="isIntegralTo" type="java.lang.Boolean">
+ 
+ 
+ 
+                 <property name="isIntegralTo" type="boolean">
                 <column name="is_integral_to" />
             </property>
 
-            <property name="referenceId" type="string">
-                <column name="reference_id" />
-            </property>
             <property name="withExpression" type="string">
                 <column name="with_expression" />
             </property>
-            <property name="actsOnTaxonId" type="integer">
+         
+              <property name="actsOnTaxonId" type="java.lang.Integer">
                 <column name="acts_on_taxon_id" />
             </property>
+         
             <property name="lastUpdateDate" type="string">
                 <column name="last_update_date" />
             </property>
+         
             <property name="assignedBy" type="string">
                 <column name="assigned_by" />
             </property>
-           <property name="extension_expression" type="string">
+          
+           <property name="extensionExpression" type="string">
                 <column name="extension_expression" />
             </property>
+          
            <property name="geneProductForm" type="string">
                 <column name="gene_product_form" />
             </property>
+
+           <property name="gafDocument" type="string">
+                <column name="gaf_document" />
+            </property>
+            
+              
+              <many-to-one name="clsObject" class="org.geneontology.gold.hibernate.model.Cls" fetch="select" update="false" insert="false">
+            <column name="cls">
+            </column>
+        </many-to-one>
+
+         <many-to-one name="bioentityObject" class="org.geneontology.gaf.hibernate.Bioentity" fetch="select" lazy="false">
+            <column name="bioentity">
+            </column>
+        </many-to-one>
+
+
+       <!--      <property name="qualifierExpression" type="string">
+                <column name="qualifier_expression" />
+            </property>
+         -->
+ 
 
     </class>
 </hibernate-mapping>

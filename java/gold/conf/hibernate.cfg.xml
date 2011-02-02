@@ -46,7 +46,9 @@
   <mapping resource="org/geneontology/gold/hibernate/model/SubrelationOf.hbm.xml"/>
   <mapping resource="org/geneontology/gold/hibernate/model/RelationChain.hbm.xml"/>
   <mapping resource="org/geneontology/gold/hibernate/model/OntologyAlternateLabelType.hbm.xml"/>
-  
+
+    <mapping resource="org/geneontology/gaf/hibernate/Bioentity.hbm.xml"/>
+  <mapping resource="org/geneontology/gaf/hibernate/GeneAnnotation.hbm.xml"/>
   
  </session-factory>
 </hibernate-configuration>

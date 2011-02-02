@@ -85,14 +85,16 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 		String geneProductForm = cols[16];
 		String lastUpdateDate = cols[13];
 		
-		GeneAnnotation ga = new GeneAnnotation(entity, qualifierExpression,
+	/*	GeneAnnotation ga = new GeneAnnotation(entity, qualifierExpression,
 				isContributesTo, isIntegeralTo, 
 				cls, null, evidenceCls, withExpression, actsOnTaxonId, 
 				lastUpdateDate, assignedBy, extensionExpression, geneProductForm);
 
 		list.add(ga);
 		
-		return ga;
+		return ga;*/
+		
+		return null;
 	}
 	
 
