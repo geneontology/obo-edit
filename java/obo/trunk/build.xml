@@ -63,7 +63,7 @@
 
 	</target>
 
-	<target name="backward_compatible_classes" depends="clean, buildbbop, resources">
+	<target name="backward_compatible_classes" depends="buildbbop, resources">
 		<mkdir dir="${outputdir}" />
 		<javac srcdir="${sourcedir}" destdir="${outputdir}" target="1.5" debug="true">
 			<classpath>
