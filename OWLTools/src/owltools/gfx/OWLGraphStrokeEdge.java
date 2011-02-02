@@ -27,7 +27,8 @@ public class OWLGraphStrokeEdge extends StrokeEdge<OWLGraphLayoutNode>  {
     			arrow,null);
     	this.owlGraphEdge = oge;
     	setRelationType();
-        this.colour = relType.color;
+    	if (relType != null)
+    		this.colour = relType.color;
     }
     
     /**
