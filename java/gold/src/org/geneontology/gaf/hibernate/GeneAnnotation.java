@@ -12,11 +12,14 @@ import org.geneontology.gold.hibernate.model.GOModel;
  */
 public class GeneAnnotation extends GOModel implements Serializable {
 
-	private Bioentity bioentity;
-	private String qualifierExpression;
+	private String bioentity;
+	private Bioentity bioentityObject;
+//	private String qualifierExpression;
 	private boolean isContributesTo;
 	private boolean isIntegralTo;
-	private Cls cls; //TODO: should it be a class or string
+	private String compositeQualifier;
+	private String cls;
+	private Cls clsObject;
 	private String referenceId;	
 	private String evidenceCls;
 	private String withExpression;
@@ -25,6 +28,7 @@ public class GeneAnnotation extends GOModel implements Serializable {
 	private String assignedBy;
 	private String extensionExpression;
 	private String geneProductForm;
+	private String gafDocument;
 	
 	public GeneAnnotation(){
 		//TODO: TBD
@@ -32,19 +36,20 @@ public class GeneAnnotation extends GOModel implements Serializable {
 		this.initUniqueConstraintFields(GeneAnnotation.class, keys);
 	}
 	
-	public GeneAnnotation(Bioentity bioentity, String qualifierExpression,
-			boolean isContributesTo, boolean isIntegralTo, Cls cls,
+	public GeneAnnotation(String bioentity, String qualifierExpression,
+			boolean isContributesTo, boolean isIntegralTo, String cls,
 			String referenceId, String evidenceCls, String withExpression,
 			int actsOnTaxonId, String lastUpdateDate, String assignedBy,
 			String extensionExpression, String geneProductForm) {
 		this();
 		this.bioentity = bioentity;
-		this.qualifierExpression = qualifierExpression;
-		this.isContributesTo = isContributesTo;
-		this.isIntegralTo = isIntegralTo;
 		this.cls = cls;
 		this.referenceId = referenceId;
 		this.evidenceCls = evidenceCls;
+
+		//this.qualifierExpression = qualifierExpression;
+		this.isContributesTo = isContributesTo;
+		this.isIntegralTo = isIntegralTo;
 		this.withExpression = withExpression;
 		this.actsOnTaxonId = actsOnTaxonId;
 		this.lastUpdateDate = lastUpdateDate;
@@ -52,53 +57,21 @@ public class GeneAnnotation extends GOModel implements Serializable {
 		this.extensionExpression = extensionExpression;
 		this.geneProductForm = geneProductForm;
 	}
-
-	public Bioentity getBioentity() {
+	
+	
+	public String getBioentity() {
 		return bioentity;
 	}
 
-	public void setBioentity(Bioentity bioentity) {
+	public void setBioentity(String bioentity) {
 		this.bioentity = bioentity;
 	}
 
-	public String getQualifierExpression() {
-		return qualifierExpression;
-	}
-
-	public void setQualifierExpression(String qualifierExpression) {
-		this.qualifierExpression = qualifierExpression;
-	}
-
-	public boolean isContributesTo() {
-		return isContributesTo;
-	}
-
-	public void setContributesTo(boolean isContributesTo) {
-		this.isContributesTo = isContributesTo;
-	}
-
-	public boolean isIntegralTo() {
-		return isIntegralTo;
-	}
-
-	public void setIntegralTo(boolean isIntegralTo) {
-		this.isIntegralTo = isIntegralTo;
-	}
-
-	/**
-	 * convenience method for getting the Id of the ontology class
-	 * 
-	 * @return id of the ontology class
-	 */
-	public String getClsId() {
-		return cls.getId();
-	}
-	
-	public Cls getCls() {
+	public String getCls() {
 		return cls;
 	}
 
-	public void setCls(Cls cls) {
+	public void setCls(String cls) {
 		this.cls = cls;
 	}
 
@@ -117,6 +90,18 @@ public class GeneAnnotation extends GOModel implements Serializable {
 	public void setEvidenceCls(String evidenceCls) {
 		this.evidenceCls = evidenceCls;
 	}
+	
+
+	/*
+	public String getQualifierExpression() {
+		return qualifierExpression;
+	}
+
+	public void setQualifierExpression(String qualifierExpression) {
+		this.qualifierExpression = qualifierExpression;
+	}*/
+
+
 
 	public String getWithExpression() {
 		return withExpression;
@@ -166,7 +151,56 @@ public class GeneAnnotation extends GOModel implements Serializable {
 		this.geneProductForm = geneProductForm;
 	}
 
+
+	public String getCompositeQualifier() {
+		return compositeQualifier;
+	}
+
+	public void setCompositeQualifier(String compositeQualifier) {
+		this.compositeQualifier = compositeQualifier;
+	}
+
+	public Bioentity getBioentityObject() {
+		return bioentityObject;
+	}
+
+	public void setBioentityObject(Bioentity bioentityObject) {
+		this.bioentityObject = bioentityObject;
+	}
 	
+	
+	public Cls getClsObject() {
+		return clsObject;
+	}
+
+	public void setClsObject(Cls clsObject) {
+		this.clsObject = clsObject;
+	}
+
+	public String getGafDocument() {
+		return gafDocument;
+	}
+
+	public void setGafDocument(String gafDocument) {
+		this.gafDocument = gafDocument;
+	}
+
+	public boolean getIsContributesTo() {
+		return isContributesTo;
+	}
+
+	public void setIsContributesTo(boolean isContributesTo) {
+		this.isContributesTo = isContributesTo;
+	}
+
+	public boolean getIsIntegralTo() {
+		return isIntegralTo;
+	}
+
+	public void setIsIntegralTo(boolean isIntegralTo) {
+		this.isIntegralTo = isIntegralTo;
+	}
+
 	
 	
 }

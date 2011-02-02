@@ -76,7 +76,7 @@ public class AnnotationTaxonCheck {
 	}
 
 	public Set<RuleViolation> getRuleViolations(GeneAnnotation a) {
-		return getRuleViolations(a.getClsId(), a.getBioentity().getNcbiTaxonId());
+		return getRuleViolations(a.getCls(), a.getBioentityObject().getNcbiTaxonId());
 	}
 	public Set<RuleViolation> getRuleViolations(String annotationCls, int ncbiTaxonId) {
 		return getRuleViolations(annotationCls, "NCBITaxon:"+ncbiTaxonId);

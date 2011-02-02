@@ -14,7 +14,7 @@ public class Bioentity extends GOModel implements Serializable {
 	private String db;
 	
 	 public Bioentity(){
-		String[] keys = {id};
+		String[] keys = {"id"};
 		this.initUniqueConstraintFields(Bioentity.class, keys);
 	}
 	
