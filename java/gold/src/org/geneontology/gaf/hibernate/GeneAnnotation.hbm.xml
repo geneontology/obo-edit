@@ -4,9 +4,9 @@
 <hibernate-mapping>
     <class name="org.geneontology.gaf.hibernate.GeneAnnotation" table="gene_annotation">
         <composite-id>
-          <!--   <key-property name="bioentity" type="string">
+            <key-property name="bioentity" type="string">
                 <column name="bioentity" />
-            </key-property>--> 
+            </key-property>
             <key-property name="cls" type="string">
                 <column name="cls" />
             </key-property>
@@ -63,17 +63,17 @@
                 <column name="gaf_document" />
             </property>
             
-              
+              <!--  
               <many-to-one name="clsObject" class="org.geneontology.gold.hibernate.model.Cls" fetch="select" update="false" insert="false">
             <column name="cls">
             </column>
         </many-to-one>
 
-         <many-to-one name="bioentityObject" class="org.geneontology.gaf.hibernate.Bioentity" fetch="select" lazy="false">
+         <many-to-one name="bioentityObject" class="org.geneontology.gaf.hibernate.Bioentity" fetch="select">
             <column name="bioentity">
             </column>
         </many-to-one>
-
+	-->
 
        <!--      <property name="qualifierExpression" type="string">
                 <column name="qualifier_expression" />

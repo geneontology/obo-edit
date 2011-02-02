@@ -13,13 +13,13 @@ import org.geneontology.gold.hibernate.model.GOModel;
 public class GeneAnnotation extends GOModel implements Serializable {
 
 	private String bioentity;
-	private Bioentity bioentityObject;
+	private transient Bioentity bioentityObject;
 //	private String qualifierExpression;
 	private boolean isContributesTo;
 	private boolean isIntegralTo;
 	private String compositeQualifier;
 	private String cls;
-	private Cls clsObject;
+	private transient Cls clsObject;
 	private String referenceId;	
 	private String evidenceCls;
 	private String withExpression;
@@ -161,18 +161,27 @@ public class GeneAnnotation extends GOModel implements Serializable {
 	}
 
 	public Bioentity getBioentityObject() {
+		if(bioentityObject == null)
+			bioentityObject =(Bioentity) getHibernateObject(Bioentity.class, "id", getBioentity());
+		
 		return bioentityObject;
 	}
 
+	
 	public void setBioentityObject(Bioentity bioentityObject) {
 		this.bioentityObject = bioentityObject;
 	}
 	
 	
 	public Cls getClsObject() {
+		if(clsObject == null)
+			clsObject = (Cls)getHibernateObject(Cls.class, "id", getCls());
+		
+		
 		return clsObject;
 	}
 
+	
 	public void setClsObject(Cls clsObject) {
 		this.clsObject = clsObject;
 	}

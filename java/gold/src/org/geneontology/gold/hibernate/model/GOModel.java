@@ -5,10 +5,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+import org.geneontology.gaf.hibernate.GafObjectsFactory;
+import org.hibernate.Session;
 import org.hibernate.proxy.HibernateProxy;
 
 public class GOModel {
 
+	private static Logger LOG = Logger.getLogger(GOModel.class);
+	private static boolean DEBUG = LOG.isDebugEnabled();
+	
+	
 	private Vector<Field> uniqueConstraintFields = new Vector<Field>();
 
 	public Vector<Field> getUniqueConstraintFields() {
@@ -174,9 +181,9 @@ public class GOModel {
 		String methodName = prefix + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1);
 
 		try {
-			Class<?>[] parameters = new Class[0];
+					Class<?>[] parameters = new Class[0];
 			returnMethod = this.getClass().getMethod(methodName, parameters);
-		} catch (SecurityException e) {
+} catch (SecurityException e) {
 			System.err.println("WARN: Access denied to method " + methodName);
 		} catch (NoSuchMethodException e){
 			//System.err.println("WARN: No getter method " + methodName);
@@ -196,6 +203,44 @@ public class GOModel {
 			System.err.println("WARN: No setter function " + methodName);
 		}
 		return returnMethod;
+	}
+	
+	/**
+	 * This method implements the lazy load strategy for the reference objects via foreign keys
+	 * @param cls
+	 * @param key
+	 * @param vaule
+	 * @return
+	 */
+	protected Object getHibernateObject(Class cls, String key, String value){
+		
+		GafObjectsFactory factory = new GafObjectsFactory();
+		Session session = factory.getSession();
+		
+		String clsName = cls.getSimpleName();
+		
+		Object obj = session.createQuery("from " + clsName + " where " + key + "=?" ).setString(0, value).uniqueResult();
+		
+		if(obj == null){
+			
+			try{
+				obj = cls.newInstance();
+				
+				Field f = cls.getDeclaredField(key);
+				
+				String methodName = "set" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1);
+				Class<?>[] parameters = {f.getType()};
+				Method method = cls.getMethod(methodName, parameters);
+				
+				method.invoke(obj, value);
+				
+			}catch(Exception ex){
+				LOG.error(ex.getMessage(), ex);
+			}
+		}
+		
+		return obj;
+		
 	}
 
 }
