@@ -3,7 +3,6 @@ package org.geneontology.gaf.hibernate.test;
 import org.geneontology.gaf.hibernate.Bioentity;
 import org.geneontology.gaf.hibernate.GafObjectsFactory;
 import org.geneontology.gaf.hibernate.GeneAnnotation;
-import org.geneontology.gold.hibernate.model.Cls;
 import org.hibernate.Session;
 
 import junit.framework.TestCase;
@@ -11,7 +10,7 @@ import junit.framework.TestCase;
 public class GafHibernateTest extends TestCase {
 
 	
-	/*public static void testAddBioentity(){
+	public static void testAddBioentity(){
 		GafObjectsFactory factory = new GafObjectsFactory();
 		
 		Session session = factory.getSession();
@@ -46,7 +45,7 @@ public class GafHibernateTest extends TestCase {
 		
 		session.save(ga);
 		session.getTransaction().commit();
-	}*/
+	}
 	
 	public static void testGetGeneAnnotation(){
 		GafObjectsFactory factory = new GafObjectsFactory();
@@ -54,11 +53,12 @@ public class GafHibernateTest extends TestCase {
 		GeneAnnotation ga = factory.getGeneAnnotations("MGIMGI:1918911").get(0);
 		
 		System.out.println(ga.getBioentityObject());
-		
+
+		System.out.println(ga.getClsObject());
+	
 		assertNotNull( ga.getBioentityObject() );
 		
-		
-		
+		assertNotNull(ga.getClsObject());
 		
 	}
 	
