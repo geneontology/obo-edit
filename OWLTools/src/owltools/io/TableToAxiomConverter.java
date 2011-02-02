@@ -76,6 +76,13 @@ public class TableToAxiomConverter {
 			String[] row = line.split("\t");
 			addRow(row);
 		}
+		
+		if (config.individualsType != null) {
+			OWLDataFactory df = graph.getDataFactory();
+			 graph.getManager().applyChange(new AddAxiom(graph.getSourceOntology(), 
+					 df.getOWLDeclarationAxiom(config.individualsType)));
+		}
+
 	}
 
 	public Set<OWLAxiom> rowToAxioms(String[] row) {
@@ -86,10 +93,12 @@ public class TableToAxiomConverter {
 			sub = row[1];
 			obj = row[0];
 		}
+		Set<OWLAxiom> axs = new HashSet<OWLAxiom>();
 		OWLAxiom ax = null;
 		
 		if (config.axiomType.equals(AxiomType.CLASS_ASSERTION)) {
 			OWLClass c = resolveClass(sub);
+			axs.add(df.getOWLDeclarationAxiom(c));
 			if (config.property == null) {
 				ax = df.getOWLClassAssertionAxiom(c, (OWLIndividual) resolveIndividual(obj));
 			}
@@ -111,7 +120,6 @@ public class TableToAxiomConverter {
 		else {
 			// TODO
 		}
-		Set<OWLAxiom> axs = new HashSet<OWLAxiom>();
 		axs.add(ax);
 		if (config.individualsType != null) {
 			axs.add(df.getOWLClassAssertionAxiom(config.individualsType, resolveIndividual(sub)));

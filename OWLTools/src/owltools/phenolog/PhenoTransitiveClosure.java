@@ -105,7 +105,7 @@ public class PhenoTransitiveClosure {
             }
                         
         } catch (Exception e) {
-            System.out.println("EXCEPTION IN OWL GRAPH");
+            System.out.println("EXCEPTION IN OWL GRAPH:");
         }
 
         return aux;

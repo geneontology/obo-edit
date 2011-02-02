@@ -294,6 +294,13 @@ public class CommandLineInterface {
 					System.out.println(a);
 				}
 			}
+			else if (opts.nextEq("--incoming-edges")) {
+				opts.info("LABEL", "list edges in graph to leaf nodes");
+				OWLObject obj = resolveEntity(g, opts);
+				System.out.println(obj+ " "+obj.getClass());
+				Set<OWLGraphEdge> edges = g.getIncomingEdges(obj);
+				showEdges(edges);
+			}
 			else if (opts.nextEq("--descendant-edges")) {
 				opts.info("LABEL", "list edges in graph closure to leaf nodes");
 				OWLObject obj = resolveEntity(g, opts);
@@ -447,12 +454,13 @@ public class CommandLineInterface {
 						if (opts.nextEq("-c"))
 							isInstances = false;
 						OWLObject anc = resolveEntity(g,opts.nextOpt());
-						System.out.println("ANC:"+anc+" "+anc.getClass());
+						System.out.println("Set1:"+anc+" "+anc.getClass());
 						Set<OWLObject> objs = g.queryDescendants((OWLClass)anc, isInstances, isClasses);
 						objs.remove(anc);
 						Set<OWLObject> objs2 = objs;
 						if (opts.nextEq("--vs")) {
 							OWLObject anc2 = resolveEntity(g,opts.nextOpt());
+							System.out.println("Set2:"+anc2+" "+anc2.getClass());
 							 objs2 = g.queryDescendants((OWLClass)anc2, isInstances, isClasses);
 							 objs2.remove(anc2);
 						}
