@@ -45,18 +45,18 @@
 		<javadoc sourcepath="${sourcedir}" classpathref="classpath" defaultexcludes="yes" destdir="${apidoc_dest}" author="true" version="true" use="true" />
 	</target>
 
-	<target name="backward_compatible_classes" depends="resources,clean">
+	<target name="classes" depends="resources">
 		<mkdir dir="${outputdir}" />
-		<javac srcdir="${sourcedir}" destdir="${outputdir}" target="1.5" debug="true">
+		<javac srcdir="${sourcedir}" destdir="${outputdir}" debug="true">
 			<classpath>
 				<path refid="classpath" />
 			</classpath>
 		</javac>
 	</target>
 
-	<target name="classes" depends="resources">
+	<target name="backward_compatible_classes" depends="resources">
 		<mkdir dir="${outputdir}" />
-		<javac srcdir="${sourcedir}" destdir="${outputdir}" debug="true">
+		<javac srcdir="${sourcedir}" destdir="${outputdir}" target="1.5" debug="true">
 			<classpath>
 				<path refid="classpath" />
 			</classpath>
