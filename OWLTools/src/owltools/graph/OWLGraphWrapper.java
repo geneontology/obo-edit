@@ -882,6 +882,7 @@ public class OWLGraphWrapper {
 		ancs.add(x);
 		return ancs;
 	}
+	
 	public Set<OWLObject> getNamedAncestors(OWLObject x) {
 		Set<OWLObject> ancs = new HashSet<OWLObject>();
 		for (OWLGraphEdge e : getOutgoingEdgesClosure(x)) {
@@ -1249,8 +1250,20 @@ public class OWLGraphWrapper {
 	 */
 	public String getLabel(OWLObject c) {
 		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()); 
-
 		return getAnnotationValue(c, lap);
+	}
+	public String getLabelOrDisplayId(OWLObject c) {
+		String label = getLabel(c);
+		if (label == null) {
+			if (c instanceof OWLNamedObject) {
+				OWLNamedObject nc = (OWLNamedObject)c;
+				label = nc.getIRI().getFragment();
+			}
+			else {
+				label = c.toString();
+			}
+		}
+		return label;
 	}
 
 

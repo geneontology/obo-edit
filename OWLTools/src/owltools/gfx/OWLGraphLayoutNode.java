@@ -9,6 +9,7 @@ import java.awt.geom.*;
 import java.util.*;
 import java.util.List;
 
+import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLObject;
 
 import owltools.graph.OWLGraphWrapper;
@@ -37,7 +38,15 @@ public class OWLGraphLayoutNode implements Node, LayoutNode {
 
     public OWLGraphLayoutNode(OWLGraphWrapper owlGraphWrapper, OWLObject owlObject,GraphStyle style) {
     	this.owlGraphWrapper = owlGraphWrapper;
-    	String label = owlGraphWrapper.getLabel(owlObject);
+    	if (owlObject == null) {
+    		label = "??";
+    		return;
+    	}
+    	String label;
+    	if (owlObject instanceof OWLNamedObject)
+    		label = owlGraphWrapper.getLabelOrDisplayId(owlObject);
+    	else
+    		label = owlObject.getClass().toString();
     	if (label == null)
     		label = "?";
     	label.replace('_', ' ');

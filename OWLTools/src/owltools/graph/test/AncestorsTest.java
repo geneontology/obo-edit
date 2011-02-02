@@ -18,38 +18,43 @@ import junit.framework.TestCase;
 
 public class AncestorsTest extends TestCase {
 
-	public static void testIntersectionsReturnedInClosure() throws Exception {
+	public static void testDescendants() throws Exception {
 		OWLGraphWrapper  g =  getOntologyWrapper();
-		OWLObject obj = g.getOWLObject("http://example.org#o1");
+		OWLClass c = g.getOWLClass("http://purl.obolibrary.org/obo/NCBITaxon_10090");
+		OWLObject i = g.getOWLObject("http://purl.obolibrary.org/obo/MGI_101761");
+		System.out.println("Descendants of "+c);
+		System.out.println("Expecting "+i);
 		boolean ok = false;
-		for (OWLGraphEdge e : g.getOutgoingEdgesClosureReflexive(obj)) {
-			System.out.println(e);
-			if (e.getTarget() instanceof OWLObjectIntersectionOf)
+		for (OWLGraphEdge e : g.getIncomingEdgesClosure(c)) {
+			System.out.println("i:"+e);
+			if (e.getSource().equals(i))
+				ok = true;
+		}
+
+		assertTrue(ok);
+	}
+	public static void testDescendantsQuery() throws Exception {
+		OWLGraphWrapper  g =  getOntologyWrapper();
+		OWLClass c = g.getOWLClass("http://purl.obolibrary.org/obo/NCBITaxon_10090");
+		OWLObject i = g.getOWLObject("http://purl.obolibrary.org/obo/MGI_101761");
+		System.out.println("Expecting "+i);
+		boolean ok = false;
+		for (OWLObject e : g.queryDescendants(c)) {
+			System.out.println("ORG:"+e);
+			if (e.equals(i))
 				ok = true;
 		}
 		assertTrue(ok);
 	}
-	public static void testRestrictionsReturnedInClosure() throws Exception {
+	public static void testAncestorsQuery() throws Exception {
 		OWLGraphWrapper  g =  getOntologyWrapper();
-		OWLObject obj = g.getOWLObject("http://example.org#deformed_hippocampus");
+		OWLClass c = g.getOWLClass("http://purl.obolibrary.org/obo/NCBITaxon_10090");
+		OWLObject i = g.getOWLObject("http://purl.obolibrary.org/obo/MGI_101761");
 		boolean ok = false;
-		for (OWLGraphEdge e : g.getOutgoingEdgesClosureReflexive(obj)) {
-			System.out.println(e);
-			if (e.getTarget() instanceof OWLRestriction)
+		for (OWLGraphEdge e : g.getOutgoingEdgesClosureReflexive(i)) {
+			System.out.println("i:"+e+" "+e.getTarget().getClass());
+			if (e.getTarget().equals(c))
 				ok = true;
-		}
-		assertTrue(ok);
-	}
-	public static void testExclusion() throws Exception {
-		OWLGraphWrapper  g =  getOntologyWrapper();
-		Config cfg = g.getConfig();
-		cfg.excludeProperty(g.getDataFactory().getOWLObjectProperty(IRI.create("http://example.org#has")));
-		OWLObject obj = g.getOWLObject("http://example.org#o1");
-		OWLObject eye = g.getOWLObject("http://example.org#eye");
-		boolean ok = true;
-		for (OWLGraphEdge e : g.getOutgoingEdgesClosureReflexive(obj)) {
-			if (e.getTarget().equals(eye))
-				ok = false;
 		}
 		assertTrue(ok);
 	}
@@ -60,7 +65,7 @@ public class AncestorsTest extends TestCase {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		return new OWLGraphWrapper( 
 				manager.loadOntologyFromOntologyDocument(
-						new File("test_resources/lcstest2.owl")));
+						new File("test_resources/test_phenotype.owl")));
 	}
 		
 	
