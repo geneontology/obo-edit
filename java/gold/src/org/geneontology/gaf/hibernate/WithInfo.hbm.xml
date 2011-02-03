@@ -2,10 +2,10 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class name="org.geneontology.gaf.hibernate.Bioentity.WithInfo" table="with_info">
+    <class name="org.geneontology.gaf.hibernate.WithInfo" table="with_info">
         <composite-id>
-            <key-property name="withExpression" type="string">
-                <column name="with_expression" />
+            <key-property name="id" type="string">
+                <column name="id" />
             </key-property>
             <key-property name="withXref" type="string">
                 <column name="with_xref" />
