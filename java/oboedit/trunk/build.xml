@@ -176,7 +176,7 @@
 		<install4j projectfile="install4j_config.install4j" release="${install4j_formatted_version_number}" />
 	</target>
 	<target name="installers" depends="clean, -releasenotes, textfiles, backward_compatible_classes, jar, library_jars, docindex, apidocs, install4j_installers" description="Build installers">
-          <property name="backwards_compatible" value="-target 1.5 -source 1.5" />
+          <property name="backward_compatible" value="-target 1.5 -source 1.5" />
 	</target>
 
 	<fileset dir="${obo_dest}/lib" id="obo_jars">
@@ -364,6 +364,12 @@
 	</target>
 
 	<target name="jar" depends="classes, jarmanifest, checkjar, scripts" unless="main_jar_current" description="Generate jar file">
+		<jar destfile="${jarfile}" manifest="${main_jar_manifest}">
+			<fileset refid="main_jar_contents" />
+		</jar>
+	</target>
+
+	<target name="backward_compatible_jar" depends="backward_compatible_classes, jarmanifest, checkjar, scripts" unless="main_jar_current" description="Generate JDK-1.5-compatible jar file">
 		<jar destfile="${jarfile}" manifest="${main_jar_manifest}">
 			<fileset refid="main_jar_contents" />
 		</jar>
