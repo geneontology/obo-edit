@@ -1,30 +1,52 @@
 [Term]
 id: bone
+name: bone
 
 [Term]
 id: endochondral_bone
+name: endochondral_bone
 intersection_of: bone
 intersection_of: develops_from cartilage
 
 [Term]
 id: tripus
+name: tripus
 is_a: bone
 relationship: develops_from bv_cartilage
 
 [Term]
 id: cartilage
+name: cartilage
 
 [Term]
 id: bv_cartilage
+name: bv_cartilage
 is_a: cartilage
 
 [Term]
 id: non_isa_complete_term
+name: non_isa_complete_term
 relationship: develops_from tripus
 
 [Term]
 id: child_of_non_isa_complete_term
+name: child_of_non_isa_complete_term
 is_a: non_isa_complete_term
+
+[Term]
+id: wibble
+name: wibble
+disjoint_from: wobble
+
+[Term]
+id: wobble
+name: wobble
+
+[Term]
+id: child-of-wibble
+name: child-of-wibble
+is_a: wibble
 
 [Typedef]
 id: develops_from
+name: develops_from
