@@ -59,5 +59,24 @@ public class GafDocument extends GOModel implements Serializable {
 		return null;
 	}
 	
+	public void addBioentity(Bioentity bioentity){
+		
+	}
+	
+	public void addCompositeQualifier(CompositeQualifier compositeQualifier){
+		
+	}
+	
+	public void addWithInfo(WithInfo withInfo){
+		
+	}
+	
+	public void addExtensionExpression(ExtensionExpression extensionExpression){
+		
+	}
+	
+	public void addGeneAnnotation(GeneAnnotation ga){
+		
+	}
 	
 }
