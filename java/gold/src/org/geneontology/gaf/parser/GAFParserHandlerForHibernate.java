@@ -67,8 +67,14 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 		String symbol = cols[2];
 		String fullName = cols[9];
 		String typeCls = cols[11];
-		int ncbiTaxonId = Integer.parseInt( cols[12] );
+		int ncbiTaxonId =-1;
+		String taxons[] = cols[12].split("|");
+		taxons = taxons[0].split(":");
+		ncbiTaxonId = Integer.parseInt(taxons[1]);
+		
 		String db = cols[10];
+		
+		
 		
 		Bioentity entity = new Bioentity(id, symbol, fullName, typeCls, ncbiTaxonId, db);
 		
@@ -131,12 +137,14 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 		String evidenceCls = cols[6];
 		String withExpression = cols[7];
 
+		int actsOnTaxonId =-1;
+		
 		String taxons[] = cols[12].split("|");
-		taxons = taxons[0].split(":");
+		if(taxons.length>1){
+			taxons = taxons[1].split(":");
+			actsOnTaxonId = Integer.parseInt(taxons[1]);
+		}
 		
-		
-		int actsOnTaxonId = Integer.parseInt(taxons[1]);
-
 		String lastUpdateDate = cols[13];
 		
 		String assignedBy = cols[14];
