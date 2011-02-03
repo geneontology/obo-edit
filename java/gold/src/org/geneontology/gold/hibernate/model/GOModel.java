@@ -3,6 +3,8 @@ package org.geneontology.gold.hibernate.model;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -242,5 +244,19 @@ public class GOModel {
 		return obj;
 		
 	}
+	
+	
+	protected List getHibernateObjects(Class cls, String key, String value){
+		
+		GafObjectsFactory factory = new GafObjectsFactory();
+		Session session = factory.getSession();
+		
+		String clsName = cls.getSimpleName();
+		
+		List list = session.createQuery("from " + clsName + " where " + key + "=?" ).setString(0, value).list();
+		
+		return list;
+	}
+	
 
 }

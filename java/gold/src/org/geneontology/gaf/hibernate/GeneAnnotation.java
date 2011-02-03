@@ -31,6 +31,10 @@ public class GeneAnnotation extends GOModel implements Serializable {
 	private String geneProductForm;
 	private String gafDocument;
 	
+	private List<WithInfo> withInfoList;
+	private List<ExtensionExpression> extensionExpressionList;
+	private List<CompositeQualifier> compositeQualifierList;
+	
 	public GeneAnnotation(){
 		//TODO: TBD
 		String keys[] = {"bioentity", "cls", "referenceId", "evidenceCls"};
@@ -96,18 +100,6 @@ public class GeneAnnotation extends GOModel implements Serializable {
 		this.evidenceCls = evidenceCls;
 	}
 	
-
-	/*
-	public String getQualifierExpression() {
-		return qualifierExpression;
-	}
-
-	public void setQualifierExpression(String qualifierExpression) {
-		this.qualifierExpression = qualifierExpression;
-	}*/
-
-
-
 	public String getWithExpression() {
 		return withExpression;
 	}
@@ -216,14 +208,25 @@ public class GeneAnnotation extends GOModel implements Serializable {
 	}
 
 	public List<ExtensionExpression> getExtensionExpressions(){
-		return null;
+		if(extensionExpressionList == null){
+			extensionExpressionList = getHibernateObjects(ExtensionExpression.class, "id", getExtensionExpression());
+		}
+		
+		return extensionExpressionList;
 	}
 	
 	public List<WithInfo> getWithInfos(){
-		return null;
+		if(withInfoList == null)
+			withInfoList = getHibernateObjects(WithInfo.class, "id", getWithExpression());
+		
+		return withInfoList;
 	}
 	
 	public List<CompositeQualifier> getCompositeQualifiers(){
+		if(compositeQualifierList == null){
+			compositeQualifierList = getHibernateObjects(CompositeQualifier.class, "id", getCompositeQualifier());
+		}
+		
 		return null;
 	}
 	
