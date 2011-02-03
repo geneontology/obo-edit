@@ -47,8 +47,14 @@
   <mapping resource="org/geneontology/gold/hibernate/model/RelationChain.hbm.xml"/>
   <mapping resource="org/geneontology/gold/hibernate/model/OntologyAlternateLabelType.hbm.xml"/>
 
-    <mapping resource="org/geneontology/gaf/hibernate/Bioentity.hbm.xml"/>
-  <mapping resource="org/geneontology/gaf/hibernate/GeneAnnotation.hbm.xml"/>
+   <mapping resource="org/geneontology/gaf/hibernate/Bioentity.hbm.xml"/>
+   <mapping resource="org/geneontology/gaf/hibernate/GeneAnnotation.hbm.xml"/>
+   <mapping resource="org/geneontology/gaf/hibernate/CompositeQualifier.hbm.xml"/>
+     <mapping resource="org/geneontology/gaf/hibernate/ExtensionExpression.hbm.xml"/>
+     <mapping resource="org/geneontology/gaf/hibernate/GafDocument.hbm.xml"/>
+     <mapping resource="org/geneontology/gaf/hibernate/WithInfo.hbm.xml"/>
+
+
   
  </session-factory>
 </hibernate-configuration>
