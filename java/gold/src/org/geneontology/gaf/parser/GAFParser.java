@@ -38,12 +38,13 @@ public class GAFParser {
 		if (DEBUG)
 			LOG.debug("Parsing Start");
 
-		handler.startDocument();
 
 		if (null != gaf_file && gaf_file.isFile()) {
 			String file_name = gaf_file.getCanonicalPath();
 			if (isValidPath(file_name)) {
 
+				handler.startDocument(gaf_file);
+				
 				double gafVersion = 0;
 
 				int expectedNumCols = 15; // default to GAF version 1.0
@@ -99,6 +100,9 @@ public class GAFParser {
 				} else {
 					errors.append(file_name + " is empty");
 				}
+				
+				handler.endDocument();
+				
 			} else {
 				errors.append(file_name + " cannot be found");
 			}
