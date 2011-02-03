@@ -1250,7 +1250,6 @@ public class DefaultOBOParser implements OBOParser {
 
 			if (parent == null) {
 				if (allowDanglingParents) {
-
 					parent = objectFactory.createDanglingObject(rs.getParent(),
 							rs.parentIsProperty);
 					session.addObject(parent);
@@ -1278,7 +1277,7 @@ public class DefaultOBOParser implements OBOParser {
 			if (type == null) {
 				if (allowDanglingParents) {
 					type = (OBOProperty) objectFactory.createDanglingObject(rs.getType(), true);
-					logger.info("No type for " + child + "--added dangling type object " + type);
+					logger.info("No type for child of " + child + " (parent = " + parent + ")--added dangling type object " + type);
 				} else {
 					throw new OBOParseException("Unrecognized type "
 							+ rs.getType(), rs.getPath(), rs.getLine(), rs
@@ -1288,7 +1287,7 @@ public class DefaultOBOParser implements OBOParser {
 				if (allowDanglingParents) {
 					type = (OBOProperty) objectFactory.createDanglingObject(rs
 							.getType(), true);
-					logger.info("No type for " + child + "--added dangling type object " + type);
+					logger.info("No type for property " + child + "--added dangling type object " + type);
 				} else {
 					throw new OBOParseException("Tried to use non-type "
 							+ rs.getType() + " as relationship " + "type", rs
@@ -1444,7 +1443,7 @@ public class DefaultOBOParser implements OBOParser {
 			if (instanceOfObj == null) {
 				if (allowDanglingParents) {
 					instanceOfObj = new DanglingClassImpl(is.instanceOf);
-					logger.info("instanceOfObj is null-added dangling object");
+//					logger.info("instanceOfObj is null-added dangling object");
 				} else {
 					throw new OBOParseException("Unrecognized instance_of ID "
 							+ is.instanceOf + " specified for "
