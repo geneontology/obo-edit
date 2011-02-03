@@ -1,8 +1,10 @@
 package org.geneontology.gaf.parser;
 
+import java.io.File;
+
 public interface GAFParserHandler {
 
-	public void startDocument();
+	public void startDocument(File gafFile);
 	
 	public void endDocument();
 	

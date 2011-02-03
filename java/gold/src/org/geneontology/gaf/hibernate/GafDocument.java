@@ -67,6 +67,8 @@ public class GafDocument extends GOModel implements Serializable {
 		
 	}
 	
+	
+	//only add if another instance of the same information already does not exists
 	public void addWithInfo(WithInfo withInfo){
 		
 	}

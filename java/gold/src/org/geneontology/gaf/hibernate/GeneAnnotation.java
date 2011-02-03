@@ -1,6 +1,7 @@
 package org.geneontology.gaf.hibernate;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.geneontology.gold.hibernate.model.Cls;
 import org.geneontology.gold.hibernate.model.GOModel;
@@ -36,29 +37,33 @@ public class GeneAnnotation extends GOModel implements Serializable {
 		this.initUniqueConstraintFields(GeneAnnotation.class, keys);
 	}
 	
-	public GeneAnnotation(String bioentity, String qualifierExpression,
-			boolean isContributesTo, boolean isIntegralTo, String cls,
+	
+	
+	public GeneAnnotation(String bioentity, boolean isContributesTo,
+			boolean isIntegralTo, String compositeQualifier, String cls,
 			String referenceId, String evidenceCls, String withExpression,
 			int actsOnTaxonId, String lastUpdateDate, String assignedBy,
-			String extensionExpression, String geneProductForm) {
+			String extensionExpression, String geneProductForm,
+			String gafDocument) {
 		this();
 		this.bioentity = bioentity;
+		this.isContributesTo = isContributesTo;
+		this.isIntegralTo = isIntegralTo;
+		this.compositeQualifier = compositeQualifier;
 		this.cls = cls;
 		this.referenceId = referenceId;
 		this.evidenceCls = evidenceCls;
-
-		//this.qualifierExpression = qualifierExpression;
-		this.isContributesTo = isContributesTo;
-		this.isIntegralTo = isIntegralTo;
 		this.withExpression = withExpression;
 		this.actsOnTaxonId = actsOnTaxonId;
 		this.lastUpdateDate = lastUpdateDate;
 		this.assignedBy = assignedBy;
 		this.extensionExpression = extensionExpression;
 		this.geneProductForm = geneProductForm;
+		this.gafDocument = gafDocument;
 	}
-	
-	
+
+
+
 	public String getBioentity() {
 		return bioentity;
 	}
@@ -210,6 +215,16 @@ public class GeneAnnotation extends GOModel implements Serializable {
 		this.isIntegralTo = isIntegralTo;
 	}
 
+	public List<ExtensionExpression> getExtensionExpressions(){
+		return null;
+	}
 	
+	public List<WithInfo> getWithInfos(){
+		return null;
+	}
+	
+	public List<CompositeQualifier> getCompositeQualifiers(){
+		return null;
+	}
 	
 }
