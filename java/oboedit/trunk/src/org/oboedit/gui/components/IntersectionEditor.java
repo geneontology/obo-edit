@@ -62,7 +62,6 @@ import org.obo.history.HistoryList;
 import org.obo.history.TermMacroHistoryItem;
 import org.obo.postcomp.PostcompUtil;
 import org.obo.query.QueryEngine;
-import org.obo.query.impl.NamespaceQuery;
 import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SelectionManager;
@@ -288,7 +287,7 @@ public class IntersectionEditor extends AbstractGUIComponent {
 
 //	protected SessionAutocompleteBox termBox;
 
-	protected QueryEngine queryEngine;
+       protected QueryEngine queryEngine; // Used?
 
 	public IntersectionEditor(String id) {
 		super(id);
