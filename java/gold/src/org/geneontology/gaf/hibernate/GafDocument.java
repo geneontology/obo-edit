@@ -1,6 +1,7 @@
 package org.geneontology.gaf.hibernate;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import org.geneontology.gold.hibernate.model.GOModel;
 
@@ -35,6 +36,27 @@ public class GafDocument extends GOModel implements Serializable {
 
 	public void setDocumentPath(String documentPath) {
 		this.documentPath = documentPath;
+	}
+	
+	public Bioentity getBioentity(String id){
+		return null;
+	}
+
+	public Set<Bioentity> getBioentities(){
+		return null;
+	}
+	
+
+	public Set<GeneAnnotation> getGeneAnnotations(){
+		return null;
+	}
+	
+	public Set<GeneAnnotation> getGeneAnnotations(String bioentity){
+		return null;
+	}
+	
+	public Set<GeneAnnotation> getGeneAnnotationsByGoCls(String cls){
+		return null;
 	}
 	
 	
