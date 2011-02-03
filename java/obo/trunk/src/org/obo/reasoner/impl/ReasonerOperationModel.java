@@ -56,7 +56,7 @@ public class ReasonerOperationModel implements OperationModel {
 	 * apply multiple items
 	 * */
 	public OperationWarning apply(Collection<HistoryItem> items) {
-		logger.debug("ReasonerOperationModel.apply multiple items");
+//		logger.debug("ReasonerOperationModel.apply multiple items");
 		Collection addlinks = null;
 		Collection rmlinks = null;
 
@@ -109,9 +109,9 @@ public class ReasonerOperationModel implements OperationModel {
 	 * apply single item
 	 * */
 	public OperationWarning apply(HistoryItem item) {
-		logger.debug("ReasonerOperationModel.apply");
+//		logger.debug("ReasonerOperationModel.apply");
 		if (item instanceof CreateLinkHistoryItem) {
-			logger.debug("apply CreateLinkHistoryItem");
+//			logger.debug("apply CreateLinkHistoryItem");
 			CreateLinkHistoryItem tchi = (CreateLinkHistoryItem) item;
 			StringRelationship sr = new StringRelationship(
 					tchi.getTarget(), tchi.getTypeID(), tchi.getParentID());
@@ -124,7 +124,7 @@ public class ReasonerOperationModel implements OperationModel {
 			 */
 			reasoner.addLink(tr);
 		} else if (item instanceof DeleteLinkHistoryItem) {
-			logger.debug("apply DeleteLinkHistoryItem");
+//			logger.debug("apply DeleteLinkHistoryItem");
 			DeleteLinkHistoryItem dlhi = (DeleteLinkHistoryItem) item;
 			StringRelationship sr = dlhi.getRel();
 
@@ -137,12 +137,12 @@ public class ReasonerOperationModel implements OperationModel {
 			 */
 			reasoner.removeLink(link);
 		} else if (item instanceof CompletesHistoryItem) {
-			logger.debug("apply CompletesHistoryItem");
+//			logger.debug("apply CompletesHistoryItem");
 			CompletesHistoryItem chi = (CompletesHistoryItem) item;
 			Link link = HistoryUtil.getRealRel(session, chi.getRel());
 			setCompleteness(link, !chi.getOldCompletes());
 		} else if (item instanceof TermMacroHistoryItem) {
-			logger.debug("apply TermMacroHistoryItem");
+//			logger.debug("apply TermMacroHistoryItem");
 			// TODO: find a cleaner way of doing this. Reasoner interface should expose what is required
 			// incremental reasoning.
 			// TODO: what about when not in a macro?

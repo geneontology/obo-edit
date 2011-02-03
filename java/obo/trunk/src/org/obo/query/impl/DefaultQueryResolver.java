@@ -54,7 +54,7 @@ public class DefaultQueryResolver implements QueryResolver {
 			public void execute() {
 				try {
 					long time = System.currentTimeMillis(); // DEL					
-					logger.info("Starting search: " + q);
+//					logger.info("Starting search: " + q);
 					progressString = "Querying...";
 					Collection<V> out = getResultHolder(q);
 					results = out;
@@ -104,7 +104,7 @@ public class DefaultQueryResolver implements QueryResolver {
 					if (out instanceof List && q.getComparator() != null) {
 						Collections.sort((List<V>) out, q.getComparator());
 					}
-					logger.info("Finished search, found " + out.size() + " results in " + (System.currentTimeMillis() - time)+"" + " ms"); // DEL
+//					logger.info("Finished search, found " + out.size() + " results in " + (System.currentTimeMillis() - time)+"" + " ms"); // DEL
 					results = out;
 				} catch (Throwable t) {
 					t.printStackTrace();
