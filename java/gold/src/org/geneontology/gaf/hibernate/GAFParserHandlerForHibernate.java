@@ -50,12 +50,12 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 	
 	
 	private Bioentity addBioEntity(String[] cols){
-		String id = cols[1];
+		String id = cols[0] + ":" + cols[1];
 		String symbol = cols[2];
 		String fullName = cols[9];
 		String typeCls = cols[11];
 		int ncbiTaxonId =-1;
-		String taxons[] = cols[12].split("|");
+		String taxons[] = cols[12].split("\\|");
 		taxons = taxons[0].split(":");
 		ncbiTaxonId = Integer.parseInt(taxons[1]);
 		
@@ -72,7 +72,7 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 	
 	private void addWithInfo(String cols[]){
 		if(cols[7].length()>0){
-			String tokens[] = cols[7].split("|");
+			String tokens[] = cols[7].split("\\|");
 			for(String token: tokens){
 				gafDocument.addWithInfo(new WithInfo(cols[7], token));
 			}
@@ -81,7 +81,7 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 	
 	private void addCompositeQualifier(String cols[]){
 		if(cols[3].length()>0){
-			String tokens[] = cols[3].split("|");
+			String tokens[] = cols[3].split("\\|");
 			for(String token: tokens){
 				gafDocument.addCompositeQualifier(new CompositeQualifier(cols[3], token));
 			}
@@ -91,7 +91,7 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 	private void addExtensionExpression(String cols[]){
 		if(cols.length==17){
 			if(cols[16].length()>0){
-				String tokens[] = cols[16].split("|");
+				String tokens[] = cols[16].split("\\|");
 				for(String token: tokens){
 					
 					int index = token.indexOf("(");
@@ -124,7 +124,7 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 
 		int actsOnTaxonId =-1;
 		
-		String taxons[] = cols[12].split("|");
+		String taxons[] = cols[12].split("\\|");
 		if(taxons.length>1){
 			taxons = taxons[1].split(":");
 			actsOnTaxonId = Integer.parseInt(taxons[1]);
