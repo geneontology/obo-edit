@@ -16,7 +16,7 @@ import org.geneontology.gaf.hibernate.GAFParserHandlerForHibernate;
 import org.geneontology.gaf.hibernate.GafDocument;
 import org.geneontology.gaf.parser.GAFParser;
 import org.geneontology.gaf.parser.GAFParserHandler;
-import org.geneontology.gold.rules.AnnotationTaxonCheck;
+import org.geneontology.gold.rules.AnnotationTaxonRule;
 import org.obolibrary.oboformat.model.FrameMergeException;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -26,7 +26,7 @@ public class BasicGAFParserTest extends TestCase {
 	
 	GAFParser parser;
 	GAFParserHandlerForHibernate handler;
-	AnnotationTaxonCheck ac;
+	AnnotationTaxonRule ac;
 	File gafFile;
 	
 	@Override

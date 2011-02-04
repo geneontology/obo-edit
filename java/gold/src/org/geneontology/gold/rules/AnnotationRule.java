@@ -6,6 +6,11 @@ import org.geneontology.gaf.hibernate.GeneAnnotation;
 
 public interface AnnotationRule {
 	
-	public Set<RuleViolation> getRuleViolations(GeneAnnotation a);	
+	/**
+	 * Given an annotation, find the list of violations using the rule
+	 * @param a
+	 * @return
+	 */
+	public Set<AnnotationRuleViolation> getRuleViolations(GeneAnnotation a);	
 
 }

@@ -18,7 +18,7 @@ import owltools.graph.OWLGraphWrapper;
 import owltools.graph.OWLQuantifiedProperty;
 import owltools.io.ParserWrapper;
 
-public class AnnotationTaxonCheck {
+public class AnnotationTaxonRule extends AbstractAnnotatioRule implements AnnotationRule {
 	OWLGraphWrapper graphWrapper;
 	OWLGraphWrapper taxGraphWrapper;
 	List<String> files;
@@ -29,7 +29,7 @@ public class AnnotationTaxonCheck {
 	public String DEFAULT_TAXON_SLIM_LOC = "http://www.geneontology.org/quality_control/annotation_checks/taxon_checks/ncbi_taxon_slim.obo";
 	public String DEFAULT_TAXON_UNION_LOC = "http://www.geneontology.org/quality_control/annotation_checks/taxon_checks/taxon_union_terms.obo";
 	
-	public AnnotationTaxonCheck() throws OWLOntologyCreationException, IOException, FrameMergeException {
+	public AnnotationTaxonRule() throws OWLOntologyCreationException, IOException, FrameMergeException {
 		super();
 		files = new Vector<String>();
 		files.add(DEFAULT_ONTOL_LOC);
@@ -40,7 +40,7 @@ public class AnnotationTaxonCheck {
 		init();
 	}
 	
-	public AnnotationTaxonCheck(String ontolLoc, String ontolTaxonBridgeLoc,
+	public AnnotationTaxonRule(String ontolLoc, String ontolTaxonBridgeLoc,
 			String taxonSlimLoc, String taxonUnionLoc) throws OWLOntologyCreationException, IOException, FrameMergeException {
 		super();
 		files = new Vector<String>();
@@ -62,7 +62,6 @@ public class AnnotationTaxonCheck {
 
 		graphWrapper = new OWLGraphWrapper(ont);
 		taxGraphWrapper = new OWLGraphWrapper(taxOnt);
-		
 	}
 
 	
@@ -75,10 +74,10 @@ public class AnnotationTaxonCheck {
 		this.taxGraphWrapper = taxGraphWrapper;
 	}
 
-	public Set<RuleViolation> getRuleViolations(GeneAnnotation a) {
+	public Set<AnnotationRuleViolation> getRuleViolations(GeneAnnotation a) {
 		return getRuleViolations(a.getCls(), a.getBioentityObject().getNcbiTaxonId());
 	}
-	public Set<RuleViolation> getRuleViolations(String annotationCls, int ncbiTaxonId) {
+	public Set<AnnotationRuleViolation> getRuleViolations(String annotationCls, int ncbiTaxonId) {
 		return getRuleViolations(annotationCls, "NCBITaxon:"+ncbiTaxonId);
 	}
 
@@ -87,8 +86,8 @@ public class AnnotationTaxonCheck {
 	
 	}
 	
-	public Set<RuleViolation> getRuleViolations(String annotationCls, String taxonCls) {
-		Set<RuleViolation> violations = new HashSet<RuleViolation>();
+	public Set<AnnotationRuleViolation> getRuleViolations(String annotationCls, String taxonCls) {
+		Set<AnnotationRuleViolation> violations = new HashSet<AnnotationRuleViolation>();
 		OWLObject cls = graphWrapper.getOWLObjectByIdentifier(annotationCls);
 		OWLObject tax = taxGraphWrapper.getOWLObjectByIdentifier(taxonCls);
 		
@@ -113,7 +112,7 @@ public class AnnotationTaxonCheck {
 				// ONLY
 				if (!taxGraphWrapper.getAncestorsReflexive(tax).contains(p)) {
 					//System.out.println("   ANCESTORS OF "+tax+" DOES NOT CONTAIN "+p);
-					violations.add(new RuleViolation("ANCESTORS OF "+tax+" DOES NOT CONTAIN "+p));
+					violations.add(new AnnotationRuleViolation("ANCESTORS OF "+tax+" DOES NOT CONTAIN "+p));
 					isValid = false;
 				}
 			}
@@ -122,7 +121,7 @@ public class AnnotationTaxonCheck {
 				//System.out.println("   NEVER: "+rOnly+" p:"+p);
 				// NEVER
 				if (taxGraphWrapper.getAncestorsReflexive(tax).contains(p)) {
-					violations.add(new RuleViolation("ANCESTORS OF "+tax+" CONTAINS "+p));
+					violations.add(new AnnotationRuleViolation("ANCESTORS OF "+tax+" CONTAINS "+p));
 					isValid = false;
 				}
 			}
