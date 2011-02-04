@@ -12,9 +12,10 @@ import owltools.graph.OWLGraphWrapper;
 import owltools.io.ParserWrapper;
 import junit.framework.TestCase;
 
+import org.geneontology.gaf.hibernate.GAFParserHandlerForHibernate;
+import org.geneontology.gaf.hibernate.GafDocument;
 import org.geneontology.gaf.parser.GAFParser;
 import org.geneontology.gaf.parser.GAFParserHandler;
-import org.geneontology.gaf.parser.GAFParserHandlerForHibernate;
 import org.geneontology.gold.rules.AnnotationTaxonCheck;
 import org.obolibrary.oboformat.model.FrameMergeException;
 import org.semanticweb.owlapi.model.OWLObject;
@@ -24,7 +25,7 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 public class BasicGAFParserTest extends TestCase {
 	
 	GAFParser parser;
-	GAFParserHandler handler;
+	GAFParserHandlerForHibernate handler;
 	AnnotationTaxonCheck ac;
 	File gafFile;
 	
@@ -38,6 +39,15 @@ public class BasicGAFParserTest extends TestCase {
 
 	public void testCheck() throws OWLOntologyCreationException, IOException, FrameMergeException {
 		parser.parse(gafFile, handler);
+		
+		GafDocument doc = handler.getGafDocument();
+	
+		assertFalse(doc.getBioentities().isEmpty());
+		
+		assertFalse(doc.getGeneAnnotations().isEmpty());
+		
+		
+		
 		// DO SOME STUFF HERE
 	}
 

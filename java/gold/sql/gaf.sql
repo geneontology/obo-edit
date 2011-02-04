@@ -9,8 +9,9 @@ CREATE TABLE bioentity (
   type_cls VARCHAR NOT NULL, -- e.g. SO:nnnn
   ncbi_taxon_id INT,
 
-  db VARCHAR -- e.g. FB - must match prefix part of id
-);
+  db VARCHAR, -- e.g. FB - must match prefix part of id
+  gaf_document varchar
+  );
 
 COMMENT ON TABLE bioentity IS 'A gene, gene product, or collection of
 gene products (i.e. macromolecular complex). A bioentity is capable of

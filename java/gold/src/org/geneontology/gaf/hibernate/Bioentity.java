@@ -12,6 +12,7 @@ public class Bioentity extends GOModel implements Serializable {
 	private String typeCls;
 	private int ncbiTaxonId;
 	private String db;
+	private String gafDocument;
 	
 	 public Bioentity(){
 		String[] keys = {"id"};
@@ -19,7 +20,7 @@ public class Bioentity extends GOModel implements Serializable {
 	}
 	
 	public Bioentity(String id, String symbol, String fullName, String typeCls,
-			int ncbiTaxonId, String db) {
+			int ncbiTaxonId, String db, String gafDocument) {
 		this();
 		this.id = id;
 		this.symbol = symbol;
@@ -27,6 +28,7 @@ public class Bioentity extends GOModel implements Serializable {
 		this.typeCls = typeCls;
 		this.ncbiTaxonId = ncbiTaxonId;
 		this.db = db;
+		this.gafDocument = gafDocument;
 	}
 
 	public String getId() {
@@ -76,8 +78,13 @@ public class Bioentity extends GOModel implements Serializable {
 	public void setDb(String db) {
 		this.db = db;
 	}
-	
-	
-	
+
+	public String getGafDocument() {
+		return gafDocument;
+	}
+
+	public void setGafDocument(String gafDocument) {
+		this.gafDocument = gafDocument;
+	}
 	
 }

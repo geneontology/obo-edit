@@ -1,15 +1,10 @@
-package org.geneontology.gaf.parser;
+package org.geneontology.gaf.hibernate;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.geneontology.gaf.hibernate.Bioentity;
-import org.geneontology.gaf.hibernate.CompositeQualifier;
-import org.geneontology.gaf.hibernate.ExtensionExpression;
-import org.geneontology.gaf.hibernate.GafDocument;
-import org.geneontology.gaf.hibernate.GeneAnnotation;
-import org.geneontology.gaf.hibernate.WithInfo;
+import org.geneontology.gaf.parser.GAFParserHandler;
 import org.geneontology.gold.hibernate.model.Cls;
 import org.geneontology.gold.hibernate.model.GOModel;
 
@@ -24,25 +19,17 @@ import sun.nio.cs.ext.ISCII91;
  */
 public class GAFParserHandlerForHibernate implements GAFParserHandler {
 
-	private List<GOModel> list;
-	
 	private GafDocument gafDocument;
 	
 	public GAFParserHandlerForHibernate(){
-		list = new ArrayList<GOModel>();
-
 		gafDocument = new GafDocument();
 	}
 	
-	
-	public List<GOModel> getHibernateObjects(){
-		return list;
+	public GafDocument getGafDocument(){
+		return gafDocument;
 	}
 	
-	
 	public void startDocument(File gafFile) {
-		list = new ArrayList<GOModel>();
-		
 		gafDocument.setDocumentPath(gafFile.getAbsolutePath());
 		gafDocument.setId(gafFile.getName());
 		
@@ -74,9 +61,7 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 		
 		String db = cols[10];
 		
-		
-		
-		Bioentity entity = new Bioentity(id, symbol, fullName, typeCls, ncbiTaxonId, db);
+		Bioentity entity = new Bioentity(id, symbol, fullName, typeCls, ncbiTaxonId, db, gafDocument.getId());
 		
 		gafDocument.addBioentity(entity);
 		

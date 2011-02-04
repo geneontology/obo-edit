@@ -35,12 +35,18 @@ public class GeneAnnotation extends GOModel implements Serializable {
 	private List<ExtensionExpression> extensionExpressionList;
 	private List<CompositeQualifier> compositeQualifierList;
 	
+	private transient GafDocument gafDocumentObject;
+	
 	public GeneAnnotation(){
 		//TODO: TBD
 		String keys[] = {"bioentity", "cls", "referenceId", "evidenceCls"};
 		this.initUniqueConstraintFields(GeneAnnotation.class, keys);
 	}
 	
+	
+	void setGafDocumetObject(GafDocument gafDocumentObject){
+		this.gafDocumentObject = gafDocumentObject;
+	}
 	
 	
 	public GeneAnnotation(String bioentity, boolean isContributesTo,
@@ -209,25 +215,34 @@ public class GeneAnnotation extends GOModel implements Serializable {
 
 	public List<ExtensionExpression> getExtensionExpressions(){
 		if(extensionExpressionList == null){
-			extensionExpressionList = getHibernateObjects(ExtensionExpression.class, "id", getExtensionExpression());
+			
+			if(gafDocumentObject != null){
+				extensionExpressionList = gafDocumentObject.getExpressions(getExtensionExpression());
+			}
 		}
 		
 		return extensionExpressionList;
 	}
 	
 	public List<WithInfo> getWithInfos(){
-		if(withInfoList == null)
-			withInfoList = getHibernateObjects(WithInfo.class, "id", getWithExpression());
+		if(withInfoList == null){
+			
+			if(gafDocumentObject != null)
+				withInfoList = gafDocumentObject.getWithInfos(getWithExpression());
+			}
 		
 		return withInfoList;
 	}
 	
 	public List<CompositeQualifier> getCompositeQualifiers(){
 		if(compositeQualifierList == null){
-			compositeQualifierList = getHibernateObjects(CompositeQualifier.class, "id", getCompositeQualifier());
+			if(gafDocumentObject != null){
+				compositeQualifierList = gafDocumentObject.getCompositeQualifiers(getCompositeQualifier());
+			}
+			
+			//compositeQualifierList = getHibernateObjects(CompositeQualifier.class, "id", getCompositeQualifier());
 		}
-		
-		return null;
+		return compositeQualifierList;
 	}
 	
 }
