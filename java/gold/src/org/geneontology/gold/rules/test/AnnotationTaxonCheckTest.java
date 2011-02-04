@@ -11,7 +11,7 @@ import owltools.graph.OWLGraphWrapper;
 import owltools.io.ParserWrapper;
 import junit.framework.TestCase;
 
-import org.geneontology.gold.rules.AnnotationTaxonCheck;
+import org.geneontology.gold.rules.AnnotationTaxonRule;
 import org.obolibrary.oboformat.model.FrameMergeException;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -20,12 +20,12 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 public class AnnotationTaxonCheckTest extends TestCase {
 	
 
-	AnnotationTaxonCheck ac;
+	AnnotationTaxonRule ac;
 	
 	@Override
 	public void setUp() throws Exception {
 		System.out.println("Setting up: " + this);
-		ac = new AnnotationTaxonCheck(
+		ac = new AnnotationTaxonRule(
 				"test_resources/cell_prolif_placenta.obo",
 				"test_resources/taxon_go_triggers.obo",
 				"test_resources/ncbi_taxon_slim.obo",
