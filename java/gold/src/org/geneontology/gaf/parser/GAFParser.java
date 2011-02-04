@@ -50,9 +50,9 @@ public class GAFParser {
 				int expectedNumCols = 15; // default to GAF version 1.0
 				BufferedReader reader = new BufferedReader(new FileReader(
 						file_name));
-				String line = reader.readLine();
-				if ((null != line && line.trim().length() > 0)) {
-					while (line != null) {
+				String line = null;
+				//if (( (line =reader.readLine()) != null && line.trim().length() > 0)) {
+					while ((line =reader.readLine()) != null) {
 
 						if (DEBUG)
 							LOG.debug("Processing line " + line);
@@ -93,13 +93,13 @@ public class GAFParser {
 
 						handler.handleColumns(columns);
 
-						line = reader.readLine();
+					//	line = reader.readLine();
 
 					} // end for loop going through gaf file contents
 
-				} else {
+				/*} else {
 					errors.append(file_name + " is empty");
-				}
+				}*/
 				
 				handler.endDocument();
 				
