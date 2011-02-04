@@ -1,9 +1,10 @@
 package org.geneontology.gaf.hibernate;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Set;
 
 import org.geneontology.gold.hibernate.model.GOModel;
@@ -14,19 +15,38 @@ public class GafDocument extends GOModel implements Serializable {
 	private String documentPath;
 	
 	private transient Hashtable<String, Bioentity> bioentities;
-	private transient Hashtable<String, Set<WithInfo>> withInfos;
-	private transient Hashtable<String, Set<ExtensionExpression>> extensionExpressions;
-	private transient Hashtable<String, Set<CompositeQualifier>> compositeQualifiers; 
-	private transient HashSet<GeneAnnotation> annotations;
+	private transient Hashtable<String, List<WithInfo>> withInfos;
+	private transient Hashtable<String, List<ExtensionExpression>> extensionExpressions;
+	private transient Hashtable<String, List<CompositeQualifier>> compositeQualifiers; 
+	private transient List<GeneAnnotation> annotations;
+	
+	private boolean hibernateLoad;
+	
+	private GafObjectsFactory factory;
 	
 	public GafDocument(){
 		String keys [] = {"id"};
 		this.initUniqueConstraintFields(GafDocument.class, keys);
+		hibernateLoad = false;
+		
+		
 		bioentities = new Hashtable<String, Bioentity>();
-		withInfos = new Hashtable<String, Set<WithInfo>>();
-		extensionExpressions = new Hashtable<String, Set<ExtensionExpression>>();
-		compositeQualifiers = new Hashtable<String, Set<CompositeQualifier>>();
-		annotations = new HashSet<GeneAnnotation>();
+		withInfos = new Hashtable<String, List<WithInfo>>();
+		extensionExpressions = new Hashtable<String, List<ExtensionExpression>>();
+		compositeQualifiers = new Hashtable<String, List<CompositeQualifier>>();
+		annotations = new ArrayList<GeneAnnotation>();
+	}
+	
+	private GafObjectsFactory getFactory(){
+		if(factory == null){
+			factory = new GafObjectsFactory();
+		}
+		
+		return factory;
+	}
+	
+	void setHibernateLoad(){
+		hibernateLoad = true;
 	}
 	
 	public GafDocument(String id, String documentPath) {
@@ -52,15 +72,33 @@ public class GafDocument extends GOModel implements Serializable {
 	}
 	
 	public Bioentity getBioentity(String id){
+		if(hibernateLoad && bioentities.isEmpty()){
+			getBioentities();
+		}
+	
 		return bioentities.get(id);
 	}
 
 	public Collection<Bioentity> getBioentities(){
+		if(hibernateLoad && bioentities.isEmpty()){
+			for(Bioentity entity: factory.getBioentities(getId())){
+				addBioentity(entity);
+			}
+		}
+		
 		return bioentities.values();
 	}
 	
 
-	public Set<GeneAnnotation> getGeneAnnotations(){
+	public List<GeneAnnotation> getGeneAnnotations(){
+		if(hibernateLoad && annotations.isEmpty()){
+			for(GeneAnnotation annotation: factory.getGeneAnnotations(getId())){
+				addGeneAnnotation(annotation);
+			}
+			
+			
+		}
+		
 		return annotations;
 	}
 	
@@ -73,39 +111,43 @@ public class GafDocument extends GOModel implements Serializable {
 	}
 	
 	public void addBioentity(Bioentity bioentity){
-		if(bioentities.contains(bioentity.getId()))
-				return;
-		
 		bioentities.put(bioentity.getId(), bioentity);
 	}
 	
 	public void addCompositeQualifier(CompositeQualifier compositeQualifier){
-		Set<CompositeQualifier> set = compositeQualifiers.get(compositeQualifier.getId());
-		if(set == null){
-			set = new HashSet<CompositeQualifier>();
-			compositeQualifiers.put(compositeQualifier.getId(), set);
+		List<CompositeQualifier> list = compositeQualifiers.get(compositeQualifier.getId());
+		if(list == null){
+			list = new ArrayList<CompositeQualifier>();
+			compositeQualifiers.put(compositeQualifier.getId(), list);
 		}
 		
-		set.add(compositeQualifier);
+		list.add(compositeQualifier);
 	}
 	
 	public Set<String> getCompositeQualifiersIds(){
 		return compositeQualifiers.keySet();
 	}
 	
-	public Set<CompositeQualifier> getCompositeQualifiers(String id){
-		return compositeQualifiers.get(id);
+	public List<CompositeQualifier> getCompositeQualifiers(String id){
+		List<CompositeQualifier> list = compositeQualifiers.get(id);
+		
+		if(list == null && hibernateLoad){
+			list = getHibernateObjects(CompositeQualifier.class, id, id);
+			compositeQualifiers.put(id, list);
+		}
+		
+		return list;
 	}
 	
 	public void addWithInfo(WithInfo withInfo){
 		
-		Set<WithInfo> set = withInfos.get(withInfo.getId());
-		if(set == null){
-			set = new HashSet<WithInfo>();
-			withInfos.put(withInfo.getId(), set);
+		List<WithInfo> list = withInfos.get(withInfo.getId());
+		if(list == null){
+			list = new ArrayList<WithInfo>();
+			withInfos.put(withInfo.getId(), list);
 		}
 		
-		set.add(withInfo);
+		list.add(withInfo);
 		
 	}
 	
@@ -113,13 +155,27 @@ public class GafDocument extends GOModel implements Serializable {
 		return withInfos.keySet();
 	}
 	
-	public Set<WithInfo> getWithInfos(String id){
-		return withInfos.get(id);
+	public List<WithInfo> getWithInfos(String id){
+		List<WithInfo> list = withInfos.get(id);
+		
+		if(list == null && hibernateLoad){
+			list = getHibernateObjects(WithInfo.class, "id", id);
+			withInfos.put(id, list);
+		}
+		
+		return list;
 	}
 	
 	
-	public Set<ExtensionExpression> getExpressions(String id){
-		return extensionExpressions.get(id);
+	public List<ExtensionExpression> getExpressions(String id){
+		List<ExtensionExpression> list = extensionExpressions.get(id);
+		
+		if(list == null && hibernateLoad){
+			list = getHibernateObjects(ExtensionExpression.class, "id", id);
+			extensionExpressions.put(id, list);
+		}
+		
+		return list;
 	}
 	
 	public Set<String> getExtensionExpressionIds(){
@@ -127,16 +183,17 @@ public class GafDocument extends GOModel implements Serializable {
 	}
 	
 	public void addExtensionExpression(ExtensionExpression extensionExpression){
-		Set<ExtensionExpression> set = extensionExpressions.get(extensionExpression.getId());
-		if(set == null){
-			set = new HashSet<ExtensionExpression>();
-			extensionExpressions.put(extensionExpression.getId(), set);
+		List<ExtensionExpression> list = extensionExpressions.get(extensionExpression.getId());
+		if(list == null){
+			list = new ArrayList<ExtensionExpression>();
+			extensionExpressions.put(extensionExpression.getId(), list);
 		}
 		
-		set.add(extensionExpression);
+		list.add(extensionExpression);
 	}
 	
 	public void addGeneAnnotation(GeneAnnotation ga){
+		ga.setGafDocumetObject(this);
 		annotations.add(ga);
 	}
 	
