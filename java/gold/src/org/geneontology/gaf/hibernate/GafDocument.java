@@ -111,6 +111,7 @@ public class GafDocument extends GOModel implements Serializable {
 	}
 	
 	public void addBioentity(Bioentity bioentity){
+		bioentity.setGafDocument(this.getId());
 		bioentities.put(bioentity.getId(), bioentity);
 	}
 	
@@ -194,6 +195,7 @@ public class GafDocument extends GOModel implements Serializable {
 	
 	public void addGeneAnnotation(GeneAnnotation ga){
 		ga.setGafDocumetObject(this);
+		ga.setGafDocument(this.getId());
 		annotations.add(ga);
 	}
 	
