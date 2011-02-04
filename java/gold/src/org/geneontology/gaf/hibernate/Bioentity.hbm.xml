@@ -32,5 +32,11 @@
             </column>
         </property>
 
+       <property name="gafDocument" type="string">
+            <column name="gaf_document">
+            </column>
+        </property>
+
+
         </class>
  </hibernate-mapping>

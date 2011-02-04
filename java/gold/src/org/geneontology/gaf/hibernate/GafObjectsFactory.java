@@ -62,7 +62,7 @@ public class GafObjectsFactory {
 	}
 	
 	
-	public synchronized List<GeneAnnotation> getGeneAnnotations(String bioentity){
+	/*public synchronized List<GeneAnnotation> getGeneAnnotations(String bioentity){
 
 		if(LOG.isDebugEnabled())
 			LOG.debug("-");
@@ -75,7 +75,53 @@ public class GafObjectsFactory {
 		session.getTransaction().commit();
 		
 		return list;
+	}*/
+	
+	public synchronized List<Bioentity> getBioentities(String gafDocument){
+
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		List<Bioentity> list =session.createQuery("from Bioentity where gaf_document=?")
+							.setString(0, gafDocument)
+							.list();
+		
+		session.getTransaction().commit();
+		
+		return list;
+	}
+
+	public synchronized List<GeneAnnotation> getGeneAnnotations(String gafDocument){
+
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		List<GeneAnnotation> list =session.createQuery("from GeneAnnotation where gaf_document=?")
+							.setString(0, gafDocument)
+							.list();
+		
+		session.getTransaction().commit();
+		
+		return list;
 	}
 	
+	public synchronized GafDocument getGafDocument(String id){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		GafDocument doc =  (GafDocument)session.createQuery("from GafDocument where id=?")
+							.setString(0, id)
+							.uniqueResult();
+		
+		doc.setHibernateLoad();
+		
+		session.getTransaction().commit();
+		
+		return doc;
+		
+	}
 	
 }
