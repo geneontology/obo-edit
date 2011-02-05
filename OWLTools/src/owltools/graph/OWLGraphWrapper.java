@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.obolibrary.obo2owl.Obo2OWLConstants;
 import org.obolibrary.obo2owl.Obo2OWLConstants.Obo2OWLVocabulary;
 import org.obolibrary.obo2owl.Obo2Owl;
@@ -64,6 +65,7 @@ import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 import owltools.graph.OWLQuantifiedProperty.Quantifier;
+import owltools.sim.DisjunctiveSetSimilarity;
 
 /**
  * This class provides additional capabilities on top of the OWLAPI.
@@ -84,6 +86,8 @@ import owltools.graph.OWLQuantifiedProperty.Quantifier;
  *
  */
 public class OWLGraphWrapper {
+
+	private static Logger LOG = Logger.getLogger(DisjunctiveSetSimilarity.class);
 
 	public static final String DEFAULT_IRI_PREFIX = "http://purl.obolibrary.org/obo/";
 
@@ -524,15 +528,32 @@ public class OWLGraphWrapper {
 		edgeBySource = new HashMap<OWLObject,Set<OWLGraphEdge>>();
 		edgeByTarget = new HashMap<OWLObject,Set<OWLGraphEdge>>();
 
-		for (OWLObject s : getAllOWLObjects()) {
+		// initialize with all named objects in ontology
+		Stack<OWLObject> allObjs = new Stack<OWLObject>();
+		allObjs.addAll(getAllOWLObjects());
+		
+		Set<OWLObject> visisted = new HashSet<OWLObject>();
+		
+		while (allObjs.size() > 0) {
+			OWLObject s = allObjs.pop();
+			if (visisted.contains(s))
+				continue;
+			visisted.add(s);
 			if (!edgeBySource.containsKey(s))
 				edgeBySource.put(s, new HashSet<OWLGraphEdge>());
-			for (OWLGraphEdge edge : getOutgoingEdges(s)) {
+			for (OWLGraphEdge edge : getPrimitiveOutgoingEdges(s)) {
 				edgeBySource.get(s).add(edge);
 				OWLObject t = edge.getTarget();
 				if (!edgeByTarget.containsKey(t))
 					edgeByTarget.put(t, new HashSet<OWLGraphEdge>());
 				edgeByTarget.get(t).add(edge);
+				
+				// we also want to get all edges from class expressions;
+				// class expressions aren't in the initial signature, but
+				// we add them here when we encounter them
+				if (t instanceof OWLClassExpression) {
+					allObjs.add(t);
+				}
 			}
 		}
 	}
@@ -913,6 +934,15 @@ public class OWLGraphWrapper {
 		Set<OWLObject> getDescendants = getDescendants(x);
 		getDescendants.add(x);
 		return getDescendants;
+	}
+	public Set<OWLObject> getIndividualDescendants(OWLObject x) {
+		Set<OWLObject> descs = new HashSet<OWLObject>();
+		for (OWLGraphEdge e : getIncomingEdgesClosure(x)) {
+			OWLObject s = e.getSource();
+			if (s instanceof OWLIndividual)
+				descs.add(s);
+		}
+		return descs;
 	}
 
 

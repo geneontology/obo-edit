@@ -8,6 +8,12 @@ import org.semanticweb.owlapi.model.OWLObject;
 
 public class JaccardSimilarity extends Similarity {
 
+	public JaccardSimilarity() {
+		super();
+		minScore = 0.2; // default
+	}
+
+	
 	@Override
 	public void calculate(SimEngine simEngine, OWLObject a, OWLObject b) {
 		double ci = simEngine.getCommonSubsumersSize(a, b);

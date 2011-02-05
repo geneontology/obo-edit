@@ -16,6 +16,7 @@ import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 import owltools.sim.SimEngine.SimilarityAlgorithmException;
 
+@Deprecated
 public class AvgInformationContentBestMatchesSimilarity extends Similarity {
 	Map <OWLObject,Similarity> matchMap = new HashMap<OWLObject,Similarity>();
 	Set <OWLObject> aset;

@@ -41,6 +41,7 @@ public abstract class Similarity {
 	OWLObject a;
 	OWLObject b;
 	Double score;
+	protected Double minScore;
 	SimEngine simEngine;
 	boolean isComparable = true;
 	
@@ -61,6 +62,9 @@ public abstract class Similarity {
 		this.score = (double) score;
 	}
 
+	public boolean isAboveMinScore() {
+		return minScore == null || score >= minScore;
+	}
 
 	public String toString() {
 		return "S:"+score;
@@ -85,6 +89,10 @@ public abstract class Similarity {
 	}
 	public void printDescription(PrintStream s, OWLObject x, int depth) {
 		depth++;
+		if (x == null) {
+			s.print("NULL");
+			return;
+		}
 		OWLGraphWrapper g = simEngine.getGraph();
 		if (x instanceof OWLNamedIndividual) {
 			for (OWLGraphEdge e : g.getPrimitiveOutgoingEdges(x)) {
