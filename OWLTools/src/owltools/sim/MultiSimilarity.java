@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -24,15 +26,31 @@ import owltools.graph.OWLGraphWrapper;
 import owltools.graph.OWLQuantifiedProperty;
 import owltools.sim.SimEngine.SimilarityAlgorithmException;
 
+/**
+ * 
+ * compares all by all attributes
+ * 
+ * @author cjm
+ *
+ */
 public class MultiSimilarity extends Similarity {
+
+	private static Logger LOG = Logger.getLogger(MultiSimilarity.class);
 
 	public OWLClass comparisonClass = null;
 	public OWLObjectProperty comparisonProperty = null;
-	public String subSimMethod = "DescriptionTreeSimilarity";
+	public String[] deepSimMethods = 
+	{
+			"ConjunctiveSetInformationContentRatioSimilarity"
+			//"ConjunctiveSetSimilarity"			
+	};
+	public String subSimMethod = "JaccardSimilarity";
+	public String preSimMethod = "MaximumInformationContentSimilarity";
 
 	public Map<OWLObject,Set<OWLObject>> featureToAttributeMap;
 	Map<OWLObject,Similarity> aBest;
 	Map<OWLObject,Similarity> bBest;
+	Map<OWLObjectPair,List<Similarity>> deepSimMap;
 
 	class ValueComparator implements Comparator {
 
@@ -52,6 +70,24 @@ public class MultiSimilarity extends Similarity {
 		}
 	}
 
+
+
+	public String getSubSimMethod() {
+		return subSimMethod;
+	}
+
+	public void setSubSimMethod(String subSimMethod) {
+		this.subSimMethod = subSimMethod;
+	}
+
+	public String getPreSimMethod() {
+		return preSimMethod;
+	}
+
+	public void setPreSimMethod(String preSimMethod) {
+		this.preSimMethod = preSimMethod;
+	}
+
 	@Override
 	public void calculate(SimEngine simEngine, OWLObject a, OWLObject b)
 	throws SimilarityAlgorithmException {
@@ -62,7 +98,9 @@ public class MultiSimilarity extends Similarity {
 
 	private void calculate(OWLObject a, OWLObject b, Set<OWLObject> aAtts,
 			Set<OWLObject> bAtts) throws SimilarityAlgorithmException {
-		
+
+		LOG.info(a+" size="+aAtts.size());
+		LOG.info(b+" size="+bAtts.size());
 		if (aAtts.size() == 0 || bAtts.size() ==0) {
 			isComparable = false;
 			return;
@@ -71,11 +109,23 @@ public class MultiSimilarity extends Similarity {
 
 		aBest = new HashMap<OWLObject,Similarity>();
 		bBest = new HashMap<OWLObject,Similarity>();
+		int ia = 0;
+
+		// all by all comparison of each attribute in each feature
 		for (OWLObject aAtt : aAtts) {
+			LOG.debug(" aAtt="+aAtt+" "+ia+"/"+aAtts.size());
+			ia++;
+			int ib = 0;
 			for (OWLObject bAtt : bAtts) {
+				LOG.debug(" bAtt="+bAtt+" "+ib+"/"+bAtts.size());
+				ib++;
 				Similarity ss = simEngine.getSimilarityAlgorithm(subSimMethod);
 				ss.calculate(simEngine, aAtt, bAtt);
+				ss.a = aAtt;
+				ss.b = bAtt;
 				Double sc = ss.getScore();
+				LOG.debug("DONE; SCORE="+sc+" in: "+aAtt+" -vs "+bAtt);
+
 				smap.put(new OWLObjectPair(aAtt,bAtt), sc);
 				if (!aBest.containsKey(aAtt) ||
 						sc > aBest.get(aAtt).getScore()) {
@@ -85,15 +135,43 @@ public class MultiSimilarity extends Similarity {
 						sc > bBest.get(bAtt).getScore()) {
 					bBest.put(bAtt, ss);
 				}
-
 			}
-		}
+		} // DONE all-by-all
+
+		// now calculate score based on BEST of each
 		double totalSc = 0.0;
 		int n = 0;
 		Set <OWLObject>allAtts = new HashSet<OWLObject>();
 		allAtts.addAll(aAtts);
 		allAtts.addAll(bAtts);
 
+		// do further analysis on best scoring matches
+		if (deepSimMethods.length > 0) {
+			deepSimMap = new HashMap<OWLObjectPair,List<Similarity>>();
+			for (String deepSimMethod : deepSimMethods) {
+
+				for (OWLObject att : aAtts) {
+					Similarity s1 = aBest.get(att);
+					Similarity s2 = getDeepSim(deepSimMethod, s1.a,s1.b);
+					OWLObjectPair pair = new OWLObjectPair(s1.a, s1.b);
+					if (!deepSimMap.containsKey(pair))						
+						deepSimMap.put(pair, new Vector<Similarity>());
+					deepSimMap.get(pair).add(s2);
+				}
+
+				for (OWLObject att : bAtts) {
+					Similarity s1 = bBest.get(att);
+					Similarity s2 = getDeepSim(deepSimMethod,s1.b,s1.a);
+					OWLObjectPair pair = new OWLObjectPair(s1.b, s1.a);
+					if (!deepSimMap.containsKey(pair))						
+						deepSimMap.put(pair, new Vector<Similarity>());
+					deepSimMap.get(pair).add(s2);
+				}
+			}
+
+			//ss.calculate(simEngine, aAtt, bAtt);
+
+		}
 
 		for (OWLObject att : aAtts) {
 			totalSc += aBest.get(att).getScore();
@@ -103,16 +181,32 @@ public class MultiSimilarity extends Similarity {
 			totalSc += bBest.get(att).getScore();
 			n++;
 		}
+
+
+
+		//ss.calculate(simEngine, aAtt, bAtt);
+
+
 		this.score = totalSc / n;
 	}
 
-	public void createFeatureToAttributeMap() {
+	private Similarity getDeepSim(String deepSimMethod, OWLObject a, OWLObject b) throws SimilarityAlgorithmException {
+		Similarity s = simEngine.getSimilarityAlgorithm(deepSimMethod);
+		s.calculate(simEngine, a, b);
+		return s;
+	}
+
+	/**
+	 * build mapping between features (e.g. organisms) and attributes (e.g. phenotypes)
+	 * 
+	 */
+	private void createFeatureToAttributeMap() {
 		featureToAttributeMap = new HashMap<OWLObject,Set<OWLObject>>();
 		featureToAttributeMap.put(a, getAttributesFor(a));
 		featureToAttributeMap.put(b, getAttributesFor(b));
 	}
 
-	public Set<OWLObject> getAttributesFor(OWLObject x) {
+	private Set<OWLObject> getAttributesFor(OWLObject x) {
 		OWLGraphWrapper g = simEngine.getGraph();
 		Set<OWLObject> ancs = new HashSet<OWLObject>();
 		if (comparisonClass != null) {
@@ -124,32 +218,38 @@ public class MultiSimilarity extends Similarity {
 			}
 		}
 		if (comparisonProperty != null) {
-			// todo - rather than closure follow iteratively
-			for (OWLGraphEdge e : g.getOutgoingEdgesClosure(x)) {
+
+			// may either be directly linked, or may be an instance of something direcly linked
+			for (OWLGraphEdge e : g.getPrimitiveOutgoingEdges(x)) {
 				OWLObject t = e.getTarget();
-				List<OWLQuantifiedProperty> qpl = e.getQuantifiedPropertyList();
-				if (qpl.size() == 1) {
-					if (comparisonProperty.equals(qpl.get(0).getProperty())) {
-						ancs.add(t);
-					}
+				OWLQuantifiedProperty qp = e.getSingleQuantifiedProperty();
+				if (comparisonProperty.equals(qp.getProperty())) {
+					ancs.add(t);
 				}
-				else if (qpl.size() == 2) {
-					if (qpl.get(0).isInstanceOf() &&
-							comparisonProperty.equals(qpl.get(1).getProperty())) {
-						ancs.add(t);
+				else if (qp.isInstanceOf()) {
+					for (OWLGraphEdge e2 : g.getPrimitiveOutgoingEdges(t)) {
+						OWLObject t2 = e2.getTarget();
+						OWLQuantifiedProperty qp2 = e2.getSingleQuantifiedProperty();
+						if (comparisonProperty.equals(qp2.getProperty())) {
+							ancs.add(t2);
+						}
 					}
+
 				}
 			}
+
 
 		}
 		if (comparisonProperty == null && comparisonProperty == null) {
 			ancs.addAll(g.getSubsumersFromClosure(x));
+			// this one probably better:
 			/*
-			for (OWLGraphEdge e : g.getOutgoingEdges(x)) {
+
+			for (OWLGraphEdge e : g.getPrimitiveOutgoingEdges(x)) {
 				OWLObject t = e.getTarget();
 				ancs.add(t);
 			}
-			*/
+			 */
 		}
 		simEngine.makeNonRedundant(ancs);
 		return ancs;
@@ -183,9 +283,16 @@ public class MultiSimilarity extends Similarity {
 		}
 	}
 
+	/**
+	 * @param s
+	 * @param att  -- attribute matched
+	 * @param bestMap
+	 * @param bestMap2 -- map in opposite direction
+	 * @param bestMapObj -- opposite attribute
+	 */
 	private void printX(PrintStream s, OWLObject att, Map<OWLObject, Similarity> bestMap, Map<OWLObject, Similarity> bestMap2, OWLObject bestMapObj) {
 		Similarity bestmatch = bestMap.get(att);
-		s.println("  Score: "+bestmatch.getScore());
+		s.println("  Attr Pair Score: "+bestmatch.getScore());
 		//if (bestMap2.get(att).score == bestmatch.getScore())
 		//	s.println("  **reciprocal**");
 		s.print("  ");
@@ -198,11 +305,39 @@ public class MultiSimilarity extends Similarity {
 		s.print("  B:");
 		s.print(bestMapObj);
 		s.println();
-		if (bestmatch instanceof DescriptionTreeSimilarity) {
-			s.print("  Shared:");
-			printDescription(s, ((DescriptionTreeSimilarity)bestmatch).lcs);
-			s.println();
+		printSubSim(s, bestmatch);
+		OWLObjectPair pair = new OWLObjectPair(att,bestMapObj);
+		if (deepSimMap != null && deepSimMap.containsKey(pair)) {
+			for (Similarity ds : deepSimMap.get(pair)) {
+				printSubSim(s, ds);
+			}
 		}
+		s.println();
+
+	}
+
+	private void printSubSim(PrintStream s, Similarity subSim) {
+		s.print("  "+subSim.getClass().toString().replaceAll(".*\\.", ""));
+		if (subSim instanceof DescriptionTreeSimilarity) {
+			s.print("  Shared:");
+			printDescription(s, ((DescriptionTreeSimilarity)subSim).lcs);
+		}
+		if (subSim instanceof ConjunctiveSetSimilarity) {
+			s.print("  Shared:");
+			for (OWLObject x : ((ConjunctiveSetSimilarity)subSim).bestSubsumers) {
+				print(s,x);
+				s.print(" ");
+			}
+		}
+		if (subSim instanceof ConjunctiveSetInformationContentRatioSimilarity) {
+			s.print("  Shared:");
+			for (OWLObject x : ((ConjunctiveSetInformationContentRatioSimilarity)subSim).bestSubsumers) {
+				print(s,x);
+				s.print(" ");
+			}
+			s.print("LCS_IC:"+((ConjunctiveSetInformationContentRatioSimilarity)subSim).lcsIC);
+		}
+		s.print(" Score:"+subSim.getScore());
 		s.println();
 
 	}
@@ -218,7 +353,7 @@ public class MultiSimilarity extends Similarity {
 	@Override
 	protected void translateResultsToOWLAxioms(String id, OWLNamedIndividual result, Set<OWLAxiom> axioms) {
 		OWLDataFactory df = simEngine.getGraph().getDataFactory();
-		
+
 		OWLAnnotationProperty pa = df.getOWLAnnotationProperty(annotationIRI("has_best_match_for_object_1"));
 		OWLAnnotationProperty pb = df.getOWLAnnotationProperty(annotationIRI("has_best_match_for_object_2"));
 
@@ -238,23 +373,6 @@ public class MultiSimilarity extends Similarity {
 			axioms.addAll(bBest.get(att).translateResultsToOWLAxioms());
 			axioms.add(df.getOWLAnnotationAssertionAxiom(pb, result.getIRI(), bBest.get(att).persistentIRI));
 		}
-		/*
-		s.println("BEST-MATCHES(B): "+bBest.keySet().size());
-		for (OWLObject att : sortMapByScore(bBest)) {
-			printX(s,att,bBest,aBest,bBest.get(att).a);
-		}
-
-		// declare a named class for the LCS and make this equivalent to the anonymous expression
-		OWLClass namedLCS = df.getOWLClass(IRI.create(id+"_LCS"));
-		axioms.add(df.getOWLAnnotationAssertionAxiom(df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()),
-				namedLCS.getIRI(), 
-				df.getOWLTypedLiteral("LCS of "+simEngine.label(a)+" and "+simEngine.label(b))));
-		axioms.add(df.getOWLEquivalentClassesAxiom(namedLCS, lcs));
-
-		// link the similarity object to the named LCS
-		OWLAnnotationProperty lcsp = df.getOWLAnnotationProperty(annotationIRI("has_least_common_subsumer"));
-		axioms.add(df.getOWLAnnotationAssertionAxiom(lcsp, result.getIRI(), namedLCS.getIRI()));
-		*/
 	}
 
 

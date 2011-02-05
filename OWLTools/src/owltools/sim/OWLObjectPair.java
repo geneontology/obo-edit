@@ -8,10 +8,20 @@ public class OWLObjectPair {
 	private transient final int hash;
 
 	public OWLObjectPair(OWLObject a, OWLObject b) {
+		this(a,b,false);
+	}
+	
+	public OWLObjectPair(OWLObject a, OWLObject b, boolean isSymmetric) {
 		super();
-		this.a = a;
-		this.b = b;
-		hash = (a == null? 0 : a.hashCode() * 31)+(b == null? 0 : b.hashCode());
+		if (isSymmetric && b.compareTo(a) < 0) {
+			this.b = a;
+			this.a = b;
+		}
+		else {
+			this.a = a;
+			this.b = b;			
+		}
+		hash = (this.a == null? 0 : this.a.hashCode() * 31)+(this.b == null? 0 : this.b.hashCode());
 	}
 	@Override
 	public int hashCode()

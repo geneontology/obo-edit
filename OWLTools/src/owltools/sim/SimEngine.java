@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
@@ -19,6 +20,9 @@ import owltools.sim.Similarity;
 
 public class SimEngine {
 
+	private static Logger LOG = Logger.getLogger(DisjunctiveSetSimilarity.class);
+
+	
 	// -------------------------------------
 	// Similarity Algorithms
 	// -------------------------------------
@@ -48,6 +52,7 @@ public class SimEngine {
 	public OWLObject comparisonSuperclass = null;
 	public Double minimumIC = null;
 	private Map<OWLObject,Double> cacheObjectIC = new HashMap<OWLObject,Double>();
+	private Map<OWLObjectPair,Set<OWLObject>> cacheLCS = new HashMap<OWLObjectPair,Set<OWLObject>> ();
 
 	// -------------------------------------
 	// Constructions
@@ -144,6 +149,27 @@ public class SimEngine {
 	}
 	
 	/**
+	 * as getFrequency(obj), treats objs as a conjunction
+	 * @param objs
+	 * @return
+	 */
+	public int getFrequency(Set<OWLObject> objs) {
+		Set<OWLObject> results = null;
+		for (OWLObject q : objs) {
+			if (results == null)
+				results = graph.getIndividualDescendants(q);
+			else {
+				results.retainAll(graph.getIndividualDescendants(q));
+			}
+			LOG.debug("Q:"+q+" SIZE:"+results.size());
+		}
+		if (results == null)
+			return 0;
+		return results.size();
+	}
+
+	
+	/**
 	 * The IC of an OWLObject is
 	 * 
 	 * freq(Obj)/corpusSize
@@ -166,6 +192,15 @@ public class SimEngine {
 		cacheObjectIC.put(obj, ic);
 		return ic;
 	}
+	public Double getInformationContent(Set<OWLObject> objs) {
+		Double ic = null;
+		int freq = getFrequency(objs);
+		if (freq > 0) {
+			ic = -Math.log(((double) freq / getCorpusSize())) / Math.log(2);
+		}
+		return ic;
+	}
+
 	public boolean hasInformationContent(OWLObject obj) {
 		return getInformationContent(obj) != null;
 	}
@@ -208,24 +243,53 @@ public class SimEngine {
 		return getCommonSubsumers(a,b).size();		
 	}
 
+	/**
+	 * note that this performs caching by default
+	 * @param a
+	 * @param b
+	 * @return LCA of a and b
+	 */
 	public Set<OWLObject> getLeastCommonSubsumers(OWLObject a, OWLObject b) {
-		Set<OWLObject> objs = getCommonSubsumers(a,b);	
-		return makeNonRedundant(objs);
+		OWLObjectPair pair = new OWLObjectPair(a,b,true);
+		if (!cacheLCS.containsKey(pair)) {
+			Set<OWLObject> objs = getCommonSubsumers(a,b);	
+			cacheLCS.put(pair, makeNonRedundant(objs));
+		}
+		return cacheLCS.get(pair);
 	}
 	public int getLeastCommonSubsumersSize(OWLObject a, OWLObject b) {
 		return getLeastCommonSubsumers(a,b).size();		
 	}
 
+	/**
+	 * An object x is redundant with a set S if:
+	 * 
+	 * there exists an element y of S, such that
+	 * y<x
+	 * 
+	 * @param objs
+	 * @return
+	 */
 	public Set<OWLObject> makeNonRedundant(Set<OWLObject> objs) {
+		// redundant set
 		Set<OWLObject> rs = new HashSet<OWLObject>();
+		
+		// check each object to see if it's redundant
 		for (OWLObject obj : objs) {
 			Set<OWLObject> ancs = getAncestors(obj);
 			ancs.retainAll(objs);
 			ancs.remove(obj);
-			// todo - equivalence
+			
 			for (OWLObject anc : ancs) {
-				if (!getAncestors(anc).contains(obj))
+				// we know that obj<anc,
+				// anc is therefore redundant
+				// (if it appears in the original set)
+				
+				// the exception is for cycles
+				if (!getAncestors(anc).contains(obj)) {
+					// not a cycle
 					rs.add(anc);
+				}
 			}
 		}
 		objs.removeAll(rs);

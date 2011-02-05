@@ -1,5 +1,6 @@
 package owltools.sim;
 
+import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,9 +13,9 @@ import org.semanticweb.owlapi.model.OWLObject;
  * @author cjm
  *
  */
-public class MaximumInformationContentSimilarity extends Similarity {
+public class DisjunctiveSetSimilarity extends Similarity {
 
-	private static Logger LOG = Logger.getLogger(MaximumInformationContentSimilarity.class);
+	private static Logger LOG = Logger.getLogger(DisjunctiveSetSimilarity.class);
 	public Set<OWLObject> bestSubsumers = new HashSet<OWLObject>();
 	
 	public String toString() {
@@ -28,23 +29,19 @@ public class MaximumInformationContentSimilarity extends Similarity {
 	@Override
 	public void calculate(SimEngine simEngine, OWLObject a, OWLObject b) {
 		this.simEngine = simEngine;
-		Set<OWLObject> objs = simEngine.getCommonSubsumers(a, b);
-		double maxIC = 0;
-		Set<OWLObject> bestSubsumers = new HashSet<OWLObject>();
+		Set<OWLObject> objs = simEngine.getLeastCommonSubsumers(a, b);
+		LOG.info("LCSs:"+objs.size());
+		double totalIC = 0;
 		for (OWLObject obj : objs) {
 			if (!simEngine.hasInformationContent(obj))
 				continue;
 			double ic = simEngine.getInformationContent(obj);
-			if (ic > maxIC) {
-				// warning: FP arithmetic
-				bestSubsumers = new HashSet<OWLObject>();
-				maxIC = ic;
-			}
-			if (ic >= maxIC) {
-				bestSubsumers.add(obj);
-			}
+			
+			LOG.info("  IC:"+obj+" is "+ic);
+
+			totalIC += ic;
 		}
-		setScore(maxIC);
+		setScore(totalIC);
 		this.bestSubsumers = bestSubsumers;
 
 	}
@@ -55,4 +52,9 @@ public class MaximumInformationContentSimilarity extends Similarity {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void print(PrintStream s) {
+		s.println(toString());
+	}
+
 }
