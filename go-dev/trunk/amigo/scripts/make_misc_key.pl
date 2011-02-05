@@ -2,22 +2,10 @@
 
 #generated key val pair for various options display in AmiGO
 
-BEGIN {
-
-	if (-f "config.pl") {
-		require "config.pl";
-	}
-
-	if (defined($ENV{GO_ROOT})) {
-	} elsif (-f "../cvs/go-dev/") {
-		$ENV{GO_ROOT} = "../cvs/go-dev";
-	}
-}
-
-use lib "$ENV{GO_ROOT}/go-perl";
-use lib "$ENV{GO_ROOT}/go-db-perl";
-#use lib "$ENV{GO_AMIGO_ROOT}/perl";
-use lib "$ENV{GO_ROOT}/amigo/perl";
+BEGIN { require "config.pl" if -f "config.pl" ; }
+use lib "$ENV{GO_DEV_ROOT}/go-perl";
+use lib "$ENV{GO_DEV_ROOT}/go-db-perl";
+use lib "$ENV{GO_DEV_ROOT}/amigo/perl";
 
 use strict;
 use FreezeThaw qw(freeze thaw);

@@ -63,8 +63,8 @@ BEGIN{
   require $fname;
 }
 ## Needs no database access at all, so just:
-use lib $ENV{GO_ROOT} . '/amigo/perl';
-use lib $ENV{GO_SVN_ROOT} . '/gobo-dbic';
+use lib $ENV{GO_DEV_ROOT} . '/amigo/perl';
+use lib $ENV{GOBO_ROOT};
 
 ## Bring in necessaries.
 use utf8;

@@ -37,8 +37,8 @@ end
 
 ## No more command line opts--let's specialize on AmiGOland.
 conf = AmiGO::Conf.new()
-test_dir = conf.get('GO_ROOT') + '/amigo/testing/profiles/amigo'
-data_dir = conf.get('GO_ROOT') + '/amigo/testing/data'
+test_dir = conf.get('GO_DEV_ROOT') + '/amigo/testing/profiles/amigo'
+data_dir = conf.get('GO_DEV_ROOT') + '/amigo/testing/data'
 output_dir = conf.get('AMIGO_TESTS_DIR')
 base_url = conf.get('AMIGO_CGI_URL')
 

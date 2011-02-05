@@ -10,7 +10,7 @@
 ## Try to get the local environment sane. This is necessary for *any*
 ## operation, so we're really going to die.
 BEGIN { require "config.pl" if -f "config.pl" ; }
-use lib $ENV{GO_ROOT} . '/amigo/perl';
+use lib $ENV{GO_DEV_ROOT} . '/amigo/perl';
 
 ## Bring in necessaries.
 use utf8;

@@ -82,7 +82,7 @@ if( -f $cname ){
   $created_tmp_config = 1;
   #  print "NO\n";
   open CONF, ">$cname" or die "unable to create temporary config: $!";
-  print CONF "\$ENV{GO_ROOT}=\'" . $go_base .  "\'\;\n";
+  print CONF "\$ENV{GO_DEV_ROOT}=\'" . $go_base .  "\'\;\n";
   print CONF "1;\n";
   close CONF;
 }

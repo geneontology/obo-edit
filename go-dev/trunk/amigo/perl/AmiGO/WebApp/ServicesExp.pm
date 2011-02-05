@@ -65,7 +65,7 @@ sub setup {
 
 #   $self->tt_config(TEMPLATE_OPTIONS =>
 # 		   {INCLUDE_PATH =>
-# 		    $self->{CORE}->amigo_env('GO_ROOT') .
+# 		    $self->{CORE}->amigo_env('GO_DEV_ROOT') .
 # 		    '/amigo/amigo/templates'});
 
   $self->mode_param('mode');

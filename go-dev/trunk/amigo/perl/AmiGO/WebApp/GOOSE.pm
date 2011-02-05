@@ -50,7 +50,7 @@ sub setup {
 
   $self->tt_config(TEMPLATE_OPTIONS =>
 		   {INCLUDE_PATH =>
-		    $self->{CORE}->amigo_env('GO_ROOT') .
+		    $self->{CORE}->amigo_env('GO_DEV_ROOT') .
 		    '/amigo/amigo/templates'});
 
   $self->mode_param('mode');
@@ -112,7 +112,7 @@ sub mode_goose {
   ### information to the mirror information hash.
   ###
 
-  my $mirror_loc = $self->{CORE}->amigo_env('GO_ROOT') .
+  my $mirror_loc = $self->{CORE}->amigo_env('GO_DEV_ROOT') .
     '/amigo/amigo/cgi-bin/experimental/go_mirrors.json';
   my $mirror_info = $self->{CORE}->parse_json_file($mirror_loc);
   #$self->{CORE}->kvetch("_mirror_info_dump_:" . Dumper($mirror_info));
