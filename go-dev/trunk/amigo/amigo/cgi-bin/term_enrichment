@@ -11,15 +11,15 @@
 ## Try to get the local environment sane.
 BEGIN {
   require "config.pl" if -f "config.pl" ;
-  if( ! defined($ENV{GO_ROOT}) &&
+  if( ! defined($ENV{GO_DEV_ROOT}) &&
       -f "../cvs/go-dev/"){
-    $ENV{GO_ROOT} = "../cvs/go-dev";
+    $ENV{GO_DEV_ROOT} = "../cvs/go-dev";
   }
   die "cannot find templates: $!" if ! $ENV{AMIGO_TEMPLATE_PATHS};
 }
-use lib "$ENV{GO_ROOT}/go-perl";
-use lib "$ENV{GO_ROOT}/go-db-perl";
-use lib "$ENV{GO_ROOT}/amigo/perl";
+use lib "$ENV{GO_DEV_ROOT}/go-perl";
+use lib "$ENV{GO_DEV_ROOT}/go-db-perl";
+use lib "$ENV{GO_DEV_ROOT}/amigo/perl";
 
 ## Bring in necessaries.
 use utf8;

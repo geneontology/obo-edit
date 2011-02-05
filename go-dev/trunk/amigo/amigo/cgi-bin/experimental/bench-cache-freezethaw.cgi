@@ -2,9 +2,9 @@
 
 ## Need a little knowledge of the "AmiGO" environment.
 BEGIN{ require "config.pl"; }
-use lib $ENV{GO_ROOT} . '/go-perl';
-use lib $ENV{GO_ROOT} . '/go-db-perl';
-use lib $ENV{GO_ROOT} . '/amigo/perl';
+use lib $ENV{GO_DEV_ROOT} . '/go-perl';
+use lib $ENV{GO_DEV_ROOT} . '/go-db-perl';
+use lib $ENV{GO_DEV_ROOT} . '/amigo/perl';
 use AmiGO;
 
 my $core = AmiGO->new();

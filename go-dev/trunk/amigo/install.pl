@@ -31,14 +31,28 @@ use File::Find;
 use Cwd;
 use Data::Dumper;
 
-##
-my $amigo_base = getcwd();
-my $go_base = substr($amigo_base, 0, 0 - length('/go-dev/amigo'));
+## Try and guess where the repo and related libraries live.
+my $current_dir = getcwd();
+my $go_base = $current_dir;
+my $go_dev_base = $current_dir;
+my $go_js_base = $current_dir;
+my $gobo_base = $current_dir;
+if( $current_dir =~ /go\-dev\/amigo$/ ){
+  $go_base = substr($current_dir, 0, 0 - length('/go-dev/amigo'));
+}elsif( $current_dir =~ /go\-dev\/trunk\/amigo$/ ){
+  $go_base = substr($current_dir, 0, 0 - length('/go-dev/trunk/amigo'));
+}
+$go_js_base = $go_base . '/javascript';
+$gobo_base = $go_base . '/gobo-dbic';
+$go_dev_base = substr($current_dir, 0, 0 - length('/amigo'));
+
 
 ## These are the user changable variables. They may be used to create
 ## synthetic variables.
 my @env_conf_order = qw(
-			 GO_SVN_ROOT
+			 GO_DEV_ROOT
+			 GO_JS_ROOT
+			 GOBO_ROOT
 
 			 GO_DBNAME
 			 GO_DBHOST
@@ -110,13 +124,32 @@ my @env_conf_order = qw(
 
 my %synth_vars = ();
 my %env_conf = (
-		GO_SVN_ROOT =>
+		GO_DEV_ROOT =>
 		{
-		 DEFAULT => $go_base,
+		 DEFAULT => $go_dev_base,
 		 MESSAGE => "Please enter the full path to the " .
-		 "SVN geneontology directory ",
+		 "SVN geneontology/go-dev[/trunk] directory ",
 		 ERROR => 'not a directory',
 		 PARSER => \&is_a_directory_p
+		},
+
+		GO_JS_ROOT =>
+		{
+		 DEFAULT => $go_js_base,
+		 MESSAGE => "Please enter the full path to the " .
+		 "SVN geneontology/javascript directory ",
+		 ERROR => 'not a directory',
+		 PARSER => \&is_a_directory_p
+		},
+
+		GOBO_ROOT =>
+		{
+		 DEFAULT => $gobo_base,
+		 MESSAGE => "Please enter the full path to the " .
+		 "SVN geneontology/gobo-dbic directory. You may not need this ".
+		 "if you already have the package loaded as a library.",
+		 ERROR => 'not a directory',
+		 PARSER => \&is_always_true
 		},
 
 		AMIGO_SHOW_GP_OPTIONS =>
@@ -865,9 +898,6 @@ $synth_vars{AMIGO_SCRATCH_DIR} =
   $synth_vars{AMIGO_CGI_ROOT_DIR} .
   '/' . 'sessions/scratch';
 
-## TODO/BUG: Temporary hack to bridge the CVS to SVN conversion.
-$synth_vars{GO_ROOT} = $env_conf{GO_SVN_ROOT}{NEW_VALUE} . '/go-dev/trunk';
-
 create_synthetic_amigo_environmental_variables();
 ll("Finish setting the installation environment.");
 
@@ -1070,7 +1100,7 @@ if ( $opt_c ) {
   ## TODO/BUG: Temporarily get the Newick tree stuff over until we can
   ## fix it more permanently.
   if ( $opt_e ) {
-    force_copy($env_conf{GO_SVN_ROOT}{NEW_VALUE} . '/javascript/newick_tree',
+    force_copy($env_conf{GO_JS_ROOT}{NEW_VALUE} . '/newick_tree',
 	       $synth_vars{AMIGO_HTDOCS_ROOT_DIR} . '/js');
   }
 

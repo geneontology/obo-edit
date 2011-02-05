@@ -1,25 +1,22 @@
 #!/usr/local/bin/perl -w
-
-#	#!/usr/bin/perl -w
+# #!/usr/bin/perl -w
 require 5.8.0;
 
 BEGIN {
-
-		if (-f "config.pl") {
-			require "config.pl";
-		}
-
-		# find go perl libraries pre compile time
-		if (defined($ENV{GO_ROOT})) {
-				;
-		} elsif (-f "../cvs/go-dev/") {
-		$ENV{GO_ROOT} = "../cvs/go-dev";
-		}
+  if (-f "config.pl") {
+    require "config.pl";
+  }
+  # find go perl libraries pre compile time
+  if (defined($ENV{GO_DEV_ROOT})) {
+    # do nothing
+  } elsif (-f "../cvs/go-dev/") {
+    $ENV{GO_DEV_ROOT} = "../cvs/go-dev";
+  }
 }
 
-use lib "$ENV{GO_ROOT}/go-perl";
-use lib "$ENV{GO_ROOT}/go-db-perl";
-use lib "$ENV{GO_ROOT}/amigo/perl";
+use lib "$ENV{GO_DEV_ROOT}/go-perl";
+use lib "$ENV{GO_DEV_ROOT}/go-db-perl";
+use lib "$ENV{GO_DEV_ROOT}/amigo/perl";
 
 use strict;
 use CGI;
@@ -31,7 +28,7 @@ use GO::CGI::Session;
 use GO::CGI::Utilities qw(:std);
 use GO::IO::go_assoc;
 
-#	for debugging
+# for debugging
 use Data::Dumper;
 $Data::Dumper::Indent = 1;
 $Data::Dumper::Sortkeys = 1;

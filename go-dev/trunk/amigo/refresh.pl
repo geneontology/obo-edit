@@ -14,10 +14,10 @@
 ####
 
 BEGIN { require "config.pl"; }
-use lib $ENV{GO_ROOT} . '/go-perl';
-use lib $ENV{GO_ROOT} . '/go-db-perl';
-use lib $ENV{GO_ROOT} . '/amigo/perl';
-use lib $ENV{GO_SVN_ROOT} . '/gobo-dbic';
+use lib $ENV{GO_DEV_ROOT} . '/go-perl';
+use lib $ENV{GO_DEV_ROOT} . '/go-db-perl';
+use lib $ENV{GO_DEV_ROOT} . '/amigo/perl';
+use lib $ENV{GOBO_ROOT};
 
 ## Bring in necessaries.
 use utf8;
@@ -299,7 +299,7 @@ if( $do_lucene ){
   $core->kvetch("Making lucene indexes, please wait...");
 
   ## Add new indexes; no args needed--from here, luigi knows where to go.
-  my @args = ("perl", $core->amigo_env('GO_ROOT') . "/amigo/scripts/luigi");
+  my @args = ("perl", $core->amigo_env('GO_DEV_ROOT') . "/amigo/scripts/luigi");
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
 
@@ -343,7 +343,7 @@ ok( 1 == 1 );
   ## Species.
 sub make_spec {
   my @args = ("perl",
-	      $core->amigo_env('GO_ROOT') . "/amigo/scripts/make_spec_key.pl",
+	      $core->amigo_env('GO_DEV_ROOT')."/amigo/scripts/make_spec_key.pl",
 	      $core->amigo_env('CGI_ROOT_DIR'), "50");
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
@@ -354,7 +354,7 @@ sub make_spec {
 ## Misc.
 sub make_misc {
   my @args = ("perl",
-	      $core->amigo_env('GO_ROOT') . "/amigo/scripts/make_misc_key.pl",
+	      $core->amigo_env('GO_DEV_ROOT')."/amigo/scripts/make_misc_key.pl",
 	      $core->amigo_env('CGI_ROOT_DIR'));
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
@@ -365,7 +365,7 @@ sub make_misc {
 ## Places for the new speed caches and clean out the old ones.
 sub reinit_caches {
   my @args = ("perl",
-	      $core->amigo_env('GO_ROOT') . "/amigo/scripts/reinit_caches.pl");
+	      $core->amigo_env('GO_DEV_ROOT')."/amigo/scripts/reinit_caches.pl");
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
   ll("Finished removing/initing(?) runtime caches.");
@@ -376,7 +376,7 @@ sub reinit_caches {
 ## NameMunger).
 sub make_dblinks {
   my @args = ("perl",
-	      $core->amigo_env('GO_ROOT') . "/amigo/scripts/make_dblinks.pl",
+	      $core->amigo_env('GO_DEV_ROOT')."/amigo/scripts/make_dblinks.pl",
 	      '-f', $core->amigo_env('CGI_ROOT_DIR'));
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
@@ -386,10 +386,10 @@ sub make_dblinks {
 
 ## Generated JS meta-data.
 sub make_go_meta_js {
-  my @args = ("perl",
-	      $core->amigo_env('GO_ROOT') . "/amigo/scripts/make_go_meta_js.pl",
-	      $core->amigo_env('AMIGO_HTDOCS_ROOT_DIR') .
-	      '/js/org/bbop/amigo/go_meta.js');
+  my @args =
+    ("perl",
+     $core->amigo_env('GO_DEV_ROOT') . "/amigo/scripts/make_go_meta_js.pl",
+     $core->amigo_env('AMIGO_HTDOCS_ROOT_DIR').'/js/org/bbop/amigo/go_meta.js');
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
   ll("Finished making go_meta JS file.");

@@ -5,8 +5,8 @@
 
 ## Setup environment.
 BEGIN { require "config.pl" if -f "config.pl" ; }
-use lib $ENV{GO_ROOT} . '/amigo/perl';
-use lib $ENV{GO_SVN_ROOT} . '/gobo-dbic';
+use lib $ENV{GO_DEV_ROOT} . '/amigo/perl';
+use lib $ENV{GOBO_ROOT};
 
 use AmiGO::Cache::GONavi;
 use AmiGO::Cache::ART;
