@@ -1,8 +1,8 @@
 #!/usr/local/bin/perl -w
 
 BEGIN {
-    if (defined($ENV{GO_ROOT})) {
-	use lib "$ENV{GO_ROOT}/perl-api";
+    if (defined($ENV{GO_DEV_ROOT})) {
+	use lib "$ENV{GO_DEV_ROOT}/perl-api";
     }
 }
 

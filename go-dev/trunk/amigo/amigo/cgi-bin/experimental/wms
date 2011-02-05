@@ -6,9 +6,9 @@
 
 ## Need a little knowledge of the "AmiGO" environment.
 BEGIN { require "config.pl"; }
-use lib $ENV{GO_ROOT} . '/go-perl';
-use lib $ENV{GO_ROOT} . '/go-db-perl';
-use lib $ENV{GO_ROOT} . '/amigo/perl';
+use lib $ENV{GO_DEV_ROOT} . '/go-perl';
+use lib $ENV{GO_DEV_ROOT} . '/go-db-perl';
+use lib $ENV{GO_DEV_ROOT} . '/amigo/perl';
 
 ## Bring in necessaries.
 use utf8;
@@ -21,7 +21,7 @@ use mapscript;
 my $core = AmiGO->new();
 
 my $MAPSERV = '/usr/lib/cgi-bin/mapserv';
-my $MAPFILE = $core->amigo_env('GO_ROOT') .
+my $MAPFILE = $core->amigo_env('GO_DEV_ROOT') .
   "/amigo/amigo/cgi-bin/experimental/test.map";
 $ENV{MAPSERV} = $MAPSERV;
 $ENV{MAPFILE} = $MAPFILE;

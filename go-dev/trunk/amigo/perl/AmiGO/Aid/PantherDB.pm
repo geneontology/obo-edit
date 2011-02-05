@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use AmiGO::Aid::ReferenceGenome;
-use lib $ENV{GO_ROOT} . '/go-perl';
+use lib $ENV{GO_DEV_ROOT} . '/go-perl';
 use GO::Metadata::Panther;
 use base 'GO::Metadata::Panther';
 
