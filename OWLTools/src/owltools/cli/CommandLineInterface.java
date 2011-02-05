@@ -431,6 +431,7 @@ public class CommandLineInterface {
 				boolean nr = false;
 				OWLObjectProperty attProp = null;
 				Vector<OWLObjectPair> pairs = new Vector<OWLObjectPair>();
+				String subSimMethod = null;
 
 				boolean isAll = false;
 				SimEngine se = new SimEngine(g);
@@ -445,6 +446,10 @@ public class CommandLineInterface {
 					else if (opts.nextEq("--min-ic")) {
 						se.minimumIC = Double.valueOf(opts.nextOpt());
 					}
+					else if (opts.nextEq("--sub-method")) {
+						opts.info("MethodName","sets the method used to compare all attributes in a MultiSim test");
+						subSimMethod = opts.nextOpt();
+					}
 					else if (opts.nextEq("-a|--all")) {
 						isAll = true;
 						boolean isClasses = true;
@@ -457,17 +462,19 @@ public class CommandLineInterface {
 						System.out.println("Set1:"+anc+" "+anc.getClass());
 						Set<OWLObject> objs = g.queryDescendants((OWLClass)anc, isInstances, isClasses);
 						objs.remove(anc);
+						System.out.println("  Size1:"+objs.size());
 						Set<OWLObject> objs2 = objs;
 						if (opts.nextEq("--vs")) {
 							OWLObject anc2 = resolveEntity(g,opts.nextOpt());
 							System.out.println("Set2:"+anc2+" "+anc2.getClass());
 							 objs2 = g.queryDescendants((OWLClass)anc2, isInstances, isClasses);
 							 objs2.remove(anc2);
+								System.out.println("  Size2:"+objs2.size());
 						}
 						for (OWLObject a : objs) {
 							for (OWLObject b : objs2) {
-								if (a.compareTo(b) <= 0)
-									continue;
+								//if (a.compareTo(b) <= 0)
+								//	continue;
 								OWLObjectPair pair = new OWLObjectPair(a,b);
 								System.out.println("Scheduling:"+pair);
 								pairs.add(pair);
@@ -507,7 +514,9 @@ public class CommandLineInterface {
 					}
 					if (attProp != null)
 						((MultiSimilarity)metric).comparisonProperty = attProp;
-
+					if (subSimMethod != null)
+						((MultiSimilarity)metric).setSubSimMethod(subSimMethod);
+					
 					System.out.println("comparing: "+oa+" vs "+ob);
 					Similarity r = se.calculateSimilarity(metric, oa, ob);
 					//System.out.println(metric+" = "+r);
@@ -621,6 +630,7 @@ public class CommandLineInterface {
 				}
 				catch (Exception e) {
 					System.err.println("could not parse:"+f+" Exception:"+e);
+					System.exit(1);
 				}
 
 	

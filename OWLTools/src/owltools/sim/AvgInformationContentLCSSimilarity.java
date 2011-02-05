@@ -17,6 +17,13 @@ import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 import owltools.sim.SimEngine.SimilarityAlgorithmException;
 
+/**
+ * use MultiSimilarity with a subSim method of MaxIC instead
+ * 
+ * @author cjm
+ *
+ */
+@Deprecated
 public class AvgInformationContentLCSSimilarity extends Similarity {
 	Map <OWLObject,Similarity> matchMap = new HashMap<OWLObject,Similarity>();
 	Set <OWLObject> aset;
