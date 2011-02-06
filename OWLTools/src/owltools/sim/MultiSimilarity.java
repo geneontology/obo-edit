@@ -37,8 +37,6 @@ public class MultiSimilarity extends Similarity {
 
 	private static Logger LOG = Logger.getLogger(MultiSimilarity.class);
 
-	public OWLClass comparisonClass = null;
-	public OWLObjectProperty comparisonProperty = null;
 	public String[] deepSimMethods = 
 	{
 			"ConjunctiveSetInformationContentRatioSimilarity"
@@ -202,58 +200,10 @@ public class MultiSimilarity extends Similarity {
 	 */
 	private void createFeatureToAttributeMap() {
 		featureToAttributeMap = new HashMap<OWLObject,Set<OWLObject>>();
-		featureToAttributeMap.put(a, getAttributesFor(a));
-		featureToAttributeMap.put(b, getAttributesFor(b));
+		featureToAttributeMap.put(a, simEngine.getAttributesFor(a));
+		featureToAttributeMap.put(b, simEngine.getAttributesFor(b));
 	}
 
-	private Set<OWLObject> getAttributesFor(OWLObject x) {
-		OWLGraphWrapper g = simEngine.getGraph();
-		Set<OWLObject> ancs = new HashSet<OWLObject>();
-		if (comparisonClass != null) {
-			for (OWLGraphEdge e : g.getOutgoingEdgesClosure(x)) {
-				OWLObject t = e.getTarget();
-				if (g.getSubsumersFromClosure(t).contains(comparisonClass)) {
-					ancs.add(t);
-				}
-			}
-		}
-		if (comparisonProperty != null) {
-
-			// may either be directly linked, or may be an instance of something direcly linked
-			for (OWLGraphEdge e : g.getPrimitiveOutgoingEdges(x)) {
-				OWLObject t = e.getTarget();
-				OWLQuantifiedProperty qp = e.getSingleQuantifiedProperty();
-				if (comparisonProperty.equals(qp.getProperty())) {
-					ancs.add(t);
-				}
-				else if (qp.isInstanceOf()) {
-					for (OWLGraphEdge e2 : g.getPrimitiveOutgoingEdges(t)) {
-						OWLObject t2 = e2.getTarget();
-						OWLQuantifiedProperty qp2 = e2.getSingleQuantifiedProperty();
-						if (comparisonProperty.equals(qp2.getProperty())) {
-							ancs.add(t2);
-						}
-					}
-
-				}
-			}
-
-
-		}
-		if (comparisonProperty == null && comparisonProperty == null) {
-			ancs.addAll(g.getSubsumersFromClosure(x));
-			// this one probably better:
-			/*
-
-			for (OWLGraphEdge e : g.getPrimitiveOutgoingEdges(x)) {
-				OWLObject t = e.getTarget();
-				ancs.add(t);
-			}
-			 */
-		}
-		simEngine.makeNonRedundant(ancs);
-		return ancs;
-	}
 
 	public Set<OWLObject> sortMapByScore(Map<OWLObject,Similarity> map) {
 		ValueComparator bvc =  new ValueComparator(map);
