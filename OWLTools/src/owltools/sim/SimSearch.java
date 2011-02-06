@@ -51,6 +51,7 @@ public class SimSearch {
 		// intersection operation. they will have a small effect on the score, as
 		// we don't divide by the union, but instead the sum of sizes
 		atts = filterNonSignificantAttributes(atts);
+		System.out.println("filtered atts: "+atts.size());
 
 		//bloomFilter = new BloomFilter<OWLObject>(0.05, atts.size());
 		//bloomFilter.addAll(atts);
@@ -61,7 +62,6 @@ public class SimSearch {
 			if (candidate.equals(queryObj))
 				continue;
 			Set<OWLObject> iAtts = simEngine.getAttributeClosureFor(candidate);
-			System.out.println("catts:"+iAtts.size());
 			//Set<OWLObject> iAtts = simEngine.getGraph().getAncestors(candidate);
 
 			if (iAtts.size() == 0)
@@ -73,7 +73,11 @@ public class SimSearch {
 			
 			// simJ, one-sided, scaled by 1000
 			// negate to ensure largest first
-			Integer score = - (iAtts.size() * 1000 / cAttsSize);
+			//Integer score = - (iAtts.size() * 1000 / cAttsSize);
+			
+			// this biases us towards genes with large numbers of annotations,
+			// but it is better at finding the models that share all features
+			Integer score = - iAtts.size();
 			if (!scoreCandidateMap.containsKey(score)) 
 				scoreCandidateMap.put(score, new HashSet<OWLObject>());
 			scoreCandidateMap.get(score).add(candidate);
