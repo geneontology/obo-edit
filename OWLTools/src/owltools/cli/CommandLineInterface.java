@@ -43,6 +43,7 @@ import owltools.mooncat.Mooncat;
 import owltools.sim.DescriptionTreeSimilarity;
 import owltools.sim.MultiSimilarity;
 import owltools.sim.OWLObjectPair;
+import owltools.sim.Reporter;
 import owltools.sim.SimEngine;
 import owltools.sim.JaccardSimilarity;
 import owltools.sim.SimEngine.SimilarityAlgorithmException;
@@ -439,6 +440,7 @@ public class CommandLineInterface {
 				//System.out.println(metric.getClass().getName());
 			}
 			else if (opts.nextEq("--sim")) {
+				Reporter reporter = new Reporter(g);
 				opts.info("[-m metric] A B", "calculates similarity between A and B");
 				boolean nr = false;
 				Vector<OWLObjectPair> pairs = new Vector<OWLObjectPair>();
@@ -463,7 +465,7 @@ public class CommandLineInterface {
 					}
 					else if (opts.nextEq("--query")) {
 						OWLObject q = resolveEntity(g,opts.nextOpt());
-						SimSearch search = new SimSearch(se);
+						SimSearch search = new SimSearch(se, reporter);
 						
 						isAll = true;
 						boolean isClasses = true;
@@ -481,9 +483,13 @@ public class CommandLineInterface {
 
 						List<OWLObject> hits = search.search(q);
 						System.out.println("  hits:"+hits.size());
+						int n = 0;
+						int MAX_PAIRS = 50; // todo - make configurable
 						for (OWLObject hit : hits) {
-							pairs.add(new OWLObjectPair(q,hit));
-							System.out.println("HIT:"+g.getLabelOrDisplayId(hit));
+							if (n < MAX_PAIRS)
+								pairs.add(new OWLObjectPair(q,hit));
+							n++;
+							System.out.println("HIT:"+n+"\t"+g.getLabelOrDisplayId(hit));
 						}
 					}
 					else if (opts.nextEq("-a|--all")) {
@@ -555,6 +561,7 @@ public class CommandLineInterface {
 					Similarity r = se.calculateSimilarity(metric, oa, ob);
 					//System.out.println(metric+" = "+r);
 					metric.print();
+					metric.report(reporter);
 					if (simOnt == null) {
 						simOnt = g.getManager().createOntology();
 					}
