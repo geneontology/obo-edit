@@ -205,7 +205,7 @@ public abstract class Similarity {
 
 	public Set<OWLAxiom> translateResultsToOWLAxioms() {
 		
-		System.out.println("TRANSLATING OWL AXIOM:"+this);
+		System.out.println("TRANSLATING TO OWL AXIOM:"+this);
 		OWLGraphWrapper graph = simEngine.getGraph();
 		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
 
