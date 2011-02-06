@@ -46,6 +46,7 @@ import owltools.sim.OWLObjectPair;
 import owltools.sim.SimEngine;
 import owltools.sim.JaccardSimilarity;
 import owltools.sim.SimEngine.SimilarityAlgorithmException;
+import owltools.sim.SimSearch;
 import owltools.sim.Similarity;
 
 public class CommandLineInterface {
@@ -94,6 +95,15 @@ public class CommandLineInterface {
 			}
 			return false;
 		}
+		
+		public boolean hasOpt(String opt) {
+			for (int j=i; j<args.length; j++) {
+				if (args[j].equals(opt))
+					return true;
+			}
+			return false;
+		}
+
 
 		public boolean nextEq(Collection<String> eqs) {
 			for (String eq : eqs) {
@@ -132,6 +142,7 @@ public class CommandLineInterface {
 				System.exit(0);
 			}
 		}
+
 	}
 
 	public static void main(String[] args) throws OWLOntologyCreationException, IOException, FrameMergeException, SimilarityAlgorithmException, OWLOntologyStorageException {
@@ -218,6 +229,7 @@ public class CommandLineInterface {
 			else if (opts.nextEq("--merge-support-ontologies")) {
 				for (OWLOntology ont : g.getSupportOntologySet())
 					g.mergeOntology(ont);
+				g.setSupportOntologySet(new HashSet<OWLOntology>());
 			}
 			else if (opts.nextEq("--add-support-from-imports")) {
 				g.addSupportOntologiesFromImportsClosure();
@@ -429,7 +441,6 @@ public class CommandLineInterface {
 			else if (opts.nextEq("--sim")) {
 				opts.info("[-m metric] A B", "calculates similarity between A and B");
 				boolean nr = false;
-				OWLObjectProperty attProp = null;
 				Vector<OWLObjectPair> pairs = new Vector<OWLObjectPair>();
 				String subSimMethod = null;
 
@@ -441,7 +452,7 @@ public class CommandLineInterface {
 						similarityAlgorithmName = opts.nextOpt();
 					}
 					else if (opts.nextEq("-p")) {
-						attProp = g.getOWLObjectProperty(opts.nextOpt());
+						se.comparisonProperty =  g.getOWLObjectProperty(opts.nextOpt());
 					}
 					else if (opts.nextEq("--min-ic")) {
 						se.minimumIC = Double.valueOf(opts.nextOpt());
@@ -449,6 +460,31 @@ public class CommandLineInterface {
 					else if (opts.nextEq("--sub-method")) {
 						opts.info("MethodName","sets the method used to compare all attributes in a MultiSim test");
 						subSimMethod = opts.nextOpt();
+					}
+					else if (opts.nextEq("--query")) {
+						OWLObject q = resolveEntity(g,opts.nextOpt());
+						SimSearch search = new SimSearch(se);
+						
+						isAll = true;
+						boolean isClasses = true;
+						boolean isInstances = true;
+						if (opts.nextEq("-i"))
+							isClasses = false;
+						if (opts.nextEq("-c"))
+							isInstances = false;
+						
+						OWLObject cc = resolveEntity(g,opts.nextOpt());
+						Set<OWLObject> candidates = g.queryDescendants((OWLClass)cc, isInstances, isClasses);
+						candidates.remove(cc);
+						search.setCandidates(candidates);
+						System.out.println("  numCandidates:"+candidates.size());
+
+						List<OWLObject> hits = search.search(q);
+						System.out.println("  hits:"+hits.size());
+						for (OWLObject hit : hits) {
+							pairs.add(new OWLObjectPair(q,hit));
+							System.out.println("HIT:"+g.getLabelOrDisplayId(hit));
+						}
 					}
 					else if (opts.nextEq("-a|--all")) {
 						isAll = true;
@@ -512,8 +548,6 @@ public class CommandLineInterface {
 					if (nr) {
 						((DescriptionTreeSimilarity)metric).forceReflexivePropertyCreation = false;
 					}
-					if (attProp != null)
-						((MultiSimilarity)metric).comparisonProperty = attProp;
 					if (subSimMethod != null)
 						((MultiSimilarity)metric).setSubSimMethod(subSimMethod);
 					
@@ -524,7 +558,9 @@ public class CommandLineInterface {
 					if (simOnt == null) {
 						simOnt = g.getManager().createOntology();
 					}
-					metric.addResultsToOWLOntology(simOnt);
+					if (opts.hasOpt("--save-sim")) {
+						metric.addResultsToOWLOntology(simOnt);
+					}
 				}
 			}
 			else if (opts.nextEq("-o|--output")) {
@@ -709,6 +745,8 @@ public class CommandLineInterface {
 		System.out.println("  ObjectProperties:"+ont.getObjectPropertiesInSignature().size());
 		System.out.println("  AxiomCount:"+ont.getAxiomCount());
 	}
+	
+
 
 	// todo - move to util
 	public static OWLObject resolveEntity(OWLGraphWrapper g, Opts opts) {

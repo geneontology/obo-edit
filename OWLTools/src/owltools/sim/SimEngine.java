@@ -7,20 +7,28 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLAnnotationValue;
+import org.semanticweb.owlapi.model.OWLAnonymousClassExpression;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 
 import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
+import owltools.graph.OWLQuantifiedProperty;
 import owltools.sim.Similarity;
 
 public class SimEngine {
 
-	private static Logger LOG = Logger.getLogger(DisjunctiveSetSimilarity.class);
+	private static Logger LOG = Logger.getLogger(SimEngine.class);
 
 	
 	// -------------------------------------
@@ -54,6 +62,10 @@ public class SimEngine {
 	private Map<OWLObject,Double> cacheObjectIC = new HashMap<OWLObject,Double>();
 	private Map<OWLObjectPair,Set<OWLObject>> cacheLCS = new HashMap<OWLObjectPair,Set<OWLObject>> ();
 
+	public OWLClass comparisonClass = null;
+	public OWLObjectProperty comparisonProperty = null;
+	
+
 	// -------------------------------------
 	// Constructions
 	// -------------------------------------
@@ -73,6 +85,54 @@ public class SimEngine {
 	public void setGraph(OWLGraphWrapper graph) {
 		this.graph = graph;
 	}
+	
+	private Set<String> excludedLabels;
+	public Set<String> getExcludedLabels() {
+		if (excludedLabels != null)
+			return excludedLabels;
+		excludedLabels = new HashSet<String>();
+		for (OWLAnnotationAssertionAxiom aa :
+			getGraph().getSourceOntology().getAnnotationAssertionAxioms(IRI.create("http://purl.obolibrary.org/obo/PhenoSim_0000001"))) {
+			OWLAnnotationValue v = aa.getValue();
+			if (v instanceof OWLLiteral) {
+				excludedLabels.add(((OWLLiteral)v).getLiteral());
+			}
+		}
+		return excludedLabels;
+	}
+	
+	/**
+	 * A class is excluded from the analysis if:
+	 * 
+	 * it is a named entity, and the label for that entity matches the exclude labels list
+	 * OR: it is a class expression, and the signature contains an excluded class
+	 * @param att
+	 * @return
+	 */
+	public boolean isExcludedFromAnalysis(OWLObject att) {
+		if (att instanceof OWLAnonymousClassExpression) {
+			for (OWLClass cls : ((OWLAnonymousClassExpression)att).getClassesInSignature()) {
+				if (isExcludedFromAnalysis(cls))
+					return true;
+			}
+			/*
+			for (OWLGraphEdge e : graph.getOutgoingEdges(att)) {
+				if (!(e.getTarget() instanceof OWLAnonymousClassExpression)) {
+					if (isExcludedFromAnalysis(e.getTarget()))
+						return true;
+				}
+			}
+			*/
+			return false;
+		}
+		String label = getGraph().getLabelOrDisplayId(att);
+		if (label != null && getExcludedLabels().contains(label)) {
+			return true;
+		}
+		return false;
+	}
+
+
 
 	// -------------------------------------
 	// Utils
@@ -116,6 +176,66 @@ public class SimEngine {
 		return ms;
 	}
 
+
+	// todo - place this in a separate class
+	public Set<OWLObject> getAttributeClosureFor(OWLObject x) {
+		OWLGraphWrapper g = getGraph();
+		Set<OWLObject> ancs = new HashSet<OWLObject>();
+		for (OWLObject a : getAttributesFor(x)) {
+			ancs.addAll(g.getAncestorsReflexive(a));
+		}
+		return ancs;
+	}
+	// todo - place this in a separate class
+	public Set<OWLObject> getAttributesFor(OWLObject x) {
+		OWLGraphWrapper g = getGraph();
+		Set<OWLObject> ancs = new HashSet<OWLObject>();
+		if (comparisonClass != null) {
+			for (OWLGraphEdge e : g.getOutgoingEdgesClosure(x)) {
+				OWLObject t = e.getTarget();
+				if (g.getSubsumersFromClosure(t).contains(comparisonClass)) {
+					ancs.add(t);
+				}
+			}
+		}
+		if (comparisonProperty != null) {
+
+			// may either be directly linked, or may be an instance of something direcly linked
+			for (OWLGraphEdge e : g.getPrimitiveOutgoingEdges(x)) {
+				OWLObject t = e.getTarget();
+				OWLQuantifiedProperty qp = e.getSingleQuantifiedProperty();
+				if (comparisonProperty.equals(qp.getProperty())) {
+					ancs.add(t);
+				}
+				else if (qp.isInstanceOf()) {
+					for (OWLGraphEdge e2 : g.getPrimitiveOutgoingEdges(t)) {
+						OWLObject t2 = e2.getTarget();
+						OWLQuantifiedProperty qp2 = e2.getSingleQuantifiedProperty();
+						if (comparisonProperty.equals(qp2.getProperty())) {
+							ancs.add(t2);
+						}
+					}
+
+				}
+			}
+
+
+		}
+		if (comparisonProperty == null && comparisonProperty == null) {
+			ancs.addAll(g.getSubsumersFromClosure(x));
+			// this one probably better:
+			/*
+
+			for (OWLGraphEdge e : g.getPrimitiveOutgoingEdges(x)) {
+				OWLObject t = e.getTarget();
+				ancs.add(t);
+			}
+			 */
+		}
+		makeNonRedundant(ancs);
+		return ancs;
+	}
+	
 
 	// -------------------------------------
 	// Statistics
@@ -223,10 +343,22 @@ public class SimEngine {
 		return nonSignificantObjectSet;
 	}
 	
+	public void filterObjects(Set<OWLObject> objs) {
+		objs.removeAll(nonSignificantObjects());
+		Set<OWLObject> rmSet = new HashSet<OWLObject>();
+		for (OWLObject obj : objs) {
+			if (this.isExcludedFromAnalysis(obj)) {
+				rmSet.add(obj);
+
+			}
+		}
+		objs.removeAll(rmSet);
+	}
+	
 	public Set<OWLObject> getUnionSubsumers(OWLObject a, OWLObject b) {
 		Set<OWLObject> s1 = getGraph().getAncestorsReflexive(a);
 		s1.addAll(getGraph().getAncestorsReflexive(b));
-		s1.removeAll(nonSignificantObjects());
+		filterObjects(s1);
 		return s1;
 	}
 	public int getUnionSubsumersSize(OWLObject a, OWLObject b) {
@@ -236,7 +368,7 @@ public class SimEngine {
 	public Set<OWLObject> getCommonSubsumers(OWLObject a, OWLObject b) {
 		Set<OWLObject> s1 = getGraph().getAncestorsReflexive(a);
 		s1.retainAll(getGraph().getAncestorsReflexive(b));
-		s1.removeAll(nonSignificantObjects());
+		filterObjects(s1);
 		return s1;
 	}
 	public int getCommonSubsumersSize(OWLObject a, OWLObject b) {

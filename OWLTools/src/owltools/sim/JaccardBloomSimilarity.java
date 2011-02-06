@@ -1,14 +1,17 @@
 package owltools.sim;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
 
-public class JaccardSimilarity extends Similarity {
+import owltools.util.BloomFilter;
 
-	public JaccardSimilarity() {
+public class JaccardBloomSimilarity extends Similarity {
+
+	public JaccardBloomSimilarity() {
 		super();
 		minScore = 0.2; // default
 	}
@@ -17,9 +20,13 @@ public class JaccardSimilarity extends Similarity {
 	@Override
 	public void calculate(SimEngine simEngine, OWLObject a, OWLObject b) {
 		this.simEngine = simEngine;
-		double ci = simEngine.getCommonSubsumersSize(a, b);
-		double cu = simEngine.getUnionSubsumersSize(a, b);
-		setScore( ci / cu );
+		Set<OWLObject> ancs = simEngine.getGraph().getAncestorsReflexive(a);
+		BloomFilter bloomFilter = new BloomFilter<OWLObject>(0.05, ancs.size());
+		bloomFilter.addAll(ancs);
+
+		Set<OWLObject>  cu = simEngine.getGraph().getAncestorsReflexive(b);
+		Collection<OWLObject> iAtts = bloomFilter.intersection(cu);
+		setScore( ((double)iAtts.size())  / ancs.size());
 	}
 
 	@Override
