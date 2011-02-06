@@ -273,5 +273,12 @@ public abstract class Similarity {
 		return IRI.create("http://purl.obolibrary.org/obo/IAO/score#"+name);
 	}
 
+	
+	/**
+	 * @param r
+	 */
+	public void report(Reporter r) {
+		r.report(this,"pair_match",a,b,score);
+	}
 
 }

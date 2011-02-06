@@ -43,12 +43,14 @@ public class MultiSimilarity extends Similarity {
 			//"ConjunctiveSetSimilarity"			
 	};
 	public String subSimMethod = "JaccardSimilarity";
-	public String preSimMethod = "MaximumInformationContentSimilarity";
+	public String preSimMethod = "MaximumInformationContentSimilarity"; // not implemented yet
 
 	public Map<OWLObject,Set<OWLObject>> featureToAttributeMap;
 	Map<OWLObject,Similarity> aBest;
 	Map<OWLObject,Similarity> bBest;
 	Map<OWLObjectPair,List<Similarity>> deepSimMap;
+	Map<String,Double> bestDeepSimScore;
+	Map<String,OWLObjectPair> bestDeepSimPair;
 
 	class ValueComparator implements Comparator {
 
@@ -146,8 +148,10 @@ public class MultiSimilarity extends Similarity {
 		// do further analysis on best scoring matches
 		if (deepSimMethods.length > 0) {
 			deepSimMap = new HashMap<OWLObjectPair,List<Similarity>>();
+			bestDeepSimScore = new HashMap<String,Double>();
+			bestDeepSimPair = new HashMap<String,OWLObjectPair>(); // todo - make a set for ties
 			for (String deepSimMethod : deepSimMethods) {
-
+				double bestScore = 0.0;
 				for (OWLObject att : aAtts) {
 					Similarity s1 = aBest.get(att);
 					Similarity s2 = getDeepSim(deepSimMethod, s1.a,s1.b);
@@ -155,6 +159,10 @@ public class MultiSimilarity extends Similarity {
 					if (!deepSimMap.containsKey(pair))						
 						deepSimMap.put(pair, new Vector<Similarity>());
 					deepSimMap.get(pair).add(s2);
+					if (s2.getScore() > bestScore) {
+						bestScore = s2.getScore();
+						this.bestDeepSimPair.put(deepSimMethod, pair);
+					}
 				}
 
 				for (OWLObject att : bAtts) {
@@ -164,7 +172,13 @@ public class MultiSimilarity extends Similarity {
 					if (!deepSimMap.containsKey(pair))						
 						deepSimMap.put(pair, new Vector<Similarity>());
 					deepSimMap.get(pair).add(s2);
+					if (s2.getScore() > bestScore) {
+						bestScore = s2.getScore();
+						this.bestDeepSimPair.put(deepSimMethod, pair);
+					}
 				}
+				bestDeepSimScore.put(deepSimMethod, bestScore);
+
 			}
 
 			//ss.calculate(simEngine, aAtt, bAtt);
@@ -211,6 +225,64 @@ public class MultiSimilarity extends Similarity {
 		sorted_map.putAll(map);
 		return sorted_map.keySet();
 	}
+
+	public void report(Reporter r) {
+		r.report(this, "feature_pair_score", a, b, score);
+		
+		if (bestDeepSimScore != null) {
+			for (String m : bestDeepSimScore.keySet()) {
+				r.report(this, "feature_pair_best_score",
+						m,a,b,
+						bestDeepSimScore.get(m),
+						bestDeepSimPair.get(m).getA(),
+						bestDeepSimPair.get(m).getB());
+			}
+		}
+
+		Vector<OWLObjectPair> pairs = new Vector<OWLObjectPair>();
+		for (OWLObject bestMatchForA : sortMapByScore(aBest)) {
+			OWLObject bestMatchInB = aBest.get(bestMatchForA).b;
+			r.report(this, "feature_pair_best_attribute_match_A",
+					a,
+					b,
+					bestMatchForA,
+					bestMatchInB);
+			OWLObjectPair pair = new OWLObjectPair(bestMatchForA,bestMatchInB);
+			pairs.add(pair);
+			aBest.get(bestMatchForA).report(r);
+			if (deepSimMap != null && deepSimMap.containsKey(pair)) {
+				for (Similarity ds : deepSimMap.get(pair)) {
+					ds.report(r);
+				}
+			}
+		}
+		for (OWLObject bestMatchForB : sortMapByScore(bBest)) {
+			OWLObject bestMatchInA = bBest.get(bestMatchForB).a;
+			r.report(this, "feature_pair_best_attribute_match_B",
+					a,
+					b,
+					bestMatchForB,
+					bestMatchInA);
+			OWLObjectPair pair = new OWLObjectPair(bestMatchForB,bestMatchInA);
+			pairs.add(pair);
+			bBest.get(bestMatchForB).report(r);
+			if (deepSimMap != null && deepSimMap.containsKey(pair)) {
+				for (Similarity ds : deepSimMap.get(pair)) {
+					ds.report(r);
+				}
+			}
+		}
+		/*
+		for (OWLObjectPair pair : pairs) {
+			if (deepSimMap != null && deepSimMap.containsKey(pair)) {
+				for (Similarity ds : deepSimMap.get(pair)) {
+					ds.report(r);
+				}
+			}
+		}
+		 */
+	}
+
 
 	public void print(PrintStream s) {
 		s.print("COMPARISON:");
@@ -281,11 +353,11 @@ public class MultiSimilarity extends Similarity {
 		}
 		if (subSim instanceof ConjunctiveSetInformationContentRatioSimilarity) {
 			s.print("  Shared:");
-			for (OWLObject x : ((ConjunctiveSetInformationContentRatioSimilarity)subSim).bestSubsumers) {
+			for (OWLObject x : ((ConjunctiveSetInformationContentRatioSimilarity)subSim).lcsIntersectionSet) {
 				print(s,x);
 				s.print(" ");
 			}
-			s.print("LCS_IC:"+((ConjunctiveSetInformationContentRatioSimilarity)subSim).lcsIC);
+			s.print("LCS_IC_Ratio:"+((ConjunctiveSetInformationContentRatioSimilarity)subSim).lcsICRatio);
 		}
 		s.print(" Score:"+subSim.getScore());
 		s.println();
