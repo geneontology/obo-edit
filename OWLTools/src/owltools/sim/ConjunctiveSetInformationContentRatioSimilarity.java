@@ -20,12 +20,12 @@ import org.semanticweb.owlapi.model.OWLObject;
 public class ConjunctiveSetInformationContentRatioSimilarity extends Similarity {
 
 	private static Logger LOG = Logger.getLogger(ConjunctiveSetInformationContentRatioSimilarity.class);
-	Double lcsIC;
-	public Set<OWLObject> bestSubsumers = new HashSet<OWLObject>();
+	Double lcsICRatio;
+	public Set<OWLObject> lcsIntersectionSet = new HashSet<OWLObject>();
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (OWLObject obj : bestSubsumers) {
+		for (OWLObject obj : lcsIntersectionSet) {
 			sb.append(obj+"; ");
 		}
 		return score + " "+sb.toString();
@@ -34,23 +34,25 @@ public class ConjunctiveSetInformationContentRatioSimilarity extends Similarity 
 	@Override
 	public void calculate(SimEngine simEngine, OWLObject a, OWLObject b) {
 		this.simEngine = simEngine;
+		this.a = a;
+		this.b = b;
 		Set<OWLObject> objs = simEngine.getLeastCommonSubsumers(a, b);
 		LOG.info("LCSs:"+objs.size());
-		lcsIC = simEngine.getInformationContent(objs);
-		if (lcsIC == null) {
-			lcsIC = 0.0;
-			setScore(lcsIC);
+		score = simEngine.getInformationContent(objs);
+		if (score == null) {
+			score = 0.0;
+			lcsICRatio = score;
 		}
 		else {
 			Double aIC = simEngine.getInformationContent(a);
 			Double bIC = simEngine.getInformationContent(b);
 			if (aIC == null || bIC == null) {
-				setScore(0.0);
+				lcsICRatio = 0.0;
 			}
-			setScore( lcsIC / Math.min(aIC, bIC));
+			lcsICRatio = score / Math.min(aIC, bIC);
 		}
 		
-		this.bestSubsumers = objs;
+		this.lcsIntersectionSet = objs;
 
 	}
 
@@ -61,9 +63,19 @@ public class ConjunctiveSetInformationContentRatioSimilarity extends Similarity 
 		
 	}
 	
+	// -------------
+	// REPORTING
+	// -------------
+	public void report(Reporter r) {
+		r.report(this,"pair_match_ic_icratio_subsumer",a,b,score,lcsICRatio,lcsIntersectionSet);
+	}
+
+	// -------------
+	// DISPLAY
+	// -------------
 	public void print(PrintStream s) {
 		s.println("IntersectionIC:"+toString()+"\n");
-		for (OWLObject obj : bestSubsumers) {
+		for (OWLObject obj : lcsIntersectionSet) {
 			print(s,obj);
 		}
 

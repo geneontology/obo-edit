@@ -29,14 +29,25 @@ public class SimSearch {
 	protected Double minIC = 3.5; // note that with test datasets this is too strict
 	protected SimEngine simEngine;
 	protected BloomFilter<OWLObject> bloomFilter;
-	protected int maxHits = 1000;
+	protected int maxHits = 300;
 	protected Set<OWLObject> candidates;
+	protected Reporter reporter;
 	
 
 	public SimSearch(SimEngine simEngine) {
 		super();
 		this.simEngine = simEngine;
 	}
+	
+	
+
+	public SimSearch(SimEngine simEngine, Reporter reporter) {
+		super();
+		this.simEngine = simEngine;
+		this.reporter = reporter;
+	}
+
+
 
 	public List<OWLObject> search(OWLObject queryObj) {
 		List<OWLObject> hits = new ArrayList<OWLObject>(maxHits);
@@ -81,18 +92,25 @@ public class SimSearch {
 			if (!scoreCandidateMap.containsKey(score)) 
 				scoreCandidateMap.put(score, new HashSet<OWLObject>());
 			scoreCandidateMap.get(score).add(candidate);
-			LOG.debug(score + " CANDIDATE:"+candidate);
-			System.out.println("SIMJ2:\t"+score + "\t"+candidate+"\t"+iAtts.size()+"\t"+cAttsSize);
+			reporter.report(this,"query_candidate_overlap_total",queryObj,candidate,iAtts.size(),cAttsSize);
 		}
 		
 		int n = 0;
 		for (Set<OWLObject> cs : scoreCandidateMap.values()) {
 			n += cs.size();
 			hits.addAll(cs);
-			if (n >= maxHits)
-				break;
 		}
 		
+		n = 0;
+		for (OWLObject hit : hits) {
+			n++;
+			reporter.report(this,"query_hit_rank_threshold",queryObj,hit,n,maxHits);
+		}
+		if (hits.size() > maxHits)
+			hits = hits.subList(0, maxHits);
+		
+
+
 		return hits;
 	}
 	
