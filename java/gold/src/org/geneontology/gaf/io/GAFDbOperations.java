@@ -2,42 +2,38 @@ package org.geneontology.gaf.io;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
-import org.geneontology.gold.hibernate.factory.GoldDeltaFactory;
-import org.geneontology.gold.hibernate.factory.GoldObjectFactory;
-import org.geneontology.gold.hibernate.model.AllSomeRelationship;
-import org.geneontology.gold.hibernate.model.Cls;
-import org.geneontology.gold.hibernate.model.ClsIntersectionOf;
-import org.geneontology.gold.hibernate.model.ClsUnionOf;
-import org.geneontology.gold.hibernate.model.DisjointWith;
-import org.geneontology.gold.hibernate.model.EquivalentTo;
-import org.geneontology.gold.hibernate.model.InferredAllSomeRelationship;
-import org.geneontology.gold.hibernate.model.InferredSubclassOf;
-import org.geneontology.gold.hibernate.model.ObjAlternateLabel;
-import org.geneontology.gold.hibernate.model.ObjDefinitionXref;
-import org.geneontology.gold.hibernate.model.ObjXref;
-import org.geneontology.gold.hibernate.model.Relation;
-import org.geneontology.gold.hibernate.model.SubclassOf;
-import org.geneontology.gold.io.DbOperations;
+import org.geneontology.gaf.hibernate.GAFParserHandlerForHibernate;
+import org.geneontology.gaf.hibernate.GafDocument;
+import org.geneontology.gaf.parser.GAFParser;
+import org.geneontology.gold.hibernate.model.Ontology;
+import org.geneontology.gold.io.DbOperationsInterface;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.io.postgres.SchemaManager;
 import org.geneontology.gold.io.postgres.TsvFileLoader;
-import org.hibernate.Session;
 
-public class GAFDbOperations {
+public class GAFDbOperations implements DbOperationsInterface{
 
 	private List<DbOperationsListener> listeners;
 	
-	private static Logger LOG = Logger.getLogger(DbOperations.class);
+	private static Logger LOG = Logger.getLogger(GAFDbOperations.class);
 
+	private static boolean DEBUG = LOG.isDebugEnabled();
+	
+	private boolean dbCreate;
+	
 	public GAFDbOperations(){
 		listeners = new ArrayList<DbOperationsListener>();
 	}
+	
+	public List<Ontology> getLastUpdateStatus(){
+		return null;
+	}
+	
 	
 	/**
 	 * Loads the contents of the obo file whose path is supplied 
@@ -49,14 +45,17 @@ public class GAFDbOperations {
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
-		String gafFile = GeneOntologyManager.getInstance().getDefaultGafFile();
+		List files = GeneOntologyManager.getInstance().getDefaultGafFileLocations();
 		
-		if(gafFile == null){
-			throw new FileNotFoundException("Obo File not Found at the path '" + 
-					GeneOntologyManager.getInstance().getProperty("geneontology.gold.obofile") + "'");
+		if(files == null || files.size()==0){
+			throw new Exception("Ontology File Location is not Found specified in the geneontology.gold.ontologylocation property" );
 		}
 		
-		bulkLoad(gafFile, force);
+		dbCreate = false;
+		
+		for(Object obj: files){
+			bulkLoad(obj.toString(), force);
+		}
 	}
 	
 	/**
@@ -66,18 +65,21 @@ public class GAFDbOperations {
 	 * 			creates new ones.
 	 * @throws Exception
 	 */
-	public void bulkLoad(String oboFile, boolean force) throws Exception{
+	public void bulkLoad(String gafLocation, boolean force) throws Exception{
+		if(DEBUG)
+			LOG.debug(gafLocation);
+		
 		for(DbOperationsListener listener: listeners){
 			listener.bulkLoadStart();
 		}
- 		
-		if(LOG.isDebugEnabled()){
-			LOG.debug("Bulk Load for: " + oboFile);
-		}
 		
-
-		List<String> list = dumpFiles("", oboFile);
-		buildSchema(force, "");
+		
+		List<String> list = dumpFiles("", gafLocation);
+		
+		if(!dbCreate)
+			buildSchema(force, "");
+		
+		dbCreate = true;
 		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
 		
 		LOG.info("Bulk Load completed successfully");
@@ -85,7 +87,6 @@ public class GAFDbOperations {
 		for(DbOperationsListener listener: listeners){
 			listener.bulkLoadEnd();
 		}
-	 
 	}
 	
 	/**
@@ -96,7 +97,7 @@ public class GAFDbOperations {
 	 * @return It returns the name of the tables for which the files are dumped
 	 * @throws Exception
 	 */
-	public List<String> dumpFiles(String tablePrefix, String oboFile) throws Exception{
+	public List<String> dumpFiles(String tablePrefix, String gafFile) throws Exception{
 		for(DbOperationsListener listener: listeners){
 			listener.dumpFilesStart();
 		}
@@ -107,12 +108,10 @@ public class GAFDbOperations {
 		
 		
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
-		/*OWLGraphWrapper wrapper = new OWLGraphWrapper( 	
-			new Obo2Owl().convert(oboFile));
+
+		GafBulkLoader loader = new GafBulkLoader(buildGafDocument(gafFile), manager.getTsvFilesDir(), tablePrefix);
 		
-		OntologyBulkLoader loader = new OntologyBulkLoader(wrapper, manager.getTsvFilesDir(), tablePrefix);
-		
-		List<String> list = loader.dumpBulkLoadTables();
+		List<String> list = loader.loadAll();
 		
 		LOG.info("Tables dump completed");
 		
@@ -120,11 +119,18 @@ public class GAFDbOperations {
 			listener.dumpFilesEnd();
 		}
 		
-		return list;*/
-		
-		return null;
+		return list;
 		
 	}
+	
+	public GafDocument buildGafDocument(String locaiton) throws IOException{
+		GAFParser parser = new GAFParser();
+		GAFParserHandlerForHibernate handler = new GAFParserHandlerForHibernate();
+		parser.parse(new File(locaiton), handler);
+		
+		return handler.getGafDocument();
+	}
+	
 	
 	/**
 	 * It creates schema of GOLD database.
@@ -147,7 +153,7 @@ public class GAFDbOperations {
 		sm.loadSchemaSQL(manager.getGolddbHostName(),
 				manager.getGolddbUserName(),
 				manager.getGolddbUserPassword(), manager.getGolddbName(),
-				manager.getOntSqlSchemaFileLocation(), tablePrefix, force);
+				manager.getGafSqlSchemaFileLocation(), tablePrefix, force);
 		
 		
 		for(DbOperationsListener listener: listeners){
@@ -232,7 +238,6 @@ public class GAFDbOperations {
 			LOG.debug("-");
 		}
 
-		//updateGold(GeneOntologyManager.getInstance().getDefaultOntologyLocation());
 	}	
 	
 	/**
@@ -242,106 +247,17 @@ public class GAFDbOperations {
 	 * @throws Exception
 	 */
 	public void updateGold(String oboFile) throws Exception{
-		for(DbOperationsListener listener: listeners){
-			listener.updateStart();
-		}
-		
-		if(LOG.isDebugEnabled()){
-			LOG.debug("-");
-		}
-
-		GeneOntologyManager manager = GeneOntologyManager.getInstance();
-		
-		List<String> list = dumpFiles(manager.getGoldDetlaTablePrefix(), oboFile);
-		buildSchema(true, manager.getGoldDetlaTablePrefix());
-
-		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
-		
-		GoldDeltaFactory gdf = new GoldDeltaFactory();
-
-		if(LOG.isDebugEnabled()){
-			LOG.debug("Extracting delt hibernate objects from prefixed temporary tables");
-		}
-		
-		List<SubclassOf> subclassList = gdf.buildSubclassOfDelta();
-		List<Relation> relationList = gdf.buildRelationDelta();
-		List<AllSomeRelationship> asmList = gdf.buildAllSomeRelationships();
-		List<Cls> clsList = gdf.buildClsDelta();
-		List<ObjAlternateLabel> oalList = gdf.buildObjAlternateLabels();
-		List<ObjXref> xrefList = gdf.buildObjXrefs();
-		List<ObjDefinitionXref> defXrefList = gdf.buildObjDefinitionXref();
-		List<EquivalentTo> eqList = gdf.buildEquivalentTo();
-		List<ClsUnionOf> unList = gdf.buildClsUnionOf();
-		List<ClsIntersectionOf> intList = gdf.buildClsIntersectionOf();
-		List<InferredSubclassOf> infSubList = gdf.buildInferredSubclassOf();
-		List<InferredAllSomeRelationship> infSomeList = gdf.buildInferredAllSomeRelationship();
-		List<DisjointWith> djList = gdf.buildDisjointWith();
-		
-		//close the session associated with the tables prefixed with 
-		// the value of the geneontology.gold.deltatableprefix property
-		gdf.getSession().close();
-		
-		if(LOG.isDebugEnabled()){
-			LOG.debug("Merging the the delta objects in the GOLD database");
-		}
-		
-		
-		GoldObjectFactory gof = GoldObjectFactory.buildDefaultFactory();
-		Session session = gof.getSession();
-		session.clear();
-
-		saveList(session, clsList);
-		
-		saveList(session, relationList);
-		
-		saveList(session, asmList);
-		
-		saveList(session, clsList);
-
-		saveList(session, subclassList);
-		
-		saveList(session, oalList);
-		
-		saveList(session, xrefList);
-		
-		saveList(session, defXrefList);
-		
-		saveList(session, eqList);
-		
-		saveList(session, djList);
-		
-		saveList(session, unList);
-		
-		saveList(session, intList);
-		
-		saveList(session, infSubList);
-		
-		saveList(session, infSomeList);
-		
-		LOG.info("Database update is completed");
-		
-		session.getTransaction().commit();
-		
-		for(DbOperationsListener listener: listeners){
-			listener.updateEnd();
-		}
 		
 		
 	}
 	
-	
 	public void addDbOperationsListener(DbOperationsListener listener){
-		listeners.add(listener);
+		if(!listeners.contains(listener))
+			listeners.add(listener);
 	}
 
 	public void removeDbOperationsListener(DbOperationsListener listener){
 		listeners.remove(listener);
-	}
-	
-	private void saveList(Session session, List list){
-		for(Object obj: list){
-			session.saveOrUpdate(obj);
-		}
 	}
 	
 	

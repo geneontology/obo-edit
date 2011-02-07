@@ -1,11 +1,12 @@
 package org.geneontology.gaf.io;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.geneontology.gaf.hibernate.Bioentity;
 import org.geneontology.gaf.hibernate.GafDocument;
 import org.geneontology.gaf.hibernate.GeneAnnotation;
-import org.geneontology.gaf.hibernate.WithInfo;
 import org.geneontology.gold.io.TableDumper;
 
 public class GafBulkLoader {
@@ -26,13 +27,21 @@ public class GafBulkLoader {
 	
 	
 	
-	public void loadAll() throws IOException{
-		loadBioentity();
-		loadGeneAnnotations();
+	public List<String> loadAll() throws IOException{
+		
+		List<String> tables = new ArrayList<String>();
+		
+		String t = loadBioentity();
+		tables.add(t);
+		
+		t = loadGeneAnnotations();
+		tables.add(t);
+		
+		return tables;
 	}
 	
 	private TableDumper createDumper(String tablename) throws IOException{
-		return new TableDumper(tablename, this.outputPath, this.prefix);
+		return new TableDumper(this.prefix + tablename, this.outputPath);
 	}
 	
 	private String loadBioentity() throws IOException{
@@ -63,6 +72,8 @@ public class GafBulkLoader {
 					ann.getLastUpdateDate(), ann.getAssignedBy(), ann.getExtensionExpression(),
 					ann.getGeneProductForm(), ann.getGafDocument());
 		}
+		
+		dumper.close();
 		
 		return dumper.getTable();
 	}
