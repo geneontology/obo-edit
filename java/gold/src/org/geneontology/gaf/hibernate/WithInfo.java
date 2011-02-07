@@ -36,6 +36,9 @@ public class WithInfo extends GOModel implements Serializable {
 		this.withXref = withXref;
 	}
 
+	public String toString(){
+		return "[" + this.id +", " + this.withXref + "]";
+	}
 
 	
 	

@@ -122,7 +122,8 @@ public class GafDocument extends GOModel implements Serializable {
 			compositeQualifiers.put(compositeQualifier.getId(), list);
 		}
 		
-		list.add(compositeQualifier);
+		if(!list.contains(compositeQualifier))
+			list.add(compositeQualifier);
 	}
 	
 	public Set<String> getCompositeQualifiersIds(){
@@ -148,7 +149,8 @@ public class GafDocument extends GOModel implements Serializable {
 			withInfos.put(withInfo.getId(), list);
 		}
 		
-		list.add(withInfo);
+		if(!list.contains(withInfo))
+			list.add(withInfo);
 		
 	}
 	
@@ -190,7 +192,8 @@ public class GafDocument extends GOModel implements Serializable {
 			extensionExpressions.put(extensionExpression.getId(), list);
 		}
 		
-		list.add(extensionExpression);
+		if(!list.contains(extensionExpression))
+			list.add(extensionExpression);
 	}
 	
 	public void addGeneAnnotation(GeneAnnotation ga){
