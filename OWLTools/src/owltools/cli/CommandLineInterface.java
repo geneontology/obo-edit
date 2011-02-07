@@ -59,7 +59,7 @@ public class CommandLineInterface {
 		int i = 0;
 		String[] args;
 		boolean helpMode = false;
-		
+
 		public Opts(String[] args) {
 			super();
 			this.i = 0;
@@ -96,7 +96,7 @@ public class CommandLineInterface {
 			}
 			return false;
 		}
-		
+
 		public boolean hasOpt(String opt) {
 			for (int j=i; j<args.length; j++) {
 				if (args[j].equals(opt))
@@ -157,6 +157,9 @@ public class CommandLineInterface {
 		boolean createDefaultInstances = false;
 		boolean merge = false;
 		OWLOntology simOnt = null;
+
+		//Configuration config = new PropertiesConfiguration("owltools.properties");
+
 
 		String similarityAlgorithmName = "JaccardSimilarity";
 
@@ -401,7 +404,7 @@ public class CommandLineInterface {
 							label = qp.getQuantifier().toString();
 						if (label != null)
 							stream.println(g.getIdentifier(x)+"\t"+label+"\t"+g.getIdentifier(e.getTarget()));
-						
+
 					}
 				}
 				stream.close();
@@ -466,15 +469,22 @@ public class CommandLineInterface {
 					else if (opts.nextEq("--query")) {
 						OWLObject q = resolveEntity(g,opts.nextOpt());
 						SimSearch search = new SimSearch(se, reporter);
-						
+
 						isAll = true;
 						boolean isClasses = true;
 						boolean isInstances = true;
-						if (opts.nextEq("-i"))
-							isClasses = false;
-						if (opts.nextEq("-c"))
-							isInstances = false;
-						
+						int MAX_PAIRS = 50; // todo - make configurable
+						while (opts.hasOpts()) {
+							if (opts.nextEq("-i"))
+								isClasses = false;
+							else if (opts.nextEq("-c"))
+								isInstances = false;
+							else if (opts.nextEq("--max-hits"))
+								MAX_PAIRS = Integer.parseInt(opts.nextOpt());
+							else
+								break;
+						}
+						search.setMaxHits(MAX_PAIRS);
 						OWLObject cc = resolveEntity(g,opts.nextOpt());
 						Set<OWLObject> candidates = g.queryDescendants((OWLClass)cc, isInstances, isClasses);
 						candidates.remove(cc);
@@ -484,12 +494,22 @@ public class CommandLineInterface {
 						List<OWLObject> hits = search.search(q);
 						System.out.println("  hits:"+hits.size());
 						int n = 0;
-						int MAX_PAIRS = 50; // todo - make configurable
 						for (OWLObject hit : hits) {
 							if (n < MAX_PAIRS)
 								pairs.add(new OWLObjectPair(q,hit));
 							n++;
 							System.out.println("HIT:"+n+"\t"+g.getLabelOrDisplayId(hit));
+						}
+						while (opts.nextEq("--include")) {
+							OWLObjectPair pair = new OWLObjectPair(q,resolveEntity(g,opts.nextOpt()));
+							
+							if (!pairs.contains(pair)) {
+								pairs.add(pair);
+								System.out.println("adding_extra_pair:"+pair);
+							}
+							else {
+								System.out.println("extra_pair_alrwady_added:"+pair);
+							}
 						}
 					}
 					else if (opts.nextEq("-a|--all")) {
@@ -509,9 +529,9 @@ public class CommandLineInterface {
 						if (opts.nextEq("--vs")) {
 							OWLObject anc2 = resolveEntity(g,opts.nextOpt());
 							System.out.println("Set2:"+anc2+" "+anc2.getClass());
-							 objs2 = g.queryDescendants((OWLClass)anc2, isInstances, isClasses);
-							 objs2.remove(anc2);
-								System.out.println("  Size2:"+objs2.size());
+							objs2 = g.queryDescendants((OWLClass)anc2, isInstances, isClasses);
+							objs2.remove(anc2);
+							System.out.println("  Size2:"+objs2.size());
 						}
 						for (OWLObject a : objs) {
 							for (OWLObject b : objs2) {
@@ -522,7 +542,7 @@ public class CommandLineInterface {
 								pairs.add(pair);
 							}							
 						}
-						
+
 					}
 					else if (opts.nextEq("-s|--subclass-of")) {
 						se.comparisonSuperclass = resolveEntity(g,opts);
@@ -556,7 +576,7 @@ public class CommandLineInterface {
 					}
 					if (subSimMethod != null)
 						((MultiSimilarity)metric).setSubSimMethod(subSimMethod);
-					
+
 					System.out.println("comparing: "+oa+" vs "+ob);
 					Similarity r = se.calculateSimilarity(metric, oa, ob);
 					//System.out.println(metric+" = "+r);
@@ -657,7 +677,7 @@ public class CommandLineInterface {
 			else if (opts.nextEq("--create-ontology")) {
 				opts.info("ONT-IRI", "creates a new OWLOntology and makes it the source ontology");
 				g = new OWLGraphWrapper(opts.nextOpt());
-				
+
 			}
 			else if (opts.hasArgs()) {
 				String f  = opts.nextOpt();
@@ -676,7 +696,7 @@ public class CommandLineInterface {
 					System.exit(1);
 				}
 
-	
+
 				//paths.add(opt);
 			}
 			else {
@@ -744,7 +764,7 @@ public class CommandLineInterface {
 			System.out.println(e);
 		}
 	}
-	
+
 	public static void summarizeOntology(OWLOntology ont) {
 		System.out.println("Ontology:"+ont);
 		System.out.println("  Classes:"+ont.getClassesInSignature().size());
@@ -752,7 +772,7 @@ public class CommandLineInterface {
 		System.out.println("  ObjectProperties:"+ont.getObjectPropertiesInSignature().size());
 		System.out.println("  AxiomCount:"+ont.getAxiomCount());
 	}
-	
+
 
 
 	// todo - move to util
@@ -773,7 +793,7 @@ public class CommandLineInterface {
 		obj = g.getOWLObjectByIdentifier(id);
 		return obj;
 	}
-	
+
 	public static OWLObjectProperty resolveObjectProperty(OWLGraphWrapper g, String id) {
 		OWLObject obj = null;
 		obj = g.getOWLObjectByLabel(id);
