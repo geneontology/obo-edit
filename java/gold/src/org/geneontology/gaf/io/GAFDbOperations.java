@@ -7,14 +7,19 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.gaf.hibernate.CompositeQualifier;
+import org.geneontology.gaf.hibernate.ExtensionExpression;
 import org.geneontology.gaf.hibernate.GAFParserHandlerForHibernate;
 import org.geneontology.gaf.hibernate.GafDocument;
+import org.geneontology.gaf.hibernate.GafObjectsFactory;
+import org.geneontology.gaf.hibernate.WithInfo;
 import org.geneontology.gaf.parser.GAFParser;
 import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperationsInterface;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.io.postgres.SchemaManager;
 import org.geneontology.gold.io.postgres.TsvFileLoader;
+import org.hibernate.Session;
 
 public class GAFDbOperations implements DbOperationsInterface{
 
@@ -25,6 +30,8 @@ public class GAFDbOperations implements DbOperationsInterface{
 	private static boolean DEBUG = LOG.isDebugEnabled();
 	
 	private boolean dbCreate;
+	
+	private GafDocument gafDocument;
 	
 	public GAFDbOperations(){
 		listeners = new ArrayList<DbOperationsListener>();
@@ -81,6 +88,13 @@ public class GAFDbOperations implements DbOperationsInterface{
 		
 		dbCreate = true;
 		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
+
+		GafObjectsFactory factory = new GafObjectsFactory();
+		Session session = factory.getSession();
+		
+		bulkLoadHibernate(session);
+	
+		session.getTransaction().commit();
 		
 		LOG.info("Bulk Load completed successfully");
 
@@ -88,6 +102,31 @@ public class GAFDbOperations implements DbOperationsInterface{
 			listener.bulkLoadEnd();
 		}
 	}
+	
+	private void bulkLoadHibernate(Session session){
+
+		
+		for(String id: this.gafDocument.getCompositeQualifiersIds()){
+			for(CompositeQualifier cq: gafDocument.getCompositeQualifiers(id)){
+				session.saveOrUpdate(cq);
+			}
+		}
+		
+		for(String id: gafDocument.getWithInfosIds()){
+			List<WithInfo> list = gafDocument.getWithInfos(id);
+			for(WithInfo wi: list){
+				session.saveOrUpdate(wi);
+			}
+		}
+		
+		for(String id: gafDocument.getExtensionExpressionIds()){
+			for(ExtensionExpression ex: gafDocument.getExpressions(id)){
+				session.saveOrUpdate(ex);
+			}
+		}
+		
+	}
+	
 	
 	/**
 	 * This method dumps the obo file (oboFile) as tab separated files
@@ -109,7 +148,8 @@ public class GAFDbOperations implements DbOperationsInterface{
 		
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
 
-		GafBulkLoader loader = new GafBulkLoader(buildGafDocument(gafFile), manager.getTsvFilesDir(), tablePrefix);
+		gafDocument = buildGafDocument(gafFile);
+		GafBulkLoader loader = new GafBulkLoader(gafDocument, manager.getTsvFilesDir(), tablePrefix);
 		
 		List<String> list = loader.loadAll();
 		
