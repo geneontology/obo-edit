@@ -36,6 +36,7 @@ public class GoldCommandLine {
 		options.put("-prefix", new String[]{"=text\t\tPrefix of the table names to be used in delta updte", "geneontology.gold.deltatableprefix"});
 		options.put("-force", new String[]{"\t\t\tDrop exsiting schema and create new one", ""});
 		options.put("-debug", new String[]{"\t\t\tEnabling log4j output", ""});
+		options.put("-gaf", new String[]{"\t\t\tEnabling log4j output", ""});
 		
 		
 		return options;
@@ -83,6 +84,8 @@ public class GoldCommandLine {
 			//options provided through command line arguments
 			String ontologyLocation = null;
 
+			String dbType = "gold";
+			
 			for(int i=0;i<args.length-1;i++){
 				String option = args[i].trim();
 				String[] tokens = option.split("=");
@@ -99,6 +102,8 @@ public class GoldCommandLine {
 					force =true;
 				}else if("-debug".equals(tokens[0])){
 					Logger.getRootLogger().setLevel(Level.DEBUG);
+				}else if ("-gaf".equals(tokens[0])){
+					dbType = "gaf";
 				}else{
 					if ("-prefix".equals(tokens[0]) )
 						tableprefix = tokens[1];
@@ -108,7 +113,7 @@ public class GoldCommandLine {
 			
 			//perform operations
 			if("loadtsv".equals(operation) || "buildschema".equals(operation)){
-				DbOperationsListenerToReportTime db = new DbOperationsListenerToReportTime(operation, null, force, tableprefix, manager.getTsvFilesDir());
+				DbOperationsListenerToReportTime db = new DbOperationsListenerToReportTime(dbType , operation, null, force, tableprefix, manager.getTsvFilesDir());
 				db.run();
 			}else if("bulkload".equals(operation) || "update".equals(operation) 
 					|| "buildtsv".equals(operation)){
@@ -119,14 +124,21 @@ public class GoldCommandLine {
 				if(ontologyLocation != null){
 					ontologyLocations = new String[]{ontologyLocation};
 				}else{
-					List list = manager.getDefaultOntologyLocations();
-					ontologyLocations = new String[list.size()];
 					
-					list.toArray(ontologyLocations);
+					if("gaf".equals(dbType)){
+						List list = manager.getDefaultGafFileLocations();
+						ontologyLocations = new String[list.size()];
+						list.toArray(ontologyLocations);
+						
+					}else{
+						List list = manager.getDefaultOntologyLocations();
+						ontologyLocations = new String[list.size()];
+						list.toArray(ontologyLocations);
+					}
 					
 				}
 				
-				DbOperationsListenerToReportTime db = new DbOperationsListenerToReportTime(operation, 
+				DbOperationsListenerToReportTime db = new DbOperationsListenerToReportTime(dbType, operation, 
 						ontologyLocations, 
 						force, tableprefix, manager.getTsvFilesDir());
 				

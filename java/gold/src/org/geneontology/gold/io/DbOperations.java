@@ -65,7 +65,7 @@ import owltools.graph.OWLGraphWrapper;
  * @author Shahid Manzoor
  *
  */
-public class DbOperations {
+public class DbOperations implements DbOperationsInterface{
 
 	
 	private List<DbOperationsListener> listeners;
