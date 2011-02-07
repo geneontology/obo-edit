@@ -32,7 +32,7 @@ public class OWLObjectPair {
 		if (!(x instanceof OWLObjectPair))
 			return false;
 		return ((OWLObjectPair)x).getA().equals(a) &&
-		((OWLObjectPair)x).getA().equals(a);
+		((OWLObjectPair)x).getB().equals(b);
 
 	}
 	public OWLObject getA() {
