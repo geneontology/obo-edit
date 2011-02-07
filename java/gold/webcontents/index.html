@@ -4,13 +4,16 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Gene Ontology Web Admin</title>
 <script type="text/javascript">
-function bulkLoad(){
+function bulkLoad(dbType){
 	var yes = confirm("This activilty will be executed only when GOLD database is empty." +
 			"\n Are you are sure you want to create an GOLD database?\n" +
 					"Database configurations are located in the installation directory of this web application, i.e in tomcat it is located at webapps/admin");
 
+	var dbTypeCommand = "";
+	if("gaf" == dbType)
+		dbTypeCommand = "&dbtype=gaf"
 	if(yes){
-		window.location="gold?servicename=db-operations&command=bulkload";
+		window.location="gold?servicename=db-operations&command=bulkload"+dbTypeCommand;
 	}
 }
 
@@ -36,7 +39,8 @@ function getLastUpdateDate(){
 
 <p>Activities:</p>
 <ul>
-<li><a href="javascript:bulkLoad();">Bulk load of the Empty gene ontology</a></li>
+<li><a href="javascript:bulkLoad('gold');">Bulk load of the Empty gene ontology</a></li>
+<li><a href="javascript:bulkLoad('gaf');">Bulk load of the Empty GAF files</a></li>
 <li><a href="javascript:update();">Update Gene Ontology</a></li>
 <li><a href="javascript:getLastUpdateDate()">Last Update of Gold database</a></li>
 <li><a href="gold?servicename=db-operations&command=checkconsistency">Perform Consistency Check</a></li>
