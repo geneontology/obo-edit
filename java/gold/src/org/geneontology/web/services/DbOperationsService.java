@@ -46,6 +46,14 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 		writer.write("</title></head>");
 
 		String command = request.getParameter("command");
+
+		String dbType = request.getParameter("dbtype");
+		
+		if(dbType == null)
+			dbType = "gold";
+		
+		
+		
 		
 		if (DEBUG) {
 			LOG.debug("Command parameter = " + command);
@@ -73,7 +81,7 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 					 * graphs.put(graph.getOntologyId(), graph);
 					 */
 					addReload = true;
-					task = new DbOperationsTask(command,
+					task = new DbOperationsTask(dbType , command,
 							new String[] { ontologylocation }, false, "", "");
 					task.start();
 					// }
@@ -82,11 +90,16 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 			} else if ("bulkload".equals(command) ||  "checkconsistency".equals(command) || "find-inferences".equals(command)) {
 				List list = GeneOntologyManager.getInstance()
 						.getDefaultOntologyLocations();
+				
+				if("gaf".equals(dbType)){
+					list = GeneOntologyManager.getInstance().getDefaultGafFileLocations();
+				}
+				
 				String locations[] = new String[list.size()];
 				list.toArray(locations);
 				addReload = true;
 				String force = request.getParameter("force");
-				task = new DbOperationsTask(command, locations,
+				task = new DbOperationsTask(dbType, command, locations,
 						"true".equals(force), "", "");
 				task.start();
 
