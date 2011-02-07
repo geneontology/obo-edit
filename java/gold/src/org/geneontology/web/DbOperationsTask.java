@@ -8,7 +8,9 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.geneontology.gaf.io.GAFDbOperations;
 import org.geneontology.gold.io.DbOperations;
+import org.geneontology.gold.io.DbOperationsInterface;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.obolibrary.obo2owl.Owl2Obo;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -46,10 +48,18 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 	private String currentOntologyBeingProcessed;
 	
 	private List<OWLGraphWrapper> graphs;
+
+	private String dbType;
 	
 	public DbOperationsTask(String op, String []locations, boolean force, String tablePrefix, String tsvFilesDir){
+		this("gold", op, locations, force, tablePrefix, tsvFilesDir);
+	}
+	
+	
+	public DbOperationsTask(String dbType, String op, String []locations, boolean force, String tablePrefix, String tsvFilesDir){
 		super();
 		
+		this.dbType = dbType;
 		this.opName =op;
 		this.locations = locations;
 		this.force = force;
@@ -73,7 +83,13 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 		
 		this.exception = null; 
 		running = true;
-		DbOperations db = new DbOperations();
+		DbOperationsInterface db = null;
+		
+		if("gaf".equals(this.dbType)){
+			db = new GAFDbOperations();
+		}else
+			db = new DbOperations();
+		
 		db.addDbOperationsListener(this);
 		
 		try{
@@ -91,10 +107,10 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 				}else if ("loadtsv".equals(opName)){
 					db.loadTsvFiles(tsvFileDir);
 				}else if("checkconsistency".equals(opName)){
-					performConsistancyCheck(db.buildOWLGraphWrapper(location).getSourceOntology());
+					performConsistancyCheck(((DbOperations) db).buildOWLGraphWrapper(location).getSourceOntology());
 				}else if("find-inferences".equals(opName)){
 					//performConsistancyCheck(db.buildOWLGraphWrapper(location).getSourceOntology());
-					findInferences(db.buildOWLGraphWrapper(location));
+					findInferences(((DbOperations)db).buildOWLGraphWrapper(location));
 				}
 			}
 		} catch (Exception e) {

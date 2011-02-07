@@ -18,6 +18,10 @@ public class DbOperationsListenerToReportTime extends DbOperationsTask {
 		super(op);
 	}
 
+	public DbOperationsListenerToReportTime(String dbType, String op, String locations[],
+			boolean force, String tablePrefix, String tsvFilesDir) {
+		super(dbType, op, locations, force, tablePrefix, tsvFilesDir);
+	}
 	
 	
 	public DbOperationsListenerToReportTime(String op, String locations[],

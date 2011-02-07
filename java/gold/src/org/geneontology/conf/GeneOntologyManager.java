@@ -190,6 +190,13 @@ public class GeneOntologyManager {
 
 	}
 
+	public String getGafSqlSchemaFileLocation() {
+
+		return guessAbsolutePath(config
+				.getString("geneontology.gold.gaf.schemalocation"));
+
+	}
+
 	
 	/*
 	 * @return Return the Integer representing the desired to port for Jetty to run on. If finding config fails, return 8080.
@@ -245,8 +252,8 @@ public class GeneOntologyManager {
 		config.setProperty(prop, value);
 	}
 	
-	public String getDefaultGafFile(){
-		return null;
+	public List getDefaultGafFileLocations(){
+		return config.getList("geneontology.gold.gaflocation");	
 	}
 	
 	
