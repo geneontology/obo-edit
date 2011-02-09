@@ -22,7 +22,9 @@ public class GoClassReferenceAnnotationRule extends AbstractAnnotatioRule {
 	public Set<AnnotationRuleViolation> getRuleViolations(GeneAnnotation a) {
 
 		
-		String cls = a.getCls();
+		String cls = a.getCls().replace(":", "_");
+		
+		
 		
 		OWLClass owlClass= graph.getOWLClass(Obo2OWLConstants.DEFAULT_IRI_PREFIX + cls);
 		
