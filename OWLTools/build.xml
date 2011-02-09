@@ -29,6 +29,9 @@
 
 	<property name="antpath" value="ant" />
 
+	<!-- properties specific to obo ontology release manager -->
+	<property name="oborelease.configfile" value="conf/obo-release.properties" />
+	<property name="oborelease.outputdir" location="oborelease" />
 	
 	<!-- library jars that should appear in the final runtime directory -->
 	<fileset dir="${librarydir}/runlibs" id="library_jars">
@@ -154,4 +157,46 @@
 	  <chmod file="oe-command-line" perm="ugo+x" />
 	</target>
 
+	<target name="make-obo-release" description="OBO Ontology release manager">
+		<echo>************************Ontology Release Manager************************</echo>
+	
+		<property file="${oborelease.configfile}"></property>
+		
+		<mkdir dir="${oborelease.outputdir}"/>
+		
+		
+		
+		<echo>${oborelease.outputdir}</echo>
+		
+		<!-- buid obo to owl -->
+		<echo>Building owl file</echo>
+		<java classname="org.obolibrary.cli.OBORunner">
+
+			<arg value="-o"/>
+			<arg value="file://${oborelease.outputdir}/${oborelease.outputfilename}.owl"/>
+			<arg value="${oborelease.obofilepath}" />
+			<classpath>
+				<fileset dir="${librarydir}/runlibs">
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
+		</java>
+
+		
+		<echo>Building obo file</echo>
+		<java classname="org.obolibrary.cli.OBORunner">
+
+			<arg value="--owl2obo" />
+			<arg value="-o"/>
+			<arg value="${oborelease.outputdir}/${oborelease.outputfilename}.obo"/>
+			<arg value="file://${oborelease.outputdir}/${oborelease.outputfilename}.owl" />
+			<classpath>
+				<fileset dir="${librarydir}/runlibs">
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
+		</java>
+		
+	</target>
+	
 </project>

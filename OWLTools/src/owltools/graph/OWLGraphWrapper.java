@@ -1323,7 +1323,31 @@ public class OWLGraphWrapper {
 		return null;
 	}
 
+	public String[] getAnnotationValues(OWLObject c, OWLAnnotationProperty lap) {
+		Set<OWLAnnotation>anns = new HashSet<OWLAnnotation>();
+		if (c instanceof OWLEntity) {
+			for (OWLOntology ont : getAllOntologies()) {
+				anns.addAll(((OWLEntity) c).getAnnotations(ont,lap));
+			}
+		}
+		else {
+			return null;
+		}
+		
+		ArrayList<String> list = new ArrayList<String>();
+		for (OWLAnnotation a : anns) {
+			if (a.getValue() instanceof OWLLiteral) {
+				OWLLiteral val = (OWLLiteral) a.getValue();
+				list.add( val.getLiteral()); 
+			}
+		}
+		
+		String ar[] = new String[list.size()];
+		
+		return list.toArray(ar);
+	}
 
+	
 	/**
 	 * assumes zero or one def
 	 * It returns the definition text (encoded as def in obo format and IAO_0000115 annotation property in OWL format) of a class
@@ -1397,10 +1421,10 @@ public class OWLGraphWrapper {
 	 * @param c could OWLClass or OWLObjectProperty
 	 * @return
 	 */
-	public String getReplacedBy(OWLObject c) {
+	public String[] getReplacedBy(OWLObject c) {
 		OWLAnnotationProperty lap = dataFactory.getOWLAnnotationProperty(Obo2OWLVocabulary.IRI_IAO_0100001.getIRI());
 
-		return getAnnotationValue(c, lap);
+		return getAnnotationValues(c, lap);
 	}
 
 	/**

@@ -161,7 +161,7 @@ public class OWLGraphEdge {
 	}
 
 	public String toString() {
-		return "["+source+" "+getQuantifiedPropertyList()+" "+distance+" "+target+"]";
+		return "["+source+" "+getQuantifiedPropertyList()+" " + " "+target+"]";
 	}
 	
 	public int hashCode() {
@@ -173,6 +173,7 @@ public class OWLGraphEdge {
 			return true;
 		if (a == null || b == null)
 			return false;
+		
 		return a.equals(b);
 	}
 	
@@ -182,6 +183,7 @@ public class OWLGraphEdge {
 			return false;
 		
 		OWLGraphEdge other = (OWLGraphEdge) e;
+		
 		
 		return 
 		isEq(other.getSource(),getSource()) &&

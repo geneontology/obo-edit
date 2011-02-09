@@ -136,7 +136,7 @@ public class OWLQuantifiedProperty {
 			return true;
 		}
 		
-		return qb &&  (getProperty() != null && getProperty().equals(other.getProperty()));
+		return qb && (getProperty() != null && getProperty().equals(other.getProperty())) ;
 			
 	}
 
