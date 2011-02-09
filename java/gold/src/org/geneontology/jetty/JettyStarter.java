@@ -10,6 +10,7 @@ import java.net.Socket;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.geneontology.web.AdminServlet;
+import org.geneontology.web.services.ServicesConfig;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
@@ -61,6 +62,12 @@ public class JettyStarter {
 
 		LOG.info("Jetty Server is started");
 		LOG.info("Please visit the web application at the url : http://localhost:" + jetty_port + "/");
+		
+		LOG.info("Initializing Services which include loading ontologies in memory. This step may take several mintues. ");
+		LOG.info("WAIT.............");
+		ServicesConfig.getServices();
+		
+		LOG.info("Services are initialized. The server is ready for performing services");
 		
 		server.join();
 	}

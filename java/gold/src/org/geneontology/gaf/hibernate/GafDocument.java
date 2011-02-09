@@ -3,11 +3,16 @@ package org.geneontology.gaf.hibernate;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 
 import org.geneontology.gold.hibernate.model.GOModel;
+import org.geneontology.gold.rules.AnnotationRuleViolation;
+import org.geneontology.gold.rules.GoClassReferenceAnnotationRule;
+
+import owltools.graph.OWLGraphWrapper;
 
 public class GafDocument extends GOModel implements Serializable {
 
@@ -202,4 +207,14 @@ public class GafDocument extends GOModel implements Serializable {
 		annotations.add(ga);
 	}
 	
+	public Set<AnnotationRuleViolation> validateAnnotations(OWLGraphWrapper graph){
+		GoClassReferenceAnnotationRule rule = new GoClassReferenceAnnotationRule(graph);
+		HashSet<AnnotationRuleViolation> set = new HashSet<AnnotationRuleViolation>();
+		
+		for(GeneAnnotation annotation: getGeneAnnotations()){
+			set.addAll(rule.getRuleViolations(annotation));
+		}
+		
+		return set;
+	}
 }

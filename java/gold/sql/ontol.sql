@@ -242,7 +242,7 @@ CREATE TABLE obj_alternate_label (
        synonym_scope VARCHAR,
        synonym_type VARCHAR,
        synonym_xref VARCHAR,
-       PRIMARY KEY (obj, label)
+       UNIQUE (obj, label, synonym_scope, synonym_type, synonym_xref)
 );
 
 COMMENT ON TABLE obj_alternate_label IS 'Synonyms and alternative labels.

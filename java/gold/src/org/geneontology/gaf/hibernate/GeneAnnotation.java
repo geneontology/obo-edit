@@ -37,6 +37,14 @@ public class GeneAnnotation extends GOModel implements Serializable {
 	
 	private transient GafDocument gafDocumentObject;
 	
+	
+	public String toString(){
+		return "[" + bioentity + ", " + compositeQualifier + isContributesTo + ", " + isIntegralTo + ", " + 
+			cls + ", " + referenceId + ", " + evidenceCls + ", " + withExpression
+			+ ", " + actsOnTaxonId + ", " + lastUpdateDate + ", " + assignedBy + ", " +
+			extensionExpression + ", " + geneProductForm + ", " + gafDocument + "]";
+	}
+	
 	public GeneAnnotation(){
 		//TODO: TBD
 		String keys[] = {"bioentity", "cls", "referenceId", "evidenceCls"};

@@ -55,7 +55,7 @@ public class DbOperationsListenerAdapter implements DbOperationsListener {
 		
 	}
 
-	public void endOntologyLoad(OWLGraphWrapper graph) {
+	public void endOntologyLoad(Object object) {
 		
 	}
 
