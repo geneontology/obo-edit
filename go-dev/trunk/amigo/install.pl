@@ -1083,11 +1083,6 @@ if ( $opt_c ) {
   force_copy(Cwd::cwd() . '/config.pl', $synth_vars{AMIGO_CGI_ROOT_DIR} . '/');
   make_readable( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/config.pl' );
 
-  ## Copy JSON config over.
-  force_copy(Cwd::cwd() . '/config.json',
-	     $synth_vars{AMIGO_CGI_ROOT_DIR} . '/');
-  make_readable( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/config.json' );
-
   ## Copy statics.
   force_copy(Cwd::cwd() . '/amigo/templates',
 	     $synth_vars{AMIGO_CGI_ROOT_DIR} );
@@ -1097,9 +1092,16 @@ if ( $opt_c ) {
 	     $synth_vars{AMIGO_HTDOCS_ROOT_DIR} );
   force_copy(Cwd::cwd() . '/amigo/js',
 	     $synth_vars{AMIGO_HTDOCS_ROOT_DIR} );
-  ## TODO/BUG: Temporarily get the Newick tree stuff over until we can
-  ## fix it more permanently.
+
+  ## Things to copy only in an experimental environment.
   if ( $opt_e ) {
+    ## Copy JSON config over.
+    force_copy(Cwd::cwd() . '/config.json',
+	       $synth_vars{AMIGO_CGI_ROOT_DIR} . '/');
+    make_readable( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/config.json' );
+
+    ## TODO/BUG: Temporarily get the Newick tree stuff over until we can
+    ## fix it more permanently.
     force_copy($env_conf{GO_JS_ROOT}{NEW_VALUE} . '/newick_tree',
 	       $synth_vars{AMIGO_HTDOCS_ROOT_DIR} . '/js');
   }
