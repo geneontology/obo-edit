@@ -257,10 +257,11 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 	//		dumpAnnotation(OboFormatTag.TAG_IS_OBSELETE.getTag(),  objId, isObselete + "", ontology);
 
 			
-		String replacedBy = graphWrapper.getReplacedBy(obj);
-		if(replacedBy != null)
-			dumpAnnotation(OboFormatTag.TAG_REPLACED_BY.getTag(),  objId, replacedBy, ontology);
-			
+		String replacedBy[] = graphWrapper.getReplacedBy(obj);
+		if(replacedBy != null){
+			for(String rb: replacedBy)
+				dumpAnnotation(OboFormatTag.TAG_REPLACED_BY.getTag(),  objId, rb, ontology);
+		}
 
 		String consider = graphWrapper.getConsider(obj);
 		if(consider != null)
@@ -529,9 +530,13 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 			
 			Set<OWLGraphEdge> reflexive = graphWrapper.getOutgoingEdgesClosureReflexive(cls);
 			
-			reflexive.removeAll(outgoing);
+			//reflexive.removeAll(outgoing);
 
 			for(OWLGraphEdge edge: reflexive){
+			
+				if(outgoing.contains(edge))
+						continue;
+				
 				String targetId = graphWrapper.getIdentifier( edge.getTarget() );
 				if(targetId == null || targetId.length()==0)
 					continue;
@@ -546,6 +551,7 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 					String propId = graphWrapper.getIdentifier(prop.getProperty());
 					if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.SOME){
 					
+			
 						inferred_all_some_relationshipDumper.dumpRow(id, propId,  targetId, "true"  ,"false", "some",ontologyId);
 					}
 					else if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.ONLY){
