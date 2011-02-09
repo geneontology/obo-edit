@@ -2,16 +2,21 @@ package org.geneontology.web;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.geneontology.gaf.hibernate.GafDocument;
 import org.geneontology.gaf.io.GAFDbOperations;
 import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.io.DbOperationsInterface;
 import org.geneontology.gold.io.DbOperationsListener;
+import org.geneontology.gold.rules.AnnotationRuleViolation;
+import org.geneontology.web.services.DbOperationsService;
+import org.geneontology.web.services.ServicesConfig;
 import org.obolibrary.obo2owl.Owl2Obo;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -49,7 +54,11 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 	
 	private List<OWLGraphWrapper> graphs;
 
+	private List<GafDocument> gafDocuments;
+	
 	private String dbType;
+	
+	private Set<AnnotationRuleViolation> annotationRuleViolations;
 	
 	public DbOperationsTask(String op, String []locations, boolean force, String tablePrefix, String tsvFilesDir){
 		this("gold", op, locations, force, tablePrefix, tsvFilesDir);
@@ -65,6 +74,9 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 		this.force = force;
 		this.tsvFileDir = tsvFilesDir;
 		graphs = new Vector<OWLGraphWrapper>();
+		gafDocuments = new ArrayList<GafDocument>();
+		
+		annotationRuleViolations = new HashSet<AnnotationRuleViolation>();
 		
 		if("checkconsistency".equals(opName) || "find-inferences".equals(opName))		
 			this.consitancyCheckBuffer = new StringBuffer();
@@ -84,9 +96,16 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 		this.exception = null; 
 		running = true;
 		DbOperationsInterface db = null;
-		
+		OWLGraphWrapper graph = null;
 		if("gaf".equals(this.dbType)){
+			
+			DbOperationsService dbservice =(DbOperationsService) ServicesConfig.getService("db-operations");
+			if(dbservice != null){
+				graph = dbservice.getOntologyGraph();
+			}
 			db = new GAFDbOperations();
+			
+			
 		}else
 			db = new DbOperations();
 		
@@ -98,6 +117,15 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 				this.currentOntologyBeingProcessed = location;
 				if("bulkload".equals(opName)){
 						db.bulkLoad(location, force);
+						if(db instanceof GAFDbOperations && graph != null){
+							for(GafDocument doc: gafDocuments){
+								
+								annotationRuleViolations.addAll(doc.validateAnnotations(graph));
+								/*for(AnnotationRuleViolation arv: doc.validateAnnotations(graph)){
+									this.annotationRuleViolations.append(arv.getMessage() + "----" + arv.getSourceAnnotation());
+								}*/
+							}
+						}
 				}else if ("update".equals(opName)){
 						db.updateGold(location);
 				}else if ("buildschema".equals(opName)){
@@ -183,9 +211,15 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 	}
 
 
-	public void endOntologyLoad(OWLGraphWrapper graph) {
+//	public void endOntologyLoad(OWLGraphWrapper graph) {
+	public void endOntologyLoad(Object object) {
 		reportEndTime("Obo To OWL Conversion--"+currentOntologyBeingProcessed);
-		graphs.add(graph);
+		
+		if(object instanceof OWLGraphWrapper)
+			graphs.add((OWLGraphWrapper)object);
+		else if(object instanceof GafDocument){
+			gafDocuments.add((GafDocument) object);
+		}
 	}
 	
 	public List<OWLGraphWrapper> getGraphs(){
@@ -194,6 +228,10 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 	
 	public String getConsistencyCheckResults(){
 		return consitancyCheckBuffer == null ? null : consitancyCheckBuffer.toString();
+	}
+	
+	public Set<AnnotationRuleViolation> getAnnotationVoilations(){
+		return this.annotationRuleViolations;
 	}
 	
 	private StringBuffer consitancyCheckBuffer;

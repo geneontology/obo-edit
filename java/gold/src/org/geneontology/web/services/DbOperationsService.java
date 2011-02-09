@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperations;
+import org.geneontology.gold.rules.AnnotationRuleViolation;
 import org.geneontology.web.AdminServlet;
 import org.geneontology.web.DbOperationsTask;
 
@@ -31,9 +32,27 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 	// global reference of the OWLGraphWrapper
 	private Hashtable<String, OWLGraphWrapper> graphs;
 
+	private OWLGraphWrapper ontologyGraph;
+	
+	public OWLGraphWrapper getOntologyGraph(){
+		return ontologyGraph;
+	}
 	
 	public DbOperationsService(){
 		graphs = new Hashtable<String, OWLGraphWrapper>();
+		
+		DbOperations db = new DbOperations();
+		for(Object location: GeneOntologyManager.getInstance().getDefaultOntologyLocations()){
+			try{
+				OWLGraphWrapper wrapper = db.buildOWLGraphWrapper(location.toString());
+				if(ontologyGraph == null)
+					ontologyGraph = wrapper;
+				graphs.put(wrapper.getOntologyId(), wrapper); 
+			}catch(Exception ex){
+				LOG.error(ex.getMessage(), ex);
+			}
+		}
+		
 	}
 	
 	public void handleService(HttpServletRequest request,
@@ -212,9 +231,25 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 			PrintWriter pw = new PrintWriter(writer);
 			task.getException().printStackTrace(pw);
 		}
+		
+		if(task.getAnnotationVoilations().size()>0){
+			writer.write("<h1>Annotation Rules Voilations</h1>");
+			writer.write("<ul>");
+			for(AnnotationRuleViolation arv: task.getAnnotationVoilations()){
+				writer.write("<li>" + arv.getMessage() + "----" + arv.getSourceAnnotation() + "</li>");
+			}
+			writer.write("</ul>");
+
+		}
 
 		if (!task.isRunning() && !addReload) {
+			
+			if(task.getGraphs().size()>0)
+				graphs = new Hashtable<String, OWLGraphWrapper>();
+			
 			for (OWLGraphWrapper graph : task.getGraphs()) {
+				if(ontologyGraph == null)
+					ontologyGraph = graph;
 				graphs.put(graph.getOntologyId(), graph);
 			}
 			this.task = null;

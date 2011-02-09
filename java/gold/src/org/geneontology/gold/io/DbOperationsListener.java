@@ -63,6 +63,9 @@ public interface DbOperationsListener {
 	
 	public void startOntologyLoad();
 	
-	public void endOntologyLoad(OWLGraphWrapper graph);
+//	public void endOntologyLoad(OWLGraphWrapper graph);
+	
+	public void endOntologyLoad(Object object);
+	
 	
 }
