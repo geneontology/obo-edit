@@ -158,7 +158,7 @@ public class OELink extends PCNode implements Morphable {
 				panelLoc.getY() - iconPanel.getHeight() / 2);
 		// PNode icon = iconManager.getIcon(getLink().getType());
 		PNode icon = new IconNode(Preferences.getPreferences()
-				.getIconForRelationshipType(getLink().getType()));
+                                          .getIconForRelationshipType(getLink().getType()));
 		provider.setNamedChild(KEY_ICON, iconPanel, icon);
 //		iconPanel.addChild(icon);
 		icon.centerFullBoundsOnPoint(iconPanel.getWidth() / 2, 
@@ -171,6 +171,13 @@ public class OELink extends PCNode implements Morphable {
 		icon.scaleAboutPoint(zoom,
 				icon.getFullBoundsReference().getWidth() / 2, icon
 						.getFullBoundsReference().getHeight() / 2);
+
+                // Compiled, but didn't do anything
+//                icon.addAttribute(TooltipFactory.TEXT_KEY, "Here's the name of this icon");
+//                iconPanel.addAttribute(TooltipFactory.TEXT_KEY, "Here's the name of this icon");
+                // wouldn't compile--PNode and PPath don't have this method.
+//                icon.setToolTipText("Here's the name of this icon");
+//                iconPanel.setToolTipText("Here's the name of this icon");
 		return iconPanel;
 	}
 
