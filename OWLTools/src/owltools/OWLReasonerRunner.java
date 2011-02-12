@@ -50,7 +50,7 @@ public class OWLReasonerRunner {
 		Collection<String> paths = new ArrayList<String>();
 		int i=0;
                 // REDUNDANT: see new method
-		String reasonerClassName = "uk.ac.manchester.cs.factplusplus.owlapiv3.Reasoner";
+//		String reasonerClassName = "uk.ac.manchester.cs.factplusplus.owlapiv3.Reasoner";
 		String reasonerName = null;
 		boolean createNamedRestrictions = false;
 		boolean createDefaultInstances = false;
@@ -60,15 +60,15 @@ public class OWLReasonerRunner {
 			System.out.println("processing arg: "+opt);
 			i++;
 			if (opt.equals("--pellet")) {
-				reasonerClassName = "com.clarkparsia.pellet.owlapiv3.Reasoner";
+	//			reasonerClassName = "com.clarkparsia.pellet.owlapiv3.Reasoner";
 				reasonerName = "pellet";
 			}
 			else if (opt.equals("--hermit")) {
-				reasonerClassName = "org.semanticweb.HermiT.Reasoner";
+		//		reasonerClassName = "org.semanticweb.HermiT.Reasoner";
 				reasonerName = "hermit";
 			}
 			else if (opt.equals("--no-reasoner")) {
-				reasonerClassName = "";
+			//	reasonerClassName = "";
 				reasonerName = "";
 			}
 			else if (opt.equals("-r") || opt.equals("--namerestr")) {
