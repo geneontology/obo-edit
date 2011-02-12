@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="lib/runlibs/GraphDraw.jar"/>
 	<classpathentry kind="lib" path="runtime/commons-math-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/runlibs/mail.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/ant.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -157,31 +157,39 @@
 	  <chmod file="oe-command-line" perm="ugo+x" />
 	</target>
 
-	
+	<!--
 	<target name="versionnum">
 		<buildnumber file="${oborelease.outputdir}/VERSION-INFO" />
 	</target>
+	-->
+	
+	<target name="convertobo2owl-asserted" if="oborelease.generateasserted">
+		
+		
+		<antcall target="convertobo2owl">
+			<param name="oborelease.outputowlfile"  value="${oborelease.ontologyid}-asserted.owl"/>
+			<param name="oborelease.outputobofile"  value="${oborelease.ontologyid}-asserted.obo"/>
+			<param name="oborelease.reasoner"  value=""/>
+		</antcall>
+		
+	</target>
+	
+	<target name="convertowl2obo" if="oborelease.isowl">
+
+		<echo>Building obo file from owl
+		</echo>
+		
+	</target>
 	
 	
-	<target name="make-obo-release" description="OBO Ontology release manager">
-		<echo>************************Ontology Release Manager************************</echo>
-	
-		<property file="${oborelease.configfile}"></property>
-		
-		<antcall target="versionnum"></antcall>
-		
-		<mkdir dir="${oborelease.outputdir}"/>
-		
-		<echo>${oborelease.outputdir}</echo>
-		
-		<!-- buid obo to owl -->
-		<echo>Building owl file</echo>
+	<target name="convertobo2owl" if="oborelease.isobo">
+
+		<echo>Building owl file from obo</echo>
+
 		<java classname="org.obolibrary.cli.OBORunner">
 
-		<!--	<arg value="-o"/>
-			<arg value="file://${oborelease.outputdir}/${oborelease.outputfilename}.owl"/>-->
-			<arg value="--outdir"/>
-			<arg value="${oborelease.outputdir}"/>
+			<arg value="-o"/>
+			<arg value="file://${oborelease.outputdir}/${oborelease.outputowlfile}"/>
 			<arg value="${oborelease.obofilepath}" />
 			<classpath>
 				<fileset dir="${librarydir}/runlibs">
@@ -190,22 +198,56 @@
 			</classpath>
 		</java>
 
+		<echo>Building obo file from owl</echo>
 		
-		<echo>Building obo file</echo>
 		<java classname="org.obolibrary.cli.OBORunner">
 
 			<arg value="--owl2obo" />
-		<!--	<arg value="-o"/>
-			<arg value="${oborelease.outputdir}/${oborelease.outputfilename}.obo"/>-->
-			<arg value="--outdir"/>
-			<arg value="${oborelease.outputdir}"/>
-			<arg value="file://${oborelease.outputdir}/${oborelease.outputfilename}.owl" />
+			<arg value="-o"/>
+			<arg value="${oborelease.outputdir}/${oborelease.outputobofile}"/>
+			<arg value="file://${oborelease.outputdir}/${oborelease.outputowlfile}" />
 			<classpath>
 				<fileset dir="${librarydir}/runlibs">
 					<include name="*.jar" />
 				</fileset>
 			</classpath>
 		</java>
+		
+		
+	</target>
+	
+	<target name="make-obo-release" description="OBO Ontology release manager">
+		<echo>************************Ontology Release Manager************************</echo>
+	
+		<property file="${oborelease.configfile}"></property>
+		
+<!--		<antcall target="versionnum"></antcall>-->
+		
+		<taskdef name="getontologyid" classname="owltools.ontologyrelease.GetOntologyId" classpath="${jarfile}"/>		
+		<taskdef name="buildversionid" classname="owltools.ontologyrelease.BuildVersionId" classpath="${jarfile}"/>		
+		
+		<getontologyid file="${oborelease.obofilepath}" />
+		<buildversionid file="${oborelease.outputdir}/VERSION-INFO" />
+		
+		<echo>Ontology id is: ${oborelease.ontologyid}</echo>
+		<echo>Version id is: ${oborelease.versionid}</echo>
+		<echo>Is Obo file: ${oborelease.isobo}</echo>
+		<echo>Generate Asserted: ${oborelease.generateasserted}</echo>
+		
+		
+		<mkdir dir="${oborelease.outputdir}"/>
+		
+		<antcall target="convertobo2owl">
+	
+			<param name="oborelease.outputowlfile"  value="${oborelease.ontologyid}.owl"/>
+			<param name="oborelease.outputobofile"  value="${oborelease.ontologyid}.obo"/>
+			
+		
+		</antcall>
+		
+		
+		<antcall target="convertobo2owl-asserted"></antcall>
+		
 		
 		<mkdir dir="${oborelease.outputdir}/subsets"/>
 
@@ -219,40 +261,8 @@
 	
 		<mkdir dir="${oborelease.outputdir}/releases/${TODAY}"/>
 		
-		<antcall target="make-asserted-obo-release"></antcall>
+<!--		<antcall target="make-asserted-obo-release"></antcall>-->
 	</target>
 
-	<target name="make-asserted-obo-release" if="oborelease.outputassertedfileprefix">
-		<java classname="org.obolibrary.cli.OBORunner">
-
-			<arg value="--outdir"/>
-			<arg value="${oborelease.outputdir}"/>
-			<arg value="--outsufix"/>
-			<arg value="${oborelease.outputassertedfileprefix}"/>
-			<arg value="${oborelease.obofilepath}" />
-			<classpath>
-				<fileset dir="${librarydir}/runlibs">
-					<include name="*.jar" />
-				</fileset>
-			</classpath>
-		</java>
-
-		<java classname="org.obolibrary.cli.OBORunner">
-
-			<arg value="--owl2obo" />
-			<arg value="--outdir"/>
-			<arg value="${oborelease.outputdir}"/>
-			<arg value="--outsufix"/>
-			<arg value="${oborelease.outputassertedfileprefix}"/>
-			<arg value="file://${oborelease.outputdir}/${oborelease.outputfilename}.owl" />
-			<classpath>
-				<fileset dir="${librarydir}/runlibs">
-					<include name="*.jar" />
-				</fileset>
-			</classpath>
-		</java>
-		
-	
-	</target>
 	
 </project>
