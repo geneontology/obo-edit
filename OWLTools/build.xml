@@ -232,22 +232,30 @@
 		<echo>Ontology id is: ${oborelease.ontologyid}</echo>
 		<echo>Version id is: ${oborelease.versionid}</echo>
 		<echo>Is Obo file: ${oborelease.isobo}</echo>
-		<echo>Generate Asserted: ${oborelease.generateasserted}</echo>
+		<echo>Generate Asserted: ${oborelease.asserted}</echo>
 		
 		
 		<mkdir dir="${oborelease.outputdir}"/>
 		
-		<antcall target="convertobo2owl">
-	
-			<param name="oborelease.outputowlfile"  value="${oborelease.ontologyid}.owl"/>
-			<param name="oborelease.outputobofile"  value="${oborelease.ontologyid}.obo"/>
-			
-		
-		</antcall>
-		
-		
-		<antcall target="convertobo2owl-asserted"></antcall>
-		
+		<java classname="owltools.ontologyrelease.OboOntologyReleaseRunner">
+
+			<arg value="--outdir"/>
+			<arg value="${oborelease.outputdir}/"/>
+			<arg value="--reasoner"/>
+			<arg value="${oborelease.reasoner}"/>
+			<arg value="--asserted"/>
+			<arg value="${oborelease.asserted}/"/>
+			<arg value="--owlversion"/>
+			<arg value="${oborelease.versionid}"/>
+			<arg value="${oborelease.obofilepath}" />
+			<classpath>
+				<fileset dir="${librarydir}/runlibs">
+					<include name="*.jar" />
+				</fileset>
+
+				<pathelement location="runtime/owltools.jar"></pathelement>
+			</classpath>
+		</java>
 		
 		<mkdir dir="${oborelease.outputdir}/subsets"/>
 
