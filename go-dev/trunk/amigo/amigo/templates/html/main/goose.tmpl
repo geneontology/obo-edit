@@ -129,17 +129,21 @@
 
   </form>		
 	
-  [% IF results_count %]
-
+  [% IF NOT results_count AND results_count == 0 %]
+  
   <div class="block">
 
     <h2>Results</h2>
 
-    [% IF results_count == 0 %]
-
     <p>Your query did not return any results.</p>
 
-    [% ELSE %]
+  </div>
+
+  [% ELSIF results_count %]
+
+  <div class="block">
+
+    <h2>Results</h2>
 
     <p id="results_generated">
 
@@ -207,7 +211,6 @@
 
   </div>
   
-  [%   END %]
   [% END %]
   
 </div>
