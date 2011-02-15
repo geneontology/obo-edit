@@ -222,25 +222,19 @@ if( $subset && length($subset) > $upper_arg_size_limit ){
 ## The content of a slim file to be created.
 my $slim_filehandle = $query->upload('slim_file');
 my $slim_filehandle_type = 'list';
-if ( ! $slim_filehandle  && $query->cgi_error() ){
+if ( ! $slim_filehandle && $query->cgi_error() ){
   my $error = $query->cgi_error();
   server_die_template({STAMP => $time_stamp, URL => $html_url,
 		MESSAGE => "slim_file upload failed: $error "});
 }else{
-  if ( $slim_filehandle ){
-    if ( $slim_filehandle =~ /\.gz/i ||
-	 $slim_filehandle =~ /\.bz/i ||
-	 $slim_filehandle =~ /\.bz2/i ||
-	 $slim_filehandle =~ /\.zip/i ||
-	 $slim_filehandle =~ /\.z/i ||
-	 $slim_filehandle =~ /\.tgz/i ) {
-      server_die_template({STAMP => $time_stamp, URL => $html_url,
-			   MESSAGE =>
-			   "AmiGO does not currently accept compressed files. ".
-			   "Please uncompress your file and try again."});
-    }elsif ( $slim_filehandle =~ /\.obo/i ) {
-      $slim_filehandle_type = 'obo';
-    }
+  if ( $slim_filehandle && ! $core->vanilla_filehandle_p($slim_filehandle) ){
+    server_die_template({MESSAGE =>
+			 "AmiGO currently only accepts text files. " .
+			 "Please change your file and try again.",
+			 STAMP => $time_stamp, URL => $html_url});
+  }
+  if ( $slim_filehandle =~ /\.obo/i ) {
+    $slim_filehandle_type = 'obo';
   }
 }
 
@@ -261,17 +255,11 @@ if ( ! $gp_filehandle  && $query->cgi_error() ){
   client_die_template({STAMP => $time_stamp, URL => $html_url,
 		MESSAGE => "gp_file upload failed: $error "});
 }else{
-  if ( $gp_filehandle && (
-			  $gp_filehandle =~ /\.gz/i ||
-			  $gp_filehandle =~ /\.bz/i ||
-			  $gp_filehandle =~ /\.bz2/i ||
-			  $gp_filehandle =~ /\.zip/i ||
-			  $gp_filehandle =~ /\.z/i ||
-			  $gp_filehandle =~ /\.tgz/i ) ){
-    server_die_template({STAMP => $time_stamp, URL => $html_url,
-			 MESSAGE =>
-			 "AmiGO does not currently accept compressed files. " .
-			 "Please uncompress your file and try again."});
+  if ( $gp_filehandle && ! $core->vanilla_filehandle_p($gp_filehandle) ){
+    server_die_template({MESSAGE =>
+			 "AmiGO currently only accepts text files. " .
+			 "Please change your file and try again.",
+			 STAMP => $time_stamp, URL => $html_url});
   }
 }
 
