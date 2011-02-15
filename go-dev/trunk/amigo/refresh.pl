@@ -34,6 +34,7 @@ use File::Find;
 use File::stat;
 #use Time::Local;
 use Time::localtime;
+use File::Temp qw(tempfile);
 
 #BEGIN { plan tests => 0; }
 
@@ -44,11 +45,12 @@ use vars qw(
 	     $opt_s
 	     $opt_g
 	     $opt_p
+	     $opt_q
 	     $opt_l
 	  );
 
 ## Setup.
-getopts('hrcsgpl');
+getopts('hrcsgpql');
 my $core = AmiGO->new();
 my @errors = ();
 
@@ -59,6 +61,7 @@ if( $opt_h ){
 }
 
 ## Take care of arguments.
+my $be_chatty = 1;
 my $do_remove = 0;
 my $do_cache = 0;
 my $do_summary = 0;
@@ -70,6 +73,7 @@ if ( $opt_c ){ $do_cache = 1; }
 if ( $opt_s ){ $do_summary = 1; }
 if ( $opt_g ){ $do_svg = 1; }
 if ( $opt_p ){ $do_png = 1; }
+if ( $opt_q ){ $be_chatty = 0; }
 if ( $opt_l ){ $do_lucene = 1; }
 
 ## Nothing at all? Then do everything.
@@ -96,7 +100,7 @@ if ( ! $opt_r &&
 
 if( $do_remove ){
 
-  ll("Starting general cleaning, please wait...");
+  ll("Starting general cleaning, please wait...") if $be_chatty;
 
 
   ## Function to decide if the file or diectory has reached its
@@ -332,9 +336,12 @@ if( $do_lucene ){
 ## no_plan returns an error on some systems), we'll leave with a
 ## trivial test. Although, we could use this opportunity to drop some
 ## tests in here at some point...
-ll("Exit testing...");
+## Make this testing quiet.
+my($tmp_fh, $tmp_fn) = tempfile();
+Test::More->builder->output($tmp_fn);
+ll("Starting testing...");
 ok( 1 == 1 );
-
+ll("Exit testing...");
 
 ###
 ### Subs.
@@ -399,7 +406,7 @@ sub make_go_meta_js {
 ## Just a little printin' when feeling verbose.
 sub ll {
   my $str = shift || '';
-  print $str . "\n";
+  print $str . "\n" if $be_chatty;
   $core->kvetch($str);
 }
 
