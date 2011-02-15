@@ -1,0 +1,620 @@
+#!/usr/local/bin/perl -w
+
+##
+## Tags that I use: BUG, TODO, WARN, NOTE, ASK
+##
+## TODO:
+##   *) work with dan to sync mirrors with common name
+##   *) add Chris's views and materializations (see email) to load script
+##   *) make sure script gracefully handles errors on making the above
+##      (some tables may only exist in development versions, etc.)
+##   *) add historical to mirrors
+##   *) add historical to interface
+##   *) add option to to report available databases
+##   *) PHP module to work with this (almost done)
+##   *) each goose run should have a way of killing long running GOOSE spawn
+##   *) make a visualization module called GANDER on principle
+##
+
+## Bring in necessaries.
+use strict;
+use utf8;
+use DBI;
+use SQL::Tokenizer;
+use Template;
+use LWP::UserAgent;
+use WWW::Mechanize;
+# Watchdog::Mysql
+
+## Set up CGI environment,
+use CGI qw/:standard/;
+use CGI::Carp qw(warningsToBrowser fatalsToBrowser);
+$CGI::POST_MAX = 0;	## no uploads.
+my $q = new CGI;
+
+## Available database information.
+my $mirrors = [];
+push @{$mirrors}, 'go_latest';
+push @{$mirrors}, 'go_old_200701';
+
+## Available mirror information.
+my $databases = {};
+$databases->{bbop} = {
+		      login => 'go_select',
+		      password => 'amigoer',
+		      server => 'spitz.lbl.gov',
+		      port => '3306'
+		     };
+$databases->{ebi} = {
+		     login => 'go_select',
+		     password => 'amigo',
+		     server => 'mysql.ebi.ac.uk',
+		     port => '4085'
+		    };
+
+## Location of examples.
+my $wiki_sql_file = 'Example_Queries.txt';
+my $wiki_sql_url = 'http://wiki.geneontology.org/index.php/Example_Queries';
+my $wikimatch = '<span class=\"mw-headline\">\s*([^\n]*?)<\/span><\/h[3-4]>.*?<pre>\s*(.*?)<\/pre>';
+
+my $go_template_paths = 'templates/pages:templates/includes';
+
+## Start output queue.
+my $results_string = '';
+
+##########
+##
+## Sanity check all possible incoming parameters:
+##
+## 'sql_query'
+## 'mirror'
+## 'database'
+## 'limit'
+## 'format'
+## 'wiki'
+##
+##########
+
+my $upper_arg_size_limit = 1000;
+
+##
+my $sql_query = $q->param('sql_query');
+if( $sql_query &&
+    length($sql_query) > $upper_arg_size_limit ){
+  die_template("illegitimate sql_query value: $!");
+}
+
+## Force a scrape from the wiki instead of using the download page.
+my $force_scrape = $q->param('wiki');
+if( $force_scrape &&
+    length($force_scrape) < $upper_arg_size_limit &&
+    ($force_scrape eq '1' ||
+     $force_scrape eq 'true' ||
+     $force_scrape eq 't') ){
+  $force_scrape = 1;
+}else{
+  $force_scrape = 0;
+}
+
+## Map number to DB and user/password.
+my $login = '';
+my $password = '';
+my $server = '';
+my $port = '';
+my $mirror = $q->param('mirror');
+if( $mirror &&
+    ( length($mirror) > 1 ||
+      $mirror =~ /^[^1-9]$/ ) ){
+  die_template("illegitimate mirror value: $!");
+}elsif( ! $mirror ){
+  ## Randomly choose database.
+  $mirror = int(rand(2)) + 1;
+}
+##
+if( $mirror eq '1' ){
+  $login = 'go_select';
+  $password = 'amigoer';
+  $server = 'spitz.lbl.gov';
+  $port = '3306';
+}elsif( $mirror eq '2' ){
+  $login = 'go_select';
+  $password = 'amigo';
+  $server = 'mysql.ebi.ac.uk';
+  $port = '4085';
+}else{
+  die_template("unknown mirror value: $!");
+}
+
+## Which database to use may be informed by which mirror is chosen.
+my $database = $q->param('database');
+my $database_name = '';
+if( $database &&
+    ( length($database) > 1 ||
+      $database =~ /[^1-9]/ ) ){
+    die_template("illegitimate database value: $!");
+}elsif( $database ){
+  if( $database eq '1' ){
+    $database_name = 'go_latest';
+  }elsif( $database eq '2' ){
+    ## For now, we're just always going to go to latest with IEAs
+    #$database_name = 'go_latest_lite';
+    $database_name = 'go_latest';
+  }else{
+    die_template("unknown database value: $!");
+  }
+}
+
+## Will there be a limit on the result size?
+my $limit_string = $q->param('limit');
+if( defined($limit_string) && length($limit_string) > $upper_arg_size_limit ){
+  die_template("illegitimate limit value: $!");
+}elsif( $limit_string &&
+	$limit_string ne '0' &&
+	$limit_string ne '10' &&
+	$limit_string ne '100' &&
+	$limit_string ne '1000' &&
+	$limit_string ne '10000' ){
+  die_template("unrecognized limit value: $!");
+}elsif( ! defined($limit_string) ) {
+  ## Force definition if undefined.
+  $limit_string = '1000';
+}
+## Let's keep it reeeeaaal safe.
+my $limit = 0; # default val for incoming
+if ( $limit_string eq '0' ) {
+  $limit = 0;
+}elsif ( $limit_string eq '10' ) {
+  $limit = 10;
+}elsif ( $limit_string eq '100' ) {
+  $limit = 100;
+}elsif ( $limit_string eq '1000' ) {
+  $limit = 1000;
+}elsif ( $limit_string eq '10000' ) {
+  $limit = 10000;
+}
+
+## Which format do we want? Force format to a defined and known value.
+my $format = $q->param('format');
+if( $format && length($format) > $upper_arg_size_limit ){
+  die_template("illegitimate format value: $!");
+}elsif( $format && $format eq 'tab' ){
+  ## OK, let it go.
+}else{
+  $format = 'html';
+}
+
+##########
+##
+## Set defaults for values that will be used during template
+## processing.
+##
+##########
+
+## Main/default template.
+my $template = 'goose_main.tmpl';
+
+## Main template variable.
+my $vars = {};
+$vars->{SQL_QUERY} = $sql_query;
+$vars->{MIRROR_SELECTION} = $mirror || "2";
+$vars->{DATABASE_SELECTION} = $database || "1";
+$vars->{LIMIT} = $limit || "-1";
+$vars->{TOTAL} = "-1";
+$vars->{DISPLAY_MAIN_RESULTS} = 0;
+$vars->{MAIN_RESULTS} = '';
+$vars->{NUMBER_OF_RESULTS} = 0;
+$vars->{RESULTS_HEADER_ARRAY} = [];
+$vars->{RESULTS_ARRAY_ARRAY} = [];
+$vars->{WIKI_JS_DATA} = '';
+
+## 
+if( $sql_query ){
+
+  die_template("No database has been selected.")
+    if ! $database;
+  die_template("No mirror has been selected.")
+    if ! $mirror;
+
+  ## Remove leading and trailing whitespace.
+  $sql_query =~ s/^\s+//;
+  $sql_query =~ s/\s+$//;
+
+  ## Remove extra inner whitespace.
+  $sql_query =~ s/\s+/ /;
+
+  ##
+  ## Let's look for fishy things in the query...
+  ##
+  my @tokens = SQL::Tokenizer->tokenize($sql_query);
+
+  ## Better start with select.
+  #print STDERR "__$tokens[0]__\n";
+  #sleep 2;
+  die_template("There was something odd in your query (a).")
+    if $tokens[0] !~ /^SELECT$/i;
+
+  ## Check for other odd things.
+  my $number_of_selects = 0;
+  foreach my $token (@tokens){
+
+    #print STDERR "$token\n";
+    #sleep 1;
+
+    if( $token =~ /^ADD$/i ||
+	$token =~ /^ALTER$/i ||
+	$token =~ /^BACKUP$/i ||
+	$token =~ /^CACHE$/i ||
+	$token =~ /^CALL$/i ||
+	$token =~ /^CHANGE$/i ||
+	$token =~ /^CREATE$/i ||
+	$token =~ /^DEALLOCATE$/i ||
+	$token =~ /^DELETE$/i ||
+	$token =~ /^DO$/i ||
+	$token =~ /^DROP$/i ||
+	$token =~ /^EXECUTE$/i ||
+	$token =~ /^FETCH$/i ||
+	$token =~ /^GRANT$/i ||
+	$token =~ /^HANDLER$/i ||
+	$token =~ /^INSERT$/i ||
+	$token =~ /^KILL$/i ||
+	$token =~ /^LOAD$/i ||
+	$token =~ /^LOCK$/i ||
+	$token =~ /^OPEN$/i ||
+	$token =~ /^PASSWORD$/i ||
+	$token =~ /^PREPARE$/i ||
+	$token =~ /^PURGE$/i ||
+	$token =~ /^RENAME$/i ||
+	$token =~ /^REPAIR$/i||
+	$token =~ /^REPLACE$/i ||
+	$token =~ /^RESET$/i ||
+	$token =~ /^RESTORE$/i ||
+	$token =~ /^RETURN$/i ||
+	$token =~ /^REVOKE$/i ||
+	$token =~ /^SET$/i ||
+	$token =~ /^SHOW$/i ||
+	$token =~ /^TABLE$/i ){
+
+      ## Things that may be questionable.
+      die_template("There was something odd in your query (b).");
+
+    }elsif( $token =~ /^SELECT$/i ){
+
+      ## I don't want to see a lot of selects.
+      $number_of_selects++;
+      die_template("There was something odd in your query (c).")
+	if $number_of_selects > 1;
+
+    }elsif( $token =~ /^[\"].*[^\"]$/ ||
+	    $token =~ /^[\'].*[^\']$/ ||
+	    $token =~ /^[^\"].*[\"]$/ ||
+	    $token =~ /^[^\'].*[\']$/ ||
+	    $token =~ /^[\'\"]$/ ){
+
+      ## I don't want to see oddly matched or single quotes in a
+      ## token.
+      die_template("There was something odd in your query (d).");
+
+    }elsif( $token =~ /^[\"](.*)[\"]$/ ||
+	    $token =~ /^[\'](.*)[\']$/  ){
+
+      ## I don't want to see quotes inside quotes.
+      die_template("There was something odd in your query (e).")
+	if $1 =~ /[\"\']/;
+
+      ## I don't want to see comments inside quotes.
+      die_template("There was something odd in your query (f).")
+	if $1 =~ /--/;
+
+      ## I don't want to see escapes inside quotes.
+      die_template("There was something odd in your query (g).")
+	if $1 =~ /\\/;
+
+    }elsif( $token =~ /\\/ ){
+
+      ## You can do funny things with escapes.
+      die_template("There was something odd in your query (h).");
+
+    }elsif( $token =~ /--/ ){
+
+      ## You can do funny things with comments.
+      die_template("Please remove your comments before trying the query.");
+
+    }else{
+      ## Clear token.
+    }
+  }
+
+  ## Rescan tokens for LIMIT specifically.
+  my $already_has_limit_p = 0;
+  foreach my $token (@tokens){
+    if ( $token =~ /^LIMIT$/i ) {
+      $already_has_limit_p++;
+    }
+  }
+  ## If we're going to use a limit, let's change the query a little:
+  if ( $limit ) {
+
+    ## If we haven't already added the calc, add it.
+    if ( $sql_query !~ /\s+SQL_CALC_FOUND_ROWS\s+/i ){
+      $sql_query =~ s/SELECT/SELECT SQL_CALC_FOUND_ROWS/i;
+    }
+
+    ## Semicolon check and add limit.
+    if ( ! $already_has_limit_p > 0 ) {
+      $sql_query =~ tr/\;//d;
+      $sql_query = $sql_query . ' LIMIT ' . $limit . ';';
+    }
+  }
+
+  ## We're good? Great! Connect to DB.
+  my $db_handle =
+    DBI->connect("DBI:mysql:$database_name:$server:$port",
+		 $login,
+		 $password) ||
+		   die_template("Couldn't connect to that database on that host.");
+
+  ## Scrape out results.
+  my $statement = $db_handle->prepare($sql_query);
+  $statement->execute()
+    or die_template("Couldn't run query.");
+
+  ## Switch on whether or not I got results.
+  $vars->{DISPLAY_MAIN_RESULTS} = 1;
+  $vars->{NUMBER_OF_RESULTS} = $statement->rows();
+  $vars->{RESULTS_HEADER_ARRAY} = $statement->{NAME};
+  while( my @row = $statement->fetchrow_array ){
+
+    ## TODO: This needs to be speeded up.
+    foreach my $item (@row){
+      ## Not all columns are defined.
+      if( $item ){
+	$item =~ s/\&/\&amp\;/g;
+	$item =~ s/\</\&lt\;/g;
+	$item =~ s/\>/\&gt\;/g;
+      }
+    }
+    push @{ $vars->{RESULTS_ARRAY_ARRAY} }, \@row;
+  }
+
+  ## Collect total results if we used a limit.
+  if ( $limit ) {
+
+      $statement = $db_handle->prepare("SELECT FOUND_ROWS()");
+      $statement->execute()
+	or die_template("Couldn't run count.");
+      my @meta_info = $statement->fetchrow_array();
+      $vars->{TOTAL} = $meta_info[0] if $meta_info[0];
+
+  }
+
+  ## Close connection.
+  $statement->finish();
+  $db_handle->disconnect();
+}
+
+##########
+##
+## Publish results using template for HTML and by hand for tab
+## delimited.
+##
+##########
+
+if( $format eq 'html' ){
+
+  ##
+  ## First we need to gather examples to populate the pulldown menu.
+  ##
+
+  ## If there is no local file or we are forcing a scrape do it
+  ## ourselves. Otherwise, get it from the local file.
+  my %examples = ();
+  if( ! -e $wiki_sql_file ||
+      ! -f $wiki_sql_file ||
+      ! -r $wiki_sql_file ||
+      ! -T $wiki_sql_file ||
+      $force_scrape ){
+
+    ## Connect to wiki page.
+    my $mech = WWW::Mechanize->new();
+    $mech->get($wiki_sql_url);
+    die_template('failed to access wiki page') if ! $mech->res->is_success;
+
+    ## Let's scrape the wiki page to get the queries.
+    %examples = $mech->content =~ /$wikimatch/gs;
+
+  }else{
+
+    ## Open file and change it to one big string.
+    open FILE, "< $wiki_sql_file"
+      or die_template("couldn\'t open local sql file");
+    my @string_buffer = ();
+    while( <FILE> ){
+      push @string_buffer, $_; }
+    my $whole_string = join '', @string_buffer;
+
+    ## Let's scrape the wiki page to get the queries.
+    %examples = $whole_string =~ /$wikimatch/gs;
+  }
+
+  ##
+  ## Create a JS array as a string with the scraped data above.
+  ##
+  my @minibuffer = ();
+  foreach my $title (sort keys %examples){
+
+    my @microbuffer = ();
+    push @microbuffer, '{';
+    push @microbuffer, 'title: "';
+    push @microbuffer, $title;
+    push @microbuffer, '", value: "';
+
+    ## Transform any problem causing characters.
+    my $munched = $examples{$title};
+    #$munched =~ s/ +/ /g;
+    $munched =~ s/\t/\\t/g;
+    $munched =~ s/\n/\\n/g;
+    $munched =~ tr/"/\"/;
+
+    push @microbuffer, $munched;
+    push @microbuffer, '"}';
+
+    push @minibuffer, join '', @microbuffer;
+  }
+  my $tmpstr = join ',', @minibuffer;
+  @minibuffer = ();
+  push @minibuffer, 'var global_goose_pulldown_table = [';
+  push @minibuffer, '{ title: "(Select example query)", value: "" }';
+  push @minibuffer, ',' if $tmpstr;
+  push @minibuffer, $tmpstr if $tmpstr;
+  push @minibuffer, '];';
+
+  ## Put it into a template variable.
+  $vars->{WIKI_JS_DATA} = join '', @minibuffer;
+
+  ##
+  ## Ready the template.
+  ##
+
+  ## BUG/FIX: I had to write this because TT gives me an 'out of
+  ## memory' if I try to let it do big results. I hate TT.
+  $vars->{MAIN_RESULTS} = results_string();
+
+  ## Template runtime parameters.
+  my $tt = Template->new({
+			  INCLUDE_PATH => $go_template_paths,
+			  EVAL_PERL => 1,
+			  #PRE_CHOMP => 1,
+			  #POST_CHOMP => 1,
+			  TRIM => 1,
+			  RECURSION => 1
+			 });
+
+  html_header();
+  $tt->process($template, $vars) ||
+    die_template("failed to process $template");
+
+}elsif( $format eq 'tab' ){
+
+  ## Hand emit.
+  unknown_header();
+  foreach my $row (@{ $vars->{RESULTS_ARRAY_ARRAY} }){
+    print join "\t", @$row;
+    print "\n";
+  }
+
+}else{
+  die_template("How did you get here?");
+}
+
+
+#####
+##
+## Subs.
+##
+####
+
+
+##
+sub html_header{ print "content-type:text/html\n\n"; }
+sub text_header{ print "content-type:text/plain\n\n"; }
+sub unknown_header{ print "content-type:unknown\n\n"; }
+
+##
+sub die_template {
+
+  my $message = shift || 'generic error';
+
+  ## Template runtime parameters.
+  my $diet = Template->new({
+			    INCLUDE_PATH => $go_template_paths,
+			    EVAL_PERL => 1,
+			    TRIM => 1,
+			   });
+  html_header();
+  $diet->process('amigo_common_error.tmpl', {ERROR_MESSAGE => $message}) ||
+  die "$message: $!"; # ASK: Is croak or confess more appropriate?
+  exit(-1); ## BUG: Why do I need both.
+}
+
+
+## I had to write this because TT gives me an 'out of memory' if I try
+## to let it do these things. I hate TT.
+sub results_string {
+
+  my @buffer = ();
+
+  ## Start replacement.
+  push @buffer, '<div class="block">';
+  push @buffer, '<h2>Results</h2>';
+
+  ## Should be point to a direct download?
+  if( $vars->{NUMBER_OF_RESULTS} < 1 ){
+
+    push @buffer, '<p>Your query did not return any results.</p>';
+
+  }else{
+
+    push @buffer, '<p>';
+    push @buffer, 'Your query generated <b>';
+    push @buffer, $vars->{NUMBER_OF_RESULTS};
+    push @buffer, '</b>';
+    if ( defined($limit) && $vars->{NUMBER_OF_RESULTS} < $vars->{TOTAL} ) {
+      push @buffer, ' (limited from <b>';
+      push @buffer, $vars->{TOTAL};
+      push @buffer, '</b>)';
+    }
+    push @buffer, ' result(s):<br />';
+    push @buffer, '(download results in a <a href="goose?sql_query=';
+    push @buffer, $vars->{SQL_QUERY};
+    push @buffer, ';&amp;mirror=';
+    push @buffer, $vars->{MIRROR_SELECTION};
+    push @buffer, ';&amp;database=';
+    push @buffer, $vars->{DATABASE_SELECTION};
+    push @buffer, ';&amp;limit=';
+    push @buffer, $vars->{LIMIT};
+    push @buffer, '&amp;format=tab" ';
+    push @buffer, 'title="Tab-delimited results download">';
+    push @buffer, 'tab-delimited format</a>)';
+    push @buffer, '</p>';
+  }
+
+  ## Write table header.
+  push @buffer, '<table summary="SQL query results"><thead><tr>';
+  foreach my $header (@{ $vars->{RESULTS_HEADER_ARRAY} }){
+    push @buffer, '<th style="">';
+    push @buffer, $header;
+    push @buffer, '</th>';
+  }
+  push @buffer, '      </tr></thead><tbody>';
+
+  ## Write table with alternating row colors.
+  my $eo = 0;
+  foreach my $row (@{ $vars->{RESULTS_ARRAY_ARRAY} }){
+    if( $eo % 2 == 0 ){
+      push @buffer, '<tr class="even_row">';
+    }else{
+      push @buffer, '<tr class="even_odd">';
+    }
+
+    ## Write each item in the row.
+    foreach my $item (@$row){
+      push @buffer, '<td rowspan="1">';
+      push @buffer, $item;
+      push @buffer, '</td>';
+    }
+    push @buffer, '</tr>';
+    $eo = $eo + 1;
+  }
+  push @buffer, '</tbody></table>';
+
+  ## Thingy to bounce us back to the top.
+  push @buffer, '<p class="toTop">';
+  push @buffer, '<a href="#top" title="Back to the top of the page">';
+  push @buffer, 'Back to top</a>';
+  push @buffer, '</p>';
+
+  ## End replacement.
+  push @buffer, '</div>';
+
+  return join '', @buffer;
+}

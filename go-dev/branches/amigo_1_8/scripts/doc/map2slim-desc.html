@@ -1,0 +1,317 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 1.0.2  (Linux)">
+	<META NAME="CREATED" CONTENT="20040205;16105500">
+	<META NAME="CHANGED" CONTENT="20040205;18114600">
+	<STYLE>
+	<!--
+		@page { size: 21.59cm 27.94cm; margin-left: 3.18cm; margin-right: 3.18cm; margin-top: 2.54cm; margin-bottom: 2.54cm }
+		P { margin-bottom: 0.21cm }
+		TD P { margin-bottom: 0.21cm }
+		TH P { margin-bottom: 0.21cm; font-style: italic }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US">
+<DIV TYPE=HEADER>
+	<P STYLE="margin-bottom: 0.5cm">map2slim</P>
+</DIV>
+<P STYLE="margin-bottom: 0cm"><FONT SIZE=7>map2slim</FONT></P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">Given a GO slim file, and a current
+ontology (in one or more files),</P>
+<P STYLE="margin-bottom: 0cm">this script will map a gene association
+file (containing annotations</P>
+<P STYLE="margin-bottom: 0cm">to the full GO) to the terms in the GO
+slim.</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">The script can be used to either create
+a new gene association file,</P>
+<P STYLE="margin-bottom: 0cm">containing the most pertinent GO slim
+accessions, or in count-mode, in</P>
+<P STYLE="margin-bottom: 0cm">which case it will give distinct gene
+product counts for each slim</P>
+<P STYLE="margin-bottom: 0cm">term</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm"><B>USAGE</B></P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">map2slim.pl generic.0208 ontology/*
+gene-associations/gene_association.fb</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">The first argument is the slim ontology
+file; the next arguments are the full ontology file or files; the
+last is the gene association file to be mapped.</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm"><B>ARGUMENTS</B></P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm"><B>-b</B> &lt;bucket slim file&gt;</P>
+<P STYLE="margin-bottom: 0cm">This argument adds &ldquo;bucket terms&rdquo;
+to the slim ontology &ndash; see the next section for an explanation.
+The new slim ontology file, including bucket terms will be written to
+&lt;bucket slim file&gt;</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">-<B>outmap </B>&lt;slim mapping file&gt;</P>
+<P STYLE="margin-bottom: 0cm">This will generate a mapping file for
+every term in the full ontology showing both the most pertinent slim
+term and all slim terms that are ancestors. If you use this option,
+do NOT supply a gene-associations file</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm"><B>-c</B></P>
+<P STYLE="margin-bottom: 0cm">This will force map2slim to give counts
+of the assoc file, rather than map it</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm"><B>-o </B>&lt;out file&gt;</P>
+<P STYLE="margin-bottom: 0cm">This will write the mapped assocs (or
+counts) to the specified file, rather than to the screen</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm"><B>MAPPING ALGORITHM</B></P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">GO is a DAG, not a tree. This means
+that there is often more than one</P>
+<P STYLE="margin-bottom: 0cm">path from a GO term up to the root
+Gene_Ontology node.</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm"><IMG SRC="map2slim-desc_html_m31f7e495.gif" ALIGN=LEFT><BR CLEAR=LEFT>A
+hypothetical example &ndash; blue circles show terms in the GO slim,
+and yellow circles show terms in the full ontology. The full ontology
+subsumes the slim, so the blue terms are also in the ontology.</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<TABLE WIDTH=100% BORDER=1 BORDERCOLOR="#000000" CELLPADDING=4 CELLSPACING=0>
+	<COL WIDTH=59*>
+	<COL WIDTH=75*>
+	<COL WIDTH=122*>
+	<THEAD>
+		<TR VALIGN=TOP>
+			<TH WIDTH=23%>
+				<P>GO ID</P>
+			</TH>
+			<TH WIDTH=29%>
+				<P>MAPS TO SLIM ID</P>
+			</TH>
+			<TH WIDTH=48%>
+				<P>ALL SLIM ANCESTORS</P>
+			</TH>
+		</TR>
+	</THEAD>
+	<TBODY>
+		<TR>
+			<TD WIDTH=23% VALIGN=BOTTOM SDVAL="5" SDNUM="1033;">
+				<P ALIGN=RIGHT>5</P>
+			</TD>
+			<TD WIDTH=29% VALIGN=TOP>
+				<P ALIGN=LEFT>2+3</P>
+			</TD>
+			<TD WIDTH=48% VALIGN=TOP>
+				<P ALIGN=LEFT>2,3,1</P>
+			</TD>
+		</TR>
+		<TR>
+			<TD WIDTH=23% VALIGN=BOTTOM SDVAL="6" SDNUM="1033;">
+				<P ALIGN=RIGHT>6</P>
+			</TD>
+			<TD WIDTH=29% VALIGN=TOP>
+				<P ALIGN=LEFT>3 only</P>
+			</TD>
+			<TD WIDTH=48% VALIGN=TOP>
+				<P ALIGN=LEFT>3,1</P>
+			</TD>
+		</TR>
+		<TR>
+			<TD WIDTH=23% VALIGN=BOTTOM SDVAL="7" SDNUM="1033;">
+				<P ALIGN=RIGHT>7</P>
+			</TD>
+			<TD WIDTH=29% VALIGN=TOP>
+				<P ALIGN=LEFT>4 only</P>
+			</TD>
+			<TD WIDTH=48% VALIGN=TOP>
+				<P ALIGN=LEFT>4,3,1</P>
+			</TD>
+		</TR>
+		<TR>
+			<TD WIDTH=23% VALIGN=BOTTOM SDVAL="8" SDNUM="1033;">
+				<P ALIGN=RIGHT>8</P>
+			</TD>
+			<TD WIDTH=29% VALIGN=TOP>
+				<P>3 only</P>
+			</TD>
+			<TD WIDTH=48% VALIGN=TOP>
+				<P>3,1</P>
+			</TD>
+		</TR>
+		<TR>
+			<TD WIDTH=23% VALIGN=BOTTOM SDVAL="9" SDNUM="1033;">
+				<P ALIGN=RIGHT>9</P>
+			</TD>
+			<TD WIDTH=29% VALIGN=TOP>
+				<P>4 only</P>
+			</TD>
+			<TD WIDTH=48% VALIGN=TOP>
+				<P>4,3,1</P>
+			</TD>
+		</TR>
+		<TR>
+			<TD WIDTH=23% VALIGN=BOTTOM SDVAL="10" SDNUM="1033;">
+				<P ALIGN=RIGHT>10</P>
+			</TD>
+			<TD WIDTH=29% VALIGN=TOP>
+				<P>2+3</P>
+			</TD>
+			<TD WIDTH=48% VALIGN=TOP>
+				<P>2,3,1</P>
+			</TD>
+		</TR>
+	</TBODY>
+</TABLE>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">The 2<SUP>nd</SUP> column shows the
+most pertinent ID(s) in the slim &ndash; the direct mapping. The 3<SUP>rd</SUP>
+column shows all ancestors in the slim.</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">Note  in particular the mapping of ID 9
+&ndash; although this has two paths to the root through the slim via
+3 and 4, 3 is discarded because it is subsumed by 4.</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">On the other hand, 10 maps to both 2
+and 3 because these are both the first slim ID in the two valid paths
+to the root, and neither subsumes the other.</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">The algorithm used is:</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">to map any one term in the full
+ontology:</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm">find all valid paths through to
+	the root node in the full ontology</P>
+	<P STYLE="margin-bottom: 0cm"></P>
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm">for each path, take the first slim
+	term encountered in the path</P>
+	<P STYLE="margin-bottom: 0cm"></P>
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm">discard any redundant slim terms
+	in this set &ndash; ie slim terms subsumed by other slim terms in
+	the set</P>
+</UL>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm"><B>BUCKET TERMS</B></P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">If you run the script with the <B>-b</B>
+option, bucket terms will be added. For any term P in the slim, if P
+has at least one child C, a bucket term P' will be created under P.
+This is a catch-all term for mapping any term in the full ontology
+that is a descendant of P, but NOT a descendant of any child of P in
+the slim ontology.</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">For example, the slim <B>generic.0208</B>
+has the following terms and structure:</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">    %DNA binding ; GO:0003677</P>
+<P STYLE="margin-bottom: 0cm">     %chromatin binding ; GO:0003682 
+</P>
+<P STYLE="margin-bottom: 0cm">     %transcription factor activity ;
+GO:0003700, GO:0000130</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">After adding bucket terms, it will look
+like this:</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">   %DNA binding ; GO:0003677</P>
+<P STYLE="margin-bottom: 0cm">    %chromatin binding ; GO:0003682</P>
+<P STYLE="margin-bottom: 0cm">    %transcription factor activity ;
+GO:0003700 ; synonym:GO:0000130</P>
+<P STYLE="margin-bottom: 0cm">    @bucket:Z-OTHER-DNA binding ;
+slim_temp_id:12</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">Terms from the full ontology that are
+other children of DNA binding, such as single-stranded DNA binding
+and its descendents will map to the bucket term.</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">The bucket term has a &ldquo;slim ID&rdquo;
+which is transient and is there only to facilitate the mapping. It
+should not be used externally.</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">The bucket term has the prefix
+&ldquo;Z-OTHER&rdquo;; the &ldquo;Z&rdquo; is a hack to make sure
+that the term is always listed last in the alphabetic ordering.</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">The algorithm is slightly modified if
+bucket terms are used. The bucket term has an implicit relationship
+to all OTHER siblings not in the slim.</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm"><B>GRAPH MISMATCHES</B></P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">Currently map2slim does not flag graph
+mismatches; it takes the full ontology as being the real graph.</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm"><B>OUTPUT</B></P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">In normal mode, a standard format
+gene-association file will be written. The GO ID column (5) will
+contain GO slim IDs. The mapping corresponds to the 2<SUP>nd</SUP>
+column in the table above. Note that the output file may contain more
+lines that the input file. This is because some full GO IDs have more
+than one pertinent slim ID.</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm"><B>COUNT MODE</B></P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm">map2slim can be run with the -c option,
+which will gives the counts of distinct gene products mapped to each
+slim term. There are actually two counts for every slim term &ndash;
+the number of distinct gene products for which this is the most
+pertinent/direct slim ID, and the number of distinct gene products
+which are annotated to any descendant of this slim ID (or annotated
+directly to the slim ID). This corresponds to the 2<SUP>nd</SUP> and
+3<SUP>rd</SUP> columns in the table above.</P>
+</BODY>
+</HTML>

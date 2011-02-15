@@ -1,0 +1,151 @@
+#!/usr/bin/python
+##
+##
+##
+
+##
+import os
+import re
+import sys
+import getopt
+import fileinput
+import time
+import gamin
+
+
+## Print usage information.
+def usage():
+    print """
+  This is a userspace "daemon" that watches for a file to be tickled
+  and then executes commands defined in a file.
+
+  Usage:
+     update-watcher [-h] [-v] [-s <filename>] [-c <filename>]
+
+  Options:
+     -h               Print this message.
+     -v               Enable more verbose messages. This is useful for checking
+                      installation errors.
+     -s <filename>    The session file that we monitor.
+     -c <filename>    The file containing the commands to run. One per line
+                      and '#'s as comments.
+
+  Example Usage:
+     update-watcher -s /var/www/cgi-bin/session -c /home/me/mycommands.txt  
+"""
+
+def die(message):
+    sys.stderr.write("DIE: " + message + "\n")
+    sys.exit(2);
+
+def log(message):
+    current_time = time.strftime('%X %x %Z')
+    sys.stdout.write("[" + current_time + "] " + message + "\n")
+    sys.stdout.flush()
+
+
+##
+def run(cmd):
+
+    try:
+        log("Running: \"" + cmd + "\"")
+        retc = os.system(cmd)
+        if retc < 0:
+            die("Command failed (1)")
+        else:
+            log("Success.")
+    except OSError, e:
+        #print >>sys.stderr, "Execution failed:", e
+        die("Command failed (2)")
+
+
+##
+def monitor(session_file, commands):
+    """Monitor a file for an alteration and issue commands on the
+    callback."""
+
+    # The all-important callback.
+    def callback(path, event):
+        current_time = time.strftime('%X %x %Z')
+        if (event == '1') or (event == 1):
+            log("Got callback: " + path + ", " + str(event))
+            for c in commands:
+                #print "\tExecute: \"%s\"" % c
+                run(c)
+        else:
+            log("Unwanted event: " + path + ", " + str(event))
+    
+    # Setup.
+    mon = gamin.WatchMonitor()
+    mon.watch_file(session_file, callback)
+
+    # Every few seconds, check for alterations to the session file,
+    # which will hit the callback.
+    while True:
+        time.sleep(5)
+        ret = mon.event_pending()
+        #print "Waiting (%s)..." % ret
+        if ret > 0:
+            ret = mon.handle_one_event()
+            ret = mon.handle_events()
+
+    # Graceful exit.
+    mon.stop_watch(session_file)
+    del mon
+
+
+##
+if __name__ == "__main__":
+
+    current_time = time.strftime('%X %x %Z')
+    log("Starting daemon...")
+
+    # Bring in our commands from the commands file.
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "hvs:c:", ["help",\
+                                                                "verbose",\
+                                                                "session=",\
+                                                                "commands="])
+    except getopt.GetoptError:
+        usage()
+        sys.exit(2)
+
+    session_file = ""
+    commands_file = ""
+    #log_file = ""
+    #have_required_args = 3
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif opt == ("-v", "--verbose"):
+            global _verbose
+            _verbose = 1
+        elif opt in ("-s", "--session"):
+            session_file = arg
+        #elif opt in ("-l", "--log"):
+        #    have_required_args -= 1
+        #    log_file = arg
+        elif opt in ("-c", "--commands"):
+            commands_file = arg
+
+    # Check for session and command files' existance.
+    have_required_args = 2
+    have_required_args -= os.path.isfile(session_file)
+    have_required_args -= os.path.isfile(commands_file)
+    if have_required_args != 0:
+        die("The session and commands files must both be defined and extant.")
+
+    ## Define our commands.
+    commands = []
+    for line in fileinput.input(commands_file):
+        # If not a comment or just ws, add to commands.
+        line = line.rstrip().lstrip()
+        regexp_for_comment = re.compile('^\w*\#')
+        if (not regexp_for_comment.match(line)) and (line != ""):
+            commands.append(line)
+            #if _verbose and _verbose == 1:
+            log("Will run: " + line)
+
+    # Start monitor.
+    monitor(session_file, commands)

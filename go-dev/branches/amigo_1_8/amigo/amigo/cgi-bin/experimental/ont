@@ -1,0 +1,135 @@
+#!/usr/bin/perl -w
+
+##
+##
+##
+use lib '/home/sjcarbon/local/src/cvs/go-dev_amigo_1_6_exp/amigo/perl';
+use lib "/users/sjcarbon/local/src/cvs/go-dev/amigo/perl";
+
+## Bring in necessaries.
+use utf8;
+use strict;
+
+## Fun for me.
+use CGI::Simple;
+use XML::Generator;
+use GOBO::DBIC::GODBModel::Graph;
+
+## Get an XML generator.
+my $xml = XML::Generator->new();
+
+## Spin up the graph.
+my $graph = GOBO::DBIC::GODBModel::Graph->new();
+
+## Simple start.
+$CGI::Simple::POST_MAX = 0;        # max upload via post default: nada
+$CGI::Simple::DISABLE_UPLOADS = 1; # disable uploads
+$CGI::Simple::DEBUG = 1;           # allow command line debugging
+my $q = new CGI::Simple;
+
+## Simple processing to get terms.
+my @terms = ();
+my $get = $q->param('get') || '';
+if( length($get) > 0 && length($get) < 32 ){
+
+  ## Get term.
+  my $term = $graph->get_term($get);
+  push @terms, $term if defined($term);
+
+}else{
+
+  ## Get roots.
+  my $roots = $graph->get_roots();
+
+  foreach my $term_key (keys %{$roots}){
+
+    my $term = $roots->{$term_key};
+    push @terms, $term;
+  }
+}
+
+
+#print STDERR "___" . $term_key . "\n";
+
+
+## Processing of terms list to generate XML for both the terms and the
+## associated links.
+my @buffer = ();
+foreach my $term (@terms){
+
+  ## Generate term XML.
+  push @buffer, generate_xml_term_from_term($term);
+
+  ## Get kids.
+  my $foo = generate_links_xml_from_term($term);
+  foreach my $link (@$foo){
+
+    push @buffer, $link;
+  }
+}
+
+
+## Header from CGI::Simple.
+#print $q->no_cache(); # BUG: This doesn't seem to work! Go to manual.
+print "Cache-Control: no-cache\n";
+print $q->header(
+		 -type    => 'text/xml',
+		 -charset => 'utf-8',
+		);
+
+## Guaranteed XML content.
+my $output = join '', @buffer;
+print $xml->graphset($xml->graph($output));
+
+
+##
+## Genuine subroutines.
+##
+
+
+##
+sub generate_xml_term_from_term {
+
+  my $term = shift;
+
+  return $xml->node(
+		    { id => $term->acc,
+		      metatype => "class" },
+		    $xml->label( $term->name )
+		   );
+}
+
+
+##
+sub generate_links_xml_from_term {
+
+  my $term = shift;
+
+  my @xml_string_array = ();
+
+  ## Get kids.
+  my $kid_rels = $graph->get_child_rels($term);
+
+  foreach my $r (keys %{$kid_rels}){
+
+    my $rel = $kid_rels->{$r};
+    push @xml_string_array, generate_pre_xml_link_from_rel($rel);
+  }
+
+  return \@xml_string_array;
+}
+
+
+##
+sub generate_pre_xml_link_from_rel {
+
+  my $rel = shift;
+
+  return $xml->link(
+		    $xml->subject($rel->subject->acc),
+		    $xml->predicate($rel->relationship_type_id),
+		    $xml->object($rel->object->acc)
+		   );
+}
+
+

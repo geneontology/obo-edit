@@ -1,0 +1,3 @@
+#!/bin/sh
+((which xsltproc > /dev/null) || (echo "You need xsltproc (part of libxslt). See go-dev/xml/xsl/README"))
+xsltproc $GO_ROOT/xml/xsl/$1.xsl $2

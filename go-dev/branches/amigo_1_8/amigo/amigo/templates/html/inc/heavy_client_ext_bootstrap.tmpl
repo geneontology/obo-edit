@@ -1,0 +1,51 @@
+<!-- START template: heavy_client_ext_bootstrap.tmpl -->
+[% css_dir = html_url _ '/css' %]
+[% STANDARD_CSS %]
+[% EXT_CSS %]
+<!-- [% EXT_THEME %] -->
+[% EXT_JS %]
+[% AMIGO_JS %]
+[% AMIGO_GO_META_JS %]
+[% AMIGO_LIVE_SEARCH_GP_JS %]
+[% AMIGO_WORKSPACE_JS %]
+[% # EXT_JS_CORE %]
+[% # EXT_JS_ALL %]
+<script type="text/javascript"
+        src="[% CLIENT_JS %]"></script>
+[% EXT_JS_INIT %]
+
+<!-- The ext css seems to eat the warning style, so a little extra -->
+<!-- love here. -->
+<style type="text/css">
+  #shout {
+  margin-top: .5em;
+  margin-bottom: .5em;
+  color : #7538D7;
+  text-align : center;
+  text-decoration : underline;
+  font-weight : bold;
+  font-style : italic;
+  font-size: 150%;
+  }
+</style>
+
+<!-- <style type="text/css"> -->
+<!--   html, body { -->
+<!--   font:normal 12px verdana; -->
+<!--   margin:0; -->
+<!--   padding:0; -->
+<!--   border:0 none; -->
+<!--   overflow:hidden; -->
+<!--   height:100%; -->
+<!--   } -->
+<!--   p { -->
+<!--   margin:5px; -->
+<!--   } -->
+<!--   .settings { -->
+<!--   background-image:url(../shared/icons/fam/folder_wrench.png); -->
+<!--   } -->
+<!--   .nav { -->
+<!--   background-image:url(../shared/icons/fam/folder_go.png); -->
+<!--   } -->
+
+<!-- END template: heavy_client_ext_bootstrap.tmpl -->

@@ -1,0 +1,138 @@
+<!-- START: heavy_client_jquery.tmpl -->
+
+<!-- Optional controls panel. -->
+<!-- <div class="ui-layout-west"> -->
+<!-- </div> -->
+
+<!-- Main application panel. -->
+<div id="blahblahblah" class="ui-layout-center" style="">
+<!-- <div id="blahblahblah" class="ui-layout-center" style="overflow: hidden !important;"> -->
+
+  <table>
+    <tr>
+      <td>
+	
+	<div id="search-tabs" style="font-size:85%; width:25em;">
+	  <ul style="">
+	    <li><a href="#search-terms"><span>Terms</span></a></li>
+	    <li><a href="#search-gps"><span>Gene Products</span></a></li>
+	    <li><a href="#search-assocs"><span>Associations</span></a></li>
+	  </ul>
+	  <div id="search-terms">
+
+	    <form id="app-form-term" action="#" method="get">
+	      <div id="app-form-term-query">
+		Loading controls...
+	      </div>
+	      <div id="app-form-term-filters">
+		Loading controls...
+	      </div>
+	    </form>
+	  
+	  </div>
+	  <div id="search-gps">
+
+	    <form id="app-form-gp" action="#" method="get">
+	      <div id="app-form-gp-query">
+		Loading controls...
+	      </div>
+	      <div id="app-form-gp-filters">
+		Loading controls...
+	      </div>
+	    </form>
+
+	  </div>	  
+	  <div id="search-assocs">
+
+	    <form id="app-form-assoc" action="#" method="get">
+	      <div id="app-form-assoc-query">
+		Loading controls...
+	      </div>
+	      <div id="app-form-assoc-filters">
+		Loading controls...
+	      </div>
+	    </form>
+
+	  </div>	  
+	</div>
+
+      </td>
+      <td style="width: 100%;">  
+	
+	  <div id="results-tabs" style="font-size:100%;">
+	    <ul>
+	      <li><a href="#results-block"><span>Results</span></a></li>
+	    </ul>
+
+	  <div id="results_block" style="">
+	    <div id="load_float" style=""></div>
+	    <div id="meta_results">
+	      <p>
+		None yet.
+	      </p>
+	    </div>
+	    
+	    <div id="results">
+
+	      <p>
+		No results will be returned until the search input is at
+		least three characters. After that, you may also use the
+		filters to reduce the number of results.
+	      </p>
+
+	      <p>
+		For a detailed explanation on how to search, please read the
+		<a id="tiptarget"
+		   title="Explanation of query syntax"
+		   href="http://lucene.apache.org/java/1_4_3/queryparsersyntax.html">query syntax</a> documentation.
+	      </p>
+
+	    </div>
+	    
+	  </div>
+
+	</div>
+
+      </td>
+    </tr>
+  </table>
+
+  <!--	 <p> -->
+  <!--	   Loading application... -->
+  <!--	 </p> -->
+  <!--	 <div style="font-size:50%;" id="test"></div> -->
+</div>
+
+<!-- Cart handling panel. Sometimes unneeded, always present. -->
+<div id="barbarbar" class="ui-layout-east">
+
+  <div id="cart-tabs" style="font-size:75%;">
+    <ul>
+      <li><a href="#cart-contents"><span>Contents</span></a></li>
+      <li><a href="#cart-options"><span>Options</span></a></li>
+    </ul>
+    <div id="cart-contents">
+      <p>
+	Loading cart contents...
+      </p>
+    </div>
+    <div id="cart-options">
+      <!-- BUG: hardwired link. -->
+      <p>
+	<a title="Jump to the workspace"
+	   href="amigo_exp?mode=workspace_client">
+	  Workspaces
+	</a>
+      </p>	
+      <p>
+	<div id="cart-short-circut-div"></div>
+      </p>	
+      <p>
+	Other cart options...
+      </p>	
+    </div>
+  </div>
+
+</div>
+
+<!-- END: heavy_client_jquery.tmpl -->

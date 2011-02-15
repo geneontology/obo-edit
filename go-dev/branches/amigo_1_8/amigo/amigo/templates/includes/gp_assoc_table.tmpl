@@ -1,0 +1,49 @@
+[% FOREACH term = term_list;
+		t_acc = term.acc;
+		gp_id = gp.id;
+		a_list = assoc_h.$gp_id.$t_acc;
+		rowspan = 0;
+		IF assoc_view != 'summary';
+			FOREACH q = a_list.keys;
+				FOREACH association = a_list.$q;
+					rowspan = rowspan + association.evidence_list.size;
+				END;
+			END;
+		ELSE;
+			rowspan = a_list.keys.size;
+		END;
+
+		IF counter % 2 == 0 %]
+		<tr class="even_row">
+	[% ELSE %]
+		<tr>
+	[% END;
+		IF assoc_view != 'summary' %]
+			<td rowspan="[% rowspan %]">
+				<input class="cbox" type="checkbox" id="term-[% counter %]" value="[% term.acc %]" name="item">
+			</td>
+	[% END %]
+			<td rowspan="[% rowspan %]" class="term">
+
+	[% IF !term.is_obsolete %]
+		<ul class="floating-links">
+		[% gp_assoc_text = 'view gene products';
+			IF show_gp_counts;
+				gp_assoc_text = term.n_deep_products _ ' gene product';
+				IF term.n_deep_products != 1;
+					gp_assoc_text = gp_assoc_text _ 's';
+			END; END %]
+		<li><a href="term-assoc.cgi?term=[% term.acc %]&amp;session_id=[% session_id %]" title="View gene products associated with this term">[% gp_assoc_text %]</a></li>
+		<li><a href="browse.cgi?action=set-tree&amp;term=[% term.acc %]&amp;session_id=[% session_id %]" title="View term in the tree">view in tree</a></li>
+		 </ul>
+	[% END %]
+			<label for="term-[% counter %]" class="acc">[% term.acc %]</label> : <a href="term_details?term=[% term.acc %]&amp;session_id=[% session_id %]&amp;" title="Click to view details of [% term.name %]" class="name">[% term.name %]</a>
+			</td>
+			<td rowspan="[% rowspan %]" class="term">
+				<a href="[% munger.get_GO_doc_url('ont', term.type) %]" title="[% term.type.replace('_',' ') %]; click to view documentation" class="type">
+				[% term.type.replace('_',' ') %]
+				</a>
+			</td>
+[% 	PROCESS assoc_table.tmpl;
+		counter = counter + 1;
+	END %]

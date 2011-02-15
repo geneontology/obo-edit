@@ -1,0 +1,163 @@
+#!/usr/local/bin/perl -w
+####
+#### Try and figure out what is wrong with an AmiGO installation.
+####
+#### Must be able to run with almost nothing, so barebone.
+####
+
+use strict;
+use File::Find	qw(find);
+use Carp;
+
+$| = 1;
+
+###
+### Start.
+###
+
+
+## Header.
+print <<EOS;
+Cache-Control: no-cache
+Content-Type: text/html
+
+<html>
+<body>
+EOS
+
+print "<h2>AmiGO runtime information</h2>";
+
+
+###
+### Examine config.pl.
+###
+
+
+## Get all config variables if possible.
+my $config_hash = {};
+if( -r "config.pl" ){
+  require "config.pl";
+
+  my $unsorted_conf_vars = [];
+  open (CONFIG, "config.pl") or die "Cannot open config.pl: $!";
+  while( <CONFIG> ){
+    if( /^\$ENV\{([a-zA-Z0-9_-]+)\}\=/ ){
+      push @$unsorted_conf_vars, $1;
+    }
+  }
+  my @conf_list = sort { $a cmp $b } @$unsorted_conf_vars;
+
+  ## Dump information.
+  print "<h3>config.pl env information</h3>";
+  print "<p>";
+  foreach my $var (@conf_list){
+    if( defined($ENV{$var}) ){
+      print $var . " = " . $ENV{$var} . "<br />\n";
+      $config_hash->{$var} = 1;
+    }
+  }
+  print "</p>";
+}
+
+
+###
+### Examine the rest of the environment.
+###
+
+print "<h3>non-config.pl env information</h3>";
+print "<p>";
+my $unsorted_env_vars = [];
+foreach my $var (keys %ENV){
+  if( ! defined($config_hash->{$var}) ){
+    push @$unsorted_env_vars, $var;
+  }
+}
+my @env_list = sort { $a cmp $b } @$unsorted_env_vars;
+foreach my $var (@env_list){
+  if( defined($ENV{$var}) ){
+    print $var . " = " . $ENV{$var} . "<br />\n";
+  }
+}
+print "</p>";
+
+###
+### Examine perl path and libs.
+###
+
+if( ! -f "perl_libs.json" ){
+  print "<h3>Couldn\'t find perl_libs.json</h3>";
+  print <<EOC;
+<p>
+Run "simulate.pl -j" and put the produced file
+into the same directory as this diagnose script.
+</p>
+EOC
+}else{
+
+  print "<h3>Perl library versions</h3>";
+  print "<p>";
+
+  use JSON;
+  my $json = JSON->new();
+
+  my $json_txt = '';
+  eval {
+    open (AFILE, 'perl_libs.json') or die "Cannot open perl_libs.json: $!";
+    while (<AFILE>) {
+      $json_txt .= $_;
+    }
+  };
+
+  ## If there is text.
+  if( $json_txt ){
+    my $llist = [];
+    eval {
+      $llist = JSON::decode_json($json_txt);
+    };
+
+    ## TODO: Print the results.
+    foreach my $mod (@$llist){
+      ##print 
+      local $SIG{__WARN__} = sub {};
+      {
+	no strict 'refs';
+	eval {
+	  "require $mod"
+	};
+	if($@){}
+      }
+      my $vers = undef;
+      {
+	no strict 'refs';
+	# $vers = ${ $mod . "::VERSION" };
+	eval{
+	  $vers = `$^X -m$mod -e 'print \$${mod}::VERSION' 2>&1`;
+	};
+	if($@){}
+      }
+
+      ##
+      print $mod;
+      if( defined $vers && $vers && $vers =~ /^[0-9\.\(\)\-\_a-zA-Z\+]+$/ ){
+	$vers =~ s/^\s*(.*?)\s*$/$1/; # why is there whitespace here??
+	print " (" . $vers . ")";
+      }
+      print "<br />\n";
+    }
+  }
+
+  print "</p>";
+}
+
+###
+### Finish.
+###
+
+print <<EOS;
+</body>
+</html>
+EOS
+
+
+
+1;

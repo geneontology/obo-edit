@@ -1,0 +1,123 @@
+#!/usr/bin/perl -w
+##
+##
+##
+
+use strict;
+use utf8;
+
+## You should only be changing these variables.
+my $NUMBER_OF_SECONDS_TO_WAIT = 120;
+my $DIR_OF_SESSION =  "/www/toy_9012/cgi-bin";
+my $NAME_OF_SESSION =  "updater.session";
+my $DIR_OF_AMIGO =  "/www/toy_9012/cgi-bin/amigo";
+my $URL_OF_AMIGO =  "http://toy.lbl.gov:9012/cgi-bin/amigo/go.cgi";
+my $URL_OF_UPDATER =  "http://toy.lbl.gov:9012/cgi-bin/updater";
+
+## Set up CGI environment,
+#use CGI qw/:standard/;
+#use CGI::Carp qw(warningsToBrowser fatalsToBrowser);
+#$CGI::POST_MAX = 0;	## no uploads.
+#my $q = new CGI;
+
+my $session_file = "$DIR_OF_SESSION/$NAME_OF_SESSION";
+my $amigo_file = "$DIR_OF_AMIGO/go.cgi";
+
+## Check the dates on an AmiGO file.
+my $base_mtime = (stat($amigo_file))[9];
+
+## Tickle update-watcher...
+run("touch $session_file");
+
+## Wait for a response (wait for the dates to change).
+my $success = 0;
+my $elapsed_time = 0;
+while( $elapsed_time < $NUMBER_OF_SECONDS_TO_WAIT && ! $success ){
+
+  ## Check for time change.
+  my $new_mtime = (stat($amigo_file))[9];
+  if( $new_mtime > $base_mtime ){
+    $success = 1;
+    last;
+  }
+
+  $elapsed_time++;
+  sleep(1);
+}
+
+## Wait some more seconds just to make sure that installer finished
+## (TODO: I should time this proper like).
+sleep(5);
+
+##
+if( $success ){
+
+  ## Report the update.
+  print<<EOC
+content-type:text/html
+
+<html>
+ <body>
+  <p>
+
+The AmiGO update has (hopefully) been <em>completed</em>.
+
+  </p>
+  <p>
+
+You may return to the bbop.org development instance here: <br />
+
+<a href="$URL_OF_AMIGO">$URL_OF_AMIGO</a>
+
+  </p>
+  <p>
+
+Or you may reinstall again: <br />
+
+<a href="$URL_OF_UPDATER">$URL_OF_UPDATER</a>
+
+  </p>
+ <body>
+</html>
+EOC
+
+}else{
+
+  ## Report the failure.
+  print<<EOC
+content-type:text/html
+
+<html>
+ <body>
+  <p>
+
+The AmiGO update has <em>failed</em>.
+
+  </p>
+  <p>
+
+Please contact Seth and get him to figure out why.
+
+  </p>
+  <p>
+
+Or you may try again: <br />
+
+<a href="$URL_OF_UPDATER">$URL_OF_UPDATER</a>
+
+  </p>
+ <body>
+</html>
+EOC
+
+}
+
+
+##
+sub run{
+  my $command = shift;
+  die "No command given: $!" if ! $command;
+  print STDERR "Starting: ($command).\n";
+  ! system($command)
+    or die "Failure: ($command): $!";
+};

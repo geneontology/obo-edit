@@ -1,0 +1,8 @@
+<?xml version="1.0"?> 
+<level name="Slim Files"
+       description="Files for doing slimmy stuff.">
+  <file id="f1"
+	name="GO Slim Generic"
+	description="The generic GO slim"
+	location="/www/toy_9002/htdocs/amigo/library/goslim_generic.obo" />
+</level>

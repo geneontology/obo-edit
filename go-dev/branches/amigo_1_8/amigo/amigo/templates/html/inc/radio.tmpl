@@ -1,0 +1,42 @@
+<!-- START template: radio.tmpl -->
+<!--    title = "[% title %]"           -->
+<!--    name = "[% name %]"             -->
+<!--    list = "[% list %]"             -->
+<!--    selected = "[% selected %]"     -->
+
+[% IF title AND title != '' %]
+<fieldset class="block">
+  <legend>
+    [% title %]
+  </legend>
+[% ELSE %]
+<div class="block">
+[% END %]
+  <ul>
+    [% i = 0 %]
+    [% FOREACH value = list.keys %]
+    [%    label = list.$value %]
+    <li>
+      <input type="radio" 
+	     [% IF selected AND value == selected %]
+	     checked="checked"
+	     [% ELSIF selected == '' AND i == 0 %]
+	     checked="checked"
+	     [% END %]
+	     name="[% name %]" 
+	     value="[% value %]" 
+	     class="cbox" />
+      <label>
+	[% label %]
+      </label>
+    </li>
+    [% i = i + 1 %]
+    [% END %]
+  </ul>
+
+[% IF title AND title != '' %]
+</fieldset>
+[% ELSE %]
+</div>
+[% END %]
+<!-- END template: radio.tmpl -->

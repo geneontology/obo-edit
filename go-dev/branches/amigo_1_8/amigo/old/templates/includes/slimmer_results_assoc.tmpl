@@ -1,0 +1,68 @@
+<!-- START template: slimmer_results_assoc.tmpl -->
+<div class="block">
+  <h2>Results</h2>
+  
+<!--
+  <p>
+  </p>
+-->
+
+  <p>
+    If you wish to retry or tune your query, you
+    may <a href="#controls" title="Jump to the controls">jump</a> to
+    the controls.
+  </p>
+
+  <table summary="Gene association file&nbsp;cho">
+    <thead>
+      <tr>
+	<th style="">DB</th>
+	<th style="">ID</th>
+	<th style="">Symbol</th>
+	<th style="">Not</th>
+	<th style="">GO ID</th>
+	<th style="">Reference(s)</th>
+	<th style="">Ev</th>
+	<th style="">With</th>
+	<th style="">Aspect</th>
+	<th style="">Full Name</th>
+	<th style="">Synonym(s)</th>
+	<th style="">Type</th>
+	<th style="">Taxon</th>
+	<th style="">Date</th>
+	<th style="">Assigned</th>
+      </tr>
+    </thead>
+    <tbody>
+      [% eo = 0 %]
+      [% FOREACH line = LINES %]
+      [%    IF eo % 2 == 0 %]
+      <tr class="even_row">
+      [%    ELSE %]
+      <tr class="even_odd">
+      [%    END %]
+      [%    item_no = 0 %]
+      [%    FOREACH item = line %]
+      [%       IF item_no == 4 %]
+      <td rowspan="1">
+	<a href="go.cgi?term=[% item %]">[% item %]</a>
+      </td>
+      [%       ELSE %]
+      <td rowspan="1">
+	[% item %]
+      </td>
+      [%       END %]
+      [%       item_no = item_no + 1 %]
+      [%    END %]
+      </tr>
+      [%    eo = eo + 1 %]
+      [% END %]
+    </tbody>
+  </table>
+
+  <p class="toTop">
+    <a href="#top" title="Back to the top of the page">Back to top</a>
+  </p>
+  
+</div>
+<!-- END template: slimmer_results_assoc.tmpl -->
