@@ -12,7 +12,7 @@ use strict;
 
 
 ##
-my @RG_CODE_ORDER =
+our @RG_CODE_ORDER =
   qw(
       9606
       10090

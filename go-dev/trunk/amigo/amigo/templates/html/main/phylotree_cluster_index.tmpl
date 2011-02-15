@@ -26,7 +26,9 @@ Last Annotated</th>
 <th>
 <input type="submit" name="memb_asce" value="&lt&lt;"/>&nbsp;<input type="submit" name="memb_desc" value="&gt&gt;"/>
 Members</th>
-<th>Reference Genome Distribution</th>
+[%- FOREACH dist IN clusters.1.dist -%]
+<th>[% dist.code %]</th>
+[%- END -%]
 </tr></thead>
 <tbody>[%- FOREACH cluster IN clusters %]<tr>
 
@@ -34,7 +36,9 @@ Members</th>
 <td><a href="[% cluster.url %]">[% cluster.key %]</a></td>
 <td>[% cluster.last_annotated %]</td>
 <td>[% cluster.number_of_members %]</td>
-<td><img src="[% cluster.dist %]" alt="[Reference Distribution Image]"/></td>
+[%- FOREACH dist IN cluster.dist -%]
+<td style="background-color:[% dist.color %]">[% dist.count %]</td>
+[%- END -%]
 
 </tr>[% END %]</tbody>
 </table></form>[%- END -%]
