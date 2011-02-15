@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
-Class-Path: FaCTpp-OWLAPI-v1.4.0.1.jar GraphDraw-20100831-1335.jar GraphDraw.jar ant.jar aterm-java-1.6.jar commons-logging-1.1.1.jar commons-math-2.1.jar junit.jar log4j-1.2.15.jar mail.jar oboformat.jar org.semanticweb.HermiT.jar owlapi-bin.jar pellet-cli.jar pellet-core.jar pellet-datatypes.jar pellet-dig.jar pellet-el.jar pellet-explanation.jar pellet-jena.jar pellet-modularity.jar pellet-owlapi.jar pellet-owlapiv3.jar pellet-pellint.jar pellet-query.jar pellet-rules.jar pellet-test.jar pellet.jar relaxngDatatype.jar servlet.jar xercesImpl.jar xml-apis.jar xsdlib.jar
+Class-Path: FaCTpp-OWLAPI-v1.4.0.1.jar GraphDraw-20100831-1335.jar GraphDraw.jar ant.jar aterm-java-1.6.jar commons-logging-1.1.1.jar commons-math-2.1.jar junit.jar log4j-1.2.15.jar mail.jar oboformat.jar org.semanticweb.HermiT.jar owlapi-bin.jar pellet-cli.jar pellet-core.jar pellet-datatypes.jar pellet-dig.jar pellet-el.jar pellet-explanation.jar pellet-jena.jar pellet-modularity.jar pellet-owlapi.jar pellet-owlapiv3.jar pellet-pellint.jar pellet-query.jar pellet-rules.jar pellet-test.jar pellet.jar relaxngDatatype.jar xercesImpl.jar xml-apis.jar xsdlib.jar
 Main-Class: owltools.OWLReasonerRunner
 Specification-Title: owltools
 Sealed: true
 Specification-Version: $VERSION$
 Specification-Vendor: Gene Ontology Consortium
 Implementation-Title: owltools
-Implementation-Version: build144_${build_date}
+Implementation-Version: build145_${build_date}
 Implementation-Vendor: Berkeley Bioinformatics and Ontologies Project
