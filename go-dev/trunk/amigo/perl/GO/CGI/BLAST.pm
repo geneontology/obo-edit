@@ -112,13 +112,13 @@ sub set_off_blast {
   }
 
   # OK, let's get going on the query now!
-  if ($inputs->{seq_id} || $inputs->{uniprot_id}) {
+  if( $inputs->{seq_id} || $inputs->{uniprot_id} ){
     my $gps;
     my $id = $inputs->{seq_id}; # this is from an AmiGO BLAST link
-    if (!$id){
+    if( ! $id ){ # make an id from input if no incoming seq id
       $id = $inputs->{uniprot_id};
-      $id =~ s/^.*[\|:]//;
-      $id = "UniProt:".$id;
+      $id =~ s/^.*[\|:]//; # ...remove eveything and including before ':'?
+      $id = "UniProt:" . $id;
     }
     $core->kvetch("Work from id: " . $id);
     my $result_h = get_gp_details($apph, $error, { gpxref => $id },
