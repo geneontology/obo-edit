@@ -1,0 +1,27 @@
+[% IF !title; title = filterdata.$opt_name.title; END;
+	IF !option; option = filterdata.$opt_name.data; END;
+	IF page_name == 'browse' || page_name == 'term_details';
+		class = 'floatL';
+	END %]
+<fieldset[% IF class; ' class="' _ class _ '"'; END %]><legend><label for="[% opt_name %]" class="select">[% title %]</label></legend>
+<select id="[% opt_name %]" name="[% opt_name %]" multiple size="[% s %]">
+[% IF opt_name == 'taxid' && (page_name != 'prefs' && page_name != 'advanced_query');
+		FOREACH opt = option;
+			IF opt.label.length > 20;
+				opt.label = opt.label.chunk(17).0 _ "...";
+			END; %]
+			<option value="[% opt.value %]"[% IF opt.selected; ' selected'; END %]>[% opt.label %]</option>
+	[% END;
+	ELSE;
+		FOREACH opt = option;
+			label = opt.value;
+			IF opt.label; label = opt.label; END; %]
+		<option value="[% opt.value %]"[% IF opt.selected; ' selected'; END %]>[% label %]</option>
+[% 	END; 
+	END %]
+</select>
+[% IF page_name == 'prefs';
+		opt_txt = 'disable_' _ opt_name _ '_filter'; %]
+<br><input type="checkbox" name="disable_[% opt_name %]_filter" id="disable_[% opt_name %]_filter" value="1" class="cbox"[% IF session.get_user_params(opt_txt) ; ' checked'; END %]><label for="disable_[% opt_name %]_filter">Disable filter</label>
+[% END %]
+</fieldset>

@@ -1,0 +1,133 @@
+#!/usr/bin/perl -w
+
+####
+#### Xapian In GO Indexer
+####
+#### Looks like these are maintained bindings, let's see how it does...
+####
+#### TODO: actually make it work
+####
+
+BEGIN { require "config.pl"; }
+use lib $ENV{GO_ROOT} . '/go-perl';
+use lib $ENV{GO_ROOT} . '/go-db-perl';
+use lib $ENV{GO_ROOT} . '/amigo/perl';
+
+## Bring in necessaries.
+use utf8;
+use strict;
+use Data::Dumper;
+use AmiGO;
+use GOBO::DBIC::GODBModel::Schema;
+use GOBO::DBIC::GODBModel::Query;
+use Search::Xapian ':all';
+#use AmiGO::Lucene::Analysis::AmiGOTextAnalyzer;
+use Getopt::Std;
+use vars qw(
+	     $opt_v
+	     $opt_l
+	  );
+
+## Setup.
+getopts('vl:');
+my $core = AmiGO->new();
+
+
+sub bark {
+  my $str = shift || '';
+  $core->kvetch($str);
+  print STDERR $str . "\n" if $opt_v;
+}
+
+
+## Use a limit if l if defined.
+my $limit_p = 0;
+my $limit = 1000;
+my $limit_toss = 0;
+if ( $opt_l ) {
+  $limit = $opt_l;
+  $limit_p = 1;
+  bark('using limit: ' . $limit . '...');
+}
+
+###
+### Ready storage.
+###
+
+my $spot = $core->amigo_env('INDEX_DIR') . '/xapian';
+
+## Destroy/create.
+my $db = Search::Xapian::WritableDatabase->new($spot, DB_CREATE_OR_OVERWRITE)
+  or die "Couldn't open/create index: $!\n";
+
+my $analyzer = Search::Xapian::TermGenerator->new();
+$analyzer->set_database($db);
+#$analyzer->set_stemmer(Search::Xapian::Stem('english')->new());
+
+###
+### Walk through database.
+###
+
+## Cycle through the gp results and process them into something
+## useful for the lucene engine.
+$limit_toss = 0;
+my $gp_query = GOBO::DBIC::GODBModel::Query->new({type=>'gene_product_lazy'});
+while ( my $gp = $gp_query->get_next_result({}) ) {
+
+  my $name = $gp->full_name || '';
+  my $symbol = $gp->symbol || '';
+  my $acc = '';
+  if ( $gp->dbxref &&
+       $gp->dbxref->xref_dbname &&
+       $gp->dbxref->xref_key ) {
+    $acc = $gp->dbxref->xref_dbname . ':' . $gp->dbxref->xref_key;
+  }
+
+  ## Slurp up synonyms.
+  my @syn_cache = ();
+  my @all_syn = $gp->gene_product_synonym->all;
+  foreach my $s (@all_syn) {
+    push @syn_cache, $s->product_synonym if $s->product_synonym;
+  }
+  my $cat_syn = '';
+  $cat_syn = join ' ', @syn_cache if @syn_cache;
+
+  ## DEBUG
+  #     bark('('. $num_assoc .') '. $acc ."\t". $symbol ."\t". $name ."\t".
+  #	 $cat_syn . "\t" . $cat_term . "\t" . $cat_split_term . "\n");
+  bark($acc);
+  bark("\tsymbol: ".$symbol);
+  bark("\tname: ".$name);
+  bark("\tsynonym: ".$cat_syn);
+
+  ##
+  my $doc = Search::Xapian::Document->new()
+    or die "can't create doc object for $acc: $!\n";
+
+  ## Position independent.
+  $doc->add_term('Q' . $acc);
+  $doc->add_term('S' . $symbol);
+  my @split_name = split /\s+/, $name;
+  my $i = 1;
+  foreach my $sn (@split_name){
+    $doc->add_posting($sn, $i++);
+  }
+  my @split_syn = split /\s+/, $cat_syn;
+  foreach my $ss (@split_syn){
+    $doc->add_posting($ss, $i++ * 10);
+  }
+  $doc->set_data($acc . ' : ' . $name);
+
+  #$analyzer->set_document($doc);
+  #$analyzer->index_text($name);
+  #$analyzer->index_text($cat_syn, 1, 'S');
+
+  $db->add_document($doc)
+    or warn "failed to add document: $acc\n";
+
+  ## Hit limit?
+  $limit_toss++;
+  last if $limit_p && $limit_toss > $limit;
+}
+
+$core->kvetch('Done gps...');

@@ -1,0 +1,49 @@
+<!-- START template: term_assoc_table.tmpl -->
+[% FOREACH gp = gplist;
+		gp_id = gp.id;
+		a_list = assoc_h.$t_acc.$gp_id;
+		rowspan = 0; 
+		FOREACH q = a_list.keys;
+			FOREACH association = a_list.$q;
+				rowspan = rowspan + association.evidence_list.size;
+			END;
+		END;
+
+		IF counter % 2 == 0 %]
+<tr class="even_row">
+	[% ELSE %]
+<tr>
+	[% END; %]
+	<td rowspan="[% rowspan %]">
+		<input type="checkbox" name="item" value="[% HTML.escape(gp.xref.xref_dbname _ ':' _ gp.xref.xref_key) %]" id="gp-[% counter %]">
+	</td>
+	<td rowspan="[% rowspan %]" class="gp">
+		<ul class="floating-links">
+[% 	term_assoc_text = "view associations";
+		IF show_term_counts == 1 && data.n_terms;
+#			gpid = gp.id
+			term_assoc_text = data.n_terms.$gp_id _ ' association';
+			IF data.n_terms.$gp_id != 1;
+				term_assoc_text = term_assoc_text _ 's';
+		END; END %]
+			<li><a href="gp-assoc.cgi?gp=[% HTML.escape(gp.xref.xref_dbname _ ':' _ gp.xref.xref_key) %]&amp;session_id=[% session_id %]" title="View term associations">[% term_assoc_text %]</a></li>
+	[% IF show_blast && gp.seq %]
+			<li><a class="blast-link" href="blast.cgi?action=blast&amp;seq_id=[% HTML.escape(gp.xref.xref_dbname _ ':' _ gp.xref.xref_key) %]&amp;session_id=[% session_id %]" title="Use sequence as BLAST query">BLAST</a></li>
+	[% END %]
+		 </ul>
+		<label for="gp-[% counter %]" class="noDisplay">[% gp.symbol %]</label>
+		<a href="gp-details.cgi?gp=[% HTML.escape(gp.xref.xref_dbname _ ':' _ gp.xref.xref_key) %]&amp;session_id=[% session_id %]" title="View gene product details" class="symbol">[% gp.symbol %]</a>
+	[% IF gp.full_name != '' && gp.full_name != gp.symbol %]
+			<br><a href="gp-details.cgi?gp=[% HTML.escape(gp.xref.xref_dbname _ ':' _ gp.xref.xref_key) %]&amp;session_id=[% session_id %]" title="View gene product details" class="name">[% gp.full_name %]</a>
+	[% END %]
+	</td>
+	<td rowspan="[% rowspan %]" class="gp">
+		<span class="type">[% gp.type %]</span>
+	[% IF gp.species.binomial.match('\S+') %]
+			from <i class="spp">[% gp.species.binomial %]</i>
+	[% END %]
+	</td>
+[% 	PROCESS assoc_table.tmpl;
+		counter = counter + 1;
+	END; %]
+<!-- END template: term_assoc_table.tmpl -->

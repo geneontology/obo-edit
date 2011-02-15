@@ -1,0 +1,13 @@
+<h3><label for="query">Enter your query</label> <a href="http://www.geneontology.org/amigo/help-blast_query.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></h3>
+<fieldset class="blast-form"><legend>Enter a UniProt accession <em>or</em> upload a text file of queries <em>or</em> paste in FASTA sequence(s) </legend>
+	<p><label for="sptr_id">UniProt accession</label>: <input type="text" name="sptr_id" id="sptr_id" class="textBox">
+	</p>
+	<p><label for="upfile">Text file</label> (maximum file size [% max_upload_size %]K): <input type="file" name="upfile" id="upfile" title="Upload a text file to use as input" class="button">
+	</p>
+	<p><label for="seq">FASTA sequence(s):</label><br>Sequences should be separated with an empty line.</p>
+	<textarea name="seq" id="seq" cols="50" rows="20"></textarea>
+</fieldset>
+<ul>
+	<li>Maximum number of sequences: [% max_seq_num %]</li>
+	<li>Maximum total length of sequence: [% max_seq_length.chunk(-3).join(',') %] residues</li>
+</ul>

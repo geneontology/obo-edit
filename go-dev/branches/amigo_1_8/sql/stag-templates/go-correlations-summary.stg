@@ -1,0 +1,39 @@
+:SELECT 
+  term.*, correlated_term.*, count(distinct association2.gene_product_id) AS correlated_term__gpcount
+  
+:FROM
+  term
+  INNER JOIN association AS association1 ON (association1.term_id = term.id)
+  INNER JOIN association AS association2 ON (association1.gene_product_id = association2.gene_product_id)
+  INNER JOIN term AS correlated_term ON (association2.term_id = correlated_term.id)
+
+:WHERE
+    [association1.term_id != association2.term_id]
+    [term.id != correlated_term.id]
+    [term.acc = &term_acc&]
+    [term.name = &term_name&]
+    [correlated_term.term_type = &correlated_term_type&]
+    [correlated_term.acc = &correlated_term_acc&]
+    [correlated_term.name = &correlated_term_name&]
+    [association1.is_not = 0]
+    [association2.is_not = 0]
+:GROUP BY term.id,correlated_term.id
+:USE NESTING (set(term(correlated_term)))
+
+//
+schema: go
+desc: given a GO term, fetch other GO terms associated with the same gene_product.
+      will also summarise the number of gene_products each pair shares in common,
+      in the gene_product/number_of_gps field
+
+      For example, term_name = ribosome and correlated_term_name = protein biosynthesis
+      should yeild a high value for number_of_gps, since these terms are
+      biologically correlated
+
+      does not use graph structure (direct associations only)
+
+example_input: term_acc => SELECT acc FROM term
+example_input: term_name => SELECT name FROM term ORDER BY name
+example_input: correlated_term_type => biological_process, cellular_component, molecular_function
+example_input: correlated_term_acc => SELECT acc FROM term
+example_input: correlated_term_name => SELECT name FROM term ORDER BY name

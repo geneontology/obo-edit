@@ -1,0 +1,50 @@
+#!/usr/bin/perl -w
+
+####
+####
+####
+
+## Need a little knowledge of the "AmiGO" environment.
+BEGIN { require "config.pl"; }
+use lib $ENV{GO_ROOT} . '/go-perl';
+use lib $ENV{GO_ROOT} . '/go-db-perl';
+use lib $ENV{GO_ROOT} . '/amigo/perl';
+
+## Bring in necessaries.
+use utf8;
+use strict;
+use JSON;
+use AmiGO;
+use CGI;
+use mapscript;
+
+my $core = AmiGO->new();
+
+my $MAPSERV = '/usr/lib/cgi-bin/mapserv';
+my $MAPFILE = $core->amigo_env('GO_ROOT') .
+  "/amigo/amigo/cgi-bin/experimental/test.map";
+$ENV{MAPSERV} = $MAPSERV;
+$ENV{MAPFILE} = $MAPFILE;
+
+## Just enough CGI to grab the incoming arg.
+$CGI::POST_MAX = 0;
+#use CGI::Carp qw(warningsToBrowser fatalsToBrowser);
+my $q = new CGI;
+#my $query = $q->param('query') || '';
+
+my @keys = $q->keywords;
+my @mbuf = ();
+push @mbuf, 'mode=map';
+push @mbuf, 'map=' . $MAPFILE;
+foreach my $key (@keys){
+  push @mbuf, $key . '=' . $q->param($key);
+}
+my $string = join '&', @mbuf;
+
+$ENV{QUERY_STRING} = $string;
+my @args = ($MAPSERV, $string);
+system(@args) == 0
+  or die "system @args failed: $?"
+
+## TODO: adding a logfile might help track what images we should be
+## supplying...

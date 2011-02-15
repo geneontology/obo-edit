@@ -1,0 +1,34 @@
+:SELECT 
+  t1.*,t2.*,tp.*,
+  graph_path1.distance+grap_path2.distance AS tp__total_distance,
+  graph_path1.distance AS t1__d1,
+  grap_path2.distance AS t2__d2
+:FROM
+  term AS t1
+  INNER JOIN graph_path AS graph_path1 ON (t1.id=graph_path1.term2_id)
+  INNER JOIN term AS tp       ON (graph_path1.term1_id=tp.id)
+  INNER JOIN graph_path AS grap_path2 ON (tp.id=grap_path2.term1_id)
+  INNER JOIN term AS t2       ON (t2.id=grap_path2.term2_id)
+:WHERE
+  [ t1.acc => &acc1& ]
+  [ t2.acc => &acc2& ]
+  [ t1.name => &name1& ]
+  [ t2.name => &name2& ]
+  [ tp.acc => &parent_acc& ]
+  [ tp.name => &parent_name& ]
+:ORDER BY tp__total_distance
+:USE NESTING (set(tp(t1)(t2)))
+//
+schema: go
+desc:
+
+  given two terms, this will find all common_ancestors of both these
+  terms. the ancestors will be ordered by the total distance (ie the
+  sum of the distance between the two children)
+
+example_input: acc1 => SELECT acc FROM term
+example_input: acc2 => SELECT acc FROM term
+example_input: acc3 => SELECT acc FROM term
+example_input: name1 => SELECT name FROM term
+example_input: name2 => SELECT name FROM term
+example_input: name3 => SELECT name FROM term

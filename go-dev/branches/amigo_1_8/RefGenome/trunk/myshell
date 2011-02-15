@@ -1,0 +1,23 @@
+#!/bin/sh
+GWT_HOME="/Users/cjm/src/gwt-mac-1.4.61"
+APPDIR=`dirname $0`
+echo $APPDIR;
+CLASSPATH="$APPDIR/src:$APPDIR/bin"
+echo $CLASSPATH
+CLASSPATH="$CLASSPATH:$GWT_HOME/gwt-user.jar"
+echo $CLASSPATH
+CLASSPATH="$CLASSPATH:$GWT_HOME/gwt-dev-mac.jar"
+echo $CLASSPATH
+for i in `find jars/ -name '*.jar'`; do
+    echo "Adding $i"
+    CLASSPATH="$CLASSPATH:$i"
+done
+#export CLASSPATH
+echo $CLASSPATH
+
+MODULE=$1
+shift
+
+C="com.google.gwt.dev.GWTShell"
+#java $C -out "$APPDIR/www" "$@" $MODULE/${MODULE/*./}.html
+java -XstartOnFirstThread -cp $CLASSPATH $C -out "$APPDIR/www" "$@" org.geneontology.refgenome.RefGenome/RefGenome.html;

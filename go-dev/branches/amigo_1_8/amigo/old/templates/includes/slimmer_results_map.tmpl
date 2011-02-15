@@ -1,0 +1,58 @@
+<!-- START template: slimmer_results_map.tmpl -->
+<div class="block">
+  <h2>Results</h2>
+  
+<!--
+  <p>
+  </p>
+-->
+
+  <p>
+    If you wish to retry or tune your query, you
+    may <a href="#controls" title="Jump to the controls">jump</a> to
+    the controls.
+  </p>
+
+  <table summary="Term mapping file&nbsp;cho">
+    <thead>
+      <tr>
+	<th style="">GO Term</th>
+	<th style=""># Leaves</th>
+	<th style=""># All</th>
+      </tr>
+    </thead>
+    <tbody>
+      [% eo = 0 %]
+      [% FOREACH mapping = MAPPINGS %]
+      [%    IF eo % 2 == 0 %]
+      <tr class="even_row">
+      [%    ELSE %]
+      <tr class="even_odd">
+      [%    END %]
+        <td rowspan="1">
+	  <a href="go.cgi?term=[% mapping.ACC %]">[% mapping.ACC %]</a>
+	</td>
+	<td rowspan="1">
+	  [% FOREACH leaf = mapping.LEAVES %]
+	  <a href="go.cgi?term=[% leaf %]">[% leaf %]</a>
+
+	  [% END %]
+	</td>
+	<td rowspan="1">
+	  [% FOREACH anc = mapping.ALL %]
+	  <a href="go.cgi?term=[% anc %]">[% anc %]</a>
+
+	  [% END %]
+	</td>
+      </tr>
+      [%    eo = eo + 1 %]
+      [% END %]
+    </tbody>
+  </table>
+
+  <p class="toTop">
+    <a href="#top" title="Back to the top of the page">Back to top</a>
+  </p>
+  
+</div>
+<!-- END template: slimmer_results_map.tmpl -->

@@ -1,0 +1,498 @@
+#!/usr/bin/perl -w
+####
+#### LUcene In GO Indexer
+####
+#### Note: Plucene looks dead.
+#### Note: Lucy looks dead.
+#### Note: Tried CLucene.pm, but it was problematic.
+####
+#### I'll also have to try Xapian...
+####
+#### This is currently taking more than a few hours on my laptop. To run:
+####
+####    reset; DBIC_TRACE = 1 perl ./scripts/luigi
+####
+#### Use "-a" if you want the "association" field to be populated, use
+#### the below. But don't because it currently takes a _long_ time.
+####
+####    ./scripts/luigi -a
+####
+
+BEGIN { require "config.pl"; }
+use lib $ENV{GO_ROOT} . '/go-perl';
+use lib $ENV{GO_ROOT} . '/go-db-perl';
+use lib $ENV{GO_ROOT} . '/amigo/perl';
+use lib $ENV{GO_SVN_ROOT} . '/gobo-dbic';
+
+## Bring in necessaries.
+use utf8;
+use strict;
+use Data::Dumper;
+use AmiGO;
+use AmiGO::ReferenceGenome;
+use GOBO::DBIC::GODBModel::Schema;
+use GOBO::DBIC::GODBModel::Query;
+use Lucene;
+#use AmiGO::Lucene::Analysis::AmiGOTextAnalyzer;
+use Getopt::Std;
+use vars qw(
+	     $opt_a
+	     $opt_v
+	     $opt_l
+	  );
+
+## Setup.
+getopts('avl:');
+my $core = AmiGO->new();
+my $rg = AmiGO::ReferenceGenome->new();
+
+sub bark {
+  my $str = shift || '';
+  $core->kvetch($str);
+  print $str . "\n" if $opt_v;
+}
+
+# ###
+# ### Analyzer experiments. If we do them, we just do them and exit.
+# ###
+# if( $opt_a ){
+#   my $analyzers =
+#     {
+#      'stnd' => new Lucene::Analysis::Standard::StandardAnalyzer(),
+#      'wspc' => new Lucene::Analysis::WhitespaceAnalyzer(),
+#      'simp' => new Lucene::Analysis::SimpleAnalyzer(),
+#      'keyw' => new Lucene::Analysis::KeywordAnalyzer(),
+#      'amgo' => new AmiGO::Lucene::Analysis::AmiGOTextAnalyzer(),
+#     };
+#   my $test_strings = [
+# 		      'GO:0005755',
+# 		      'GO\:0005755',
+# 		      'acc:GO:0005755',
+# 		      'acc:GO:0005755 or name:foo',
+# 		      '(acc:GO:0005755 or name:foo) and bar'
+# 		     ];
+#   foreach my $a_id (keys %$analyzers){
+#     my $a = $analyzers->{$a_id};
+#     my $parser = new Lucene::QueryParser("acc", $a);
+#     bark("$a_id : ");
+#     foreach my $str (@$test_strings){
+#       my $query = $parser->parse($str);
+#       if( defined $query ){
+# 	my $qstring = $query->toString();
+# 	bark("\t$str  ~>  $qstring");
+#       }else{
+# 	bark("\t$str  ~>  nil");
+#       }
+#     }
+#   }
+#   exit(1);
+# }
+
+
+## Use a limit if l if defined.
+my $limit_p = 0;
+my $limit = 1000;
+my $limit_toss = 0;
+if ( $opt_l ) {
+  $limit = $opt_l;
+  $limit_p = 1;
+  bark('using limit: ' . $limit . '...');
+}
+
+###
+### Ready storage.
+###
+
+## Same analyzer for all three.
+my $analyzer = new Lucene::Analysis::Standard::StandardAnalyzer();
+
+## General search.
+my $general_spot = $core->amigo_env('INDEX_DIR_GENERAL');
+my $general_store = Lucene::Store::FSDirectory->getDirectory($general_spot,1);
+my $general_writer =
+  new Lucene::Index::IndexWriter($general_store, $analyzer, 1);
+
+## Term search.
+my $term_spot = $core->amigo_env('INDEX_DIR_TERM');
+my $term_store = Lucene::Store::FSDirectory->getDirectory($term_spot, 1);
+my $term_writer = new Lucene::Index::IndexWriter($term_store, $analyzer, 1);
+
+## GP search.
+my $gp_spot = $core->amigo_env('INDEX_DIR_GENE_PRODUCT');
+my $gp_store = Lucene::Store::FSDirectory->getDirectory($gp_spot, 1);
+my $gp_writer = new Lucene::Index::IndexWriter($gp_store, $analyzer, 1);
+
+# ## Try at association search.
+# my $assoc_spot = $core->amigo_env('INDEX_DIR_ASSOCIATION');
+# my $assoc_store = Lucene::Store::FSDirectory->getDirectory($assoc_spot,1);
+# my $assoc_writer = new Lucene::Index::IndexWriter($assoc_store, $analyzer, 1);
+
+# ## Try at xref search.
+# my $xref_spot = $core->amigo_env('INDEX_DIR_XREF');
+# my $xref_store = Lucene::Store::FSDirectory->getDirectory($xref_spot,1);
+# my $xref_writer = new Lucene::Index::IndexWriter($xref_store, $analyzer, 1);
+
+###
+### Walk through database.
+###
+
+bark('Start terms...');
+
+## Cycle through the term results and process them into something
+## useful for the lucene engine.
+$limit_toss = 0;
+my $onts = $core->ontology();
+my $re = $core->amigo_env('AMIGO_TERM_REGEXP');
+my $term_query = GOBO::DBIC::GODBModel::Query->new({type=>'term_lazy'});
+while ( my $t = $term_query->get_next_result({}) ) {
+
+  my $name = $t->name;
+  my $acc = $t->acc;
+  my $ontology = '';
+
+  ## Lets skip all of the strange non-term accs...
+  if ( $acc =~ /$re/ ) {
+
+    ## What ontology is this?
+    if( defined $onts->{$t->term_type} ){
+      $ontology = $t->term_type;
+    }
+
+    ## Slurp up synonyms.
+    my @syn_cache = ();
+    my @all_syn = $t->term_synonym->all;
+    foreach my $s (@all_syn) {
+      push @syn_cache, $s->term_synonym if $s->term_synonym;
+      push @syn_cache, $s->acc_synonym if $s->acc_synonym;
+    }
+    my $cat_syn = '';
+    $cat_syn = join "\n", @syn_cache if @syn_cache;
+
+    ## Look for definition and comments.
+    my $definition_text = '';
+    my $comment_text = '';
+    my $def = $t->term_definition;
+    if( defined $def ){
+      $definition_text = $def->term_definition || '';
+      $comment_text = $def->term_comment || '';
+    }
+
+    #     ## DEBUG
+    #     #bark($acc ."\t". $acc ."\t". $name ."\t". $cat_syn . "\n");
+    #     bark($acc);
+    #     bark("\tontology: ".$ontology);
+    #     bark("\tname: ".$name);
+    #     bark("\tsynonym: ".$cat_syn);
+
+    ## Add trivial Lucene fields.
+    my $doc = Lucene::Document->new;
+    $doc->add(Lucene::Document::Field->Text(acc => $acc));
+    $doc->add(Lucene::Document::Field->Text(ontology => $ontology));
+
+    ## Boost name.
+    my $name_field = Lucene::Document::Field->Text(name => $name);
+    $name_field->setBoost(2.0);
+    $doc->add($name_field);
+
+    ## Devalue synonym.
+    my $syn_field = Lucene::Document::Field->Text(synonym => $cat_syn);
+    $syn_field->setBoost(0.5);
+    $doc->add($syn_field);
+
+    ## Devalue definition.
+    my $definition_field =
+      Lucene::Document::Field->Text(definition => $definition_text);
+    $definition_field->setBoost(0.5);
+    $doc->add($definition_field);
+
+    ## NOTE/TODO: Apparently, we've chucked the comment field for
+    ## search.
+    my $comment_field = Lucene::Document::Field->Text(comment => $comment_text);
+    #$comment_field->setBoost(0.5);
+    #$doc->add($comment_field);
+
+    ## Add to the general and term stores.
+    $general_writer->addDocument($doc);
+    $term_writer->addDocument($doc);
+
+    ## Hit limit?
+    $limit_toss++;
+    last if $limit_p && $limit_toss > $limit;
+
+    bark("Done $limit_toss terms...") if ($limit_toss % 1000) == 0;
+  }
+}
+
+bark('Done terms...');
+bark('Start gps...');
+
+## Grab species name cache for later.
+my $spec_conv = $core->species();
+
+## Cycle through the gp results and process them into something
+## useful for the lucene engine.
+$limit_toss = 0;
+my $gp_query = GOBO::DBIC::GODBModel::Query->new({type=>'gene_product_lazy'});
+while ( my $gp = $gp_query->get_next_result({}) ) {
+
+  my $acc = '';
+  my $source = '';
+  if ( $gp->dbxref &&
+       $gp->dbxref->xref_dbname &&
+       $gp->dbxref->xref_key ) {
+    $acc = $gp->dbxref->xref_dbname . ':' . $gp->dbxref->xref_key;
+    $source = $gp->dbxref->xref_dbname;
+  }
+
+  ## A few more...
+  my $name = $gp->full_name || '';
+  my $symbol = $gp->symbol || '';
+  my $species = $gp->species->ncbi_taxa_id || '';
+  my $scientific = $spec_conv->{$species} || '';
+  my $gptype = $gp->type->name || '';
+
+  ## RG detect.
+  my $rg_check = 'excluded';
+  my $rg_check_raw = $rg->find_refgen_info({gene_product=>$acc});
+  if( defined $rg_check_raw ){
+    $rg_check = 'included';
+  }
+
+  ## Slurp up synonyms.
+  my @syn_cache = ();
+  my @all_syn = $gp->gene_product_synonym->all;
+  foreach my $s (@all_syn) {
+    push @syn_cache, $s->product_synonym if $s->product_synonym;
+  }
+  my $cat_syn = '';
+  $cat_syn = join "\n", @syn_cache if @syn_cache;
+
+  ## Slurp associated terms if flagged.
+  my $cat_assoc = '';
+  if( $opt_a ){
+
+    my %assoc_cache = ();
+    if ( $gp->association ) {
+      my @all_assocs = $gp->association->all;
+      foreach my $a (@all_assocs) {
+
+	## Get all of the ancestors for each of the term associations.
+	if ( $a->term->ancestors ) {
+  	  my @all_anc = $a->term->ancestors->all;
+  	  foreach my $anc (@all_anc) {
+  	    my $acc = $anc->object->acc;
+  	    $assoc_cache{$acc} = 1;
+  	  }
+	}
+      }
+    }
+    $cat_assoc = join "\n", keys %assoc_cache;
+  }
+
+  #   ## DEBUG
+  #   bark($acc);
+  #   bark("\tsymbol: ". $symbol);
+  #   bark("\tname: ". $name);
+  #   bark("\tspecies: ". $species);
+  #   bark("\tscientific: ". $scientific);
+  #   bark("\tsource: ". $source);
+  #   bark("\tgptype: ". $gptype);
+  #   bark("\tsynonym: ". $cat_syn);
+  #   bark("\tassociation: ". $cat_assoc);
+
+  ## Add trivial lucene fields.
+  my $doc = Lucene::Document->new;
+  $doc->add(Lucene::Document::Field->Text(dbxref => $acc));
+  $doc->add(Lucene::Document::Field->Text(symbol => $symbol));
+  $doc->add(Lucene::Document::Field->Text(species => $species));
+  $doc->add(Lucene::Document::Field->Text(scientific => $scientific));
+  $doc->add(Lucene::Document::Field->Text(source => $source));
+  $doc->add(Lucene::Document::Field->Text(gptype => $gptype));
+  $doc->add(Lucene::Document::Field->Text(association => $cat_assoc));
+  $doc->add(Lucene::Document::Field->Text(homolset => $rg_check));
+
+  ## Boost name.
+  my $name_field = Lucene::Document::Field->Text(full_name => $name);
+  $name_field->setBoost(2.0);
+  $doc->add($name_field);
+
+  ## Devalue synonym.
+  my $syn_field = Lucene::Document::Field->Text(gpsynonym => $cat_syn);
+  $syn_field->setBoost(0.5);
+  $doc->add($syn_field);
+
+  ## Add to the general and term stores.
+  $general_writer->addDocument($doc);
+  $gp_writer->addDocument($doc);
+
+  ## Hit limit?
+  $limit_toss++;
+  last if $limit_p && $limit_toss > $limit;
+
+  bark("Done $limit_toss gene products...") if ($limit_toss % 1000) == 0;
+}
+
+bark('Done gps...');
+
+## NOTE: too much time for now. Revisit later...
+#bark('Start assoc...');
+
+# ## Cycle through the assoc results and process them into something
+# ## useful for the lucene engine.
+# $limit_toss = 0;
+# my $assoc_query = GOBO::DBIC::GODBModel::Query->new({type=>'association'});
+# while ( my $assoc = $assoc_query->get_next_result({}) ) {
+
+#   ## Gene products.
+#   my $gp = $assoc->gene_product;
+
+#   ## Repeat gene product part above.
+#   my $gpacc = $gp->dbxref->xref_dbname . ':' . $gp->dbxref->xref_key;
+#   my $source = $gp->dbxref->xref_dbname;
+#   my $gpname = $gp->full_name || '';
+#   my $symbol = $gp->symbol || '';
+#   my $species = $gp->species->ncbi_taxa_id || '';
+#   my $scientific = $spec_conv->{$species} || '';
+#   my $gptype = $gp->type->name || '';
+
+#   ## RG detect.
+#   my $rg_check = 'no';
+#   my $rg_check_raw = $rg->find_refgen_info({gene_product=>$gpacc});
+#   if( defined $rg_check_raw ){
+#     $rg_check = 'yes';
+#   }
+
+#   ## Slurp up gp synonyms.
+#   my @syn_gp_cache = ();
+#   my @all_gp_syn = $gp->gene_product_synonym->all;
+#   foreach my $s (@all_gp_syn) {
+#     push @syn_gp_cache, $s->product_synonym if $s->product_synonym;
+#   }
+#   my $cat_gp_syn = '';
+#   $cat_gp_syn = join "\n", @syn_gp_cache if @syn_gp_cache;
+
+#   ##
+#   my $term = $assoc->term;
+
+#   ##
+#   my $name = $term->name;
+#   my $acc = $term->acc;
+#   my $ontology = '';
+#   if( defined $onts->{$term->term_type} ){
+#     $ontology = $term->term_type;
+#   }
+
+#   ## Slurp up term synonyms.
+#   my @syn_term_cache = ();
+#   my @all_term_syn = $term->term_synonym->all;
+#   foreach my $t (@all_term_syn) {
+#     push @syn_term_cache, $t->term_synonym if $t->term_synonym;
+#     push @syn_term_cache, $t->acc_synonym if $t->acc_synonym;
+#   }
+#   my $cat_term_syn = '';
+#   $cat_term_syn = join "\n", @syn_term_cache if @syn_term_cache;
+
+#   ## Evidence.
+#   my @ev_cache = ();
+#   my @all_ev = $assoc->evidence->all;
+#   foreach my $e (@all_ev) {
+#     push @ev_cache, $e->code if $e->code;
+#   }
+#   my $cat_ev = '';
+#   $cat_ev = join "\n", @ev_cache if @ev_cache;
+
+#   ## Lucene ADD!
+#   my $doc = Lucene::Document->new;
+
+#   ## Termish.
+#   $doc->add(Lucene::Document::Field->Text(acc => $acc));
+#   $doc->add(Lucene::Document::Field->Text(name => $name));
+#   $doc->add(Lucene::Document::Field->Text(ontology => $ontology));
+#   $doc->add(Lucene::Document::Field->Text(synonym => $cat_term_syn));
+
+#   ## GPish.
+#   $doc->add(Lucene::Document::Field->Text(dbxref => $gpacc));
+#   #$doc->add(Lucene::Document::Field->Text(gpacc => $gpacc));
+#   #$doc->add(Lucene::Document::Field->Text(gpname => $gpname));
+#   $doc->add(Lucene::Document::Field->Text(full_name => $gpname));
+#   $doc->add(Lucene::Document::Field->Text(symbol => $symbol));
+#   $doc->add(Lucene::Document::Field->Text(species => $species));
+#   $doc->add(Lucene::Document::Field->Text(scientific => $scientific));
+#   $doc->add(Lucene::Document::Field->Text(source => $source));
+#   $doc->add(Lucene::Document::Field->Text(gptype => $gptype));
+#   $doc->add(Lucene::Document::Field->Text(gpsynonym => $cat_gp_syn));
+#   $doc->add(Lucene::Document::Field->Text(homolset => $rg_check));
+
+#   ## Evidence.
+#   $doc->add(Lucene::Document::Field->Text(evidence => $cat_ev));
+
+#   ## Add to the assoc store.
+#   $assoc_writer->addDocument($doc);
+
+#   ## Hit limit?
+#   $limit_toss++;
+#   last if $limit_p && $limit_toss > $limit;
+# }
+
+# bark('Done assoc...');
+
+## NOTE: I'm not sure why this is here anymore.
+# bark('Start xrefs...');
+
+# ##
+# $limit_toss = 0;
+# my $xref_query = GOBO::DBIC::GODBModel::Query->new({type=>'dbxref_lazy'});
+# while ( my $x = $xref_query->get_next_result({}) ) {
+
+#   my $id = $x->id;
+#   my $dbname = $x->xref_dbname;
+#   my $key = $x->xref_key;
+#   my $keytype = $x->xref_keytype || ''; # nullable
+#   my $desc = $x->xref_desc || ''; # nullable
+
+#   ## TODO: figure out everything that the dbxref connects into inside
+#   ## the GO DB and connect back to it? Actually, maybe this could be
+#   ## done quickly at runtime?
+#   #if ( $acc =~ /$re/ ) {
+#   #}
+
+#   ## Lucene ADD!
+#   my $doc = Lucene::Document->new;
+
+#   $doc->add(Lucene::Document::Field->Text(dbname => $dbname));
+#   $doc->add(Lucene::Document::Field->Text(key => $key));
+#   $doc->add(Lucene::Document::Field->Text(id => $dbname . ':' . $key));
+
+#   ## Add to the assoc store.
+#   $xref_writer->addDocument($doc);
+
+#   ## Hit limit?
+#   $limit_toss++;
+#   last if $limit_p && $limit_toss > $limit;
+# }
+
+# bark('Done xrefs...');
+
+###
+### Lucene STOP!
+###
+
+$general_writer->optimize;
+$general_writer->close;
+undef $general_writer;
+
+$term_writer->optimize;
+$term_writer->close;
+undef $term_writer;
+
+$gp_writer->optimize;
+$gp_writer->close;
+undef $gp_writer;
+
+# $assoc_writer->optimize;
+# $assoc_writer->close;
+# undef $assoc_writer;
+
+# $xref_writer->optimize;
+# $xref_writer->close;
+# undef $xref_writer;

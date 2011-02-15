@@ -1,0 +1,657 @@
+body
+{	background: #fff;
+	margin: 5px 0;
+	font: 1em Verdana, Arial, Helvetica, sans-serif;
+	color: #000;
+}
+
+h1, h2, h3, h4
+{	font-family: "trebuchet ms", "lucida grande", arial, sans-serif;
+}
+
+h1 { font-size: 2em;
+	text-align: center; }
+h2 { font-size: 1.6em; }
+h3 { font-size: 1.4em; }
+h4 { font-size: 1.2em; }
+
+a
+{	color: #006;
+	text-decoration: none;
+	border-bottom : 1px dotted #006;
+	padding: 0.1em 2px;
+	background: #e9effa;
+}
+
+a:hover, a:active
+{	color: #fff;
+	background: #3875D7;
+	border: none;
+}
+
+a.img
+{	background: #fff;
+	border: none;
+}
+
+a.img img
+{	border: 1px solid #fff;
+	padding: 2px;
+}
+
+a.img:hover img, a.img:active img
+{	border: 1px solid #3875D7;
+}
+ 
+a.anchor
+{	visibility: hidden;
+}
+
+div.header, div.footer
+{	width: 100%;
+	background: #e9effa;
+	border-width: 3px 0 3px 0;
+	border-color: #3875D7;
+	border-style: solid;
+}
+
+.footer p
+{	margin: 0;
+	padding: 5px;
+	font-size: 0.7em;
+	text-align: right;
+	line-height: 1.4em;
+}
+
+.footer a
+{	border: none;
+}
+
+.footer img
+{	border: 0;
+	float: left;
+	margin: 5px 10px;
+}
+
+div.header
+{	background: url(../images/GO-head.gif) #e9effa 0 -10px no-repeat;
+}
+
+.header h1
+{	font: italic 2em "trebuchet ms", "lucida grande", arial, sans-serif;
+	margin: 0;
+	padding: 15px 5px 5px 125px;
+	color: #3875D7;
+	text-align: left;
+}
+
+.header form, .header p
+{	margin: 0;
+	padding: 3px;
+	font-size: 0.9em;
+}
+
+div.content
+{	background: url(../images/bg.gif) #fff left top repeat-y;
+}
+
+/* page layout */
+#navBox
+{	width: 180px;
+	padding: 0;
+	margin: 0;
+	float: left;
+}
+
+/* nav bar on left */
+#navLeft
+{	font-size: 0.8em;
+	line-height: 130%;
+	padding-top: 10px;
+}
+
+#navLeft ul
+{	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+#navLeft a
+{	display: block;
+	color: #000;
+	margin: 0;
+	background: #cddcf3;
+	border-bottom: 1px solid #fff;
+	padding: 2px 15px 2px 5px;
+}
+
+#navLeft li.head a
+{	font-weight: bold;
+}
+
+#navLeft li.sub a
+{	background: #EBF1FC;
+	padding: 2px 5px 2px 15px;
+}
+
+#navLeft li a:hover
+{	color: #fff;
+	background: #3875D7;
+}
+
+#navLeft li.sub
+{	display: none;
+}
+
+#navLeft.all li
+{	display: block;
+}
+
+#navLeft li.dl
+{	display: block;
+}
+
+#navLeft.docs li.docs
+{	display: block;
+}
+
+#navLeft.abt li.abt
+{	display: block;
+}
+
+#navLeft.tools li.tools
+{	display: block;
+}
+
+#navLeft.cur li.cur
+{	display: block;
+}
+
+#navLeft li.top
+{	display: inline;
+}
+
+/* page contents */
+div.main
+{	margin-left: 180px;
+	padding: 10px;
+}
+
+/* pages without left hand navigation menu */
+div.photo
+{	padding: 10px;
+	margin: 0;
+}
+
+p.intro, div.main p
+{	padding: 10px;
+}
+
+div.main p, div.main div.block, .photo p
+{	line-height: 1.6em;
+}
+
+/* table of contents */
+div.navPage
+{	border: 2px solid #ccc;
+	background: #EBF1FC;
+	padding: 5px 5%;
+	font-size: 0.9em;
+	line-height: 1.5em;
+}
+
+div.navPage p
+{	margin: 3px 0;
+	padding: 0;
+}
+
+div.navPage ul
+{	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+div.navPage li
+{	margin: 3px 0;
+	padding: 0;
+}
+
+div.navPage a
+{	padding: 0 2px;
+	border: solid 1px #ebf1fc;
+}
+
+div.navPage a:hover
+{	border: solid 1px #3875D7;
+	background: #fff;
+	color: #006;
+}
+
+div.navPage li.h2
+{	font-weight: bold;
+}
+
+div.navPage li.h3
+{	font-weight: normal;
+	padding-left: 20px;
+}
+/* end page navigation */
+
+/* extra class for the site map */
+div.navPage li.h1
+{	font-weight: bold;
+	margin-left: -20px;
+	padding-top: 5px;
+	font-size: 1.2em;
+}
+
+/* classes for the navBar on the 2006 annotation camp pages */
+div.navBarDiv
+{	padding: 3px 0;
+	margin: 10px -10px;
+	border-width: 3px 0 3px 0;
+	border-color: #3875D7;
+	border-style: solid;
+	background: #e9effa;
+	font-size: 1.2em;
+}
+
+ul.navBar
+{	margin: 0;
+	padding: 1px;
+	list-style: none;
+	background: #e9effa;
+	text-align: center;
+}
+
+ul.navBar li
+{	display: inline;
+	margin: 0;
+	padding: 0;
+}
+
+ul.navBar li a
+{	border: 1px solid #e9effa;
+	padding: 3px 5px;
+	margin: 0;
+}
+
+ul.navBar li a:hover, ul.navBar li a:active
+{	border: 1px solid #fff;
+	color: #fff;
+	background: #3875D7;
+}
+
+ul.navBar li a.here
+{	color: #000;
+	border: 1px solid #000;
+	background: #fff;
+}
+
+/* bibliography specific */
+h4#setViewOptions
+{	margin-bottom: 1px;
+}
+
+p#viewOptions
+{	color: #006;
+	border: solid 1px #3875D7;
+	background: #fff;
+	padding: 10px;
+	margin-top: 0;
+}
+
+div.biblio ul
+{	font-size: 0.7em;
+	margin: 0 0 0 20px;
+	padding: 0;
+}
+
+div.biblio p
+{	font-size: 0.8em;
+	margin: 15px 0 0 0;
+	padding: 0;
+}
+
+div.biblio p b
+{	font-size: 1.2em;
+}
+
+div.biblio p a
+{	font-size: 1.1em;
+}
+
+/* page contents proper */
+div.block
+{	border: 1px solid #3875D7;
+	margin: 10px 0;
+	font-size: 0.9em;
+	padding: 0 10px;
+}
+	
+div.block p, div.block h4
+{	padding: 0;
+	margin: 0.5em 0;
+}
+
+div.block ul
+{	padding: 5px 0;
+	margin: 0 0 0 20px;
+}
+
+div.block li
+{	padding: 0.2em 0;
+	margin: 0;
+}
+
+div.block ul.small
+{	padding: 0 0 5px 0;
+}
+
+div.block ul.small li
+{	padding: 0;
+	margin: 0;
+}
+
+div.block h2
+{	border-bottom: 1px solid #3875D7;
+	background: #e9effa;
+	margin: 0 -10px;
+	padding: 5px 10px;
+}
+
+div.block h3, div.tool h4
+{	border-top: 1px solid #3875D7;
+	margin: 0 -10px;
+	padding: 10px 10px 5px 10px;
+	color: #006;
+	text-align: left;
+}
+
+div.block h2 + h3, div.block h2 + div.tool h4
+{	border-top: 0;
+}
+
+div.block dl
+{	margin: 0;
+	padding: 0;
+}
+
+div.block p.terminal
+{	font: 0.9em monaco, courier, monospace;
+	background: #009;
+	color: #fff;
+	border: 2px solid #ccc;
+	padding: 5px 10px;
+	margin: 0;
+}
+
+/* links at bottom of each block section */
+div.block p.toTop
+{	font-size: 0.8em;
+	line-height: 1.4em;
+	text-align: right;
+	background: #e9effa;
+	margin: 0 -10px;
+	padding: 0.3em;
+}
+
+div.block p.toTop a
+{	background: #cddcf3;
+	color: #000;
+	text-decoration: none;
+	padding: 0.3em;
+	margin: 0;
+	border: none;
+}
+
+div.block p.toTop a:hover, p.toTop a:active
+{	background: #3875D7;
+	color: #fff;
+}
+
+div.diag
+{	width: 80%;
+	margin: 10px 0 20px 10%;
+	background: #e9effa;
+	border: 3px solid #ccc;
+	padding: 5px 10px;
+}
+
+div.contents p
+{	padding: 10px 0 0 0;
+}
+
+table
+{	border: 2px solid #ccc;
+	margin: 10px 0;
+	padding: 0;
+	width: 100%;
+}
+
+div.photo table
+{	background: #ccc;
+	margin: 0;
+}
+
+th
+{	padding: 5px;
+	background: #cddcf3;
+	font-weight: bold;
+	text-align: center;
+	vertical-align: top;
+}
+
+td
+{	padding: 5px;
+	background: #e9effa;
+	vertical-align: top;
+}
+
+td.stdL
+{	background: #cddcf3;
+	font-weight: bold;
+	width: 25%;
+}
+
+.tt
+{	font-family: monaco, courier, monospace;
+}
+
+.wh
+{	background: #fff;
+}
+
+.red
+{	color: #f00;
+}
+
+.blue
+{	color: #00f;
+}
+
+.green
+{	color: #060;
+}
+
+.purple
+{	color: #909;
+}
+
+.C
+{	text-align: center;
+}
+
+.L
+{	text-align: left;
+}
+
+.R
+{	text-align: right;
+}
+
+.term
+{	color: #090;
+	font-weight: 700;
+}
+
+.small
+{	font-size: 0.8em;
+}
+
+ul.noDot
+{	list-style: none;
+}
+
+.w10
+{	width: 10%;
+}
+
+.w20
+{	width: 20%;
+}
+
+.w25
+{	width: 25%;
+}
+
+.w40
+{	width: 40%;
+}
+
+.w75
+{	width: 75%;
+}
+
+.b
+{	font-weight: bold;
+}
+
+.i
+{	font-style: italic;
+}
+
+table.annot td.sep
+{	padding: 0;
+}
+
+ul.inline
+{	margin: 0;
+	padding: 0;
+}
+
+ul.inline li
+{	display: inline;
+	list-style: none;
+	margin: 0 5px;
+	padding: 0;
+}
+
+.floatR
+{	float: right;
+	margin: 0;
+	padding-right: 10px;
+}
+
+div.floatR a
+{	background: #fff;
+	border: none;
+	padding: 3px;
+	margin: 0;
+}
+
+.clearboth
+{	clear: both;
+	height: 1px;
+	visibility: hidden;
+}
+
+.clearR
+{	clear: right;
+	height: 1px;
+	margin: 5px 0;
+	visibility: hidden;
+}
+
+dl.evidence 
+{	padding: 0;
+}
+
+.evidence dt
+{	width: 15%;
+	float: left;
+	margin: 0;
+	padding: .5em; 
+	border-top: 1px solid #999;
+	font-weight: bold;
+}
+
+/* commented backslash hack for mac-ie5 \*/
+dt { clear: both; }
+/* end hack */
+
+.evidence dd
+{	margin: 0 0 0 15%;
+	padding: .5em; 
+	border-top: 1px solid #999;
+}
+
+div.tool div.floatR
+{	margin-top: 5px;
+	padding: 0;
+}
+
+div.tool div.floatR img
+{	margin: 0;
+	padding: 2px;
+}
+
+.block li.dir, .block li.doc, .block li.html, .block li.jpg, .block li.link, .block li.pdf, .block li.ppt, .block li.psd, .block li.sxi, .block li.txt, .block li.zip
+{	background-repeat: no-repeat;
+	background-position: 0% 50%;
+	padding-left: 18px;
+}
+
+.block li.jpg
+{	background-image: url(../images/icon-jpg.gif);
+}
+
+.block li.html
+{	background-image: url(../images/icon-html.gif);
+}
+
+.block li.ppt
+{	background-image: url(../images/icon-ppt.gif);
+}
+
+.block li.zip
+{	background-image: url(../images/icon-zip.gif);
+}
+
+.block li.psd
+{	background-image: url(../images/icon-psd.gif);
+}
+
+.block li.sxi
+{	background-image: url(../images/icon-unknown.gif);
+}
+
+.block li.txt
+{	background-image: url(../images/icon-txt.gif);
+}
+
+.block li.doc
+{	background-image: url(../images/icon-doc.gif);
+}
+
+.block li.dir
+{	background-image: url(../images/icon-dir.gif);
+}
+
+.block li.pdf
+{	background-image: url(../images/icon-pdf.gif);
+}
+
+.form textarea, .form input
+{	margin: 10px 0;
+}

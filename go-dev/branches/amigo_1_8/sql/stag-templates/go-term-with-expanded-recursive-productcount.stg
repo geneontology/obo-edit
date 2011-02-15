@@ -1,0 +1,30 @@
+:SELECT 
+  term.acc,
+  term.term_type,
+  term.name,
+  term.is_obsolete,
+  gene_product_count.speciesdbname,
+  gene_product_count.product_count
+:FROM
+  term
+  INNER JOIN gene_product_count ON (term.id = gene_product_count.term_id)
+:WHERE
+    [term.acc => &term_acc&]
+    [term.name => &term_name&]
+    [term.term_type => &term_type&]
+    [term.is_obsolete => &term_is_obsolete&]
+    [term.is_root => &term_is_root&]
+    [term.id => &term_id&]
+    [gene_product_count.speciesdbname => &speciesdbname& ]
+
+//
+schema: go
+desc: terms with number of distinct products attached to this node OR BELOW
+
+gives the sum total of distinct genes as seperate element underneath term
+
+uses warehouse-mode gene_product_count table
+
+example_input: term_acc => SELECT DISTINCT term.acc FROM term INNER JOIN term2term ON (term.id = term2term.term1_id) ORDER BY term.acc DESC
+example_input: term_name => SELECT DISTINCT term.name FROM term INNER JOIN term2term ON (term.id = term2term.term1_id) WHERE name like '%binding%' ORDER BY term.name DESC
+example_input: speciesdbname => SELECT DISTINCT xref.xref_dbname FROM gene_product INNER JOIN dbxref ON (gene_product.dbxref_id = dbxref.id) ORDER BY xref_dbname

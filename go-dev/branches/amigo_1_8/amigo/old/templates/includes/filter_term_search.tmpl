@@ -1,0 +1,31 @@
+<dl>
+	<dt id="filterToggle" class="toggle">Filter search results <a href="http://www.geneontology.org/amigo/help-filter_term_search.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></dt>
+	<dd id="filterDiv">
+		<form action="search.cgi">
+			<div class="floatL">
+			[% opt_name = 'ont';
+				INCLUDE options_select.tmpl;
+				FOREACH q = querylist %]
+			<input type="hidden" name="query" value="[% q %]">
+			[% END %]
+			<input type="hidden" name="action" value="filter">
+			<input type="hidden" name="search_constraint" value="[% search_constraint %]">
+			<input type="hidden" name="session_id" value="[% session_id %]">
+			</div>
+			<!--<fieldset><legend><label for="addn-query">Additional filter text</label></legend>
+			<input class="textBox" type="text" name="query" size="18" id="addn-query">
+			</fieldset>-->
+			<input class="button" type="submit" value="Set filters"> 
+		</form>
+		<form action="search.cgi">
+			[% FOREACH q = querylist %]
+			<input type="hidden" name="query" value="[% q %]">
+			[% END %]
+			<input type="hidden" name="action" value="reset-filters">
+			<input type="hidden" name="search_constraint" value="[% search_constraint %]">
+			<input type="hidden" name="session_id" value="[% session_id %]">
+			<input class="button" type="submit" value="Remove all filters"> 
+		</form>
+<hr class="clearL">
+	</dd>
+</dl>

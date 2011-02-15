@@ -1,0 +1,12 @@
+<!-- Begin: assoc_table_foot.tmpl -->
+<tr id="options" class="table-options">
+[% IF table_type != 'gp_multi' %]
+<td class="C"></td>
+[% END %]
+	<td colspan="[% colspan_minus_1 %]">
+	[% INCLUDE options_gp_table.tmpl %]
+	<input type="hidden" name="session_id" value="[% session_id %]">
+	<input class="button" type="submit" value="Go!">
+	</td>
+</tr>
+<!-- End: assoc_table_foot.tmpl -->

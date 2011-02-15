@@ -1,0 +1,220 @@
+#!/usr/bin/ruby -w
+####
+#### NOTE: Right now, needs to run from "go-dev/amigo".
+#### Run: ./scripts/kappa
+####
+#### TODO: Agents should share cookies...
+####
+
+require 'scripts/amigo'
+require 'scripts/amb'
+#require 'nondeterminism'
+
+include AmiGO
+
+
+## Setup data.
+aconf = AmiGO::JSONConf.new('./config.json')
+#home_url = aconf.get('amigo_cgi_url') + '/amigo'
+$te_home_url = aconf.get('amigo_cgi_url') + '/term_enrichment'
+$data_home = '/home/sjcarbon/local/src/svn/geneontology/lisp/tanuki/data/'
+$dump_home = '/home/sjcarbon/tmp/kappa/'
+
+## Do these tests:
+# $tests = [:straight, :template, :links101, :timeout, :random, :file]
+$tests = [:random]
+$test_map = {}
+
+###
+### Direct manipulation.
+###
+
+$test_map[:straight] = proc do
+
+  $t1 = AmiGO::PAgent::HTML.new($te_home_url)
+  $t1.set_upload('term_enrichment_form',
+                 'gp_file',
+                 $data_home + 'gp/sgd-small-10.txt')
+  $t1.set_upload('term_enrichment_form',
+                 'bggp_file',
+                 $data_home + 'gp/sgd-small-40.txt')
+  $t1.set_multi_select('term_enrichment_form',
+                       'speciesdb',
+                       ['SGD'])
+  $t1.set_radio('term_enrichment_form',
+                'iea',
+                'yes')
+  $t1.set_field('term_enrichment_form',
+                'cutoff',
+                '10')
+  $t2 = $t1.submit('term_enrichment_form')
+
+  ## May time out.
+  if ! $t2.nil?
+    $t3 = $t2.submit('visualize')
+  end
+
+end
+
+###
+### Try templating.
+###
+
+$test_map[:template] = proc do
+
+  $t4 = AmiGO::PAgent::HTML.new($te_home_url)
+  $form_hash = {
+    'form' => 'term_enrichment_form',
+    'upload' => {
+      'gp_file' => $data_home + 'gp/sgd-small-10.txt',
+      'bggp_file' => $data_home + 'gp/sgd-small-40.txt'
+    },
+    'multi_select' => {'speciesdb' => ['SGD']},
+    'radio' => {'iea' => 'yes'},
+    'field' => {'cutoff' => '10'}
+  }
+  $t4.form_from_template($form_hash)
+  $t5 = $t4.submit('term_enrichment_form')
+
+  ## May time out.
+  if ! $t5.nil?
+    $t6 = $t5.submit('visualize')
+  end
+
+end
+
+###
+### Try doing things based from the file system.
+###
+
+## TODO:
+$test_map[:file] = proc do
+
+  $pr = AmiGO::PageRunner.new('/home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/profiles/te_001.page')
+  $pr.over_page($te_home_url)
+  puts $pr.resultant_page
+
+end
+
+
+###
+### Check timeouts.
+###
+
+$test_map[:timeout] = proc do
+  $ts_url = 'http://localhost/cgi-bin/amigo/form_test?mode=timeout&seconds=299'
+  $t7 = AmiGO::PAgent::HTML.new($ts_url)
+end
+
+###
+### Check example links and timeouts.
+###
+
+
+$test_map[:links101] = proc do
+
+  $test_url = 'http://localhost/cgi-bin/amigo/form_test?mode=links_101'
+  $t8 = AmiGO::PAgent::HTML.new($test_url)
+
+  $new_links = [];
+  $new_forms = [];
+  if $t8.okay && ($t8.code == "200") 
+    $new_links = $t8.links 
+  else
+    puts "trouble getting: " + $t8.uri
+  end
+
+  $new_agents = $new_links.map{ |l| $t8.click(l) }
+  #puts $new_agents
+
+end
+
+
+###
+### TODO: randomly generate input.
+###
+
+
+$test_map[:random] = proc do
+
+  ## Get initial page for probing.
+  $t9 = AmiGO::PAgent::HTML.new($te_home_url)
+
+  ## Create a speciesdb subset using amb.
+  all_sdb = $t9.select_values('term_enrichment_form', 'speciesdb')
+  $sbd_subset = []
+#   amb = Amb.new
+#   begin
+#     a = amb.choose(all_asdb)
+#     @a.assert(  )
+#         @a.assert( a + b == c )
+#         assert( (a < b) && (a + b == c) )
+#         solutions.push({:a => a, :b => b, :c => c})
+#         @a.search
+#       rescue Amb::ExhaustedError
+#         #puts "No More Solutions"
+#       end
+
+
+  ## Get large bank of GPs.
+  $gp_bank = [];
+  ['gp/All_genes',
+   'gp/sc_product_list',
+   'gp/total-genes-MGIMGI.txt'].each do |fname|
+
+    full_name = $data_home + fname
+    file = File.new(full_name)
+    file.each do |line|
+      $gp_bank.push(line.chomp)
+    end
+    file.close
+
+  end
+
+  ## Shuffle banked gene products...
+  shuffled = $gp_bank.sort_by { rand }
+  $gp_subset = shuffled.slice(0,100)
+  $bggp_subset = shuffled.slice(0,500)
+
+  ## Create form template.
+  $random_form_hash = {
+    'form' => 'term_enrichment_form',
+    'multi_select' => {'speciesdb' => ['SGD', 'dictyBase', 'MGI']},
+    'radio' => {'iea' => 'yes'},
+    'field' => {
+      #'request' => 'results',
+      #'force' => 'yes',
+      'cutoff' => '10',
+      'gp_list' => $gp_subset.join(' '),
+      'bggp_list' => $bggp_subset.join(' ')
+    }
+  }
+
+  ## Run page.
+  $t9.form_from_template($random_form_hash)
+  $t10 = $t9.submit('term_enrichment')
+
+  ## May have timed out.
+  if ! $t10.nil?
+    $t11 = $t10.submit('visualize')
+    if ! $t11.nil?
+      puts "got image: " + $t11.dump($dump_home)
+    else
+      puts "random visualize may have timed out"
+    end
+  else
+    puts "random TE may have timed out"
+  end
+
+end
+
+
+###
+### Do specified tests.
+###
+
+
+$tests.each do |s|
+  puts "Doing " + s.to_s + "..."
+  $test_map[s].call
+end

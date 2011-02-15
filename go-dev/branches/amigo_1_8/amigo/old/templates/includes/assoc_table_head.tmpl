@@ -1,0 +1,14 @@
+[% IF table_type != 'gp_multi' %]
+<th class="input"></th>
+[% END %]
+<th class="qualCol">Qualifier</th>
+[% IF table_type == 'gp' || table_type == 'gp_multi' %]
+<th abbr="Name">Name / Symbol</th>
+<th>Information</th>
+[% ELSIF table_type == 'term' %]
+<th>Term</th>
+<th class="ontCol">Ontology</th>
+[% END %]
+<th class="evCol">Evidence</th>
+<th class="refCol">Reference</th>
+[% IF assoc_view != 'summary' %]<th class="assCol">Assigned by</th>[% END %]

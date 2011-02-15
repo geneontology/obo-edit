@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+
+	<servlet>
+	  <!--
+	  <servlet-name>AmiGO</servlet-name>
+	  -->
+	  <servlet-name>AmiGOLookupService</servlet-name>
+	  <servlet-class>org.bbop.server.AmiGOLookupServiceImpl</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+	  <!--
+	  <servlet-name>AmiGO</servlet-name>
+	  -->
+	  <servlet-name>AmiGOLookupService</servlet-name>
+	  <url-pattern>/AmiGOLookupService</url-pattern>
+	</servlet-mapping>
+
+</web-app>

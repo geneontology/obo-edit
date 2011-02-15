@@ -1,0 +1,52 @@
+:SELECT DISTINCT
+  taxon.*,
+  term.*,
+  subterm.*,
+  gene_product_count_outgroup.*,
+  outgroup.*
+:FROM
+ term
+ INNER JOIN gene_product_count ON (term.id=gene_product_count.term_id)
+ INNER JOIN species ON (gene_product_count.species_id=species.id)
+ INNER JOIN species AS taxon ON (species.left_value >= taxon.left_value AND species.left_value <= taxon.right_value)
+ INNER JOIN term2term ON (term1_id=term.id)
+ INNER JOIN term AS subterm ON (term2_id=subterm.id)
+ INNER JOIN gene_product_count AS gene_product_count_outgroup ON (subterm.id=gene_product_count_outgroup.term_id)
+ INNER JOIN species AS outgroup ON (outgroup.id=gene_product_count_outgroup.species_id)
+ 
+:WHERE
+    [taxon.ncbi_taxa_id => &ncbi_taxa_id&]
+    [taxon.common_name => &species_common_name&]
+    [taxon.genus => &genus&]
+    [taxon.species => &species&]
+    [term.acc => &term_acc&]
+
+    [gene_product_count_outgroup.product_count > &outgroup_count& ]
+
+    [subterm.name => &subterm_name&]
+    [subterm.term_type => &subterm_type&]
+    [subterm.is_obsolete => &subterm_is_obsolete&]
+    [subterm.is_root => &subterm_is_root&]
+    [subterm.id => &subterm_id&]
+    [subterm_definition.term_definition => &subterm_definition&]
+
+    [term.name => &term_name&]
+    [term.term_type => &term_type&]
+    [term.is_obsolete => &term_is_obsolete&]
+    [term.is_root => &term_is_root&]
+    [term.id => &term_id&]
+    [term_definition.term_definition => &term_definition&]
+    [
+     NOT EXISTS
+      (SELECT * FROM 
+         gene_product_count AS gpc2
+         INNER JOIN species AS s2 ON (gpc2.species_id=s2.id)
+       WHERE subterm.id=gpc2.term_id
+        AND
+       (s2.left_value >= taxon.left_value AND s2.left_value <= taxon.right_value))
+    ]
+:USE NESTING (set(taxon(subterm)(term)(gene_product_count_outgroup)))
+//
+schema: go
+desc: 
+

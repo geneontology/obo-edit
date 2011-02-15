@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="obo">
+    <xs:annotation>
+      <xs:documentation>top-level element corresponding to an ontology of part of an ontology</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="source"/>
+        <xs:element ref="header"/>
+        <xs:element ref="term"/>
+        <xs:element ref="typedef"/>
+        <xs:element ref="instance"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="source">
+    <xs:annotation>
+      <xs:documentation>metadata on the source file</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="source_id"/>
+        <xs:element ref="source_type"/>
+        <xs:element ref="source_fullpath"/>
+        <xs:element ref="source_path"/>
+        <xs:element ref="source_md5"/>
+        <xs:element ref="source_mtime"/>
+        <xs:element ref="source_parsetime"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="source_id" type="xs:string"/>
+  <xs:element name="source_type" type="xs:string"/>
+  <xs:element name="source_path" type="xs:string"/>
+  <xs:element name="source_fullpath" type="xs:string"/>
+  <xs:element name="source_md5" type="xs:string"/>
+  <xs:element name="source_mtime" type="xs:string"/>
+  <xs:element name="source_parsetime" type="xs:string"/>
+  <xs:element name="header">
+    <xs:annotation>
+      <xs:documentation>ontology metadata</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="format-version"/>
+        <xs:element ref="date"/>
+        <xs:element ref="saved-by"/>
+        <xs:element ref="auto-generated-by"/>
+        <xs:element ref="default-namespace"/>
+        <xs:element ref="remark"/>
+        <xs:element ref="subsetdef"/>
+        <xs:element ref="synonymtypedef"/>
+        <xs:element ref="idspace"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="format-version" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Should be 1.2</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="date" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>In DD.MM.YYYY time format</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="saved-by" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>username of last curator to edit file</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="auto-generated-by" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>name of program that wrote file</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="default-namespace" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>ontology-wide default</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="remark" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>description of ontology</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="subsetdef">
+    <xs:annotation>
+      <xs:documentation>A subset (aka slim) is the name of a view over one or more ontologies
+See also the subset element</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="id"/>
+        <xs:element ref="name"/>
+        <xs:element ref="dbxref"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="synonymtypedef">
+    <xs:annotation>
+      <xs:documentation>individual obo files can define their own synonym types</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="id"/>
+        <xs:element ref="name"/>
+        <xs:element ref="scope"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="idspace">
+    <xs:annotation>
+      <xs:documentation>An ID space places an OBO Local IDSpace (e.g. GO, CL, CHEBI, FMA)
+to a global IDSpace (e.g. an LSID prefix)
+This can be used to expand an ID for export to RDF/OWL</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="local"/>
+        <xs:element ref="global"/>
+        <xs:element ref="comment"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="local" type="xs:NMTOKEN">
+    <xs:annotation>
+      <xs:documentation>e.g. GO, CL, PATO</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="global" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>A URI prefix; this uniquely identify this ontology in a global
+context</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="scope" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>synonym scope - EXACT, BROAD, NARROW, RELATED</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="term">
+    <xs:annotation>
+      <xs:documentation>Terms are the fundamental units in an obo ontology
+Also known as classes
+Note: here 'term' refers to the primary term - synonyms are a
+a different representational entity</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="id"/>
+        <xs:element ref="name"/>
+        <xs:element ref="namespace"/>
+        <xs:element ref="def"/>
+        <xs:element ref="is_a"/>
+        <xs:element ref="alt_id"/>
+        <xs:element ref="subset"/>
+        <xs:element ref="comment"/>
+        <xs:element ref="is_anonymous"/>
+        <xs:element ref="is_obsolete"/>
+        <xs:element ref="consider"/>
+        <xs:element ref="replaced_by"/>
+        <xs:element ref="is_root"/>
+        <xs:element ref="xref_analog"/>
+        <xs:element ref="synonym"/>
+        <xs:element ref="relationship"/>
+        <xs:element ref="intersection_of"/>
+        <xs:element ref="union_of"/>
+        <xs:element ref="disjoint_from"/>
+        <xs:element ref="lexical_category"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="id" type="identifier_Type">
+    <xs:annotation>
+      <xs:documentation>Unique identifier
+If this is for a term, then the ID is
+a OBO ID, typically of the form LocalIDSpace:LocalID</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="name" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>A label intended for humans. Unique within a namespace</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="namespace" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>A label identifying the ontology. names should be unique within namespaces
+NOTE: this is different from how the term 'namespace' is used in RDF/XML/OWL
+ the RDF conception of namespace maps to OBO ID-Spaces</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="def">
+    <xs:annotation>
+      <xs:documentation>natural language definition; includes optional provenance dbxrefs</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="defstr"/>
+        <xs:element ref="dbxref"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="defstr" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>free text</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="xref_analog">
+    <xs:annotation>
+      <xs:documentation>A record that corresponds to a term
+ the exact semantics are not defined - may be for an equivalent term
+ (eg from EC or MetaCyc)
+ or a related term (eg from InterPro)</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="acc"/>
+        <xs:element ref="dbname"/>
+        <xs:element ref="name"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="is_a" type="identifier_Type">
+    <xs:annotation>
+      <xs:documentation>A subtype relation
+Should conform to:
+http://obo.sf.net/relationship/#OBO_REL:is_a</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="relationship">
+    <xs:annotation>
+      <xs:documentation>A link to another term
+It is  recommended that type is drawn from:
+http://obofoundry.org/ro
+Follows in an ALL-SOME fashion; eg all instances of the source term
+stand in this relationship to the 'to' term</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="type"/>
+        <xs:element ref="to"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="type" type="identifier_Type">
+    <xs:annotation>
+      <xs:documentation>here used to indicate a relation</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="to" type="identifier_Type">
+    <xs:annotation>
+      <xs:documentation>A term linked to</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="consider" type="identifier_Type">
+    <xs:annotation>
+      <xs:documentation>An optional replacement term for obsoletes</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="replaced_by" type="identifier_Type">
+    <xs:annotation>
+      <xs:documentation>A mandatory replacement term for obsoletes</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="alt_id" type="identifier_Type">
+    <xs:annotation>
+      <xs:documentation>A secondary identifier </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="subset" type="identifier_Type">
+    <xs:annotation>
+      <xs:documentation>indicates that the term belongs to a subset (view)</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="comment" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>gloss or additional notes on a term that does not belong in definition</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="is_anonymous" type="boolean_Type">
+    <xs:annotation>
+      <xs:documentation>advanced feature:
+anonymous terms do not receive stable IDs, they are  there primarily
+to define other terms
+corresponds to rdf bNodes</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="is_obsolete" type="boolean_Type">
+    <xs:annotation>
+      <xs:documentation>true if the term is obsoleted
+in this case the term is no longer a class</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="is_root" type="boolean_Type">
+    <xs:annotation>
+      <xs:documentation>may be set to true if this is a root in the current ontology;
+optional - it should not be assumed that this is set</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="synonym">
+    <xs:annotation>
+      <xs:documentation>Alternate term (alias)</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="synonym_text"/>
+        <xs:element ref="dbxref"/>
+      </xs:choice>
+      <xs:attribute name="scope">
+        <xs:annotation>
+          <xs:documentation>exact, narrow, ...</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="synonym_type"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="synonym_text" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>The alias string</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="lexical_category" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>e.g. adj, noun:
+this element is experimental and not stable
+DEPRECATED</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="intersection_of">
+    <xs:annotation>
+      <xs:documentation>Terms can be defined by set-intersection (cross-products)
+A cross-product corresponds to two or more intersection_of elements
+Each intersection_of corresponds to a class or link to a class;
+Typically a term will be defined by a genus and 1 or more differentia.
+For the genus, the type element will be omitted.
+Corresponds to owl:intersectionOf</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="type"/>
+        <xs:element ref="to"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="union_of" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Corresponds to owl:unionOf</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="disjoint_from" type="identifier_Type">
+    <xs:annotation>
+      <xs:documentation>set-disjointness between two classes</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="typedef">
+    <xs:annotation>
+      <xs:documentation>For representation of relations and datatype properties</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="id"/>
+        <xs:element ref="name"/>
+        <xs:element ref="namespace"/>
+        <xs:element ref="is_a"/>
+        <xs:element ref="def"/>
+        <xs:element ref="domain"/>
+        <xs:element ref="range"/>
+        <xs:element ref="consider"/>
+        <xs:element ref="replaced_by"/>
+        <xs:element ref="inverse_of"/>
+        <xs:element ref="is_metadata_tag"/>
+        <xs:element ref="is_transitive"/>
+        <xs:element ref="is_symmetric"/>
+        <xs:element ref="is_anti_symmetric"/>
+        <xs:element ref="is_reflexive"/>
+        <xs:element ref="transitive_over"/>
+        <xs:element ref="holds_over_chain"/>
+        <xs:element ref="xref_analog"/>
+        <xs:element ref="synonym"/>
+        <xs:element ref="relationship"/>
+        <xs:element ref="intersection_of"/>
+        <xs:element ref="union_of"/>
+        <xs:element ref="disjoint_from"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="inverse_of" type="identifier_Type">
+    <xs:annotation>
+      <xs:documentation>instance-level inverse
+if R inverse_of R', and x R y (where x and y are instances)
+then y R' x</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="domain" type="identifier_Type">
+    <xs:annotation>
+      <xs:documentation>advanced.
+if the domain of a relation R is D, then
+instances that are the source of a relation R must be instances of D
+Note: open-world holds
+Equivalent to rdfs:domain</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="range" type="identifier_Type">
+    <xs:annotation>
+      <xs:documentation>advanced.
+if the range of a relation R is X, then
+instances that are the target of a relation R must be instances of X
+Note: open-world holds
+Equivalent to rdfs:domain</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="is_transitive" type="boolean_Type">
+    <xs:annotation>
+      <xs:documentation>See http://obo.sf.net/relationship/</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="is_symmetric" type="boolean_Type">
+    <xs:annotation>
+      <xs:documentation>See http://obo.sf.net/relationship/</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="is_anti_symmetric" type="boolean_Type">
+    <xs:annotation>
+      <xs:documentation>See http://obo.sf.net/relationship/</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="is_reflexive" type="boolean_Type">
+    <xs:annotation>
+      <xs:documentation>See http://obo.sf.net/relationship/</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="is_metadata_tag" type="boolean_Type"/>
+  <xs:element name="transitive_over" type="identifier_Type">
+    <xs:annotation>
+      <xs:documentation>R transitive_over S, x R y, y S z =&gt; x R z</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="holds_over_chain">
+    <xs:annotation>
+      <xs:documentation>R holds_over_chain S.T, x S y, y T z =&gt; x R z</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="relation"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="relation" type="identifier_Type"/>
+  <xs:element name="instance">
+    <xs:annotation>
+      <xs:documentation>An instance is a representation of a particular entity
+in contrast to the general entities represented by term</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="id"/>
+        <xs:element ref="name"/>
+        <xs:element ref="namespace"/>
+        <xs:element ref="instance_of"/>
+        <xs:element ref="property_value"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="instance_of" type="identifier_Type">
+    <xs:annotation>
+      <xs:documentation>An instantiation relation
+Should conform to:
+http://obo.sf.net/relationship/#OBO_REL:instance_of</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="property_value">
+    <xs:annotation>
+      <xs:documentation>An instance level relationship or a data value for an instance</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="type"/>
+        <xs:element ref="value"/>
+        <xs:element ref="to"/>
+        <xs:element ref="datatype"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="value" type="xs:string"/>
+  <xs:element name="datatype" type="xs:string"/>
+  <xs:element name="dbxref">
+    <xs:annotation>
+      <xs:documentation>A link to a record in a database</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="acc"/>
+        <xs:element ref="dbname"/>
+        <xs:element ref="name"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="acc" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>The local name, ID or accession in a database record</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="dbname" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>The authority name, ID-space or database name in a database record
+typically a short form (eg FlyBase, UniProt)
+can be expanded to long form using idspace header tag</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="synonym_category">
+    <xs:annotation>
+      <xs:documentation>ontology-specific synonym types</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="id"/>
+        <xs:element ref="name"/>
+        <xs:element ref="namespace"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:simpleType name="boolean_Type">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="identifier_Type">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="subset_identifier_Type">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+</xs:schema>

@@ -1,0 +1,142 @@
+<!-- START template: live_search_term.tmpl -->
+
+<div class="contents">
+
+  <h1>Term Search using Live Search</h1>
+
+  <div class="block">
+
+    <h2>Query</h2>
+
+    <p>
+      For a detailed explanation on how to search, a list of what
+      fields can be used in the search string, or an explanation for
+      how to get the results you want (including using boolean
+      operators), please view the
+      <a alt="Go to Live Search documentation"
+	 href="http://wiki.geneontology.org/index.php/AmiGO_Manual:_Live_Search">AmiGO Live Search documentation</a>.
+    </p>
+    
+    <form action="amigo_exp" id="ls_term_search_form" method="GET">
+
+	<input type="hidden" name="mode" value="live_search_term" />
+	<input type="hidden" name="count" value="20" />
+
+	[% label = 'Select ontology' %]
+	[% variable = 'ontology' %]
+	[% hash = ontology_hash %]
+	[% selected = selected_ontology_hash %]
+	[% catch_all = 'No filter' %]
+	[% multiple = 1 %]
+	[% size = 4 %]
+	[% INCLUDE html/inc/select.tmpl %]
+	
+	<br />
+
+	<label for="query">Search GO</label>
+	<input class="textBox"
+	       type="text"
+	       name="query"
+	       size="40"
+	       value="[% IF SEARCHED_P == 1 %][% query %][% END %]"
+       	       id="query" />
+
+	<input type="submit" class="button" />
+
+      </p>
+    </form>
+  </div>
+
+  [% IF SEARCHED_P == 1 %]
+
+  <div class="block" id="results_block">
+
+    <h2>Results</h2>
+
+    <h3 id="results">[% RESULTS_TOTAL %] term results for: [% query %]</h3>
+
+    [% IF RESULTS_TOTAL == 0 %]
+
+    <p>
+      There were no results for your query. Please try again.
+    </p>
+
+    [% ELSE %]
+
+    <p>
+
+      [% IF RESULTS_FIRST > 1 %]
+      <a href="[% PREV_LINK %]#results_block"
+	 alt="Go one page back in the results"><- back</a>
+      [% END %]
+
+      ([% RESULTS_FIRST %] through [% RESULTS_LAST %])
+
+      [% IF RESULTS_LAST < RESULTS_TOTAL %]
+      <a href="[% NEXT_LINK %]#results_block"
+	 alt="Go one page forward in the results">forward -></a>
+      [% END %]
+
+    </p>
+
+    <table>
+
+      <thead>
+	<tr>
+	  <th>score</th>
+	  <th>acc</th>
+	  <th>name</th>
+	  <th>ontology</th>
+	  <th>synonym(s)</th>
+	</tr>
+      </thead>
+
+      <tbody>
+
+	[% eo = 1 %]
+	[% FOREACH r = RESULTS_LIST %]
+	[%   eo = eo + 1 %]
+
+	[% IF eo % 2 == 0 %]
+	<tr class="odd_row">
+	[% ELSE %]
+	<tr class="even_row">
+	[% END %]
+
+	<td>
+	  [% r.score %]%
+	</td>
+	
+	<td>
+	  <a title="link to information on [% r.acc %]"
+	     href="[% r.link %]">[% r.hilite_acc %]</a>
+	</td>
+	
+	<td>
+	  [% r.hilite_name %]
+	</td>
+
+	<td>
+	  [% r.hilite_ontology %]
+	</td>
+
+	<td>
+	  [% r.hilite_synonym.replace('\n+', ', ') %]
+	</td>
+
+	</tr>
+	[% END %]
+	
+      </tbody>
+
+    </table>
+
+    [% END %]
+
+  </div>
+  
+  [% END %]
+
+</div>
+
+<!-- END template: live_search_term.tmpl -->

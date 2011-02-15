@@ -1,0 +1,1044 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML><HEAD><TITLE>Description of Schema</TITLE>
+<META NAME="generator" CONTENT="SQL::Translator::Producer::HTML, 1.13">
+</HEAD><BODY>
+<H1 CLASS="SchemaDescription">Description of Schema</H1>
+<HR>
+<!-- Table listing (36 tables) -->
+<A NAME="top">
+<TABLE CLASS="LinkTable" WIDTH="100%">
+<TR><TD CLASS="LinkTableCell"><H2 CLASS="LinkTableTitle">Tables</H2></TD></TR>
+<!-- Start link to table 'species' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="species-link" href="#species">species</a></TD></TR>
+<!-- End link to table 'species' -->
+<!-- Start link to table 'gene_product_synonym' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="gene_product_synonym-link" href="#gene_product_synonym">gene_product_synonym</a></TD></TR>
+<!-- End link to table 'gene_product_synonym' -->
+<!-- Start link to table 'term' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="term-link" href="#term">term</a></TD></TR>
+<!-- End link to table 'term' -->
+<!-- Start link to table 'term2term' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="term2term-link" href="#term2term">term2term</a></TD></TR>
+<!-- End link to table 'term2term' -->
+<!-- Start link to table 'term_dbxref' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="term_dbxref-link" href="#term_dbxref">term_dbxref</a></TD></TR>
+<!-- End link to table 'term_dbxref' -->
+<!-- Start link to table 'db' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="db-link" href="#db">db</a></TD></TR>
+<!-- End link to table 'db' -->
+<!-- Start link to table 'evidence_dbxref' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="evidence_dbxref-link" href="#evidence_dbxref">evidence_dbxref</a></TD></TR>
+<!-- End link to table 'evidence_dbxref' -->
+<!-- Start link to table 'graph_path' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="graph_path-link" href="#graph_path">graph_path</a></TD></TR>
+<!-- End link to table 'graph_path' -->
+<!-- Start link to table 'node_operation' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="node_operation-link" href="#node_operation">node_operation</a></TD></TR>
+<!-- End link to table 'node_operation' -->
+<!-- Start link to table 'structure_edit' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="structure_edit-link" href="#structure_edit">structure_edit</a></TD></TR>
+<!-- End link to table 'structure_edit' -->
+<!-- Start link to table 'structure_edit_src' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="structure_edit_src-link" href="#structure_edit_src">structure_edit_src</a></TD></TR>
+<!-- End link to table 'structure_edit_src' -->
+<!-- Start link to table 'term_synonym' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="term_synonym-link" href="#term_synonym">term_synonym</a></TD></TR>
+<!-- End link to table 'term_synonym' -->
+<!-- Start link to table 'graph_path2term' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="graph_path2term-link" href="#graph_path2term">graph_path2term</a></TD></TR>
+<!-- End link to table 'graph_path2term' -->
+<!-- Start link to table 'gene_product_seq' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="gene_product_seq-link" href="#gene_product_seq">gene_product_seq</a></TD></TR>
+<!-- End link to table 'gene_product_seq' -->
+<!-- Start link to table 'gene_product' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="gene_product-link" href="#gene_product">gene_product</a></TD></TR>
+<!-- End link to table 'gene_product' -->
+<!-- Start link to table 'wordunit2term' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="wordunit2term-link" href="#wordunit2term">wordunit2term</a></TD></TR>
+<!-- End link to table 'wordunit2term' -->
+<!-- Start link to table 'synonym_edit' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="synonym_edit-link" href="#synonym_edit">synonym_edit</a></TD></TR>
+<!-- End link to table 'synonym_edit' -->
+<!-- Start link to table 'evidence' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="evidence-link" href="#evidence">evidence</a></TD></TR>
+<!-- End link to table 'evidence' -->
+<!-- Start link to table 'term_category' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="term_category-link" href="#term_category">term_category</a></TD></TR>
+<!-- End link to table 'term_category' -->
+<!-- Start link to table 'term_comment' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="term_comment-link" href="#term_comment">term_comment</a></TD></TR>
+<!-- End link to table 'term_comment' -->
+<!-- Start link to table 'gene_product_count' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="gene_product_count-link" href="#gene_product_count">gene_product_count</a></TD></TR>
+<!-- End link to table 'gene_product_count' -->
+<!-- Start link to table 'seq' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="seq-link" href="#seq">seq</a></TD></TR>
+<!-- End link to table 'seq' -->
+<!-- Start link to table 'category' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="category-link" href="#category">category</a></TD></TR>
+<!-- End link to table 'category' -->
+<!-- Start link to table 'term_dbxref_edit' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="term_dbxref_edit-link" href="#term_dbxref_edit">term_dbxref_edit</a></TD></TR>
+<!-- End link to table 'term_dbxref_edit' -->
+<!-- Start link to table 'seq_property' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="seq_property-link" href="#seq_property">seq_property</a></TD></TR>
+<!-- End link to table 'seq_property' -->
+<!-- Start link to table 'term_text_edit' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="term_text_edit-link" href="#term_text_edit">term_text_edit</a></TD></TR>
+<!-- End link to table 'term_text_edit' -->
+<!-- Start link to table 'source_audit' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="source_audit-link" href="#source_audit">source_audit</a></TD></TR>
+<!-- End link to table 'source_audit' -->
+<!-- Start link to table 'dbxref' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="dbxref-link" href="#dbxref">dbxref</a></TD></TR>
+<!-- End link to table 'dbxref' -->
+<!-- Start link to table 'seq_dbxref' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="seq_dbxref-link" href="#seq_dbxref">seq_dbxref</a></TD></TR>
+<!-- End link to table 'seq_dbxref' -->
+<!-- Start link to table 'term_category_edit' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="term_category_edit-link" href="#term_category_edit">term_category_edit</a></TD></TR>
+<!-- End link to table 'term_category_edit' -->
+<!-- Start link to table 'association' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="association-link" href="#association">association</a></TD></TR>
+<!-- End link to table 'association' -->
+<!-- Start link to table 'assoc_rel' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="assoc_rel-link" href="#assoc_rel">assoc_rel</a></TD></TR>
+<!-- End link to table 'assoc_rel' -->
+<!-- Start link to table 'term_definition' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="term_definition-link" href="#term_definition">term_definition</a></TD></TR>
+<!-- End link to table 'term_definition' -->
+<!-- Start link to table 'instance_data' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="instance_data-link" href="#instance_data">instance_data</a></TD></TR>
+<!-- End link to table 'instance_data' -->
+<!-- Start link to table 'term_audit' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="term_audit-link" href="#term_audit">term_audit</a></TD></TR>
+<!-- End link to table 'term_audit' -->
+<!-- Start link to table 'gene_product_property' -->
+<TR CLASS="LinkTableRow"><TD CLASS="LinkTableCell"><a id="gene_product_property-link" href="#gene_product_property">gene_product_property</a></TD></TR>
+<!-- End link to table 'gene_product_property' -->
+</TABLE>
+<!-- Starting table 'species' -->
+<A NAME="species">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>species</H3></TD> <a name="species"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> GO DATABASE TABLE CREATION SQL <BR> contact: go-database@fruitfly.bdgp.berkeley.edu <BR> Note: this file is the SOURCE sql; it is for defining <BR> the schema in a RDBMS vendor independent way. to "compile" <BR> this source into SQL that your DBMS (mysql/postgres/etc) <BR> will understand, use the "configure" and "make" commands. <BR> See the README file in this directory for more details <BR> ******************************************************* <BR> ** go-associations.sql                               ** <BR> **                                                   ** <BR> ** gene products and associations between            ** <BR> ** products and terms                                ** <BR> **                                                   ** <BR> ******************************************************* <BR> CORRESPONDING GO SOURCE FILE: <BR> ftp://ftp.geneontology.org/pub/go/gene-associations/gene_association.* <BR> for documentation, see <BR> http://www.geneontology.org/doc/GO.annotation.html#file <BR> MAPPING: <BR> COL    NAME		     GO-DB SCHEMA <BR> ===    ====              ============ <BR> 1	   DB		     gene_product x dbxref.xref_dbname <BR> 2	   DB_Object_ID	     gene_product x dbxref.xref_xref_key <BR> 3	   DB_Object_Symbol  gene_product.symbol <BR> 4      NOT		     association.is_not <BR> 5      GOid              association x term.acc <BR> 6      DB:Reference	     association x evidence.dbxref_id <BR> 7      Evidence	     association x evidence.code <BR> 8      With/From         evidence.seq_acc       [DENORMALIZED] <BR> evidence x dbxref.*    [NORMALIZED] <BR> 9      Aspect            association x term.term_type <BR> 10     DB_Object_Name    gene_product.full_name <BR> 11     Synonym           gene_product x gene_product_synonym <BR> 12     DB_Object_type    gene_product.type_id x term.name    [TBA] <BR> 13     Taxon             gene_product x species.ncbi_taxa_id <BR> 14     Date              association.assoc_date <BR> 15     Assigned_by       association.source_db_id x db.name</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="species-id">id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">11</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">PRIMARY KEY, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="species-ncbi_taxa_id">ncbi_taxa_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="species-common_name">common_name</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="species-lineage_string">lineage_string</a></TD> <TD CLASS="FieldCellType">text</TD> <TD CLASS="FieldCellSize">64000</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="species-genus">genus</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">55</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="species-species">species</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">55</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>sp0</TD> <TD>id</TD></TR>
+<TR CLASS="IndexCell"><TD>sp1</TD> <TD>ncbi_taxa_id</TD></TR>
+<TR CLASS="IndexCell"><TD>sp2</TD> <TD>common_name</TD></TR>
+<TR CLASS="IndexCell"><TD>sp3</TD> <TD>genus</TD></TR>
+<TR CLASS="IndexCell"><TD>sp4</TD> <TD>species</TD></TR>
+<TR CLASS="IndexCell"><TD>sp5</TD> <TD>genus, species</TD></TR>
+<TR CLASS="IndexCell"><TD>sp6</TD> <TD>id, ncbi_taxa_id</TD></TR>
+<TR CLASS="IndexCell"><TD>sp7</TD> <TD>id, ncbi_taxa_id, genus, species</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'gene_product' -->
+<A NAME="gene_product">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>gene_product</H3></TD> <a name="gene_product"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> Gene product-related tables</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="gene_product-id">id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">11</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">PRIMARY KEY, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="gene_product-symbol">symbol</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">128</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="gene_product-dbxref_id">dbxref_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL, unique id for this gene product in a database; (eg model organism db)</TD> <TD CLASS="FieldCellFK"><a href="#dbxref-id">dbxref.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="gene_product-species_id">species_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"><a href="#species-id">species.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="gene_product-type_id">type_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">gene_product type (eg gene, transcript, protein)</TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="gene_product-full_name">full_name</a></TD> <TD CLASS="FieldCellType">text</TD> <TD CLASS="FieldCellSize">64000</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>g0</TD> <TD>id</TD></TR>
+<TR CLASS="IndexCell"><TD>g1</TD> <TD>symbol</TD></TR>
+<TR CLASS="IndexCell"><TD>g2</TD> <TD>dbxref_id</TD></TR>
+<TR CLASS="IndexCell"><TD>g3</TD> <TD>species_id</TD></TR>
+<TR CLASS="IndexCell"><TD>g4</TD> <TD>id, species_id</TD></TR>
+<TR CLASS="IndexCell"><TD>g5</TD> <TD>dbxref_id, species_id</TD></TR>
+<TR CLASS="IndexCell"><TD>g6</TD> <TD>id, dbxref_id</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>symbol</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>dbxref_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>dbxref_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>species_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>type_id</TD></TR>
+<TR CLASS="IndexCell"><TD>UNIQUE</TD> <TD>symbol, dbxref_id</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'gene_product_synonym' -->
+<A NAME="gene_product_synonym">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>gene_product_synonym</H3></TD> <a name="gene_product_synonym"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="gene_product_synonym-gene_product_id">gene_product_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#gene_product-id">gene_product.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="gene_product_synonym-product_synonym">product_synonym</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>gs1</TD> <TD>gene_product_id</TD></TR>
+<TR CLASS="IndexCell"><TD>gs2</TD> <TD>product_synonym</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>gene_product_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>gene_product_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>product_synonym</TD></TR>
+<TR CLASS="IndexCell"><TD>UNIQUE</TD> <TD>gene_product_id, product_synonym</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'gene_product_property' -->
+<A NAME="gene_product_property">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>gene_product_property</H3></TD> <a name="gene_product_property"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="gene_product_property-gene_product_id">gene_product_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#gene_product-id">gene_product.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="gene_product_property-property_key">property_key</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">64</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="gene_product_property-property_val">property_val</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">create named unique index to avoid index name clash (in pg)</TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>gpp1</TD> <TD>gene_product_id</TD></TR>
+<TR CLASS="IndexCell"><TD>gpp2</TD> <TD>property_key</TD></TR>
+<TR CLASS="IndexCell"><TD>gpp3</TD> <TD>property_val</TD></TR>
+<TR CLASS="IndexCell"><TD>gppu4</TD> <TD>gene_product_id, property_key, property_val</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>gene_product_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>gene_product_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>property_key</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'association' -->
+<A NAME="association">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>association</H3></TD> <a name="association"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> association <BR> stores the annotations; <BR> an annotation is essentially a link <BR> between a gene product and an ontology term, <BR> with one or more pieces of evidence <BR> assocdate is a date in YYYYMMDD format <BR> (this is the date the association was made by <BR> the source db providers) <BR> source_db_id is a FK into the db table that indicates <BR> the source of the association; for instance, the association <BR> file may come from SwissProt, but the source of the association <BR> could be MGI <BR> NOTE: <BR> in future we may have more complex statements <BR> about annotations which will require a schema <BR> change, although the current table will probably <BR> be retained as a [materialized] view <BR> "roles" <BR> this table contains a "group" number which is optional <BR> the idea is that associations could be seperated into groups <BR> representing different roles/actions of the gene product <BR> at first this will be unpopulated, as GO currently lumps together <BR> all associations, but this allows the option of statements such as <BR> "product X has function F in cell component C"</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="association-id">id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">11</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">PRIMARY KEY, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="association-term_id">term_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="association-gene_product_id">gene_product_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#gene_product-id">gene_product.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="association-is_not">is_not</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="association-qualifier_id">qualifier_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="association-role_group">role_group</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="association-assocdate">assocdate</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="association-source_db_id">source_db_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"><a href="#db-id">db.id</a></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>a0</TD> <TD>id</TD></TR>
+<TR CLASS="IndexCell"><TD>a1</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>a2</TD> <TD>gene_product_id</TD></TR>
+<TR CLASS="IndexCell"><TD>a3</TD> <TD>term_id, gene_product_id</TD></TR>
+<TR CLASS="IndexCell"><TD>a4</TD> <TD>id, term_id, gene_product_id</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>gene_product_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>gene_product_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>qualifier_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>source_db_id</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'evidence' -->
+<A NAME="evidence">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>evidence</H3></TD> <a name="evidence"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> evidence <BR> each association can have one or more pieces of <BR> evidence attached to it. <BR> see www.geneontology.org for a discussion of <BR> evidence types <BR> evidence.seq_acc is a denormalised field containing a | <BR> seperated list of accession supporting the call. for <BR> the normalised data, use evidence_dbxref <BR> NOTE: <BR> evidence codes may eventually become "ontologized"</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="evidence-id">id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">11</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">PRIMARY KEY, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="evidence-code">code</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">8</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="evidence-association_id">association_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#association-id">association.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="evidence-dbxref_id">dbxref_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#dbxref-id">dbxref.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="evidence-seq_acc">seq_acc</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE</TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>ev0</TD> <TD>id</TD></TR>
+<TR CLASS="IndexCell"><TD>ev1</TD> <TD>association_id</TD></TR>
+<TR CLASS="IndexCell"><TD>ev2</TD> <TD>code</TD></TR>
+<TR CLASS="IndexCell"><TD>ev3</TD> <TD>dbxref_id</TD></TR>
+<TR CLASS="IndexCell"><TD>ev4</TD> <TD>association_id, code</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>code</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>association_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>association_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>dbxref_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>dbxref_id</TD></TR>
+<TR CLASS="IndexCell"><TD>UNIQUE</TD> <TD>association_id, dbxref_id, code, seq_acc</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'evidence_dbxref' -->
+<A NAME="evidence_dbxref">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>evidence_dbxref</H3></TD> <a name="evidence_dbxref"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> evidence <BR> each piece of evidence can have multiple dbxrefs associated <BR> with it; this is the normalised version of evidence.seq_acc</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="evidence_dbxref-evidence_id">evidence_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#evidence-id">evidence.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="evidence_dbxref-dbxref_id">dbxref_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#dbxref-id">dbxref.id</a></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>evx1</TD> <TD>evidence_id</TD></TR>
+<TR CLASS="IndexCell"><TD>evx2</TD> <TD>dbxref_id</TD></TR>
+<TR CLASS="IndexCell"><TD>evx3</TD> <TD>evidence_id, dbxref_id</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>evidence_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>evidence_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>dbxref_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>dbxref_id</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'assoc_rel' -->
+<A NAME="assoc_rel">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>assoc_rel</H3></TD> <a name="assoc_rel"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> assoc_rel <BR> NOT POPULATED YET <BR> for "conjunctive" annotations, or "slot-based" annotations. <BR> currently all GO annotations are "disjunctive" (ie unrelated) <BR> this table provides a way of linking together annotations. <BR> for example: <BR> "gene foo has function F during process P in cell component C" <BR> treated as 3 associations: foo/F, foo/P, foo/C <BR> assocs 1 and 2 are related by the type "acts_during" (for example) <BR> assocs 1 and 3 are related by the type "acts_in" <BR> "gene foo has function biosynthesis, acting on interleukin-18" <BR> treated as 2 associations: foo/biosynth, foo/il-18 <BR> assocs are related by the type "acts_on" (for example) <BR> the from_id is for the subject (domain); the to_id is for the <BR> object (range). if a gene has function F during process P, then <BR> the from_id is the association to F, and the to_id is the <BR> association to P <BR> the nature of the relationship (aka slot) is a controlled term <BR> in the ontology; for example "acts_on", "acts_during",...</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="assoc_rel-id">id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">11</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">PRIMARY KEY, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="assoc_rel-from_id">from_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#association-id">association.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="assoc_rel-to_id">to_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#association-id">association.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="assoc_rel-relationship_type_id">relationship_type_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>from_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>from_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>to_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>to_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>relationship_type_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>relationship_type_id</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'term_definition' -->
+<A NAME="term_definition">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>term_definition</H3></TD> <a name="term_definition"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> GO DATABASE TABLE CREATION SQL <BR> contact: go-database@fruitfly.bdgp.berkeley.edu <BR> Note: this file is the SOURCE sql; it is for defining <BR> the schema in a RDBMS vendor independent way. to "compile" <BR> this source into SQL that your DBMS (mysql/postgres/etc) <BR> will understand, use the "configure" and "make" commands. <BR> See the README file in this directory for more details <BR> ******************************************************* <BR> ** go-meta.sql                                       ** <BR> **                                                   ** <BR> ** meta data specific to the core GO model           ** <BR> ** that doesn't relate to graphs per se;             ** <BR> ** extra information about the nodes in the graph    ** <BR> **                                                   ** <BR> ******************************************************* <BR> term_definition <BR> each term has a single definition <BR> open question: get rid of this table and <BR> include in the term table?</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_definition-term_id">term_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_definition-term_definition">term_definition</a></TD> <TD CLASS="FieldCellType">text</TD> <TD CLASS="FieldCellSize">64000</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_definition-dbxref_id">dbxref_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"><a href="#dbxref-id">dbxref.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_definition-term_comment">term_comment</a></TD> <TD CLASS="FieldCellType">text</TD> <TD CLASS="FieldCellSize">64000</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_definition-reference">reference</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>td1</TD> <TD>term_id</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>term_definition</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>dbxref_id</TD></TR>
+<TR CLASS="IndexCell"><TD>UNIQUE</TD> <TD>term_id</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'term_synonym' -->
+<A NAME="term_synonym">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>term_synonym</H3></TD> <a name="term_synonym"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> term_synonym <BR> each term has 0 or more synonyms <BR> synonyms can be for GO IDs or name synonyms <BR> note: currently acc_synonym is not used - all <BR> synonyms go in term_synonym <BR> synonym_type_id refers to a synonym type <BR> see http://www.geneontology.org/GO.synonyms.html <BR> (not yet populated) <BR> this table will change at some point, probably <BR> towards the end of 2003; we will be extending to <BR> include the concept of 'exact synonym', <BR> 'more general synonym' and 'more specific synonym'</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_synonym-term_id">term_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_synonym-term_synonym">term_synonym</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_synonym-acc_synonym">acc_synonym</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_synonym-synonym_type_id">synonym_type_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>ts1</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>ts2</TD> <TD>term_synonym</TD></TR>
+<TR CLASS="IndexCell"><TD>ts3</TD> <TD>term_id, term_synonym</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>synonym_type_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>synonym_type_id</TD></TR>
+<TR CLASS="IndexCell"><TD>UNIQUE</TD> <TD>term_id, term_synonym</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'term_dbxref' -->
+<A NAME="term_dbxref">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>term_dbxref</H3></TD> <a name="term_dbxref"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> term_dbxref <BR> links term table and dbxref <BR> (relationship is many to many) <BR> dbxrefs refer to either the term or the definition</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_dbxref-term_id">term_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_dbxref-dbxref_id">dbxref_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#dbxref-id">dbxref.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_dbxref-is_for_definition">is_for_definition</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault">0</TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>tx0</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>tx1</TD> <TD>dbxref_id</TD></TR>
+<TR CLASS="IndexCell"><TD>tx2</TD> <TD>term_id, dbxref_id</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>dbxref_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>dbxref_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>is_for_definition</TD></TR>
+<TR CLASS="IndexCell"><TD>UNIQUE</TD> <TD>term_id, dbxref_id, is_for_definition</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'term' -->
+<A NAME="term">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>term</H3></TD> <a name="term"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> CREATE INDEX td2 on term_definition(term_definition); <BR> GO DATABASE TABLE CREATION SQL <BR> contact: go-database@fruitfly.bdgp.berkeley.edu <BR> Note: this file is the SOURCE sql; it is for defining <BR> the schema in a RDBMS vendor independent way. to "compile" <BR> this source into SQL that your DBMS (mysql/postgres/etc) <BR> will understand, use the "configure" and "make" commands. <BR> See the README file in this directory for more details <BR> ******************************************************* <BR> ** go-graph.sql                                      ** <BR> **                                                   ** <BR> ** generic tables for representing graphs/triples    ** <BR> ** the central concept in a GO/OBO style ontology.   ** <BR> ** Nodes are terms, arcs are relationships between   ** <BR> ** terms                                             ** <BR> ******************************************************* <BR> term <BR> represents a concept, or node in the <BR> ontology graph <BR> NOTES: <BR> term_type is redundant, inefficient, and <BR> a false concept when we have complex <BR> relationships; it will become obsolete <BR> unique(name, type),</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="term-id">id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">11</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">PRIMARY KEY, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term-name">name</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term-term_type">term_type</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">55</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term-acc">acc</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term-is_obsolete">is_obsolete</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault">0</TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term-is_root">is_root</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault">0</TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>t0</TD> <TD>id</TD></TR>
+<TR CLASS="IndexCell"><TD>t1</TD> <TD>name</TD></TR>
+<TR CLASS="IndexCell"><TD>t2</TD> <TD>term_type</TD></TR>
+<TR CLASS="IndexCell"><TD>t3</TD> <TD>acc</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>name</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>term_type</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>acc</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>is_obsolete</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>is_root</TD></TR>
+<TR CLASS="IndexCell"><TD>UNIQUE</TD> <TD>acc</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'term2term' -->
+<A NAME="term2term">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>term2term</H3></TD> <a name="term2term"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> ********************************************************** <BR> term2term <BR> represents arcs in the graph, (or triple-statements) <BR> If thought of as a graph term1 is parent, <BR> term2 is child. <BR> If thought of as statements, the assertion is <BR> (term2 relationship_type term1) <BR> EXAMPLE: <BR> if term1_id points to nucleic acid binding <BR> term2_id points to DNA binding <BR> relationship_type points to ISA <BR> then we have a statement <BR> "DNA binding ISA nucleic acid binding" <BR> NOTE: <BR> relationship types are kept in the term table, since <BR> these are controlled terms in themselves</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="term2term-id">id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">11</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">PRIMARY KEY, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term2term-relationship_type_id">relationship_type_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term2term-term1_id">term1_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL, parent</TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term2term-term2_id">term2_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL, child</TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>tt1</TD> <TD>term1_id</TD></TR>
+<TR CLASS="IndexCell"><TD>tt2</TD> <TD>term2_id</TD></TR>
+<TR CLASS="IndexCell"><TD>tt3</TD> <TD>term1_id, term2_id</TD></TR>
+<TR CLASS="IndexCell"><TD>tt4</TD> <TD>relationship_type_id</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>relationship_type_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>relationship_type_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>term1_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>term1_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>term2_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>term2_id</TD></TR>
+<TR CLASS="IndexCell"><TD>UNIQUE</TD> <TD>term1_id, term2_id, relationship_type_id</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'seq' -->
+<A NAME="seq">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>seq</H3></TD> <a name="seq"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> INDICES <BR> GO DATABASE TABLE CREATION SQL <BR> contact: go-database@fruitfly.bdgp.berkeley.edu <BR> Note: this file is the SOURCE sql; it is for defining <BR> the schema in a RDBMS vendor independent way. to "compile" <BR> this source into SQL that your DBMS (mysql/postgres/etc) <BR> will understand, use the "configure" and "make" commands. <BR> See the README file in this directory for more details <BR> ******************************************************* <BR> ** go-sequence.sql                                   ** <BR> **                                                   ** <BR> ** storing of sequences in a GO database is          ** <BR> ** optional.                                         ** <BR> **                                                   ** <BR> **                                                   ** <BR> ******************************************************* <BR> represents a sequence entry <BR> will usually be amino acid, but no <BR> constraint on molecule type</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="seq-id">id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">11</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">PRIMARY KEY, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="seq-display_id">display_id</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">64</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="seq-description">description</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="seq-seq">seq</a></TD> <TD CLASS="FieldCellType">text</TD> <TD CLASS="FieldCellSize">64000</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="seq-seq_len">seq_len</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="seq-md5checksum">md5checksum</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">32</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="seq-moltype">moltype</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">25</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="seq-timestamp">timestamp</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>seq0</TD> <TD>id</TD></TR>
+<TR CLASS="IndexCell"><TD>seq1</TD> <TD>display_id</TD></TR>
+<TR CLASS="IndexCell"><TD>seq2</TD> <TD>md5checksum</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>UNIQUE</TD> <TD>display_id, md5checksum</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'seq_property' -->
+<A NAME="seq_property">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>seq_property</H3></TD> <a name="seq_property"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> seq can have various properties attached to it</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="seq_property-id">id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">11</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">PRIMARY KEY, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="seq_property-seq_id">seq_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#seq-id">seq.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="seq_property-property_key">property_key</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">64</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="seq_property-property_val">property_val</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>seqp0</TD> <TD>seq_id</TD></TR>
+<TR CLASS="IndexCell"><TD>seqp1</TD> <TD>property_key</TD></TR>
+<TR CLASS="IndexCell"><TD>seqp2</TD> <TD>property_val</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>seq_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>seq_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>property_key</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>property_val</TD></TR>
+<TR CLASS="IndexCell"><TD>UNIQUE</TD> <TD>seq_id, property_key, property_val</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'seq_dbxref' -->
+<A NAME="seq_dbxref">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>seq_dbxref</H3></TD> <a name="seq_dbxref"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> relationship between seq and dbxref is <BR> many to many</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="seq_dbxref-seq_id">seq_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#seq-id">seq.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="seq_dbxref-dbxref_id">dbxref_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#dbxref-id">dbxref.id</a></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>seqx0</TD> <TD>seq_id</TD></TR>
+<TR CLASS="IndexCell"><TD>seqx1</TD> <TD>dbxref_id</TD></TR>
+<TR CLASS="IndexCell"><TD>seqx2</TD> <TD>seq_id, dbxref_id</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>seq_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>seq_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>dbxref_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>dbxref_id</TD></TR>
+<TR CLASS="IndexCell"><TD>UNIQUE</TD> <TD>seq_id, dbxref_id</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'gene_product_seq' -->
+<A NAME="gene_product_seq">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>gene_product_seq</H3></TD> <a name="gene_product_seq"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> relationship between gene_product and seq is <BR> many to many <BR> (a gene_product should only have one seq that <BR> is marked is_primary_seq, although this is not <BR> enforced. the idea is that there may be different <BR> seqs for a product - allelic variations, variant <BR> spliceforms, but only one is the "representative" <BR> seq)</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="gene_product_seq-gene_product_id">gene_product_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#gene_product-id">gene_product.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="gene_product_seq-seq_id">seq_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#seq-id">seq.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="gene_product_seq-is_primary_seq">is_primary_seq</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>gpseq1</TD> <TD>gene_product_id</TD></TR>
+<TR CLASS="IndexCell"><TD>gpseq2</TD> <TD>seq_id</TD></TR>
+<TR CLASS="IndexCell"><TD>gpseq3</TD> <TD>seq_id, gene_product_id</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>gene_product_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>gene_product_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>seq_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>seq_id</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'wordunit2term' -->
+<A NAME="wordunit2term">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>wordunit2term</H3></TD> <a name="wordunit2term"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> GO DATABASE TABLE CREATION SQL <BR> contact: go-database@fruitfly.bdgp.berkeley.edu <BR> Note: this file is the SOURCE sql; it is for defining <BR> the schema in a RDBMS vendor independent way. to "compile" <BR> this source into SQL that your DBMS (mysql/postgres/etc) <BR> will understand, use the "configure" and "make" commands. <BR> See the README file in this directory for more details <BR> EXPERIMENTAL MODULE <BR> index of terms by word <BR> FOR FUTURE EXPANSION <BR> *** not currently populated ***</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="wordunit2term-term_id">term_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="wordunit2term-is_synonym">is_synonym</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL, set to true (1) if this word came from the synonym table</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="wordunit2term-is_definition">is_definition</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL, set to true (1) if this word came from the definitions table</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="wordunit2term-wordtype">wordtype</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">32</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">type of word (eg noun, verb etc) - UNPOPULATED</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="wordunit2term-wordsound">wordsound</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">32</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">in mysql we can use soundex function to get the word 'sound'</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="wordunit2term-wordunit">wordunit</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">128</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>tut1</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>tut2</TD> <TD>wordunit</TD></TR>
+<TR CLASS="IndexCell"><TD>tut3</TD> <TD>wordsound</TD></TR>
+<TR CLASS="IndexCell"><TD>tut4</TD> <TD>wordunit, wordsound</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>is_synonym</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>is_definition</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'term_audit' -->
+<A NAME="term_audit">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>term_audit</H3></TD> <a name="term_audit"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> GO DATABASE TABLE CREATION SQL <BR> contact: go-database@fruitfly.bdgp.berkeley.edu <BR> Note: this file is the SOURCE sql; it is for defining <BR> the schema in a RDBMS vendor independent way. to "compile" <BR> this source into SQL that your DBMS (mysql/postgres/etc) <BR> will understand, use the "configure" and "make" commands. <BR> See the README file in this directory for more details <BR> ******************************************************* <BR> ** go-audit.sql                                      ** <BR> **                                                   ** <BR> ** tracks loading times                              ** <BR> **                                                   ** <BR> ** all times are unixtimes (seconds since 1970)      ** <BR> ** use standard unix/perl funcs to convert these     ** <BR> **                                                   ** <BR> **                                                   ** <BR> ******************************************************* <BR> term_audit</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_audit-term_id">term_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_audit-term_loadtime">term_loadtime</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>ta1</TD> <TD>term_id</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>UNIQUE</TD> <TD>term_id</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'source_audit' -->
+<A NAME="source_audit">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>source_audit</H3></TD> <a name="source_audit"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> source_audit <BR> time of last modification of data source (usually type:file) <BR> source_path is a file path or name</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="source_audit-source_path">source_path</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="source_audit-source_type">source_type</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="source_audit-source_mtime">source_mtime</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>fa1</TD> <TD>source_path</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'instance_data' -->
+<A NAME="instance_data">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>instance_data</H3></TD> <a name="instance_data"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="instance_data-release_name">release_name</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="instance_data-release_type">release_type</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="instance_data-release_notes">release_notes</a></TD> <TD CLASS="FieldCellType">text</TD> <TD CLASS="FieldCellSize">64000</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>UNIQUE</TD> <TD>release_name</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'node_operation' -->
+<A NAME="node_operation">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>node_operation</H3></TD> <a name="node_operation"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="node_operation-id">id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">11</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">PRIMARY KEY, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="node_operation-type">type</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="node_operation-term_id">term_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="node_operation-edit_session_id">edit_session_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#edit_session-id">edit_session.id</a></TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>edit_session_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>edit_session_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>term_id</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'structure_edit' -->
+<A NAME="structure_edit">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>structure_edit</H3></TD> <a name="structure_edit"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="structure_edit-id">id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">11</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">PRIMARY KEY, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="structure_edit-operation_id">operation_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#operation-id">operation.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="structure_edit-term_id">term_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="structure_edit-term_output_id">term_output_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>operation_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>term_output_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>operation_id</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'structure_edit_src' -->
+<A NAME="structure_edit_src">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>structure_edit_src</H3></TD> <a name="structure_edit_src"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="structure_edit_src-structure_edit_id">structure_edit_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"><a href="#structure_edit-id">structure_edit.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="structure_edit_src-source_parent_id">source_parent_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="structure_edit_src-source_term_id">source_term_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="structure_edit_src-source_type">source_type</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="structure_edit_src-implied">implied</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>implied</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>structure_edit_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>source_parent_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>source_term_id</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'synonym_edit' -->
+<A NAME="synonym_edit">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>synonym_edit</H3></TD> <a name="synonym_edit"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="synonym_edit-operation_id">operation_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"><a href="#node_operation-id">node_operation.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="synonym_edit-synonym_text">synonym_text</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="synonym_edit-acc">acc</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="synonym_edit-new_synonym">new_synonym</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="synonym_edit-new_acc">new_acc</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="synonym_edit-edit_type">edit_type</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">25</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>edit_type</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>operation_id</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'term_category_edit' -->
+<A NAME="term_category_edit">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>term_category_edit</H3></TD> <a name="term_category_edit"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_category_edit-operation_id">operation_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#node_operation-id">node_operation.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_category_edit-category_id">category_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#category-id">category.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_category_edit-is_del">is_del</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>operation_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>category_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>is_del</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>operation_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>category_id</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'term_dbxref_edit' -->
+<A NAME="term_dbxref_edit">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>term_dbxref_edit</H3></TD> <a name="term_dbxref_edit"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_dbxref_edit-operation_id">operation_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#node_operation-id">node_operation.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_dbxref_edit-xref_key">xref_key</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">55</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_dbxref_edit-xref_dbname">xref_dbname</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">55</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_dbxref_edit-xref_type">xref_type</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">55</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_dbxref_edit-new_xref_key">new_xref_key</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">55</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_dbxref_edit-new_xref_dbname">new_xref_dbname</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">55</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_dbxref_edit-new_xref_type">new_xref_type</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">55</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_dbxref_edit-edit_type">edit_type</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">25</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>operation_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>edit_type</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>operation_id</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'term_text_edit' -->
+<A NAME="term_text_edit">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>term_text_edit</H3></TD> <a name="term_text_edit"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_text_edit-operation_id">operation_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#node_operation-id">node_operation.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_text_edit-name">name</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_text_edit-term_definition">term_definition</a></TD> <TD CLASS="FieldCellType">text</TD> <TD CLASS="FieldCellSize">64000</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_text_edit-comment_text">comment_text</a></TD> <TD CLASS="FieldCellType">text</TD> <TD CLASS="FieldCellSize">64000</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>operation_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>operation_id</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'category' -->
+<A NAME="category">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>category</H3></TD> <a name="category"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> e.g. go_slim</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="category-id">id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">11</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">PRIMARY KEY, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="category-name">name</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">55</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="category-description">description</a></TD> <TD CLASS="FieldCellType">text</TD> <TD CLASS="FieldCellSize">64000</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>name</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'term_category' -->
+<A NAME="term_category">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>term_category</H3></TD> <a name="term_category"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_category-term_id">term_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_category-category_id">category_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#category-id">category.id</a></TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>category_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>category_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>UNIQUE</TD> <TD>term_id, category_id</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'term_comment' -->
+<A NAME="term_comment">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>term_comment</H3></TD> <a name="term_comment"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_comment-term_id">term_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#term_comment-term_id">term_comment.term_id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="term_comment-comment_text">comment_text</a></TD> <TD CLASS="FieldCellType">text</TD> <TD CLASS="FieldCellSize">64000</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>comment_text</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>term_id</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'dbxref' -->
+<A NAME="dbxref">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>dbxref</H3></TD> <a name="dbxref"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> GO DATABASE TABLE CREATION SQL <BR> contact: go-database@fruitfly.bdgp.berkeley.edu <BR> Note: this file is the SOURCE sql; it is for defining <BR> the schema in a RDBMS vendor independent way. to "compile" <BR> this source into SQL that your DBMS (mysql/postgres/etc) <BR> will understand, use the "configure" and "make" commands. <BR> See the README file in this directory for more details <BR> ******************************************************* <BR> ** go-general                                        ** <BR> **                                                   ** <BR> ** general purpose tables, not specific to GO or     ** <BR> ** biology per se                                    ** <BR> **                                                   ** <BR> ******************************************************* <BR> dbxref <BR> an accession number for an entry in an <BR> external database. <BR> dbxrefs can be used from a variety of places: <BR> as an xref for a sequence <BR> as an xref for a gene product (gene_product != seq except in the case of <BR> GOA) <BR> as an xref for a term (eg swissprot keywords) <BR> as evidence for an association based on sequence evidence <BR> xref_dbname is NOT standardized - it comes from a varierty of sources; <BR> you can treat the following as synonymous <BR> FB FlyBase <BR> WB WormBase <BR> SP SWP SPTR SWALL <BR> if you use a copy of the db loaded via the perl API, then <BR> the dbname will be lowercased to help achieve uniformity <BR> at a later date we will include metadata on the various data <BR> sources <BR> For now, refer to this file: <BR> ftp://ftp.geneontology.org/pub/go/doc/GO.xrf_abbs</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="dbxref-id">id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">11</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">PRIMARY KEY, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="dbxref-xref_key">xref_key</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="dbxref-xref_keytype">xref_keytype</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">32</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="dbxref-xref_dbname">xref_dbname</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">55</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">UNIQUE, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="dbxref-xref_desc">xref_desc</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">optional description of dbxref</TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>dx0</TD> <TD>id</TD></TR>
+<TR CLASS="IndexCell"><TD>dx1</TD> <TD>xref_dbname</TD></TR>
+<TR CLASS="IndexCell"><TD>dx2</TD> <TD>xref_key</TD></TR>
+<TR CLASS="IndexCell"><TD>dx3</TD> <TD>id, xref_dbname</TD></TR>
+<TR CLASS="IndexCell"><TD>dx4</TD> <TD>id, xref_key, xref_dbname</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>xref_key</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>xref_dbname</TD></TR>
+<TR CLASS="IndexCell"><TD>UNIQUE</TD> <TD>xref_key, xref_dbname</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'db' -->
+<A NAME="db">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>db</H3></TD> <a name="db"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> metadata on the different database / accession granting <BR> authorities. the data should come from the GO.xref_abbs <BR> file. <BR> the dbname is the abbreviation, and should match dbxref.xref_dbname <BR> however we have no foreign key so not every dbxref.xref_dbname will <BR> have an entry here <BR> most columns will not be populated in the short term - the other <BR> fields are for future expansion</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="db-id">id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">11</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">PRIMARY KEY, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="db-name">name</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">55</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="db-fullname">fullname</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="db-datatype">datatype</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="db-generic_url">generic_url</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="db-url_syntax">url_syntax</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">255</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>db0</TD> <TD>id</TD></TR>
+<TR CLASS="IndexCell"><TD>db1</TD> <TD>name</TD></TR>
+<TR CLASS="IndexCell"><TD>db2</TD> <TD>fullname</TD></TR>
+<TR CLASS="IndexCell"><TD>db3</TD> <TD>datatype</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'graph_path' -->
+<A NAME="graph_path">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>graph_path</H3></TD> <a name="graph_path"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> CREATE INDEX dx3 on dbxref(xref_keytype); <BR> GO DATABASE TABLE CREATION SQL <BR> contact: go-database@fruitfly.bdgp.berkeley.edu <BR> Note: this file is the SOURCE sql; it is for defining <BR> the schema in a RDBMS vendor independent way. to "compile" <BR> this source into SQL that your DBMS (mysql/postgres/etc) <BR> will understand, use the "configure" and "make" commands. <BR> See the README file in this directory for more details <BR> ******************************************************* <BR> ** go-optimisations.sql                              ** <BR> **                                                   ** <BR> ** these are OPTIONAL optimisations; they are only   ** <BR> ** suitable for a 'warehouse' style GO database;     ** <BR> ** this is because every time one of the main        ** <BR> ** tables is updated, an update here is forced       ** <BR> ** which would be expensive.                         ** <BR> **                                                   ** <BR> ******************************************************* <BR> Paths between any two terms <BR> (traversing down only) <BR> this table states whether there exists a <BR> path between a parent and a child, and the <BR> distance between them. multiple paths mean <BR> multiple entries in this table <BR> [this table only used in "data warehouse mode"] <BR> an entry also exists linking every term with itself <BR> of distance 0. This is known as "reflexive transitive <BR> closure". See <BR> http://foldoc.doc.ic.ac.uk/foldoc/foldoc.cgi?query=transitive+closure <BR> http://foldoc.doc.ic.ac.uk/foldoc/foldoc.cgi?query=reflexive+transitive+closure <BR> see also some example queries, accessible from: <BR> http://www.godatabase.org/dev/database <BR> note: use of this table is optional. but as most <BR> relational dbs don't implement recursive queries, you <BR> will have to incrementally calculate the transitive closure <BR> via multiple SQL calls if you do not use it for <BR> graph based queries</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="graph_path-id">id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">11</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">PRIMARY KEY, NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="graph_path-term1_id">term1_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL, parent</TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="graph_path-term2_id">term2_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL, child</TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="graph_path-distance">distance</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>graph_path0</TD> <TD>id</TD></TR>
+<TR CLASS="IndexCell"><TD>graph_path1</TD> <TD>term1_id</TD></TR>
+<TR CLASS="IndexCell"><TD>graph_path2</TD> <TD>term2_id</TD></TR>
+<TR CLASS="IndexCell"><TD>graph_path3</TD> <TD>term1_id, term2_id</TD></TR>
+<TR CLASS="IndexCell"><TD>graph_path4</TD> <TD>term1_id, distance</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>term1_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>term1_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>term2_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>term2_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>distance</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'graph_path2term' -->
+<A NAME="graph_path2term">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>graph_path2term</H3></TD> <a name="graph_path2term"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> FOR FUTURE EXPANSION <BR> *** not currently populated *** <BR> this table only used in "data warehouse mode" <BR> each entry in the path table can have multiple <BR> entries in here showing the path from parent to child</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="graph_path2term-graph_path_id">graph_path_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#graph_path-id">graph_path.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="graph_path2term-term_id">term_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="graph_path2term-rank">rank</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>graph_path_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>graph_path_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>rank</TD></TR>
+</TABLE>
+<HR>
+<!-- Starting table 'gene_product_count' -->
+<A NAME="gene_product_count">
+<TABLE WIDTH="100%" CLASS="TableHeader"><TR CLASS="TableHeaderRow"><TD CLASS="TableHeaderCell"><H3>gene_product_count</H3></TD> <a name="gene_product_count"> <TD ALIGN="right" CLASS="TableHeaderCell"><a href="#top">Top</a></TD></TR></TABLE>
+<B>Comments:</B>
+<BR>
+<EM><BR> this table for use in "data warehouse mode" <BR> caches recursive gene product counts</EM>
+<TABLE BORDER="1">
+<TR><TH CLASS="FieldHeader">Field Name</TH> <TH CLASS="FieldHeader">Data Type</TH> <TH CLASS="FieldHeader">Size</TH> <TH CLASS="FieldHeader">Default Value</TH> <TH CLASS="FieldHeader">Other</TH> <TH CLASS="FieldHeader">Foreign Key</TH></TR>
+<TR><TD CLASS="FieldCellName"><a name="gene_product_count-term_id">term_id</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"><a href="#term-id">term.id</a></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="gene_product_count-code">code</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">8</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther"></TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="gene_product_count-speciesdbname">speciesdbname</a></TD> <TD CLASS="FieldCellType">varchar</TD> <TD CLASS="FieldCellSize">55</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL, this should match the gene_product.dbxref</TD> <TD CLASS="FieldCellFK"></TD></TR>
+<TR><TD CLASS="FieldCellName"><a name="gene_product_count-product_count">product_count</a></TD> <TD CLASS="FieldCellType">integer</TD> <TD CLASS="FieldCellSize">10</TD> <TD CLASS="FieldCellDefault"></TD> <TD CLASS="FieldCellOther">NOT NULL</TD> <TD CLASS="FieldCellFK"></TD></TR>
+</TABLE>
+<H3>Indices</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Name</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>gpc1</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>gpc2</TD> <TD>code</TD></TR>
+<TR CLASS="IndexCell"><TD>gpc3</TD> <TD>speciesdbname</TD></TR>
+<TR CLASS="IndexCell"><TD>gpc4</TD> <TD>term_id, code, speciesdbname</TD></TR>
+</TABLE>
+<H3>Constraints</H3>
+<TABLE BORDER="1">
+<TR CLASS="IndexRow"><TH>Type</TH> <TH>Fields</TH></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>FOREIGN KEY</TD> <TD>term_id</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>speciesdbname</TD></TR>
+<TR CLASS="IndexCell"><TD>NOT NULL</TD> <TD>product_count</TD></TR>
+</TABLE>
+<HR>
+Created by <a href="http://sqlfairy.sourceforge.net">
+SQL::Translator 0.05</a>
+</BODY></HTML>

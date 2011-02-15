@@ -1,0 +1,104 @@
+#!/usr/bin/ruby -w
+####
+#### Minimal test towards replacement of lisp tanuki.
+####
+#### NOTE: Right now, needs to run from "go-dev/amigo".
+#### Run: ./scripts/tanuki <url>
+####
+
+require 'scripts/amigo'
+
+include AmiGO
+
+def die msg
+  puts msg
+  return 0;  
+end
+
+###
+###
+###
+ARGV[0] = "http://obofoundry.org"
+ARGV[1] = "http://obofoundry.org"
+
+base_url = ARGV[0]
+test_url = ARGV[1]
+
+$internal_full_uri = []
+$internal_partial_uri = []
+$external_uri = []
+$failed_links = []
+
+##
+base_uri = URI(base_url)
+
+##
+page = AmiGO::PAgent::HTML.new(test_url)
+if page.code == "200" 
+
+  ##
+  page.links.each do |link|
+
+    # puts "try #{link.href}"
+
+    ## Sort links into internal, external, and failed.
+    begin
+
+      link_uri = link.uri
+      if link_uri.host == nil then
+        $internal_partial_uri.push link_uri
+      elsif link_uri.host == base_uri.host then
+        $internal_full_uri.push link_uri
+      else
+        $external_uri.push link_uri
+      end
+
+    rescue URI::InvalidURIError
+      $failed_links.push link      
+    end
+
+  end
+
+else
+  die "Not a good test URL."
+end
+
+###
+###
+###
+
+$failed_links.each do |l|
+    puts "FAILED URI: \"#{l.href}\""
+end
+
+## Adjust internal partials to full.
+$internal_partial_uri.each do |ipu|
+
+  full_uri = base_uri.merge(ipu)
+  # puts full_uri.to_s
+  $internal_full_uri.push full_uri
+
+end
+
+##
+$fail = []
+$bad = []
+$set = $internal_full_uri + $external_uri
+$set.each do |uri|
+
+  puts "try: #{uri.to_s}"
+  # linked_page = AmiGO::PAgent::HTML.new(uri)
+  linked_page = AmiGO::PAgent::HTML.new(uri)
+  if linked_page.okay
+    if linked_page.code == "200"
+      puts "\tokay #{linked_page.code} #{linked_page.uri}"
+    else
+      puts "\tBAD: #{linked_page.uri}"
+      $bad.push uri
+    end
+  else
+    puts "\tFAIL: #{uri}" 
+    $fail.push uri
+  end
+
+end
