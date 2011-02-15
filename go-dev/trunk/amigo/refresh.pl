@@ -337,8 +337,10 @@ if( $do_lucene ){
 ## trivial test. Although, we could use this opportunity to drop some
 ## tests in here at some point...
 ## Make this testing quiet.
-my($tmp_fh, $tmp_fn) = tempfile();
-Test::More->builder->output($tmp_fn);
+if( ! $be_chatty ){
+  my($tmp_fh, $tmp_fn) = tempfile();
+  Test::More->builder->output($tmp_fn);
+}
 ll("Starting testing...");
 ok( 1 == 1 );
 ll("Exit testing...");
