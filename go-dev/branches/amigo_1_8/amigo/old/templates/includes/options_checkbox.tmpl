@@ -1,0 +1,6 @@
+<fieldset><legend>[% title %]</legend>
+[% FOREACH opt = option %]
+		<input type="checkbox" name="[% opt_name %]" id="[% opt.value %]" value="[% opt.value %]" class="cbox"[% IF opt.selected; ' checked'; END %]><label for="[% opt.value %]">[% opt.label %]</label>
+		<input type="checkbox" name="[% opt_name %]" id="[% opt.value %]" value="[% opt.value %]" class="cbox"><label for="[% opt.value %]">[% opt.label %]</label>
+[% END %]
+</fieldset>

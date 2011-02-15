@@ -1,0 +1,46 @@
+<!-- START: front_page.tmpl -->
+
+<div class="contents">
+
+  <form action="search.cgi" name="frontForm" id="frontForm" method="GET">
+    <fieldset class="C">
+      <legend>Search</legend>
+      <!--       <input type="hidden" name="session_id" value=""> -->
+      <p><label for="query">Search the Gene Ontology database</label></p>
+
+<!--       <select name="search_constraint"> -->
+<!-- 	<option value="term">all of GO</option> -->
+<!-- 	<option value="term">GO terms</option> -->
+<!-- 	<option value="gene_product">GO gene products</option> -->
+<!--       </select> -->
+
+      <!-- autocomplete="off" -->
+      <input type="text"
+	     name="search_query"
+	     size="25"
+	     value=""
+	     style="outline: #3875D7 solid 1px;"
+	     id="query">
+
+      <input type="hidden" name="action" value="new-search">
+
+      <!--       <fieldset> -->
+      <!-- 	<legend>Search type</legend> -->
+      <!-- 	<span><input type="radio" name="search_constraint" value="term" checked id="term"><label for="term">GO terms</label></span> -->
+      <!-- 	<span><input type="radio" name="search_constraint" value="gp" id="gp"><label for="gp">genes or proteins</label></span> -->
+      <!-- 	<input type="checkbox" id="exact_match" name="exact_match" value="yes"><label for="exact_match">exact match</label> -->
+      <!--       </fieldset> -->
+
+      <br />
+
+      <input class="button" type="submit">
+
+    </fieldset>
+
+  </form>
+
+  <br />
+
+</div>
+
+<!-- END: front_page.tmpl -->

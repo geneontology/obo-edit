@@ -1,0 +1,157 @@
+#!/usr/bin/perl -w
+#!/usr/bin/perl -wT
+
+####
+####
+#### A survey of experimental PMID annotations.
+####
+####
+
+##
+## reset; DBIC_TRACE = 1 ./report_1
+##
+
+BEGIN { require "config.pl"; }
+use lib $ENV{GO_ROOT} . '/go-perl';
+use lib $ENV{GO_ROOT} . '/go-db-perl';
+use lib $ENV{GO_ROOT} . '/amigo/perl';
+
+## Bring in necessaries.
+use utf8;
+use strict;
+use Data::Dumper;
+use AmiGO;
+use GOBO::DBIC::GODBModel::Schema;
+use GOBO::DBIC::GODBModel::Query;
+#use Utility::TSLParser;
+# use AmiGO::ReferenceGenome;
+# use Cache::Memcached;
+
+my $core = AmiGO->new();
+
+#print "content-type:text/plain\n\n";
+
+## Get the external linkies. No checking because the name should be
+## (according to the schema) a unique constraint.
+my $dbs = GOBO::DBIC::GODBModel::Query->new({type=>'db'});
+my $dbs_all = $dbs->get_all_results();
+my %db_info_by_name = ();
+foreach my $db (@$dbs_all){
+  $db_info_by_name{$db->name} = {
+				 id => $db->id,
+				 name => $db->name,
+				 fullname => $db->fullname,
+				 datatype => $db->datatype,
+				 generic_url => $db->generic_url,
+				 url_syntax => $db->url_syntax,
+				 url_exmaple => $db->url_example,
+				 uri_prefix => $db->uri_prefix,
+				};
+  #print $db->name . "\n";
+}
+
+## Do the query.
+my $query = GOBO::DBIC::GODBModel::Query->new({type=>'association'});
+my @e_codes = @{$core->experimental_evidence_codes()};
+
+## Cycle through the results and process them into something useful.
+my $results = [];
+#my $count_a = 0;
+#my $count_b = 0;
+#my $count_c = 0;
+while( my $a = $query->get_next_result({-and=>[
+					       {'evidence.code'=>
+						{'=', \@e_codes}},
+					       {'dbxref_2.xref_dbname' =>
+						{'like', '%PMID%'}}
+					      ]
+				       }) ){
+
+  my $e_rs = $a->evidence;
+  my @all_e = $e_rs->all;
+  foreach my $e (@all_e){
+
+    ## The ref column
+    #my $flag = 0;
+    my $str = '';
+    if( $e->dbxref ){
+      $str = $e->dbxref->xref_dbname . ':' . $e->dbxref->xref_key;
+      #$flag = 1 if $e->dbxref->xref_dbname eq 'PMID';
+    }else{
+      $str = '?';
+    }
+
+    #    if( $flag ){
+    print $str;
+    print "\t";
+
+    ## Term id
+    print $a->term->acc;
+    print "\t";
+
+    ## Term name
+    print $a->term->name;
+    print "\t";
+
+    ## gp "id"
+    print $a->gene_product->dbxref->xref_dbname;
+    print ":";
+    print $a->gene_product->dbxref->xref_key;
+    print "\t";
+
+    ## gp symbol
+    print $a->gene_product->symbol;
+    print "\t";
+
+    #     ## The with column
+    #     print "\t(";
+    #     my $ed = $e->evidence_dbxref;
+    #     my @ed_all = $ed->all;
+    #     if( @ed_all ){
+    #       foreach my $edb (@ed_all){
+    # 	#print $e->seq_acc; # with
+    # 	if( $edb->dbxref ){
+    # 	  print " ";
+    # 	  print $edb->dbxref->xref_dbname;
+    # 	  print ":";
+    # 	  print $edb->dbxref->xref_key;
+    # 	}
+    # 	$count_a++;
+    #       }
+    #     }
+    #     print " )";
+
+    #     ## Obs?
+    #     print $a->term->is_obsolete|| 0;
+    #     print "\t";
+
+    ## Not
+    print $a->is_not || 0;
+    print "\t";
+
+    ## A link.
+    my $link = '?';
+    my $dbname = $a->gene_product->dbxref->xref_dbname;
+    if( defined($db_info_by_name{$dbname}) &&
+	defined($db_info_by_name{$dbname}{url_syntax}) ){
+      $link = $db_info_by_name{$dbname}{url_syntax} .
+	$a->gene_product->dbxref->xref_key;
+    }
+    print $link;
+
+    print "\n";
+    #}
+
+    #    $count_b++;
+  }
+
+  #  $count_c++;
+
+  #        #gp_link => $self->get_interlink({mode=>'gp-details',
+  #        #		     arg=>{gp=>$gp_ids,
+  #        #			   session_id=>$self->{SESSION_ID}}}),
+}
+
+#print "Count A: " . $count_a . "\n";
+#print "Count B: " . $count_b . "\n";
+#print "Count C: " . $count_c . "\n";

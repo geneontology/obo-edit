@@ -1,0 +1,96 @@
+<!-- START template: slimmer_results_count.tmpl
+-->
+<div class="block">
+  <h2>Results</h2>
+  
+  <p>
+
+    <em>[% NUMBER_OF_RESULTS %]</em> result(s) in slim set with [% NUMBER_OF_TERMS %] terms and [% NUMBER_OF_GPS %] gene products from your gene product list:
+
+  </p>
+
+  <p>
+    If you wish to retry or tune your query, you
+    may <a href="#controls" title="Jump to the controls">jump</a> to
+    the controls.
+  </p>
+
+  <table summary="Terms associated with the gene&nbsp;cho">
+    <thead>
+      <tr>
+	<th style="">GO Slim Term</th>
+	<th style="">Total # GPs</th>
+	<!--
+	<th style="width: 10em"># Direct GPs</th>
+	-->
+	<th style="width: 5em">Ontology</th>
+	<!--
+	<th style="width: 8em">Obsolete</th>
+	-->
+      </tr>
+    </thead>
+    <tbody>
+      [% eo = 0 %]
+      [% FOREACH count = COUNTS %]
+      [%    IF eo % 2 == 0 %]
+      <tr class="even_row">
+      [%    ELSE %]
+      <tr class="even_odd">
+      [%    END %]
+
+      
+      <td rowspan="1">
+	[%    IF count.IS_BUCKET_TERM %]
+	[% count.ACC %]
+	[%    ELSE %]
+	<a href="go.cgi?term=[% count.ACC %]">[% count.ACC %]</a> [% count.NAME %]
+	[%    END %]
+      </td>
+
+      <td rowspan="1">
+	[% IF count.COUNT_ALL_SLIM > 0 %]
+	[%    count.COUNT_ALL_SLIM %]
+	<!-- ([% count.ALL_PERCENT %]%)
+	<br /> -->
+
+	([%    acc = count.ACC %]
+	[%    FOREACH gp IN T2G_MAPS.item(acc) %]
+	<a href="go.cgi?gene_product=[% gp %]">[% gp %]</a>
+	[%    END %])
+
+	[% ELSE %]
+ 	0
+	[% END %]
+
+      </td>
+<!--
+      <td rowspan="1">
+	[% IF count.COUNT_DIRECT_SLIM > 0 %]
+	[%    count.COUNT_DIRECT_SLIM %] ([% count.DIRECT_PERCENT %]%)
+	[% ELSE %]
+ 	0
+	[% END %]
+      </td>
+-->
+        <td rowspan="1">
+	  [% count.TYPE %]
+	</td>
+
+	<!--
+        <td rowspan="1">
+	  [% count.OBSOLETE %]
+	</td>
+	-->
+
+      </tr>
+      [%    eo = eo + 1 %]
+      [% END %]
+    </tbody>
+  </table>
+
+  <p class="toTop">
+    <a href="#top" title="Back to the top of the page">Back to top</a>
+  </p>
+  
+</div>
+<!-- END template: slimmer_results_count.tmpl -->

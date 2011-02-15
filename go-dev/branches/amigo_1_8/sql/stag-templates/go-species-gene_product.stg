@@ -1,0 +1,20 @@
+:SELECT 
+  *
+:FROM
+  species
+  INNER JOIN gene_product ON (gene_product.species_id = species.id)
+  INNER JOIN dbxref ON (dbxref.id = gene_product.dbxref_id)
+:WHERE
+    [species.ncbi_taxa_id => &ncbi_taxa_id&]
+    [species.common_name => &species_common_name&]
+    [species.genus => &genus&]
+    [species.species => &species&]
+    [dbxref.xref_key => &product_acc&]
+    [dbxref.xref_dbname => &product_dbname&]
+    [association.is_not => &negated& ]
+:USE NESTING (set(species(gene_product(dbxref))))
+//
+schema: go
+desc: 
+
+ fetches species/gene_product/dbxref

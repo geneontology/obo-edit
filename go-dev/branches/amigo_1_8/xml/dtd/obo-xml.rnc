@@ -1,0 +1,394 @@
+## OBO-XML 1.2
+## $Id: obo-xml.rnc,v 1.5 2009/11/10 22:56:15 cmungall Exp $
+## 
+## This is an XML representation of the Obo-text file format, for
+## modeling any GO or OBO ontology
+## 
+## The master schema is the Relax NG compact syntax version (.rnc)
+## The .rng and .xsd file is generated from these
+## 
+## See also the obo 1.2 file format specification
+
+start = obo
+
+obo =
+   ## top-level element corresponding to an ontology of part of an ontology
+   element obo {
+      source* & 
+      header* &
+      term* & 
+      typedef* &
+      instance*
+  }
+
+source =
+   ## metadata on the source file
+   element source {
+      source_id? 
+    & source_type?
+    & source_fullpath?
+    & source_path?
+    & source_md5?
+    & source_mtime?
+    & source_parsetime?
+  }
+
+source_id = 
+  element source_id {  text }
+source_type = 
+  element source_type {  text }
+source_path = 
+  element source_path {  text }
+source_fullpath = 
+  element source_fullpath {  text }
+source_md5 = 
+  element source_md5 {  text }
+source_mtime = 
+  element source_mtime {  text }
+source_parsetime = 
+  element source_parsetime {  text }
+
+header =
+   ## ontology metadata
+   element header {
+      format-version?
+    & data-version?
+    & date?
+    & saved-by?
+    & auto-generated-by?
+    & default-namespace?
+    & remark?
+    & subsetdef*
+    & synonymtypedef*
+    & idspace*
+  }
+
+format-version = 
+  ## Should be 1.2
+  element format-version {  text }
+date = 
+   ## In DD.MM.YYYY time format
+  element date {  text }
+saved-by = 
+   ## username of last curator to edit file
+  element saved-by {  text }
+auto-generated-by =
+  ## name of program that wrote file
+  element auto-generated-by {  text }
+default-namespace =
+  ## ontology-wide default
+  element default-namespace {  text }
+remark = 
+  ## description of ontology
+  element remark {  text }
+subsetdef =
+  ## A subset (aka slim) is the name of a view over one or more ontologies
+  ## See also the subset element
+  element subsetdef {  id & name & dbxref* }
+synonymtypedef =
+  ## individual obo files can define their own synonym types
+  element synonymtypedef {  id & name? & scope? }
+idspace =
+   ## An ID space places an OBO Local IDSpace (e.g. GO, CL, CHEBI, FMA)
+   ## to a global IDSpace (e.g. an LSID prefix)
+   ## This can be used to expand an ID for export to RDF/OWL
+   element idspace {  local & global & comment* }
+local = 
+  ## e.g. GO, CL, PATO
+  element local {  xsd:NMTOKEN }
+global = 
+  ## A URI prefix; this uniquely identify this ontology in a global
+  ## context
+  element global {  text }
+
+scope =
+  ## synonym scope - EXACT, BROAD, NARROW, RELATED
+  element scope { text }
+
+term =
+   ## Terms are the fundamental units in an obo ontology
+   ## Also known as classes
+   ## Note: here 'term' refers to the primary term - synonyms are a
+   ## a different representational entity
+  element term {
+     id
+   & name
+   & \namespace
+   & def?
+   & is_a*
+   & alt_id*
+   & subset*
+   & comment?
+   & is_anonymous?
+   & is_obsolete?
+   & consider*
+   & replaced_by*
+   & is_root?
+   & xref_analog*
+   & synonym*
+   & relationship*
+   & intersection_of*
+   & union_of*
+   & disjoint_from*
+   & lexical_category?
+  }
+
+id = 
+  ## Unique identifier
+  ## If this is for a term, then the ID is
+  ## a OBO ID, typically of the form LocalIDSpace:LocalID
+  element id {  identifier_Type }
+name = 
+  ## A label intended for humans. Unique within a namespace
+  element name {  text }
+\namespace = 
+  ## A label identifying the ontology. names should be unique within namespaces
+  ## NOTE: this is different from how the term 'namespace' is used in RDF/XML/OWL
+  ##  the RDF conception of namespace maps to OBO ID-Spaces
+  element namespace {  text }
+def = 
+   ## natural language definition; includes optional provenance dbxrefs
+   element def {  
+      defstr
+    & dbxref* 
+   }
+
+defstr = 
+  ## free text
+  element defstr {  text }
+xref_analog =
+  ## A record that corresponds to a term
+  ##  the exact semantics are not defined - may be for an equivalent term
+  ##  (eg from EC or MetaCyc)
+  ##  or a related term (eg from InterPro)
+  element xref_analog {  
+     acc 
+   & dbname
+   & name?
+  }
+
+is_a = 
+  ## A subtype relation
+  ## Should conform to:
+  ## http://obo.sf.net/relationship/#OBO_REL:is_a
+  element is_a {  identifier_Type }
+relationship =
+  ## A link to another term
+  ## It is  recommended that type is drawn from:
+  ## http://obofoundry.org/ro
+  ## Follows in an ALL-SOME fashion; eg all instances of the source term
+  ## stand in this relationship to the 'to' term
+  element relationship {  type & to }
+type = 
+  ## here used to indicate a relation
+  element type {  identifier_Type }
+to = 
+  ## A term linked to
+  element to {  identifier_Type }
+
+consider = 
+  ## An optional replacement term for obsoletes
+  element consider {  identifier_Type }
+replaced_by = 
+  ## A mandatory replacement term for obsoletes
+  element replaced_by {  identifier_Type }
+alt_id = 
+  ## A secondary identifier 
+  element alt_id {  identifier_Type }
+subset = 
+  ## indicates that the term belongs to a subset (view)
+  element subset {  identifier_Type }
+comment = 
+  ## gloss or additional notes on a term that does not belong in definition
+  element comment {  text }
+
+is_anonymous = 
+  ## advanced feature:
+  ## anonymous terms do not receive stable IDs, they are  there primarily
+  ## to define other terms
+  ## corresponds to rdf bNodes
+  element is_anonymous {  boolean_Type }
+is_obsolete = 
+  ## true if the term is obsoleted
+  ## in this case the term is no longer a class
+  element is_obsolete {  boolean_Type }
+is_root = 
+  ## may be set to true if this is a root in the current ontology;
+  ## optional - it should not be assumed that this is set
+  element is_root {  boolean_Type }
+
+synonym = 
+   ## Alternate term (alias)
+   element synonym {  
+      ## exact, narrow, ...
+      attribute scope { text }?
+    & attribute synonym_type { text }?
+    & synonym_text 
+    & dbxref*
+   }
+
+synonym_text = 
+  ## The alias string
+  element synonym_text {  text }
+
+lexical_category =
+   ## e.g. adj, noun:
+   ## this element is experimental and not stable
+   ## DEPRECATED
+  element lexical_category {  text }
+
+intersection_of =
+   ## Terms can be defined by set-intersection (cross-products)
+   ## A cross-product corresponds to two or more intersection_of elements
+   ## Each intersection_of corresponds to a class or link to a class;
+   ## Typically a term will be defined by a genus and 1 or more differentia.
+   ## For the genus, the type element will be omitted.
+   ## Corresponds to owl:intersectionOf
+  element intersection_of { 
+     type?
+   & to 
+  }
+
+union_of = 
+   ## Corresponds to owl:unionOf
+  element union_of {  text }
+
+disjoint_from =
+  ## set-disjointness between two classes
+ element disjoint_from { identifier_Type }
+
+
+typedef =
+   ## For representation of relations and datatype properties
+   element typedef {
+    id
+     & name
+     & \namespace
+     & is_a*
+     & def?
+     & domain?
+     & range?
+     & consider*
+     & replaced_by*
+     & inverse_of?
+     & is_metadata_tag?
+     & is_transitive?
+     & is_symmetric?
+     & is_anti_symmetric?
+     & is_reflexive?
+     & transitive_over*
+     & holds_over_chain*
+     & xref_analog*
+     & synonym*
+     & relationship*
+     & intersection_of*
+     & union_of*
+     & disjoint_from*
+  }
+
+inverse_of = 
+  ## instance-level inverse
+  ## if R inverse_of R', and x R y (where x and y are instances)
+  ## then y R' x
+  element inverse_of {  identifier_Type }
+domain = 
+  ## advanced.
+  ## if the domain of a relation R is D, then
+  ## instances that are the source of a relation R must be instances of D
+  ## Note: open-world holds
+  ## Equivalent to rdfs:domain
+  element domain {  identifier_Type }
+range = 
+  ## advanced.
+  ## if the range of a relation R is X, then
+  ## instances that are the target of a relation R must be instances of X
+  ## Note: open-world holds
+  ## Equivalent to rdfs:domain
+  element range {  identifier_Type }
+is_transitive = 
+  ## See http://obo.sf.net/relationship/
+  element is_transitive {  boolean_Type }
+is_symmetric = 
+  ## See http://obo.sf.net/relationship/
+  element is_symmetric {  boolean_Type }
+is_anti_symmetric =
+  ## See http://obo.sf.net/relationship/
+  element is_anti_symmetric {  boolean_Type }
+is_reflexive = 
+  ## See http://obo.sf.net/relationship/
+  element is_reflexive {  boolean_Type }
+is_metadata_tag = 
+  element is_metadata_tag {  boolean_Type }
+
+transitive_over =
+  ## R transitive_over S, x R y, y S z => x R z
+ element transitive_over { identifier_Type }
+holds_over_chain =
+  ## R holds_over_chain S.T, x S y, y T z => x R z
+  element holds_over_chain {  
+     relation+
+  }
+
+relation = 
+   element relation { identifier_Type }
+
+instance =
+   ## An instance is a representation of a particular entity
+   ## in contrast to the general entities represented by term
+   element instance {
+      id
+    & name
+    & \namespace
+    & instance_of
+    & property_value*
+  }
+
+instance_of = 
+  ## An instantiation relation
+  ## Should conform to:
+  ## http://obo.sf.net/relationship/#OBO_REL:instance_of
+  element instance_of {  identifier_Type }
+
+property_value =
+  ## An instance level relationship or a data value for an instance
+  element property_value {
+       type
+     & value?
+     & to?
+     & datatype
+  }
+
+value =
+   element value { xsd:string }
+
+datatype =
+   element datatype { xsd:string }
+
+dbxref = 
+   ## A link to a record in a database
+   element dbxref {
+      acc
+    & dbname
+    & name?
+   }
+
+acc = 
+  ## The local name, ID or accession in a database record
+  element acc {  text }
+dbname = 
+  ## The authority name, ID-space or database name in a database record
+  ## typically a short form (eg FlyBase, UniProt)
+  ## can be expanded to long form using idspace header tag
+  element dbname {  text }
+
+synonym_category =
+  ## ontology-specific synonym types
+  element synonym_category {
+     id
+   & name
+   & \namespace?
+  }
+
+boolean_Type = xsd:string
+identifier_Type = xsd:string
+subset_identifier_Type = xsd:string

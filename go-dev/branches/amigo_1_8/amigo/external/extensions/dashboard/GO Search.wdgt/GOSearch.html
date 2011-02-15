@@ -1,0 +1,89 @@
+<html>
+  <head>
+    <style>
+      @import "GOSearch.css";
+    </style>
+    
+    <script type="text/javascript"
+	    src="/System/Library/WidgetResources/AppleClasses/AppleInfoButton.js"
+	    charset="utf-8"></script>
+    <script type="text/javascript"
+	    src="/System/Library/WidgetResources/AppleClasses/AppleAnimator.js"
+	    charset="utf-8"></script>
+    <script type="text/javascript"
+	    src="/System/Library/WidgetResources/AppleClasses/AppleButton.js"
+	    charset="utf-8"></script>
+
+    <script type="text/javascript"
+	    src="http://amigo.berkeleybop.org/amigo/js/org/bbop/amigo.js"></script>
+    <script type="text/javascript"
+	    src="http://amigo.berkeleybop.org/amigo/js/com/jquery-1.3.2.min.js"></script>
+    
+    <script type="text/javascript" src="GOSearch.js"></script> 
+
+  </head>
+<body onload="GOSearchWidgetInit();">
+
+    <!-- Front side. -->
+    <div id="front">
+
+      <img src="Default-10.png" />
+
+      <div id="kvetch"></div>
+
+      <div id="title-curtain">AmiGO: GO Quick Search</div>
+
+      <div id="cform">
+	<form 
+	   id="completion-form"
+	   name="completion-form"
+	   method="GET"
+	   action="http://amigo.berkeleybop.org/cgi-bin/amigo/completion">
+	  <div style="font-size: 75%;" id="search-fields">
+	    <input type="hidden"
+		   id="format-field"
+		   name="format"
+		   value="widget" />
+	    Search:&nbsp;<input type="text" 
+				name="query"
+				id="query-field" />
+	  </div>
+	  <br />
+	  <div style="font-size: 75%;" id="type-fields">
+	    <input type="radio"
+		   name="type"
+		   id="type-field-gp"
+		   value="gene_product"
+		   checked /> Gene Product
+	    <input type="radio"
+		   id="type-field-term"
+		   name="type"
+		   value="term" /> Term
+	  </div>
+	</form> 
+      </div>
+
+      <img id="results-curtain" src="bounds.png" />
+      <div id="results">
+	<div style="padding-top: 5px; padding-left: 5px;">
+	  Enter three or more characters to<br />get search results.
+	</div>
+      </div>
+
+      <div id="infoButton"></div>
+
+    </div>
+
+    <!-- Back side. -->
+    <div id="back">
+      <img src="Back-10.png" />
+      <div id="back-info">
+	<p>
+	  For more information about this widget, please visit the AmiGO <a href="#" style="color: #cddcf3;" onclick="widget.openURL('http://wiki.geneontology.org/index.php/AmiGO_Manual:_OpenSearch')">
+	    OpenSearch site</a>.
+	</p>
+      </div>
+      <div id="returnButton"></div>
+    </div>
+
+</html>

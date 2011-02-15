@@ -1,0 +1,884 @@
+#!/usr/local/bin/perl -w
+
+##
+## Tags that I use: BUG, TODO, WARN, NOTE, ASK
+##
+## TODO: Make sure that all errors will work with all formats. Gunna
+## need an error chooser pretty early on.
+##
+
+## Try to get the local environment sane.
+BEGIN {
+  require "config.pl" if -f "config.pl" ;
+  if( ! defined($ENV{GO_ROOT}) &&
+      -f "../cvs/go-dev/"){
+    $ENV{GO_ROOT} = "../cvs/go-dev";
+  }
+  die "cannot find templates: $!" if ! $ENV{GO_TEMPLATE_PATHS};
+}
+use lib "$ENV{GO_ROOT}/go-perl";
+use lib "$ENV{GO_ROOT}/go-db-perl";
+use lib "$ENV{GO_ROOT}/amigo/perl";
+
+## Bring in necessaries.
+use utf8;
+use strict;
+use Template;
+use AmiGO::Reader;
+use GO::AppHandle;
+
+## Set up CGI environment,
+use CGI qw/:standard/;
+use CGI::Carp qw(warningsToBrowser fatalsToBrowser);
+$CGI::POST_MAX = 1024 * 100000;	## 100M uploads max.
+my $query = new CGI;
+
+
+##########
+##
+## I hate to do this at the top, but we need this to get names of the
+## different subsets, databases, evcodes, etc. for creating the
+## initial page. Ask the db...
+##
+##########
+my $apph = GO::AppHandle->connect(-dbname=>$ENV{GO_DBNAME},
+				  -dbhost=>$ENV{GO_DBHOST});
+die_template("Could not connect to GO database.") if ! $apph;
+
+## Available species databases.
+my $apph_sd_hash = {};
+my $tmp_apph_sd_hash = $apph->get_speciesdb_dict;
+foreach my $src (keys %$tmp_apph_sd_hash) {
+  #$apph_sd_hash->{$src} = $tmp_apph_sd_hash->{$src}->common_name;
+  $apph_sd_hash->{$src} = $src;
+}
+
+## Available evidence codes.
+my $apph_ontology_hash = {};
+$apph_ontology_hash->{biological_process} = 'Biological Process';
+$apph_ontology_hash->{cellular_component} = 'Cellular Component';
+$apph_ontology_hash->{molecular_function} = 'Molecular Function';
+
+## Available evidence codes.
+my $apph_evcode_hash = {};
+%{$apph_evcode_hash} = map {$_ => $_} $apph->evidence_codes;
+
+## Available gp upload filetypes.
+#my $gp_upload_type_hash = {};
+#$gp_upload_type_hash->{obo} = 1;
+#$gp_upload_type_hash->{gene_association} = 1;
+
+
+##########
+##
+## Sanity check all possible incoming parameters:
+##
+## Flow arguments:
+## 'request' drop into data mode, build data structure
+## 'force' this will force continuation instead of dying for *small*
+## problems
+##
+## Results arguments:
+## 'output' what we output (e.g. map, gafile, count, etc.)
+## 'format' how we output
+##
+## Data arguments:
+## 'gp_list' list of gene ids
+## 'gp_file' content of a gene id file (post)
+## 'gp_file_type'
+## 'bggp_file' content of a gene id file (post) for the background set
+## 'bggp_file_type'
+##
+## Filter arguments:
+## 'cutoff'
+## 'min_gps'
+## 'speciesdb'
+##### 'ontology' TODO
+##### 'evcode' TODO
+##
+##########
+
+my $upper_arg_size_limit = 256;
+my $upper_list_arg_size_limit = 100000;
+
+## Required
+my $request = $query->param('request');
+if( $request && $request ne 'results' ){
+  die_template('illegitimate request type (unknown value)');
+}
+
+##
+my $force = $query->param('force');
+if( $force && ( $force ne 'yes' &&  $force ne 'no' ) ){
+  die_template('illegitimate force value');
+}
+if( $force && $force eq 'yes' ){
+  $force = 1; }
+else{
+  $force = 0; }
+
+
+## What do we want to output?
+my $output = $query->param('output');
+if( $output && length($output) > $upper_arg_size_limit ){
+  die_template("illegitimate output value");
+}elsif( $output && ( $output eq 'normal' ||
+		     $output eq 'raw' ) ){
+  ## OK, let it go.
+}elsif( $output ){
+  die_template("unknown output value");
+}
+
+
+## Which format do we want? Force format to a defined and known value:
+## html. Other formats are 'tab' (tab-delimited text file) and xml
+## (TODO).
+my $format = $query->param('format');
+if( $format && length($format) > $upper_arg_size_limit ){
+  die_template("illegitimate format value");
+}elsif( $format && ( $format eq 'tab' ||
+ 		     $format eq 'xml' ||
+ 		     $format eq 'html' ) ){
+  ## OK, let it go.
+}else{
+  $format = 'html';
+}
+
+
+## Gene labels in the input box for enrichment processing.
+my $gp_list = $query->param('gp_list');
+if( $gp_list &&
+    ( length($gp_list) > $upper_list_arg_size_limit ||
+      $gp_list =~ /[^0-9a-zA-Z\_\.\s\-\[\]\(\)\:]+/ ) ){
+  die_template('illegitimate gene list value');
+}
+if( $gp_list && $gp_list !~ /[a-z0-9]/i ){ # text in there too
+  $gp_list = '';
+}
+
+## Stub for the background gene product list.
+my $bggp_list = $query->param('bggp_list');
+if( $bggp_list &&
+    ( length($bggp_list) > $upper_list_arg_size_limit ||
+      $bggp_list =~ /[^0-9a-zA-Z\_\.\s\-\[\]\(\)\:]+/ ) ){
+  die_template('illegitimate background gene list value');
+}
+if( $bggp_list && $bggp_list !~ /[a-z0-9]/i ){ # text in there too
+  $bggp_list = '';
+}
+#my $bggp_list = '';
+
+## The gene product list file.
+my $gp_filehandle = $query->upload('gp_file');
+if ( ! $gp_filehandle  && $query->cgi_error() ){
+  my $error = $query->cgi_error();
+  die_template("gp_file upload failed: $error ");
+}else{
+  if ( $gp_filehandle && (
+			  $gp_filehandle =~ /\.gz/i ||
+			  $gp_filehandle =~ /\.bz/i ||
+			  $gp_filehandle =~ /\.bz2/i ||
+			  $gp_filehandle =~ /\.zip/i ||
+			  $gp_filehandle =~ /\.z/i ||
+			  $gp_filehandle =~ /\.tgz/i ) ){
+    die_template("AmiGO does not currently accept compressed files. " .
+		 "Please uncompress your file and try again.");
+  }
+}
+
+## The background gene product list file.
+my $bggp_filehandle = $query->upload('bggp_file');
+if ( ! $bggp_filehandle  && $query->cgi_error() ){
+  my $error = $query->cgi_error();
+  die_template("bggp_file upload failed: $error ");
+}else{
+  if ( $bggp_filehandle && (
+			  $bggp_filehandle =~ /\.gz/i ||
+			  $bggp_filehandle =~ /\.bz/i ||
+			  $bggp_filehandle =~ /\.bz2/i ||
+			  $bggp_filehandle =~ /\.zip/i ||
+			  $bggp_filehandle =~ /\.z/i ||
+			  $bggp_filehandle =~ /\.tgz/i ) ){
+    die_template("AmiGO does not currently accept compressed files. " .
+		 "Please uncompress your file and try again.");
+  }
+}
+
+## What is the GP file type?
+my $gp_file_type = $query->param('gp_file_type');
+if( $gp_file_type && length($gp_file_type) > $upper_arg_size_limit ){
+  die_template("illegitimate gp_file_type value");
+}elsif( $gp_file_type && ( $gp_file_type eq 'list' ||
+			   $gp_file_type eq 'ga' ) ){
+  ## OK, let it go.
+}elsif( $gp_file_type ){
+  die_template("unknown gp_file_type value");
+}
+
+## What is the BGGP file type?
+my $bggp_file_type = $query->param('bggp_file_type');
+if( $bggp_file_type && length($bggp_file_type) > $upper_arg_size_limit ){
+  die_template("illegitimate bggp_file_type value");
+}elsif( $bggp_file_type && ( $bggp_file_type eq 'list' ||
+			     $bggp_file_type eq 'ga' ) ){
+  ## OK, let it go.
+}elsif( $bggp_file_type ){
+  die_template("unknown bggp_file_type value");
+}
+
+
+## There's a reason for all this oddness: the CGI was taking empty
+## arguments and making legitimate arrays out of them.
+my @speciesdbs = ();
+my @in_speciesdbs = $query->param('speciesdb');
+if( @in_speciesdbs ){
+  foreach my $speciesdb (@in_speciesdbs){
+    if( $speciesdb ){
+      if( length($speciesdb) > $upper_arg_size_limit ){
+	die_template('illegitimate speciesdb value');
+      }elsif( ! $apph_sd_hash->{$speciesdb} ){
+	die_template('unknown speciesdb value: ' . $speciesdb);
+      }
+      push @speciesdbs, $speciesdb;
+    }
+  }
+}else{
+  @speciesdbs = ();
+}
+
+##
+my @ontologies = ();
+my @in_ontologies = $query->param('ontology');
+if( @in_ontologies ){
+  foreach my $ontology (@in_ontologies){
+    if( $ontology ){
+      if( length($ontology) > $upper_arg_size_limit ){
+	die_template('illegitimate ontology value');
+      }elsif( $ontology && ! $apph_ontology_hash->{$ontology} ){
+	die_template('unknown ontology value: ' . $ontology);
+      }
+      push @ontologies, $ontology;
+    }
+  }
+}else{
+  @ontologies = ();
+}
+
+##
+my @evcodes = ();
+my @in_evcodes = $query->param('evcode');
+if( @in_evcodes ){
+  foreach my $evcode (@in_evcodes){
+    if( $evcode ){
+      if( length($evcode) > $upper_arg_size_limit ){
+	die_template('illegitimate evcode value');
+      }elsif( $evcode && ! $apph_evcode_hash->{$evcode} ){
+	die_template('unknown evcode value: ' . $evcode);
+      }
+      push @evcodes, $evcode;
+    }
+  }
+}else{
+  @evcodes = ();
+}
+
+## Optional but necessary numeric argument.
+my $cutoff = $query->param('cutoff');
+if( $cutoff &&
+    ( length($cutoff) > $upper_arg_size_limit ||
+      $cutoff =~ /[^0-9\.]+/ ) ){ # TODO: Make this a better check.
+  die_template('illegitimate cutoff value');
+}elsif( $cutoff ){
+  $cutoff = $cutoff + 0.0;
+}else{
+  $cutoff = 0.1;
+}
+
+## Optional but necessary numeric argument.
+my $min_gps = $query->param('min_gps');
+if( $min_gps &&
+    ( length($min_gps) > $upper_arg_size_limit ||
+      $min_gps =~ /[^0-9]+/ ) ){ # TODO: Make this a better check.
+  die_template('illegitimate min_gps value');
+}elsif( $min_gps ){
+  $min_gps = $min_gps + 0;
+}else{
+  $min_gps = 2;
+}
+
+
+##########
+##
+## Set defaults for values that will be used during template
+## processing.
+##
+##########
+
+## Main/default template.
+my $template = 'term_enrichment_main.tmpl';
+
+## Main template variable.
+my $vars = {};
+
+## Variables for results.
+$vars->{DISPLAY_MAIN_RESULTS} = 0;
+$vars->{NUMBER_OF_RESULTS} = 0;
+$vars->{NUMBER_OF_RESULTS_OVER_THRESHOLDS} = 0;
+$vars->{NUMBER_OF_GPS_INPUTTED} = -1;
+$vars->{DISPLAY_MISSING_GPS} = 0; # show
+$vars->{DISPLAY_MISSING_BGGPS} = 0; # show gps not found
+$vars->{MISSING_GPS} = []; # gps not found bggps not found
+$vars->{MISSING_BGGPS} = []; # bggps not found
+$vars->{GO_TERMS} = []; #
+
+## Variables for GUI
+$vars->{AVAILABLE_ONTOLOGIES} = $apph_ontology_hash; # Onts we can choose from.
+$vars->{AVAILABLE_SPECIESDBS} = $apph_sd_hash; # DBs we can choose from.
+$vars->{AVAILABLE_EVCODES} = $apph_evcode_hash; # evcodes we can choose from.
+%{$vars->{ECHO_ONTOLOGIES}} = map { $_ => 1 } @ontologies;
+%{$vars->{ECHO_SPECIESDBS}} = map { $_ => 1 } @speciesdbs;
+%{$vars->{ECHO_EVCODES}} = map { $_ => 1 } @evcodes;
+$vars->{ECHO_GP_LIST} = $gp_list;
+$vars->{ECHO_BGGP_LIST} = $bggp_list;
+$vars->{ECHO_MIN_GPS} = $min_gps;
+$vars->{ECHO_CUTOFF} = $cutoff;
+
+$vars->{ECHO_SPECIESDBS_STRING} = 'all databases used';
+$vars->{ECHO_SPECIESDBS_STRING} = join '', @speciesdbs if @speciesdbs;
+
+if ( $request && $request eq 'results' ) {
+
+  ## Gotta have a format and a target output.
+  #die_template("Need to have an output type.") if ! $output;
+  die_template("Need to have a format type.") if ! $format;
+
+  ## Required arguments so the client knows where the output is.
+  #die_template("a field is required for results")
+  #  if ! $field;
+
+  ## DEBUG
+  #foreach my $key (sort keys(%ENV)) {
+  #  print "$key = $ENV{$key} \n";
+  #}
+  ## TODO: Other filters in.
+  #foreach my $foo (@speciesdbs) {
+  #  print STDERR '......' . $foo . '......';
+  #  sleep 1;
+  #}
+  #die "halt" if ! @speciesdbs;
+
+  $apph->filters({speciesdbs=>\@speciesdbs}) if @speciesdbs;
+  #$apph->filters({evcodes=>\@evcodes}) if @evcodes;
+  #$apph->filters({ontology=>\@ontologies}) if @ontologies;
+  #$apph->filters({speciesdb=>\@speciesdbs}) if @speciesdbs;
+  #$apph->filters({evcode=>\@evcodes}) if @evcodes;
+
+  ##########
+  ##
+  ## Handle incoming gps.
+  ##
+  ##########
+
+  ## Make sure that we have input...
+  die_template("A gene product list is necessary for this operation")
+    if ! $gp_list && ! $gp_filehandle;
+
+  ## ...but only one sample...
+  #if( ( $gp_list && $gp_filehandle ) ||
+  #    ( $gp_filehandle && @speciesdbs ) ||
+  #    ( @speciesdbs && $gp_list ) ){
+  if( $gp_filehandle && $gp_list ){
+    die_template("Please choose just a single sample gene " .
+		 "product input method: you have selected at least two.");
+  }
+
+  ## ...and only one background set.
+  #if( ( $bggp_list && $bggp_filehandle ) ||
+  #    ( $bggp_filehandle && @speciesdbs ) ||
+  #    ( @speciesdbs && $bggp_list ) ){
+  if( $bggp_filehandle && $bggp_list ){
+    die_template("Please choose just a single background gene " .
+		 "product input method: you have selected at least two.");
+  }
+
+  ## If there is no gp_list, but we have a gp_filehandle, turn the one
+  ## into the other.
+  if( $gp_filehandle ){
+
+    if( $gp_file_type eq 'ga' ){
+
+      ## Get gene associations in upload.
+      my $reader = AmiGO::Reader->new('go_assoc', 'sessions/scratch');
+      my $term_list = $reader->readh($gp_filehandle);
+      die_template("Failed on association input (file): " .
+		   $reader->error_message)
+	if ! $reader->success;
+
+      ## Squeeze all of the gps out of the term list.
+      my @minibuf = ();
+      foreach my $term (@$term_list){
+	my $gp_list = $term->product_list;
+	foreach my $gp (@$gp_list){
+	  push @minibuf, $gp->symbol;
+	}
+      }
+      $gp_list = join ' ', @minibuf;
+
+    }elsif( $gp_file_type eq 'list' ){
+
+      my @minibuf = ();
+      while ( <$gp_filehandle> ) {
+	push @minibuf, $_; }
+      $gp_list = join ' ', @minibuf;
+
+    }else{
+      die "Impossible doesn\'t mean what I think it means.";
+    }
+  }
+
+  ## Now that we hopefully have some kind of gp list, let's check it
+  ## against the actual ontology.
+  my $complete_gp_list = [];
+  if( $gp_list ){
+
+    ## Tokenize--crop trailing and leading ws, split on ws-like
+    ## things. Remove all of the dupes.
+    #my @gp_list = split /\s+/, $gp_list;
+    #     my @gp_list = split /[\n\r]+/s, $gp_list;
+    #     my %dedupe = ();
+    #     foreach my $mgp (@gp_list){
+    #       $mgp =~ s/^\s+//;
+    #       $mgp =~ s/\s+$//;
+    #       $mgp =~ s/\s+/ /;
+    #       $dedupe{$mgp} = 1;
+    #     }
+    #     @gp_list = keys %dedupe;
+
+    ## Tokenize--crop trailing and leading ws, split on ws-like
+    ## things. Remove all of the dupes.
+    $gp_list =~ s/^\s+//;
+    $gp_list =~ s/\s+$//;
+    my @gp_list = split /\s+/, $gp_list;
+    my %dedupe = map {$_ => 1} @gp_list;
+    @gp_list = keys %dedupe;
+
+    ## Scan over symbol, then accession id.
+    foreach my $gp_label (@gp_list){
+
+      ## Look for it, by product symbol, synonym, and then acc.
+      my $prod = $apph->get_product({symbol=>$gp_label});
+      $prod = $apph->get_product({synonym=>$gp_label})
+	if ! $prod;
+      $prod = $apph->get_product({acc=>$gp_label})
+	if ! $prod;
+
+      ## Retry if it seems that there might be a db id making life hard.
+      if( ! $prod && $gp_label =~ /([^:]*?:)(.*)/ ){
+	my $alt_gp_label = $2;
+	$prod = $apph->get_product({symbol=>$alt_gp_label});
+	$prod = $apph->get_product({synonym=>$alt_gp_label})
+	  if ! $prod;
+	$prod = $apph->get_product({acc=>$alt_gp_label})
+	  if ! $prod;
+      }
+
+      ## Add it to list...if it exists
+      if( $prod ){
+	push @$complete_gp_list, $prod;
+      }else{
+
+	## Check to see if we're forcing and how to die if we are.
+	if ( $force ) {
+	  push @{$vars->{MISSING_GPS}}, $gp_label;
+	  $vars->{DISPLAY_MISSING_GPS} = 1;
+	}else {
+	  die_template("Couldn't find: " . $gp_label .
+	  	       ' with current filters. ' .
+	  	       'If the filters are correct, ' .
+	  	       'the gene product may not be present in the ' .
+	  	       'GO database.');
+	}
+      }
+    }
+  }
+
+  ##########
+  ##
+  ## Handle incoming background gps.
+  ##
+  ##########
+
+  ##
+  if( $bggp_filehandle ){
+
+    if( $bggp_file_type eq 'ga' ){
+
+      ## Get gene associations in upload.
+      my $reader = AmiGO::Reader->new('go_assoc', 'sessions/scratch');
+      my $term_list = $reader->readh($bggp_filehandle);
+      die_template("Failed on bggp input (file): " .
+		   $reader->error_message)
+	if ! $reader->success;
+
+      ## Squeeze all of the gps out of the term list.
+      my @minibuf = ();
+      foreach my $term (@$term_list){
+	my $gp_list = $term->product_list;
+	foreach my $gp (@$gp_list){
+	  push @minibuf, $gp->symbol;
+	}
+      }
+      $bggp_list = join ' ', @minibuf;
+
+    }elsif( $bggp_file_type eq 'list' ){
+
+      my @minibuf = ();
+      while ( <$bggp_filehandle> ) {
+	push @minibuf, $_; }
+      $bggp_list = join ' ', @minibuf;
+
+    }else{
+      die "Impossible doesn\'t mean what I think it means.";
+    }
+  }
+
+  ##
+  my $complete_bggp_list = [];
+  if( $bggp_list ){
+
+    ## Tokenize--crop trailing and leading ws, split on ws-like
+    ## things.
+    $bggp_list =~ s/^\s+//;
+    $bggp_list =~ s/\s+$//;
+    my @bggp_list = split /\s+/, $bggp_list;
+
+    ## Remove all of the dupes.
+    my %dedupe = map {$_ => 1} @bggp_list;
+    @bggp_list = keys %dedupe;
+
+    ## Scan over symbol, then accession id.
+    foreach my $bggp_label (@bggp_list){
+
+      ## Look for it, by product symbol, synonym, and then acc.
+      my $prod = $apph->get_product({symbol=>$bggp_label});
+      $prod = $apph->get_product({synonym=>$bggp_label})
+	if ! $prod;
+      $prod = $apph->get_product({acc=>$bggp_label})
+	if ! $prod;
+
+      ## Retry if it seems that there might be a db id making life hard.
+      if( ! $prod && $bggp_label =~ /([^:]*?:)(.*)/ ){
+	my $alt_bggp_label = $2;
+	$prod = $apph->get_product({symbol=>$alt_bggp_label});
+	$prod = $apph->get_product({synonym=>$alt_bggp_label})
+	  if ! $prod;
+	$prod = $apph->get_product({acc=>$alt_bggp_label})
+	  if ! $prod;
+      }
+
+      ## Add it to list...if it exists
+      if( $prod ){
+	push @$complete_bggp_list, $prod;
+      }else{
+
+	## Check to see if we're forcing and how to die if we are.
+	if ( $force ) {
+	  push @{$vars->{MISSING_BGGPS}}, $bggp_label;
+	  $vars->{DISPLAY_MISSING_BGGPS} = 1;
+	}else {
+	  die_template("Couldn't find: " . $bggp_label .
+	  	       ' with current filters. ' .
+	  	       'If the filters are correct, ' .
+	  	       'the gene product may not be present in the ' .
+	  	       'GO database.');
+	}
+      }
+    }
+  }
+
+  ## We did get something, right? Check to see if the filters hacked
+  ## everything out.
+  if( ! @$complete_gp_list ){
+    if( $gp_list ){
+      die_template($gp_list .
+		   ': gene product(s) could ' .
+		   'not be found with the current filters. ' .
+		   'If the filters are correct, ' .
+		   'the gene product(s) may not be present in the ' .
+		   'GO database.');
+    }else{
+      die_template("No gene products defined in gp_list.")
+    }
+  }
+
+  ## And now do the same for the background list, but we don't care if
+  ## nothing at all is defined--that will default us to using
+  ## everything.
+  if( $bggp_list && ! @$complete_bggp_list ){
+    die_template($bggp_list .
+		 ': background list gene product(s) could ' .
+		 'not be found with the current filters. ' .
+		 'If the filters are correct, ' .
+		 'the gene product(s) may not be present in the ' .
+		 'GO database.');
+  }
+
+  ## Now, since we're resonably sure that the array ref is populated,
+  ## we'll go ahead with the enrichment.
+  #my $eth = $apph->get_enriched_term_hash( $complete_gp_list, $ontology );
+  $vars->{NUMBER_OF_GPS_INPUTTED} = scalar( @$complete_gp_list )
+    if @$complete_gp_list;
+  my $eth = $apph->get_enriched_term_hash( $complete_gp_list,
+					   $complete_bggp_list );
+
+  die_template("couldn\'t generate enriched term hash (1)")
+    if ! $eth ;
+
+  ## Sort according to p-value.
+  my @eth_rows =
+    sort {
+      $a->{p_value} <=> $b->{p_value}
+    } values %$eth;
+
+  ## Chew into an easily digested form for the TT and direct output.
+  $vars->{ROWS} = [];
+  foreach ( @eth_rows ) {
+
+    ##
+    my $acc = $_->{term}->acc;
+    my $name = $_->{term}->name;
+    my $aspect = $_->{term}->get_code_from_namespace;
+    #drint("_", $aspect);
+    my $pval = sprintf "%.2e", $_->{p_value};
+
+    my $number_gps_in_sample = $_->{n_gps_in_sample};
+    my $number_gps_in_sample_annotated = $_->{n_gps_in_sample_annotated};
+    my $sample_ratio = sprintf "%.1f",
+      ($number_gps_in_sample_annotated / $number_gps_in_sample) * 100.0;
+
+    my $number_gps_in_background = $_->{n_gps_in_background};
+    my $number_gps_in_background_annotated =
+      $_->{n_gps_in_background_annotated};
+    my $background_ratio = sprintf "%.1f",
+      ($number_gps_in_background_annotated / $number_gps_in_background) * 100.0;
+
+    #my $genes = join('; ',map {sprintf("%s[%s]", $_->symbol, $_->acc)}
+    #		     @{$_->{gps_in_sample_annotated}});
+    my $genes =
+      [ map {sprintf("%s", $_->symbol)} @{$_->{gps_in_sample_annotated}} ];
+
+    ## Drop everything below our threshold. TODO: Is the coersion
+    ## really necessary?
+    if ( $output eq 'raw' ) {
+
+	## Add to GO terms list.
+	push @{ $vars->{GO_TERMS} }, $acc;
+
+	## Add to the filtered output buffer.
+	push @{ $vars->{ROWS} }, {
+				  acc => $acc,
+				  aspect => $aspect,
+				  name => $name,
+				  pval => $pval,
+
+				  number_gps_in_sample_annotated =>
+				  $number_gps_in_sample_annotated,
+				  number_gps_in_sample =>
+				  $number_gps_in_sample,
+				  sample_ratio =>
+				  $sample_ratio,
+
+				  number_gps_in_background_annotated =>
+				  $number_gps_in_background_annotated,
+				  number_gps_in_background =>
+				  $number_gps_in_background,
+				  background_ratio =>
+				  $background_ratio,
+
+				  genes => $genes
+				 };
+
+    }else {
+
+      if ( $_->{p_value} + 0.0 <= $cutoff + 0.0 &&
+	   $_->{n_gps_in_sample_annotated} + 0.0 >= $min_gps + 0.0 ) {
+
+	## Add to GO terms list.
+	push @{ $vars->{GO_TERMS} }, $acc;
+
+	## Add to the filtered output buffer.
+	push @{ $vars->{ROWS} }, {
+				  acc => $acc,
+				  aspect => $aspect,
+				  name => $name,
+				  pval => $pval,
+
+				  number_gps_in_sample_annotated =>
+				  $number_gps_in_sample_annotated,
+				  number_gps_in_sample =>
+				  $number_gps_in_sample,
+				  sample_ratio =>
+				  $sample_ratio,
+
+				  number_gps_in_background_annotated =>
+				  $number_gps_in_background_annotated,
+				  number_gps_in_background =>
+				  $number_gps_in_background,
+				  background_ratio =>
+				  $background_ratio,
+
+				  genes => $genes
+				 };
+      }
+    }
+  }
+
+  ## We've had no problems--looks like we're gunna try to show
+  ## results.
+  $vars->{NUMBER_OF_RESULTS_OVER_THRESHOLDS} = scalar(@{ $vars->{ROWS} });
+  $vars->{NUMBER_OF_RESULTS} = scalar(@eth_rows);
+  $vars->{DISPLAY_MAIN_RESULTS} = 1;
+
+  ## Recreate the incoming command for the download versions.
+  my $link_string = join '%0D%0A', @{ $vars->{GO_TERMS} };
+  $vars->{transfer_link} = 'slimmer?slim_list=' . $link_string;
+
+  ## Create a link for the visualizer.
+  my @mbuf = ();
+  foreach my $r (@{ $vars->{ROWS} }){
+    my @sbuf = ();
+    push @sbuf, 'term=';
+    push @sbuf, $r->{acc};
+    push @sbuf, '@';
+    push @sbuf, $r->{pval};
+    push @mbuf, join('', @sbuf);
+  }
+  my $viz_list = join('&', @mbuf);
+  $vars->{visualize_link} =
+    'visualize?request=render&format=image&' . $viz_list;
+}
+
+##########
+##
+## Publish results using template or direct.
+##
+##########
+
+if( $format eq 'html' ){
+
+  ## Template runtime parameters.
+  my $tt = Template->new({
+			  INCLUDE_PATH => $ENV{GO_TEMPLATE_PATHS},
+			  EVAL_PERL => 1,
+			  #PRE_CHOMP => 1,
+			  #POST_CHOMP => 1,
+			  TRIM => 1,
+			  RECURSION => 1
+			 });
+
+  html_header();
+  $tt->process($template, $vars) ||
+    die_template("failed to process $template");
+
+}elsif( $format eq 'tab' ){
+
+  ## Hand emit.
+  unknown_header();
+  foreach my $row (@{ $vars->{ROWS} }){
+
+    my @minibuf = ();
+    foreach my $gene (@{$$row{genes}}){
+      push @minibuf, $gene;
+    }
+    my $gstring = join ' ', @minibuf;
+
+    printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
+      $$row{acc}, $$row{aspect}, $$row{name}, $$row{pval},
+	$$row{number_gps_in_sample_annotated}, $$row{number_gps_in_sample},
+	  $$row{number_gps_in_background_annotated},
+	    $$row{number_gps_in_background}, $gstring;
+  }
+
+}elsif( $format eq 'xml' ){
+
+  ## Hand emit.
+  xml_header();
+  print"<response>";
+  foreach my $row (@{ $vars->{ROWS} }){
+    print"<term>";
+    print"<acc>";
+    printf "%s", $$row{acc};
+    print"</acc>";
+    print"<aspect>";
+    printf "%s", $$row{aspect};
+    print"</aspect>";
+    print"<name>";
+    printf "%s", $$row{name};
+    print"</name>";
+    print"<pval>";
+    printf "%s", $$row{pval};
+    print"</pval>";
+    print"<sample_annotated>";
+    printf "%s", $$row{number_gps_in_sample_annotated};
+    print"</sample_annotated>";
+    print"<sample>";
+    printf "%s", $$row{number_gps_in_sample};
+    print"</sample>";
+    print"<database_annotated>";
+    printf "%s", $$row{number_gps_in_background_annotated};
+    print"</database_annotated>";
+    print"<database>";
+    printf "%s", $$row{number_gps_in_background};
+    print"</database>";
+    print"<genes>";
+    foreach my $gene (@{$$row{genes}}){
+      print"<gene>";
+      print $gene;
+      print"</gene>";
+    }
+    print"</genes>";
+    print"</term>";
+  }
+  print"</response>";
+
+}else{
+  die_template("How did you get here? Impossible!");
+}
+
+#####
+##
+## Subs.
+##
+####
+
+
+##
+sub html_header{ print "content-type:text/html\n\n"; }
+sub tab_header{ print "content-type:text/plain\n\n"; }
+sub xml_header{ print "content-type:text/xml\n\n"; }
+sub unknown_header{ print "content-type:unknown\n\n"; }
+
+##
+sub die_template {
+
+  my $message = shift || 'generic error';
+
+  ## Template runtime parameters.
+  my $diet = Template->new({
+			    INCLUDE_PATH => $ENV{GO_TEMPLATE_PATHS},
+			    EVAL_PERL => 1,
+			    TRIM => 1,
+			   });
+  html_header();
+  $diet->process('amigo_error.tmpl', {ERROR_MESSAGE => $message}) ||
+  die "$message: $!"; # ASK: Is croak or confess more appropriate?
+  exit(-1); ## BUG: Why do I need both.
+}
+
+
+sub drint {
+  my $head = shift || '';
+  my $string = shift || 'whatever';
+  print STDERR $head . $string . "\n";
+  sleep 1;
+}

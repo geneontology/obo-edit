@@ -1,0 +1,63 @@
+<!-- START: xp_process.tmpl -->
+<div class="contents">
+  
+  <h1>Cross-product Term Request: Process</h1>
+  
+  <div class="block">
+    
+    <h2>Processes in Other Processes</h2>
+    
+    <div class="chooser">
+      
+      <form>
+
+	<input name="mode" type="hidden" value="do" />
+
+	<p>
+	  Process example: (M phase) that is <i>part of</i> (meiotic
+	  cell cycle)
+	</p>
+	
+	<p>
+	  Hint: A term like <i>cytosolic X</i> would be have <i>X</i>
+	  in the first box and <i>cytosol</i> in the second
+	</p>
+	
+	<p>
+	  Suggested name:
+	  <input name="name"
+		 type="text"
+		 value=""
+		 style="outline: #3875D7 solid 1px;" />
+	  (optional)
+	</p>
+	
+	<input name="relation" type="hidden" value="part_of" />
+ 
+	<p>
+	  <!-- autocomplete="off" -->
+	  <input id="genus"
+		 name="genus"
+		 type="text"
+		 value=""
+		 style="outline: #3875D7 solid 1px;"
+		 size="30" />
+	  that is part of
+	  <!-- autocomplete="off" -->
+	  <input id="target"
+		 name="target"
+		 type="text"
+		 style="outline: #3875D7 solid 1px;"
+		 value="" size="30" />
+	</p>
+
+	<p>
+	  <input class="button" type="submit" value="Request" />
+	</p>
+
+      </form>
+      
+    </div>
+  </div>
+</div>
+<!-- END: xp_process.tmpl -->

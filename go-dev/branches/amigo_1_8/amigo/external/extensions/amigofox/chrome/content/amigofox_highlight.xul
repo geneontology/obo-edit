@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<overlay id="dictionaryLookupOverlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript"
+	  src="chrome://amigofox/content/amigofox_highlight.js">
+  </script>
+
+  <popup id="contentAreaContextMenu">
+    <menu id="amigofox_submenu"
+	  label="AmiGO..."
+	  accesskey="A"
+	  insertbefore="devToolsSeparator"
+	  onmouseover="lookup();">
+      <menupopup id="amigofox_popup">
+      </menupopup>
+    </menu>
+  </popup>
+
+</overlay>
+

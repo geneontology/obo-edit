@@ -1,0 +1,38 @@
+body {
+  background: white;
+  color: black
+}
+
+h1 {
+  color: #c33;
+  background: none;
+  font-weight: bold;
+  font-size: smaller;
+}
+
+h2 {
+  color: #00008b;
+  background: none;
+  margin-left: 10%;
+  margin-right: 0%;
+  font-size: smaller;
+  font-weight: bold
+}
+
+h3 {
+  color: #006400;
+  background: none;
+  margin-left: 20%;
+  margin-right: 0%;
+  font-size: small;
+  font-weight: bold
+}
+ul, ol, dl, p {
+  margin-left: 0%;
+  margin-right: 0%
+}
+li { 
+  margin-left: -10%;
+  font-size: small;
+}
+

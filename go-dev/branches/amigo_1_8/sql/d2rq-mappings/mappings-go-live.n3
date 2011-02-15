@@ -1,0 +1,210 @@
+@prefix : <http://www.geneontology.org/owl#> .
+@prefix map: <file:///stdout#> .
+@prefix db: <> .
+@prefix vocab: <vocab/> .
+@prefix oban: <http://www.berkeleybop.org/ontologies/oban/alpha#> .
+@prefix genomics: <http://www.berkeleybop.org/ontologies/genomics/alpha#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
+@prefix insitu: <http://www.fruitfly.org/insituimages/insitu_images/thumbnails> .
+@prefix digitalmedia: <http://www.mindswap.org/2005/owl/digital-media#> .
+@prefix oborel: <http://www.obofoundry.org/ro/ro.owl#> .
+@prefix obo: <http://purl.org/obo/owl> .
+@prefix go: <http://purl.org/obo/owl/GO#> .
+
+# ========================================
+# Table: gene_product
+# ========================================
+
+map:gene_product a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+        d2rq:uriPattern "gene_product/@@gene_product.id@@";
+# the URI should really be the primary dbxref:
+#      d2rq:uriPattern "gene_product/@@dbxref.xref_dbname@@:@@dbxref.xref_key@@";
+#      d2rq:join "gene_product.dbxref_id = dbxref.id" ;
+        d2rq:join "gene_product.dbxref_id = dbxref.id" ;
+	.
+
+# GeneProduct type - from SO
+map:GeneProductType a d2rq:PropertyBridge ;
+      d2rq:property rdf:type ;
+      # this is a bit messy - we don't use SO IDs in the db
+      d2rq:uriPattern "http://obofoundry.org/obo/SO:@@term.acc@@" ;
+      d2rq:join "gene_product.type_id = term.id" ;
+      d2rq:belongsToClassMap map:gene_product .
+
+map:gene_product_label a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gene_product;
+	d2rq:property rdfs:label;
+	d2rq:pattern "@@gene_product.symbol@@";
+	.
+
+map:gene_product_full_name a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gene_product;
+	d2rq:property dc:description;
+	d2rq:column "gene_product.full_name";
+	.
+
+# A GeneProduct can have 0 or many synonyms
+#  - we use SKOS
+map:gene_product_synonym a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gene_product;
+	d2rq:property skos:altLabel;
+	d2rq:column "gene_product_synonym.product_synonym";
+        d2rq:join "gene_product_synonym.gene_product_id = gene_product.id"
+	.
+
+# A GeneProduct can have 0 to many secondary dbxrefs
+# (not to be confused with the primary dbxref, which should give the URI)
+# - use rdfs:seeAlso
+map:gene_product_dbxref a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gene_product;
+	d2rq:property rdfs:seeAlso;
+        d2rq:uriPattern "http://obofoundry.org/obo/@@dbxref.xref_dbname@@:@@dbxref.xref_key@@";
+	d2rq:join "gene_product.id = gene_product_seq.gene_product_id";
+	d2rq:join "gene_product_seq.seq_id = seq_dbxref.seq_id";
+	d2rq:join "seq_dbxref.dbxref_id = dbxref.id";
+	.
+
+# A GeneProduct is in exactly one species
+map:GeneProductSpecies a d2rq:PropertyBridge ;
+      d2rq:property genomics:part_of_organism ;
+      d2rq:uriPattern "http://obofoundry.org/obo/NCBITaxon:@@species.ncbi_taxa_id@@" ;
+      d2rq:join "gene_product.species_id = species.id" ;
+      d2rq:belongsToClassMap map:gene_product .
+
+# A GeneProduct can have 0 or more sequences
+map:GeneProductSeq a d2rq:PropertyBridge ;
+      d2rq:property genomics:has_amino_acid_sequence ;
+      d2rq:column "seq.seq";
+      d2rq:join "gene_product.id = gene_product_seq.gene_product_id" ;
+      d2rq:join "gene_product_seq.seq_id = seq.id" ;
+      d2rq:belongsToClassMap map:gene_product .
+
+# ========================================
+# Table: association
+# ========================================
+# TODO: not
+
+
+map:association a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+	d2rq:uriPattern "association/@@association.id@@";
+	.
+
+# 
+map:GeneProductAssociation a d2rq:PropertyBridge ;
+      d2rq:property oban:has_role ;
+      d2rq:uriPattern "http://obofoundry.org/obo/@@term.acc@@" ;
+      d2rq:join "gene_product.id = association.gene_product_id" ;
+      d2rq:join "association.term_id = term.id" ;
+#      d2rq:condition "association.is_not=0 OR association.is_not IS NULL" ;
+      d2rq:belongsToClassMap map:gene_product .
+
+# reification
+map:AssociationSubject a d2rq:PropertyBridge ;
+      d2rq:property rdf:subject ;
+      d2rq:uriPattern "gene_product/@@gene_product.id@@";
+#      d2rq:uriPattern "gene_product/@@dbxref.xref_dbname@@:@@dbxref.xref_key@@";
+#      d2rq:join "gene_product.dbxref_id = dbxref.id" ;
+      d2rq:join "gene_product.id = association.gene_product_id" ;
+      d2rq:belongsToClassMap map:association .
+
+map:AssociationObject a d2rq:PropertyBridge ;
+      d2rq:property rdf:object ;
+      d2rq:uriPattern "http://obofoundry.org/obo/@@term.acc@@" ;
+      d2rq:join "association.term_id = term.id" ;
+      d2rq:belongsToClassMap map:association .
+
+map:AssociationPredicate a d2rq:PropertyBridge ;
+      d2rq:property rdf:predicate ;
+      d2rq:uriPattern "http://www.berkeleybop.org/ontology/oban/alpha#has_role" ;
+      d2rq:belongsToClassMap map:association .
+
+map:AssociationStmtType a d2rq:PropertyBridge ;
+      d2rq:property rdf:type ;
+      d2rq:uriPattern "http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement" ;
+      d2rq:belongsToClassMap map:association .
+
+# evidence
+map:AssociationEvidence a d2rq:PropertyBridge ;
+      d2rq:property oban:has_evidence ;
+      d2rq:uriPattern "evidence/@@evidence.id@@";
+      d2rq:join "evidence.association_id = association.id" ;
+      d2rq:belongsToClassMap map:association .
+
+# provenance
+#  typically a pubmed ID
+map:AssociationPub a d2rq:PropertyBridge ;
+      d2rq:property oban:has_source ;
+      d2rq:uriPattern "http://purl.org/obo/xref/@@dbxref.xref_dbname@@:@@dbxref.xref_key@@";
+      d2rq:join "evidence.association_id = association.id" ;
+      d2rq:join "evidence.dbxref_id = dbxref.id" ;
+      d2rq:belongsToClassMap map:association .
+
+map:AssociationCreator a d2rq:PropertyBridge ;
+      d2rq:property dc:creator ;
+      d2rq:uriPattern "http://purl.org/obo/xref/@@db.name@@";
+      d2rq:join "association.source_db_id = db.id" ;
+      d2rq:belongsToClassMap map:association .
+
+# ========================================
+# Table: evidence
+# ========================================
+map:evidence a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+	d2rq:uriPattern "evidence/@@evidence.id@@" ;
+        .
+
+map:evidence__type a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:evidence;
+	d2rq:property rdf:type;
+	d2rq:uriPattern "http://purl.org/obo/owl/ECO#ECO_@@evidence.code@@" ;
+        .
+
+# 'with' column: maps to rdfs:seeAlso
+map:evidence_dbxref a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:evidence;
+	d2rq:property rdfs:seeAlso;
+        d2rq:join "evidence.id = evidence_dbxref.evidence_id" ;
+        d2rq:join "evidence_dbxref.dbxref_id = dbxref.id" ;
+        d2rq:uriPattern "http://purl.org/obo/xref/@@dbxref.xref_dbname@@:@@dbxref.xref_key@@";
+        .
+
+# ========================================
+# Table: term
+# ========================================
+map:Term a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+	d2rq:uriPattern "http://obofoundry.org/obo/@@term.acc@@" ;
+        .
+	
+map:Term_label a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:Term;
+	d2rq:property rdfs:label;
+	d2rq:pattern "@@term.name@@";
+	.
+map:Term_type a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:Term;
+	d2rq:property rdf:type;
+	d2rq:uriPattern "http://www.w3.org/2002/07/owl#Class"
+	.
+
+# TEST!!!
+map:subClass a d2rq:PropertyBridge ;
+      d2rq:property rdfs:subClassOf ;
+      d2rq:uriPattern "http://obofoundry.org/obo/@@term.acc@@" ;
+      d2rq:join "term.id = term2term.term2_id" ;
+      d2rq:join "term2term.term1_id = parent.id" ;
+      d2rq:alias "term AS parent" ;
+      d2rq:belongsToClassMap map:Term .
+map:database a d2rq:Database;
+	d2rq:jdbcDriver "com.mysql.jdbc.Driver";
+	d2rq:jdbcDSN "jdbc:mysql://spitz/go_latest_lite";
+	.
+

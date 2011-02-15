@@ -1,0 +1,124 @@
+<!-- Start: nmatrix_results_3d.tmpl -->
+
+<!-- Generate tab axis toggles. -->
+<div id="three-d-tabs">
+  <ul style="">
+    [% DIV_COUNT = 0 %]
+    [% FOR thracc IN axis_3_list %]
+    <li style="">
+      <a href="#three-d-tab-[% DIV_COUNT %]" style="background-color: transparent; border-bottom: 0px;">
+	<span style="font-size: 80%; font-style: normal; font-weight: normal;">
+	  [% FILTER truncate(25) %]
+	  [%    term_info.$thracc.name %]
+	  [% END %]
+        </span>
+        <br />
+        <span style="font-size: 67%; font-style: normal; font-weight: normal;">
+	  [% thracc %]
+        </span>
+      </a>
+    </li>
+    [% DIV_COUNT = DIV_COUNT + 1 %]
+    [% END %]
+  </ul>
+
+  <!-- Generate all sub-tables. -->
+  [% DIV_COUNT = 0 %]
+  [% FOR thracc IN axis_3_list %]
+  <div id="three-d-tab-[% DIV_COUNT %]">
+
+    <table border="1">
+      <tr>
+	<td></td>
+	
+	[% EO_C = 0 %]
+	[% FOR term_acc IN axis_1_list %]
+	[%   IF EO_C % 2 == 0 %]
+	<td class="even_row">
+	  [%   ELSE %]
+	<td class="odd_row">
+	  [%   END %]
+	  <span style="font-size: 80%;">
+	    [% term_info.$term_acc.name %]
+	  </span>
+	  <br />
+          <span style="font-size:67%; font-style: normal; font-weight: normal;">
+	    [% term_acc %]
+	  </span>
+	</td>
+	[%   EO_C = EO_C + 1 %]
+	[% END %]
+      </tr>
+      
+      <!-- -->
+      [% EO_R = 0 %]
+      [% FOR row_acc IN axis_2_list %]
+      <tr>
+	[% IF EO_R % 2 == 0 %]
+	<td class="even_row">
+	  [% ELSE %]
+	<td class="odd_row">
+	  [% END %]
+	  <span style="font-size: 80%;">
+	    [% term_info.$row_acc.name %]
+	  </span>
+	  <br />
+        <span style="font-size: 67%; font-style: normal; font-weight: normal;">
+	  [% row_acc %]
+	  </span>
+	</td>
+	
+	[% EO_C = 0 %]
+	[% FOR col_acc IN axis_1_list %]
+	
+	[% IF EO_R % 2 == 0 AND EO_C % 2 == 0 %]
+	<td class="crossed_row">
+	  [% ELSIF EO_R % 2 == 0 %]
+	<td class="even_row">
+	  [% ELSIF EO_C % 2 == 0 %]
+	<td class="even_row">
+	  [% ELSE %]
+	<td class="odd_row">
+	  [% END %]
+	  [% IF matrix.$row_acc.$col_acc.$thracc.gene_product_count > 0 %]
+	  <span title="Click to see additional information and options."
+		class="simulated-link"
+		style="text-decoration: underline;"
+		onclick="info_shield([ '[% row_acc %]', '[% col_acc %]', '[% thracc %]' ]);">
+	    [% matrix.$row_acc.$col_acc.$thracc.gene_products.size %]
+	  </span>
+	  <!-- 	  <a href="[% matrix.$row_acc.$col_acc.$thracc.link %]" -->
+	  <!-- 	    title="View shared associations."> -->
+	  <!-- 	   [% matrix.$row_acc.$col_acc.$thracc.gene_products.size %] -->
+	  <!-- 	  </a> -->
+	  <!-- 	  &nbsp; -->
+	  <!-- 	  <img width="20px" -->
+	  <!-- 	       height="13px" -->
+	  <!-- 	       id="[% unique_point_id.$row_acc.$col_acc %]" -->
+	  <!-- 	       src="[% cart_image %]" -->
+	  <!-- 	       class="cart-bindable" -->
+	  <!-- 	       alt="AmiGO cart." -->
+	  <!-- 	       title="Add to your cart." /> -->
+	  
+	  [% ELSE %]
+	  [%    # matrix.$row_acc.$col_acc.$thracc.gene_products.size %]
+	  0
+	  [% END %]
+	</td>
+	
+	[%   EO_C = EO_C + 1 %]
+	[% END %]
+	
+      </tr>
+      
+      [%   EO_R = EO_R + 1 %]
+      [% END %]
+      
+    </table>
+    
+  </div>
+  [% DIV_COUNT = DIV_COUNT + 1 %]
+  [% END %]
+</div>
+
+<!-- End: nmatrix_results_3d.tmpl -->

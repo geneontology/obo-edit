@@ -1,0 +1,56 @@
+#!/usr/bin/perl -w
+
+##
+## Early test for session client library.
+##
+
+use strict;
+use IO::Socket;
+use Net::hostent;
+use XML::Generator;
+
+## Get an XML generator.
+my $xml = XML::Generator->new();
+
+## Listen to 9999.
+my $server = IO::Socket::INET->new(
+				   Proto     => 'tcp',
+				   LocalPort => 9999,
+				   Reuse     => 1,
+				   Listen    => SOMAXCONN
+				  )
+  or die "Can't create server\n";
+
+print "Listening on ", $server->sockport, "\n";
+
+while( my $handler = $server->accept() ){
+
+  #$handler or die "accept: $!\n";
+  $handler->autoflush(1);
+
+  my $peeraddr = $handler->peeraddr;
+  my $hostinfo = gethostbyaddr($peeraddr);
+  my $locale = $hostinfo->name || $handler->peerhost;
+  printf "accept %s...", $locale;
+
+  ## GET one line of the request.
+  my $request = <$handler>;
+  ## of form: PUT | GET \d{*}
+  ##          LIST_NAME
+  ##          XML # if put
+  ## response of form:
+  ##          OK_PUT | OK_GET | ERROR
+  ##          [] | [XML] | [ERROR mesg]
+  ## TODO: if/else request cascade
+
+  printf "for %d\n", $n;
+  #sleep 20;
+  my $msg = $xml->message(
+			  $xml->foo('bar'),
+			  $xml->from($locale),
+			  $xml->number($n)
+			 );
+  print '[' . $msg . "]\n";
+  print $handler $msg;
+  close($handler);
+}

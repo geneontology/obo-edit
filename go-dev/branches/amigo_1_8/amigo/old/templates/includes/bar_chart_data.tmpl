@@ -1,0 +1,51 @@
+<h1>Gene Product Annotation To [% data.parent.name %] ; [% data.parent.acc %]</h1>
+
+<div class="block">
+
+	[%# USE Dumper(indent=1) ; '<pre>'; Dumper.dump( data.graph ); '</pre>' %]
+
+<div class="graph">
+[% FOREACH t = data.graph;
+		IF t.percent != 0 %]
+	<strong class='bar' style="width: [% t.percent %]%">[% t.acc %]</strong>
+[% END; END %]
+</div>
+
+<table summary="[% data.parent.name %] and its direct children, number of gene products annotated to those terms and the percentage of the total annotations to  [% data.parent.name %]">
+	<thead>
+	<tr>
+		<th abbr="Name">Term Name</th>
+		<th abbr="Total GPs">Total Gene Products</th>
+		<th abbr="% of annots">Percent of [% data.parent.name %]</th>
+	</tr>
+	</thead>
+	<tbody>
+	[% counter = 1 %]
+[% TRY;
+		FOREACH term = data.graph;
+			IF counter % 2 == 0 %]
+		<tr class="even_row">
+		[% ELSE %]
+		<tr>
+		[% END %]
+			<td><a href="term-details.cgi?term=[% term.acc %]&amp;session_id=[% session_id %]" title="View details of [% term.name %]" class="term">[% term.name %] ; [% term.acc %]</a></td>
+			<td>[% term.count %]</td>
+			<td>
+				[% term.percent %]
+			</td>
+		</tr>
+	[% counter = counter + 1;
+		END;
+	CATCH;
+		PROCESS error.tmpl;
+	END; %]
+	</tbody>
+	<tfoot>
+	<tr>
+		<td>All [% data.parent.name %]</td>
+		<td>[% data.parent.count %]</td>
+		<td> </td>
+	</tr>
+	</tfoot>
+</table>
+</div>

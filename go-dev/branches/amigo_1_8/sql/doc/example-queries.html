@@ -1,0 +1,719 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>GO Example Queries</title>
+    <link rel="stylesheet" type="text/css" href="../../doc/stylesheet.css">
+  </head>
+
+  <body>
+    <h1>GO Example Queries</h1>
+
+
+    <div class="abstract">
+      <p>
+	You can do a number of complex queries on the GO data. Here are
+	some examples of just a few of them. For more information, read
+	the schema documentation in <a href="godb-sql-doc.html">GO
+	  Schema Documentation</a>
+      </p>
+    </div>
+
+    <p>
+      Every example query comes with a sample piece of SQL. The SQL
+      can be typed directly into the MySQL command line
+      interpreter. For some queries we also provide an example of how
+      to achieve the same thing programmatically using the <a
+      href="../../go-db-perl/doc/go-db-perl-doc.html">go-db-perl</a>
+      API. These examples can be typed interactively in perl using the
+      GOshell.pl <a
+      href="../../scripts/doc/scripts-doc.html">script</a>; or they
+      can be used with a program that uses the go-db-perl API.
+    </p>
+
+    <p>
+      Some of the example queries have a <a
+      href="http://stag.sf.net">DBStag Template</a>. See the <a
+      href="../stag-templates/README">README</a> in the <a
+      href="../stag-templates/">stag-templates</a> directory. You can
+      use stag templates on your unix command line (if you follow the
+      instructions in the README), or by selecting the appropriate
+      template from the <a
+      href="http://www.godatabase.org/cgi-bin/ubiq-go/ubiq.cgi">GO
+      DBStag Demo</a>.
+    </p>
+	
+    <h2>Examples</h2>
+
+    <ul>
+      <li><a href="#Finding_all_the_children_of_a_term">Finding all the children of a term</a></li>
+      <li><a href="#Fetching_every_descendent_of_blood_coagulation">Fetching every descendent of blood coagulation</a></li>
+      <li><a href="#Finding_the_ancestors_of_'DNA_Helicase_activity'">Finding the ancestors of 'DNA Helicase activity'</a></li>
+      <li><a href="#graph">Finding ancestor terms and their relationships</a></li>
+      <li><a href="#Finding_the_shared_parent_of_two_nodes">Finding the shared parent of two nodes</a></li>
+      <li><a href="#Finding_the_distance_between_two_nodes_in_the_graph">Finding the distance between two nodes in the graph</a></li>
+      <li><a href="#Finding_every_fly_gene_product_that_has_been_annotated_as_some_kind_of_transmembrane_receptor_by_non-sequence_based_methods">Finding every fly gene product that has been annotated as some kind of transmembrane receptor by non-sequence based methods</a></li>
+      <li><a href="#Fetching_sequences_for_a_GO_term">Fetching sequences for a GO term</a></li>
+      <li><a href="#Finding_correlations_between_terms">Finding correlations between terms</a></li>
+      <li><a href="#Transitive_Correlations">Transitive Correlations</a></li>
+      <li><a href="#Fetching_most_common_interpro_domains_for_a_GO_term">Fetching most common interpro domains for a GO term</a></li>
+      <li><a href="#Finding_pairs_of_interpro_domains_associated_with_terms">Finding pairs of interpro domains associated with terms</a></li>
+      <li><a href="#Batch_Queries">Batch Queries</a></li>
+    </ul>
+
+    <hr></hr>
+
+    <a name="Finding_all_the_children_of_a_term"></a>
+    <h3>Finding all the children of a term</h3>
+
+    <p>
+      Find the child terms of blood coagulation:
+    </p>
+
+    <div class="codeblock"><pre>
+SELECT child.*
+FROM term AS parent,
+     term2term,
+     term AS child
+WHERE
+     parent.name = 'blood coagulation' AND
+     parent.id = term2term.term1_id AND
+     child.id  = term2term.term2_id
+      </pre></div>
+
+    <p>
+      You can use the stag-template <a
+	href="../stag-templates/go-child_term.stg">go-child_term</a>
+    </p>
+
+    <div class="codeblock"><pre>
+selectall_xml.pl -d go /go-child_term -h
+selectall_xml.pl -d go /go-child_term GO:0008045
+selectall_xml.pl -d go /go-child_term term_name='blood coagulation'
+      </pre></div>
+
+    <a name="Fetching_every_descendent_of_blood_coagulation"></a>
+    <h3>Fetching every descendent of blood coagulation</h3>
+
+    <p>
+      The GO Graph is stored using the "term" (=node) and "term2term" (=arc) tables. Queries such as the above present a problem in that they are *recursive* - it is impossible to do them in a single query using the two tables above. Fortunately GO also includes a layer of *denormalization* which includes a table called "graph_path" (see <a href="godb-sql-doc.html">GO Schema Documentation</a> ), which stores all paths between a term and all its ancestors.
+    </p>
+    
+    <div class="codeblock"><pre>
+SELECT
+  rchild.* 
+FROM 
+  term AS rchild, term AS ancestor, graph_path
+WHERE
+  graph_path.term2_id = rchild.id and 
+  graph_path.term1_id = ancestor.id and 
+  ancestor.name = 'blood coagulation'
+      </pre></div>
+
+    <p>
+      Or if you prefer using perl, fire up GoShell or write a perl script to do this:
+    </p>
+
+    <div class="codeblock"><pre>
+$term = $apph->get_term({name=>"blood coagulation"});
+$graph = $apph->get_graph_below($term->acc);
+$terms = $graph->get_all_nodes;
+foreach $t (@$terms) { printf "term:%s\n", $t->name }
+      </pre></div>
+
+    <p>
+      see GO::Model::Graph for more on the graph object
+      (note the code above will work even if the graph_path table is not populated)
+    </p>
+
+    <p>
+      You can use the stag-template <a
+	href="../stag-templates/go-descendent_term.stg">go-descendent_term</a>
+    </p>
+
+    <div class="codeblock"><pre>
+selectall_xml.pl -d go /go-descendent_term -h
+selectall_xml.pl -d go /go-descendent_term GO:0008045
+selectall_xml.pl -d go /go-descendent_term term_name='blood coagulation'
+      </pre></div>
+
+    <a name="Finding_the_ancestors_of_'DNA_Helicase_activity'"></a>
+    <h3>Finding the ancestors of 'DNA Helicase activity'</h3>
+
+    <p>
+      fetching ancestors is similar to finding descendants. try this for the    
+      ancestors of DNA Helicase:
+    </p>
+
+<div class="codeblock"><pre>
+SELECT p.*
+FROM
+ graph_path 
+  INNER JOIN
+ term AS t ON (t.id = graph_path.term2_id)
+  INNER JOIN
+ term AS p ON (p.id = graph_path.term1_id)
+WHERE t.name = 'DNA Helicase activity';
+</pre></div>
+
+    <p>
+      this is the reflexive closure so it includes DNA Helicase itself - to
+      get the non-reflexive closure (ie to filter out the central term) add the
+      constraint graph_path.distance > 0
+    </p>
+
+    <p>
+      You can use the stag-template <a
+	href="../stag-templates/go-descendent_term.stg">go-descendent_term</a> - <i>the same template can find either descendents or ancestors</i>
+    </p>
+
+    <div class="codeblock"><pre>
+selectall_xml.pl -d go /go-descendent_term descendent_term_acc=GO:0008045
+selectall_xml.pl -d go /go-descendent_term descendent_term_name='DNA Helicase activity'
+      </pre></div>
+
+
+    <a name="graph"/>
+    <h3>Finding ancestor terms and their relationships</h3>
+
+      <p>
+        The previous query showed how to find all the ancestor terms
+        for a term; what if you want to find the ancestor terms, and
+        the relationships for those terms? This is useful for getting
+        a sub-graph from the whole DAG.
+      </p>
+
+<div class="codeblock"><pre>
+SELECT p.*,r.*
+FROM
+ graph_path 
+  INNER JOIN
+ term AS t ON (t.id = graph_path.term2_id)
+  INNER JOIN
+ term AS p ON (p.id = graph_path.term1_id)
+  INNER JOIN
+ term2term AS r ON (r.term2_id = p.id)
+WHERE t.name = 'DNA Helicase activity';
+</pre></div>
+
+      <p>
+        This fetches all ancestor terms, and the relationship which
+        have each ancestor term as a child
+      </p>
+      <p>
+        Note that this will not fetch the root term, because the root
+        term is not the child of any other term. It will fetch
+        relationships which have the root as parent. If you also want
+        to fetch the root term, change the last join to a <b>LEFT
+          OUTER JOIN</b>
+      </p>
+
+
+    <a name="combined_associations"></a>
+    <h3>Gene products annotated to two terms</h3>
+
+    <p>
+      See also: TRANSITIVE CORRELATIONS
+    </p>
+
+    <p>
+      Say we want to find the total number pf gene products that are
+      BOTH GTP binding (GO:0005525) and immune response (GO:0006955)
+    </p>
+
+    <div class="codeblock"><pre>
+SELECT 
+  count(DISTINCT a1.gene_product_id)
+FROM 
+  term AS t1
+  INNER JOIN graph_path AS p1 ON (t1.id=p1.term1_id)
+  INNER JOIN association AS a1 ON (a1.term_id=p1.term2_id)
+  INNER JOIN term AS t2       ON (t2.id=p2.term1_id)
+  INNER JOIN graph_path AS p2 ON (a2.term_id=p2.term2_id)
+  INNER JOIN association AS a2 ON (a2.gene_product_id=a1.gene_product_id)
+WHERE  t1.acc = 'GO:0005525'  AND  t2.acc = 'GO:0006955'
+      </pre></div>
+
+
+
+    <p>
+      This query is not generalisable to n terms; fortunately there is
+      another way of doing things (this version doesn't use the graph):
+    </p>
+
+    <div class="codeblock"><pre>
+SELECT gene_product.id, count(distinct term_id) AS c
+  FROM       gene_product
+  INNER JOIN association ON association.gene_product_id=gene_product.id
+  INNER JOIN term        ON association.term_id=term.id
+  WHERE term.name='immune response'
+  OR    term.name='interleukin-4 receptor binding'
+  GROUP BY gene_product.id
+  HAVING c=2;
+      </pre></div>
+    <p>  
+      Thanks go to Claude Pasquier for coming up with this solution
+    </p>  
+
+    <a name="Finding_the_shared_parent_of_two_nodes"></a> <h3>Finding
+    the shared parent of two nodes</h3>
+
+    <p>
+      Imagine we want to find the minimal common parent of GO:0008045 (motor
+      axon guidance) and GO:0007474 (wing vein specification).
+    </p>
+
+    <div class="codeblock"><pre>
+SELECT tp.*,
+  p1.distance+p2.distance AS total_distance,
+  p1.distance AS d1,
+  p2.distance AS d2
+FROM term AS t1
+  INNER JOIN graph_path AS p1 ON (t1.id=p1.term2_id)
+  INNER JOIN term AS tp       ON (p1.term1_id=tp.id)
+  INNER JOIN graph_path AS p2 ON (tp.id=p2.term1_id)
+  INNER JOIN term AS t2       ON (t2.id=p2.term2_id)
+WHERE  t1.acc = 'GO:0008045'  AND  t2.acc = 'GO:0007474'
+ORDER BY total_distance
+      </pre></div>
+
+    <p>
+      The total distance is defined as the sum of the distance between the
+      first term and the common parent and the second term and the common
+      parent. Note that there may be multiple paths between a child and a parent.
+    </p>
+
+    <p>
+      You can use the stag-template <a
+	href="../stag-templates/go-common_ancestor.stg">go-common_ancestor</a>
+    </p>
+
+    <div class="codeblock"><pre>
+selectall_xml.pl -d go /go-common_ancestor GO:0008045 GO:0008045
+      </pre></div>
+
+    <a name="Finding_the_distance_between_two_nodes_in_the_graph"></a>
+    <h3>Finding the distance between two nodes in the graph</h3>
+
+    <p>
+      Imagine we want to find the distance between GO:0006629
+      (lipid metabolism) and GO:0007165 (signal transduction)
+    </p>
+
+    <p>
+      The graph_path table only stores the distance between nodes that have recursive parent/child relationships, not siblings (or cousins!). But we can still do this with a little cunning:
+    </p>
+      <div class="codeblock"><pre>
+SELECT 
+  min(graph_path1.distance + graph_path2.distance) AS dist
+FROM 
+  graph_path AS graph_path1, graph_path AS graph_path2, 
+  term AS t1, term AS t2
+WHERE
+  t1.acc = 'GO:0007165' and t2.acc = 'GO:0006629' and graph_path1.term2_id = t1.id
+  and graph_path2.term2_id = t2.id and graph_path1.term1_id = graph_path2.term1_id
+      </pre></div>
+
+    <p>
+      Or if that is too much to type, just fire up GoShell and type:
+    </p>
+
+    <div class="codeblock"><pre>
+print $apph->get_distance('GO:0007165', 'GO:0006629')    
+      </pre></div>
+
+    <a name="Finding_every_fly_gene_product_that_has_been_annotated_as_some_kind_of_transmembrane_receptor_by_non-sequence_based_methods"></a>
+    <h3>Finding every fly gene product that has been annotated as some kind of transmembrane receptor by non-sequence based methods</h3>
+
+    <div class="codeblock"><pre>
+SELECT DISTINCT 
+  gene_product.*, 
+  dbxref.xref_key AS acc, 
+  dbxref.xref_dbname AS speciesdb 
+FROM 
+  gene_product, dbxref, association, graph_path, evidence, term
+WHERE
+  evidence.association_id = association.id and 
+  code!='IEA' and code!='ISS' and 
+  gene_product.dbxref_id = dbxref.id and 
+  association.gene_product_id = gene_product.id 
+  and graph_path.term2_id = association.term_id 
+  and graph_path.term1_id = term.id and
+  dbxref.xref_dbname='FB' and
+  term.name = 'transmembrane receptor activity'
+      </pre></div>
+
+    <p>
+      GoAPI or GoShell:
+    </p>
+
+    <div class="codeblock"><pre>
+$gpl = $apph->get_deep_products({term=>"transmembrane receptor", speciesdb=>"FB", evcodes=>["!IEA", "!ISS"]});
+foreach $g (@$gpl) { printf "product:%s\n", $g->symbol }
+      </pre></div>
+
+    <p>
+      OR query using the NCBI taxon ID - this will give different
+      results; the former is FlyBase associations only; the latter is
+      FlyBase Drosophila Melanogaster associations PLUS (possibly
+      redundant) associations for fly proteins coming from other
+      sources (eg GOA).
+    </p>
+
+    <div class="codeblock"><pre>
+$gpl = $apph->get_deep_products({term=>"transmembrane receptor", taxid=>7227, evcodes=>["!IEA", "!ISS"]});
+foreach $g (@$gpl) { printf "product:%s\n", $g->symbol }
+      </pre></div>
+
+    <p>
+      See also the ::GO::Model::GeneProduct class which represents instances of GeneProducts
+    </p>
+
+    <p>
+      You can use the stag-template <a
+	href="../stag-templates/go-geneproduct-by-term-and-evidence.stg">go-geneproduct-by-term-and-evidence</a>; here are some example below
+    </p>
+
+    <div class="codeblock"><pre>
+selectall_xml.pl -d go /go-geneproduct-by-term-and-evidence GO:0004888
+selectall_xml.pl -d go /go-geneproduct-by-term-and-evidence term_name='transmembrane receptor activity'
+selectall_xml.pl -d go /go-geneproduct-by-term-and-evidence term_acc=GO:0004888 product_dbname=FB
+selectall_xml.pl -d go /go-geneproduct-by-term-and-evidence term_acc=GO:0004888 ncbi_taxa_id=7227
+selectall_xml.pl -d go /go-geneproduct-by-term-and-evidence -where\
+   "term.acc='GO:0004888' AND species.ncbi_taxa_id=7227 AND evidence.code not in ('IEA','ISS')"
+      </pre></div>
+    <p>
+      (note that there is currently no way of passing in multiple
+      values for the same constraint variable with the DBStag command
+      line interface - you have to override the whole sql where
+      clause, as shown in the final example above)
+    </p>
+
+    <a name="Fetching_sequences_for_a_GO_term"></a>
+    <h3>Fetching sequences for a GO term</h3>
+
+    <p>
+      This finds sequences for gene products associated to <b>inner
+      membrane</b> (GO:0019866) or any of its children:
+    </p>
+    
+    <div class="codeblock"><pre>
+SELECT *
+FROM gene_product
+    INNER JOIN dbxref ON (gene_product.dbxref_id = dbxref.id)
+    INNER JOIN association ON (gene_product.id = association.gene_product_id)
+    INNER JOIN graph_path ON (association.term_id = graph_path.term2_id)
+    INNER JOIN term ON (graph_path.term1_id = term.id)
+    INNER JOIN term AS associated_term ON (graph_path.term2_id = associated_term.id)
+    INNER JOIN gene_product_seq ON (gene_product.id = gene_product_seq.gene_product_id)
+    INNER JOIN seq ON (seq.id = gene_product_seq.seq_id)
+WHERE term.acc = 'GO:0019866'
+      </pre></div>
+
+    <p>
+      You can use the stag-template <a
+      href="../stag-templates/go-seq-by-term.stg">go-seq-by-term</a>
+    </p>
+
+    <div class="codeblock"><pre>
+selectall_xml.pl -d go /go-seq-by-term GO:0019866
+      </pre></div>
+    
+    <a name="Finding_correlations_between_terms"></a>
+    <h3>Finding correlations between terms</h3>
+    <p>
+      In GO, gene products can be associated with multiple terms in multiple categories (funtion, process, cellular component). One would expect "protein biosynthesis" to be correlated with "ribosome" based on gene products in common.
+      </p>
+    <p>
+      We can explore these correlations with SQL queries like the following. ("protein biosynthesis" is GO:0006412)
+    </p>
+
+
+    <div class="codeblock"><pre>SELECT
+ t2.name, t2.acc, count(distinct a2.gene_product_id) AS gpc
+FROM
+ term t1,
+ term t2,
+ association a1,
+ association a2
+WHERE
+ a1.term_id = t1.id AND
+ a2.term_id = t2.id AND
+ a1.gene_product_id = a2.gene_product_id AND
+ t1.acc = 'GO:0006412' AND
+ t1.id != t2.id
+GROUP BY t2.name, t2.acc
+ORDER BY gpc DESC
+LIMIT 10</pre></div>
+
+This gives the following:
+    <div class="codeblock"><pre>
++-----------------------------------------------------+------------+------+
+| name                                                | acc        | gpc  |
++-----------------------------------------------------+------------+------+
+| structural constituent of ribosome                  | GO:0003735 | 1925 |
+| ribosome                                            | GO:0005840 |  506 |
+| cytosolic large ribosomal subunit (sensu Eukaryota) | GO:0005842 |  312 |
+| cytosolic small ribosomal subunit (sensu Eukaryota) | GO:0005843 |  296 |
+| cytosolic large ribosomal subunit (sensu Bacteria)  | GO:0009282 |  262 |
+| triplet codon-amino acid adaptor activity           | GO:0030533 |  217 |
+| RNA binding                                         | GO:0003723 |  214 |
+| cytosol                                             | GO:0005829 |  205 |
+| mitochondrial large ribosomal subunit               | GO:0005762 |  180 |
+| cytosolic small ribosomal subunit (sensu Bacteria)  | GO:0009283 |  158 |
++-----------------------------------------------------+------------+------+
+10 rows in set (3.77 sec)                                                             </pre></div>
+
+    <p>
+      (The final row shows the number of gene products that the two terms have in common)
+    </p>
+    <p>
+      We have "discovered" that translation is associated with the
+      ribosome. Woohoo! Not a startling breakthrough in itself, but
+      the ability to do this query may prove useful in a variety of
+      contexts eg verifying changes to the ontology or verifying
+      automatic assignments.
+    </p>
+
+    <p>
+      You can use the stag-template <a
+      href="../stag-templates/go-correlations.stg">go-correlations</a>
+      or <a
+      href="../stag-templates/go-correlations-summary.stg">go-correlations-summary</a>;
+      the first finds cellular component correlations with protein
+      biosynthesis; the second finds ALL correlations.
+    </p>
+
+    <div class="codeblock"><pre>
+selectall_xml.pl -d go /go-correlations term_acc=GO:0006412 correlated_term_type='cellular_component'
+selectall_xml.pl -d go /go-correlations > all_correlations.xml
+      </pre></div>
+
+    <a name="Transitive_Correlations"></a>
+    <h3>Transitive Correlations</h3>
+
+    <p>
+      Above we saw direct correlations between two terms. remember GO
+      is a set of terms in a subsumption architecture, eg if you use
+      the above query to ask for correlations between "nucleic acid
+      binding" and other terms, you will miss out on correlations
+      involving "DNA binding". Thankfully we can use the graph_path
+      table to help us.
+      </p>
+
+    <p>
+      This example is for finding correlations between transcription
+      factor (GO:0003700) and other terms:
+    </p>
+
+    <div class="codeblock"><pre>
+SELECT
+ t2.name, t2.acc, count(distinct a2.gene_product_id) AS gpc
+FROM
+ term t1,
+ term t2,
+ graph_path p1,
+ graph_path p2,
+ association a1,
+ association a2,
+ evidence e1,
+ evidence e2
+WHERE
+ t1.id = p1.term1_id AND
+ t2.id = p2.term1_id AND
+ a1.term_id = p1.term2_id AND
+ a2.term_id = p2.term2_id AND
+ e1.association_id = a1.id AND
+ e2.association_id = a2.id AND
+ a1.is_not = 0 AND
+ a2.is_not = 0 AND
+ e1.code != 'IEA' AND
+ e2.code != 'IEA' AND
+ a1.gene_product_id = a2.gene_product_id AND
+ t1.acc = 'GO:0003700'  AND
+ a1.term_id != a2.term_id
+GROUP BY t2.name, t2.acc
+ORDER BY gpc DESC
+LIMIT 30 </pre></div>
+
+    <p>
+      (This filters out IEAs which could skew the results)
+    </p>
+
+    <p>
+      You can use the stag-template <a
+      href="../stag-templates/go-transitive_correlations.stg">go-transitive_correlations</a>
+      or <a
+      href="../stag-templates/go-transitive_correlations-summary.stg">go-transitive_correlations-summary</a>;
+      the first finds cellular component correlations with protein
+      biosynthesis; the second finds ALL correlations [only do this if
+      you have a massive mysql server, or you don't have the full
+      association set loaded into your db!]
+    </p>
+
+    <div class="codeblock"><pre>
+selectall_xml.pl -d go /go-transitive_correlations term_acc=GO:0006412 correlated_term_type='cellular_component'
+selectall_xml.pl -d go /go-transitive_correlations > all_correlations.xml
+      </pre></div>
+    
+    <a name="Fetching_most_common_interpro_domains_for_a_GO_term"></a>
+    <h3>Fetching most common interpro domains for a GO term</h3>
+
+    <p>
+      Let's say we want to look at correlations between interpro
+      domains and the GO term "transmembrane receptor". NOTE: This is
+      independent of the interpro2go mapping (available from the
+      term_dbxref table). For this you will need a go database with
+      seqs, as we are looking for interpro accessions attached to
+      sequence records correlated with terms. (these interpro
+      accessions become associated with the sequence records via
+      various protein motif searching programs run at the EBI).
+      </p>
+
+    <div class="codeblock"><pre>
+SELECT 
+ term.name, term.acc, dbxref.xref_key, count(dbxref.xref_key) AS c
+FROM
+ term,
+ association,
+ graph_path,
+ seq_dbxref,
+ gene_product_seq AS gps,
+ dbxref 
+WHERE
+ term.name = 'transmembrane receptor' AND
+ dbxref.xref_dbname = 'interpro' AND
+ dbxref.id = seq_dbxref.dbxref_id AND
+ gps.seq_id = seq_dbxref.seq_id AND
+ gps.gene_product_id = association.gene_product_id AND
+ association.term_id = graph_path.term2_id AND
+ association.is_not = 0 AND
+ graph_path.term1_id = term.id
+GROUP BY term.name, term.acc, dbxref.xref_key HAVING c > 1 ORDER BY c DESC
+      </pre></div>
+
+    <p>
+      You can use the stag-template <a
+      href="../stag-templates/go-peptide_motif-by-term.stg">go-peptide_motif-by-term</a>
+    </p>
+
+    <div class="codeblock"><pre>
+selectall_xml.pl -d go /go-peptide_motif-by-term term_acc=GO:0006412 motif_dbname=interpro
+      </pre></div>
+
+    <a name="Finding_pairs_of_interpro_domains_associated_with_terms"></a>
+    <h3>Finding pairs of interpro domains associated with terms</h3>
+
+    <p>
+      Let's say we want to know the most common pairing of domains
+      associated with GPCRs (GO:0004390); we can modify the above
+      query like this:
+    </p>
+
+    <div class="codeblock"><pre>
+SELECT 
+ term.name, term.acc, x1.xref_key, x2.xref_key, count(x1.xref_key) AS c
+FROM
+ term,
+ association,
+ graph_path,
+ seq_dbxref sx1,
+ seq_dbxref sx2,
+ gene_product_seq AS gps,
+ dbxref x1,
+ dbxref x2
+WHERE
+ term.acc = 'GO:0004930' AND
+ x1.id < x2.id AND
+ x1.xref_dbname = 'interpro' AND
+ x2.xref_dbname = 'interpro' AND
+ x1.id = sx1.dbxref_id AND
+ x2.id = sx2.dbxref_id AND
+ gps.seq_id = sx1.seq_id AND
+ gps.seq_id = sx2.seq_id AND
+ gps.gene_product_id = association.gene_product_id AND
+ association.term_id = graph_path.term2_id AND
+ association.is_not = 0 AND
+ graph_path.term1_id = term.id
+GROUP BY term.name, term.acc, x1.xref_key, x2.xref_key HAVING c > 1 ORDER BY c DESC
+;
+      </pre></div>
+    <p>
+      This gives something like:
+    </p>
+
+    <div class="codeblock"><pre>
++----------------------------+--------------+-----------+-----------+----+
+| name                       | acc          | xref_key  | xref_key  | c  |
++----------------------------+--------------+-----------+-----------+----+
+| G-protein coupled receptor | 'GO:0004930' | IPR003006 | IPR003597 | 34 |
+| G-protein coupled receptor | 'GO:0004930' | IPR000832 | IPR001879 | 32 |
+| G-protein coupled receptor | 'GO:0004930' | IPR001828 | IPR000337 | 19 |
+| G-protein coupled receptor | 'GO:0004930' | IPR000276 | IPR001760 | 17 |
+| G-protein coupled receptor | 'GO:0004930' | IPR003006 | IPR000353 | 14 |
+| G-protein coupled receptor | 'GO:0004930' | IPR003597 | IPR000353 | 14 |
+| G-protein coupled receptor | 'GO:0004930' | IPR003006 | IPR001039 | 13 |
+| G-protein coupled receptor | 'GO:0004930' | IPR003597 | IPR001039 | 13 |
+| G-protein coupled receptor | 'GO:0004930' | IPR002106 | IPR000276 | 12 |
+| G-protein coupled receptor | 'GO:0004930' | IPR001611 | IPR000276 | 11 |
+
+      </pre></div>
+
+    <a name="Batch_Queries"></a>
+    <h3>Batch Queries</h3>
+
+    <p>
+      If you have a list of gene product identifiers that have been annotated with GO terms in the GO database, you can do a batch query for the GO terms associated with these:
+    </p>
+
+    <div class="codeblock"><pre>
+SELECT term.*
+FROM 
+ dbxref
+  INNER JOIN
+ gene_product ON (dbxref.id = gene_product.dbxref_id)
+  INNER JOIN
+ association ON (association.gene_product_id=gene_product.id)
+  INNER JOIN
+ term ON (association.term_id = term.id)
+WHERE      
+ dbxref.xref_key IN 
+ ('Q8BRY9', 'Q8BRX4', 'Q8BRZ4', ...)
+      </pre></div>
+
+    <p>
+      If you would like to fetch the gene product dbxref with every term, change the SELECT clause to <b>term.*,gene_product.*,dbxref.*</b>
+    </p>
+
+    <p>
+      To do the same query with the API:
+    </p>
+
+    <div class="codeblock"><pre>
+  my $apph = GO::AppHandle->connect(-dbname=>$dbname, -dbhost=>$mysqlhost);
+  my @accs = qw(Q8BRY9 Q8BRX4 Q8BRZ4);
+  my @pqlist = map { {acc=>$_} } @accs;
+  my $term_l = 
+    $apph->get_terms({products=>[@pqlist]});
+  foreach my $term (@$term_l) {
+    printf "Term: %s %s\n", $term->acc, $term->name;
+    foreach my $assoc (@{$term->selected_association_list || []}) {
+      my $gp = $assoc->gene_product;
+      my $ev_l = $assoc->evidence_list || [];
+      printf "  %s %s evidence:%s\n",
+        $gp->acc,
+        $gp->symbol,
+        join('; ', map {$_->code} @$ev_l);
+    }
+  }
+      </pre></div>
+
+    <hr>
+      
+    <address><a href="mailto:cjm@fruitfly.org">Chris Mungall</a></address>
+<!-- Created: Fri Jan 23 14:30:13 PST 2004 -->
+<!-- hhmts start -->
+Last modified: Tue Nov 29 13:47:08 PST 2005
+<!-- hhmts end -->
+  </body>
+</html>
+
