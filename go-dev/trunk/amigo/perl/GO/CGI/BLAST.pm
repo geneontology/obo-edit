@@ -1,5 +1,10 @@
 ﻿package GO::CGI::BLAST;
 
+BEGIN { require "config.pl" if -f "config.pl" ; }
+use lib "$ENV{GO_DEV_ROOT}/go-perl";
+use lib "$ENV{GO_DEV_ROOT}/go-db-perl";
+use lib "$ENV{GO_DEV_ROOT}/amigo/perl";
+
 use strict;
 use Carp;
 #use GO::Utils qw(rearrange);
@@ -21,7 +26,10 @@ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $VERSION);
 use Data::Dumper;
 $Data::Dumper::Indent = 1;
 
-our $verbose = get_environment_param('verbose');
+## Some new stuff to try...
+use AmiGO;
+my $core = AmiGO->new();
+
 
 =head1 SYNOPSIS
 
@@ -54,300 +62,313 @@ package GO::CGI::BLAST
 		direct => < sequence >
 		OR seq_id => < seq_id >, seqs => < seq_id's sequence >
 	}
+
 =cut
 
 sub set_off_blast {
-	my $apph = shift;
-	my $error = shift;
-	my $blast_settings = shift; # required settings from the CGI
-	my $inputs = shift;         # hash containing the input seqs
-	my $blast_options = shift;  # from the CGI
+  my $apph = shift;
+  my $error = shift;
+  my $blast_settings = shift; # required settings from the CGI
+  my $inputs = shift;         # hash containing the input seqs
+  my $blast_options = shift;  # from the CGI
 
-	# where the results will go
-	my $blast_dir = $blast_settings->{blast_dir};
+  # where the results will go
+  my $blast_dir = $blast_settings->{blast_dir};
 
-	foreach ($apph, $error, $inputs, $blast_options, $blast_dir)
-	{	print STDERR Dumper($_)."\n" if $verbose;
-	}
+  foreach ($apph, $error, $inputs, $blast_options, $blast_dir) {
+    $core->kvetch(Dumper($_));
+  }
 
-	my $max_seq_num = $blast_settings->{max_seq_num} || 100;
-	my $max_seq_len = $blast_settings->{max_seq_length} || 3000000;
+  my $max_seq_num = $blast_settings->{max_seq_num} || 100;
+  my $max_seq_len = $blast_settings->{max_seq_length} || 3000000;
 
-	my @seqs;       # array for storing our checked sequences
-	my $input_seqs; # store the sequence source (e.g. seq ID or 
-	                # text entered into box) and the sequence itself
-	my $program;    # which blast program to use
+  my @seqs;       # array for storing our checked sequences
+  my $input_seqs; # store the sequence source (e.g. seq ID or 
+                  # text entered into box) and the sequence itself
+  my $program;    # which blast program to use
 
-	require GO::Model::Seq;
+  require GO::Model::Seq;
 
-	#	check we have some inputs
-	if (scalar keys %$inputs == 0)
-	{	print STDERR "No inputs found. Quitting...\n" if $verbose;
-		$error = set_message($error, 'fatal', 'no_input');
-		return { error => $error };
-	}
-	elsif (scalar keys %$inputs > 1)
-	{	print STDERR "Too many inputs found! Warning.\n" if $verbose;
-		$error = set_message($error, 'warning', 'too_many_inputs');
-	}
+  # check we have some inputs
+  if (scalar keys %$inputs == 0){
+    $core->kvetch("No inputs found. Quitting...");
+    $error = set_message($error, 'fatal', 'no_input');
+    return { error => $error };
+  }elsif (scalar keys %$inputs > 1){
+    $core->kvetch("Too many inputs found! Warning.");
+    $error = set_message($error, 'warning', 'too_many_inputs');
+  }else{
+    $core->kvetch("Inputs clear.");
+  }
 
+  ##
+  if (!$apph || !$blast_dir){
+    $core->kvetch("Missing required input apph / blast_dir");
+    $error = set_message($error, 'fatal', 'config_error',
+			 "No apph / user BLAST directory found!");
+    return { error => $error };
+  }else{
+    $core->kvetch("Locations clear.");
+  }
 
-	if (!$apph || !$blast_dir)
-	{	print STDERR "Missing required input apph / blast_dir\n" if $verbose;
-		$error = set_message($error, 'fatal', 'config_error', "No apph / user BLAST directory found!");
-		return { error => $error };
-	}
+  # OK, let's get going on the query now!
+  if ($inputs->{seq_id} || $inputs->{uniprot_id}) {
+    my $gps;
+    my $id = $inputs->{seq_id}; # this is from an AmiGO BLAST link
+    if (!$id){
+      $id = $inputs->{uniprot_id};
+      $id =~ s/^.*[\|:]//;
+      $id = "UniProt:".$id;
+    }
+    $core->kvetch("Work from id: " . $id);
+    my $result_h = get_gp_details($apph, $error, { gpxref => $id },
+				  { tmpl => { seq => 1 } });
+    # no GPs found...
+    if( ! $result_h->{results} ){
+      $core->kvetch("No gps found...");
+      return { error => $result_h->{error} };
+    }
+    $error = $result_h->{error};
+    $gps = $result_h->{results};
 
-	#	OK, let's get going on the query now!
-	if ($inputs->{seq_id} || $inputs->{uniprot_id}) {
-		my $gps;
-		my $id = $inputs->{seq_id}; # this is from an AmiGO BLAST link
-		if (!$id)
-		{	$id = $inputs->{uniprot_id};
-			$id =~ s/^.*[\|:]//;
-			$id = "UniProt:".$id;
-		}
-		my $result_h = get_gp_details($apph, $error, { gpxref => $id }, { tmpl => { seq => 1 } });
-		return { error => $result_h->{error} } if !$result_h->{results};  # no GPs found
-		$error = $result_h->{error};
-		$gps = $result_h->{results};
-		
-		if ($gps->[0]->to_fasta)
-		{	$input_seqs = {
-				type => 'seq_id',
-				seq_id => uc($gps->[0]->xref->xref_dbname)."|".$gps->[0]->xref->xref_key,
-				seqs => [ $gps->[0]->to_fasta ],
-			};
-		}
-		else
-		{	print STDERR "Bad seq ID - GP does not have a sequence\n" if $verbose;
-			$error = set_message($error, 'fatal', 'no_seq_found', $input_seqs->{seq_id});
-			return { error => $error };
-		}
-		$program = 'blastp';
-		push @seqs, @{$input_seqs->{seqs}};
-	} 
-	elsif ($inputs->{seq} || $inputs->{seq_from_file})
-	{	#	uploaded sequences
-		my $sequence = "";
-		my $seq;
-
-		if ($inputs->{seq_from_file})
-		{	$seq = $inputs->{seq_from_file};
-		} 
-		elsif ($inputs->{seq}) {
-			$seq = $inputs->{seq};
-		}
-		print STDERR "sequence from param seq:\n".Dumper($seq)."\n" if $verbose;
-
-#		$seq =~ s/^\s*//m;
-#		$seq =~ s/\s*$//m;
-#		$seq =~ s/\r/\n/g;
-		# remove line feeds.
-		$seq =~ s/\x0D//g;
-
-		if (!$seq || $seq !~ /[a-z]/im)
-		{	print STDERR "No actual sequence found.\n" if $verbose;
-			$error = set_message($error, 'fatal', 'no_input');
-			return { error => $error };
-		}
-
-		$seq =~ s/>/\n\n>/gm;
-
-		#	split up the sequence by > and empty lines
-		my @seq_arr = split(/\n{2,}/, $seq);
-		my @msgs;
-		my $l_acc;
-		my $length;
-		my $head;
-		my $tail;
-		#print STDERR "seq_arr: ".Dumper(\@seq_arr);
-
-		foreach (@seq_arr)
-		{	print STDERR "sequence: ".Dumper($_)."\n\n" if $verbose;
-			$sequence = '';
-
-			foreach my $seqline ( split(/\n/, $_) )
-			{	chomp $seqline;
-				#$seqline =~ s/^[ \t\f]*//;
-				#$seqline =~ s/[ \t\f]*$//;
-				print STDERR "line before: >$seqline<\n" if $verbose;
-				$seqline =~ s/^\s*//;
-				$seqline =~ s/\s*$//;
-				print STDERR "line after : >$seqline<\n" if $verbose;
-				$sequence .= $seqline."\n";
-			}
-	
-			if (!$sequence)
-			{	print STDERR "No actual sequence found.\n" if $verbose;
-				next;
-	#			$error = set_message($error, 'fatal', 'no_input');
-	#			return { error => $error };
-			}
-
-			$head = '';
-			$tail = '';
-			if ($sequence =~ /^>/)
-			{	#	remove the seq header
-				($head, $tail) = split("\n", $sequence, 2);
-			#	$_ =~ s/\ //g unless ($sequence =~ /^>/);
-			}
-			else 
-			{	$head = '>sequence';
-				$tail = $_;
-			}
-			next if (!$tail || $tail !~ /[a-z]/i);
-			$tail =~ s/\s*//g;
-
-			print STDERR "sequence: ".Dumper($tail)."\n\n" if $verbose;
-			#	check the sequence isn't too long
-			$length = 0;
-			eval {
-				chomp($tail);
-				my $seq = GO::Model::Seq->new(-seq=>$tail);
-				$length = $seq->length;
-			};
-			if($@) {
-				print STDERR "bad sequence: $@\n" if $verbose;
-				push @msgs, { 'bad seq' => $@ };
-#				$error = set_message($error, 'fatal', 'bad_seq', $@);
-			}
-			elsif ($length > $max_seq_len) {
-				print STDERR "seq too long: $length\n" if $verbose;
-				push @msgs, { 'seq_too_long' => '' };
-#				$error = set_message($error, 'fatal', 'seq_too_long');
-			}
-			else
-			{	$l_acc += $length;
-				if ($l_acc > $max_seq_len)
-				{	#	too many seqs! exit the loop
-					$error = set_message($error, 'warning', 'too_many_seqs');
-					last;
-				}
-				push @seqs, $head."\n".$tail;
-				
-				if (scalar @seqs == $max_seq_num)
-				{	print STDERR "Reached max number of seqs - stopping parser\n" if $verbose;
-					last;
-					$error = set_message($error, 'warning', 'too_many_seqs');
-				
-				}
-			}
-		}
-		if (!@seqs)
-		{	print STDERR "No valid seqs found!\n" if $verbose;
-			$error = set_message($error, 'fatal', 'no_input');
-			return { error => $error };
-		}
-
-		$input_seqs = {
-			type => 'direct',
-			direct => join("\n\n", @seqs),
-		};
-
-		$program = get_program($seqs[0]);
-		$input_seqs->{seqs} = [@seqs];
-	}
-
-	#	All is well with the sequence(s).
-	#	Now let's go on to launching the job.
-
-	print STDERR "Starting launchJob...\n" if $verbose;
-
-	## Save session to disk.
-	my $file = new FileHandle;
-	print STDERR "Eval-ing the find blast_dir command\n" if $verbose;
-	eval {
-		#	`find $data_dir/$blast_dir -name "*" -exec rm -f {} \\;`;
-			`find $blast_dir -mindepth 1 -name "*" -exec rm -rf {} \\;`;
+    if ($gps->[0]->to_fasta){
+      $input_seqs =
+	{
+	 type => 'seq_id',
+	 seq_id =>
+	 uc($gps->[0]->xref->xref_dbname) . "|" . $gps->[0]->xref->xref_key,
+	 seqs => [ $gps->[0]->to_fasta ],
 	};
-	
-	if ($@)
-	{	print STDERR "Error: $@" if $verbose;
+    }else{
+      $core->kvetch("Bad seq ID - GP does not have a sequence");
+      $error = set_message($error, 'fatal', 'no_seq_found',
+			   $input_seqs->{seq_id});
+      return { error => $error };
+    }
+    $program = 'blastp';
+    push @seqs, @{$input_seqs->{seqs}};
+  }elsif ($inputs->{seq} || $inputs->{seq_from_file}){
+    # uploaded sequences
+    my $sequence = "";
+    my $seq;
+
+    if ($inputs->{seq_from_file}){
+      $seq = $inputs->{seq_from_file};
+    }elsif ($inputs->{seq}) {
+      $seq = $inputs->{seq};
+    }
+    $core->kvetch("sequence from param seq:\n".Dumper($seq));
+
+    #		$seq =~ s/^\s*//m;
+    #		$seq =~ s/\s*$//m;
+    #		$seq =~ s/\r/\n/g;
+    # remove line feeds.
+    $seq =~ s/\x0D//g;
+
+    if (!$seq || $seq !~ /[a-z]/im){
+      $core->kvetch("No actual sequence found.");
+      $error = set_message($error, 'fatal', 'no_input');
+      return { error => $error };
+    }
+
+    $seq =~ s/>/\n\n>/gm;
+
+    #	split up the sequence by > and empty lines
+    my @seq_arr = split(/\n{2,}/, $seq);
+    my @msgs;
+    my $l_acc;
+    my $length;
+    my $head;
+    my $tail;
+    #$core->kvetch("seq_arr: ".Dumper(\@seq_arr);
+
+    foreach (@seq_arr){
+      $core->kvetch("sequence: ".Dumper($_));
+      $sequence = '';
+
+      foreach my $seqline ( split(/\n/, $_) ){
+	chomp $seqline;
+	#$seqline =~ s/^[ \t\f]*//;
+	#$seqline =~ s/[ \t\f]*$//;
+	$core->kvetch("line before: >$seqline<");
+	$seqline =~ s/^\s*//;
+	$seqline =~ s/\s*$//;
+	$core->kvetch("line after : >$seqline<");
+	$sequence .= $seqline."\n";
+      }
+
+      if (!$sequence){
+	$core->kvetch("No actual sequence found.");
+	next;
+	# $error = set_message($error, 'fatal', 'no_input');
+	# return { error => $error };
+      }
+
+      $head = '';
+      $tail = '';
+      if ($sequence =~ /^>/){
+	# remove the seq header
+	($head, $tail) = split("\n", $sequence, 2);
+	# $_ =~ s/\ //g unless ($sequence =~ /^>/);
+      }else{
+	$head = '>sequence';
+	$tail = $_;
+      }
+      next if (!$tail || $tail !~ /[a-z]/i);
+      $tail =~ s/\s*//g;
+
+      $core->kvetch("sequence: ".Dumper($tail));
+      #	check the sequence isn't too long
+      $length = 0;
+      eval {
+	chomp($tail);
+	my $seq = GO::Model::Seq->new(-seq=>$tail);
+	$length = $seq->length;
+      };
+      if($@) {
+	$core->kvetch("bad sequence: $@");
+	push @msgs, { 'bad seq' => $@ };
+	# $error = set_message($error, 'fatal', 'bad_seq', $@);
+      }elsif ($length > $max_seq_len) {
+	$core->kvetch("seq too long: $length");
+	push @msgs, { 'seq_too_long' => '' };
+	# $error = set_message($error, 'fatal', 'seq_too_long');
+      }else{
+	$l_acc += $length;
+	if ($l_acc > $max_seq_len){
+	  # too many seqs! exit the loop
+	  $error = set_message($error, 'warning', 'too_many_seqs');
+	  last;
 	}
-	
-	my $i = 0;
-	my $bfilter_opt = " ";
-	$bfilter_opt = " -filter SEG" if ($blast_options->{blast_filter} && $blast_options->{blast_filter} eq 'on');
-	my $ncpus = 1; #restrict blast load on servers
+	push @seqs, $head."\n".$tail;
 
-#	my $tmpdir = File::Temp::tempdir( CLEANUP => 1 );
-#	my $cmd_file = "$tmpdir/command.sh";
-	my $cmd_file = "$blast_dir/command.sh";
+	if (scalar @seqs == $max_seq_num){
+	  $core->kvetch("Reached max number of seqs - stopping parser");
+	  last;
+	  $error = set_message($error, 'warning', 'too_many_seqs');
 
-	for my $seq (@seqs) {
-		$i++;
-		my $seq_file = "$blast_dir/current_seq.$i";
-		my $result = "$blast_dir/result.$i";
-		my $result_tmp = "$blast_dir/result_tmp.$i";
-		my $error = "$blast_dir/error.$i";
-		
-		my $seqfile = new FileHandle("> $seq_file");
-		$seqfile->print($seq);
-		$seqfile->close;
-		`chmod a+r $seq_file`;
-		# create the blast command: multi commands in one file
-		my $file = new FileHandle(">> $cmd_file");
-		if ($i == 1) {
-			$file = new FileHandle("> $cmd_file");
-			$file->print('#!/bin/sh'."\n");
-		}
-#		$file->print("WUBLASTFILTER=/usr/local/bdgp/wublast/filter; export WUBLASTFILTER\n");
-		$file->print(
-		$blast_settings->{$program}." "
-		.$blast_settings->{fasta_db}
-		." $seq_file"
-		." -v".$blast_options->{maxhits}
-		." -b".$blast_options->{maxhits}
-		.$bfilter_opt
-		." -e".$blast_options->{threshold}
-		." -cpus=$ncpus> $result_tmp 2>$error\n");
-		$file->print("mv $result_tmp $result\n");
-		$file->print("chmod a+r $result\n");
-		$file->print("chmod a+r $error\n");
-		$file->close;
 	}
-	`chmod a+r $cmd_file`;
+      }
+    }
+    if (!@seqs)	{
+      $core->kvetch("No valid seqs found!");
+      $error = set_message($error, 'fatal', 'no_input');
+      return { error => $error };
+    }
 
-	print STDERR "finished setting all the settings\n" if $verbose;
+    $input_seqs =
+      {
+       type => 'direct',
+       direct => join("\n\n", @seqs),
+      };
 
-	if (lc($blast_settings->{blast_method}) eq 'pbs')
-	{	my $qsub = $blast_settings->{qsub};
-		my $pbs_user = $blast_settings->{pbs_user} || 'public';
-		my $queue = $blast_settings->{queue};
+    $program = get_program($seqs[0]);
+    $input_seqs->{seqs} = [@seqs];
+  }
 
-		#launch the job
-		my $job = `$qsub -u $pbs_user -q $queue $cmd_file`;
-		chomp $job;
-		if (!$job)
-		{	print STDERR "qsub failed to submit blast job to cluster!\n" if $verbose;
-			$error = set_message($error, 'fatal', 'config_error', "qsub failed to submit blast job to cluster!\n");
-			return { error => $error };
-		}
-	}
-	else
-	{	eval {
-			system ("/bin/sh $cmd_file &")
-		};
-		
-		if ($@)
-		{	die("Error: $@");
-		}
+  #	All is well with the sequence(s).
+  #	Now let's go on to launching the job.
+
+  $core->kvetch("Starting launchJob...");
+
+  ## Save session to disk.
+  my $file = new FileHandle;
+  $core->kvetch("Eval-ing the find blast_dir command");
+  eval {
+    #	`find $data_dir/$blast_dir -name "*" -exec rm -f {} \\;`;
+    `find $blast_dir -mindepth 1 -name "*" -exec rm -rf {} \\;`;
+  };
+
+  if ($@){
+    $core->kvetch("Error: $@");
+  }
+
+  my $i = 0;
+  my $bfilter_opt = " ";
+  $bfilter_opt = " -filter SEG"
+    if($blast_options->{blast_filter} && $blast_options->{blast_filter} eq 'on');
+  my $ncpus = 1; #restrict blast load on servers
+
+  #	my $tmpdir = File::Temp::tempdir( CLEANUP => 1 );
+  #	my $cmd_file = "$tmpdir/command.sh";
+  my $cmd_file = "$blast_dir/command.sh";
+
+  for my $seq (@seqs) {
+    $i++;
+    my $seq_file = "$blast_dir/current_seq.$i";
+    my $result = "$blast_dir/result.$i";
+    my $result_tmp = "$blast_dir/result_tmp.$i";
+    my $error = "$blast_dir/error.$i";
+
+    my $seqfile = new FileHandle("> $seq_file");
+    $seqfile->print($seq);
+    $seqfile->close;
+    `chmod a+r $seq_file`;
+    # create the blast command: multi commands in one file
+    my $file = new FileHandle(">> $cmd_file");
+    if ($i == 1) {
+      $file = new FileHandle("> $cmd_file");
+      $file->print('#!/bin/sh'."\n");
+    }
+    #$file->print("WUBLASTFILTER=/usr/local/bdgp/wublast/filter; export WUBLASTFILTER\n");
+    $file->print(
+		 $blast_settings->{$program}." "
+		 .$blast_settings->{fasta_db}
+		 ." $seq_file"
+		 ." -v".$blast_options->{maxhits}
+		 ." -b".$blast_options->{maxhits}
+		 .$bfilter_opt
+		 ." -e".$blast_options->{threshold}
+		 ." -cpus=$ncpus> $result_tmp 2>$error\n");
+    $file->print("mv $result_tmp $result\n");
+    $file->print("chmod a+r $result\n");
+    $file->print("chmod a+r $error\n");
+    $file->close;
+  }
+  `chmod a+r $cmd_file`;
+
+  $core->kvetch("finished setting all the settings");
+
+  if (lc($blast_settings->{blast_method}) eq 'pbs'){
+    my $qsub = $blast_settings->{qsub};
+    my $pbs_user = $blast_settings->{pbs_user} || 'public';
+    my $queue = $blast_settings->{queue};
+
+    #launch the job
+    my $job = `$qsub -u $pbs_user -q $queue $cmd_file`;
+    chomp $job;
+    if (!$job){
+      $core->kvetch("qsub failed to submit blast job to cluster!");
+      $error = set_message($error, 'fatal', 'config_error',
+			   "qsub failed to submit blast job to cluster!\n");
+      return { error => $error };
+    }
+  }else{
+    eval {
+      system ("/bin/sh $cmd_file &")
+    };
+
+    if ($@){
+      die("Error: $@");
+    }
+
 =old code here
 		require LWP::UserAgent;
 		my $ua = LWP::UserAgent->new;
 		my $blast_url = get_environment_param('blast_url');
-		print STDERR "blast url: $blast_url\n" if $verbose;
+		$core->kvetch("blast url: $blast_url");
 		my %form = ( blast_dir => $blast_dir); #, temp_dir => $tmpdir );
 
-		print STDERR "starting post at ".localtime()."\n" if $verbose;
+		$core->kvetch("starting post at ".localtime());
 		my $response = $ua->post($blast_url, \%form);
-#		print STDERR "response: ".Dumper($response)."\n" if $verbose;
-		print STDERR "finished post at ".localtime()."\n" if $verbose;
+#		$core->kvetch("response: ".Dumper($response));
+		$core->kvetch("finished post at ".localtime());
+
 =cut
-	}
-	return { error => $error, results => $input_seqs };
+  }
+  return { error => $error, results => $input_seqs };
 }
+
 
 sub get_program {
 	my $seq = shift;
@@ -401,7 +422,7 @@ sub get_blast_results {
 	my $seq_file = "$blast_dir/current_seq.$seqno";
 
 	if (!$apph || !$session_id || !$blast_dir || !$result_file || !$seq_file)
-	{	print STDERR "Missing apph / session_id / blast_dir / result file / sequence file\n" if $verbose;
+	{	$core->kvetch("Missing apph / session_id / blast_dir / result file / sequence file");
 		$error = set_message($error, 'fatal', 'config_error', "Missing apph / session_id / blast_dir / result file / sequence file");
 		return { error => $error };
 	}
@@ -421,7 +442,7 @@ sub get_blast_results {
 #		$data->{sequence} = $seq;
 	}
 	else
-	{	print STDERR "Could not open sequence file $seq_file: $!\n" if $verbose;
+	{	$core->kvetch("Could not open sequence file $seq_file: $!");
 		$error = set_message($error, 'fatal', 'config_error', "Could not open sequence file: $!");
 		return { error => $error };
 	}
@@ -471,13 +492,13 @@ sub get_blast_results {
 			close FILE;
 		}
 		else
-		{	print STDERR "Could not open result file $result_file: $!\n" if $verbose;
+		{	$core->kvetch("Could not open result file $result_file: $!");
 			$error = set_message($error, 'fatal', 'config_error', "Could not open results file: $!");
 			return { error => $error };
 		}
 	}
 	if (!$raw)
-	{	print STDERR "blast.cgi: No raw data found!\n" if $verbose;
+	{	$core->kvetch("blast.cgi: No raw data found!");
 		$error = set_message($error, 'fatal', 'config_error', 'No data returned by BLAST');
 		return { error => $error };
 	}
@@ -487,7 +508,7 @@ sub get_blast_results {
 	$data->{raw_data} = $raw;
 
 	if (!keys %xrefs)
-	{	print STDERR "blast.cgi: No gene products found!\n" if $verbose;
+	{	$core->kvetch("blast.cgi: No gene products found!");
 		$error = set_message($error, 'fatal', 'no_blast_results');
 		return { results => $data, error => $error };
 	}
@@ -506,10 +527,10 @@ sub get_blast_results {
 
 	$data->{product_h} = $product_h;
 	my $omitted = (scalar keys %xrefs) - (scalar keys %$product_h);
-	print STDERR "omitted: $omitted\n" if $verbose;
+	$core->kvetch("omitted: $omitted");
 	$data->{omitted} = $omitted if ($omitted != 0);
 
-#	print STDERR "results structure: ".Dumper($data)."\n" if $verbose;
+#	$core->kvetch("results structure: ".Dumper($data));
 	
 	return
 	{	results => $data, 

@@ -71,6 +71,7 @@ my $session = new GO::CGI::Session('-q'=>$q, -ses_type=>$ses_type,
 $session->blast_sync($q);
 $session->save_session;
 
+$core->kvetch("ses_type: ". $ses_type);
 if ($session->ses_type eq 'blast_query'){
   # get the blast bits for the form
   $core->kvetch("getting the bits for the BLAST query form");
@@ -133,6 +134,7 @@ if ($session->ses_type eq 'blast_query'){
   $vars->{error} = $result_h->{error};
 
   if ($vars->{error}{fatal}){
+    $core->kvetch("hit fatal error after set_off_blast");
     $session->ses_type('amigo_message');
     $vars->{page_title} = 'BLAST Submission Error';
     $core->status_error_client();
