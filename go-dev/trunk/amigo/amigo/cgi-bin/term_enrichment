@@ -220,16 +220,10 @@ if ( ! $gp_filehandle  && $query->cgi_error() ){
   server_die_template({MESSAGE => "gp_file upload failed: $error ",
 		       STAMP => $time_stamp, URL => $html_url});
 }else{
-  if ( $gp_filehandle && (
-			  $gp_filehandle =~ /\.gz/i ||
-			  $gp_filehandle =~ /\.bz/i ||
-			  $gp_filehandle =~ /\.bz2/i ||
-			  $gp_filehandle =~ /\.zip/i ||
-			  $gp_filehandle =~ /\.z/i ||
-			  $gp_filehandle =~ /\.tgz/i ) ){
+  if ( $gp_filehandle && ! $core->vanilla_filehandle_p($gp_filehandle) ){
     server_die_template({MESSAGE =>
-			 "AmiGO does not currently accept compressed files. " .
-			 "Please uncompress your file and try again.",
+			 "AmiGO currently only accepts text files. " .
+			 "Please change your file and try again.",
 			 STAMP => $time_stamp, URL => $html_url});
   }
 }
@@ -241,16 +235,10 @@ if ( ! $bggp_filehandle  && $query->cgi_error() ){
   server_die_template({MESSAGE => "bggp_file upload failed: $error ",
 		       STAMP => $time_stamp, URL => $html_url});
 }else{
-  if ( $bggp_filehandle && (
-			  $bggp_filehandle =~ /\.gz/i ||
-			  $bggp_filehandle =~ /\.bz/i ||
-			  $bggp_filehandle =~ /\.bz2/i ||
-			  $bggp_filehandle =~ /\.zip/i ||
-			  $bggp_filehandle =~ /\.z/i ||
-			  $bggp_filehandle =~ /\.tgz/i ) ){
+  if ( $bggp_filehandle && ! $core->vanilla_filehandle_p($bggp_filehandle) ){
     server_die_template({MESSAGE =>
-			 "AmiGO does not currently accept compressed files. " .
-			 "Please uncompress your file and try again.",
+			 "AmiGO currently only accepts text files. " .
+			 "Please change your file and try again.",
 			 STAMP => $time_stamp, URL => $html_url});
   }
 }
