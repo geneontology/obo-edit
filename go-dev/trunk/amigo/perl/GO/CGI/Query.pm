@@ -6,6 +6,11 @@ package GO::CGI::Query
 
 package GO::CGI::Query;
 
+BEGIN { require "config.pl" if -f "config.pl" ; }
+use lib "$ENV{GO_DEV_ROOT}/go-perl";
+use lib "$ENV{GO_DEV_ROOT}/go-db-perl";
+use lib "$ENV{GO_DEV_ROOT}/amigo/perl";
+
 use strict;
 use Carp;
 use DBI;
@@ -21,6 +26,10 @@ use Time::HiRes qw(gettimeofday); # just for testing purposes
 use Data::Dumper;
 $Data::Dumper::Indent = 1;
 $Data::Dumper::Sortkeys = 1;
+
+## Some new stuff to try...
+use AmiGO;
+my $core = AmiGO->new();
 
 use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $VERSION);
 @ISA = ('Exporter');
@@ -62,171 +71,168 @@ our $verbose = get_environment_param('verbose');
 =cut
 
 sub get_gp_details {
-	my ($apph, $error, $constr, $option_h) = rearrange([qw(apph error constr option_h)], @_);
+  my ($apph, $error, $constr, $option_h) =
+    rearrange([qw(apph error constr option_h)], @_);
 
-	my $gps = $constr->{gpxref} || $constr->{id} || $constr->{seq_xref};
-	if (!ref($gps))
-	{	$gps = [$gps];
+  my $gps = $constr->{gpxref} || $constr->{id} || $constr->{seq_xref};
+  if (!ref($gps)){
+    $gps = [$gps];
+  }
+  # check for / remove dups and blank entries
+  my %hash;
+  foreach (@$gps){
+    $hash{$_} = 1 if defined $_;
+  }
+  if (!keys %hash){
+    $core->kvetch("GP list is empty");
+    $error = set_message($error, 'fatal', 'no_gp');
+    return { error => $error };
+  }
+  $gps = [ keys %hash ];
+
+  my $tmpl = $option_h->{tmpl};
+  if (!$tmpl){
+    # the default (as used by gp-details.cgi) is to have all the info
+    $tmpl =
+      {
+       synonyms => 1,
+       seq => 1,
+       spp => 1,
+       gptype => 1,
+      };
+  }
+
+  $core->kvetch("tmpl: ".Dumper($tmpl));
+  my $dbh = $apph->dbh;
+
+  my $tables = ["gene_product", "dbxref"];
+  my $where = ["gene_product.dbxref_id = dbxref.id"];
+
+  if ($constr->{gpxref}){
+    push @$where,
+      "(".join(" OR ", map {
+	if ($_ =~ /(.*?):(.*)/) {
+	  "(dbxref.xref_dbname = ".sql_quote($1).
+	    " AND dbxref.xref_key = ".sql_quote($2).")";
+	}else{
+	  "dbxref.xref_key = ".sql_quote($_);
 	}
-	#	check for / remove dups and blank entries
+      } @{$gps}). ")";
+  }elsif ($constr->{id}){
+    push @$where,
+      "gene_product.id IN (".join(",", map { sql_quote($_) }@{$gps} ). ")";
+  }elsif ($constr->{seqxref}){
+    push @$tables, 'gene_product_seq', 'seq', 'seq_dbxref', 'dbxref seqxref';
+    push @$where,
+      'gene_product.id=gene_product_seq.gene_product_id',
+	'gene_product_seq.seq_id=seq.id',
+	  'seq.id=seq_dbxref.seq_id',
+	    'seq_dbxref.dbxref_id=seqxref.id';
+    push @$where,
+      "(".join(" OR ", map {
+	if ($_ =~ /(.*?):(.*)/) {
+	  "(seqxref.xref_dbname = ".sql_quote($1).
+	    " AND seqxref.xref_key = ".sql_quote($2).")";
+	}else{
+	  "seqxref.xref_key = ".sql_quote($_);
+	}
+      } @{$gps}). ")";
+  }
+
+  if ($option_h->{use_filters} && keys %{$apph->filters}){
+    my $what_to_filter;
+    if ($option_h->{use_filters} eq 'gp'){
+      #	ignoring association filters for the time being
+      #	the filters that apply to GPs are speciesdb, type and taxid
+      $what_to_filter = ['gp'];
+    }
+    _set_filters($apph->filters, $dbh, $tables, $where, $what_to_filter);
+  }
+
+  my $sql = "SELECT DISTINCT gene_product.*, dbxref.xref_key AS acc, dbxref.xref_dbname AS speciesdb from " . join(", ", @$tables) . " WHERE " . join(" AND ", @$where);
+
+  if ($sql =~ /\(\)/){
+    $core->kvetch("Problem with the SQL!\n$sql");
+    $error = set_message($error, 'fatal', 'sql', $sql);
+    return { error => $error } ;
+  }
+
+  $core->kvetch("running sql: $sql");
+
+  my $sth = $dbh->prepare($sql);
+  $sth->execute();
+
+  my %gp_h;
+
+  while (my $d = $sth->fetchrow_hashref) {
+    # $core->kvetch("$d:\n".Dumper($d));
+    foreach my $n qw(full_name symbol){
+      #$d->{$n} = spell_greek($d->{$n});
+      encode_entities($d->{$n});
+    }
+    $d->{full_name} = $d->{symbol} if !$d->{full_name};
+    $gp_h{$d->{id}} = $apph->create_gene_product_obj($d);
+    $gp_h{$d->{id}}{species_id} = $d->{species_id};
+    $gp_h{$d->{id}}{type_id} = $d->{type_id} if $d->{type_id};
+  }
+
+  if (keys %gp_h) {
+    unless ($option_h->{ignore_errors}){
+      #	check we have all the GPs we were looking for
+      if (scalar (keys %gp_h) != scalar @$gps){
+	$core->kvetch("scalar gps = ".scalar @$gps."; scalar keys gp_h = ".scalar (keys %gp_h));
+	my $missing;
 	my %hash;
-	foreach (@$gps)
-	{	$hash{$_} = 1 if defined $_;
-	}
-	if (!keys %hash)
-	{	print STDERR "GP list is empty\n" if $verbose;
-		$error = set_message($error, 'fatal', 'no_gp');
-		return { error => $error };
-	}
-	$gps = [ keys %hash ];
-
-	
-	my $tmpl = $option_h->{tmpl};
-	if (!$tmpl)
-	{	#	the default (as used by gp-details.cgi) is to have all the info
-		$tmpl = {
-			synonyms => 1,
-			seq => 1,
-			spp => 1,
-			gptype => 1,
-		};
-	}
-	
-	print STDERR "tmpl: ".Dumper($tmpl) if $verbose;
-	my $dbh = $apph->dbh;
-
-	my $tables = ["gene_product", "dbxref"];
-	my $where = ["gene_product.dbxref_id = dbxref.id"];
-	
-	if ($constr->{gpxref})
-	{	push @$where, "(".join(" OR ", 
-			map {
-					if ($_ =~ /(.*?):(.*)/) {
-						"(dbxref.xref_dbname = ".sql_quote($1).
-						" AND dbxref.xref_key = ".sql_quote($2).")";
-					}
-					else {
-						"dbxref.xref_key = ".sql_quote($_);
-					}
-				} @{$gps}). ")";
-	}
-	elsif ($constr->{id})
-	{	push @$where, "gene_product.id IN (".join(",", map { sql_quote($_) }@{$gps} ). ")";
-	}
-	elsif ($constr->{seqxref})
-	{	push @$tables, 'gene_product_seq', 'seq', 'seq_dbxref', 'dbxref seqxref';
-		push @$where, 
-		'gene_product.id=gene_product_seq.gene_product_id',
-		'gene_product_seq.seq_id=seq.id',
-		'seq.id=seq_dbxref.seq_id',
-		'seq_dbxref.dbxref_id=seqxref.id';
-		push @$where, "(".join(" OR ", 
-			map {
-					if ($_ =~ /(.*?):(.*)/) {
-						"(seqxref.xref_dbname = ".sql_quote($1).
-						" AND seqxref.xref_key = ".sql_quote($2).")";
-					}
-					else {
-						"seqxref.xref_key = ".sql_quote($_);
-					}
-				} @{$gps}). ")";
+	if ($constr->{gpxref}) {
+	  map { $hash{ lc($_->xref->xref_dbname) . ":" . lc($_->xref->xref_key) } = 1 } values %gp_h;
+	}elsif ($constr->{id}) {
+	  %hash = %gp_h;
 	}
 
-	if ($option_h->{use_filters} && keys %{$apph->filters})
-	{	my $what_to_filter;
-		if ($option_h->{use_filters} eq 'gp')
-		{	#	ignoring association filters for the time being
-			#	the filters that apply to GPs are speciesdb, type and taxid
-			$what_to_filter = ['gp'];
-		}
-		_set_filters($apph->filters, $dbh, $tables, $where, $what_to_filter);
+	foreach (@$gps){
+	  #if (!grep { $xref eq $_->speciesdb.":".$_->acc } values %gp_h)
+	  if (!$hash{ lc($_) }){
+	    push @$missing, $_;
+	    $core->kvetch("Lost $_");
+	  }
 	}
+	$error = set_message($error, 'warning', 'gp_not_found', $missing);
+      }
+    }
 
-	my $sql = "SELECT DISTINCT gene_product.*, dbxref.xref_key AS acc, dbxref.xref_dbname AS speciesdb from " . join(", ", @$tables) . " WHERE " . join(" AND ", @$where);
+    $apph->_get_product_species([values %gp_h]) if $tmpl->{spp};
+    $apph->_get_product_types([values %gp_h]) if $tmpl->{gptype};
 
-	if ($sql =~ /\(\)/)
-	{	print STDERR "Problem with the SQL!\n$sql\n" if $verbose;
-		$error = set_message($error, 'fatal', 'sql', $sql);
-		return { error => $error } ;
-	}
+    if ($tmpl->{synonyms}) {
+      # get synonyms (spelt greek)
+      my $sl =
+	select_hashlist($dbh,
+			"gene_product_synonym",
+			"gene_product_id in (".join(", ", keys %gp_h).")");
+      foreach (@$sl) {
+	$gp_h{$_->{gene_product_id}}->add_synonym( encode_entities($_->{product_synonym}));
+      }
+    }
 
-	print STDERR "SQL: $sql\n" if $verbose;
-	
-	my $sth = $dbh->prepare($sql);
-	$sth->execute();
+    if (!$tmpl->{seq}){
+      if ($tmpl->{has_seq}){
+	# just see if it has a sequence, don't retrieve the seq
+	get_seqs_for_gps($apph, [values %gp_h], 'has_seq');
+      }
+    }else{
+      get_seqs_for_gps($apph, [values %gp_h] );
+    }
+    # return [values %gp_h];
+    return { error => $error, results => [values %gp_h ] };
+  }
 
-	my %gp_h;
-	
-	while (my $d = $sth->fetchrow_hashref) {
-	#	print STDERR "$d:\n".Dumper($d)."\n" if $verbose;
-		foreach my $n qw(full_name symbol)
-		{	#$d->{$n} = spell_greek($d->{$n});
-			encode_entities($d->{$n});
-		}
-		$d->{full_name} = $d->{symbol} if !$d->{full_name};
-		$gp_h{$d->{id}} = $apph->create_gene_product_obj($d);
-		$gp_h{$d->{id}}{species_id} = $d->{species_id};
-		$gp_h{$d->{id}}{type_id} = $d->{type_id} if $d->{type_id};
-	}
-
-	if (keys %gp_h) {
-		unless ($option_h->{ignore_errors})
-		{	#	check we have all the GPs we were looking for
-			if (scalar (keys %gp_h) != scalar @$gps)
-			{	print STDERR "scalar gps = ".scalar @$gps."; scalar keys gp_h = ".scalar (keys %gp_h)."\n" if $verbose;
-				my $missing;
-				my %hash;
-				if ($constr->{gpxref}) {
-					map { $hash{ lc($_->xref->xref_dbname) . ":" . lc($_->xref->xref_key) } = 1 } values %gp_h;
-				}
-				elsif ($constr->{id}) {
-					%hash = %gp_h;
-				}
-
-				foreach (@$gps)
-				{	#if (!grep { $xref eq $_->speciesdb.":".$_->acc } values %gp_h)
-					if (!$hash{ lc($_) })
-					{	push @$missing, $_;
-						print STDERR "Lost $_\n" if $verbose;
-					}
-				}
-				$error = set_message($error, 'warning', 'gp_not_found', $missing);
-			}
-		}
-		
-		$apph->_get_product_species([values %gp_h]) if $tmpl->{spp};
-		$apph->_get_product_types([values %gp_h]) if $tmpl->{gptype};
-
-		if ($tmpl->{synonyms}) {
-		# get synonyms (spelt greek)
-			my $sl =
-				select_hashlist($dbh,
-					"gene_product_synonym",
-					"gene_product_id in (".join(", ", keys %gp_h).")");
-	
-			foreach (@$sl) {
-				$gp_h{$_->{gene_product_id}}->add_synonym( encode_entities($_->{product_synonym}));
-			}
-		}
-
-		if (!$tmpl->{seq})
-		{	if ($tmpl->{has_seq})
-			{	#	just see if it has a sequence, don't retrieve the seq
-				get_seqs_for_gps($apph, [values %gp_h], 'has_seq');
-			}
-		}
-		else {
-			get_seqs_for_gps($apph, [values %gp_h] );
-		}
-#		return [values %gp_h];
-		return { error => $error, results => [values %gp_h ] };
-	}
-
-	$error = set_message($error, 'fatal', 'gp_not_found', $gps) if !$option_h->{ignore_errors};
-	print STDERR "No gps found! error: ".Dumper($error) if $verbose;
-#	$error = set_message($error, 'fatal', 'gp_not_found', $gps);
-	return { error => $error };
+  $error = set_message($error, 'fatal', 'gp_not_found', $gps)
+    if !$option_h->{ignore_errors};
+  $core->kvetch("No gps found! error: ".Dumper($error));
+  # $error = set_message($error, 'fatal', 'gp_not_found', $gps);
+  return { error => $error };
 }
+
 
 =head2 get_gp_assocs
 
