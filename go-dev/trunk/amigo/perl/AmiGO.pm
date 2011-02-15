@@ -35,6 +35,10 @@ use URI::Escape;
 use JSON::PP;
 use Data::UUID;
 
+## File type guessing games.
+use File::MMagic;
+use FileHandle;
+
 use FreezeThaw qw(freeze thaw);
 
 my $EXP_EVCODES = [
@@ -1729,6 +1733,36 @@ sub get_image_resource {
     $retval = $img_data->{$mangled_res};
   }else{
     ## TODO: sensible fall-through
+  }
+
+  return $retval;
+}
+
+
+=item vanilla_filehandle_p
+
+
+
+Return 1 or 0
+
+=cut
+sub vanilla_filehandle_p {
+
+  my $self = shift;
+  my $fh = shift || undef;
+  my $retval = 0;
+
+  if( $fh ){
+
+    ## File::MMagic permonks hack.
+    push @Fh::ISA, 'IO::Seekable' unless Fh->isa('IO::Seekable');
+    push @Fh::ISA, 'IO::Handle' unless Fh->isa('IO::Handle');
+    my $mt = File::MMagic->new->checktype_filehandle($fh);
+    $self->kvetch('mimetype: ' . $mt);
+
+    if( $mt =~ /text\/plain/ ){
+      $retval = 1;
+    }
   }
 
   return $retval;

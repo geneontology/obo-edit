@@ -8,7 +8,6 @@ package AmiGO::Aid;
 
 use base 'AmiGO';
 
-
 my $READABLE =
   {
    'biological_process' => 'Biological Process',
