@@ -206,7 +206,7 @@ sub id2phylotree{
     return $s->_index_display(keys %ids);
 }
 
-# Set this a list of phylotree ids and it will return a list of
+# Send this a list of phylotree ids and it will return a list of
 # objects suitable for mod_cluster_index
 sub _index_display{
     my $s = shift;
@@ -273,12 +273,14 @@ sub id2{
 	page => $page,
 	select =>
 	[
+	 #'phylotree_id',
 	 'xref_key',
 	 { count => 'DISTINCT gene_product_phylotree.gene_product_id', -as => 'members' },
 	 { max => 'association.assocdate',                             -as => 'last_anno' },
 	],
 	as =>
 	[
+	 #'phylotree_id',
 	 'xref_key',
 	 'members',
 	 'last_anno',
@@ -286,15 +288,24 @@ sub id2{
 	order_by => $order,
        });
 
-    return map {
+    my @out = map {
 	my %new = %$s;
+
+	#$new{id}                = $_->get_column('phylotree_id');
 	$new{key}               = $_->get_column('xref_key');
 	$new{number_of_members} = $_->get_column('members');
 	$new{last_annotated}    = $_->get_column('last_anno');
 	my $out = __PACKAGE__->new(%new);
-	$out->{dist} = $out->url(mode => 'dist', ref => 1, diameter => 50);
+
+	my @foo = $out->species_dist(1);
+	#warn join(' ', map { $_->{code} } @foo);
+	$out->{dist} = \@foo;
+
 	$out;
     } @$r;
+
+
+    return @out;
 }
 
 =item last_annotated()
@@ -472,9 +483,15 @@ sub species_dist{
 	order_by => \@gs,
        });
 
+
+    my @o                                         =
+      $ref                                        ?
+	AmiGO::Aid::PantherDB->reference_genome() :
+	    AmiGO::Aid::PantherDB->panther_all()  ;
+
     my %ncbi = map {
 	$_->ncbi_taxon_id() => $_;
-    } AmiGO::Aid::PantherDB->panther_all();
+    } @o;
 
     my @out = map {
 	my $ncbi = $_->get_column('ncbi');
@@ -507,6 +524,7 @@ sub species_dist{
 	    }
 	} @out;
 
+
 	# now we add missing items.
 	my @copy = qw/code common/;
 	@out = map {
@@ -530,21 +548,14 @@ sub species_dist{
 		}
 		\%o;
 	    }
-	} AmiGO::Aid::PantherDB->panther_all();
+	} @o;
     }
-
-    if ($ref) {
-	@out = map {
-	    $_->{color} ? ($_) : ();
-	} @out;
-    }
-
 
     return map {
-	$_->{display} = [ $_->{common} || $_->{code} || ($_->{genus}, $_->{species}) ];
-	$_;
+    	$_->{display} = [ $_->{common} || $_->{code} || ($_->{genus}, $_->{species}) ];
+    	$_;
     } @out;
-    return @out;
+    # return @out;
 }
 
 =item $p->paint_files

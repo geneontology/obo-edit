@@ -128,8 +128,6 @@ sub mode_cluster_index{
 	my $submit = lc($q->param('submit'));
 	if ($submit eq 'next') {
 	    $page++;
-
-
 	} elsif ($submit eq 'prev') {
 	    $page-- if ($page > 1);
 	} elsif ($submit eq 'home') {
@@ -214,7 +212,7 @@ sub mode_cluster{
 	    mode => 'display_tree',
 	    arg => {id => $pid},
 	 });
-      $c->{CORE}->kvetch("link: " . $viz_link);
+      $c->{CORE}->kvetch('link: ' . $viz_link);
       $c->set_template_parameter('viz_link', $viz_link);
       $c->set_template_parameter('viz_img', $c->{CORE}->get_image_resource('ptree'));
     }
