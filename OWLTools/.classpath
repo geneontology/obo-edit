@@ -11,7 +11,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="lib/runlibs/GraphDraw-20100831-1335.jar"/>
 	<classpathentry kind="lib" path="lib/runlibs/GraphDraw.jar"/>
-	<classpathentry kind="lib" path="runtime/commons-math-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/runlibs/mail.jar"/>
 	<classpathentry kind="lib" path="lib/runlibs/ant.jar"/>
 	<classpathentry kind="lib" path="lib/runlibs/pellet-core.jar"/>
@@ -21,5 +20,6 @@
 	<classpathentry kind="lib" path="lib/runlibs/pellet-rules.jar"/>
 	<classpathentry kind="lib" path="lib/runlibs/pellet-datatypes.jar"/>
 	<classpathentry kind="lib" path="lib/runlibs/pellet-el.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/commons-math-2.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

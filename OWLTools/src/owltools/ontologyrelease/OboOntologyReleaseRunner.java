@@ -58,8 +58,12 @@ public class OboOntologyReleaseRunner {
 		int i=0;
 		while (i < args.length) {
 			String opt = args[i];
-			System.out.println("processing arg: "+opt);
 			i++;
+
+			if(opt.trim().length()==0)
+				continue;
+			
+			System.out.println("processing arg: "+opt);
 			if (opt.equals("-h") || opt.equals("--help")) {
 				usage();
 				System.exit(0);
@@ -77,8 +81,7 @@ public class OboOntologyReleaseRunner {
 				i++;
 			}
 			else if (opt.equals("--asserted")) {
-				asserted="true".equals(args[i]);
-				i++;
+				asserted= true;
 			}
 
 			else {
