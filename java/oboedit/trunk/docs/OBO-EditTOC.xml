@@ -155,8 +155,6 @@
 			target="The_OBO_Edit_Reasoner" />
 		<tocitem text="The Reasoner and the Interface"
 			target="The_Reasoner_and_the_Interface" />
-		<tocitem text="The Reasoner Manager"
-			target="The_Reasoner_Manager" />
 		<tocitem text="Showing Explanations"
 			target="The_Explanation_Plugin" />
 		<tocitem text="Reasoner Prefilters"
