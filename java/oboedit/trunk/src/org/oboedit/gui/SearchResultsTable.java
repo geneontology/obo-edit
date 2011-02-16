@@ -20,6 +20,7 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.LinkedObject;
 import org.obo.query.impl.SearchHit;
 import org.oboedit.controller.SelectionManager;
+import org.oboedit.gui.Preferences;
 
 import org.apache.log4j.*;
 
@@ -30,8 +31,10 @@ public class SearchResultsTable extends JTable {
 
 	protected SearchResultsTableModel<?> searchModel;
 	protected long maximumFormattingTime = 1000;
-	/** Light blue color. */
-	public static final Color LIGHT_BLUE = new Color(210,220,240);
+        public static final Color LIGHT_BLUE = new Color(210,220,240);  // Color for light blue alternate rows in search results table
+//        public static final Color SELECTED_COLOR = Color.orange;  // Highlight color used when user selects a search result
+//        public static final Color SELECTED_COLOR = new Color(160,170,255);
+        public static final Color SELECTED_COLOR = Preferences.getPreferences().getSelectionColor();
 
 	protected static class SearchResultsRenderer extends
 	DefaultTableCellRenderer {
@@ -63,7 +66,7 @@ public class SearchResultsTable extends JTable {
 				//alternate blue and white row colors 
 				//			if (row % 2 == 0 && !isSelected) {
 				if (isSelected) {
-					c.setBackground(Color.blue);
+					c.setBackground(SELECTED_COLOR);
 					c.setForeground(Color.black);
 				} 
 				else if(row %2 ==0){
