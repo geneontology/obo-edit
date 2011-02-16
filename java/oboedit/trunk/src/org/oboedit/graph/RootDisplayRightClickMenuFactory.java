@@ -89,8 +89,8 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 						selection = provider.getSelectionProvider().getSelection();
 					if (selection == null)
 						selection = SelectionManager.createEmptySelection(null);
-					logger.debug("selection: " + selection);
-					logger.debug("Showing " + provider.getLabel() + " in Graph Editor"); 
+//					logger.debug("selection: " + selection);
+//					logger.debug("Showing " + provider.getLabel() + " in Graph Editor"); 
 					final Collection<? extends LinkedObject> shown = provider.getShown(selection);
 					if (shown != null)
 						visibles.addAll(shown);
