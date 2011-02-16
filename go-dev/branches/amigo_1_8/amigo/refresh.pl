@@ -14,10 +14,10 @@
 ####
 
 BEGIN { require "config.pl"; }
-use lib $ENV{GO_DEV_ROOT} . '/go-perl';
-use lib $ENV{GO_DEV_ROOT} . '/go-db-perl';
-use lib $ENV{GO_DEV_ROOT} . '/amigo/perl';
-use lib $ENV{GOBO_ROOT};
+use lib $ENV{GO_ROOT} . '/go-perl';
+use lib $ENV{GO_ROOT} . '/go-db-perl';
+use lib $ENV{GO_ROOT} . '/amigo/perl';
+use lib $ENV{GO_SVN_ROOT} . '/gobo-dbic';
 
 ## Bring in necessaries.
 use utf8;
@@ -34,7 +34,6 @@ use File::Find;
 use File::stat;
 #use Time::Local;
 use Time::localtime;
-use File::Temp qw(tempfile);
 
 #BEGIN { plan tests => 0; }
 
@@ -45,12 +44,11 @@ use vars qw(
 	     $opt_s
 	     $opt_g
 	     $opt_p
-	     $opt_q
 	     $opt_l
 	  );
 
 ## Setup.
-getopts('hrcsgpql');
+getopts('hrcsgpl');
 my $core = AmiGO->new();
 my @errors = ();
 
@@ -61,7 +59,6 @@ if( $opt_h ){
 }
 
 ## Take care of arguments.
-my $be_chatty = 1;
 my $do_remove = 0;
 my $do_cache = 0;
 my $do_summary = 0;
@@ -73,7 +70,6 @@ if ( $opt_c ){ $do_cache = 1; }
 if ( $opt_s ){ $do_summary = 1; }
 if ( $opt_g ){ $do_svg = 1; }
 if ( $opt_p ){ $do_png = 1; }
-if ( $opt_q ){ $be_chatty = 0; }
 if ( $opt_l ){ $do_lucene = 1; }
 
 ## Nothing at all? Then do everything.
@@ -100,7 +96,7 @@ if ( ! $opt_r &&
 
 if( $do_remove ){
 
-  ll("Starting general cleaning, please wait...") if $be_chatty;
+  ll("Starting general cleaning, please wait...");
 
 
   ## Function to decide if the file or diectory has reached its
@@ -303,7 +299,7 @@ if( $do_lucene ){
   $core->kvetch("Making lucene indexes, please wait...");
 
   ## Add new indexes; no args needed--from here, luigi knows where to go.
-  my @args = ("perl", $core->amigo_env('GO_DEV_ROOT') . "/amigo/scripts/luigi");
+  my @args = ("perl", $core->amigo_env('GO_ROOT') . "/amigo/scripts/luigi");
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
 
@@ -336,14 +332,9 @@ if( $do_lucene ){
 ## no_plan returns an error on some systems), we'll leave with a
 ## trivial test. Although, we could use this opportunity to drop some
 ## tests in here at some point...
-## Make this testing quiet.
-if( ! $be_chatty ){
-  my($tmp_fh, $tmp_fn) = tempfile();
-  Test::More->builder->output($tmp_fn);
-}
-ll("Starting testing...");
-ok( 1 == 1 );
 ll("Exit testing...");
+ok( 1 == 1 );
+
 
 ###
 ### Subs.
@@ -352,7 +343,7 @@ ll("Exit testing...");
   ## Species.
 sub make_spec {
   my @args = ("perl",
-	      $core->amigo_env('GO_DEV_ROOT')."/amigo/scripts/make_spec_key.pl",
+	      $core->amigo_env('GO_ROOT') . "/amigo/scripts/make_spec_key.pl",
 	      $core->amigo_env('CGI_ROOT_DIR'), "50");
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
@@ -363,7 +354,7 @@ sub make_spec {
 ## Misc.
 sub make_misc {
   my @args = ("perl",
-	      $core->amigo_env('GO_DEV_ROOT')."/amigo/scripts/make_misc_key.pl",
+	      $core->amigo_env('GO_ROOT') . "/amigo/scripts/make_misc_key.pl",
 	      $core->amigo_env('CGI_ROOT_DIR'));
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
@@ -374,7 +365,7 @@ sub make_misc {
 ## Places for the new speed caches and clean out the old ones.
 sub reinit_caches {
   my @args = ("perl",
-	      $core->amigo_env('GO_DEV_ROOT')."/amigo/scripts/reinit_caches.pl");
+	      $core->amigo_env('GO_ROOT') . "/amigo/scripts/reinit_caches.pl");
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
   ll("Finished removing/initing(?) runtime caches.");
@@ -385,7 +376,7 @@ sub reinit_caches {
 ## NameMunger).
 sub make_dblinks {
   my @args = ("perl",
-	      $core->amigo_env('GO_DEV_ROOT')."/amigo/scripts/make_dblinks.pl",
+	      $core->amigo_env('GO_ROOT') . "/amigo/scripts/make_dblinks.pl",
 	      '-f', $core->amigo_env('CGI_ROOT_DIR'));
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
@@ -395,10 +386,10 @@ sub make_dblinks {
 
 ## Generated JS meta-data.
 sub make_go_meta_js {
-  my @args =
-    ("perl",
-     $core->amigo_env('GO_DEV_ROOT') . "/amigo/scripts/make_go_meta_js.pl",
-     $core->amigo_env('AMIGO_HTDOCS_ROOT_DIR').'/js/org/bbop/amigo/go_meta.js');
+  my @args = ("perl",
+	      $core->amigo_env('GO_ROOT') . "/amigo/scripts/make_go_meta_js.pl",
+	      $core->amigo_env('AMIGO_HTDOCS_ROOT_DIR') .
+	      '/js/org/bbop/amigo/go_meta.js');
   $core->kvetch("System: \"@args\"");
   system(@args) == 0 || die "System \"@args\" failed: $?";
   ll("Finished making go_meta JS file.");
@@ -408,7 +399,7 @@ sub make_go_meta_js {
 ## Just a little printin' when feeling verbose.
 sub ll {
   my $str = shift || '';
-  print $str . "\n" if $be_chatty;
+  print $str . "\n";
   $core->kvetch($str);
 }
 
