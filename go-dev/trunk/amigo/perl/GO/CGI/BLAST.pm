@@ -113,23 +113,42 @@ sub set_off_blast {
 
   # OK, let's get going on the query now!
   if( $inputs->{seq_id} || $inputs->{uniprot_id} ){
-    my $gps;
-    my $id = $inputs->{seq_id}; # this is from an AmiGO BLAST link
-    if( ! $id ){ # make an id from input if no incoming seq id
-      $id = $inputs->{uniprot_id};
+
+    # this is from an AmiGO BLAST link
+    my $in_id = $inputs->{seq_id} || undef;
+    my $result_h = undef;
+    ## Get id from incoming seq id, else make ids from input if no
+    ## incoming seq id.
+    if( $in_id ){
+      $core->kvetch("Work from (seq) id: " . $in_id);
+      $result_h = get_gp_details($apph, $error, { gpxref => $in_id },
+				 { tmpl => { seq => 1 } });
+    }else{
+
+      ## Construct different possible IDs.
+      my $id = $inputs->{uniprot_id};
       $id =~ s/^.*[\|:]//; # ...remove eveything and including before ':'?
-      $id = "UniProt:" . $id;
+      my $upkb_id = "UniProtKB:" . $id;
+      my $up_id = "UniProt:" . $id;
+
+      ## Try KB, if fail, try non-KB.
+      $core->kvetch("Work from (KB) id: " . $upkb_id);
+      $result_h = get_gp_details($apph, $error, { gpxref => $upkb_id },
+				 { tmpl => { seq => 1 } });
+      if( ! $result_h->{results} ){
+	$core->kvetch("Work from (non-KB) id: " . $up_id);
+	$result_h = get_gp_details($apph, $error, { gpxref => $up_id },
+				   { tmpl => { seq => 1 } });
+      }
     }
-    $core->kvetch("Work from id: " . $id);
-    my $result_h = get_gp_details($apph, $error, { gpxref => $id },
-				  { tmpl => { seq => 1 } });
+
     # no GPs found...
     if( ! $result_h->{results} ){
-      $core->kvetch("No gps found...");
+      $core->kvetch("No gps found...anywhere...");
       return { error => $result_h->{error} };
     }
     $error = $result_h->{error};
-    $gps = $result_h->{results};
+    my $gps = $result_h->{results};
 
     if ($gps->[0]->to_fasta){
       $input_seqs =
