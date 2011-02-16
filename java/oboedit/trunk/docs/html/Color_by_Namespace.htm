@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+<title></title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>Color-coding Multiple Ontologies in the Graph Editor</h1>
+<p>Editing an ontology can become confusing when terms from
+other ontologies are referenced. Term names may be similar between ontologies, which can lead to
+inadvertent associations, and 
+it can difficult to distinguish in a graph which term is associated with which ontology. Fortunately, it is possible to use the Term renderers configuration panel
+to color-code the different ontologies in the Graph Editor. The following steps describe how to do this.</p>
+<ol>
+<li> Load an ontology that contains terms from multiple ontologies.</li>
+<li> On the Graph Editor panel, click the wrench icon in the titlebar to open
+the Configure panel.</li>
+<li> Scroll through the tabs with the right arrow button to get to the Term renderers tab.</li>
+<li> Click the + button at the bottom of the panel to create a
+new renderer.</li>
+<li> A filter pops up that looks very similar to the search
+filter.  You might have to expand or maximize the panel to see all the fields.  You may also need to drag the central vertical line to the right to see all the term renderer fields on the left.</li>
+<li> Set the filter to select
+terms that have a namespace that equals the value [insert namespace of
+an ontology].</li>
+<li> Choose "Background Color" on the right side of the panel.</li>
+Your panel should now look like this:
+<P><IMG hspace=0 src="../images/color-by-namespace-term-renderer.png" border=0></P><br />
+<li> Click "Change". A color chooser pops up.  Choose the desired color for this namespace and click the "OK" button.  The color chooser will go away.</li>
+<li> To add another renderer to color-code another ontology, click the + button at the BOTTOM of the panel--the one next to the minus button, NOT the one that's to the left of the checkbox for "Indicate if selected term matches filter".
+<P><IMG hspace=0 src="../images/color-by-namespace-second-term-renderer.png" border=0></P><br />
+<li> When you are done adding a color renderer for each namespace, click the 
+check icon on the right side of the panel's menubar.</li>
+<li> You may need to close the nodes in the Graph Editor (use the right-mouse menu option to Hide all nodes) and reopen them to see the colors.</li>
+</ol>
+<p>
+Here is an example of the Graph Editor showing part of the Gene Ontology colored by namespace (pink for biological_process, green for molecular_function, and blue for cellular_component).</p>
+<P><IMG hspace=0 src="../images/colored-by-namespace.png" border=0></P>
+<p>There are a few things to
+note. OBO-Edit automatically
+assigns the default namespace to ontology terms MIREOTed when they lack an
+assigned namespace. An ontology
+engineer may have to manually assign a new namespace to these terms.  An ontology engineer should also be
+careful when assigning colors to namespaces. Ontology engineers are
+encouraged to consult online resources in choosing color schemes that are
+easily distinguishable and reproduce well both in print and on a computer
+screen.   If done properly, publication-quality figures can be generated with
+OBO-Edit.</p>
+<p>Renderers are set up per component, so if you want to color terms by namespace in the Ontology Tree Editor as well as the Graph Editor, you will need to set up a renderer in the Ontology Tree Editor as well (in the same fashion as described above).  Also note that you can set up term renderers in the Graph Editor but not in the Graph Viewer.
+</body>
+</html>
