@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
-<title>The Reasoner Plugin</title>
+<title>The Reasoner Manager</title>
 <link rel="stylesheet" type="text/css" href="../javahelp.css">
 </head>
 <body bgcolor="#ffffff">
@@ -10,27 +10,26 @@
 <p>The reasoner is activated and deactivated via the 
 Reasoner Manager.
 You can turn on the reasoner in OBO-Edit by showing the Reasoner Manager ([Reasoner] -> [Reasoner Manager]) and selecting a reasoner from the
-pulldown list.  (Once you make your choice, you can get rid of the Reasoner Manager panel
-and the reasoner selection will stay as you left it.)
-<p>OBO-Edit offers a choice of reasoners.  The current options are
-  ForwardChainingReasoner and LinkPileReasoner.  ForwardChainingReasoner,
-  which was the default reasoner in OBO-Edit before March 2008, is faster but
-  not as complete, and will be phased out.
-LinkPileReasoner is currently
-  very slow, but more complete.
-</P><P>
+pulldown list.  Once you make your choice, you can get rid of the Reasoner Manager panel
+and the reasoner selection will stay as you left it. However, because the
+reasoner uses so much memory, it is generally a good idea to turn it on only
+when you really need it, and turn it off when you're done.  Be sure to save your work
+<b>before</b> you turn on the reasoner, in case OBO-Edit runs out of memory
+and dies.
+<P>
 <div class="sidebar">
 <h1>Wait... Did I Leave the Reasoner On?</h1>
 <hr>
 
-<p>     Like most components, the Reasoner Manager remembers its state when OBO-Edit is exited. This 
+<p>Like most OBO-Edit components, the Reasoner Manager remembers its state when OBO-Edit is exited. This 
 means that if the reasoner is on when you exit OBO-Edit, 
-it will be on the next time you start OBO-Edit.  The entire application runs more slowly when the reasoner is running, so 
-enable it with caution.</p><p>
-When one of the reasoners is turned on, the titlebar of the OBO-Edit window says
-  "(REASONER ON)" as a visual reminder.  The reasoner causes some
-operations in OBO-Edit to take longer, so you may want to turn it off if you
-don't need it.</p>
+it will be on the next time you start OBO-Edit.  The entire application runs
+  more slowly when the reasoner is running, so usually it makes sense to turn
+  off the reasoner before you exit OBO-Edit (you can always turn it back on
+  next time if you need it).
+  </p><p>
+When the reasoner is turned on, the titlebar of the OBO-Edit window says
+  "(REASONER ON)" as a visual reminder.</p>
 </div>
 </body>
 </html>

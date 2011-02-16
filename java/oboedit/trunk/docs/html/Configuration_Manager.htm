@@ -24,34 +24,9 @@ is "User Settings".</p>
   <li><strong>Configuration directory</strong> - 
   Displays the path to the OS-appropriate directory that contains your personal OBO-Edit 
   configuration info. This field is not editable; it is for
-  informational purposes only.  You can mouse-select it and copy it to your
-  clipboard to copy elsewhere, if you want.
-<ul><li>
-  <b>Note for Mac users</b>:  your configuration directory will be in
-  ~/Library/Application Support/, e.g., /users/nomi/Library/Application Support/.
-  Because that directory name has a space in it, if you are trying to use it in a shell
-  command (e.g., cd), you will need
-  to put quotes around that path:
-  <code>cd "/users/nomi/Library/Application Support"</code>.
-</li>
-<li><b>Note for Windows XP users</b>:  your configuration directory will be in
-Application Data\OBO-Edit-beta in your home directory.  By default, Windows
-      hides this directory from you.  If you are looking at your Windows
-      directories in Explorer (the usual Windows directory browser), you can
-      get it to show the hidden directories by choosing "Folder Options" from
-      the Tools menu, and selecting the "View" tab.  Under "Advanced
-      settings", select the "Show hidden files and folders" radio button.<br>You
-      can also get to your configuration directory via the Windows command
-      interface by copying and pasting it from the Configuration Manager, and
-      putting quotes around the path because of the spaces in it.
-</li>
-<li><b>Note for Unix users</b>: your configuration directory will be in
-  ~/.oboeditbeta.  If you do "ls ~", you won't see it because file or
-  directory names that start with "."  are
-  hidden by default.  Use "ls -a" if you want to see it in the directory listing.
-</li>
-</ul>    
-  <li><strong>Log file</strong> - The text output from OBO-Edit is saved in
+  informational purposes only.  You can mouse-select the directory path and copy it to your
+  clipboard to paste elsewhere, if you want.
+<li><strong>Log file</strong> - The text output from OBO-Edit is saved in
   this file in your configuration directory.  It can be useful for debugging.
   This field is not editable, but can be copied and pasted elsewhere.</li>
   <li><strong>OBO-Edit memory allocation</strong> (requires restart) - 
@@ -60,9 +35,12 @@ Application Data\OBO-Edit-beta in your home directory.  By default, Windows
   letter M, indicating the number of megabytes of memory that should be 
   allocated. A high value will make OBO-Edit less likely to run out of memory and 
   crash, but will also lessen the amount of memory available to 
-  other programs and may cause OBO-Edit to run slower on some platforms. 
+  other programs and may cause OBO-Edit to run slower on some platforms. On
+  most computers, Java limits the maximum memory allocation to 1860M, so you
+  should generally choose a value lower than that.
   </li>
-  <li><strong>User name</strong> - The user name OBO-Edit should use. This 
+  <li><strong>User name</strong> - The user name OBO-Edit should use when
+  saving your edits. This 
   information is used in the "saved-by" header field when using the <A 
   href="The_OBO_Adapter.htm">OBO adapter</a>.</li>
 </ul>
@@ -88,7 +66,9 @@ relationship type from the list. The icon association editor will appear:</p>
 </p><p><IMG hspace=0 src="../images/config_icons_and_colors.png" border=0></p>
 <p>To pick an image file from the local disk, press the "Browse 
 files" button. To use one of OBO-Edit's built-in icons, press the "Browse 
-built-in icons" button.  The "Icon URL" box will get filled in automatically.</p>
+built-in icons" button.  (Note: it takes a few seconds for OBO-Edit to find
+  and display all the built-in icons.) The "Icon URL" box will get filled in automatically
+  when you choose one of the icons.</p>
 <p>To delete a relationship type icon association, left-click the association 
 and press the "Del" button.</p>
 <p>To add a new relationship type icon association, press the "Add" button. A 
@@ -108,7 +88,7 @@ The new id for <strong>is_a</strong> is <strong>OBO_REL:is_a</strong>.</p>
 </div>
 
 <h3>Changing link color</h3>
-<p>Below the "Browse" buttons is the text "Link color", and the name of the color (e.g. "blue").
+<p>Below the "Browse" buttons is the text "Link color" and the name of the color (e.g., "blue").
 Click on the color name to pop up a color chooser and select a new color for links
 of that particular relationship type.
 As when you select a new icon, the OBO-Edit
@@ -117,8 +97,8 @@ something that changes the display (e.g., click open a node).</p>
 
 <h2>Autosave</h2>
 <ul>
-  <li><strong>Enable autosave</strong> - If this box is checked, autosave will 
-  be enabled. The ontology will be saved periodically in the autosave file
+  <li><strong>Enable autosave</strong> - If this box is checked, OBO-Edit will
+  automatically save backup copies of your work. Your edited ontology will be saved periodically in the autosave file
   path (see next item).  The default is for autosave
   to be enabled; you can turn this off if you prefer.
   <li><strong>Autosave file path</strong> -&nbsp;This&nbsp;field specifies&nbsp;a directory where autosave 
@@ -127,17 +107,24 @@ something that changes the display (e.g., click open a node).</p>
   <li><strong>Autosave files expire in </strong>- The number of days old an 
   autosave file must be before it is automatically deleted.</li>
 </ul>
-<h2><a name="textedit"></a>Text Editing</h2>
 
 <h2>Behavior</h2>
 <ul>
+  <li><strong>Exclude obsolete terms from autocomplete lists</strong> - When
+  you start typing in a search or filter box, a dropdown list of term names
+  appears, including terms (or relations) that include the text you've typed
+  so far.  By default, this list includes terms that have been marked as
+  obsolete.  If you prefer to exclude obsolete terms, check this checkbox.
+  The downside is that the autocomplete lists will take slightly longer to
+  appear (because OBO-Edit has to do extra work, checking each term to see
+  whether it's obsolete or not). </li>
   <li><strong>Case sensitive term sorting</strong> - If this box is checked, the case of a term name will be 
   taken into account when sorting terms. Lower case letters will appear before 
-  upper case letters. 
+  upper case letters. </li>
   <li><strong>Show terms ids as tool tips in term panels</strong> - If this box 
   is checked, the id of a term will appear if the mouse hovers over a term in 
   the <A href="The_Term_Editor_Panel.htm">ontology editor panel</a>. Enabling this feature will make OBO-Edit run slightly slower 
-  on older machines. 
+  on older machines. </li> 
   <li><strong>Allow new cycles to be created</strong> - If this box is checked, OBO-Edit will allow cycles to be 
   created. If it is not checked, OBO-Edit will refuse to allow new cycles to be 
   made. Only enable this option if an ontology requires cycles. Most do not. See 
@@ -161,9 +148,9 @@ something that changes the display (e.g., click open a node).</p>
   <li><strong>Confirm on exit</strong>- If this 
   box is checked, OBO-Edit will ask for confirmation before exiting.</li></ul>
 </ul>
-
+<h2><a name="textedit"></a>Text Editing</h2>
 <ul>
-  <li><strong>Auto commit text edits</strong> - If this box 
+  <li><strong>Autocommit text edits</strong> - If this box 
   is checked, OBO-Edit commits text edits as soon as a new term is selected or 
   the ontology is saved. The user does not have to explicitly commit text edits 
   by pressing a "commit" button.

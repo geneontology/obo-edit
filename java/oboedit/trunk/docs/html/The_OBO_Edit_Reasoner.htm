@@ -21,7 +21,14 @@ Interface</A> for instructions on how to turn the reasoner on (or off) and how i
 non-redundant ontology encodes a lot of implicit information, so the reasoner 
 can use a lot of memory as it makes this implicit information explicit. See <A 
 href="Configuration_Manager.htm">The Configuration Manager</A> for information 
-about how to increase the memory available to OBO-Edit.</P>
+about how to increase the memory available to OBO-Edit.
+</P><p>Even with the maximum allowable memory setting (currently, 1860M),
+using the reasoner on large ontologies may cause OBO-Edit to use up all of the
+memory.  It's generally best to use the reasoner only when you specifically
+need to, and to turn it off otherwise. Also, be sure to save your work
+<b>before</b> you turn on the reasoner, in case OBO-Edit runs out of memory
+and dies.
+</P>
 <H2>Reasoner Rules</H2>
 <P>This section documents all the rules OBO-Edit uses for 
 reasoning. Realize that all these rules interact. If an implied link is 
