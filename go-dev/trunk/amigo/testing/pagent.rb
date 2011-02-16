@@ -22,8 +22,8 @@ class PAgent
 
   def initialize (init)
 
-    @agent = WWW::Mechanize.new
-    @agent.user_agent= "AmiGO Inspector 0.01 (from ruby WWW-Mechanize/0.9.3)"
+    @agent = Mechanize.new
+    @agent.user_agent= "AmiGO Inspector 0.01 (from ruby Mechanize/1.0.0)"
     @agent.read_timeout= 600 # is that right? 10min?
 
     @okay = true
@@ -31,14 +31,14 @@ class PAgent
     @data_path = nil
 
     ## Init @core.
-    if init.class.eql?(WWW::Mechanize::Page)
+    if init.class.eql?(Mechanize::Page)
       @core = init
-    elsif init.class.eql?(WWW::Mechanize::File)
+    elsif init.class.eql?(Mechanize::File)
       @core = init
     elsif init.class.eql?(String)
       begin
         @core = @agent.get(init)
-      rescue WWW::Mechanize::ResponseCodeError => bad_resp
+      rescue Mechanize::ResponseCodeError => bad_resp
         puts "bad response on init, but continuing with code: #{bad_resp.response_code}"
         @core = bad_resp.page
         @okay = false
@@ -326,9 +326,9 @@ class PAgent::HTML < PAgent
 
     ## Choose the return value.
     if ! thing.nil?
-      if thing.class.eql?(WWW::Mechanize::Page)
+      if thing.class.eql?(Mechanize::Page)
         PAgent::HTML.new(thing)
-      elsif thing.class.eql?(WWW::Mechanize::File)
+      elsif thing.class.eql?(Mechanize::File)
         PAgent::Graphic.new(thing)
       else
         raise "thing is an unknown creature"
@@ -344,7 +344,7 @@ class PAgent::HTML < PAgent
     new_thing = nil
     begin
       new_thing = @agent.submit(form)
-    rescue WWW::Mechanize::ResponseCodeError => bad_resp
+    rescue Mechanize::ResponseCodeError => bad_resp
       puts "bad response on submit, but continuing with code: #{bad_resp.response_code}"
       new_thing = bad_resp.page
     rescue SocketError
@@ -362,7 +362,7 @@ class PAgent::HTML < PAgent
     new_thing = nil
     begin
       new_thing = classed_link.click
-    rescue WWW::Mechanize::ResponseCodeError
+    rescue Mechanize::ResponseCodeError
       puts "bad response on click"
     rescue SocketError
       puts "bad getaddrinfo on click"
