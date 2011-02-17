@@ -1,5 +1,6 @@
 package org.oboedit.gui;
 
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -266,6 +267,10 @@ public class TermFilterEditor extends JPanel {
 //		model.clear();  // Need?
 		valueField.setAllowNonModelValues(true);
 		valueField.setMinLength(1);
+                // Color used to highlight selected item in dropdown autocomplete list
+                // will be the same as the one used to highlight selected search result
+                // (and selected term in OTE).
+                valueField.setSelectionBackground(Preferences.getPreferences().getSelectionColor());
 
 		criterionBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -349,7 +354,7 @@ public class TermFilterEditor extends JPanel {
 	}
 
 	public Filter<IdentifiedObject> getFilter() {
-		ObjectFilter out = new ObjectFilterImpl();
+          ObjectFilter out = new ObjectFilterImpl(Preferences.getPreferences().getExcludeObsoletesFromSearches());
 		out.setCriterion((SearchCriterion) criterionBox.getSelectedItem());
 		// out.setValue(valueField.getValue());
 		// Trim whitespace at beginning/end of search string before doing search,
