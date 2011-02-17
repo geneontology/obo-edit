@@ -157,6 +157,7 @@ AbstractSingleActionTask {
 		GUIManager.setPrefsDir(getPrefsDir());
 		PluginManager.getManager().setPluginDirs(getPluginDirs());
 		configureLogging();
+                // This next step is very slow if there are any plugins to install.
 		installPlugins();
 		configureUI();
 		configureSystem();
@@ -169,6 +170,7 @@ AbstractSingleActionTask {
 		installMenus();
 		installDefaultToolBars();
 		doOtherInstallations();
+                // Note: next step is slow--see if we can speed it up somehow.
 		ComponentManager.getManager().setDriver(createLayoutDriver());
 
 		showFrame();
