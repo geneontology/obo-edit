@@ -72,6 +72,7 @@
 			<tocitem text="Filtering" target="Filtering" />
 			<tocitem text="Rendering" target="Rendering" >
 			<tocitem text="HTML Rendering" target="HTML_Rendering" />
+			<tocitem text="Coloring terms by namespace" target="Color_by_Namespace" />
 		</tocitem>
 			<tocitem text="Global Filters &amp; Renderers"
 				target="Global_Filters___Renderers" />
