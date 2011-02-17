@@ -41,8 +41,12 @@ public class CardinalityCheckRule extends AbstractAnnotatioRule {
 		
 		checkCardinality(bioentity.getTypeCls(), "Column 12: DB Object Type", set, a, 1,1);
 		
+		checkCardinality(a.getAssignedBy(), "Column 15: DB Object Type", set, a, 1,1);
 		
+		checkCardinality(a.getAssignedBy(), "Column 16: DB Object Type", set, a, 0,3);
 		
+		checkCardinality(a.getAssignedBy(), "Column 17: DB Object Type", set, a, 0,3);
+
 		return set;
 	
 	}
@@ -60,7 +64,11 @@ public class CardinalityCheckRule extends AbstractAnnotatioRule {
 	
 	private void checkCardinality(String value, String columnName, HashSet<AnnotationRuleViolation> set, GeneAnnotation a, int min, int max){
 
-		if(value.length() != value.trim().length()){
+		if(min>0 && value.length() != value.trim().length()){
+			set.add(new AnnotationRuleViolation("Spaces are not allowed in the " + columnName+ " column", a));
+		}
+
+		if(min==0 && value != null && value.length() != value.trim().length()){
 			set.add(new AnnotationRuleViolation("Spaces are not allowed in the " + columnName+ " column", a));
 		}
 		
