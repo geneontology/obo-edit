@@ -274,6 +274,7 @@ public class PluginManager {
 			LinkedList<URL> urlList = new LinkedList<URL>();
 			for (URL embedded : embeddedJars.get(url)) {
 				try {
+                                  // !! This is very expensive.  Is there a better wayt o do this?
 					File temp = File.createTempFile("templib", ".jar");
 					temp.deleteOnExit();
 					IOUtil.dumpAndClose(embedded.openStream(),
