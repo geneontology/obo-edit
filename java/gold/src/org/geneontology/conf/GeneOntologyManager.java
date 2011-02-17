@@ -256,6 +256,9 @@ public class GeneOntologyManager {
 		return config.getList("geneontology.gold.gaflocation");	
 	}
 	
-	
+	public String getGoXrfAbbsLocation(){
+		return guessAbsolutePath(config
+				.getString("geneontology.gold.gaf.xrfabbslocation"));
+	}
 	
 }

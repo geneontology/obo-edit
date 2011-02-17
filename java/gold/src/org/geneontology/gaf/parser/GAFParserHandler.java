@@ -7,6 +7,8 @@ public interface GAFParserHandler {
 
 	public void startDocument(File gafFile);
 	
+	public void setVersion(double version);
+	
 	public void endDocument();
 	
 	public void handleColumns(String []cols);
