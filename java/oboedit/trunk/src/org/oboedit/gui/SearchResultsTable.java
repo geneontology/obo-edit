@@ -31,7 +31,8 @@ public class SearchResultsTable extends JTable {
 
 	protected SearchResultsTableModel<?> searchModel;
 	protected long maximumFormattingTime = 1000;
-        public static final Color LIGHT_BLUE = new Color(210,220,240);  // Color for light blue alternate rows in search results table
+//        public static final Color LIGHT_BLUE = new Color(210,220,240);  // Color for light blue alternate rows in search results table
+        public static final Color LIGHT_BLUE = new Color(230,235,250);  // Color for light blue alternate rows in search results table
 //        public static final Color SELECTED_COLOR = Color.orange;  // Highlight color used when user selects a search result
 //        public static final Color SELECTED_COLOR = new Color(160,170,255);
         public static final Color SELECTED_COLOR = Preferences.getPreferences().getSelectionColor();
