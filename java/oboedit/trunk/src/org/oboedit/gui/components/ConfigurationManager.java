@@ -10,6 +10,7 @@ import org.bbop.io.FileUtil;
 import org.bbop.io.IOUtil;
 import org.bbop.swing.*;
 import org.obo.datamodel.*;
+import org.oboedit.controller.FilterManager;
 import org.oboedit.gui.*;
 import org.oboedit.gui.event.ReconfigEvent;
 import org.oboedit.gui.widget.DbxrefListEditor;
@@ -83,6 +84,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 	JCheckBox caseSensitiveSortBox;
 
 	JCheckBox showToolTipsBox;
+        JCheckBox excludeObsoletesFromSearchesBox;
 
 	JCheckBox confirmOnExitBox;
 
@@ -354,6 +356,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				final JDialog dialog = new JDialog();
 				dialog.setTitle("Click an icon to select it");
 				dialog.setModal(true);  // Is this really necessary?
+                                panel.setPreferredSize(new Dimension(565, 415));  // This is a good size for 142 icons
 
 				for (final URL url : icons) {
 					ActionListener listener = new ActionListener() {
@@ -455,7 +458,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		// setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setLayout(new BorderLayout());
 
-		JLabel noIconLabel = new JLabel("Click an icon definition to edit");
+		JLabel noIconLabel = new JLabel("Click a relationship name to edit its icon");
 
 		icons = getIcons();
 
@@ -552,10 +555,18 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		advancedRootDetectionBox = new JCheckBox("Use advanced root "
 				+ "detection");
 		onlyOneGlobalOTECheckbox = new JCheckBox("Only one Ontology Tree Editor at a time can be in global mode");
-		showUndefinedTermsBox = new JCheckBox("Gray out undefined terms");
+		showUndefinedTermsBox = new JCheckBox("Gray out undefined terms"); // But this is not currently shown.
 		caseSensitiveSortBox = new JCheckBox("Case-sensitive term sorting");
 		showToolTipsBox = new JCheckBox("Show term IDs as tool tips in "
 				+ "term panels");
+                excludeObsoletesFromSearchesBox = new JCheckBox("Exclude obsolete terms from search results [requires restart to change behavior]");
+		excludeObsoletesFromSearchesBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+                          Preferences.getPreferences().setExcludeObsoletesFromSearches(excludeObsoletesFromSearchesBox.isSelected());
+//                          FilterManager.getManager().installDefaults();
+//                          reload(); // ?  // doesn't help
+			}
+		});
 
 		confirmOnExitBox = new JCheckBox("Confirm on exit");
 		advxpMatrixEditorCheckBox = new JCheckBox("Cross-Product Matrix Editor");
@@ -578,6 +589,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		showUndefinedTermsBox.setOpaque(false);
 		caseSensitiveSortBox.setOpaque(false);
 		showToolTipsBox.setOpaque(false);
+                excludeObsoletesFromSearchesBox.setOpaque(false);
 		confirmOnExitBox.setOpaque(false);
 		advxpMatrixEditorCheckBox.setOpaque(false);
 		advIntersectionEditorCheckBox.setOpaque(false);
@@ -648,6 +660,8 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				.getCaseSensitiveSort());
 		showToolTipsBox.setSelected(Preferences.getPreferences()
 				.getShowToolTips());
+                excludeObsoletesFromSearchesBox.setSelected(Preferences.getPreferences()
+				.getExcludeObsoletesFromSearches());
 		confirmOnExitBox.setSelected(Preferences.getPreferences()
 				.getConfirmOnExit());
 
@@ -898,6 +912,13 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		runtimeDisplayPanel.setLayout(new BoxLayout(runtimeDisplayPanel,
 				BoxLayout.Y_AXIS));
 
+		JPanel excludeObsoletesFromSearchesPanel = new JPanel();
+		excludeObsoletesFromSearchesPanel.setOpaque(false);
+		excludeObsoletesFromSearchesPanel.setLayout(new BoxLayout(excludeObsoletesFromSearchesPanel,
+				BoxLayout.X_AXIS));
+		excludeObsoletesFromSearchesPanel.add(excludeObsoletesFromSearchesBox);
+		excludeObsoletesFromSearchesPanel.add(Box.createHorizontalGlue());
+
 		JPanel caseSensitiveSortPanel = new JPanel();
 		caseSensitiveSortPanel.setOpaque(false);
 		caseSensitiveSortPanel.setLayout(new BoxLayout(caseSensitiveSortPanel,
@@ -930,6 +951,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 		behaviorPanel.setLayout(new BoxLayout(behaviorPanel, BoxLayout.Y_AXIS));
 
+		behaviorPanel.add(excludeObsoletesFromSearchesPanel);
 		behaviorPanel.add(caseSensitiveSortPanel);
 		behaviorPanel.add(showToolTipsPanel);
 		behaviorPanel.add(allowBox);
@@ -1006,6 +1028,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		mainPanel.addTab("Text Editing", null, textEditPanel,
 		"Set text editing options");
 		mainPanel.addTab("Enable Experimental Components", null, advancedPanel, "Advanced user options");
+                mainPanel.setPreferredSize(new Dimension(800,400));
 
 		add(mainPanel, "Center");
 		Box buttonBox = Box.createVerticalBox();
@@ -1014,6 +1037,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		buttonBox.add(Box.createVerticalStrut(15));
 		add(buttonBox, "South");
 		buildFontPreview();
+                setPreferredSize(new Dimension(800,400));
 	}
 
 	private String getDefaultFontName() {
@@ -1187,6 +1211,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		dbxrefEditor.store(ref);
 
 		preferences.setPersonalDbxref(ref);
+		preferences.setExcludeObsoletesFromSearches(excludeObsoletesFromSearchesBox.isSelected());
 		preferences.setCaseSensitiveSort(caseSensitiveSortBox.isSelected());
 		preferences.setShowToolTips(showToolTipsBox.isSelected());
 		preferences.setConfirmOnExit(confirmOnExitBox.isSelected());
@@ -1233,10 +1258,9 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		String mem = memoryField.getText();
 		String numMem = mem.substring(0, mem.indexOf("M"));
 		int intMem = Integer.parseInt(numMem);
-		if(intMem >= 1860){
-			if (JOptionPane.showConfirmDialog( GUIManager.getManager().getFrame(), "WARNING -- Allocating heap space greater than 1860M " +
-					"will not be acceptable on all sytems. Proceed after validating system configuration and JVM requirements " +
-					"\n Continue?", "Warning", JOptionPane.OK_CANCEL_OPTION)
+		if(intMem > 1860){
+			if (JOptionPane.showConfirmDialog( GUIManager.getManager().getFrame(), "WARNING -- On most systems, Java limits the maximum memory allocation to 1860M. " +
+					"\n Do you really want to set it to " + mem + "?", "Warning", JOptionPane.OK_CANCEL_OPTION)
 				!= JOptionPane.OK_OPTION) mem = "1860M";
 		} 
 		//sending mem value to preferences to update vmoptions file
@@ -1292,3 +1316,4 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 	}
 }
+
