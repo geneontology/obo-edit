@@ -1,7 +1,9 @@
 package org.geneontology.gaf.hibernate;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.geneontology.gaf.parser.GAFParserHandler;
@@ -27,20 +29,26 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 	
 	private List<AnnotationRuleViolation> voilations;
 	
+	private SimpleDateFormat dtFormat;
+	
 	public GAFParserHandlerForHibernate(){
 		gafDocument = new GafDocument();
 		voilations = new ArrayList<AnnotationRuleViolation>();
+		dtFormat = new SimpleDateFormat("yyyyMMdd");
 	}
 	
 	public GafDocument getGafDocument(){
 		return gafDocument;
 	}
 	
-	
+	public List<AnnotationRuleViolation> getAnnotationRuleViolations(){
+		return voilations;
+	}
 	
 	public void startDocument(File gafFile) {
 		gafDocument.setDocumentPath(gafFile.getAbsolutePath());
 		gafDocument.setId(gafFile.getName());
+		voilations = new ArrayList<AnnotationRuleViolation>();
 		
 	}
 
@@ -63,19 +71,115 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 		
 	}
 	
-	public void handleColumns(String[] cols) {
+	private void performBasicChecks(String cols[]){
+
+		String row = getRow(cols);
+		
 		if(version == 2.0){
 			if(cols.length != 17){
-				String row = getRow(cols);
 				voilations.add(new AnnotationRuleViolation(" The row '"+ row + "' does not contain required columns number"));
 			}
 		}else{
 			if(cols.length != 15){
-				String row = getRow(cols);
 				voilations.add(new AnnotationRuleViolation(" The row '"+ row + "' does not contain required columns number"));
 			}
 		}
+
+		//cardinality checks
+		checkCardinality(cols[0], "Column 1: DB", row,1,1);
+		checkCardinality(cols[1], "Column 2: DB Object ID", row,1,1);
+		checkCardinality(cols[2], "Column 3: DB Object Symbol", row,1,1);
+		checkCardinality(cols[3], "Column 4: Qualifier", row, 0, 3);
+		checkCardinality(cols[4], "Column 5: GO ID", row,1,1);
+		checkCardinality(cols[5], "Column 6: DB Reference", row,1,3);
+		checkCardinality(cols[6], "Column 7: Evidence Code", row,1,3);
+		checkCardinality(cols[7], "Column 8: With or From", row,0,3);
+		checkCardinality(cols[8], "Column 9: Aspect", row,1,1);
+		checkCardinality(cols[9], "Column 10: DB Object Name", row,0,1);
+		checkCardinality(cols[10], "Column 11: DB Object Synonym",  row, 0,3);
+		checkCardinality(cols[11], "Column 12: DB Object Type", row, 1,1);
+		checkCardinality(cols[12], "Column 13: Taxon", row, 1,2);
+		checkCardinality(cols[13], "Column 14: Date", row, 1,1);
+		checkCardinality(cols[14], "Column 15: DB Object Type", row, 1,1);
+		checkCardinality(cols[15], "Column 16: DB Object Type", row, 0,3);
+		checkCardinality(cols[16], "Column 17: DB Object Type", row, 0,3);
+
+		//check date format
+		String dtString = cols[13];
+		try{
+			dtFormat.parse(dtString);
+		}catch(Exception ex){
+			voilations.add(new AnnotationRuleViolation("The date in the column 14 is of incorrect format in the row: " + row));
+		}
 		
+		//taxon check
+		String[] taxons  = cols[12].split("|");
+		checkTaxon(taxons[0], row);
+		if(taxons.length>0){
+			checkTaxon(taxons[1], row);
+		}
+	}
+	
+	private void checkTaxon(String value, String row){
+		if(!value.startsWith("taxon"))
+			voilations.add(new AnnotationRuleViolation("The taxon id in the column 13 is of in correct format in the row :" + row));
+		
+		try{
+			Integer.parseInt(value.substring("taxon".length()-1));
+		}catch(Exception ex){
+			voilations.add(new AnnotationRuleViolation("The taxon id in the column 13 is not an integer value :" + row));
+		}
+	}
+	
+	private void checkCardinality(String value, String columnName, String row, int min, int max){
+
+		if(min>0 && value.length() != value.trim().length()){
+			voilations.add(new AnnotationRuleViolation("White Spaces are found in the " + columnName+ " column in the row: " + row));
+		}
+
+		if(min==0 && value != null && value.length() != value.trim().length()){
+			voilations.add(new AnnotationRuleViolation("White Spaces are found in the " + columnName+ " column in the row: " + row));
+		}
+		
+		if(min>=1 && value.length()==0){
+			voilations.add(new AnnotationRuleViolation(columnName +" value is not supplied in the row: " + row ));
+		}
+		
+		if(max==1 && value.contains("|")){
+			voilations.add(new AnnotationRuleViolation(columnName +" cardinality is found greate than 1 in the row: " + row));
+		}
+		
+		
+		if(value != null){
+			String tokens[] = value.split("|");
+			
+			if(max==2 && tokens.length>2){
+				voilations.add(new AnnotationRuleViolation(columnName +" cardinality is found greate than 2 in the row: " + row));
+			}
+			
+			if(tokens.length>1){
+				for(int i =1;i<tokens.length;i++){
+					String token = tokens[i]; 
+					checkWhiteSpaces(token, columnName, row);
+				}
+			}
+		}
+		
+		
+	}
+	
+	private void checkWhiteSpaces(String value, String columnName, String row){
+
+		if(value.length() != value.trim().length()){
+			voilations.add(new AnnotationRuleViolation("White Spaces are found in the " + columnName+ " column in the row: " + row));
+		}
+		
+	}
+	
+	
+	public void handleColumns(String[] cols) {
+		
+		performBasicChecks(cols);
 		
 		Bioentity entity = addBioEntity(cols);
 		addGeneAnnotation(cols, entity);
@@ -198,10 +302,5 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 		gafDocument.addGeneAnnotation(ga);
 		
 	}
-
-
-	
-	
-	
 
 }
