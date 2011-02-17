@@ -12,16 +12,34 @@ public class NameSearchCriterion extends
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(NameSearchCriterion.class);
 
+        protected boolean excludeObsoletes = false;
+        // We end up making two of these criteria, and they need different IDs.
+        protected String id = "name";
+
 	public static final NameSearchCriterion CRITERION = new NameSearchCriterion();
 
 	public NameSearchCriterion() {
-		// TODO Auto-generated constructor stub
+          this(false);
 	}
+
+        public NameSearchCriterion(boolean excludeObsoletes) {
+         this.excludeObsoletes = excludeObsoletes;
+       }
+
+        public NameSearchCriterion(boolean excludeObsoletes, String ID) {
+//         logger.debug("NameSearchCriterion(excludeObsoletes = " + excludeObsoletes + ", id = " + ID + ")");
+         this.excludeObsoletes = excludeObsoletes;
+         this.id = ID;
+       }
 	
 	public Collection<String> getValues(Collection<String> scratch,
 			IdentifiedObject obj) {
-		if (obj.getName() != null)
-			scratch.add(obj.getName());
+          if ((obj.getName() != null)
+              && !(excludeObsoletes && isObsolete(obj)))
+              scratch.add(obj.getName());
+//          else { // DEL
+//            logger.debug("NameSearchCriterion.excludeObsoletes = " + excludeObsoletes + "--Excluding obsolete object (name = " + obj.getName() + ", id = " + obj.getID() + ") from NameSearchCriterion.getValues"); // DEL
+//          }
 		return scratch;
 	}
 
@@ -33,9 +51,8 @@ public class NameSearchCriterion extends
 		return 1;
 	}
 
-
 	public String getID() {
-		return "name";
+          return id;
 	}
 
 	public Class<IdentifiedObject> getInputType() {
