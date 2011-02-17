@@ -1631,8 +1631,10 @@ public class DefaultOBOParser implements OBOParser {
 				} else
 					throw new OBOParseException("Could not resolve ID "
 							+ bm.getObject() + " in replaced_by "
-							+ "statement.", bm.getPath(), bm.getLine(), bm
-							.getLineNum());
+							+ "statement." +
+                                                                    "\nThis ID is probably a dangling reference.  You may be able to load this file\nby using the \"Advanced\" data adapter and checking the \"Allow dangling references\" box.",
+                                                                    bm.getPath(), bm.getLine(), bm
+                                                                    .getLineNum());
 			}
 
 			if (!(object instanceof ObsoletableObject)) {
@@ -1703,8 +1705,9 @@ public class DefaultOBOParser implements OBOParser {
 				}
 				else
 					throw new OBOParseException("Could not resolve ID "
-							+ bm.getObject() + " in consider " + "tag.", bm
-							.getPath(), bm.getLine(), bm.getLineNum());
+							+ bm.getObject() + " in consider " + "tag." +
+                                                                    "\nThis ID is probably a dangling reference.  You may be able to load this file\nby using the \"Advanced\" data adapter and checking the \"Allow dangling references\" box.",
+                                                                    bm.getPath(), bm.getLine(), bm.getLineNum());
 			}
 
 			if (!(object instanceof ObsoletableObject)) {
