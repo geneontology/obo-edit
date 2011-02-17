@@ -1,6 +1,9 @@
 package org.obo.filters;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.obo.datamodel.*;
 
@@ -8,18 +11,20 @@ import org.apache.log4j.*;
 
 public class AllTextFieldsCriterion extends AbstractStringCriterion {
 
-	//initialize logger
 	protected final static Logger logger = Logger.getLogger(AllTextFieldsCriterion.class);
-
 	protected List keywordCriteria = new LinkedList();
 
-	public AllTextFieldsCriterion() {
+        public AllTextFieldsCriterion() {
+          this(false);
+        }
+
+	public AllTextFieldsCriterion(boolean excludeObsoletes) {
 		super();
-		keywordCriteria.add(new NameSynonymSearchCriterion());
-		keywordCriteria.add(new IDSearchCriterion());
-		keywordCriteria.add(new CommentSearchCriterion());
-		keywordCriteria.add(new DefinitionSearchCriterion());
-		keywordCriteria.add(new DbxrefSearchCriterion());
+		keywordCriteria.add(new NameSynonymSearchCriterion(excludeObsoletes));
+		keywordCriteria.add(new IDSearchCriterion(excludeObsoletes, " ID"));
+		keywordCriteria.add(new CommentSearchCriterion(excludeObsoletes));
+		keywordCriteria.add(new DefinitionSearchCriterion(excludeObsoletes));
+		keywordCriteria.add(new DbxrefSearchCriterion(excludeObsoletes));
 	}
 
 	public Collection getValues(Collection scratch, Object obj) {
@@ -29,7 +34,7 @@ public class AllTextFieldsCriterion extends AbstractStringCriterion {
 			SearchCriterion sc = (SearchCriterion) it.next();
 			List scratchList = new LinkedList();
 			sc.getValues(scratchList, obj);
-			scratch.addAll(scratchList);
+                          scratch.addAll(scratchList);
 		}
 
 		return scratch;

@@ -8,16 +8,29 @@ import org.apache.log4j.*;
 
 public class DefinitionSearchCriterion extends AbstractStringCriterion {
 
-	//initialize logger
 	protected final static Logger logger = Logger.getLogger(DefinitionSearchCriterion.class);
+
+        protected boolean excludeObsoletes = false;
 
 	public static final DefinitionSearchCriterion CRITERION =
 		new DefinitionSearchCriterion();
 
-	public Collection getValues(Collection scratch, Object obj) {
-		if (obj instanceof DefinedObject)
-			scratch.add(((DefinedObject) obj).getDefinition());
-		return scratch;
+	public DefinitionSearchCriterion() {
+          this(false);
+	}
+
+       public DefinitionSearchCriterion(boolean excludeObsoletes) {
+         this.excludeObsoletes = excludeObsoletes;
+       }
+
+	public Collection getValues(Collection scratch, Object obj) {  
+                // This is adding a lot of empty definitions to the list, but leaving them out doesn't seem to make much difference later on...
+//              if (obj instanceof DefinedObject && !((DefinedObject) obj).getDefinition().equals(""))
+          if (obj instanceof DefinedObject) {
+            if (!(excludeObsoletes && isObsolete((IdentifiedObject)obj)))
+              scratch.add(((DefinedObject) obj).getDefinition());
+          }
+            return scratch;
 	}
 	
 	@Override
