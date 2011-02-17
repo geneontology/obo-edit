@@ -86,8 +86,7 @@ symbols to be specified for relations. This is necessary when loading
 file does not contain any information about relations at all. For more 
 information about how to do this, see <A href="#property_symbols">Specifying 
 Relation Symbols</A>              
-            
-       below.</p>
+      below.</p>
 <p>The remaining controls are a series of checkboxes:</p>
 <ul>
   <li>
@@ -99,8 +98,10 @@ Relation Symbols</A>
 <div><strong>Allow cycles</strong> - Allows files that 
   contain cycles to be loaded.</div>
   <li>
-<div><strong>Allow dangling parent references</strong> - 
-  Allows files that contain dangling parents to be loaded.</div>
+<div><strong>Allow dangling references</strong> - 
+  Allows files that contain dangling parents to be loaded.
+(The default behavior is that dangling references cause a fatal load error.)
+</div>
   <li>
 <div><strong>Translate type ids</strong> - Many files in 
   GO Flat File Format use inconsistent ids for common relations. If this box is 
@@ -185,7 +186,7 @@ left blank, but all your definitions will be lost.</p>
   Allows ontologies containing cycles to be saved. Cycles are technically 
   illegal in the GO Flat File Format. If this box is not checked and an attempt 
   is made to save an ontology that contains cycles, the save will fail. 
-  <li><strong>Allow dangling parent references</strong> - Allows ontologies containing dangling references to be 
+  <li><strong>Allow dangling references</strong> - Allows ontologies containing dangling references to be 
   saved.&nbsp;Dangling references&nbsp;are technically illegal in the GO Flat 
   File Format. If this box is not checked and an attempt is made to save an 
   ontology that contains dangling references, the save will fail. 

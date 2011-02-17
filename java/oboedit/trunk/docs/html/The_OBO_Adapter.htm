@@ -47,11 +47,12 @@ the disk by clicking the "Browse..." button.</p>
 the path set to "&lt;new path&gt;". Edit the path as described above.</p>
 <p>To delete a path, select it from the list and press the "Del" button.</p>
 <p>The "Allow dangling references" box enables the OBO Adapter to load 
-ontologies that contain dangling references. (Note:  as of April 2008, this is
-  now the default.)  Dangling references occur when an 
+ontologies that contain dangling references.
+Dangling references occur when an 
 ontology term contains a link to a term that does not exist. This can happen if 
 an ontology contains links to another ontology, but the second ontology is not 
-loaded.</p>
+loaded.  (The default is NOT to allow dangling references--they will cause a
+  fatal load error.)</p>
 <p>If dangling references are loaded, OBO-Edit records the references and writes 
 them out when the file is saved. The dangling references cannot be changed or 
 deleted within the normal OBO-Edit interface (although external plugins may 
