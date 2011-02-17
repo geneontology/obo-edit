@@ -44,4 +44,13 @@ public abstract class AbstractDbxrefSearchCriterion<T> extends
 	public String getID() {
 		return "dbxref";
 	}
+
+        /**
+	 * Returns whether the given object is obsolete.
+	 */
+	public static boolean isObsolete(IdentifiedObject o) {
+          return ((o instanceof ObsoletableObject)
+                  && ((ObsoletableObject) o).isObsolete());
+	}
+
 }

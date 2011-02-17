@@ -6,6 +6,8 @@ import org.obo.datamodel.*;
 
 import org.apache.log4j.*;
 
+/** I think this class is obsolete--it now does the same thing as AllTextFieldsCriterion. */
+
 public class KeywordSearchCriterion extends AbstractStringCriterion {
 
 	//initialize logger
@@ -17,13 +19,18 @@ public class KeywordSearchCriterion extends AbstractStringCriterion {
 	 * protected static final delimChars = { '\t', ' ', '-', ',', '+', '_', '.',
 	 * '!', '?', '\'' '"', '(', ')', '{', '}', '[]<>;/ };
 	 */
-	public KeywordSearchCriterion() {
+
+        public KeywordSearchCriterion() {
+          this(false);
+        }
+
+	public KeywordSearchCriterion(boolean excludeObsoletes) {
 		super();
-		keywordCriteria.add(new NameSynonymSearchCriterion());
-		keywordCriteria.add(new IDSearchCriterion());
-		keywordCriteria.add(new CommentSearchCriterion());
-		keywordCriteria.add(new DefinitionSearchCriterion());
-		keywordCriteria.add(new DbxrefSearchCriterion());
+		keywordCriteria.add(new NameSynonymSearchCriterion(excludeObsoletes));
+		keywordCriteria.add(new IDSearchCriterion(excludeObsoletes));
+		keywordCriteria.add(new CommentSearchCriterion(excludeObsoletes));
+		keywordCriteria.add(new DefinitionSearchCriterion(excludeObsoletes));
+		keywordCriteria.add(new DbxrefSearchCriterion(excludeObsoletes));
 	}
 
 	public Collection getValues(Collection scratch, Object obj) {

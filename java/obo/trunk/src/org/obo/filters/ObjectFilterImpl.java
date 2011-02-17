@@ -28,7 +28,9 @@ public class ObjectFilterImpl implements ObjectFilter {
 
 	protected SearchAspect aspect = new SelfSearchAspect();
 
-	protected SearchCriterion<?, ?> criterion = new AllTextFieldsCriterion();
+        protected boolean excludeObsoletes = false;
+
+        protected SearchCriterion<?, ?> criterion = new AllTextFieldsCriterion();
 
 	protected SearchCriterion wrappedCriterion = new StringCriterionWrapper(
 			criterion, StringConverter.DEFAULT);
@@ -38,7 +40,13 @@ public class ObjectFilterImpl implements ObjectFilter {
 	protected String value = "";
 
 	public ObjectFilterImpl() {
+          this(false);
 	}
+
+	public ObjectFilterImpl(boolean excludeObsoletes) {
+          this.excludeObsoletes = excludeObsoletes;
+          criterion = new AllTextFieldsCriterion(excludeObsoletes);
+        }
 
 	@Override
 	public int hashCode() {
@@ -96,7 +104,7 @@ public class ObjectFilterImpl implements ObjectFilter {
 	// checking object's compliance to filter conditions
 	public boolean satisfies(Object object) {
 		if (criterion == null) {
-			logger.debug("satisfies(" +  object+ "): criterion is null"); 
+//			logger.debug("satisfies(" +  object+ "): criterion is null"); 
 			return false;
 		}
 		//          logger.debug("ObjectFilterImpl.satisfies -- input type = " + criterion.getInputType() + "; evaluating object: " + object); // DEL
