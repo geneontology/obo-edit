@@ -110,14 +110,19 @@ something that changes the display (e.g., click open a node).</p>
 
 <h2>Behavior</h2>
 <ul>
-  <li><strong>Exclude obsolete terms from autocomplete lists</strong> - When
+  <li><strong>Exclude obsolete terms from search results</strong> - OBO-Edit's
+  default behavior is to allow obsolete terms in autocomplete lists and search
+  results. When
   you start typing in a search or filter box, a dropdown list of term names
   appears, including terms (or relations) that include the text you've typed
   so far.  By default, this list includes terms that have been marked as
-  obsolete.  If you prefer to exclude obsolete terms, check this checkbox.
-  The downside is that the autocomplete lists will take slightly longer to
-  appear (because OBO-Edit has to do extra work, checking each term to see
-  whether it's obsolete or not). </li>
+  obsolete.  If you prefer to exclude obsolete terms from these dropdown lists
+  and also from search results, check this checkbox.
+  The downside is that the searches will take slightly longer
+  (because OBO-Edit has to do extra work, checking each term to see
+  whether it's obsolete or not).<br>Note that if you change this option in the
+  configuration manager, you must quit and restart OBO-Edit for the behavior
+  to change.</li>
   <li><strong>Case sensitive term sorting</strong> - If this box is checked, the case of a term name will be 
   taken into account when sorting terms. Lower case letters will appear before 
   upper case letters. </li>
