@@ -7,6 +7,8 @@ import java.util.List;
 import org.geneontology.gaf.parser.GAFParserHandler;
 import org.geneontology.gold.hibernate.model.Cls;
 import org.geneontology.gold.hibernate.model.GOModel;
+import org.geneontology.gold.rules.AnnotationRuleViolation;
+import org.hibernate.exception.ViolatedConstraintNameExtracter;
 
 import sun.nio.cs.ext.ISCII91;
 
@@ -21,13 +23,20 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 
 	private GafDocument gafDocument;
 	
+	private double version;
+	
+	private List<AnnotationRuleViolation> voilations;
+	
 	public GAFParserHandlerForHibernate(){
 		gafDocument = new GafDocument();
+		voilations = new ArrayList<AnnotationRuleViolation>();
 	}
 	
 	public GafDocument getGafDocument(){
 		return gafDocument;
 	}
+	
+	
 	
 	public void startDocument(File gafFile) {
 		gafDocument.setDocumentPath(gafFile.getAbsolutePath());
@@ -35,12 +44,39 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 		
 	}
 
+	public void setVersion(double version) {
+		this.version = version;
+	}
+	
+	
 	public void endDocument() {
 
 	}
 
-
+	private String getRow(String[] cols){
+		String row = "";
+		for(String col: cols){
+			row += col + "\tt";
+		}
+		
+		return row;
+		
+	}
+	
 	public void handleColumns(String[] cols) {
+		if(version == 2.0){
+			if(cols.length != 17){
+				String row = getRow(cols);
+				voilations.add(new AnnotationRuleViolation(" The row '"+ row + "' does not contain required columns number"));
+			}
+		}else{
+			if(cols.length != 15){
+				String row = getRow(cols);
+				voilations.add(new AnnotationRuleViolation(" The row '"+ row + "' does not contain required columns number"));
+			}
+		}
+		
+		
 		Bioentity entity = addBioEntity(cols);
 		addGeneAnnotation(cols, entity);
 		addWithInfo(cols);
@@ -162,6 +198,8 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 		gafDocument.addGeneAnnotation(ga);
 		
 	}
+
+
 	
 	
 	
