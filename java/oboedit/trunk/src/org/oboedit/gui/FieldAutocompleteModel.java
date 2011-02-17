@@ -85,17 +85,20 @@ public class FieldAutocompleteModel<T> extends AbstractAutocompleteModel<T, T> {
 			Collection<FieldPath> fpaths = FieldPath.resolve(spec,
 					getLinkDatabase());
 			((Superset<FieldPath>) paths).addSubset(fpaths);
+//                        logger.debug("FieldAutocompleteModel.getAllValues: for spec " + spec + ", got " + fpaths.size() + " fpaths, " + paths.size() + " paths"); 
 		}
 		if (specQuery != null)
 			paths = QueryUtil.query(getQueryEngine(), paths, specQuery);
 		Collection<T> out = new LinkedHashSet<T>();
+                // This is where the strings that were found in the autocomplete search are added to the dropdown list.
 		for(FieldPath p : paths) {
 			T val = (T) p.getLastValue();
-			out.add(val);
-		}
+                        if (val instanceof java.lang.String) // This leaves out the ugly java.lang.Objects
+                          out.add(val);
+                }
 		return out;
-	}
-	
+        }
+
 	public void setQueryEngine(QueryEngine queryEngine) {
 		this.queryEngine = queryEngine;
 	}
