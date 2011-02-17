@@ -5,8 +5,6 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gaf.hibernate.CompositeQualifier;
@@ -21,10 +19,7 @@ import org.geneontology.gold.io.DbOperationsInterface;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.io.postgres.SchemaManager;
 import org.geneontology.gold.io.postgres.TsvFileLoader;
-import org.geneontology.gold.rules.AnnotationRuleViolation;
 import org.hibernate.Session;
-
-import owltools.graph.OWLGraphWrapper;
 
 public class GAFDbOperations implements DbOperationsInterface{
 

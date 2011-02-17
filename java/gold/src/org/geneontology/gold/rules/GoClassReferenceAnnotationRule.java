@@ -18,6 +18,8 @@ public class GoClassReferenceAnnotationRule extends AbstractAnnotatioRule {
 		this.graph = wrapper;
 	}
 	
+	
+	
 	@Override
 	public Set<AnnotationRuleViolation> getRuleViolations(GeneAnnotation a) {
 
@@ -37,7 +39,9 @@ public class GoClassReferenceAnnotationRule extends AbstractAnnotatioRule {
 		boolean isObsolete = graph.getIsObsolete(owlClass);
 		
 		if(isObsolete){
-			set.add(new AnnotationRuleViolation("The GO id in the annotation is a obsolete class", a));
+			AnnotationRuleViolation arv = new AnnotationRuleViolation("The GO id in the annotation is a obsolete class", a);
+			//arv.setSuggestedReplacements(suggestedReplacements)
+			set.add(arv);
 		}
 		
 		
