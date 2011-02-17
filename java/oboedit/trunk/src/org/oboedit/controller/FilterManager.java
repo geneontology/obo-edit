@@ -82,6 +82,7 @@ import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.ReasonerListener;
 import org.obo.util.FilterUtil;
 import org.oboedit.gui.LineType;
+import org.oboedit.gui.Preferences;
 import org.oboedit.gui.event.GlobalFilterListener;
 import org.oboedit.gui.event.ReasonerStatusEvent;
 import org.oboedit.gui.event.ReasonerStatusListener;
@@ -179,7 +180,10 @@ public class FilterManager {
 		return manager;
 	}
 
-	protected void installDefaults() {
+	public void installDefaults() {
+          boolean excludeObsoletes = Preferences.getPreferences().getExcludeObsoletesFromSearches();
+          logger.debug("installDefaults: Preferences.getPreferences().getExcludeObsoletesFromSearches()) = " + excludeObsoletes);
+
 		addComparison(new ContainsComparison());
 		addComparison(new EqualsComparison());
 		addComparison(new StartsWithComparison());
@@ -191,19 +195,27 @@ public class FilterManager {
 		addComparison(new GreaterThanComparison());
 		addComparison(new GreaterThanEqualsComparison());
 
-		addCriterion(new AllTextFieldsCriterion());
-		addCriterion(new NameSynonymSearchCriterion());
-		addCriterion(new IDSearchCriterion());
-		addCriterion(new SubsetSearchCriterion());
-		addCriterion(new NameSearchCriterion());
-		addCriterion(new SynonymSearchCriterion());
-		addCriterion(new CommentSearchCriterion());
-		addCriterion(new DefinitionSearchCriterion());
-		addCriterion(new NamespaceSearchCriterion());
+		addCriterion(new AllTextFieldsCriterion(excludeObsoletes));
+		addCriterion(new NameSynonymSearchCriterion(excludeObsoletes));
+                // This criterion is for internal use by OE, not for the user to choose as a search criterion.
+                // That's because it's also used to show the Obsolete terms in the Ontology Tree Editor.
+                // (The "false" argument means don't show it in the search options list.)
+		addCriterion(new NameSearchCriterion(), false);
+                // This is the one for searches (and autocomplete) that can exclude obsoletes.
+                // Notice that it's assigned a different ID.
+		addCriterion(new NameSearchCriterion(excludeObsoletes, " Name"));
+                // Same deal for ID search--this criterion is also used to show IDs in the search result table, so we need two different criteria.
+		addCriterion(new IDSearchCriterion(), false);
+                addCriterion(new IDSearchCriterion(excludeObsoletes, " ID"));
+		addCriterion(new SubsetSearchCriterion(excludeObsoletes));
+		addCriterion(new SynonymSearchCriterion(excludeObsoletes));
+		addCriterion(new CommentSearchCriterion(excludeObsoletes));
+		addCriterion(new DefinitionSearchCriterion(excludeObsoletes));
+		addCriterion(new NamespaceSearchCriterion(excludeObsoletes));
 		addCriterion(new LinkNamespaceSearchCriterion());
-		addCriterion(new DbxrefSearchCriterion());
-		addCriterion(new GeneralDbxrefSearchCriterion());
-		addCriterion(new DefinitionDbxrefSearchCriterion());
+		addCriterion(new DbxrefSearchCriterion(excludeObsoletes));
+		addCriterion(new GeneralDbxrefSearchCriterion(excludeObsoletes));
+		addCriterion(new DefinitionDbxrefSearchCriterion(excludeObsoletes));
 		addCriterion(new SynonymDbxrefSearchCriterion());
 		addCriterion(new IsCompleteCriterion());
 		addCriterion(new IsaCompleteCriterion());
@@ -222,7 +234,9 @@ public class FilterManager {
 		addCriterion(new IsRedundantLinkCriterion());
 		addCriterion(new IsTransitiveCriterion());
 		addCriterion(new IsBuiltinCriterion());
-		addCriterion(new KeywordSearchCriterion());
+                // Maybe once upon a time Keyword search was different from Any text field search,
+                // but now they're exactly the same.
+//		addCriterion(new KeywordSearchCriterion());
 		addCriterion(new MultipleRootSearchCriterion());
 
 		addAspect(new SelfSearchAspect());
@@ -322,6 +336,7 @@ public class FilterManager {
 	}
 
 	public SearchCriterion getCriterion(String id) {
+//          logger.debug("getCriterion(" + id + ")");
 		return criteria.get(id);
 	}
 

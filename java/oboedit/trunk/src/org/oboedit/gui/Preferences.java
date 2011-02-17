@@ -85,6 +85,8 @@ public class Preferences {
 
 	protected boolean showToolTips = true;
 
+        protected boolean excludeObsoletesFromSearches = false;
+
 	protected boolean allowCycles = false;
 
 	protected boolean warnBeforeDelete = true;
@@ -379,6 +381,16 @@ public class Preferences {
 		return showToolTips;
 	}
 
+	public void setExcludeObsoletesFromSearches(boolean excludeObsoletesFromSearches) {
+//          logger.debug("setExcludeObsoletesFromSearches(" + excludeObsoletesFromSearches);
+		this.excludeObsoletesFromSearches = excludeObsoletesFromSearches;
+	}
+
+	public boolean getExcludeObsoletesFromSearches() {
+//          logger.debug("getExcludeObsoletesFromSearches: " + excludeObsoletesFromSearches);
+		return excludeObsoletesFromSearches;
+	}
+
 	public void setCaseSensitiveSort(boolean caseSensitiveSort) {
 		this.caseSensitiveSort = caseSensitiveSort;
 	}
@@ -604,6 +616,7 @@ public class Preferences {
 	}
 
 	public boolean getUseReasoner() {
+//                logger.debug("Prefs.getUseReasoner = " + useReasoner); // DEL
 		return useReasoner;
 	}
 
@@ -674,8 +687,6 @@ public class Preferences {
 		GUIManager.setadvSemanticParserCheckBox(advSemanticParserCheckBox);
 	}
 
-
-
 	public Color getLightSelectionColor() {
 		if (lightSelectionColor == null)
 			lightSelectionColor = new Color(230, 230, 255);  // pale lavender-blue
@@ -688,12 +699,13 @@ public class Preferences {
 	}
 
 	// Color for the subselection (darker)
+        // Note: this is used to highlight selected items in the Ontology Tree Editor and Graph Editor.
 	public Color getSelectionColor() {
 		if (selectionColor == null)
 			//			selectionColor = new Color(204, 204, 255);
 			// Slightly darker blue than before
 			selectionColor = new Color(180, 190, 255);
-		//		selectionColor = Color.orange;  // for testing
+//				selectionColor = Color.orange;  // for testing
 		return selectionColor;
 	}
 
@@ -852,6 +864,7 @@ public class Preferences {
 		// }
 		// return iconLib;
 
+          // Why is this so slow?  It takes ~6 seconds, even when there are only ~20 icons.
 		return ClassUtil.getResources(Preferences.class.getClassLoader(),
 				"/org/oboedit/gui/resources/icons/typeicons/**", "gif",
 				"jpg", "svg");
@@ -1062,6 +1075,9 @@ public class Preferences {
 				out = new TextIcon((name == null) ? id : name);
 			}
 			iconIndex.put(id, out);
+                        // Didn't work
+//                        out.setToolTipText("Icon: " + name);
+//                        out.component.setToolTipText("Icon: " + name);
 		}
 		return out;
 	}
