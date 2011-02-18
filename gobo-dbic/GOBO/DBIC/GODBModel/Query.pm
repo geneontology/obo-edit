@@ -350,6 +350,12 @@ sub new {
     $self->{QUERY_JOIN} = [ 'dbxref' ],
     #$self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
 
+  }elsif( $type eq 'phylotree_dist' ){
+
+    $self->{QUERY_RESULT_SET} = 'Phylotree';
+    $self->{QUERY_JOIN} = [ 'dbxref', { 'gene_product_phylotree' => { gene_product => 'species' }}  ];
+    #$self->{QUERY_PREFETCH} = [ 'gene_product' ];
+
   }elsif( $type eq 'seq' ){
 
     $self->{QUERY_RESULT_SET} = 'Seq';

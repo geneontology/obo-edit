@@ -3,7 +3,7 @@ use warnings;
 use strict;
 use Data::Dumper;
 use Net::FTP;
-use List::Util qw/first/;
+use List::Util qw/first sum/;
 use Fcntl qw/:seek/;
 
 =head1 NAME
@@ -297,13 +297,13 @@ sub id2{
 	$new{last_annotated}    = $_->get_column('last_anno');
 	my $out = __PACKAGE__->new(%new);
 
-	my @foo = $out->species_dist(1);
-	#warn join(' ', map { $_->{code} } @foo);
-	$out->{dist} = \@foo;
+	# my @foo = $out->species_dist(1);
+	# $out->{dist} = \@foo;
 
 	$out;
     } @$r;
 
+    refg_species_dists(@out);
 
     return @out;
 }
@@ -458,7 +458,79 @@ sub gene_products{
     return @gp;
 }
 
-=item $p->species_dist
+=item refg_species_dists(@_);
+
+C<@_> Is a bunch of AmiGO::Work:Phylotree objects.
+
+=cut
+sub refg_species_dists{
+    # for my $s (@_) {
+    # 	my @dist = $s->species_dist(1);
+    # 	die Dumper \@dist;
+    # 	$s->{dist} = \@dist;
+    # }
+
+    my $gobo = GOBO::DBIC::GODBModel::Query->new({type=>'phylotree_dist'});
+
+    my @s = @_;
+    my $r = $gobo->get_all_results
+      ({ xref_dbname => $s[0]->{dbname},
+	 xref_key    => [ map { $_->{key} } @s ],
+       });
+    if (scalar(@$r) != scalar(@s)) {
+	die sprintf('Expecting %d clusters, got %d', scalar(@s), scalar(@$r));
+    }
+
+    my %s = map {
+	$_->{key} => $_;
+    } @s;
+
+    my %dist;
+    while (@$r) {
+	my $pt = shift @$r;
+	my $key = $pt->dbxref()->xref_key();
+
+	my @got = $pt->gene_product_phylotree();
+
+	while (@got) {
+	    my $got = shift @got;
+	    my $ncbi = $got->gene_product()->species()->ncbi_taxa_id();
+	    $dist{$key}->{$ncbi}++;
+	    #$s{$key}->{foo}->{$ncbi}++;
+	}
+    }
+
+    for my $s (@s) {
+	for my $o (AmiGO::Aid::PantherDB->reference_genome()) {
+	    #die Dumper \%dist, $s, $o;
+
+	    my @ncbi = $o->ncbi_ids();
+	    my $ncbi = $ncbi[0];
+	    my $count = sum map { ($dist{$s->{key}}->{$_} || 0) } @ncbi;
+
+	    push @{ $s->{dist} },
+	      {
+	       ncbi  => $ncbi,
+	       count => $count,
+	       color => $o->color(),
+	       code  => $o->code(),
+	      };
+	}
+	#die Dumper $s;
+    }
+    warn Dumper $s[0], $dist{$s[0]->{key}};
+
+
+#    for my $s (values %s) {
+#	warn Dumper $s;
+#    }
+
+}
+
+
+=item $p->species_dist([ refg ]);
+
+Return a species distribution of the given group.
 
 =cut
 sub species_dist{
@@ -467,7 +539,7 @@ sub species_dist{
 
     my $r = $phylotree_gobo->get_all_results
       ({ xref_dbname => $s->{dbname}, xref_key => $s->{key} });
-    if (length(@$r) != 1) {
+    if (scalar(@$r) != 1) {
 	die 'I should of gotten one cluster';
     }
     $r = $r->[0];
