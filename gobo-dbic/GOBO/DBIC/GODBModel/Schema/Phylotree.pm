@@ -49,7 +49,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key('id');
 
 ##
-__PACKAGE__->might_have('gene_product_phylotree' =>
+#__PACKAGE__->might_have('gene_product_phylotree' =>
+__PACKAGE__->has_many('gene_product_phylotree' =>
 			'GOBO::DBIC::GODBModel::Schema::GeneProductPhylotree',
 			'phylotree_id');
 
