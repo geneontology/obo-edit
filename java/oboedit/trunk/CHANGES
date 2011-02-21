@@ -40,6 +40,8 @@ Advanced data adapter with the "Allow dangling references" box checked.
 (I think "allow dangling references" used to be the default setting, and now
 it's not.)
 
+data-version header field was not getting round-tripped--now it is.
+
 =================================
 What's New in OBO-Edit v2.1-beta8 (1/20/11)
 =================================
