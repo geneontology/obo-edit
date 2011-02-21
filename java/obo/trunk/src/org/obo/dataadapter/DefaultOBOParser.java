@@ -531,7 +531,8 @@ public class DefaultOBOParser implements OBOParser {
 	}
 
 	public void readFileVersion(String version) {
-		metaData.mapFileData(getCurrentPath(), version);
+	    metaData.mapFileData(getCurrentPath(), version);  // Not sure what this is for--it puts version in metaData, but then it's never gotten out.
+	    session.getCurrentHistory().setVersion(version);  // That's where the OBO writer looks for it.
 	}
 
 	public void readDate(Date date) {
