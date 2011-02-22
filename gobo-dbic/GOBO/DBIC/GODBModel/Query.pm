@@ -354,7 +354,7 @@ sub new {
 
     $self->{QUERY_RESULT_SET} = 'Phylotree';
     $self->{QUERY_JOIN} = [ 'dbxref', { 'gene_product_phylotree' => { gene_product => 'species' }}  ];
-    #$self->{QUERY_PREFETCH} = [ 'gene_product' ];
+    $self->{QUERY_PREFETCH} = $self->{QUERY_JOIN};
 
   }elsif( $type eq 'seq' ){
 
