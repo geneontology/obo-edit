@@ -1,9 +1,0 @@
-To install AmiGO, please run the "install.pl" script. For usage, try
-"install.pl -h". For real instructions, please consult the Gene
-Ontology Consortium wiki at:
-
-http://wiki.geneontology.org/index.php/AmiGO_Manual:_Installation
-
-Please note that an installation of AmiGO can create a large number of
-temporary files. Please see the crontab file in this directory for an
-example of how to clean.

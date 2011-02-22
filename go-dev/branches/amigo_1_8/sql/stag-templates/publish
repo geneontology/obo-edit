@@ -1,2 +1,0 @@
-#!/bin/sh
-make PUBTMPLDIR=/data/bioconf/templates TEMPLATEBINDIR=/usr/local/bdgp/stagbin
