@@ -1,0 +1,52 @@
+:SELECT 
+  *
+:FROM
+  term
+  INNER JOIN graph_path AS graph_path1 ON (term.id = graph_path1.term1_id)
+  INNER JOIN association AS association1 ON (association1.term_id = graph_path1.term2_id)
+  INNER JOIN association AS association2 ON (association1.gene_product_id = association2.gene_product_id)
+  INNER JOIN graph_path AS grap_path2 ON (association2.term_id = grap_path2.term2_id)
+  INNER JOIN term AS correlated_term ON (grap_path2.term1_id = correlated_term.id)
+  INNER JOIN gene_product ON (association2.gene_product_id = gene_product.id)
+  INNER JOIN dbxref ON (gene_product.dbxref_id = dbxref.id)
+  INNER JOIN species ON (gene_product.species_id = species.id)
+
+:WHERE
+    [association1.term_id != association2.term_id]
+    [term.acc = &term_acc&]
+    [term.name = &term_name&]
+    [correlated_term.term_type = &correlated_term_type&]
+    [correlated_term.acc = &correlated_term_acc&]
+    [correlated_term.name = &correlated_term_name&]
+    [association1.is_not = 0]
+    [association2.is_not = 0]
+:USE NESTING (set(term(correlated_term(gene_product(dbxref)(species)(graph_path1(association1))(grap_path2(association2))))))
+
+//
+schema: go
+desc: given a GO term, fetch other GO terms associated with the SAME gene_product.
+      will also summarise the number of gene_products each pair shares in common,
+      in the gene_product/number_of_gps field
+
+      For example, term_name = ribosome and correlated_term_name = protein biosynthesis
+      should yeild a high value for number_of_gps, since these terms are
+      biologically correlated
+
+      This is similar to the template "go-correlations" - the
+      difference is that this traverses the graph using the graph_path
+      transitive closure table
+
+      if xml output is chosen, gene_products will be nested inside
+      each term pair; nested inside each <gene_product> is the
+      graph_path table entry showing the transitive relationship
+      between the term that the gene_product was annotated to and
+      either of the two chosen terms
+
+      BE WARNED: if not constrained correctly, this could take a LONG TIME
+      to finish
+
+example_input: term_acc => SELECT acc FROM term
+example_input: term_name => SELECT name FROM term ORDER BY name
+example_input: correlated_term_type => biological_process, cellular_component, molecular_function
+example_input: correlated_term_acc => SELECT acc FROM term
+example_input: correlated_term_name => SELECT name FROM term ORDER BY name

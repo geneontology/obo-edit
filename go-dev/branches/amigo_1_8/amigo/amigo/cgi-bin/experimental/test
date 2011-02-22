@@ -1,0 +1,155 @@
+#!/usr/bin/perl -w
+#!/usr/bin/perl -wT
+
+##
+## reset; DBIC_TRACE = 1 ./test
+##
+
+BEGIN { require "config.pl"; }
+use lib $ENV{GO_DEV_ROOT} . '/go-perl';
+use lib $ENV{GO_DEV_ROOT} . '/go-db-perl';
+use lib $ENV{GO_DEV_ROOT} . '/amigo/perl';
+
+## Bring in necessaries.
+use utf8;
+use strict;
+use Data::Dumper;
+use AmiGO;
+use GOBO::DBIC::GODBModel::Schema;
+use GOBO::DBIC::GODBModel::Query;
+# use strict;
+# use Continuity;
+# use URI::Escape;
+# use Lucene;
+# use AmiGO::Worker::EvidenceCalculation;
+# use Utility::TSLParser;
+# use AmiGO::ReferenceGenome;
+# use Cache::Memcached;
+
+my $core = AmiGO->new();
+
+#print "content-type:text/html\n\n";
+#print <<EOC;
+#<html><body>
+#<p>
+#Ran!<br />
+#</p>
+#EOC
+
+## (Attempt at) Amelia's way.
+my $query = GOBO::DBIC::GODBModel::Query->new({type=>'association_coannotation'});
+my $results = $query->get_all_results({-and=>[
+					      #{'object.acc' => 'GO:0000430'},
+					      #{'object_2.acc' => 'GO:0000437'}
+					      {'object.acc' => 'GO:0015758'},
+					      {'object_2.acc' => 'GO:0005412'}
+					     ]});
+my $i = 0;
+foreach my $a (@$results){
+
+  print $a->term->acc . " ";
+  print $a->term->name . " and ";
+  print $a->gene_product->symbol . " ";
+  print $a->gene_product->dbxref->xref_dbname . ":";
+  print $a->gene_product->dbxref->xref_key. "\n";
+  $i++;
+}
+print "Total count: $i\n";
+
+## Seth's way.
+$query = GOBO::DBIC::GODBModel::Query->new({type=>'gene_product_two_terms'});
+$results = $query->get_all_results({-and=>[
+					   #{'object.acc' => 'GO:0000430'},
+					   #{'object_2.acc' => 'GO:0000437'}
+					   {'object.acc' => 'GO:0015758'},
+					   {'object_2.acc' => 'GO:0005412'}
+					  ]});
+$i = 0;
+foreach my $gp (@$results){
+
+#   print $a->term->acc . " ";
+#   print $a->term->name . " and ";
+#   print $a->gene_product->symbol . " ";
+#   print $a->gene_product->dbxref->xref_dbname . ":";
+#   print $a->gene_product->dbxref->xref_key. "\n";
+  print $gp->symbol . " ";
+  print $gp->dbxref->xref_dbname . ":";
+  print $gp->dbxref->xref_key. "";
+  $i++;
+
+  ## Check to see if we can just get the associations that occured in
+  ## the query.
+  my @assocs = $gp->association;
+  my @assocs_aux = $gp->association_aux;
+  print " (" . scalar(@assocs) . " " . scalar(@assocs_aux) . ")\n\t";
+  foreach my $a (@assocs){
+    print $a->term->acc . " ";
+  }
+  print "\n\t";
+  foreach my $a (@assocs_aux){
+    print $a->term->acc . " ";
+  }
+  print "\n";
+}
+print "Total count: $i\n";
+
+
+## Other stuff...
+$query = GOBO::DBIC::GODBModel::Query->new({type=>'term'});
+$results =
+  #$query->get_all_results({'gene_product.symbol'=>{like=>'%shroom%'}});
+  $query->get_all_results({'me.name'=>{like=>'%pigmentation%'}});
+$i = 0;
+my %primary_aid_hash = ();
+my %secondary_aid_hash = ();
+foreach my $t (@$results){
+
+  print $t->name . " (";
+  print $t->acc . ") ";
+  print scalar($t->gene_products) . "\n";
+
+  #my @assocs = $t->association->all;
+  my @assocs = $t->association;
+  foreach my $a (@assocs){
+
+    print "\t" . scalar($t->gene_products) . " ";
+    print $a->gene_product->symbol . " (";
+    print $a->gene_product->dbxref->xref_dbname . ":";
+    print $a->gene_product->dbxref->xref_key. ")\n";
+    $primary_aid_hash{$a->id} = 1;
+    $i++;
+  }
+}
+#   my $gp = $a->gene_product;
+
+#   ## Now, take the GPs, and trace them the other way.
+#   #my @mbuf =();
+#   #foreach my $a ($gp->association){
+#   foreach my $a ($gp->association->all){
+#     #push @mbuf, $a->id;
+#     $secondary_aid_hash{$a->id} = 1;
+#     if( ! defined $primary_aid_hash{$a->id} ){
+#       print "\tOUT FOUND(" . $a->id . ")\n";
+#     }else{
+#       print "\tIN FOUND(" . $a->id . ")\n";
+#     }
+#   }
+# #  sleep 1;
+#   #print "\t";
+#   #print join ' ', @mbuf;
+#   #print "\n";
+# }
+
+print "Total count: $i\n";
+
+my $o = 0;
+foreach my $key (keys %primary_aid_hash){
+  if( ! defined $secondary_aid_hash{$key} ){
+    $o++;
+  }
+}
+print "Total difference: $o\n";
+
+#print <<EOC;
+#</body></html>
+#EOC

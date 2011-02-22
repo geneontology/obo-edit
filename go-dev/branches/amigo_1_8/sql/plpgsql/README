@@ -1,0 +1,14 @@
+hack some way to query GO graph up or down in 2 db calls.
+currently (v 7.2), postgres can not return query result set (m rows of n fields) using plpqsql.
+
+To use these functions, you have to install plpgsql for your GO database
+by running 'createlang 'plpgsql' dbname' from command line or from inside psql shell;
+and load the function by '\i script_file_name;' inside psql shell or by loading it from command line.
+
+these functions put all results in temp table (which is only visible to the current db session),
+so you could get them by selection query from the temp table, whose name is returned from the function call.
+to repeat use the same function in one session, make sure to drop the temp table (until we figure out
+how to find out if the table existence in plpqsl so we do drop table inside the function itself).
+e.g. (pseudo code!)
+	$tblname = select r2ld(58);
+	select * from $tblname;

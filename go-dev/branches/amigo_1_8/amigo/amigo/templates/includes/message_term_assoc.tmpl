@@ -1,0 +1,233 @@
+[% IF error;
+	error_h = data.error_hash;
+
+	tmpl = '';
+	m_types = ['fatal', 'warning', 'info'];
+	FOREACH c = m_types;
+		IF error.$c;
+			img = c;
+			LAST;
+		END;
+	END %]
+<div id="messages" class="[% c %]">
+<ul id="error">
+[% 
+	amigo_disclaimer = "Due to limitations in the current AmiGO software, requests of this size have been disabled. If this is problematic, please contact the GO helpdesk about query limits. Otherwise, please select from one of the options below.";
+	
+	contact_link = 'If you cannot access the data you need using the options above, please <a href="http://www.geneontology.org/GO.contacts.shtml">contact the GO helpdesk</a>.';
+	
+	goose_link = 'Query the GO database directly using <a href="http://go.berkeleybop.org/goose" title="GOOSE, the GO Online SQL Environment">GOOSE, the GO Online SQL Environment</a>.';
+
+	FOREACH class = error.keys.sort;
+		message = '';
+	
+		FOREACH type = error.$class.keys;
+		#	type = msg.shift;
+			msg = [];
+			IF error.$class.$type != 1;
+				msg = error.$class.$type;
+			END;
+		#	'<li>' _ type _ '</li>';
+			SWITCH type;
+
+	#	fatal
+		CASE 'too_many_assocs';
+			tmpl = 'too_many_assocs';
+			IF term_assocs == 'all';
+				pronoun = 'its';
+				IF (msg.size > 1);
+					message = "There are over " _ error_h.orig_query.n_pages _ " pages of gene products annotated to the terms " _ msg.join(', ');
+					pronoun = 'their';
+				ELSE;
+					message = "There are over " _ error_h.orig_query.n_pages _ " pages of gene products annotated to the term " _ msg.0;
+				END;
+				message = message _ " and " _ pronoun _ " children.";
+			ELSIF term_assocs == 'direct';
+				IF (msg.size > 1);
+					message = "There are over " _ error_h.orig_query.n_pages _ " pages of gene products annotated to the terms " _ msg.join(', ') _ ".";
+				ELSE;
+					message = "There are over " _ error_h.orig_query.n_pages _ " pages of gene products annotated to the term " _ msg.0 _ ".";
+				END;
+			END;
+			message = message _ ' ' _ amigo_disclaimer;
+
+		CASE 'no_term';
+			message = 'No terms selected. Please go back and select one or more terms.';
+
+		CASE 'not_ont_term';
+			message = 'The term you have selected is not in the Gene Ontology and hence has no annotations.';
+
+		CASE 'root_term_assocs';
+			tmpl = 'root_term_assocs';
+			message = "Retrieval of gene product associations to the root terms is currently not allowed.";
+
+		CASE 'no_assocs';
+			tmpl = 'no_assocs';
+			pronoun = 'its';
+			IF (msg.size > 1);
+				message = "There are no gene products annotated to the terms " _ msg.join(', ');
+				pronoun = 'their';
+			ELSE;
+				message = "There are no gene products annotated to the term " _ msg.0;
+			END;
+			IF term_assocs != 'direct';
+				message = message _ " or " _ pronoun _ " children";
+			END;
+			IF filters_on;
+				message = message _ " with the current filter settings";
+			END;
+			message = message _ ".";
+
+		CASE 'obs_term';
+			message = 'This term is obsolete and hence has no gene products associated with it.';
+
+		CASE 'term_not_found';
+			IF (msg.size > 1);
+				message = "The following terms could not be found: " _ msg.join(", ");
+			ELSE;
+				message = "The term " _ msg.0 _ " could not be found.";
+			END;
+
+		CASE;
+			message = type;
+		END; %]
+
+		<li><img src="[% image_dir %]/[% class %].png" alt="[% class %] message"> [% message %]</li>
+	[% END; END %]
+</ul>
+
+[% IF tmpl == 'root_term_assocs' %]
+	<ul>
+		<li><a href="browse.cgi?action=reset-tree&amp;session_id=[% session_id %]">Browse the tree and select a more specific term.</a></li>
+		<li><a href="http://www.geneontology.org/GO.current.annotations.shtml">Download files containing all gene product associations</a> from the Gene Ontology website.</li>
+	</ul>
+[% ELSIF tmpl == 'too_many_assocs'; %]
+	<ul>
+		[% IF error_h.orig_query.dl_ok %]
+		<li>Download associations in <a href="term-assoc.cgi?[% url_string %]&amp;session_id=[% session_id %]&amp;format=rdfxml">RDF-XML</a> or <a href="term-assoc.cgi?[% url_string %]&amp;session_id=[% session_id %]&amp;format=go_assoc">tab-delimited gene association format</a>.</li>
+		[% END %]
+		<li>Alter your filter settings: 
+		[% INCLUDE filter_term_assoc.tmpl %]
+		</li>
+
+[% IF term_assocs == 'all';
+		IF error_h.html_direct_ok || error_h.dl_direct_ok;
+			n_prods = data.n_results_direct;
+			IF n_prods == 0;
+				prods = 'There are no gene products';
+			ELSIF n_prods == 1;
+				prods = 'There is one gene product';
+			ELSE; # n_prods > 1;
+				prods = 'There are ' _ n_prods _ ' ' _ prods;
+				%]
+				<li>max results download: [% max_results_download %]; max results paged: [% max_results_html %]; prods: [% n_prods %]</li>
+		[% END %]
+
+		<li>[% prods %] annotated directly to [% target.name %]. 
+		<ul class="indent">
+		[% IF error_h.html_direct_ok == 1 %]
+			<li><a href="term-assoc.cgi?term=[% target.acc %]&amp;term_assocs=direct&amp;session_id=[% session_id %]">View direct associations</a>[% IF data.n_pages_direct && data.n_pages_direct != 1 %] ([% data.n_pages_direct %] pages)[% END %]
+			</li>
+		[% END;
+			IF error_h.dl_direct_ok == 1 %]
+			<li>Download associations in <a href="term-assoc.cgi?term=[% target.acc %]&amp;session_id=[% session_id %]&amp;term_assocs=direct&amp;format=rdfxml">RDF-XML</a> or <a href="term-assoc.cgi?term=[% target.acc %]&amp;session_id=[% session_id %]&amp;term_assocs=direct&amp;format=go_assoc">tab-delimited gene association format</a>.</li>
+		[% END %]
+		</ul>
+	[% END;
+	END;
+
+
+
+	IF data.term_h && data.term_h.size > 0;
+		FOREACH t = data.term_h.keys;
+			this_term = data.term_h.$t;
+			IF error_h.term.${this_term.acc};
+				term_data = error_h.term.${this_term.acc} %]
+			[% #	if the term has children, offer a link
+				IF term_data.direct_children && term_data.direct_children > 0;
+					children = ' children';
+					IF term_data.direct_children == 1;
+						children = 'one child term';
+					ELSE;
+						children = term_data.direct_children _ children;
+					END %]
+		<li><a href="browse.cgi?action=set-tree&amp;open_0=[% this_term.acc %]&amp;open_1=[% this_term.acc %]&amp;session_id=[% session_id %]">View the [% children %] of [% this_term.acc %]</a> and select a more specific GO term.</li>
+			[% END;
+			END;
+		END;
+	END; %]
+[% IF show_goose_links %]
+		<li>[% goose_link %]</li>
+[% END %]
+		<li><a href="http://www.geneontology.org/GO.current.annotations.shtml">Download files containing all gene product associations</a> from the Gene Ontology website.</li>
+	</ul>
+<p>[% contact_link %]</p>
+
+[% # end of tmpl too_many_assocs
+
+
+		ELSIF tmpl == 'no_assocs';
+			IF filters_on %]
+	<ul>
+		<li>Alter your filter settings: 
+		[% INCLUDE filter_term_assoc.tmpl %]
+		</li>
+	</ul>
+		[% END %]
+
+
+	[% END
+		#	end of the template choices.
+	
+	%]
+
+[% 
+
+	IF 1 == 0;  # turn this off for the time being
+	IF data.term_h && data.term_h.size > 0; %]
+<ul>
+	[% FOREACH t = data.term_h.keys;
+			this_term = data.term_h.$t;
+			IF error_h.term.${this_term.acc};
+				term_data = error_h.term.${this_term.acc} %]
+<li><a href="term_details?term=[% this_term.acc %]&amp;session=[% session_id %]" title="View term details">[% this_term.name %] ; [% this_term.acc %]</a>:</li>
+			[% #	if the term has children, offer a link
+				IF term_data.direct_children && term_data.direct_children > 0;
+					children = ' children';
+					IF term_data.direct_children == 1;
+						children = 'one child term';
+					ELSE;
+						children = term_data.direct_children _ children;
+					END %]
+		<li><a href="browse.cgi?action=set-tree&amp;open_0=[% this_term.acc %]&amp;open_1=[% this_term.acc %]&amp;session_id=[% session_id %]">View the [% children %] of [% this_term.acc %]</a> and select a more specific GO term.</li>
+			[% END;
+				
+				FOREACH ass_type = ['direct', 'all'];
+					FOREACH ftype = ['filtered', 'unfiltered'];
+						IF error_h.term.${this_term.acc}.$ass_type.$ftype.n_results %]
+				<li>[% error_h.term.${this_term.acc}.$ass_type.$ftype.n_results %][% IF ass_type == 'direct'; ' direct '; END %] associations
+[% IF error_h.term.${this_term.acc}.$ass_type.$ftype.html_ok %]
+<a href="term-assoc.cgi?term=[% this_term.acc %]&amp;session=[% session_id %]" title="View gene product associations">view</a>
+[% END;
+	IF error_h.term.${this_term.acc}.$ass_type.$ftype.dl_ok %]
+<a href="term-assoc.cgi?term=[% this_term.acc %]&amp;session=[% session_id %]&amp;format=go_assoc" title="Download in gene association file format">gene association format</a>
+<a href="term-assoc.cgi?term=[% this_term.acc %]&amp;session=[% session_id %]&amp;format=rdfxml" title="Download in RDF XML format">RDF XML</a>
+[% END; %]</li>
+			[% END; END; END;
+			END;
+		END;
+	'</ul>';
+	END;
+
+
+	USE Dumper; '<pre style="font-size: 0.7em">'; Dumper.dump(error);"\n\n";
+	Dumper.dump(error_h);
+
+	'</pre>';
+
+
+	END; %]
+
+
+</div>
+[% END %]

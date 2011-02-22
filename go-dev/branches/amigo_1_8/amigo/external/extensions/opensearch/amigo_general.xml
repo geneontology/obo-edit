@@ -1,0 +1,30 @@
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/"
+                       xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+  <ShortName>AmiGO (term)</ShortName>
+  <Description>Search for terms in the Gene Ontology</Description>
+  <InputEncoding>UTF-8</InputEncoding>
+  <Image width="16" height="16">data:image/x-icon;base64,
+iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A
+/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9gIGAUdMT8drp4AAAAZdEVYdENv
+bW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAC5ElEQVQ4y4XOu24cVQCA4f/cZs/Mem/2em0T
+S3HWSURCgUIoIkGXggJBQ0HHWyDlJXiDSIiHoECCAooUcbjJEcbB2Fp7DWu8Xq+9l5kzO3MOBaKg
+4nuCT7z90efB25TNwxTXO6R5q04ZGnjfYSOf044cI1HQrtRZGwuaQnF0t2RwY46QKToXOZHziEwg
+lUUqyzz3aCkQ3hOMxAvBVGQkRtDMBJ2TJkooZlsZ2hKRTD1mWlIkiiJIXFBoLXi6+wRE4JNHT8i1
+J61GjHLDSjpG9SwX0/tIM/SY8wVyliGTQJp7pI05He6QlXOyIuVouEvhHZlMOWtMuQKqs4zXzl8h
+13vXLI0ucc0U4oS5tES2yeHJV/xrd7BDnhhSnZIy4zy+5o9oxgSJLuUEaQWljcmCQdsW6eiU4eSA
+zeQmKOiPewzGA9brK1SN45IZ10oQhEBnrRgnS0qtqUR1lrxl//hrAN7aeIQz0P+1x8HpDq3GB4io
+IMgCb0oWxiNZxNhQYzk0WXUJtVnGwfAZRho2Otus3biLjRJ+P/2BReGYBYWrGPJYU9Q0ctUZ2osK
+y4WiURQMxt/hypTtlXsU1QSzvER36yF54eidvUTqGJfkLFogWhKp66CjgmrFU409P599C8D2zQeU
+LcNEBLqvvwvAfn+HSU2Q1i00p7Q3MnRWB/IFi9IxuuoxmJwA8OWLL+AF/3ExOuZicsxau0U7XtCe
+NpGplZR1S9qI+GX8nP9zdPQcV5lSrVXw57fQOg7khcPl1/RPdwDB4/c/pdpZwSwFMuWRUjC/vuCb
+p5/x528/8cbjdyjCDBUFZNANbH2Z4XiPonCsb96nvXWPZGWVYC06NlRbMZ3uGut3blPmOf29PUYZ
+5K0echbd5kp1ebX/T7/75oeQdCBqYeI2VrXRfgkWiu6DhwD0X/7IKE+4bFwh3vv4+6C0QesKUmm8
+LEB4ZOTQlZSKmqL0nCAu8XJKWhui7ITZOEYUf/E3BxhPjv4l+o8AAAAASUVORK5CYII=</Image>
+  <Url type="text/html" method="POST" template="http://localhost/cgi-bin/amigo/search.cgi?query={searchTerms}">
+    <!--
+	<Param name="paramName1" value="paramValue1"/>
+	</Url>
+      -->
+    <Url type="application/x-suggestions+json" template="http://localhost/cgi-bin/amigo/completion?format=opensearch&amp;type=term&amp;query={searchTerms}"/>
+  <moz:SearchForm>http://localhost/cgi-bin/amigo/go</moz:SearchForm>
+</OpenSearchDescription>

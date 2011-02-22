@@ -1,0 +1,18 @@
+:SELECT 
+  species.*, count(gene_product.id) AS species__gpcount
+:FROM
+  species
+  INNER JOIN gene_product ON (gene_product.species_id = species.id)
+:WHERE
+    [species.ncbi_taxa_id => &ncbi_taxa_id&]
+    [species.common_name => &species_common_name&]
+    [species.genus => &genus&]
+    [species.species => &species&]
+:GROUP BY species.ncbi_taxa_id
+:ORDER BY species.ncbi_taxa_id
+//
+schema: go
+desc: 
+
+ fetches species and number of gene products in that species (that are
+ in the db)

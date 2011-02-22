@@ -1,0 +1,195 @@
+<!--    The Gene Ontology DTD                                   -->
+
+<!--  The idea is that GO is dumped as a linear list of terms.  -->
+<!--  The relationships between the terms are represented in    -->
+<!--  RDF, using the rdf:about and rdf:resource tags.  RDF was  -->
+<!--  chosen because of its flexibilty at representing graphs   --> 
+<!--  and widespread tool support.                              -->
+
+<!--  Basically, one can think of rdf:about and rdf:resource    -->
+<!--  as being similar to xml's id and idref, respectively.     -->
+<!--  RDF, however, can represent multiple parentage.  The      -->
+<!--  other thing to know about rdf is that the IDs should be   -->
+<!--  universally unique, so GO:0003700 becomes:                -->
+<!--  http://www.geneontology.org/go#GO:0003700                 -->
+
+<!ENTITY parseType "CDATA  #FIXED  'Resource'">
+
+<!ELEMENT go:go (
+    go:version?,
+    rdf:RDF
+)>
+
+<!ATTLIST go:go
+    xmlns:go   CDATA  #FIXED  "http://www.geneontology.org/dtd/go.dtd#"
+    xmlns:rdf  CDATA  #FIXED  "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+
+<!ELEMENT go:version (#PCDATA)>
+
+<!ATTLIST go:version
+    timestamp  CDATA  #IMPLIED
+>
+
+
+<!--  RDF requires any rdf nodes to be inside the rdf:RDF tag   -->
+
+<!ELEMENT rdf:RDF (go:term*)>
+    
+<!ELEMENT go:term (
+    go:accession,
+    go:name,
+    go:synonym*, 
+    go:definition?, 
+    go:comment*,
+    (go:part_of | go:is_a | go:negatively_regulates | go:positively_regulates | go:regulates)*,
+    go:dbxref*,
+    go:association*,
+    go:history*,
+    go:is_obsolete*
+    )>
+
+<!ATTLIST go:term
+    focus   (yes|no)  #IMPLIED
+    rdf:about  CDATA     #REQUIRED
+    >
+
+<!ELEMENT go:accession (#PCDATA)>
+<!ELEMENT go:name (#PCDATA)>
+<!ELEMENT go:is_obsolete (#PCDATA)>
+<!ELEMENT go:comment (#PCDATA)>
+
+<!--  Synonyms are simply represented as a text string.   -->
+
+<!ELEMENT go:synonym (#PCDATA)>
+<!ELEMENT go:definition (#PCDATA)>
+
+<!--  Each term can be is_a and part_of many terms  -->
+<!--  This is represented with an rdf:resource att -->
+<!--  Right now, you can also add a common name    -->
+<!--  for the linked term.  Is this smart?         -->
+
+<!ELEMENT go:part_of (#PCDATA)>
+<!ATTLIST go:part_of
+  rdf:resource   CDATA   #REQUIRED
+>
+
+<!ELEMENT go:regulates (#PCDATA)>
+<!ATTLIST go:regulates
+  rdf:resource   CDATA   #REQUIRED
+>
+
+<!ELEMENT go:negatively_regulates (#PCDATA)>
+<!ATTLIST go:negatively_regulates
+  rdf:resource   CDATA   #REQUIRED
+>
+
+<!ELEMENT go:positively_regulates (#PCDATA)>
+<!ATTLIST go:positively_regulates
+  rdf:resource   CDATA   #REQUIRED
+>
+
+<!ELEMENT go:is_a (#PCDATA)>
+<!ATTLIST go:is_a
+  rdf:resource   CDATA   #REQUIRED
+>
+
+<!ELEMENT go:association (
+   go:evidence+,
+   go:gene_product
+)>
+
+<!ATTLIST go:association
+   rdf:parseType CDATA  #FIXED  'Resource'
+>
+
+<!ELEMENT go:evidence (
+    go:dbxref?
+)>
+
+
+<!--  IC, ND and NR really do not belong, but the curators  -->
+<!-- are using them, so I'm including them for now          -->
+<!-- for the sake of completeness.                          -->
+
+<!ATTLIST go:evidence 
+    evidence_code   ( IEA | IMP | IGI | IPI | ISS | IDA | IEP | TAS |
+NAS | IC | ND | NR | RCA | NULL )  #REQUIRED
+>
+
+<!ELEMENT go:gene_product (
+    go:name,
+    go:dbxref
+)>
+
+<!ATTLIST go:gene_product
+    rdf:parseType CDATA  #FIXED  'Resource'
+>
+
+<!--  I'm using reference instead of accession  -->
+<!--  since these don't have to be primary db   -->
+<!--  accessions in the traditional sense.      -->
+<!--  Do they?                                  -->
+
+<!ELEMENT go:dbxref (
+    go:database_symbol,
+    go:reference
+)>
+
+<!ATTLIST go:dbxref
+    rdf:parseType CDATA  #FIXED  'Resource'
+>
+
+<!ELEMENT go:database_symbol (#PCDATA)>
+
+<!ELEMENT go:reference (#PCDATA)>
+<!ATTLIST go:reference
+    type CDATA  #IMPLIED
+>
+
+<!--  Each term should have one history node at   -->
+<!--  creation.  Another history node is added    -->
+<!--  each time a term is deleted, split, moved   -->
+<!--  or merged.                                  -->
+
+<!ELEMENT go:history (
+    go:date, 
+    go:person, 
+    go:rationale, 
+    ( go:created | 
+      go:deleted | 
+      go:split   | 
+      go:merged  | 
+      go:moved )
+    )>
+<!ATTLIST go:history
+  obsolete   (yes|no)   #IMPLIED
+>
+
+
+<!ELEMENT go:date (#PCDATA)>
+<!ELEMENT go:person (#PCDATA)>
+<!ELEMENT go:rationale (#PCDATA)>
+<!ELEMENT go:created (EMPTY)>
+<!ELEMENT go:deleted (EMPTY)>
+
+<!--  In go:split, go:merged and go:moved, the  -->
+<!--  rdf:resource ref should point to the      -->
+<!--  "parent" term, ie the term that this      -->
+<!--  term was split from.                           -->
+
+<!ELEMENT go:split (EMPTY)>
+<!ATTLIST go:split
+  rdf:resource   CDATA   #REQUIRED
+>
+           
+<!ELEMENT go:merged (EMPTY)>
+<!ATTLIST go:merged
+  rdf:resource    CDATA   #REQUIRED
+>
+              
+<!ELEMENT go:moved (EMPTY)>
+<!ATTLIST go:moved
+  rdf:resource     CDATA   #REQUIRED
+>           
+

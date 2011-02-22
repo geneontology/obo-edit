@@ -1,0 +1,153 @@
+GO DATABASE STAG SQL TEMPLATES
+==============================
+
+[note: this part of go-dev is NOT YET FULLY SUPPORTED]
+
+This directory contains SQL Templates for querying chado in stag
+format. The templates can either be browsed as a resource in their own
+right, or they can be used in conjunction with the DBStag library.
+
+For full documentation on the stag project, see 
+
+  http://stag.sf.net
+
+PREREQUISITES
+=============
+
+You need a local GO MySQL database (see http://www.godatabase.org/dev
+for download details)
+
+You will also need to install the perl modules
+
+  Data::Stag   (version 0.04 or higher)
+  DBIx::DBStag (version 0.03 or higher)
+
+This can be installed from CPAN, like this
+
+  perl -MCPAN -e shell
+  install Data::Stag
+  install DBIx::DBStag
+
+Or it can be downloaded from sourceforge
+
+  http://sourceforge.net/project/showfiles.php?group_id=68482&package_id=81568
+
+  tar -zxvf Data::Stag-0.04-tar.gz
+  cd  Data::Stag-0.04
+  perl Makefile.PL
+  make test
+  make install
+
+  tar -zxvf DBIx::DBStag-0.03-tar.gz
+  cd  DBIx::DBStag-0.03
+  perl Makefile.PL
+  make test
+  make install
+
+Note that the test suite currently relies on postgresql being
+installed, although DBStag still works with MySQL. You may need to
+pass in extra parameters when you run "perl Makefile.PL"
+
+UNERSTANDING STAG SQL TEMPLATES
+===============================
+
+A stag SQL template is fairly simple - the first part is basically an
+SQL query with placeholder variables, and the second part is optional
+metadata.
+
+A placeholder variable (typically in the WHERE part of the query)
+looks like this
+
+  [ feature.name => &name& ]
+
+This means the template user can optionally fill in a value for &name&
+- this can be a string match (in which case LIKE will be used) or an
+exact match.
+
+DBStag utilises one extension to SQL - the "USE NESTING" clause.
+
+This is for constructing hierarchical XML from the query results -
+DBStag will decompose the results of any SQL query back into the
+original relations
+
+For full documentation on templates, install DBIx::DBStag (see above)
+and read the pod docs for DBIx::DBStag::SQLTemplate
+
+Or you can read the same documentation online:
+
+  http://search.cpan.org/perldoc?DBIx::DBStag
+  http://search.cpan.org/perldoc?DBIx::DBStag::SQLTemplate
+
+USING STAG TEMPLATES
+====================
+
+Stag templates can either be used on the command line or via a WWW
+interface. Both give the option of returning either row data or
+hierarchical data (eg XML).
+
+The WWW interface to GO via stag templates may be running here:
+
+  http://www.godatabase.org/cgi-bin/ubiq-go/ubiq.cgi
+
+  [this is not a permanent URL - Demo server]
+
+Use this WWW interface to select and execute templates
+
+Alternatively, you can install DBIx::DBStag, download the go-dev
+distribution (see http://www.godatabase.org/dev) and do this:
+
+  setenv DBSTAG_TEMPLATE_DIRS "$HOME/go-dev/sql/stag-templates"
+
+(you may have to alter the path depending on where you place go-dev on
+your filesystem)
+
+You can use a template by specifying its name after the slash with the
+following script:
+
+  selectall_xml.pl -d go /go-geneproduct-by-term GO:0008045
+
+note - you may need to provide a full DBI DSN for the dbname; for example
+
+  selectall_xml.pl -d dbi:mysql:dbname=go /go-geneproduct-by-term GO:0008045
+
+You can bind specific placeholder variables like this:
+
+  selectall_xml.pl -d go /go-geneproduct-by-term term_name='blood coagulation'
+
+This will generate a large chunk of XML; there is no DTD for this XML
+- the structure is determined dynamically by the
+go-geneproduct-by-term.stg template
+
+  (see the USE NESTING stag-specific SQL extension)
+
+Each template has a list of parameters you can pass in; to view the
+list for a particular template do this:
+
+  selectall_xml.pl -d go /go-geneproduct-by-term -h
+
+You can get a list of templates available for a schema like this:
+
+  selectall_xml.pl -d go -h
+
+You can also generate an individual script for every template; in this
+directory type
+
+  mkdir ~/templates ~/stagbin
+  setenv PATH "$PATH:$HOME/stagbin"
+  make -f make-publish PUBTMPLDIR=~/sql-templates TEMPLATEBINDIR=~/stagbin
+
+(substituting appropriately)
+
+then you can just run the templates as executables; try
+
+  go-geneproduct-by-term -h
+
+For instructions
+
+Have fun! More GO-specific documentation coming soon. You can also
+view the generic DBStag documentation here:
+
+  http://stag.sourceforge.net
+
+Chris Mungall BDGP
+cjm@fruitfly.org

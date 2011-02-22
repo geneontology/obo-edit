@@ -1,0 +1,25 @@
+:SELECT 
+  species.*,
+  term.*,
+  gene_product_count.*
+:FROM
+ term
+ INNER JOIN gene_product_count ON (term.id=gene_product_count.term_id)
+ INNER JOIN species ON (gene_product_count.species_id=species.id)
+:WHERE
+    [species.ncbi_taxa_id => &ncbi_taxa_id&]
+    [species.common_name => &species_common_name&]
+    [species.genus => &genus&]
+    [species.species => &species&]
+    [term.acc => &term_acc&]
+    [term.name => &term_name&]
+    [term.term_type => &term_type&]
+    [term.is_obsolete => &term_is_obsolete&]
+    [term.is_root => &term_is_root&]
+    [term.id => &term_id&]
+    [term_definition.term_definition => &term_definition&]
+:USE NESTING (set(term(species(gene_product_count))))
+//
+schema: go
+desc: 
+

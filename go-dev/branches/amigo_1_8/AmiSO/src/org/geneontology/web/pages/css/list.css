@@ -1,0 +1,12 @@
+
+.anEvenRow {
+    font-size: 110%;
+    padding: .33em;
+    background: #ccddcc;
+}
+
+.anOddRow {
+    font-size: 110%;
+    padding: .33em;
+    background: #ffffff;
+}

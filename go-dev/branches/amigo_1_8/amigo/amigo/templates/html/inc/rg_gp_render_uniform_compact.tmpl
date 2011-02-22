@@ -1,0 +1,88 @@
+<!-- START template: rg_gp_render_uniform_compact.tmpl -->
+<!-- aid_hash = [% aid_hash %] -->
+
+[% aid_list = aid_hash.keys %]
+
+[% ## TODO: Way more logic than I want in here, but if this works out, %]
+[% ## we can do the information destruction earlier in the data stream. %]
+
+[% ## First, compact all things down to a unique GP, and preserve non-ev. %]
+[% ## GP link is considered the key (symbols might not be unique, links %]
+[% ## had better be...). %]
+[% compactor = {} %]
+[% FOREACH aid = aid_list %]
+
+[%    ## Variable collection. %]
+[%    a_struct = aid_hash.$aid %]
+[%    key = a_struct.gene_product_link %]
+
+[%    IF ! compactor.$key %]
+[%       compactor.$key = {} %]
+[%       compactor.$key.gene_product_link = a_struct.gene_product_link %]
+[%       compactor.$key.gene_product_symbol = a_struct.gene_product_symbol %]
+[%       compactor.$key.gene_product_id = a_struct.gene_product_id %]
+[%       compactor.$key.direct_p = 0 %]
+[%       compactor.$key.has_exp_p = 0 %]
+[%       compactor.$key.has_good_iss_p = 0 %]
+[%       compactor.$key.has_odd_iss_p = 0 %]
+[%       compactor.$key.has_non_p = 0 %]
+[%    END %]
+[%    obj = compactor.$key %]
+
+[%    IF a_struct.has_exp_p >= 1 %]
+[%       obj.has_exp_p = 1 %]
+[%    END %]
+
+[%    IF a_struct.has_good_iss_p >= 1 %]
+[%       obj.has_good_iss_p = 1 %]
+[%    END %]
+
+[%    IF a_struct.has_odd_iss_p >= 1 %]
+[%       obj.has_odd_iss_p = 1 %]
+[%    END %]
+
+[% #   IF a_struct.has_exp_p == 0 && a_struct.has_good_iss_p == 0 && a_struct.has_odd_iss_p == 0 %]
+[% #      obj.has_non_p = 1 %]
+[% #   END %]
+
+[%    IF a_struct.direct_p >= 1 %]
+[%       obj.direct_p = 1 %]
+[%    END %]
+
+[% END %]
+
+
+[% gp_list = compactor.keys %]
+[% i = 1 %]
+[% FOREACH key = gp_list %]
+[%    gp_struct = compactor.$key %]
+
+[%    ## Make evidence list. %]
+[%    total_assoc_types = 0 %]
+[%    ev_types = [] %]
+[%    IF gp_struct.has_exp_p == 1 %]
+[%       total_assoc_types = total_assoc_types + 1 %]
+[%       ev_types.push('<a href="#ev_e" title="Experimental" style="border:1px solid #666666; background-color: ' _ STATUS_COLORS.exp _ ';">&nbsp;e&nbsp;</a>') %]
+[%    END %]
+[%    IF gp_struct.has_good_iss_p == 1 %]
+[%       total_assoc_types = total_assoc_types + 1 %]
+[%       ev_types.push('<a href="#ev_p" title="Proper ISS" style="border:1px solid #666666; background-color: ' _ STATUS_COLORS.good _ ';">&nbsp;p&nbsp;</a>') %]
+[%    END %]
+[%    IF gp_struct.has_odd_iss_p == 1 %]
+[%       total_assoc_types = total_assoc_types + 1 %]
+[%       ev_types.push('<a href="#ev_i" title="Improper ISS" style="border:1px solid #666666; background-color: ' _ STATUS_COLORS.odd _ ';">&nbsp;i&nbsp;</a>') %]
+[%    END %]
+[% #   IF gp_struct.has_non_p == 1 %]
+[%    IF gp_struct.has_exp_p == 0 && gp_struct.has_good_iss_p == 0 && gp_struct.has_odd_iss_p == 0 %]
+[%       total_assoc_types = total_assoc_types + 1 %]
+[%       ev_types.push('<a href="#ev_n" title="Evidence that is neither experimantal nor ISS" style="border:1px solid #666666; background-color: ' _ STATUS_COLORS.bad _ ';">&nbsp;n&nbsp;</a>') %]
+[%    END %]
+[%    ev_span = ev_types.join('&nbsp;') %]
+
+[%    ## Add symbol %]
+[%    IF gp_struct.direct_p == 1 %]<b>[% END %]<a title="[% gp_struct.gene_product_symbol %] ([% gp_struct.gene_product_id %])" href="[% gp_struct.gene_product_link %]">[% gp_struct.gene_product_symbol %]</a></span>[% IF gp_struct.direct_p == 1 %]</b>[% END %][% IF total_assoc_types >= 1 %]&nbsp;[% ev_span %][% END %]
+
+[%    IF i < gp_list.size %]<br />[% END %]
+[%    i = i + 1 %]
+[% END %]
+<!-- END template: rg_gp_render_uniform_compact.tmpl -->

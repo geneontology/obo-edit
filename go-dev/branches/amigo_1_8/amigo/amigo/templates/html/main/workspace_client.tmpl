@@ -1,0 +1,136 @@
+<!-- START: workspace_client.tmpl -->
+
+<div id="error"
+     style="position: absolute; top: 40%; left: 40%; color: red;" ></div>
+
+<table width="100%" height="95%">
+  <tr height="95%">
+    <td width="66%" height="95%">
+      
+      <div id="status"
+	   style="font-size:75%; height:100%;">
+      </div>
+
+    </td>
+
+    <td width="33%" height="95%">
+
+      <div id="wsp-cont-tabs" style="font-size:75%; height: 100%">
+	<ul style="">
+	  <li><a href="#wsp-cont-actions"><span>Chain</span></a></li>
+	  <li><a href="#wsp-cont-options"><span>Options</span></a></li>
+	  <li><a href="#wsp-cont-usables"><span>Usables</span></a></li>
+	</ul>
+  
+  <div id="wsp-cont-actions">
+    <form action="" id="ws-chain-form" method="POST">
+      <p>
+	<label>Use</label>
+	<select id="ws-chain-form-workspace" name="workspace">
+	</select>
+	<label>for</label>
+	<select id="ws-chain-form-destination" name="destination">
+	  <option value="go_navigation">navigation</option>
+	  <option value="term_enrichment">term enrichment</option>
+	  <option value="slimmer">slimmer</option>
+	  <option value="nmatrix">n-matrix</option>
+	  <option value="blast">blast</option>
+	</select>
+	<input id="ws-chain-submit" type="submit" class="button" value="go">
+      </p>
+    </form>
+
+  </div>
+
+  <div id="wsp-cont-options">
+
+    <form action="" id="ws-refresh-form" method="POST">
+      <p>
+	<input type="hidden" name="mode" value="workspace_client">
+	Refresh workspaces
+	<input id="ws-refresh-submit" type="submit"
+	       class="button" value="refresh">
+      </p>
+    </form>
+
+    <form action="" id="ws-add-form" method="POST">
+      <input type="hidden" name="mode" value="workspace">
+      <input type="hidden" name="action" value="add_workspace"> 
+      <p>
+	<label>Add workspace</label>
+	<input id="ws-add-form-workspace"
+	       class="textBox" type="text" 
+	       name="workspace" size="10" value="">
+	<input id="ws-add-submit"
+	       type="submit"
+	       class="button"
+	       value="add">
+      </p>	
+    </form>
+    
+    <form action="" id="ws-copy-form" method="POST">
+      <input type="hidden" name="mode" value="workspace">
+      <input type="hidden" name="action" value="copy_workspace"> 
+      <p>
+	<label>Copy</label>
+	<select id="ws-copy-form-workspace-from" name="workspace-form">
+	</select>
+	to
+	<select id="ws-copy-form-workspace-to" name="workspace-to">
+	</select>
+	<input id="ws-copy-submit"
+	       type="submit"
+	       class="button"
+	       value="copy">
+      </p>	
+    </form>
+    
+    <form action="" id="ws-clear-form" method="POST">
+      <input type="hidden" name="mode" value="workspace">
+      <input type="hidden" name="action" value="clear_workspace"> 
+      <p>
+	<label>Clear workspace</label>
+	<select id="ws-clear-form-workspace" name="workspace">
+	</select>
+	<input id="ws-clear-submit" type="submit" class="button" value="clear">
+      </p>	
+    </form>
+    
+    <form action="" id="ws-remove-form" method="POST">
+      <input type="hidden" name="mode" value="workspace">
+      <input type="hidden" name="action" value="remove_workspace">    
+      <p>
+	<label>Remove workspace</label>
+	<select id="ws-remove-form-workspace" name="workspace">
+	</select>
+	<input id="ws-remove-submit" type="submit"
+	       class="button" value="remove">
+      </p>
+    </form>
+    
+  </div>
+
+  <div id="wsp-cont-usables">
+    
+    <p>
+      <a title="Jump to the live search"
+         href="amigo_exp?mode=heavy_client_jquery">
+        Live Search
+      </a>
+    </p>      
+    
+    <p>
+      <a title="Enter the matrix"
+         href="amigo_exp?mode=nmatrix">
+        N-Matrix
+      </a>
+    </p>      
+    
+  </div> 
+
+</div>
+
+</td>
+</tr>
+</table>
+<!-- END: workspace_client.tmpl -->

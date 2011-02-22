@@ -1,0 +1,453 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title></title>
+<style>
+          body { background: white;
+                 color: black; }
+          h2   { border-top: black solid 1px;
+                 margin-top: 2em;
+                 padding-top: 1em; }
+        </style>
+</head>
+<body>
+<h2>Table of Contents</h2>
+<h3>Elements</h3>
+<ul>
+<li><a href="#element-type-acc">acc</a></li>
+<li><a href="#element-type-alt_id">alt_id</a></li>
+<li><a href="#element-type-auto-generated-by">auto-generated-by</a></li>
+<li><a href="#element-type-comment">comment</a></li>
+<li><a href="#element-type-date">date</a></li>
+<li><a href="#element-type-dbname">dbname</a></li>
+<li><a href="#element-type-dbxref">dbxref</a></li>
+<li><a href="#element-type-def">def</a></li>
+<li><a href="#element-type-default-namespace">default-namespace</a></li>
+<li><a href="#element-type-defstr">defstr</a></li>
+<li><a href="#element-type-domain">domain</a></li>
+<li><a href="#element-type-format-version">format-version</a></li>
+<li><a href="#element-type-global">global</a></li>
+<li><a href="#element-type-header">header</a></li>
+<li><a href="#element-type-id">id</a></li>
+<li><a href="#element-type-idspace">idspace</a></li>
+<li><a href="#element-type-intersection_of">intersection_of</a></li>
+<li><a href="#element-type-inverse_of">inverse_of</a></li>
+<li><a href="#element-type-is_a">is_a</a></li>
+<li><a href="#element-type-is_anonymous">is_anonymous</a></li>
+<li><a href="#element-type-is_anti_symmetric">is_anti_symmetric</a></li>
+<li><a href="#element-type-is_obsolete">is_obsolete</a></li>
+<li><a href="#element-type-is_reflexive">is_reflexive</a></li>
+<li><a href="#element-type-is_root">is_root</a></li>
+<li><a href="#element-type-is_symmetric">is_symmetric</a></li>
+<li><a href="#element-type-is_transitive">is_transitive</a></li>
+<li><a href="#element-type-lexical_category">lexical_category</a></li>
+<li><a href="#element-type-local">local</a></li>
+<li><a href="#element-type-name">name</a></li>
+<li><a href="#element-type-namespace">namespace</a></li>
+<li><a href="#element-type-obo">obo</a></li>
+<li><a href="#element-type-range">range</a></li>
+<li><a href="#element-type-relationship">relationship</a></li>
+<li><a href="#element-type-remark">remark</a></li>
+<li><a href="#element-type-saved-by">saved-by</a></li>
+<li><a href="#element-type-source">source</a></li>
+<li><a href="#element-type-source_md5">source_md5</a></li>
+<li><a href="#element-type-source_mtime">source_mtime</a></li>
+<li><a href="#element-type-source_path">source_path</a></li>
+<li><a href="#element-type-source_type">source_type</a></li>
+<li><a href="#element-type-subset">subset</a></li>
+<li><a href="#element-type-subsetdef">subsetdef</a></li>
+<li><a href="#element-type-synonym">synonym</a></li>
+<li><a href="#element-type-synonym_category">synonym_category</a></li>
+<li><a href="#element-type-synonym_text">synonym_text</a></li>
+<li><a href="#element-type-term">term</a></li>
+<li><a href="#element-type-to">to</a></li>
+<li><a href="#element-type-type">type</a></li>
+<li><a href="#element-type-typedef">typedef</a></li>
+<li><a href="#element-type-union_of">union_of</a></li>
+<li><a href="#element-type-xref_analog">xref_analog</a></li>
+</ul>
+  <h2 id="element-type-obo">Element Type: obo</h2>
+      <p>top-level element corresponding to an ontology of part of an ontology</p>
+    <h3>Content Model</h3>
+      <p>Optional repeatable choice of:</p>
+<ul>
+        <li>Exactly 1 <a href="#element-type-source">source</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-synonym_category">synonym_category</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-header">header</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-term">term</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-typedef">typedef</a>
+</li>
+      </ul>
+    
+  <h2 id="element-type-source">Element Type: source</h2>
+      <p>metadata on the source file</p>
+    <h3>Content Model</h3>
+      <p>Optional repeatable choice of:</p>
+<ul>
+        <li>Exactly 1 <a href="#element-type-source_type">source_type</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-source_path">source_path</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-source_md5">source_md5</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-source_mtime">source_mtime</a>
+</li>
+      </ul>
+    
+  <h2 id="element-type-source_type">Element Type: source_type</h2>
+<h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-source_path">Element Type: source_path</h2>
+<h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-source_md5">Element Type: source_md5</h2>
+<h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-source_mtime">Element Type: source_mtime</h2>
+<h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-header">Element Type: header</h2>
+      <p>ontology metadata</p>
+    <h3>Content Model</h3>
+      <p>Optional repeatable choice of:</p>
+<ul>
+        <li>Exactly 1 <a href="#element-type-format-version">format-version</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-date">date</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-saved-by">saved-by</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-auto-generated-by">auto-generated-by</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-default-namespace">default-namespace</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-remark">remark</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-subsetdef">subsetdef</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-idspace">idspace</a>
+</li>
+      </ul>
+    
+  <h2 id="element-type-format-version">Element Type: format-version</h2>
+      <p>Should be 1.2</p>
+    <h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-date">Element Type: date</h2>
+      <p>In DD.MM.YYYY time format</p>
+    <h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-saved-by">Element Type: saved-by</h2>
+      <p>username of last curator to edit file</p>
+    <h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-auto-generated-by">Element Type: auto-generated-by</h2>
+      <p>name of program that wrote file</p>
+    <h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-default-namespace">Element Type: default-namespace</h2>
+      <p>ontology-wide default</p>
+    <h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-remark">Element Type: remark</h2>
+      <p>description of ontology</p>
+    <h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-subsetdef">Element Type: subsetdef</h2>
+<h3>Content Model</h3>
+      <p>Optional repeatable choice of:</p>
+<ul>
+        <li>Exactly 1 <a href="#element-type-id">id</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-name">name</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-dbxref">dbxref</a>
+</li>
+      </ul>
+    
+  <h2 id="element-type-idspace">Element Type: idspace</h2>
+<h3>Content Model</h3>
+      <p>Optional repeatable choice of:</p>
+<ul>
+        <li>Exactly 1 <a href="#element-type-local">local</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-global">global</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-comment">comment</a>
+</li>
+      </ul>
+    
+  <h2 id="element-type-local">Element Type: local</h2>
+      <p>e.g. GO, CL, PATO</p>
+    <h3>Content Model</h3>
+<p>Built-in type NMTOKEN</p>
+  <h2 id="element-type-global">Element Type: global</h2>
+<h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-term">Element Type: term</h2>
+<h3>Content Model</h3>
+      <p>Optional repeatable choice of:</p>
+<ul>
+        <li>Exactly 1 <a href="#element-type-id">id</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-name">name</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-namespace">namespace</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-def">def</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-is_a">is_a</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-alt_id">alt_id</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-subset">subset</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-comment">comment</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-is_anonymous">is_anonymous</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-is_obsolete">is_obsolete</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-is_root">is_root</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-xref_analog">xref_analog</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-synonym">synonym</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-relationship">relationship</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-intersection_of">intersection_of</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-union_of">union_of</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-lexical_category">lexical_category</a>
+</li>
+      </ul>
+    
+  <h2 id="element-type-id">Element Type: id</h2>
+<h3>Content Model</h3>
+<p>Simple type <a href="#simple-type-identifier_Type">identifier_Type</a></p>
+  <h2 id="element-type-name">Element Type: name</h2>
+      <p>A label intended for humans. Unique within a namespace</p>
+    <h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-namespace">Element Type: namespace</h2>
+<h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-def">Element Type: def</h2>
+      <p>natural language definition; includes optional provenance dbxrefs</p>
+    <h3>Content Model</h3>
+      <p>Optional repeatable choice of:</p>
+<ul>
+        <li>Exactly 1 <a href="#element-type-defstr">defstr</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-dbxref">dbxref</a>
+</li>
+      </ul>
+    
+  <h2 id="element-type-defstr">Element Type: defstr</h2>
+      <p>free text</p>
+    <h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-xref_analog">Element Type: xref_analog</h2>
+<h3>Content Model</h3>
+      <p>Optional repeatable choice of:</p>
+<ul>
+        <li>Exactly 1 <a href="#element-type-acc">acc</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-dbname">dbname</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-name">name</a>
+</li>
+      </ul>
+    
+  <h2 id="element-type-is_a">Element Type: is_a</h2>
+<h3>Content Model</h3>
+<p>Simple type <a href="#simple-type-identifier_Type">identifier_Type</a></p>
+  <h2 id="element-type-relationship">Element Type: relationship</h2>
+<h3>Content Model</h3>
+      <p>Optional repeatable choice of:</p>
+<ul>
+        <li>Exactly 1 <a href="#element-type-type">type</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-to">to</a>
+</li>
+      </ul>
+    
+  <h2 id="element-type-type">Element Type: type</h2>
+      <p>here used to indicate a relation</p>
+    <h3>Content Model</h3>
+<p>Simple type <a href="#simple-type-identifier_Type">identifier_Type</a></p>
+  <h2 id="element-type-to">Element Type: to</h2>
+      <p>A term linked to</p>
+    <h3>Content Model</h3>
+<p>Simple type <a href="#simple-type-identifier_Type">identifier_Type</a></p>
+  <h2 id="element-type-alt_id">Element Type: alt_id</h2>
+      <p>A secondary identifier </p>
+    <h3>Content Model</h3>
+<p>Simple type <a href="#simple-type-identifier_Type">identifier_Type</a></p>
+  <h2 id="element-type-subset">Element Type: subset</h2>
+      <p>indicates that the term belongs to a subset (view)</p>
+    <h3>Content Model</h3>
+<p>Simple type <a href="#simple-type-identifier_Type">identifier_Type</a></p>
+  <h2 id="element-type-comment">Element Type: comment</h2>
+      <p>gloss or additional notes on a term that does not belong in definition</p>
+    <h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-is_anonymous">Element Type: is_anonymous</h2>
+<h3>Content Model</h3>
+<p>Simple type <a href="#simple-type-boolean_Type">boolean_Type</a></p>
+  <h2 id="element-type-is_obsolete">Element Type: is_obsolete</h2>
+<h3>Content Model</h3>
+<p>Simple type <a href="#simple-type-boolean_Type">boolean_Type</a></p>
+  <h2 id="element-type-is_root">Element Type: is_root</h2>
+<h3>Content Model</h3>
+<p>Simple type <a href="#simple-type-boolean_Type">boolean_Type</a></p>
+  <h2 id="element-type-synonym">Element Type: synonym</h2>
+      <p>Alternate term (alias)</p>
+    <table border="1">
+<caption>Attributes</caption>
+<tr valign="baseline">
+<th align="left" rowspan="2">scope</th>
+<td></td>
+<td>optional</td>
+</tr>
+<tr valign="baseline"><td colspan="2">
+          <p>exact, narrow, ...</p>
+        </td></tr>
+</table>
+<h3>Content Model</h3>
+      <p>Optional repeatable choice of:</p>
+<ul>
+        <li>Exactly 1 <a href="#element-type-synonym_text">synonym_text</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-dbxref">dbxref</a>
+</li>
+      </ul>
+      
+    
+  <h2 id="element-type-synonym_text">Element Type: synonym_text</h2>
+      <p>The alias string</p>
+    <h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-lexical_category">Element Type: lexical_category</h2>
+<h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-intersection_of">Element Type: intersection_of</h2>
+<h3>Content Model</h3>
+      <p>Optional repeatable choice of:</p>
+<ul>
+        <li>Exactly 1 <a href="#element-type-type">type</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-to">to</a>
+</li>
+      </ul>
+    
+  <h2 id="element-type-union_of">Element Type: union_of</h2>
+      <p>Corresponds to owl:unionOf</p>
+    <h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-typedef">Element Type: typedef</h2>
+      <p>For representation of relations and datatype properties</p>
+    <h3>Content Model</h3>
+      <p>Optional repeatable choice of:</p>
+<ul>
+        <li>Exactly 1 <a href="#element-type-id">id</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-name">name</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-namespace">namespace</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-is_a">is_a</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-def">def</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-domain">domain</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-range">range</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-inverse_of">inverse_of</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-is_transitive">is_transitive</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-is_symmetric">is_symmetric</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-is_anti_symmetric">is_anti_symmetric</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-is_reflexive">is_reflexive</a>
+</li>
+      </ul>
+    
+  <h2 id="element-type-inverse_of">Element Type: inverse_of</h2>
+<h3>Content Model</h3>
+<p>Simple type <a href="#simple-type-identifier_Type">identifier_Type</a></p>
+  <h2 id="element-type-domain">Element Type: domain</h2>
+<h3>Content Model</h3>
+<p>Simple type <a href="#simple-type-identifier_Type">identifier_Type</a></p>
+  <h2 id="element-type-range">Element Type: range</h2>
+<h3>Content Model</h3>
+<p>Simple type <a href="#simple-type-identifier_Type">identifier_Type</a></p>
+  <h2 id="element-type-is_transitive">Element Type: is_transitive</h2>
+      <p>See http://obo.sf.net/relationship/</p>
+    <h3>Content Model</h3>
+<p>Simple type <a href="#simple-type-boolean_Type">boolean_Type</a></p>
+  <h2 id="element-type-is_symmetric">Element Type: is_symmetric</h2>
+      <p>See http://obo.sf.net/relationship/</p>
+    <h3>Content Model</h3>
+<p>Simple type <a href="#simple-type-boolean_Type">boolean_Type</a></p>
+  <h2 id="element-type-is_anti_symmetric">Element Type: is_anti_symmetric</h2>
+      <p>See http://obo.sf.net/relationship/</p>
+    <h3>Content Model</h3>
+<p>Simple type <a href="#simple-type-boolean_Type">boolean_Type</a></p>
+  <h2 id="element-type-is_reflexive">Element Type: is_reflexive</h2>
+      <p>See http://obo.sf.net/relationship/</p>
+    <h3>Content Model</h3>
+<p>Simple type <a href="#simple-type-boolean_Type">boolean_Type</a></p>
+  <h2 id="element-type-dbxref">Element Type: dbxref</h2>
+      <p>A link to a record in a database</p>
+    <h3>Content Model</h3>
+      <p>Optional repeatable choice of:</p>
+<ul>
+        <li>Exactly 1 <a href="#element-type-acc">acc</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-dbname">dbname</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-name">name</a>
+</li>
+      </ul>
+    
+  <h2 id="element-type-acc">Element Type: acc</h2>
+      <p>The local name, ID or accession in a database record</p>
+    <h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-dbname">Element Type: dbname</h2>
+<h3>Content Model</h3>
+<p>Built-in type string</p>
+  <h2 id="element-type-synonym_category">Element Type: synonym_category</h2>
+      <p>ontology-specific synonym types</p>
+    <h3>Content Model</h3>
+      <p>Optional repeatable choice of:</p>
+<ul>
+        <li>Exactly 1 <a href="#element-type-id">id</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-name">name</a>
+</li>
+        <li>Exactly 1 <a href="#element-type-namespace">namespace</a>
+</li>
+      </ul>
+    
+  
+    <p>Built-in type string</p>
+  
+  
+    <p>Built-in type string</p>
+  
+  
+    <p>Built-in type string</p>
+  
+</body>
+</html>

@@ -1,0 +1,179 @@
+.green {
+  color: green;
+}
+
+.red {
+  color: red;
+}
+
+.header {
+  background: #1E4176 url(images/bg/hd-bg.gif) repeat-x scroll 0pt;
+  border: 0pt none;
+  padding-left: 3px;
+  padding-top: 3px;
+  
+}
+
+.header .title {
+  color: white;
+  font-family: tahoma, arial, sans-serif;
+  font-size: 16px;
+  font-size-adjust: none;
+  font-stretch: normal;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  line-height: normal;
+  margin: 5px;
+  padding-bottom: 3px;
+}
+
+.target-info {
+	background-color: #F0F0F0;
+	border: 2px groove silver;
+	
+}
+
+.target-label {
+	background-color: #0000FF;
+	color: white;
+	font-weight: bold;
+	padding: 6px;
+	width:50%
+	
+}
+
+.target-value {
+	font-style: italic;
+	padding: 6px;
+	background-color: #CCFF99;
+	width:50%;
+}
+
+.icon-add {
+  background: url(images/icons/add.gif) no-repeat;
+}
+
+.icon-delete {
+  background: url(images/icons/delete.gif) no-repeat;
+}
+
+.icon-email {
+  background: url(images/icons/email.png) no-repeat;
+}
+
+.icon-email-add {
+  background: url(images/icons/email-add.png) no-repeat;
+}
+
+.icon-date-add {
+  background: url(images/icons/date-add.png) no-repeat;
+}
+
+.icon-contact {
+  background: url(images/icons/vcard.png) no-repeat;
+}
+
+.icon-contact-add {
+  background: url(images/icons/vcard_add.png) no-repeat;
+}
+
+.icon-shell {
+  background: url(images/icons/shell.gif) no-repeat;
+}
+
+.icon-accordian {
+  background: url(images/icons/accordian.gif) no-repeat;
+}
+
+.icon-add {
+  background: url(images/icons/add.gif) no-repeat;
+}
+
+.icon-page {
+  background: url(images/icons/document.gif) no-repeat;
+}
+
+.icon-text {
+  background: url(images/icons/text.gif) no-repeat;
+}
+
+.icon-add-disabled {
+  background: url(images/icons/add.gif) no-repeat -16px 0px;
+}
+
+.text {
+  line-height: 135%;
+}
+
+.text,.text p {
+  margin: 4 0px;
+}
+
+.icon-chart {
+  background-image: url(images/icons/chart.png);
+}
+
+.icon-list {
+  background: url(images/icons/list.gif) no-repeat 50% 50%;
+}
+
+.icon-feed {
+  background-image: url(images/icons/feed.gif);
+}
+
+.icon-info {
+  background-image: url(images/icons/information.png);
+}
+
+.icon-info-white {
+  background-image: url(images/icons/information-white.gif);
+}
+
+.icon-music {
+  background-image: url(images/icons/music.png);
+}
+
+.icon-printer {
+  background: url(images/icons/printer.png) no-repeat 50% 50%;
+}
+
+.icon-page-code {
+  background: url(images/icons/icons.png) no-repeat 0px -16px;
+}
+
+.icon-widget {
+  background-image: url(images/icons/icons.png);
+}
+
+.icon-widget-disabled {
+  background: url(images/icons/icons.png) no-repeat -16px 0px;
+}
+
+.icon-tabs {
+  background-image: url(images/icons/tabs.gif);
+}
+
+.icon-view {
+  background: url(images/icons/eye.png) no-repeat 50% 50%;
+}
+
+.icon-report-go {
+  background: url(images/icons/report_go.png) no-repeat 50% 50%;
+}
+
+.icon-report {
+  background: url(images/icons/report.png) no-repeat 50% 50%;
+}
+
+.icon-database-add {
+  background: url(images/icons/database_add.png) no-repeat 50% 50%;
+}
+
+.icon-database-delete {
+  background: url(images/icons/database_delete.png) no-repeat 50% 50%;
+}
+
+.icon-application-view-list {
+  background: url(images/icons/application_view_list.png) no-repeat 50% 50%;
+}

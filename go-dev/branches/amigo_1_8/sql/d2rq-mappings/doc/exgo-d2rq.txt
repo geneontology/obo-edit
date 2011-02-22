@@ -1,0 +1,289 @@
+
+This document describes a SPARQL endpoint for a database containing
+annotated images of gene expression in fruitfly embryogenesis. The
+images depict the actual expression of genes at a microscopic level
+using a technique called insitu hybridisation. The results were
+recorded in a relational database, and the images were annotated using
+the fly anatomy ontology.
+
+The relational database and experiments are described in this journal
+article (open access):
+
+* http://genomebiology.com/2002/3/12/research/0088.1
+
+A description of the database and traditional CGI interface can be
+found here:
+
+* http://www.fruitfly.org/cgi-bin/ex/insitu.pl
+* http://fruitfly.org/ex/Annotation.htm
+
+I mapped the relational schema to RDF using D2RQ. The mapping is an
+extension of the mapping of the Gene Ontology database schema
+(described elsewhere).
+
+The temporary URL for the SPARQL endpoint is:
+
+* http://spade.lbl.gov:2021
+
+Please read on before exploring randomly!
+
+The images show the anatomical localisation of gene expression in
+embryogenesis. All the images were captured using high resultion
+digital photography as part of the BDGP fruitfly insitu project. Each
+image has its own URL. We use the following prefix:
+
+  @prefix insitu <http://www.fruitfly.org/insituimages/insitu_images/thumbnails>
+
+For example, the following are images depicting expression of the
+gene 'sim' in the mesectoderm anlage:
+
+* http://www.fruitfly.org/insituimages/insitu_images/thumbnails/img_dir_22/insitu22070.jpe
+* http://www.fruitfly.org/insituimages/insitu_images/thumbnails/img_dir_22/insitu22067.jpe
+
+We use the Mindswap digital media ontology to represent both images
+themselves and the relationship between the image and the biological
+entities depicted therein:
+
+  @prefix dm: <http://www.mindswap.org/2005/owl/digital-media#> .
+
+At this point we do not capture any metadata on the image itself. The
+plan is to use the nascent OBI (ontology for Biomedical
+Investigations) for microscopy and image orientation details. For
+those interested in the imaging itself, information can be found at:
+
+* http://www.fruitfly.org/ex/Imaging.htm
+
+Currently we capture the image type (always dm:Image) and the
+depiction relation; for example (in n3):
+
+  insitu:img_dir_22/insitu22070.jpe
+    a dm:Image ;
+    dm:depicts [
+      # <representation of gene expression events go here>
+    ]
+
+The image represents a biological process - the coordinated expression
+of multiple genes in particular parts of the developing fly, at
+specific developmental stages. I will discuss the locations first,
+then the genes.
+
+Instances of body parts are represented using classes from the
+fly_anatomy ontology. This ontology consists of a subsumption
+hierarchy (is_a/subclass), mereotopological relations
+(part_of/has_part) and ontogeneic relations (develops_from).
+
+You can download fly_anatomy in OWL from
+
+* http://www.fruitfly.org/~cjm/obo-download
+
+Currently the only part of the ontology that is available through the
+d2rq mapping on this server is the rdfs:label. This is useful as all
+the class URIs are non-descriptive numeric IDs. For example, to get
+the URI of the class representing the mesectoderm anlage (a region of
+the embryo that is the precursor of many other body parts including
+brain cells), you can issue the following query:
+
+  SELECT * WHERE {
+    ?LocClass rdf:type owl:Class ;
+              rdfs:label 'mesectoderm anlage'
+  }
+
+This should return the ID/URI:
+
+* http://www.geneontology.org/owl#FBbt:00000109
+
+Note the class URIs all have http://www.geneontology.org/owl# as a
+prefix. This may change in future.
+
+Human-readable details of this class can be found using a traditional
+(ie non-RDF/SPARQL/OWL based), web interface:
+
+* http://www.fruitfly.org/cgi-bin/ex/go.cgi?query=FBbt:00000109&view=details
+
+We also use an ontology of developmental stages, acessable using the
+same kind of queries.
+
+Each image depicts an instance of a population of genes being
+expressed (as RNA molecules, which are then detected using insitu
+hybridization). There is some complex biology going on, but we can
+use a minimal representation that retains fidelity on the underlying
+biological reality as follows. The n3 snippet below shows an
+example. The rdfs:labels have been added for clarity, but are not
+actually produced by the mapping:
+
+ <http://www.fruitfly.org/insituimages/insitu_images/thumbnails/img_dir_22/insitu22070.jpe>
+   a dm:Image ;
+   dm:depicts [
+     rdfs:label "instance of coordinated expression of sim genes in the mesectoderm anlage" ;
+     a oban:CoordinatedGeneExpression ;
+     oban:has_participants_from bdgp:RE54280 ;
+     ro:located_in [
+        a fly_anatomy:mesectoderm_anlage
+     ]
+     ro:during [
+       a fly_devel:stage7-8
+     ]
+   ]
+
+(note in the actual rdf/n3 obtained via the mapping, the class URIs
+would be non-descriptive numbers. I cheat and use the labels and URIs
+here for clarity)
+
+bdgp:RE54280 is the URI for one of the RNA products of the sim gene
+(quick biology lession: genes are transcribed by the machinery of the
+cell to make RNA molecules, which can themselves encode
+proteins. Often large numbers of genes of identical types are switched
+on, ie transcribed at timed points during development)
+
+The coordinated expression event is located as a particular (unlabeled)
+location, and a particular (unlabeled) developmental stage, and has
+participants drawn from a specific types of gene.
+
+Currently we do not use bNodes for the unnamed instances, but we
+could. As an aside, we note that in representing biological instances
+we frequently have unlabeled instances.
+
+Currently we do not encode the relations between specific genes,
+transcripts and proteins. However, it's possible to query for gene
+products using the gene as an alternate label:
+
+  SELECT * WHERE {
+    ?gp skos:altLabel 'sim'
+  }
+
+You can see all the relations for this entity here: 
+
+* http://spade.lbl.gov:2021/snorql/?describe=http%3A//spade.lbl.gov%3A2021/resource/gene_product/8997
+
+We recognise there is an actual ontological, non-lexical relationship
+between a gene and its product; however, treating these as labels is
+simplest for this demo.
+
+Classes and relations have been temporarily defined in the oban
+ontology. CoordinatedGeneExpression will eventually be defined using a
+combination of the OBO upper ontology and the Gene Ontology
+representation of gene expression.
+
+WHAT NEXT?
+
+It would be nice to demonstrate how a semantic web application could
+make use of this endpoint without any pre-programmed domain
+knowledge. Query by SPARQL will only interest a few.
+
+Tabulator; enter a resource directly; eg:
+
+* http://spade.lbl.gov:2021/resource/location/10
+
+It would also be good to show how two or more resources can be
+integrated via SPARQL. I have a separate database (the Gene Ontology
+Database) which is wrapped with D2RQ which gives functional
+information on the genes used here. If there are applications that can
+do this, I could wrap more resources (or make them available via other
+SPARQL endpoints, eg through Sesame). There is no shortage of
+biological databases out there in need of integration!
+
+For me the interesting part of the semantic web is the 'semantic'
+part. To me this must include some kind of logical entailment. Here
+are the kinds of entailment I would want to use:
+
+SUBSUMPTION
+
+The classes in the anatomical ontology are arranged in a subclass
+hierarchy. For example, 'sensory neuron' is a kind of 'neuron'. This
+means that if I am searching for events that are located at the
+neuron, I want to find events that are explicitly asserted to be
+located at the 'sensory neuron'.
+
+This would require some simple fragment of RDFS entailment
+
+MEREOLOGICAL
+
+Anatomical classes stand in part_of relationships to one another (the
+ontology will also soon include other spatial relations). For example,
+neuron part_of nervous system, so I want queries for events in the
+nervous system to return events asserted to be in the neuron. The
+part_of relation is transitive. Because the class-level relations are
+encoded in owl (using owl:someValuesFrom) we need some fragment of OWL
+entailment here.
+
+OTHER
+
+If an image depicts an event, and that event takes place in a
+location, then the image also depicts that location. The dm ontology
+does not state this semantics for depicts, and even if it did,
+supporting this would require either SWRL or OWL1.1 (transitive over)
+
+
+I think these entailment are important. Currently someone searching for
+images of insects would not find my images. This is because I have not
+explicitly encoded these to be images depicting insects. I have
+asserted them to be images depicting biological processes that take
+place in a part of an organism which is a kind of insect. The person
+or application formulating this query would have to know this in
+advance and construct the query accordingly. This seems antithetical
+to the vision of the semantic web.
+
+I am aware that implementing these kinds of entailments in a web
+context is challenging, to say the least. In fact it seems that there
+may be something of a dichotomy emerging between RDF folks who have
+large distributed datasets and want minimal OWL semantics and those
+working solely in an ontology development environment and want to cram
+the most into OWL whilst keeping it practical for mid sized
+ontologies...
+
+I have a proposed solution that will work for my complex entailments
+and large datasets, at the expense of the "web" part of the SW. I will
+outline it here.
+
+The relational database I am wrapping with D2RQ already has the
+deductions I need pre-computed in a deductive closure. I can actually
+solve my use cases above with simple SQL queries and thus also in the
+corresponding SPARQL endpoint. The question is, how should I expose
+this?
+
+One option is to implement rdf:type as if it were querying the implied
+graph; I could do the same thing for dm:depicts
+
+For example, the following query over the implied graph
+
+  SELECT * WHERE {
+   ?im digitalmedia:depicts ?loc .
+   ?loc rdf:type ?loctype .
+   ?loctype rdf:type owl:Class ;
+      rdfs:label 'embryo'
+  }
+
+would include in its result set results from the following quesry over
+the asserted graph:
+
+  SELECT * WHERE {
+   ?im digitalmedia:depicts ?ex .
+   ?ex oborel:located_in ?loc .
+   ?loc rdf:type ?loctype .
+   ?loctype rdf:type owl:Class ;
+      rdfs:label 'mesectoderm anlage'
+  }
+
+But if all queries are over the implied graph, how can I query for
+asserted triples? SPARQL appears to be completely agnostic wrt details
+of the underlying graph, whether it is asserted or
+implied. Sesame/SeRQL provides serql:directType which seems
+reasonable.
+
+I say my approach is at the expense of the "web" part of the SW
+because the deductive closures are only computed over a predetermined
+subset of all possible ontologies. For example, my SPARQL queries may
+have all kinds of cool entailment over the fly anatomy ontology, but
+if I do not have in my database a species taxonomy then the fact that
+"fly subclassOf insect" will not be entailed and my "find me all
+images of insects" use case will not be solved. From my perspective,
+this is fine, I can pre-compute on all the ontologies that are
+required for my use cases. But I'd like to try and be a good semantic
+web citizen.
+
+It seems my other options are to wait until D2RQ can take care of
+entailment issues for me (perhaps by integrating with a reasoner), or
+to hope that this can be done perhaps by some 3rd party endpoint, with
+something like DARQ integrating the results.
+
+

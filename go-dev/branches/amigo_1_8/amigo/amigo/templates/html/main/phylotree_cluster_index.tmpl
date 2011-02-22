@@ -1,0 +1,45 @@
+<!-- START: phylotree_cluster_index.tmpl -->
+[%- IF clusters.size == 0 -%]
+<p>No phylotree entries to display.</p>
+[%- ELSE -%]
+
+<h1>[% dbname %]</h1>
+<form method="post" action="[% form %]">
+<input type="hidden" name="page" value="[% page %]"/>
+<input type="hidden" name="order" value="[% order %]"/>
+
+<table>[% IF next %]<caption>
+<input type="submit" name="submit" value="Prev"/>
+<input type="submit" name="submit" value="Home"/>
+<input type="submit" name="submit" value="Next"/>
+<label>Rows: <input type="text" name="rows" value="[% rows %]" /></label>
+
+</caption>[% END -%]
+<thead><tr>
+<td></td>
+<th>
+<input type="submit" name="name_asce" value="&lt&lt;"/>&nbsp;<input type="submit" name="name_desc" value="&gt&gt;"/>
+Cluster</th>
+<th>
+<input type="submit" name="anno_asce" value="&lt&lt;"/>&nbsp;<input type="submit" name="anno_desc" value="&gt&gt;"/>
+Last Annotated</th>
+<th>
+<input type="submit" name="memb_asce" value="&lt&lt;"/>&nbsp;<input type="submit" name="memb_desc" value="&gt&gt;"/>
+Members</th>
+[%- FOREACH dist IN clusters.1.dist -%]
+<th>[% dist.code %]</th>
+[%- END -%]
+</tr></thead>
+<tbody>[%- FOREACH cluster IN clusters %]<tr>
+
+<td>[% IF offset ; loop.count + offset ; ELSE ; loop.count ; END %]</td>
+<td><a href="[% cluster.url %]">[% cluster.key %]</a></td>
+<td>[% cluster.last_annotated %]</td>
+<td>[% cluster.number_of_members %]</td>
+[%- FOREACH dist IN cluster.dist -%]
+<td style="background-color:[% dist.color %]">[% dist.count %]</td>
+[%- END -%]
+
+</tr>[% END %]</tbody>
+</table></form>[%- END -%]
+<!-- END: phylotree_cluster_index.tmpl -->

@@ -1,0 +1,78 @@
+2006-01
+
+*Added go-dev/sql/view
+
+These views can be layered on to any GO database (MySQL 5.0 or higher
+required). These views make ad-hoc querying and data mining
+easier. They are not used by the API at present.
+
+More views will be added soon
+
+2006-09-11
+
+*Added table term_subset. Backwards compatible. Required for forthcoming go-db-perl code
+
+*Added table term_property. Backwards compatible. Not immediately required, useful for future extension
+
+2006-12-12
+
+*Added 2 new columns to db table
+
+         url_example     varchar(255),
+         uri_prefix      varchar(255),
+
+backwards compatible
+
+2007-07-5
+
+added
+
+        association_species_qualifier
+        association_property
+
+removed gene_product.secondary_species_id
+
+2007-08-09
+
+- documentation additions
+- new indexes in associations.sql
+
+2007-08-10
+
+added
+
+        term2term_metadata'
+
+this is for consider/replaced_by tags
+
+** this version is required if you are using go-xsl 2007-08-10 or higher **
+
+2007-08-23
+
+added
+        gene_product_count.species_id
+
+
+2007-08-24
+
+added taxon hierarchy columns to species table
+
+2007-09-09
+
+added term_synonym.synonym_category_id
+
+2007-09-20
+
+added gene_product_subset
+
+2007-10-08
+
+added go-homology module DRAFT
+
+2008-10-27
+
+added relation_composition table. See http://wiki.geneontology.org/index.php/Relation_composition
+
+added term.is_relation
+
+added relation_properties table.
