@@ -1,11 +1,17 @@
 package org.geneontology.gaf.hibernate;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.gaf.hibernate.GafConstants.EvidenceCode;
+import org.geneontology.gaf.hibernate.GafConstants.Qualifier;
 import org.geneontology.gaf.parser.GAFParserHandler;
 import org.geneontology.gold.hibernate.model.Cls;
 import org.geneontology.gold.hibernate.model.GOModel;
@@ -23,6 +29,8 @@ import sun.nio.cs.ext.ISCII91;
  */
 public class GAFParserHandlerForHibernate implements GAFParserHandler {
 
+	private final static Logger LOG = Logger.getLogger(GAFParserHandlerForHibernate.class);
+	
 	private GafDocument gafDocument;
 	
 	private double version;
@@ -30,6 +38,39 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 	private List<AnnotationRuleViolation> voilations;
 	
 	private SimpleDateFormat dtFormat;
+	
+	private static final HashSet<String> db_abbreviations = buildAbbreviations();
+	
+	private static HashSet<String> buildAbbreviations(){
+		HashSet<String> set = new HashSet<String>();
+		
+		try{
+			
+			BufferedReader reader = new BufferedReader(new FileReader(new File(GeneOntologyManager.getInstance().getGoXrfAbbsLocation())));
+			
+			String line = null;
+			while ((line =reader.readLine()) != null) {
+	
+				if(line.startsWith("!"))
+					continue;
+					
+				String data[] = line.split(":");
+				
+				if(data.length==2 && "abbreviation".equals(data[0]) ){
+					set.add(data[1].trim());
+				}
+				
+			}			
+			
+		}catch(Exception ex){
+			LOG.error("Cann't read Go.xrf_abbs file at the location " + GeneOntologyManager.getInstance().getGoXrfAbbsLocation(),
+					ex);
+		}
+		
+		return set;
+		
+	}
+	
 	
 	public GAFParserHandlerForHibernate(){
 		gafDocument = new GafDocument();
@@ -104,6 +145,8 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 		checkCardinality(cols[15], "Column 16: DB Object Type", row, 0,3);
 		checkCardinality(cols[16], "Column 17: DB Object Type", row, 0,3);
 
+		//check internal spaces
+		
 		//check date format
 		String dtString = cols[13];
 		try{
@@ -118,6 +161,26 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 		if(taxons.length>0){
 			checkTaxon(taxons[1], row);
 		}
+		
+		
+		//check qualifier value
+		if(cols[3].length()>0){
+			Qualifier qaulifer = Qualifier.valueOf(cols[3]);
+			if(qaulifer == null){
+				voilations.add(new AnnotationRuleViolation("The qualifier '" + cols[3] + "' in the column 4 is incorrect in the row " + row));
+			}
+		}
+		
+		//check evidence code
+		EvidenceCode evidenceCode = EvidenceCode.valueOf( cols[6] );
+		if(evidenceCode == null){
+			voilations.add(new AnnotationRuleViolation("The evidence code '" + cols[6] + "' in the column 7 is incorrect in the row " + row));
+		}
+		
+		//check db abbreviations
+		if(!db_abbreviations.contains(cols[0]))
+			voilations.add(new AnnotationRuleViolation("The DB '" + cols[0] + "'  referred in the column 1 is incorrect in the row: " + row));
+ 		
 	}
 	
 	private void checkTaxon(String value, String row){
