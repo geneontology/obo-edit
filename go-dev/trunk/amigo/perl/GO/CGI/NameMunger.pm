@@ -76,18 +76,16 @@ sub get_url_fn {
   ## First, let's try and get this done with the new stuff;
   ## otherwise fall back to the antiques.
   my $new_try = $core->database_link($database, $acc_no);
-  $core->kvetch("database: " . $database);
-  $core->kvetch("acc_no: " . $acc_no);
   if( defined $new_try ){
-    $core->kvetch("defined");
+    $core->kvetch("defined: db: " . $database . ", acc: " . $acc_no);
     return $new_try;
   }else{
-    $core->kvetch("not defined--use fallback");
+    $core->kvetch("not defined: db: " . $database . ", acc: " . $acc_no);
   }
 
-
-	my %db_hash =
-(
+  $core->kvetch("check fallback...");
+  my %db_hash =
+    (
 agi_locuscode => "http://www.arabidopsis.org/servlets/TairObject?type=locus&amp;name=$acc_no",
 brenda => "http://www.brenda.uni-koeln.de/php/result_flat.php4?ecno=$acc_no",
 cbs => "http://www.cbs.dtu.dk/services/$acc_no/",
