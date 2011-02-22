@@ -1,1 +1,0 @@
-SELECT xref_dbname, evidence.code, count(DISTINCT association.id) FROM   gene_product  INNER JOIN dbxref ON (gene_product.dbxref_id=dbxref.id)  INNER JOIN association ON (gene_product.id=association.gene_product_id)  INNER JOIN evidence ON (association.id=evidence.association_id) GROUP BY xref_dbname, evidence.code;

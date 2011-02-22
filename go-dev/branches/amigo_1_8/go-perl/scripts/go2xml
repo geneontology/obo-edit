@@ -1,2 +1,0 @@
-#!/bin/sh
-go2fmt.pl -w xml $@
