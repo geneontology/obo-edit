@@ -1,0 +1,146 @@
+/* Style sheet made to go with tracker-client.cgi. */
+ 
+/* ------------------------------------- */
+/* ----------- Default style ----------- */
+/* ------------------------------------- */
+body {
+    font-family: arial, helvetica, sans-serif;
+    font-size: 110%;
+    color: black;
+   /* background: #d0d0d0;
+   background: #f8f8f8;
+    margin-right: 14em;*/
+}
+
+.left_column{
+    float: left;
+    width: 78%;
+    text-align: left;
+
+   /* border-right: 1px solid #ccc;*/
+}
+
+.right_column{
+
+    float: right;
+    width: 20%;
+    text-align: left;
+    /*position: fixed;*/
+    /*top: 7.6em;
+    right: 1em;*/
+
+}
+
+.right_column_item {
+    padding-left: .5em;
+    padding-right: .5em;
+    border: 1px solid blue;
+    background: #fafafa;
+}
+
+.list {    
+    margin-left: .5em;
+    margin-bottom: .25em;
+    /*list-style: none;
+    list-style-type: none;*/
+}
+
+.list_item_good{
+    padding: .1em;
+}
+
+.list_item_good a{
+    color: #000000;
+    text-decoration: none;    
+}
+
+.list_item_good a:hover{
+    background: #8dc87f;
+}
+
+.list_item_neutral{
+    padding: .1em;
+}
+
+.list_item_neutral a{
+    color: #000000;
+    text-decoration: none;    
+}
+
+.list_item_neutral a:hover{
+    background: #aaaaaa;
+}
+
+.list_item_bad{
+    padding: .1em;
+}
+
+.list_item_bad a{
+    color: #000000;
+    text-decoration: none;    
+}
+
+.list_item_bad a:hover{
+    background: #ec8087;
+}
+
+.textarea {
+    font-size: 110%;
+    width: 30em;
+    height: 10em;
+    background: #fdfdfd;
+}
+
+.success {
+    color: #5d984f;
+}
+
+.error {
+    color: #ec8087;
+}
+
+.centered{
+    text-align: center;
+}
+
+.explanation{
+    font-size: 85%;
+}
+
+.long_text_input{
+    width: 30em;
+    border: 1px solid #000;
+    font-size: 110%;
+}
+
+.header {
+    margin-left: 3em;
+}
+
+.hidden {
+    display: none;
+}
+
+.happy_button {
+    border: 2px solid green;
+}
+
+.blue_button {
+    border: 2px solid blue;
+}
+
+
+.small_chooser {
+    margin-bottom: .5em;
+    font-size: 85%;
+    position: relative;
+    left: 2em;
+}
+
+a, a:link, a:visited {
+    text-decoration: none;
+    padding: 0;
+    border: 0;
+}
+
+foo { border-bottom: 1px solid #3875D7; background: #e9effa; color: #000; margin: 0 -10px 5px; padding: 5px 10px; }

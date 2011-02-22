@@ -1,0 +1,78 @@
+#!/usr/bin/perl -w
+
+####
+####
+#### A survey of top level RG information.
+####
+####
+
+##
+## reset; DBIC_TRACE = 1 ./report_2
+##
+
+BEGIN { require "config.pl"; }
+use lib $ENV{GO_DEV_ROOT} . '/go-perl';
+use lib $ENV{GO_DEV_ROOT} . '/go-db-perl';
+use lib $ENV{GO_DEV_ROOT} . '/amigo/perl';
+
+## Bring in necessaries.
+use utf8;
+use strict;
+use Data::Dumper;
+use AmiGO;
+use GOBO::DBIC::GODBModel::Schema;
+use GOBO::DBIC::GODBModel::Query;
+#use Utility::TSLParser;
+# use AmiGO::ReferenceGenome;
+# use Cache::Memcached;
+
+my $core = AmiGO->new();
+
+#print "content-type:text/plain\n\n";
+my $self = {};
+$self->{QUERY}= GOBO::DBIC::GODBModel::Query->new({type=>'gene_product_homolset'});
+
+my @records = ();
+#while( my $gph = $self->{QUERY}->get_next_result() ){
+my $all_gphs = $self->{QUERY}->get_all_results();
+foreach my $gph (@$all_gphs){
+
+  my $gp = $gph->gene_product;
+
+#   print  $gph->homolset->id;
+#   print  "\t";
+#   print  $gph->homolset->symbol;
+#   print  "\t";
+#   print  $gph->homolset->dbxref->xref_dbname . ':' .
+#     $gph->homolset->dbxref->xref_key;
+#   print  "\t";
+#   print  $gp->symbol;
+#   print  "\t";
+#   print  $gp->dbxref->xref_dbname . ':' . $gp->dbxref->xref_key;
+#   print  "\n";
+
+  push @records,
+    {
+     id => $gph->homolset->id,
+     sym => $gph->homolset->symbol,
+     xref => $gph->homolset->dbxref->xref_dbname . ':' . $gph->homolset->dbxref->xref_key,
+     gp_sym => $gp->symbol,
+     gp_xref => $gp->dbxref->xref_dbname . ':' . $gp->dbxref->xref_key,
+    };
+}
+
+my @sorted = sort { $a->{id} <=> $b->{id} } @records;
+
+foreach (@sorted){
+  print $_->{id};
+  print "\t";
+  print $_->{sym};
+  print "\t";
+  print $_->{xref};
+  print "\t";
+  print $_->{gp_sym};
+  print "\t";
+  print $_->{gp_xref};
+  print "\n";
+}
+

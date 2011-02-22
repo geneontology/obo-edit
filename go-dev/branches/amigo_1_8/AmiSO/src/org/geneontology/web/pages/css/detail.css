@@ -1,0 +1,17 @@
+
+.detail td {
+    padding: 5px 10px 5px 10px;
+    font-size: 1em;
+    text-align: right;
+}
+
+.detail td.data{
+    width: 85%;
+    text-align: left;
+    background-color: #ccddcc;
+}
+
+.detail td.data a:hover {
+    color: #ffffff;
+    background: #1b5c92
+}

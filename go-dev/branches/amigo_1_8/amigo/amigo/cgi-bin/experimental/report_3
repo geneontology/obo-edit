@@ -1,0 +1,114 @@
+#!/usr/bin/perl -w
+
+####
+####
+#### A survey of top level RG information, will become new 
+####
+####
+
+##
+## reset; DBIC_TRACE = 1 ./report_2
+##
+
+BEGIN { require "config.pl"; }
+use lib $ENV{GO_DEV_ROOT} . '/go-perl';
+use lib $ENV{GO_DEV_ROOT} . '/go-db-perl';
+use lib $ENV{GO_DEV_ROOT} . '/amigo/perl';
+
+## Bring in necessaries.
+use utf8;
+use strict;
+use Data::Dumper;
+use AmiGO;
+use GOBO::DBIC::GODBModel::Schema;
+use GOBO::DBIC::GODBModel::Query;
+use AmiGO::Worker::EvidenceCalculation;
+
+#use Utility::TSLParser;
+# use AmiGO::ReferenceGenome;
+# use Cache::Memcached;
+
+my $core = AmiGO->new();
+
+#print "content-type:text/plain\n\n";
+my $self = {};
+$self->{QUERY}= GOBO::DBIC::GODBModel::Query->new({type=>'gene_product_homolset'});
+
+## Generate all of the results.
+my $ev_calc = AmiGO::Worker::EvidenceCalculation->new();
+$ev_calc->generate_homolset_evidence();
+
+my %set_records = ();
+#while( my $gph = $self->{QUERY}->get_next_result() ){
+my $all_gphs = $self->{QUERY}->get_all_results();
+foreach my $gph (@$all_gphs){
+
+  my $gp = $gph->gene_product;
+
+  #my $xref = $gp->dbxref->xref_dbname . ':' . $gp->dbxref->xref_key;
+  my $set = $gph->homolset->id;
+
+  $set_records{$set} = [] if ! defined $set_records{$set};
+
+  my $gp_xref = $gp->dbxref->xref_dbname . ':' . $gp->dbxref->xref_key;
+  push @{$set_records{$set}},
+    {
+     id => $gph->homolset->id,
+     sym => $gph->homolset->symbol,
+     #xref => $xref,
+     gp_sym => $gp->symbol,
+     gp_xref => $gp_xref,
+    };
+}
+
+
+## Add evidence information.
+foreach my $set (keys %set_records){
+
+  $ev_calc->generate_homolset_evidence($set);
+
+  #$core->kvetch("___$set");
+  print STDERR "___$set\n";
+  foreach my $record (@{$set_records{$set}}){
+
+    my $gp_xref = $record->{gp_xref};
+    $record->{has_exp} =           $ev_calc->has_exp($gp_xref);
+    $record->{iss_only_good} =     $ev_calc->iss_only_good($gp_xref);
+    $record->{iss_only_good_odd} = $ev_calc->iss_only_good_odd($gp_xref);
+    $record->{iss_only_bad} =      $ev_calc->iss_only_bad($gp_xref);
+
+    _print_item($record);
+  }
+}
+
+#my @sorted = sort { $a->{sym} cmp $b->{sym} } @records;
+#foreach (@sorted){
+#  _print_item($_);
+#}
+
+
+sub _print_item {
+
+  $_ = shift;
+
+  print $_->{id};
+  print "\t";
+  print $_->{sym};
+  print "\t";
+  #print $_->{xref};
+  #print "\t";
+  print $_->{gp_sym};
+  print "\t";
+  print $_->{gp_xref};
+  print "\t";
+
+  print $_->{has_exp};
+  print "\t";
+  print $_->{iss_only_good};
+  print "\t";
+  print $_->{iss_only_good_odd};
+  print "\t";
+  print $_->{iss_only_bad};
+  print "\t";
+  print "\n";
+}

@@ -1,0 +1,42 @@
+/* */
+
+.browser a:hover, a:active {
+    color: #ffffff;
+    background-color: #444444;
+}
+
+.browser a:link {
+    color: #660000;
+    text-decoration: none;
+}
+
+.browser a:visited {
+    color: #888888;
+    text-decoration: none;
+}
+
+.browser img {
+    border: 0;
+}
+
+.browser a.page {
+    font-weight: bold;
+    color: #444444;
+}
+
+.browser a:hover {
+    color: #ffffff;
+    background-color: #444444;
+}
+
+
+.browser ul {
+    padding: 0;
+    list-style-type: none;
+    margin: 2px 0 2px 15px;
+    font-size: 1.0em;
+}
+
+.browser li {
+    margin: 0.2em 2px 0.2em 2px;
+}

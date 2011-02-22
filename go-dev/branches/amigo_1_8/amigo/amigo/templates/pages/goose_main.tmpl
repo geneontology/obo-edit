@@ -1,0 +1,192 @@
+[% USE HTML %]
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	  "http://www.w3.org/TR/html4/strict.dtd">
+<!-- START template: goose_main.tmpl -->
+<!-- path: [% path %] -->
+<!-- html_url: [% html_url %] -->
+<html lang="en">
+
+  <head>
+
+    [% INCLUDE amigo_common_head.tmpl %]
+
+   <meta name="description"
+         content="Gene Ontology SQL web client.">
+
+   <!-- Optional JavaScript entry: TODO -->
+   <script type="text/javascript">
+   <!--
+   [% INCLUDE goose_js.tmpl %]
+   // -->
+   </script>
+
+  </head>
+  <body onload="if( 1 ) pulldownForGoose();">
+
+    [% current = "" %]
+    [% INCLUDE amigo_common_header_lite.tmpl %]
+
+    <div class="contents">
+      
+	<h1>GO Online SQL Environment</h1>
+    
+	<form action="goose"
+	      method="GET"
+	      name="goose_form"
+	      id="goose_form">
+	
+	  <div class="block">
+
+	    <!--
+	  	<input type="hidden" name="database" value="1" />
+		-->
+
+	    <h2>Directly query the GO database</h2>
+	  
+	  See some <a
+	  href="http://wiki.geneontology.org/index.php/Example_Queries">examples</a>
+	  and learn more about the <a
+	  href="http://www.geneontology.org/GO.database.shtml"
+	  title="GO database schema documentation">schema</a>.<br />
+	  If your query takes a long time or returns a blank screen, you may want to try the download option. If your query is long-running or fails, you may also want to try a "lite" database from the mirror selection.
+	  
+	 
+	    <h3 class="first">
+	      Enter your SQL query:
+	    </h3>
+
+
+<textarea id="sql_query" name="sql_query" cols="80" rows="5">[% SQL_QUERY %]</textarea>
+
+	    <div style="" id="goose_example_table"></div>
+
+            Limit the number of results returned:
+	    <select name="limit" size="1">
+	      <option
+		 title="10" 
+		 value="10" 
+		 [% IF LIMIT == 10 %]selected[% END %]
+		 class="" />10</option>
+	      <option
+		 title="100" 
+		 value="100" 
+		 [% IF LIMIT == 100 %]selected[% END %]
+		 class="" />100</option>
+	      <option
+		 title="1000" 
+		 value="1000" 
+		 [% IF LIMIT == 1000 %]selected[% END %]
+		 class="" />1000</option>
+	      <option
+		 title="10000" 
+		 value="10000" 
+		 [% IF LIMIT == 10000 %]selected[% END %]
+		 class="" />10000</option>
+	      <option
+		 title="unlimited" 
+		 value="0" 
+		 [% IF LIMIT == 0 %]selected[% END %]
+		 class="" />unlimited</option>
+            </select>
+
+	    <br />
+
+	    <div>
+            Download results directly in tab-delimited format
+	    <input class="cbox" type="checkbox" name="format" value="tab" />
+	    </div>
+
+	    <fieldset class="block">
+	      <legend>
+		Mirror
+	      </legend>
+	      <ul>
+
+		[% step = 0 %]
+		[% FOREACH db = ALL_MIRRORS %]
+
+		<li>
+		  <input type="radio" 
+			 name="mirror" 
+			 value="[% step %]" 
+			 [% IF CURRENT_MIRROR_INDEX == step %]checked[% END %]
+			 class="cbox">
+		  <b>
+		    [% IF db.is_dead_p == 1 %][UNAVAILABLE][% END %]
+		    [% db.label %]
+		  </b>:
+		  Use the database mirror at [% db.desc %].
+		  Last updated on [% db.release_name %]
+		  ([% dbrt =  db.release_type; IF dbrt == 'termdb' OR dbrt == 'assocdb' OR dbrt == 'seqdb' OR dbrt == 'full' %]<a title="Go to GO database type documentation." href="http://geneontology.org/GO.database.shtml#dbtypes">[% dbrt %]</a>[% ELSE %][% dbrt %][% END %]).
+		</li>
+
+		[%  step = step + 1 %]
+		[% END %]
+
+		<!--
+		<li>
+		  <input type="radio" 
+			 name="mirror" 
+			 value="1" 
+			 [%IF MIRROR_SELECTION == '1' %]checked[% END %]
+			 class="cbox">
+		    <b>Berkeley</b>:
+		    Use the database mirror at the Berkeley BOP.
+		</li>
+
+		<li>
+		  <input type="radio" 
+			 name="mirror" 
+			 value="2" 
+			 [%IF MIRROR_SELECTION == '2' %]checked[% END %]
+			 class="cbox">
+		  <b>EBI</b>:
+		  Use the database mirror at EBI.
+		</li>
+
+		<li>
+		  <input type="radio" 
+			 name="mirror" 
+			 value="3" 
+			 [%IF MIRROR_SELECTION == '3' %]checked[% END %]
+			 class="cbox">
+		  <b>Experimental</b>:
+		  Use the experimental database at BBOP (alpha).
+		</li>
+		-->
+
+	      </ul>	      
+	    </fieldset>
+
+	    <hr class="clearL">
+	    <input type="submit" class="button" value="Query!" />
+	      
+	  </div>
+
+	</form>		
+	
+	[%IF DISPLAY_MAIN_RESULTS %]
+	[%   MAIN_RESULTS %]
+	[%END%]
+	
+    </div>
+    
+    [% INCLUDE amigo_goose_footer.tmpl %]
+
+    [% IF GOOGLE_ANALYTICS_ID.length > 1 %]
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("[% GOOGLE_ANALYTICS_ID %]");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+[% ELSE %]
+<!-- no analytics -->
+[% END %]
+
+  </body>
+</html>
+<!-- END template: goose_main.tmpl -->

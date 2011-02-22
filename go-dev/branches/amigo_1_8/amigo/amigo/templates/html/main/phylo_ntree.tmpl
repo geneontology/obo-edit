@@ -1,0 +1,72 @@
+<!-- START: phylo_ntree.tmpl -->
+
+<div class="contents">
+
+  [% IF tree_name %]
+  <h1 class="name">[% tree_name %]</h1>
+  [% END %]
+
+  [% IF external_status == 'todo' %]
+  [% ELSIF external_status == 'failure' %]
+  <h4 class="error">Couldn't get resource!</h4>
+  [% ELSIF external_status == 'success' %]
+  <div id="ntree" name="ntree" style="position: relative;"></div>
+  [% ELSE %]
+  <h4 class="error">UNKNOWN BUG!</h4>
+  [% END %]  
+
+</div>
+
+
+<div class="contents">
+
+  [% IF no_controls %]
+  [% ELSE %]
+
+  <form action="[% base %]/amigo_exp" name="fform1" id="fform1" method="GET">
+    <input type="hidden" name="mode" value="ntree">
+    <fieldset class="C">
+      <p>
+  	<label for="query">Select file to use</label>
+      </p>
+
+      <select name="external_resource">
+  	<option value="" selected>select</option>
+  	[% FOREACH tree IN tree_files %]
+  	<option value="[% tree_path %]/[% tree %]">[% tree %]</option>
+  	[% END %]
+      </select>
+      <input class="button" value="Use resource" type="submit">
+    </fieldset>
+  </form>
+
+  <h4 class="C">-or-</h4>
+
+  <form action="[% base %]/amigo_exp" name="fform2" id="fform2" method="GET">
+    <input type="hidden" name="mode" value="ntree">
+    <fieldset class="C">
+      <!-- <legend>Upload</legend> -->
+      <p>
+	<label for="query">Upload external Newick file to view</label>
+	<br />
+      </p>
+
+      <input type="text"
+	     name="external_resource"
+	     size="25"
+	     value="[% external_resource %]"
+	     style="outline: #3875D7 solid 1px;"
+	     id="query">
+      <!-- <br /> -->
+      <input class="button" value="Get resource" type="submit">
+      <br />
+      <span style="font-size: 67%;">Hint: try "http://amigo.berkeleybop.org/amigo/panther/PTHRNNNNN.tree", where N &#8712; (0,1,2,3,4,5,6,7,8,9).</span>
+    </fieldset>
+  </form>
+  [% END %]
+
+  <br />
+
+</div>
+
+<!-- END: phylo_ntree.tmpl -->

@@ -1,0 +1,120 @@
+<!-- START template: query_summary.tmpl -->
+[% 
+USE Dumper;
+IF error && error.fatal;
+#	'<pre>Error: ';Dumper.dump(error);'</pre>';
+	INCLUDE message.tmpl;
+ELSE; %]
+<div class="filters">
+[% #'<pre>'; Dumper.dump(search); '</pre>';
+
+
+	#	no query
+	IF !querylist || querylist.0 == '' %]
+	<p>No search text entered. Please enter some text and try again.</p>
+[% #	query found. Hurrah!
+
+	ELSE;
+	
+	   ## Sanitize list/array before joins.
+	   index = 0;
+	   FOREACH item = querylist;
+	     querylist.$index = HTML.escape(querylist.$index);
+	     index = index + 1;
+	   END;
+
+		IF large_result_set;
+#			'<pre>' _ Dumper.dump(large_result_set) _ '</pre>';
+		END %]
+	<p>
+	[% IF large_result_set; 'There are '; END %]
+		<em>[% n_results || 0 %]</em> result[% IF n_results != 1 -%]s [% END %]
+	for <em class="hilite">[% querylist.join('</em> or <em class="hilite">') %]</em> 
+	[% IF exact_match == '1' %] [exact match] [% END %]
+		 in [% search_constraint_name %] field[% IF search_fields.size != 1 %]s[% END %] <span class="type">
+	[% IF search_fields.size == 0;
+			'unknown';
+		ELSE;
+			sflast = search_fields.pop;
+			search_fields.join(', ') _ ' and ' _ sflast;
+		END %]
+		</span>
+		</p>
+	[% IF large_result_set;
+			IF large_result_set == 'too_large' %]
+		<p>Please try a more specific query or apply filters to your search results.</p>
+		<dl>
+[%			ELSE %]
+		<p>Are you sure you wish to view this many results?</p>
+		<dl>
+		<dt><a href="search.cgi?query=[% queryurl %]&amp;search_constraint=[% search_constraint %]&amp;session_id=[% session_id %]&amp;page=1&amp;action=sort" title="View results">View results</a></dt>
+[%			END %]
+		<dt>Refine query</dt>
+		<dd>
+		<form action="search.cgi" method="post">
+			<label for="search_query">Search GO [% search_constraint_name %]</label><input class="textBox" type="text" name="search_query" size="50" value="[% HTML.escape(query) %]" id="search_query">
+				<input type="checkbox" id="exact_match" name="exact_match" value="1" class="cbox"><label for="exact_match">Exact Match</label>
+			<input type="hidden" name="session_id" value="[% session_id %]">
+			<input type="hidden" name="search_constraint" value="[% search_constraint %]">
+			<input type="hidden" name="action" value="new-search">
+			<input type="submit" class="button">
+		</form>
+		</dd>
+		[% in_dl = 1;
+			INCLUDE filters.tmpl;
+			IF page_name == 'gp_search';
+				INCLUDE filter_gp_search.tmpl;
+			ELSIF page_name == 'term_search';
+				INCLUDE filter_term_search.tmpl;
+			END;
+		%]
+		</dl>
+	[% ELSIF message;
+			INCLUDE message.tmpl;
+		END;
+		UNLESS (!filters_on && n_results == 0) || large_result_set;
+			INCLUDE filters.tmpl;
+			filter_page_name = 'filter_' _ page_name _ '.tmpl';
+			INCLUDE $filter_page_name;
+		END; %]
+	[% IF n_results == 0;
+			IF message;
+				INCLUDE message.tmpl;
+			ELSE; %]
+		<ul>
+			[% IF filters_on %]
+			<li>
+				<a href="search.cgi?query=[% queryurl %]&amp;search_constraint=[% search_constraint %]&amp;session_id=[% session_id %]&amp;action=reset-filters">Repeat your search with filters turned off.</a>
+			</li>
+			[% END %]
+			<li>
+				<a href="search.cgi?action=advanced_query&amp;session_id=[% session_id %]">Perform another query</a>
+			</li>
+			[% IF search_constraint == 'gp' %]
+				<li><a href="search.cgi?search_query=[% queryurl %]&amp;search_constraint=term&amp;session_id=[% session_id %]&amp;action=new-search" title="Search terms for [% HTML.escape(querytext) %]">Search terms for <span class="hilite">[% querylist.join('</span> or <span class="hilite">') %]</span></a></li>
+			<li>If you are interested in annotating this gene product, please <a href="http://www.geneontology.org/GO.contacts.shtml" title="Contact the GO helpdesk">contact the GO helpdesk</a>.
+			</li>
+			[% ELSIF search_constraint == 'term' %]
+				<li><a href="search.cgi?search_query=[% queryurl %]&amp;search_constraint=gp&amp;session_id=[% session_id %]&amp;action=new-search" title="Search gene products for [% HTML.escape(querytext) %]">Search gene products for <span class="hilite">[% querylist.join('</span> or <span class="hilite">') %]</span></a></li>
+			<li>If you would like to request a new term to cover this concept, please <a href="http://www.geneontology.org/GO.contacts.shtml" title="Contact the GO helpdesk">contact the GO helpdesk</a>.
+			</li>
+			[% END %]
+		</ul>
+	[% END; END; END %]
+
+	[% IF sort_criterion %]
+<p>Results are sorted by <b>[% sort_crit_names.$sort_criterion || sort_criterion %]</b>. To change the sort order, click on the column headers.
+[% IF REFGEN_INFO.HAS_INFO_P > 0 %]
+<br />
+<img src="[% image_dir %]/star.png" alt="Belongs to a homolog set." />
+indicates that the gene product is a member of a <a href="http://www.geneontology.org/GO.refgenome.shtml">homolog set</a>. Click on the gene product details link for more information.<br />
+[% END %]
+</p>
+	[% END %]
+
+	[% IF n_results == '0' && (querylist.0 == 'the meaning of life' || querylist.0 == 'meaning of life');
+		'<p>Sorry, AmiGO cannot provide an answer for existential issues.</p>';
+		END; %]
+</div>
+[% END %]
+<!-- END template: query_summary.tmpl -->
