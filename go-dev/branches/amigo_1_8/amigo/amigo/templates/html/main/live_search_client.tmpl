@@ -1,0 +1,113 @@
+<!-- START template: live_search_client.tmpl -->
+<!-- FILTER_SPECIES_ARRAY = [% FILTER_SPECIES_ARRAY %] -->
+<!-- FILTER_SOURCE_ARRAY = [% FILTER_SOURCE_ARRAY %] -->
+<!-- FILTER_GPTYPE_ARRAY = [% FILTER_GPTYPE_ARRAY %] -->
+
+
+  <!-- Newer stuff
+  
+  <div class="" id="blahWrapper"></div>
+  <div id='wrapper'>
+    <div id='searchWrapper'></div>
+    <div id='gridWrapper'></div>
+  </div>
+ 
+<div id="test"></div>
+ -->
+
+<div class="contents">
+
+  <h1>Live Search Client</h1>
+
+  <!-- Older stuff -->
+
+  <table>
+    <tr>
+      <td style="width:25em;">
+	<div class="block">
+	  
+	  <h2>Search</h2>
+	  
+	  <div style="height: 30em; overflow:auto;">
+	    <p>
+	      Search for items using the
+	      <a id="tiptarget"
+		 title="Explanation of query syntax"
+		 href="http://lucene.apache.org/java/1_4_3/queryparsersyntax.html">query syntax</a>.
+	    </p>
+	    
+	    <form id="input" action="">
+	    
+	      <input type="hidden" name="mode" value="live_search">
+	      <input type="hidden" name="count" value="100">
+	    
+	      <label for="query">Text:</label>
+	      <input class="textBox"
+		     type="text"
+		     name="query"
+		     size="35" 
+		     value=""
+		     id="query">
+	    
+	      <p>
+		Apply additional filters to reduce the number of results.
+	      </p>
+	    
+	      [% title = "Species:" %]
+	      [% form_name = "species" %]
+	      [% multiple = "true" %]
+	      [% size = 4 %]
+	      [% array = FILTER_SPECIES_ARRAY %]
+	      [% catch_all = "No filter" %]
+	      [% INCLUDE includes/amigo_common_select_array.tmpl %]
+	      
+	      [% title = "Source:" %]
+	      [% form_name = "source" %]
+	      [% multiple = "true" %]
+	      [% size = 4 %]
+	      [% array = FILTER_SOURCE_ARRAY %]
+	      [% catch_all = "No filter" %]
+	      [% INCLUDE includes/amigo_common_select_array.tmpl %]
+	      
+	      [% title = "GP Type:" %]
+	      [% form_name = "gptype" %]
+	      [% multiple = "true" %]
+	      [% size = 4 %]
+	      [% array = FILTER_GPTYPE_ARRAY %]
+	      [% catch_all = "No filter" %]
+	    [% INCLUDE includes/amigo_common_select_array.tmpl %]
+	      
+	    </form>
+	  </div>
+	</div>
+      </td>
+      <td>
+
+	<div class="block">
+
+	  <h2>Results</h2>
+	  
+	  <div id="results_block" style="height: 30em; width: 100%; overflow:auto;">
+	    <div id="load_float" style="float: right;"></div>
+	    <div id="meta_results">
+	      <p>
+		None.
+	      </p>
+	    </div>
+	  
+	    <div id="results">
+	      <p>
+		No results will be returned until the text input is at least
+		three characters. After that, you may also use the filters to
+		reduce the number of results.
+	      </p>
+	    </div>
+	  </div>
+	</div>
+      </td>
+    </tr>
+  </table>
+  
+</div>
+
+<!-- END template: live_search_client.tmpl -->

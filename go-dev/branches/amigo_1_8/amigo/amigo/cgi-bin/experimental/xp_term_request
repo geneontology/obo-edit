@@ -1,0 +1,13 @@
+#!/usr/bin/perl -w
+####
+#### ...
+####
+
+BEGIN { require "config.pl"; }
+use lib $ENV{GO_DEV_ROOT} . '/go-perl';
+use lib $ENV{GO_DEV_ROOT} . '/go-db-perl';
+use lib $ENV{GO_DEV_ROOT} . '/amigo/perl';
+
+use AmiGO::WebApp::XPTermRequest;
+my $xptrc = AmiGO::WebApp::XPTermRequest->new(PARAMS => {});
+$xptrc->run();

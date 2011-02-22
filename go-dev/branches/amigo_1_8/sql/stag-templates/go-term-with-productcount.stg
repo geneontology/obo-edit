@@ -1,0 +1,32 @@
+:SELECT 
+  term.acc,
+  term.term_type,
+  term.name,
+  term.is_obsolete,
+  count(DISTINCT gene_product_id) AS term__direct_gpcount
+:FROM
+  term
+  LEFT OUTER JOIN association ON (term.id = association.term_id)
+  LEFT OUTER JOIN evidence    ON (evidence.association_id = association.id)
+:WHERE
+    [term.acc => &term_acc&]
+    [term.name => &term_name&]
+    [term.term_type => &term_type&]
+    [term.is_obsolete => &term_is_obsolete&]
+    [term.is_root => &term_is_root&]
+    [term.id => &term_id&]
+    [evidence.code => &evidence_code& ]
+:GROUP BY
+  term.acc,
+  term.term_type,
+  term.name,
+  term.is_obsolete
+:ORDER BY term__direct_gpcount DESC
+
+//
+schema: go
+desc: terms with number of DIRECT products attached
+
+
+example_input: term_acc => SELECT DISTINCT term.acc FROM term INNER JOIN term2term ON (term.id = term2term.term1_id) ORDER BY term.acc DESC
+example_input: term_name => SELECT DISTINCT term.name FROM term INNER JOIN term2term ON (term.id = term2term.term1_id) WHERE name like '%binding%' ORDER BY term.name DESC

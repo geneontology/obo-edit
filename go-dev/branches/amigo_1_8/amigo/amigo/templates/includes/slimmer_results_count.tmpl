@@ -1,0 +1,113 @@
+<!-- START template: slimmer_results_count.tmpl -->
+<!-- USE_BUCKET_RESULTS = [% USE_BUCKET_RESULTS %] -->
+<!-- DISPLAY_BUCKET_RESULTS = [% DISPLAY_BUCKET_RESULTS %] -->
+<!-- BUCKET_COUNTS = [% BUCKET_COUNTS %] -->
+<div class="block">
+  <h2>Results</h2>
+  
+  <p>
+
+    <em>[% NUMBER_OF_RESULTS %]</em> result(s) in slim set with [% NUMBER_OF_TERMS %] terms and [% NUMBER_OF_GPS %] gene products from your gene product list:
+
+  </p>
+
+  <p id="star_info">
+    Please note that ontology roots nodes (marked with '*') only show
+    direct associations.
+  </p>
+
+  <p>
+    You may also <a href="#controls" title="Jump to the
+    controls">refine</a> your input parameters.
+  </p>
+
+  <p>
+    [% IF DISPLAY_BP_RESULTS && DISPLAY_BP_RESULTS > 0 %]
+    Jump to <a href = "#bp">Biological Process</a>
+    <br />
+    [% END %]
+    [% IF DISPLAY_CC_RESULTS && DISPLAY_CC_RESULTS > 0 %]
+    Jump to <a href = "#cc">Cellular Component</a>
+    <br />
+    [% END %]
+    [% IF DISPLAY_MF_RESULTS && DISPLAY_MF_RESULTS > 0 %]
+    Jump to <a href = "#mf">Molecular Function</a>
+    <br />
+    [% END %]
+    [% IF USE_BUCKET_RESULTS && DISPLAY_BUCKET_RESULTS && DISPLAY_BUCKET_RESULTS > 0 %]
+    Jump to <a href = "#bucket">Bucket Terms</a>
+    <a href="http://wiki.geneontology.org/index.php/AmiGO_Manual:_Slimmer#Bucket_Terms"
+       class="help-link">
+      <img src="[% HTML_URL %]/images/help.png"
+	   alt="help!">
+    </a>
+    <br />
+    [% END %]
+  </p>
+
+  [% IF DISPLAY_MISSED_GPS && DISPLAY_MISSED_GPS > 0 %]
+
+  <h3 class="error_text" id="">Missed Gene Products</h3>
+
+  <p>
+    The following gene products could not be mapped to non-root nodes
+    in the ontology using this slim. This may mean that the slim is
+    incomplete.
+  </p>
+
+  <table summary="Missed Gene Products">
+    <tbody>
+      [% eo = 0 %]
+      [% FOREACH gp IN MISSED_GPS_ARRAY %]
+      [%    IF eo % 2 == 0 %]
+      <tr class="even_row">
+	[%    ELSE %]
+      <tr class="even_odd">
+	[%    END %]
+
+	<td rowspan="1">
+	  <a href="gp-details.cgi?gp=[% HTML.escape(gp.ACC) %]">[% HTML.escape(gp.BEST_SYMBOL) %]</a>
+	</td>
+
+      </tr>
+      [%    eo = eo + 1 %]
+      [% END %]
+    </tbody>
+  </table>
+
+  <p class="toTop">
+    <a href="#top" title="Back to the top of the page">Back to top</a>
+  </p>
+
+  [% END %]
+
+  [% title = "Biological Process" %]
+  [% id = "bp" %]
+  [% counts = BP_COUNTS %]
+  [% IF DISPLAY_BP_RESULTS > 0 %]
+  [%    INCLUDE slimmer_results_count_table.tmpl %]
+  [% END %]
+
+  [% title = "Cellular Component" %]
+  [% id = "cc" %]
+  [% counts = CC_COUNTS %]
+  [% IF DISPLAY_CC_RESULTS > 0 %]
+  [%    INCLUDE slimmer_results_count_table.tmpl %]
+  [% END %]
+
+  [% title = "Molecular Function" %]
+  [% id = "mf" %]
+  [% counts = MF_COUNTS %]
+  [% IF DISPLAY_MF_RESULTS > 0 %]
+  [%    INCLUDE slimmer_results_count_table.tmpl %]
+  [% END %]
+  
+  [% title = "Bucket Results" %]
+  [% id = "bucket" %]
+  [% counts = BUCKET_COUNTS %]
+  [% IF USE_BUCKET_RESULTS && DISPLAY_BUCKET_RESULTS > 0 %]
+  [%    INCLUDE slimmer_results_bucket_table.tmpl %]
+  [% END %]
+  
+</div>
+<!-- END template: slimmer_results_count.tmpl -->

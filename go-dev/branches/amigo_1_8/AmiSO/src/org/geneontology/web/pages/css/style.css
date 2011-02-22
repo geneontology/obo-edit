@@ -1,0 +1,196 @@
+/* Style sheet made to go with snugglebunnies. */
+
+/* ---------- Default properties. ---------- */
+body {
+       font-family: arial, helvetica, sans-serif;
+       font-size: 100%;
+       /*background: white url(/phenote/images/) repeat top right;*/
+       color: grey;
+       margin: 0;
+}
+
+/* ---------- "page_head" area. ---------- */
+
+/**/
+#page_head{
+        /*background-image: url(top_image.jpg);*/
+        /*background-repeat: repeat-x;*/
+	/*background: #ebf1fc;*/
+	top: 0px;
+        height: 110px;
+}
+
+.ehead{
+        white-space: nowrap;
+        left: 1em;
+        font-size: 1.25em;
+        font-weight: bold;
+        color: 999999;
+        position: absolute;
+        z-index: 2;
+}
+
+.jhead{
+        white-space: nowrap;
+        position: absolute;
+        left: 5em;
+        top: 1em;
+        font-size: 1.5em;
+        color: #aabbdd;
+        z-index: 1;
+}
+
+.page_logo{
+	left: .1em;
+	top: .1em;
+	position: absolute;
+	/* padding: .25em; */
+}
+
+
+/* ---------- Effects classes. ---------- */
+
+/**/
+.small{
+       font-size: 80%;
+}
+
+.smaller{
+       font-size: 75%;
+}
+
+.smallest{
+       font-size: 50%;
+}
+
+/* ---------- "page_body" class. ---------- */
+
+/**/
+#page_body{
+	padding: 1.5em;
+}
+
+/* ---------- "page_foot" class. ---------- */
+
+/**/
+#page_foot{
+	/*color: #dddddd;*/
+	font-size: .25em;
+	/*float: right;*/
+}
+
+/* ---------- "main_content" class. ---------- */
+
+/**/
+#main_content{
+height: auto;
+       /*background: #f4ecd9;*/
+       background: #f9f9f9;
+       padding-left: 1em;
+       padding-right: 1em;
+       padding-bottom: 1em;
+       margin-left: 12em;
+       -khtml-border-radius: 1em;
+       -moz-border-radius: 1em;
+       -o-border-radius: 1em;
+       border-radius: 4px;
+       border: 2px solid black;
+}
+
+#main_content img{
+ padding-right: 1em;
+ padding-bottom: 1em;
+}
+
+#main_content .portrait {
+ float: left;
+ /*border: 1px solid brown;*/
+}
+
+#main_content .contact{
+ clear: right;
+ /*border: 1px solid brown;*/
+}
+
+
+/* ---------- "copyright" class. ---------- */
+
+/**/
+.copyright{
+ /*float: right;*/
+ /*border: 5px solid orange;*/
+}
+
+/* ---------- "navi" id. ---------- */
+
+/* Tell us what/where a "navi" is... */
+#navi {
+        /*background: #f4ecd9;*/
+       background: #f9f9f9;
+        float: left;
+	width:8em;
+	padding-top: .5em;
+	padding-bottom: 1em;
+	padding-left: 1em;
+	padding-right: 1em;
+        border: 2px solid blue;
+        padding: 1em;
+        -khtml-border-radius: 1em;
+        -moz-border-radius: 1em;
+        -o-border-radius: 1em;
+        border-radius: 4px;
+        border: 2px solid blue;
+}
+
+/*  How to display "h2"s in a "navi". */
+.navi_head {
+	font-size: 1.1em;
+	color: #36c;
+	font-weight: bold;
+        margin-bottom: .15em;
+}
+
+/* Give non-anchors a little breathing space. */
+#navi ul {
+	list-style: none;
+	margin: 0 0 0 0;
+	padding: 0;
+}
+
+#navi li {
+        margin: .25em;
+}
+
+#navi li a {
+	text-decoration: none;
+	display: inline;
+	color: #0000c0;
+       background: #f9f9f9;
+}
+
+/* Highlight "li"'s "a"s on hover. */
+#navi li a:hover {
+       background: #aabbdd;
+	/*background: #e0e0e0;*/
+}
+
+/*  */
+#navi ul li {
+	display: block;
+       background: #f9f9f9;
+}
+
+/*  */
+#navi ul li ul{
+	text-decoration: none;
+	display: block;
+	margin-left: 1em;
+}
+
+/*  */
+#navi ul li ul li{
+        font-size: .85em;
+	text-decoration: none;
+	display: block;
+       background: #f9f9f9;
+}

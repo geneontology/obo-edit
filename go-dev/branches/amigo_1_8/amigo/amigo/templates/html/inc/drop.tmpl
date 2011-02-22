@@ -1,0 +1,30 @@
+<!-- START template: drop.tmpl -->
+<!--    id = "[% id %]"                         -->
+<!--    variable = "[% variable %]"             -->
+<!--    hash = "[% hash %]"                     -->
+<!--    selected = "[% selected %]"             -->
+<!--    catch_all = "[% catch_all %]"           --> 
+[% IF NOT id %]
+[% id = '' %]
+[% END %]
+<select id="[% id %]"
+	name="[% variable %]"
+	size="1">
+  [% IF catch_all %]
+  [%    IF ! selected %]
+  <option value="" selected>[% catch_all %]</option>
+  [%    ELSE %]
+  <option value="">[% catch_all %]</option>
+  [%    END %]
+[% END %]
+[% i = 0 %]
+[% FOREACH item IN hash %]
+   [% IF ( i == 0 && ! selected && ! catch_all ) || selected == item.key %]
+   <option selected value="[% item.key %]">[% item.value %]</option>
+   [% ELSE %]
+   <option value="[% item.key %]">[% item.value %]</option>
+   [% END %]
+   [% i = i + 1 %]
+[% END %]
+</select>
+<!-- END template: drop.tmpl -->

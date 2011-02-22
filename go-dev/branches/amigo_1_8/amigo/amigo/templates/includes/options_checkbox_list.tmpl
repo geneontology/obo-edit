@@ -1,0 +1,7 @@
+<fieldset[% IF class; ' class="' _ class _ '"'; END %]><legend>[% title %]</legend>
+<ul>
+[% FOREACH opt = option; %]
+<li><input type="checkbox" name="[% opt_name %]" id="[% opt_name %].[% opt.value.replace('\|','_') %]" value="[% opt.value %]" class="cbox" [% IF opt.selected; ' checked'; END %]><label for="[% opt_name %].[% opt.value.replace('\|','_') %]">[% opt.label %]</label></li>
+[% END %]
+</ul>
+</fieldset>

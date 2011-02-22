@@ -1,0 +1,16 @@
+<!-- Begin: assoc_table_head.tmpl -->
+[% IF table_type != 'gp_multi' %]
+<th class="input"></th>
+[% END;
+	IF table_type == 'gp' || table_type == 'gp_multi' %]
+<th>Accession, Term</th>
+<th class="ontCol">Ontology</th>
+[% ELSIF table_type == 'term' %]
+<th abbr="Name">Symbol, full name</th>
+<th>Information</th>
+[% END %]
+<th class="qualCol">Qualifier</th>
+<th class="evCol">Evidence</th>
+<th class="refCol">Reference</th>
+[% IF assoc_view != 'summary' %]<th class="assCol">Assigned by</th>[% END %]
+<!-- End: assoc_table_head.tmpl -->

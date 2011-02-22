@@ -1,0 +1,16 @@
+go-dev/xml
+
+this directory contains data specific to the XML formats used by GO
+
+  dtd/   - document type definitions
+  xsl/   - XSLT stylesheets for processing XML
+  scripts/
+        go-apply-xslt       - applies xsl from xsl dir
+  
+XML VALIDATION
+
+Download msv.jar from:
+
+http://wwws.sun.com/software/xml/developers/multischema/
+
+java -jar ~/src/msv/msv.jar $GO_ROOT/xml/dtd/obo-xml.dtd MyFile.obo-xml 

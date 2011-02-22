@@ -1,0 +1,205 @@
+<!-- START template: live_search_gene_product.tmpl -->
+
+<div class="contents">
+
+  <h1>Gene Product Search using Live Search</h1>
+
+  <div class="block">
+
+    <h2>Query</h2>
+
+    <p>
+      For a detailed explanation on how to search, a list of what
+      fields can be used in the search string, or an explanation for
+      how to get the results you want (including using boolean
+      operators), please view the
+      <a alt="Go to Live Search documentation"
+	 href="http://wiki.geneontology.org/index.php/AmiGO_Manual:_Live_Search">AmiGO Live Search documentation</a>.
+    </p>
+    
+    <form action="amigo_exp" id="ls_gene_product_search_form" method="GET">
+
+	<input type="hidden" name="mode" value="live_search_gene_product" />
+	<input type="hidden" name="count" value="20" />
+
+	<!-- <fieldset class="block"><legend>Search fields</legend> -->
+
+	[% label = 'Select species' %]
+	[% variable = 'species' %]
+	[% hash = species_hash %]
+	[% selected = selected_species_hash %]
+	[% catch_all = 'No filter' %]
+	[% multiple = 1 %]
+	[% size = 4 %]
+	[% INCLUDE html/inc/select.tmpl %]
+
+	[% label = 'Select source' %]
+	[% variable = 'source' %]
+	[% hash = source_hash %]
+	[% selected = selected_source_hash %]
+	[% catch_all = 'No filter' %]
+	[% multiple = 1 %]
+	[% size = 4 %]
+	[% INCLUDE html/inc/select.tmpl %]
+
+	[% label = 'Select gp type' %]
+	[% variable = 'gptype' %]
+	[% hash = gptype_hash %]
+	[% selected = selected_gptype_hash %]
+	[% catch_all = 'No filter' %]
+	[% multiple = 1 %]
+	[% size = 4 %]
+	[% INCLUDE html/inc/select.tmpl %]
+
+	<!-- </fieldset> -->
+
+	<br />
+
+	<label for="query">Search GO</label>
+	<input class="textBox"
+	       type="text"
+	       name="query"
+	       size="40"
+	       value="[% IF SEARCHED_P == 1 %][% query %][% END %]"
+       	       id="query" />
+
+	<input type="submit" class="button" />
+
+      </p>
+    </form>
+  </div>
+
+  [% IF SEARCHED_P == 1 %]
+
+  <div class="block" id="results_block">
+
+    <h2>Results</h2>
+
+    <h3 id="results">[% RESULTS_TOTAL %] term results for: [% query %]</h3>
+
+    [% IF SUCCESS_P == 0 %]
+
+    <p>
+      There were issues with your query:
+    </p>
+    <p class="error_text">
+      [% ERROR_MESSAGE %]
+    </p>
+
+    [% ELSIF RESULTS_TOTAL == 0 %]
+
+    <p>
+      There were no results for your query. Please try again.
+    </p>
+
+    [% ELSE %]
+
+    <p>
+
+      [% IF RESULTS_FIRST > 1 %]
+      <a href="[% PREV_LINK %]#results_block"
+	 alt="Go one page back in the results"><- back</a>
+      [% END %]
+
+      ([% RESULTS_FIRST %] through [% RESULTS_LAST %])
+
+      [% IF RESULTS_LAST < RESULTS_TOTAL %]
+      <a href="[% NEXT_LINK %]#results_block"
+	 alt="Go one page forward in the results">forward -></a>
+      [% END %]
+
+    </p>
+
+    <table>
+
+      <thead>
+	<tr>
+	  <th>score</th>
+	  <th>acc</th>
+	  <!-- <th>hset</th> -->
+	  <th>symbol</th>
+	  <th>name</th>
+	  <th>gptype</th>
+	  <th>source</th>
+	  <th>species</th>
+	  <th>synonym(s)</th>
+	</tr>
+      </thead>
+
+      <tbody>
+
+	[% eo = 1 %]
+	[% FOREACH r = RESULTS_LIST %]
+	[%   eo = eo + 1 %]
+
+	[% IF eo % 2 == 0 %]
+	<tr class="odd_row">
+	[% ELSE %]
+	<tr class="even_row">
+	[% END %]
+
+	<td>
+	  [% r.score %]%
+	</td>
+	
+	<td>
+	  <a title="link to information on [% r.dbxref %]"
+	     href="[% r.link %]">[% r.hilite_dbxref %]</a>
+	</td>
+	
+	<!-- Homolset? -->
+	<!-- <td> -->
+	<!-- [% IF r.homolset == 'included' %] -->
+	<!-- <img src="' + gm.get_image_resource('star') + '"' -->
+	<!-- title="This gene product is a member of a homolset." /> -->
+	<!-- [% ELSE %] -->
+	<!-- &nbsp; -->
+	<!-- [% END %] -->
+	<!-- </td> -->
+
+	<td>
+	  [% r.hilite_symbol %]
+	</td>
+
+	<td>
+	  [% r.hilite_full_name %]
+	</td>
+
+	<td>
+	  [% r.hilite_gptype %]
+	</td>
+
+	<td>
+	  [% r.hilite_source %]
+	</td>
+
+	[% s_ncbi_taxa_id = r.species %]
+	[% s_name = species_hash.$s_ncbi_taxa_id %]
+	[% IF s_name AND s_name.split(' ').size <= 2 %]
+        <td class="nowrap">
+	[% ELSE %]
+	<td class="">
+	[% END %]
+	[% s_name %]
+	</td>
+
+	<td>
+	  [% r.hilite_gpsynonym.replace('\n+', ', ') %]
+	</td>
+
+	</tr>
+	[% END %]
+	
+      </tbody>
+
+    </table>
+
+    [% END %]
+
+  </div>
+  
+  [% END %]
+
+</div>
+
+<!-- END template: live_search_gene_product.tmpl -->

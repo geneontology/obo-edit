@@ -1,0 +1,85 @@
+This is an experimental pre-alpha test of an incremental bulk-loading
+strategy.
+
+Currently you jave to manually perform the steps:
+
+* create the denormalized load_gaf table in the db
+* make a mysqlimport-ready file from a GAF (see Makefile)
+* run SQL to populate the normaziled schema tables
+
+These steps could be scripted.
+
+Advantages:
+
+- incremental loading
+- speed of bulkloading
+
+Disadvantages:
+
+- need to do some hacky parse-y stuff in SQL. Perhpaps do these upfront eg in perl?
+
+TODO:
+
+- finish it
+- deletion of rows
+
+Preliminary tests indicate that this approach could be very
+scalable. Loading a 30m line GAF from UniProt in a few
+hours. Incremental updates are faster, and can be done on-demand.
+
+
+PERFORMANCE NOTES:
+
+
+mysql> select count(*) from load_gaf;
++----------+
+| count(*) |
++----------+
+| 14800535 | 
++----------+
+1 row in set (0.00 sec)
+
+(interrupted halfway through)
+
+
+mysql> CREATE INDEX load_gaf_ix1 ON load_gaf(proddb,prodacc);
+Query OK, 14800535 rows affected (27 min 36.98 sec)
+Records: 14800535  Duplicates: 0  Warnings: 0
+
+mysql> explain SELECT DISTINCT proddb,prodacc FROM load_gaf WHERE NOT EXISTS (SELECT id FROM dbxref WHERE xref_dbname=proddb AND xref_key=prodacc);
++----+--------------------+----------+--------+----------------------+--------------+---------+----------------------------------------------------------------+------+---------------------------------------+
+| id | select_type        | table    | type   | possible_keys        | key          | key_len | ref                                                            | rows | Extra                                 |
++----+--------------------+----------+--------+----------------------+--------------+---------+----------------------------------------------------------------+------+---------------------------------------+
+|  1 | PRIMARY            | load_gaf | range  | NULL                 | load_gaf_ix1 | 316     | NULL                                                           |   10 | Using where; Using index for group-by | 
+|  2 | DEPENDENT SUBQUERY | dbxref   | eq_ref | xref_key,dx6,dx1,dx2 | xref_key     | 314     | go_latest_lite.load_gaf.prodacc,go_latest_lite.load_gaf.proddb |    1 |                                       | 
++----+--------------------+----------+--------+----------------------+--------------+---------+----------------------------------------------------------------+------+---------------------------------------+
+2 rows in set (0.03 sec)
+
+with index:
+
+mysql> INSERT INTO dbxref (xref_dbname,xref_key) SELECT DISTINCT proddb,prodacc FROM load_gaf WHERE NOT EXISTS (SELECT id FROM dbxref WHERE xref_dbname=proddb AND xref_key=prodacc);
+
+Query OK, 1961942 rows affected (19 min 37.10 sec)
+Records: 1961942  Duplicates: 0  Warnings: 0
+
+again but empty (for testing speed):
+
+mysql> INSERT INTO dbxref (xref_dbname,xref_key) SELECT DISTINCT proddb,prodacc FROM load_gaf WHERE NOT EXISTS (SELECT id FROM dbxref WHERE xref_dbname=proddb AND xref_key=prodacc);
+
+Query OK, 0 rows affected (4 min 22.90 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> UPDATE load_gaf SET gene_product_dbxref_id = (SELECT id FROM dbxref WHERE xref_dbname=proddb AND xref_key=prodacc);
+
+Query OK, 14642068 rows affected (14 min 14.50 sec)
+Rows matched: 14800535  Changed: 14642068  Warnings: 0
+
+again but empty (for testing speed):
+mysql> UPDATE load_gaf SET gene_product_dbxref_id = (SELECT id FROM dbxref WHERE xref_dbname=proddb AND xref_key=prodacc);
+Query OK, 0 rows affected (21 min 57.39 sec)
+Rows matched: 14800535  Changed: 0  Warnings: 0
+
+mysql> UPDATE load_gaf SET term_id = (SELECT id FROM term WHERE acc=termacc);
+Query OK, 14642062 rows affected (47 min 0.17 sec)
+Rows matched: 14800535  Changed: 14642062  Warnings: 0
+

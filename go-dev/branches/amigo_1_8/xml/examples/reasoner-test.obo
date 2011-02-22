@@ -1,0 +1,42 @@
+format-version: 1.0
+date:
+saved-by:
+default-namespace: test
+remark: 
+id-mapping: has_central_participant anon:has_central_participant
+
+[Term]
+id: anon:0000000
+name: cell activation
+
+[Term]
+id: anon:0000001
+name: macrophage activation
+intersection_of: anon:0000000 
+intersection_of: has_central_participant anon:0000003 
+
+[Term]
+id: anon:0000002
+name: microglial activation
+intersection_of: anon:0000000 
+intersection_of: has_central_participant anon:0000004 
+!is_a to be inferred by reasoner
+
+[Term]
+id: anon:0000002
+name: microglial activation
+
+[Term]
+id: anon:0000003
+name: macrophage
+is_a: CL:0000000
+
+[Term]
+id: anon:0000004
+name: microglial cell
+is_a: anon:0000003
+
+[Typedef]
+id: anon:has_central_participant
+name: has_central_participant
+

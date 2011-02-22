@@ -1,0 +1,95 @@
+#!/usr/bin/perl -w
+#!/usr/bin/perl -wT
+
+##
+## reset; DBIC_TRACE = 1 ./test
+##
+
+BEGIN { require "config.pl"; }
+use lib $ENV{GO_DEV_ROOT} . '/go-perl';
+use lib $ENV{GO_DEV_ROOT} . '/go-db-perl';
+use lib $ENV{GO_DEV_ROOT} . '/amigo/perl';
+
+## Bring in necessaries.
+use utf8;
+use strict;
+use Data::Dumper;
+# use AmiGO;
+# use GOBO::DBIC::GODBModel::Schema;
+# use GOBO::DBIC::GODBModel::Query;
+# use AmiGO::Worker::EvidenceCalculation;
+#use Utility::TSLParser;
+# use AmiGO::ReferenceGenome;
+# use Cache::Memcached;
+# initalize searcher and parser
+use Lucene;
+
+#my $core = AmiGO->new();
+
+#print "content-type:text/html\n\n";
+#print <<EOC;
+#<html><body>
+#<p>
+#Ran!<br />
+#</p>
+#EOC
+
+use strict;
+use Continuity;
+use URI::Escape;
+
+# Create the server and start the Event::loop
+# Defaults to HTTP::Daemon backend on random port
+# and cookie-based session tracking
+#Continuity->new->loop;
+Continuity->new( port => 8080 )->loop;
+
+# Ask a question and keep asking until they answer
+sub prompt {
+  my ($request, $msg, %ops) = @_;
+  $request->print("$msg<br>");
+  foreach my $option (keys %ops) {
+    my $uri_option = uri_escape($option);
+    $request->print(qq{<a href="?option=$uri_option">$option</a>&nbsp;});
+  }
+  # Subtle! Halt, wait for next request, and grab the 'option' param
+  my $option = $request->next->param('option');
+  # DoubleSubtle! Call the callback
+  return $option ? $ops{$option}->() : prompt($request, $msg, %ops);
+}
+
+sub main {
+  # We are given a handle to get new requests
+  my $request = shift;
+
+  # When we are first called we get a chance to initialize stuff
+  my $counter = 0;
+
+  # After we're done with that we enter a loop. Forever.
+  while(1) {
+    my $action =
+      prompt($request,"Count: $counter",
+	     "++" => sub { $counter++ },
+	     "--" => sub {
+	       if($counter == 0) {
+		 if(prompt($request,"Do you really want to GO NEGATIVE?",
+			   "Yes" => sub{1}, "No"=>sub{0})) {
+		   $counter--;
+		 }
+	       } else {
+		 $counter--;
+	       }
+	     }
+	    );
+    if($counter == 42) {
+      $request->print(q{
+        <h1>The Answer to Life, The Universe, and Everything</h1>
+      });
+    }
+  }
+}
+
+
+#print <<EOC;
+#</body></html>
+#EOC

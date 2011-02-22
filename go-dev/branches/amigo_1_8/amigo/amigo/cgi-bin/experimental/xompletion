@@ -1,0 +1,86 @@
+#!/usr/bin/perl -w
+####
+#### TODO: completion test of xapian.
+####
+
+## Need a little knowledge of the "AmiGO" environment.
+BEGIN{ require "config.pl"; }
+
+## Ready environmental globals for reuse. The logic here is a bit
+## twisted, but think about the BEGIN block and consider what happens
+## without the "if"s down here. If we just want to read the config
+## file once, we need these to be global and not be rewritten by the
+## null environment (BEGIN just once) of the spawned children. These
+## variables should just be set the first time.
+our $regexp = $ENV{AMIGO_TERM_REGEXP} if ! $regexp;
+our $search_dir = $ENV{AMIGO_INDEX_DIR} if ! $search_dir;
+
+#our $go_root = $ENV{GO_DEV_ROOT} if ! $go_root;
+#use lib $go_root . '/go-perl';
+#use lib $go_root . '/go-db-perl';
+#use lib $go_root . '/amigo/perl';
+
+## Bring in necessaries.
+use utf8;
+use strict;
+use Carp;
+
+##
+use JSON;
+use Search::Xapian;
+use CGI;
+#use AmiGO::Lucene;
+
+##
+my $MIN_SIZE = 3;
+my $MAX_SIZE = 30;
+my $RETURN_LIMIT = 10;
+
+## Just enough CGI to grab the incoming arg.
+$CGI::POST_MAX = 0;
+#use CGI::Carp qw(warningsToBrowser fatalsToBrowser);
+my $q = new CGI;
+
+## Grab the actually query string. Don't worry about it, we'll just be
+## passing it to Lucene anyways.
+my $in_query = $q->param('query') || '';
+
+## Do we need a '*' at the beginning too? Make lucene less irritating
+## in this case.
+#my $lucy = AmiGO::Lucene->new();
+#my $fixed_query = $lucy->fix_query($in_query); # make sure things are escaped
+my $fixed_query = $in_query;
+#if( $fixed_query =~ /^\w+$/ ){
+  print "fixed_query: $fixed_query\n";
+#  $fixed_query .= '*';
+#  print "bar: $fixed_query\n";
+#}
+
+## If there is no major problem, try it.
+## Look only if we meet minimal requirements.
+my $cgi_error = $q->cgi_error;
+if ( ! $cgi_error &&
+     $in_query &&
+     length($in_query) > $MIN_SIZE &&
+     length($in_query) < $MAX_SIZE ){
+
+  #  ## Default to general type, switch otherwise.
+  my $spot = $search_dir . '/xapian';
+  my $db = Search::Xapian::Database->new($spot)
+    or die "Couldn't open index: $!\n";
+
+  my $enq = $db->enquire($fixed_query);
+  print STDERR "Running query: " . $enq->get_query()->get_description() . "\n";
+
+  my @matches = $enq->matches(0, $RETURN_LIMIT);
+  print STDERR scalar(@matches) . " results found\n";
+
+  ## Fields and ranking for each result.
+  foreach my $match (@matches){
+    #  for( my $i = 0; $i < scalar(@matches) && $i < $RETURN_LIMIT; $i++ ){
+
+    my $doc = $match->get_doc();
+    my $score = $match->get_percent();
+    print STDERR $score . '% ... ' . $doc->get_data() . "\n";
+  }
+}
