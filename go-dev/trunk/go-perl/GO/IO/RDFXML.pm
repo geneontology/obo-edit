@@ -415,18 +415,53 @@ sub dataElement {
   my $tag = shift;
   my $content = shift;
 
-  $self->{writer}->dataElement($tag,
-			       $self->__strip_non_ascii($content));
-  
+  $self->{writer}->dataElement($tag, $self->__strip_non_ascii($content));
 }
 
-sub __strip_non_ascii {
+
+## WARNING: it is though that this code does not correctly get all
+## problem encoded characters; deprecated for __strip_non_ascii.
+sub __strip_non_ascii_old {
   my $self = shift;
   my $string = shift;
 
   $string =~ s/\P{IsASCII}//g;
 
   return $string;
+}
+
+
+## NOTE: taken from GO::Parsers::go_assoc_parser
+## Meant to solve slippery encoding issues, see:
+## "Re: [Software-group] RDF XML go full"
+## As demonstrated in the code below, this does not actually remove unicode
+## characters, but rather seems to force them down.
+# push @INC, "/home/sjcarbon/local/src/svn/geneontology/go-dev/trunk/go-perl";
+# use GO::IO::RDFXML;
+# use FileHandle;
+# $out = new FileHandle(">-");
+# $x = GO::IO::RDFXML->new(-output=>$out);
+# $foo = "asdf"
+# $bar = "okテストay"
+# print $x->__strip_non_ascii($foo);
+# print $x->__strip_non_ascii($bar);
+sub __strip_non_ascii {
+  my $self = shift;
+  my $_ = shift;
+
+  # UNICODE causes problems for XML and DB
+  # delete 8th bit
+  tr [\200-\377]
+     [\000-\177];   # see 'man perlop', section on tr/
+  # weird ascii characters should be excluded
+  tr/\0-\10//d;   # remove weird characters; ascii 0-8
+  # preserve \11 (9 - tab) and \12 (10-linefeed)
+  tr/\13\14//d;   # remove weird characters; 11,12
+  # preserve \15 (13 - carriage return)
+  tr/\16-\37//d;  # remove 14-31 (all rest before space)
+  tr/\177//d;     # remove DEL character
+
+  return $_;
 }
 
 sub __make_go_from_acc {
