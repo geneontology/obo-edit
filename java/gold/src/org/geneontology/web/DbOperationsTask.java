@@ -10,6 +10,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.geneontology.gaf.hibernate.GafDocument;
+import org.geneontology.gaf.hibernate.GafObjectsBuilder;
 import org.geneontology.gaf.io.GAFDbOperations;
 import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.io.DbOperationsInterface;
@@ -217,8 +218,16 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 		
 		if(object instanceof OWLGraphWrapper)
 			graphs.add((OWLGraphWrapper)object);
-		else if(object instanceof GafDocument){
-			gafDocuments.add((GafDocument) object);
+		else if(object instanceof GafObjectsBuilder){
+			GafObjectsBuilder builder = (GafObjectsBuilder) object;
+			gafDocuments.add( builder.getGafDocument());
+			
+			this.annotationRuleViolations.addAll(builder.getParser().getAnnotationRuleViolations());
+			
+			for(String s: builder.getParser().getErrors()){
+				this.annotationRuleViolations.add(new AnnotationRuleViolation(s));
+			}
+			
 		}
 	}
 	

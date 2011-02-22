@@ -11,6 +11,7 @@ import org.geneontology.gaf.hibernate.CompositeQualifier;
 import org.geneontology.gaf.hibernate.ExtensionExpression;
 import org.geneontology.gaf.hibernate.GAFParserHandlerForHibernate;
 import org.geneontology.gaf.hibernate.GafDocument;
+import org.geneontology.gaf.hibernate.GafObjectsBuilder;
 import org.geneontology.gaf.hibernate.GafObjectsFactory;
 import org.geneontology.gaf.hibernate.WithInfo;
 import org.geneontology.gaf.parser.GAFParser;
@@ -170,16 +171,18 @@ public class GAFDbOperations implements DbOperationsInterface{
 			listener.startOntologyLoad();
 		}
 
-		GAFParser parser = new GAFParser();
-		GAFParserHandlerForHibernate handler = new GAFParserHandlerForHibernate();
-		parser.parse(new File(locaiton), handler);
+	//	GAFParser parser = new GAFParser();
+//		GAFParserHandlerForHibernate handler = new GAFParserHandlerForHibernate();
+	//	parser.parse(new File(locaiton),);
+		GafObjectsBuilder builder = new GafObjectsBuilder();
 		
-		GafDocument doc = handler.getGafDocument();
+		GafDocument doc = builder.buildDocument(new File(locaiton));
+
 		for(DbOperationsListener listener: listeners){
-			listener.endOntologyLoad(doc);
+			listener.endOntologyLoad(builder);
 		}
 		
-		return handler.getGafDocument();
+		return doc;
 	}
 	
 	
