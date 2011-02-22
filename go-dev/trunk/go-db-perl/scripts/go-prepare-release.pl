@@ -137,6 +137,8 @@ push(@steps,
    # TERMDB DONE
 ));
 
+push @steps, ['get_goa_uniprot_ga'] if $monthly;
+
 unless ($daily) {
     push(@steps,
 	 (
