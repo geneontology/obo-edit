@@ -1346,8 +1346,8 @@ RightClickMenuProvider, Autoscroll {
 		for (int i = 0; i < selectionListeners.length; i++) {
 			addTreeSelectionListener(selectionListeners[i]);
 		}
-		logger.info("Reloaded OTE in " + (System.currentTimeMillis() - time)
-				+ " ms (expanding took " + time2 + " ms)");
+//		logger.debug("Reloaded OTE in " + (System.currentTimeMillis() - time)
+//				+ " ms (expanding took " + time2 + " ms)");
 	}
 
 	public void restorePaths(TreePath[] expanded) {
