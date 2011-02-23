@@ -83,6 +83,8 @@ sub get_url_fn {
     $core->kvetch("not defined: db: " . $database . ", acc: " . $acc_no);
   }
 
+
+  ## Ancient fallbacks in case of problems.
   $core->kvetch("check fallback...");
   my %db_hash =
     (
