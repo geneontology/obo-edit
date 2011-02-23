@@ -961,6 +961,20 @@ sub database_link {
   #print STDERR "_db_" . $db . "\n";
   #print STDERR "_id_" . $id . "\n";
 
+  ## WARNING
+  ## TODO: Temporary Reactome special case. This should be removeable
+  ## in a couple of months when Reactome has entirely switched over to
+  ## satable ids...
+  ## Stable id:
+  ## http://www.reactome.org/cgi-bin/link?SOURCE=Reactome&ID=REACT_604
+  ## DB id:
+  ## http://www.reactome.org/cgi-bin/eventbrowser?DB=gk_current&ID=10046
+  # $self->kvetch("Reactome test: $db $id");
+  if( $db =~ /^reactome$/i && $id =~ /^[0-9]+$/i ){
+    $self->kvetch("looks like a Reactome db id--special case!");
+    return 'http://www.reactome.org/cgi-bin/eventbrowser?DB=gk_current&ID='.$id;
+  }
+
   ## Revive the cache if we don't have it.
   if( ! defined($self->{DB_INFO}) ){
     ## Populate our hash.
