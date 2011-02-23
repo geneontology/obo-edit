@@ -1,7 +1,16 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 =================================
-What's New in OBO-Edit v2.1-beta9 (1/26/11)
+What's New in OBO-Edit v2.1-beta10 (2/23/11)
+=================================
+
+data-version header field was not getting round-tripped--now it is.
+
+ [ geneontology-Bugs-3188520] saved-by should appear in saved OBO file
+
+
+=================================
+What's New in OBO-Edit v2.1-beta9 (2/18/11)
 =================================
 Bug Fixes:
  [ geneontology-Bugs-3165309 ] hitting return just selects first term from dropdown list
@@ -40,7 +49,6 @@ Advanced data adapter with the "Allow dangling references" box checked.
 (I think "allow dangling references" used to be the default setting, and now
 it's not.)
 
-data-version header field was not getting round-tripped--now it is.
 
 =================================
 What's New in OBO-Edit v2.1-beta8 (1/20/11)

@@ -238,6 +238,7 @@ public class TestUtil extends TestCase {
 			if (!(astr.startsWith("date") || astr.startsWith("saved-by")
 					|| astr.startsWith("auto-generated-by")
 					|| astr.startsWith("format-version")
+					|| astr.startsWith("data-version")
 					|| astr.startsWith("remark") || astr.startsWith("!"))
 					|| (astr.startsWith("!") && astr.startsWith("type")))
 				test.assertTrue("Lines '" + astr + "' & '" + bstr
