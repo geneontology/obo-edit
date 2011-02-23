@@ -308,6 +308,57 @@ sub id2{
     return @out;
 }
 
+
+sub id3{
+    my $s = shift;
+
+    my $r = GOBO::DBIC::GODBModel::Query->new({type=>'phylotree_lazy'})->get_all_results
+      ({
+	xref_dbname  => [ $s->{dbname} ],
+       },
+       {
+	join =>
+	[
+	 'dbxref',
+	 { gene_product_phylotree => 'association' },
+	],
+	select =>
+	[
+	 #'phylotree_id',
+	 'xref_key',
+	 { count => 'DISTINCT gene_product_phylotree.gene_product_id', -as => 'members' },
+	 { max => 'association.assocdate',                             -as => 'last_anno' },
+	],
+	as =>
+	[
+	 #'phylotree_id',
+	 'xref_key',
+	 'members',
+	 'last_anno',
+	],
+	order_by => 'xref_key',
+       });
+
+    my @out = map {
+	my %new = %$s;
+
+	#$new{id}                = $_->get_column('phylotree_id');
+	$new{key}               = $_->get_column('xref_key');
+	$new{number_of_members} = $_->get_column('members');
+	$new{last_annotated}    = $_->get_column('last_anno');
+	my $out = __PACKAGE__->new(%new);
+
+	# my @foo = $out->species_dist(1);
+	# $out->{dist} = \@foo;
+
+	$out;
+    } @$r;
+
+    refg_species_dists(@out);
+
+    return @out;
+}
+
 =item last_annotated()
 
 The C<MAX(association.assocdate)> value for all the members related to
@@ -472,18 +523,23 @@ sub refg_species_dists{
 
     my $gobo = GOBO::DBIC::GODBModel::Query->new({type=>'phylotree_dist'});
 
-    my @s = @_;
-    my $r = $gobo->get_all_results
-      ({ xref_dbname => $s[0]->{dbname},
-	 xref_key    => [ map { $_->{key} } @s ],
-       });
-    if (scalar(@$r) != scalar(@s)) {
-	die sprintf('Expecting %d clusters, got %d', scalar(@s), scalar(@$r));
-    }
-
+    my $dbname = $_[0]->{dbname};
+    my $count  = scalar @_;
     my %s = map {
 	$_->{key} => $_;
-    } @s;
+    } @_;
+
+    my %args = ( xref_dbname => $dbname );
+    if ($count < 1000) {
+	warn "Yea!";
+	$args{xref_key} = [ map { $_->{key} } values %s ];
+    }
+
+    my $r = $gobo->get_all_results(\%args);
+    if (scalar(@$r) != $count) {
+	die sprintf('Expecting %d clusters, got %d', $count, scalar(@$r));
+    }
+
 
     my %dist;
     while (@$r) {
@@ -496,11 +552,10 @@ sub refg_species_dists{
 	    my $got = shift @got;
 	    my $ncbi = $got->gene_product()->species()->ncbi_taxa_id();
 	    $dist{$key}->{$ncbi}++;
-	    #$s{$key}->{foo}->{$ncbi}++;
 	}
     }
 
-    for my $s (@s) {
+    for my $s (values %s) {
 	for my $o (AmiGO::Aid::PantherDB->reference_genome()) {
 	    #die Dumper \%dist, $s, $o;
 
@@ -516,15 +571,7 @@ sub refg_species_dists{
 	       code  => $o->code(),
 	      };
 	}
-	#die Dumper $s;
     }
-    #warn Dumper $s[0], $dist{$s[0]->{key}};
-
-
-#    for my $s (values %s) {
-#	warn Dumper $s;
-#    }
-
 }
 
 

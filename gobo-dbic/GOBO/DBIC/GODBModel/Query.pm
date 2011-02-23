@@ -26,7 +26,7 @@ use strict;
 use GOBO::DBIC::GODBModel::Schema;
 #use Data::Page;
 
-
+#$ENV{DBI_TRACE} = 1;
 
 =item new
 
