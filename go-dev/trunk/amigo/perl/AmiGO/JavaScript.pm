@@ -65,13 +65,11 @@ my $sig2path =
    'com/jquery.layout.min.js',
 
    ## More plugins.
-   'com.jquery.treeview' =>
-   'com/jquery.treeview.js',
-   'com.jquery.treeview.async' =>
-   'com/jquery.treeview.async.js',
-   'com.jquery.tablesorter' =>
-   'com/jquery.tablesorter.min.js',
-   #'com/jquery.tablesorter.js',
+   'com.jquery.treeview'          => 'com/jquery.treeview.js',
+   'com.jquery.treeview.async'    => 'com/jquery.treeview.async.js',
+   'com.jquery.tablesorter'       => 'com/jquery.tablesorter.min.js',
+   'com.jquery.tablesorter.pager' => 'com/jquery.tablesorter.pager.js',
+
 
    ## TODO/BUG: temporary newick locations and links. These are not
    ## automatically copied at installation time at this point as they
