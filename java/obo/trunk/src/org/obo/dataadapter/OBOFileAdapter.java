@@ -376,10 +376,14 @@ public class OBOFileAdapter implements OBOAdapter {
 	}
 
 	public String getUserName() {
-		return userName;
+          if (userName == null) {
+            userName = System.getProperty("user.name");
+          }
+          return userName;
 	}
 
 	public void setUserName(String userName) {
+          logger.debug("OBOFileAdapter.setUserName " + userName);
 		this.userName = userName;
 	}
 
