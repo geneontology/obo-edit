@@ -54,6 +54,7 @@ sub setup {
     (
      sets => 'mode_cluster_sets',
      index => 'mode_cluster_index',
+     pager => 'mode_cluster_jindex', # JavaScript Index
      cluster => 'mode_cluster',
      dist => 'mode_dist_image',
 
@@ -168,6 +169,40 @@ sub mode_cluster_index{
 
     $c->generate_template_page();
 }
+
+sub mode_cluster_jindex{
+    my $c = shift;
+    my $q = $c->query();
+    my $o = AmiGO::Worker::Phylotree->new
+      (dbname => ($q->param('dbname') || $default_dbname));
+
+    my @id = map { split(m/\s+/, $_) } $q->param('id');
+    my @key = map { split(m/\s+/, $_) } $q->param('key');
+
+    my @r;
+    if (scalar(@id) || scalar(@key)) {
+	@r = $o->id2phylotree(@id);
+	push @r, $o->key2phylotree(@id);
+    } else {
+	@r = $o->id3();
+    }
+
+
+    $c->set_template_parameter(dbname => $o->{dbname});
+    $c->set_template_parameter(clusters => \@r);
+    $c->add_template_content('html/main/phylotree_cluster_index2.tmpl');
+    $c->set_template_parameter(page_title => "phylotree: $o->{dbname}");
+    $c->add_template_bulk
+      ({javascript_library =>
+	[
+	 'com.jquery',
+	 'com.jquery.tablesorter',
+	 'com.jquery.tablesorter.pager',
+	] });
+
+    $c->generate_template_page();
+}
+
 
 sub mode_id_entry{
     my $c = shift;

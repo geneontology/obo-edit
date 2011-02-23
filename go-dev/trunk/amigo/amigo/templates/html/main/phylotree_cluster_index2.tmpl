@@ -1,0 +1,72 @@
+<!-- START: phylotree_cluster_index.tmpl -->
+[%- IF clusters.size == 0 -%]
+<p>No phylotree entries to display.</p>
+[%- ELSE -%]
+
+<script type="text/javascript">
+jQuery(document).ready(function() { 
+
+ $.tablesorter.addParser({
+  id: "bloodyDigit",
+  is: function(s,table) {
+   if (s == '0') {
+    return true;
+   } 
+   var c = table.config;
+   return $.tablesorter.isDigit(s,c);
+  },
+  format: function(s) {
+   return $.tablesorter.formatFloat(s);
+  },
+  type: "numeric"
+ });
+
+  $('table').tablesorter().tablesorterPager({container: $("#pager"),positionFixed:false});
+});
+</script>
+
+<h1>[% dbname %]</h1>
+<table>
+
+<caption id="pager" class="pager">
+  <form>
+    <img src="/amigo/js/com/ext/resources/images/default/grid/page-first.gif" class="first"/>
+    <img src="/amigo/js/com/ext/resources/images/default/grid/page-prev.gif" class="prev"/>
+    <input type="text" class="pagedisplay"/>
+    <img src="/amigo/js/com/ext/resources/images/default/grid/page-next.gif" class="next"/>
+    <img src="/amigo/js/com/ext/resources/images/default/grid/page-last.gif" class="last"/>
+    <select class="pagesize">
+      <option selected="selected"  value="10">10</option>
+      <option value="20">20</option>
+      <option value="30">30</option>
+      <option  value="40">40</option>
+      </select>
+    </form>
+</caption>
+
+
+<thead><tr>
+<th></th>
+<th>Cluster</th>
+<th>Last Annotated</th>
+<th>Members</th>
+[%- FOREACH dist IN clusters.1.dist -%]
+<th>[% dist.code %]</th>
+[%- END -%]
+</tr></thead>
+<tbody>[%- FOREACH cluster IN clusters %]<tr>
+
+<td>[% IF offset ; loop.count + offset ; ELSE ; loop.count ; END %]</td>
+<td><a href="[% cluster.url %]">[% cluster.key %]</a></td>
+<td>[% cluster.last_annotated %]</td>
+<td>[% cluster.number_of_members %]</td>
+[%- FOREACH dist IN cluster.dist -%]
+<td style="background-color:[% dist.color %]">[% dist.count %]</td>
+[%- END -%]
+
+</tr>[% END %]</tbody>
+</table>[%- END -%]
+
+
+
+<!-- END: phylotree_cluster_index.tmpl -->
