@@ -383,7 +383,6 @@ public class OBOFileAdapter implements OBOAdapter {
 	}
 
 	public void setUserName(String userName) {
-          logger.debug("OBOFileAdapter.setUserName " + userName);
 		this.userName = userName;
 	}
 
