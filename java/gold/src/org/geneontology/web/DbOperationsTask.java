@@ -53,8 +53,10 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 	//id of the current
 	private String currentOntologyBeingProcessed;
 	
-	private List<OWLGraphWrapper> graphs;
+//	private List<OWLGraphWrapper> graphs;
 
+	private OWLGraphWrapper graph;
+	
 	private List<GafDocument> gafDocuments;
 	
 	private String dbType;
@@ -74,7 +76,7 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 		this.locations = locations;
 		this.force = force;
 		this.tsvFileDir = tsvFilesDir;
-		graphs = new Vector<OWLGraphWrapper>();
+//		graphs = new Vector<OWLGraphWrapper>();
 		gafDocuments = new ArrayList<GafDocument>();
 		
 		annotationRuleViolations = new HashSet<AnnotationRuleViolation>();
@@ -113,18 +115,26 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 		db.addDbOperationsListener(this);
 		
 		try{
+			boolean bulkLoadDone = false;
 			
 			for(String location: locations){
 				this.currentOntologyBeingProcessed = location;
 				if("bulkload".equals(opName)){
-						db.bulkLoad(location, force);
 						if(db instanceof GAFDbOperations && graph != null){
+							db.bulkLoad(location, force);
 							for(GafDocument doc: gafDocuments){
 								
 								annotationRuleViolations.addAll(doc.validateAnnotations(graph));
 								/*for(AnnotationRuleViolation arv: doc.validateAnnotations(graph)){
 									this.annotationRuleViolations.append(arv.getMessage() + "----" + arv.getSourceAnnotation());
 								}*/
+							}
+						}else{
+							if(bulkLoadDone){
+								db.updateGold(location);
+							}else{
+								db.bulkLoad(location, force);
+								bulkLoadDone = true;
 							}
 						}
 				}else if ("update".equals(opName)){
@@ -136,10 +146,12 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 				}else if ("loadtsv".equals(opName)){
 					db.loadTsvFiles(tsvFileDir);
 				}else if("checkconsistency".equals(opName)){
-					performConsistancyCheck(((DbOperations) db).buildOWLGraphWrapper(location).getSourceOntology());
+				//	performConsistancyCheck(((DbOperations) db).buildOWLGraphWrapper(location).getSourceOntology());
+						performConsistancyCheck(this.graph.getSourceOntology());
 				}else if("find-inferences".equals(opName)){
 					//performConsistancyCheck(db.buildOWLGraphWrapper(location).getSourceOntology());
-					findInferences(((DbOperations)db).buildOWLGraphWrapper(location));
+					//findInferences(((DbOperations)db).buildOWLGraphWrapper(location));
+					findInferences(this.graph);					
 				}
 			}
 		} catch (Exception e) {
@@ -216,9 +228,19 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 	public void endOntologyLoad(Object object) {
 		reportEndTime("Obo To OWL Conversion--"+currentOntologyBeingProcessed);
 		
-		if(object instanceof OWLGraphWrapper)
-			graphs.add((OWLGraphWrapper)object);
-		else if(object instanceof GafObjectsBuilder){
+		if(object instanceof OWLOntology){
+			OWLOntology ont = (OWLOntology) object;
+			if(graph == null){
+				try{
+					graph = new OWLGraphWrapper(ont);
+				}catch(Exception ex){
+					LOG.error(ex.getMessage(), ex);
+					this.exception = ex;
+				}
+			}else{
+				graph.addSupportOntology(ont);
+			}
+		}else if(object instanceof GafObjectsBuilder){
 			GafObjectsBuilder builder = (GafObjectsBuilder) object;
 			gafDocuments.add( builder.getGafDocument());
 			
@@ -231,8 +253,12 @@ public class DbOperationsTask extends Task implements DbOperationsListener{
 		}
 	}
 	
-	public List<OWLGraphWrapper> getGraphs(){
+	/*public List<OWLGraphWrapper> getGraphs(){
 		return graphs;
+	}*/
+	
+	public OWLGraphWrapper getOWLGraphWrapper(){
+		return this.graph;
 	}
 	
 	public String getConsistencyCheckResults(){

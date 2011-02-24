@@ -197,7 +197,7 @@ public class DbOperations implements DbOperationsInterface{
 		
 	}
 
-	public OWLGraphWrapper buildOWLGraphWrapper(String ontologyLocation) throws IOException, OWLOntologyCreationException{
+	public OWLOntology buildOWLOntology(String ontologyLocation) throws IOException, OWLOntologyCreationException{
 		if(ontologyLocation == null)
 			throw new FileNotFoundException("The file is not found");
 		
@@ -224,12 +224,48 @@ public class DbOperations implements DbOperationsInterface{
 				
 		}
 		
+		for(DbOperationsListener listener: listeners){
+			listener.endOntologyLoad(ontology);
+		}
+		
+		return ontology;
+	}	
+	
+	
+	public OWLGraphWrapper buildOWLGraphWrapper(String ontologyLocation) throws IOException, OWLOntologyCreationException{
+		/*if(ontologyLocation == null)
+			throw new FileNotFoundException("The file is not found");
+		
+
+		for(DbOperationsListener listener: listeners){
+			listener.startOntologyLoad();
+		}
+		
+		OWLOntology ontology = null;
+		if(ontologyLocation.endsWith(".obo")){
+			OBOFormatParser parser = new OBOFormatParser();
+			
+			OBODoc doc = parser.parse(ontologyLocation);
+			
+			Obo2Owl obo2owl = new Obo2Owl();
+			
+			ontology = obo2owl.convert(doc);
+		}else{
+			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+			if(ontologyLocation.startsWith("http:"))
+				ontology = manager.loadOntologyFromOntologyDocument(IRI.create(ontologyLocation));
+			else
+				ontology = manager.loadOntologyFromOntologyDocument(new File(ontologyLocation));
+				
+		}*/
+		OWLOntology ontology = buildOWLOntology(ontologyLocation);
+		
 		OWLGraphWrapper wrapper = new OWLGraphWrapper(ontology);
 
-		
+		/*
 		for(DbOperationsListener listener: listeners){
 			listener.endOntologyLoad(wrapper);
-		}
+		}*/
 		
 		return wrapper;
 	}	
