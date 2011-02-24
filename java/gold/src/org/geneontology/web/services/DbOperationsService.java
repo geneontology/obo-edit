@@ -3,7 +3,6 @@ package org.geneontology.web.services;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.util.Hashtable;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +15,7 @@ import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.rules.AnnotationRuleViolation;
 import org.geneontology.web.AdminServlet;
 import org.geneontology.web.DbOperationsTask;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import owltools.graph.OWLGraphWrapper;
 
@@ -30,7 +30,7 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 	private DbOperationsTask task;
 
 	// global reference of the OWLGraphWrapper
-	private Hashtable<String, OWLGraphWrapper> graphs;
+//	private Hashtable<String, OWLGraphWrapper> graphs;
 
 	private OWLGraphWrapper ontologyGraph;
 	
@@ -39,15 +39,24 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 	}
 	
 	public DbOperationsService(){
-		graphs = new Hashtable<String, OWLGraphWrapper>();
+	//	graphs = new Hashtable<String, OWLGraphWrapper>();
 		
 		DbOperations db = new DbOperations();
-		for(Object location: GeneOntologyManager.getInstance().getDefaultOntologyLocations()){
+		List ontologies = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
+		OWLGraphWrapper wrapper = null;
+		for(int i=0;i<ontologies.size();i++){
+			String location = ontologies.get(i).toString();
 			try{
-				OWLGraphWrapper wrapper = db.buildOWLGraphWrapper(location.toString());
+				OWLOntology ontology = db.buildOWLOntology(location);
+				if(wrapper==null){
+					wrapper = new OWLGraphWrapper(ontology);
+					wrapper.setSourceOntology(ontology);
+				}else{
+					wrapper.addSupportOntology(ontology);
+				}
 				if(ontologyGraph == null)
 					ontologyGraph = wrapper;
-				graphs.put(wrapper.getOntologyId(), wrapper); 
+				//graphs.put(wrapper.getOntologyId(), wrapper); 
 			}catch(Exception ex){
 				LOG.error(ex.getMessage(), ex);
 			}
@@ -244,14 +253,20 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 
 		if (!task.isRunning() && !addReload) {
 			
-			if(task.getGraphs().size()>0)
+			
+			
+			/*if(task.getGraphs().size()>0)
 				graphs = new Hashtable<String, OWLGraphWrapper>();
 			
 			for (OWLGraphWrapper graph : task.getGraphs()) {
 				if(ontologyGraph == null)
 					ontologyGraph = graph;
 				graphs.put(graph.getOntologyId(), graph);
-			}
+			}*/
+			
+			if(task.getOWLGraphWrapper() != null)
+				this.ontologyGraph = task.getOWLGraphWrapper();
+			
 			this.task = null;
 		}
 
