@@ -6,7 +6,9 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -23,12 +25,17 @@ import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyFormat;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.reasoner.Node;
+import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.util.InferredAxiomGenerator;
@@ -218,7 +225,9 @@ public class OboOntologyReleaseRunner {
 					
 					System.out.println("Creating Inferences");
 					if(reasoner != null){
-						simpleOnt = buildInferredOntology(simpleOnt, manager, reasoner);
+						//buildInferredOntology(simpleOnt, manager, reasoner);
+						buildInferences(simpleOnt, manager, reasoner);
+						
 					}
 					System.out.println("Inferences creation completed");
 				
@@ -254,7 +263,8 @@ public class OboOntologyReleaseRunner {
 				
 				System.out.println("Creating inferences");
 				if(reasoner != null)
-					ontology= buildInferredOntology(ontology, manager, reasoner);
+					buildInferences(ontology, manager, reasoner);
+				//	ontology= buildInferredOntology(ontology, manager, reasoner);
 			
 				System.out.println("Inferences creation completed");
 				
@@ -469,7 +479,85 @@ public class OboOntologyReleaseRunner {
 
 	
 
-	private static OWLOntology buildInferredOntology(OWLOntology ontology, OWLOntologyManager manager, String reasonerName) throws OWLOntologyCreationException{
+	private static Set<OWLAxiom>  buildInferences(OWLOntology ontology, OWLOntologyManager manager,  String reasonerName){
+	//	OWLOntology ontology = graph.getSourceOntology();
+	//	PelletReasonerFactory factory = new PelletReasonerFactory();
+	//	OWLReasoner reasoner = factory.createReasoner(ontology);
+
+		OWLDataFactory factory = manager.getOWLDataFactory();
+		OWLReasoner reasoner = createReasoner(ontology, reasonerName);
+		
+		
+		Set<OWLClass> nrClasses = new HashSet<OWLClass>();
+
+		Set<OWLAxiom> set = new HashSet<OWLAxiom>();
+		for (OWLClass cls : ontology.getClassesInSignature()) {
+			if (nrClasses.contains(cls))
+				continue; // do not report these
+			
+			// REPORT INFERRED EQUIVALENCE BETWEEN NAMED CLASSES
+			for (OWLClass ec : reasoner.getEquivalentClasses(cls)) {
+				if (nrClasses.contains(ec))
+					continue; // do not report these
+				
+				if(cls.toString().equals(ec.toString()))
+					continue;
+				
+				if (cls.toString().compareTo(ec.toString()) > 0) // equivalence is symmetric: report each pair once
+					set.add( factory.getOWLEquivalentClassesAxiom(cls, ec));
+					//consitancyCheckBuffer.append("&nbsp;&nbsp;&nbsp;* INFERRED: equivalent "+getLabel(cls, graph)+" "+ getLabel(ec, graph) + "<br />" );
+			}
+			
+			// REPORT INFERRED SUBCLASSES NOT ALREADY ASSERTED
+
+			NodeSet<OWLClass> scs = reasoner.getSuperClasses(cls, true);
+			for (Node<OWLClass> scSet : scs) {
+				for (OWLClass sc : scSet) {
+					if (sc.toString().endsWith("Thing")) {
+						continue;
+					}
+					if (nrClasses.contains(sc))
+						continue; // do not report subclasses of owl:Thing
+
+					// we do not want to report inferred subclass links
+					// if they are already asserted in the ontology
+					boolean isAsserted = false;
+					for (OWLClassExpression asc : cls.getSuperClasses(ontology)) {
+						if (asc.equals(sc)) {
+							// we don't want to report this
+							isAsserted = true;								
+						}
+					}
+					for (OWLClassExpression ec : cls.getEquivalentClasses(ontology)) {
+						
+						if (ec instanceof OWLObjectIntersectionOf) {
+							OWLObjectIntersectionOf io = (OWLObjectIntersectionOf)ec;
+							for (OWLClassExpression op : io.getOperands()) {
+								if (op.equals(sc)) {
+									isAsserted = true;
+								}
+							}
+						}
+					}
+					if (!isAsserted) {
+						set.add(factory.getOWLSubClassOfAxiom(cls, sc));
+						//this.consitancyCheckBuffer.append("&nbsp;&nbsp;&nbsp;&nbsp;*INFERRED:  "+getLabel(cls,graph)+" subClassOf "+getLabel(sc, graph) + "<br />");
+					}
+				}
+			}
+		}
+		
+	//	OWLOntologyManager manager = graph.getManager();
+		for(OWLAxiom ax: set){
+			manager.applyChange(new AddAxiom(ontology, ax));
+		}
+		
+		return set;
+		
+	}
+	
+	
+	/*private static OWLOntology buildInferredOntology(OWLOntology ontology, OWLOntologyManager manager, String reasonerName) throws OWLOntologyCreationException{
 
 		OWLReasoner reasoner = createReasoner(ontology, reasonerName);
 		List<InferredAxiomGenerator<? extends OWLAxiom>> gens = new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
@@ -491,7 +579,7 @@ public class OboOntologyReleaseRunner {
 
 		return infOnt;
 	
-	}
+	}*/
 	
 	private static OWLReasoner createReasoner(OWLOntology ont, String reasonerName) {
 			OWLReasonerFactory reasonerFactory = null;
