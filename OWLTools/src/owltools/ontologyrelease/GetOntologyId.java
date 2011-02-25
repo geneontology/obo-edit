@@ -17,7 +17,10 @@ public class GetOntologyId extends Task {
 	private String ontologyLocation;
 
 	public void setFile(String file){
-		this.ontologyLocation = file;
+		if(file != null){
+			String files[] = file.split(" ");
+			this.ontologyLocation = files[0];
+		}
 	}
 	
 	public String getFile(){
