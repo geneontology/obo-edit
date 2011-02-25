@@ -187,16 +187,18 @@
 		<echo>Ontology id is: ${oborelease.ontologyid}</echo>
 		<echo>Version id is: ${oborelease.versionid}</echo>
 		<echo>Generate Asserted: ${oborelease.asserted.option}</echo>
-		
+		<echo>Generate Simple: ${oborelease.simple.option}</echo>
 		
 		<java classname="owltools.ontologyrelease.OboOntologyReleaseRunner">
-
-			<arg value="--outdir"/>
+		<!--	<jvmarg value="-Xmx2024m"></jvmarg>-->
+			
+			<arg value="-outdir"/>
 			<arg value="${oborelease.outputdir}/${TODAY}"/>
-			<arg value="--reasoner"/>
+			<arg value="-reasoner"/>
 			<arg value="${oborelease.reasoner}"/>
 			<arg value="${oborelease.asserted.option}"/>
-			<arg value="--owlversion"/>
+			<arg value="${oborelease.simple.option}"/>
+			<arg value="-owlversion"/>
 			<arg value="${oborelease.versionid}"/>
 			<arg value="${oborelease.obofilepath}" />
 			<classpath>
