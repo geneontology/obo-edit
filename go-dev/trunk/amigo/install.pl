@@ -983,6 +983,7 @@ if ( $opt_c ) {
 	  completion
 	  fcompletion
 
+	  pgraph
 	  phylotree
 
 	  xp_term_request
@@ -1100,9 +1101,9 @@ if ( $opt_c ) {
 	       $synth_vars{AMIGO_CGI_ROOT_DIR} . '/');
     make_readable( $synth_vars{AMIGO_CGI_ROOT_DIR} . '/config.json' );
 
-    ## TODO/BUG: Temporarily get the Newick tree stuff over until we can
-    ## fix it more permanently.
-    force_copy($env_conf{GO_JS_ROOT}{NEW_VALUE} . '/newick_tree',
+    ## Get the (new) graph/tree stuff over.
+    ## TODO/BUG: Redo this layout later.
+    force_copy($env_conf{GO_JS_ROOT}{NEW_VALUE},
 	       $synth_vars{AMIGO_HTDOCS_ROOT_DIR} . '/js');
   }
 
