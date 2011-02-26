@@ -9,8 +9,8 @@
 // TODO/BUG: Remove absolute path once this is all folded into the
 // main AmiGO JS area.
 // Load testing.
-load('/home/sjcarbon/local/src/cvs/go-dev/amigo/amigo/js/org/bbop/test.js');
-var mr_t = new org.bbop.test();
+load('/home/sjcarbon/local/src/svn/geneontology/javascript/graph/test.js');
+var mr_t = new bbop.test();
 
 // Libs to test.
 load('json2.js');

@@ -1,5 +1,5 @@
 ////
-//// A trivial testing framework for JS. See test.test.js for usage.
+//// A trivial testing framework for JS. See test.tests.js for usage.
 ////
 //// Notes: cannot depend on core.js
 ////
