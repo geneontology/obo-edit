@@ -49,7 +49,7 @@ sub setup {
   $self->start_mode('exp');
   $self->error_mode('mode_fatal');
   $self->run_modes(
-		   'exp'    => 'mode_exp',
+		   'exp'      => 'mode_exp',
 		   'AUTOLOAD' => 'mode_exception'
 		  );
 }
@@ -97,10 +97,10 @@ sub mode_exp {
   #$self->add_template_javascript($self->{JS}->initializer_jquery($jsinit));
 
   ## Juggle onto absolute version of header template.
-  $self->set_template_parameter('page_name', 'amigo'); # menu bar okay
+  #$self->set_template_parameter('page_name', 'amigo'); # menu bar okay
   $self->set_template_parameter('STANDARD_YUI', 'no');
   $self->add_template_content('html/main/pgraph.tmpl');
-  return $self->generate_template_page({header=>0});
+  return $self->generate_template_page();
 }
 
 
