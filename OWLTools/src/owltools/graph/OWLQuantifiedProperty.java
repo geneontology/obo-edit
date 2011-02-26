@@ -12,7 +12,7 @@ public class OWLQuantifiedProperty {
 	
 	// TODO - change name to predicate?
 	public enum Quantifier {
-		SOME, ONLY, CARDINALITY, SUBCLASS_OF, INSTANCE_OF, PROPERTY_ASSERTION, IDENTITY, VALUE
+		SOME, ONLY, CARDINALITY, SUBCLASS_OF, INSTANCE_OF, PROPERTY_ASSERTION, IDENTITY, VALUE, EQUIVALENT
 	}
 	
 	private OWLObjectProperty property;
