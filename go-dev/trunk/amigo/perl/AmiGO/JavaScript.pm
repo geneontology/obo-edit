@@ -76,13 +76,31 @@ my $sig2path =
    ## are kept in SVN, not CVS. This will be taken care of after the
    ## merge.
    'newick.json' =>
-   'newick_tree/json2.js',
+   'javascript/newick_tree/json2.js',
    'newick.tree' =>
-   'newick_tree/NewickTree.js',
+   'javascript/newick_tree/NewickTree.js',
    'newick.tree_utils' =>
-   'newick_tree/NewickTreeUtils.js',
+   'javascript/newick_tree/NewickTreeUtils.js',
    'newick.phylo' =>
-   'newick_tree/phylo_tree.js',
+   'javascript/newick_tree/phylo_tree.js',
+
+   ## TODO/BUG: better layout for "external" libs
+   'com.raphael' =>
+   'javascript/external/raphael-min.js',
+   'com.raphael.graffle' =>
+   'javascript/external/graffle.js',
+
+   ## TODO/BUG: better layout for "external" libs
+   'org.bbop.graph.core' =>
+   'javascript/graph/core.js',
+   'org.bbop.graph.model' =>
+   'javascript/graph/model.js',
+   'org.bbop.graph.tree' =>
+   'javascript/graph/tree.js',
+   'org.bbop.graph.render.phylo' =>
+   'javascript/graph/render/phylo.js',
+   'exp' =>
+   'javascript/graph/render/exp.js',
 
    ## EXT JS.
    'com.ext' =>
