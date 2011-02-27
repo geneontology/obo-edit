@@ -12,11 +12,15 @@ import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperations;
+import org.geneontology.gold.io.reasoner.InferenceBuilder;
 import org.geneontology.gold.rules.AnnotationRuleViolation;
 import org.geneontology.web.AdminServlet;
 import org.geneontology.web.DbOperationsTask;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
 
+import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 
 public class DbOperationsService extends ServiceHandlerAbstract {
@@ -33,6 +37,13 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 //	private Hashtable<String, OWLGraphWrapper> graphs;
 
 	private OWLGraphWrapper ontologyGraph;
+	
+	/*public List<OWLGraphEdge> edges;
+	
+	public OWLGraphWrapper infGrap;
+	*/
+
+	public InferenceBuilder infBuilder;
 	
 	public OWLGraphWrapper getOntologyGraph(){
 		return ontologyGraph;
@@ -54,6 +65,12 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 				}else{
 					wrapper.addSupportOntology(ontology);
 				}
+				
+				
+				for(OWLOntology sont: wrapper.getSupportOntologySet()){
+					wrapper.mergeOntology(sont);
+				}
+				
 				if(ontologyGraph == null)
 					ontologyGraph = wrapper;
 				//graphs.put(wrapper.getOntologyId(), wrapper); 
@@ -71,7 +88,11 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 		writer.write("<html>");
 		writer.write("<head><title>");
 		writer.write("GOLD Admin Operation Status");
-		writer.write("</title></head>");
+		writer.write("</title>");
+		writer.write("<script type='text/javascript' src='/scripts/jquery-1.5.1.min.js'></script>");
+		writer.write("<script type='text/javascript' src='/scripts/inferences.js'></script>");
+		writer.write("<link rel='stylesheet' type='text/css' href='/scripts/gold.css' />");
+		writer.write("</head>");
 
 		String command = request.getParameter("command");
 
@@ -79,9 +100,6 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 		
 		if(dbType == null)
 			dbType = "gold";
-		
-		
-		
 		
 		if (DEBUG) {
 			LOG.debug("Command parameter = " + command);
@@ -111,6 +129,9 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 					addReload = true;
 					task = new DbOperationsTask(dbType , command,
 							new String[] { ontologylocation }, false, "", "");
+					
+					
+					
 					task.start();
 					// }
 				}
@@ -129,6 +150,14 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 				String force = request.getParameter("force");
 				task = new DbOperationsTask(dbType, command, locations,
 						"true".equals(force), "", "");
+				
+				
+				if("checkconsistency".equals(command) || "find-inferences".equals(command)){
+					if(this.ontologyGraph != null){
+						task.setOWLGrapWrapper(this.ontologyGraph);
+					}
+				}
+				
 				task.start();
 
 			} else if ("getlastupdate".equals(command)) {
@@ -191,10 +220,18 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 		}
 		
 		
-		String consistencyResults = task.getConsistencyCheckResults();
-		if(consistencyResults != null){
-			writer.write("<h2>Consistency Check status</h2>");
-			writer.write(consistencyResults);
+		String reasonerComputationsResults = task.getReasonerComputationsResults();
+		if(reasonerComputationsResults != null){
+	//		writer.write("<h2>Consistency Check status</h2>");
+			writer.write(reasonerComputationsResults);
+			this.infBuilder = task.infBuilder;
+			/*this.edges = task.infEdges;
+			try{
+				this.infGrap = new OWLGraphWrapper(task.infOntology);
+			}catch(Exception ex){
+				LOG.error(ex, ex);
+				throw new RuntimeException(ex);
+			}*/
 		}else{
 			writer.write("<h2>Status report for the running task '"
 					+ task.getOperationName() + "' :</h2>");
@@ -264,8 +301,18 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 				graphs.put(graph.getOntologyId(), graph);
 			}*/
 			
-			if(task.getOWLGraphWrapper() != null)
+			if(task.getOWLGraphWrapper() != null && task.getOWLGraphWrapper() != this.ontologyGraph){
+			
 				this.ontologyGraph = task.getOWLGraphWrapper();
+				
+				for(OWLOntology sont: this.ontologyGraph.getSupportOntologySet()){
+					try{
+						this.ontologyGraph.mergeOntology(sont);
+					}catch(Exception ex){
+						LOG.error(ex);
+					}
+				}
+			}
 			
 			this.task = null;
 		}
