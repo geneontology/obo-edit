@@ -15,6 +15,9 @@ public class ServicesConfig {
 		ServiceHandler service = new DbOperationsService();
 		table.put(service.getServiceName(), service);
 		
+		service = new ReasoningService();
+		table.put(service.getServiceName(), service);
+		
 		table.put(service.getServiceName(), service);
 		
 		
