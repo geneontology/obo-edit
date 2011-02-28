@@ -9,6 +9,7 @@ use File::Basename;
 use Cairo;
 use AmiGO::Worker::PANTHERTree; # I'll have to change the name... -Seth
 use AmiGO::Worker::Phylotree;
+use AmiGO::Cache::PhylotreeSummary;
 
 =head1 NAME
 
@@ -181,10 +182,56 @@ sub mode_cluster_jindex{
 
     my @r;
     if (scalar(@id) || scalar(@key)) {
+	# work with data from the box page (untested here)
 	@r = $o->id2phylotree(@id);
 	push @r, $o->key2phylotree(@id);
     } else {
-	@r = $o->id3();
+	#@r = $o->id3();
+	my @species = AmiGO::Aid::PantherDB->reference_genome();
+	my $cache = new AmiGO::Cache::PhylotreeSummary(@species);
+	my @all = $cache->get_all_data();
+
+	my @first = @{ shift @all };
+	shift @first; # primary key
+	shift @first; # dbname
+
+	$r[0] =
+	  {
+	   key               => shift(@first),
+	   last_annotated    => shift(@first),
+	   number_of_members => shift(@first),
+	  };
+
+	for my $o (@species) {
+	    push @{ $r[0]->{dist} },
+	      {
+	       count => shift @first,
+	       color => $o->color(),
+	       code  => $o->code(),
+	      };
+	}
+
+	while (@all) {
+	    my @one = @{ shift @all };
+	    shift @one; # primary key
+	    shift @one; # dbname
+	    my %one =
+	      (
+	       key               => shift(@one),
+	       last_annotated    => shift(@one),
+	       number_of_members => shift(@one),
+	      );
+
+	    for my $o (@species) {
+		push @{ $one{dist} },
+		  {
+		   count => shift @one,
+		   color => $o->color(),
+		  };
+	    }
+	    push @r, \%one;
+	}
+
     }
 
     $c->set_template_parameter(dbname => $o->{dbname});

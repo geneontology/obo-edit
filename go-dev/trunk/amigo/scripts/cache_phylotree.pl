@@ -18,6 +18,7 @@ use AmiGO::Aid::PantherDB;
 
 my $work = new AmiGO::Worker::Phylotree(dbname => 'PantherDB');
 my @cache_me = $work->id3();
+print Dumper @cache_me;
 
 my @species = AmiGO::Aid::PantherDB->reference_genome();
 my $cache = new AmiGO::Cache::PhylotreeSummary(@species);
