@@ -531,7 +531,6 @@ sub refg_species_dists{
 
     my %args = ( xref_dbname => $dbname );
     if ($count < 1000) {
-	warn "Yea!";
 	$args{xref_key} = [ map { $_->{key} } values %s ];
     }
 
@@ -539,7 +538,6 @@ sub refg_species_dists{
     if (scalar(@$r) != $count) {
 	die sprintf('Expecting %d clusters, got %d', $count, scalar(@$r));
     }
-
 
     my %dist;
     while (@$r) {

@@ -1,0 +1,67 @@
+package AmiGO::Cache::PhylotreeSummary;
+use warnings;
+use strict;
+
+use base 'AmiGO::Cache';
+
+our $code_name  = __PACKAGE__ . '::code';
+our $insert_sth = __PACKAGE__ . '::sth';
+
+sub new{
+    my $c = shift;
+    my $sig = __PACKAGE__;
+    $sig =~ s/.*:://;
+    my $s = $c->SUPER::new($sig);
+    my @code = map {
+	$_->code;
+    } @_;
+    warn 'Caching:' . join(',', @code);
+    $s->{$code_name} = \@code;
+
+    return bless $s, $c;
+}
+
+sub code_names{
+    my $s = shift;
+    return @{ $s->{$code_name} };
+}
+
+sub build{
+    my $s = shift;
+
+    $s->initialize();
+    $s->open();
+
+    my $schema = <<SQL .
+CREATE TABLE data(
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ xref_dbname VARCHAR(55),
+ xref_key VARCHAR(255),
+ last_annotated DATE,
+ members INTEGER,
+SQL
+      join(",\n", map {
+	  ' ' . lc($_) . ' INTEGER';
+      } $s->code_names()) . ')';
+
+    $s->{CACHE_DBH}->do($schema) or die $s->{CACHE_DBH}->errstr;
+    $s->close();
+}
+
+
+sub cache_data{
+    my $s = shift;
+    my @code = $s->code_names;
+
+    if (! $s->{$insert_sth} ) {
+	my $sql = 'INSERT INTO data(xref_dbname,xref_key,last_annotated,members,' .
+	  join(',', map { lc } @code) . ')VALUES(?,?,?,?,' .
+	    join(',', ('?') x scalar(@code)) . ')';
+	warn $sql;
+	$s->{$insert_sth} = $s->{CACHE_DBH}->prepare($sql);
+    }
+
+    return $s->{$insert_sth}->execute(@_);
+}
+
+1;
