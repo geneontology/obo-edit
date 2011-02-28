@@ -175,7 +175,7 @@
 		<echo message="install4J version = ${install4j_formatted_version_number}" />
 		<install4j projectfile="install4j_config.install4j" release="${install4j_formatted_version_number}" />
 	</target>
-	<target name="installers" depends="clean, -releasenotes, textfiles, backward_compatible_classes, jar, library_jars, docindex, apidocs, install4j_installers" description="Build installers">
+	<target name="installers" depends="clean, -releasenotes, textfiles, backward_compatible_jar, library_jars, docindex, apidocs, install4j_installers" description="Build installers">
           <property name="backward_compatible" value="-target 1.5 -source 1.5" />
 	</target>
 

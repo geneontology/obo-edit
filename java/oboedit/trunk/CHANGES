@@ -4,9 +4,9 @@
 What's New in OBO-Edit v2.1-beta10 (2/23/11)
 =================================
 
-data-version header field was not getting round-tripped--now it is.
-
- [ geneontology-Bugs-3188520] saved-by should appear in saved OBO file
+Fixed round-tripping of two header fields in OBO output:
+- data-version header field was not getting round-tripped--now it is.
+- [ geneontology-Bugs-3188520] saved-by should appear in saved OBO file
 
 
 =================================
