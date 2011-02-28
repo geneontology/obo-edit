@@ -367,12 +367,14 @@ the C<phylotree> row printed in a human readable format.
 =cut
 sub last_annotated{
     my $s = shift;
+    my $f = $s->{last_annotated};
 
-    if ($s->{last_annotated}) {
-	if ($s->{last_annotated} =~ m/^(\d{4})(\d{2})(\d{2})$/) {
+    if ($f) {
+	if ($f =~ m/^(\d{4})-?(\d{2})-?(\d{2})$/) {
 	    return "$1-$2-$3";
+	} else {
+	    return $f;
 	}
-	return 'Unknown Format';
     }
     return 'Never';
 }
