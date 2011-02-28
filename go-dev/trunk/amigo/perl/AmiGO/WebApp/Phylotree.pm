@@ -193,14 +193,15 @@ sub mode_cluster_jindex{
 
 	my @first = @{ shift @all };
 	shift @first; # primary key
-	shift @first; # dbname
 
 	$r[0] =
 	  {
+	   dbname            => shift(@first),
 	   key               => shift(@first),
 	   last_annotated    => shift(@first),
 	   number_of_members => shift(@first),
 	  };
+	bless $r[0], 'AmiGO::Worker::Phylotree';
 
 	for my $o (@species) {
 	    push @{ $r[0]->{dist} },
@@ -214,9 +215,9 @@ sub mode_cluster_jindex{
 	while (@all) {
 	    my @one = @{ shift @all };
 	    shift @one; # primary key
-	    shift @one; # dbname
 	    my %one =
 	      (
+	       dbname            => shift(@one),
 	       key               => shift(@one),
 	       last_annotated    => shift(@one),
 	       number_of_members => shift(@one),
@@ -229,7 +230,8 @@ sub mode_cluster_jindex{
 		   color => $o->color(),
 		  };
 	    }
-	    push @r, \%one;
+	    push @r, bless \%one, 'AmiGO::Worker::Phylotree';
+
 	}
 
     }
