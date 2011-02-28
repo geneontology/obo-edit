@@ -1,6 +1,7 @@
 package AmiGO::Cache::PhylotreeSummary;
 use warnings;
 use strict;
+use Data::Dumper;
 
 use base 'AmiGO::Cache';
 
@@ -15,7 +16,7 @@ sub new{
     my @code = map {
 	$_->code;
     } @_;
-    warn 'Caching:' . join(',', @code);
+    #warn 'Caching:' . join(',', @code);
     $s->{$code_name} = \@code;
 
     return bless $s, $c;
@@ -57,11 +58,22 @@ sub cache_data{
 	my $sql = 'INSERT INTO data(xref_dbname,xref_key,last_annotated,members,' .
 	  join(',', map { lc } @code) . ')VALUES(?,?,?,?,' .
 	    join(',', ('?') x scalar(@code)) . ')';
-	warn $sql;
+	#warn $sql;
 	$s->{$insert_sth} = $s->{CACHE_DBH}->prepare($sql);
     }
 
     return $s->{$insert_sth}->execute(@_);
+}
+
+sub get_all_data{
+    my $s = shift;
+
+    $s->open();
+    my $sth = $s->{CACHE_DBH};
+    my $all = $sth->selectall_arrayref("SELECT * FROM DATA");
+    $s->close();
+
+    return @$all;
 }
 
 1;
