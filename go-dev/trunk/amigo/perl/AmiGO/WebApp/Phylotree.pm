@@ -187,7 +187,6 @@ sub mode_cluster_jindex{
 	@r = $o->id3();
     }
 
-
     $c->set_template_parameter(dbname => $o->{dbname});
     $c->set_template_parameter(clusters => \@r);
     $c->add_template_content('html/main/phylotree_cluster_index2.tmpl');
@@ -200,7 +199,7 @@ sub mode_cluster_jindex{
 	 'com.jquery.tablesorter.pager',
 	] });
 
-    $c->generate_template_page();
+    return $c->generate_template_page();
 }
 
 
