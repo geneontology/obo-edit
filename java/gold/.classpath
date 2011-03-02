@@ -49,5 +49,12 @@
 	<classpathentry kind="lib" path="lib/jetty/servlet-api-2.5-20081211.jar"/>
 	<classpathentry kind="lib" path="lib/pellet-owlapi.jar"/>
 	<classpathentry kind="lib" path="lib/forester.jar"/>
+	<classpathentry kind="lib" path="lib/jsp/ant-1.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/jsp/commons-el-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/jsp/core-3.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/jsp/jsp-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/jsp/jsp-api-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/jsp/xercesImpl-2.6.2.jar"/>
+	<classpathentry kind="lib" path="lib/jsp/xmlParserAPIs-2.6.2.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

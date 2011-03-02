@@ -1,6 +1,7 @@
 package org.geneontology.jetty;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetAddress;
@@ -15,12 +16,18 @@ import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.handler.DefaultHandler;
-import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.webapp.WebAppContext;
+import org.mortbay.xml.XmlConfiguration;
 
 import org.geneontology.conf.GeneOntologyManager;
+
+/**
+ * This class responsible for start and stop of the jetty server.
+ * @author Shahid Manzoor
+ *
+ */
 
 public class JettyStarter {
 
@@ -37,21 +44,31 @@ public class JettyStarter {
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
 		int jetty_port = manager.getJettyPort();
 		
-		server = new Server(jetty_port);
+		server = new Server();
+		
+		System.setProperty("jetty.port", jetty_port + "");
+		
+		//reading the jetty configurations including the configurtions for jsp
+		String[] configFiles = {"etc/jetty.xml"};
+		for(String configFile : configFiles) {
+		    XmlConfiguration configuration = new XmlConfiguration(new File(configFile).toURI().toURL());
+		    configuration.configure(server);
+		}
+		
+		
+		//setting up the root context
 		WebAppContext files = new WebAppContext("webcontents", "/");
 		
 		ContextHandlerCollection contexts = new ContextHandlerCollection();
 	
-	//	server.setHandler(contexts);
-
-		
-		
+		//setting up the gold servlet
 		Context root = new Context(contexts, "/gold", Context.SESSIONS);
 		root.addServlet(new ServletHolder(new AdminServlet()), "/*");
 
-	      HandlerCollection handlers = new HandlerCollection();
-	      handlers.setHandlers(new Handler[]{contexts,files, new DefaultHandler()});		
 		
+	//	HandlerList handlers = new HandlerList();
+		ContextHandlerCollection handlers = new ContextHandlerCollection();
+		handlers.setHandlers(new Handler[]{ files, root, new DefaultHandler()});		
 		server.setHandler(handlers);
 		ShutdownMonitor monitor = new ShutdownMonitor();
 		
@@ -61,7 +78,8 @@ public class JettyStarter {
 		server.start();
 
 		LOG.info("Jetty Server is started");
-		LOG.info("Please visit the web application at the url : http://localhost:" + jetty_port + "/");
+		LOG.info("Please visit the web application at the url : http://localhost:8080/");
+		
 		
 		LOG.info("Initializing Services which include loading ontologies in memory. This step may take several mintues. ");
 		LOG.info("WAIT.............");
@@ -72,6 +90,11 @@ public class JettyStarter {
 		server.join();
 	}
 
+	/*
+	 * From calling this method even from a different jvm, it stops
+	 * the jetty server.
+	 * 
+	 */
 	public void stop() throws Exception {
 
 		Socket s = new Socket(InetAddress.getByName("127.0.0.1"), 8079);
@@ -122,6 +145,13 @@ public class JettyStarter {
 		
 	}
 
+	/**
+	 * This monitor runs in background. It waits for the user requests over the 8097 socket port 
+	 * to stop the jetty. The request can be initiated from a different jvm of the localhost.
+	 * 
+	 * @author Shahid Manzoor
+	 *
+	 */
 	private class ShutdownMonitor extends Thread {
 
 		private ServerSocket socket;
