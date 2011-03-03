@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.geneontology.web.TaskExecution;
+import org.geneontology.web.TaskExecutionListener;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -25,20 +27,32 @@ import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 import owltools.graph.OWLQuantifiedProperty.Quantifier;
 
-public class InferenceBuilder {
+public class InferenceBuilder implements TaskExecution {
 
 	
 	
-	public OWLReasoner reasoner;
+	private OWLReasoner reasoner;
 	
-	public PelletReasonerFactory factory;
+	//publ PelletReasonerFactory factory;
 	
-	public OWLGraphWrapper graph;
+	private OWLGraphWrapper graph;
 	
-	private OWLOntology infOntology;
+	//private OWLOntology infOntology;
+	
+	private List<TaskExecutionListener> listeners;
+	
+	
+	public OWLGraphWrapper getOWLGraphWrapper(){
+		return this.graph;
+	}
+	
+	public InferenceBuilder(OWLGraphWrapper graph){
+		this.graph = graph;
+		listeners =new ArrayList<TaskExecutionListener>();
+	}
 	
 	private void buildDuplicate(){
-		try{
+		/*try{
 			infOntology = graph.getManager().createOntology(graph.getSourceOntology().getOntologyID());
 			OWLOntologyManager manager = graph.getManager();
 			for(OWLAxiom ax: graph.getSourceOntology().getAxioms()){
@@ -46,20 +60,19 @@ public class InferenceBuilder {
 			}
 		}catch(Exception ex){
 			ex.printStackTrace();
-		}
+		}*/
 		
 	}
 	
-	public List<OWLGraphEdge> buildInferences(OWLGraphWrapper graph) {
+	public List<OWLGraphEdge> buildInferences() {
 		List<OWLGraphEdge> sedges = new ArrayList<OWLGraphEdge>();
 
 		List<OWLGraphEdge> eedges = new ArrayList<OWLGraphEdge>();
 
-		this.graph = graph;
 		
-		buildDuplicate();
+	//	buildDuplicate();
 		
-		OWLDataFactory dataFactory = graph.getDataFactory();
+	//	OWLDataFactory dataFactory = graph.getDataFactory();
 		
 	//	ReasonerFactory factory = new ReasonerFactory();
 		
@@ -67,8 +80,11 @@ public class InferenceBuilder {
 		//		.createDefaultOwlReasoner(ontology);
 
 		OWLOntology ontology = graph.getSourceOntology();
-		factory = new PelletReasonerFactory();
-		reasoner = factory.createReasoner(ontology);
+		
+		if(reasoner == null){
+			PelletReasonerFactory factory = new PelletReasonerFactory();
+			reasoner = factory.createReasoner(ontology);
+		}
 		
 		Set<OWLClass> nrClasses = new HashSet<OWLClass>();
 
@@ -93,7 +109,7 @@ public class InferenceBuilder {
 
 					eedges.add(new OWLGraphEdge(cls, ec, Quantifier.EQUIVALENT));
 				
-					graph.getManager().applyChange(new AddAxiom(infOntology, dataFactory.getOWLEquivalentClassesAxiom(cls, ec)  ));
+		//			graph.getManager().applyChange(new AddAxiom(infOntology, dataFactory.getOWLEquivalentClassesAxiom(cls, ec)  ));
 				/*
 				 * reasonerComputationsResults
 				 * .append("&nbsp;&nbsp;&nbsp;* INFERRED: equivalent " +
@@ -137,7 +153,7 @@ public class InferenceBuilder {
 						sedges.add(new OWLGraphEdge(cls, sc,
 								Quantifier.SUBCLASS_OF));
 						
-						graph.getManager().applyChange(new AddAxiom(infOntology, dataFactory.getOWLSubClassOfAxiom(cls, sc)  ));
+			//			graph.getManager().applyChange(new AddAxiom(infOntology, dataFactory.getOWLSubClassOfAxiom(cls, sc)  ));
 				
 						/*
 						 * this.reasonerComputationsResults
@@ -151,19 +167,14 @@ public class InferenceBuilder {
 		}
 
 		
-		reasoner = factory.createReasoner(infOntology);
-		
-		
+	//	reasoner = factory.createReasoner(infOntology);
 		sedges.addAll(eedges);
-		
-		
-		
 		return sedges;
 
 	}
 	
 	public Set<Set<OWLAxiom>> getExplaination(String c1, String c2, Quantifier quantifier){
-		OWLAxiom ax = null;
+		/*OWLAxiom ax = null;
 		OWLDataFactory dataFactory = graph.getDataFactory();
 		OWLClass cls1 = dataFactory.getOWLClass(IRI.create(c1));
 		OWLClass cls2 = dataFactory.getOWLClass(IRI.create(c2));
@@ -181,7 +192,33 @@ public class InferenceBuilder {
 				reasoner,null);
 		
 	
-		return gen.getExplanations(ax);
+		return gen.getExplanations(ax);*/
+		
+		return null;
+	}
+
+	private List<OWLGraphEdge> edges;
+	
+	@Override
+	public void execute() {
+		edges = buildInferences();
+		fireTaskExecutionListener(edges);
+	}
+
+	@Override
+	public Object getData() {
+		return edges;
+	}
+	
+	protected void fireTaskExecutionListener(List<OWLGraphEdge> edges){
+		for(TaskExecutionListener l: listeners){
+			l.updateData(edges);
+		}
+	}
+
+	@Override
+	public void addTaskExecutionListener(TaskExecutionListener listener) {
+		listeners.add(listener);
 	}
 
 }
