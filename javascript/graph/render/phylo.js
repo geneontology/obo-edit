@@ -104,12 +104,23 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
     ///
 
     // Init: context, label, x-coord, y-coord.
-    graph_pnode = function(context, label, px, py){
+    graph_pnode = function(context, label, px, py, internal_p){
+
+	var pnode_box_width = renderer_context.box_width;
+	var pnode_box_height = renderer_context.box_height;
 
 	// Color and size definitions.
-	var text_offset_x = renderer_context.box_width / 2.0;
-	var text_offset_y = renderer_context.box_height / 2.0;
+	var text_offset_x = pnode_box_width / 2.0;
+	var text_offset_y = pnode_box_height / 2.0;
 	this.base_node_color = "#00f";
+
+	// Variations if an internal node.
+	if( internal_p ){
+	    pnode_box_width = pnode_box_width / 2.0;
+	    pnode_box_width = 2.0;
+	    //pnode_box_height = 2.0;
+	    text_offset_x = (pnode_box_width / 2.0);
+	}
 
 	// Future visibility.    
 	this.visible = true;
@@ -177,8 +188,9 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
 	this._text = // NOTE: text is *centered* at this point.
 	this._context.text(px + text_offset_x, py + text_offset_y, label);
 	this._text.toBack(); // make sure it's behind the boxes
-	this._shape = this._context.rect(px, py, renderer_context.box_width,
-					 renderer_context.box_height, 2);
+	this._shape = this._context.rect(px, py,
+					 pnode_box_width, pnode_box_height,
+					 2);
 
 	// Proxy properties and functions.
 	// This is so wrong, but feels so good...proxy most things through
@@ -204,7 +216,7 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
 	this._start_shape_y = this._shape.attr("y");
 	this._start_text_y = this._text.attr("y");
     };
-    // Move 
+    // Move.
     graph_pnode.prototype.move_y = function(arg){
 	var d_shape = this._start_shape_y + arg;
 	var d_text = this._start_text_y + arg;
@@ -421,6 +433,63 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
 	    }
 	}
     };
+    // // Generate path from between the two internally stored objects.
+    // graph_connection.prototype.get_path_between_info = function(){
+
+    // 	var bb1 = this.from.getBBox();
+    // 	var bb2 = this.to.getBBox();
+
+    // 	//bbop.core.kvetch("bb1.width: " + bb1.width);
+    // 	//bbop.core.kvetch("bb1.x: " + bb1.x + ", bb1.y: " + bb1.y);
+    // 	//bbop.core.kvetch("bb1.width: "+ bb1.width +", bb1.height: "+ bb1.height);
+
+    // 	var p = [{x: bb1.x + bb1.width / 2, y: bb1.y - 1},
+    // 		 {x: bb1.x + bb1.width / 2, y: bb1.y + bb1.height + 1},
+    // 		 {x: bb1.x - 1, y: bb1.y + bb1.height / 2},
+    // 		 {x: bb1.x + bb1.width + 1, y: bb1.y + bb1.height / 2},
+    // 		 {x: bb2.x + bb2.width / 2, y: bb2.y - 1},
+    // 		 {x: bb2.x + bb2.width / 2, y: bb2.y + bb2.height + 1},
+    // 		 {x: bb2.x - 1, y: bb2.y + bb2.height / 2},
+    // 		 {x: bb2.x + bb2.width + 1, y: bb2.y + bb2.height / 2}];
+    // 	var d = {};
+    // 	var dis = [];
+    // 	for (var i = 0; i < 4; i++) {
+    //         for (var j = 4; j < 8; j++) {
+    // 		var dx = Math.abs(p[i].x - p[j].x);
+    // 		var dy = Math.abs(p[i].y - p[j].y);
+    // 		if ((i == j - 4) ||
+    // 		    (((i != 3 && j != 6) || p[i].x < p[j].x) &&
+    // 		     ((i != 2 && j != 7) || p[i].x > p[j].x) &&
+    // 		     ((i != 0 && j != 5) || p[i].y > p[j].y) &&
+    // 		     ((i != 1 && j != 4) || p[i].y < p[j].y))) {
+    //                 dis.push(dx + dy);
+    //                 d[dis[dis.length - 1]] = [i, j];
+    // 		}
+    //         }
+    // 	}
+    // 	var res = null;
+    // 	if (dis.length == 0) {
+    //         res = [0, 4];
+    // 	}else{
+    //         res = d[Math.min.apply(Math, dis)];
+    // 	}
+    // 	var x1 = p[res[0]].x;
+    // 	var y1 = p[res[0]].y;
+    // 	var x2 = p[res[1]].x;
+    // 	var y2 = p[res[1]].y;
+    // 	var dx = Math.max(Math.abs(x1 - x2) / 2, 10);
+    // 	var dy = Math.max(Math.abs(y1 - y2) / 2, 10);
+    // 	return {"path": [
+    // 		    "M", x1.toFixed(3), y1.toFixed(3),
+    // 		    "L", x1.toFixed(3), y2.toFixed(3),
+    // 		    "L", x2.toFixed(3), y2.toFixed(3)
+    // 		].join(","),
+    // 		// "center_point": [(x1.toFixed(3) + x1.toFixed(3)),
+    // 		// 		     (y1.toFixed(3) + y2.toFixed(3))]
+    // 		"center_point": [(x1 + x2) / 2.0, (y2)]
+    // 	       };
+    // };
+
     // Generate path from between the two internally stored objects.
     graph_connection.prototype.get_path_between_info = function(){
 
@@ -429,20 +498,34 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
 
 	//bbop.core.kvetch("bb1.width: " + bb1.width);
 	//bbop.core.kvetch("bb1.x: " + bb1.x + ", bb1.y: " + bb1.y);
-	//bbop.core.kvetch("bb1.width: " + bb1.width +", bb1.height: "+ bb1.height);
+	//bbop.core.kvetch("bb1.width: "+ bb1.width +", bb1.height: "+ bb1.height);
 
-	var p = [{x: bb1.x + bb1.width / 2, y: bb1.y - 1},
-		 {x: bb1.x + bb1.width / 2, y: bb1.y + bb1.height + 1},
-		 {x: bb1.x - 1, y: bb1.y + bb1.height / 2},
-		 {x: bb1.x + bb1.width + 1, y: bb1.y + bb1.height / 2},
-		 {x: bb2.x + bb2.width / 2, y: bb2.y - 1},
-		 {x: bb2.x + bb2.width / 2, y: bb2.y + bb2.height + 1},
-		 {x: bb2.x - 1, y: bb2.y + bb2.height / 2},
-		 {x: bb2.x + bb2.width + 1, y: bb2.y + bb2.height / 2}];
+	var p =
+	    [
+		// bb1: middle-top
+		{x: bb1.x + bb1.width / 2, y: bb1.y - 1},
+		// bb1: middle-bottom
+		{x: bb1.x + bb1.width / 2, y: bb1.y + bb1.height + 1},
+		// bb1: left-middle
+		{x: bb1.x - 1, y: bb1.y + bb1.height / 2},
+		// bb1: right-middle
+		{x: bb1.x + bb1.width + 1, y: bb1.y + bb1.height / 2},
+		// bb2: middle-top
+		//{x: bb2.x + bb2.width / 2, y: bb2.y - 1},
+		{x: bb2.x - 1, y: bb2.y + bb2.height / 2},
+		// bb2: middle-bottom
+		//{x: bb2.x + bb2.width / 2, y: bb2.y + bb2.height + 1},
+		{x: bb2.x - 1, y: bb2.y + bb2.height / 2},
+		// bb2: left-middle
+		{x: bb2.x - 1, y: bb2.y + bb2.height / 2},
+		// bb2: right-middle
+		//{x: bb2.x + bb2.width + 1, y: bb2.y + bb2.height / 2}
+		{x: bb2.x - 1, y: bb2.y + bb2.height / 2}
+	    ];
 	var d = {};
 	var dis = [];
-	for (var i = 0; i < 4; i++) {
-            for (var j = 4; j < 8; j++) {
+	for (var i = 0; i < 4; i++) { // for bb1
+            for (var j = 4; j < 8; j++) { // for bb2
 		var dx = Math.abs(p[i].x - p[j].x);
 		var dy = Math.abs(p[i].y - p[j].y);
 		if ((i == j - 4) ||
@@ -465,8 +548,8 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
 	var y1 = p[res[0]].y;
 	var x2 = p[res[1]].x;
 	var y2 = p[res[1]].y;
-	var dx = Math.max(Math.abs(x1 - x2) / 2, 10);
-	var dy = Math.max(Math.abs(y1 - y2) / 2, 10);
+	//var dx = Math.max(Math.abs(x1 - x2) / 2, 10);
+	//var dy = Math.max(Math.abs(y1 - y2) / 2, 10);
 	return {"path": [
     		    "M", x1.toFixed(3), y1.toFixed(3),
     		    "L", x1.toFixed(3), y2.toFixed(3),
@@ -831,6 +914,40 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
 	}
 
 	///
+	///  Render info box if wanted.
+	///
+
+	if( info_box_p ){
+	    
+	    //var lnodes = this._graph.get_leaf_nodes();
+	    // Get the last ordered cohort and build table from that.
+	    var lnodes = layout.cohorts[layout.cohorts.length - 1];
+	    for( var ln = 0; ln < lnodes.length; ln++ ){	    
+		var lnode = lnodes[ln];
+
+		var pr_xa = paper.width - (paper.width * 0.2) + 20; // x-axis
+		var pr_ya = 1.0 + (y_scale * ln); // y-axis
+		var bw = (paper.width * 0.2) - 30.0; // width
+		var bh = y_scale - 1.0; // height
+		var pr = paper.rect(pr_xa, pr_ya,
+				    bw, bh,
+				    1); // roundness
+		pr.attr({
+			    "fill": "#eeee99",
+			    "fill-opacity": 0.5,
+			    "opacity": 1.0,
+			    "stroke": "#333388",
+			    "stroke-width": 1,
+			    "title": "This is " + lnode.id
+			    //"cursor": "move"
+			});
+
+		var pt = paper.text(pr_xa + (bw / 2.0), pr_ya + (bh / 2.0),
+				    "Data for " + lnode.id);
+	    }
+	}
+
+	///
 	/// Phynode creation and placement.
 	/// 
 
@@ -849,7 +966,16 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
 	    var lpy = (layout.position_y[node_id] * y_scale) + edge_shift;
 
 	    // Create node at place. 
-	    var phynode = new graph_pnode(paper, node_id, lpx, lpy);
+	    var phynode = null;
+	    if( ! this._graph.is_leaf_node(node_id) && info_box_p ){
+		bbop.core.kvetch('display: internal node: ' + node_id);
+		phynode = new graph_pnode(paper, node_id, lpx, lpy, true);
+		//phynode.attr("width") = 10;
+		//phynode.attr("height") = 10;
+	    }else{
+		phynode = new graph_pnode(paper, node_id, lpx, lpy);
+	    }
+
             phynodes.push(phynode);
 
 	    // Indexing for later (edge) use.
@@ -905,37 +1031,6 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
 			     ', ei: ' + ei);
 	}
 	
-	//  Render info box if wanted.
-	if( info_box_p ){
-	    
-	    //var lnodes = this._graph.get_leaf_nodes();
-	    // Get the last ordered cohort and build table from that.
-	    var lnodes = layout.cohorts[layout.cohorts.length - 1];
-	    for( var ln = 0; ln < lnodes.length; ln++ ){	    
-		var lnode = lnodes[ln];
-
-		var pr_xa = paper.width - (paper.width * 0.2) + 15; // x-axis
-		var pr_ya = 1.0 + (y_scale * ln); // y-axis
-		var bw = (paper.width * 0.2) - 25.0; // width
-		var bh = y_scale - 1.0; // height
-		var pr = paper.rect(pr_xa, pr_ya,
-				    bw, bh,
-				    1); // roundness
-		pr.attr({
-			    "fill": "#eeee99",
-			    "fill-opacity": 0.5,
-			    "opacity": 1.0,
-			    "stroke": "#333388",
-			    "stroke-width": 1,
-			    "title": "This is " + lnode.id
-			    //"cursor": "move"
-			});
-
-		var pt = paper.text(pr_xa + (bw / 2.0), pr_ya + (bh / 2.0),
-				    "Data for " + lnode.id);
-	    }
-	}
-
 	// See: https://github.com/sorccu/cufon/wiki/about
 	// See: http://raphaeljs.com/reference.html#getFont
 	// var txt = paper.print(100, 100, "print",
