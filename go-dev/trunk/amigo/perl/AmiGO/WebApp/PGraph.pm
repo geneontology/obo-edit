@@ -49,8 +49,9 @@ sub setup {
   $self->start_mode('exp');
   $self->error_mode('mode_fatal');
   $self->run_modes(
-		   'exp'      => 'mode_exp',
-		   'AUTOLOAD' => 'mode_exception'
+		   'exp'       => 'mode_exp',
+		   'pthr10170' => 'mode_pthr10170',
+		   'AUTOLOAD'  => 'mode_exception'
 		  );
 }
 
@@ -98,6 +99,37 @@ sub mode_exp {
 
   ## Juggle onto absolute version of header template.
   #$self->set_template_parameter('page_name', 'amigo'); # menu bar okay
+  $self->set_template_parameter('STANDARD_YUI', 'no');
+  $self->add_template_content('html/main/pgraph.tmpl');
+  return $self->generate_template_page();
+}
+
+
+##
+sub mode_pthr10170 {
+
+  my $self = shift;
+  my $i = AmiGO::WebApp::Input->new();
+  my $params = $i->input_profile();
+  my $prep =
+    {
+     css_library =>
+     [
+      'standard', # basic GO-styles
+     ],
+     javascript_library =>
+     [
+      'com.raphael',
+      'com.raphael.graffle',
+      'org.bbop.graph.core',
+      'org.bbop.graph.core',
+      'org.bbop.graph.model',
+      'org.bbop.graph.tree',
+      'org.bbop.graph.render.phylo',
+      'pthr10170'
+     ]
+    };
+  $self->add_template_bulk($prep);
   $self->set_template_parameter('STANDARD_YUI', 'no');
   $self->add_template_content('html/main/pgraph.tmpl');
   return $self->generate_template_page();

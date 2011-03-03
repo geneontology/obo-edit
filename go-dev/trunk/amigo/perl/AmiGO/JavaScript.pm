@@ -99,8 +99,11 @@ my $sig2path =
    'javascript/graph/tree.js',
    'org.bbop.graph.render.phylo' =>
    'javascript/graph/render/phylo.js',
+   ## BUG: These two really have to go.
    'exp' =>
    'javascript/graph/render/exp.js',
+   'pthr10170' =>
+   'javascript/graph/render/pthr10170.js',
 
    ## EXT JS.
    'com.ext' =>
