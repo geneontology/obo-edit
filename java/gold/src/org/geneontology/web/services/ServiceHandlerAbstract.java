@@ -11,4 +11,9 @@ public abstract class ServiceHandlerAbstract implements ServiceHandler  {
 	
 	}
 	
+	public String getViewPath(){
+		return null;
+	}
+
+	
 }
