@@ -12,7 +12,9 @@ public class ServicesConfig {
 
 		Hashtable<String, ServiceHandler> table = new Hashtable<String, ServiceHandler>();
 		
-		ServiceHandler service = new DbOperationsService();
+	//	ServiceHandler service = new DbOperationsService();
+		
+		ServiceHandler service = new GoldDbOperationsService();
 		table.put(service.getServiceName(), service);
 		
 		service = new ReasoningService();
