@@ -77,14 +77,16 @@ public class ReasoningService extends ServiceHandlerAbstract {
 	}
 
 	private InferenceBuilder getInferenceBuilder(){
+		GoldDbOperationsService dbService =(GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
 		if(this.inf == null){
-			DbOperationsService dbService =(DbOperationsService) ServicesConfig.getService("db-operations");
-			inf = new InferenceBuilder(dbService.getOntologyGraph());
+			inf = new InferenceBuilder(dbService.getGraphWrapper());
+		}else{
+			if(inf.getOWLGraphWrapper() != dbService.getGraphWrapper()){
+				inf.setOWLGraphWrapper(dbService.getGraphWrapper());
+			}
 		}
 		
 		return inf;
 	}
-	
-	
 	
 }

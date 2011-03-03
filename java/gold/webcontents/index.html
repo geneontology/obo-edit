@@ -4,16 +4,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Gene Ontology Web Admin</title>
 <script type="text/javascript">
-function bulkLoad(dbType){
+function bulkLoad(){
 	var yes = confirm("This activilty will be executed only when GOLD database is empty." +
 			"\n Are you are sure you want to create an GOLD database?\n" +
 					"Database configurations are located in the installation directory of this web application, i.e in tomcat it is located at webapps/admin");
 
-	var dbTypeCommand = "";
-	if("gaf" == dbType)
-		dbTypeCommand = "&dbtype=gaf"
 	if(yes){
-		window.location="gold?servicename=db-operations&command=bulkload"+dbTypeCommand;
+		window.location="gold?servicename=gold-db-operations&command=bulkload";
 	}
 }
 
@@ -39,12 +36,12 @@ function getLastUpdateDate(){
 
 <p>Activities:</p>
 <ul>
-<li><a href="javascript:bulkLoad('gold');">Bulk load of the Empty gene ontology database</a></li>
-<li><a href="javascript:bulkLoad('gaf');">Bulk load of the Empty GAF database</a></li>
+<li><a href="javascript:bulkLoad();">Bulk load of the Empty gene ontology database</a></li>
+<li><a href="javascript:bulkLoad();">Bulk load of the Empty GAF database</a></li>
 <li><a href="javascript:update();">Update Gene Ontology</a></li>
 <li><a href="javascript:getLastUpdateDate()">Last Update of Gold database</a></li>
 <li><a href="gold?servicename=db-operations&command=checkconsistency">Perform Consistency Check</a></li>
-<li><a href="gold?servicename=db-operations&command=find-inferences">Find Inferences</a></li>
+<li><a href="gold?servicename=reasoning-service&command=find-inferences">Find Inferences</a></li>
 <li>Built Solr indexer from Scratch</li>
 <li>Delta update of the indexer</li>
 <li>Last Update date of Solr</li>
