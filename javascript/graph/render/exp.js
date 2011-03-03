@@ -10,6 +10,10 @@ bbop.core.require('bbop', 'render', 'phylo');
 // Run the layout after everything is loaded.
 window.onload = function(){
 
+    ///
+    /// Nonsense trials.
+    /// 
+
     // Example graph hand loaded through tree.
     var r1 = new bbop.render.phylo.renderer('test1');
     r1.add_node('AN0');
