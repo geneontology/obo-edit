@@ -376,9 +376,10 @@ public class DbOperationsTask extends Task implements DbOperationsListener {
 		reasonerComputationsResults
 				.append("<h1>Inferences Computations Results</h1>");
 
-		infBuilder = new InferenceBuilder();
+		if(infBuilder == null)
+			infBuilder = new InferenceBuilder(graph);
 		
-		List<OWLGraphEdge> edges= infBuilder.buildInferences(graph);
+		List<OWLGraphEdge> edges= infBuilder.buildInferences();
 		/*infEdges = edges;
 		
 		try{

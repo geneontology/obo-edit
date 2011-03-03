@@ -6,6 +6,9 @@ import java.io.Writer;
 import java.util.Hashtable;
 import java.util.List;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -59,6 +62,15 @@ public class AdminServlet extends HttpServlet {
 		}
 		
 		handler.handleService(request, response);
+		
+		if(handler.getViewPath() != null){
+			//RequestDispatcher dispatcher = getServletContext().getContext(handler.getViewPath()). .getRequestDispatcher(handler.getViewPath());
+
+			ServletContext context = getServletContext().getContext("/");
+			RequestDispatcher dispatcher = context.getRequestDispatcher(handler.getViewPath());
+			
+			dispatcher.forward(request, response);
+		}
 		
 	}
 
