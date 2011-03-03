@@ -42,7 +42,7 @@ bbop.core.namespace('bbop', 'render', 'phylo');
 
 // Render out.
 // Actually, use this to wrap graph abstraction.
-bbop.render.phylo.renderer = function (element_id){
+bbop.render.phylo.renderer = function (element_id, info_box_p){
 
     var elt_id = element_id;
 
@@ -488,9 +488,11 @@ bbop.render.phylo.renderer = function (element_id){
 	var layout = this._graph.layout();
 	var elt = document.getElementById(elt_id);
 
+	// Fudge variables.
 	var edge_shift = 1.0; // fudge to allow the last little bit on screen
 	var absolute_pull = 15.0; // there seems to be a misjudgement
 				  // in width by about this much
+
 	// Adjust vertical scales and display.
 	var y_scale = renderer_context.box_height * 2.0; // fixed y-scale
 	this._render_frame_height = (layout.max_width * y_scale);
@@ -509,11 +511,15 @@ bbop.render.phylo.renderer = function (element_id){
 	}
 	// Now adjust the drawing width to make sure that the boxes
 	// fit.
+	//this._render_internal_width = this._render_frame_width;
 	this._render_internal_width =
 	    this._render_frame_width
 	    - (1.0 * renderer_context.box_width)
 	    - absolute_pull;
-	//this._render_internal_width = this._render_frame_width;
+	// If we're using the info box, adjust inwards by some amount.
+	if( info_box_p ){
+	    this._render_internal_width = this._render_internal_width * 0.8;
+	}
 	// Recalculate x-scale.
 	x_scale = this._render_internal_width / layout.max_distance;
 	// Get that last pixel column on board.
@@ -897,6 +903,37 @@ bbop.render.phylo.renderer = function (element_id){
 	    bbop.core.kvetch('display: indexed (edge): e0: ' + e0 +
 			     ', e1: ' + e1 +
 			     ', ei: ' + ei);
+	}
+	
+	//  Render info box if wanted.
+	if( info_box_p ){
+	    
+	    //var lnodes = this._graph.get_leaf_nodes();
+	    // Get the last ordered cohort and build table from that.
+	    var lnodes = layout.cohorts[layout.cohorts.length - 1];
+	    for( var ln = 0; ln < lnodes.length; ln++ ){	    
+		var lnode = lnodes[ln];
+
+		var pr_xa = paper.width - (paper.width * 0.2) + 15; // x-axis
+		var pr_ya = 1.0 + (y_scale * ln); // y-axis
+		var bw = (paper.width * 0.2) - 25.0; // width
+		var bh = y_scale - 1.0; // height
+		var pr = paper.rect(pr_xa, pr_ya,
+				    bw, bh,
+				    1); // roundness
+		pr.attr({
+			    "fill": "#eeee99",
+			    "fill-opacity": 0.5,
+			    "opacity": 1.0,
+			    "stroke": "#333388",
+			    "stroke-width": 1,
+			    "title": "This is " + lnode.id
+			    //"cursor": "move"
+			});
+
+		var pt = paper.text(pr_xa + (bw / 2.0), pr_ya + (bh / 2.0),
+				    "Data for " + lnode.id);
+	    }
 	}
 
 	// See: https://github.com/sorccu/cufon/wiki/about

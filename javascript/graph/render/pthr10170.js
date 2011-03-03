@@ -15,7 +15,7 @@ window.onload = function(){
     /// 
 
     // Example graph hand loaded through tree.
-    var r0 = new bbop.render.phylo.renderer('test1');
+    var r0 = new bbop.render.phylo.renderer('test0');
 
     r0.add_node('AN0');
 

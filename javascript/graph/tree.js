@@ -331,9 +331,9 @@ bbop.model.tree.graph = function(){
 			var node = c_nodes[ci];
 			position_acc = position_acc + position_y[node.id()];
 		    }
-		    bbop.core.kvetch(' position_acc: ' + position_acc);
-		    bbop.core.kvetch(' c_nodes: ' + c_nodes);
-		    bbop.core.kvetch(' c_nodes.length: ' + c_nodes.length);
+		    // bbop.core.kvetch(' position_acc: ' + position_acc);
+		    // bbop.core.kvetch(' c_nodes: ' + c_nodes);
+		    // bbop.core.kvetch(' c_nodes.length: ' + c_nodes.length);
 		    var avg = position_acc / (c_nodes.length * 1.0);
 		    position_y[item.id] = avg;
 		    bbop.core.kvetch('position_y (new): '+ item.id +', '+ avg);
