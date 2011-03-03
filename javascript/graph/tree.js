@@ -68,7 +68,7 @@ bbop.model.tree.graph = function(){
     this.default_sort = function(a, b){
 	var sort_val = 0;
 	if( a.id < b.id ){
-	    sort_val = -1;
+	    sort_val = - 1;
 	}else if( a.id > b.id ){
 	    sort_val = 1;
 	}
@@ -108,7 +108,7 @@ bbop.model.tree.graph = function(){
 	    if( ! edge_hash[edge_uid] ){
 		edge_hash[edge_uid] = true;
 		edge_list.push([pid, node_id]);
-		bbop.core.kvetch('bracket_down: indexing: ' + edge_uid);
+		bbop.core.kvetch('info_up: indexing: ' + edge_uid);
 	    }
 
 	    // Add new data to globals.
@@ -267,7 +267,7 @@ bbop.model.tree.graph = function(){
 		//
 		bbop.core.kvetch(' order_cohort: i: ' + i);
 		bbop.core.kvetch(' order_cohort: lvl: ' + bracket_item.level);
-		cohort_list[bracket_item.level -1].push(bracket_item);
+		cohort_list[bracket_item.level - 1].push(bracket_item);
 		// Drill down.
 		if( bracket_item.brackets.length > 0 ){
 		    bbop.core.kvetch(' order_cohort: down: ' +
@@ -294,25 +294,28 @@ bbop.model.tree.graph = function(){
 	// Walk backwards through the cohorts to find a base Y position. for
 	// the final cohort.
 	var position_y = {};
-	var final_cohort = cohort_list[max_depth -1];
-	bbop.core.kvetch('look at final cohort: ' + max_depth -1);
+	var final_cohort = cohort_list[(max_depth - 1)];
+	bbop.core.kvetch('look at final cohort: ' + (max_depth - 1));
 	for( var j = 0; j < final_cohort.length; j++ ){
 	    var item = final_cohort[j];
-	    //position_y[item.id] = j + 1.0;
-	    position_y[item.id] = j + 0.0;
-	    bbop.core.kvetch('position_y: ' + item.id + ', ' + (j + 1.0));
+	    //var local_shift = j + 1.0; // correct, but shifts too far down
+	    var local_shift = j + 0.0;
+	    position_y[item.id] = local_shift;
+	    bbop.core.kvetch('position_y: ' + item.id + ', ' + local_shift);
 	}
 	// Walk backwards through the remaining cohorts to find the best Y
 	// positions.
-	for( var i = cohort_list.length -1; i > 0; i-- ){
+	for( var i = cohort_list.length - 1; i > 0; i-- ){
 	    //
-	    var cohort = cohort_list[i -1];
-	    bbop.core.kvetch('look at cohort: ' + (i -1));
+	    var cohort = cohort_list[i - 1];
+	    bbop.core.kvetch('look at cohort: ' + (i - 1));
 	    for( var j = 0; j < cohort.length; j++ ){
 		var item = cohort[j];
 
 		// Deeper placements always take precedence.
-		if( ! position_y[item.id] ){
+		if( position_y[item.id] != undefined ){
+		    bbop.core.kvetch('position_y (old): '+ item.id);
+		}else{
 
 		    // If you have one parent, they have the same Y as you.
 		    // This generalizes to: the parent has the average Y of
@@ -328,9 +331,12 @@ bbop.model.tree.graph = function(){
 			var node = c_nodes[ci];
 			position_acc = position_acc + position_y[node.id()];
 		    }
+		    bbop.core.kvetch(' position_acc: ' + position_acc);
+		    bbop.core.kvetch(' c_nodes: ' + c_nodes);
+		    bbop.core.kvetch(' c_nodes.length: ' + c_nodes.length);
 		    var avg = position_acc / (c_nodes.length * 1.0);
 		    position_y[item.id] = avg;
-		    bbop.core.kvetch('position_y:: ' + item.id + ', ' + avg);
+		    bbop.core.kvetch('position_y (new): '+ item.id +', '+ avg);
 		}
 	    }
 	}

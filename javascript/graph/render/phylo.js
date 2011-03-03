@@ -505,7 +505,7 @@ bbop.render.phylo.renderer = function (element_id){
 	if( elt.clientWidth ){
 	    this._render_frame_width = elt.clientWidth;
 	}else{
-	    bbop.core.kvetch("UFI: Unidentified Failing Platform.");
+	    bbop.core.kvetch("UFP: Unidentified Failing Platform.");
 	}
 	// Now adjust the drawing width to make sure that the boxes
 	// fit.
