@@ -447,7 +447,7 @@ sub __strip_non_ascii_old {
 # print $x->__strip_non_ascii($bar);
 sub __strip_non_ascii {
   my $self = shift;
-  my $_ = shift;
+  $_ = shift;
 
   # UNICODE causes problems for XML and DB
   # delete 8th bit
