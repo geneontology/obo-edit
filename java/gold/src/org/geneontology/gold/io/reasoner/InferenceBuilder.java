@@ -45,11 +45,19 @@ public class InferenceBuilder implements TaskExecution {
 	public OWLGraphWrapper getOWLGraphWrapper(){
 		return this.graph;
 	}
+
+	public void setOWLGraphWrapper(OWLGraphWrapper g){
+		this.reasoner = null;
+		this.graph =g;
+	}
+	
 	
 	public InferenceBuilder(OWLGraphWrapper graph){
 		this.graph = graph;
 		listeners =new ArrayList<TaskExecutionListener>();
 	}
+	
+
 	
 	private void buildDuplicate(){
 		/*try{
