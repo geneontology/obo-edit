@@ -207,7 +207,7 @@ sub mode_cluster_jindex{
 	    push @{ $r[0]->{dist} },
 	      {
 	       count => shift @first,
-	       color => $o->color(),
+	       #color => $o->color(),
 	       code  => $o->code(),
 	      };
 	}
@@ -227,7 +227,8 @@ sub mode_cluster_jindex{
 		push @{ $one{dist} },
 		  {
 		   count => shift @one,
-		   color => $o->color(),
+		   #color => $o->color(),
+		   code  => $o->code(),
 		  };
 	    }
 	    push @r, bless \%one, 'AmiGO::Worker::Phylotree';
