@@ -16,6 +16,9 @@ public class ServicesConfig {
 		
 		ServiceHandler service = new GoldDbOperationsService();
 		table.put(service.getServiceName(), service);
+
+		service = new GafDbOperationsService();
+		table.put(service.getServiceName(), service);
 		
 		service = new ReasoningService();
 		table.put(service.getServiceName(), service);

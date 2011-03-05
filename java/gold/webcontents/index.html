@@ -14,17 +14,26 @@ function bulkLoad(){
 	}
 }
 
+function bulkLoadGaf(){
+	var yes = confirm("Are you sure to execute this operation");
+
+	if(yes){
+		window.location="gold?servicename=gaf-db-operations&command=bulkload";
+	}
+}
+
+
 function update(){
 	var yes = confirm("Are you are sure you want to update the GOLD database?");
 
 	if(yes){
-		window.location="gold?servicename=db-operations&command=update";
+		window.location="gold?servicename=gold-db-operations&command=update";
 	}
 	
 }
 
 function getLastUpdateDate(){
-	window.location="gold?servicename=db-operations&command=getlastupdate";
+	window.location="gold?servicename=gold-db-operations&command=getlastupdate";
 }
 
 
@@ -37,7 +46,7 @@ function getLastUpdateDate(){
 <p>Activities:</p>
 <ul>
 <li><a href="javascript:bulkLoad();">Bulk load of the Empty gene ontology database</a></li>
-<li><a href="javascript:bulkLoad();">Bulk load of the Empty GAF database</a></li>
+<li><a href="javascript:bulkLoadGaf();">Bulk load of the Empty GAF database</a></li>
 <li><a href="javascript:update();">Update Gene Ontology</a></li>
 <li><a href="javascript:getLastUpdateDate()">Last Update of Gold database</a></li>
 <li><a href="gold?servicename=db-operations&command=checkconsistency">Perform Consistency Check</a></li>
