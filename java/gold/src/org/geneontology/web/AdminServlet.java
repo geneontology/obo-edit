@@ -37,12 +37,12 @@ import owltools.graph.OWLGraphWrapper;
  */
 public class AdminServlet extends HttpServlet {
 	
-	private void printError(String message, PrintWriter writer){
+	/*private void printError(String message, PrintWriter writer){
 		writer.println("<html><body>");
 		writer.println("<center><h1>************"+ message +"************</h1></center>");
 		writer.println("</body></html>");
 		
-	}
+	}*/
 	
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -50,25 +50,34 @@ public class AdminServlet extends HttpServlet {
 	
 		String servicename= request.getParameter("servicename");
 		
+		String error = null;
+		
 		if(servicename == null){
-			printError("servicename parameter is missing in the parameter", response.getWriter());
-			return;
+			error = "servicename parameter is missing in the parameter";
+		//	printError("servicename parameter is missing in the parameter", response.getWriter());
+	//		return;
 		}
 		
 		ServiceHandler handler= ServicesConfig.getService(servicename);	
-		
+		String view = null;
 		if(handler == null){
-			printError("The service '"+ servicename + "' is not supproted by the server", response.getWriter());
+			error = "The service '"+ servicename + "' is not supproted by the server";
+			//printError("The service '"+ servicename + "' is not supproted by the server", response.getWriter());
+		//	return;
+		}else{
+			handler.handleService(request, response);
+			view = handler.getViewPath();
 		}
 		
-		handler.handleService(request, response);
+		if(error != null){
+			view = "/servicesui/error.jsp";
+			request.setAttribute("error", error);
+		}
 		
-		if(handler.getViewPath() != null){
+		if(view != null){
 			//RequestDispatcher dispatcher = getServletContext().getContext(handler.getViewPath()). .getRequestDispatcher(handler.getViewPath());
-
 			ServletContext context = getServletContext().getContext("/");
-			RequestDispatcher dispatcher = context.getRequestDispatcher(handler.getViewPath());
-			
+			RequestDispatcher dispatcher = context.getRequestDispatcher(view);
 			dispatcher.forward(request, response);
 		}
 		

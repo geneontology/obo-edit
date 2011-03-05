@@ -1,3 +1,6 @@
+<%@page import="java.io.PrintWriter"%>
+<%@page import="org.geneontology.gold.rules.AnnotationRuleViolation"%>
+<%@page import="java.util.Set"%>
 <%@page import="org.geneontology.web.Task"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
@@ -28,7 +31,7 @@
 		}
 	%>
 
-	<h1>Status of the execution of the <%= request.getParameter("command") %>' command on GOLD DB</h1>
+	<h1>Status of the execution of the <%= request.getParameter("command") %>' command on the <%= request.getAttribute("dbname") %> database.</h1>
 
 	<%
 		Task task = (Task)request.getAttribute("task");
@@ -36,8 +39,9 @@
 
 	<table><tr><th>Operation Name</th><th>Status/Completion Time</th></tr>
 	<% 		
+		Exception ex = null;
 		if(task != null){
-			Exception ex = task.getException();
+			ex = task.getException();
 			String ontology = "";
 			for (String opName : task.getCompletedOperations()) {
 				String[] st = opName.split("--");
@@ -70,12 +74,45 @@
 			<% 			
 			}
 	
-			if(ex != null){
-				ex.printStackTrace(response.getWriter());
-			}
 		}
 		%>	
 	</table>
+
+	<%
+	if(ex != null){
+		PrintWriter pw = new PrintWriter(out);
+		ex.printStackTrace(pw);
+		pw.flush();
+	}
+	
+	%>
+
+<!-- 
+	The below code is executed only when GafDbOperationsService is executed
+ -->
+	<%
+	Set<AnnotationRuleViolation> annotationRuleViolations = (Set<AnnotationRuleViolation>)request.getAttribute("violations");
+	if(annotationRuleViolations != null){
+	%>
+
+		<hr />
+		<h3>Annotation Violations</h3>
+		<ul>
+		<%
+		
+		for(AnnotationRuleViolation v: annotationRuleViolations){
+			%>
+			<li> <%= v.getMessage() %> -- <%= v.getSourceAnnotation() %> </li>
+			<%			
+		}
+		
+		%>
+
+		</ul>
+	
+	<%
+	}
+	%>
 
 
 </body>
