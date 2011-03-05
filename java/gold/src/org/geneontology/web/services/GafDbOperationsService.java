@@ -2,55 +2,49 @@ package org.geneontology.web.services;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
-import org.geneontology.gold.hibernate.model.Ontology;
-import org.geneontology.gold.io.DbOperations;
+import org.geneontology.gaf.hibernate.GafDocument;
+import org.geneontology.gaf.hibernate.GafObjectsBuilder;
+import org.geneontology.gaf.io.GAFDbOperations;
 import org.geneontology.gold.io.DbOperationsListener;
+import org.geneontology.gold.rules.AnnotationRuleViolation;
 import org.geneontology.web.Task;
 import org.geneontology.web.TaskExecution;
 import org.geneontology.web.TaskExecutionListener;
 import org.geneontology.web.TaskRunner;
-import org.semanticweb.owlapi.model.OWLOntology;
 
 import owltools.graph.OWLGraphWrapper;
 
+public class GafDbOperationsService extends ServiceHandlerAbstract {
 
-/**
- * This service handles gold db operations such as update and bulkload.
- *  
- * @author shaid
- *
- */
-public class GoldDbOperationsService extends ServiceHandlerAbstract {
-
-	private static Logger LOG = Logger.getLogger(GoldDbOperationsService.class);
+	private static Logger LOG = Logger.getLogger(GafDbOperationsService.class);
 	
-	
-	//this instance can be share with the other service 
-	private OWLGraphWrapper ontologyGraph;
+	private List<GafDocument> gafDocuments;
 	
 	private String viewPath;
 	
-	private List<String> ontLocations;
+	private List<String> gafLocations;
 	
 	private TaskRunner runner;
 	
 	private boolean force;
 	
+	private Set<AnnotationRuleViolation> annotationRuleViolations;	
+	
 	private String command;
 	
-	public GoldDbOperationsService(){
+	public GafDbOperationsService(){
 		
 		
-		buildOWLGraphWrapper(null);
-		
-		this.ontLocations = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
+		this.gafLocations = GeneOntologyManager.getInstance().getDefaultGafFileLocations();
 		runner = null;
 	}
 	
@@ -73,40 +67,32 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract {
 				
 				
 				if(ontologylocation != null){
-					ontLocations = new ArrayList<String>();
-					ontLocations.add(ontologylocation);
-					runner = new TaskRunner(new GoldDbTaskExecution());
+					gafLocations = new ArrayList<String>();
+					gafLocations.add(ontologylocation);
+					runner = new TaskRunner(new GafDbTaskExecution());
 				}else{
 					request.setAttribute("servicename", getServiceName());
 					this.viewPath = "/servicesui/golddb-updateform.jsp";
 				}
 			}else if("bulkload".equals(command)){
 				this.force = "true".equals(request.getParameter("force"));
-				runner = new TaskRunner(new GoldDbTaskExecution());
+				runner = new TaskRunner(new GafDbTaskExecution());
 			}else if("getlastupdate".equals(command)){
 
 				viewPath = "/servicesui/gold-lastupdate.jsp";
 				
-				DbOperations db = new DbOperations();
-				request.setAttribute("dbname", "Gold");
-				Hashtable<String, String[]> dbs = new Hashtable<String, String[]>();
-				request.setAttribute("dbs", dbs);
-				
-				for(Ontology ont: db.getLastUpdateStatus()){
-					dbs.put(ont.getId(), new String[]{ont.getVersioniri(), ont.getCreationDate()});
-				}
 				
 			}
-		
 
 			if(this.runner != null){
-				ontologyGraph = null;
 				runner.start();
 			}
+			
+			
 		}
-		
+		request.setAttribute("violations", annotationRuleViolations);
 		request.setAttribute("isTaskRunning", runner == null ? false: runner.isRunning());
-		request.setAttribute("dbname", "GOLD");
+		request.setAttribute("dbname", "GAF");
 		
 		if(runner != null){
 			request.setAttribute("task", runner.getData());
@@ -119,102 +105,67 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract {
 		
 	}
 	
-	public OWLGraphWrapper getGraphWrapper(){
-		return this.ontologyGraph;
-	}
-
 	@Override
 	public String getServiceName() {
 		// TODO Auto-generated method stub
-		return "gold-db-operations";
+		return "gaf-db-operations";
 	}
 
 	public String getViewPath(){
 		return this.viewPath;
 	}
 	
-	private void buildOWLGraphWrapper(String exclude){
-		
-		DbOperations db = new DbOperations();
-		List ontologies = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
-		OWLGraphWrapper wrapper = null;
-		for(int i=0;i<ontologies.size();i++){
-			
-			String location = ontologies.get(i).toString();
-
-
-			if(location.equals(exclude))
-				continue;
-			
-			try{
-				OWLOntology ontology = db.buildOWLOntology(location);
-				if(wrapper==null){
-					wrapper = new OWLGraphWrapper(ontology);
-					wrapper.setSourceOntology(ontology);
-				}else{
-					wrapper.addSupportOntology(ontology);
-				}
-				
-				
-				for(OWLOntology sont: wrapper.getSupportOntologySet()){
-					wrapper.mergeOntology(sont);
-				}
-				
-				if(ontologyGraph == null)
-					ontologyGraph = wrapper;
-				//graphs.put(wrapper.getOntologyId(), wrapper); 
-			}catch(Exception ex){
-				LOG.error(ex.getMessage(), ex);
-			}
-		}
-		
-		
-		
-	}
 	
 	
-	class GoldDbTaskExecution extends Task implements TaskExecution, DbOperationsListener{
+	class GafDbTaskExecution extends Task implements TaskExecution, DbOperationsListener{
 
 		private List<TaskExecutionListener> listeners;
 
 		// id of the current
 		private String currentOntologyBeingProcessed;
 		
+	//	private Exception exception;
 		
-		public GoldDbTaskExecution(){
+		public GafDbTaskExecution(){
 			listeners = new ArrayList<TaskExecutionListener>();
 		}
 		
 		
 		@Override
 		public void execute() {
-			// TODO Auto-generated method stub
 		
-		
+			gafDocuments = new ArrayList<GafDocument>();
+			
+			annotationRuleViolations = new HashSet<AnnotationRuleViolation>();
+			
 			for(TaskExecutionListener l: listeners){
 				l.updateData(this);
 			}
 			
-			DbOperations db = new DbOperations();
+			GAFDbOperations db = new GAFDbOperations();
 			db.addDbOperationsListener(this);
 			
 			try{
-					for(String ontLocation: ontLocations){
+					for(String ontLocation: gafLocations){
 						this.currentOntologyBeingProcessed = ontLocation;
-						OWLGraphWrapper graph = db.buildOWLGraphWrapper(ontLocation);
 						
 						if("bulkload".equals(command))
-							db.bulkLoad(graph, force);
+							db.bulkLoad(ontLocation, force);
 						else 
-							db.updateGold(graph);
+							db.updateGold(ontLocation);
 					}
-				if("update".equals(command)){
-					//rebuilt the merge because of change in one of the ontology
-					if(GeneOntologyManager.getInstance().getDefaultOntologyLocations().size()>0)
-						buildOWLGraphWrapper(ontLocations.get(0));
+					
+					GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
+					
+					OWLGraphWrapper graph = goldDb.getGraphWrapper();
+					
+					for (GafDocument doc : gafDocuments) {
+
+						annotationRuleViolations.addAll(doc
+								.validateAnnotations(graph));
+					}
 					
 					
-				}
 			}catch(Exception ex){
 				this.exception = ex;
 				LOG.error(ex, ex);
@@ -287,26 +238,27 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract {
 					+ currentOntologyBeingProcessed);
 		}
 
-		// public void endOntologyLoad(OWLGraphWrapper graph) {
 		public void endOntologyLoad(Object object) {
 			reportEndTime("Obo To OWL Conversion--" + currentOntologyBeingProcessed);
 
-			if (object instanceof OWLOntology) {
-				OWLOntology ont = (OWLOntology) object;
-				if (ontologyGraph == null) {
-					try {
-						ontologyGraph = new OWLGraphWrapper(ont);
-					} catch (Exception ex) {
-						LOG.error(ex.getMessage(), ex);
-						this.exception = ex;
-					}
-				} else {
-					ontologyGraph.addSupportOntology(ont);
+			if (object instanceof GafObjectsBuilder) {
+				GafObjectsBuilder builder = (GafObjectsBuilder) object;
+				gafDocuments.add(builder.getGafDocument());
+
+				annotationRuleViolations.addAll(builder.getParser()
+						.getAnnotationRuleViolations());
+
+				for (String s : builder.getParser().getErrors()) {
+					annotationRuleViolations
+							.add(new AnnotationRuleViolation(s));
 				}
+
 			}
+			
+			
 		}
 		
 		
 	}
-	
+
 }
