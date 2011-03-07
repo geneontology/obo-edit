@@ -400,7 +400,7 @@ public class DbOperations implements DbOperationsInterface{
 	 * located the default location.
 	 * @throws Exception
 	 */
-	public void updateGold() throws Exception{
+	public void update() throws Exception{
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
@@ -408,11 +408,11 @@ public class DbOperations implements DbOperationsInterface{
 		List list = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
 		
 		if(list == null || list.size()==0){
-			throw new Exception("Ontology File Location is not Found specified in the geneontology.gold.ontologylocation property" );
+			throw new Exception("Ontology File Locations are not specified in the geneontology.gold.ontologylocation property" );
 		}
 		
 		for(Object obj: list)
-			updateGold(obj.toString());
+			update(obj.toString());
 	}	
 	
 	/**
@@ -421,7 +421,7 @@ public class DbOperations implements DbOperationsInterface{
 	 * @param oboFile
 	 * @throws Exception
 	 */
-	public void updateGold(String oboFile) throws Exception{
+	public void update(String oboFile) throws Exception{
 		
 		updateGold(buildOWLGraphWrapper(oboFile));
 		

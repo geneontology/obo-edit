@@ -1,3 +1,4 @@
+<%@page import="java.util.List"%>
 <%@page import="org.geneontology.conf.GeneOntologyManager"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
@@ -17,8 +18,9 @@
 		<label>Please select ontology</label><br />
 		
 		<% 
-		for (Object obj : GeneOntologyManager.getInstance()
-				.getDefaultOntologyLocations()) {
+		
+		List locations = (List)request.getAttribute("locations");
+		for (Object obj : locations) {
 			%>
 			
 			<input type='radio' name='ontologylocation' value='<%= obj %>' /> <%= obj %> <br />

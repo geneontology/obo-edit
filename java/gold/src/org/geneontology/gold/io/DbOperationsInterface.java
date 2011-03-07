@@ -65,14 +65,14 @@ public interface DbOperationsInterface {
 	 * located the default location.
 	 * @throws Exception
 	 */
-	public void updateGold() throws Exception;
+	public void update() throws Exception;
 	/**
 	 * Incrementa update of the GOLD database from the contents of the obo file
 	 * located at the path supplied in the parameter
 	 * @param oboFile
 	 * @throws Exception
 	 */
-	public void updateGold(String oboFile) throws Exception;
+	public void update(String oboFile) throws Exception;
 	
 	public void addDbOperationsListener(DbOperationsListener listener);
 
