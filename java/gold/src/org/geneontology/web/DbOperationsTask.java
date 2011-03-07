@@ -162,14 +162,14 @@ public class DbOperationsTask extends Task implements DbOperationsListener {
 							}
 						} else {
 							if (bulkLoadDone) {
-								db.updateGold(location);
+								db.update(location);
 							} else {
 								db.bulkLoad(location, force);
 								bulkLoadDone = true;
 							}
 						}
 					} else if ("update".equals(opName)) {
-						db.updateGold(location);
+						db.update(location);
 					} else if ("buildschema".equals(opName)) {
 						db.buildSchema(force, tablePrefix);
 					} else if ("buildtsv".equals(opName)) {

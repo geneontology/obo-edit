@@ -4,17 +4,19 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.gaf.hibernate.Bioentity;
 import org.geneontology.gaf.hibernate.CompositeQualifier;
 import org.geneontology.gaf.hibernate.ExtensionExpression;
-import org.geneontology.gaf.hibernate.GAFParserHandlerForHibernate;
+import org.geneontology.gaf.hibernate.GafDeltaFactory;
 import org.geneontology.gaf.hibernate.GafDocument;
 import org.geneontology.gaf.hibernate.GafObjectsBuilder;
 import org.geneontology.gaf.hibernate.GafObjectsFactory;
+import org.geneontology.gaf.hibernate.GeneAnnotation;
 import org.geneontology.gaf.hibernate.WithInfo;
-import org.geneontology.gaf.parser.GAFParser;
 import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperationsInterface;
 import org.geneontology.gold.io.DbOperationsListener;
@@ -287,10 +289,20 @@ public class GAFDbOperations implements DbOperationsInterface{
 	 * located the default location.
 	 * @throws Exception
 	 */
-	public void updateGold() throws Exception{
+	public void update() throws Exception{
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
+		
+		List list = GeneOntologyManager.getInstance().getDefaultGafFileLocations();
+		
+		if(list == null || list.size()==0){
+			throw new Exception("Gaf File Locations are not specified in the geneontology.gold.gaflocation property" );
+		}
+		
+		for(Object obj: list)
+			update(obj.toString());
+		
 
 	}	
 	
@@ -300,9 +312,56 @@ public class GAFDbOperations implements DbOperationsInterface{
 	 * @param oboFile
 	 * @throws Exception
 	 */
-	public void updateGold(String oboFile) throws Exception{
+	public void update(String gafLocation) throws Exception{
+		if(LOG.isDebugEnabled()){
+			LOG.debug("-");
+		}
 		
 		
+		gafDocument = buildGafDocument(gafLocation);
+		
+		GeneOntologyManager manager = GeneOntologyManager.getInstance();
+		
+		List<String> list = dumpFiles(manager.getGoldDetlaTablePrefix(), gafLocation);
+
+		buildSchema(true, manager.getGoldDetlaTablePrefix());
+
+		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
+		
+		GafDeltaFactory deltaFactory = new GafDeltaFactory(gafDocument);
+		
+		Collection<Bioentity> entities = deltaFactory.buildBioentityDelta();
+		Collection<GeneAnnotation> annotations = deltaFactory.buildGeneAnnotations();
+		Collection<CompositeQualifier> qualifiers = deltaFactory.buildCompositeQualifiers();
+		Collection<ExtensionExpression> expressions = deltaFactory.buildExtensionExpressions();
+		Collection<WithInfo> infos = deltaFactory.buildWithInfos();
+		
+		GafObjectsFactory factory = new GafObjectsFactory();
+		Session session = factory.getSession();
+		
+		saveOrUpdate(session, entities);
+		saveOrUpdate(session, annotations);
+		saveOrUpdate(session, qualifiers);
+		saveOrUpdate(session, expressions);
+		saveOrUpdate(session, infos);
+		
+	
+		session.getTransaction().commit();
+		
+		LOG.info("Bulk Load completed successfully");
+
+		for(DbOperationsListener listener: listeners){
+			listener.bulkLoadEnd();
+		}
+		
+		
+	}
+	
+	private void saveOrUpdate(Session session, Collection objects){
+		
+		for(Object obj: objects){
+			session.saveOrUpdate(obj);
+		}
 	}
 	
 	public void addDbOperationsListener(DbOperationsListener listener){

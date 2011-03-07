@@ -30,6 +30,19 @@ public class GafObjectsFactory {
 	}
 	
 	
+	public static GafObjectsFactory buildDeltaObjectFactory(){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		GafObjectsFactory factory = new GafObjectsFactory();
+		
+		factory.session = sf.openSession(new DeltaQueryInterceptor());
+		factory.isDeltaFactory = true;
+		
+		return factory;
+	}
+	
+	
 	private static SessionFactory buildFactory(){
 		if(LOG.isDebugEnabled())
 			LOG.debug("-");
@@ -83,13 +96,29 @@ public class GafObjectsFactory {
 			LOG.debug("-");
 
 		Session session = getSession();
-		List<Bioentity> list =session.createQuery("from Bioentity where gaf_document=?")
-							.setString(0, gafDocument)
+		List<Bioentity> bioentities  = session.createQuery("from Bioentity where gaf_document=?")
+					.setString(0, gafDocument)
 							.list();
 		
 		session.getTransaction().commit();
 		
-		return list;
+		return bioentities ;
+	}
+
+	
+	public synchronized Bioentity getBioentity(String id){
+
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		Bioentity bioentity  = (Bioentity)session.createQuery("from Bioentity where id=?")
+					.setString(0, id)
+							.uniqueResult();
+		
+		session.getTransaction().commit();
+		
+		return bioentity;
 	}
 
 	public synchronized List<GeneAnnotation> getGeneAnnotations(String gafDocument){

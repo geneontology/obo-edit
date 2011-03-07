@@ -78,6 +78,7 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract {
 					runner = new TaskRunner(new GoldDbTaskExecution());
 				}else{
 					request.setAttribute("servicename", getServiceName());
+					request.setAttribute("locations", GeneOntologyManager.getInstance().getDefaultOntologyLocations());
 					this.viewPath = "/servicesui/golddb-updateform.jsp";
 				}
 			}else if("bulkload".equals(command)){
