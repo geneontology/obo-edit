@@ -72,6 +72,8 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 					runner = new TaskRunner(new GafDbTaskExecution());
 				}else{
 					request.setAttribute("servicename", getServiceName());
+					request.setAttribute("locations", GeneOntologyManager.getInstance().getDefaultGafFileLocations());
+					
 					this.viewPath = "/servicesui/golddb-updateform.jsp";
 				}
 			}else if("bulkload".equals(command)){
@@ -152,7 +154,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 						if("bulkload".equals(command))
 							db.bulkLoad(ontLocation, force);
 						else 
-							db.updateGold(ontLocation);
+							db.update(ontLocation);
 					}
 					
 					GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");

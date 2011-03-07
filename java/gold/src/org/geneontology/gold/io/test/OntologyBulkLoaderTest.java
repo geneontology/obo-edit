@@ -21,7 +21,7 @@ public class OntologyBulkLoaderTest extends TestCase {
 
 		DbOperations gold = new DbOperations();
 		
-		gold.updateGold("test_resources/caro_update.obo");
+		gold.update("test_resources/caro_update.obo");
 	}
 	
 	
