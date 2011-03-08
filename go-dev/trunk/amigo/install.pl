@@ -1134,6 +1134,11 @@ if ( $opt_s ) {
   if ( $opt_e ) {
     ll("\n!!! Experimental file generation: these may take a (very great) while!\n!!! Using ctrl-c on these jobs should not be problematic\nin the main parts of AmiGO...\n");
 
+    ## Sven's caching of info.
+    @args = ("perl", "./scripts/cache_phylotree.pl");
+    ll("System: \"@args\"");
+    system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_t;
+
     ## Heavy-duty caching files (including expensive RG).
     @args = ("perl", "./scripts/make_exp_caches.pl");
     ll("System: \"@args\"");
