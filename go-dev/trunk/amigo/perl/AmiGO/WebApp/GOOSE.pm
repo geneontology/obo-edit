@@ -114,7 +114,7 @@ sub mode_goose {
 
   my $mirror_loc = $self->{CORE}->amigo_env('GO_DEV_ROOT') .
     '/amigo/amigo/cgi-bin/experimental/go_mirrors.json';
-  my $mirror_info = $self->{CORE}->parse_json_file($mirror_loc);
+  my $mirror_info = $self->{JS}->parse_json_file($mirror_loc);
   #$self->{CORE}->kvetch("_mirror_info_dump_:" . Dumper($mirror_info));
 
   ## Run the mirror test on every mirror and at the same time see if

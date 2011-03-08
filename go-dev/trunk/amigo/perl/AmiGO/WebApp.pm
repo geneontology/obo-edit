@@ -22,6 +22,7 @@ use utf8;
 use strict;
 use AmiGO;
 use AmiGO::JavaScript;
+use AmiGO::CSS;
 use DBI;
 #use AmiGO::Input.pm
 use Data::Dumper;
@@ -33,11 +34,10 @@ use Data::Dumper;
 sub cgiapp_init {
   my $self = shift;
 
-  ## Let's bring in the AmiGO core and not bother with multiple
-  ## inheritence...
-  #$self->{CORE} = AmiGO->new();
-  $self->{CORE} = AmiGO::JavaScript->new();
-  $self->{JS} = $self->{CORE};
+  ## ...
+  $self->{CORE} = AmiGO->new();
+  $self->{JS} = AmiGO::JavaScript->new();
+  $self->{CSS} = AmiGO::CSS->new();
 
   ## What the default prefix looks like.
   $self->{SESSION_STRING} = 'cgisess_';
@@ -615,7 +615,7 @@ sub add_template_bulk {
 
   if( defined $args->{css_library} ){
     foreach my $css_lib (@{$args->{css_library}}){
-      $self->add_template_css( $self->{CORE}->get_css($css_lib) );
+      $self->add_template_css( $self->{CSS}->get_css($css_lib) );
     }
   }
   if( defined $args->{css} ){
@@ -625,7 +625,7 @@ sub add_template_bulk {
   }
   if( defined $args->{javascript_library} ){
     foreach my $js_lib (@{$args->{javascript_library}}){
-      $self->add_template_javascript( $self->{CORE}->get_lib($js_lib) );
+      $self->add_template_javascript( $self->{JS}->get_lib($js_lib) );
     }
   }
   if( defined $args->{javascript} ){
@@ -635,10 +635,10 @@ sub add_template_bulk {
   }
   if( defined $args->{javascript_init} ){
     # foreach my $jsi (@{$args->{javascript_init}}){
-    #  $self->add_template_javascript($self->{CORE}->initializer_jquery($jsi));
+    #  $self->add_template_javascript($self->{JS}->initializer_jquery($jsi));
     # }
     my $alljs = join("\n", @{$args->{javascript_init}});
-    $self->add_template_javascript($self->{CORE}->initializer_jquery( $alljs ));
+    $self->add_template_javascript($self->{JS}->initializer_jquery( $alljs ));
   }
   if( defined $args->{content} ){
     foreach my $c (@{$args->{content}}){
@@ -827,7 +827,7 @@ sub mode_js_status {
   $self->header_add( -type => 'application/json' );
 
   $json_resp->set_results({
-			   heartbeat => $self->{CORE}->{JSON_TRUE},
+			   heartbeat => $self->{JS}->{JSON_TRUE},
 			   id => $self->{CORE}->unique_id(),
 			  });
 

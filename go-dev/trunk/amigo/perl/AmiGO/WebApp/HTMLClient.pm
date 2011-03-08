@@ -73,6 +73,7 @@ sub setup {
 		   'homolset_graph'      => 'mode_homolset_graph',
 		   'homolset_annotation' => 'mode_homolset_annotation',
 		   'live_search'         => 'mode_live_search',
+		   'css'                 => 'mode_dynamic_style',
 		   'AUTOLOAD'            => 'mode_exception'
 		  );
 }
@@ -546,6 +547,24 @@ sub mode_homolset_annotation {
   }
 
   return $output;
+}
+
+
+##
+sub mode_dynamic_style {
+
+  my $self = shift;
+  $self->header_add( -type => 'text/css' ); #,-expires=>'+7d');
+  my @dstack = ();
+
+  ## 
+  my $rg = $rg_aid->species_information($rg_aid->species_list({num_p => 1}));
+  foreach my $spc (keys %$rg){
+    push @dstack, sprintf('.taxid_%s { background-color: %s }',
+			  $spc, $rg->{$spc}{species_color});
+  }
+
+  return join("\n", @dstack);
 }
 
 
