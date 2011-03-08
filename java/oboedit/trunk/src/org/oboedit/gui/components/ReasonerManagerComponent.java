@@ -58,7 +58,7 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 
 	protected ActionListener reasonerListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			logger.debug("calling enableReasoner " + reasonerChoice.getSelectedItem());
+//			logger.debug("calling enableReasoner " + reasonerChoice.getSelectedItem());
 			enableReasoner((String)reasonerChoice.getSelectedItem());
 		}
 	};
@@ -110,13 +110,13 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 	}
 
 	protected void enableReasoner(String reasonerChoice) {
-		logger.debug("ReasonerManagerComponent.enableReasoner");
+//		logger.debug("ReasonerManagerComponent.enableReasoner");
 		summaryField.setText(" ");
 		sessionManager.setReasonerName(reasonerChoice);
 	}
 
 	protected void cancelReasoner(String reasonerChoice) {
-		logger.debug("reasonerChoice: " + reasonerChoice);
+//		logger.debug("reasonerChoice: " + reasonerChoice);
 		logger.debug("ReasonerManagerComponent.cancelReasoner");
 		summaryField.setText("Reasoning cancelled.. ");
 		sessionManager.setReasonerName(reasonerChoice);
