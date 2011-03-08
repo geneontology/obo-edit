@@ -114,7 +114,9 @@ sub url{
     my $s = shift;
     my %arg = @_;
 
-    if ($s->{dbname}) {
+    if ($arg{mode} and ($arg{mode} eq 'css')) {
+	# Don't want dbname set for this
+    } elsif ($s->{dbname}) {
 	$arg{dbname} = $s->{dbname}   if (!$arg{dbname});
 	if ($s->{key}) {
 	    $arg{key}    = $s->{key}  if (!$arg{key});
@@ -123,6 +125,7 @@ sub url{
 	    $arg{mode}   = 'index'    if (!$arg{mode});
 	}
     }
+
 
     return $core->get_interlink
       ({ mode => 'phylotree', arg => \%arg });
