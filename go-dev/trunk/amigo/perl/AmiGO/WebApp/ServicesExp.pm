@@ -134,7 +134,7 @@ sub mode_navi_js_data {
 
     $self->{CORE}->kvetch("GONavi: found cached data (key): " . $cache->{key});
 
-    $retstruct = $self->{CORE}->parse_json_data($cache->{meta_data});
+    $retstruct = $self->{JS}->parse_json_data($cache->{meta_data});
     $png_file = $cache->{image};
     $mini_png_file = $cache->{mini_image};
 
@@ -154,7 +154,7 @@ sub mode_navi_js_data {
     ## Store a copy of it for later.
     $cache_manager->cache_data({
 				key => $input_key,
-				meta_data => $self->{CORE}->make_js($retstruct),
+				meta_data => $self->{JS}->make_js($retstruct),
 				image => $png_file,
 				mini_image => $mini_png_file,
 			       });
@@ -226,7 +226,7 @@ sub mode_navi_js_data {
 
   #$self->header_add( -type => 'text/plain' );
   $self->header_add( -type => 'application/javascript' );
-  return 'GONavi.Data = ' . $self->{CORE}->make_js($retstruct) . ';';
+  return 'GONavi.Data = ' . $self->{JS}->make_js($retstruct) . ';';
 }
 
 

@@ -180,46 +180,6 @@ my $sig2path =
    #'orb.js',
   };
 
-## For CSS for use with JS.
-my $uicss2path =
-  {
-   'org.bbop.amigo.ui.autocomplete' =>
-   'org/bbop/amigo/ui/css/autocomplete.css',
-
-   'org.bbop.amigo.ui.standard' =>
-   'org/bbop/amigo/ui/css/standard.css',
-
-   'org.bbop.amigo.ui.widgets' =>
-   'org/bbop/amigo/ui/css/widgets.css',
-
-   ## jQuery's stuff in a strange place.
-   'com.jquery.redmond.custom' =>
-   'com/jquery/css/redmond/jquery-ui-1.7.1.custom.css',
-   'com.jquery.jqamigo.custom' =>
-   'com/jquery/css/jqamigo/jquery-ui-1.8rc3.custom.css',
-   'com.jquery.tablesorter' =>
-   'com/jquery/css/tablesorter/style.css',
-
-   ##
-   'com.ext.resources.ext-all' =>
-   'com/ext/resources/css/ext-all.css',
-  };
-
-## For independant CSS.
-my $css2path =
-  {
-   ## Use this:
-   'standard' =>
-   'formatting.css',
-
-   ## TODO: Deprecated:
-   'formatting' =>
-   'formatting.css',
-
-   'GONavi' =>
-   'GONavi.css',
-  };
-
 
 =item new
 
@@ -301,50 +261,6 @@ sub acquire_source {
   push @mbuf, $source;
 
   push @mbuf, '"></script>';
-  push @mbuf, "\n";
-
-  return join '', @mbuf;
-}
-
-
-=item get_css
-
-Args: the signifier for a css lib.
-Returns: a css line for html
-
-NOTE: done separately from the JS so as to make it easier for
-end-users to override with theor own styles.
-
-=cut
-sub get_css {
-
-  my $self = shift;
-  my $sig = shift || '';
-
-  my @mbuf = ();
-  if( $self->{USE_XLINK} ){
-    push @mbuf, '<link rel="stylesheet" type="text/css" xlink:src="'
-  }else{
-    push @mbuf, '<link rel="stylesheet" type="text/css" href="'
-  }
-
-  ## Check JS w/CSS registery first, then try the standalone
-  ## registry. Otherwise, hope the transformations goes well...
-  push @mbuf, $self->amigo_env('AMIGO_HTML_URL');
-  if( $uicss2path->{$sig} ){
-    push @mbuf, '/js/';
-    push @mbuf, $uicss2path->{$sig};
-  }elsif( $css2path->{$sig} ){
-    push @mbuf, '/css/';
-    push @mbuf, $css2path->{$sig};
-  }else{
-    push @mbuf, '/css/';
-    $sig =~ s/\./\//gs;
-    $sig .= '.css';
-    push @mbuf, $sig;
-  }
-
-  push @mbuf, '">';
   push @mbuf, "\n";
 
   return join '', @mbuf;

@@ -1455,6 +1455,12 @@ sub get_interlink {
        $ilink = 'amigo_exp?mode=ptree&id=' . $id;
      },
 
+     'style' =>
+     sub {
+       my $sheet = $args->{sheet} || '';
+       $ilink = 'style?mode=' . $sheet . '.css';
+     },
+
      ## I don't *think* this would be Seth approved. -Sven
      ## Seth thinks it's fine, but jiggered it to see. -Seth
      phylotree =>
