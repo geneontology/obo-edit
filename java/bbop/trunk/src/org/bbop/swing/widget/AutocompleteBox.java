@@ -411,7 +411,6 @@ public class AutocompleteBox<T> extends JComboBox {
 //				logger.info("current: = " + getSelectedItem());
 			}
 			setSelectedItem(null);
-//			logger.debug("setValue: NULL");
 		}
 		else {
 			List values = autocompleteModel.getDisplayValues(object);
@@ -424,7 +423,6 @@ public class AutocompleteBox<T> extends JComboBox {
 	}
 
 	public T getValue () {
-//		logger.debug("getValue current ACBox: "+getId());
 		/*
 		 * at some undetermined point, the selected item in the JComboBox is being lost.
 		 * to get around this we keep track of the selected item ourselves, and ensure that the JCB has the correct
@@ -467,27 +465,22 @@ public class AutocompleteBox<T> extends JComboBox {
 	 * set autocompleted object as selected item
 	 */
 	public void setSelectedItem(Object anObject) {
-//		logger.debug("setSelectedItem:"+getId());
-	    if (anObject != null) {
+//	    if (anObject != null) {
 //			logger.debug("AutocompleteBox.setSelectedItem: TRYING to select " + anObject + ", type = " + anObject.getClass());
-	    }
+//	    }
 		if (anObject == null) {
-//			logger.debug("  AutocompleteBox.setSelectedItem: NULL");
 			doSetSelectedItem(null);
 		} else if (autocompleteModel.getDisplayType().isAssignableFrom(anObject.getClass())) {
 			doSetSelectedItem(anObject);
-//			logger.debug("  isAssignableFrom: "+anObject);
 			Object selected = getSelectedItem();
 //			logger.debug("  selected: "+selected);
 		} else if (autocompleteModel.getOutputType().isAssignableFrom(anObject.getClass())) {
 			List values = autocompleteModel.getDisplayValues(anObject);
-//			logger.debug("  values: "+values);
 			if (values.size() > 0)
 				doSetSelectedItem(values.get(0));
 			else
 				doSetSelectedItem(null);
 		} else if (anObject instanceof String) {
-//			logger.debug("  string: "+anObject);
 			doSetSelectedItem(autocompleteModel.createValue((String) anObject));
 		}
 		if (isEditable() && getEditor() != null) {
@@ -496,7 +489,6 @@ public class AutocompleteBox<T> extends JComboBox {
 	}
 
 	protected void doSetSelectedItem(Object o) {
-//		logger.debug("Autocompletebox.doSetSelectedItem: "+ o == null ? "NULL" : o);
 		/*
 		 * we keep track of the selected item ourselves as a "backup", because for some reason
 		 * the JCB loses the value
