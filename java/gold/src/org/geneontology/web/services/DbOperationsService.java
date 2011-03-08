@@ -23,6 +23,7 @@ import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
 import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 
+@Deprecated
 public class DbOperationsService extends ServiceHandlerAbstract {
 
 	private static final Logger LOG = Logger.getLogger(AdminServlet.class);

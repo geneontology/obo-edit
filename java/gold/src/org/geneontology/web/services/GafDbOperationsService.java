@@ -23,20 +23,44 @@ import org.geneontology.web.TaskRunner;
 
 import owltools.graph.OWLGraphWrapper;
 
+/**
+ * This class performs bulkload and update operations against the
+ * web based requests.
+ *  
+ * @author Shahid Manzoor
+ *
+ */
 public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 	private static Logger LOG = Logger.getLogger(GafDbOperationsService.class);
 	
-	private List<GafDocument> gafDocuments;
-	
+//	private List<GafDocument> gafDocuments;
+
+	/**
+	 * Path of the jsp file which renders the results of the computations of this service.
+	 */
 	private String viewPath;
 	
+	/**
+	 * The GAF file paths
+	 */
 	private List<String> gafLocations;
 	
+	/**
+	 * The thread which runs the bulkload and update operations
+	 * in background.
+	 */
 	private TaskRunner runner;
 	
+	/**
+	 * It holds the value of the 'force' request parameter. The parameter is used in bulkload.
+	 * If the value is true then delete gold database tables and create from scratch.
+	 */
 	private boolean force;
 	
+	/**
+	 * It holds the collections gene annotation voilations.
+	 */
 	private Set<AnnotationRuleViolation> annotationRuleViolations;	
 	
 	private String command;
@@ -136,7 +160,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 		@Override
 		public void execute() {
 		
-			gafDocuments = new ArrayList<GafDocument>();
+			List<GafDocument> gafDocuments = new ArrayList<GafDocument>();
 			
 			annotationRuleViolations = new HashSet<AnnotationRuleViolation>();
 			
@@ -245,7 +269,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 			if (object instanceof GafObjectsBuilder) {
 				GafObjectsBuilder builder = (GafObjectsBuilder) object;
-				gafDocuments.add(builder.getGafDocument());
+		//		gafDocuments.add(builder.getGafDocument());
 
 				annotationRuleViolations.addAll(builder.getParser()
 						.getAnnotationRuleViolations());
