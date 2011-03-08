@@ -3,14 +3,18 @@ use warnings;
 use strict;
 use Data::Dumper;
 
-if ($ARGV[0]) {
-    require shift(@ARGV);
-} elsif (-f 'config.pl') {
-    require 'config.pl';
-} else {
-    die 'Found no config.pl file';
+sub BEGIN{
+    if ($ARGV[0]) {
+	require shift(@ARGV);
+    } elsif (-f 'config.pl') {
+	require 'config.pl';
+    } else {
+	die 'Found no config.pl file';
+    }
 }
 
+use lib "$ENV{GO_DEV_ROOT}/amigo/perl";
+use lib $ENV{GOBO_ROOT};
 
 use AmiGO::Worker::Phylotree;
 use AmiGO::Cache::PhylotreeSummary;
@@ -18,7 +22,6 @@ use AmiGO::Aid::PantherDB;
 
 my $work = new AmiGO::Worker::Phylotree(dbname => 'PantherDB');
 my @cache_me = $work->id3();
-print Dumper @cache_me;
 
 my @species = AmiGO::Aid::PantherDB->reference_genome();
 my $cache = new AmiGO::Cache::PhylotreeSummary(@species);
