@@ -254,22 +254,6 @@ FieldCheck {
 		}
 		return stdspellChecker;
 	}
-	//user-defined (domain specific vocabulary) spell check
-// 	public SpellChecker getUserDefSpellChecker() {
-// 		if (usrspellChecker == null) {
-// 			SpellDictionary userdict = null;
-// 			try {
-// 				FileUtil.ensureExists(Preferences.getUserDefDictionaryFile(), "org/oboedit/resources/user.dict");
-// 				logger.debug("user-defined dict getUserDefSpellChecker: opened dict " + Preferences.getUserDefDictionaryFile());
-// 				userdict = new SpellDictionaryHashMap(Preferences.getUserDefDictionaryFile());
-// 			} catch (IOException e) {
-// 				logger.debug("Couldn't open user dictionary: " + e);
-// 			}
-// 			usrspellChecker = new SpellChecker(userdict);
-// 			logger.debug("userdict = " + usrspellChecker + ", config = " + usrspellChecker.getConfiguration()); // DEL
-// 		}
-// 		return usrspellChecker;
-// 	}
 
 	protected static Set getAllowedRepeats() {
 		if (allowedRepeats == null){
@@ -825,8 +809,8 @@ FieldCheck {
 										arg0.getInvalidWord());
 								// Add this word to the user defined dictionary: user.dict
 								saveWord(arg0.getInvalidWord(), Preferences.getUserDefDictionaryFile());
-								//refresh Text Editor to reflect changes
-//								Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
+								// refresh Text Editor to reflect changes
+								Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 							}
 						};
 
@@ -839,8 +823,8 @@ FieldCheck {
 										arg0.getInvalidWord());
 								// Add this word to the standard dictionary: standard.dict
 								saveWord(arg0.getInvalidWord(), Preferences.getStandardDictionaryFile());
-//								refresh Text Editor to reflect changes
-//								Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
+								// refresh Text Editor to reflect changes
+								Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 							}
 						};
 
