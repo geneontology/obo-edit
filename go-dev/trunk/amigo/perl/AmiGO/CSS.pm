@@ -105,21 +105,22 @@ sub get_css {
 
   ## Check JS w/CSS registery first, then try the standalone
   ## registry. Otherwise, hope the transformations goes well...
-  push @mbuf, $self->amigo_env('AMIGO_HTML_URL');
   if( $uicss2path->{$sig} ){
+    push @mbuf, $self->amigo_env('AMIGO_HTML_URL');
     push @mbuf, '/js/';
     push @mbuf, $uicss2path->{$sig};
   }elsif( $css2path->{$sig} ){
+    push @mbuf, $self->amigo_env('AMIGO_HTML_URL');
     push @mbuf, '/css/';
     push @mbuf, $css2path->{$sig};
-  # }elsif( $dyncss2path->{$sig} ){
-  #   ## A little more complicated since we're going to ask the cgi
-  #   ## part.
-  #   @mbuf = ();
-  #   push @mbuf, $self->amigo_env('AMIGO_CGI_URL');
-  #   push @mbuf, '/style/';
-  #   push @mbuf, $css2path->{$sig};
+  }elsif( $dyncss2path->{$sig} ){
+    ## A little more complicated since we're going to ask the cgi
+    ## part.
+    push @mbuf, $self->get_interlink({mode=>'style',
+				      optional=>{full=>1},
+				      arg=>{}})
   }else{
+    push @mbuf, $self->amigo_env('AMIGO_HTML_URL');
     push @mbuf, '/css/';
     $sig =~ s/\./\//gs;
     $sig .= '.css';

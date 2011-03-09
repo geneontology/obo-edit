@@ -64,6 +64,8 @@ sub setup {
      box => 'mode_id_entry',
 
      paint => 'mode_paint_ajax',
+
+     'AUTOLOAD' => 'mode_exception'
     );
 }
 
@@ -174,7 +176,8 @@ sub mode_cluster_index{
 }
 
 sub mode_cluster_jindex{
-    my $c = shift;
+    my $self = shift;
+    my $c = $self;
     my $q = $c->query();
     my $o = AmiGO::Worker::Phylotree->new
       (dbname => ($q->param('dbname') || $default_dbname));
@@ -238,6 +241,9 @@ sub mode_cluster_jindex{
 	}
 
     }
+
+    ## Add general dynamic CSS.
+    $self->add_template_css($self->{CSS}->get_css('dynamic'));
 
     $c->add_template_css(sprintf('<link href="%s" rel="stylesheet" type="text/css">', $o->url(mode => 'css')));
     $c->set_template_parameter(dbname => $o->{dbname});

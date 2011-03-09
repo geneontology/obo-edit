@@ -959,7 +959,7 @@ sub mode_autocomplete_client {
 
   ## Add 'em.
   foreach my $css_lib (@css_libs){
-    $self->add_template_css( $self->{JS}->get_css($css_lib) );
+    $self->add_template_css( $self->{CSS}->get_css($css_lib) );
   }
   foreach my $js_lib (@js_libs){
     $self->add_template_javascript( $self->{JS}->get_lib($js_lib) );
