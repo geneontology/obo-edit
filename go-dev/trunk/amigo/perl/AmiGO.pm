@@ -1458,7 +1458,8 @@ sub get_interlink {
      'style' =>
      sub {
        my $sheet = $args->{sheet} || '';
-       $ilink = 'style?mode=' . $sheet . '.css';
+       #$ilink = 'amigo?mode=css' . $sheet . '.css';
+       $ilink = 'amigo?mode=css';
      },
 
      ## I don't *think* this would be Seth approved. -Sven
@@ -1492,9 +1493,13 @@ sub get_interlink {
     ## Use full URL?
     if( $ilink ){
       if( $optional_public_p ){
+	#$self->kvetch('PUBLIC LINK');
 	$ilink = $self->amigo_env('AMIGO_PUBLIC_CGI_URL') . '/' . $ilink;
       }elsif( $optional_full_p ){
+	#$self->kvetch('FULL LINK');
 	$ilink = $self->amigo_env('AMIGO_CGI_URL') . '/' . $ilink;
+      }else{
+	#$self->kvetch('LOCAL LINK');
       }
     }
 
