@@ -59,8 +59,6 @@ sub setup {
      cluster => 'mode_cluster',
      dist => 'mode_dist_image',
 
-     css => 'mode_css',
-
      box => 'mode_id_entry',
 
      paint => 'mode_paint_ajax',
@@ -214,6 +212,7 @@ sub mode_cluster_jindex{
 	       count => shift @first,
 	       #color => $o->color(),
 	       code  => $o->code(),
+	       ncbi_taxa_id => $o->ncbi_taxon_id(),
 	      };
 	}
 
@@ -233,7 +232,8 @@ sub mode_cluster_jindex{
 		  {
 		   count => shift @one,
 		   #color => $o->color(),
-		   code  => $o->code(),
+		   #code  => $o->code(),
+		   ncbi_taxa_id => $o->ncbi_taxon_id(),
 		  };
 	    }
 	    push @r, bless \%one, 'AmiGO::Worker::Phylotree';
@@ -245,7 +245,6 @@ sub mode_cluster_jindex{
     ## Add general dynamic CSS.
     $self->add_template_css($self->{CSS}->get_css('dynamic'));
 
-    $c->add_template_css(sprintf('<link href="%s" rel="stylesheet" type="text/css">', $o->url(mode => 'css')));
     $c->set_template_parameter(dbname => $o->{dbname});
     $c->set_template_parameter(clusters => \@r);
     $c->add_template_content('html/main/phylotree_cluster_index2.tmpl');
@@ -329,21 +328,6 @@ sub mode_cluster{
 
     $c->add_template_content('html/main/phylotree_cluster.tmpl');
     return $c->generate_template_page();
-}
-
-
-=item mode_css
-
-Displays a CSS with Reference Genome colors.
-
-=cut
-sub mode_css{
-    my $c = shift;
-    $c->header_props(-type=>'text/css'); #,-expires=>'+7d');
-
-    return join("\n", map {
-	sprintf('.%s { background-color:%s }', $_->code(), $_->color);
-    } AmiGO::Aid::PantherDB->reference_genome());
 }
 
 
