@@ -17,7 +17,9 @@ AmiGO::Aid::PantherDB - L<GO::Metadata::Panther> with color!
 
 Adds functionality to the L<GO::Metadata::Panther> object.
 
-=over $s->color()
+=over
+
+=item $s->color()
 
 Returns a pretty color if the species is a reference genome.
 Otherwise retuns C<undef>.
@@ -29,7 +31,12 @@ sub color{
     return (hex(substr($color,1)) ? $color : undef);
 }
 
+=item $s->reference_genome()
 
+Returns a list of AmiGO::Aid::PantherDB objects that are references
+genomes sorted by scientific name.
+
+=cut
 sub reference_genome{
     my $c = shift;
     return sort {
