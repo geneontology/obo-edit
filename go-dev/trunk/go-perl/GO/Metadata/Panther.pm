@@ -191,9 +191,9 @@ our %species =
    XENTR => { prefer => [ 'UniProtKB', 'ENSEMBL' ] },
 );
 
-=over
-
 =head2 Exportable Subroutines
+
+=over
 
 =item panther_codes()
 
@@ -242,6 +242,8 @@ sub valid_panther_codes{
 =back
 
 =head2 OO Function
+
+=over
 
 =item GO::Metadata::Panther-E<gt>new(...);
 
@@ -315,8 +317,6 @@ sub new{
     return @all;
 }
 
-
-=over
 
 =item $s->ncbi_taxa_ids()
 

@@ -59,7 +59,7 @@ jQuery(document).ready(function() {
 <td>[% cluster.last_annotated %]</td>
 <td>[% cluster.number_of_members %]</td>
 [%- FOREACH dist IN cluster.dist -%]
-<td class="[% dist.code %]">[% dist.count %]</td>
+<td class="taxid_[% dist.ncbi_taxa_id %]">[% dist.count %]</td>
 [%- END -%]
 
 </tr>[% END %]</tbody>
