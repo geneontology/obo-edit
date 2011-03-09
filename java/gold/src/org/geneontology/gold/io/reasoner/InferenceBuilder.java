@@ -4,31 +4,21 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.geneontology.web.TaskExecution;
-import org.geneontology.web.TaskExecutionListener;
-import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-
-import com.clarkparsia.owlapi.explanation.DefaultExplanationGenerator;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
-
 import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 import owltools.graph.OWLQuantifiedProperty.Quantifier;
 
-public class InferenceBuilder implements TaskExecution {
-
+//public class InferenceBuilder implements TaskExecution {
+public class InferenceBuilder{
 	
 	
 	private OWLReasoner reasoner;
@@ -39,7 +29,7 @@ public class InferenceBuilder implements TaskExecution {
 	
 	//private OWLOntology infOntology;
 	
-	private List<TaskExecutionListener> listeners;
+//	private List<TaskExecutionListener> listeners;
 	
 	
 	public OWLGraphWrapper getOWLGraphWrapper(){
@@ -54,7 +44,7 @@ public class InferenceBuilder implements TaskExecution {
 	
 	public InferenceBuilder(OWLGraphWrapper graph){
 		this.graph = graph;
-		listeners =new ArrayList<TaskExecutionListener>();
+//		listeners =new ArrayList<TaskExecutionListener>();
 	}
 	
 
@@ -205,15 +195,17 @@ public class InferenceBuilder implements TaskExecution {
 		return null;
 	}
 
-	private List<OWLGraphEdge> edges;
+//	private List<OWLGraphEdge> edges;
 	
-	@Override
+/*	@Override
 	public void execute() {
+		this.data = null;
 		edges = buildInferences();
-		fireTaskExecutionListener(edges);
-	}
+		this.data = edges;
+//		fireTaskExecutionListener(edges);
+	}*/
 
-	@Override
+/*	@Override
 	public Object getData() {
 		return edges;
 	}
@@ -228,5 +220,5 @@ public class InferenceBuilder implements TaskExecution {
 	public void addTaskExecutionListener(TaskExecutionListener listener) {
 		listeners.add(listener);
 	}
-
+*/
 }
