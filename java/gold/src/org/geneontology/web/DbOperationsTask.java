@@ -37,6 +37,7 @@ import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 import owltools.graph.OWLQuantifiedProperty.Quantifier;
 
+@Deprecated
 public class DbOperationsTask extends Task implements DbOperationsListener {
 
 	private static Logger LOG = Logger.getLogger(DbOperationsTask.class);
@@ -508,6 +509,12 @@ public class DbOperationsTask extends Task implements DbOperationsListener {
 		this.reasonerComputationsResults.append("<h3>Total Sub Classes : " + totalSubclass + "</h3>");
 		this.reasonerComputationsResults.append("<h3>Total Equivalent Classes : " + totalEq + "</h3>");
 
+	}
+
+	@Override
+	public void execute() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	/*private static String getLabel(OWLClass cls, OWLGraphWrapper graph) {

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
 
 public abstract class Task extends Thread {
 
@@ -15,13 +13,16 @@ public abstract class Task extends Thread {
 	
 	private Collection<String> opsOrder;
 	
-	private String currentRunningOperation;
+	protected String currentRunningOperation;
 	
 	protected Exception exception;
+	
+	protected Object data;
 	
 	public Task(){
 		completedOperations = new Hashtable<String, long[]>();
 		opsOrder = new ArrayList<String>();
+		running = true;
 	}
 	
 	
@@ -81,5 +82,19 @@ public abstract class Task extends Thread {
 		return -1;
 	}
 	
+	public void run(){
+		
+		execute();
+		
+		running = false;
+	}
+	
+	public Object getData(){
+		return data;
+	}
+	
+	
+	//sub classes must implement this method
+	public abstract void execute();
 	
 }
