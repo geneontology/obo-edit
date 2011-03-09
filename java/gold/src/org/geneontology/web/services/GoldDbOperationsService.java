@@ -9,22 +9,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.gaf.io.GAFDbOperations;
 import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.web.Task;
-import org.geneontology.web.TaskExecution;
-import org.geneontology.web.TaskExecutionListener;
-import org.geneontology.web.TaskRunner;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import owltools.graph.OWLGraphWrapper;
 
 
 /**
- * This service handles gold db operations such as update and bulkload.
+ * This class performs bulkload and update operations for geneontology GOLD database against the
+ * web based requests.
  *  
- * @author shaid
+ * @author Shahid Manzoor
  *
  */
 public class GoldDbOperationsService extends ServiceHandlerAbstract {
@@ -32,38 +31,55 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract {
 	private static Logger LOG = Logger.getLogger(GoldDbOperationsService.class);
 	
 	
-	//this instance can be share with the other service 
+	/**
+	 * this instance is shared with the other service
+	 */
 	private OWLGraphWrapper ontologyGraph;
-	
+
+	/**
+	 * Path of the jsp file which renders the results of the computations of this service.
+	 */
 	private String viewPath;
 	
+	/**
+	 * The ontologies files paths
+	 */
 	private List<String> ontLocations;
+
+	/**
+	 * The thread which runs the bulkload and update operations
+	 * in background.
+	 */
+	private Task runner;
 	
-	private TaskRunner runner;
-	
+	/**
+	 * It holds the value of the 'force' request parameter. The parameter is used in bulkload.
+	 * If the value is true then delete gold database tables and create from scratch.
+	 */
 	private boolean force;
 	
 	private String command;
 	
 	public GoldDbOperationsService(){
-		
-		
 		buildOWLGraphWrapper(null);
-		
-		this.ontLocations = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
 		runner = null;
 	}
 	
-	
+	/**
+	 * This service performs the computations and stores the computations results via request.setAttribute method.
+	 * This request object attributes values are visible in the jsp file associated with this service. 
+	 * The jsp file prints the values during its rendering process.   
+	 */
 	@Override
 	public void handleService(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
 
-		this.force = false;
 		command = request.getParameter("command");
+		this.force = "true".equals(request.getParameter("force"));
 	
+		//set the default view
 		viewPath = "/servicesui/golddb.jsp";
-		
+		//if there is no task running then create one for the update and bulkload commands
 		if(runner == null){
 		
 			if ("update".equals(command)) {
@@ -75,15 +91,15 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract {
 				if(ontologylocation != null){
 					ontLocations = new ArrayList<String>();
 					ontLocations.add(ontologylocation);
-					runner = new TaskRunner(new GoldDbTaskExecution());
+					runner = new GoldDbTaskExecution();
 				}else{
 					request.setAttribute("servicename", getServiceName());
 					request.setAttribute("locations", GeneOntologyManager.getInstance().getDefaultOntologyLocations());
 					this.viewPath = "/servicesui/golddb-updateform.jsp";
 				}
 			}else if("bulkload".equals(command)){
-				this.force = "true".equals(request.getParameter("force"));
-				runner = new TaskRunner(new GoldDbTaskExecution());
+				this.ontLocations = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
+				runner = new GoldDbTaskExecution();
 			}else if("getlastupdate".equals(command)){
 
 				viewPath = "/servicesui/gold-lastupdate.jsp";
@@ -105,7 +121,9 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract {
 				runner.start();
 			}
 		}
-		
+	
+		//store information in the request object. The request object is available in the 
+		//jsp file. The jsp use the objects data in print html.
 		request.setAttribute("isTaskRunning", runner == null ? false: runner.isRunning());
 		request.setAttribute("dbname", "GOLD");
 		
@@ -174,16 +192,24 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract {
 	}
 	
 	
-	class GoldDbTaskExecution extends Task implements TaskExecution, DbOperationsListener{
+//	class GoldDbTaskExecution extends Task implements TaskExecution, DbOperationsListener{
+	/**
+	 * The execute method is called by the {@link Task} class. This class executes the
+	 * update and bulkload methods of {@link DbOperations}. The implemented listener  methods of the
+	 * {@link DbOperationsListener} interface are called {@link GAFDbOperations}. The listener methods keep
+	 * stores start and end time of sub task of the the bulkload and update operation. The subtasks completion
+	 * time is printed by the jsp associated with the GoldDbOperationsService class. 
+	 * 
+	 * @author Shahid Manzoor
+	 *
+	 */
+	class GoldDbTaskExecution extends Task implements DbOperationsListener{
 
-		private List<TaskExecutionListener> listeners;
-
-		// id of the current
+		// id of the current ontology being proce
 		private String currentOntologyBeingProcessed;
 		
 		
 		public GoldDbTaskExecution(){
-			listeners = new ArrayList<TaskExecutionListener>();
 		}
 		
 		
@@ -191,10 +217,7 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract {
 		public void execute() {
 			// TODO Auto-generated method stub
 		
-		
-			for(TaskExecutionListener l: listeners){
-				l.updateData(this);
-			}
+			this.data = this;
 			
 			DbOperations db = new DbOperations();
 			db.addDbOperationsListener(this);
@@ -222,17 +245,6 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract {
 			}
 			
 		}
-
-		@Override
-		public Object getData() {
-			return this;
-		}
-
-		@Override
-		public void addTaskExecutionListener(TaskExecutionListener listener) {
-			listeners.add(listener);
-		}
-
 
 		protected void reportStartTime(String name) {
 			this.addInProgress(name);

@@ -94,7 +94,7 @@ public class DbOperations implements DbOperationsInterface{
 	 * @throws Exception
 	 */
 	public void bulkLoad(boolean force) throws Exception{
-		if(LOG.isDebugEnabled()){
+		if(DEBUG){
 			LOG.debug("-");
 		}
 		List files = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
@@ -133,7 +133,7 @@ public class DbOperations implements DbOperationsInterface{
 
 	private void _bulkLoad(OWLGraphWrapper wrapper, boolean force) throws Exception{
 
-		if(LOG.isDebugEnabled()){
+		if(DEBUG){
 			LOG.debug("Bulk Load for: " + wrapper.getOntologyId());
 		}
 		
@@ -275,7 +275,7 @@ public class DbOperations implements DbOperationsInterface{
 			listener.dumpFilesStart();
 		}
 		
-		if(LOG.isDebugEnabled()){
+		if(DEBUG){
 			LOG.debug("-");
 		}
 		
@@ -311,7 +311,7 @@ public class DbOperations implements DbOperationsInterface{
 			listener.buildSchemaStart();
 		}
 		
-		if(LOG.isDebugEnabled()){
+		if(DEBUG){
 			LOG.debug("-");
 		}
 
@@ -342,7 +342,7 @@ public class DbOperations implements DbOperationsInterface{
 		}
 	
 		
-		if(LOG.isDebugEnabled()){
+		if(DEBUG){
 			LOG.debug(list + " files being loaded");
 		}
 
@@ -369,7 +369,7 @@ public class DbOperations implements DbOperationsInterface{
 	 */
 	public void loadTsvFiles(String tsvFilesDir) throws Exception{
 		
-		if(LOG.isDebugEnabled()){
+		if(DEBUG){
 			LOG.debug("-");
 		}
 
@@ -401,7 +401,7 @@ public class DbOperations implements DbOperationsInterface{
 	 * @throws Exception
 	 */
 	public void update() throws Exception{
-		if(LOG.isDebugEnabled()){
+		if(DEBUG){
 			LOG.debug("-");
 		}
 
@@ -432,7 +432,7 @@ public class DbOperations implements DbOperationsInterface{
 			listener.updateStart();
 		}
 		
-		if(LOG.isDebugEnabled()){
+		if(DEBUG){
 			LOG.debug("-");
 		}
 
@@ -445,7 +445,7 @@ public class DbOperations implements DbOperationsInterface{
 		
 		GoldDeltaFactory gdf = new GoldDeltaFactory();
 
-		if(LOG.isDebugEnabled()){
+		if(DEBUG){
 			LOG.debug("Extracting delt hibernate objects from prefixed temporary tables");
 		}
 		
@@ -481,7 +481,7 @@ public class DbOperations implements DbOperationsInterface{
 		// the value of the geneontology.gold.deltatableprefix property
 		gdf.getSession().close();
 		
-		if(LOG.isDebugEnabled()){
+		if(DEBUG){
 			LOG.debug("Merging the the delta objects in the GOLD database");
 		}
 		

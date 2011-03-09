@@ -6,24 +6,24 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 
-<%@ taglib uri='http://java.sun.com/jsp/jstl/core' prefix='c'%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<title>Reasoning Service</title>
-	
-	<c:set var="isTaskRunning"
-		value="<%= request.getAttribute("isTaskRunning") %>" />
-
 </head>
 
 <body>
 
 	<h1>Inferences Computation Results</h1>
 	
-	<c:if test="${isTaskRunning}">
+
+	<%
+		boolean  isTaskRunning = (Boolean)request.getAttribute("isTaskRunning");
 	
+		if(isTaskRunning){
+	%>
+
 		<script type='text/javascript'>
 			setTimeout("location.reload(true)", 9000);
 		</script>
@@ -31,7 +31,11 @@
 		<center><img src="/images/progress-indicator.gif" alt="Request is in Progress" /></center>
 		<p align="center">Your Request is in Progress</p>
 	
-	</c:if>
+	<%
+		}
+	%>
+
+
 	<table>
 		<tr>
 		<td>Axiom Type</td><td>Class 1</td><td>Class 2</td>
@@ -58,5 +62,13 @@
 		
 		
 	</table>
+
+	<%
+	String taskCompletionTime = (String)request.getAttribute("taskCompletionTime");
+	%>
+	<hr />
+	<h4>The inference computation is completed in <%= taskCompletionTime %> seconds</h4>	
+
+	
 </body>
 </html>
