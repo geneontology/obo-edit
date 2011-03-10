@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperations;
-import org.geneontology.gold.io.reasoner.InferenceBuilder;
 import org.geneontology.gold.rules.AnnotationRuleViolation;
 import org.geneontology.web.AdminServlet;
 import org.geneontology.web.DbOperationsTask;
@@ -20,6 +19,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
 
+import owltools.InferenceBuilder;
 import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 
@@ -43,7 +43,7 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 	
 	public OWLGraphWrapper infGrap;
 	*/
-
+ 
 	public InferenceBuilder infBuilder;
 	
 	public OWLGraphWrapper getOntologyGraph(){
@@ -188,7 +188,7 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 			writer.write("<h1>No valid parameters are provided. Please call this page with valid parameters</h1>");
 			return;
 		}
-
+ 
 		// DbOperationsTask task = (DbOperationsTask) obj;
 
 		if (task != null) {
@@ -225,7 +225,7 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 		if(reasonerComputationsResults != null){
 	//		writer.write("<h2>Consistency Check status</h2>");
 			writer.write(reasonerComputationsResults);
-			this.infBuilder = task.infBuilder;
+			//this.infBuilder = task.infBuilder;
 			/*this.edges = task.infEdges;
 			try{
 				this.infGrap = new OWLGraphWrapper(task.infOntology);
