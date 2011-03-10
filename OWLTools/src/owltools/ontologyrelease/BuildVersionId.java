@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Properties;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -50,12 +52,17 @@ public class BuildVersionId extends Task {
         validate();
 
         final Properties properties = loadProperties();
-        double versionid = getBuildNumber(properties);
+    /*    double versionid = getBuildNumber(properties);
         
         versionid = versionid +  0.01;
         DecimalFormat df = new DecimalFormat("#.##");        
         
         String versionidString = df.format(versionid);
+      */
+
+        SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String versionidString = dtFormat.format(Calendar.getInstance().getTime());
+        
         properties.put(DEFAULT_PROPERTY_NAME,
             versionidString);
 
@@ -96,6 +103,8 @@ public class BuildVersionId extends Task {
      * @return the build number or if no number in properties object
      * @throws BuildException if build.number property is not an integer
      */
+    
+    /*
     private double getBuildNumber(final Properties properties)
          throws BuildException {
         final String buildNumber =
@@ -109,7 +118,7 @@ public class BuildVersionId extends Task {
                 myFile + " contains a non numberic build number: " + buildNumber;
             throw new BuildException(message, nfe);
         }
-    }
+    }*/
 
 
     /**

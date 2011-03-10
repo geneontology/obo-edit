@@ -28,7 +28,7 @@ public class OboProperty extends Property {
 		
 		Object asserted = propertyHelper.getProperty("oborelease.asserted");
 		
-		if(asserted != null && asserted.toString().equals("true")){
+		if(asserted != null && asserted.toString().equals("yes")){
 			addProperty("oborelease.asserted.option", "--asserted");
 		}else{
 			addProperty("oborelease.asserted.option", "");
@@ -36,7 +36,7 @@ public class OboProperty extends Property {
 		
 		Object simple = propertyHelper.getProperty("oborelease.simple");
 		
-		if(simple != null && "true".equals(simple.toString())){
+		if(simple != null && "yes".equals(simple.toString())){
 			addProperty("oborelease.simple.option", "--simple");
 		}else{
 			addProperty("oborelease.simple.option", "");
