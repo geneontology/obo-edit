@@ -167,7 +167,8 @@
 		
 		<taskdef name="getontologyid" classname="owltools.ontologyrelease.GetOntologyId" classpath="${jarfile}"/>		
 		<taskdef name="buildversionid" classname="owltools.ontologyrelease.BuildVersionId" classpath="${jarfile}"/>		
-		
+
+	
 
 		<tstamp>
 			<format property="TODAY" pattern="yyyy-MM-dd" />
@@ -182,8 +183,12 @@
 		<mkdir dir="${oborelease.outputdir}/releases"/>
 
 		<getontologyid file="${oborelease.obofilepath}" />
-		<buildversionid file="${oborelease.outputdir}/VERSION-INFO" />
+
+		<mkdir dir="${oborelease.outputdir}/releases/${oborelease.ontologyid}"/>
 		
+		<buildversionid file="${oborelease.outputdir}/releases/${oborelease.ontologyid}/VERSION-INFO" />
+		
+
 		<echo>Ontology id is: ${oborelease.ontologyid}</echo>
 		<echo>Version id is: ${oborelease.versionid}</echo>
 		<echo>Generate Asserted: ${oborelease.asserted.option}</echo>
@@ -211,15 +216,16 @@
 		</java>
 		
 	
-		<copy todir="${oborelease.outputdir}/releases/${TODAY}">
+		<copy todir="${oborelease.outputdir}/releases/${oborelease.ontologyid}/${TODAY}">
 			<fileset dir="${oborelease.outputdir}/${TODAY}"></fileset>
 		</copy>
 
-		<copy todir="${oborelease.outputdir}/">
+		
+		<copy todir="${oborelease.outputdir}/releases/${oborelease.ontologyid}">
 			<fileset dir="${oborelease.outputdir}/${TODAY}"></fileset>
 		</copy>
 		
-		<copy file="${oborelease.outputdir}/VERSION-INFO"  todir="${oborelease.outputdir}/releases/${TODAY}">
+		<copy file="${oborelease.outputdir}/releases/${oborelease.ontologyid}/VERSION-INFO"  todir="${oborelease.outputdir}/releases/${oborelease.ontologyid}/${TODAY}">
 		</copy>
 		
 		<delete dir="${oborelease.outputdir}/${TODAY}"></delete>
