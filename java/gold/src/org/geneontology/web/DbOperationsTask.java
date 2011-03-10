@@ -15,7 +15,6 @@ import org.geneontology.gaf.io.GAFDbOperations;
 import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.io.DbOperationsInterface;
 import org.geneontology.gold.io.DbOperationsListener;
-import org.geneontology.gold.io.reasoner.InferenceBuilder;
 import org.geneontology.gold.rules.AnnotationRuleViolation;
 import org.geneontology.web.services.DbOperationsService;
 import org.geneontology.web.services.ServicesConfig;
@@ -33,6 +32,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
+import owltools.InferenceBuilder;
 import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 import owltools.graph.OWLQuantifiedProperty.Quantifier;
@@ -55,7 +55,7 @@ public class DbOperationsTask extends Task implements DbOperationsListener {
 	private String tablePrefix;
 
 	private String tsvFileDir;
-
+ 
 	// id of the current
 	private String currentOntologyBeingProcessed;
 
@@ -368,7 +368,7 @@ public class DbOperationsTask extends Task implements DbOperationsListener {
 		return ontology;
 	}*/
 	
-	public InferenceBuilder infBuilder;
+//	public InferenceBuilder infBuilder;
 	
  	private void findInferences(OWLGraphWrapper graph) {
 	
@@ -377,10 +377,10 @@ public class DbOperationsTask extends Task implements DbOperationsListener {
 		reasonerComputationsResults
 				.append("<h1>Inferences Computations Results</h1>");
 
-		if(infBuilder == null)
+	/*	if(infBuilder == null)
 			infBuilder = new InferenceBuilder(graph);
 		
-		List<OWLGraphEdge> edges= infBuilder.buildInferences();
+		List<OWLAxiom> edges= infBuilder.buildInferences();*/
 		/*infEdges = edges;
 		
 		try{
@@ -398,7 +398,7 @@ public class DbOperationsTask extends Task implements DbOperationsListener {
 		
 		int totalSubclass = 0;
 		int totalEq = 0;
-		
+		/*
 		for(OWLGraphEdge edge: edges){
 			IRI cls1 = ((OWLClass)edge.getSource()).getIRI();
 			IRI cls2 = ((OWLClass)edge.getTarget()).getIRI();
@@ -411,21 +411,13 @@ public class DbOperationsTask extends Task implements DbOperationsListener {
 			}else
 				totalSubclass++;
 			
-		/*	if(edge.getSingleQuantifiedProperty().getQuantifier() == Quantifier.SUBCLASS_OF){
-				manager.applyChange( new AddAxiom(infOntology,
-						factory.getOWLSubClassOfAxiom((OWLClass)edge.getSource(), (OWLClass)edge.getTarget()) ) );
-			}else{
-				manager.applyChange( new AddAxiom(infOntology,
-						factory.getOWLEquivalentClassesAxiom((OWLClass)edge.getSource(), (OWLClass)edge.getTarget()) ) );
-			}
-			*/
 			reasonerComputationsResults.append("<tr><td>" + quantifier + "</td>");
 			reasonerComputationsResults.append("<td>" +  Owl2Obo.getIdentifier(cls1) + "[" + graph.getLabel(edge.getSource()) + "]</td>");
 			reasonerComputationsResults.append("<td>" +  Owl2Obo.getIdentifier(cls2) + "[" + graph.getLabel(edge.getTarget()) + "]</td>");
 			reasonerComputationsResults.append("<td><a href='javascript:getExplanation(\""+cls1 + "\",\""+ cls2 + "\", \"" + quantifier + "\", \"" + id + "\" );'>Explanation</a></td>");
 			reasonerComputationsResults.append("</tr>");
 			reasonerComputationsResults.append("<tr class='explanation'><td colspan='4'><div id='" +id+ "'></div></td></tr>");
-		}
+		}*/
 		
 		reasonerComputationsResults.append("</table>");
 		

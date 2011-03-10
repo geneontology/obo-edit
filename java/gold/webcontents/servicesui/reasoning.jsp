@@ -5,9 +5,15 @@
 <%@page import="owltools.graph.OWLGraphEdge"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
-
+<%@page import="org.semanticweb.owlapi.model.OWLAxiom"%>
+<%@page import="org.semanticweb.owlapi.model.OWLSubClassOfAxiom"%>
+<%@page import="org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom"%>
+<%@page import="java.util.Set"%>
+<%@page import="org.semanticweb.owlapi.model.OWLClassExpression"%>
+<%@page import="java.util.Iterator"%>
+<%@page import="org.semanticweb.owlapi.model.OWLObject"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<title>Reasoning Service</title>
@@ -43,16 +49,33 @@
 		<%
 		
 			OWLGraphWrapper graph = (OWLGraphWrapper)request.getAttribute("graph");
-			for(OWLGraphEdge edge: (List<OWLGraphEdge>)request.getAttribute("edges")){
+			for(OWLAxiom axiom: (List<OWLAxiom>)request.getAttribute("axioms")){
 				
-				String label1 = Owl2Obo.getIdentifier(edge.getSource()) +"[" + graph.getLabel(edge.getSource()) +"]";
-				String label2 = Owl2Obo.getIdentifier(edge.getTarget()) +"["+ graph.getLabel(edge.getTarget()) + "]"; 
+				String label1 = null;
+				String label2 = null;
+				String axiomType = null;
 				
-				String axiomType = edge.getSingleQuantifiedProperty().getQuantifier().toString();
+				if(axiom instanceof OWLSubClassOfAxiom){
+					OWLSubClassOfAxiom ax = (OWLSubClassOfAxiom)axiom;
+					label1 = Owl2Obo.getIdentifier(ax.getSubClass()) +"[" + graph.getLabel(ax.getSubClass()) +"]";
+					label2 = Owl2Obo.getIdentifier(ax.getSuperClass()) +"[" + graph.getLabel(ax.getSuperClass()) +"]";
+					axiomType = "SUBCLASS_OF";
+				}else if(axiom instanceof OWLEquivalentClassesAxiom){
+					OWLEquivalentClassesAxiom ax = (OWLEquivalentClassesAxiom) axiom;
+					Iterator<OWLClassExpression> classes = ax.getClassExpressions().iterator();
+					OWLObject obj1 = classes.next();
+					OWLObject obj2 = classes.next();
+					label1 = Owl2Obo.getIdentifier(obj1) +"[" + graph.getLabel(obj1) +"]";
+					label2 = Owl2Obo.getIdentifier(obj2) +"[" + graph.getLabel(obj2) +"]";
+					axiomType = "EQUIVALENT";
+					
+				}else{
+					continue;
+				}
 		%>
 				
 				<tr>
-				<td><%= axiomType %></td><td><%= label1 %></td><td><%= label2 %></td>
+			 	<td><%= axiomType %></td><td><%= label1 %></td><td><%= label2 %></td>
 				</tr>
 		<%		
 				
@@ -71,4 +94,6 @@
 
 	
 </body>
+
+
 </html>
