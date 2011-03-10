@@ -7,8 +7,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
-import org.geneontology.gold.io.reasoner.InferenceBuilder;
 import org.geneontology.web.Task;
+import org.semanticweb.owlapi.model.OWLAxiom;
+
+import owltools.InferenceBuilder;
 import owltools.graph.OWLGraphEdge;
 
 public class ReasoningService extends ServiceHandlerAbstract {
@@ -48,12 +50,12 @@ public class ReasoningService extends ServiceHandlerAbstract {
 			}
 		}
 		
-		List<OWLGraphEdge> edges = null;
+		List<OWLAxiom> axioms = null;
 		
 		
 		String completedTime = "--";
 		if(runner != null){
-			edges = (List<OWLGraphEdge>)runner.getData();
+			axioms = (List<OWLAxiom>)runner.getData();
 			long st = runner.getStartTime("build-inferences");
 			long et = runner.getEndTime("build-inferences");
 			
@@ -69,11 +71,11 @@ public class ReasoningService extends ServiceHandlerAbstract {
 			runner = null;
 		}
 
-		if(edges == null){
-			edges = new ArrayList<OWLGraphEdge>();
+		if(axioms == null){
+			axioms = new ArrayList<OWLAxiom>();
 		}
 
-		request.setAttribute("edges", edges);
+		request.setAttribute("axioms", axioms);
 		request.setAttribute("graph", inf.getOWLGraphWrapper());
 	}
 
@@ -103,7 +105,7 @@ public class ReasoningService extends ServiceHandlerAbstract {
 	}
 	
 	class InferenceBuilderTask extends Task{
-		private List<OWLGraphEdge> edges;
+		private List<OWLAxiom> edges;
 
 		@Override
 		public void execute() {
