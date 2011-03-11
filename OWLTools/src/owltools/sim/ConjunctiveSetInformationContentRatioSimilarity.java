@@ -5,9 +5,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 /**
  * score is the IC of the intersection of all attributes  divided my min IC of a or b
@@ -36,9 +43,9 @@ public class ConjunctiveSetInformationContentRatioSimilarity extends Similarity 
 		this.simEngine = simEngine;
 		this.a = a;
 		this.b = b;
-		Set<OWLObject> objs = simEngine.getLeastCommonSubsumers(a, b);
-		LOG.info("LCSs:"+objs.size());
-		score = simEngine.getInformationContent(objs);
+		lcsIntersectionSet = simEngine.getLeastCommonSubsumers(a, b);
+		LOG.info("LCSs:"+lcsIntersectionSet.size());
+		score = simEngine.getInformationContent(lcsIntersectionSet);
 		if (score == null) {
 			score = 0.0;
 			lcsICRatio = score;
@@ -46,21 +53,46 @@ public class ConjunctiveSetInformationContentRatioSimilarity extends Similarity 
 		else {
 			Double aIC = simEngine.getInformationContent(a);
 			Double bIC = simEngine.getInformationContent(b);
-			if (aIC == null || bIC == null) {
+			if (aIC == null || bIC == null || aIC == 0 || bIC == 0) {
 				lcsICRatio = 0.0;
 			}
-			lcsICRatio = score / Math.min(aIC, bIC);
+			else {
+				lcsICRatio = score / Math.min(aIC, bIC);
+			}
 		}
 		
-		this.lcsIntersectionSet = objs;
 
 	}
+	
+	public OWLClassExpression getLCS() {
+		OWLDataFactory df = simEngine.getGraph().getDataFactory();
+		OWLObjectProperty topRel = df.getOWLTopObjectProperty();
+		Set<OWLClassExpression> ces = new HashSet<OWLClassExpression>();
+		for (OWLObject obj : lcsIntersectionSet) {
+			if (obj instanceof OWLClassExpression)
+				ces.add(df.getOWLObjectSomeValuesFrom(topRel,
+						(OWLClassExpression) obj));
+		}
+		OWLClassExpression ce =
+			df.getOWLObjectIntersectionOf(ces);
+		return ce;
+	}
 
+	// TODO - DRY - similar code to DescriptionTreeSimilarity
 	@Override
-	protected void translateResultsToOWLAxioms(String id,
-			OWLNamedIndividual result, Set<OWLAxiom> axioms) {
-		// TODO Auto-generated method stub
+	protected void translateResultsToOWLAxioms(String id, OWLNamedIndividual result, Set<OWLAxiom> axioms) {
+		OWLDataFactory df = simEngine.getGraph().getDataFactory();
 		
+		// declare a named class for the LCS and make this equivalent to the anonymous expression
+		OWLClass namedLCS = df.getOWLClass(IRI.create(id+"_LCS"));
+		axioms.add(df.getOWLAnnotationAssertionAxiom(df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()),
+				namedLCS.getIRI(), 
+				df.getOWLLiteral("LCS of "+simEngine.label(a)+" and "+simEngine.label(b))));
+		axioms.add(df.getOWLEquivalentClassesAxiom(namedLCS, getLCS()));
+
+		// link the similarity object to the named LCS
+		OWLAnnotationProperty lcsp = df.getOWLAnnotationProperty(annotationIRI("has_least_common_subsumer"));
+		axioms.add(df.getOWLAnnotationAssertionAxiom(lcsp, result.getIRI(), namedLCS.getIRI()));
 	}
 	
 	// -------------

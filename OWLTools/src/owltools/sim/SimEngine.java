@@ -26,29 +26,19 @@ import owltools.graph.OWLGraphWrapper;
 import owltools.graph.OWLQuantifiedProperty;
 import owltools.sim.Similarity;
 
+/**
+ * SimEngine provides access to multiple similarity calculation
+ * procedures (see {@link Similarity}).
+ * 
+ * It wraps an OWLGraphWrapper object, and also provides
+ * convenience methods for calculating the LCA
+ * 
+ * @author cjm
+ *
+ */
 public class SimEngine {
 
 	private static Logger LOG = Logger.getLogger(SimEngine.class);
-
-	
-	// -------------------------------------
-	// Similarity Algorithms
-	// -------------------------------------
-
-	/*
-	public abstract class SimilarityAlgorithm {};
-	public class JaccardSimilarity extends SimilarityAlgorithm {};
-	public class OverlapSimilarity extends SimilarityAlgorithm {};
-	public class MaximumInformationContentSimilarity extends SimilarityAlgorithm {};
-	public class SumInformationContentBestMatchesSimilarity extends SimilarityAlgorithm {};
-	 */
-
-	// -------------------------------------
-	// Similarity Result Classes
-	// -------------------------------------
-
-
-
 
 
 	// -------------------------------------
@@ -61,6 +51,7 @@ public class SimEngine {
 	public Double minimumIC = null;
 	private Map<OWLObject,Double> cacheObjectIC = new HashMap<OWLObject,Double>();
 	private Map<OWLObjectPair,Set<OWLObject>> cacheLCS = new HashMap<OWLObjectPair,Set<OWLObject>> ();
+	private Set<String> excludedLabels;
 
 	public OWLClass comparisonClass = null;
 	public OWLObjectProperty comparisonProperty = null;
@@ -86,7 +77,16 @@ public class SimEngine {
 		this.graph = graph;
 	}
 	
-	private Set<String> excludedLabels;
+        /**
+         * any class whose label matches any of the strings returned
+         * here will be excluded from any analysis.
+         *
+         * the set of excluded labels is controlled by loading an
+         * ontology with an entity PhenoSim_0000001 where all
+         * the literals associated with this are excluded.
+         * (note that this method may change in future)
+         *
+         */
 	public Set<String> getExcludedLabels() {
 		if (excludedLabels != null)
 			return excludedLabels;
@@ -138,6 +138,11 @@ public class SimEngine {
 	// Utils
 	// -------------------------------------
 
+	/**
+	 * factory class for generating a Similarity instance based on its name
+	 * 
+	 * 
+	 */
 	public Similarity getSimilarityAlgorithm(String name) throws SimilarityAlgorithmException {
 		Class c = null;
 		try {
@@ -207,7 +212,7 @@ public class SimEngine {
 				if (comparisonProperty.equals(qp.getProperty())) {
 					ancs.add(t);
 				}
-				else if (qp.isInstanceOf()) {
+				else if (qp.isInstanceOf() || qp.isSubClassOf()) {
 					for (OWLGraphEdge e2 : g.getPrimitiveOutgoingEdges(t)) {
 						OWLObject t2 = e2.getTarget();
 						OWLQuantifiedProperty qp2 = e2.getSingleQuantifiedProperty();

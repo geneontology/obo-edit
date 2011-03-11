@@ -560,7 +560,7 @@ public class DescriptionTreeSimilarity extends Similarity {
 		OWLClass namedLCS = df.getOWLClass(IRI.create(id+"_LCS"));
 		axioms.add(df.getOWLAnnotationAssertionAxiom(df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()),
 				namedLCS.getIRI(), 
-				df.getOWLTypedLiteral("LCS of "+simEngine.label(a)+" and "+simEngine.label(b))));
+				df.getOWLLiteral("LCS of "+simEngine.label(a)+" and "+simEngine.label(b))));
 		axioms.add(df.getOWLEquivalentClassesAxiom(namedLCS, lcs));
 
 		// link the similarity object to the named LCS
