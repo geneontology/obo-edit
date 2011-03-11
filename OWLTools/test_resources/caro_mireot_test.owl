@@ -24,7 +24,7 @@
      <!-- http://purl.obolibrary.org/obo/X_1 -->
 
     <Class rdf:about="http://purl.obolibrary.org/obo/X_1">
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">simple columnar epithelium cell</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">simple columnar epithelial cell</rdfs:label>
         <equivalentClass>
             <Class>
                 <intersectionOf rdf:parseType="Collection">
