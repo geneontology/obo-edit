@@ -42,9 +42,12 @@ public class MultiSimilarity extends Similarity {
 			"ConjunctiveSetInformationContentRatioSimilarity"
 			//"ConjunctiveSetSimilarity"			
 	};
-	public String subSimMethod = "JaccardSimilarity";
+	public String subSimMethod = "AsymmetricJaccardSimilarity";
 	public String preSimMethod = "MaximumInformationContentSimilarity"; // not implemented yet
 
+	public double aScore;
+	public double bScore;
+	
 	public Map<OWLObject,Set<OWLObject>> featureToAttributeMap;
 	Map<OWLObject,Similarity> aBest;
 	Map<OWLObject,Similarity> bBest;
@@ -185,14 +188,26 @@ public class MultiSimilarity extends Similarity {
 
 		}
 
+		int nA = 0;
+		int nB = 0;
+		aScore = 0.0; // highest when phenotypess of a are subsumed by phenotypes of b
+		bScore = 0.0; // highest when phenotypess of b are subsumed by phenotypes of a
 		for (OWLObject att : aAtts) {
-			totalSc += aBest.get(att).getScore();
+			double s =  aBest.get(att).getScore();
+			totalSc += s;
+			aScore += s;
+			nA++;
 			n++;
 		}
 		for (OWLObject att : bAtts) {
-			totalSc += bBest.get(att).getScore();
+			double s = bBest.get(att).getScore();
+			totalSc += s;
+			bScore += s;
+			nB++;
 			n++;
 		}
+		aScore /= nA;
+		bScore /= nB;
 
 
 
@@ -228,6 +243,8 @@ public class MultiSimilarity extends Similarity {
 
 	public void report(Reporter r) {
 		r.report(this, "feature_pair_score", a, b, score);
+		r.report(this, "feature_pair_score_a", a, b, aScore);
+		r.report(this, "feature_pair_score_b", a, b, bScore);
 		
 		if (bestDeepSimScore != null) {
 			for (String m : bestDeepSimScore.keySet()) {
@@ -295,6 +312,8 @@ public class MultiSimilarity extends Similarity {
 			return;
 		}
 		s.println("AVG-BEST: "+score);
+		s.println("AVG-BEST-A: "+aScore);
+		s.println("AVG-BEST-B: "+bScore);
 		s.println("BEST-MATCHES(A): "+aBest.keySet().size());
 		for (OWLObject att : sortMapByScore(aBest)) {
 			printX(s,att,aBest,bBest,aBest.get(att).b);
@@ -329,9 +348,13 @@ public class MultiSimilarity extends Similarity {
 		s.println();
 		printSubSim(s, bestmatch);
 		OWLObjectPair pair = new OWLObjectPair(att,bestMapObj);
+		Set<Similarity> alreadyPrinted = new HashSet<Similarity>();
 		if (deepSimMap != null && deepSimMap.containsKey(pair)) {
 			for (Similarity ds : deepSimMap.get(pair)) {
+				if (alreadyPrinted.contains(ds))
+					continue;
 				printSubSim(s, ds);
+				alreadyPrinted.add(ds);
 			}
 		}
 		s.println();
@@ -339,19 +362,20 @@ public class MultiSimilarity extends Similarity {
 	}
 
 	private void printSubSim(PrintStream s, Similarity subSim) {
+		// TODO - DRY
 		s.print("  "+subSim.getClass().toString().replaceAll(".*\\.", ""));
 		if (subSim instanceof DescriptionTreeSimilarity) {
 			s.print("  Shared:");
 			printDescription(s, ((DescriptionTreeSimilarity)subSim).lcs);
 		}
-		if (subSim instanceof ConjunctiveSetSimilarity) {
+		else if (subSim instanceof ConjunctiveSetSimilarity) {
 			s.print("  Shared:");
 			for (OWLObject x : ((ConjunctiveSetSimilarity)subSim).bestSubsumers) {
 				print(s,x);
 				s.print(" ");
 			}
 		}
-		if (subSim instanceof ConjunctiveSetInformationContentRatioSimilarity) {
+		else if (subSim instanceof ConjunctiveSetInformationContentRatioSimilarity) {
 			s.print("  Shared:");
 			for (OWLObject x : ((ConjunctiveSetInformationContentRatioSimilarity)subSim).lcsIntersectionSet) {
 				print(s,x);
@@ -395,6 +419,15 @@ public class MultiSimilarity extends Similarity {
 			axioms.addAll(bBest.get(att).translateResultsToOWLAxioms());
 			axioms.add(df.getOWLAnnotationAssertionAxiom(pb, result.getIRI(), bBest.get(att).persistentIRI));
 		}
+		
+		if (deepSimMap != null) {
+			for (List<Similarity> ss : deepSimMap.values()) {
+				for (Similarity s : ss) {
+					axioms.addAll(s.translateResultsToOWLAxioms());
+				}
+			}
+		}
+
 	}
 
 

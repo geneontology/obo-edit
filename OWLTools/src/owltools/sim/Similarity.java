@@ -44,7 +44,7 @@ public abstract class Similarity {
 	protected Double minScore;
 	SimEngine simEngine;
 	boolean isComparable = true;
-	
+
 	// for caching as OWL
 	IRI persistentIRI;
 
@@ -76,11 +76,16 @@ public abstract class Similarity {
 		s.println(toString());
 	}
 	public void print(PrintStream s, OWLObject x) {
-		String label = simEngine.getGraph().getLabel(x);
-		if (label == null)
-			s.print(x.toString());
-		else
-			s.print(x.toString()+" \""+label+"\"");
+		if (x instanceof OWLNamedObject) {
+			String label = simEngine.getGraph().getLabel(x);
+			if (label == null)
+				s.print(x.toString());
+			else
+				s.print(x.toString()+" \""+label+"\"");
+		}
+		else {
+			printDescription(s,x);
+		}
 	}
 
 
@@ -94,6 +99,8 @@ public abstract class Similarity {
 			return;
 		}
 		OWLGraphWrapper g = simEngine.getGraph();
+		
+		// for individuals, show their class
 		if (x instanceof OWLNamedIndividual) {
 			for (OWLGraphEdge e : g.getPrimitiveOutgoingEdges(x)) {
 				OWLObject c = e.getTarget();
@@ -101,8 +108,11 @@ public abstract class Similarity {
 					printDescription(s, c, depth);
 				}
 			}
+			s.print(" :: ");
 		}
-		else if (x instanceof OWLObjectIntersectionOf) {
+		
+		//
+		if (x instanceof OWLObjectIntersectionOf) {
 			int n = 0;
 			for (OWLClassExpression y : ((OWLObjectIntersectionOf)x).getOperands()) {
 				if (n>0)
@@ -204,7 +214,7 @@ public abstract class Similarity {
 	}
 
 	public Set<OWLAxiom> translateResultsToOWLAxioms() {
-		
+
 		System.out.println("TRANSLATING TO OWL AXIOM:"+this);
 		OWLGraphWrapper graph = simEngine.getGraph();
 		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
@@ -224,7 +234,7 @@ public abstract class Similarity {
 		String[] toksB = splitIRI(ib);
 		String id = toksA[0]+toksA[1]+"-vs-"+toksB[1];
 
-		 persistentIRI = IRI.create(id);
+		persistentIRI = IRI.create(id);
 
 		// each similarity is stored as an individual of class similarity_relationship
 		OWLNamedIndividual result = df.getOWLNamedIndividual(persistentIRI);
@@ -244,7 +254,7 @@ public abstract class Similarity {
 		axioms.add(df.getOWLAnnotationAssertionAxiom(sp, result.getIRI(), df.getOWLTypedLiteral(score)));
 
 		translateResultsToOWLAxioms(id, result, axioms);
-		
+
 		return axioms;
 	}
 
@@ -273,7 +283,7 @@ public abstract class Similarity {
 		return IRI.create("http://purl.obolibrary.org/obo/IAO/score#"+name);
 	}
 
-	
+
 	/**
 	 * @param r
 	 */
