@@ -37,7 +37,7 @@ public class MireotTest3 extends TestCase {
 		// this test ontology has a class defined using a caro class, and imports caro_local
 		OWLGraphWrapper g =
 			pw.parseToOWLGraph("file:test_resources/caro_mireot_test.owl", true);
-		OWLOntology ont = g.getOntology();
+		OWLOntology ont = g.getSourceOntology();
 		
 		Mooncat m = new Mooncat(g);
 		g.addSupportOntologiesFromImportsClosure();
@@ -49,10 +49,10 @@ public class MireotTest3 extends TestCase {
 		for (OWLEntity e : m.getExternalReferencedEntities()) {
 			System.out.println("e="+e);
 		}
-		for (OWLObject e : m.getClosure()) {
+		for (OWLObject e : m.getClosureOfExternalReferencedEntities()) {
 			System.out.println("c="+e);
 		}
-		for (OWLAxiom ax : m.getClosureAxioms()) {
+		for (OWLAxiom ax : m.getClosureAxiomsOfExternalReferencedEntities()) {
 			System.out.println("M_AX:"+ax);
 		}
 	}

@@ -44,10 +44,10 @@ public class MireotTest2 extends TestCase {
 		for (OWLEntity e : m.getExternalReferencedEntities()) {
 			System.out.println("e="+e);
 		}
-		for (OWLObject e : m.getClosure()) {
+		for (OWLObject e : m.getClosureOfExternalReferencedEntities()) {
 			System.out.println("c="+e);
 		}
-		for (OWLAxiom ax : m.getClosureAxioms()) {
+		for (OWLAxiom ax : m.getClosureAxiomsOfExternalReferencedEntities()) {
 			System.out.println("M_AX:"+ax);
 		}
 	}
