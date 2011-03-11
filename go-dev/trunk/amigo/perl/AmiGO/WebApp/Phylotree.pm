@@ -54,8 +54,11 @@ sub setup {
   $self->run_modes
     (
      sets => 'mode_cluster_sets',
-     index => 'mode_cluster_index',
-     pager => 'mode_cluster_jindex', # JavaScript Index
+     oldIndex => 'mode_cluster_index', # deprecated
+
+     pager => 'mode_cluster_jindex', # deprecated
+     index => 'mode_cluster_jindex', # JavaScript Index
+
      cluster => 'mode_cluster',
      dist => 'mode_dist_image',
 
