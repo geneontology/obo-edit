@@ -20,6 +20,7 @@ import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLImportsDeclaration;
 import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLObject;
@@ -27,9 +28,17 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.semanticweb.owlapi.reasoner.Node;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.util.AutoIRIMapper;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
+
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 import owltools.gfx.OWLGraphLayoutRenderer;
 import owltools.graph.OWLGraphEdge;
@@ -37,6 +46,7 @@ import owltools.graph.OWLGraphWrapper;
 import owltools.graph.OWLQuantifiedProperty;
 import owltools.graph.OWLQuantifiedProperty.Quantifier;
 import owltools.io.GraphClosureWriter;
+import owltools.io.OWLPrettyPrinter;
 import owltools.io.ParserWrapper;
 import owltools.io.TableToAxiomConverter;
 import owltools.mooncat.Mooncat;
@@ -49,6 +59,7 @@ import owltools.sim.JaccardSimilarity;
 import owltools.sim.SimEngine.SimilarityAlgorithmException;
 import owltools.sim.SimSearch;
 import owltools.sim.Similarity;
+import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
 
 public class CommandLineInterface {
 
@@ -151,12 +162,15 @@ public class CommandLineInterface {
 		List<String> paths = new ArrayList<String>();
 		//Integer i=0;
 		// REDUNDANT: see new method
-		String reasonerClassName = "uk.ac.manchester.cs.factplusplus.owlapiv3.Reasoner";
-		String reasonerName = null;
+		//String reasonerClassName = "uk.ac.manchester.cs.factplusplus.owlapiv3.Reasoner";
+		String reasonerClassName = "com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory";
+		String reasonerName = "pellet";
 		boolean createNamedRestrictions = false;
 		boolean createDefaultInstances = false;
 		boolean merge = false;
 		OWLOntology simOnt = null;
+		Set<OWLSubClassOfAxiom> removedSubClassOfAxioms = null;
+		OWLPrettyPrinter owlpp;
 
 		//Configuration config = new PropertiesConfiguration("owltools.properties");
 
@@ -254,6 +268,60 @@ public class CommandLineInterface {
 			else if (opts.nextEq("--serialize-closure")) {
 				GraphClosureWriter gcw = new GraphClosureWriter(opts.nextOpt());
 				gcw.serializeClosure(g);
+			}
+			else if (opts.nextEq("--run-reasoner")) {
+				opts.info("[-r reasonername]", "infer new relationships");
+				if (opts.hasOpts()) {
+					if (opts.nextEq("-r")) {
+						reasonerName = opts.nextOpt();
+					}
+				}
+				OWLReasoner reasoner = createReasoner(g.getSourceOntology(),reasonerName,g.getManager());
+				if (removedSubClassOfAxioms != null) {
+					System.out.println("attempting to recapitulate "+removedSubClassOfAxioms.size()+" axioms");
+					for (OWLSubClassOfAxiom a : removedSubClassOfAxioms) {
+						OWLClassExpression sup = a.getSuperClass();
+						if (sup instanceof OWLClass) {
+							boolean has = false;
+							for (Node<OWLClass> isup : reasoner.getSuperClasses(a.getSubClass(),true)) {
+								if (isup.getEntities().contains(sup)) {
+									has = true;
+									break;
+								}
+							}
+							System.out.print(has ? "POSITIVE: " : "NEGATIVE: ");
+							System.out.println(a);
+						}
+					}
+				}
+				System.out.println("all inferences");
+				for (OWLObject obj : g.getAllOWLObjects()) {
+					if (obj instanceof OWLClass) {
+						for (Node<OWLClass> sup : reasoner.getSuperClasses((OWLClassExpression) obj, true)) {
+							System.out.println(obj+" SubClassOf "+sup);
+						}
+						Node<OWLClass> ecs = reasoner.getEquivalentClasses(((OWLClassExpression) obj));
+						System.out.println(obj+" EquivalentTo "+ecs);
+
+
+					}
+				}
+
+
+			}
+			else if (opts.nextEq("--stash-subclasses")) {
+				opts.info("", "removes all subclasses in current source ontology; after reasoning, try to re-infer these");
+				removedSubClassOfAxioms = new HashSet<OWLSubClassOfAxiom>();
+				System.out.println("Stashing "+removedSubClassOfAxioms.size()+" SubClassOf axioms");
+				HashSet<RemoveAxiom> rmaxs = new HashSet<RemoveAxiom>();
+				for (OWLSubClassOfAxiom a : g.getSourceOntology().getAxioms(AxiomType.SUBCLASS_OF)) {
+					RemoveAxiom rmax = new RemoveAxiom(g.getSourceOntology(),a);
+					rmaxs.add(rmax);
+					removedSubClassOfAxioms.add(g.getDataFactory().getOWLSubClassOfAxiom(a.getSubClass(), a.getSuperClass()));
+				}
+				for (RemoveAxiom rmax : rmaxs) {
+					g.getManager().applyChange(rmax);
+				}
 			}
 			else if (opts.nextEq("-a|--ancestors")) {
 				opts.info("LABEL", "list edges in graph closure to root nodes");
@@ -502,7 +570,7 @@ public class CommandLineInterface {
 						}
 						while (opts.nextEq("--include")) {
 							OWLObjectPair pair = new OWLObjectPair(q,resolveEntity(g,opts.nextOpt()));
-							
+
 							if (!pairs.contains(pair)) {
 								pairs.add(pair);
 								System.out.println("adding_extra_pair:"+pair);
@@ -534,7 +602,15 @@ public class CommandLineInterface {
 							System.out.println("  Size2:"+objs2.size());
 						}
 						for (OWLObject a : objs) {
+							if (!(a instanceof OWLNamedObject)) {
+								continue;
+							}
 							for (OWLObject b : objs2) {
+								if (!(b instanceof OWLNamedObject)) {
+									continue;
+								}
+								if (a.equals(b))
+									continue;
 								//if (a.compareTo(b) <= 0)
 								//	continue;
 								OWLObjectPair pair = new OWLObjectPair(a,b);
@@ -591,7 +667,7 @@ public class CommandLineInterface {
 				}
 			}
 			else if (opts.nextEq("-o|--output")) {
-				opts.info("FILE", "writes ontology -- specified as IRI, e.g. file://`pwd`/foo.owl");
+				opts.info("FILE", "writes source ontology -- specified as IRI, e.g. file://`pwd`/foo.owl");
 				pw.saveOWL(g.getSourceOntology(), opts.nextOpt());
 			}
 			else if (opts.nextEq("--save-sim")) {
@@ -729,6 +805,24 @@ public class CommandLineInterface {
 
 	}
 
+	private static OWLReasoner createReasoner(OWLOntology ont, String reasonerName, 
+			OWLOntologyManager manager) {
+		OWLReasonerFactory reasonerFactory = null;
+		if (reasonerName == null || reasonerName.equals("factpp"))
+			reasonerFactory = new FaCTPlusPlusReasonerFactory();
+		else if (reasonerName.equals("pellet"))
+			reasonerFactory = new PelletReasonerFactory();
+		else if (reasonerName.equals("hermit")) {
+			//return new org.semanticweb.HermiT.Reasoner.ReasonerFactory().createReasoner(ont);
+			//reasonerFactory = new org.semanticweb.HermiT.Reasoner.ReasonerFactory();			
+		}
+		else
+			System.out.println("no such reasoner: "+reasonerName);
+
+		OWLReasoner reasoner = reasonerFactory.createReasoner(ont);
+		return reasoner;
+	}
+
 	private static void catOntologies(OWLGraphWrapper g, Opts opts) throws OWLOntologyCreationException, IOException {
 		opts.info("[-r|--ref-ont ONT] [-i|--use-imports]", "Catenate ontologies taking only referenced subsets of supporting onts.\n"+
 		"        See Mooncat docs");
@@ -751,8 +845,11 @@ public class CommandLineInterface {
 				opts.fail();
 			}
 		}
+		if (m.getReferencedOntologies().size() == 0) {
+			m.setReferencedOntologies(g.getSupportOntologySet());
+		}
 		//g.useImportClosureForQueries();
-		for (OWLAxiom ax : m.getClosureAxioms()) {
+		for (OWLAxiom ax : m.getClosureAxiomsOfExternalReferencedEntities()) {
 			System.out.println("M_AX:"+ax);
 		}
 
