@@ -822,6 +822,8 @@ public class OWLGraphWrapper {
 		// transitivity and link composition
 		Set<OWLGraphEdge> dEdges = this.getIncomingEdgesClosure(t);
 		for (OWLGraphEdge dEdge : dEdges) {
+			if (dEdge.getQuantifiedPropertyList().size() > 1)
+				continue;
 			OWLQuantifiedProperty qp = dEdge.getSingleQuantifiedProperty();
 			if ((isInstances && qp.isInstanceOf()) || 
 					(isClasses && qp.isSubClassOf()))
@@ -967,7 +969,9 @@ public class OWLGraphWrapper {
 		Set<OWLGraphEdge> visitedSet = new HashSet<OWLGraphEdge>();
 		Set<OWLObject> visitedObjs = new HashSet<OWLObject>();
 
-		// initialize
+		// initialize -
+		// note that edges are always from src to tgt. here we are extending down from tgt to src
+		
 		//edgeStack.add(new OWLGraphEdge(t,t,ontology,new OWLQuantifiedProperty()));
 		edgeStack.addAll(getIncomingEdges(t));
 		closureSet.addAll(edgeStack);
@@ -976,9 +980,13 @@ public class OWLGraphWrapper {
 			OWLGraphEdge ne = edgeStack.pop();
 
 			int nextDist = ne.getDistance() + 1;
+			
+			// extend down from this edge; e.g. [s, extEdge + ne, tgt] 
 			Set<OWLGraphEdge> extSet = getIncomingEdges(ne.getSource());
 			for (OWLGraphEdge extEdge : extSet) {
-				OWLGraphEdge nu = combineEdgePairDown(ne, t, extEdge, nextDist);
+				
+				// combine [extEdge + ne]
+				OWLGraphEdge nu = combineEdgePairDown(ne, extEdge, nextDist);
 				OWLObject nusource = nu.getSource();
 
 				boolean isEdgeVisited = false;
@@ -1077,18 +1085,27 @@ public class OWLGraphWrapper {
 		return nu;
 	}
 
-	private OWLGraphEdge combineEdgePairDown(OWLGraphEdge ne, OWLObject t, OWLGraphEdge extEdge, int nextDist) {
+	/**
+	 *  combine [srcEdge + tgtEdge]
+	 *  
+	 * @param tgtEdge
+	 * @param t
+	 * @param srcEdge
+	 * @param nextDist
+	 * @return
+	 */
+	private OWLGraphEdge combineEdgePairDown(OWLGraphEdge tgtEdge, OWLGraphEdge srcEdge, int nextDist) {
 		// fill in edge label later
 		// todo
-		OWLGraphEdge nu = new OWLGraphEdge(extEdge.getSource(), t);
+		OWLGraphEdge nu = new OWLGraphEdge(srcEdge.getSource(), tgtEdge.getTarget());
 		nu.setDistance(nextDist);
 		Vector<OWLQuantifiedProperty> qps = new Vector<OWLQuantifiedProperty>();
 
 		// put all but the final one in a new list
 		int n = 0;
-		int size = ne.getQuantifiedPropertyList().size();
+		int size = tgtEdge.getQuantifiedPropertyList().size();
 		OWLQuantifiedProperty finalQP = null;
-		for (OWLQuantifiedProperty qp : ne.getQuantifiedPropertyList()) {
+		for (OWLQuantifiedProperty qp : tgtEdge.getQuantifiedPropertyList()) {
 			n++;
 			if (n > 1)
 				qps.add(qp);
@@ -1096,11 +1113,13 @@ public class OWLGraphWrapper {
 				finalQP = qp;
 		}
 		// TODO
+		// join src+tgt edge
 		OWLQuantifiedProperty combinedQP = 
-			combinedQuantifiedPropertyPair(ne.getFinalQuantifiedProperty(), extEdge.getSingleQuantifiedProperty());
+			combinedQuantifiedPropertyPair(srcEdge.getFinalQuantifiedProperty(), tgtEdge.getSingleQuantifiedProperty());
+		//combinedQuantifiedPropertyPair(tgtEdge.getFinalQuantifiedProperty(), srcEdge.getSingleQuantifiedProperty());
 		if (combinedQP == null) {
 			qps.add(finalQP);
-			qps.add(extEdge.getSingleQuantifiedProperty());
+			qps.add(srcEdge.getSingleQuantifiedProperty());
 		}
 		else {
 			qps.add(combinedQP);
@@ -1252,7 +1271,18 @@ public class OWLGraphWrapper {
 		// TODO
 		return null;
 	}
-
+	
+	
+	/**
+	 * Given a set of OWLObjects (for example, all OWLClass objects in a GO slim),
+	 * find the set of asserted and inferred edges that connect
+	 * 
+	 * @param objs
+	 * @return
+	 */
+	public Set<OWLGraphEdge> getMinimalEdgesFromSubset(Set<OWLObject> objs) {
+		return null;
+	}
 
 	// ----------------------------------------
 	// BASIC WRAPPER UTILITIES
