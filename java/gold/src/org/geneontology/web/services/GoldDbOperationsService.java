@@ -13,6 +13,7 @@ import org.geneontology.gaf.io.GAFDbOperations;
 import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.io.DbOperationsListener;
+import org.geneontology.gold.io.FileMonitorListener;
 import org.geneontology.web.Task;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -26,7 +27,7 @@ import owltools.graph.OWLGraphWrapper;
  * @author Shahid Manzoor
  *
  */
-public class GoldDbOperationsService extends ServiceHandlerAbstract {
+public class GoldDbOperationsService extends ServiceHandlerAbstract implements FileMonitorListener {
 
 	private static Logger LOG = Logger.getLogger(GoldDbOperationsService.class);
 	
@@ -61,7 +62,7 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract {
 	private String command;
 	
 	public GoldDbOperationsService(){
-		buildOWLGraphWrapper(null);
+		buildOWLGraphWrapper();
 		runner = null;
 	}
 	
@@ -152,7 +153,7 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract {
 		return this.viewPath;
 	}
 	
-	private void buildOWLGraphWrapper(String exclude){
+	private void buildOWLGraphWrapper(){
 		
 		DbOperations db = new DbOperations();
 		List ontologies = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
@@ -161,10 +162,6 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract {
 			
 			String location = ontologies.get(i).toString();
 
-
-			if(location.equals(exclude))
-				continue;
-			
 			try{
 				OWLOntology ontology = db.buildOWLOntology(location);
 				if(wrapper==null){
@@ -235,7 +232,7 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract {
 				if("update".equals(command)){
 					//rebuilt the merge because of change in one of the ontology
 					if(GeneOntologyManager.getInstance().getDefaultOntologyLocations().size()>0)
-						buildOWLGraphWrapper(ontLocations.get(0));
+						buildOWLGraphWrapper();
 					
 					
 				}
@@ -319,6 +316,27 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract {
 			}
 		}
 		
+		
+	}
+
+	/**
+	 * Rebuild the ontologyGraph when ontology files are modified
+	 */
+	public void filesModified(String[] files) {
+		LOG.info("filesModified event occured");
+
+		
+		buildOWLGraphWrapper();	
+		
+		try{
+			DbOperations db = new DbOperations();
+			for(String file: files){
+				db.update(file);
+			}
+		}catch(Exception ex){
+			LOG.error(ex.getMessage(), ex);
+		}
+	
 		
 	}
 	

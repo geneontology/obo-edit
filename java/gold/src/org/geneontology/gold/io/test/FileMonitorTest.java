@@ -1,8 +1,8 @@
 package org.geneontology.gold.io.test;
 
-import javax.swing.JOptionPane;
-
+import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.io.FileMonitor;
+import org.geneontology.gold.io.FileMonitorListener;
 
 import junit.framework.TestCase;
 
@@ -10,14 +10,23 @@ public class FileMonitorTest extends TestCase {
 
 	public void testFileMonitor() throws InterruptedException{
 		
-		FileMonitor monitor = new FileMonitor();
-		monitor.setDelay(1*60*1000);
+		FileMonitorListener fileListener = new FileMonitorListener() {
+			
+			@Override
+			public void filesModified(String[] files) {
+				for(String file: files){
+					System.out.println("Modified File " + file);
+				}
+				
+			}
+		};
 		
+		FileMonitor monitor = new FileMonitor(GeneOntologyManager.getInstance().getDefaultOntologyLocations(), 1*60*100);
+		monitor.addFileMonitorListener(fileListener);
 		monitor.startMonitoring();
 		
 		Thread.sleep(5*60*1000);
 		
-	//	JOptionPane.showMessageDialog(null, "Stop this");
 		monitor.stopMonitoring();
 		
 	}

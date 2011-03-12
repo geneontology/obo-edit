@@ -11,6 +11,7 @@ import java.net.Socket;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.geneontology.web.AdminServlet;
+import org.geneontology.web.services.GoldDbOperationsService;
 import org.geneontology.web.services.ServicesConfig;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
@@ -22,6 +23,7 @@ import org.mortbay.jetty.webapp.WebAppContext;
 import org.mortbay.xml.XmlConfiguration;
 
 import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.gold.io.FileMonitor;
 
 /**
  * This class responsible for start and stop of the jetty server.
@@ -72,6 +74,12 @@ public class JettyStarter {
 		server.setHandler(handlers);
 		ShutdownMonitor monitor = new ShutdownMonitor();
 		
+		int delay = GeneOntologyManager.getInstance().getFileMonitorDelay();
+		FileMonitor goMonitor = new FileMonitor(GeneOntologyManager.getInstance().getDefaultOntologyLocations(), delay*60*1000);
+		goMonitor.addFileMonitorListener((GoldDbOperationsService)ServicesConfig.getService("gold-db-operations"));
+		goMonitor.startMonitoring();
+		LOG.info("Ontologies files monitor is started");
+		
 		
 		monitor.start();
 		
@@ -86,6 +94,7 @@ public class JettyStarter {
 		ServicesConfig.getServices();
 		
 		LOG.info("Services are initialized. The server is ready for performing services");
+		
 		
 		server.join();
 	}
