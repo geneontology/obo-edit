@@ -261,4 +261,8 @@ public class GeneOntologyManager {
 				.getString("geneontology.gold.gaf.xrfabbslocation"));
 	}
 	
+	public int getFileMonitorDelay(){
+		return config.getInt("geneontology.gold.filemonitordelay", 15);
+	}
+	
 }
