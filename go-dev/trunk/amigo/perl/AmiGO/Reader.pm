@@ -9,14 +9,11 @@ use strict;
 use FileHandle;
 use File::Temp;
 use GO::Parser;
+use IO::Handle;
 
 
 package AmiGO::Reader;
-
-require Exporter;
-my @ISA = qw(Exporter);
-my @EXPORT = qw(new readh success error_message);
-#my @EXPORT_OK = qw();
+use base ("AmiGO");
 
 
 ## Takes GO::Parser handler strings and a scratch directory as
@@ -24,13 +21,11 @@ my @EXPORT = qw(new readh success error_message);
 sub new {
 
   my $class = shift;
+  my $self  = $class->SUPER::new();
+
   my $target = shift || '';
-  my $path = shift || 'sessions/scratch';
+  my $path = $self->amigo_env('AMIGO_SCRATCH_DIR');
 
-  #print STDERR '>>>[type]' . $type . "\n";
-  #sleep 2;
-
-  my $self = {};
   $self->{TARGET} = $target; # type of target
   $self->{PATH} = $path; # where to put the scratch files
   $self->{SUCCESS} = 1;
@@ -62,12 +57,12 @@ sub new {
 sub readh {
 
   my $self = shift;
-  my $incoming = shift;
+  my $incoming_fh = shift;
 
   #my $graph = {};
   my $term_l = [];
 
-  if( ! $incoming ){
+  if( ! $incoming_fh ){
 
     $self->{ERROR_MESSAGE} = "AmiGO::Reader didn\'t have anything to read";
     $self->{SUCCESS} = 0;
@@ -99,8 +94,11 @@ sub readh {
     my $tmp_fname = $self->{PATH} . "/TMP.$$.eraseme";
     open my $fh, ">", $tmp_fname
       or die "AmiGO::Reader, couldn\'t create: $tmp_fname: $!";
-    while( <$incoming> ){
-      print $fh $_; }
+    $| = 1;
+    $fh->autoflush(1);
+    while( <$incoming_fh> ){
+      print $fh $_;
+    }
     close $fh;
     #open my $fh, "<", $tmp_fname
     #  or die "AmiGO::Reader, couldn\'t open: $tmp_fname: $!";

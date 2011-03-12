@@ -1766,7 +1766,9 @@ sub get_image_resource {
 
 =item vanilla_filehandle_p
 
-
+WARNING: using this runs the file forward a little, which caused
+problems in the past. We now run back to zero before leaving, but who
+knows what other dumb things perl might do...
 
 Return 1 or 0
 
@@ -1784,6 +1786,9 @@ sub vanilla_filehandle_p {
     push @Fh::ISA, 'IO::Handle' unless Fh->isa('IO::Handle');
     my $mt = File::MMagic->new->checktype_filehandle($fh);
     $self->kvetch('mimetype: ' . $mt);
+
+    ## Rewind for future use.
+    seek $fh, 0, 0;
 
     if( $mt =~ /text\/plain/ ){
       $retval = 1;
