@@ -9,10 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.hibernate.factory.GoldDeltaFactory;
@@ -67,6 +65,13 @@ import owltools.graph.OWLGraphWrapper;
  */
 public class DbOperations implements DbOperationsInterface{
 
+	/**
+	 * Only one operation either update or bulkload can run. 
+	 * This variable keeps track if any of these operation running and
+	 * throw exception if another operation is called while currently an operation
+	 * is in progress.
+	 */
+	private static boolean isOperationRunning  = false;
 	
 	private List<DbOperationsListener> listeners;
 	
@@ -84,6 +89,10 @@ public class DbOperations implements DbOperationsInterface{
 		GoldObjectFactory factory = GoldObjectFactory.buildDefaultFactory();
 		
 		return factory.getOntologies();
+	}
+	
+	public static boolean IsOperationRunning(){
+		return isOperationRunning;
 	}
 	
 	
@@ -137,17 +146,29 @@ public class DbOperations implements DbOperationsInterface{
 			LOG.debug("Bulk Load for: " + wrapper.getOntologyId());
 		}
 		
-
-		List<String> list = dumpFiles("", wrapper);
+		if(isOperationRunning){
+			throw new RuntimeException("Another operating is still running. ");
+		}
 		
-		if(!dbCreate)
-			buildSchema(force, "");
+		try{
+			isOperationRunning = true;
+	
+			List<String> list = dumpFiles("", wrapper);
+			
+			if(!dbCreate)
+				buildSchema(force, "");
+			
+			dbCreate = true;
+			loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
+			
+			LOG.info("Bulk Load completed successfully");
+	
+		}catch(Exception ex){
+			throw ex;
+		}finally{
+			isOperationRunning = false;
+		}
 		
-		dbCreate = true;
-		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
-		
-		LOG.info("Bulk Load completed successfully");
-
 		for(DbOperationsListener listener: listeners){
 			listener.bulkLoadEnd();
 		}
@@ -428,136 +449,147 @@ public class DbOperations implements DbOperationsInterface{
 	}
 	
 	public void updateGold(OWLGraphWrapper wrapper) throws Exception{
-		for(DbOperationsListener listener: listeners){
-			listener.updateStart();
-		}
-		
 		if(DEBUG){
 			LOG.debug("-");
 		}
 
-		GeneOntologyManager manager = GeneOntologyManager.getInstance();
-		
-		List<String> list = dumpFiles(manager.getGoldDetlaTablePrefix(), wrapper);
-		buildSchema(true, manager.getGoldDetlaTablePrefix());
-
-		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
-		
-		GoldDeltaFactory gdf = new GoldDeltaFactory();
-
-		if(DEBUG){
-			LOG.debug("Extracting delt hibernate objects from prefixed temporary tables");
+		for(DbOperationsListener listener: listeners){
+			listener.updateStart();
 		}
-		
-		List<SubclassOf> subclassList = gdf.buildSubclassOfDelta();
-		List<Relation> relationList = gdf.buildRelationDelta();
-		List<AllSomeRelationship> asmList = gdf.buildAllSomeRelationships();
-		List<Cls> clsList = gdf.buildClsDelta();
-		List<ObjAlternateLabel> oalList = gdf.buildObjAlternateLabels();
-		List<ObjXref> xrefList = gdf.buildObjXrefs();
-		List<ObjDefinitionXref> defXrefList = gdf.buildObjDefinitionXref();
-		List<EquivalentTo> eqList = gdf.buildEquivalentTo();
-		List<ClsUnionOf> unList = gdf.buildClsUnionOf();
-		List<ClsIntersectionOf> intList = gdf.buildClsIntersectionOf();
-		List<InferredSubclassOf> infSubList = gdf.buildInferredSubclassOf();
-		List<InferredAllSomeRelationship> infSomeList = gdf.buildInferredAllSomeRelationship();
-		List<DisjointWith> djList = gdf.buildDisjointWith();
-		List<Ontology> ontList = gdf.buildOntology();
-		List<OntologyAnnotation> ontAnnotationList = gdf.buildOntologyAnnotation();
-		List<OntologyImports> ontImportsList = gdf.buildOntologyImports();
-		List<OntologySubset> ontSubsetList = gdf.buildOntologySubset();
-		List<ObjSubset> objSubsetList = gdf.buildObjSubset();
-		List<AnnotationProperty> annPropList = gdf.buildAnnotationProperty();
-		List<ObjAlternateId> objAltIdList = gdf.buildObjAlternateId();
-		List<AllOnlyRelationship> allOnlyList = gdf.buildAllOnlyRelationships();
-		List<NeverSomeRelationship> neverSomeList = gdf.buildNeverSomeRelationship();
-		List<SubrelationOf> subRelationList = gdf.buildSubrelationOf();
-		List<RelationDisjointWith> relDisjointList = gdf.buildRelationDisjointWith();
-		List<RelationChain> rcList = gdf.buildRelationChain();
-		List<AnnotationAssertion> annAssertionList = gdf.buildAnnotationAssertion();
-		List<RelationEquivalenTo> relEqList = gdf.buildRelationEquivalenTo();
-		List<OntologyAlternateLabelType> oatList = gdf.buildOntologyAlternateLabelType();
-		//close the session associated with the tables prefixed with 
-		// the value of the geneontology.gold.deltatableprefix property
-		gdf.getSession().close();
-		
-		if(DEBUG){
-			LOG.debug("Merging the the delta objects in the GOLD database");
-		}
-		
-		
-		
-		GoldObjectFactory gof = GoldObjectFactory.buildDefaultFactory();
-		Session session = gof.getSession();
-		session.clear();
-
-		//delete the removed assertions
-		//TODO: implement it for mult ontologies
-		DeleteUtility du = new DeleteUtility(manager.getGoldDetlaTablePrefix(), wrapper.getOntologyId());
-		session.doWork(du);
-		
-		saveList(session, clsList);
-		
-		saveList(session, relationList);
-		
-		saveList(session, asmList);
-		
-		saveList(session, clsList);
-
-		saveList(session, subclassList);
-		
-		saveList(session, oalList);
-		
-		saveList(session, xrefList);
-		
-		saveList(session, defXrefList);
-		
-		saveList(session, eqList);
-		
-		saveList(session, djList);
-		
-		saveList(session, unList);
-		
-		saveList(session, intList);
-		
-		saveList(session, infSubList);
-		
-		saveList(session, infSomeList);
-		
-		saveList(session, ontList);
-		
-		saveList(session, ontAnnotationList);
-		
-		saveList(session, ontImportsList);
 	
-		saveList(session, ontSubsetList);
+		if(isOperationRunning){
+			throw new RuntimeException("Another operating is still running. ");
+		}
 		
-		saveList(session, objSubsetList);
+		isOperationRunning = true;
 		
-		saveList(session, annPropList);
+		try{
+			GeneOntologyManager manager = GeneOntologyManager.getInstance();
+			
+			List<String> list = dumpFiles(manager.getGoldDetlaTablePrefix(), wrapper);
+			buildSchema(true, manager.getGoldDetlaTablePrefix());
+	
+			loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
+			
+			GoldDeltaFactory gdf = new GoldDeltaFactory();
+	
+			if(DEBUG){
+				LOG.debug("Extracting delt hibernate objects from prefixed temporary tables");
+			}
+			
+			List<SubclassOf> subclassList = gdf.buildSubclassOfDelta();
+			List<Relation> relationList = gdf.buildRelationDelta();
+			List<AllSomeRelationship> asmList = gdf.buildAllSomeRelationships();
+			List<Cls> clsList = gdf.buildClsDelta();
+			List<ObjAlternateLabel> oalList = gdf.buildObjAlternateLabels();
+			List<ObjXref> xrefList = gdf.buildObjXrefs();
+			List<ObjDefinitionXref> defXrefList = gdf.buildObjDefinitionXref();
+			List<EquivalentTo> eqList = gdf.buildEquivalentTo();
+			List<ClsUnionOf> unList = gdf.buildClsUnionOf();
+			List<ClsIntersectionOf> intList = gdf.buildClsIntersectionOf();
+			List<InferredSubclassOf> infSubList = gdf.buildInferredSubclassOf();
+			List<InferredAllSomeRelationship> infSomeList = gdf.buildInferredAllSomeRelationship();
+			List<DisjointWith> djList = gdf.buildDisjointWith();
+			List<Ontology> ontList = gdf.buildOntology();
+			List<OntologyAnnotation> ontAnnotationList = gdf.buildOntologyAnnotation();
+			List<OntologyImports> ontImportsList = gdf.buildOntologyImports();
+			List<OntologySubset> ontSubsetList = gdf.buildOntologySubset();
+			List<ObjSubset> objSubsetList = gdf.buildObjSubset();
+			List<AnnotationProperty> annPropList = gdf.buildAnnotationProperty();
+			List<ObjAlternateId> objAltIdList = gdf.buildObjAlternateId();
+			List<AllOnlyRelationship> allOnlyList = gdf.buildAllOnlyRelationships();
+			List<NeverSomeRelationship> neverSomeList = gdf.buildNeverSomeRelationship();
+			List<SubrelationOf> subRelationList = gdf.buildSubrelationOf();
+			List<RelationDisjointWith> relDisjointList = gdf.buildRelationDisjointWith();
+			List<RelationChain> rcList = gdf.buildRelationChain();
+			List<AnnotationAssertion> annAssertionList = gdf.buildAnnotationAssertion();
+			List<RelationEquivalenTo> relEqList = gdf.buildRelationEquivalenTo();
+			List<OntologyAlternateLabelType> oatList = gdf.buildOntologyAlternateLabelType();
+			//close the session associated with the tables prefixed with 
+			// the value of the geneontology.gold.deltatableprefix property
+			gdf.getSession().close();
+			
+			if(DEBUG){
+				LOG.debug("Merging the the delta objects in the GOLD database");
+			}
+			
+			
+			
+			GoldObjectFactory gof = GoldObjectFactory.buildDefaultFactory();
+			Session session = gof.getSession();
+			session.clear();
+	
+			//delete the removed assertions
+			//TODO: implement it for mult ontologies
+			DeleteUtility du = new DeleteUtility(manager.getGoldDetlaTablePrefix(), wrapper.getOntologyId());
+			session.doWork(du);
+			
+			saveList(session, clsList);
+			
+			saveList(session, relationList);
+			
+			saveList(session, asmList);
+			
+			saveList(session, clsList);
+	
+			saveList(session, subclassList);
+			
+			saveList(session, oalList);
+			
+			saveList(session, xrefList);
+			
+			saveList(session, defXrefList);
+			
+			saveList(session, eqList);
+			
+			saveList(session, djList);
+			
+			saveList(session, unList);
+			
+			saveList(session, intList);
+			
+			saveList(session, infSubList);
+			
+			saveList(session, infSomeList);
+			
+			saveList(session, ontList);
+			
+			saveList(session, ontAnnotationList);
+			
+			saveList(session, ontImportsList);
 		
-		saveList(session, objAltIdList);
-
-		saveList(session, annAssertionList);
-		
-		saveList(session, allOnlyList);
-
-		saveList(session, neverSomeList);
-
-		saveList(session, subRelationList);
-		
-		saveList(session, relDisjointList);
-
-		saveList(session, relEqList);
-		
-		saveList(session, rcList);
-		
-		saveList(session, oatList);
-		
-		LOG.info("Database update is completed");
-		
-		session.getTransaction().commit();
-		
+			saveList(session, ontSubsetList);
+			
+			saveList(session, objSubsetList);
+			
+			saveList(session, annPropList);
+			
+			saveList(session, objAltIdList);
+	
+			saveList(session, annAssertionList);
+			
+			saveList(session, allOnlyList);
+	
+			saveList(session, neverSomeList);
+	
+			saveList(session, subRelationList);
+			
+			saveList(session, relDisjointList);
+	
+			saveList(session, relEqList);
+			
+			saveList(session, rcList);
+			
+			saveList(session, oatList);
+			
+			LOG.info("Database update is completed");
+			
+			session.getTransaction().commit();
+		}catch(Exception ex){
+			throw ex;
+		}finally{
+			isOperationRunning = false;
+		}
 		for(DbOperationsListener listener: listeners){
 			listener.updateEnd();
 		}
