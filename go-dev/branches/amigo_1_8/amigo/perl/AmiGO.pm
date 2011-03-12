@@ -1455,6 +1455,13 @@ sub get_interlink {
        $ilink = 'amigo_exp?mode=ptree&id=' . $id;
      },
 
+     'style' =>
+     sub {
+       my $sheet = $args->{sheet} || '';
+       #$ilink = 'amigo?mode=css' . $sheet . '.css';
+       $ilink = 'amigo?mode=css';
+     },
+
      ## I don't *think* this would be Seth approved. -Sven
      ## Seth thinks it's fine, but jiggered it to see. -Seth
      phylotree =>
@@ -1486,9 +1493,13 @@ sub get_interlink {
     ## Use full URL?
     if( $ilink ){
       if( $optional_public_p ){
+	#$self->kvetch('PUBLIC LINK');
 	$ilink = $self->amigo_env('AMIGO_PUBLIC_CGI_URL') . '/' . $ilink;
       }elsif( $optional_full_p ){
+	#$self->kvetch('FULL LINK');
 	$ilink = $self->amigo_env('AMIGO_CGI_URL') . '/' . $ilink;
+      }else{
+	#$self->kvetch('LOCAL LINK');
       }
     }
 
@@ -1755,7 +1766,9 @@ sub get_image_resource {
 
 =item vanilla_filehandle_p
 
-
+WARNING: using this runs the file forward a little, which caused
+problems in the past. We now run back to zero before leaving, but who
+knows what other dumb things perl might do...
 
 Return 1 or 0
 
@@ -1773,6 +1786,9 @@ sub vanilla_filehandle_p {
     push @Fh::ISA, 'IO::Handle' unless Fh->isa('IO::Handle');
     my $mt = File::MMagic->new->checktype_filehandle($fh);
     $self->kvetch('mimetype: ' . $mt);
+
+    ## Rewind for future use.
+    seek $fh, 0, 0;
 
     if( $mt =~ /text\/plain/ ){
       $retval = 1;
