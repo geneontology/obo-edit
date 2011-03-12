@@ -36,6 +36,7 @@ use AmiGO::Reader;
 use AmiGO::Slimmer;
 use AmiGO::LabelResolve;
 #use AmiGO::Error;
+use Data::Dumper;
 
 my $core = AmiGO->new();
 my $google_id = $core->amigo_env('AMIGO_GOOGLE_ANALYTICS_ID') || '';
@@ -233,7 +234,7 @@ if ( ! $slim_filehandle && $query->cgi_error() ){
 			 "Please change your file and try again.",
 			 STAMP => $time_stamp, URL => $html_url});
   }
-  if ( $slim_filehandle =~ /\.obo/i ) {
+  if ( $slim_filehandle && $slim_filehandle =~ /\.obo/i ) {
     $slim_filehandle_type = 'obo';
   }
 }
@@ -250,7 +251,7 @@ if( $slim_list && $slim_list !~ /[a-z0-9]/i ){ # text in there too
 
 ## The content of an gene association file to be created.
 my $gp_filehandle = $query->upload('gp_file');
-if ( ! $gp_filehandle  && $query->cgi_error() ){
+if ( ! $gp_filehandle && $query->cgi_error() ){
   my $error = $query->cgi_error();
   client_die_template({STAMP => $time_stamp, URL => $html_url,
 		MESSAGE => "gp_file upload failed: $error "});
@@ -260,6 +261,17 @@ if ( ! $gp_filehandle  && $query->cgi_error() ){
 			 "AmiGO currently only accepts text files. " .
 			 "Please change your file and try again.",
 			 STAMP => $time_stamp, URL => $html_url});
+  ## NOTE: used during go_assoc input error tests
+  # }elsif ( $gp_filehandle ){
+  #   $core->kvetch('incoming gp_filehandle: ' . $gp_filehandle);
+  #   my $tmp_fname = $core->amigo_env('AMIGO_SCRATCH_DIR') . "/OUT.$$.eraseme";
+  #   open my $fh, ">", $tmp_fname
+  #     or die "Couldn\'t create: $tmp_fname: $!";
+  #   while( <$gp_filehandle> ){
+  #     print $fh $_;
+  #   }
+  #   close $fh;
+  #   die "DONE!";
   }
 }
 
@@ -415,7 +427,7 @@ $vars->{T2G_MAPS} = {}; # how terms map to gps
 $vars->{LAST_UPDATE_STRING} = localtime( (stat($0))[9] ) || 'unknown';
 $vars->{HTML_URL} = $ENV{AMIGO_HTML_URL};
 
-$core->kvetch("___here 1");
+$core->kvetch("start: pre request results");
 
 ## The minimum we need to attempt a data run is the request, and both
 ## a slim and genes defined in some form.
@@ -447,7 +459,7 @@ if( $request && $request eq 'results' ){
   ## Let's bring in the subset terms, whatever their source.
   ##
 
-  $core->kvetch("___here 2");
+  $core->kvetch("input resolution");
 
   ## Make sure that we only have one input.
   if( ( $slim_list && $slim_filehandle ) ||
@@ -479,9 +491,9 @@ if( $request && $request eq 'results' ){
     ## Get any in the textarea.
     my $reader;
     if( $slim_filehandle_type eq 'obo' ){
-      $reader = AmiGO::Reader->new('obo_text', 'sessions/scratch');
+      $reader = AmiGO::Reader->new('obo_text');
     }else {
-      $reader = AmiGO::Reader->new('go_ids', 'sessions/scratch');
+      $reader = AmiGO::Reader->new('go_ids');
     }
     my $tmp_term_l = $reader->readh($fh);
     client_die_template({STAMP => $time_stamp, URL => $html_url,
@@ -548,16 +560,16 @@ if( $request && $request eq 'results' ){
   #MESSAGE => "got there: " . $foo});
 
 
-  $core->kvetch("___here 3");
+  $core->kvetch("get ontology graph");
 
   ## Resolve into graphs.
   my $ontology_graph = $apph->get_graph(-template=>{terms=>{acc=>1}});
 
-  $core->kvetch("___here 4");
+  $core->kvetch("get slim graph");
 
   my $slim_graph = $apph->get_graph_by_terms(-terms=>$slim_set, -depth=>0);
 
-  $core->kvetch("___here 5");
+  $core->kvetch("setup slimming process");
 
   ## Snag the roots.
   my $ont_roots = {};
@@ -589,7 +601,7 @@ if( $request && $request eq 'results' ){
 		       $slim->error_message})
     if ! $slim->success;
 
-  $core->kvetch("___here 6");
+  $core->kvetch("ready slimmer output processing");
 
   ##
   ## From here on out, the output flows diverge...really, into fullmap
@@ -625,6 +637,8 @@ if( $request && $request eq 'results' ){
     #my %complete_gp_hash = ();
     my $gp_term_l = [];
     if( $gp_list || ( $gp_filehandle && $gp_file_type eq 'list' ) ){
+
+      $core->kvetch("start list output");
 
       ## Convert a list into the list.
       if( $gp_filehandle && $gp_file_type eq 'list' ){
@@ -702,7 +716,7 @@ if( $request && $request eq 'results' ){
 	$gp_term_l = $apph->get_terms({product_accs=>$good_list});
       }
 
-      $core->kvetch("___here 8");
+      $core->kvetch("check that there was legit output");
 
       ## We did get something, right? Check to see if the filters hacked
       ## everything out.
@@ -723,11 +737,14 @@ if( $request && $request eq 'results' ){
 			   $slim->error_message})
 	if ! $slim->success;
 
-      $core->kvetch("___here 9 (out)");
+      $core->kvetch("end list output");
 
     }elsif( $gp_filehandle && $gp_file_type eq 'ga' ){
+
+      $core->kvetch("start ga output");
+
       ## Get gene associations in upload.
-      my $reader = AmiGO::Reader->new('go_assoc', 'sessions/scratch');
+      my $reader = AmiGO::Reader->new('go_assoc');
       $gp_term_l = $reader->readh($gp_filehandle);
       server_die_template({STAMP => $time_stamp, URL => $html_url,
 			   MESSAGE => "Failed on association input (file): " .
@@ -738,24 +755,27 @@ if( $request && $request eq 'results' ){
       ## everything out.
       if( ! $gp_term_l || ! @$gp_term_l ){
 	client_die_template({STAMP => $time_stamp, URL => $html_url,
-		      MESSAGE => $gp_list .
-		      ': could not be found in the file with ' .
-		      'the current filters. ' .
-		      'If the filters are correct, ' .
-		      'the gene product may not be present in the ' .
-		      'GO database.'});
+			     MESSAGE => 'Usable data could not be found in ' .
+			     'the file with the current filters. ' .
+			     'If the filters are correct, ' .
+			     'the gene product may not be present in the ' .
+			     'GO database.'});
       }
 
       ##
+      $core->kvetch("ga add_list output");
+      #$core->kvetch('ga gp_term_l: ' . Dumper($gp_term_l));
       $slim->add_list($gp_term_l, 0);
       server_template({STAMP => $time_stamp, URL => $html_url,
 		       MESSAGE => "Problem with adding list: " .
 		       $slim->error_message})
 	if ! $slim->success;
 
+      $core->kvetch("end ga output");
+
     }elsif( scalar(@speciesdbs) ){
 
-      $core->kvetch("___here 11 (in)");
+      $core->kvetch("start filter output");
 
 #        my $all_products = $apph->get_products({speciesdbs => \@speciesdbs});
 #        my $dbid_list = [];
@@ -773,15 +793,16 @@ if( $request && $request eq 'results' ){
       my $good_list = $lresolve->all_accs();
       $gp_term_l = $apph->get_terms({product_accs => $good_list});
 
-      $core->kvetch("___good list from 11: " . scalar(@$good_list));
-      $core->kvetch("___gp term list from 11: " . scalar(@$gp_term_l));
+      $core->kvetch("good list from filter output: " . scalar(@$good_list));
+      $core->kvetch("gp term list from filter output: " . scalar(@$gp_term_l));
 
       $slim->add_list($gp_term_l, 1);
+
+      $core->kvetch("end filter output");
 
     }else{
       die "Impossible doesn\'t mean what I think it means.";
     }
-
 
     #die "TEST: " . scalar(@$gp_term_l) . " : " . $$gp_term_l[0];
 
@@ -799,9 +820,9 @@ if( $request && $request eq 'results' ){
 
     }elsif( $output eq 'minicount' || $output eq 'fullcount' ){
 
-      $core->kvetch("___here count: " . $output);
-      $core->kvetch("___raw bucket: " . $bucket);
-      $core->kvetch("___bucket: " . $vars->{USE_BUCKET_RESULTS});
+      $core->kvetch("mini/fill count: " . $output);
+      $core->kvetch("mini/fill count raw bucket: " . $bucket);
+      $core->kvetch("mini/fill count bucket: " . $vars->{USE_BUCKET_RESULTS});
 
       ## Decide whether or not we give the gene list after the count.
       $vars->{GPLIST_P} = 0;
