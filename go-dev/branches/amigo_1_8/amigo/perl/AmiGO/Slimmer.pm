@@ -75,8 +75,8 @@ sub new {
 
     ##
     %{$self->{SLIM_SET_HASH}} = map {$_->acc => $_} @{$self->{SLIM_SET}};
-    $self->kvetch('AmiGO::Slimmer::new: SLIM_SET_HASH keys:');
-    $self->kvetch(Dumper(\(keys %{$self->{SLIM_SET_HASH}})));
+    $self->kvetch('SLIM_SET_HASH keys:');
+    #$self->kvetch(Dumper(\(keys %{$self->{SLIM_SET_HASH}})));
 
     ## Generate a hash of the term array for the slims.
     my $slimterms = $self->{SLIM_GRAPH}->get_all_terms;
@@ -117,7 +117,7 @@ sub add_list {
     ## association info. Store it and add as we go.
     foreach my $term (@$term_l){
 
-      $self->kvetch('AmiGO::Slimmer::add_list: ' . $term->acc);
+      #$self->kvetch('term->acc: ' . $term->acc);
 
       ## TODO: Discuss this: Lame? necessary evil? I'm at the point
       ## where I think that apph handle remembering its state is a bad
@@ -146,20 +146,22 @@ sub add_list {
 	  my $gp = $assoc->gene_product;
 
 	  ## Gotta get 'em all.
-	  push @cols, $gp->speciesdb;# 1  DB
-	  push @cols, $gp->acc;# 2  DB_Object_ID
-	  push @cols, $gp->symbol;# 3  DB_Object_Symbol
+	  push @cols, $gp->speciesdb; # 1 DB
+	  push @cols, $gp->acc; # 2 DB_Object_ID
+	  push @cols, $gp->symbol; # 3 DB_Object_Symbol
 
-	  # 4  NOT (optional)
+	  #$self->kvetch('gp->acc: ' . $gp->acc);
+
+	  # 4 NOT (optional)
 	  if ( $assoc->is_not ) {
 	    push @cols, 'NOT';
 	  }else{
 	    push @cols, '';
 	  }
 
-	  push @cols, $term->acc;# 5  GOid
+	  push @cols, $term->acc;# 5 GOid
 
-	  # 6  DB:Reference
+	  # 6 DB:Reference
 	  my $xref_listref = $ev->xref_list;
 	  my @minibuf = ();
 	  foreach my $xref ( @$xref_listref ) {
@@ -167,9 +169,9 @@ sub add_list {
 	  my $str = join '|', @minibuf;
 	  push @cols, $str;
 
-	  push @cols, $ev->code;# 7  Evidence
+	  push @cols, $ev->code;# 7 Evidence
 
-	  # 8  With/From (optional)
+	  # 8 With/From (optional)
 	  if(  $ev->seq_acc ){
 	    push @cols, $ev->seq_acc;
 	  }else{
@@ -177,7 +179,7 @@ sub add_list {
 	  }
 
 	  ## Get aspect from the main ontology.
-	  # 9  Aspect
+	  # 9 Aspect
 	  my $aspect = '?';
 	  $aspect = $term->get_code_from_namespace if
 	    $term->get_code_from_namespace;
@@ -211,14 +213,14 @@ sub add_list {
  	    push @cols, '?';
 	  }
 
-	  # 10  DB_Object_Name (optional)
+	  # 10 DB_Object_Name (optional)
 	  if ( $gp->full_name ) {
 	    push @cols, $gp->full_name;
 	  }else{
 	    push @cols, '';
 	  }
 
-	  # 11  Synonym (optional)
+	  # 11 Synonym (optional)
 	  my $syn_listref = $gp->synonym_list;
 	  if ( $syn_listref && @$syn_listref ) {
 	    @minibuf = ();
@@ -230,14 +232,22 @@ sub add_list {
 	    push @cols, '';
 	  }
 
-	  #
-	  push @cols, $gp->type;# 12  DB_Object_type
-	  push @cols, 'taxon:' . $gp->species->ncbi_taxa_id; #13  Taxon
-	  push @cols, $assoc->assocdate; # 14 association.assoc_date
-	  push @cols, $assoc->assigned_by || ''; # 15 assigned_by
+	  # TODO/BUG: catch cases like this...
+	  eval{
+
+	    push @cols, $gp->type;# 12 DB_Object_type
+	    push @cols, 'taxon:' . $gp->species->ncbi_taxa_id; # 13 Taxon
+	    push @cols, $assoc->assocdate; # 14 association.assoc_date
+	    push @cols, $assoc->assigned_by || ''; # 15 assigned_by
+	  };
+	  if( $@ ){
+	    $self->kvetch('die: term->acc: ' . $term->acc);
+	    die "gp ncbi death triggered";
+	  }
 
 	  ## I got 'em, right?
-	  if( scalar(@cols) != 15 ){
+	  #if( scalar(@cols) != 15 ){
+	  if( scalar(@cols) < 15 ){ # new cols in new vers, right?
 
 	    $self->{SUCCESS} = 0;
 	    $self->{ERROR_MESSAGE} =
@@ -295,6 +305,7 @@ sub add_list {
 
 	      ## Use better name and map the annotated GO term up to
 	      ## the slim term(s).  $acc = $term->acc;
+	      #$self->kvetch('call map_to_subset');
 	      my ($leaf_pnodes, $all_pnodes) = $self->map_to_subset($acc);
 
 	      #$self->{GPS}{$prod} = 1;
@@ -306,13 +317,11 @@ sub add_list {
 	      $self->{COUNTED}{$acc . $prod} = 1;
 	      foreach my $leaf (@$leaf_pnodes){
 		$self->{LEAFH}{$leaf}->{$prod} = 1;
-		$self->kvetch('AmiGO::Slimmer::add_list: LEAF: (' .
-			      $leaf . ", " . $prod . ")");
+		#$self->kvetch('LEAF: (' . $leaf . ", " . $prod . ")");
 	      }
 	      foreach my $anc (@$all_pnodes){
 		$self->{ALLH}{$anc}->{$prod} = 1;
-		$self->kvetch('AmiGO::Slimmer::add_list: ANC: (' .
-			      $anc . ", " . $prod . ")");
+		#$self->kvetch('ANC: (' . $anc . ", " . $prod . ")");
 		## Associate an acc with a list of gps.
 		if( ! $self->{GP_MAPPINGS}{$anc} ){
 		  $self->{GP_MAPPINGS}{$anc} = {};
@@ -320,8 +329,7 @@ sub add_list {
 		if( ! $self->{GP_MAPPINGS}{$anc}{$prod} ){
 		  my $best = $prod_symbol || $prod;
 		  $self->{GP_MAPPINGS}{$anc}{$prod} = $best;
-		  $self->kvetch('AmiGO::Slimmer::add_list: GPMAP: (' .
-				$anc . ", " . $prod . ', ' . $best . ")");
+		  #$self->kvetch('GPMAP: ('. $anc .", ".$prod.', '. $best .")");
 		}
 	      }
 
@@ -433,7 +441,7 @@ sub get_counts {
   push @union, @{$self->{SLIM_SET}};
   ## ...and bucket terms if necessary.
   if( $self->{BUCKET} ){
-    $self->kvetch('AmiGO::Slimmer::get_counts: BUCKET: ' . $self->{BUCKET});
+    $self->kvetch('BUCKET: ' . $self->{BUCKET});
     $self->{SLIM_GRAPH}->iterate(
 				 sub {
 				   my $ni = shift;
@@ -519,11 +527,9 @@ sub get_counts {
     $foo->{TYPE} = 'undefined'; # see NAME above
     if( ! $foo->{IS_BUCKET_TERM} ){
       $foo->{TYPE} = $t->get_code_from_namespace;
-      $self->kvetch('AmiGO::Slimmer::get_counts: I_B_T: '.
-		    $foo->{ACC}. ', no');
+      $self->kvetch('I_B_T: '. $foo->{ACC}. ', no');
     }else{
-      $self->kvetch('AmiGO::Slimmer::get_counts: I_B_T: ' .
-		    $foo->{ACC} . ', ' . $foo->{TYPE} . ', yes');
+      $self->kvetch('I_B_T: ' . $foo->{ACC} . ', ' . $foo->{TYPE} . ', yes');
     }
     #$foo->{TYPE} = $t_full->type || 'undefined'; # see NAME above
     #$foo->{TYPE} = 'undefined'; # see NAME above
@@ -572,8 +578,7 @@ sub get_counts {
     return $cmp;
   } @bucket_results;
 
-  $self->kvetch('AmiGO::Slimmer::get_counts: dump bucket: '.
-		Dumper(\@bucket_results));
+  #$self->kvetch('dump bucket: ' . Dumper(\@bucket_results));
   return {
 	  BUCKET=>\@bucket_results,
 	  BP=>\@bp_results,
@@ -610,19 +615,19 @@ sub get_missed {
   my %mapped_gps = ();
   foreach my $acc (keys %{$self->{UNIONED_TERM_MAP_RESULTS}} ){
     foreach my $gpi (keys %{$self->{GP_MAPPINGS}{$acc}} ){
-      $self->kvetch('AmiGO::Slimmer::get_missed: acc: '.$acc.' gpi: '.$gpi);
+      #$self->kvetch('acc: '.$acc.' gpi: '.$gpi);
       $mapped_gps{$gpi} = 1;
     }
   }
 
   ## Go through each of all GPs, and add to missing list if not found
   ## in mapped_gps.
+  $self->kvetch('not found mapped: ');
   foreach my $gp (keys %{$self->{GPS}}) {
 
     ## If not found to be mapped, add it to the hash and array
     ## structures.
-    $self->kvetch('AmiGO::Slimmer::get_missed: map?: ' .
-		  $gp . ', _' . ! defined($mapped_gps{$gp}) . '_');
+    #$self->kvetch('map?: ' . $gp . ', _' . ! defined($mapped_gps{$gp}) . '_');
     if ( ! defined($mapped_gps{$gp}) ){
       $self->{MISSED_GPS}{$gp} = $self->{GPS}{$gp};
     }
@@ -647,6 +652,7 @@ sub get_association_mappings {
   ## Write slim mapping for all terms in the gene associations.
   #foreach my $acc (sort {$a cmp $b} (keys %{$self->{TERMS_ASSOCIATED_WITH_GPS}} )){
   foreach my $acc (keys %{$self->{TERMS_ASSOCIATED_WITH_GPS}} ){
+    $self->kvetch('call map_to_subset');
     my ($leaf_pnodes, $all_pnodes) = $self->map_to_subset($acc);
     #print STDERR "MAPPING: $acc => @$leaf_pnodes // @$all_pnodes\n";
     push @results, { ACC => $acc,
@@ -676,6 +682,7 @@ sub get_ontology_mappings {
 		 my $t = $ni->term;
 		 return if $t->is_relationship_type;
 		 my $acc = $t->acc;
+		 $self->kvetch('call map_to_subset');
 		 my ($leaf_pnodes, $all_pnodes) = $self->map_to_subset($acc);
 		 push @results, { ACC => $acc,
 				  LEAVES => $leaf_pnodes,
@@ -709,7 +716,7 @@ sub map_to_subset {
   my $self = shift;
   my $acc = shift;
 
-  $self->kvetch('AmiGO::Slimmer::map_to_subset:acc: ' . $acc);
+  #$self->kvetch('acc: ' . $acc);
 
   ## Never recompute on the same accession
   #die( $self->{MEMOIZED_RESULTS} );
@@ -782,8 +789,7 @@ sub map_to_subset {
     }
   }
 
-  $self->kvetch('AmiGO::Slimmer::map_to_subset::number_of_slim_term_hits: ' .
-		$number_of_slim_term_hits);
+  $self->kvetch('number_of_slim_term_hits: ' . $number_of_slim_term_hits);
   if ( $number_of_slim_term_hits == 0 ) {
     $self->{MISSED_TERMS}{$acc} = 1;
   }
@@ -796,7 +802,7 @@ sub map_to_subset {
   $memo = [[@uancestors], [keys %ancestorh]];
   $self->{MEMOIZED_RESULTS}{$acc} = $memo;
 
-  $self->kvetch(Dumper($memo));
+  #$self->kvetch(Dumper($memo));
 
   return @$memo;
 }
