@@ -528,7 +528,7 @@ if ( $request && $request eq 'results' ) {
     if( $gp_file_type eq 'ga' ){
 
       ## Get gene associations in upload.
-      my $reader = AmiGO::Reader->new('go_assoc', 'sessions/scratch');
+      my $reader = AmiGO::Reader->new('go_assoc');
       my $term_list = $reader->readh($gp_filehandle);
       client_die_template({MESSAGE => "Failed on association input (file): " .
 			   $reader->error_message,
@@ -683,7 +683,7 @@ if ( $request && $request eq 'results' ) {
     if( $bggp_file_type eq 'ga' ){
 
       ## Get gene associations in upload.
-      my $reader = AmiGO::Reader->new('go_assoc', 'sessions/scratch');
+      my $reader = AmiGO::Reader->new('go_assoc');
       my $term_list = $reader->readh($bggp_filehandle);
       server_die_template({MESSAGE => "Failed on bggp input (file): " .
 			   $reader->error_message,
