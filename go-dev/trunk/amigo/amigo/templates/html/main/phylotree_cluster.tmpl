@@ -55,23 +55,13 @@ $(document).ready(function() {
   }
  })
 
- $.tablesorter.addParser({
-  id: "bloodyDigit",
-  is: function(s,table) {
-   if (s == '0') {
-    return true;
-   } 
-   var c = table.config;
-   return $.tablesorter.isDigit(s,c);
-  },
-  format: function(s) {
-   return $.tablesorter.formatFloat(s);
-  },
-  type: "numeric"
+ $("#members").tablesorter({
+  headers:{
+   0: {sorter:false },
+   5: {sorter:'digit'},
+   6: {sorter:'digit'},
+  }
  });
-
-
- $("#members").tablesorter({ headers: { 0: {sorter: false }}});
 
 });
 </script>
@@ -86,8 +76,8 @@ $(document).ready(function() {
 <th>dbxref</th>
 <th></th>
 <th>species</th>
-<th>Experimental</th>
-<th>Other</th>
+<th class="{sorter:'digit'}">Experimental</th>
+<th class="{sorter:'digit'}">Other</th>
 </tr><thead><tbody>[% FOREACH gene_product IN gene_products %]<tr class="[% IF gene_product.color %]refg[% ELSE %]nrefg[% END %]">
 <td>[% IF (gene_product.eec + gene_product.oec) > 0 %]
 <input type="checkbox" name="gp" value="[% gene_product.dbxref %]" />
@@ -96,7 +86,7 @@ $(document).ready(function() {
 <td>[% gene_product.dbxref %]</td>
 <td[% IF gene_product.color %] style="color:[% gene_product.color %]">&#8251;[% ELSE %]>[% END %]</td>
 <td>[% gene_product.species %]</td>
-<td class="digit">[% gene_product.eec %]</td>
+<td>[% gene_product.eec %]</td>
 <td>[% gene_product.oec %]</td>
 </tr>[% END %]</tbody>
 <tfoot><tr><td><input type="submit" \></td></tr></tfoot>
