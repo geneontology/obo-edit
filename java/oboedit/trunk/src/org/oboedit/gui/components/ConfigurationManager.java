@@ -1028,7 +1028,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		mainPanel.addTab("Text Editing", null, textEditPanel,
 		"Set text editing options");
 		mainPanel.addTab("Enable Experimental Components", null, advancedPanel, "Advanced user options");
-                mainPanel.setPreferredSize(new Dimension(800,400));
+                mainPanel.setPreferredSize(new Dimension(800,500));
 
 		add(mainPanel, "Center");
 		Box buttonBox = Box.createVerticalBox();
@@ -1037,7 +1037,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		buttonBox.add(Box.createVerticalStrut(15));
 		add(buttonBox, "South");
 		buildFontPreview();
-                setPreferredSize(new Dimension(800,400));
+                setPreferredSize(new Dimension(800,500));
 	}
 
 	private String getDefaultFontName() {
