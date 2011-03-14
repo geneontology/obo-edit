@@ -68,7 +68,9 @@
 			<tocitem text="Reusing Filters" target="Reusing_Filters" />
 		</tocitem>
 		<tocitem text="Using Filters">
-			<tocitem text="Searching" target="Searching" />
+                  <tocitem text="Searching" target="Searching">
+                    <tocitem text="Advanced Searching" target="Advanced_Searching" />
+                  </tocitem>
 			<tocitem text="Filtering" target="Filtering" />
 			<tocitem text="Rendering" target="Rendering" >
 			<tocitem text="HTML Rendering" target="HTML_Rendering" />
