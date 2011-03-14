@@ -67,7 +67,7 @@ public class LinkFilterEditor extends TermFilterEditor {
 		if (aspectBox == null)
 			aspectBox = new JComboBox(values);
 		if (selectLinkLabel == null)
-			selectLinkLabel = new JLabel("Select links where ");
+			selectLinkLabel = new JLabel("Find links where ");
 		Box northPanel = Box.createHorizontalBox();
 		northPanel.add(selectLinkLabel);
 		northPanel.add(aspectBox);
@@ -83,7 +83,8 @@ public class LinkFilterEditor extends TermFilterEditor {
 						isSelected, cellHasFocus);
 			}
 		});
-		selectTermsLabel.setText("that");
+//		selectTermsLabel.setText("that");
+		selectTermsLabel.setText("");
 		setLayout(new BorderLayout());
 		add(northPanel, "North");
 		add(mainPanel, "Center");
