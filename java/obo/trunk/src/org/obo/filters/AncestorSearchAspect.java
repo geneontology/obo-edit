@@ -52,4 +52,8 @@ public class AncestorSearchAspect implements SearchAspect {
 	public String toString() {
 		return "Ancestor";
 	}
+
+  public boolean requiresReasoner() {
+    return true;
+  }
 }

@@ -23,6 +23,9 @@ public class SelfSearchAspect implements SearchAspect {
 
 	@Override
 	public boolean equals(Object o) {
+          if (o == null)
+            return false;
+          else
 		return o.getClass().equals(getClass());
 	}
 
@@ -39,4 +42,8 @@ public class SelfSearchAspect implements SearchAspect {
 	public String toString() {
 		return "Self";
 	}
+
+        public boolean requiresReasoner() {
+          return false;
+        }
 }

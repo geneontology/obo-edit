@@ -54,5 +54,7 @@ public class ParentSearchAspect implements SearchAspect {
 		return "Parent";
 	}
 
-
+        public boolean requiresReasoner() {
+          return false;
+        }
 }
