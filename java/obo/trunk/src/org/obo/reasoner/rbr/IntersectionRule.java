@@ -166,8 +166,8 @@ public class IntersectionRule extends AbstractRule {
 				bestLinkMap.put(xp, bestLink);
 			}
 			long xpInitTime = System.nanoTime() - itime;
-			logger.info("      xpInitTime = "
-					+ (xpInitTime / 1000000d) + " ms");
+//			logger.info("      xpInitTime = "
+//					+ (xpInitTime / 1000000d) + " ms");
 		}
 		
 		// trivial links are added; now the main classification step
@@ -242,8 +242,8 @@ public class IntersectionRule extends AbstractRule {
 				expls.add(exp);	
 			}
 		}
-		logger.info("      findBestLinkTime = "
-				+ (findBestLinkTime / 1000000d) + " ms");
+//		logger.info("      findBestLinkTime = "
+//				+ (findBestLinkTime / 1000000d) + " ms");
 
 		ruleTime += (System.nanoTime() - time);
 		return expls;	
