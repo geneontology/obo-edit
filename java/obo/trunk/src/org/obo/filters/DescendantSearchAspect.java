@@ -53,4 +53,9 @@ public class DescendantSearchAspect implements SearchAspect {
 	public String toString() {
 		return "Descendant";
 	}
+
+        public boolean requiresReasoner() {
+//          logger.info("DescendantSearchAspect requires reasoner"); // DEL
+          return true;
+        }
 }
