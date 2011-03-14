@@ -198,12 +198,14 @@ The default behavior. Only the current term is examined.</div>
   <li>
 <div><strong>Ancestor</strong>       - Instead of the current 
 term itself, examine the ancestors of the current term.
-<b>Note:</b> May require the reasoner to be turned on.
+<b>Note:</b> requires the reasoner to be turned on. Does not appear in the
+  aspect menu unless the reasoner is on.
 </div>
   <li>
 <div><strong>Descendant</strong>       - Instead of the current 
 term itself, examine the descendants of the current term.
-<b>Note:</b> May require the reasoner to be turned on.
+<b>Note:</b> requires the reasoner to be turned on.  Does not appear in the
+  aspect menu unless the reasoner is on.
 </div>
 <div><strong>Parent</strong>       - Instead of the current 
 term itself, examine the parents of the current term.</div></li></ul>
@@ -225,7 +227,7 @@ match, because <strong>B</strong> is not a descendant of itself.</p>
 we get 3 results: <strong>A, B,</strong> and <strong>C.</strong> This is because 
 these terms are the only terms with a descendant named "D".</p>
 <p>The ancestor aspect works in a similar way. If we search for 
-<strong>[Ancestor] [Name] [equals] "B"</strong>, we get&nbsp;2 results: 
+<strong>[Ancestor] [Name] [equals] "B"</strong>, we get two results: 
 <strong>D </strong>and <strong>F</strong>. These are the two terms that have an 
 ancestor with the name "B". <strong>E</strong> does not match, because none of 
 its ancestors (<strong>C</strong> and <strong>A</strong>) have a name that 
