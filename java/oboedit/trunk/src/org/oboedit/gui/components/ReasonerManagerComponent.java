@@ -67,8 +67,8 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 		super(id);
 		JPanel panel = new JPanel();
 		panel.setLayout(new FlowLayout());	
-		setPreferredSize(new Dimension(450,200));
-		summaryField.setPreferredSize(new Dimension(400, 20));
+		setPreferredSize(new Dimension(400,180));
+		summaryField.setPreferredSize(new Dimension(350, 20));
 		summaryField.setContentType("text/html");
 		summaryField.setEditable(false);
 
@@ -128,11 +128,11 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 		//		logger.debug("ReasonerManagerComponent -- updateProgressPanel: " + enableReasoner);
 		if (enableReasoner) {
 			text += "<html><body>\n";
-			text += "Reasoning completed.";
+			text += "<center>Reasoning completed.</center>";
 			text += "</body></html>";
 		} else{
 			text += "<html><body>\n";
-			text += "Reasoner off";
+			text += "<center>Reasoner off</center>";
 			text += "</body></html>";
 		}
 		final String summaryText = text;
