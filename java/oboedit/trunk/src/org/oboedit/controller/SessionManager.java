@@ -195,7 +195,7 @@ public class SessionManager {
 	}
 
 	public void setUseReasoner(final boolean useReasoner) {
-		logger.debug("setUseReasoner: old = " + getUseReasoner() + ", new = " + useReasoner); // DEL
+//		logger.debug("setUseReasoner: old = " + getUseReasoner() + ", new = " + useReasoner); // DEL
 		if (getUseReasoner() != useReasoner) {
 			Preferences.getPreferences().setUseReasoner(useReasoner);
 			fireReasonerStatusChange(new ReasonerStatusEvent(this, useReasoner));
@@ -204,7 +204,6 @@ public class SessionManager {
 				reasonerReqComponentsOn();
 			}
 			else { //reasoner turned off
-//				logger.debug("check here");
 				clearReasonerDatabase();
 				reasonerReqComponentsOff();
 				fireDone(); // Need to make sure listeners are informed when reasoner is turned OFF
@@ -544,7 +543,7 @@ public class SessionManager {
 	}
 
 	protected void fireReasonerStatusChange(ReasonerStatusEvent e) {
-//		logger.debug("SessionManager.fireReasonerStatusChange");
+		logger.debug("SessionManager.fireReasonerStatusChange");
 		for (ReasonerStatusListener listener : reasonerStatusListeners) {
 			listener.statusChanged(e);
 		}
