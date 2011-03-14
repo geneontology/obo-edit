@@ -1,6 +1,7 @@
 package org.oboedit.gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.ToolTipManager;
 
 import org.bbop.swing.MultiIcon;
 import org.bbop.swing.widget.AutocompleteBox;
@@ -38,6 +40,8 @@ import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.event.GUIUpdateEvent;
 import org.oboedit.gui.event.GUIUpdateListener;
+import org.oboedit.gui.event.ReasonerStatusListener;
+import org.oboedit.gui.event.ReasonerStatusEvent;
 
 import org.apache.log4j.*;
 
@@ -48,7 +52,7 @@ public class TermFilterEditor extends JPanel {
 
 	protected static final String[] values = { "have", "don't have" };
 
-	protected JComboBox aspectBox = new JComboBox();
+        protected JComboBox aspectBox = new JComboBox();
 
 	protected JComboBox comparisonBox = new JComboBox();
 
@@ -79,7 +83,7 @@ public class TermFilterEditor extends JPanel {
 
 	protected JPanel mainPanel = new JPanel();
 
-	protected JLabel selectTermsLabel = new JLabel("Select terms that ");
+	protected JLabel selectTermsLabel = new JLabel("Find terms that ");
 
 	protected Box comparisonPanel = new Box(BoxLayout.X_AXIS);
 
@@ -90,9 +94,9 @@ public class TermFilterEditor extends JPanel {
 	protected class BasicActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-			updateFields();
+                  // Don't seem to need this call to updateFields...
+//                  updateFields();
 		}
-
 	}
 
 	protected ActionListener aspectBoxListener = new BasicActionListener();
@@ -126,13 +130,14 @@ public class TermFilterEditor extends JPanel {
 		return IdentifiedObject.class;
 	}
 
+  // This method gets called 33 times when OBO-Edit launches!
 	protected Collection<SearchCriterion<?, ?>> getCriteria() {
 		Collection<SearchCriterion<?, ?>> out = new LinkedList<SearchCriterion<?, ?>>();
 		for (SearchCriterion sc : FilterManager.getManager()
 				.getDisplayableCriteria()) {
 			if (getInputClass().isAssignableFrom(sc.getInputType())) {
-				out.add(sc);
-			}
+                            out.add(sc);
+                        }
 		}
 		return out;
 	}
@@ -167,8 +172,16 @@ public class TermFilterEditor extends JPanel {
 
 		if (!containsCurrentSelection)
 			criterion = (SearchCriterion) criterionBox.getItemAt(0);
-
+//                logger.debug("criterionBox.setSelectedItem(" + criterion + ")");
 		criterionBox.setSelectedItem(criterion);
+
+                // Update aspects too
+		aspectBox.removeAllItems();
+//                logger.debug("updateFields: updating aspects.");
+		for (SearchAspect aspect : FilterManager.getManager().getAspects()) {
+                  if (isValid(aspect))
+			aspectBox.addItem(aspect);
+		}
 
 		containsCurrentSelection = false;
 		typeBox.removeAllItems();
@@ -267,6 +280,10 @@ public class TermFilterEditor extends JPanel {
 //		model.clear();  // Need?
 		valueField.setAllowNonModelValues(true);
 		valueField.setMinLength(1);
+                // The default for ComboBox is to show 8 items.  Something is limiting
+                // this pulldown to shown 10 items, so might as well have it show all 10
+                // rather than 8 with a scrollbar.
+		valueField.setMaximumRowCount(10); // Default is 8
                 // Color used to highlight selected item in dropdown autocomplete list
                 // will be the same as the one used to highlight selected search result
                 // (and selected term in OTE).
@@ -275,13 +292,15 @@ public class TermFilterEditor extends JPanel {
 		criterionBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.clear();
-//				logger.info("actioPerformed: model.clear"); // DEL
+//				logger.info("criterionBox.actionPerformed: " + e); // DEL
 				model.addCriterion((SearchCriterion) criterionBox
 						.getSelectedItem());
 			}
 		});
 
+//                logger.info("TermFilterEditor.init: getting aspects");
 		for (SearchAspect aspect : FilterManager.getManager().getAspects()) {
+                  if (isValid(aspect))
 			aspectBox.addItem(aspect);
 		}
 
@@ -303,7 +322,16 @@ public class TermFilterEditor extends JPanel {
 		valueBox.add(valuePanel);
 
 		advancedButtonAndAspectLineBox.add(advancedButton);
-		aspectLineBox.add(new JLabel(" in "));
+                // Tried adding this tooltip to the aspectBox but that didn't seem to work.
+                JLabel inLabel = new JLabel("  in ") {
+                  @Override
+                  public String getToolTipText() {
+                    return "Note: Ancestor and Descendent are available only if the reasoner is on.";
+                  }
+                };
+                ToolTipManager.sharedInstance().registerComponent(inLabel);
+		aspectLineBox.add(inLabel);
+                ToolTipManager.sharedInstance().registerComponent(aspectBox);
 		aspectLineBox.add(aspectBox);
 		aspectLineBox.add(reachedViaLabel);
 		aspectLineBox.add(typeBox);
@@ -316,8 +344,12 @@ public class TermFilterEditor extends JPanel {
 		setAspectControlsVisible(false);
 
 		aspectBox.setOpaque(false);
+                // This ComboBox was excessively wide.
+                // Tried setting preferred size but that didn't do anything.
+                aspectBox.setMaximumSize(new Dimension(120, aspectBox.getPreferredSize().height));
 		comparisonBox.setOpaque(false);
 		criterionBox.setOpaque(false);
+		criterionBox.setMaximumRowCount(25); // Show all the options
 		notBox.setOpaque(false);
 		typeBox.setOpaque(false);
 		advancedButton.setOpaque(false);
@@ -329,9 +361,20 @@ public class TermFilterEditor extends JPanel {
 		criterionBox.addActionListener(criterionBoxListener);
 		typeBox.addActionListener(typeBoxListener);
 		valueField.addUpdateListener(valueFieldListener);
+
+                // If reasoner is turned on or off, may need to update the choices (for aspect or criterion)
+		SessionManager.getManager().addReasonerStatusListener(
+                  new ReasonerStatusListener() {
+                    // For some reason, this gets triggered like 24 times when the reasoner is turned on or off...
+                    public void statusChanged(ReasonerStatusEvent e) {
+//                      logger.debug("TermFilterEditor: reasoning statusChanged"); // DEL
+                      updateFields();
+                    }
+                  });
+
 		timer.start();
 		layoutGUI();
-		updateFields();
+		updateFields(); // Apparently this is needed, although it seems to get called excessively.
 	}
 
 	protected void layoutGUI() {
@@ -434,5 +477,16 @@ public class TermFilterEditor extends JPanel {
 		} else
 			throw new IllegalArgumentException("Cannot load non-object filter");
 	}
+
+  /** Some filters and aspects require the reasoner, in which case they are not valid
+      unless the reasoner is on. 
+      This method returns false if the specified SearchAspect requires the reasoner
+      and the reasoner is not on. */
+  private boolean isValid(SearchAspect aspect) {
+    if (aspect.requiresReasoner() && !(SessionManager.getManager().getUseReasoner()))
+      return false;
+    else
+      return true;
+  }
 
 }
