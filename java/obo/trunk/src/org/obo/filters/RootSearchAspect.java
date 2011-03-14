@@ -59,4 +59,8 @@ public class RootSearchAspect implements SearchAspect {
 	public String toString() {
 		return "Root";
 	}
+
+        public boolean requiresReasoner() {
+          return false;
+        }
 }

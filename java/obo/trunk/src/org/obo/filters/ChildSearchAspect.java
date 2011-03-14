@@ -52,7 +52,7 @@ public class ChildSearchAspect implements SearchAspect {
 		return "Children";
 	}
 
-
+        public boolean requiresReasoner() {
+          return false;
+        }
 }
-
-

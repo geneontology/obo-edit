@@ -10,4 +10,5 @@ public interface SearchAspect extends Cloneable {
 	public Collection<LinkedObject> getObjects(Collection<LinkedObject> c,
 			ReasonedLinkDatabase reasoner, Filter traversalFilter, Object o);
 	public String getID();
-}
+	public boolean requiresReasoner();
+  }
