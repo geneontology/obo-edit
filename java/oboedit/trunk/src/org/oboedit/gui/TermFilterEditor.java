@@ -94,8 +94,9 @@ public class TermFilterEditor extends JPanel {
 	protected class BasicActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-                  // Don't seem to need this call to updateFields...
-//                  updateFields();
+                  // This is needed by the Link Search when the user selects
+                  // a different item from the "Find links where" menu.
+                  updateFields();
 		}
 	}
 
