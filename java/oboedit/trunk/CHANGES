@@ -7,8 +7,14 @@ What's New in OBO-Edit v2.1-beta11
 [ geneontology-Bugs-3203198 ] Words added to dictionary in unedited term don't
   turn black immediately
 
-1899612 Some filters give wrong answers unless reasoner turned on
-3169726 Search term Filter returning wrong results
+[ geneontology-Bugs-1899612] Some filters give wrong answers unless reasoner turned on
+[ geneontology-Bugs-3169726] Search term Filter returning wrong results
+- Since the Ancestor and Descendent aspects don't work unless the reasoner is
+on, these aspects are now included in the aspect menu only if the reasoner is on.
+- Added tooltip to "in" label before aspect that says "Note: Ancestor and
+Descendent are available only if the reasoner is on.";
+- Added notes to user guide about ancestor/descendent only being available if
+reasoner is on.
 
 =================================
 What's New in OBO-Edit v2.1-beta10 (2/23/11)
