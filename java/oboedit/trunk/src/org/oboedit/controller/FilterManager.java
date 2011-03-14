@@ -158,17 +158,17 @@ public class FilterManager {
 		}, true);
 		SessionManager.getManager().addReasonerStatusListener(
 				new ReasonerStatusListener() {
-
 					public void statusChanged(ReasonerStatusEvent e) {
+//                                          logger.debug("FilterManager: reasoning statusChanged"); // DEL
 						updateReasoner();
 					}
-
 				});
-		updateReasoner();
+		updateReasoner(); // Need?
 	}
 
 	protected void updateReasoner() {
 		ReasonedLinkDatabase r = SessionManager.getManager().getReasoner();
+//                logger.debug("FilterManager: updateReasoner"); // DEL
 		for (SearchCriterion<?, ?> crit : getCriteria()) {
 			crit.setReasoner(r);
 		}
@@ -202,7 +202,7 @@ public class FilterManager {
                 // (The "false" argument means don't show it in the search options list.)
 		addCriterion(new NameSearchCriterion(), false);
                 // This is the one for searches (and autocomplete) that can exclude obsoletes.
-                // Notice that it's assigned a different ID.
+                // We assign it a different ID (the other NameSearchCriterion has the ID "Name" that is assigned by default).
 		addCriterion(new NameSearchCriterion(excludeObsoletes, " Name"));
                 // Same deal for ID search--this criterion is also used to show IDs in the search result table, so we need two different criteria.
 		addCriterion(new IDSearchCriterion(), false);
@@ -336,7 +336,6 @@ public class FilterManager {
 	}
 
 	public SearchCriterion getCriterion(String id) {
-//          logger.debug("getCriterion(" + id + ")");
 		return criteria.get(id);
 	}
 
