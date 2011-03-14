@@ -149,9 +149,9 @@ public class OboOntologyReleaseRunner {
 				usage();
 				System.exit(0);
 			}
-			/*
-			 * else if (opt.equals("-outdir")) { outPath = args[i]; i++; }
-			 */
+			
+			 else if (opt.equals("-outdir")) { baseDirectory = args[i]; i++; }
+			 
 			/*
 			 * else if (opt.equals("-owlversion")) { version = args[i]; i++; }
 			 */
@@ -379,13 +379,13 @@ public class OboOntologyReleaseRunner {
 	private static void usage() {
 		System.out.println("This utility builds an ontology release");
 		System.out.println("\n");
-		System.out.println("[OPTIONS] -outdir DIRPATH ONTOLOGIES-FILES");
+		System.out.println("bin/ontology-release-runner [OPTIONAL OPTIONS] ONTOLOGIES-FILES");
 		System.out
 				.println("Multiple obo or owl files are separated by a space character in the place of the ONTOLOGIES-FILES arguments.");
 		System.out.println("\n");
 		System.out.println("OPTIONS:");
-	//	System.out
-		//		.println("\t\t (-owlversion 20110310) This option provides version id of the ontology.");
+		System.out
+				.println("\t\t (-outdir ~/work/myontology) The path where the release will be produced.");
 		System.out
 				.println("\t\t (-reasoner pellet) This option provides name of reasoner to be used to build inference computation.");
 		System.out
@@ -410,6 +410,13 @@ public class OboOntologyReleaseRunner {
 
 	}
 
+	
+	/**
+	 * Copies file/directory to destination from source.
+	 * @param fromFile
+	 * @param toFile
+	 * @throws IOException
+	 */
 	public static void copy(File fromFile, File toFile) throws IOException {
 
 		if (toFile.isDirectory())
