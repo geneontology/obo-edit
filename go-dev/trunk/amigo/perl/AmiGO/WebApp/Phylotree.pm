@@ -250,6 +250,7 @@ sub mode_cluster_jindex{
 
     $c->set_template_parameter(dbname => $o->{dbname});
     $c->set_template_parameter(clusters => \@r);
+    $c->set_template_parameter(cluster_count => scalar @r);
     $c->add_template_content('html/main/phylotree_cluster_index2.tmpl');
     $c->set_template_parameter(page_title => "phylotree: $o->{dbname}");
     $c->add_template_bulk
