@@ -222,7 +222,7 @@ public class RuleBasedReasoner extends AbstractReasoner {
 
 		impliedLinkDatabase = createImpliedLinkDatabase(getLinkDatabase());
 		rct = new RelationCompositionTable(getLinkDatabase());
-		logger.info("RCT:\n"+rct.toTable());
+//		logger.debug("RCT:\n"+rct.toTable());
 		// TODO: replace with standard Map
 		explanationMap =
 			//			new MultiHashSetMap<Link, Explanation>();
@@ -263,10 +263,10 @@ public class RuleBasedReasoner extends AbstractReasoner {
 		int newLinks = 0;
 		while (!isExhausted) {
 			sweep++;
-			logger.info("sweep: "+sweep);
+//			logger.debug("sweep: "+sweep);
 			isExhausted = true;
 			for (Rule rule : rules) {
-				logger.info("  rule: "+rule);
+//				logger.debug("  rule: "+rule);
 				Collection<Explanation> expls = rule.getNewInferences(this);
 				if (expls == null)
 					continue;
@@ -299,22 +299,22 @@ public class RuleBasedReasoner extends AbstractReasoner {
 						}
 					}
 				}
-				logger.info("  new links: "+newLinks);
+//				logger.debug("  new links: "+newLinks);
 
 			}
 		}
-		logger.info("finished on sweep: "+sweep);
-		logger.info("new links: "+newLinks);
+		logger.debug("finished on sweep: "+sweep);
+		logger.debug("new links: "+newLinks);
 		for (Rule rule : rules) {
 			rule.end(this);
 		}
 		long totalTime = System.nanoTime() - initTime;
-		logger.info("   Total reasoner time = "
+		logger.debug("   Total reasoner time = "
 				+ (totalTime / 1000000d) + " ms");
 
 		for (Rule rule : rules) {
 			if (rule instanceof AbstractRule)
-				logger.info("   time in rule (" + rule + ") = "
+				logger.debug("   time in rule (" + rule + ") = "
 						+ (((AbstractRule) rule).ruleTime / 1000000d)
 						+ " ms");
 
@@ -425,7 +425,7 @@ public class RuleBasedReasoner extends AbstractReasoner {
 	}
 
 	protected void cascadingRemoveLink(Link link) {
-		logger.info("removing link:"+link);
+		logger.debug("removing link:"+link);
 		// actually remove the dead link from the various caches
 		impliedLinkDatabase.removeParent(link);
 		explanationMap.remove(link);
