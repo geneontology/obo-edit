@@ -735,7 +735,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 //				logger.debug("stop");
 //			}
 			if (c.hasChanges()){
-				logger.debug("TextEditor.hasChanges -- Component c has changes - c: " + c);
+//				logger.debug("TextEditor.hasChanges -- Component c has changes - c: " + c);
 				return true;
 			}
 				
