@@ -46,6 +46,6 @@ public class HasParentWithTypeIDCriterion extends
 
 	@Override
 	public String toString() {
-		return "Has parent with type id";
+		return "Has parent with type ID";
 	}
 }

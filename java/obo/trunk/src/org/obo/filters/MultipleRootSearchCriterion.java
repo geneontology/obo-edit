@@ -63,7 +63,6 @@ public class MultipleRootSearchCriterion extends AbstractBooleanCriterion {
 	}
 
 	public String toString() {
-		return "Has Multiple Roots";
+		return "Has multiple roots";
 	}
-
 }

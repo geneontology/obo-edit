@@ -53,6 +53,6 @@ public class IsaCompleteCriterion extends AbstractBooleanCriterion {
 
 	@Override
 	public String toString() {
-		return "Is isa complete";
+		return "Is is_a complete";
 	}
 }
