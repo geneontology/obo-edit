@@ -35,6 +35,6 @@ public class IsaParentCountCriterion extends AbstractNumberCriterion {
 
 	@Override
 	public String toString() {
-		return "ISA Parent count";
+		return "is_a parent count";
 	}
 }
