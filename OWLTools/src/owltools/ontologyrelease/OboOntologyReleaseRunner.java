@@ -17,10 +17,8 @@ import org.obolibrary.obo2owl.Obo2Owl;
 import org.obolibrary.obo2owl.Owl2Obo;
 import org.obolibrary.oboformat.model.OBODoc;
 import org.obolibrary.oboformat.parser.OBOFormatDanglingReferenceException;
-import org.obolibrary.oboformat.parser.OBOFormatParser;
 import org.obolibrary.oboformat.parser.OBOFormatConstants.OboFormatTag;
 import org.obolibrary.oboformat.writer.OBOFormatWriter;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotation;
@@ -34,6 +32,8 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import owltools.InferenceBuilder;
 import owltools.graph.OWLGraphWrapper;
+import owltools.io.ParserWrapper;
+import owltools.mooncat.Mooncat;
 
 /**
  * This class is a command line utility which builds an ontology release. The
@@ -52,35 +52,6 @@ public class OboOntologyReleaseRunner {
 			"yyyy-MM-dd");
 
 	
-	/**
-	 * Build OWL ontology from the path supplied in the arguments. The ontology path could 
-	 * point either to obo ontology or owl ontology file.  
-	 * @param path
-	 * @return
-	 * @throws IOException
-	 * @throws OWLOntologyCreationException
-	 */
-	private static OWLOntology getOntology(String path) throws IOException,
-			OWLOntologyCreationException {
-
-		OWLOntology ontology = null;
-
-		if (path.endsWith(".obo")) {
-			OBOFormatParser p = new OBOFormatParser();
-			OBODoc obodoc = p.parse(path);
-
-			Obo2Owl bridge = new Obo2Owl();
-			ontology = bridge.convert(obodoc);
-		} else {
-			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-			ontology = manager.loadOntologyFromOntologyDocument(new File(path));
-
-		}
-
-		return ontology;
-
-	}
-
 	private static void makeDir(File path) {
 		if (!path.exists())
 			path.mkdir();
@@ -121,6 +92,11 @@ public class OboOntologyReleaseRunner {
 			else if (f.isDirectory() && f.getName().equals("extensions"))
 				f.delete();
 		}*/
+	}
+	
+	private static String getPathIRI(String path){
+		
+		return path;
 	}
 
 	public static void main(String[] args) throws IOException,
@@ -212,34 +188,71 @@ public class OboOntologyReleaseRunner {
 		makeDir(extensions);
 
 		if (paths.size() > 0)
-			path = paths.get(0);
+			path = getPathIRI( paths.get(0) );
 
 		System.out.println("Processing Ontologies: " + paths);
 
-		OWLOntology ontology = getOntology(path);
-		OWLGraphWrapper graphWrapper = new OWLGraphWrapper(ontology);
-		// if(oboIncludes != null){
-		// String paths[] = oboIncludes.split(" ");
-		// for(String p: paths){
+		ParserWrapper parser = new ParserWrapper();
+		Mooncat mooncat = new Mooncat(parser.parseToOWLGraph(path));
+		
 		for (int k = 1; k < paths.size(); k++) {
-			// if(p.length()>0){
-			OWLOntology ont = getOntology(paths.get(k));
-			graphWrapper.mergeOntology(ont);
-			// }
+			String p = getPathIRI(paths.get(k));
+			mooncat.addReferencedOntology(parser.parseOWL(p));
 		}
-		// }
-
-		OWLOntologyManager manager = graphWrapper.getManager();
-
-		// if (iri.endsWith(".obo")) {
-		// showMemory();
 
 		if (version != null) {
-			addVersion(ontology, version, manager);
+			addVersion(mooncat.getOntology(), version, mooncat.getManager());
 		}
 
-		String ontologyId = Owl2Obo.getOntologyId(ontology);
+		String ontologyId = Owl2Obo.getOntologyId(mooncat.getOntology());
 
+		if (simple) {
+
+			System.out.print("Creating simple ontology");
+
+
+			System.out.println("Creating Inferences");
+			if (reasoner != null) {
+				// buildInferredOntology(simpleOnt, manager, reasoner);
+				buildInferences(mooncat.getGraph());
+
+			}
+			System.out.println("Inferences creation completed");
+
+			String outputURI = new File(base, ontologyId + "-simple.owl")
+					.getAbsolutePath();
+
+			System.out.println("saving to " + ontologyId + "," + outputURI
+					+ " via " + format);
+			FileOutputStream os = new FileOutputStream(new File(outputURI));
+			mooncat.getManager().saveOntology(mooncat.getOntology(), format, os);
+			os.close();
+
+			Owl2Obo owl2obo = new Owl2Obo();
+			OBODoc doc = owl2obo.convert(mooncat.getOntology());
+
+			outputURI = new File(base, ontologyId + "-simple.obo")
+					.getAbsolutePath();
+			System.out.println("saving to " + outputURI);
+
+			OBOFormatWriter writer = new OBOFormatWriter();
+
+			BufferedWriter bwriter = new BufferedWriter(new FileWriter(
+					new File(outputURI)));
+
+			writer.write(doc, bwriter);
+
+			bwriter.close();
+
+			System.out.println("Creating simple ontology completed");
+
+		}		
+		
+		System.out.println("Merging Ontologies");
+
+		mooncat.mergeOntologies();
+		
+		
 		if (asserted) {
 			System.out.println("Creating Asserted Ontology");
 
@@ -248,11 +261,11 @@ public class OboOntologyReleaseRunner {
 
 			System.out.println("saving to " + outputURI);
 			FileOutputStream os = new FileOutputStream(new File(outputURI));
-			manager.saveOntology(ontology, format, os);
+			mooncat.getManager().saveOntology(mooncat.getOntology(), format, os);
 			os.close();
 
 			Owl2Obo owl2obo = new Owl2Obo();
-			OBODoc doc = owl2obo.convert(ontology);
+			OBODoc doc = owl2obo.convert(mooncat.getOntology());
 
 			outputURI = new File(base, ontologyId + "-asserted.obo")
 					.getAbsolutePath();
@@ -270,61 +283,13 @@ public class OboOntologyReleaseRunner {
 			System.out.println("Asserted Ontolog Creationg Completed");
 		}
 
-		if (simple) {
 
-			System.out.print("Creating simple ontology");
-
-			OWLOntologyManager simpleManager = OWLManager
-					.createOWLOntologyManager();
-
-			OWLOntology simpleOnt = getOntology(path);
-
-			if (version != null) {
-				addVersion(simpleOnt, version, simpleManager);
-			}
-
-			System.out.println("Creating Inferences");
-			if (reasoner != null) {
-				// buildInferredOntology(simpleOnt, manager, reasoner);
-				buildInferences(new OWLGraphWrapper(simpleOnt));
-
-			}
-			System.out.println("Inferences creation completed");
-
-			String outputURI = new File(base, ontologyId + "-simple.owl")
-					.getAbsolutePath();
-
-			System.out.println("saving to " + ontologyId + "," + outputURI
-					+ " via " + format);
-			FileOutputStream os = new FileOutputStream(new File(outputURI));
-			simpleManager.saveOntology(simpleOnt, format, os);
-			os.close();
-
-			Owl2Obo owl2obo = new Owl2Obo();
-			OBODoc doc = owl2obo.convert(simpleOnt);
-
-			outputURI = new File(base, ontologyId + "-simple.obo")
-					.getAbsolutePath();
-			System.out.println("saving to " + outputURI);
-
-			OBOFormatWriter writer = new OBOFormatWriter();
-
-			BufferedWriter bwriter = new BufferedWriter(new FileWriter(
-					new File(outputURI)));
-
-			writer.write(doc, bwriter);
-
-			bwriter.close();
-
-			System.out.println("Creating simple ontology completed");
-
-		}
 
 		System.out.println("Creating basic ontology");
 
 		System.out.println("Creating inferences");
 		if (reasoner != null)
-			buildInferences(graphWrapper);
+			buildInferences(mooncat.getGraph());
 		// ontology= buildInferredOntology(ontology, manager, reasoner);
 
 		System.out.println("Inferences creation completed");
@@ -338,11 +303,11 @@ public class OboOntologyReleaseRunner {
 		System.out.println("saving to " + ontologyId + "," + outputURI
 				+ " via " + format);
 		FileOutputStream os = new FileOutputStream(new File(outputURI));
-		manager.saveOntology(ontology, format, os);
+		mooncat.getManager().saveOntology(mooncat.getOntology(), format, os);
 		os.close();
 
 		Owl2Obo owl2obo = new Owl2Obo();
-		OBODoc doc = owl2obo.convert(ontology);
+		OBODoc doc = owl2obo.convert(mooncat.getOntology());
 
 		outputURI = new File(base, ontologyId + ".obo").getAbsolutePath();
 		System.out.println("saving to " + outputURI);
