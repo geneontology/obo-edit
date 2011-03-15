@@ -4,11 +4,12 @@
 
 use strict;
 use FileHandle;
+use Time::HiRes qw(gettimeofday);
 use Data::Dumper;
 $Data::Dumper::Sortkeys = 1;
 
 use GOBO::Graph;
-use GOBO::Parsers::OBOParserDispatchHash;
+use GOBO::Parsers::OBOParser;
 use GOBO::InferenceEngine::CustomEngine;
 use GOBO::InferenceEngine;
 use GOBO::Writers::OBOWriter;
@@ -22,18 +23,22 @@ my $subset_min = $options->{minimum_subset_terms} || 5;
 if (! $options->{verbose})
 {	$options->{verbose} = $ENV{GO_VERBOSE} || 0;
 }
+if ($options->{verbose})
+{	$ENV{VERBOSE} = 1;
+}
 
+print STDERR gettimeofday() . ": starting script\n" if $options->{verbose};
 # parse the input file and check we get a graph
-my $parser = new GOBO::Parsers::OBOParserDispatchHash(file => $options->{input});
+my $parser = new GOBO::Parsers::OBOParser(file => $options->{input});
 $parser->parse;
 die "Error: parser could not find a graph in " . $options->{input} . "!\n" unless $parser->graph;
 
-print STDERR "Finished parsing file " . $options->{input} . "\n" if $options->{verbose};
+print STDERR gettimeofday() . ": Finished parsing file " . $options->{input} . "\n" if $options->{verbose};
 
 # get the nodes matching our subset criteria
 # will die if no subset terms found
 my $data = GOBO::Util::GraphFunctions::get_subset_nodes( graph => $parser->graph, options => $options );
-	print STDERR "Done GOBO::Util::GraphFunctions::get_subset_nodes!\n" if $options->{verbose};
+	print STDERR gettimeofday() . ": Done GOBO::Util::GraphFunctions::get_subset_nodes!\n" if $options->{verbose};
 
 $options->{return_as_graph} = 1;
 $options->{remove_unlinked_terms} = 1;
@@ -76,7 +81,7 @@ if (@errs)
 {	warn join("\n", @errs);
 }
 
-print STDERR "Job complete!\n" if $options->{verbose};
+print STDERR gettimeofday() . ": Job complete!\n" if $options->{verbose};
 
 exit(0);
 
@@ -214,7 +219,7 @@ sub check_options {
 			delete $opt->{basename};
 		}
 	}
-	
+
 	if ($opt->{subset} && ref $opt->{subset} eq 'HASH')
 	{	$opt->{subset} = [ keys %{$opt->{subset}} ];
 	}

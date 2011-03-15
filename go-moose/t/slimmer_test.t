@@ -6,7 +6,7 @@ use FileHandle;
 use Data::Dumper;
 $Data::Dumper::Sortkeys = 1;
 
-use GOBO::Parsers::OBOParserDispatchHash;
+use GOBO::Parsers::OBOParser;
 use GOBO::Util::GraphFunctions;
 
 use Storable;
@@ -47,7 +47,7 @@ die "go-slimdown.pl exited funny: $?" unless $status == 0;
 # ok($status == 0, "Checking go-slimdown.pl with valid args");
 
 ## read in the graph, check it is ok
-$parser = new GOBO::Parsers::OBOParserDispatchHash(file=>"t/data/slimmer_test_results.obo");
+$parser = new GOBO::Parsers::OBOParser(file=>"t/data/slimmer_test_results.obo");
 $parser->parse;
 
 cmp_ok(testme($parser->graph, 'ontology_links', 1), "==", 1, "Checking slimmer_test_results.obo");
@@ -63,7 +63,7 @@ die "go-slimdown.pl exited funny: $?" unless $status == 0;
 
 ## read in the graph, check it is ok
 undef $parser;
-$parser = new GOBO::Parsers::OBOParserDispatchHash(file=>"t/data/slimmer_test_results.obo");
+$parser = new GOBO::Parsers::OBOParser(file=>"t/data/slimmer_test_results.obo");
 $parser->parse;
 
 cmp_ok(testme($parser->graph, 'ontology_links', 2), "==", 1, "Checking slimmer_test_results.obo");
@@ -83,7 +83,7 @@ die "go-slimdown.pl exited funny: $?" unless $status == 0;
 #ok($status == 0, "Checking go-slimdown.pl with small subset and force mode on");
 
 undef $parser;
-$parser = new GOBO::Parsers::OBOParserDispatchHash(file=>"t/data/slimmer_test_results.obo");
+$parser = new GOBO::Parsers::OBOParser(file=>"t/data/slimmer_test_results.obo");
 $parser->parse;
 
 cmp_ok(testme($parser->graph, 'ontology_links', 4), "==", 1, "Checking slimmer_test_results.obo");
@@ -140,7 +140,7 @@ foreach my $a (values %$args)
 
 	## read in the graph, check it is ok
 	undef $parser;
-	$parser = new GOBO::Parsers::OBOParserDispatchHash(file=>"t/data/SLIMMER_TEST_test_goslim.obo");
+	$parser = new GOBO::Parsers::OBOParser(file=>"t/data/SLIMMER_TEST_test_goslim.obo");
 	$parser->parse;
 
 	## 14
@@ -152,7 +152,7 @@ foreach my $a (values %$args)
 
 	## read in the graph, check it is ok
 	undef $parser;
-	$parser = new GOBO::Parsers::OBOParserDispatchHash(file=>"t/data/SLIMMER_TEST_test_next_goslim.obo");
+	$parser = new GOBO::Parsers::OBOParser(file=>"t/data/SLIMMER_TEST_test_next_goslim.obo");
 	$parser->parse;
 
 	## 15
@@ -164,7 +164,7 @@ foreach my $a (values %$args)
 
 	## read in the graph, check it is ok
 	undef $parser;
-	$parser = new GOBO::Parsers::OBOParserDispatchHash(file=>"t/data/SLIMMER_TEST_results.obo");
+	$parser = new GOBO::Parsers::OBOParser(file=>"t/data/SLIMMER_TEST_results.obo");
 	$parser->parse;
 
 	## 16

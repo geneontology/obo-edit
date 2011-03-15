@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# tests for go-slim-annotations.pl script
+# tests for go-map-annotations-to-slim.pl script
 
 use strict;
 use FileHandle;
@@ -7,7 +7,7 @@ use Data::Dumper;
 $Data::Dumper::Sortkeys = 1;
 
 use Storable qw( dclone );
-use GOBO::Parsers::OBOParserDispatchHash;
+use GOBO::Parsers::OBOParser;
 use GOBO::Parsers::QuickGAFParser;
 use GOBO::Util::GraphFunctions;
 use GOBO::Writers::TreeWriter;
@@ -29,22 +29,22 @@ my $status;
 ## a set of commands that should all fail.
 
 ## not enough subset terms found
-$status = `perl bin/go-slim-annotations.pl -i t/data/caro.obo -g t/data/tiny_gaf.gaf -o t/data/tiny_gaf_remapped.gaf -t t/data/test_goslim_termlist.txt 2>&1 1>/dev/null`;
+$status = `perl bin/go-map-annotations-to-slim.pl -i t/data/caro.obo -g t/data/tiny_gaf.gaf -o t/data/tiny_gaf_remapped.gaf -t t/data/test_goslim_termlist.txt 2>&1 1>/dev/null`;
 like( $status, qr/None of the terms specified in t\/data\/test_goslim_termlist.txt were found in the ontology file. Please try again./ , 'Subset terms not found');
 
-$status = `perl bin/go-slim-annotations.pl -i t/data/tiny_obo.obo -g t/data/tiny_gaf.gaf -o t/data/tiny_gaf_remapped.gaf -s goslim_monster 2>&1 1>/dev/null`;
+$status = `perl bin/go-map-annotations-to-slim.pl -i t/data/tiny_obo.obo -g t/data/tiny_gaf.gaf -o t/data/tiny_gaf_remapped.gaf -s goslim_monster 2>&1 1>/dev/null`;
 like( $status, qr/Error: no nodes were found in any of the subsets specified./, 'Subset terms not found');
 
 ## no annotations
-$status = `perl bin/go-slim-annotations.pl -i t/data/tiny_obo.obo -g t/data/caro.obo -o t/data/tiny_gaf_remapped.gaf -s goslim_test  2>&1 1>/dev/null`;
+$status = `perl bin/go-map-annotations-to-slim.pl -i t/data/tiny_obo.obo -g t/data/caro.obo -o t/data/tiny_gaf_remapped.gaf -s goslim_test  2>&1 1>/dev/null`;
 like( $status, qr/No annotations were found! Dying/, 'No annotations at all');
 
 ## annotations to terms not in the ontology
-$status = `perl bin/go-slim-annotations.pl -i t/data/tiny_obo.obo -g t/data/128up.gaf -o t/data/tiny_gaf_remapped.gaf -s goslim_test  2>&1 1>/dev/null`;
+$status = `perl bin/go-map-annotations-to-slim.pl -i t/data/tiny_obo.obo -g t/data/128up.gaf -o t/data/tiny_gaf_remapped.gaf -s goslim_test  2>&1 1>/dev/null`;
 like( $status, qr/None of the terms in the annotation file matched those in the ontology file./, 'No matching annotations');
 
 ## as above, some annots found
-$status = `perl bin/go-slim-annotations.pl -i t/data/transporters.obo -g t/data/AT1G49810.gaf -o t/data/tiny_gaf_remapped.gaf -s goslim_generic  2>&1 1>/dev/null`;
+$status = `perl bin/go-map-annotations-to-slim.pl -i t/data/transporters.obo -g t/data/AT1G49810.gaf -o t/data/tiny_gaf_remapped.gaf -s goslim_generic  2>&1 1>/dev/null`;
 like( $status, qr/The following terms were not found in the ontology file/, 'Some annotations');
 
 
@@ -55,13 +55,14 @@ like( $status, qr/The following terms were not found in the ontology file/, 'Som
 
 
 ## read in a file and see if the tree writer works...
-my $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>'t/data/tiny_obo.obo');
+my $parser = new GOBO::Parsers::OBOParser(file=>'t/data/tiny_obo.obo');
 $parser->parse;
 ## get the subset terms
-my $ss_data = GOBO::Util::GraphFunctions::get_subset_nodes( graph => $parser->graph, options => { subset => { 'goslim_test' => 1 } }  );
-my $subset = $ss_data->{subset}{goslim_test};
+my $ss_data = GOBO::Util::GraphFunctions::get_subset_nodes( graph => $parser->graph, options => { subset => [ 'goslim_test' ] } );
 
-my $results = GOBO::Util::GraphFunctions::slim_annotations(options =>  { ga_input => 't/data/tiny_gaf.gaf' }, subset => $subset, graph => dclone $parser->graph );
+my $subset_ids = [ keys %{$ss_data->{subset}{goslim_test}} ];
+
+my $results = GOBO::Util::GraphFunctions::slim_annotations(options =>  { ga_input => 't/data/tiny_gaf.gaf' }, subset_ids => $subset_ids, graph => dclone $parser->graph );
 
 my $graph = $results->{graph};
 my $assoc_data = $results->{assoc_data};
@@ -105,8 +106,8 @@ if (-e "t/data/tiny_gaf_remapped.gaf")
 }
 
 ## 9
-$status = system("perl", qw( bin/go-slim-annotations.pl -i t/data/tiny_obo.obo -g t/data/tiny_gaf.gaf -o t/data/tiny_gaf_remapped.gaf -s goslim_test ) );
-ok($status == 0, "Running bin/go-slim-annotations.pl -i t/data/tiny_obo.obo -g t/data/tiny_gaf.gaf -s goslim_test -o t/data/tiny_gaf_remapped.gaf");
+$status = system("perl", qw( bin/go-map-annotations-to-slim.pl -i t/data/tiny_obo.obo -g t/data/tiny_gaf.gaf -o t/data/tiny_gaf_remapped.gaf -s goslim_test ) );
+ok($status == 0, "Running bin/go-map-annotations-to-slim.pl -i t/data/tiny_obo.obo -g t/data/tiny_gaf.gaf -s goslim_test -o t/data/tiny_gaf_remapped.gaf");
 
 ## some kind of comparison between tiny_gaf_remapped.gaf and tiny_gaf?
 
@@ -115,7 +116,7 @@ if (-e "t/data/count_file.txt")
 	die "Could not delete existing file t/data/count_file.txt" if -e "t/data/count_file.txt";
 }
 
-system("perl", qw( bin/go-slim-annotations.pl -i t/data/tiny_obo.obo -g t/data/tiny_gaf.gaf -s goslim_test -c -o t/data/count_file.txt) );
+system("perl", qw( bin/go-map-annotations-to-slim.pl -i t/data/tiny_obo.obo -g t/data/tiny_gaf.gaf -s goslim_test -c -o t/data/count_file.txt) );
 ## open the count file and check the results
 my $arr = read_file('t/data/count_file.txt');
 
@@ -139,7 +140,7 @@ if (-e "t/data/tree_file.txt")
 {	system("rm", "t/data/tree_file.txt");
 	die "Could not delete existing file t/data/tree_file.txt" if -e "t/data/tree_file.txt";
 }
-system("perl", qw( bin/go-slim-annotations.pl -i t/data/tiny_obo.obo -g t/data/tiny_gaf.gaf -s goslim_test --show_tree -o t/data/tree_file.txt) );
+system("perl", qw( bin/go-map-annotations-to-slim.pl -i t/data/tiny_obo.obo -g t/data/tiny_gaf.gaf -s goslim_test --show_tree -o t/data/tree_file.txt) );
 
 $str = join("\n", @{read_file('t/data/tree_file.txt')});
 $str2 =
@@ -183,7 +184,7 @@ $graph->add_statements( new GOBO::LinkStatement( node=>$graph->get_term('GO:0000
 
 ## run the annotation slimmer again
 undef $results;
-$results = GOBO::Util::GraphFunctions::slim_annotations(options =>  { ga_input => 't/data/tiny_gaf.gaf' }, subset => $subset, graph => dclone $graph );
+$results = GOBO::Util::GraphFunctions::slim_annotations(options =>  { ga_input => 't/data/tiny_gaf.gaf' }, subset_ids => $subset_ids, graph => dclone $graph );
 
 ## OK, we should find that we have lost the annotations that were attached to GO:0000001, but we've kept those attached to GO:0000002.
 
@@ -200,22 +201,22 @@ $str2 = join("\n", sort ( @{$results->{assoc_data}->{by_t}{'GO:0000002'}} , @{$r
 ## 13
 ok( $str eq $str2, "Checking we have no doubled annotations" );
 
-## 
-$results = GOBO::Util::GraphFunctions::slim_annotations(options =>  { ga_input => 't/data/tiny_gaf2.gaf' }, subset => $subset, graph => dclone $graph );
+##
+$results = GOBO::Util::GraphFunctions::slim_annotations(options =>  { ga_input => 't/data/tiny_gaf2.gaf' }, subset_ids => $subset_ids, graph => dclone $graph );
 
 
 exit(0);
 
 ## now let's make a new graph where slimming produces a new root.
-$parser = new GOBO::Parsers::OBOParserDispatchHash(file=>'t/data/tiny_obo2.obo');
+$parser = new GOBO::Parsers::OBOParser(file=>'t/data/tiny_obo2.obo');
 $parser->parse;
 ## get the subset terms
 $ss_data = GOBO::Util::GraphFunctions::get_subset_nodes( graph => $parser->graph, options => { subset => { 'goslim_test' => 1 } }  );
-$subset = $ss_data->{subset}{goslim_test};
+$subset_ids = [ keys %{$ss_data->{subset}{goslim_test}} ];
 
-$results = GOBO::Util::GraphFunctions::slim_annotations(options =>  { ga_input => 't/data/tiny_gaf.gaf' }, subset => $subset, graph => dclone $parser->graph );
+$results = GOBO::Util::GraphFunctions::slim_annotations(options =>  { ga_input => 't/data/tiny_gaf.gaf' }, subset_ids => $subset_ids, graph => dclone $parser->graph );
 
-$results = GOBO::Util::GraphFunctions::slim_annotations(options =>  { ga_input => 't/data/tiny_gaf.gaf', delete_new_roots => 1 }, subset => $subset, graph => dclone $parser->graph );
+$results = GOBO::Util::GraphFunctions::slim_annotations(options =>  { ga_input => 't/data/tiny_gaf.gaf', delete_new_roots => 1 }, subset_ids => $subset_ids, graph => dclone $parser->graph );
 
 $graph = $results->{graph};
 $assoc_data = $results->{assoc_data};
@@ -469,8 +470,8 @@ if (-e $output)
 }
 
 ## a tiny test
-$status = system("perl", qw( bin/go-slim-annotations.pl -i t/data/tiny_obo.obo -s test_goslim -g t/data/tiny_gaf.gaf -o t/data/test_output.txt -v -f ) );
-ok($status == 0, "Checking go-slim-annotations.pl with valid args");
+$status = system("perl", qw( bin/go-map-annotations-to-slim.pl -i t/data/tiny_obo.obo -s test_goslim -g t/data/tiny_gaf.gaf -o t/data/test_output.txt -v -f ) );
+ok($status == 0, "Checking go-map-annotations-to-slim.pl with valid args");
 file_not_empty_ok($output, "Results file exists");
 
 {	open(FH, "< $output") or die "Could not open file $output: $!";
@@ -493,12 +494,12 @@ if (-e $output)
 {	system("rm", $output);
 }
 ## do some slimming
-$status = system("perl", qw( bin/go-slim-annotations.pl -i t/data/slimmer_test_3.obo -s test_goslim -g t/data/test_gaf.gaf -v -c -o ), $output );
-file_not_empty_ok($output, "Checking go-slim-annotations.pl with valid args");
+$status = system("perl", qw( bin/go-map-annotations-to-slim.pl -i t/data/slimmer_test_3.obo -s test_goslim -g t/data/test_gaf.gaf -v -c -o ), $output );
+file_not_empty_ok($output, "Checking go-map-annotations-to-slim.pl with valid args");
 
 ## do some slimming
-$status = system("perl", qw( bin/go-slim-annotations.pl -v -i t/data/slimmer_test_3.obo -s test_goslim -g t/data/test_gaf.gaf --show_tree -o t/data/tree_file.txt ) );
-file_not_empty_ok("t/data/tree_file.txt", "Checking go-slim-annotations.pl with valid args");
+$status = system("perl", qw( bin/go-map-annotations-to-slim.pl -v -i t/data/slimmer_test_3.obo -s test_goslim -g t/data/test_gaf.gaf --show_tree -o t/data/tree_file.txt ) );
+file_not_empty_ok("t/data/tree_file.txt", "Checking go-map-annotations-to-slim.pl with valid args");
 
 exit(0);
 =cut
@@ -506,7 +507,7 @@ exit(0);
 
 =cut
 ## parse file and load the graph
-my $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>$options->{input});
+my $parser = new GOBO::Parsers::OBOParser(file=>$options->{input});
 $parser->parse;
 my $graph = $parser->graph;
 
@@ -527,15 +528,15 @@ print STDERR "Done quickparse_gaf!\n" if $options->{verbose};
 
 
 ## do some slimming
-$status = system("perl", qw( bin/go-slim-annotations.pl -i t/data/tiny_obo.obo -s test_goslim -g t/data/tiny_gaf.gaf -o t/data/outfile.txt -c -v -f ) );
-ok($status == 0, "Checking go-slim-annotations.pl with valid args");
+$status = system("perl", qw( bin/go-map-annotations-to-slim.pl -i t/data/tiny_obo.obo -s test_goslim -g t/data/tiny_gaf.gaf -o t/data/outfile.txt -c -v -f ) );
+ok($status == 0, "Checking go-map-annotations-to-slim.pl with valid args");
 file_not_empty_ok("t/data/outfile.txt", "Results file exists");
 
 
 
 ## do some slimming
-#$status = system("perl", qw( bin/go-slim-annotations.pl --mapping_file t/data/mapping_file.txt -i t/data/slimmer_test_3.obo -g t/data/test_gaf.gaf -c -o t/data/count_file2.txt ) );
-#ok($status == 0, "Checking go-slim-annotations.pl with mapping file");
+#$status = system("perl", qw( bin/go-map-annotations-to-slim.pl --mapping_file t/data/mapping_file.txt -i t/data/slimmer_test_3.obo -g t/data/test_gaf.gaf -c -o t/data/count_file2.txt ) );
+#ok($status == 0, "Checking go-map-annotations-to-slim.pl with mapping file");
 
 #file_not_empty_ok("t/data/count_file2.txt", "Results file exists");
 

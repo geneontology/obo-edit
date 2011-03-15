@@ -70,7 +70,7 @@ use File::stat;
 
 # use lib "geneontology/go-moose/";
 use GOBO::Graph;
-use GOBO::Parsers::OBOParserDispatchHash;
+use GOBO::Parsers::OBOParser;
 # use GOBO::InferenceEngine;
 # use GOBO::Writers::OBOWriter;
 
@@ -112,7 +112,7 @@ else
 }
 
 my $fh = new FileHandle($obo_file);
-my $parser = new GOBO::Parsers::OBOParserDispatchHash(fh=>$fh);
+my $parser = new GOBO::Parsers::OBOParser(fh=>$fh);
 $parser->parse;
 
 #print STDERR "parser: " . Dumper( $parser );
