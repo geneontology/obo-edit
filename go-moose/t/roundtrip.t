@@ -8,7 +8,7 @@ use GOBO::Statement;
 use GOBO::LinkStatement;
 use GOBO::NegatedStatement;
 use GOBO::Node;
-use GOBO::Parsers::OBOParserDispatchHash;
+use GOBO::Parsers::OBOParser;
 use GOBO::Writers::OBOWriter;
 use FileHandle;
 

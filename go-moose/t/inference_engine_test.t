@@ -6,7 +6,7 @@ use GOBO::Statement;
 use GOBO::LinkStatement;
 use GOBO::NegatedStatement;
 use GOBO::Node;
-use GOBO::Parsers::OBOParserDispatchHash;
+use GOBO::Parsers::OBOParser;
 use GOBO::Writers::OBOWriter;
 use GOBO::InferenceEngine;
 #use GOBO::InferenceEngine::CustomEngine;
@@ -98,7 +98,7 @@ ok( join("||", sort { $a->node->id cmp $b->node->id || $a->relation->id cmp $b->
 exit(0);
 =cut
 
-$parser = new GOBO::Parsers::OBOParserDispatchHash( file => 't/data/slimmer_test_3.obo');
+$parser = new GOBO::Parsers::OBOParser( file => 't/data/slimmer_test_3.obo');
 $parser->parse;
 $g1 = $parser->graph;
 $ie = new GOBO::InferenceEngine(graph=>$g1);
@@ -159,7 +159,7 @@ $g->add_node($gene);
 
 ## OK, let's test the custom engine a bit...
 my $link_h;
-$parser = new GOBO::Parsers::OBOParserDispatchHash(file=>'t/data/cell.obo');
+$parser = new GOBO::Parsers::OBOParser(file=>'t/data/cell.obo');
 $parser->parse;
 my $graph = $parser->graph;
 

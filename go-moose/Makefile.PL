@@ -11,15 +11,15 @@ WriteMakefile(
     'VERSION_FROM' => "GOBO.pm",
     'PREREQ_PM'    => {
 #        'AmiGO::Model::Graph'       => 0,
-        'DateTime::Format::ISO8601' => 0,
-        'Test::Deep'                 => 0,
 #        'DBIx::Class'               => 0,
-#        'Graph'                     => 0,
-        'List::MoreUtils'           => 0,
 #        'Lucene'                    => 0,
-        'Moose'                     => 0.81,
 #        'RDF::Redland'              => 0,
-#        'Set::Object'               => 0,
+        'DateTime::Format::ISO8601' => '0.0.7',
+        'Test::Deep'                 => '0.106',
+#        'Graph'                     => '0.94',
+        'List::MoreUtils'           => '0.22',
+        'Moose'                     => '1.08',
+        'Set::Object'               => '1.28',
     },
     'EXE_FILES'    => [
         qw(
@@ -28,10 +28,10 @@ WriteMakefile(
                                     bin/gobo-make-lucene-index.pl
                                    )
     ],
-    'dist'         => { 
+    'dist'         => {
         'SUFFIX'       => ".gz",
         'DIST_DEFAULT' => 'all tardist',
-        'COMPRESS'     => "gzip -9f" 
+        'COMPRESS'     => "gzip -9f"
     },
     clean => {
         FILES => 'GOBO-$(VERSION).tar.gz',

@@ -77,7 +77,7 @@ use Data::Dumper;
 $Data::Dumper::Sortkeys = 1;
 
 use GOBO::Graph;
-use GOBO::Parsers::OBOParserDispatchHash;
+use GOBO::Parsers::OBOParser;
 use GOBO::InferenceEngine;
 use GOBO::Util::GraphFunctions;
 #use Data::Compare;
@@ -160,7 +160,7 @@ foreach my $f ('f1', 'f2')
 {
 	## let's quickly get the ontology data and do a big ass comparison that way
 	local $/ = "\n[";
-	$parser = new GOBO::Parsers::OBOParserDispatchHash;
+	$parser = new GOBO::Parsers::OBOParser;
 
 #	print STDERR "Ready to read in $f!\n";
 	open(FH, "<" . $options->{$f}) or die("Could not open " . $options->{$f} . "! $!");
