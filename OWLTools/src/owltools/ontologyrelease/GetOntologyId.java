@@ -11,6 +11,7 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+@Deprecated
 public class GetOntologyId extends Task {
 
 	

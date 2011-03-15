@@ -191,6 +191,8 @@
 	  <chmod file="oe-command-line" perm="ugo+x" />
 	</target>
 	
+	<!-- The target make-obo-release is deprecated. It is no more being used -->
+	<!--
 	<target name="make-obo-release" description="OBO Ontology release manager">
 		<echo>************************Ontology Release Manager************************</echo>
 
@@ -229,7 +231,6 @@
 		<echo>Generate Simple: ${oborelease.simple.option}</echo>
 		
 		<java classname="owltools.ontologyrelease.OboOntologyReleaseRunner">
-		<!--	<jvmarg value="-Xmx2024m"></jvmarg>-->
 			
 			<arg value="-outdir"/>
 			<arg value="${oborelease.outputdir}/${TODAY}"/>
@@ -267,6 +268,6 @@
 		
 		
 	</target>
-
+-->
 	
 </project>
