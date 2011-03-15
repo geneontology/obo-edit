@@ -12,7 +12,7 @@ $Data::Dumper::Sortkeys = 1;
 
 use GOBO::Graph;
 use GOBO::Util::GraphFunctions;
-use GOBO::Parsers::OBOParserDispatchHash;
+use GOBO::Parsers::OBOParser;
 use GOBO::InferenceEngine;
 use GOBO::InferenceEngine::CustomEngine;
 use GOBO::Writers::TreeWriter;
@@ -23,7 +23,7 @@ use Storable qw(dclone);
 my $data;
 my $ss;
 my $fh = new FileHandle("t/data/relation_test.obo");
-my $parser = new GOBO::Parsers::OBOParserDispatchHash(fh=>$fh);
+my $parser = new GOBO::Parsers::OBOParser(fh=>$fh);
 $parser->parse;
 
 my $other_h = GOBO::Util::GraphFunctions::create_bucket_terms(graph => $parser->graph, ix => 'ontology_links', subset_ids => [ $parser->graph->get_term('GO:0000001'), $parser->graph->get_term('GO:0000002'), $parser->graph->get_term('GO:0000004') ]);
@@ -40,7 +40,7 @@ ok( $expr->as_string eq 'NOT (GO:0000001 OR GO:0000002 OR GO:0000004)', "Checkin
 
 print STDERR "reading in t/data/bucket_test.obo...\n";
 $fh = new FileHandle("t/data/bucket_test.obo");
-$parser = new GOBO::Parsers::OBOParserDispatchHash(fh=>$fh);
+$parser = new GOBO::Parsers::OBOParser(fh=>$fh);
 $parser->parse;
 $data = GOBO::Util::GraphFunctions::get_subset_nodes(graph=>$parser->graph, options => { subset => [ 'goslim_test' ] } );
 $ss = [ keys %{$data->{subset}{goslim_test}} ];
@@ -52,7 +52,7 @@ my $results = GOBO::Util::GraphFunctions::add_bucket_terms_to_graph(graph=>dclon
 ok( grep { $_ eq '-(GO:0000005|GO:0000004)' } @{$results->{subset_ids}}, "Checking for the complement term");
 
 $fh = new FileHandle("t/data/bucket_test.obo");
-$parser = new GOBO::Parsers::OBOParserDispatchHash(fh=>$fh);
+$parser = new GOBO::Parsers::OBOParser(fh=>$fh);
 $parser->parse;
 $data = GOBO::Util::GraphFunctions::get_subset_nodes(graph=>$parser->graph, options => { subset => [ 'goslim_test' ] } );
 
@@ -246,7 +246,7 @@ my $stts = $g->statements($link);
 
 ok(scalar @$stts == 1, "Checking we can reset the links as planned");
 
-$parser = new GOBO::Parsers::OBOParserDispatchHash( file => 't/data/inf_engine_test.obo' );
+$parser = new GOBO::Parsers::OBOParser( file => 't/data/inf_engine_test.obo' );
 $parser->parse;
 $g = new GOBO::Graph;
 

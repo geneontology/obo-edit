@@ -1,6 +1,6 @@
 use Test::More tests => 29;
 use strict;
-use GOBO::Parsers::OBOParserDispatchHash;
+use GOBO::Parsers::OBOParser;
 use GOBO::InferenceEngine;
 #use GOBO::Util::GraphFunctions;
 use FileHandle;
@@ -8,7 +8,7 @@ use FileHandle;
 use Data::Dumper;
 
 my $fh = new FileHandle("t/data/relation_test.obo");
-my $parser = new GOBO::Parsers::OBOParserDispatchHash(fh=>$fh);
+my $parser = new GOBO::Parsers::OBOParser(fh=>$fh);
 $parser->parse;
 my $graph = $parser->graph;
 my $ie = new GOBO::InferenceEngine(graph=>$graph);

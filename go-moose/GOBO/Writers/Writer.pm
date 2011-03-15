@@ -5,7 +5,7 @@ use FileHandle;
 
 has fh => (is=>'rw', isa=>'FileHandle', clearer=>'clear_fh', predicate=>'has_fh'); #, coerce=>1);
 has file => (is=>'rw', isa=>'Str', trigger => \&init_fh);
-has graph => (is=>'rw', isa=>'GOBO::Graph');
+has graph => (is=>'rw', isa=>'GOBO::Graph'); #,  clearer => 'clear_graph' );
 
 ## indexes to use for the different types of statement
 has 'statement_ix' => (is=>'rw', isa=>'Str', default=>sub { 'statements' } );
@@ -13,7 +13,7 @@ has 'annotation_ix' => (is=>'rw', isa=>'Str', default=>sub { 'annotations' } );
 has 'edge_ix' => (is=>'rw', isa=>'Str', default=>sub { 'edges' } );
 has 'ontology_link_ix' => (is=>'rw', isa=>'Str', default=>sub { 'ontology_links' } );
 
-## set up output; 
+## set up output;
 sub BUILD {
 	my $self = shift;
 	$self->init_fh;
@@ -59,7 +59,7 @@ sub xxxfile {
     if (@_) {
         my ($f) = @_;
         $self->{file} = $f;
-        $self->fh(FileHandle->new(">$f"));
+        $self->fh( FileHandle->new(">$f") );
     }
 
     return $self->{file};
@@ -81,7 +81,7 @@ sub printrow {
     my $self = shift;
     my $row = shift;
     my $fh = $self->fh;
-    print $fh join("\t",@$row),"\n";
+    print $fh join( "\t", @$row ), "\n";
     return;
 }
 
@@ -95,7 +95,7 @@ sub print {
 sub println {
     my $self = shift;
     my $fh = $self->fh;
-    print $fh @_,"\n";
+    print $fh @_, "\n";
     return;
 }
 

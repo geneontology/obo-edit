@@ -23,7 +23,7 @@ use GOBO::LinkStatement;
 use GOBO::NegatedStatement;
 use GOBO::Node;
 use GOBO::Graph;
-use GOBO::Parsers::OBOParserDispatchHash;
+use GOBO::Parsers::OBOParser;
 use GOBO::Parsers::QuickGAFParser;
 use GOBO::Writers::OBOWriter;
 use GOBO::DataArray;
@@ -31,7 +31,7 @@ use FileHandle;
 use Storable qw( dclone );
 
 
-my $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>"t/data/obo_file.obo");
+my $parser = new GOBO::Parsers::OBOParser(file=>"t/data/obo_file.obo");
 
 $parser->parse;
 
@@ -110,7 +110,7 @@ stderr_like( sub { $g->remove_statement_ix('ontology_links') }, qr/The index ont
 ## check some other graph functions at the same time...
 
 ## get_annotated_terms
-$parser = new GOBO::Parsers::OBOParserDispatchHash(file=>'t/data/tiny_obo.obo', graph => new GOBO::Graph );
+$parser = new GOBO::Parsers::OBOParser(file=>'t/data/tiny_obo.obo', graph => new GOBO::Graph );
 $parser->parse;
 $g = dclone $parser->graph;
 my $g2 = dclone $parser->graph;
@@ -120,7 +120,7 @@ my $gaf_parser = GOBO::Parsers::QuickGAFParser->new(fh=>'t/data/tiny_gaf.gaf');
 my $assoc_data = $gaf_parser->parse;
 
 ## this file contains the 'annotated_to' and 'annotated_to_NOT' relations
-$parser = new GOBO::Parsers::OBOParserDispatchHash(file=>'t/data/annotation_relations.obo',
+$parser = new GOBO::Parsers::OBOParser(file=>'t/data/annotation_relations.obo',
 	graph => new GOBO::Graph,
 	body => { parse_only => { typedef => '*' } },
 );
@@ -154,7 +154,7 @@ ok( join("--", sort { $a->id cmp $b->id } @{$g2->get_annotated_terms('annotation
 ok( join("--", sort map { $_->id } @{$g2->get_annotated_terms_in_ix('special_annotations')} ) eq 'GO:0000003--GO:0000007', "Checking links are correct");
 
 ## load up a graph and check some roots.
-$parser = new GOBO::Parsers::OBOParserDispatchHash(file=>'t/data/obo_file.obo');
+$parser = new GOBO::Parsers::OBOParser(file=>'t/data/obo_file.obo');
 $parser->parse;
 
 ## get the root of the graph

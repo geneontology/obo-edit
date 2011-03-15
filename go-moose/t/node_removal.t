@@ -10,11 +10,11 @@ use GOBO::Graph;
 #use GOBO::LinkStatement;
 #use GOBO::NegatedStatement;
 #use GOBO::Node;
-use GOBO::Parsers::OBOParserDispatchHash;
+use GOBO::Parsers::OBOParser;
 
 $ENV{VERBOSE} = 1;
 
-my $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>"t/data/obo_file.obo");
+my $parser = new GOBO::Parsers::OBOParser(file=>"t/data/obo_file.obo");
 my $verbose = 1;
 $parser->parse;
 
@@ -46,7 +46,7 @@ ok ( ! $g->get_term("GO:0000007") );
 
 ok ( scalar(@{$g->get_outgoing_ontology_links("GO:0000007")}) == 0);
 
-my $parser = new GOBO::Parsers::OBOParserDispatchHash( file => 't/data/so-xp.obo');
+my $parser = new GOBO::Parsers::OBOParser( file => 't/data/so-xp.obo');
 $parser->parse;
 my $graph = $parser->graph;
 print STDERR "n terms: " . scalar (@{$graph->terms}) . "\n";

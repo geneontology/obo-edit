@@ -7,7 +7,7 @@ use Data::Dumper;
 $Data::Dumper::Sortkeys = 1;
 
 use GOBO::Graph;
-use GOBO::Parsers::OBOParserDispatchHash;
+use GOBO::Parsers::OBOParser;
 use GOBO::InferenceEngine::CustomEngine;
 use GOBO::Util::GraphFunctions;
 use GOBO::Util::Misc;
@@ -166,7 +166,7 @@ if ($options->{termlist})
 }
 
 # parse the input file and check we get a graph
-my $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>$options->{input},
+my $parser = new GOBO::Parsers::OBOParser(file=>$options->{input},
 options => {
 	body => {
 		parse_only => {

@@ -110,11 +110,12 @@ use FileHandle;
 use Carp;
 use Storable qw(dclone);
 use Data::Dumper;
+use Timer::HiRes qw(gettimeofday);
 $Data::Dumper::Sortkeys = 1;
 $Data::Dumper::Indent = 1;
 
 use GOBO::Graph;
-use GOBO::Parsers::OBOParserDispatchHash;
+use GOBO::Parsers::OBOParser;
 use GOBO::Parsers::QuickGAFParser;
 use GOBO::Writers::TreeWriter;
 use GOBO::InferenceEngine::CustomEngine;
@@ -165,7 +166,7 @@ if ($options->{mapping_file})
 
 	print STDERR "Getting info from " . $options->{input} . "\n" if $options->{verbose};
 
-	my $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>$options->{input},
+	my $parser = new GOBO::Parsers::OBOParser(file=>$options->{input},
 		options => $p_options);
 	$parser->parse;
 
@@ -192,7 +193,7 @@ else
 	} } };
 
 	## parse file and load the graph
-	my $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>$options->{input},
+	my $parser = new GOBO::Parsers::OBOParser(file=>$options->{input},
 		options => $p_options, graph => new GOBO::Graph );
 	$parser->parse;
 	$graph = $parser->graph;
