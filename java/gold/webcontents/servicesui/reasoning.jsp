@@ -49,7 +49,8 @@
 		<%
 		
 			OWLGraphWrapper graph = (OWLGraphWrapper)request.getAttribute("graph");
-			for(OWLAxiom axiom: (List<OWLAxiom>)request.getAttribute("axioms")){
+			List<OWLAxiom> axioms = (List<OWLAxiom>)request.getAttribute("axioms");
+			for(OWLAxiom axiom: axioms){
 				
 				String label1 = null;
 				String label2 = null;
@@ -91,6 +92,8 @@
 	%>
 	<hr />
 	<h4>The inference computation is completed in <%= taskCompletionTime %> seconds</h4>	
+	<h4>Total Inferences found are: <%= axioms.size() %></h4>	
+	<h4>Ontology is : <%= graph.getOntologyId() %></h4>	
 
 	
 </body>
