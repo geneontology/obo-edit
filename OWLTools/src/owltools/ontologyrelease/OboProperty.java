@@ -5,6 +5,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.PropertyHelper;
 import org.apache.tools.ant.taskdefs.Property;
 
+@Deprecated
 public class OboProperty extends Property {
 
 	public OboProperty() {
