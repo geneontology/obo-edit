@@ -377,7 +377,8 @@ public class OboOntologyReleaseRunner {
 	}
 
 	private static void usage() {
-		System.out.println("This utility builds an ontology release");
+		System.out.println("This utility builds an ontology release. This tool is supposed to be run " +
+				"from the location where a particular ontology releases are to be maintained.");
 		System.out.println("\n");
 		System.out.println("bin/ontology-release-runner [OPTIONAL OPTIONS] ONTOLOGIES-FILES");
 		System.out
