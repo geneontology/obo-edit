@@ -13,6 +13,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.util.FileUtils;
 
+@Deprecated
 public class BuildVersionId extends Task {
 
     /**
