@@ -79,7 +79,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 	protected ListEditor namespaceList;
 
-	protected JLabel addInstruction = new JLabel("Click 'Add' to create a new save profile");
+	protected JLabel addInstruction = new JLabel("Click 'Add' to create a profile for loading or saving");
 
 	protected OBOFileAdapter.OBOAdapterConfiguration currentProfile;
 
@@ -93,7 +93,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 	protected JCheckBox allowDanglingBox = new JCheckBox("Allow dangling references");
 
-	protected JCheckBox closureforDanglingBox = new JCheckBox("Perform is_a closure for cross-references terms");
+	protected JCheckBox closureforDanglingBox = new JCheckBox("Perform is_a closure for cross-referenced terms");
 
 	protected JTextField pathField = new JTextField(30);
 
