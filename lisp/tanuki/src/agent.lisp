@@ -6,7 +6,7 @@
 (defpackage :tanuki-agent
   (:use
    :cl
-   :mechanize)
+   :kappa)
   (:export
    ;; Classes.
    tanuki-agent
@@ -42,10 +42,10 @@
 
 (defvar *version* "0.1.0" "This version of Tanuki Agent.")
 (defparameter +user-agent+
-  (format nil "Tanuki ~a (over CL-Mechanize (over Drakma))" *version*)
+  (format nil "Tanuki ~a (over CL Kappa (over Drakma))" *version*)
   "User agent string.")
 
-;; Subclass of mechanize:agent.
+;; Subclass of kappa:agent.
 (defclass tanuki-agent (agent)
   ((home-url
     :documentation "String url to help judge relativity properties."
@@ -99,8 +99,8 @@
 (defmethod is-internal-p ((agent tanuki-agent) query-str)
   "Check whether the current url is internal relative to home-url."
   (let ((query-puri (puri:parse-uri
-                     (mechanize::make-canonical query-str
-                                                :relative-to (home-url agent))))
+                     (kappa::make-canonical query-str
+					       :relative-to (home-url agent))))
 	(base-puri (puri:parse-uri (home-url agent))))
     (string= (puri:uri-authority query-puri)
 	     (puri:uri-authority base-puri))))

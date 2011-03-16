@@ -32,7 +32,7 @@
 				     (:file "decide")
                                      (:file "agent")
                                      (:file "tanuki"))))
-  :depends-on (:mechanize
+  :depends-on (:kappa
 	       :bbop
 	       :cl-ppcre
 	       :postmodern

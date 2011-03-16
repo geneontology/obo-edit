@@ -36,7 +36,6 @@
        counting t into line-count
        finally (return (values lines line-count)))))
 
-
 (defun flatten (xlist)
   "Flatten a tree into a list."
   (labels ((rec (xlist acc)
