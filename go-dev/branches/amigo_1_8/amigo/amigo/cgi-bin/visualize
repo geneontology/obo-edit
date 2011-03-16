@@ -208,7 +208,7 @@ sub mode_advanced {
   if( $input_term_data_type eq 'string' ){
     $term_list = $self->{CORE}->clean_term_list($input_term_data);
   }else{
-    $term_hash = $self->{CORE}->parse_json_viz_data($input_term_data);
+    $term_hash = $self->{JS}->parse_json_viz_data($input_term_data);
     #if( defined($input_term_data) &&
     #	scalar(keys %$input_term_data) != 0 ){
     # $input_term_list = [];
