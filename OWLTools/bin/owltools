@@ -53,7 +53,7 @@ do
 			CMDARGS="$CMDARGS '$ARG'"
 		fi
 	fi
-	shift;
+	shift 1;
 	
 done
 
@@ -99,5 +99,5 @@ then
 	fi
 fi
 
-CMD="$JAVAPATH -Xmx2048M -Xms2048M -Djava.library.path=$PATH_TO_ME/../lib -classpath $CLASSPATH:gold.jar -DlauncherDir=$PATH_TO_ME $JAVAARGS owltools.cli.CommandLineInterface $CMDARGS"
+CMD="$JAVAPATH -Xmx4096M -Xms2048M -Djava.library.path=$PATH_TO_ME/../lib -classpath $CLASSPATH:gold.jar -DlauncherDir=$PATH_TO_ME $JAVAARGS owltools.cli.CommandLineInterface $CMDARGS"
 sh -c "$CMD"
