@@ -10,7 +10,7 @@
 
 ;; Tanuki
 (defsystem bbop
-  :name "Berkeley BOP utility belt."
+  :name "Berkeley BOP Lisp utility belt."
   :version "0.2"
   :author "Seth Carbon <sjcarbon@berkeleybop.org>"
   :maintainer "Seth Carbon <sjcarbon@berkeleybop.org>"
@@ -20,38 +20,32 @@
   :components ((:static-file "bbop.asd")
                (:module :src
                         :serial t
-                        :components ((:file "io")
-                                     (:file "list")
-                                     (:file "fs")
-                                     (:file "num")
-                                     (:file "util")
-                                     (:file "time")
-                                     (:file "log")
-                                     (:file "repl")
-                                     (:file "shell"))))
+                        :components ((:file "package")
+				     (:file "obo")
+				     (:file "couchdb"))))
+                                     ;; (:file "list")
+                                     ;; (:file "fs")
+                                     ;; (:file "num")
+                                     ;; (:file "util")
+                                     ;; (:file "time")
+                                     ;; (:file "log")
+                                     ;; (:file "repl")
+				     ;; (:file "obo")
+                                     ;; (:file "shell"))))
 				     ;; (:file "url")
 				     ;; (:file "utils")
 				     ;; (:file "json")
 				     ;; (:file "couchdb")
-				     ;; (:file "obo")
   :depends-on (:cl-ppcre
 	       :cl-json
 	       :cl-fad
 	       :local-time
+	       :day-to-day
 	       ;; :fiveam
 	       ;; :puri
 	       ;; :drakma
 	       )
-
-  ;;; Replace Albert, maybe with clod.
-  ;; ;; And some stuff for Albert...
-  ;; :properties ((#:author-email . "sjcarbon@berkeleybop.org")
-  ;; 	       (#:date . "Summer 2010")
-  ;; 	       ((#:albert #:output-dir) . "docs")
-  ;; 	       ((#:albert #:formats) . ("docbook"))
-  ;; 	       ((#:albert #:docbook #:template) . "book")
-  ;; 	       ((#:albert #:docbook #:bgcolor) . "white")
-  ;; 	       ((#:albert #:docbook #:textcolor) . "black"))
+  ;; TODO: doc
 )
 
 ;; ;; Add tanuki to our features.

@@ -24,32 +24,40 @@
   :author "Seth Carbon <sjcarbon@berkeleybop.org>"
   :maintainer "Seth Carbon <sjcarbon@berkeleybop.org>"
   :licence "Modified BSD"
-  :description "GO database access."
+  :description "GO database access and GO related utilities."
   :long-description "GOOOOOOOO database access."
   :components ((:static-file "go.asd")
-               (:module :src
+               (:module :common
+			:pathname "src/common"
                         :serial t
-                        :components (;;(:file "database")
-				     ;;(:file "sutils")
-				     (:file "schema")
-				     (:file "engine")
-				     (:file "model")
-				     (:file "graph")
-				     (:file "irc")
-				     ;;(:file "web")
-				     ;;(:file "shell")
+                        :components ((:file "packages")
+				     ;;(:file "couchdb")
+				     ;;(:file "irc")
+				     (:file "obo")))
+               (:module :lead
+			:pathname "src/lead"
+                        :serial t
+                        :components (
+				     ;;((:file "schema")
+				     ;;(:file "engine")
+				     ;;(:file "model")
+				     ))
+	       (:module :godot
+			:pathname "src/godot"
+                        :serial t
+                        :components (
+				     ;;(:file "godot")
+				     ;;(:file "config")
+				     ;;(:file "amigo-js")
+				     ))
+	       (:module :gold
+			:pathname "src/gold"
+                        :serial t
+                        :components (
+				     ;; TODO
 				     )))
-  :depends-on (:cl-graph
+  :depends-on (;:cl-graph
 	       :cl-ppcre
-	       :clsql
-	       :clsql-mysql
-	       :weblocks
-	       :toolkit)
-  ;; And some stuff for Albert...
-  :properties ((#:author-email . "sjcarbon@berkeleybop.org")
-	       (#:date . "Summer 2008")
-	       ((#:albert #:output-dir) . "docs")
-	       ((#:albert #:formats) . ("docbook"))
-	       ((#:albert #:docbook #:template) . "book")
-	       ((#:albert #:docbook #:bgcolor) . "white")
-	       ((#:albert #:docbook #:textcolor) . "black")))
+	       ;:clsql
+	       ;:clsql-mysql
+	       :day-to-day))
