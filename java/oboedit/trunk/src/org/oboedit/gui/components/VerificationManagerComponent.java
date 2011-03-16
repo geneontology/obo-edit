@@ -311,18 +311,18 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 	protected VerificationTableModel tableModel = new VerificationTableModel();
 
 	protected JCheckBox textEditWarningCheckbox = new JCheckBox(
-			"On text edits?");
+			"Text edits");
 
-	protected JCheckBox reasonerWarningCheckbox = new JCheckBox("On reasoner?");
+	protected JCheckBox reasonerWarningCheckbox = new JCheckBox("Reasoner starts");
 
-	protected JCheckBox saveWarningCheckbox = new JCheckBox("On save?");
+	protected JCheckBox saveWarningCheckbox = new JCheckBox("Save");
 
 	protected JCheckBox checkObsoletesCheckbox = new JCheckBox(
-			"Check obsoletes?");
+			"Check obsoletes");
 
-	protected JCheckBox loadWarningCheckbox = new JCheckBox("On load?");
+	protected JCheckBox loadWarningCheckbox = new JCheckBox("Load");
 
-	protected JCheckBox manualWarningCheckbox = new JCheckBox("On manual?");
+	protected JCheckBox manualWarningCheckbox = new JCheckBox("Manual");
 
 	protected ActionListener warningCheckboxListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -388,7 +388,7 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 		checkboxPanel.add(saveWarningCheckbox);
 		checkboxPanel.add(loadWarningCheckbox);
 		checkboxPanel.add(manualWarningCheckbox);
-		TitledBorder titledBorder = new TitledBorder("Show warnings");
+		TitledBorder titledBorder = new TitledBorder("Check for warnings at time of...");
 		checkboxPanel.setBorder(titledBorder);
 
 		Box otherOptionsPanel = new Box(BoxLayout.X_AXIS);
