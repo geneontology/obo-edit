@@ -1,17 +1,11 @@
-This method works in all OS platforms, i.e Ubuntu, OSX and Windows. 
-This method is suitable for developers. 
-
-- Step 1: Download Jetty from http://dist.codehaus.org/jetty/
-- Step 2: Extract the downloaded jetty compress file and move the contents of 
-			the root directory to {USER.HOME}/jetty. The USER.HOME is the home
-			directory of a user in a OS. The directory path {USER.HOME}/jetty in this 
-			documentation is referred as jetty.home.
-- Step 3: Install postgresql database
-- Step 4: Create a user in postgresql who has privileges to create 
-			a database and tables.
-- Step 5: Update conf/gold.properties (in the source of this project) to reflect
-			the information of the user name and password of postgresql 
-- Step 6: Run the 'ant make-war' (from this project source directory) command on shell to 
-			build distribution of this project. 
-- Step 7: Copy dist/admin.war file (from this project source) to jetty.home/webapps directory.
-- Step 8: Visit the 'http://localhost:8080/admin' url.
+-	The gold application has dependency on postgresql, so it must be installed before
+	running the gold application.
+-	compile the project with the ant jar command
+-	configure the conf/gold.properties file. The following properties must be configured:
+		* geneontology.gold.username
+		* geneontology.gold.password
+		* geneontology.gold.host
+		* geneontology.gold.ontologylocation
+		
+-	Jetty server is embedded in the project. To start it run the command as: bin/jetty-runner start		 
+-	Access to the application web admin interface via linke as: http:8080/localhost
