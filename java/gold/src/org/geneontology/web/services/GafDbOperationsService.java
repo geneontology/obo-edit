@@ -69,7 +69,6 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	 * This request object attributes values are visible in the jsp file associated with this service. 
 	 * The jsp file prints the values during its rendering process.   
 	 */
-	@Override
 	public void handleService(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
 
@@ -133,7 +132,6 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 		
 	}
 	
-	@Override
 	public String getServiceName() {
 		// TODO Auto-generated method stub
 		return "gaf-db-operations";

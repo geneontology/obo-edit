@@ -32,7 +32,6 @@ public class ReasoningService extends ServiceHandlerAbstract {
 		runner = null;
 	}
 	
-	@Override
 	public void handleService(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
 
@@ -84,7 +83,6 @@ public class ReasoningService extends ServiceHandlerAbstract {
 	}
 	
 	
-	@Override
 	public String getServiceName() {
 		return "reasoning-service";
 	}
