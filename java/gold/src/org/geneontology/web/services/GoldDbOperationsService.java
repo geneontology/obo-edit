@@ -71,7 +71,6 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract implements F
 	 * This request object attributes values are visible in the jsp file associated with this service. 
 	 * The jsp file prints the values during its rendering process.   
 	 */
-	@Override
 	public void handleService(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
 
@@ -143,7 +142,6 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract implements F
 		return this.ontologyGraph;
 	}
 
-	@Override
 	public String getServiceName() {
 		// TODO Auto-generated method stub
 		return "gold-db-operations";
