@@ -348,7 +348,7 @@ public class GAFParser {
 				voilations.add(new AnnotationRuleViolation(" The row '"+ row + "' does not contain required columns number"));
 			}
 		}
-
+ 
 		//cardinality checks
 		checkCardinality(cols[0],0, "Column 1: DB", row,1,1);
 		checkCardinality(cols[1], 1,"Column 2: DB Object ID", row,1,1);
@@ -387,18 +387,18 @@ public class GAFParser {
 		
 		
 		//check qualifier value
-		if(cols[3].length()>0){
+	/*	if(cols[3].length()>0){
 			Qualifier qaulifer = Qualifier.valueOf(cols[3]);
 			if(qaulifer == null){
 				voilations.add(new AnnotationRuleViolation("The qualifier '" + cols[3] + "' in the column 4 is incorrect in the row " + row));
 			}
-		}
+		}*/
 		
 		//check evidence code
-		EvidenceCode evidenceCode = EvidenceCode.valueOf( cols[6] );
+	/*	EvidenceCode evidenceCode = EvidenceCode.valueOf( cols[6] );
 		if(evidenceCode == null){
 			voilations.add(new AnnotationRuleViolation("The evidence code '" + cols[6] + "' in the column 7 is incorrect in the row " + row));
-		}
+		}*/
 		
 		//check db abbreviations
 		if(!db_abbreviations.contains(cols[0]))
