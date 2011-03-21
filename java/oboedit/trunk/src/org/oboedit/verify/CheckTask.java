@@ -76,7 +76,7 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 					getCheckObsoletes()));
 			if (out.size() > VerificationManager.MAX_WARNINGS) {
 				logger.info("After checking " + qpath + " there are too many warnings (" + out.size() + ")--stopping verification.");
-				out.add(new CheckWarning("Too many warnings--showing only the first " + out.size() + ".", false));
+				out.add(new CheckWarning("Too many warnings--showing only the first " + out.size() + " or so.", false));
 				return;
 			}
 		}
