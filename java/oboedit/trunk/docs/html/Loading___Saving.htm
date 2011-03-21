@@ -48,15 +48,17 @@ button again.</P>
 <h2>Import Terms</h2>
 <P> Import a set of terms into the ontology currently being edited.</P>
 
-
 <h2>Loading two or more ontologies</h2>
 <p>To load several ontologies at the same time, click the "File" menu and choose "Load ontologies...".
-Click the "Advanced" button.</p>
-<p>Click the "Add" button to add ontology filenames (e.g., Gene Ontology and ChEBI ontology). You can add more than one ontology, but keep in mind that
+Click the "Advanced" button. Then click the "Add" button to add ontology filenames (e.g., Gene Ontology and ChEBI ontology). You can add more than one ontology, but keep in mind that
 ontology files are very big and OBO-Edit might get really slow.</p>
 <p>You can also create a new profile to save these file paths for later use.  Enter the name of your profile  (e.g., go-chebi) in
 the box that says "Stored adapter settings".</p>
 <p><img src="../images/chebi-go.png" border="0" alt=""></p>
+<p>There's actually an easier way to load multiple ontologies if you know the
+full path of each ontology file.  In the "Basic" file load mode, you can
+enter multiple ontology file paths in the "Load files" box, separated by spaces:
+<p><img src="../images/load-two-ontologies.png" border="0" alt=""></p>
 <h2><a name="filter">Filtered save</a></h2>
 <p>
 You can save just the ontology terms that match a particular search.  The
@@ -88,5 +90,21 @@ One way to do this is to set up a filter that saves terms from a
   specified namespace.  To include all relations in the saved file, construct a
 compound filter 
 that includes "OR is property" (in this context, property means relation).</p>
+
+<div class="sidebar">
+<h1>Tip: saving an ontology that has fatal errors</h1>
+<hr>
+<p class="sidebar">
+Sometimes you may want to save an ontology file even if OBO-Edit says it has
+  fatal errors.  (For example, maybe you loaded multiple ontology files, and
+  the terms with errors are in another ontology, not the one you're working
+  on.)  The OBO-Edit Verification checks are what flag an ontology as having
+  fatal errors, which then causes OBO-Edit to refuse to save it.  You can get
+  around this by opening the <a
+  href="The_Verification_Plugin.htm">Verification Manager</a>, choosing
+  Configuration, and unchecking the checkboxes in the "On save" column so that
+  the verification checks are not run when you're trying to save the ontology
+  to a file.
+</p></div>
 </BODY>
 </HTML>
