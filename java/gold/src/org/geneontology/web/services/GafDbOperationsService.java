@@ -45,7 +45,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	 * The thread which runs the bulkload and update operations
 	 * in background.
 	 */
-	private Task runner;
+	private GafDbTaskExecution runner;
 	
 	/**
 	 * It holds the value of the 'force' request parameter. The parameter is used in bulkload.
@@ -60,74 +60,100 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	
 	private String command;
 	
+	private boolean commit;
+	
+//	private boolean isOPerationCompleted;
+	
+	private List<GafDocument> gafDocuments;
+	
+	
 	public GafDbOperationsService(){
 		runner = null;
+	//	isOPerationCompleted = true;
+		annotationRuleViolations = new HashSet<AnnotationRuleViolation>();
 	}
 	
 	/**
 	 * This service performs the computations and stores the computations results via request.setAttribute method.
 	 * This request object attributes values are visible in the jsp file associated with this service. 
 	 * The jsp file prints the values during its rendering process.   
+	 * update and bulkload is a two stage process. In the first stage GAF file parsed and annotation rules are run. A summary
+	 * of rules voilation is represented to the user. The second stage is commit which makes changes in the database.
 	 */
 	public void handleService(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
 
-		this.force = "true".equals(request.getParameter("force"));
-		command = request.getParameter("command");
 	
-		//set the default view
-		viewPath = "/servicesui/golddb.jsp";
-		//if there is no task running then create one for the update and bulkload commands
-		if(runner == null){
 		
-			//update command expects gaf location location in the parameter.
-			//If no gaflocatoin parameter is set then present 
-			//a form to user to select gaf file
-			if ("update".equals(command)) {
-	
-				String ontologylocation = request
-						.getParameter("ontologylocation");
-				
-				
-				if(ontologylocation != null){
-					gafLocations = new ArrayList<String>();
-					gafLocations.add(ontologylocation);
-					runner = new GafDbTaskExecution();
-				}else{
-					request.setAttribute("servicename", getServiceName());
-					request.setAttribute("locations", GeneOntologyManager.getInstance().getDefaultGafFileLocations());
+		try{
+		
+		//	this.force = "true".equals(request.getParameter("force"));
+			command = request.getParameter("command");
+			commit = request.getParameter("commit") == null ? false : true;
+			//set the default view
+			viewPath = "/servicesui/gafdb.jsp";
+			
+			//if there is no task running then create one for the update and bulkload commands
+//			if(isOPerationCompleted && !commit) {
+			if(runner == null && !commit) {
+			
+				//update command expects gaf location location in the parameter.
+				//If no gaflocatoin parameter is set then present 
+				//a form to user to select gaf file
+				if ("update".equals(command)) {
+		
+					String ontologylocation = request
+							.getParameter("ontologylocation");
 					
-					this.viewPath = "/servicesui/golddb-updateform.jsp";
+					if(ontologylocation != null){
+						gafLocations = new ArrayList<String>();
+						gafLocations.add(ontologylocation);
+						gafDocuments = null;
+					}else{
+						request.setAttribute("servicename", getServiceName());
+						request.setAttribute("locations", GeneOntologyManager.getInstance().getDefaultGafFileLocations());
+						
+						this.viewPath = "/servicesui/golddb-updateform.jsp";
+					}
+				}else if("bulkload".equals(command)){
+					this.gafLocations = GeneOntologyManager.getInstance().getDefaultGafFileLocations();
+					gafDocuments = null;
+				}else if("getlastupdate".equals(command)){
+					viewPath = "/servicesui/gold-lastupdate.jsp";
 				}
-			}else if("bulkload".equals(command)){
-				this.gafLocations = GeneOntologyManager.getInstance().getDefaultGafFileLocations();
+			}
+			
+			//if commit is calld prior to the bulkload nand upate then throw error
+			if(commit && gafDocuments == null){
+				request.setAttribute("exception", new IllegalStateException("The commit is not allowed."));
+			}else if((commit || "bulkload".equals(command) || "update".equals(command)) && runner == null) {
+				annotationRuleViolations.clear();
 				runner = new GafDbTaskExecution();
-			}else if("getlastupdate".equals(command)){
-				viewPath = "/servicesui/gold-lastupdate.jsp";
-			}
-
-			//run the task in backgorund
-			if(this.runner != null){
 				runner.start();
+				
 			}
 			
+			//store information in the request object. The request object is available in the 
+			//jsp file. The jsp use the objects data in print html.
+			if(!commit)
+				request.setAttribute("violations", annotationRuleViolations);
 			
+			request.setAttribute("isTaskRunning", runner == null ? false: runner.isRunning());
+//			request.setAttribute("dbname", "GAF");
+			
+			if(runner != null){
+				request.setAttribute("task", runner.getData());
+			}
+		}finally{
+			
+			//if the task has completed its operation then set it to null
+			if(runner != null && !runner.isRunning()){
+				runner = null;
+				//				isOPerationCompleted = true;
+			}
 		}
 		
-		//store information in the request object. The request object is available in the 
-		//jsp file. The jsp use the objects data in print html.
-		request.setAttribute("violations", annotationRuleViolations);
-		request.setAttribute("isTaskRunning", runner == null ? false: runner.isRunning());
-		request.setAttribute("dbname", "GAF");
 		
-		if(runner != null){
-			request.setAttribute("task", runner.getData());
-		}
-		
-		//if the task has completed its operation then set it to null
-		if(runner != null && !runner.isRunning()){
-			runner = null;
-		}
 		
 		
 	}
@@ -168,9 +194,8 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 		@Override
 		public void execute() {
 		
-			List<GafDocument> gafDocuments = new ArrayList<GafDocument>();
 			
-			annotationRuleViolations = new HashSet<AnnotationRuleViolation>();
+			
 			
 			/*for(TaskExecutionListener l: listeners){
 				l.updateData(this);
@@ -180,15 +205,16 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			db.addDbOperationsListener(this);
 			
 			try{
+				if(!commit){
 					for(String ontLocation: gafLocations){
 						this.currentOntologyBeingProcessed = ontLocation;
-						
-						if("bulkload".equals(command))
-							db.bulkLoad(ontLocation, force);
-						else 
-							db.update(ontLocation);
-					}
 					
+							gafDocuments = new ArrayList<GafDocument>();
+							if("bulkload".equals(command) || "update".equals(command)){
+								gafDocuments.add( db.buildGafDocument(ontLocation) );
+							}
+						}
+
 					GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
 					
 					OWLGraphWrapper graph = goldDb.getGraphWrapper();
@@ -198,6 +224,20 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 						annotationRuleViolations.addAll(doc
 								.validateAnnotations(graph));
 					}
+					
+				//	wait();
+				}else{
+						
+						for(GafDocument gafDocument: gafDocuments){
+						
+							if("bulkload".equals(command)){
+								db.bulkLoad(gafDocument, false);
+							}else if("update".equals(command)){
+								db.update(gafDocument);
+							}
+						}
+					}
+					
 					
 					
 			}catch(Exception ex){
