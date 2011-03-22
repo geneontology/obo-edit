@@ -78,15 +78,23 @@ public class GAFDbOperations implements DbOperationsInterface{
 	 * @throws Exception
 	 */
 	public void bulkLoad(String gafLocation, boolean force) throws Exception{
+
+		gafDocument = buildGafDocument(gafLocation);
+		
+		bulkLoad(gafDocument, force);
+	
+	}
+	
+	public void bulkLoad(GafDocument gafDocument, boolean force) throws Exception{
 		if(DEBUG)
-			LOG.debug(gafLocation);
+			LOG.debug("--");
 		
 		for(DbOperationsListener listener: listeners){
 			listener.bulkLoadStart();
 		}
 		
 		
-		List<String> list = dumpFiles("", gafLocation);
+		List<String> list = dumpFiles("", gafDocument);
 		
 		if(!dbCreate)
 			buildSchema(force, "");
@@ -97,7 +105,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 		GafObjectsFactory factory = new GafObjectsFactory();
 		Session session = factory.getSession();
 		
-		bulkLoadHibernate(session);
+		bulkLoadHibernate(session, gafDocument);
 	
 		session.getTransaction().commit();
 		
@@ -106,12 +114,13 @@ public class GAFDbOperations implements DbOperationsInterface{
 		for(DbOperationsListener listener: listeners){
 			listener.bulkLoadEnd();
 		}
+		
 	}
 	
-	private void bulkLoadHibernate(Session session){
+	private void bulkLoadHibernate(Session session, GafDocument gafDocument){
 
 		
-		for(String id: this.gafDocument.getCompositeQualifiersIds()){
+		for(String id: gafDocument.getCompositeQualifiersIds()){
 			for(CompositeQualifier cq: gafDocument.getCompositeQualifiers(id)){
 				session.saveOrUpdate(cq);
 			}
@@ -142,7 +151,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 	 * @throws Exception
 	 */
 	public List<String> dumpFiles(String tablePrefix, String gafFile) throws Exception{
-		for(DbOperationsListener listener: listeners){
+		/*for(DbOperationsListener listener: listeners){
 			listener.dumpFilesStart();
 		}
 		
@@ -164,9 +173,38 @@ public class GAFDbOperations implements DbOperationsInterface{
 			listener.dumpFilesEnd();
 		}
 		
+		return list;*/
+		
+		gafDocument = buildGafDocument(gafFile);
+		return dumpFiles(tablePrefix, gafDocument);
+	}
+
+	public List<String> dumpFiles(String tablePrefix, GafDocument gafDocument) throws Exception{
+		for(DbOperationsListener listener: listeners){
+			listener.dumpFilesStart();
+		}
+		
+		if(LOG.isDebugEnabled()){
+			LOG.debug("-");
+		}
+		
+		
+		GeneOntologyManager manager = GeneOntologyManager.getInstance();
+
+		GafBulkLoader loader = new GafBulkLoader(gafDocument, manager.getTsvFilesDir(), tablePrefix);
+		
+		List<String> list = loader.loadAll();
+		
+		LOG.info("Tables dump completed");
+		
+		for(DbOperationsListener listener: listeners){
+			listener.dumpFilesEnd();
+		}
+		
 		return list;
 		
 	}
+	
 	
 	public GafDocument buildGafDocument(String locaiton) throws IOException{
 		for(DbOperationsListener listener: listeners){
@@ -306,23 +344,32 @@ public class GAFDbOperations implements DbOperationsInterface{
 
 	}	
 	
+	public void update(String gafLocation) throws Exception{
+		if(LOG.isDebugEnabled()){
+			LOG.debug("-");
+		}
+		
+		gafDocument = buildGafDocument(gafLocation);
+		
+		update(gafDocument);
+	}
+
+	
 	/**
 	 * Incrementa update of the GOLD database from the contents of the obo file
 	 * located at the path supplied in the parameter
 	 * @param oboFile
 	 * @throws Exception
 	 */
-	public void update(String gafLocation) throws Exception{
+	public void update(GafDocument gafDocument) throws Exception{
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
 		
 		
-		gafDocument = buildGafDocument(gafLocation);
-		
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
 		
-		List<String> list = dumpFiles(manager.getGoldDetlaTablePrefix(), gafLocation);
+		List<String> list = dumpFiles(manager.getGoldDetlaTablePrefix(), gafDocument);
 
 		buildSchema(true, manager.getGoldDetlaTablePrefix());
 
