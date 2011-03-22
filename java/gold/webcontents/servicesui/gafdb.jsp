@@ -31,7 +31,7 @@
 		}
 	%>
 
-	<h1>Status of the execution of the <%= request.getParameter("command") %>' command on the <%= request.getAttribute("dbname") %> database.</h1>
+	<h1>Status of the execution of the <%= request.getParameter("command") %>' command on the GAF database.</h1>
 
 	<%
 		Task task = (Task)request.getAttribute("task");
@@ -75,6 +75,10 @@
 			}
 	
 		}
+		
+		if(ex == null){
+			ex = (Exception)request.getAttribute("exception");
+		}
 		%>	
 	</table>
 
@@ -86,5 +90,48 @@
 	}
 	
 	%>
+
+	<%
+	if(request.getParameter("commit") == null){
+	
+		Set<AnnotationRuleViolation> annotationRuleViolations = (Set<AnnotationRuleViolation>)request.getAttribute("violations");
+		if(annotationRuleViolations != null){
+		%>
+	
+			<hr />
+			<h3>Annotation Violations</h3>
+			<ul>
+			<%
+			
+			for(AnnotationRuleViolation v: annotationRuleViolations){
+				%>
+				<li> <%= v.getMessage() %> -- <%= v.getSourceAnnotation() %> </li>
+				<%			
+			}
+			
+			%>
+	
+			</ul>
+		
+		<%
+		}
+	
+		if(!isTaskRunning){
+		
+			%>
+			<hr />		
+			<form action=".">
+				<input type="hidden" name="commit" />
+				<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
+				<input type="hidden" name="command" value="<%= request.getParameter("command") %>" />
+				<input type="submit" value="Commit GAF" />
+			</form>
+			
+			<%
+		}
+	}
+	%>
+
+
 </body>
 </html>
