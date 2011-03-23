@@ -268,6 +268,20 @@ sub term_regexp {
 }
 
 
+=item is_term_acc_p
+
+Return: 0 or 1 on string input
+
+=cut
+sub is_term_acc_p {
+
+  my $self = shift;
+  my $str = shift || "";
+  my $regexp = $self->amigo_env('AMIGO_TERM_REGEXP');
+  return $str =~ /$regexp/;
+}
+
+
 =item term_regexp_string
 
 Return: a string that can be used to compile a term-matching regexp.
