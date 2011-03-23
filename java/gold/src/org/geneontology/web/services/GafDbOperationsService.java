@@ -1,6 +1,8 @@
 package org.geneontology.web.services;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,6 +16,7 @@ import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gaf.hibernate.GafDocument;
 import org.geneontology.gaf.hibernate.GafObjectsBuilder;
 import org.geneontology.gaf.io.GAFDbOperations;
+import org.geneontology.gaf.io.GafURLFetch;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.rules.AnnotationRuleViolation;
 import org.geneontology.web.Task;
@@ -39,7 +42,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	/**
 	 * The GAF files paths
 	 */
-	private List<String> gafLocations;
+	private Object gafLocations;
 	
 	/**
 	 * The thread which runs the bulkload and update operations
@@ -93,9 +96,13 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			//set the default view
 			viewPath = "/servicesui/gafdb.jsp";
 			
+			String remoteGAF = request.getParameter("remote-gaf");
+			
 			//if there is no task running then create one for the update and bulkload commands
 //			if(isOPerationCompleted && !commit) {
-			if(runner == null && !commit) {
+			if(remoteGAF != null){
+				gafLocations = new GafURLFetch(remoteGAF);
+			}else if(runner == null && !commit) {
 			
 				//update command expects gaf location location in the parameter.
 				//If no gaflocatoin parameter is set then present 
@@ -107,7 +114,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 					
 					if(ontologylocation != null){
 						gafLocations = new ArrayList<String>();
-						gafLocations.add(ontologylocation);
+						((ArrayList)gafLocations).add(ontologylocation);
 						gafDocuments = null;
 					}else{
 						request.setAttribute("servicename", getServiceName());
@@ -159,7 +166,6 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	}
 	
 	public String getServiceName() {
-		// TODO Auto-generated method stub
 		return "gaf-db-operations";
 	}
 
@@ -206,23 +212,35 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			
 			try{
 				if(!commit){
-					for(String ontLocation: gafLocations){
-						this.currentOntologyBeingProcessed = ontLocation;
 					
-							gafDocuments = new ArrayList<GafDocument>();
-							if("bulkload".equals(command) || "update".equals(command)){
-								gafDocuments.add( db.buildGafDocument(ontLocation) );
-							}
+					if(gafLocations instanceof GafURLFetch){
+						GafURLFetch fetch = (GafURLFetch) gafLocations;
+						fetch.connect();
+						gafDocuments = new ArrayList<GafDocument>();
+						while(fetch.hasNext()){
+							InputStream is = (InputStream)fetch.next();
+							gafDocuments.add(db.buildGafDocument(new InputStreamReader(is)));
 						}
-
-					GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
-					
-					OWLGraphWrapper graph = goldDb.getGraphWrapper();
-					
-					for (GafDocument doc : gafDocuments) {
-
-						annotationRuleViolations.addAll(doc
-								.validateAnnotations(graph));
+					}else{
+						List<String> files = (List<String>)gafLocations;
+						for(String ontLocation: files){
+							this.currentOntologyBeingProcessed = ontLocation;
+						
+								gafDocuments = new ArrayList<GafDocument>();
+								if("bulkload".equals(command) || "update".equals(command)){
+									gafDocuments.add( db.buildGafDocument(ontLocation) );
+								}
+							}
+	
+						GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
+						
+						OWLGraphWrapper graph = goldDb.getGraphWrapper();
+						
+						for (GafDocument doc : gafDocuments) {
+	
+							annotationRuleViolations.addAll(doc
+									.validateAnnotations(graph));
+						}
 					}
 					
 				//	wait();

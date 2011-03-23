@@ -1,0 +1,16 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Incremental load of GAF submissions</title>
+</head>
+<body>
+<center>Incremental load of GAF submissions</center>
+<form action="/gold">
+	Http/Ftp url of the GAf Location <input type="text" name="remote-gaf" size="100" />
+	<input type="hidden" name="servicename" value="gaf-db-operations" />
+	<input type="hidden" name="command" value="bulkload" />
+	<input type="submit" value="Load GAF" />
+</form>
+</body>
+</html>

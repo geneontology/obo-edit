@@ -2,7 +2,9 @@ package org.geneontology.gaf.io;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -205,24 +207,25 @@ public class GAFDbOperations implements DbOperationsInterface{
 		
 	}
 	
-	
-	public GafDocument buildGafDocument(String locaiton) throws IOException{
+	public GafDocument buildGafDocument(Reader reader) throws IOException{
 		for(DbOperationsListener listener: listeners){
 			listener.startOntologyLoad();
 		}
 
-	//	GAFParser parser = new GAFParser();
-//		GAFParserHandlerForHibernate handler = new GAFParserHandlerForHibernate();
-	//	parser.parse(new File(locaiton),);
 		GafObjectsBuilder builder = new GafObjectsBuilder();
 		
-		GafDocument doc = builder.buildDocument(new File(locaiton));
+		GafDocument doc = builder.buildDocument(reader);
 
 		for(DbOperationsListener listener: listeners){
 			listener.endOntologyLoad(builder);
 		}
 		
 		return doc;
+
+	}
+	public GafDocument buildGafDocument(String locaiton) throws IOException{
+		FileReader reader = new FileReader(new File(locaiton));
+		return buildGafDocument(reader);
 	}
 	
 	

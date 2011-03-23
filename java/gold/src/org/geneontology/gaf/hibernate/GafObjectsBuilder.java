@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,12 +43,13 @@ public class GafObjectsBuilder {
 		return parser;
 	}
 	
-	public GafDocument buildDocument(File gafFilePath) throws IOException{
+	public GafDocument buildDocument(Reader reader) throws IOException{
+	
 		gafDocument = new GafDocument();
 		
 		parser = new GAFParser();
 		
-		parser.parse(gafFilePath);
+		parser.parse(reader);
 		
 		while(parser.next()){
 			Bioentity entity= addBioEntity(parser);
@@ -60,6 +62,16 @@ public class GafObjectsBuilder {
 		
 		
 		return gafDocument;
+		
+	
+	}
+		
+	
+	public GafDocument buildDocument(File gafFilePath) throws IOException{
+		
+		FileReader reader = new FileReader(gafFilePath);
+		return buildDocument(reader);
+		
 	}
 	
 	private Bioentity addBioEntity(GAFParser parser){
