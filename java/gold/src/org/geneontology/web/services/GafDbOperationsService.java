@@ -145,7 +145,6 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			if(!commit)
 				request.setAttribute("violations", annotationRuleViolations);
 			
-			request.setAttribute("isTaskRunning", runner == null ? false: runner.isRunning());
 //			request.setAttribute("dbname", "GAF");
 			
 			if(runner != null){
@@ -158,6 +157,9 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 				runner = null;
 				//				isOPerationCompleted = true;
 			}
+			
+			request.setAttribute("isTaskRunning", runner == null ? false: runner.isRunning());
+			
 		}
 		
 		
