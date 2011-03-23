@@ -70,7 +70,7 @@ sub new{
     my $c = shift;
     my $s = scalar(@_) ? { @_ } : {};
 
-    $s->{verbose} = '1';
+    #$s->{verbose} = '1';
 
     return bless $s, $c;
 }
@@ -312,6 +312,47 @@ sub id2{
 }
 
 
+sub id4{
+    my $s = shift;
+
+    my $r = GOBO::DBIC::GODBModel::Query->new({type=>'phylotree'})->get_all_results
+      ({
+	xref_dbname  => $s->{dbname},
+	#xref_key => [ 'PTHR10000', 'PTHR10003' ], # for debugging
+       });
+
+    my $progress;
+    eval {
+	require Term::ProgressBar;
+    };
+    if (!$@) {
+	$progress = new Term::ProgressBar
+	  ({
+	    count => scalar(@$r),
+	    name => 'reading',
+	   })
+    }
+
+    my $count = 0;
+    my @out = sort {
+	$a->{key} cmp $b->{key};
+    } map {
+	if ($progress) {
+	    $progress->update(++$count);
+	}
+
+	my $in = $_;
+	my %out;
+
+	my $out = __PACKAGE__->new(dbname => $s->{dbname}, key => $in->dbxref()->xref_key());
+	$out->gene_products();
+
+	$out;
+    } @$r;
+    refg_species_dists(@out);
+    return @out;
+}
+
 sub id3{
     my $s = shift;
 
@@ -323,7 +364,7 @@ sub id3{
 	join =>
 	[
 	 'dbxref',
-	 { gene_product_phylotree => 'association' },
+	 { gene_product_phylotree => { association => 'evidence' }},
 	],
 	select =>
 	[
@@ -349,6 +390,7 @@ sub id3{
 	$new{key}               = $_->get_column('xref_key');
 	$new{number_of_members} = $_->get_column('members');
 	$new{last_annotated}    = $_->get_column('last_anno');
+
 	my $out = __PACKAGE__->new(%new);
 
 	# my @foo = $out->species_dist(1);
@@ -432,7 +474,6 @@ C<#I<RRGGBB>> format.
 sub gene_products{
     my $s = shift;
 
-
     my $r = $phylotree_gobo->get_all_results
       ({ xref_dbname => $s->{dbname}, xref_key => $s->{key} });
     if (length(@$r) != 1) {
@@ -442,19 +483,13 @@ sub gene_products{
 
     $s->{last_annotated} = $r->associations->get_column('assocdate')->max();
 
-    # # Number of exidences codes
-    # $s->{exp} = $r->associations
-    #   ({ code => $core->experimental_evidence_codes },
-    #    { prefetch => 'evidence' }
-    #   )->count();
-
     $s->{exp} = $r->associations()->search
       ({ code => $core->experimental_evidence_codes },
-        {
-	 join => [ 'evidence' ],
-	 select => ['association.gene_product_id' ],
-	 distinct => 1,
-	})->count();
+       {
+	join => [ 'evidence' ],
+	select => ['association.gene_product_id' ],
+	distinct => 1,
+       })->count();
 
     my @gp; # gene products
     for my $gp ($r->gene_products

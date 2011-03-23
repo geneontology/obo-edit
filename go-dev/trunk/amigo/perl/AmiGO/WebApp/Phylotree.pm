@@ -206,6 +206,8 @@ sub mode_cluster_jindex{
 	   key               => shift(@first),
 	   last_annotated    => shift(@first),
 	   number_of_members => shift(@first),
+	   number_of_refg_members => shift(@first),
+	   exp => shift(@first),
 	  };
 	bless $r[0], 'AmiGO::Worker::Phylotree';
 
@@ -228,6 +230,8 @@ sub mode_cluster_jindex{
 	       key               => shift(@one),
 	       last_annotated    => shift(@one),
 	       number_of_members => shift(@one),
+	       number_of_refg_members => shift(@one),
+	       exp => shift(@one),
 	      );
 
 	    for my $o (@species) {
