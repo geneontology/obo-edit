@@ -99,7 +99,7 @@ sub mode_term_details_core {
 				  'AmiGO: Term Details for ' . $input_term_id});
 
   # ## TODO/BUG: these need to go later.
-  # my $graph_type = $params->{graph_type};
+  #my $graph_type = $params->{graph_type};
 
   ## Input sanity check.
   my $acc_list_for_gpc_info = [];
@@ -247,31 +247,22 @@ sub mode_term_details_core {
       my $inf = $lnode_rel_inf->{$acc};
       # my $rel = $graph->get_relationship($acc, $input_term_id);
 
-      # ## Looks like it's not a member of this "reduced" graph.
-      # ## TODO/BUG: this graph_type stupidity will be removed once we're
-      # ## settled.
-      # if( defined $rel || $graph_type eq 'all' ){
+      ## Looks like it's not a member of this "reduced" graph.
+      if( ! defined $rel ){ $rel = 'fatal'; }
 
-      # 	##
-      # 	if( ! defined $rel ){ $rel = 'fatal'; }
-
-      # 	#$self->{CORE}->kvetch("_rel: " . $rel);
-      # 	push @{$nodes_by_depth->{$depth}},
-      # 	  {
-      # 	   acc => $acc,
-      # 	   inferred_p => $inf,
-      # 	   name => $term->name,
-      # 	   rel => $rel,
-      # 	   link => $self->{CORE}->get_interlink({
-      # 					 mode => 'term_details',
-      # 					 arg => {acc => $acc},
-      # 					}),
-      # 	  };
-      # 	push @$acc_list_for_gpc_info, $acc;
-      # }else{
-      # 	## There probably won't be a need for "fatal"s now...
-      # 	# $rel = 'fatal';
-      # }
+      #$self->{CORE}->kvetch("_rel: " . $rel);
+      push @{$nodes_by_depth->{$depth}},
+	{
+	 acc => $acc,
+	 inferred_p => $inf,
+	 name => $term->name,
+	 rel => $rel,
+	 link => $self->{CORE}->get_interlink({
+					       mode => 'term_details',
+					       arg => {acc => $acc},
+					      }),
+	};
+      push @$acc_list_for_gpc_info, $acc;
     }
   }
   $self->{CORE}->kvetch("nodes_by_depth:\n" . Dumper($nodes_by_depth));

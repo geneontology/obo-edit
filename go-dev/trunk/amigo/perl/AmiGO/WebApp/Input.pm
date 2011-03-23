@@ -115,7 +115,7 @@ sub input_profile {
     $self->_add_ontology();
     $self->_add_compat_term();
     # ## TODO: remove these later after testing.
-    # $self->_add_simple_argument('graph_type', 'correct', ['all', 'correct']);
+    #$self->_add_simple_argument('graph_type', 'correct', ['all', 'correct']);
   }elsif( $profile_name eq 'gp' ){
     $self->_add_gp_set();
   }elsif( $profile_name eq 'matrix' ){
