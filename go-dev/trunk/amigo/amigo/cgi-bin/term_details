@@ -98,15 +98,10 @@ sub mode_term_details_core {
   $self->_common_params_settings({'title' =>
 				  'AmiGO: Term Details for ' . $input_term_id});
 
-  # ## TODO/BUG: these need to go later.
-  #my $graph_type = $params->{graph_type};
-
   ## Input sanity check.
-  my $acc_list_for_gpc_info = [];
   if( ! $input_term_id ){
     return $self->mode_die_with_message("Term acc could not be found! Is it possible that what you're looking for is not a term acc?");
   }
-  push @$acc_list_for_gpc_info, $input_term_id;
 
   ###
   ### Get full term info.
@@ -123,6 +118,30 @@ sub mode_term_details_core {
   my $foo = (keys %$term_info)[0];
   $self->{CORE}->kvetch('$term_info: ' . Dumper($term_info->{$foo}));
   $self->set_template_parameter('TERM_INFO', $term_info->{$foo});
+
+  ## First switch on term vs. subset.
+  my $is_term_acc_p = $self->{CORE}->is_term_acc_p($input_term_id);
+  my $acc_list_for_gpc_info = [];
+  my $input_term_ids = [];
+  if( $is_term_acc_p ){
+
+    $self->{CORE}->kvetch('Looks like a term acc...');
+
+    $input_term_ids = [$input_term_id];
+    push @$acc_list_for_gpc_info, $input_term_id;
+
+  }else{
+
+    $self->{CORE}->kvetch('Looks like a subset acc...');
+
+    ## Convert input subset acc to term accs.
+    my $sget = AmiGO::Worker::Subset->new();
+    #@subset_list = keys(%{$sget->get_term_accs($input_term_id)});
+    for my $k keys(%{$sget->get_term_accs($input_term_id)}){
+      push @$input_term_ids, $k;
+      push @$acc_list_for_gpc_info, $k;
+    }
+  }
 
   ## TODO: spin into AmiGO::Worker somewhere.
   ## Graph on.
