@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -167,6 +168,11 @@ public class GAFParser {
 	}
 	
 
+	
+	public void parse(Reader reader){
+		this.reader = new BufferedReader(reader);
+	}
+	
 	public void parse(File gaf_file)
 			throws IOException {
 
