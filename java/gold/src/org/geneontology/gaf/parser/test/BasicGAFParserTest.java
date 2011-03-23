@@ -2,6 +2,7 @@ package org.geneontology.gaf.parser.test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,5 +51,34 @@ public class BasicGAFParserTest extends TestCase {
 		
 		// DO SOME STUFF HERE
 	}
+	
+	public void testHttpURL() throws IOException, URISyntaxException{
+		GAFParser p = new GAFParser();
+		p.parse("http://www.geneontology.org/gene-associations/gene_association.aspgd.gz");
 
+		
+		p.next();
+		
+		
+		assertNotNull( p.getDb() );
+		
+	}
+
+	public void testURI() throws IOException, URISyntaxException{
+		
+		File f = new File("test_resources/test_gene_association_mgi.gaf");
+		
+		
+		GAFParser p = new GAFParser();
+		p.parse(f.toURI().toString());
+
+		
+		p.next();
+		
+		
+		assertNotNull( p.getDb() );
+		
+	}
+	
+	
 }
