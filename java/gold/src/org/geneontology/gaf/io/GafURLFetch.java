@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
 public class GafURLFetch implements Iterator {
@@ -40,7 +41,26 @@ public class GafURLFetch implements Iterator {
 		if(httpURL != null)
 			return true;
 		
-		return counter<files.length;
+		if(counter>=files.length)
+			return false;
+		
+		try{
+			FTPFile ftpFiles[] = ftpClient.listFiles(files[counter]);
+			
+			if(ftpFiles.length>0){
+				if( ftpFiles[0].isDirectory()){
+					counter++;
+					hasNext();
+				}else{
+					return true;
+				}
+			}
+			
+		}catch(IOException ex){
+			throw new RuntimeException(ex);
+		}
+		
+		return false;
 	}
 
 	public Object next() {
@@ -55,7 +75,7 @@ public class GafURLFetch implements Iterator {
 				if(url.endsWith(".gz")){
 					is = new GZIPInputStream(is);
 				}
-				
+				this.httpURL = null;
 				return is;
 			}else{
 				

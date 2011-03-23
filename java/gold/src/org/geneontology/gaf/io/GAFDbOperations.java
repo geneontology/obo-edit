@@ -2,12 +2,17 @@ package org.geneontology.gaf.io;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
+
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gaf.hibernate.Bioentity;
@@ -25,6 +30,7 @@ import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.io.postgres.SchemaManager;
 import org.geneontology.gold.io.postgres.TsvFileLoader;
 import org.hibernate.Session;
+import org.semanticweb.owl.io.FileInputSource;
 
 public class GAFDbOperations implements DbOperationsInterface{
 
@@ -224,8 +230,13 @@ public class GAFDbOperations implements DbOperationsInterface{
 
 	}
 	public GafDocument buildGafDocument(String locaiton) throws IOException{
-		FileReader reader = new FileReader(new File(locaiton));
-		return buildGafDocument(reader);
+		InputStream is = new FileInputStream(new File(locaiton));
+		
+		if(locaiton.endsWith(".gz")){
+			is = new GZIPInputStream(is);
+		}
+		
+		return buildGafDocument(new InputStreamReader(is));
 	}
 	
 	
