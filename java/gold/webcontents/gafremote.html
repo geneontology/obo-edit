@@ -5,9 +5,12 @@
 <title>Incremental load of GAF submissions</title>
 </head>
 <body>
-<center>Incremental load of GAF submissions</center>
+<center><h1>Incremental load of GAF submissions</h1></center>
+
+Load GAF from http/ftp URLs. The FTP URL could point to a file or directory.<br /><br /><br />
+
 <form action="/gold">
-	Http/Ftp url of the GAf Location <input type="text" name="remote-gaf" size="100" />
+	GAF Location <input type="text" name="remote-gaf" size="100" />
 	<input type="hidden" name="servicename" value="gaf-db-operations" />
 	<input type="hidden" name="command" value="bulkload" />
 	<input type="submit" value="Load GAF" />
