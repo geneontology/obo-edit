@@ -21,7 +21,7 @@ use AmiGO::Cache::PhylotreeSummary;
 use AmiGO::Aid::PantherDB;
 
 my $work = new AmiGO::Worker::Phylotree(dbname => 'PantherDB');
-my @cache_me = $work->id3();
+my @cache_me = $work->id4();
 
 my @species = AmiGO::Aid::PantherDB->reference_genome();
 my $cache = new AmiGO::Cache::PhylotreeSummary(@species);
@@ -30,7 +30,8 @@ $cache->build();
 $cache->open();
 while (scalar @cache_me) {
     my $me = shift @cache_me;
-    my @data = ($me->{dbname}, $me->{key}, $me->last_annotated(), $me->{number_of_members}, map {
+    my @data = ($me->{dbname}, $me->{key}, $me->last_annotated(), $me->{number_of_members},
+		$me->{number_of_refg_members}, $me->{exp}, map {
 	$_->{count};
     } @{ $me->{dist} });
 
