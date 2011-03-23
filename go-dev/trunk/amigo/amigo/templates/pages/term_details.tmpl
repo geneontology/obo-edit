@@ -15,8 +15,9 @@
 		INCLUDE message.tmpl %]
 			<h1 class="name">[% page_title %]</h1>
 		
-[% IF term;
-		IF term.is_obsolete %]
+[% IF term %]
+
+		[% IF term.is_obsolete %]
 <div class="block obsolete" id="info">
 [% ELSE %]
 	<ul id="navPage" class="inline C">
@@ -33,6 +34,16 @@
 		<li><a href="term-assoc.cgi?term=[% term.acc %]&amp;session_id=[% session_id %]" title="View gene products associated with this term">[% gp_assoc_text %] <img src="[% image_dir %]/left.png" alt="link to another page"></a></li>
 	[% END %]
 	</ul>
+
+<div class="block warning" id="old">
+  <h2 class="">Warning</h2>
+  <p>
+    This page, while still accurate, is deprecated and may have
+    reduced functionality. Please update your links to the new page
+    at: <a title="New page for [% term.acc %]" href="[% NEW_LINK %]">[% NEW_LINK %]</a>.
+  </p>
+</div>
+
 <div class="block" id="info">
 [% END %]
 	<h2>Term Information</h2>
