@@ -2,21 +2,29 @@ package org.geneontology.gaf.parser;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gaf.hibernate.GafConstants.EvidenceCode;
 import org.geneontology.gaf.hibernate.GafConstants.Qualifier;
 import org.geneontology.gold.rules.AnnotationRuleViolation;
+import org.semanticweb.owl.io.FileInputSource;
 
 /**
  * 
@@ -170,31 +178,44 @@ public class GAFParser {
 
 	
 	public void parse(Reader reader){
+		init();
+		if (DEBUG)
+			LOG.debug("Parsing Start");
+	
 		this.reader = new BufferedReader(reader);
 	}
+
+	public void parse(String file) throws IOException, URISyntaxException{
+		if(file == null){
+			throw new IOException("File '" + file + "' file not found");
+		}
+		
+		InputStream is = null;
+		
+		if(file.startsWith("http://")){
+			URL url = new URL(file);
+			is = url.openStream();
+		}else if(file.startsWith("file:/")){
+			is = new FileInputStream(new File(new URI(file)));
+		}else{
+			is = new FileInputStream(file);
+		}
+		
+		if(file.endsWith(".gz")){
+			is = new GZIPInputStream(is);
+		}
+		
+		parse(new InputStreamReader(is));
+		
+	}
+
 	
 	public void parse(File gaf_file)
 			throws IOException {
 
 
-		init();
 		// String message = "Importing GAF data";
-		if (DEBUG)
-			LOG.debug("Parsing Start");
-
-		if (null != gaf_file && gaf_file.isFile()) {
-			String file_name = gaf_file.getCanonicalPath();
-			if (isValidPath(file_name)) {
-
-				this.reader = new BufferedReader(new FileReader(new File(file_name)));
-			//	next();
-
-			} else {
-				errors.add(file_name + " cannot be found");
-			}
-		} else {
-			errors.add(gaf_file + " is not a readable file.");
-		}
+		parse(gaf_file.getAbsoluteFile());
 
 	}
 	
