@@ -92,6 +92,7 @@ sub new {
   $self->{SOURCE} = undef;
   $self->{GPTYPE} = undef;
   $self->{ONTOLOGY} = undef;
+  $self->{SUBSET} = undef;
   $self->{DB_INFO} = undef;
   $self->{EVCODES} = undef;
   $self->{RELATIONS} = undef;
@@ -1039,6 +1040,33 @@ sub ontology {
     }
   }
   return $self->{ONTOLOGY};
+}
+
+
+=item subset
+
+# TODO:
+
+=cut
+sub subset {
+
+  my $self = shift;
+
+  if( ! defined($self->{SUBSET}) ){
+
+    my($ret_hash) = _read_frozen_file($self, '/misc_keys.pl');
+
+    ## Populate our hash.
+    $self->{SUBSET} = {};
+    if( defined $ret_hash->{subset} ){
+      my $subs = $ret_hash->{subset};
+      foreach my $s (@$subs){
+	$self->{SUBSET}{$s} = $s;
+	#$self->kvetch('subset: ' . $s);
+      }
+    }
+  }
+  return $self->{SUBSET};
 }
 
 

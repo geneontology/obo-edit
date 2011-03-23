@@ -78,6 +78,15 @@ if (scalar @term_list > 1)
 $vars->{term_acc} = $term_list[0];
 
 ###
+### Link to new page...
+###
+
+$vars->{NEW_LINK} =
+  $core->get_interlink({mode => 'term_details',
+			arg => {acc => $vars->{term_acc}},
+			optional => {full => 1}});
+
+###
 ### New visualization links...
 ###
 
