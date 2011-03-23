@@ -18,13 +18,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
-
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
-import org.geneontology.gaf.hibernate.GafConstants.EvidenceCode;
-import org.geneontology.gaf.hibernate.GafConstants.Qualifier;
 import org.geneontology.gold.rules.AnnotationRuleViolation;
-import org.semanticweb.owl.io.FileInputSource;
 
 /**
  * 
@@ -185,6 +181,13 @@ public class GAFParser {
 		this.reader = new BufferedReader(reader);
 	}
 
+	/**
+	 * 
+	 * @param file is the location of the gaf file. The location
+	 *  could be http url, absolute path and uri. The could refer to a gaf file or compressed gaf (gzip fle).
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 */
 	public void parse(String file) throws IOException, URISyntaxException{
 		if(file == null){
 			throw new IOException("File '" + file + "' file not found");

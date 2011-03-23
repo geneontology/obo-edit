@@ -7,17 +7,30 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.zip.GZIPInputStream;
-
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.net.ftp.FTPReply;
+import org.apache.log4j.Logger;
+import org.geneontology.gaf.io.test.GafURLFetchTest;
+import org.geneontology.web.services.GafDbOperationsService;
 
+/**
+ * This class builds the {@link InputStream} objects for the http/ftp URLs.
+ * The next method returns the input streams object. If the protocol is ftp  then
+ * completeDownload is to be called after reading the input the stream.
+ * See {@link GafURLFetchTest} and {@link GafDbOperationsService} for use.
+ * @author Shahid Manzoor
+ *
+ */
 public class GafURLFetch implements Iterator {
 
+	private static Logger LOG = Logger.getLogger(GafURLFetch.class);
+	private static boolean DEBUG = LOG.isDebugEnabled();
+	
 	private String url;
 	
-	private String[] files;
+	private FTPFile[] files;
 	
 	private FTPClient ftpClient;
 	
@@ -28,7 +41,7 @@ public class GafURLFetch implements Iterator {
 	private URL httpURL;
 	
 	public GafURLFetch(String url){
-		this.url = url;
+		this.url =  url ;
 		ftpClient = new FTPClient();
 		counter = 0;
 	}
@@ -44,28 +57,20 @@ public class GafURLFetch implements Iterator {
 		if(counter>=files.length)
 			return false;
 		
-		try{
-			FTPFile ftpFiles[] = ftpClient.listFiles(files[counter]);
-			
-			if(ftpFiles.length>0){
-				if( ftpFiles[0].isDirectory()){
-					counter++;
-					hasNext();
-				}else{
-					return true;
-				}
-			}
-			
-		}catch(IOException ex){
-			throw new RuntimeException(ex);
+		if( files[counter].isDirectory()){
+			counter++;
+			return hasNext();
+		}else{
+			return true;
 		}
 		
-		return false;
+		
+			
 	}
 
 	public Object next() {
 		if(!hasNext()){
-			return null;
+			throw new NoSuchElementException();
 		}
 		
 		try{
@@ -79,11 +84,14 @@ public class GafURLFetch implements Iterator {
 				return is;
 			}else{
 				
-				String file = files[counter++];
+				String file = files[counter++].getName();
+				
+				if(DEBUG)
+					LOG.debug("Returning input stream for the file: " + file);
 				
 				InputStream is = ftpClient.retrieveFileStream(file);
 				
-				if(url.endsWith(".gz")){
+				if(file.endsWith(".gz")){
 					is = new GZIPInputStream(is);
 				}
 				
@@ -94,11 +102,16 @@ public class GafURLFetch implements Iterator {
 		}
 		
 	}
+	
+	public void completeDownload() throws IOException{
+		if(this.url.startsWith("ftp:"))
+			ftpClient.completePendingCommand();
+	}
 
 	public void remove() {
 	}
 
-	public boolean connect() throws URISyntaxException, SocketException, IOException{
+	public boolean connect() throws SocketException, IOException, URISyntaxException{
 		if(this.isConnected)
 			return true;
 		
@@ -107,7 +120,7 @@ public class GafURLFetch implements Iterator {
 		if(this.url.startsWith("http://")){
 			this.httpURL = uri.toURL();
 			this.isConnected = true;
-			this.files = new String[]{};
+			this.files = new FTPFile[]{};
 			return true;
 		}
 		
@@ -122,22 +135,17 @@ public class GafURLFetch implements Iterator {
 		ftpClient.login("anonymous", "");
 		ftpClient.enterLocalActiveMode();
 		
-		/*int reply = ftpClient.getReply();
+		this.files = ftpClient.listFiles( uri.getPath() );
 
+		String path = uri.getPath();
 		
-		if(!FTPReply.isPositiveIntermediate(reply)){
-			ftpClient.disconnect();
-			return false;
-		}*/
-		
-		
-		/*if(url.endsWith(".gaf")){
-			String file = url.substring( url.lastIndexOf("/"));
-			this.files = new String[]{file};
-		}else{*/
+		if(this.files.length==1){
+			path = path.substring(0, path.lastIndexOf("/")) + "/";
 			
-		this.files = ftpClient.listNames( uri.getPath() );
-
+		}
+		
+		ftpClient.changeWorkingDirectory(path);
+		
 		this.isConnected = true;
 		
 		return true;
