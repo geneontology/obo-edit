@@ -101,7 +101,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			//if there is no task running then create one for the update and bulkload commands
 //			if(isOPerationCompleted && !commit) {
 			if(remoteGAF != null){
-				gafLocations = new GafURLFetch(remoteGAF);
+					gafLocations = new GafURLFetch(remoteGAF);
 			}else if(runner == null && !commit) {
 			
 				//update command expects gaf location location in the parameter.
