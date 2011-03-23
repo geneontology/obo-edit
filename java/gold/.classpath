@@ -44,7 +44,7 @@
 	<classpathentry kind="lib" path="lib/commons-lang-2.5.jar"/>
 	<classpathentry kind="lib" path="lib/postgresql-9.0-801.jdbc4.jar"/>
 	<classpathentry kind="lib" path="lib/owltools.jar" sourcepath="/OWLTools/src"/>
-	<classpathentry kind="lib" path="lib/jetty/jetty-6.1.26.jar"/>
+	<classpathentry kind="lib" path="lib/jetty/jetty-6.1.26.jar" sourcepath="/Users/shahidmanzoor/.m2/repository/org/mortbay/jetty/jetty/6.1.26/jetty-6.1.26-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jetty/jetty-util-6.1.26.jar"/>
 	<classpathentry kind="lib" path="lib/jetty/servlet-api-2.5-20081211.jar"/>
 	<classpathentry kind="lib" path="lib/pellet-owlapi.jar"/>
@@ -58,5 +58,6 @@
 	<classpathentry kind="lib" path="lib/jsp/xmlParserAPIs-2.6.2.jar"/>
 	<classpathentry kind="lib" path="lib/jstl/standard.jar"/>
 	<classpathentry kind="lib" path="lib/jstl/jstl.jar"/>
+	<classpathentry kind="lib" path="lib/commons-net-2.2.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
