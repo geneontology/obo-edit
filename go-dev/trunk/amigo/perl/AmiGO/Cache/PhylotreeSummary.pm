@@ -40,6 +40,8 @@ CREATE TABLE data(
  xref_key VARCHAR(255),
  last_annotated DATE,
  members INTEGER,
+ refg_members INTEGER,
+ exp INTEGER,
 SQL
       join(",\n", map {
 	  ' ' . lc($_) . ' INTEGER';
@@ -55,14 +57,16 @@ sub cache_data{
     my @code = $s->code_names;
 
     if (! $s->{$insert_sth} ) {
-	my $sql = 'INSERT INTO data(xref_dbname,xref_key,last_annotated,members,' .
-	  join(',', map { lc } @code) . ')VALUES(?,?,?,?,' .
+	my $sql = 'INSERT INTO data(xref_dbname,xref_key,last_annotated,members,refg_members,exp,' .
+	  join(',', map { lc } @code) . ')VALUES(?,?,?,?,?,?,' .
 	    join(',', ('?') x scalar(@code)) . ')';
-	#warn $sql;
+	warn $sql;
 	$s->{$insert_sth} = $s->{CACHE_DBH}->prepare($sql);
     }
 
-    return $s->{$insert_sth}->execute(@_);
+    return $s->{$insert_sth}->execute(map {
+	$_ ? $_ : 0;
+    } @_);
 }
 
 sub get_all_data{

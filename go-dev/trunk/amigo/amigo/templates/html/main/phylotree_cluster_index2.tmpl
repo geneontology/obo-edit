@@ -33,6 +33,8 @@ jQuery(document).ready(function() {
 <th>Cluster</th>
 <th>Last Annotated</th>
 <th>Members</th>
+<th>RefG Members</th>
+<th>EXP</th>
 [%- FOREACH dist IN clusters.0.dist -%]
 <th>[% dist.code %]</th>
 [%- END -%]
@@ -43,6 +45,8 @@ jQuery(document).ready(function() {
 <td><a href="[% cluster.url %]">[% cluster.key %]</a></td>
 <td>[% cluster.last_annotated %]</td>
 <td>[% cluster.number_of_members %]</td>
+<td>[% cluster.number_of_refg_members %]</td>
+<td>[% cluster.exp %]</td>
 [%- FOREACH dist IN cluster.dist -%]
 <td class="taxid_[% dist.ncbi_taxa_id %]">[% dist.count %]</td>
 [%- END -%]
