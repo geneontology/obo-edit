@@ -14,6 +14,17 @@
 [% TRY;
 		INCLUDE message.tmpl;
 		#	USE Dumper(indent=1) ; '<pre>'; Dumper.dump( graph ); '</pre>' %]
+
+
+<!-- <div class="block warning" id="old"> -->
+<!--   <h2 class="">Warning</h2> -->
+<!--   <p> -->
+<!--     This page, while still accurate, is deprecated and may have -->
+<!--     reduced functionality. Please update your links to the new page -->
+<!--     at: <a title="New page for [% term.acc %]" href="[% NEW_LINK %]">[% NEW_LINK %]</a>. -->
+<!--   </p> -->
+<!-- </div> -->
+
 <div class="block term" id="info">
 	<h2>Subset Information</h2>
 	<dl class="term-info">
