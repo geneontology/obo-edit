@@ -220,8 +220,13 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 						fetch.connect();
 						gafDocuments = new ArrayList<GafDocument>();
 						while(fetch.hasNext()){
+
 							InputStream is = (InputStream)fetch.next();
-							gafDocuments.add(db.buildGafDocument(new InputStreamReader(is)));
+							this.currentOntologyBeingProcessed = fetch.getCurrentGafFile();
+							
+							GafDocument doc = db.buildGafDocument(new InputStreamReader(is), fetch.getCurrentGafFile(), fetch.getCurrentGafFilePath());
+							gafDocuments.add( doc);
+							
 						}
 					}else{
 						List<String> files = (List<String>)gafLocations;
@@ -249,6 +254,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 				}else{
 						
 						for(GafDocument gafDocument: gafDocuments){
+							this.currentOntologyBeingProcessed = gafDocument.getId();
 						
 							if("bulkload".equals(command)){
 								db.bulkLoad(gafDocument, false);
@@ -328,12 +334,12 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 		}
 
 		public void startOntologyLoad() {
-			reportStartTime("Obo To OWL Conversion--"
+			reportStartTime("Parsing GAF--"
 					+ currentOntologyBeingProcessed);
 		}
 
 		public void endOntologyLoad(Object object) {
-			reportEndTime("Obo To OWL Conversion--" + currentOntologyBeingProcessed);
+			reportEndTime("Parsing GAF--" + currentOntologyBeingProcessed);
 
 			if (object instanceof GafObjectsBuilder) {
 				GafObjectsBuilder builder = (GafObjectsBuilder) object;
