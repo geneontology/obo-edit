@@ -61,9 +61,9 @@ public abstract class TermHyperlinkListener implements HyperlinkListener {
 				} else
 					return;
 			}
-			logger.info("linkType = "+linkType);
-			logger.info("linkParam = "+linkParam);
-			logger.info("linkVal = "+linkVal);
+                        //			logger.debug("linkType = "+linkType);
+                        //			logger.debug("linkParam = "+linkParam);
+                        //			logger.debug("linkVal = "+linkVal);
 			if (linkType.equals("term")) {
 				String id = linkVal.replaceAll("%3A", ":");
 				IdentifiedObject io = linkDatabase.getObject(id);
