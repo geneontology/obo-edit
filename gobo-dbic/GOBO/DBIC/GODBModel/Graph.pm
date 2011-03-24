@@ -19,6 +19,8 @@ use GOBO::DBIC::GODBModel::Schema;
 use GOBO::DBIC::GODBModel::Query;
 use Graph::Directed;
 use Graph::TransitiveClosure;
+use Data::Dumper;
+
 
 =item new
 
@@ -120,6 +122,29 @@ sub _convert_term_or_acc_to_acc {
 }
 
 
+## Internal convenience function. Convert pretty much anything into
+## acc string array ref.
+sub _convert_whatever_to_acc_aref {
+
+  my $self = shift;
+  my $term = shift || '';
+  my $ret_thing = [];
+
+  if( ref($term) eq "ARRAY" ){
+    #$self->kvetch('what: term (many): ' . Dumper($term));
+    for my $t (@$term){
+      push @$ret_thing, $self->_convert_term_or_acc_to_acc($t);
+    }
+  }else{
+    #$self->kvetch('what: term (single): ' .  Dumper($term));
+    push @$ret_thing, $self->_convert_term_or_acc_to_acc($term);
+  }
+
+  #$self->kvetch('what: ret_thing: ' . Dumper($ret_thing));
+  return $ret_thing;
+}
+
+
 =item get_roots
 
 Returns the root nodes.
@@ -181,7 +206,7 @@ sub is_leaf_p {
 
 =item get_term
 
-TODO: accept arrayrefs as well. That should help the speedups.
+TODO?: accept arrayrefs as well. That should help the speedups.
 
 Gets a term from an acc string or DBIx::Class Term.
 A Term just gets passed through (little overhead).
@@ -207,7 +232,7 @@ sub get_term {
 
 =item get_children
 
-In: acc string or Term.
+In: acc string, Term, or aref of either.
 Out: Children term (object) list ref.
 
 =cut
@@ -216,11 +241,12 @@ sub get_children {
   my $self = shift;
   #my $term = shift || undef;
   my $thing = shift || '';
-  my $acc = $self->_convert_term_or_acc_to_acc($thing);
+  #my $acc = $self->_convert_term_or_acc_to_acc($thing);
+  my $accs = $self->_convert_whatever_to_acc_aref($thing);
 
   # my $all = $self->{GRAPH_Q}->get_all_results({'graph_object.acc' => $acc,
   # 					       'graph_path.distance' => 1});
-  my $all = $self->{GRAPH_PATH}->get_all_results({'object.acc' => $acc,
+  my $all = $self->{GRAPH_PATH}->get_all_results({'object.acc' => $accs,
 						  'me.distance' => 1});
 
   my $ret = [];
@@ -251,7 +277,7 @@ sub get_relationship {
 
   ## 
   my $all = $self->{GRAPH_PATH}->get_all_results({'object.acc' => $obj_acc,
-						  'subject.acc' => $sub_acc});
+  						  'subject.acc' => $sub_acc});
 
   ## Should be just one.
   my $ret = undef;
@@ -266,7 +292,7 @@ sub get_relationship {
 
 =item get_child_relationships
 
-Takes DBIx::Class Term or acc string.
+Takes DBIx::Class Term or acc string, or aref of either.
 Gets the term2term links from a term.
 
 # TODO/BUG: track down functions that use this to switch over to running
@@ -277,18 +303,17 @@ sub get_child_relationships {
 
   my $self = shift;
   my $term = shift || undef;
-  my $term_acc = $self->_convert_term_or_acc_to_acc($term);
+  #my $term_acc = $self->_convert_term_or_acc_to_acc($term);
+  my $term_accs = $self->_convert_whatever_to_acc_aref($term);
 
-  # return $self->{GRAPH_PATH}->get_all_results({'me.acc' => $term_acc,
-  #                                              'me.distance' => 1});
-  return $self->{GRAPH_Q}->get_all_results({'graph_object.acc' => $term_acc,
+  return $self->{GRAPH_Q}->get_all_results({'graph_object.acc' => $term_accs,
   					    'graph_path.distance' => 1});
 }
 
 
 =item get_parent_relationships
 
-Takes DBIx::Class Term or acc string.
+Takes DBIx::Class Term or acc string, or aref of either.
 Gets the term2term links from a term.
 
 TODO/BUG: track down functions that use this to switch over to running
@@ -299,13 +324,11 @@ sub get_parent_relationships {
 
   my $self = shift;
   my $term = shift || undef;
-  my $term_acc = $self->_convert_term_or_acc_to_acc($term);
+  #my $term_acc = $self->_convert_term_or_acc_to_acc($term);
+  my $term_accs = $self->_convert_whatever_to_acc_aref($term);
 
-  # return
-  #   $self->{GRAPH_PATH}->get_all_results({'me.acc' => $term_acc,
-  # 				       'me.distance' => 1});
   return
-    $self->{GRAPH_Q}->get_all_results({'graph_subject.acc' => $term_acc,
+    $self->{GRAPH_Q}->get_all_results({'graph_subject.acc' => $term_accs,
 				       'graph_path.distance' => 1});
 }
 
@@ -327,6 +350,7 @@ sub climb {
   my $self = shift;
   my $in_thing = shift || [];
 
+  ## TODO: could probably use _convert_whatever_to_acc_aref here...
   ## Whatever it is, arrayify it.
   if( ref $in_thing ne 'ARRAY' ){
     $in_thing = [$in_thing];
@@ -335,10 +359,8 @@ sub climb {
   ## Whatever is in there, make sure that they're all Terms. Use
   ## Graph::get_term pass-through.
   my @seed_terms = map {
-  #my @blah = map {
     $self->get_term($_);
   } @$in_thing;
-  #my $seed_terms = \@blah;
 
   ## For doing transitive closure on the graph to help with
   ## association transfer.
@@ -489,10 +511,13 @@ sub lineage {
   my $self = shift;
   my $sub_thing = shift || '';
 
-  my $sub_acc = $self->_convert_term_or_acc_to_acc($sub_thing);
+  #my $sub_acc = $self->_convert_term_or_acc_to_acc($sub_thing);
+  #$self->kvetch('sub_thing: ' . $sub_thing);
+  my $sub_accs = $self->_convert_whatever_to_acc_aref($sub_thing);
+  #$self->kvetch('sub_accs: ' . Dumper($sub_accs));
 
   ##
-  my $all = $self->{GRAPH_PATH}->get_all_results({'subject.acc' => $sub_acc});
+  my $all = $self->{GRAPH_PATH}->get_all_results({'subject.acc' => $sub_accs});
 
   my $nodes = {};
   my $node_depth = {};

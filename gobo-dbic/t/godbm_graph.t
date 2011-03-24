@@ -27,11 +27,27 @@ if( ! $ENV{GO_DBNAME} || ! $ENV{GO_DBHOST} ){
     ok($g->is_root_p($r), $r . " is a root");
   }
 
+  ## Check kids.
+  my $numk1 = $g->get_children("GO:0022008");
+  ok( scalar(@$numk1) eq 5, "GO:0022008 has 5 kids");
+  my $numk2 = $g->get_children(["GO:0016787"]);
+  ok( scalar(@$numk2) eq 19, "GO:0016787 has 19 kids");
+  my $numk3 = $g->get_children(["GO:0016787", "GO:0022008"]);
+  ok( scalar(@$numk3) eq 24, "GO:0016787 and GO:0022008 have 24 kids");
+
+  ## Check kid rels.
+  my $numkr1 = $g->get_child_relationships("GO:0022008");
+  ok( scalar(@$numk1) eq 5, "GO:0022008 has 5 kid rels");
+  my $numkr2 = $g->get_child_relationships(["GO:0016787"]);
+  ok( scalar(@$numk2) eq 19, "GO:0016787 has 19 kid rels");
+  my $numkr3 = $g->get_child_relationships(["GO:0016787", "GO:0022008"]);
+  ok( scalar(@$numk3) eq 24, "GO:0016787 and GO:0022008 have 24 kid rels");
+
   ## Get a couple lineage sets.
   my($lnodes1, $lnode_rel1, $lnode_rel_inf1, $lnode_depth1, $max_ldepth1) =
     $g->lineage('GO:0022008');
   my($lnodes2, $lnode_rel2, $lnode_rel_inf2, $lnode_depth2, $max_ldepth2) =
-    $g->lineage('GO:0007399');
+    $g->lineage(['GO:0007399']);
   # $g->kvetch('lnode_depth1: ' . Dumper($lnode_depth1));
   # $g->kvetch('lnode_depth2: ' . Dumper($lnode_depth2));
 
