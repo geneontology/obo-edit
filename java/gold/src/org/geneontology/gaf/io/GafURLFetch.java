@@ -40,6 +40,11 @@ public class GafURLFetch implements Iterator {
 	
 	private URL httpURL;
 	
+
+	private String currentGafFile;
+	
+	private String currentGafFilePath;
+	
 	public GafURLFetch(String url){
 		this.url =  url ;
 		ftpClient = new FTPClient();
@@ -72,6 +77,8 @@ public class GafURLFetch implements Iterator {
 		if(!hasNext()){
 			throw new NoSuchElementException();
 		}
+
+		this.currentGafFilePath = this.url;
 		
 		try{
 			if(this.httpURL != null){
@@ -80,11 +87,21 @@ public class GafURLFetch implements Iterator {
 				if(url.endsWith(".gz")){
 					is = new GZIPInputStream(is);
 				}
+				
+				this.currentGafFile = this.currentGafFilePath.substring(this.currentGafFilePath.lastIndexOf("/")+1);
+				
 				this.httpURL = null;
 				return is;
 			}else{
 				
 				String file = files[counter++].getName();
+		
+				this.currentGafFile = file;
+				
+				
+				if(!this.currentGafFilePath.endsWith(file))
+					currentGafFilePath += file;
+				
 				
 				if(DEBUG)
 					LOG.debug("Returning input stream for the file: " + file);
@@ -116,6 +133,8 @@ public class GafURLFetch implements Iterator {
 			return true;
 		
 		URI uri = new URI(url);
+		
+		this.currentGafFile = null;
 		
 		if(this.url.startsWith("http://")){
 			this.httpURL = uri.toURL();
@@ -150,5 +169,13 @@ public class GafURLFetch implements Iterator {
 		
 		return true;
 	}
-	
+
+	public String getCurrentGafFile() {
+		return currentGafFile;
+	}
+
+	public String getCurrentGafFilePath() {
+		return currentGafFilePath;
+	}
+
 }

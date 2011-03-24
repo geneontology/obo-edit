@@ -128,6 +128,8 @@ public class GAFDbOperations implements DbOperationsInterface{
 	private void bulkLoadHibernate(Session session, GafDocument gafDocument){
 
 		
+		session.save(gafDocument);
+		
 		for(String id: gafDocument.getCompositeQualifiersIds()){
 			for(CompositeQualifier cq: gafDocument.getCompositeQualifiers(id)){
 				session.saveOrUpdate(cq);
@@ -213,14 +215,14 @@ public class GAFDbOperations implements DbOperationsInterface{
 		
 	}
 	
-	public GafDocument buildGafDocument(Reader reader) throws IOException{
+	public GafDocument buildGafDocument(Reader reader, String docId, String path) throws IOException{
 		for(DbOperationsListener listener: listeners){
 			listener.startOntologyLoad();
 		}
 
 		GafObjectsBuilder builder = new GafObjectsBuilder();
 		
-		GafDocument doc = builder.buildDocument(reader);
+		GafDocument doc = builder.buildDocument(reader, docId, path);
 
 		for(DbOperationsListener listener: listeners){
 			listener.endOntologyLoad(builder);
@@ -230,13 +232,15 @@ public class GAFDbOperations implements DbOperationsInterface{
 
 	}
 	public GafDocument buildGafDocument(String locaiton) throws IOException{
-		InputStream is = new FileInputStream(new File(locaiton));
+		File f = new File(locaiton);		
+		
+		InputStream is = new FileInputStream(f);
 		
 		if(locaiton.endsWith(".gz")){
 			is = new GZIPInputStream(is);
 		}
 		
-		return buildGafDocument(new InputStreamReader(is));
+		return buildGafDocument(new InputStreamReader(is), f.getName(), f.getCanonicalPath());
 	}
 	
 	
