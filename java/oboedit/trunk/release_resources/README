@@ -1,7 +1,7 @@
 Copyright (C) 2011, Gene Ontology Consortium
-Original author:  John Day-Richter (john.richter@aya.yale.edu)
-Version:      2.1-beta8
-Release date: January 24, 2011
+Original author:  John Day-Richter
+Version:  2.1-beta11
+Release date:  March 24, 2011
 
 OBO-Edit is an open source tool written in Java for browsing, searching, and
 modifying OBO ontologies.
@@ -12,16 +12,47 @@ Contacting us
   The OBO-Edit source code can be found at
   http://geneontology.svn.sourceforge.net/viewvc/geneontology/java/oboedit/trunk/
 
-How to report bugs:
------------
-  Use the bug tracking system on our sourceforge site. Submit a bug by going to
+How to report bugs
+---------------
+  Use the bug tracking system on our SourceForge site. Submit bug reports at
   http://sourceforge.net/tracker/?func=add&group_id=36855&atid=418257
 
-Revision History:
------------
-  Version 2.1-beta8
 
-===  OBO-Edit v2.1 RELEASE NOTES  ===
+=================================
+What's New in OBO-Edit v2.1-beta11 (3/24/2011)
+=================================
+
+Bug fixes:
+[ geneontology-Bugs-3203198 ] Words added to dictionary in unedited term don't
+  turn black immediately
+
+[ geneontology-Bugs-1899612] Some filters give wrong answers unless reasoner turned on
+[ geneontology-Bugs-3169726] Search term Filter returning wrong results
+- Since the Ancestor and Descendent aspects don't work unless the reasoner is
+on, these aspects are now included in the aspect menu only if the reasoner is on.
+- Added tooltip to "in" label before aspect that says "Note: Ancestor and
+Descendent are available only if the reasoner is on.";
+- Added notes to user guide about ancestor/descendent only being available if
+reasoner is on.
+
+[ geneontology-Bugs-1894720 ] multiple empty hits when searching help
+
+[ geneontology-Bugs-2899138 ] explanation component not always working
+The Explanations component and Graph Editor weren't showing explanations for
+some newer explanation types (just the question, "Why is this link in the
+ontology?").  Now they show raw explanations for any explanation types that
+don't have a pretty form defined.
+
+Minor changes/improvements/additions to documentation:
+Made Configuration manager window a bit bigger so nothing is cut off.
+
+Not all the "Show warnings" checkboxes were visible with the Verification
+Manager its normal size--one was hidden.  Made labels shorter so they all fit.
+
+Changed max number of warnings to show from 200(ish) to 300(ish).
+
+Added info to user guide on how to save an ontology that has fatal errors.
+
 
 =================================
 What's New in OBO-Edit v2.1-beta10 (2/23/11)
@@ -345,16 +376,3 @@ Berkeley Bioinformatics and Open Source Projects Group (BBOP) at Lawrence
 Berkeley National Laboratory, Berkeley, California.  The tool was originally
 developed by John Day-Richter.  Others who have contributed to the code
 include Chris Mungall, Amina Abdulla, and Jennifer Deegan.
-
-
-============
-To Do
-============
-Documentation:
-- Assert Implied Links Component
-- Update Advanced Save interface options
-
-Troubleshooting- add note about:
-https://sourceforge.net/tracker2/index.php?func=detail&aid=2683791&group_id=36855&atid=418257
-
-Known Issues - Upcoming fixes
