@@ -138,17 +138,21 @@
  [% UNLESS TERM_INFO.obsolete_p %]
  [% # IF graph %]
  [% IF 1 == 1 %]
+
+ <noscript>
+   <div class="block warning">
+     <h2>Notice</h2>
+     <p>
+       Enable JavaScript in your browser and reload for gene product
+       count filters and links.
+     </p>
+   </div>
+ </noscript>
+
  <div class="block" id="lineage">
    <h2>Term Neighborhood for [% TERM_INFO.name %] ([% TERM_INFO.acc %])</h2>
    
    <!-- Holder for term gp filters. -->
-   <noscript>
-     <div class="warning">
-       <p>
-	 Enable JavaScript and reload for gene product count filters and links.
-       </p>
-     </div>
-   </noscript>
    <div id="gp-count-filters" class="filters"></div>
 
    <!-- Display tabbing. -->
