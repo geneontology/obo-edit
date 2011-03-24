@@ -43,9 +43,9 @@ public class GafObjectsBuilder {
 		return parser;
 	}
 	
-	public GafDocument buildDocument(Reader reader) throws IOException{
+	public GafDocument buildDocument(Reader reader, String docId, String path) throws IOException{
 	
-		gafDocument = new GafDocument();
+		gafDocument = new GafDocument(docId, path);
 		
 		parser = new GAFParser();
 		
@@ -70,7 +70,7 @@ public class GafObjectsBuilder {
 	public GafDocument buildDocument(File gafFilePath) throws IOException{
 		
 		FileReader reader = new FileReader(gafFilePath);
-		return buildDocument(reader);
+		return buildDocument(reader, gafFilePath.getName(), gafFilePath.getCanonicalPath());
 		
 	}
 	

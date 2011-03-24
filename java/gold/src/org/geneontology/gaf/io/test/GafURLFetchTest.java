@@ -41,7 +41,7 @@ public class GafURLFetchTest  extends TestCase {
 
 			Reader reader = new InputStreamReader(is);
 			
-			GafDocument doc = builder.buildDocument(reader);
+			GafDocument doc = builder.buildDocument(reader, fetch.getCurrentGafFile(), fetch.getCurrentGafFilePath());
 			
 			
 			System.out.println( doc.getBioentities());
@@ -63,7 +63,7 @@ public class GafURLFetchTest  extends TestCase {
 
 			Reader reader = new InputStreamReader(is);
 			
-			GafDocument doc = builder.buildDocument(reader);
+			GafDocument doc = builder.buildDocument(reader, fetch.getCurrentGafFile(), fetch.getCurrentGafFilePath());
 			
 			
 			System.out.println( doc.getBioentities());
