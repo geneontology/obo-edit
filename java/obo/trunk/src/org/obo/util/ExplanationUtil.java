@@ -55,8 +55,8 @@ public class ExplanationUtil {
 		    return "";
 		}
 
-		logger.info("getting explanations for: "+link);
-		logger.info("  parent: "+link.getParent());
+//		logger.info("Getting explanations for: "+link + "; documentation = " + documentation);
+//		logger.info("  (link parent = "+link.getParent() + ")");
 		if (link.getParent() == null)
 			return "";
 		Collection<Explanation> explanations = reasoner.getExplanations(link);
@@ -283,10 +283,15 @@ public class ExplanationUtil {
 								.append("<font color=red><b>Note:</b> This link has been marked redundant by the reasoner.</font>");
 				}
 			}
+                        else {
+                            // This is some new explanation type that we don't have pretty text for--just show the raw explanation (better than nothing).
+                            out.append("This link was derived by the reasoner.<br>" + e);
+                        }
 		}
 		if (explanations.size() > 1) {
 			out.append("</ol>");
 		}
+//                logger.debug("Explanation text: " + out.toString());
 		return out.toString();
 	}
 }
