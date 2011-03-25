@@ -1,0 +1,44 @@
+<!-- START template: subset_summary.tmpl -->
+
+<div class="contents term">
+  <h1 class="name">GO Subset Summary</h1>
+  
+  <div class="block" id="info">
+    <h2>Subset Information</h2>
+
+    <div id="" class="chunk">
+      [% IF SUBSET_CHUNKS && SUBSET_CHUNKS.size > 0 %]
+      <ul>
+        [% FOREACH subset IN SUBSET_CHUNKS %]
+	<li>
+	  <a href="[% subset.link %]"
+	     title="Go to detailed information about [% subset.name %]"
+	     class="">[% subset.name %]</a> ([% subset.count %])
+	  <a class="term_clickable" href="#">
+	    <span style="font-size: 75%;">[toggle term list]</span>
+	  </a>
+	  [% IF subset.terms && subset.terms.size > 0 %]
+	  <div class="term_list">
+	    <ul>
+	      [% FOREACH sterm IN subset.terms %]
+	      <li>
+		&nbsp;&nbsp;&nbsp;
+		<a href="[% sterm.link %]"
+		   title="Go to detailed information about [% sterm.name %]"
+		   class="">[% sterm.acc %]</a> [% sterm.name %]
+	      </li>
+	      [% END %]
+	    </ul>
+	  </div>
+	  [% END %]
+	</li>
+        [% END %]
+      </ul>
+      [% ELSE %]
+      [% END %]
+    </div>
+    
+  </div>
+
+</div>
+<!-- END template: subset_summary.tmpl -->
