@@ -1239,12 +1239,22 @@ sub get_interlink {
 	 $acc . '&session_id=' . $sid;
      },
 
+     ## "Classic" version.
+     # 'term-subset' =>
+     # sub {
+     #   die "interlink mode 'term-subset' requires args" if ! defined $args;
+     #   my $acc = $args->{acc} || '';
+     #   my $sid = $args->{session_id} || '';
+     #   $ilink = 'term-details.cgi?term=' .
+     # 	 #$self->html_safe($acc) . '&session_id=' . $sid;
+     # 	 $acc . '&session_id=' . $sid;
+     # },
      'term-subset' =>
      sub {
        die "interlink mode 'term-subset' requires args" if ! defined $args;
        my $acc = $args->{acc} || '';
        my $sid = $args->{session_id} || '';
-       $ilink = 'term-details.cgi?term=' .
+       $ilink = 'term_details?term=' .
 	 #$self->html_safe($acc) . '&session_id=' . $sid;
 	 $acc . '&session_id=' . $sid;
      },
