@@ -41,6 +41,7 @@ sub new {
 =item get_info
 
 Args: term acc string or arrayref of term acc strings.
+    : takes optional arg {lite => (0|1)}, default 0
 Returns: hash containing various term infomation, keyed by acc
 
 =cut
@@ -48,14 +49,24 @@ sub get_info {
 
   my $self = shift;
   my $arg = shift || die "need an argument";
+  my $opt_arg = shift || {};
 
   ## Only array refs.
   if( ref $arg ne 'ARRAY' ){ $arg = [$arg]; }
 
+  my $is_lite_p = 0;
+  $is_lite_p = 1 if $opt_arg && $opt_arg->{lite};
+
   ## Get term information for display.
   my $query_results =
     $self->{AW_TQ}->get_all_results({'me.acc' => {-in => $arg}});
-  my $term_info = $self->{AW_AID}->term_information($query_results);
+  my $term_info = undef;
+
+  if( $is_lite_p ){
+    $term_info = $self->{AW_AID}->lite_term_information($query_results);
+  }else{
+    $term_info = $self->{AW_AID}->term_information($query_results);
+  }
 
   return $term_info;
 }

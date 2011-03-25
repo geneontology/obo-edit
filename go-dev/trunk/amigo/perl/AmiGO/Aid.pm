@@ -236,6 +236,47 @@ sub term_information {
 }
 
 
+=item lite_term_information
+
+Given an array ref of our DBIx term objects, return a hash ref of
+useful term information. This done be core information.
+
+=cut
+sub lite_term_information {
+
+  my $self = shift;
+  my $terms = shift || [];
+
+  # Term
+  my %term_hash = ();
+  foreach my $term (@$terms){
+
+    if( ! defined $term_hash{$term->acc} ){
+
+      ## Start the bundle.
+      $term_hash{$term->acc} =
+	{
+	 acc => $term->acc,
+	 name => $term->name,
+	 ontology_readable => $self->readable($term->term_type),
+	 ontology => $term->term_type,
+	 term_link =>
+	 $self->get_interlink({mode=>'term-details', arg=>{acc=>$term->acc}}),
+	 obsolete_p => $term->is_obsolete || 0,
+	 definition => undef,
+	 comment => undef,
+	 subsets => [],
+	 synonyms => [],
+	 dbxrefs => [],
+	 term_dbxrefs => [],
+	};
+    }
+  }
+
+  return \%term_hash;
+}
+
+
 # =item deep_term_information
 
 # Given an array ref of our DBIx term objects, return a hash ref of
