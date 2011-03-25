@@ -27,6 +27,7 @@ import sun.nio.cs.ext.ISCII91;
  * @author Shahid Manzoor
  *
  */
+@Deprecated
 public class GAFParserHandlerForHibernate implements GAFParserHandler {
 
 	private final static Logger LOG = Logger.getLogger(GAFParserHandlerForHibernate.class);
