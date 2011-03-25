@@ -230,10 +230,9 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 						}
 					}else{
 						List<String> files = (List<String>)gafLocations;
+						gafDocuments = new ArrayList<GafDocument>();
 						for(String ontLocation: files){
 							this.currentOntologyBeingProcessed = ontLocation;
-						
-								gafDocuments = new ArrayList<GafDocument>();
 								if("bulkload".equals(command) || "update".equals(command)){
 									gafDocuments.add( db.buildGafDocument(ontLocation) );
 								}
