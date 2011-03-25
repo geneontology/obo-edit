@@ -39,7 +39,7 @@
 
 	<table><tr><th>Operation Name</th><th>Status/Completion Time</th></tr>
 	<% 		
-		Exception ex = null;
+		Throwable ex = null;
 		if(task != null){
 			ex = task.getException();
 			String ontology = "";
@@ -77,7 +77,7 @@
 		}
 		
 		if(ex == null){
-			ex = (Exception)request.getAttribute("exception");
+			ex = (Throwable)request.getAttribute("exception");
 		}
 		%>	
 	</table>

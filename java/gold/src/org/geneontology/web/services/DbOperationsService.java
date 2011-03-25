@@ -237,7 +237,7 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 			writer.write("<h2>Status report for the running task '"
 					+ task.getOperationName() + "' :</h2>");
 			writer.write("<table><tr><th>Operation Name</th><th>Status/Completion Time</th></tr>");
-			Exception ex = task.getException();
+			Throwable ex = task.getException();
 			String ontology = "";
 			for (String opName : task.getCompletedOperations()) {
 				String[] st = opName.split("--");
