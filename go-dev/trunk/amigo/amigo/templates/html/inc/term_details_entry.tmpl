@@ -3,6 +3,8 @@
 <!-- number_of_spaces = [% number_of_spaces %]-->
 <!-- override_image = [% override_image %]-->
 <!-- override_title = [% override_title %]-->
+<!-- override_link = [% override_link %]-->
+<!-- override_bold = [% override_bold %]-->
 <!-- default_count = [% default_count %] -->
 [% IF NOT default_count %]
 [%    default_count = 'n/a' %]
@@ -20,6 +22,6 @@
 	title="[% graph_entry.rel %] relation" />
   [%    END %]
   [% END %]
-  [% IF override_link %]<span style="font-weight: bold;">[% graph_entry.acc %]&nbsp;[% graph_entry.name %]</span>[% ELSE %]<a href="[% graph_entry.link %]#lineage" title="Go to [% graph_entry.name %]">[% graph_entry.acc %]&nbsp;[% graph_entry.name %]</a>[% END %][% for_acc = graph_entry.acc %]&nbsp;<span id="[% ACC_TO_RAND.$for_acc %]">[% default_count %]</span>
+  [% IF override_link %][% IF override_bold %]<span style="font-weight: bold;">[% END %][% graph_entry.acc %]&nbsp;[% graph_entry.name %][% IF override_bold %]</span>[% END %][% ELSE %][% IF override_bold %]<span style="font-weight: bold;">[% END %]<a href="[% graph_entry.link %]#lineage" title="Go to [% graph_entry.name %]">[% graph_entry.acc %]&nbsp;[% graph_entry.name %]</a>[% END %][% for_acc = graph_entry.acc %]&nbsp;<span id="[% ACC_TO_RAND.$for_acc %]">[% default_count %]</span>[% IF override_bold %]</span>[% END %]
 </li>
 <!-- END template: term_details_entry.tmpl -->

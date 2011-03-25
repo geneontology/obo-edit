@@ -1,4 +1,4 @@
-<!-- START template: term_details.tmpl -->
+<!-- START template: subset_details.tmpl -->
 
 <div class="contents term">
   <h1 class="name">[% TERM_INFO.name %]</h1>
@@ -9,11 +9,13 @@
     <ul id="navPage" class="inline C">
       <li><a href="#info" title="View term information">Term information <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
       <li><a href="#lineage" title="View the placement of the term in the tree">Term neighborhood <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
+      [% IF TERM_INFO.dbxrefs && TERM_INFO.dbxrefs.size > 0 %]
       <li><a href="#xrefs" title="View cross-references to external databases">External references <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
+      [% END %]
       <li>
+	[% IF GENE_PRODUCT_ASSOCIATIONS_LINK || ( GENE_PRODUCT_ASSOCIATIONS_COUNT && GENE_PRODUCT_ASSOCIATIONS_COUNT == 0 ) %]
 	<a href="[% GENE_PRODUCT_ASSOCIATIONS_LINK %]"
 	   title="View gene products associated with this term">
-	  [% IF GENE_PRODUCT_ASSOCIATIONS_LINK || ( GENE_PRODUCT_ASSOCIATIONS_COUNT && GENE_PRODUCT_ASSOCIATIONS_COUNT == 0 ) %]
 	  [%    IF GENE_PRODUCT_ASSOCIATIONS_COUNT %]
 	  [%       IF GENE_PRODUCT_ASSOCIATIONS_COUNT == 1 %]
 	  1 gene product association
@@ -36,7 +38,7 @@
 
     <div class="block" id="info">
 
-      <h2>Term Information</h2>
+      <h2>Subset Information</h2>
 
       <dl class="term-info">
 
@@ -46,86 +48,7 @@
      <dt>Ontology</dt>
      <dd class="type">[% TERM_INFO.ontology_readable %]</dd>
 
-     <!-- Synonyms -->
-     <dt>Synonyms</dt>
-     [% sl = TERM_INFO.synonyms %]
-     [% IF sl.size == 0 %]
-     <dd>None</dd>
-     [% ELSE %]
-     [%    FOREACH synh IN sl %]
-     <dd class="syn">[% IF synh.scope %]<span class="type">[% synh.scope %]</span>: [% END %][% synh.acc %]</dd>
-     [%    END %]
-     [% END %]
-
-     <!-- Definition -->
-     <dt>Definition</dt>
-     [% IF TERM_INFO.definition %]
-     <dd class="def">[% TERM_INFO.definition %]
-       [% IF TERM_INFO.term_dbxrefs && TERM_INFO.term_dbxrefs.size > 0 %]
-       <br /><i>Source:</i>
-       [%    txref_count = TERM_INFO.term_dbxrefs.size %]
-       [%    txref_counter = 1 %]
-       [%    FOREACH txref = TERM_INFO.term_dbxrefs %]
-       [% #      href = txref.link %]
-       [%       vis = txref.id %]
-       [%       IF txref.dbname == "URL" %]
-       [% #         href = txref.key %]
-       [%          vis = txref.key %]
-       [%       END %]
-       [%    IF  txref.dbname == 'PMID' || txref.dbname == 'DOI' %]
-       <cite class="paper">[% ELSE %]<cite>[% END %][% IF txref.link %]<a title="Go to [% vis %]" href="[% txref.link %]">[% vis %]</a>[% ELSE %][% vis %][% END %]</cite>[% IF txref_counter < txref_count; txref_counter = txref_counter + 1 %],[% END %]
-       [%    END %]
-       [% ELSE %]
-       [ source: unknown ]
-       [% END %]
-     </dd>
-     [% ELSE %]
-     <dd>None</dd>
-     [% END %]
-
-     <!-- Comment -->
-     <dt>Comment</dt>
-     [% IF TERM_INFO.comment %]
-     <dd class="comment">[% TERM_INFO.comment %]</dd>
-     [% ELSE %]
-     <dd>None</dd>
-     [% END %]
-     [%	IF TERM_INFO.is_obsolete;
-     IF TERM_INFO.replaced_by_list;
-     '<dd>Replaced by';
-       FOREACH t = TERM_INFO.replaced_by_list %]
-       <a href="term_details?term=[% t.acc %]&amp;session_id=[% session_id %]">[% t.acc %] : [% t.name %]</a>
-       [%				END;
-       '</dd>';
-     END;
-     IF TERM_INFO.consider_list;
-     '<dd>Consider';
-       FOREACH t = TERM_INFO.consider_list %]
-       <a href="term_details?term=[% t.acc %]&amp;session_id=[% session_id %]">[% t.acc %] : [% t.name %]</a>
-       [%				END;
-       '</dd>';
-     END;
-     END %]
-
-     <!-- Subsets -->
-     <dt>Subset</dt>
-     [% IF TERM_INFO.subsets.size != 0 %]
-     <dd><ul class="subset">
-	 [% FOREACH sub = TERM_INFO.subsets %]
-	 [% #   IF sub.link %]
-	 [%    IF sub.acc.search('goslim') %]
-	 <li><a href="[% sub.link %]" title="View details of the [% sub.name %] GO slim">[% sub.name %]</a></li>
-	 [%    ELSE %]
-	 <!-- <li>Unavailable</li> -->
-	 <li>[% sub.name %]</li>
-	 [%    END %]
-	 [% END %]
-     </ul></dd>
-     [% ELSE %]
-     <dd>None</dd>
-     [% END %]
-     
-     [% INCLUDE includes/term_details_gonuts.tmpl %]
+     <!-- [% # INCLUDE includes/term_details_gonuts.tmpl %] -->
 
    </dl>
 
@@ -163,13 +86,15 @@
 	    class="override"><span>Inferred Tree View</span></a>
        </li>
        <li>
+	 <!-- <a href="#display-sentences" -->
+	 <!--    class="override"><span>Ancestors and Children</span></a> -->
 	 <a href="#display-sentences"
-	    class="override"><span>Ancestors and Children</span></a>
+	    class="override"><span>Term List</span></a>
        </li>
-       <li>
-	 <a href="#display-qg"
-	    class="override"><span>Graph View</span></a>
-       </li>
+       <!-- <li> -->
+       <!-- 	 <a href="#display-qg" -->
+       <!-- 	    class="override"><span>Graph View</span></a> -->
+       <!-- </li> -->
        <li>
 	 <a href="#display-out"
 	    class="override"><span>Other Views</span></a>
@@ -178,10 +103,10 @@
 	 <a href="#display-down"
 	    class="override"><span>Downloads</span></a>
        </li>
-       <li>
-	 <a href="#display-xref"
-	    class="override"><span>Mappings</span></a>
-       </li>
+       <!-- <li> -->
+       <!-- 	 <a href="#display-xref" -->
+       <!-- 	    class="override"><span>Mappings</span></a> -->
+       <!-- </li> -->
      </ul>
 
      <!-- -->
@@ -205,7 +130,19 @@
          [%             default_count = '[' _ tmp_cnt _ ' gene products]' %]
          [%             graph_entry = anc %]
          [%             number_of_spaces = d %]
+	 [%             IF SUBSET_TERMS.$tmp_acc %]
+         [%                override_image = image_dir _ "/" _ "term_subset_wedge.png" %]
+         [%                override_title = "Subset term" %]
+         [%                override_bold = "1" %]
+	 [%             ELSE %]
+	 [%                # Ignore %]
+	 [%             END %]
          [%             INCLUDE html/inc/term_details_entry.tmpl %]
+         [%             # Reset subroutine values. %]
+         [%             override_image = "" %]
+         [%             override_title = "" %]
+         [%             override_link = "" %]
+         [%             override_bold = "" %]
          [%             default_count = "" %]
          [%          END %]
          [%       END %]
@@ -214,23 +151,6 @@
          [% ELSE %]
          [%    d = d + 1 %]
          [% END %]
-
-         [% graph_entry = TERM_INFO %]
-         [% number_of_spaces = d - 1 %]
-         [% override_image = image_dir _ "/" _ "term_lineage_wedge.png" %]
-         [% override_title = "Current term" %]
-         [% override_link = "1" %]
-         [% override_bold = "1" %]
-         [% tmp_acc = graph_entry.acc %]
-         [% tmp_cnt = GPA_COUNTS.$tmp_acc %]
-         [% default_count = '[' _ tmp_cnt _ ' gene products]' %]
-         [% INCLUDE html/inc/term_details_entry.tmpl %]
-         [% # Reset subroutine values. %]
-         [% override_image = "" %]
-         [% override_title = "" %]
-         [% override_link = "" %]
-         [% override_bold = "" %]
-         [% default_count = "" %]
 
          [% IF CHILD_CHUNKS && CHILD_CHUNKS.size > 0 %]
          [%    FOREACH desc IN CHILD_CHUNKS %]
@@ -347,40 +267,40 @@
 
        [% ELSE %]
 
-       <p>
-	 This term has no children.
-       </p>
+       <!-- <p> -->
+       <!-- 	 This term has no children. -->
+       <!-- </p> -->
 
        [% END %]
 
      </div>
 
-      <div id="display-qg">
-	[% IF QUICKGO_ENGINE_P %]
-	<p>
-	  View this term in
-	  <a href="[% QUICKGO_TERM_LINK %]"
-	     title="Go to the QuickGO term page for [% TERM_INFO.acc %]">QuickGO</a>.
-	</p>
-	<p>
-	  <a class="override"
-	     href="[% QUICKGO_TERM_LINK %]"
-	     title="Go to the QuickGO term page for [% TERM_INFO.acc %]">
-	    <img src="[% VIZ_QUICKGO_LINK %]"
-		 alt="Graph of [% TERM_INFO.acc %] from QuickGO" />
-	  </a>
-	</p>
-	[% ELSE %]
-	<p>
-	  <a class="override"
-	     href="[% VIZ_STATIC_LINK %]"
-	     title="Stand-alone graphic for [% TERM_INFO.acc %]">
-	    <img src="[% VIZ_STATIC_LINK %]"
-		 alt="Graph of [% TERM_INFO.acc %]" />
-	  </a>
-	</p>
-	[% END %]
-      </div>
+     <!-- <div id="display-qg"> -->
+     <!-- 	[% IF QUICKGO_ENGINE_P %] -->
+     <!-- 	<p> -->
+     <!-- 	  View this term in -->
+     <!-- 	  <a href="[% QUICKGO_TERM_LINK %]" -->
+     <!-- 	     title="Go to the QuickGO term page for [% TERM_INFO.acc %]">QuickGO</a>. -->
+     <!-- 	</p> -->
+     <!-- 	<p> -->
+     <!-- 	  <a class="override" -->
+     <!-- 	     href="[% QUICKGO_TERM_LINK %]" -->
+     <!-- 	     title="Go to the QuickGO term page for [% TERM_INFO.acc %]"> -->
+     <!-- 	    <img src="[% VIZ_QUICKGO_LINK %]" -->
+     <!-- 		 alt="Graph of [% TERM_INFO.acc %] from QuickGO" /> -->
+     <!-- 	  </a> -->
+     <!-- 	</p> -->
+     <!-- 	[% ELSE %] -->
+     <!-- 	<p> -->
+     <!-- 	  <a class="override" -->
+     <!-- 	     href="[% VIZ_STATIC_LINK %]" -->
+     <!-- 	     title="Stand-alone graphic for [% TERM_INFO.acc %]"> -->
+     <!-- 	    <img src="[% VIZ_STATIC_LINK %]" -->
+     <!-- 		 alt="Graph of [% TERM_INFO.acc %]" /> -->
+     <!-- 	  </a> -->
+     <!-- 	</p> -->
+     <!-- 	[% END %] -->
+     <!--  </div> -->
 
       <div id="display-out">
 	<p>
@@ -391,8 +311,8 @@
 	    <li><a href="browse.cgi?action=set-tree&amp;[% vbridge %]&amp;session_id=[% session_id %]" title="View tree in GO browser">View in tree browser</a></li>
 	    <li><a href="[% VIZ_STATIC_LINK %]"
 		   title="View the tree in graph form as a static PNG image">Graphical view (PNG)</a></li>
-	    <li><a href="[% VIZ_DYNAMIC_LINK %]"
-		   title="View the tree in graph form as an interactive SVG+JS document">Graphical view (SVG)</a></li>
+	    <!-- <li><a href="[% VIZ_DYNAMIC_LINK %]" -->
+	    <!-- 	   title="View the tree in graph form as an interactive SVG+JS document">Graphical view (SVG)</a></li> -->
 	    <!-- One day this will be out of experimental. -->
 	    <!-- <li><a href="[% NAVIGATION_LINK %]" -->
 		 <!-- 	      title="Navigate the GO, using the current term as a seed">GO Navigation</a></li> -->
@@ -463,7 +383,7 @@
 	  </dl>
 
 	  [% ELSE %]
-	  <p>None.</p>
+	  <!-- <p>None.</p> -->
 	  [% END %]
 	<!-- </div> -->
 
@@ -483,4 +403,4 @@
  
  [% END %]
 </div>
-<!-- END template: term_details.tmpl -->
+<!-- END template: subset_details.tmpl -->
