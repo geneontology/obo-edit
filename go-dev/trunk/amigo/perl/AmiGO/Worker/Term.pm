@@ -153,6 +153,7 @@ sub get_child_info {
 =item get_ancestor_info
 
 Args: term acc string or arrayref of term acc strings.
+    : takes optional arg {reflexive => (0|1)}
 Returns: hash containing various term infomation, keyed by (string) type
 
 =cut
@@ -160,6 +161,10 @@ sub get_ancestor_info {
 
   my $self = shift;
   my $arg = shift || die "need an argument";
+  my $opt_arg = shift || {};
+
+  my $is_reflexive_p = 0;
+  $is_reflexive_p = 1 if $opt_arg && $opt_arg->{reflexive};
 
   ## Only array refs.
   if( ref $arg ne 'ARRAY' ){ $arg = [$arg]; }
@@ -168,15 +173,22 @@ sub get_ancestor_info {
   ### Get neighborhood above term(s).
   ###
 
-  #$self->kvetch("Start lineage: " . $arg);
+  $self->{AW_TG}->verbose(1);
+
+  #$self->kvetch("Start lineage arg: " . Dumper($arg));
   my($lnodes, $lnode_rel, $lnode_rel_inf, $lnode_depth, $max_ldepth) =
     $self->{AW_TG}->lineage($arg);
-  # $self->kvetch('lnodes: ' . Dumper($lnodes));
+  #$self->kvetch('lnodes: ' . Dumper($lnodes));
   # $self->kvetch('lnode_rel: ' . Dumper($lnode_rel));
   # $self->kvetch('lnode_depth: ' . Dumper($lnode_depth));
   # $self->kvetch('max_depth: ' . Dumper($max_ldepth));
   #$self->kvetch("Stop lineage");
   #die;
+
+  ## Adjust if we want depth done to reflexive levels.
+  if( $is_reflexive_p ){
+    $max_ldepth += 1;
+  }
 
   ## We'll want to know if later input is in the incoming arg list.
   my %in_arg_list = map { $_ => 1 } @$arg;
@@ -187,16 +199,17 @@ sub get_ancestor_info {
   # my $max_depth = 0;
   foreach my $acc (keys %$lnodes){
 
-    #$self->kvetch("clumb: " . $acc);
-
     ## Only continue if not self, don't want reflexive input.
     #if( $acc ne $input_term_id ){
-    if( ! $in_arg_list{acc} ){
+    #$self->kvetch("looking at1: " . $acc);
+    if( ! $in_arg_list{$acc} || $is_reflexive_p ){
 
       ## 
       my $depth = $lnode_depth->{$acc};
+      $self->kvetch("looking at: " . $acc . ', depth: ' . $depth);
       if( ! defined $nodes_by_depth->{$depth} ){
 	$nodes_by_depth->{$depth} = [];
+	$self->kvetch('made level: ' . $depth);
       }
 
       ## Add manufactured struct.
@@ -222,9 +235,9 @@ sub get_ancestor_info {
       push @$acc_list_for_gpc_info, $acc;
     }
   }
-  $self->kvetch("nodes_by_depth:\n" . Dumper($nodes_by_depth));
-  #$self->kvetch("adepth:\n" . Dumper($adepth));
-  #$self->kvetch("_max_depth: " . $max_depth);
+  #$self->kvetch("nodes_by_depth:\n" . Dumper($nodes_by_depth));
+  ##$self->kvetch("adepth:\n" . Dumper($adepth));
+  $self->kvetch("_max_depth: " . $max_ldepth);
   my $nodes_sorted_by_depth = {};
   for( my $depth = 0; $depth < $max_ldepth; $depth++ ){
     #$self->kvetch("_depth: " . $depth);
@@ -235,7 +248,7 @@ sub get_ancestor_info {
       $nodes_sorted_by_depth->{$depth} = \@blah;
     }
     #$self->kvetch("nbd:\n" .Dumper($nodes_by_depth->{$depth}));
-    #$self->kvetch("nsbd:\n" .Dumper($nodes_sorted_by_depth->{$depth}));
+    $self->kvetch("nsbd $depth:\n" .Dumper($nodes_sorted_by_depth->{$depth}));
   }
 
   ## Out.
