@@ -493,11 +493,14 @@ sub climb {
 
 BUG/TODO: clearly differentiate climb and lineage.
 
-Not quite get ancestors, as we're getting depth and inference info too.
+Not quite get ancestors, as we're getting depth and inference info as well.
 
 With an array ref of terms, will climb to the top of the ontology
 (with an added 'all' stopper for GO). This should be an easy and
 lightweight alternative to climb for some use cases.
+
+# Takes optional arg {reflexive => (0|1)}. If not set to one, will
+# ignore distance 0 reflexive relationsships.
 
 This returns an array of five things:
    (\%nodes, \%edges, \%tc_desc, \%tc_anc, \%tc_depth);
@@ -510,23 +513,39 @@ sub lineage {
 
   my $self = shift;
   my $sub_thing = shift || '';
+  #my $opt_arg = shift || {};
 
   #my $sub_acc = $self->_convert_term_or_acc_to_acc($sub_thing);
   #$self->kvetch('sub_thing: ' . $sub_thing);
   my $sub_accs = $self->_convert_whatever_to_acc_aref($sub_thing);
   #$self->kvetch('sub_accs: ' . Dumper($sub_accs));
 
-  ##
-  my $all = $self->{GRAPH_PATH}->get_all_results({'subject.acc' => $sub_accs});
-
   my $nodes = {};
   my $node_depth = {};
   my $node_rel = {};
   my $node_rel_inf = {};
+
+  # ## Thinks that we can logically tease out, but only if we care about
+  # ## reflexive relationships.
+  # if( $opt_arg && $opt_arg->{reflexive} ){
+  #   foreach my $acc (@$sub_accs){
+  #     ## Reflexive relations are direct.
+  #     $node_rel_inf->{$acc} = 0;
+  #     $node_rel->{$acc} = 'is_a'; # BUG: technically, this is a go-ism
+  #     $node_depth->{$acc} = 0;
+  #     $nodes->{$acc} = $self->get_term;
+  #   }
+  # }
+
+  ## Things that we need to ask the database about.
+  my $all = $self->{GRAPH_PATH}->get_all_results({'subject.acc' => $sub_accs});
   my $max_depth = 0;
   foreach my $gp (@$all){
+
     if( ! $gp->object->is_obsolete &&
 	$gp->object->acc ne 'all' ){ # GO specific control
+
+      #$self->kvetch('accs if: ' . $gp->object->acc);
 
       ## Inc. depth if necessary.
       if( $gp->distance > $max_depth ){ $max_depth = $gp->distance; }
@@ -539,9 +558,10 @@ sub lineage {
 
       ## Check existance, if it's not there yet, make it. If it's
       ## already there, modify the entry accordingly.
-      #$self->verbose(1);
-      #$self->kvetch('distance: ' . $gp->object->acc . ' : ' . $gp->distance);
       if( ! defined $node_rel->{$gp->object->acc} ){
+	# $self->kvetch('distance: ' . $gp->object->acc .
+	# 	      ' : ' . $gp->distance .
+	# 	      ' : ' . $gp->subject->acc);
 	$node_rel->{$gp->object->acc} = $gp->relationship_type->acc;
 	$node_depth->{$gp->object->acc} = $gp->distance;
 	$nodes->{$gp->object->acc} = $gp->object;
@@ -549,6 +569,9 @@ sub lineage {
 	if( $gp->distance == 1 ){
 	  $node_rel_inf->{$gp->object->acc} = 0;
 	}
+	# if( $gp->distance == 0 ){
+	#   $self->kvetch('0 dist: ' . $gp->object->acc);
+	# }
       }else{
 
 	## Take the dominating relation.
@@ -572,17 +595,22 @@ sub lineage {
 	  $node_depth->{$gp->object->acc} = $gp->distance;
 	}
       }
+    # }else{
+    #   $self->kvetch('accs else: ' . $gp->object->acc);
     }
   }
 
   ## Now go through and correct distance to depth.
   foreach my $acc (keys %$node_depth){
+    #$self->kvetch('final acc: ' . $acc);
     my $d = $node_depth->{$acc};
     $d = $d - $max_depth;
     $d = abs($d);
     $node_depth->{$acc} = $d;
   }
 
+  # my @foo = keys(%$nodes);
+  # $self->kvetch('nodes: ' . Dumper(\@foo));
   return ($nodes, $node_rel, $node_rel_inf, $node_depth, $max_depth);
 }
 
