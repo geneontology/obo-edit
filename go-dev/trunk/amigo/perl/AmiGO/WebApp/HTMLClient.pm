@@ -27,6 +27,8 @@ use Data::Dumper;
 
 
 ## Real external workers.
+use AmiGO::Worker::Term;
+use AmiGO::Worker::Subset;
 use AmiGO::Worker::HomolsetGraph2;
 use AmiGO::Worker::HomolsetSummary2;
 use AmiGO::Worker::GPInformation::HomolsetInformation;
@@ -69,6 +71,7 @@ sub setup {
   $self->run_modes(
 		   'visualize'           => 'mode_visualize',
 		   'software_list'       => 'mode_software_list',
+		   'subset_summary'      => 'mode_subset_summary',
 		   'homolset_summary'    => 'mode_homolset_summary',
 		   'homolset_graph'      => 'mode_homolset_graph',
 		   'homolset_annotation' => 'mode_homolset_annotation',
@@ -179,6 +182,119 @@ sub mode_software_list {
   $self->set_template_parameter('OLD_LOC', $foo);
 
   $self->add_template_content('html/main/software_list.tmpl');
+  return $self->generate_template_page();
+}
+
+
+##
+sub mode_subset_summary {
+
+  my $self = shift;
+
+  my $i = AmiGO::WebApp::Input->new();
+  my $params = $i->input_profile();
+
+  $self->_common_params_settings({title=>'AmiGO: GO Subset List'});
+
+  ## ....
+  my $done_sets = [];
+  my $ss_worker = AmiGO::Worker::Subset->new();
+  my $term_worker = AmiGO::Worker::Term->new();
+  my @all_subset_accs = keys(%{$self->{CORE}->subset()});
+  my $ss_infos = $term_worker->get_info(\@all_subset_accs);
+  foreach my $subset_acc (keys(%$ss_infos)){
+
+    ## Get high-level subset info (such as it is).
+    my $ss_info = $ss_infos->{$subset_acc};
+    # $self->{CORE}->kvetch("now subset: " . $subset_acc);
+    # $self->{CORE}->kvetch("subset info: " . Dumper($ss_info));
+
+    ## Get all the terms in the subset.
+    my $collected_terms = [];
+    my @subset_term_list = keys(%{$ss_worker->get_term_accs($subset_acc)});
+    my $term_infos = $term_worker->get_info(\@subset_term_list, {lite=>1});
+    foreach my $st_acc (keys(%$term_infos)){
+      my $st = $term_infos->{$st_acc};
+      push @$collected_terms,
+      {
+       acc => $st->{acc},
+       name => $st->{name},
+       link => $st->{term_link},
+      };
+    }
+
+    ## Sort by name.
+    @$collected_terms =
+      sort { lc($a->{name}) cmp lc($b->{name}) }
+	@$collected_terms;
+
+    push @$done_sets,
+      {
+       acc => $ss_info->{acc},
+       name => $ss_info->{name},
+       link => $ss_info->{term_link},
+       count => scalar(@$collected_terms),
+       terms => $collected_terms,
+      };
+  }
+
+  ## Sort by name.
+  @$done_sets =
+    sort { lc($a->{name}) cmp lc($b->{name}) }
+      @$done_sets;
+
+  $self->set_template_parameter('SUBSET_CHUNKS', $done_sets);
+  #$self->{CORE}->kvetch("done_sets: " . Dumper($done_sets));
+
+  ## Non-standard settings.
+  $self->set_template_parameter('STANDARD_YUI', 'no'); # no YUI please
+  $self->set_template_parameter('STANDARD_CSS', 'no');
+
+  ## Our AmiGO services CSS.
+  my $prep =
+    {
+     css_library =>
+     [
+      'standard',
+      'com.jquery.jqamigo.custom',
+     ],
+     javascript_library =>
+     [
+      'com.jquery',
+      'com.jquery-ui',
+      'org.bbop.amigo'#,
+      #'org.bbop.amigo.go_meta',
+      #'org.bbop.amigo.live_search',
+      #'org.bbop.amigo.ui.widgets'
+     ],
+     # javascript =>
+     # [
+     #  #$self->{JS}->get_lib('SubsetSummary.js')
+     # ],
+     # javascript_init =>
+     # [
+     #  #'SubsetSummaryInit();'
+     # ],
+     content =>
+     [
+      'html/main/subset_summary.tmpl'
+     ]
+    };
+  $self->add_template_bulk($prep);
+
+  ## Get the JS we want in.
+  $self->add_template_javascript("<script type=\"text/javascript\">
+    \$(document).ready(function(){
+    \$(\".chunk .term_list\").hide();
+
+    \$(\".term_clickable\").click(function(event){
+       \$(this).next().toggle();
+       event.preventDefault();
+    });
+
+    }); </script>");
+
+  ## ...
   return $self->generate_template_page();
 }
 

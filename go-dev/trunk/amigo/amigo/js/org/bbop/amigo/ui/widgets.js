@@ -173,7 +173,7 @@ org.bbop.amigo.ui.widgets = function(){
     ///
 
     //
-    this.table = {}
+    this.table = {};
 
     // Headers must be the same width as row.
     this.table.simple = function(headers, rows){
@@ -417,7 +417,7 @@ org.bbop.amigo.ui.widgets = function(){
 		found[name].push(value);
 	    });
 	    return found;
-	}
+	};
     };
 };
 
