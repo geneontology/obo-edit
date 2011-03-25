@@ -1,25 +1,15 @@
 package org.geneontology.gaf.hibernate;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
 import org.apache.log4j.Logger;
-import org.geneontology.conf.GeneOntologyManager;
-import org.geneontology.gaf.hibernate.GafConstants.EvidenceCode;
-import org.geneontology.gaf.hibernate.GafConstants.Qualifier;
 import org.geneontology.gaf.parser.GAFParser;
-import org.geneontology.gold.rules.AnnotationRuleViolation;
 
 public class GafObjectsBuilder {
 
-	private final static Logger LOG = Logger.getLogger(GAFParserHandlerForHibernate.class);
+	private final static Logger LOG = Logger.getLogger(GafObjectsBuilder.class);
 	
 	private GafDocument gafDocument;
 	
@@ -82,7 +72,12 @@ public class GafObjectsBuilder {
 		int ncbiTaxonId =-1;
 		String taxons[] = parser.getTaxon().split("\\|");
 		taxons = taxons[0].split(":");
-		ncbiTaxonId = Integer.parseInt(taxons[1]);
+		
+		try{
+			ncbiTaxonId = Integer.parseInt(taxons[1]);
+		}catch(Exception ex){
+			LOG.error(ex.getMessage(), ex);
+		}
 		
 		String db = parser.getDbObjectSynonym();
 		

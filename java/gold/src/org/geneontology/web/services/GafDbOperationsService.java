@@ -238,7 +238,10 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 								}
 							}
 	
-						GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
+						
+						performAnnotationChecks();
+						
+						/*GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
 						
 						OWLGraphWrapper graph = goldDb.getGraphWrapper();
 						
@@ -246,7 +249,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	
 							annotationRuleViolations.addAll(doc
 									.validateAnnotations(graph));
-						}
+						}*/
 					}
 					
 				//	wait();
@@ -265,11 +268,10 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 					
 					
 					
-			}catch(Exception ex){
+			}catch(Throwable ex){
 				this.exception = ex;
 				LOG.error(ex, ex);
-			}
-			
+			}			
 		}
 
 /*		@Override
@@ -283,6 +285,26 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 		}
 */
 
+		
+		private void performAnnotationChecks(){
+			reportStartTime("Performing Annotations Checks--" + currentOntologyBeingProcessed);
+		
+			
+			GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
+			
+			OWLGraphWrapper graph = goldDb.getGraphWrapper();
+			
+			for (GafDocument doc : gafDocuments) {
+
+				annotationRuleViolations.addAll(doc
+						.validateAnnotations(graph));
+			}
+
+			reportEndTime("Performing Annotations Checks--" + currentOntologyBeingProcessed);
+			
+			
+		}
+		
 		protected void reportStartTime(String name) {
 			this.addInProgress(name);
 		}

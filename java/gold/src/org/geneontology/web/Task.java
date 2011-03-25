@@ -15,7 +15,8 @@ public abstract class Task extends Thread {
 	
 	protected String currentRunningOperation;
 	
-	protected Exception exception;
+//	protected Exception exception;
+	protected Throwable exception;
 	
 	protected Object data;
 	
@@ -26,7 +27,8 @@ public abstract class Task extends Thread {
 	}
 	
 	
-	public Exception getException(){
+//	public Exception getException(){
+	public Throwable getException(){
 		return this.exception;
 	}
 	

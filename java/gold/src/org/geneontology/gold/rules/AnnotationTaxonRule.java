@@ -24,7 +24,7 @@ public class AnnotationTaxonRule extends AbstractAnnotatioRule implements Annota
 	List<String> files;
 	List<String> taxfiles;
 	
-	public String DEFAULT_ONTOL_LOC = "http://www.geneontology.org/pub/go/ontology/obo_format_1_2/gene_ontology_ext.obo";
+	public String DEFAULT_ONTOL_LOC = "http://www.geneontology.org/ontology/obo_format_1_2/gene_ontology_ext.obo";
 	public String DEFAULT_ONTOL_TAXON_BRIDGE_LOC = "http://www.geneontology.org/quality_control/annotation_checks/taxon_checks/taxon_go_triggers.obo";
 	public String DEFAULT_TAXON_SLIM_LOC = "http://www.geneontology.org/quality_control/annotation_checks/taxon_checks/ncbi_taxon_slim.obo";
 	public String DEFAULT_TAXON_UNION_LOC = "http://www.geneontology.org/quality_control/annotation_checks/taxon_checks/taxon_union_terms.obo";

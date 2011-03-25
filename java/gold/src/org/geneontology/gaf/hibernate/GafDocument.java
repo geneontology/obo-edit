@@ -8,14 +8,18 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.geneontology.gold.hibernate.model.GOModel;
 import org.geneontology.gold.rules.AnnotationRuleViolation;
+import org.geneontology.gold.rules.AnnotationTaxonRule;
 import org.geneontology.gold.rules.GoClassReferenceAnnotationRule;
 
 import owltools.graph.OWLGraphWrapper;
 
 public class GafDocument extends GOModel implements Serializable {
 
+	private static Logger LOG = Logger.getLogger(GafDocument.class);
+	
 	private String id;
 	private String documentPath;
 	
@@ -208,11 +212,19 @@ public class GafDocument extends GOModel implements Serializable {
 	}
 	
 	public Set<AnnotationRuleViolation> validateAnnotations(OWLGraphWrapper graph){
-		GoClassReferenceAnnotationRule rule = new GoClassReferenceAnnotationRule(graph);
 		HashSet<AnnotationRuleViolation> set = new HashSet<AnnotationRuleViolation>();
 		
-		for(GeneAnnotation annotation: getGeneAnnotations()){
-			set.addAll(rule.getRuleViolations(annotation));
+		try{
+		
+			GoClassReferenceAnnotationRule rule = new GoClassReferenceAnnotationRule(graph);
+		//	AnnotationTaxonRule taxonRule = new AnnotationTaxonRule();
+			
+			for(GeneAnnotation annotation: getGeneAnnotations()){
+				set.addAll(rule.getRuleViolations(annotation));
+			//	set.addAll(taxonRule.getRuleViolations(annotation));
+			}
+		}catch(Exception ex){
+			LOG.error(ex.getMessage(), ex);
 		}
 		
 		return set;
