@@ -58,6 +58,12 @@ sub _create_db {
       DBI->connect('dbi:SQLite:dbname=' . $name, '','',
 		   { RaiseError => 1, })
 	|| die "Database connection not made: $DBI::errstr";
+
+    ## We aren't really worried about a power outage while we're doing
+    ## inserts, but speed is nice.
+    $dbh->do("PRAGMA default_synchronous = OFF");
+    $dbh->do("PRAGMA synchronous = OFF");
+
     $dbh->disconnect;
   }
 }
@@ -91,6 +97,7 @@ sub open {
 	|| die "Database connection not made: $DBI::errstr";
 
   }
+  $self->{CACHE_DBH}->do("BEGIN TRANSACTION");
   return $self->{CACHE_DBH};
 }
 
@@ -104,6 +111,7 @@ Returns:
 sub close {
   my $self = shift;
   if( defined $self->{CACHE_DBH} ){
+    $self->{CACHE_DBH}->do("COMMIT");
     $self->{CACHE_DBH}->disconnect();
     $self->{CACHE_DBH} = undef;
   }
