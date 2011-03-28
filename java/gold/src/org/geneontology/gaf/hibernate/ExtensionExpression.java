@@ -17,7 +17,7 @@ public class ExtensionExpression extends GOModel implements Serializable {
 
 	
 	public ExtensionExpression(){
-		String keys[] = {"id"};
+		String keys[] = {"id", "relation", "cls"};
 		this.initUniqueConstraintFields(ExtensionExpression.class, keys);
 	}
 	
