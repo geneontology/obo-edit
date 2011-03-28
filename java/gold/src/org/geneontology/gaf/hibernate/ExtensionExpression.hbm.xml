@@ -3,20 +3,22 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class name="org.geneontology.gaf.hibernate.ExtensionExpression" table="extension_expression">
-        <id name="id" type="string">
+        
+        <composite-id>
+        
+        <key-property name="id" type="string">
             <column name="id" />
-            <generator class="assigned" />
-        </id>
-        <property name="cls" type="string">
+        </key-property>
+        <key-property name="cls" type="string">
             <column name="cls">
             </column>
-        </property>
+        </key-property>
 
-        <property name="relation" type="string">
+        <key-property name="relation" type="string">
             <column name="relation">
             </column>
-        </property>
-
+        </key-property>
+</composite-id>
 
         </class>
  </hibernate-mapping>
