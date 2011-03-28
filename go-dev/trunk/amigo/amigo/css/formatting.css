@@ -16,7 +16,7 @@ tbody { background: #fff }
 
 td, th { vertical-align: top; padding: 2px; border-width: 0; }
 
-.bluebg, tfoot tr, thead tr, tr.thead { background: #cddcf3; }
+.bluebg, tfoot tr, thead tr, tr.thead { background:  #e9effa; }
 
 th { padding: 0 2px; font-size: 90%; }
 
@@ -515,3 +515,12 @@ class. */
 .warning p, .warning dl, .warning div, .warning ul { margin: 5px 0; }
 .warning dt { font-weight: bold; }
 .warning dd { font-size: 90%; }
+
+.disabled-normal {
+    /* size: 100%; */
+    /* font-size: 100%; */
+    font-color: #000000;
+    color: #000000;
+    background: #ffffff;
+    /* background: #cddcf3; */
+}

@@ -8,39 +8,62 @@ jQuery(document).ready(function() {
 });
 </script>
 
-<h1>[% dbname %]</h1><table>
+<div class="contents">
+  <h1>[% dbname %]</h1>
 
-<caption id="pager" class="pager">
- <img src="/amigo/js/com/ext/resources/images/default/grid/page-first.gif" class="first"/>
- <img src="/amigo/js/com/ext/resources/images/default/grid/page-prev.gif" class="prev"/>
- <input type="text" class="pagedisplay"/>
- <img src="/amigo/js/com/ext/resources/images/default/grid/page-next.gif" class="next"/>
- <img src="/amigo/js/com/ext/resources/images/default/grid/page-last.gif" class="last"/>
- <select class="pagesize">
-  <option value="10" selected="selected">10</option>
-  <option value="20">20</option>
-  <option value="30">30</option>
-  <option value="40">40</option>
-  <option value="[% cluster_count %]">[% cluster_count %] (all)</option>
- </select>
-</caption>
+  <div class="block">
+    <h2>Cluster Annotation List</h2>
 
-<thead><tr><th></th><th>Cluster</th><th>Last Annotated</th><th>All</th><th>RefG</th><th>EXP</th>
-[%- FOREACH dist IN clusters.0.dist -%]
-<th>[% dist.code %]</th>
-[%- END -%]
-</tr></thead>
+    <table>
 
-<tbody>
-[%- FOREACH cluster IN clusters %]<tr>
-<td>[% IF offset ; loop.count + offset ; ELSE ; loop.count ; END %]</td>
-<td><a href="[% cluster.url %]">[% cluster.key %]</a></td>
-<td>[% cluster.last_annotated %]</td>
-<td>[% cluster.number_of_members %]</td>
-<td>[% cluster.number_of_refg_members %]</td>
-<td>[% cluster.exp %]</td>
-[%- FOREACH dist IN cluster.dist -%]
-<td class="taxid_[% dist.ncbi_taxa_id %]">[% dist.count %]</td>
-[%- END -%]
-</tr>[% END %]</tbody></table>[%- END -%]
+      <caption id="pager" class="pager">
+	<img height="16" src="[% JUMP_BACK_IMAGE %]" class="first"/>
+	<img src="[% BACK_IMAGE %]" class="prev"/>
+	<input type="text" class="pagedisplay disabled-normal" disabled />
+	<img src="[% FORWARD_IMAGE %]" class="next"/>
+	<img src="[% JUMP_FORWARD_IMAGE %]" class="last"/>
+	<select class="pagesize">
+	  <option value="10" selected="selected">10</option>
+	  <option value="20">20</option>
+	  <option value="30">30</option>
+	  <option value="40">40</option>
+	  <option value="[% cluster_count %]">[% cluster_count %] (all)</option>
+	</select>
+      </caption>
+
+      <thead>
+	<tr>
+	  <th></th>
+	  <th>Cluster</th>
+	  <th>Last Annotated</th>
+	  <th>All</th><th>RefG</th>
+	  <th>EXP</th>
+	  [%- FOREACH dist IN clusters.0.dist -%]
+	  <th>[% dist.code %]</th>
+	  [%- END -%]
+	</tr>
+      </thead>
+
+      <tbody>
+	[%- FOREACH cluster IN clusters %]
+	<tr>
+	  <td>
+	    [% IF offset ; loop.count + offset ; ELSE ; loop.count ; END %]
+	  </td>
+	  <td><a href="[% cluster.url %]">[% cluster.key %]</a></td>
+	  <td>[% cluster.last_annotated %]</td>
+	  <td>[% cluster.number_of_members %]</td>
+	  <td>[% cluster.number_of_refg_members %]</td>
+	  <td>[% cluster.exp %]</td>
+	  [%- FOREACH dist IN cluster.dist -%]
+	  <td class="taxid_[% dist.ncbi_taxa_id %]">[% dist.count %]</td>
+	  [%- END -%]
+	</tr>
+	[% END %]
+      </tbody>
+    </table>
+    [%- END -%]
+
+  </div>
+</div>
 <!-- END: phylotree_cluster_index2.tmpl -->

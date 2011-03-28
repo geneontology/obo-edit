@@ -167,11 +167,9 @@ sub mode_cluster_index{
 	$c->set_template_parameter(offset => ($page - 1) * $rows);
     }
 
-
     $c->set_template_parameter(dbname => $o->{dbname});
     $c->set_template_parameter(clusters => \@r);
     $c->add_template_content('html/main/phylotree_cluster_index.tmpl');
-    $c->set_template_parameter(page_title => "phylotree: $o->{dbname}");
 
     $c->generate_template_page();
 }
@@ -252,11 +250,22 @@ sub mode_cluster_jindex{
     ## Add general dynamic CSS.
     $self->add_template_css($self->{CSS}->get_css('dynamic'));
 
+    ## Grab image resources we want.
+    my $grab = sub {
+      my $arg = shift || '';
+      return $c->{CORE}->get_image_resource($arg, 17);
+    };
+    $c->set_template_parameter('JUMP_FORWARD_IMAGE', &{$grab}('jump_forward'));
+    $c->set_template_parameter('FORWARD_IMAGE', &{$grab}('forward'));
+    $c->set_template_parameter('BACK_IMAGE', &$grab('back'));
+    $c->set_template_parameter('JUMP_BACK_IMAGE', &$grab('jump_back'));
+
     $c->set_template_parameter(dbname => $o->{dbname});
     $c->set_template_parameter(clusters => \@r);
     $c->set_template_parameter(cluster_count => scalar @r);
     $c->add_template_content('html/main/phylotree_cluster_index2.tmpl');
-    $c->set_template_parameter(page_title => "phylotree: $o->{dbname}");
+    $c->set_template_parameter(page_title =>
+			       "AmiGO: phylotree over $o->{dbname}");
     $c->add_template_bulk
       ({javascript_library =>
 	[
