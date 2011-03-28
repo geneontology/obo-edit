@@ -163,13 +163,14 @@ CREATE TABLE with_info (
 --  in this case there would be two rows in the table
 CREATE TABLE extension_expression (
   -- composite expression
-  id VARCHAR PRIMARY KEY,
+  id VARCHAR,
 
   -- EXAMPLE: "occurs_in"
   relation VARCHAR,
 
   -- EXAMPLE: "CL:000123"
-  cls VARCHAR
+  cls VARCHAR,
+  PRIMARY KEY (id, relation, cls)
 );
 
 CREATE TABLE gaf_document (
