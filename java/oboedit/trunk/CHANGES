@@ -31,6 +31,9 @@ Made Configuration manager window a bit bigger so nothing is cut off.
 Not all the "Show warnings" checkboxes were visible with the Verification
 Manager its normal size--one was hidden.  Made labels shorter so they all fit.
 
+Repeated word warnings: was warning about some repeated digits (e.g.,
+"7.7-dimethyl-whatever").  Now all of the digits are in the allowed-repeats list.
+
 Changed max number of warnings to show from 200(ish) to 300(ish).
 
 Added info to user guide on how to save an ontology that has fatal errors.

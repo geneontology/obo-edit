@@ -1,7 +1,7 @@
 Copyright (C) 2011, Gene Ontology Consortium
 Original author:  John Day-Richter
-Version:  2.1-beta11
-Release date:  March 24, 2011
+Version:  2.1-beta8
+Release date:  January 24, 2011
 
 OBO-Edit is an open source tool written in Java for browsing, searching, and
 modifying OBO ontologies.
@@ -18,8 +18,10 @@ How to report bugs
   http://sourceforge.net/tracker/?func=add&group_id=36855&atid=418257
 
 
+===  OBO-Edit v2.1 RELEASE NOTES  ===
+
 =================================
-What's New in OBO-Edit v2.1-beta11 (3/24/2011)
+What's New in OBO-Edit v2.1-beta11
 =================================
 
 Bug fixes:
@@ -38,16 +40,16 @@ reasoner is on.
 [ geneontology-Bugs-1894720 ] multiple empty hits when searching help
 
 [ geneontology-Bugs-2899138 ] explanation component not always working
-The Explanations component and Graph Editor weren't showing explanations for
-some newer explanation types (just the question, "Why is this link in the
-ontology?").  Now they show raw explanations for any explanation types that
-don't have a pretty form defined.
+
 
 Minor changes/improvements/additions to documentation:
 Made Configuration manager window a bit bigger so nothing is cut off.
 
 Not all the "Show warnings" checkboxes were visible with the Verification
 Manager its normal size--one was hidden.  Made labels shorter so they all fit.
+
+Repeated word warnings: was warning about some repeated digits (e.g.,
+"7.7-dimethyl-whatever").  Now all of the digits are in the allowed-repeats list.
 
 Changed max number of warnings to show from 200(ish) to 300(ish).
 
