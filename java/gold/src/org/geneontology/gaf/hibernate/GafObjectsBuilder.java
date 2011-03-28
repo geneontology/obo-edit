@@ -173,7 +173,7 @@ public class GafObjectsBuilder {
 		ga.setGeneProductForm(geneProductForm);
 		ga.setCompositeQualifier(compositeQualifier);
 		ga.setGafDocument(gafDocument.getId());
-		
+		ga.setBioentityObject(entity);
 		gafDocument.addGeneAnnotation(ga);
 		
 	}
