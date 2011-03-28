@@ -1,0 +1,30 @@
+default-namespace: test
+
+[Term]
+id: X:1
+name: x1
+intersection_of: X:2
+intersection_of: r X:3
+
+[Term]
+id: X:2
+name: x2
+
+[Term]
+id: X:3
+name: x3
+
+[Term]
+id: X:4
+name: x4
+is_a: X:2
+
+[Term]
+id: X:5
+name: x5
+is_a: X:2
+disjoint_from: X:4
+
+[Typedef]
+id: r
+name: r
