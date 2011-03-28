@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.obo.reasoner.impl.DirectLinkReasonerFactory;
 import org.obo.reasoner.impl.ForwardChainingReasonerFactory;
 import org.obo.reasoner.impl.LinkPileReasonerFactory;
 import org.obo.reasoner.rbr.RuleBasedReasoner;
@@ -41,6 +42,7 @@ public class ReasonerRegistry {
 //		registerReasoner("ForwardChainingReasoner (old, faster)", defaultReasonerFactory);
 //		registerReasoner("LinkPileReasoner (new, slower)", new LinkPileReasonerFactory());
 		registerReasoner("RuleBasedReasoner", new RuleBasedReasonerFactory());
+		registerReasoner("DirectLinkReasoner", new DirectLinkReasonerFactory());
 		/*
 		for (Class cls : ReasonerFactory.class.getClasses()) {
 			try {
