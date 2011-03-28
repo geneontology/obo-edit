@@ -1795,13 +1795,19 @@ sub get_image_resource {
 
   my $self = shift;
   my $res = shift || '';
+  my $mod = shift || undef;
 
-  my $mangled_res = 'bbop_img_' . lc($res);
+  my $lower = lc($res);
+  my $mangled_res = 'bbop_img_' . $lower;
   my $ibase = $self->amigo_env('AMIGO_IMAGE_URL');
   my $img_data =
     {
      bbop_img_star => $ibase . '/star.png',
      bbop_img_ptree => $ibase . '/ptree.png',
+     bbop_img_forward => $ibase . '/media_forward.png',
+     bbop_img_jump_forward => $ibase . '/media_jump_forward.png',
+     bbop_img_back => $ibase . '/media_back.png',
+     bbop_img_jump_back => $ibase . '/media_jump_back.png',
     };
 
   ##
@@ -1809,7 +1815,13 @@ sub get_image_resource {
   if( defined $img_data->{$mangled_res} ){
     $retval = $img_data->{$mangled_res};
   }else{
-    ## TODO: sensible fall-through
+    ## TODO: sensible fall-through?
+    $retval = $ibase . '/' . $lower;
+  }
+
+  ## Add optional size.
+  if( defined $mod && $mod ){
+    $retval =~ s/(.*)\.png$/$1_$mod\.png/;
   }
 
   return $retval;
