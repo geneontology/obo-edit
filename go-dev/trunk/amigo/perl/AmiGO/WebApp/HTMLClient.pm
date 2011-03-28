@@ -204,38 +204,43 @@ sub mode_subset_summary {
   my $ss_infos = $term_worker->get_info(\@all_subset_accs);
   foreach my $subset_acc (keys(%$ss_infos)){
 
-    ## Get high-level subset info (such as it is).
-    my $ss_info = $ss_infos->{$subset_acc};
-    # $self->{CORE}->kvetch("now subset: " . $subset_acc);
-    # $self->{CORE}->kvetch("subset info: " . Dumper($ss_info));
+    ## TODO: this is right, right? We don't want non-"slim" subsets to
+    ## be exposed.
+    if( $subset_acc =~ /goslim/ ){
 
-    ## Get all the terms in the subset.
-    my $collected_terms = [];
-    my @subset_term_list = keys(%{$ss_worker->get_term_accs($subset_acc)});
-    my $term_infos = $term_worker->get_info(\@subset_term_list, {lite=>1});
-    foreach my $st_acc (keys(%$term_infos)){
-      my $st = $term_infos->{$st_acc};
-      push @$collected_terms,
-      {
-       acc => $st->{acc},
-       name => $st->{name},
-       link => $st->{term_link},
-      };
+      ## Get high-level subset info (such as it is).
+      my $ss_info = $ss_infos->{$subset_acc};
+      # $self->{CORE}->kvetch("now subset: " . $subset_acc);
+      # $self->{CORE}->kvetch("subset info: " . Dumper($ss_info));
+
+      ## Get all the terms in the subset.
+      my $collected_terms = [];
+      my @subset_term_list = keys(%{$ss_worker->get_term_accs($subset_acc)});
+      my $term_infos = $term_worker->get_info(\@subset_term_list, {lite=>1});
+      foreach my $st_acc (keys(%$term_infos)){
+	my $st = $term_infos->{$st_acc};
+	push @$collected_terms,
+	  {
+	   acc => $st->{acc},
+	   name => $st->{name},
+	   link => $st->{term_link},
+	  };
+      }
+
+      ## Sort by name.
+      @$collected_terms =
+	sort { lc($a->{name}) cmp lc($b->{name}) }
+	  @$collected_terms;
+
+      push @$done_sets,
+	{
+	 acc => $ss_info->{acc},
+	 name => $ss_info->{name},
+	 link => $ss_info->{term_link},
+	 count => scalar(@$collected_terms),
+	 terms => $collected_terms,
+	};
     }
-
-    ## Sort by name.
-    @$collected_terms =
-      sort { lc($a->{name}) cmp lc($b->{name}) }
-	@$collected_terms;
-
-    push @$done_sets,
-      {
-       acc => $ss_info->{acc},
-       name => $ss_info->{name},
-       link => $ss_info->{term_link},
-       count => scalar(@$collected_terms),
-       terms => $collected_terms,
-      };
   }
 
   ## Sort by name.
