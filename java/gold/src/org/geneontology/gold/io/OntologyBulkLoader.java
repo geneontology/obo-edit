@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import org.mortbay.log.Log;
+import org.apache.log4j.Logger;
 import org.obolibrary.obo2owl.Obo2OWLConstants;
 import org.obolibrary.obo2owl.Owl2Obo;
 import org.obolibrary.oboformat.model.Clause;
@@ -57,6 +57,8 @@ import owltools.graph.OWLQuantifiedProperty;
  */
 public class OntologyBulkLoader extends AbstractBulkLoader{
 
+	private static Logger LOG = Logger.getLogger(OntologyBulkLoader.class);
+	
 	
 	private void initTables() throws IOException{
 	
@@ -495,7 +497,7 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 				
 				if(edge.getQuantifiedPropertyList().size()>1){
 					//TODO: TBD
-					Log.warn("*******************TBD************************");
+					LOG.warn("*******************TBD************************");
 				}else{
 					OWLQuantifiedProperty prop = edge.getSingleQuantifiedProperty();
 
@@ -544,7 +546,7 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 				
 				if(edge.getQuantifiedPropertyList().size()>1){
 					//TODO: TBD
-					Log.warn("*******************TBD************************");
+					LOG.warn("*******************TBD************************");
 				}else{
 					OWLQuantifiedProperty prop = edge.getSingleQuantifiedProperty();
 
