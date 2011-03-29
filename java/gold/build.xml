@@ -242,6 +242,10 @@
 		</war>
 	</target>
 	
+	<target name="make-war2">		
+			<war destfile="webcontents/gold.war" webxml="conf/web.xml">
+			</war>
+		</target>
 	
 	
 </project>

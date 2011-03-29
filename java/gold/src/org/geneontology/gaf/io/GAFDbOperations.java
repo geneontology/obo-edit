@@ -30,7 +30,6 @@ import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.io.postgres.SchemaManager;
 import org.geneontology.gold.io.postgres.TsvFileLoader;
 import org.hibernate.Session;
-import org.semanticweb.owl.io.FileInputSource;
 
 public class GAFDbOperations implements DbOperationsInterface{
 
