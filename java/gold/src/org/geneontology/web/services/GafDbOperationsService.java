@@ -103,28 +103,43 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			if(remoteGAF != null){
 					gafLocations = new GafURLFetch(remoteGAF);
 			}else if(runner == null && !commit) {
-			
+
+				String fileLocation = request
+				.getParameter("filelocation");
+		
+				if(fileLocation != null){
+					gafLocations = new ArrayList<String>();
+					((ArrayList)gafLocations).add(fileLocation);
+					gafDocuments = null;
+				}				
+				
 				//update command expects gaf location location in the parameter.
 				//If no gaflocatoin parameter is set then present 
 				//a form to user to select gaf file
 				if ("update".equals(command)) {
 		
-					String ontologylocation = request
+					/*String ontologylocation = request
 							.getParameter("ontologylocation");
 					
 					if(ontologylocation != null){
 						gafLocations = new ArrayList<String>();
 						((ArrayList)gafLocations).add(ontologylocation);
 						gafDocuments = null;
-					}else{
+					}else*/if(fileLocation==null){
 						request.setAttribute("servicename", getServiceName());
 						request.setAttribute("locations", GeneOntologyManager.getInstance().getDefaultGafFileLocations());
 						
 						this.viewPath = "/servicesui/golddb-updateform.jsp";
 					}
 				}else if("bulkload".equals(command)){
-					this.gafLocations = GeneOntologyManager.getInstance().getDefaultGafFileLocations();
+					
+					if(fileLocation == null){
+						this.gafLocations = GeneOntologyManager.getInstance().getDefaultGafFileLocations();
+					}
 					gafDocuments = null;
+					
+					
+					
 				}else if("getlastupdate".equals(command)){
 					viewPath = "/servicesui/gold-lastupdate.jsp";
 				}

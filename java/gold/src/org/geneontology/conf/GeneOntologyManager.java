@@ -265,4 +265,9 @@ public class GeneOntologyManager {
 		return config.getInt("geneontology.gold.filemonitordelay", 15);
 	}
 	
+	public String getGafUploadDir(){
+		return config
+		.getString("geneontology.gold.gafuploaddir", "/tmp");
+	}
+	
 }

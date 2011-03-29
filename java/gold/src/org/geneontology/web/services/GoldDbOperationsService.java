@@ -85,7 +85,7 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract implements F
 			if ("update".equals(command)) {
 	
 				String ontologylocation = request
-						.getParameter("ontologylocation");
+						.getParameter("filelocation");
 				
 				
 				if(ontologylocation != null){

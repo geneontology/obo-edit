@@ -23,7 +23,7 @@
 		for (Object obj : locations) {
 			%>
 			
-			<input type='radio' name='ontologylocation' value='<%= obj %>' /> <%= obj %> <br />
+			<input type='radio' name='filelocation' value='<%= obj %>' /> <%= obj %> <br />
 		<%
 		}
 		%>
