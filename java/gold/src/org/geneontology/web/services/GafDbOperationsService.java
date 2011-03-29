@@ -226,7 +226,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 							
 							GafDocument doc = db.buildGafDocument(new InputStreamReader(is), fetch.getCurrentGafFile(), fetch.getCurrentGafFilePath());
 							gafDocuments.add( doc);
-							
+							performAnnotationChecks();
 						}
 					}else{
 						List<String> files = (List<String>)gafLocations;
