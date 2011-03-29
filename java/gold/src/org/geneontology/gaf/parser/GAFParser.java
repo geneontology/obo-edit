@@ -142,13 +142,14 @@ public class GAFParser {
 				next();
 			}else{
 				this.currentCols = this.currentRow.split("\\t", -1);
-				performBasicChecks(this.currentCols);
 				if (currentCols.length != expectedNumCols) {
 					errors.add("Got invalid number of columns for row (expected "
 							+ expectedNumCols
 							+ ", got "
 							+ currentCols.length
-							+ "): " + this.currentRow );
+							+ "): " + this.currentRow + ". The row will be ignored" );
+				}else{
+					performBasicChecks(this.currentCols);
 				}
 		}
 			
@@ -395,8 +396,11 @@ public class GAFParser {
 		checkCardinality(cols[12], 12,"Column 13: Taxon", row, 1,2);
 		checkCardinality(cols[13], 13,"Column 14: Date", row, 1,1);
 		checkCardinality(cols[14], 14,"Column 15: DB Object Type", row, 1,1);
-		checkCardinality(cols[15], 15,"Column 16: DB Object Type", row, 0,3);
-		checkCardinality(cols[16], 16,"Column 17: DB Object Type", row, 0,3);
+		
+		if(this.expectedNumCols>15){
+			checkCardinality(cols[15], 15,"Column 16: DB Object Type", row, 0,3);
+			checkCardinality(cols[16], 16,"Column 17: DB Object Type", row, 0,3);
+		}
 
 		//check internal spaces
 		
