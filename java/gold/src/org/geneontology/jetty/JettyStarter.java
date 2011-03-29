@@ -1,27 +1,28 @@
 package org.geneontology.jetty;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.geneontology.web.AdminServlet;
+import org.eclipse.jetty.deploy.DeploymentManager;
+import org.eclipse.jetty.deploy.providers.WebAppProvider;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.RequestLogHandler;
+import org.eclipse.jetty.server.handler.StatisticsHandler;
+import org.eclipse.jetty.server.nio.SelectChannelConnector;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.geneontology.web.services.GoldDbOperationsService;
 import org.geneontology.web.services.ServicesConfig;
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.ContextHandlerCollection;
-import org.mortbay.jetty.handler.DefaultHandler;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
-import org.mortbay.jetty.webapp.WebAppContext;
-import org.mortbay.xml.XmlConfiguration;
-
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.io.FileMonitor;
 
@@ -46,7 +47,137 @@ public class JettyStarter {
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
 		int jetty_port = manager.getJettyPort();
 		
-		server = new Server();
+		
+        String jetty_home = System.getProperty("jetty.home",".");
+        System.setProperty("jetty.home",jetty_home);
+
+        Server server = new Server(jetty_port);
+//        server.setDumpAfterStart(true);
+ //       server.setDumpBeforeStop(true);
+    
+        /*
+        // Setup JMX
+        MBeanContainer mbContainer=new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
+        server.getContainer().addEventListener(mbContainer);
+        server.addBean(mbContainer);
+        mbContainer.addBean(Log.getLog());
+		*/
+        
+        // Setup Threadpool
+        QueuedThreadPool threadPool = new QueuedThreadPool();
+        threadPool.setMaxThreads(100);
+        server.setThreadPool(threadPool);
+
+        // Setup Connectors
+        SelectChannelConnector connector = new SelectChannelConnector();
+        connector.setPort(8080);
+        connector.setMaxIdleTime(30000);
+        connector.setConfidentialPort(8443);
+        connector.setStatsOn(true);
+        
+        server.setConnectors(new Connector[]
+        { connector });
+
+        /*SslSelectChannelConnector ssl_connector = new SslSelectChannelConnector();
+        ssl_connector.setPort(8443);
+        SslContextFactory cf = ssl_connector.getSslContextFactory();
+        cf.setKeyStore(jetty_home + "/etc/keystore");
+        cf.setKeyStorePassword("OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4");
+        cf.setKeyManagerPassword("OBF:1u2u1wml1z7s1z7a1wnl1u2g");
+        cf.setTrustStore(jetty_home + "/etc/keystore");
+        cf.setTrustStorePassword("OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4");
+        cf.setExcludeCipherSuites(
+                new String[] {
+                    "SSL_RSA_WITH_DES_CBC_SHA",
+                    "SSL_DHE_RSA_WITH_DES_CBC_SHA",
+                    "SSL_DHE_DSS_WITH_DES_CBC_SHA",
+                    "SSL_RSA_EXPORT_WITH_RC4_40_MD5",
+                    "SSL_RSA_EXPORT_WITH_DES40_CBC_SHA",
+                    "SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA",
+                    "SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA"
+                });
+        ssl_connector.setStatsOn(true);
+        server.addConnector(ssl_connector);*/
+
+      /*  Ajp13SocketConnector ajp = new Ajp13SocketConnector();
+        ajp.setPort(8009);
+        server.addConnector(ajp);
+        */
+        
+        
+        HandlerCollection handlers = new HandlerCollection();
+        ContextHandlerCollection contexts = new ContextHandlerCollection();
+        RequestLogHandler requestLogHandler = new RequestLogHandler();
+        WebAppContext files = new WebAppContext("webcontents", "/");
+        contexts.setHandlers(new Handler[]{files});
+        handlers.setHandlers(new Handler[]
+        { contexts, new DefaultHandler(), requestLogHandler, files });
+        
+        StatisticsHandler stats = new StatisticsHandler();
+        stats.setHandler(handlers);
+        
+        server.setHandler(stats);
+
+        // Setup deployers
+        DeploymentManager deployer = new DeploymentManager();
+        deployer.setContexts(contexts);
+        server.addBean(deployer);   
+        
+        /*ContextProvider context_provider = new ContextProvider();
+        context_provider.setMonitoredDirName(jetty_home + "/contexts");
+        context_provider.setScanInterval(2);
+        deployer.addAppProvider(context_provider);*/
+
+        WebAppProvider webapp_provider = new WebAppProvider();
+        webapp_provider.setMonitoredDirName(jetty_home + "/webcontents");
+        webapp_provider.setParentLoaderPriority(false);
+        webapp_provider.setExtractWars(true);
+        webapp_provider.setScanInterval(2);
+        webapp_provider.setDefaultsDescriptor(jetty_home + "/etc/webdefault.xml");
+        webapp_provider.setContextXmlDir(jetty_home + "/contexts");
+        deployer.addAppProvider(webapp_provider);
+        
+     /*   HashLoginService login = new HashLoginService();
+        login.setName("Test Realm");
+        login.setConfig(jetty_home + "/etc/realm.properties");
+        server.addBean(login);
+*/
+       /*
+        NCSARequestLog requestLog = new NCSARequestLog(jetty_home + "/logs/jetty-yyyy_mm_dd.log");
+        requestLog.setExtended(false);
+        requestLogHandler.setRequestLog(requestLog);
+		*/
+        server.setStopAtShutdown(true);
+        server.setSendServerVersion(true);
+        
+		ShutdownMonitor monitor = new ShutdownMonitor();
+		
+		int delay = GeneOntologyManager.getInstance().getFileMonitorDelay();
+		FileMonitor goMonitor = new FileMonitor(GeneOntologyManager.getInstance().getDefaultOntologyLocations(), delay*60*1000);
+		goMonitor.addFileMonitorListener((GoldDbOperationsService)ServicesConfig.getService("gold-db-operations"));
+		goMonitor.startMonitoring();
+		LOG.info("Ontologies files monitor is started");
+		
+		
+		monitor.start();
+		
+		server.start();
+
+		LOG.info("Jetty Server is started");
+		LOG.info("Please visit the web application at the url : http://localhost:8080/");
+		
+		
+		LOG.info("Initializing Services which include loading ontologies in memory. This step may take several mintues. ");
+		LOG.info("WAIT.............");
+		ServicesConfig.getServices();
+		
+		LOG.info("Services are initialized. The server is ready for performing services");
+		
+		
+		server.join();		
+		
+		
+		/*server = new Server();
 		
 		System.setProperty("jetty.port", jetty_port + "");
 		
@@ -96,7 +227,7 @@ public class JettyStarter {
 		LOG.info("Services are initialized. The server is ready for performing services");
 		
 		
-		server.join();
+		server.join();*/
 	}
 
 	/*

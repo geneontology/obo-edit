@@ -34,7 +34,17 @@ import org.geneontology.web.services.ServicesConfig;
 public class AdminServlet extends HttpServlet {
 
 	@Override
-	protected void service(HttpServletRequest request,
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+
+
+		resp.getWriter().println("Post method");
+	}
+
+	
+	
+	@Override
+	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response)
 			throws ServletException, IOException {
 
