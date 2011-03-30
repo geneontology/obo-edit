@@ -7,7 +7,8 @@ CREATE TABLE bioentity (
   symbol VARCHAR NOT NULL,
   full_name VARCHAR NOT NULL,
   type_cls VARCHAR NOT NULL, -- e.g. SO:nnnn
-  ncbi_taxon_id INT,
+  ncbi_taxon_id INT, -- DEPRECATED
+  taxon_cls VARCHAR NOT NULL, -- e.g. NCBITaxon:nnnn
 
   db VARCHAR, -- e.g. FB - must match prefix part of id
   gaf_document varchar
@@ -51,12 +52,20 @@ MAPPINGS:
 ';
 
 COMMENT ON COLUMN bioentity.ncbi_taxon_id IS 'Integer corresponding
-directly to the NCBI Taxon ID. TODO: decide whether to retain this, or
-keep the generic ontology reference mechanism.
+directly to the NCBI Taxon ID. TODO: DEPRECATED - use taxon_cls instead.
 
 MAPPINGS:
  GAF: c13
  LEAD: gene_product.species.ncbi_taxa_id
+';
+
+COMMENT ON COLUMN bioentity.taxon_cls IS 'An ontology identifier
+referencing the cls table, providing the organism type (e.g. NCBI
+Taxon class)
+
+MAPPINGS:
+ GAF: c13
+ LEAD: "NCBITaxon:" + gene_product.species.ncbi_taxa_id
 ';
 
 COMMENT ON COLUMN bioentity.db IS 'Database from which this bioentity
@@ -111,7 +120,10 @@ CREATE TABLE gene_annotation (
   -- EXAMPLE VALUE: "CGSC:pabA|CGSC:pabB"
   with_expression VARCHAR,
 
-  -- col 13, card>1
+  -- col 13, cardinality>1
+  -- this is only used in the (rare) cases of multi-species interaction annotations (e.g. parasite-host)
+  -- in these cases, col13 of the GAF has 2 values. The second value goes here, and indicates
+  -- the host species (the bioentity.ncbi_taxon_id maps to the species to which the active gene belongs, e.g. parasite)
   acts_on_taxon_id INT,
 
   -- col 14.
