@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<schema name="golr" version="1.2">
+<schema name="golr" version="1.3">
 
   <types>
     <!-- Used to be in string: omitNorms="true"/> -->
@@ -19,63 +19,245 @@
   </types>
 
   <fields>
-    <!-- Both. (acc|dbxref) -->
+
+
+    <!-- ------------- -->
+    <!-- SHARED FIELDS -->
+    <!-- ------------- -->
+    <!-- this section of the schema has fields that are typically shared across all documents -->
+
+    <!-- this schema is overloaded so we can use a general category -->
+    <!-- can we use an enum? one of: ontology_class, bioentity or annotation -->
+    <field name="document_category"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="false"
+	   required="false" />
+
+    <!-- all documents have an identifier. make one up for annotations -->
+    <!-- Lead: (both): (acc|dbxref) -->
+    <!-- Gene: bioentity.id OR -->
+    <!-- Ont:  cls.id -->
+    <!-- Ann:  create a skolem gene_annotation ID -->
     <field name="id"
 	   type="string"
 	   indexed="true"
 	   stored="true"
 	   required="true" />
+
+    <!-- Lead: (both): (term.term_type|gp.db) -->
+    <!-- Ann:  c15 -->
+    <field name="source"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   required="false" /> <!-- TODO: make it true when this field is implemented in the OboOwlApiProcssor.java class -->
+
+    <!-- Lead: (both): (BUG: not implemented) -->
+    <!-- In annotations, last update date - in terms, creation date. meaningless for genes -->
+    <!-- Ann: c14 - TODO - use date field type? -->
+    <field name="date"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   required="false" />
+
+    <!-- ------------- -->
+    <!-- BIOENTITY TYPES -->
+    <!-- ------------- -->
+    <!-- bioentites have types (e.g. gene). we also use this field to type the bioentity in an annotation document -->
+
+    <!-- Lead: (both): (term.term_type|gp type) -->
+    <!-- Gene: bioentity.type_cls -->
+    <!-- Ont:  null (OR: aspect?) -->
+    <!--  for annotations, refers to type of the bioentity, and is required for all annotations -->
+    <!-- c12 -->
+    <!-- gene_annotation.bioentity.type_cls -->
+    <!-- Example: SO:1234567 -->
+    <field name="type"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   required="false" /> <!-- TODO: make it true when this field is implemented in the OboOwlApiProcssor.java class -->
+
+    <!-- Gene: bioentity.type_cls.label -->
+    <!--  for annotations, refers to type of the bioentity, and is required for all annotations -->
+    <!-- derived from c12 -->
+    <!-- gene_annotation.bioentity.type_cls.class.label -->
+    <!-- Example: 'gene' -->
+    <field name="type_label"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="false"
+	   required="false" />
+
+    <!-- Gene: bioentity.type_cls * inferred_subclass_of -->
+    <!--  for annotations, refers to type of the bioentity, and is required for all annotations -->
+    <!-- derived from c12 + SO -->
+    <field name="type_closure"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+
+    <!-- Gene: bioentity.type_cls * inferred_subclass_of * cls.label -->
+    <!--  for annotations, refers to type of the bioentity, and is required for all annotations -->
+    <!-- derived from c12 + SO -->
+    <field name="type_label_closure"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+
+
+
+    <!-- -------------- -->
+    <!--  TAXON FIELDS -->
+    <!-- -------------- -->
+
+    <!-- the meaning of a taxon field varies depending on document category -->
+    <!-- for data entities (which represent things like genes), this is the species of the entity -->
+    <!-- for annotations, this is the species of the annotated bioentity -->
+    <!-- for terms, this is the taxon the term is restricted to -->
+
+    <!-- Ann: gene_annotation.bioentity.taxon_cls -->
+    <!-- derived from c13 (replace 'taxon' with 'NCBITaxon' -->
+    <!-- E.g. NCBITaxon:7227 -->
+
+    <!-- Lead: GP (both eventually). (species.ncbi_taxa_id) -->
+    <field name="taxon"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   required="false" />
+
+    <!-- Lead: GP (both eventually). (NOTE: closure of above to be implemented) -->
+    <!-- Ann: gene_annotation.bioentity.taxon_cls * inferred_subclass_of -->
+    <!-- derived from c13 + ncbi_taxonomy.obo -->
+    <field name="taxon_closure"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+
+    <!-- Ann: cls[gene_annotation.bioentity.taxon_cls].label -->
+    <!-- derived from c13 + ncbi_taxonomy.obo -->
+    <!-- E.g. "Homo sapiens" -->
+    <field name="taxon_label"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="false"
+	   required="false" />
+
+    <!-- Ann: gene_annotation.bioentity.taxon_cls * inferred_subclass_of * label -->
+    <!-- derived from c13 + ncbi_taxonomy.obo -->
+    <!-- E.g. "Homo sapiens", "Homo", "Mammalia", "Amniota", "Vertebrata", "Chordata", "Metazoa", "Eukaryota" -->
+    <field name="taxon_label_closure"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+
+
+    <!-- -------------- -->
+    <!-- INFERENCE FIELDS -->
+    <!-- -------------- -->
+    <!-- these are also typically shared by both ontology classes and annotations -->
+    <!-- when used for a class, it refers to the relationship between the main document class and the field class. -->
+    <!-- when used for an annotation, it refers to the relationship between the annotation class and the field class. -->
+
+    <!-- subclass of X or part of some X -->
+    <!-- Ont: inferred_subclass_of UNION inferred_all_som_relationship[property=part_of] -->
+    <!-- Ann: gene_annotation * inferred_subclass_of UNION inferred_all_som_relationship[property=part_of] -->
+    <!-- note: we could make this two fields and make the client do a union...? -->
+    <field name="isa_partof_closure"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+
+    <field name="isa_partof_label_closure"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+
+    <!-- regulates some X -->
+    <!-- Ont: inferred_all_som_relationship[property=regulates] -->
+    <!-- Ann: gene_annotation * inferred_all_som_relationship[property=regulates] -->
+    <field name="regulates_closure"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+
+    <field name="regulates_label_closure"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+
+    <!-- ------------- -->
+    <!-- ENTITY FIELDS -->
+    <!-- ------------- -->
+    <!-- only apply to bioentities or ontology classes -->
+
+
+
     <!-- Both (term.name|gp.symbol) -->
+    <!-- Gene: bioentity.label -->
+    <!-- Ont:  cls.label -->
     <field name="label"
 	   type="text_ws"
 	   indexed="true"
 	   stored="true"
 	   required="true" />
-    <!-- Both. (term.name|gp.full_name) -->
+    <!-- Lead: (both): (term.name|gp.full_name) -->
+    <!-- Gene: bioentity. -->
+    <!-- Ont:  cls. -->
     <field name="descriptive_name"
    	   type="text_ws"
    	   indexed="true"
    	   stored="true"
    	   required="false" />
-    <!-- Both. (term_synonym|gene_product_synonym) -->
+    <!-- Lead: (both): (term_synonym|gene_product_synonym) -->
+    <!-- Gene: bioentity. -->
+    <!-- Ont:  cls. -->
     <field name="synonym"
 	   type="string"
 	   indexed="true"
 	   stored="true"
 	   multiValued="true"
 	   required="false" />
-    <!-- Both. (term.term_type|gp type) -->
-    <field name="type"
-	   type="string"
-	   indexed="true"
-	   stored="true"
-	   required="false" /> <!-- TODO: make it true when this field is implemented in the OboOwlApiProcssor.java class -->
-    <!-- Both. (term.term_type|gp.db) -->
-    <field name="source"
-	   type="string"
-	   indexed="true"
-	   stored="true"
-	   required="false" /> <!-- TODO: make it true when this field is implemented in the OboOwlApiProcssor.java class -->
-    <!-- Both. (BUG: not implemented) -->
-    <field name="date"
-	   type="string"
-	   indexed="true"
-	   stored="true"
-	   required="false" />
-    <!-- Both. (term_synonym.acc_synonym|BUG: not implemented for gp) -->
+
+    <!-- Lead: (both): (term_synonym.acc_synonym|BUG: not implemented for gp) -->
+    <!-- Gene: obj_alternate_label.label[obj=$gene] -->
+    <!-- Ont:  obj_alternate_label.label[obj=$cls] -->
     <field name="alternate_id"
 	   type="string"
 	   indexed="true"
 	   stored="true"
 	   multiValued="true"
  	   required="false" />
-    <!-- Both. (term def|gp def (NOTE: not there yet)) -->
+    <!-- Lead: (both): (term def|gp def (NOTE: not there yet)) -->
     <field name="description"
 	   type="text_ws"
 	   indexed="true"
 	   stored="true"
 	   required="false" />
     <!-- Term. (term->term_subset->term.name) -->
+    <!-- Ont: obj_subset.label -->
     <field name="subset"
 	   type="string"
 	   indexed="true"
@@ -94,26 +276,7 @@
 	   indexed="true"
 	   stored="true"
 	   required="false" />
-    <!-- Term. (all graph ancestors) -->
-    <field name="term_closure"
-	   type="string"
-	   indexed="true"
-	   stored="true"
-	   multiValued="true"
-	   required="false" />
-    <!-- GP (both eventually). (species.ncbi_taxa_id) -->
-    <field name="taxon"
-	   type="string"
-	   indexed="true"
-	   stored="true"
-	   required="false" />
-    <!-- GP (both eventually). (NOTE: closure of above to be implemented) -->
-    <field name="taxon_closure"
-	   type="string"
-	   indexed="true"
-	   stored="true"
-	   multiValued="true"
-	   required="false" />
+
     <!-- GP. (direct terms associatied with GP - will be changed (testing)) -->
     <field name="direct_annotation"
 	   type="string"
@@ -128,11 +291,152 @@
 	   stored="true"
 	   multiValued="true"
 	   required="false" />
+
+    <!-- ------------- -->
+    <!-- ANNOT FIELDS  -->
+    <!-- ------------- -->
+
+    <!-- Required for all annotations -->
+    <!-- c1+c2 -->
+    <!-- gene_annotation.bioentity -->
+    <field name="bioentity_id"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="false"
+	   required="false" />
+
+    <!-- Required for all annotations -->
+    <!-- c3 -->
+    <!-- gene_annotation.bioentity.label -->
+    <field name="bioentity_label"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="false"
+	   required="false" />
+
+    <!-- Ann: obj_alternate_label[obj=$gene_annotation.bioentity].label -->
+    <field name="bioentity_alternate_label"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+                                                 
+
+    <!-- derived from c4 -->
+    <!-- MAKE THIS BOOLEAN -->
+    <field name="is_negated"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="false"
+	   required="false" />
+
+    <!-- derived from c4 -->
+    <field name="qualifier"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+
+    <!-- c5 -->
+    <!-- gene_annotation.cls -->
+    <field name="annotation_class"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="false"
+	   required="false" />
+
+    <!-- derived from c5 + ontology -->
+    <!-- gene_annotation.cls.label -->
+    <field name="annotation_class_label"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="false"
+	   required="false" />
+
+    <!-- gene_annotation.acts_on_taxon -->
+    <field name="secondary_taxon"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="false"
+	   required="false" />
+
+    <field name="secondary_label"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="false"
+	   required="false" />
+
+    <field name="bioentity_isoform"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="false"
+	   required="false" />
+
+    <field name="bioentity_isoform_label"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="false"
+	   required="false" />
+
+    <field name="evidence_type"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="false"
+	   required="false" />
+
+    <field name="evidence_closure"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="false"
+	   required="false" />
+
+    <field name="evidence_with"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="false"
+	   required="false" />
+
+    <field name="reference"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="false"
+	   required="false" />
+
+    <field name="annotation_extension_class"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+
+    <field name="annotation_extension_class_closure"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+
+
   </fields>
 
   <uniqueKey>id</uniqueKey>
 
-  <defaultSearchField>descriptive_name</defaultSearchField>
+  <defaultSearchField>label</defaultSearchField>
 
   <solrQueryParser defaultOperator="OR"/>
 
