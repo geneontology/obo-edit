@@ -21,9 +21,9 @@
   <fields>
 
 
-    <!-- ------------- -->
+    <!--               -->
     <!-- SHARED FIELDS -->
-    <!-- ------------- -->
+    <!--               -->
     <!-- this section of the schema has fields that are typically shared across all documents -->
 
     <!-- this schema is overloaded so we can use a general category -->
@@ -63,9 +63,9 @@
 	   stored="true"
 	   required="false" />
 
-    <!-- ------------- -->
+    <!--               -->
     <!-- BIOENTITY TYPES -->
-    <!-- ------------- -->
+    <!--               -->
     <!-- bioentites have types (e.g. gene). we also use this field to type the bioentity in an annotation document -->
 
     <!-- Lead: (both): (term.term_type|gp type) -->
@@ -115,9 +115,9 @@
 
 
 
-    <!-- -------------- -->
+    <!--                -->
     <!--  TAXON FIELDS -->
-    <!-- -------------- -->
+    <!--                -->
 
     <!-- the meaning of a taxon field varies depending on document category -->
     <!-- for data entities (which represent things like genes), this is the species of the entity -->
@@ -166,9 +166,9 @@
 	   required="false" />
 
 
-    <!-- -------------- -->
+    <!--                -->
     <!-- INFERENCE FIELDS -->
-    <!-- -------------- -->
+    <!--                -->
     <!-- these are also typically shared by both ontology classes and annotations -->
     <!-- when used for a class, it refers to the relationship between the main document class and the field class. -->
     <!-- when used for an annotation, it refers to the relationship between the annotation class and the field class. -->
@@ -208,9 +208,9 @@
 	   multiValued="true"
 	   required="false" />
 
-    <!-- ------------- -->
+    <!--               -->
     <!-- ENTITY FIELDS -->
-    <!-- ------------- -->
+    <!--               -->
     <!-- only apply to bioentities or ontology classes -->
 
 
@@ -292,9 +292,9 @@
 	   multiValued="true"
 	   required="false" />
 
-    <!-- ------------- -->
+    <!--               -->
     <!-- ANNOT FIELDS  -->
-    <!-- ------------- -->
+    <!--               -->
 
     <!-- Required for all annotations -->
     <!-- c1+c2 -->
