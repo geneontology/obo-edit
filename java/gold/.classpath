@@ -68,5 +68,6 @@
 	<classpathentry kind="lib" path="lib/jta-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/apache-solr-dataimporthandler-1.4.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
