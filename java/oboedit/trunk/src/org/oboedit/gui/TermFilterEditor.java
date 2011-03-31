@@ -94,9 +94,15 @@ public class TermFilterEditor extends JPanel {
 	protected class BasicActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-                  // This is needed by the Link Search when the user selects
-                  // a different item from the "Find links where" menu.
-                  updateFields();
+                  // This call to updateFields is needed by the Link Search when the user
+                  // selects a different item from the "Find links where" menu.
+                  // 3/31/2011: Is it?  It doesn't seem to be, and having it there breaks
+                  // the aspect field (in [self, child, etc.]) in the Search Panel.
+                  // Oh, I see...if you don't updateFields, the status label
+                  // (the text that has a descriptin of the search, e.g., "all_text_fields contains 'blue'")
+                  // (it's in FilterComponent.java) doesn't update when you change the search.
+//                  updateFields();
+                  fireUpdateEvent(); // This seems to do the trick--statusLabel updates as it should.
 		}
 	}
 
@@ -176,9 +182,10 @@ public class TermFilterEditor extends JPanel {
 //                logger.debug("criterionBox.setSelectedItem(" + criterion + ")");
 		criterionBox.setSelectedItem(criterion);
 
-                // Update aspects too
-		aspectBox.removeAllItems();
+                // Update aspects too--some might have become valid or invalid due to
+                // change in reasoner state.
 //                logger.debug("updateFields: updating aspects.");
+		aspectBox.removeAllItems();
 		for (SearchAspect aspect : FilterManager.getManager().getAspects()) {
                   if (isValid(aspect))
 			aspectBox.addItem(aspect);
