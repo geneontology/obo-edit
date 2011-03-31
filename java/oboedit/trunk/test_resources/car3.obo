@@ -1,0 +1,49 @@
+format-version: 1.2
+date: 22:03:2011 16:38
+saved-by: mah79
+auto-generated-by: OBO-Edit 2.1-beta10
+default-namespace: file:/Applications/OBO-Edit2/test_resources/car3.obo
+
+[Term]
+id: TEST:0000001
+name: car
+namespace: car
+synonym: "automobile" EXACT []
+
+[Term]
+id: TEST:0000003
+name: blue car
+namespace: car
+is_a: TEST:0000001 ! car
+
+[Term]
+id: TEST:0000004
+name: sky blue VW
+namespace: car
+is_a: TEST:0000003 ! blue car
+is_a: TEST:0000005 ! VW
+intersection_of: TEST:0000001 ! car
+intersection_of: has_color COLOR:0000005 ! sky blue
+
+[Term]
+id: TEST:0000005
+name: VW
+namespace: car
+is_a: TEST:0000001 ! car
+
+[Term]
+id: TEST:0000006
+name: automobile
+namespace: car
+is_obsolete: true
+
+[Typedef]
+id: has_color
+name: has_color
+namespace: car
+
+[Typedef]
+id: has_make
+name: has_make
+namespace: car
+
