@@ -6,6 +6,7 @@
 		* geneontology.gold.password
 		* geneontology.gold.host
 		* geneontology.gold.ontologylocation
+		* geneontology.gold.jetty.port (optional)
 		
 -	Jetty server is embedded in the project. To start it run the command as: bin/jetty-runner start		 
 -	Access to the application web admin interface via linke as: http:8080/localhost
