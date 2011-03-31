@@ -9,6 +9,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -38,6 +40,9 @@ import owltools.graph.OWLGraphWrapper;
  * 
  */
 public class GeneOntologyManager {
+
+	/* Want logging here too. */
+	private static Logger LOG = Logger.getLogger(GeneOntologyManager.class);
 
 	/**
 	 * Singleton instance
@@ -130,7 +135,7 @@ public class GeneOntologyManager {
 
 	/**
 	 * 
-	 * @return It returns the vlaue of the geneontology.gold.username property
+	 * @return It returns the value of the geneontology.gold.username property
 	 */
 	public String getGolddbUserName() {
 		return config.getString("geneontology.gold.username");
@@ -204,12 +209,15 @@ public class GeneOntologyManager {
 	public Integer getJettyPort() {
 		int port = -1;
 		try{
-			port = config.getInt("geneontology.gold.jetty.port");	
+			port = config.getInt("geneontology.gold.jetty.port");
+			LOG.info("Found defined port value");
 		}catch(Exception ex){
-			// TODO: debug or log here to indicate fallthrough
+			LOG.info("Fallback to hard-coded default port");
 			port = 8080;
 		}
-	
+
+		LOG.info("Using port: " + Integer.toString(port));
+		
 		return port;
 	}
 	
