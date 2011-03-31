@@ -38,7 +38,11 @@ public class ParentSearchAspect implements SearchAspect {
 
 
 	public boolean equals(Object o) {
-		return o.getClass().equals(getClass());
+          if (o == null) {
+//            logger.debug("ParentSearchAspect: o = null, class = " + getClass());
+            return false;
+          }
+          return o.getClass().equals(getClass());
 	}
 
 	@Override

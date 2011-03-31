@@ -36,7 +36,10 @@ public class ChildSearchAspect implements SearchAspect {
 
 
 	public boolean equals(Object o) {
-		return o.getClass().equals(getClass());
+          if (o == null) {
+            return false;
+          }
+          return o.getClass().equals(getClass());
 	}
 
 	@Override

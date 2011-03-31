@@ -43,6 +43,10 @@ public class RootSearchAspect implements SearchAspect {
 
 	@Override
 	public boolean equals(Object o) {
+          if (o == null) {
+            logger.debug("RootSearchAspect: o = null"); // DEL
+            return false;
+          }
 		return o.getClass().equals(getClass());
 	}
 
