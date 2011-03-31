@@ -10,3 +10,7 @@
 		
 -	Jetty server is embedded in the project. To start it run the command as: bin/jetty-runner start		 
 -	Access to the application web admin interface via linke as: http:8080/localhost
+- 	To have the port be other than the default 8080, you must change the following files:
+	   	* conf/gold.properties (see above)
+		* etc/jetty.xml (one value)
+		* etc/jetty-fileserver.xml (one value)
