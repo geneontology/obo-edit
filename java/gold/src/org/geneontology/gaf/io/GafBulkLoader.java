@@ -50,7 +50,7 @@ public class GafBulkLoader {
 		
 		for(Bioentity entity: doc.getBioentities()){
 			dumper.dumpRow(entity.getId(), entity.getSymbol(), entity.getFullName(),
-					entity.getTypeCls(), entity.getNcbiTaxonId() + "", entity.getDb(), 
+					entity.getTypeCls(), "NCBIGene:"+entity.getNcbiTaxonId() + "", entity.getDb(), 
 					entity.getGafDocument());
 		}
 		
