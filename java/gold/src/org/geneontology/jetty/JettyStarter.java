@@ -70,7 +70,7 @@ public class JettyStarter {
 
         // Setup Connectors
         SelectChannelConnector connector = new SelectChannelConnector();
-        connector.setPort(8080);
+        connector.setPort(jetty_port);
         connector.setMaxIdleTime(30000);
         connector.setConfidentialPort(8443);
         connector.setStatsOn(true);
@@ -164,7 +164,7 @@ public class JettyStarter {
 		server.start();
 
 		LOG.info("Jetty Server is started");
-		LOG.info("Please visit the web application at the url : http://localhost:8080/");
+		LOG.info("Please visit the web application at the url : http://localhost:" + jetty_port + "/");
 		
 		
 		LOG.info("Initializing Services which include loading ontologies in memory. This step may take several mintues. ");
@@ -217,7 +217,7 @@ public class JettyStarter {
 		server.start();
 
 		LOG.info("Jetty Server is started");
-		LOG.info("Please visit the web application at the url : http://localhost:8080/");
+		LOG.info("Please visit the web application at the url : http://localhost:" + jetty_port + "/");
 		
 		
 		LOG.info("Initializing Services which include loading ontologies in memory. This step may take several mintues. ");
