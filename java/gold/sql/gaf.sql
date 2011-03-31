@@ -7,7 +7,6 @@ CREATE TABLE bioentity (
   symbol VARCHAR NOT NULL,
   full_name VARCHAR NOT NULL,
   type_cls VARCHAR NOT NULL, -- e.g. SO:nnnn
-  ncbi_taxon_id INT, -- DEPRECATED
   taxon_cls VARCHAR NOT NULL, -- e.g. NCBITaxon:nnnn
 
   db VARCHAR, -- e.g. FB - must match prefix part of id
@@ -49,14 +48,6 @@ type is "complex" in which case GO should be used.
 MAPPINGS:
  GAF: c12->class
  LEAD: gene_product.type_id
-';
-
-COMMENT ON COLUMN bioentity.ncbi_taxon_id IS 'Integer corresponding
-directly to the NCBI Taxon ID. TODO: DEPRECATED - use taxon_cls instead.
-
-MAPPINGS:
- GAF: c13
- LEAD: gene_product.species.ncbi_taxa_id
 ';
 
 COMMENT ON COLUMN bioentity.taxon_cls IS 'An ontology identifier
