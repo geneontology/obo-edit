@@ -60,7 +60,6 @@ sub cache_data{
 	my $sql = 'INSERT INTO data(xref_dbname,xref_key,last_annotated,members,refg_members,exp,' .
 	  join(',', map { lc } @code) . ')VALUES(?,?,?,?,?,?,' .
 	    join(',', ('?') x scalar(@code)) . ')';
-	warn $sql;
 	$s->{$insert_sth} = $s->{CACHE_DBH}->prepare($sql);
     }
 
