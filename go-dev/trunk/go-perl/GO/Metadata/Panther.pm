@@ -287,7 +287,14 @@ sub new{
     # This bugs me
     ##########
 
-    @all = $c->SUPER::new(map {
+    @all = map {
+	if (!$_->ncbi_taxon_id()) {
+	    warn 'Skipping unknown NCBI taxon ID, check: SELECT * FROM species WHERE ncbi_taxa_id=0';
+	    ();
+	} else {
+	    $_;
+	}
+    } $c->SUPER::new(map {
 	if ($species{$_} && $species{$_}->{is}) {
 	    warn "$_ -> $species{$_}->{is}";
 	    $species{$_}->{is};
