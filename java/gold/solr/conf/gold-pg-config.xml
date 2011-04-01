@@ -1,10 +1,10 @@
 <dataConfig>
   <dataSource type="JdbcDataSource" 
               driver="org.postgresql.driver"
-              url="jdbc:mysql://localhost/go_latest_lite"
+              url="jdbc:postgressql://localhost/gold_test"
 	      batchSize="-1"
-              user="sjcarbon" 
-              password=""/>
+              user="gold_user" 
+              password="gold_pass"/>
   <document>
      <entity name="gene_annotations"
               query="
