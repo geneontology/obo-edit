@@ -1,53 +1,49 @@
 <dataConfig>
   <dataSource type="JdbcDataSource" 
-              driver="org.postgresql.driver"
-              url="jdbc:postgresql://localhost:5432/gold"
-	      batchSize="-1"
-              user="cjm" 
-              password=""/>
+              driver="org.postgresql.Driver"
+              url="jdbc:postgresql://localhost:5432/gold_test"
+              user="gold_user" 
+              password="gold_pass"/>
   <document>
      <entity name="gene_annotations"
               query="
 SELECT DISTINCT 
         'annotation' AS document_category,
-        g.id || c.id || a.reference_id || a.assigned_by || a.evidence_cls AS id,
+        g.id || c.id || gene_annotation.reference_id || gene_annotation.assigned_by || gene_annotation.evidence_cls AS id,
         g.id AS bioentity_id,
         g.symbol AS bioentity_label,
         g.type_cls AS type,
-        a.reference_id AS reference,
-        a.assigned_by AS source,
-        a.last_update_date AS date,
+        gene_annotation.with_expression,
+        gene_annotation.reference_id AS reference,
+        gene_annotation.assigned_by AS source,
+        gene_annotation.last_update_date AS date,
         g.taxon_cls AS taxon,
-        a.cls AS annotation_class,
+        gene_annotation.cls AS annotation_class,
         c.label AS annotation_class_label,
-        a.evidence_cls AS evidence_type
-        FROM gene_annotation a INNER JOIN bioentity AS g ON (a.bioentity=g.id) INNER JOIN cls AS c ON (a.cls=c.id)">
+        gene_annotation.evidence_cls AS evidence_type
+        FROM gene_annotation INNER JOIN bioentity AS g ON (gene_annotation.bioentity=g.id) INNER JOIN cls AS c ON (gene_annotation.cls=c.id)">
 
         <entity name="evidence_with"
-          query="SELECT with_xref AS annotation_with FROM with_info WHERE cls=${a.with_expression}"></entity>
+          query="SELECT with_info.with_xref AS annotation_with FROM with_info WHERE with_info.id='${gene_annotation.with_expression}'"></entity>
 
-
-        <entity name="isa_partof_closure"
-          query="SELECT target_cls AS isa_partof_closure FROM inferred_isa_or_partof WHERE cls=${a.cls}"></entity>
-        <entity name="isa_partof_label_closure"
-          query="SELECT cls.label AS isa_partof_label_closure FROM inferred_isa_or_partof AS i INNER JOIN cls AS c ON (i.target_cls=c.cls) WHERE cls=${a.cls}"></entity>
-
-        <entity name="regulates_closure"
-          query="SELECT target_cls AS regulates_closure FROM inferred_regulates WHERE cls=${a.cls}"></entity>
-        <entity name="regulates_label_closure"
-          query="SELECT cls.label AS regulates_label_closure FROM inferred_regulates AS i INNER JOIN cls AS c ON (i.target_cls=c.cls) WHERE cls=${a.cls}"></entity>
+        <!-- <entity name="isa_partof_closure" -->
+        <!--   query="SELECT target_cls AS isa_partof_closure FROM inferred_isa_or_partof WHERE cls='${gene_annotation.cls}'"></entity> -->
+        <!-- <entity name="isa_partof_label_closure" -->
+        <!--   query="SELECT cls.label AS isa_partof_label_closure FROM inferred_isa_or_partof AS i INNER JOIN cls AS c ON (i.target_cls=c.cls) WHERE cls='${gene_annotation.cls}'"></entity> -->
+        <!-- <entity name="regulates_closure" -->
+        <!--   query="SELECT target_cls AS regulates_closure FROM inferred_regulates WHERE cls='${gene_annotation.cls}'"></entity> -->
+        <!-- <entity name="regulates_label_closure" -->
+        <!--   query="SELECT cls.label AS regulates_label_closure FROM inferred_regulates AS i INNER JOIN cls AS c ON (i.target_cls=c.cls) WHERE cls='${gene_annotation.cls}'"></entity> -->
 
         <entity name="annotation_extension_class"
-          query="SELECT cls AS annotation_extension_class FROM extension_expression WHERE id=${a.extension_expression}"></entity>
+          query="SELECT extension_expression.cls AS annotation_extension_class FROM extension_expression WHERE id='${gene_annotation.extension_expression}'"></entity>
 
-        <entity name="annotation_extension_class_label"
-          query="SELECT c.label AS annotation_extension_class_label FROM extension_expression AS x INNER JOIN cls AS c ON (x.cls=c.id) WHERE id=${a.extension_expression}"></entity>
-
-        <entity name="annotation_extension_class_closure"
-          query="SELECT target_cls AS annotation_extension_class_closure FROM extension_expression AS x INNER JOIN isa_partof_closure AS i ON (x.cls=i.id) WHERE id=${a.extension_expression}"></entity>
-
-        <entity name="annotation_extension_class_label_closure"
-          query="SELECT c.label AS annotation_extension_class_label_closure FROM extension_expression AS x INNER JOIN isa_partof_closure AS i ON (x.cls=i.id) INNER JOIN cls AS c ON (c.id=i.target_cls) WHERE id=${a.extension_expression}"></entity>
+        <!-- <entity name="annotation_extension_class_label" -->
+        <!--   query="SELECT c.label AS annotation_extension_class_label FROM extension_expression AS x INNER JOIN cls AS c ON (x.cls=c.id) WHERE id='${gene_annotation.extension_expression}'"></entity> -->
+        <!-- <entity name="annotation_extension_class_closure" -->
+        <!--   query="SELECT target_cls AS annotation_extension_class_closure FROM extension_expression AS x INNER JOIN isa_partof_closure AS i ON (x.cls=i.id) WHERE id='${gene_annotation.extension_expression}'"></entity> -->
+        <!-- <entity name="annotation_extension_class_label_closure" -->
+        <!--   query="SELECT c.label AS annotation_extension_class_label_closure FROM extension_expression AS x INNER JOIN isa_partof_closure AS i ON (x.cls=i.id) INNER JOIN cls AS c ON (c.id=i.target_cls) WHERE id='${gene_annotation.extension_expression}'"></entity> -->
         
     </entity>
 
