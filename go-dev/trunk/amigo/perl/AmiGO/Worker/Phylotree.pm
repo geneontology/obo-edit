@@ -524,6 +524,9 @@ sub gene_products{
 	##########
 
 	my $species = $gp->species;
+	my $aid = AmiGO::Aid::PantherDB->new($species->ncbi_taxa_id);
+	next if (!$aid); # If something went wrong we skip it
+
 	## Get together to add a link too.
 	my $dbname = $gp->dbxref->xref_dbname;
 	my $dbkey = $gp->dbxref->xref_key;
@@ -539,7 +542,7 @@ sub gene_products{
 	   eec => $eec,
 	   oec => $oec,
 	  );
-	my $aid = AmiGO::Aid::PantherDB->new($species->ncbi_taxa_id);
+
 	$gp{color} = $aid->color;
 	$s->{number_of_refg_members}++ if ($gp{color});
 
