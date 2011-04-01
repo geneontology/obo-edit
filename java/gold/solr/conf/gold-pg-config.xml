@@ -10,18 +10,18 @@
               query="
 SELECT DISTINCT 
         'annotation' AS document_category,
-        g.id || a.id || a.reference AS id
+        g.id || c.id || a.reference_id || a.assigned_by || a.evidence_cls AS id,
         g.id AS bioentity_id,
-        g.label AS bioentity_label,
+        g.symbol AS bioentity_label,
         g.type_cls AS type,
         a.reference_id AS reference,
-        a.source,
-        a.date_updated AS date,
+        a.assigned_by AS source,
+        a.last_update_date AS date,
         g.taxon_cls AS taxon,
         a.cls AS annotation_class,
         c.label AS annotation_class_label,
         a.evidence_cls AS evidence_type
-        FROM gene_annotation a INNER JOIN bioentity AS g ON (a.bioentity=g.id) INNER JOIN cls AS c ON (a.annotation_cls=c.id)">
+        FROM gene_annotation a INNER JOIN bioentity AS g ON (a.bioentity=g.id) INNER JOIN cls AS c ON (a.cls=c.id)">
 
         <entity name="evidence_with"
           query="SELECT with_xref AS annotation_with FROM with_info WHERE cls=${a.with_expression}"></entity>
