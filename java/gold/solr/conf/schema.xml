@@ -166,6 +166,7 @@
 	   required="false" />
 
 
+
     <!--                -->
     <!-- INFERENCE FIELDS -->
     <!--                -->
@@ -222,7 +223,7 @@
 	   type="text_ws"
 	   indexed="true"
 	   stored="true"
-	   required="true" />
+	   required="false" />
     <!-- Lead: (both): (term.name|gp.full_name) -->
     <!-- Gene: bioentity. -->
     <!-- Ont:  cls. -->
@@ -368,7 +369,7 @@
 	   multiValued="false"
 	   required="false" />
 
-    <field name="secondary_label"
+    <field name="secondary_taxon_label"
 	   type="string"
 	   indexed="true"
 	   stored="true"
@@ -407,7 +408,7 @@
 	   type="string"
 	   indexed="true"
 	   stored="true"
-	   multiValued="false"
+	   multiValued="true"
 	   required="false" />
 
     <field name="reference"
@@ -424,7 +425,21 @@
 	   multiValued="true"
 	   required="false" />
 
+    <field name="annotation_extension_class_label"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+
     <field name="annotation_extension_class_closure"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+
+    <field name="annotation_extension_class_label_closure"
 	   type="string"
 	   indexed="true"
 	   stored="true"
