@@ -5,7 +5,7 @@
               user="postgres" 
               password="postgres"/>
   <document>
-     <entity name="gene_annotations"
+     <entity name="gene_annotation"
               query="
 SELECT DISTINCT 
         'annotation' AS document_category,
@@ -13,25 +13,31 @@ SELECT DISTINCT
         g.id AS bioentity_id,
         g.symbol AS bioentity_label,
         g.type_cls AS type,
-        gene_annotation.with_expression,
+        gene_annotation.with_expression AS with_expression,
+        gene_annotation.composite_qualifier,
         gene_annotation.reference_id AS reference,
         gene_annotation.assigned_by AS source,
         gene_annotation.last_update_date AS date,
+        gene_annotation.extension_expression,
         g.taxon_cls AS taxon,
         gene_annotation.cls AS annotation_class,
         c.label AS annotation_class_label,
         gene_annotation.evidence_cls AS evidence_type
         FROM gene_annotation INNER JOIN bioentity AS g ON (gene_annotation.bioentity=g.id) INNER JOIN cls AS c ON (gene_annotation.cls=c.id)">
-
+        
         <entity name="evidence_with"
-          query="SELECT with_info.with_xref AS annotation_with FROM with_info WHERE with_info.id='${gene_annotation.with_expression}'"></entity>
-
+          query="SELECT with_info.with_xref AS evidence_with FROM with_info WHERE with_info.id='${gene_annotation.with_expression}'"></entity>
+        
+        <entity name="qualifier"
+          query="SELECT qualifier_obj AS qualifier FROM composite_qualifier WHERE composite_qualifier.id='${gene_annotation.composite_qualifier}'"></entity>
+        
+<!-- TODO: ensure the _reflexive_ closure is stored -->
          <entity name="isa_partof_closure" 
-           query="SELECT target_cls AS isa_partof_closure FROM inferred_isa_or_partof WHERE cls='${gene_annotation.cls}'"></entity> 
-        <!-- <entity name="isa_partof_label_closure" -->
-        <!--   query="SELECT cls.label AS isa_partof_label_closure FROM inferred_isa_or_partof AS i INNER JOIN cls AS c ON (i.target_cls=c.cls) WHERE cls='${gene_annotation.cls}'"></entity> -->
-        <!-- <entity name="regulates_closure" -->
-        <!--   query="SELECT target_cls AS regulates_closure FROM inferred_regulates WHERE cls='${gene_annotation.cls}'"></entity> -->
+           query="SELECT target_cls AS isa_partof_closure FROM inferred_isa_or_partof WHERE cls='${gene_annotation.annotation_class}'"></entity> 
+         <entity name="isa_partof_label_closure"
+           query="SELECT c.label AS isa_partof_label_closure FROM inferred_isa_or_partof AS i INNER JOIN cls AS c ON (i.target_cls=c.id) WHERE cls='${gene_annotation.annotation_class}'"></entity> 
+         <entity name="regulates_closure" 
+           query="SELECT target_cls AS regulates_closure FROM inferred_regulates WHERE cls='${gene_annotation.annotation_class}'"></entity> -->
         <!-- <entity name="regulates_label_closure" -->
         <!--   query="SELECT cls.label AS regulates_label_closure FROM inferred_regulates AS i INNER JOIN cls AS c ON (i.target_cls=c.cls) WHERE cls='${gene_annotation.cls}'"></entity> -->
 
