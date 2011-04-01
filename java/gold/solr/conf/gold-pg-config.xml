@@ -1,9 +1,9 @@
 <dataConfig>
   <dataSource type="JdbcDataSource" 
               driver="org.postgresql.Driver"
-              url="jdbc:postgresql://localhost:5432/gold_test"
-              user="gold_user" 
-              password="gold_pass"/>
+              url="jdbc:postgresql://localhost:5432/gold"
+              user="postgres" 
+              password="postgres"/>
   <document>
      <entity name="gene_annotations"
               query="
@@ -26,8 +26,8 @@ SELECT DISTINCT
         <entity name="evidence_with"
           query="SELECT with_info.with_xref AS annotation_with FROM with_info WHERE with_info.id='${gene_annotation.with_expression}'"></entity>
 
-        <!-- <entity name="isa_partof_closure" -->
-        <!--   query="SELECT target_cls AS isa_partof_closure FROM inferred_isa_or_partof WHERE cls='${gene_annotation.cls}'"></entity> -->
+         <entity name="isa_partof_closure" 
+           query="SELECT target_cls AS isa_partof_closure FROM inferred_isa_or_partof WHERE cls='${gene_annotation.cls}'"></entity> 
         <!-- <entity name="isa_partof_label_closure" -->
         <!--   query="SELECT cls.label AS isa_partof_label_closure FROM inferred_isa_or_partof AS i INNER JOIN cls AS c ON (i.target_cls=c.cls) WHERE cls='${gene_annotation.cls}'"></entity> -->
         <!-- <entity name="regulates_closure" -->
