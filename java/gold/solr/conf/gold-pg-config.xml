@@ -6,8 +6,51 @@
               user="sjcarbon" 
               password=""/>
   <document>
-      <entity name="all_associations"
-              query="SELECT DISTINCT term.acc AS annotation_closure FROM gene_product AS gp2, association, graph_path, term WHERE gp2.id = association.gene_product_id AND association.term_id = graph_path.term2_id AND graph_path.term1_id = term.id AND association.is_not = 0 AND term.acc != 'all' AND gene_product_id='${gene_product.id}'"/>
+     <entity name="gene_annotations"
+              query="
+SELECT DISTINCT 
+        'annotation' AS document_category,
+        g.id || a.id || a.reference AS id
+        g.id AS bioentity_id,
+        g.label AS bioentity_label,
+        g.type_cls AS type,
+        a.reference_id AS reference,
+        a.source,
+        a.date_updated AS date,
+        g.taxon_cls AS taxon,
+        a.cls AS annotation_class,
+        c.label AS annotation_class_label,
+        a.evidence_cls AS evidence_type
+        FROM gene_annotation a INNER JOIN bioentity AS g ON (a.bioentity=g.id)" INNER JOIN cls AS c ON (a.annotation_cls=c.id)">
+
+        <entity name="evidence_with"
+          query="SELECT with_xref AS annotation_with FROM with_info WHERE cls=${a.with_expression}"></entity>
+
+
+        <entity name="isa_partof_closure"
+          query="SELECT target_cls AS isa_partof_closure FROM inferred_isa_or_partof WHERE cls=${a.cls}"></entity>
+        <entity name="isa_partof_label_closure"
+          query="SELECT cls.label AS isa_partof_label_closure FROM inferred_isa_or_partof AS i INNER JOIN cls AS c ON (i.target_cls=c.cls) WHERE cls=${a.cls}"></entity>
+
+        <entity name="regulates_closure"
+          query="SELECT target_cls AS regulates_closure FROM inferred_regulates WHERE cls=${a.cls}"></entity>
+        <entity name="regulates_label_closure"
+          query="SELECT cls.label AS regulates_label_closure FROM inferred_regulates AS i INNER JOIN cls AS c ON (i.target_cls=c.cls) WHERE cls=${a.cls}"></entity>
+
+        <entity name="annotation_extension_class"
+          query="SELECT cls AS annotation_extension_class FROM extension_expression WHERE id=${a.extension_expression}"></entity>
+
+        <entity name="annotation_extension_class_label"
+          query="SELECT c.label AS annotation_extension_class_label FROM extension_expression AS x INNER JOIN cls AS c ON (x.cls=c.id) WHERE id=${a.extension_expression}"></entity>
+
+        <entity name="annotation_extension_class_closure"
+          query="SELECT target_cls AS annotation_extension_class_closure FROM extension_expression AS x INNER JOIN isa_partof_closure AS i ON (x.cls=i.id) WHERE id=${a.extension_expression}"></entity>
+
+        <entity name="annotation_extension_class_label_closure"
+          query="SELECT c.label AS annotation_extension_class_label_closure FROM extension_expression AS x INNER JOIN isa_partof_closure AS i ON (x.cls=i.id) INNER JOIN cls AS c ON (c.id=i.target_cls) WHERE id=${a.extension_expression}"></entity>
+        
+          
+        </entity>
     </entity>
 
     <entity name="term" 
