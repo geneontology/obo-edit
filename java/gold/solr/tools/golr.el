@@ -53,7 +53,7 @@ repository."
   '(("apache" ("golr") "/etc/apache2/sites-available/")
     ("jetty" ("jetty.conf" "jetty-rewrite.xml" "jetty.xml") "/etc/jetty/")
     ("jetty" ("no_access.html") "/var/lib/jetty/webapps/root/")
-    ("conf" ("go-data-config.xml" "schema.xml" "solrconfig.xml") "/etc/solr/conf/"))
+    ("conf" ("gold-pg-config.xml" "schema.xml" "solrconfig.xml") "/etc/solr/conf/"))
   "File transfers to make when \"installing\" and before
   restarting. For each sub-list, the first item is the
   sub-directory in golr-location, the second item is a list of
