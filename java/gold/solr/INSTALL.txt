@@ -37,7 +37,7 @@ Edit /etc/default/jetty and change NO_START to be 0 (or comment it out).
 
 ** Get Sol into a usable state.
 
-Edit ./solr/go-data-config.xml to reflect your setup. This is likely
+Edit ./solr/gold-pg-config.xml to reflect your setup. This is likely
 to just be changing a couple of entries in dataConfig/dataSource for the
 JDBC driver.
 
