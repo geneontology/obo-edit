@@ -47,6 +47,7 @@
        classpath, this is useful for including all jars in a directory.
     -->
   <lib dir="../../contrib/extraction/lib" />
+  <lib path="/usr/share/java/postgresql.jar" />
   
 <!--     <lib path="/Users/shaid/work/go/java/solr/geneontology-solr.jar" />-->
    <lib dir="../lib/" />
@@ -945,7 +946,7 @@
   </requestHandler>
   
   
- <!-- Handler for full mysql db import... -sjc -->
+ <!-- Handler for full db import... -sjc -->
   <requestHandler name="/dataimport"
 		  class="org.apache.solr.handler.dataimport.DataImportHandler">
     <lst name="defaults">
