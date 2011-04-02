@@ -29,11 +29,12 @@ This method is suitable for developers.
 * Installation instructions for Ubuntu 10.04.
 ** Get the necessary libraries and installations.
 
-   sudo apt-get -u install solr-jetty pg-java
+   sudo apt-get -u install solr-jetty libpg-java
 
 ** Get Jetty into a usable state.
 
 Edit /etc/default/jetty and change NO_START to be 0 (or comment it out).
+You might want to change the port there as well.
 
 ** Get Solr into a usable state.
 
