@@ -391,6 +391,10 @@ public class GAFDbOperations implements DbOperationsInterface{
 			return;
 		}
 		
+		for(DbOperationsListener listener: listeners){
+			listener.updateStart();
+		}
+		
 		
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
 		
@@ -423,7 +427,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 		LOG.info("Bulk Load completed successfully");
 
 		for(DbOperationsListener listener: listeners){
-			listener.bulkLoadEnd();
+			listener.updateEnd();
 		}
 		
 		
