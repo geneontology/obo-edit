@@ -384,6 +384,13 @@ public class GAFDbOperations implements DbOperationsInterface{
 			LOG.debug("-");
 		}
 		
+		GafObjectsFactory factory = new GafObjectsFactory();
+
+		if(factory.getGafDocument().isEmpty()){
+			bulkLoad(gafDocument, false);
+			return;
+		}
+		
 		
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
 		
@@ -401,9 +408,9 @@ public class GAFDbOperations implements DbOperationsInterface{
 		Collection<ExtensionExpression> expressions = deltaFactory.buildExtensionExpressions();
 		Collection<WithInfo> infos = deltaFactory.buildWithInfos();
 		
-		GafObjectsFactory factory = new GafObjectsFactory();
 		Session session = factory.getSession();
 		
+		session.saveOrUpdate(gafDocument);
 		saveOrUpdate(session, entities);
 		saveOrUpdate(session, annotations);
 		saveOrUpdate(session, qualifiers);

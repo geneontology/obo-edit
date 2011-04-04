@@ -274,7 +274,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 							this.currentOntologyBeingProcessed = gafDocument.getId();
 						
 							if("bulkload".equals(command)){
-								db.bulkLoad(gafDocument, false);
+								db.update(gafDocument);
 							}else if("update".equals(command)){
 								db.update(gafDocument);
 							}
@@ -329,11 +329,11 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 		}
 
 		public void bulkLoadStart() {
-			reportStartTime("BulkLoad/TotalTime--" + currentOntologyBeingProcessed);
+			reportStartTime("Load/TotalTime--" + currentOntologyBeingProcessed);
 		}
 
 		public void bulkLoadEnd() {
-			reportEndTime("BulkLoad/TotalTime--" + currentOntologyBeingProcessed);
+			reportEndTime("Load/TotalTime--" + currentOntologyBeingProcessed);
 		}
 
 		public void dumpFilesStart() {
@@ -362,11 +362,11 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 		}
 
 		public void updateStart() {
-			reportStartTime("Update/TotalTime--" + currentOntologyBeingProcessed);
+			reportStartTime("Load/TotalTime--" + currentOntologyBeingProcessed);
 		}
 
 		public void updateEnd() {
-			reportEndTime("Update/TotalTime--" + currentOntologyBeingProcessed);
+			reportEndTime("Load/TotalTime--" + currentOntologyBeingProcessed);
 		}
 
 		public void startOntologyLoad() {
