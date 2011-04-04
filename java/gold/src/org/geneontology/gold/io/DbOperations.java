@@ -79,7 +79,7 @@ public class DbOperations implements DbOperationsInterface{
 
 	private static boolean DEBUG = LOG.isDebugEnabled();
 	
-	private boolean dbCreate;
+//	private boolean dbCreate;
 	
 	public DbOperations(){
 		listeners = new ArrayList<DbOperationsListener>();
@@ -112,7 +112,7 @@ public class DbOperations implements DbOperationsInterface{
 			throw new Exception("Ontology File Location is not Found specified in the geneontology.gold.ontologylocation property" );
 		}
 		
-		dbCreate = false;
+	//	dbCreate = false;
 		
 		for(Object obj: files){
 			bulkLoad(obj.toString(), force);
@@ -155,10 +155,10 @@ public class DbOperations implements DbOperationsInterface{
 	
 			List<String> list = dumpFiles("", wrapper);
 			
-			if(!dbCreate)
+			/*if(!dbCreate)
 				buildSchema(force, "");
 			
-			dbCreate = true;
+			dbCreate = true;*/
 			loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
 			
 			LOG.info("Bulk Load completed successfully");

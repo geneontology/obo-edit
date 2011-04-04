@@ -1,6 +1,7 @@
 package org.geneontology.gold.io.postgres;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.Reader;
@@ -13,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.geneontology.conf.GeneOntologyManager;
 
 
 /**
@@ -44,6 +46,14 @@ public class SchemaManager {
 		if(DEBUG)
 			LOG.debug("--");
 		
+		Connection connection = getConnection(host, username, password, db);
+		
+		loadSchemaSQL(connection, file, tablePrefix, force);
+		
+	}
+	
+	private Connection getConnection(String host, String username, String password, String db) throws ClassNotFoundException, SQLException{
+		
 		Class.forName("org.postgresql.Driver");
 		
 		
@@ -69,13 +79,54 @@ public class SchemaManager {
 			
 		}
 		
-		loadSchemaSQL(connection, file, tablePrefix, force);
+		return connection;
+	}
+	
+	public void loadSchemaSQL() throws ClassNotFoundException, SQLException, FileNotFoundException{
+		GeneOntologyManager manager = GeneOntologyManager.getInstance();
+		String dbHostName = manager.getGolddbHostName();
+		String dbUserName = 		manager.getGolddbUserName();
+		String dbUserPassword =		manager.getGolddbUserPassword();
+		String dbName = manager.getGolddbName();
+		
+		Connection connection = getConnection(dbHostName, dbUserName, dbUserPassword, dbName);
+		
+		String sqlFile = manager.getOntSqlSchemaFileLocation();
+		
+		if(sqlFile == null){
+			throw new FileNotFoundException("The sql file location is not configured (geneontology.gold.schemalocation) in the gold.properties file");
+		}
+		
+		File f = new File(sqlFile);
+		
+		if(!f.exists()){
+			throw new FileNotFoundException("The sql file location " + sqlFile + " is not found.");
+		}
+
+		loadSchemaSQL(connection, manager.getOntSqlSchemaFileLocation(), "", false);
+		
+		loadSchemaSQL(connection, manager.getGafSqlSchemaFileLocation(), "", false);
+
+		
+		f = f.getParentFile();
+		
+		for(File sql: f.listFiles()){
+			if(manager.getGafSqlSchemaFileLocation().endsWith(sql.getName()) || manager.getOntSqlSchemaFileLocation().endsWith(sql.getName()))
+				continue;
+			
+			if(sql.getName().endsWith(".sql")){
+				
+				
+				
+				loadSchemaSQL(connection, sql.getAbsolutePath(), "", false);
+			}
+		}
+		
 		
 	}
 	
 	public void loadSchemaSQL(Connection connection, String file, String tablePrefix, boolean force) throws FileNotFoundException{
-		if(DEBUG)
-			LOG.debug("--");
+		LOG.info("Loading Schema file: " + file);
 		
 		
 		executeScript(new FileReader(file), connection, tablePrefix, force);
@@ -92,7 +143,7 @@ public class SchemaManager {
 			throw new RuntimeException("Can not perform operation as connection is establed with the RDBMS");
 
 		tablePrefix = tablePrefix == null ? "" : tablePrefix.trim();
-		
+		String sql = "";
 		try{
 			//BufferedReader reader =new BufferedReader( new FileReader(new File(scriptFile)) );
                         BufferedReader reader =new BufferedReader(r);
@@ -101,6 +152,7 @@ public class SchemaManager {
 			StringBuffer buf = new StringBuffer();
 			Pattern pattern = Pattern.compile("CREATE\\s*TABLE\\s*\\w+", Pattern.CASE_INSENSITIVE);
 			Pattern Refspattern = Pattern.compile("REFERENCES\\s*\\w+", Pattern.CASE_INSENSITIVE);
+			
 			
 			while((line = reader.readLine()) != null){
 				
@@ -113,6 +165,7 @@ public class SchemaManager {
 					line = line.substring(0, index);
 				}
 				
+				buf.append(" ");
 				buf.append(line);
 
 				if(line.endsWith(";")){
@@ -120,7 +173,7 @@ public class SchemaManager {
 					try{
 						Statement stmt = connection.createStatement();
 						
-						String sql = buf.toString();
+						sql = buf.toString();
 						
 						if(tablePrefix.length()>0 || force){
 							Matcher matcher = pattern.matcher(sql);
@@ -162,9 +215,12 @@ public class SchemaManager {
 						if(DEBUG)
 							LOG.debug(sql);
 						
+						
+						
 						stmt.executeUpdate(sql);
 					}catch(Exception ex){
-						ex.printStackTrace();
+						LOG.error("Error occured in the " + sql + "sql statement.\n " + ex.getMessage(), ex);
+						//ex.printStackTrace();
 					}finally{
 						buf = new StringBuffer();
 					}
