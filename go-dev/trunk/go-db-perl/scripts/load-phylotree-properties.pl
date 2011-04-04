@@ -52,7 +52,7 @@ foreach my $tfile (@full_tree_files){
   $blob =~ s/^[\r\s\n]+//;
   $blob =~ s/[\r\s\n]+$//;
 
-  my $db_name = 'PantherDB';
+  my $db_name = 'PANTHER';
   my $xref = $db_name . ':' . $db_key;
 
   #ll("xref: " . $xref);

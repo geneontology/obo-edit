@@ -666,7 +666,7 @@ sub species_dist{
 	};
     } @results;
 
-    if ($s->{dbname} eq 'PantherDB') {
+    if ($s->{dbname} eq 'PANTHER') {
 
 	# First, combine items AmiGO::Aid::Pantherdb says are the same.
 	my %out;
