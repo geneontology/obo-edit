@@ -150,7 +150,24 @@ public class GafObjectsFactory {
 		session.getTransaction().commit();
 		
 		return doc;
-		
 	}
+
+	public synchronized List<GafDocument> getGafDocument(){
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		List<GafDocument> docs =  session.createQuery("from GafDocument")
+							.list();
+		
+		for(GafDocument doc: docs){
+			doc.setHibernateLoad();
+		}
+		
+		session.getTransaction().commit();
+		
+		return docs;
+	}
+	
 	
 }

@@ -23,7 +23,7 @@
         </property>
 
         <property name="ncbiTaxonId" type="integer">
-            <column name="ncbi_taxon_id">
+            <column name="taxon_cls">
             </column>
         </property>
 
