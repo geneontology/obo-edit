@@ -36,7 +36,8 @@ use JSON::PP;
 use Data::UUID;
 
 ## File type guessing games.
-use File::MMagic;
+#use File::MMagic;
+use File::Type;
 use FileHandle;
 
 use FreezeThaw qw(freeze thaw);
@@ -1842,20 +1843,33 @@ sub vanilla_filehandle_p {
   my $self = shift;
   my $fh = shift || undef;
   my $retval = 0;
+  my $cdata = undef;
 
   if( $fh ){
 
-    ## File::MMagic permonks hack.
-    push @Fh::ISA, 'IO::Seekable' unless Fh->isa('IO::Seekable');
-    push @Fh::ISA, 'IO::Handle' unless Fh->isa('IO::Handle');
-    my $mt = File::MMagic->new->checktype_filehandle($fh);
-    $self->kvetch('mimetype: ' . $mt);
-
-    ## Rewind for future use.
-    seek $fh, 0, 0;
-
-    if( $mt =~ /text\/plain/ ){
+    ## Other tests--the above is remarkably unreliable...
+    if( -T $fh ){
+      $self->kvetch('is text');
       $retval = 1;
+    }else{
+      $self->kvetch('is binary?');
+
+      ## File::MMagic permonks hack.
+      push @Fh::ISA, 'IO::Seekable' unless Fh->isa('IO::Seekable');
+      push @Fh::ISA, 'IO::Handle' unless Fh->isa('IO::Handle');
+
+      ## Try again.
+      my $ft = File::Type->new();
+      $fh->read($cdata, 0x8564);
+      my $tfd = $ft->checktype_contents($cdata);
+      seek $fh, 0, 0; # rewind for future use.
+      $self->kvetch('contents type: ' . $tfd);
+
+      ## Decide.
+      #if( $mt =~ /text\/plain/ ){
+      if( $tfd =~ /text/ ){
+	$retval = 1;
+      }
     }
   }
 
