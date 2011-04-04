@@ -230,7 +230,7 @@ if ( ! $slim_filehandle && $query->cgi_error() ){
 }else{
   if ( $slim_filehandle && ! $core->vanilla_filehandle_p($slim_filehandle) ){
     server_die_template({MESSAGE =>
-			 "AmiGO currently only accepts text files. " .
+			 "AmiGO currently only accepts plain text files. " .
 			 "Please change your file and try again.",
 			 STAMP => $time_stamp, URL => $html_url});
   }
@@ -258,7 +258,7 @@ if ( ! $gp_filehandle && $query->cgi_error() ){
 }else{
   if ( $gp_filehandle && ! $core->vanilla_filehandle_p($gp_filehandle) ){
     server_die_template({MESSAGE =>
-			 "AmiGO currently only accepts text files. " .
+			 "AmiGO currently only accepts plain text files. " .
 			 "Please change your file and try again.",
 			 STAMP => $time_stamp, URL => $html_url});
   ## NOTE: used during go_assoc input error tests
