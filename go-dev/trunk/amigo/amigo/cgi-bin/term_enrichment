@@ -196,7 +196,8 @@ if( $format && length($format) > $upper_arg_size_limit ){
 ## Gene labels in the input box for enrichment processing.
 my $gp_list = $query->param('gp_list');
 if( $gp_list && length($gp_list) > $upper_list_arg_size_limit ){
-  client_die_template({MESSAGE => 'illegitimate gene list value',
+  client_die_template({MESSAGE => 'illegitimate gene list value' .
+		       '--likely too large an input. Please reduce and retry.',
 		       STAMP => $time_stamp, URL => $html_url});
 }
 if( $gp_list && $gp_list !~ /[a-z0-9]/i ){ # text in there too
@@ -206,7 +207,8 @@ if( $gp_list && $gp_list !~ /[a-z0-9]/i ){ # text in there too
 ## Stub for the background gene product list.
 my $bggp_list = $query->param('bggp_list');
 if( $bggp_list && length($bggp_list) > $upper_list_arg_size_limit ){
-  client_die_template({MESSAGE => 'illegitimate background gene list value',
+  client_die_template({MESSAGE => 'illegitimate background gene list value' .
+		       '--likely too large an input. Please reduce and retry.',
 		       STAMP => $time_stamp, URL => $html_url});
 }
 if( $bggp_list && $bggp_list !~ /[a-z0-9]/i ){ # text in there too
@@ -222,7 +224,7 @@ if ( ! $gp_filehandle  && $query->cgi_error() ){
 }else{
   if ( $gp_filehandle && ! $core->vanilla_filehandle_p($gp_filehandle) ){
     server_die_template({MESSAGE =>
-			 "AmiGO currently only accepts text files. " .
+			 "AmiGO currently only accepts plain text files. " .
 			 "Please change your file and try again.",
 			 STAMP => $time_stamp, URL => $html_url});
   }
@@ -237,7 +239,7 @@ if ( ! $bggp_filehandle  && $query->cgi_error() ){
 }else{
   if ( $bggp_filehandle && ! $core->vanilla_filehandle_p($bggp_filehandle) ){
     server_die_template({MESSAGE =>
-			 "AmiGO currently only accepts text files. " .
+			 "AmiGO currently only accepts plain text files. " .
 			 "Please change your file and try again.",
 			 STAMP => $time_stamp, URL => $html_url});
   }
