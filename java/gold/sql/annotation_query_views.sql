@@ -21,28 +21,28 @@ CREATE OR REPLACE VIEW inferred_isa_or_partof AS
 
 CREATE OR REPLACE VIEW basic_annotation_closure AS
  SELECT 
-  *,
+  a.*,
   i.target_cls
  FROM gene_annotation AS a
   INNER JOIN inferred_isa_or_partof AS i ON (a.cls=i.cls);
 
 CREATE OR REPLACE VIEW regulation_annotation_closure AS
  SELECT 
-  *,
+  a.*,
   i.target_cls
  FROM gene_annotation AS a
   INNER JOIN inferred_regulates AS i ON (a.cls=i.cls);
 
 CREATE OR REPLACE VIEW regulation_annotation_closure AS
  SELECT 
-  *,
+  a.*,
   i.target_cls
  FROM gene_annotation AS a
   INNER JOIN inferred_regulates AS i ON (a.cls=i.cls);
 
 CREATE OR REPLACE VIEW annotation_extension_closure AS
  SELECT 
-  *,
+  a.*,
   i.target_cls
  FROM gene_annotation AS a
   INNER JOIN extension_expression AS x ON (a.extension_expression=x.id)

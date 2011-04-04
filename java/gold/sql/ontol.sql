@@ -599,3 +599,25 @@ COMMENT ON TABLE ontology_changes_history IS 'This table maintains history of ch
 ontology is updated preiodically.
 This table is on experimental basis. Its structure can be changed in future. 
 ';
+
+-- ****************************************
+-- Axiom Cache
+-- ****************************************
+
+CREATE TABLE axiom_cache (
+       obj VARCHAR,
+       axiom VARCHAR,
+       ontology VARCHAR,
+       is_directly_about BOOLEAN,
+       owlformat VARCHAR
+);
+
+COMMENT ON TABLE axiom_cache IS 'This table contains a cache of all axioms in the ontology, and their relationship to an object (a class, property or individual)
+';
+
+COMMENT ON COLUMN axiom_cache.obj IS 'ID for the entity that is associated with the axiom. E.g. GO:0008150';
+COMMENT ON COLUMN axiom_cache.axiom IS 'A formatted string encoding an axiom. E.g. SubClassOf(GO_000001 GO_0000002). TODO - QName scheme';
+COMMENT ON COLUMN axiom_cache.ontology IS 'The ontology to which the axiom belongs. Note that the axiom can belong to a different ontology from the class declaration';
+COMMENT ON COLUMN axiom_cache.is_directly_about IS 'True if the axiom is directly about obj. This corresponds to what you would see on the main display in Protege vs under the "about" tab';
+COMMENT ON COLUMN axiom_cache.owlformat IS 'The syntax used in axiom_cache.axiom. One of: functional, manchester, owlxml';
+
