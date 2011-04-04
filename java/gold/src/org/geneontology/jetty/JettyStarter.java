@@ -25,6 +25,7 @@ import org.geneontology.web.services.GoldDbOperationsService;
 import org.geneontology.web.services.ServicesConfig;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.io.FileMonitor;
+import org.geneontology.gold.io.postgres.SchemaManager;
 
 /**
  * This class responsible for start and stop of the jetty server.
@@ -173,6 +174,13 @@ public class JettyStarter {
 		
 		LOG.info("Services are initialized. The server is ready for performing services");
 		
+		LOG.info("Initializing gold database schema.");
+		LOG.info("WAIT.............");
+		
+		SchemaManager schema = new SchemaManager();
+		schema.loadSchemaSQL();
+
+		LOG.info("SQL Schema is created successfully");
 		
 		server.join();		
 		

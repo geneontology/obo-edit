@@ -52,5 +52,5 @@ CREATE TABLE family_data_dump (
        family VARCHAR,
        data_source TEXT,
        data_dump TEXT,
-       data_format VARCHAR, -- e.g. nhx
+       data_format VARCHAR -- e.g. nhx
 );

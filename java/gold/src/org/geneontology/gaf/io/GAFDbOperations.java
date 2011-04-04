@@ -39,7 +39,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 
 	private static boolean DEBUG = LOG.isDebugEnabled();
 	
-	private boolean dbCreate;
+	//private boolean dbCreate;
 	
 	private GafDocument gafDocument;
 	
@@ -70,7 +70,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 			throw new Exception("Ontology File Location is not Found specified in the geneontology.gold.ontologylocation property" );
 		}
 		
-		dbCreate = false;
+	//	dbCreate = false;
 		
 		for(Object obj: files){
 			bulkLoad(obj.toString(), force);
@@ -103,10 +103,10 @@ public class GAFDbOperations implements DbOperationsInterface{
 		
 		List<String> list = dumpFiles("", gafDocument);
 		
-		if(!dbCreate)
+		/*if(!dbCreate)
 			buildSchema(force, "");
 		
-		dbCreate = true;
+		dbCreate = true;*/
 		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
 
 		GafObjectsFactory factory = new GafObjectsFactory();
@@ -250,6 +250,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 	 * @param tablePrefix This prefix is used as prefix of each table created in the database.
 	 * @throws Exception
 	 */
+
 	public void buildSchema(boolean force, String tablePrefix) throws Exception{
 		for(DbOperationsListener listener: listeners){
 			listener.buildSchemaStart();
