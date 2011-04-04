@@ -9,3 +9,7 @@ CREATE INDEX composite_qualifier_ix_id_obj ON composite_qualifier(id,qualifier_o
 CREATE INDEX with_info_ix_id ON with_info(id);
 CREATE INDEX with_info_ix_xref ON with_info(with_xref);
 CREATE INDEX with_info_ix_id_xref ON with_info(id,with_xref);
+
+CREATE INDEX extension_expression_ix_id ON extension_expression(id);
+CREATE INDEX extension_expression_ix_obj ON extension_expression(cls);
+CREATE INDEX extension_expression_ix_id_cls ON extension_expression(id,cls);

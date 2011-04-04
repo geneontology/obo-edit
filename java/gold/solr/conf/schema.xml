@@ -293,6 +293,18 @@
 	   multiValued="true"
 	   required="false" />
 
+    <!-- Entity: axiom_obj.axiom -->
+    <!-- Each ontology entity (class or property) can be associated with multiple OWL axioms. -->
+    <!--  We cache them in the index so that advanced OWL-aware clients can pull relevant information quickly  -->                                                       
+    <!--  Axioms are stored in functional syntax -->
+    <field name="axiom"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
+
+
     <!--               -->
     <!-- ANNOT FIELDS  -->
     <!--               -->
@@ -380,7 +392,7 @@
 	   type="string"
 	   indexed="true"
 	   stored="true"
-	   multiValued="false"
+	   multiValued="true"
 	   required="false" />
 
     <field name="bioentity_isoform_label"
