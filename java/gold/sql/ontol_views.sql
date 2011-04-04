@@ -1,17 +1,17 @@
-/*
-CREATE VIEW named_entity AS
- SELECT *
- FROM
-  cls
- UNION
- SELECT *
- FROM
-  relation
- UNION
- SELECT *
- FROM
-  annotation_property;
-*/
+
+--CREATE VIEW named_entity AS
+-- SELECT *
+-- FROM
+--  cls
+-- UNION
+-- SELECT *
+-- FROM
+--  relation
+-- UNION
+-- SELECT *
+-- FROM
+-- annotation_property;
+
 
 CREATE VIEW inferred_relationship
  AS
