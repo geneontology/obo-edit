@@ -31,7 +31,7 @@ if (1 == scalar(@ARGV)) {
 }
 
 my $split = qr/,/;
-my $xref_dbname = 'PantherDB';
+my $xref_dbname = 'PANTHER';
 my $property_key = 'concurrent';
 
 my $xref_key_head = '"family"';

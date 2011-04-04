@@ -39,7 +39,8 @@ use File::Temp;
 use Net::FTP;
 use File::Basename;
 use Cwd 'realpath';
-## TODO/BUG: Remove opt_F after go-load-qfo-fresh.pl is default.
+## TODO/BUG: $opt_F -F now returns an warning to not use it anymore
+
 use vars qw(
 	    $opt_h
 	    $opt_v
@@ -806,130 +807,34 @@ sub load_qfo {
   ll("Load QfO...");
 
   if ($opt_F) {
-      my $qfo_script = "go-db-perl/scripts/go-load-qfo-fresh.pl";
-
-      my @args =
-	(
-	 $go_dev_path . $qfo_script,
-	 '-dbname', $local{EXTENSION},
-	 '-dbhost', $local{DB_HOST}
-	);
-      push @args, ('-dbuser', $local{DB_USER}) if $local{DB_USER};
-      push @args, ('-dbauth', $local{DB_PASS}) if $local{DB_PASS};
-      push @args, ('-dbport', $local{DB_PORT}) if $local{DB_PORT};
-      #push @args, '-noseq';
-      #push @args, $tmp_dl_file;
-      push @args, qw/--unannotated-report --fetch --panther --no-dry-run/;
-
-      ll("[SYSTEM] \"@args\"");
-      eval {
-	system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_x;
-      };
-      if( $@ ){
-	ww("WARNING: Could not load properly.");
-	return undef;
-      }
-
-      return 1;
+      warn '-F option no longer required';
   }
 
-  my $retval = 0;
-  ###
-  ### Setup environment.
-  ###
+  my $qfo_script = "go-db-perl/scripts/go-load-qfo-fresh.pl";
 
-  ## BUG/TODO: We'll have to have more here to work with Stanford's
-  ## complicated setup. Hopefully these things will all be in the
-  ## pipeline before reaching production.
-  # $ENV{GO_DBNAME} = $env_conf{GO_DBNAME}{NEW_VALUE};
-  # $ENV{DBI_DRIVER} = "DBI:mysql:database=" . $ENV{GO_DBNAME};
-  my $qfo_tmp = $local{FS_DOWNLOAD_DIR};
-  my $qfo_script = "go-db-perl/scripts/go-load-qfo-seqs.pl";
-  my $qfo_site = 'ftp.ebi.ac.uk';
-  my $qfo_dir = '/pub/contrib/qfo/';
+  my @args =
+    (
+     $go_dev_path . $qfo_script,
+     '-dbname', $local{EXTENSION},
+     '-dbhost', $local{DB_HOST}
+    );
+  push @args, ('-dbuser', $local{DB_USER}) if $local{DB_USER};
+  push @args, ('-dbauth', $local{DB_PASS}) if $local{DB_PASS};
+  push @args, ('-dbport', $local{DB_PORT}) if $local{DB_PORT};
+  #push @args, '-noseq';
+  #push @args, $tmp_dl_file;
+  push @args, qw/--unannotated-report --fetch --panther --no-dry-run/;
 
-  ###
-  ### Go to site and get a listing of all of the qfo fasta files.
-  ###
-
-  ## Go and go down.
-  my $ftp = Net::FTP->new($qfo_site, Passive => $local{FTP_USE_PASSIVE_MODE})
-    or die "Cannot connect to $qfo_site: $!";
-  if ( $local{FTP_USE_PASSIVE_MODE} ) {
-      ll("[FTP] Connected (PASV) to " . $qfo_site);
-  } else {
-      ll("[FTP] Connected to " . $qfo_site);
+  ll("[SYSTEM] \"@args\"");
+  eval {
+      system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_x;
+  };
+  if( $@ ){
+      ww("WARNING: Could not load properly.");
+      return undef;
   }
-  $ftp->login('anonymous', 'anonymous') or die "Cannot login: $!";
-  $ftp->binary() or die "Cannot change to binary mode: $!";
-  $ftp->cwd($qfo_dir) or die "Cannot change working directory to $qfo_dir: $!";
-  ll("[FTP] In " . $qfo_dir);
 
-  ## Get the file listing.
-  my @listing = $ftp->ls()
-    or die "[FTP] Cannot get a listing: $!";
-  ll("[FTP] Received file listing.");
-
-  ###
-  ### Download and install found FASTA files.
-  ###
-
-  ##
-  for my $qfile (@listing){
-    if( $qfile =~ /\.fasta(\.gz)?$/ ){
-
-      ## Create temp file for the FTP download.
-      my $tmp_dl_file = new File::Temp(TEMPLATE => $qfile . '_qfo_dl_XXXXX',
-				       DIR => $qfo_tmp, SUFFIX => '');
-      die "Could not create temporary download file: $!" if ! $tmp_dl_file;
-
-      my $try = 3;
-      while ($try) {
-	  ll("[FTP] Downloading (tries left: $try): " . $qfile);
-	  $try--;
-	  if ($ftp->get($qfile, $tmp_dl_file)) {
-	      last;
-	  } elsif (0 == $try) {
-	      die "Cannot download $qfile: $!";
-	  } else {
-	      $ftp = Net::FTP->new($qfo_site, Passive => $local{FTP_USE_PASSIVE_MODE})
-		or die "Cannot reconnect to $qfo_site: $!";
-	      $ftp->login('anonymous', 'anonymous') or die "Cannot login: $!";
-	      $ftp->binary() or die "Cannot change to binary mode: $!";
-	      $ftp->cwd($qfo_dir) or die "Cannot change working directory to $qfo_dir: $!";
-	  }
-      }
-
-      ## Run final command.
-      my @args =
-	(
-	 $go_dev_path . $qfo_script,
-	 '-dbname', $local{EXTENSION},
-	 '-dbhost', $local{DB_HOST}
-	);
-      push @args, ('-dbuser', $local{DB_USER}) if $local{DB_USER};
-      push @args, ('-dbauth', $local{DB_PASS}) if $local{DB_PASS};
-      push @args, ('-dbport', $local{DB_PORT}) if $local{DB_PORT};
-      #'-verbose',
-      push @args, '-noseq';
-      push @args, $tmp_dl_file;
-
-      ll("[SYSTEM] \"@args\"");
-      eval {
-	system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_x;
-      };
-      if( $@ ){
-	ww("WARNING: Could not load  properly.");
-      }else{
-	ll("[DB] Added: " . $qfile);
-	$retval = 1;
-      }
-    }
-  }
-  $ftp->quit;
-
-  ll("Done loading QfO.");
-  return $retval;
+  return 1;
 }
 
 

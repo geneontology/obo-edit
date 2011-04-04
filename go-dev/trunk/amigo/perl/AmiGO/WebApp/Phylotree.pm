@@ -94,7 +94,7 @@ sub mode_cluster_sets{
 =item mode_cluster_index
 
 If this mode is used as the start mode it will assume you are looking
-items where AmiGO::Worker::Phylotree C<dbname> value is S<PantherDB>,
+items where AmiGO::Worker::Phylotree C<dbname> value is S<PANTHER>,
 otherwise it will seek itmes from C<dbname> fetched from the CGI
 query.
 
@@ -102,7 +102,7 @@ It will display links to all C<key> values that have a C<dbname> of
 the given value along with some summary information.
 
 =cut
-my $default_dbname = 'PantherDB';
+my $default_dbname = 'PANTHER';
 my %sort =
   (
    name_asce => 'xref_key',
