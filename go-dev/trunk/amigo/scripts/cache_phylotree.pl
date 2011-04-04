@@ -20,7 +20,7 @@ use AmiGO::Worker::Phylotree;
 use AmiGO::Cache::PhylotreeSummary;
 use AmiGO::Aid::PantherDB;
 
-my $work = new AmiGO::Worker::Phylotree(dbname => 'PantherDB');
+my $work = new AmiGO::Worker::Phylotree(dbname => 'PANTHER');
 my @cache_me = $work->id4();
 
 my @species = AmiGO::Aid::PantherDB->reference_genome();

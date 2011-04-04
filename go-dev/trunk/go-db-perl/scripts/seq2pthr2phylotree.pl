@@ -91,7 +91,7 @@ my $dbh = $GO::MatchID::dbh = $apph->dbh;
 
 my @species;
 my $dry_run = 10000; # start pho column ids at negative this number
-my $pthr_xref_dbname = 'PantherDB'; # Make this an option when loading
+my $pthr_xref_dbname = 'PANTHER'; # Make this an option when loading
                                     # somethings other then pthr stuff
 my $every = 0; #30; # seconds
 my $last = $^T;
@@ -342,7 +342,7 @@ number as a fake column id.
 We now know what we need to do for everything.  For each protein we
 check if there is a C<phylotree> entry for the cluster.  It get
 created, along with a related C<dbxref> row.  C<dbxref.xref_dbname>
-will be I<PantherDB> and C<dbxref.xref_key> will be the cluster name.
+will be I<PANTHER> and C<dbxref.xref_key> will be the cluster name.
 C<phylotree.name> will be a C<dbxref.xref_dbname||':'dbxref.xref_xey>
 concatenation.
 
