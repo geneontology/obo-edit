@@ -31,25 +31,26 @@ SELECT DISTINCT
         <entity name="qualifier"
           query="SELECT qualifier_obj AS qualifier FROM composite_qualifier WHERE composite_qualifier.id='${gene_annotation.composite_qualifier}'"></entity>
         
-<!-- TODO: ensure the _reflexive_ closure is stored -->
+        <!-- TODO: ensure the _reflexive_ closure is stored -->
          <entity name="isa_partof_closure" 
-           query="SELECT target_cls AS isa_partof_closure FROM inferred_isa_or_partof WHERE cls='${gene_annotation.annotation_class}'"></entity> 
-         <entity name="isa_partof_label_closure"
-           query="SELECT c.label AS isa_partof_label_closure FROM inferred_isa_or_partof AS i INNER JOIN cls AS c ON (i.target_cls=c.id) WHERE cls='${gene_annotation.annotation_class}'"></entity> 
-         <entity name="regulates_closure" 
-           query="SELECT target_cls AS regulates_closure FROM inferred_regulates WHERE cls='${gene_annotation.annotation_class}'"></entity> -->
-        <!-- <entity name="regulates_label_closure" -->
-        <!--   query="SELECT cls.label AS regulates_label_closure FROM inferred_regulates AS i INNER JOIN cls AS c ON (i.target_cls=c.cls) WHERE cls='${gene_annotation.cls}'"></entity> -->
+          query="SELECT target_cls AS isa_partof_closure FROM inferred_isa_or_partof WHERE cls='${gene_annotation.annotation_class}'"></entity> 
+        <entity name="isa_partof_label_closure"
+           query="SELECT c.label AS isa_partof_label_closure FROM inferred_isa_or_partof AS i INNER JOIN cls AS c ON (i.target_cls=c.id) WHERE i.cls='${gene_annotation.annotation_class}'"></entity> 
+
+        <entity name="regulates_closure" 
+           query="SELECT target_cls AS regulates_closure FROM inferred_regulates WHERE cls='${gene_annotation.annotation_class}'"></entity> 
+        <entity name="regulates_label_closure" 
+          query="SELECT c.label AS regulates_label_closure FROM inferred_regulates AS i INNER JOIN cls AS c ON (i.target_cls=c.id) WHERE i.cls='${gene_annotation.annotation_class}'"></entity>
 
         <entity name="annotation_extension_class"
           query="SELECT extension_expression.cls AS annotation_extension_class FROM extension_expression WHERE id='${gene_annotation.extension_expression}'"></entity>
 
-        <!-- <entity name="annotation_extension_class_label" -->
-        <!--   query="SELECT c.label AS annotation_extension_class_label FROM extension_expression AS x INNER JOIN cls AS c ON (x.cls=c.id) WHERE id='${gene_annotation.extension_expression}'"></entity> -->
-        <!-- <entity name="annotation_extension_class_closure" -->
-        <!--   query="SELECT target_cls AS annotation_extension_class_closure FROM extension_expression AS x INNER JOIN isa_partof_closure AS i ON (x.cls=i.id) WHERE id='${gene_annotation.extension_expression}'"></entity> -->
-        <!-- <entity name="annotation_extension_class_label_closure" -->
-        <!--   query="SELECT c.label AS annotation_extension_class_label_closure FROM extension_expression AS x INNER JOIN isa_partof_closure AS i ON (x.cls=i.id) INNER JOIN cls AS c ON (c.id=i.target_cls) WHERE id='${gene_annotation.extension_expression}'"></entity> -->
+        <entity name="annotation_extension_class_label"
+          query="SELECT c.label AS annotation_extension_class_label FROM extension_expression AS x INNER JOIN cls AS c ON (x.cls=c.id) WHERE x.id='${gene_annotation.extension_expression}'"></entity>
+        <entity name="annotation_extension_class_closure" 
+           query="SELECT target_cls AS annotation_extension_class_closure FROM extension_expression AS x INNER JOIN inferred_isa_or_partof AS i ON (x.cls=i.cls) WHERE x.id='${gene_annotation.extension_expression}'"></entity> 
+        <entity name="annotation_extension_class_label_closure" 
+          query="SELECT c.label AS annotation_extension_class_label_closure FROM extension_expression AS x INNER JOIN inferred_isa_or_partof AS i ON (x.cls=i.cls) INNER JOIN cls AS c ON (c.id=i.target_cls) WHERE x.id='${gene_annotation.extension_expression}'"></entity>
         
     </entity>
 
