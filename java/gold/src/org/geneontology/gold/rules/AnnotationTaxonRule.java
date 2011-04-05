@@ -77,9 +77,9 @@ public class AnnotationTaxonRule extends AbstractAnnotatioRule implements Annota
 	public Set<AnnotationRuleViolation> getRuleViolations(GeneAnnotation a) {
 		return getRuleViolations(a.getCls(), a.getBioentityObject().getNcbiTaxonId());
 	}
-	public Set<AnnotationRuleViolation> getRuleViolations(String annotationCls, int ncbiTaxonId) {
-		return getRuleViolations(annotationCls, "NCBITaxon:"+ncbiTaxonId);
-	}
+	/*public Set<AnnotationRuleViolation> getRuleViolations(String annotationCls, String ncbiTaxonId) {
+		return getRuleViolations(annotationCls, cbiTaxonId);
+	}*/
 
 	public boolean check(String annotationCls, String taxonCls) {
 		return getRuleViolations(annotationCls, taxonCls).size() == 0;
