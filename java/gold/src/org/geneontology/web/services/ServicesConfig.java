@@ -28,6 +28,7 @@ public class ServicesConfig {
 		service = new ReasoningService();
 		table.put(service.getServiceName(), service);
 		
+		service = new InitializationService();
 		table.put(service.getServiceName(), service);
 		
 		

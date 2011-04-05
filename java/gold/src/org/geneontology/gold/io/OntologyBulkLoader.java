@@ -546,7 +546,7 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 				
 				if(edge.getQuantifiedPropertyList().size()>1){
 					//TODO: TBD
-					LOG.warn("*******************TBD************************");
+					LOG.warn("*******************More than one quantifiers properties are found-TBD************************\t"+ edge.getQuantifiedPropertyList());
 				}else{
 					OWLQuantifiedProperty prop = edge.getSingleQuantifiedProperty();
 
