@@ -21,6 +21,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.web.services.GafDbOperationsService;
 import org.geneontology.web.services.GoldDbOperationsService;
+import org.geneontology.web.services.InitializationService;
 import org.geneontology.web.services.ReasoningService;
 import org.geneontology.web.services.ServiceHandler;
 import org.geneontology.web.services.ServicesConfig;
@@ -51,8 +52,6 @@ public class AdminServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		
-		System.out.println("Post method.........." + request.getRequestURI());
-
 		if(ServletFileUpload.isMultipartContent(request)){
 			response.getWriter().println("File uload");
 			
@@ -118,37 +117,44 @@ public class AdminServlet extends HttpServlet {
 			HttpServletResponse response)
 			throws ServletException, IOException {
 
-		//get the service name from the parameter
-		String servicename= request.getParameter("servicename");
+		InitializationService initHandler =(InitializationService) ServicesConfig.getService("initialization");
+		initHandler.handleService(request, response);
+		String view = initHandler.getViewPath();
 		
-		String error = null;
-		
-		if(servicename == null){
-			error = "servicename parameter is missing in the parameter";
-		}
-		
-		//find the service object
-		ServiceHandler handler= ServicesConfig.getService(servicename);	
-		String view = null;
-		if(handler == null){
-			error = "The service '"+ servicename + "' is not supproted by the server";
-		}else{
+		if(initHandler.isInitialized()){
+			//get the service name from the parameter
+			String servicename= request.getParameter("servicename");
 			
-			handler.handleService(request, response);
-			view = handler.getViewPath();
+			String error = null;
+			
+			if(servicename == null){
+				error = "servicename parameter is missing in the parameter";
+			}
+			
+			//find the service object
+			ServiceHandler handler= ServicesConfig.getService(servicename);	
+			if(handler == null){
+				error = "The service '"+ servicename + "' is not supproted by the server";
+			}else{
+				
+				handler.handleService(request, response);
+				view = handler.getViewPath();
+			}
+			
+			if(error != null){
+				view = "/servicesui/error.jsp";
+				request.setAttribute("error", error);
+			}
 		}
 		
-		if(error != null){
-			view = "/servicesui/error.jsp";
-			request.setAttribute("error", error);
-		}
-		
+			
 		//forwarding the request to a jsp file reffered in the 'view' variable
 		if(view != null){
 			ServletContext context = getServletContext().getContext("/");
 			RequestDispatcher dispatcher = context.getRequestDispatcher(view);
 			dispatcher.forward(request, response);
 		}
+		
 	
 	}
 

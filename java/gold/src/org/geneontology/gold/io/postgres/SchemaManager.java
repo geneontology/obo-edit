@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -81,8 +82,9 @@ public class SchemaManager {
 		
 		return connection;
 	}
-	
-	public void loadSchemaSQL() throws ClassNotFoundException, SQLException, FileNotFoundException{
+
+	private Connection getConnection() throws ClassNotFoundException, SQLException{
+		
 		GeneOntologyManager manager = GeneOntologyManager.getInstance();
 		String dbHostName = manager.getGolddbHostName();
 		String dbUserName = 		manager.getGolddbUserName();
@@ -91,6 +93,32 @@ public class SchemaManager {
 		
 		Connection connection = getConnection(dbHostName, dbUserName, dbUserPassword, dbName);
 		
+		return connection;
+	}
+	
+	public boolean isDatabaseInitialed() throws ClassNotFoundException, SQLException{
+		Connection connection = getConnection();
+		
+		ResultSet rs = connection.getMetaData().getTables(null, "public", "%", new String[]{"TABLE"});
+		
+		boolean found = false;
+		while(rs.next()){
+			String table = rs.getString(3);
+			if("cls".equals(table)){
+				found = true;
+				break;
+			}
+		}
+		
+		connection.close();
+		
+		return found;
+	}
+	
+	public void loadSchemaSQL() throws ClassNotFoundException, SQLException, FileNotFoundException{
+		Connection connection = getConnection();		
+
+		GeneOntologyManager manager = GeneOntologyManager.getInstance();
 		String sqlFile = manager.getOntSqlSchemaFileLocation();
 		
 		if(sqlFile == null){
