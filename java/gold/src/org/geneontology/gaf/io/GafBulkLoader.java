@@ -50,7 +50,7 @@ public class GafBulkLoader {
 		
 		for(Bioentity entity: doc.getBioentities()){
 			dumper.dumpRow(entity.getId(), entity.getSymbol(), entity.getFullName(),
-					entity.getTypeCls(), "NCBIGene:"+entity.getNcbiTaxonId() + "", entity.getDb(), 
+					entity.getTypeCls(), ""+entity.getNcbiTaxonId() + "", entity.getDb(), 
 					entity.getGafDocument());
 		}
 		
@@ -68,7 +68,7 @@ public class GafBulkLoader {
 					ann.getIsIntegralTo() ? ann.getIsIntegralTo() + "" : null, 
 					ann.getCls(), ann.getReferenceId(),
 					ann.getEvidenceCls(), ann.getWithExpression(), 
-					ann.getActsOnTaxonId() ==-1 ? null : ann.getActsOnTaxonId() + "",
+					ann.getActsOnTaxonId(),
 					ann.getLastUpdateDate(), ann.getAssignedBy(), ann.getExtensionExpression(),
 					ann.getGeneProductForm(), ann.getGafDocument());
 		}

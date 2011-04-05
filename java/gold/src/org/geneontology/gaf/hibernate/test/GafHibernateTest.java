@@ -19,7 +19,7 @@ public class GafHibernateTest extends TestCase {
 		
 		entity.setId("MGIMGI:1918911");
 		entity.setDb("MGI");
-		entity.setNcbiTaxonId(10090);
+		entity.setNcbiTaxonId("NCBIGene:"+10090);
 		entity.setSymbol("0610005C13Rik");
 		entity.setFullName("RIKEN");
 		entity.setTypeCls("gene");
