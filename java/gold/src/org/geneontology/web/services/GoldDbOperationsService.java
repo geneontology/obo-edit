@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gaf.io.GAFDbOperations;
+import org.geneontology.gold.hibernate.factory.GoldObjectFactory;
 import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.io.DbOperationsListener;
@@ -75,31 +76,31 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract implements F
 			HttpServletResponse response) throws IOException, ServletException {
 
 		command = request.getParameter("command");
-		this.force = "true".equals(request.getParameter("force"));
+		//this.force = "true".equals(request.getParameter("force"));
 	
 		//set the default view
 		viewPath = "/servicesui/golddb.jsp";
 		//if there is no task running then create one for the update and bulkload commands
 		if(runner == null){
-		
-			if ("update".equals(command)) {
-	
-				String ontologylocation = request
-						.getParameter("filelocation");
-				
-				
-				if(ontologylocation != null){
-					ontLocations = new ArrayList<String>();
-					ontLocations.add(ontologylocation);
-					runner = new GoldDbTaskExecution();
-				}else{
-					request.setAttribute("servicename", getServiceName());
-					request.setAttribute("locations", GeneOntologyManager.getInstance().getDefaultOntologyLocations());
-					this.viewPath = "/servicesui/golddb-updateform.jsp";
-				}
-			}else if("bulkload".equals(command)){
+			GoldObjectFactory factory = GoldObjectFactory.buildDefaultFactory();
+			List list = factory.getOntologies();
+			if ("update".equals(command) && !list.isEmpty()) {
+					String ontologylocation = request
+							.getParameter("filelocation");
+					
+					if(ontologylocation != null){
+						ontLocations = new ArrayList<String>();
+						ontLocations.add(ontologylocation);
+						runner = new GoldDbTaskExecution();
+					}else{
+						request.setAttribute("servicename", getServiceName());
+						request.setAttribute("locations", GeneOntologyManager.getInstance().getDefaultOntologyLocations());
+						this.viewPath = "/servicesui/golddb-updateform.jsp";
+					}
+			}else if("bulkload".equals(command) || ("update".equals(command) && list.isEmpty()) ){
 				this.ontLocations = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
 				runner = new GoldDbTaskExecution();
+				command = "bulkload";
 			}else if("getlastupdate".equals(command)){
 
 				viewPath = "/servicesui/gold-lastupdate.jsp";
