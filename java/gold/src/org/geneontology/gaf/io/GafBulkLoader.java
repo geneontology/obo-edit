@@ -27,6 +27,12 @@ public class GafBulkLoader {
 	
 	
 	
+	/**
+	 * loads all bioentities and annotations into the database
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
 	public List<String> loadAll() throws IOException{
 		
 		List<String> tables = new ArrayList<String>();
