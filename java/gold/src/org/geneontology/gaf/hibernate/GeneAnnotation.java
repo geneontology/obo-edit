@@ -24,7 +24,7 @@ public class GeneAnnotation extends GOModel implements Serializable {
 	private String referenceId;	
 	private String evidenceCls;
 	private String withExpression;
-	private int actsOnTaxonId;
+	private String actsOnTaxonId;
 	private String lastUpdateDate; //TODO: convert it to date
 	private String assignedBy;
 	private String extensionExpression;
@@ -60,7 +60,7 @@ public class GeneAnnotation extends GOModel implements Serializable {
 	public GeneAnnotation(String bioentity, boolean isContributesTo,
 			boolean isIntegralTo, String compositeQualifier, String cls,
 			String referenceId, String evidenceCls, String withExpression,
-			int actsOnTaxonId, String lastUpdateDate, String assignedBy,
+			String actsOnTaxonId, String lastUpdateDate, String assignedBy,
 			String extensionExpression, String geneProductForm,
 			String gafDocument) {
 		this();
@@ -122,11 +122,11 @@ public class GeneAnnotation extends GOModel implements Serializable {
 		this.withExpression = withExpression;
 	}
 
-	public int getActsOnTaxonId() {
+	public String getActsOnTaxonId() {
 		return actsOnTaxonId;
 	}
 
-	public void setActsOnTaxonId(int actsOnTaxonId) {
+	public void setActsOnTaxonId(String actsOnTaxonId) {
 		this.actsOnTaxonId = actsOnTaxonId;
 	}
 

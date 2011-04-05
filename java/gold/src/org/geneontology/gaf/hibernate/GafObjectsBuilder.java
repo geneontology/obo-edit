@@ -81,7 +81,7 @@ public class GafObjectsBuilder {
 		
 		String db = parser.getDbObjectSynonym();
 		
-		Bioentity entity = new Bioentity(id, symbol, fullName, typeCls, ncbiTaxonId, db, gafDocument.getId());
+		Bioentity entity = new Bioentity(id, symbol, fullName, typeCls, "NCBIGene:" + ncbiTaxonId, db, gafDocument.getId());
 		
 		gafDocument.addBioentity(entity);
 		
@@ -166,7 +166,7 @@ public class GafObjectsBuilder {
 		ga.setReferenceId(referenceId);
 		ga.setEvidenceCls(evidenceCls);
 		ga.setWithExpression(withExpression);
-		ga.setActsOnTaxonId(actsOnTaxonId);
+		ga.setActsOnTaxonId("NCBIGene:" +actsOnTaxonId);
 		ga.setLastUpdateDate(lastUpdateDate);
 		ga.setAssignedBy(assignedBy);
 		ga.setExtensionExpression(extensionExpression);

@@ -115,7 +115,7 @@ CREATE TABLE gene_annotation (
   -- this is only used in the (rare) cases of multi-species interaction annotations (e.g. parasite-host)
   -- in these cases, col13 of the GAF has 2 values. The second value goes here, and indicates
   -- the host species (the bioentity.ncbi_taxon_id maps to the species to which the active gene belongs, e.g. parasite)
-  acts_on_taxon_id INT,
+  acts_on_taxon_id VARCHAR,
 
   -- col 14.
   -- TODO: change to datetime instead of VARCHAR?

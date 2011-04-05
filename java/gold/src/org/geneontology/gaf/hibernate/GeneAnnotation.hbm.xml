@@ -39,7 +39,7 @@
                 <column name="with_expression" />
             </property>
          
-              <property name="actsOnTaxonId" type="java.lang.Integer">
+              <property name="actsOnTaxonId" type="string">
                 <column name="acts_on_taxon_id" />
             </property>
          

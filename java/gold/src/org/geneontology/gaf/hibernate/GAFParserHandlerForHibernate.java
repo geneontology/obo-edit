@@ -265,7 +265,7 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 		
 		String db = cols[10];
 		
-		Bioentity entity = new Bioentity(id, symbol, fullName, typeCls, ncbiTaxonId, db, gafDocument.getId());
+		Bioentity entity = new Bioentity(id, symbol, fullName, typeCls,"NCBIGene:" +ncbiTaxonId, db, gafDocument.getId());
 		
 		gafDocument.addBioentity(entity);
 		
@@ -355,7 +355,7 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 		ga.setReferenceId(referenceId);
 		ga.setEvidenceCls(evidenceCls);
 		ga.setWithExpression(withExpression);
-		ga.setActsOnTaxonId(actsOnTaxonId);
+		ga.setActsOnTaxonId("NCBIGene:" +actsOnTaxonId);
 		ga.setLastUpdateDate(lastUpdateDate);
 		ga.setAssignedBy(assignedBy);
 		ga.setExtensionExpression(extensionExpression);
