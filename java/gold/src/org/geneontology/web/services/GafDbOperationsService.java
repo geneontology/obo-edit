@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gaf.hibernate.GafDocument;
 import org.geneontology.gaf.hibernate.GafObjectsBuilder;
+import org.geneontology.gaf.hibernate.GafObjectsFactory;
 import org.geneontology.gaf.io.GAFDbOperations;
 import org.geneontology.gaf.io.GafURLFetch;
 import org.geneontology.gold.io.DbOperationsListener;
@@ -111,35 +112,30 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 					gafLocations = new ArrayList<String>();
 					((ArrayList)gafLocations).add(fileLocation);
 					gafDocuments = null;
-				}				
+				}
+				
+				GafObjectsFactory factory = new GafObjectsFactory();
+				
+				List list = factory.getGafDocument();
 				
 				//update command expects gaf location location in the parameter.
 				//If no gaflocatoin parameter is set then present 
 				//a form to user to select gaf file
-				if ("update".equals(command)) {
+				if ("update".equals(command) && !list.isEmpty()) {
 		
-					/*String ontologylocation = request
-							.getParameter("ontologylocation");
-					
-					if(ontologylocation != null){
-						gafLocations = new ArrayList<String>();
-						((ArrayList)gafLocations).add(ontologylocation);
-						gafDocuments = null;
-					}else*/if(fileLocation==null){
+					if(fileLocation==null){
 						request.setAttribute("servicename", getServiceName());
 						request.setAttribute("locations", GeneOntologyManager.getInstance().getDefaultGafFileLocations());
 						
 						this.viewPath = "/servicesui/golddb-updateform.jsp";
 					}
-				}else if("bulkload".equals(command)){
+				}else if("bulkload".equals(command) || (list.isEmpty() && "update".equals(command)) ){
 					
 					if(fileLocation == null){
 						this.gafLocations = GeneOntologyManager.getInstance().getDefaultGafFileLocations();
 					}
 					gafDocuments = null;
-					
-					
-					
+					command = "bulkload";
 				}else if("getlastupdate".equals(command)){
 					viewPath = "/servicesui/gold-lastupdate.jsp";
 				}

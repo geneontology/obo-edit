@@ -174,14 +174,14 @@ public class JettyStarter {
 		
 		LOG.info("Services are initialized. The server is ready for performing services");
 		
-		LOG.info("Initializing gold database schema.");
+		/*LOG.info("Initializing gold database schema.");
 		LOG.info("WAIT.............");
 		
 		SchemaManager schema = new SchemaManager();
 		schema.loadSchemaSQL();
 
 		LOG.info("SQL Schema is created successfully");
-		
+		*/
 		server.join();		
 		
 		
