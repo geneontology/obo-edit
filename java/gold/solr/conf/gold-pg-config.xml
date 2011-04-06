@@ -48,9 +48,9 @@ SELECT DISTINCT
         <entity name="annotation_extension_class_label"
           query="SELECT c.label AS annotation_extension_class_label FROM extension_expression AS x INNER JOIN cls AS c ON (x.cls=c.id) WHERE x.id='${gene_annotation.extension_expression}'"></entity>
         <entity name="annotation_extension_class_closure" 
-           query="SELECT target_cls AS annotation_extension_class_closure FROM extension_expression AS x INNER JOIN inferred_isa_or_partof AS i ON (x.cls=i.cls) WHERE x.id='${gene_annotation.extension_expression}'"></entity> 
+           query="SELECT target_cls AS annotation_extension_class_closure FROM extension_expression AS x INNER JOIN inferred_subclass_of AS i ON (x.cls=i.cls) WHERE x.id='${gene_annotation.extension_expression}'"></entity> 
         <entity name="annotation_extension_class_label_closure" 
-          query="SELECT c.label AS annotation_extension_class_label_closure FROM extension_expression AS x INNER JOIN inferred_isa_or_partof AS i ON (x.cls=i.cls) INNER JOIN cls AS c ON (c.id=i.target_cls) WHERE x.id='${gene_annotation.extension_expression}'"></entity>
+          query="SELECT c.label AS annotation_extension_class_label_closure FROM extension_expression AS x INNER JOIN inferred_subclass_of AS i ON (x.cls=i.cls) INNER JOIN cls AS c ON (c.id=i.target_cls) WHERE x.id='${gene_annotation.extension_expression}'"></entity>
         
     </entity>
 
