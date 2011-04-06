@@ -1,5 +1,6 @@
 package org.geneontology.web.services;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -237,20 +238,39 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 							
 							GafDocument doc = db.buildGafDocument(new InputStreamReader(is), fetch.getCurrentGafFile(), fetch.getCurrentGafFilePath());
 							gafDocuments.add( doc);
-							performAnnotationChecks();
+							performAnnotationChecks(doc);
 						}
 					}else{
 						List<String> files = (List<String>)gafLocations;
 						gafDocuments = new ArrayList<GafDocument>();
 						for(String ontLocation: files){
-							this.currentOntologyBeingProcessed = ontLocation;
-								if("bulkload".equals(command) || "update".equals(command)){
-									gafDocuments.add( db.buildGafDocument(ontLocation) );
-								}
+							
+							File file = new File(ontLocation);
+							
+							File dirFiles[] = null;
+							
+							if(file.isDirectory()){
+								dirFiles = file.listFiles();
+							}else{
+								dirFiles = new File[]{file};
 							}
+							
+							
+							for(File f: dirFiles){
+								if(!f.isFile() || f.getName().startsWith("."))
+									continue;
+								ontLocation = f.getAbsolutePath();
+								this.currentOntologyBeingProcessed = ontLocation;
+									if("bulkload".equals(command) || "update".equals(command)){
+										GafDocument doc = db.buildGafDocument(ontLocation);
+										gafDocuments.add( doc );
+										performAnnotationChecks(doc);
+
+									}
+								}
+						}
 	
 						
-						performAnnotationChecks();
 						
 						/*GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
 						
@@ -297,7 +317,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 */
 
 		
-		private void performAnnotationChecks(){
+		private void performAnnotationChecks(GafDocument doc){
 			reportStartTime("Performing Annotations Checks--" + currentOntologyBeingProcessed);
 		
 			
@@ -305,11 +325,11 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			
 			OWLGraphWrapper graph = goldDb.getGraphWrapper();
 			
-			for (GafDocument doc : gafDocuments) {
+			//for (GafDocument doc : gafDocuments) {
 
 				annotationRuleViolations.addAll(doc
 						.validateAnnotations(graph));
-			}
+			//}
 
 			reportEndTime("Performing Annotations Checks--" + currentOntologyBeingProcessed);
 			
