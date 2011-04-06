@@ -2,15 +2,13 @@ CREATE OR REPLACE VIEW inferred_partof AS
  SELECT cls,target_cls FROM
   inferred_all_some_relationship
  WHERE
-  relation='TODO:part_of';
--- TODO!!
+  relation='go:part_of';
 
 CREATE OR REPLACE VIEW inferred_regulates AS
  SELECT cls,target_cls FROM
   inferred_all_some_relationship
  WHERE
-  relation='TODO:regulates';
--- TODO!!
+  relation='go:regulates';
 
 CREATE OR REPLACE VIEW inferred_isa_or_partof AS
  SELECT cls,target_cls FROM
