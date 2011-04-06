@@ -24,7 +24,7 @@ public class InitializationService extends ServiceHandlerAbstract {
 	
 	private Task runner;
 	
-	@Override
+//	@Override
 	public void handleService(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
 
@@ -67,12 +67,12 @@ public class InitializationService extends ServiceHandlerAbstract {
 		return this.isInitialized;
 	}
 	
-	@Override
+//	@Override
 	public String getServiceName() {
 		return "initialization";
 	}
 
-	@Override
+//	@Override
 	public String getViewPath(){
 		return this.viewPath;
 	}
