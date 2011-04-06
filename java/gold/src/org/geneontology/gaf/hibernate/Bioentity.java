@@ -2,6 +2,7 @@ package org.geneontology.gaf.hibernate;
 
 import java.io.Serializable;
 
+import org.geneontology.gold.hibernate.model.Cls;
 import org.geneontology.gold.hibernate.model.GOModel;
 
 public class Bioentity extends GOModel implements Serializable {
@@ -13,6 +14,8 @@ public class Bioentity extends GOModel implements Serializable {
 	private String ncbiTaxonId;
 	private String db;
 	private String gafDocument;
+	
+	private Cls ncbiTaxonIdObject;
 	
 	 public Bioentity(){
 		String[] keys = {"id"};
@@ -86,5 +89,17 @@ public class Bioentity extends GOModel implements Serializable {
 	public void setGafDocument(String gafDocument) {
 		this.gafDocument = gafDocument;
 	}
+
+	public Cls getNcbiTaxonIdObject() {
+		if(this.ncbiTaxonIdObject == null){
+			ncbiTaxonIdObject = (Cls) getHibernateObject(Cls.class, "id", getNcbiTaxonId());
+		}
+		
+		
+		return ncbiTaxonIdObject;
+	}
+
+	
+	
 	
 }
