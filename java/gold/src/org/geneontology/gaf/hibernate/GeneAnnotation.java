@@ -31,6 +31,7 @@ public class GeneAnnotation extends GOModel implements Serializable {
 	private String geneProductForm;
 	private String gafDocument;
 	
+	private Cls actsOnTaxonIdObject;
 	private List<WithInfo> withInfoList;
 	private List<ExtensionExpression> extensionExpressionList;
 	private List<CompositeQualifier> compositeQualifierList;
@@ -252,5 +253,13 @@ public class GeneAnnotation extends GOModel implements Serializable {
 		}
 		return compositeQualifierList;
 	}
-	
+
+	public Cls getActsOnTaxonIdObject() {
+		if(actsOnTaxonIdObject == null){
+			actsOnTaxonIdObject =(Cls) getHibernateObject(Cls.class, "id", getActsOnTaxonId());
+		}
+		
+		return actsOnTaxonIdObject;
+	}
+
 }
