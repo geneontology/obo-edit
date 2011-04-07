@@ -148,70 +148,70 @@ sub mode_live_search_gene_product {
 }
 
 
-# ## Return a JSON representation of search results; fast and on the
-# ## fly. Should be similar to the separate completion code. Might need
-# ## to be spun out for speed under mod_perl in the end...
-# sub mode_live_search_association {
+## Return a JSON representation of search results; fast and on the
+## fly. Should be similar to the separate completion code. Might need
+## to be spun out for speed under mod_perl in the end...
+sub mode_live_search_association {
 
-#   my $self = shift;
-#   my $json_resp = AmiGO::JSON->new('live_search_association');
+  my $self = shift;
+  my $json_resp = AmiGO::JSON->new('live_search_association');
 
-#   ##
-#   my $i = AmiGO::WebApp::Input->new();
-#   my $params = $i->input_profile('live_search_association');
+  ##
+  my $i = AmiGO::WebApp::Input->new();
+  my $params = $i->input_profile('live_search_association');
 
-#   ## Standard and bookkeeping.
-#   my $query = $params->{query};
-#   my $index = $params->{index} + 0; # coerce to int?
-#   my $count = $params->{count} + 0; # coerce to int?
-#   my $packet = $params->{packet} + 0; # coerce to int?
+  ## Standard and bookkeeping.
+  my $query = $params->{query};
+  my $index = $params->{index} + 0; # coerce to int?
+  my $count = $params->{count} + 0; # coerce to int?
+  my $packet = $params->{packet} + 0; # coerce to int?
 
-#   ## GP-specific.
-#   my $species = $params->{species};
-#   my $scientific = $params->{scientific};
-#   my $source = $params->{source};
-#   my $gptype = $params->{gptype};
+  ## GP-specific.
+  my $species = $params->{species};
+  my $scientific = $params->{scientific};
+  my $source = $params->{source};
+  my $gptype = $params->{gptype};
 
-#   ## Term-specific.
-#   my $ontology = $params->{ontology};
+  ## Term-specific.
+  my $ontology = $params->{ontology};
 
-#   ## Assoc-specific.
-#   my $evidence = $params->{evidence};
+  ## Assoc-specific.
+  my $evidence = $params->{evidence};
 
-#   $self->{CORE}->kvetch("query: ". $query);
-#   $self->{CORE}->kvetch("index: ". $index);
-#   $self->{CORE}->kvetch("count: ". $count);
-#   $self->{CORE}->kvetch("packet: ". $packet);
-#   $self->{CORE}->kvetch("ontology: ". $ontology);
-#   $self->{CORE}->kvetch("species: ". $species);
-#   $self->{CORE}->kvetch("scientific: ". $scientific);
-#   $self->{CORE}->kvetch("source: ". $source);
-#   $self->{CORE}->kvetch("gptype: ". $gptype);
-#   $self->{CORE}->kvetch("evidence: ". $evidence);
+  $self->{CORE}->kvetch("query: ". $query);
+  $self->{CORE}->kvetch("index: ". $index);
+  $self->{CORE}->kvetch("count: ". $count);
+  $self->{CORE}->kvetch("packet: ". $packet);
+  $self->{CORE}->kvetch("ontology: ". $ontology);
+  $self->{CORE}->kvetch("species: ". $species);
+  $self->{CORE}->kvetch("scientific: ". $scientific);
+  $self->{CORE}->kvetch("source: ". $source);
+  $self->{CORE}->kvetch("gptype: ". $gptype);
+  $self->{CORE}->kvetch("evidence: ". $evidence);
 
-#   ## Irritating FormValidator can return scalar or array
-#   ## ref. Normalize on array ref.
-#   my $required_ontology = $self->to_array_ref($ontology);
-#   my $required_species = $self->to_array_ref($species);
-#   my $required_source = $self->to_array_ref($source);
-#   my $required_gptype = $self->to_array_ref($gptype);
-#   my $required_evidence = $self->to_array_ref($evidence);
+  ## Irritating FormValidator can return scalar or array
+  ## ref. Normalize on array ref.
+  my $required_ontology = $self->to_array_ref($ontology);
+  my $required_species = $self->to_array_ref($species);
+  my $required_source = $self->to_array_ref($source);
+  my $required_gptype = $self->to_array_ref($gptype);
+  my $required_evidence = $self->to_array_ref($evidence);
 
-#   ## Get our results...
-#   my $search = AmiGO::Worker::LiveSearch::Association->new({});
-#   my $results = $search->query($query, $index, $count,
-#   			       $required_ontology,
-#   			       $required_species,
-#   			       $required_source,
-#   			       $required_gptype,
-# 			       $required_evidence);
+  ## Get our results...
+  my $search = AmiGO::Worker::LiveSearch::Association->new({});
+  my $results = $search->query($query, $index, $count,
+  			       $required_ontology,
+  			       $required_species,
+  			       $required_source,
+  			       $required_gptype,
+			       $required_evidence);
 
-#   ## We will only be doing JSON out.
-#   $self->header_add( -type => 'application/json' );
-#   $json_resp->set_arguments($self->raw_params());
-#   $json_resp->set_results($results);
-#   return $json_resp->make_js();
-# }
+  ## We will only be doing JSON out.
+  $self->header_add( -type => 'application/json' );
+  $json_resp->set_arguments($self->raw_params());
+  $json_resp->set_results($results);
+  return $json_resp->make_js();
+}
 
 
 
