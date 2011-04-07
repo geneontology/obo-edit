@@ -114,7 +114,7 @@ sub setup {
 		   'autocomplete_client' => 'mode_autocomplete_client',
 		   #'exp_search'          => 'mode_exp_search',
 		   'workspace_client'    => 'mode_workspace_client',
-		   'layers_graph'       => 'mode_layers_graph',
+		   'layers_graph'        => 'mode_layers_graph',
 		   'hierarchical'        => 'mode_hierarchical',
 		   'heavy_client_ext'    => 'mode_heavy_client_ext',
 		   'heavy_client_jquery' => 'mode_heavy_client_jquery',
@@ -125,8 +125,9 @@ sub setup {
 		   #'orb'                 => 'mode_orb',
 		   #'coannot_matrix'      => 'mode_coannot_matrix',
 		   #'orb_client'          => 'mode_orb_client',
+		   'exhibit'             => 'mode_exhibit_exp',
 
-		   'report_slimmerish_1'        => 'mode_report_slimmerish_1',
+		   'report_slimmerish_1' => 'mode_report_slimmerish_1',
 
 		   ## Replacements.
 		   'front_page'          => 'mode_front_page',

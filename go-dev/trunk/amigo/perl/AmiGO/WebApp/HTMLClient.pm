@@ -76,6 +76,7 @@ sub setup {
 		   'homolset_graph'      => 'mode_homolset_graph',
 		   'homolset_annotation' => 'mode_homolset_annotation',
 		   'live_search'         => 'mode_live_search',
+		   'live_search_gold'    => 'mode_live_search_gold',
 		   'css'                 => 'mode_dynamic_style',
 		   'AUTOLOAD'            => 'mode_exception'
 		  );
@@ -733,6 +734,58 @@ sub mode_live_search {
      content =>
      [
       'html/main/live_search.tmpl'
+     ]
+    };
+  $self->add_template_bulk($prep);
+
+  return $self->generate_template_page();
+}
+
+
+## A committed client based on the jQuery libraries and GOlr. The
+## future.
+sub mode_live_search_gold {
+
+  my $self = shift;
+
+  ## Non-standard settings.
+  $self->set_template_parameter('STANDARD_YUI', 'no'); # no YUI please
+  $self->set_template_parameter('STANDARD_CSS', 'no');
+
+  ## Grab resources we want.
+  $self->set_template_parameter('STAR_IMAGE',
+				$self->{CORE}->get_image_resource('star'));
+
+  ## Our AmiGO services CSS.
+  my $prep =
+    {
+     css_library =>
+     [
+      'standard',
+      #'com.jquery.redmond.custom',
+      'com.jquery.jqamigo.custom',
+      'org.bbop.amigo.ui.widgets'
+     ],
+     javascript_library =>
+     [
+      'com.jquery',
+      'com.jquery-ui',
+      'org.bbop.amigo',
+      'org.bbop.amigo.go_meta',
+      'org.bbop.amigo.live_search',
+      'org.bbop.amigo.ui.widgets'
+     ],
+     javascript =>
+     [
+      $self->{JS}->get_lib('LiveSearchGOlr.js')
+     ],
+     javascript_init =>
+     [
+      'LiveSearchGOlrInit();'
+     ],
+     content =>
+     [
+      'html/main/live_search_gold.tmpl'
      ]
     };
   $self->add_template_bulk($prep);
