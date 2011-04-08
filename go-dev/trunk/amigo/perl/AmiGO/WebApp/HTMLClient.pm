@@ -772,7 +772,7 @@ sub mode_live_search_gold {
       'com.jquery-ui',
       'org.bbop.amigo',
       'org.bbop.amigo.go_meta',
-      'org.bbop.amigo.live_search',
+      #'org.bbop.amigo.live_search',
       'org.bbop.amigo.ui.widgets'
      ],
      javascript =>

@@ -220,6 +220,10 @@ org.bbop.amigo.core = function(){
     }
 
     // Construct the templates using the segments.
+    function _ls_golr_template(segments){
+	//segments['mode'] = 'live_search_association_golr';
+	return _abstract_link_template('select', segments);
+    }
     function _ls_assoc_template(segments){
 	segments['mode'] = 'live_search_association';
 	return _abstract_link_template('aserve', segments);
@@ -389,7 +393,7 @@ org.bbop.amigo.core = function(){
     /// JSON? JS? API functions for workspaces.
     ///
 
-    this.api.workspace = {}
+    this.api.workspace = {};
 
     this.api.workspace.remove = function(ws_name){
 	return _ws_template({
@@ -484,6 +488,40 @@ org.bbop.amigo.core = function(){
     /// API functions for live search.
     ///
     this.api.live_search = {};
+
+    // General search:
+    // http://accordion.lbl.gov:8080/solr/select?indent=on&version=2.2&q=annotation_class_label%3Abinding&fq=&start=0&rows=10&fl=*%2Cscore&qt=standard&wt=json&explainOther=&hl.fl=
+    // Facet on date:
+    // http://accordion.lbl.gov:8080/solr/select?indent=on&version=2.2&q=annotation_class_label%3Abinding&fq=&start=0&rows=10&fl=*%2Cscore&qt=standard&wt=json&explainOther=&hl.fl=&facet=true&facet.field=date    
+    this.api.live_search.golr = function(in_args){
+
+	if( ! in_args ){ in_args = {}; }
+	var default_args =
+	    {
+		// TODO/BUG? need jsonp things here?
+		qt: 'standard',
+		wt: 'json',
+		version: '2.2',
+		rows: 10,
+		start: 1,
+		fl: '*%2Cscore',
+
+		// Query-type stuff.
+		q: '',
+		//ontology: [],
+		type: [],
+		source: [],
+		taxon: [],
+		evidence_type: [],
+		
+		// Our bookkeeping.
+		packet: 1
+	    };
+	var final_args = _merge(default_args, in_args);
+		
+	return _ls_golr_template(final_args);
+    };
+
     this.api.live_search.association = function(in_args){
 
 	if( ! in_args ){ in_args = {}; }
