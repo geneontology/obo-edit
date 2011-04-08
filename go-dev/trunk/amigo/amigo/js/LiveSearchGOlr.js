@@ -1,10 +1,11 @@
 ////
-//// A full take on a production live search.
+//// A full take on a production live search for GOlr--try and make it
+//// work directly off of the server for giggles/testing.
 ////
 
 
 // Bring in the AmiGO core and keep a coder handy.
- // TODO: switch DEBUG to false for release.
+// TODO/BUG: switch DEBUG to false for release.
 org.bbop.amigo.DEBUG = true;
 var core = new org.bbop.amigo.core();
 var gm = new org.bbop.amigo.go_meta();
@@ -34,9 +35,6 @@ function LiveSearchGOlrInit(){
 
     //
     core.kvetch('Apply tabs...');
-    // jQuery("#search-tabs").removeClass();
-    // jQuery("#rm1").removeClass();
-    // jQuery("#rm2").removeClass();
     jQuery("#search-tabs").tabs();
     jQuery("#search-tabs").tabs('select', 0);
 
@@ -45,10 +43,10 @@ function LiveSearchGOlrInit(){
     core.kvetch('LiveSearchGOlr init completed.');
 
     // Pull in GO meta info.
-    var ontology_data = gm.ontologies();
+    //var ontology_data = gm.ontologies();
     var species_data = gm.species();
     var source_data = gm.sources();
-    var gptype_data = gm.gp_types();
+    var type_data = gm.gp_types();
 
     var evidence_data = gm.evidence_codes();
     var evcode_set = []; 
@@ -58,7 +56,7 @@ function LiveSearchGOlrInit(){
     }
 
     ///
-    /// Create forms and controls for term, gps, and associations.
+    /// Create forms and controls.
     ///
 
     // The hidden count for all forms.
@@ -67,70 +65,37 @@ function LiveSearchGOlrInit(){
     // Clear the controls' area.
     _clear_app_forms();
 
-    // // Create the new form for terms.
-    // var hidden_mode_term_search_text =
-    // 	widgets.form.hidden_input('mode', 'live_search_term');
-    // var query_term_text =
-    // 	widgets.form.text_input('term-query','term-query',25,'Search GO for terms<br />');
+    // Create the new form for a GOlr search.
+    var hidden_document_category = // TODO: make dynamic later
+    	widgets.form.hidden_input('document_category', 'annotation');
+    // var hidden_mode_search_text =
+    // 	widgets.form.hidden_input('mode', 'live_search_association_golr');
+    var query_text =
+    	widgets.form.text_input('query', 'query', 25, 
+				'Search GO for ???<br />');
     // var ontology_text =
-    // 	widgets.form.multiselect('ontology','ontology',4,
-    // 				 ontology_data,'Ontology');
-    // jQuery("#app-form-term").append(hidden_mode_term_search_text);
-    // jQuery("#app-form-term").append(hidden_count_text);
-    // jQuery("#app-form-term-query").append(query_term_text);
-    // jQuery("#app-form-term-filters").append(ontology_text);
-
-    // // Create the new form for gps.
-    // var hidden_mode_gp_search_text =
-    // 	widgets.form.hidden_input('mode', 'live_search_gene_product');
-    // var query_gp_text =
-    // 	widgets.form.text_input('gp-query','gp-query',25,'Search GO for gene products<br />');
-    // var gptype_text =
-    // 	widgets.form.multiselect('gptype','gptype',4,gptype_data,'GP type');
-    // var species_text =
-    // 	widgets.form.multiselect('species','species',4,species_data,'Species');
-    // var source_text =
-    // 	widgets.form.multiselect('source','source',4,source_data,'Data source');
-    // var homolset_text =
-    // 	widgets.form.multiselect('homolset', 'homolset', 3,
-    // 				 [['yes','included'],['no','excluded']],
-    // 				 'In a homolog set');
-    // jQuery("#app-form-gp").append(hidden_mode_gp_search_text);
-    // jQuery("#app-form-gp").append(hidden_count_text);
-    // jQuery("#app-form-gp-query").append(query_gp_text);
-    // jQuery("#app-form-gp-filters").append(gptype_text);
-    // jQuery("#app-form-gp-filters").append(species_text);
-    // jQuery("#app-form-gp-filters").append(source_text);
-    // jQuery("#app-form-gp-filters").append(homolset_text);
-
-    // Create the new form for associations.
-    var hidden_mode_assoc_search_text =
-    	widgets.form.hidden_input('mode', 'live_search_association');
-    var query_assoc_text =
-    	widgets.form.text_input('assoc-query', 'assoc-query', 25, 'Search GO for associations<br />');
-    var assoc_ontology_text =
-    	widgets.form.multiselect('assoc-ontology', 'ontology', 4,
-    				 ontology_data, 'Ontology');
-    var assoc_gptype_text =
-    	widgets.form.multiselect('assoc-gptype', 'gptype', 4,
-    				 gptype_data, 'GP type');
-    var assoc_species_text =
-    	widgets.form.multiselect('assoc-species', 'species', 4,
+    // 	widgets.form.multiselect('ontology', 'ontology', 4,
+    // 				 ontology_data, 'Ontology');
+    var type_text =
+    	widgets.form.multiselect('type', 'type', 4,
+    				 type_data, 'GP type');
+    var species_text =
+    	widgets.form.multiselect('species', 'species', 4,
     				 species_data, 'Species');
-    var assoc_source_text =
-    	widgets.form.multiselect('assoc-source', 'source', 4,
+    var source_text =
+    	widgets.form.multiselect('source', 'source', 4,
     				 source_data, 'Data source');
-    var assoc_evidence_text =
-    	widgets.form.multiselect('assoc-evidence', 'evidence', 4,
-    				 evcode_set, 'Evidence (alpha)');
-    jQuery("#app-form-assoc").append(hidden_mode_assoc_search_text);
-    jQuery("#app-form-assoc").append(hidden_count_text);
-    jQuery("#app-form-assoc-query").append(query_assoc_text);
-    jQuery("#app-form-assoc-filters").append(assoc_ontology_text);
-    jQuery("#app-form-assoc-filters").append(assoc_gptype_text);
-    jQuery("#app-form-assoc-filters").append(assoc_species_text);
-    jQuery("#app-form-assoc-filters").append(assoc_source_text);
-    jQuery("#app-form-assoc-filters").append(assoc_evidence_text);
+    var evidence_text =
+    	widgets.form.multiselect('evidence', 'evidence', 4,
+    				 evcode_set, 'Evidence');
+    jQuery("#app-form").append(hidden_mode_search_text);
+    jQuery("#app-form").append(hidden_count_text);
+    jQuery("#app-form-query").append(query_text);
+    //jQuery("#app-form-filters").append(ontology_text);
+    jQuery("#app-form-filters").append(type_text);
+    jQuery("#app-form-filters").append(species_text);
+    jQuery("#app-form-filters").append(source_text);
+    jQuery("#app-form-filters").append(evidence_text);
 
     function _generate_action_to_server(marshaller, do_results, query_id, type){
 	return function(event){
@@ -158,115 +123,91 @@ function LiveSearchGOlrInit(){
 			kc == 16 || // shift
 			kc ==  8 || // delete
 			kc ==  0 ){ // super
-			core.kvetch('ignorable key event: ' + kc);
+			    core.kvetch('ignorable key event: ' + kc);
 			ignorable_event_p = true;
 		    }
 		}
 	    }
-
+	    
 	    //
 	    if( ! ignorable_event_p ){
 
 		// And...um... convert gp-query to the correct query.
 		var all_inputs = marshaller();
 		all_inputs['query'] = all_inputs[query_id];
-
+		
 		// Cut down on overhead a little.
 		if( all_inputs &&
 		    all_inputs['query'] &&
 		    all_inputs['query'][0] &&
 		    all_inputs['query'][0].length >= 3 ){
+			
+			// Increment packet (async ordering).
+			all_inputs['packet'] = last_sent_packet++;
 
-		    // Increment packet (async ordering).
-		    all_inputs['packet'] = last_sent_packet++;
+			var url = core.api.live_search.golr(all_inputs);
 
-		    var url = null;
-		    if( type == 'association' ){
-			url = core.api.live_search.association(all_inputs);
-		    }else if( type == 'gene_product' ){
-			url = core.api.live_search.gene_product(all_inputs);
-		    }else if( type == 'term' ){
-			url = core.api.live_search.term(all_inputs);
-		    }else{
-			core.kvetch('ERROR: no good type, ready to die...');
-		    }
-
-		    core.kvetch('try: ' + url);		    
-		    widgets.start_wait('Updating...');
-
-		    jQuery.ajax({
-	    		type: "GET",
-	    		url: url,
-	    		dataType: 'json',
-	    		success: do_results,
-	    		error: function (result, status, error) {
-
-	    		    core.kvetch('Failed server request ('+
-					query_id + '): ' + status);
-
-			    // Get the error out if possible.
-			    var jreq = result.responseText;
-			    var req = jQuery.parseJSON(jreq);
-			    if( req && req['errors'] &&
-				req['errors'].length > 0 ){
-				var in_error = req['errors'][0];
-				core.kvetch('ERROR:' + in_error);
+			core.kvetch('try: ' + url);		    
+			widgets.start_wait('Updating...');
+			
+			// TODO/BUG: JSONP for solr looks like?
+			var argvar = {
+	    		    type: "GET",
+	    		    url: url,
+			    //data: myQueryParameters,
+	    		    //dataType: 'json',
+	    		    dataType: 'jsonp',
+			    jsonp: 'json.wrf',
+	    		    success: do_results,
+	    		    error: function (result, status, error) {
 				
-				// Split on newline if possible to get
-				// at the nice part before the perl
-				// error.
-				var reg = new RegExp("\n+", "g");
-				var clean_error_split = in_error.split(reg);
-				var clean_error = clean_error_split[0];
-				widgets.error(clean_error);
-			    }
+	    			core.kvetch('Failed server request ('+
+					    query_id + '): ' + status);
 
-			    // Close wait no matter what.
-			    widgets.finish_wait();
-	    		}
-		    });
-		}
+				// Get the error out if possible.
+				var jreq = result.responseText;
+				var req = jQuery.parseJSON(jreq);
+				if( req && req['errors'] &&
+				    req['errors'].length > 0 ){
+					var in_error = req['errors'][0];
+					core.kvetch('ERROR:' + in_error);
+					
+					// Split on newline if possible to get
+					// at the nice part before the perl
+					// error.
+					var reg = new RegExp("\n+", "g");
+					var clean_error_split =
+					    in_error.split(reg);
+					var clean_error = clean_error_split[0];
+					widgets.error(clean_error);
+				    }
+
+				// Close wait no matter what.
+				widgets.finish_wait();
+			    }
+			};
+			jQuery.ajax(argvars);
+	    	    }
 	    }
 	};
-    }
+    };
 
     // Create our callback function for this case.
-    var marshal_assoc_form = 
-    	widgets.form.create_jquery_marshal('#app-form-assoc',
+    var marshal_form = 
+    	widgets.form.create_jquery_marshal('#app-form',
     					   ['input', 'option:selected']);
-    // var marshal_gp_form = 
-    // 	widgets.form.create_jquery_marshal('#app-form-gp',
-    // 					   ['input', 'option:selected']);
-    // var marshal_term_form = 
-    // 	widgets.form.create_jquery_marshal('#app-form-term',
-    // 					   ['input', 'option:selected']);
     
-    var assoc_saction = _generate_action_to_server(marshal_assoc_form,
-    						   _process_assoc_results,
-    						   'assoc-query','association');
-    // var gp_saction = _generate_action_to_server(marshal_gp_form,
-    // 						_process_results,
-    // 						'gp-query', 'gene_product');
-    // var term_saction = _generate_action_to_server(marshal_term_form,
-    // 						  _process_results,
-    // 						  'term-query', 'term');
+    var server_action = _generate_action_to_server(marshal_form,
+    						   _process_results,
+    						   'query','association');
     
     // Attach listeners to the assoc form.
-    jQuery("#assoc-query").keyup(assoc_saction);
-    jQuery("#assoc-ontology").change(assoc_saction);
-    jQuery("#assoc-gptype").change(assoc_saction);
-    jQuery("#assoc-species").change(assoc_saction);
-    jQuery("#assoc-source").change(assoc_saction);
-    jQuery("#assoc-evidence").change(assoc_saction);
-
-    // // Attach listeners to the gp form.
-    // jQuery("#gptype").change(gp_saction);
-    // jQuery("#species").change(gp_saction);
-    // jQuery("#source").change(gp_saction);
-    // jQuery("#homolset").change(gp_saction);
-
-    // // Attach listeners to the term form.
-    // jQuery("#ontology").change(term_saction);
+    jQuery("#query").keyup(server_action);
+    //jQuery("#ontology").change(assoc_saction);
+    jQuery("#type").change(server_action);
+    jQuery("#species").change(server_action);
+    jQuery("#source").change(server_action);
+    jQuery("#evidence").change(server_action);
 
     // Slow down the input on our typing fields.
     function delayed_keyup_action(selector, action, delay){
@@ -277,14 +218,10 @@ function LiveSearchGOlrInit(){
 	    window.inputTimeout = window.setTimeout(action, delay);
 	});
     }
-    // delayed_keyup_action("#gp-query", gp_saction, delay_in_ms);
-    // delayed_keyup_action("#term-query", term_saction, delay_in_ms);
-    delayed_keyup_action("#assoc-query", assoc_saction, delay_in_ms);
+    delayed_keyup_action("#query", server_action, delay_in_ms);
 
     // Make the forms unsubmitable.
-    jQuery("#app-form-assoc").submit(function(){return false;});
-    // jQuery("#app-form-gp").submit(function(){return false;});
-    // jQuery("#app-form-term").submit(function(){return false;});
+    jQuery("#app-form").submit(function(){return false;});
 }
 
 
@@ -296,15 +233,8 @@ function LiveSearchGOlrInit(){
 
 //
 function _clear_app_forms(){
-
-    jQuery("#app-form-assoc-query").empty();
-    jQuery("#app-form-assoc-filters").empty();
-
-    // jQuery("#app-form-gp-query").empty();
-    // jQuery("#app-form-gp-filters").empty();
-
-    // jQuery("#app-form-term-query").empty();
-    // jQuery("#app-form-term-filters").empty();
+    jQuery("#app-form-query").empty();
+    jQuery("#app-form-filters").empty();
 }
 
 
@@ -369,22 +299,9 @@ function _process_meta_results (data, type, args){
 	var proc = null;
 	var backward_url = null;
 	var forward_url = null;
-	// if( type == 'gene_product' ){
-	// proc = _process_results;
-	// backward_url = core.api.live_search.gene_product(b_args);
-	// forward_url = core.api.live_search.gene_product(f_args);
-	// }else if( type == 'term' ){
-	// proc = _process_results;
-	// backward_url = core.api.live_search.term(b_args);
-	// forward_url = core.api.live_search.term(f_args);
-	// }else if( type == 'association' ){
-	if( type == 'association' ){
-	    proc = _process_assoc_results;
-	    backward_url = core.api.live_search.association(b_args);
-	    forward_url = core.api.live_search.association(f_args);
-	}else{
-	    core.kvetch('ERROR: no good type in meta, ready to die...');
-	}
+	proc = _process_assoc_results;
+	backward_url = core.api.live_search.golr(b_args);
+	forward_url = core.api.live_search.golr(f_args);
 
 	// Generate the necessary paging html.
 	if( first > 1 ){
@@ -477,171 +394,14 @@ function _process_results (json_data, status){
 }
 
 
-// //
-// function _term_table_cache_from_results (struct){
-
-//     var cache = new Array();
-
-//     //
-//     cache.push('<table>');
-//     cache.push('<thead><tr>');
-//     cache.push('<th>score</th>');
-//     cache.push('<th>acc</th>');
-//     cache.push('<th>name</th>');
-//     cache.push('<th>ontology</th>');
-//     cache.push('<th>synonym(s)</th>');
-//     cache.push('</tr></thead><tbody>');
-//     for( var i = 0; i < struct.length; i++ ){
-
-// 	var r = struct[i];
-// 	// var encoded_acc = coder.encode(r.acc);
-	
-// 	// Create HTML.
-// 	if( i % 2 == 0 ){
-// 	    cache.push('<tr class="odd_row">');
-// 	}else{
-// 	    cache.push('<tr class="even_row">');
-// 	}
-	
-// 	//
-// 	cache.push('<td>');
-// 	cache.push(r.score + '%');
-// 	cache.push('</td>');
-	
-// 	cache.push('<td>');
-// 	cache.push('<a title="link to information on ' + r.acc +
-// 		   '" href=\"' + r.link +
-// 		   '">' + r.hilite_acc +
-// 		   '</a>');
-// 	cache.push('</td>');
-	
-// 	cache.push('<td>');
-// 	cache.push(r.hilite_name);
-// 	cache.push('</td>');
-// 	cache.push('<td>');
-// 	cache.push(r.hilite_ontology);
-// 	//cache.push('n/a');
-// 	cache.push('</td>');
-// 	cache.push('<td>');
-// 	//cache.push(r.hilite_synonym);
-// 	cache.push(r.hilite_synonym.replace(newline_finder, ", "));
-// 	cache.push('</td>');
-// 	cache.push('</tr>');
-//     }
-//     cache.push('</tbody></table>');
-    
-//     return cache;
-// }
-
-
-// //
-// function _gp_table_cache_from_results (struct){
-    
-//     var species_map = gm.species_map();
-
-//     // Bulk change.
-//     var cache = new Array();
-//     cache.push('<table>');
-//     cache.push('<thead><tr>');
-//     cache.push('<th>score</th>');
-//     cache.push('<th>acc</th>');
-//     cache.push('<th>hset</th>');
-//     cache.push('<th>symbol</th>');
-//     cache.push('<th>name</th>');
-//     cache.push('<th>gptype</th>');
-//     cache.push('<th>source</th>');
-//     cache.push('<th>species</th>');
-//     cache.push('<th>synonym(s)</th>');
-//     cache.push('</tr></thead><tbody>');
-//     for( var i = 0; i < struct.length; i++ ){
-
-// 	var r = struct[i];
-// 	// var encoded_acc = coder.encode(r.dbxref);
-
-// 	// Create HTML.
-// 	if( i % 2 == 0 ){
-// 	    cache.push('<tr class="odd_row">');
-// 	}else{
-// 	    cache.push('<tr class="even_row">');
-// 	}
-
-// 	// Score.
-// 	cache.push('<td>');
-// 	cache.push(r.score + '%');
-// 	cache.push('</td>');
-
-// 	// Acc.
-// 	cache.push('<td>');
-// 	cache.push('<a title="link to information on ' + r.dbxref +
-// 		   '" href=\"' + r.link +
-// 		   '">' + r.hilite_dbxref +
-// 		   '</a>');
-// 	cache.push('</td>');
-
-// 	// Homolset?
-// 	cache.push('<td>');
-// 	//core.kvetch('homolset status: ' + r.homolset);
-// 	if( r.homolset == 'included' ){
-// 	    cache.push('<img src="' + gm.get_image_resource('star') + '"');
-// 	    cache.push(' title="This gene product is a member of a homolset." />');
-// 	}else{
-// 	    cache.push('&nbsp;');
-// 	}
-// 	cache.push('</td>');
-
-// 	// Symbol.
-// 	cache.push('<td>');
-// 	cache.push(r.hilite_symbol);
-// 	cache.push('</td>');
-
-// 	// Full name.
-// 	cache.push('<td>');
-// 	cache.push(r.hilite_full_name);
-// 	cache.push('</td>');
-
-// 	// Type.
-// 	cache.push('<td>');
-// 	cache.push(r.hilite_gptype);
-// 	cache.push('</td>');
-
-// 	// Source.
-// 	cache.push('<td>');
-// 	cache.push(r.hilite_source);
-// 	cache.push('</td>');
-
-// 	// Species. Simple names aren't split, but complicated
-// 	// ones are.
-// 	var s_name = species_map[r.species];
-// 	if( s_name && s_name.split(' ').length <= 2 ){
-// 	    cache.push('<td class="nowrap">');
-// 	}else{
-// 	    cache.push('<td class="">');
-// 	}
-// 	cache.push(species_map[r.species]);
-// 	cache.push('</td>');
-	
-// 	// Synonyms.
-// 	cache.push('<td>');
-// 	//cache.push(r.hilite_synonym);
-// 	cache.push(r.hilite_gpsynonym.replace(newline_finder, ", "));
-// 	cache.push('</td>');
-	
-// 	cache.push('</tr>');
-//     }
-//     cache.push('</tbody></table>');
-    
-//     return cache;
-// }
-
-
 // Convert the return JSON results into something usable...
-function _process_assoc_results (json_data, status){
+function _process_results (json_data, status){
 
     core.kvetch('checking results...');
 
     // Verify the incoming data. Only go if we got something.
     if( core.response.success(json_data) &&
-	core.response.type(json_data) == 'live_search_association' ){
+	core.response.type(json_data) == 'live_search_golr' ){
 	core.kvetch('assoc results okay...');
 
 	// Packet order checking.
@@ -672,13 +432,13 @@ function _process_assoc_results (json_data, status){
 
 	    cache.push('<th>acc</th>');
 	    cache.push('<th>name</th>');
-	    cache.push('<th>ontology</th>');
+	    //cache.push('<th>ontology</th>');
 	    cache.push('<th>synonym(s)</th>');
 
 	    cache.push('<th>dbxref</th>');
 	    cache.push('<th>symbol</th>');
 	    cache.push('<th>full_name</th>');
-	    cache.push('<th>gptype</th>');
+	    cache.push('<th>type</th>');
 	    cache.push('<th>source</th>');
 	    cache.push('<th>species</th>');
 	    cache.push('<th>gpsynonym(s)</th>');

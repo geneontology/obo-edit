@@ -218,6 +218,25 @@ sub input_profile {
     ## Association.
     $self->_add_evidence();
 
+  }elsif( $profile_name eq 'live_search_association_golr' ){
+
+    ## Bookkeeping.
+    $self->_add_simple_search_set();
+    $self->_add_range_set();
+    $self->_add_packet_order();
+
+    ## Term.
+    $self->_add_ontology();
+
+    ## GP.
+    $self->_add_species();
+    $self->_add_scientific();
+    $self->_add_source();
+    $self->_add_gptype();
+
+    ## Association.
+    $self->_add_evidence();
+
   }elsif( $profile_name eq 'paged_search' ){
     $self->_add_simple_search_set();
     $self->_add_paging();

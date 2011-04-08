@@ -71,6 +71,8 @@ my @env_conf_order = qw(
 
                          AMIGO_PUBLIC_CGI_PARTIAL_URL
 
+                         AMIGO_PUBLIC_GOLR_URL
+
 			 AMIGO_SHOW_GP_OPTIONS
 			 AMIGO_SHOW_GRAPHVIZ
 			 AMIGO_DOT_PATH
@@ -286,6 +288,15 @@ my %env_conf = (
 		 DEFAULT => 'http://amigo.geneontology.org/cgi-bin',
 		 MESSAGE => "Please enter the partial public URL ",
 		 ERROR => 'you should not play with this',
+		 PARSER => \&is_always_true,
+		 DEPENDS => \&is_always_false,
+		},
+
+		AMIGO_PUBLIC_GOLR_URL =>
+		{
+		 DEFAULT => 'http://accordion.lbl.gov:8080/solr',
+		 MESSAGE => "Please enter the public URL of the GOlr server",
+		 ERROR => 'you should probably not play with this',
 		 PARSER => \&is_always_true,
 		 DEPENDS => \&is_always_false,
 		},

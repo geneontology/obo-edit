@@ -59,6 +59,7 @@ my $ret =
   {
    ## Variables.
    app_base => $core->amigo_env('AMIGO_CGI_URL'),
+   golr_base => $core->amigo_env('AMIGO_PUBLIC_GOLR_URL'),
    html_base => $core->amigo_env('AMIGO_HTML_URL'),
    image_base => $core->amigo_env('AMIGO_IMAGE_URL'),
    term_regexp => $core->amigo_env('AMIGO_TERM_REGEXP'),
