@@ -78,7 +78,7 @@ org.bbop.amigo.core = function(){
 	// "defaults write com.apple.Safari IncludeDebugMenu 1"
 	// Need the wrapper function because safari has personality
 	// problems.
-	sayer = function(msg){ window.console.log(msg); }
+	sayer = function(msg){ window.console.log(msg); };
 	ender = "\n";
     }else if( typeof(console) != 'undefined' &&
 	      typeof(console.log) != 'undefined' ){
@@ -98,6 +98,65 @@ org.bbop.amigo.core = function(){
 	if( org.bbop.amigo.DEBUG == true ){
 	    sayer(string + ender);
 	}
+    };
+
+    ///
+    /// GOlr response checking (after parsing).
+    ///
+
+    this.golr_response = {};
+
+    // Simple return verification.
+    this.golr_response.success = function(robj){
+	var retval = false;
+	if( robj &&
+	    robj.responseHeader &&
+	    typeof robj.responseHeader.status != 'undefined' &&
+	    robj.responseHeader.status == 0 &&
+	    robj.responseHeader.params &&
+	    robj.response &&
+	    typeof robj.response.numFound != 'undefined' &&
+	    typeof robj.response.start != 'undefined' &&
+	    typeof robj.response.maxScore != 'undefined' &&
+	    robj.response.docs ){
+		retval = true;
+	    }
+	return retval;
+    };
+
+    // Get the parameter chunk--variable stuff we put in.
+    this.golr_response.parameters = function(robj){
+	return robj.responseHeader.params;
+    };
+
+    // ...
+    this.golr_response.total = function(robj){
+	return robj.response.numFound;
+    };
+
+    // ...
+    this.golr_response.total_documents = function(robj){
+	return robj.response.numFound;
+    };
+
+    // ...
+    this.golr_response.start_document = function(robj){
+	return robj.response.start;
+    };
+
+    // ...
+    this.golr_response.end_document = function(robj){
+	return robj.response.start + robj.response.docs.length;
+    };
+
+    // ...
+    this.golr_response.total = function(robj){
+	return robj.response.numFound;
+    };
+
+    // ...
+    this.golr_response.documents = function(robj){
+	return robj.response.docs;
     };
 
     ///
@@ -329,7 +388,7 @@ org.bbop.amigo.core = function(){
     var random_base =
 	['1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
 	 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-	 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+	 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
     function _randomness(len){
 	var length = 10;
 	if( len ){
@@ -366,14 +425,14 @@ org.bbop.amigo.core = function(){
 	    // TODO:
 	    // str.replace(en_re, "-_-");
 	    return new_str;
-	}
+	};
 	this.decode = function(str){	    
 	    // Decode and demangle.
 	    var new_str = str.substring(mangle_str.length + space_size + 1);
 	    // TODO:
 	    // str.replace(de_re, ":");
 	    return new_str;
-	}
+	};
     };
 
 //     // Some handling for a workspace object once we get one.
@@ -500,6 +559,7 @@ org.bbop.amigo.core = function(){
 	    {
 		// TODO/BUG? need jsonp things here?
 		qt: 'standard',
+		indent: 'on',
 		wt: 'json',
 		version: '2.2',
 		rows: 10,
@@ -515,7 +575,7 @@ org.bbop.amigo.core = function(){
 		evidence_type: [],
 		
 		// Our bookkeeping.
-		packet: 1
+		packet: 0
 	    };
 	var final_args = _merge(default_args, in_args);
 		

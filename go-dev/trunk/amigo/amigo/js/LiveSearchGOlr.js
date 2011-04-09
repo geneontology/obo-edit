@@ -71,7 +71,7 @@ function LiveSearchGOlrInit(){
     // var hidden_mode_search_text =
     // 	widgets.form.hidden_input('mode', 'live_search_association_golr');
     var query_text =
-    	widgets.form.text_input('query', 'query', 25, 
+    	widgets.form.text_input('q', 'q', 25, 
 				'Search GO for ???<br />');
     // var ontology_text =
     // 	widgets.form.multiselect('ontology', 'ontology', 4,
@@ -88,7 +88,7 @@ function LiveSearchGOlrInit(){
     var evidence_text =
     	widgets.form.multiselect('evidence', 'evidence', 4,
     				 evcode_set, 'Evidence');
-    jQuery("#app-form").append(hidden_mode_search_text);
+    //jQuery("#app-form").append(hidden_mode_search_text);
     jQuery("#app-form").append(hidden_count_text);
     jQuery("#app-form-query").append(query_text);
     //jQuery("#app-form-filters").append(ontology_text);
@@ -97,8 +97,12 @@ function LiveSearchGOlrInit(){
     jQuery("#app-form-filters").append(source_text);
     jQuery("#app-form-filters").append(evidence_text);
 
-    function _generate_action_to_server(marshaller, do_results, query_id, type){
+    function _generate_action_to_server(marshaller, do_results){//, query_id){
 	return function(event){
+
+	    core.kvetch('EV: ' + event );
+	    core.kvetch('SP: ' + event.stopPropagation() );
+	    event.stopPropagation();
 
 	    // core.kvetch('event1...' + event);
 	    // core.kvetch('event3...' + event.keyCode);
@@ -124,34 +128,43 @@ function LiveSearchGOlrInit(){
 			kc ==  8 || // delete
 			kc ==  0 ){ // super
 			    core.kvetch('ignorable key event: ' + kc);
-			ignorable_event_p = true;
-		    }
+			    ignorable_event_p = true;
+			}
 		}
 	    }
 	    
 	    //
 	    if( ! ignorable_event_p ){
 
-		// And...um... convert gp-query to the correct query.
+		// And...um... convert q to the correct query.
 		var all_inputs = marshaller();
-		all_inputs['query'] = all_inputs[query_id];
+		//all_inputs['q'] = all_inputs[query_id];
 		
 		// Cut down on overhead a little.
 		if( all_inputs &&
-		    all_inputs['query'] &&
-		    all_inputs['query'][0] &&
-		    all_inputs['query'][0].length >= 3 ){
+		    all_inputs['q'] &&
+		    all_inputs['q'][0] &&
+		    all_inputs['q'][0].length >= 3 ){
 			
+			core.kvetch('input q: ' + all_inputs['q'][0]);
+
 			// Increment packet (async ordering).
 			all_inputs['packet'] = last_sent_packet++;
 
-			var url = core.api.live_search.golr(all_inputs);
+			// BUG/TODO: a switch to dismax will eliminate
+			// this, this is just here to bootstrap
+			// debugging for now.
+			all_inputs['q'][0] =
+			    'annotation_class_label:' + all_inputs['q'][0];
+
+			var resrc = core.api.live_search.golr(all_inputs);
+			var url = gm.golr_base() + '/' + resrc;
 
 			core.kvetch('try: ' + url);		    
 			widgets.start_wait('Updating...');
 			
 			// TODO/BUG: JSONP for solr looks like?
-			var argvar = {
+			var argvars = {
 	    		    type: "GET",
 	    		    url: url,
 			    //data: myQueryParameters,
@@ -163,7 +176,7 @@ function LiveSearchGOlrInit(){
 				
 	    			core.kvetch('Failed server request ('+
 					    query_id + '): ' + status);
-
+				
 				// Get the error out if possible.
 				var jreq = result.responseText;
 				var req = jQuery.parseJSON(jreq);
@@ -181,13 +194,16 @@ function LiveSearchGOlrInit(){
 					var clean_error = clean_error_split[0];
 					widgets.error(clean_error);
 				    }
-
+				
 				// Close wait no matter what.
 				widgets.finish_wait();
 			    }
 			};
 			jQuery.ajax(argvars);
-	    	    }
+	    	    }else{
+			core.kvetch('Threshold not passed with: ' +
+				    all_inputs['q'][0]);
+		    }
 	    }
 	};
     };
@@ -195,14 +211,13 @@ function LiveSearchGOlrInit(){
     // Create our callback function for this case.
     var marshal_form = 
     	widgets.form.create_jquery_marshal('#app-form',
-    					   ['input', 'option:selected']);
+					   ['input', 'option:selected']);
     
-    var server_action = _generate_action_to_server(marshal_form,
-    						   _process_results,
-    						   'query','association');
+    var server_action =
+	_generate_action_to_server(marshal_form, _process_results);
     
-    // Attach listeners to the assoc form.
-    jQuery("#query").keyup(server_action);
+    // Attach listeners to the form.
+    jQuery("#q").keyup(server_action);
     //jQuery("#ontology").change(assoc_saction);
     jQuery("#type").change(server_action);
     jQuery("#species").change(server_action);
@@ -218,7 +233,7 @@ function LiveSearchGOlrInit(){
 	    window.inputTimeout = window.setTimeout(action, delay);
 	});
     }
-    delayed_keyup_action("#query", server_action, delay_in_ms);
+    delayed_keyup_action("#q", server_action, delay_in_ms);
 
     // Make the forms unsubmitable.
     jQuery("#app-form").submit(function(){return false;});
@@ -245,12 +260,12 @@ function _clear_app_forms(){
 
 // Convert the return JSON results into something usable...
 // Include link arrows to page the results.
-function _process_meta_results (data, type, args){
+function _process_meta_results (json_data){
 
     // Grab meta information.
-    var total = data.total();
-    var first = data.first();
-    var last = data.last();
+    var total = core.golr_response.total_documents(json_data);
+    var first = core.golr_response.start_document(json_data);
+    var last = core.golr_response.end_document(json_data);
     var meta_cache = new Array();
     meta_cache.push('Total: ' + total);
 
@@ -282,11 +297,13 @@ function _process_meta_results (data, type, args){
 	// Determine which arguments we'll (or would) need to page
 	// forwards or backwards.
 	var b_args = null;
-	var f_args = null;
-	b_args = core.util.clone(args);
+	//b_args = core.util.clone(args);
+	b_args = core.util.clone(core.golr_response.parameters(json_data));
 	if( ! b_args['index'] ){ b_args['index'] = 2; }
 	b_args['index'] = parseInt(b_args['index']) - 1;
-	f_args = core.util.clone(args);
+	var f_args = null;
+	//f_args = core.util.clone(args);
+	f_args = core.util.clone(core.golr_response.parameters(json_data));
 	if( ! f_args['index'] ){ f_args['index'] = 1; }
 	f_args['index'] = parseInt(f_args['index']) + 1;
 
@@ -299,10 +316,10 @@ function _process_meta_results (data, type, args){
 	var proc = null;
 	var backward_url = null;
 	var forward_url = null;
-	proc = _process_assoc_results;
+	proc = _process_results;
 	backward_url = core.api.live_search.golr(b_args);
 	forward_url = core.api.live_search.golr(f_args);
-
+	
 	// Generate the necessary paging html.
 	if( first > 1 ){
 	    meta_cache.push(' <a href="#results_block" id="' +
@@ -330,51 +347,32 @@ function _process_meta_results (data, type, args){
 // Convert the return JSON results into something usable...
 function _process_results (json_data, status){
 
-    core.kvetch('checking results...');    
+    core.kvetch('Checking results...');    
 
-    // Verify the incoming data. Only go if we got something.
-    var resp_type = core.response.type(json_data);
-    if( resp_type == 'live_search_term' ){
-	resp_type = 'term';
-    }else if( resp_type == 'live_search_gene_product' ){
-	resp_type = 'gene_product';
-    }else{
-    }
+    // Some trivial validation here.
+    if( core.golr_response.success(json_data) ){
 
-    if( core.response.success(json_data) &&
-	(resp_type == 'term' || resp_type == 'gene_product' ) ){
-
-	core.kvetch(resp_type + ' results okay...');
+	core.kvetch('Results okay...');
 	
 	// Packet order checking.
-	var in_args = core.response.arguments(json_data);
-	var our_packet = parseInt(in_args.packet);
+	var in_params = core.golr_response.parameters(json_data);
+	var our_packet = parseInt(in_params.packet);
 	core.kvetch("packet: "+ our_packet +" (>? "+ last_received_packet +")");
 	if( our_packet && our_packet > last_received_packet ){
-
-	    core.kvetch("order usable term packet: "+ our_packet);
-
+	    
+	    core.kvetch("Usable return packet: " + our_packet);
+	    
 	    // Set last received.
 	    last_received_packet = our_packet;
-
-	    // Okay, get the results data.
-	    var ls = new org.bbop.amigo.live_search(json_data);	
-
+	    
 	    // Check to see if there is someting there first
 	    var cache = new Array();
-	    if( ls.total() == 0 ){
-		core.kvetch("lonely emptiness");
+	    if( core.golr_response.total_documents(json_data) == 0 ){
+		core.kvetch("No results (empty).");
 	    }else{
-
-		// Bulk change.
-		var struct = ls.results();
-		if( resp_type == 'gene_product' ){
-		    cache = _gp_table_cache_from_results(struct);
-		}else if( resp_type == 'term' ){
-		    cache = _term_table_cache_from_results(struct);
-		}else{
-		    core.kvetch("unknown results type");
-		}
+		// Process main results table.
+		var brdg = core.golr_response.documents(json_data);
+		cache = _table_cache_from_results(brdg);
 	    }
 	    
 	    // Set results div text. If there were no results, this
@@ -382,157 +380,261 @@ function _process_results (json_data, status){
 	    jQuery('#results_div').html('<p>' + cache.join('') + '</p>');
 	    
 	    // Set the text in the meta area.
-	    _process_meta_results(ls, resp_type, in_args);
+	    _process_meta_results(json_data);
 	    
 	}else{
-	    core.kvetch("dropping packet");
+	    core.kvetch("Dropping packet.");
 	}
     }else{
-	core.kvetch("check for overload...");
+	core.kvetch("Invalid response.");
     }
+    //core.kvetch("finish wait");
     widgets.finish_wait();
 }
 
 
-// Convert the return JSON results into something usable...
-function _process_results (json_data, status){
+// // Convert the return JSON results into something usable...
+// function _process_results (json_data, status){
 
-    core.kvetch('checking results...');
+//     core.kvetch('checking results...');
 
-    // Verify the incoming data. Only go if we got something.
-    if( core.response.success(json_data) &&
-	core.response.type(json_data) == 'live_search_golr' ){
-	core.kvetch('assoc results okay...');
+//     // Verify the incoming data. Only go if we got something.
+//     if( core.response.success(json_data) &&
+// 	core.response.type(json_data) == 'live_search_golr' ){
+// 	core.kvetch('assoc results okay...');
 
-	// Packet order checking.
-	var in_args = core.response.arguments(json_data);
-	var our_packet = parseInt(in_args.packet);
-	core.kvetch("packet: "+ our_packet +" (>? "+ last_received_packet +")");
-	if( our_packet && our_packet > last_received_packet ){
+// 	// Packet order checking.
+// 	var in_args = core.response.arguments(json_data);
+// 	var our_packet = parseInt(in_args.packet);
+// 	core.kvetch("packet: "+ our_packet +" (>? "+ last_received_packet +")");
+// 	if( our_packet && our_packet > last_received_packet ){
 
-	    core.kvetch("order usable packet: "+ our_packet);
+// 	    core.kvetch("order usable packet: "+ our_packet);
 
-	    // Set last received.
-	    last_received_packet = our_packet;
+// 	    // Set last received.
+// 	    last_received_packet = our_packet;
 
-	    // Okay, get the results data.
-	    var ls = new org.bbop.amigo.live_search(json_data);
-	    var struct = ls.results();
+// 	    // Okay, get the results data.
+// 	    var ls = new org.bbop.amigo.live_search(json_data);
+// 	    var struct = ls.results();
 
-	    var species_map = gm.species_map();
+// 	    var species_map = gm.species_map();
 
-	    // Bulk change.
-	    var cache = new Array();
-	    cache.push('<table>');
-	    cache.push('<thead><tr>');
+// 	    // Bulk change.
+// 	    var cache = new Array();
+// 	    cache.push('<table>');
+// 	    cache.push('<thead><tr>');
 
-	    cache.push('<th>score</th>');
+// 	    cache.push('<th>score</th>');
 
-	    cache.push('<th>evidence</th>');
+// 	    cache.push('<th>evidence</th>');
 
-	    cache.push('<th>acc</th>');
-	    cache.push('<th>name</th>');
-	    //cache.push('<th>ontology</th>');
-	    cache.push('<th>synonym(s)</th>');
+// 	    cache.push('<th>acc</th>');
+// 	    cache.push('<th>name</th>');
+// 	    //cache.push('<th>ontology</th>');
+// 	    cache.push('<th>synonym(s)</th>');
 
-	    cache.push('<th>dbxref</th>');
-	    cache.push('<th>symbol</th>');
-	    cache.push('<th>full_name</th>');
-	    cache.push('<th>type</th>');
-	    cache.push('<th>source</th>');
-	    cache.push('<th>species</th>');
-	    cache.push('<th>gpsynonym(s)</th>');
+// 	    cache.push('<th>dbxref</th>');
+// 	    cache.push('<th>symbol</th>');
+// 	    cache.push('<th>full_name</th>');
+// 	    cache.push('<th>type</th>');
+// 	    cache.push('<th>source</th>');
+// 	    cache.push('<th>species</th>');
+// 	    cache.push('<th>gpsynonym(s)</th>');
 
-	    cache.push('</tr></thead><tbody>');
-	    for( var i = 0; i < struct.length; i++ ){
+// 	    cache.push('</tr></thead><tbody>');
+// 	    for( var i = 0; i < struct.length; i++ ){
 
-		var r = struct[i];
-		// var encoded_acc = coder.encode(r.acc);
-		// var encoded_dbxref = coder.encode(r.dbxref);
+// 		var r = struct[i];
+// 		// var encoded_acc = coder.encode(r.acc);
+// 		// var encoded_dbxref = coder.encode(r.dbxref);
 
-		// Create HTML.
-		if( i % 2 == 0 ){
-		    cache.push('<tr class="odd_row">');
-		}else{
-		    cache.push('<tr class="even_row">');
-		}
+// 		// Create HTML.
+// 		if( i % 2 == 0 ){
+// 		    cache.push('<tr class="odd_row">');
+// 		}else{
+// 		    cache.push('<tr class="even_row">');
+// 		}
 
-		// Score.
-		cache.push('<td>');
-		cache.push(r.score + '%');
-		cache.push('</td>');
+// 		// Score.
+// 		cache.push('<td>');
+// 		cache.push(r.score + '%');
+// 		cache.push('</td>');
 
-		// Evidence.
-		cache.push('<td>');
-		cache.push(r.evidence);
-		cache.push('</td>');
+// 		// Evidence.
+// 		cache.push('<td>');
+// 		cache.push(r.evidence);
+// 		cache.push('</td>');
 		
-		// Term section.
-		cache.push('<td>');
-		cache.push('<a title="link to information on ' + r.acc +
-			   '" href=\"' + r.term_link +
-			   '">' + r.hilite_acc +
-			   '</a>');
-		cache.push('</td>');
-		cache.push('<td>');
-		cache.push(r.hilite_name);
-		cache.push('</td>');
-		cache.push('<td>');
-		cache.push(r.hilite_ontology);
-		//cache.push('n/a');
-		cache.push('</td>');
-		cache.push('<td>');
-		//cache.push(r.hilite_synonym);
-		cache.push(r.hilite_synonym.replace(newline_finder, ", "));
-		cache.push('</td>');
+// 		// Term section.
+// 		cache.push('<td>');
+// 		cache.push('<a title="link to information on ' + r.acc +
+// 			   '" href=\"' + r.term_link +
+// 			   '">' + r.hilite_acc +
+// 			   '</a>');
+// 		cache.push('</td>');
+// 		cache.push('<td>');
+// 		cache.push(r.hilite_name);
+// 		cache.push('</td>');
+// 		cache.push('<td>');
+// 		cache.push(r.hilite_ontology);
+// 		//cache.push('n/a');
+// 		cache.push('</td>');
+// 		cache.push('<td>');
+// 		//cache.push(r.hilite_synonym);
+// 		cache.push(r.hilite_synonym.replace(newline_finder, ", "));
+// 		cache.push('</td>');
 
-		// GP section.
-		cache.push('<td>');
-		cache.push('<a title="link to information on ' + r.dbxref +
-			   '" href=\"' + r.gene_product_link +
-			   '">' + r.hilite_dbxref +
-			   '</a>');
-		cache.push('</td>');
-		cache.push('<td>');
-		cache.push(r.hilite_symbol);
-		cache.push('</td>');
-		cache.push('<td>');
-		cache.push(r.hilite_full_name);
-		cache.push('</td>');
-		cache.push('<td>');
-		cache.push(r.hilite_gptype);
-		cache.push('</td>');
-		cache.push('<td>');
-		cache.push(r.hilite_source);
-		cache.push('</td>');
-		// Simple names aren't split, complicated ones are.
-		var s_name = species_map[r.species];
-		if( s_name && s_name.split(' ').length <= 2 ){
-		    cache.push('<td class="nowrap">');
-		}else{
-		    cache.push('<td class="">');
-		}
-		cache.push(species_map[r.species]);
-		cache.push('</td>');
-		cache.push('<td>');
-		//cache.push(r.hilite_synonym);
-		cache.push(r.hilite_gpsynonym.replace(newline_finder, ", "));
-		cache.push('</td>');
-		cache.push('</tr>');
-	    }
-	    cache.push('</tbody></table>');
+// 		// GP section.
+// 		cache.push('<td>');
+// 		cache.push('<a title="link to information on ' + r.dbxref +
+// 			   '" href=\"' + r.gene_product_link +
+// 			   '">' + r.hilite_dbxref +
+// 			   '</a>');
+// 		cache.push('</td>');
+// 		cache.push('<td>');
+// 		cache.push(r.hilite_symbol);
+// 		cache.push('</td>');
+// 		cache.push('<td>');
+// 		cache.push(r.hilite_full_name);
+// 		cache.push('</td>');
+// 		cache.push('<td>');
+// 		cache.push(r.hilite_gptype);
+// 		cache.push('</td>');
+// 		cache.push('<td>');
+// 		cache.push(r.hilite_source);
+// 		cache.push('</td>');
+// 		// Simple names aren't split, complicated ones are.
+// 		var s_name = species_map[r.species];
+// 		if( s_name && s_name.split(' ').length <= 2 ){
+// 		    cache.push('<td class="nowrap">');
+// 		}else{
+// 		    cache.push('<td class="">');
+// 		}
+// 		cache.push(species_map[r.species]);
+// 		cache.push('</td>');
+// 		cache.push('<td>');
+// 		//cache.push(r.hilite_synonym);
+// 		cache.push(r.hilite_gpsynonym.replace(newline_finder, ", "));
+// 		cache.push('</td>');
+// 		cache.push('</tr>');
+// 	    }
+// 	    cache.push('</tbody></table>');
 
-	    // Set div text.
-	    jQuery('#results_div').html('<p>' + cache.join('') + '</p>');
+// 	    // Set div text.
+// 	    jQuery('#results_div').html('<p>' + cache.join('') + '</p>');
 
-	    _process_meta_results(ls, 'association',
-				  core.response.arguments(json_data));
+// 	    _process_meta_results(ls, 'association',
+// 				  core.response.arguments(json_data));
 
+// 	}else{
+// 	    core.kvetch("dropping packet");
+// 	}
+//     }
+//     widgets.finish_wait();
+// }
+
+//
+function _table_cache_from_results (dlist){
+    
+    var species_map = gm.species_map();
+
+    // Bulk change.
+    var cache = new Array();
+    cache.push('<table>');
+    cache.push('<thead><tr>');
+    cache.push('<th>score</th>');
+    cache.push('<th>acc</th>');
+    cache.push('<th>ev</th>');
+    cache.push('<th>symbol</th>');
+    cache.push('<th>name</th>');
+    cache.push('<th>type</th>');
+    cache.push('<th>source</th>');
+    cache.push('<th>species</th>');
+    cache.push('<th>synonym(s)</th>');
+    cache.push('</tr></thead><tbody>');
+    for( var i = 0; i < dlist.length; i++ ){
+
+	var r = dlist[i];
+	// var encoded_acc = coder.encode(r.dbxref);
+
+	// Create HTML.
+	if( i % 2 == 0 ){
+	    cache.push('<tr class="odd_row">');
 	}else{
-	    core.kvetch("dropping packet");
+	    cache.push('<tr class="even_row">');
 	}
+
+	// Score.
+	cache.push('<td>');
+	cache.push(r.score + '%');
+	cache.push('</td>');
+
+	// GO term acc.
+	cache.push('<td>');
+	cache.push(r.annotation_class);
+	// cache.push('<a title="link to information on ' + r.dbxref +
+	// 	   '" href=\"' + r.link +
+	// 	   '">' + r.hilite_dbxref +
+	// 	   '</a>');
+	cache.push('</td>');
+
+	// Evidence.
+	cache.push('<td>');
+	cache.push(r.evidence_type);
+	// //core.kvetch('homolset status: ' + r.homolset);
+	// if( r.homolset == 'included' ){
+	//     cache.push('<img src="' + gm.get_image_resource('star') + '"');
+	//     cache.push(' title="This gene product is a member of a homolset." />');
+	// }else{
+	//     cache.push('&nbsp;');
+	// }
+	cache.push('</td>');
+
+	// GP symbol.
+	cache.push('<td>');
+	cache.push(r.bioentity_label);
+	cache.push('</td>');
+
+	// Full name.
+	cache.push('<td>');
+	cache.push(r.annotation_class_label);
+	cache.push('</td>');
+
+	// Type.
+	cache.push('<td>');
+	cache.push(r.type);
+	cache.push('</td>');
+
+	// Source.
+	cache.push('<td>');
+	cache.push(r.source);
+	cache.push('</td>');
+
+	// // Species. Simple names aren't split, but complicated
+	// // ones are.
+	// var s_name = species_map[r.species];
+	// if( s_name && s_name.split(' ').length <= 2 ){
+	//     cache.push('<td class="nowrap">');
+	// }else{
+	//     cache.push('<td class="">');
+	// }
+	// cache.push(species_map[r.species]);
+	cache.push('<td>');
+	cache.push(r.taxon);
+	cache.push('</td>');
+	
+	// Synonyms.
+	cache.push('<td>');
+	//cache.push(r.hilite_gpsynonym.replace(newline_finder, ", "));
+	cache.push('nil');
+	cache.push('</td>');
+	
+	cache.push('</tr>');
     }
-    widgets.finish_wait();
+    cache.push('</tbody></table>');
+    
+    return cache;
 }
 
 
