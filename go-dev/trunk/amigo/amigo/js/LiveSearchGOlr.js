@@ -150,7 +150,8 @@ function LiveSearchGOlrInit(){
 			core.kvetch('input q: ' + all_inputs['q'][0]);
 
 			// Increment packet (async ordering).
-			all_inputs['packet'] = last_sent_packet++;
+			last_sent_packet++;
+			all_inputs['packet'] = last_sent_packet;
 
 			// BUG/TODO: a switch to dismax will eliminate
 			// this, this is just here to bootstrap
