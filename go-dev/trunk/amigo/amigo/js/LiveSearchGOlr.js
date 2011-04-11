@@ -100,8 +100,9 @@ function LiveSearchGOlrInit(){
     function _generate_action_to_server(marshaller, do_results){//, query_id){
 	return function(event){
 
-	    core.kvetch('EV: ' + event );
-	    core.kvetch('SP: ' + event.stopPropagation() );
+	    // core.kvetch('EV: ' + event );
+	    // core.kvetch('TP: ' + typeof(event) );
+	    // core.kvetch('SP: ' + event.stopPropagation );
 	    event.stopPropagation();
 
 	    // core.kvetch('event1...' + event);
@@ -224,16 +225,17 @@ function LiveSearchGOlrInit(){
     jQuery("#source").change(server_action);
     jQuery("#evidence").change(server_action);
 
-    // Slow down the input on our typing fields.
-    function delayed_keyup_action(selector, action, delay){
-	jQuery(selector).keyup(function(){
-	    if( typeof(window.inputTimeout) != 'undefined' ){
-		window.clearTimeout(window.inputTimeout);
-	    }
-	    window.inputTimeout = window.setTimeout(action, delay);
-	});
-    }
-    delayed_keyup_action("#q", server_action, delay_in_ms);
+    // NOTE: we can either use this or the one above.
+    // // Slow down the input on our typing fields.
+    // function delayed_keyup_action(selector, action, delay){
+    // 	jQuery(selector).keyup(function(){
+    // 	    if( typeof(window.inputTimeout) != 'undefined' ){
+    // 		window.clearTimeout(window.inputTimeout);
+    // 	    }
+    // 	    window.inputTimeout = window.setTimeout(action, delay);
+    // 	});
+    // }
+    // delayed_keyup_action("#q", server_action, delay_in_ms);
 
     // Make the forms unsubmitable.
     jQuery("#app-form").submit(function(){return false;});
