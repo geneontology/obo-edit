@@ -61,6 +61,11 @@ function LiveSearchGOlrInit(){
 
     // The hidden count for all forms.
     var hidden_count_text = widgets.form.hidden_input('count', '10');
+    var hidden_facet_text = widgets.form.hidden_input('facet', 'true');
+    var hidden_facet_field_type_text =
+	widgets.form.hidden_input('facet.field', 'type');
+    var hidden_facet_field_ev_type_text =
+	widgets.form.hidden_input('facet.field', 'evidence_type');
     
     // Clear the controls' area.
     _clear_app_forms();
@@ -79,23 +84,26 @@ function LiveSearchGOlrInit(){
     var type_text =
     	widgets.form.multiselect('type', 'type', 4,
     				 type_data, 'GP type');
-    var species_text =
-    	widgets.form.multiselect('species', 'species', 4,
+    var taxon_text =
+    	widgets.form.multiselect('taxon', 'taxon', 4,
     				 species_data, 'Species');
     var source_text =
     	widgets.form.multiselect('source', 'source', 4,
     				 source_data, 'Data source');
-    var evidence_text =
-    	widgets.form.multiselect('evidence', 'evidence', 4,
+    var evidence_type_text =
+    	widgets.form.multiselect('evidence_type', 'evidence_type', 4,
     				 evcode_set, 'Evidence');
     //jQuery("#app-form").append(hidden_mode_search_text);
     jQuery("#app-form").append(hidden_count_text);
+    jQuery("#app-form").append(hidden_facet_text);
+    jQuery("#app-form").append(hidden_facet_field_type_text);
+    jQuery("#app-form").append(hidden_facet_field_ev_type_text);
     jQuery("#app-form-query").append(query_text);
     //jQuery("#app-form-filters").append(ontology_text);
     jQuery("#app-form-filters").append(type_text);
-    jQuery("#app-form-filters").append(species_text);
+    jQuery("#app-form-filters").append(taxon_text);
     jQuery("#app-form-filters").append(source_text);
-    jQuery("#app-form-filters").append(evidence_text);
+    jQuery("#app-form-filters").append(evidence_type_text);
 
     function _generate_action_to_server(marshaller, do_results){//, query_id){
 	return function(event){
@@ -222,9 +230,9 @@ function LiveSearchGOlrInit(){
     jQuery("#q").keyup(server_action);
     //jQuery("#ontology").change(assoc_saction);
     jQuery("#type").change(server_action);
-    jQuery("#species").change(server_action);
+    jQuery("#taxon").change(server_action);
     jQuery("#source").change(server_action);
-    jQuery("#evidence").change(server_action);
+    jQuery("#evidence_type").change(server_action);
 
     // NOTE: we can either use this or the one above.
     // // Slow down the input on our typing fields.
