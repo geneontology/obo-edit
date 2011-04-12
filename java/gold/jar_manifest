@@ -6,5 +6,5 @@ Sealed: true
 Specification-Version: $VERSION$
 Specification-Vendor: OBO Foundry
 Implementation-Title: gold
-Implementation-Version: build6_${build_date}
+Implementation-Version: build7_${build_date}
 Implementation-Vendor: OBO Foundry

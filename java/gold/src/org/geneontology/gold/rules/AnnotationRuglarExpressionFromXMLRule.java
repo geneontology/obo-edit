@@ -24,13 +24,12 @@ public class AnnotationRuglarExpressionFromXMLRule extends
 		AbstractAnnotatioRule {
 
 	
-	public AnnotationRuglarExpressionFromXMLRule(){
-		init();
+	public AnnotationRuglarExpressionFromXMLRule(List regexList){
+		init(regexList);
 	}
 
 	private static Logger LOG = Logger.getLogger(AnnotationRuglarExpressionFromXMLRule.class);
 	
-	private static String rules_xml_file_location = "http://www.geneontology.org/quality_control/annotation_checks/annotation_qc.xml";
 	
 	private  List<RuleData> rules;
 	
@@ -61,15 +60,11 @@ public class AnnotationRuglarExpressionFromXMLRule extends
 		
 	}
 
-	private  void init(){
-		SAXBuilder builder = new SAXBuilder();
+	private  void init(List regexList){
 		rules = new ArrayList<AnnotationRuglarExpressionFromXMLRule.RuleData>();
 		
 		try {
-			Document doc = builder.build(new URL(rules_xml_file_location));
-		    XPath regexRule = XPath.newInstance("//implementation/script[@language='regex']");			
-			
-		    Iterator itr = regexRule.selectNodes(doc).iterator();
+		    Iterator itr = regexList.iterator();
 		    
 		    while(itr.hasNext()){
 		    	Element script = (Element) itr.next();
@@ -98,39 +93,6 @@ public class AnnotationRuglarExpressionFromXMLRule extends
 		    	rules.add(data);
 		    }
 		    
-		    
-		    
-			/*Iterator itr = doc.getRootElement().getChildren("rule").iterator();
-			
-			while(itr.hasNext()){
-				Element rule = (Element)itr.next();
-				Element impList = rule.getChild("implementation_list");
-				if(impList == null)
-					return;
-				
-				Iterator impItr= impList.getChildren().iterator();
-				
-				while(impItr.hasNext()){
-					Element imp = (Element)impItr.next();
-					
-					Element script = imp.getChild("script");
-					
-					if(script == null)
-						return;
-					
-					String langAttr = script.getAttributeValue("language");
-					if(!"regex".equals(langAttr))
-						return;
-					
-					String regex = script.getTextNormalize();
-					
-					rules.put(regex, rule);
-				}
-		    
-		    
-				
-			}*/
-			
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
 		}
