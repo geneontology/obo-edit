@@ -118,7 +118,9 @@ org.bbop.amigo.core = function(){
 	    typeof robj.response.numFound != 'undefined' &&
 	    typeof robj.response.start != 'undefined' &&
 	    typeof robj.response.maxScore != 'undefined' &&
-	    robj.response.docs ){
+	    robj.response.docs &&
+	    robj.facet_counts &&
+	    robj.facet_counts.facet_fields ){
 		retval = true;
 	    }
 	return retval;
@@ -129,9 +131,9 @@ org.bbop.amigo.core = function(){
 	return robj.responseHeader.params;
     };
 
-    // ...
+    // BUG: Hand bug fix for:
     this.golr_response.total = function(robj){
-	return robj.response.numFound;
+	return (robj.response.numFound - 1);
     };
 
     // ...
@@ -158,6 +160,11 @@ org.bbop.amigo.core = function(){
     this.golr_response.documents = function(robj){
 	return robj.response.docs;
     };
+
+    // // ...
+    // this.golr_response.documents = function(robj){
+    // 	return robj.response.docs;
+    // };
 
     ///
     /// General AmiGO AJAX response checking (after parsing).
@@ -223,11 +230,16 @@ org.bbop.amigo.core = function(){
     /// Workspaces' linking.
     ///
 
-    // Construct the templates using the segments.
-    // NOT: Non-recursive--there are some interesting ways to create
+    function _abstract_head_template(head){
+	return head + '?';
+    }
+
+    // Convert a hash (with possible arrays as arguments) into a link
+    // string.
+    // NOTE: Non-recursive--there are some interesting ways to create
     // cyclic graph hashes in SpiderMonkey, and I'd rather not think
     // about it right now.
-    function _abstract_link_template(head, segments){
+    function _abstract_segment_template(segments){
 	
 	var maxibuf = new Array();
 	for( var segkey in segments ){
@@ -257,7 +269,56 @@ org.bbop.amigo.core = function(){
 		maxibuf.push(minibuf.join(''));
 	    }
 	}
-	return head + '?' + maxibuf.join('&');
+	return maxibuf.join('&');
+    }
+
+    // Similar to the above, but creating a solr filter set.
+    function _abstract_filter_template(filters){
+	
+	var allbuf = new Array();
+	for( var filter_key in filters ){
+
+	    var filter_val = filters[filter_key];
+
+	    // If the value looks like an array, iterate over it and
+	    // collect.
+	    if( filter_val &&
+		filter_val != null &&
+		typeof filter_val == 'object' &&
+		filter_val.length ){
+
+		    for( var i = 0; i < filter_val.length; i++ ){
+			var minibuf = new Array();
+			var try_val = filter_val[i];
+			if( typeof(try_val) != 'undefined' &&
+			try_val != '' ){
+			    minibuf.push('fq=');
+			    minibuf.push(filter_key);
+			    minibuf.push(':');
+			    minibuf.push(filter_val[i]);
+			    allbuf.push(minibuf.join(''));
+			}
+		    }
+		    
+		}else{
+		    var minibuf = new Array();
+		    if( typeof(filter_val) != 'undefined' &&
+			filter_val != '' ){
+			minibuf.push('fq=');
+			minibuf.push(filter_key);
+			minibuf.push(':');
+			minibuf.push(filter_val);
+			allbuf.push(minibuf.join(''));
+		    }
+		}
+	}
+	return allbuf.join('&');
+    }
+
+    // Construct the templates using head and segments.
+    function _abstract_link_template(head, segments){	
+	return _abstract_head_template(head) +
+	    _abstract_segment_template(segments);
     }
 
     // Construct the templates using the segments.
@@ -279,10 +340,6 @@ org.bbop.amigo.core = function(){
     }
 
     // Construct the templates using the segments.
-    function _ls_golr_template(segments){
-	//segments['mode'] = 'live_search_association_golr';
-	return _abstract_link_template('select', segments);
-    }
     function _ls_assoc_template(segments){
 	segments['mode'] = 'live_search_association';
 	return _abstract_link_template('aserve', segments);
@@ -435,18 +492,18 @@ org.bbop.amigo.core = function(){
 	};
     };
 
-//     // Some handling for a workspace object once we get one.
-//     this.util.workspace = {};
-//     this.util.workspace.get_terms = function(ws){
-// 	var all_terms = new Array();
-// 	for( var t = 0; t < ws.length; t++ ){
-// 	    var item = ws[t];
-// 	    if( item.type == 'term' ){
-// 		all_terms.push(item.key);
-// 	    }
-// 	}
-// 	return all_terms;
-//     };
+    //     // Some handling for a workspace object once we get one.
+    //     this.util.workspace = {};
+    //     this.util.workspace.get_terms = function(ws){
+    // 	var all_terms = new Array();
+    // 	for( var t = 0; t < ws.length; t++ ){
+    // 	    var item = ws[t];
+    // 	    if( item.type == 'term' ){
+    // 		all_terms.push(item.key);
+    // 	    }
+    // 	}
+    // 	return all_terms;
+    //     };
 
     ///
     /// JSON? JS? API functions for workspaces.
@@ -493,7 +550,7 @@ org.bbop.amigo.core = function(){
 	    action: 'add_item',
 	    workspace: ws_name,
 	    key: key,
-// 	    type: type,
+            // type: type,
 	    name: name
 	});
     };
@@ -555,7 +612,7 @@ org.bbop.amigo.core = function(){
     this.api.live_search.golr = function(in_args){
 
 	if( ! in_args ){ in_args = {}; }
-	var default_args =
+	var default_query_args =
 	    {
 		// TODO/BUG? need jsonp things here?
 		qt: 'standard',
@@ -566,20 +623,38 @@ org.bbop.amigo.core = function(){
 		start: 1,
 		fl: '*%2Cscore',
 
+		// Control of facets.
+		facet: '',
+		'facet.field': [],
+
 		// Query-type stuff.
 		q: '',
+
+		// Our bookkeeping.
+		packet: 0
+	    };
+	var final_query_args = _merge(default_query_args, in_args);
+		
+	var default_filter_args =
+	    {
+		// Filter stuff.
 		//ontology: [],
 		type: [],
 		source: [],
 		taxon: [],
-		evidence_type: [],
-		
-		// Our bookkeeping.
-		packet: 0
+		evidence_type: []
 	    };
-	var final_args = _merge(default_args, in_args);
-		
-	return _ls_golr_template(final_args);
+	var final_filter_args = _merge(default_filter_args, in_args);
+
+	// ...
+	//return _abstract_link_template('select', segments);	
+	var complete_query = _abstract_head_template('select') +
+	    _abstract_segment_template(final_query_args);
+	var addable_filters = _abstract_filter_template(final_filter_args);
+	if( addable_filters.length > 0 ){
+	    complete_query = complete_query + '&' + addable_filters;
+	}
+	return complete_query;
     };
 
     this.api.live_search.association = function(in_args){
@@ -602,7 +677,7 @@ org.bbop.amigo.core = function(){
 	return _ls_assoc_template(final_args);
     };
     this.api.live_search.gene_product = function(in_args){
-
+	
 	if( ! in_args ){ in_args = {}; }
 	var default_args =
 	    {
@@ -815,7 +890,7 @@ org.bbop.amigo.core = function(){
 	    in_args.terms.length &&
 	    in_args.terms.length > 0 ){
 
-	    //
+		//
 	    for( var at = 0; at < in_args.terms.length; at++ ){
 		terms_buf.push(in_args.terms[at]);
 	    } 
