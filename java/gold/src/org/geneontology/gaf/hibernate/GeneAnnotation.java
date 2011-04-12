@@ -39,11 +39,17 @@ public class GeneAnnotation extends GOModel implements Serializable {
 	private transient GafDocument gafDocumentObject;
 	
 	
+	private String toString;
+	
 	public String toString(){
-		return "[" + bioentity + ", " + compositeQualifier + isContributesTo + ", " + isIntegralTo + ", " + 
+		return toString != null ? toString : "[" + bioentity + ", " + compositeQualifier + isContributesTo + ", " + isIntegralTo + ", " + 
 			cls + ", " + referenceId + ", " + evidenceCls + ", " + withExpression
 			+ ", " + actsOnTaxonId + ", " + lastUpdateDate + ", " + assignedBy + ", " +
 			extensionExpression + ", " + geneProductForm + ", " + gafDocument + "]";
+	}
+	
+	void setToString(String toString){
+		this.toString = toString;
 	}
 	
 	public GeneAnnotation(){
@@ -261,5 +267,7 @@ public class GeneAnnotation extends GOModel implements Serializable {
 		
 		return actsOnTaxonIdObject;
 	}
+	
+
 
 }
