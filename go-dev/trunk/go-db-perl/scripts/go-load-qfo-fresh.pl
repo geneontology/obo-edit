@@ -175,8 +175,8 @@ if (defined $fetch_dir) {
 	    my $file = File::Spec->catfile($fetch_dir, $_);
 	    my @stat = stat($file);
 
-	    if (-e $file) { # Just check if it exists
-		okp(1, '[FTP] Already have', $file);
+	    if ((-e $file) and ((-s $file) == $ftp->size($_))) {
+		okp(1, '[FTP] already have', $file);
 	    } else {
 		warn "[FTP] fetching $file\n";
 		if (!$ftp->get($_, $file)) {
