@@ -31,6 +31,17 @@ sub color{
     return (hex(substr($color,1)) ? $color : undef);
 }
 
+=item $s->is_refg()
+
+Returns a true value if we are a reference genome.  Really returns the
+color, but don't trust it to continue to be that way.
+
+=cut
+
+sub is_refg(){
+    shift()->color();
+}
+
 =item $s->reference_genome()
 
 Returns a list of AmiGO::Aid::PantherDB objects that are references
