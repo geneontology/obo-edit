@@ -278,4 +278,9 @@ public class GeneOntologyManager {
 		.getString("geneontology.gold.gafuploaddir", "/tmp");
 	}
 	
+	public String getAnnotationQCFile(){
+		return config
+		.getString("geneontology.gold.gaf.qcfile", "test_resources/test_resources/annotation_qc.xml");
+	}
+	
 }
