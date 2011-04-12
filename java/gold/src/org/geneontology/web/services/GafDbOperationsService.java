@@ -21,6 +21,7 @@ import org.geneontology.gaf.io.GAFDbOperations;
 import org.geneontology.gaf.io.GafURLFetch;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.rules.AnnotationRuleViolation;
+import org.geneontology.gold.rules.AnnotationRulesEngine;
 import org.geneontology.web.Task;
 
 import owltools.graph.OWLGraphWrapper;
@@ -145,7 +146,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			//if commit is calld prior to the bulkload nand upate then throw error
 			if(commit && gafDocuments == null){
 				request.setAttribute("exception", new IllegalStateException("The commit is not allowed."));
-			}else if((commit || "bulkload".equals(command) || "update".equals(command)) && runner == null) {
+			}else if((commit || "bulkload".equals(command) || "update".equals(command)) && runner == null && this.gafLocations != null) {
 				annotationRuleViolations.clear();
 				runner = new GafDbTaskExecution();
 				runner.start();
@@ -321,7 +322,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			reportStartTime("Performing Annotations Checks--" + currentOntologyBeingProcessed);
 		
 			
-			GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
+			/*GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
 			
 			OWLGraphWrapper graph = goldDb.getGraphWrapper();
 			
@@ -329,7 +330,12 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 				annotationRuleViolations.addAll(doc
 						.validateAnnotations(graph));
-			//}
+			//}*/
+			AnnotationRulesEngine engine = AnnotationRulesEngine.getInstance();
+			
+			Set<AnnotationRuleViolation> violations= engine.validateAnnotations(doc);
+			
+			annotationRuleViolations.addAll(violations);
 
 			reportEndTime("Performing Annotations Checks--" + currentOntologyBeingProcessed);
 			
