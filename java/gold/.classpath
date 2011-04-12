@@ -70,6 +70,7 @@
 	<classpathentry kind="lib" path="lib/commons-io-2.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/apache-solr-dataimporthandler-1.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/antlr-2.7.6.jar"/>
-	<classpathentry kind="lib" path="lib/jdom.jar"/>
+	<classpathentry kind="lib" path="lib/jdom/jaxen.jar"/>
+	<classpathentry kind="lib" path="lib/jdom/jdom.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

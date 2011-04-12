@@ -75,14 +75,25 @@ public class AnnotationRuglarExpressionFromXMLRule extends
 		    	Element script = (Element) itr.next();
 		    	
 		    	String regex = script.getTextNormalize();
+		    	boolean isCaseInsensitive = regex.endsWith("/i");
 		    	
-		    	Element title= script.getParentElement().getParentElement().getChild("title");
+		    	regex = regex.replace("/^", "^");
+		    	regex = regex.replace("/i", "");
+		    	
+		    	Element title= script.getParentElement().getParentElement().getParentElement().getChild("title");
 		    	String titleString = "";
 		    	if(title != null){
 		    		titleString = title.getTextNormalize();
 		    	}
 		    	
-		    	RuleData data = new RuleData(Pattern.compile(regex), titleString);
+		    	Pattern pattern = null;
+		    	
+		    	if(isCaseInsensitive)
+		    		pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+		    	else
+		    		pattern = Pattern.compile(regex);
+		    	
+		    	RuleData data = new RuleData(pattern, titleString);
 		    	
 		    	rules.add(data);
 		    }
