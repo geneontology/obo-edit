@@ -160,6 +160,10 @@ public class GAFParser {
 			
 	}
 	
+	public String getCurrentRow(){
+		return this.currentRow;
+	}
+	
 	public GAFParser(){
 		init();
 	}
