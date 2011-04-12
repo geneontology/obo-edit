@@ -17,7 +17,7 @@
 	<classpathentry kind="lib" path="lib/jetty7/jetty-rewrite-7.3.1.v20110307.jar"/>
 	<classpathentry kind="lib" path="lib/jetty7/jetty-security-7.3.1.v20110307.jar"/>
 	<classpathentry kind="lib" path="lib/jetty7/jetty-server-7.3.1.v20110307.jar"/>
-	<classpathentry kind="lib" path="lib/jetty7/jetty-servlet-7.3.1.v20110307.jar"/>
+	<classpathentry kind="lib" path="lib/jetty7/jetty-servlet-7.3.1.v20110307.jar" sourcepath="/Users/shahidmanzoor/.m2/repository/org/eclipse/jetty/jetty-servlet/7.3.1.v20110307/jetty-servlet-7.3.1.v20110307-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jetty7/jetty-servlets-7.3.1.v20110307.jar"/>
 	<classpathentry kind="lib" path="lib/jetty7/jetty-util-7.3.1.v20110307.jar"/>
 	<classpathentry kind="lib" path="lib/jetty7/jetty-webapp-7.3.1.v20110307.jar"/>
@@ -70,5 +70,6 @@
 	<classpathentry kind="lib" path="lib/commons-io-2.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/apache-solr-dataimporthandler-1.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/antlr-2.7.6.jar"/>
+	<classpathentry kind="lib" path="lib/jdom.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

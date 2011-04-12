@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.geneontology.gaf.hibernate.GeneAnnotation;
+import org.geneontology.web.services.GoldDbOperationsService;
+import org.geneontology.web.services.ServicesConfig;
 import org.obolibrary.obo2owl.Obo2OWLConstants;
 import org.semanticweb.owlapi.model.OWLClass;
 
@@ -12,13 +14,16 @@ import owltools.graph.OWLGraphWrapper;
 public class GoClassReferenceAnnotationRule extends AbstractAnnotatioRule {
 
 	
-	private OWLGraphWrapper graph;
+//	private OWLGraphWrapper graph;
 	
-	public GoClassReferenceAnnotationRule(OWLGraphWrapper wrapper){
+/*	public GoClassReferenceAnnotationRule(OWLGraphWrapper wrapper){
 		this.graph = wrapper;
 	}
+	*/
 	
-	
+	public GoClassReferenceAnnotationRule(){
+		
+	}
 	
 	@Override
 	public Set<AnnotationRuleViolation> getRuleViolations(GeneAnnotation a) {
@@ -26,7 +31,9 @@ public class GoClassReferenceAnnotationRule extends AbstractAnnotatioRule {
 		
 		String cls = a.getCls().replace(":", "_");
 		
-		
+		GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
+
+		OWLGraphWrapper graph = goldDb.getGraphWrapper();
 		
 		OWLClass owlClass= graph.getOWLClass(Obo2OWLConstants.DEFAULT_IRI_PREFIX + cls);
 		

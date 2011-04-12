@@ -216,7 +216,7 @@ public class GafDocument extends GOModel implements Serializable {
 		
 		try{
 		
-			GoClassReferenceAnnotationRule rule = new GoClassReferenceAnnotationRule(graph);
+			GoClassReferenceAnnotationRule rule = new GoClassReferenceAnnotationRule();
 		//	AnnotationTaxonRule taxonRule = new AnnotationTaxonRule();
 			
 			for(GeneAnnotation annotation: getGeneAnnotations()){

@@ -159,6 +159,7 @@ public class GafObjectsBuilder {
 
 		
 		GeneAnnotation ga = new GeneAnnotation();
+		ga.setToString(parser.getCurrentRow());
 		ga.setBioentity(entity.getId());
 		ga.setIsContributesTo(isContributesTo);
 		ga.setIsIntegralTo(isIntegeralTo);
