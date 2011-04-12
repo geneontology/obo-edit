@@ -33,7 +33,6 @@ jQuery(document).ready(function() {
 
       <thead>
 	<tr>
-	  <th></th>
 	  <th>Cluster</th>
 	  <th>Last Annotated</th>
 	  <th>All</th><th>RefG</th>
@@ -47,9 +46,6 @@ jQuery(document).ready(function() {
       <tbody>
 	[%- FOREACH cluster IN clusters %]
 	<tr>
-	  <td>
-	    [% IF offset ; loop.count + offset ; ELSE ; loop.count ; END %]
-	  </td>
 	  <td><a href="[% cluster.url %]">[% cluster.key %]</a></td>
 	  <td>[% cluster.last_annotated %]</td>
 	  <td>[% cluster.number_of_members %]</td>
