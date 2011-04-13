@@ -20,6 +20,11 @@
 	and create instances of the Annotation Rules. This object also run the rules to get the annotation violations.
 </p>
 
+<p>
+	The class {@link org.geneontology.gold.rules.AnnotationRuglarExpressionFromXMLRule} general implementation for the regular expression rules
+	(See annotation_qc.xml file for the regular expression rules).
+</p>
+
 @author Shahid Manzoor
 
  */
