@@ -1,29 +1,30 @@
 package org.geneontology.gold.rules;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.log4j.Logger;
 import org.geneontology.gaf.hibernate.GeneAnnotation;
-import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.xpath.XPath;
 
+/**
+ * This class implements execution of the regular expression rules. All the regular expression rules
+ * are run by the single instance of this class.
+ * @author Shahid Manzoor
+ *
+ */
 public class AnnotationRuglarExpressionFromXMLRule extends
 		AbstractAnnotatioRule {
 
-	
+	/**
+	 * 
+	 * @param The parameter is the list of the {@link Element} objects. These elements objects are 
+	 * build from the annotation-qc.xml xml file. The each element object points to 'script' xml tag.
+	 */
 	public AnnotationRuglarExpressionFromXMLRule(List regexList){
 		init(regexList);
 	}
@@ -60,6 +61,12 @@ public class AnnotationRuglarExpressionFromXMLRule extends
 		
 	}
 
+	/**
+	 * 
+	 * @param This method iterates through the script xml elements to get the regular expression. 
+	 * It gets the 'title' element (child of the 'rule' element). During the execution of the rule title
+	 * is used as an error message when the regular expression is matched.
+	 */
 	private  void init(List regexList){
 		rules = new ArrayList<AnnotationRuglarExpressionFromXMLRule.RuleData>();
 		
@@ -72,9 +79,12 @@ public class AnnotationRuglarExpressionFromXMLRule extends
 		    	String regex = script.getTextNormalize();
 		    	boolean isCaseInsensitive = regex.endsWith("/i");
 		    	
+		    	//java doesn't like the /^ switch so it is replaced by ^
 		    	regex = regex.replace("/^", "^");
+		    	//java does not support the /i case in-sensitivity switch so it is removed
 		    	regex = regex.replace("/i", "");
 		    	
+		    	//title is child of the rule element
 		    	Element title= script.getParentElement().getParentElement().getParentElement().getChild("title");
 		    	String titleString = "";
 		    	if(title != null){
@@ -97,6 +107,7 @@ public class AnnotationRuglarExpressionFromXMLRule extends
 			LOG.error(e.getMessage(), e);
 		}
 	}
+	
 	
 	private class RuleData{
 		
