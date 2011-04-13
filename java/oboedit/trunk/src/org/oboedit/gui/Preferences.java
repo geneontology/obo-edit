@@ -557,6 +557,10 @@ public class Preferences {
 			}
 		}
 
+                if (mem == null) {
+                    logger.error("WARNING: readMemStringFromDisk couldn't get memory string from vmoptions file " + optionFile);
+                    return null;
+                }
 		String numMem = mem.substring(0, mem.indexOf("M"));
 		return numMem + "M";
 	}
@@ -569,20 +573,26 @@ public class Preferences {
 	}
 
 	public void setMemoryValue(String mem) {
+                if (mem == null)
+                    return;
+
 		this.mem = mem;
 		String numMem = mem.substring(0, mem.indexOf("M"));
 		//update vmoptions
 		String diskmem = readMemStringFromDisk();
-		if (!numMem.equals(diskmem)){
+		if (diskmem == null || !numMem.equals(diskmem)){
 			updateDiskMemValue(mem);
 		}
-		
 	}
 
 	//update OBOEdit.vmoptions when memory settings have been updated through the config manager
 	public static void updateDiskMemValue(String mem) {
 		File optionFile = new File(getInstallationDirectory(), 
 				getLauncherName() + ".vmoptions");
+                if (mem == null || mem.toUpperCase().indexOf("M") < 1) {
+                    logger.error("updateDiskMemValue: memory string " + mem + " is not legal.");
+                    return;
+                }
 		String newmemValue = "-Xmx"+ mem;
 		//		logger.debug("newmemValue: " + newmemValue);
 

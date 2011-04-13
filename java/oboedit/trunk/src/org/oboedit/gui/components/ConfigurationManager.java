@@ -1256,7 +1256,12 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				(String) fontTypeList.getSelectedItem()));
 		
 		String mem = memoryField.getText();
-		String numMem = mem.substring(0, mem.indexOf("M"));
+                if (mem == null || mem.toUpperCase().indexOf("M") < 1) {
+                  JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(), 
+                                                "Error: illegal memory setting " + ((mem == null) ? "" : mem) + ".\nMemory setting must be some number of megabytes (M) >800M and <= 1860M.\nSetting to 18060M.");
+                  mem = "1860M";
+		}
+                String numMem = mem.substring(0, mem.indexOf("M"));
 		int intMem = Integer.parseInt(numMem);
 		if(intMem > 1860){
 			if (JOptionPane.showConfirmDialog( GUIManager.getManager().getFrame(), "WARNING -- On most systems, Java limits the maximum memory allocation to 1860M. " +
