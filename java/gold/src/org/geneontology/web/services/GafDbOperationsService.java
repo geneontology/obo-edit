@@ -24,8 +24,6 @@ import org.geneontology.gold.rules.AnnotationRuleViolation;
 import org.geneontology.gold.rules.AnnotationRulesEngine;
 import org.geneontology.web.Task;
 
-import owltools.graph.OWLGraphWrapper;
-
 /**
  * This class performs bulkload and update operations for GAF database against the
  * web based requests.
