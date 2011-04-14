@@ -58,6 +58,11 @@
 				<when_performed>on_submit</when_performed>
 				<output>warn_and_remove</output>
 			</implementation>
+		<implementation status="active">
+			<script language="java" source="org.geneontology.gold.rules.BasicChecksRule" />
+				<input format="gaf1.0" />
+				<input format="gaf2.0" />
+		</implementation>
 		</implementation_list>
 		<status date="2005-10-19">
 			Implemented
@@ -624,23 +629,7 @@ WHERE  evidence.code = 'ND'
 		</status>
 	</rule>
 
-<!-- 	
-<rule>
-	<id>GO_AR:0000012</id>
-	<title>GO_AR:0000012 Cardinality Check</title>
-	<contact>smanzoor@lbl.gov</contact>
-	<description format="html"></description>
-	<implementation_list>
-		<implementation status="active">
-			<script language="java" source="org.geneontology.gold.rules.CardinalityCheckRule" />
-				<input format="gaf1.0" />
-				<input format="gaf2.0" />
-		</implementation>
-	</implementation_list>
-	<status date="2011-04-12">Proposed</status>
-</rule>
-
-
+<!--   	
 <rule>
 	<id>GO_AR:0000013</id>
 	<title>GO_AR:0000013 Taxon Check</title>
@@ -671,21 +660,4 @@ WHERE  evidence.code = 'ND'
 	<status date="2011-04-12">Proposed</status>
 </rule>
 
-<!--  
-<rule>
-	<id>GO_AR:0000015</id>
-	<title>GO_AR:0000015 Db Abbreviation check</title>
-	<contact>smanzoor@lbl.gov</contact>
-	<description format="html"></description>
-	<implementation_list>
-		<implementation status="active">
-			<script language="java" source="org.geneontology.gold.rules.DbAbbreviationsRule" />
-				<input format="gaf1.0" />
-				<input format="gaf2.0" />
-		</implementation>
-	</implementation_list>
-	<status date="2011-04-12">Proposed</status>
-</rule>
--->
-	
 </ruleset>
