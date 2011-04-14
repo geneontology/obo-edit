@@ -72,6 +72,7 @@ public class AnnotationRulesEngine {
 			}
 		}catch(Exception ex){
 			LOG.error(ex.getMessage(), ex);
+			throw new RuntimeException(ex);
 		}
 		
 		return set;

@@ -6,10 +6,8 @@ import java.io.FileReader;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
-import org.geneontology.gaf.hibernate.Bioentity;
 import org.geneontology.gaf.hibernate.GeneAnnotation;
 import org.geneontology.gaf.parser.GAFParser;
 
@@ -103,7 +101,7 @@ public class BasicChecksRule extends AbstractAnnotatioRule {
 		checkCardinality(cols[5], 5,"Column 6: DB Reference", row,1,3, set);
 		checkCardinality(cols[6], 6,"Column 7: Evidence Code", row,1,3, set);
 		checkCardinality(cols[7], 7,"Column 8: With or From", row,0,3, set);
-		checkCardinality(cols[8], 8,"Column 9: Aspect", row,1,1, set);
+	//	checkCardinality(cols[8], 8,"Column 9: Aspect", row,1,1, set);
 		checkCardinality(cols[9], 9,"Column 10: DB Object Name", row,0,1, set);
 		checkCardinality(cols[10], 10,"Column 11: DB Object Synonym",  row, 0,3, set);
 		checkCardinality(cols[11], 11,"Column 12: DB Object Type", row, 1,1, set);
