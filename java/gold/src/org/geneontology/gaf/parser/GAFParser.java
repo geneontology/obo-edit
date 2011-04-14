@@ -68,7 +68,6 @@ public class GAFParser {
 	
 	private List<AnnotationRuleViolation> voilations;
 	
-	private static SimpleDateFormat dtFormat = new SimpleDateFormat("yyyyMMdd");
 	
 	private static final HashSet<String> db_abbreviations = buildAbbreviations();
 	
@@ -349,12 +348,12 @@ public class GAFParser {
 		return errors;
 	}
 	
-	private boolean isValidPath(String file_name) {
+	/*private boolean isValidPath(String file_name) {
 		if (file_name == null)
 			return false;
 
 		return new File(file_name).canRead();
-	}
+	}*/
 
 	private boolean isFormatDeclaration(String line) {
 		return line.startsWith(GAF_VERSION);
@@ -384,7 +383,7 @@ public class GAFParser {
 			}
 		}
  
-		//cardinality checks
+		/*//cardinality checks
 		checkCardinality(cols[0],0, "Column 1: DB", row,1,1);
 		checkCardinality(cols[1], 1,"Column 2: DB Object ID", row,1,1);
 		checkCardinality(cols[2], 2,"Column 3: DB Object Symbol", row,1,1);
@@ -404,12 +403,12 @@ public class GAFParser {
 		if(this.expectedNumCols>15){
 			checkCardinality(cols[15], 15,"Column 16: DB Object Type", row, 0,3);
 			checkCardinality(cols[16], 16,"Column 17: DB Object Type", row, 0,3);
-		}
+		}*/
 
 		//check internal spaces
 		
 		//check date format
-		String dtString = cols[DATE];
+		/*String dtString = cols[DATE];
 		try{
 			dtFormat.parse(dtString);
 		}catch(Exception ex){
@@ -421,7 +420,7 @@ public class GAFParser {
 		checkTaxon(taxons[0], row);
 		if(taxons.length>1){
 			checkTaxon(taxons[1], row);
-		}
+		}*/
 		
 		
 		//check qualifier value
@@ -438,10 +437,10 @@ public class GAFParser {
 			voilations.add(new AnnotationRuleViolation("The evidence code '" + cols[6] + "' in the column 7 is incorrect in the row " + row));
 		}*/
 		
-		//check db abbreviations
+		/*//check db abbreviations
 		if(!db_abbreviations.contains(cols[0]))
 			voilations.add(new AnnotationRuleViolation("The DB '" + cols[0] + "'  referred in the column 1 is incorrect in the row: " + row));
- 		
+ 		*/
 	}
 	
 	private void checkTaxon(String value, String row){
