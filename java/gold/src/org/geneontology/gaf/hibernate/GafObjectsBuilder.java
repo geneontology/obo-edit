@@ -142,12 +142,12 @@ public class GafObjectsBuilder {
 		String evidenceCls = parser.getEvidence();
 		String withExpression = parser.getWith();
 
-		int actsOnTaxonId =-1;
+		String actsOnTaxonId ="";
 		
 		String taxons[] = parser.getTaxon().split("\\|");
 		if(taxons.length>1){
 			taxons = taxons[1].split(":");
-			actsOnTaxonId = Integer.parseInt(taxons[1]);
+			actsOnTaxonId = "NCBIGene:" + taxons[1];
 		}
 		
 		String lastUpdateDate = parser.getDate();
@@ -158,9 +158,11 @@ public class GafObjectsBuilder {
 		String geneProductForm = parser.getGeneProjectFormId();
 
 		
-		GeneAnnotation ga = new GeneAnnotation();
-		ga.setToString(parser.getCurrentRow());
-		ga.setBioentity(entity.getId());
+		GeneAnnotation ga = new GeneAnnotation(entity.getId(),
+				isContributesTo, isIntegeralTo, compositeQualifier, clsId, referenceId, evidenceCls, 
+				withExpression, actsOnTaxonId, lastUpdateDate, assignedBy,extensionExpression, geneProductForm, gafDocument.getId());
+		//ga.setToString(parser.getCurrentRow());
+		/*ga.setBioentity(entity.getId());
 		ga.setIsContributesTo(isContributesTo);
 		ga.setIsIntegralTo(isIntegeralTo);
 		ga.setCls(clsId);
@@ -173,7 +175,7 @@ public class GafObjectsBuilder {
 		ga.setExtensionExpression(extensionExpression);
 		ga.setGeneProductForm(geneProductForm);
 		ga.setCompositeQualifier(compositeQualifier);
-		ga.setGafDocument(gafDocument.getId());
+		ga.setGafDocument(gafDocument.getId());*/
 		ga.setBioentityObject(entity);
 		gafDocument.addGeneAnnotation(ga);
 		

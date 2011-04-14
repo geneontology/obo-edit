@@ -38,24 +38,114 @@ public class GeneAnnotation extends GOModel implements Serializable {
 	
 	private transient GafDocument gafDocumentObject;
 	
+	/**
+	 * If value of this variable is true then toString is re-calculated
+	 */
+	private boolean isChanged;
 	
 	private String toString;
 	
-	public String toString(){
-		return toString != null ? toString : "[" + bioentity + ", " + compositeQualifier + isContributesTo + ", " + isIntegralTo + ", " + 
-			cls + ", " + referenceId + ", " + evidenceCls + ", " + withExpression
-			+ ", " + actsOnTaxonId + ", " + lastUpdateDate + ", " + assignedBy + ", " +
-			extensionExpression + ", " + geneProductForm + ", " + gafDocument + "]";
+	/**
+	 * this method generate a tab separated row of a gene annotation
+	 * @return
+	 */
+	private void buildRow(){
+		if(!isChanged)
+			return;
+		
+		String s = "";
+
+		String taxon = "";
+		String dbObjectSynonym = "";
+		String dbObjectName = "";
+		String dbObjectType = "";
+		String symbol = "";
+		
+		if(this.bioentityObject!= null){
+			taxon = bioentityObject.getNcbiTaxonId();
+			if(taxon != null){
+				int i = taxon.indexOf(":");
+				
+				if(i<0)
+					i = 0;
+				else
+					i++;
+				
+				taxon ="taxon:" + bioentityObject.getNcbiTaxonId().substring(i);
+			}
+
+			dbObjectName = this.bioentityObject.getFullName();
+			dbObjectType = this.bioentityObject.getTypeCls();
+			symbol = this.bioentityObject.getSymbol();
+		}
+		
+		if(this.bioentity != null){
+			int i = bioentity.indexOf(":");
+			if(i>-1){
+				s += bioentity.substring(0, i) + "\t" + bioentity.substring(i+1) + "\t";
+			}else{
+				s += bioentity + "\t";
+			}
+		}else{
+			s += "\t\t";
+		}
+			
+		
+		s += symbol + "\t";
+		
+		s+= compositeQualifier + "\t";
+		
+		s+= this.cls + "\t";
+		
+		s += this.referenceId + "\t";
+		
+		s += this.evidenceCls + "\t";
+		
+		s += this.withExpression + "\t";
+		
+		s += "\t";
+		
+		s += dbObjectName+ "\t";
+		
+		s += dbObjectSynonym + "\t";
+		
+		s += dbObjectType+ "\t";
+		
+		if(this.actsOnTaxonId != null && this.actsOnTaxonId.length()>0){
+			int i = actsOnTaxonId.indexOf(":");
+			if(i<0)
+				i = 0;
+			else 
+				i++;
+			
+			taxon += "|taxon:" + actsOnTaxonId.substring(i);
+		}
+		
+		s+= taxon + "\t";
+		
+		s += this.lastUpdateDate + "\t";
+		
+		s += this.assignedBy + "\t";
+		
+		s += this.extensionExpression + "\t";
+		
+		s += this.geneProductForm;
+		
+		this.isChanged = false;
+		
+		this.toString = s;
+
 	}
 	
-	void setToString(String toString){
-		this.toString = toString;
+	public String toString(){
+		buildRow();
+		
+		return toString;
 	}
+	
 	
 	public GeneAnnotation(){
-		//TODO: TBD
-		String keys[] = {"bioentity", "cls", "referenceId", "evidenceCls"};
-		this.initUniqueConstraintFields(GeneAnnotation.class, keys);
+		this("", false, false, "", "", "", "", "", "", "", "", "", "", "");
 	}
 	
 	
@@ -70,7 +160,10 @@ public class GeneAnnotation extends GOModel implements Serializable {
 			String actsOnTaxonId, String lastUpdateDate, String assignedBy,
 			String extensionExpression, String geneProductForm,
 			String gafDocument) {
-		this();
+
+		String keys[] = {"bioentity", "cls", "referenceId", "evidenceCls"};
+		this.initUniqueConstraintFields(GeneAnnotation.class, keys);
+		
 		this.bioentity = bioentity;
 		this.isContributesTo = isContributesTo;
 		this.isIntegralTo = isIntegralTo;
@@ -85,6 +178,7 @@ public class GeneAnnotation extends GOModel implements Serializable {
 		this.extensionExpression = extensionExpression;
 		this.geneProductForm = geneProductForm;
 		this.gafDocument = gafDocument;
+		this.isChanged = true;
 	}
 
 
@@ -95,6 +189,8 @@ public class GeneAnnotation extends GOModel implements Serializable {
 
 	public void setBioentity(String bioentity) {
 		this.bioentity = bioentity;
+		
+		this.isChanged = true;
 	}
 
 	public String getCls() {
@@ -103,6 +199,8 @@ public class GeneAnnotation extends GOModel implements Serializable {
 
 	public void setCls(String cls) {
 		this.cls = cls;
+		this.isChanged = true;
+	
 	}
 
 	public String getReferenceId() {
@@ -111,6 +209,8 @@ public class GeneAnnotation extends GOModel implements Serializable {
 
 	public void setReferenceId(String referenceId) {
 		this.referenceId = referenceId;
+		this.isChanged = true;
+
 	}
 
 	public String getEvidenceCls() {
@@ -119,6 +219,8 @@ public class GeneAnnotation extends GOModel implements Serializable {
 
 	public void setEvidenceCls(String evidenceCls) {
 		this.evidenceCls = evidenceCls;
+		this.isChanged = true;
+
 	}
 	
 	public String getWithExpression() {
@@ -127,6 +229,8 @@ public class GeneAnnotation extends GOModel implements Serializable {
 
 	public void setWithExpression(String withExpression) {
 		this.withExpression = withExpression;
+		this.isChanged = true;
+
 	}
 
 	public String getActsOnTaxonId() {
@@ -135,6 +239,8 @@ public class GeneAnnotation extends GOModel implements Serializable {
 
 	public void setActsOnTaxonId(String actsOnTaxonId) {
 		this.actsOnTaxonId = actsOnTaxonId;
+		this.isChanged = true;
+
 	}
 
 	public String getLastUpdateDate() {
@@ -143,6 +249,8 @@ public class GeneAnnotation extends GOModel implements Serializable {
 
 	public void setLastUpdateDate(String lastUpdateDate) {
 		this.lastUpdateDate = lastUpdateDate;
+		this.isChanged = true;
+
 	}
 
 	public String getAssignedBy() {
@@ -151,6 +259,8 @@ public class GeneAnnotation extends GOModel implements Serializable {
 
 	public void setAssignedBy(String assignedBy) {
 		this.assignedBy = assignedBy;
+		this.isChanged = true;
+
 	}
 
 	public String getExtensionExpression() {
@@ -159,6 +269,8 @@ public class GeneAnnotation extends GOModel implements Serializable {
 
 	public void setExtensionExpression(String extensionExpression) {
 		this.extensionExpression = extensionExpression;
+		this.isChanged = true;
+
 	}
 
 	public String getGeneProductForm() {
@@ -167,6 +279,8 @@ public class GeneAnnotation extends GOModel implements Serializable {
 
 	public void setGeneProductForm(String geneProductForm) {
 		this.geneProductForm = geneProductForm;
+		this.isChanged = true;
+
 	}
 
 
@@ -176,6 +290,8 @@ public class GeneAnnotation extends GOModel implements Serializable {
 
 	public void setCompositeQualifier(String compositeQualifier) {
 		this.compositeQualifier = compositeQualifier;
+		this.isChanged = true;
+
 	}
 
 	public Bioentity getBioentityObject() {
@@ -188,6 +304,7 @@ public class GeneAnnotation extends GOModel implements Serializable {
 	
 	public void setBioentityObject(Bioentity bioentityObject) {
 		this.bioentityObject = bioentityObject;
+		this.isChanged = true;
 	}
 	
 	
