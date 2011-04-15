@@ -34,6 +34,11 @@ public class Bioentity extends GOModel implements Serializable {
 		this.gafDocument = gafDocument;
 	}
 
+	// added by Sven so I could dump Collection<Bioentity> objects and remain sane
+	public String toString() {
+		return this.getId();
+	}
+	
 	public String getId() {
 		return id;
 	}

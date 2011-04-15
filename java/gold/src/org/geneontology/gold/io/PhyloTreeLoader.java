@@ -3,14 +3,10 @@ package org.geneontology.gold.io;
 import java.io.*;
 import java.util.zip.GZIPInputStream;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.TreeSet;
-
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import org.geneontology.util.*;
+import org.geneontology.gaf.hibernate.*;
 
 import org.forester.io.parsers.nhx.NHXParser;
 import org.forester.phylogeny.Phylogeny;
@@ -25,7 +21,8 @@ public class PhyloTreeLoader implements Loader {
 	private File file;
 	private BufferedReader reader;
 	private Phylogeny tree;
-	private Map<String,PantherID> leaves;
+	private Map<String,HibPantherID> leaves;
+	private Map<HibPantherID,Bioentity> matches;
 	
 	static NHXParser parser = null;
 	
@@ -46,14 +43,14 @@ public class PhyloTreeLoader implements Loader {
 	
 	/**
 	 * Clears data and sets new file.
-	 * @param file File object to be loaded
+	 * @param file - File object to be loaded
 	 */
 	public void setSource(File file) {
 		this.file = file;
 		reader = null;
 		tree = null;
-		leaves = new TreeMap<String,PantherID>();
-	
+		leaves = new TreeMap<String,HibPantherID>();
+		matches = null;
 	}
 	
 	public boolean isLoadRequired() {
@@ -90,7 +87,7 @@ public class PhyloTreeLoader implements Loader {
 
 		while ((line = reader.readLine()) != null) {
 			String[] kv = line.replaceFirst(".$", "").split(":", 2);
-			leaves.put(kv[0], new PantherID(kv[1].replace('=', ':')));
+			leaves.put(kv[0], new HibPantherID(kv[1].replace('=', ':')));
 		}
 		
 		/*
@@ -154,12 +151,39 @@ public class PhyloTreeLoader implements Loader {
 	 * 
 	 * @return a collection of PantherID classes that are the leaves of the Panther tree.
 	 */
-	public Collection<PantherID> getLeaves() {
+	public Collection<HibPantherID> getLeaves() {
 		return leaves.values();
 	}
 	
+	public Map<HibPantherID,Bioentity> getBioentities() {
+		if (matches != null) {
+			return matches;
+		}
+		
+		matches = new TreeMap<HibPantherID,Bioentity>();
+		for (HibPantherID pid : this.getLeaves()) {
+
+			Collection<Bioentity> match = pid.bioentityMatch();
+				
+			if (match.isEmpty()) {
+				// for now, only report unmatched PantherIDs if they are refg
+				if (pid.isRefG()) {
+					System.err.println(pid.toString() + " => []");
+				}
+			} else if (1 == match.size()) {
+				Bioentity got = match.iterator().next();
+				matches.put(pid, got);
+			} else {
+				// we matched more then one bioentity
+				System.err.println(pid.toString() + " => " + match);
+			}
+			////////////////////
+		}
+		return matches;
+	}
+	
 	public static void main(String[] args) throws IOException {
-		UniProtSpecies.debug = true;
+		UniProtSpecies.debug = false;
 		TreeFileFilter tff = new TreeFileFilter();
 	
 		Collection<File> files = new TreeSet<File>();
@@ -182,10 +206,9 @@ public class PhyloTreeLoader implements Loader {
 		for (File file : files) {
 			ptl.setSource(file);
 			ptl.loadFromFile();
-			for (PantherID id : ptl.getLeaves()) {
-				//System.out.println(id.toString() + " => " + id.getTaxonNode());
-				id.getTaxonNode();
-			}
+			System.out.println(ptl.getBioentities());
+			
+
 			//System.out.println(tree.toString());
 		}
 		
