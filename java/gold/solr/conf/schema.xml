@@ -245,7 +245,7 @@
 
     <!-- Lead: (both): (term_synonym.acc_synonym|BUG: not implemented for gp) -->
     <!-- Gene: obj_alternate_label.label[obj=$gene] -->
-    <!-- Ont:  obj_alternate_label.label[obj=$cls] -->
+    <!-- Ont:  obj_alternate_id.id[obj=$cls] -->
     <field name="alternate_id"
 	   type="string"
 	   indexed="true"
