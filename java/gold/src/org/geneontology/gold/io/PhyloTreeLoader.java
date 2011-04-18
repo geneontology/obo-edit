@@ -172,12 +172,12 @@ public class PhyloTreeLoader implements Loader {
 				}
 			} else if (1 == match.size()) {
 				Bioentity got = match.iterator().next();
+				// check species id someplace here
 				matches.put(pid, got);
 			} else {
 				// we matched more then one bioentity
 				System.err.println(pid.toString() + " => " + match);
 			}
-			////////////////////
 		}
 		return matches;
 	}
@@ -208,8 +208,6 @@ public class PhyloTreeLoader implements Loader {
 			ptl.loadFromFile();
 			System.out.println(ptl.getBioentities());
 			
-
-			//System.out.println(tree.toString());
 		}
 		
 		System.err.println("All Done.");
