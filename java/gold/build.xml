@@ -71,7 +71,7 @@
 	</target>
 
 	<!-- classes that should appear in the main jar file -->
-	<fileset id="main_jar_contents" dir="${outputdir}" includes="**/*.class,**/resources/**,**/*.hbm.xml" excludes="**/.svn/*" />
+	<fileset id="main_jar_contents" dir="${outputdir}" includes="**/*.class,**/resources/**,**/*.hbm.xml" excludes="**/.svn/*, **/solr/**" />
 
 	<target name="all" depends="clean, classes, jar, apidocs" description="Cleans and rebuilds from scratch">
 	</target>
@@ -246,6 +246,16 @@
 			<war destfile="webcontents/gold.war" webxml="conf/web.xml">
 			</war>
 		</target>
+	
+	
+	<target name="make-solr-serv" depends="classes">		
+	
+		<jar destfile="solr/lib/apiproc.jar"
+		       basedir="${outputdir}"
+				includes="**/solr/**"
+		  />		
+		
+	</target>
 	
 	
 </project>

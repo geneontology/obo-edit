@@ -57,9 +57,13 @@ public class OboOwlApiProcessor extends EntityProcessorBase {
 			
 			GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
 			
+			
+			
 			if(goldDb != null){
 				OWLGraphWrapper graph = goldDb.getGraphWrapper();
 				rowIterator = new RowsIterator(graph);
+				
+				System.out.println("****************Importinng ontology '"+ graph.getOntologyId() +"'****************");
 			}
 		      
 		     ended = true;
