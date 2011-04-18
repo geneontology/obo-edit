@@ -311,9 +311,10 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 			throws IOException{
 		
 		TableDumper table = tables.get("obj_alternate_id");
-		String alt_id = graphWrapper.getAltId(obj);
-		if(alt_id != null){
-			table.dumpRow(id,alt_id);
+		String altIds[] = graphWrapper.getAltId(obj);
+		if(altIds != null){
+			for(String alt_id: altIds)
+				table.dumpRow(id,alt_id);
 		}
 		
 	}
