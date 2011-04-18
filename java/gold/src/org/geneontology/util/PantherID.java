@@ -62,24 +62,47 @@ public class PantherID implements Comparable<PantherID> {
 		return pantherID;
 	}
 	
-	/*
-	public int getNcbiTaxonId() {
-		int out = -1;
+	public int getTaxonNode() {
 		try {
-			out = getTaxonNode();
+			flushNeededSpecies();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.exit(1);
 		}
-		return out;
-	}
-	*/
-	
-	public int getTaxonNode() throws IOException {
-		flushNeededSpecies();
 		return haveSpecies.get(speciesCode).getTaxonNode();
 	}
+
+	int[] getTaxonNodes() {
+		int taxonNode = this.getTaxonNode();
+		switch(taxonNode){
+		case 83333: // ECOLI
+			int[] out = { 83333, 511145 };
+			return out;
+		//break;
+		}
+		int[] out = new int[1];
+		out[0] = taxonNode;
+		return out;
+	}
+	
+	public Collection<String> getIDguesses() {
+		Collection<String> out = new LinkedHashSet<String>();
+
+		switch(this.getTaxonNode()){
+		case 83333: // ECOLI
+			for (String id : this.getIDs()) {
+				if (id.startsWith("ECOLI:")) {
+					String guess = id.replaceFirst("ECOLI:", "EcoCyc:");
+					//System.err.println(id + " ----->" + guess);
+					out.add(guess);
+				}
+			}
+			break;
+		}
+		return out;
+	}
+	
+
 	
 	public Collection<String> getIDs() {
 		return this.IDs;
@@ -98,5 +121,4 @@ public class PantherID implements Comparable<PantherID> {
 		return false;
 	}
 	
-
 }
