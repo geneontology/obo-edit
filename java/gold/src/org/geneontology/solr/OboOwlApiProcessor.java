@@ -160,11 +160,34 @@ public class OboOwlApiProcessor extends EntityProcessorBase {
 		       	String[] synonyms = wrapper.getSynonymStrings(cls);
 			
 			    Map<String, Object> row = new HashMap<String, Object>();
+			    row.put("document_category", "document_category");
 			    row.put("id", id);
 			    row.put("label", label);
 			    row.put("description", def);
-			    row.put("synonym", synonyms);
-		       	
+			    
+			    if(synonyms != null && synonyms.length>0)
+			    	row.put("synonym", synonyms);
+			    
+			    String[] altIds = wrapper.getAltId(cls);
+			    if(altIds != null && altIds.length>0)
+			    	row.put("alternate_id", altIds);
+			    
+			    String[] subsets = wrapper.getSubsets(cls);
+			    
+			    if(subsets != null && subsets.length>0)
+			    	row.put("subset", subsets);
+			    
+			    boolean isObselete = wrapper.getIsObsolete(cls);
+			    if(isObselete){
+			    	row.put("is_obsolete", isObselete);
+			    }
+			    
+			    String comment = wrapper.getComment(cls);
+			    if(comment != null){
+			    	row.put("comment", comment);
+			    }
+
+			    
 			    return row;
 				
 			}
