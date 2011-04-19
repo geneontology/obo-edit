@@ -951,6 +951,7 @@
 		  class="org.apache.solr.handler.dataimport.DataImportHandler">
     <lst name="defaults">
        <str name="config">gold-pg-config.xml</str>
+       <!-- To load through owl api then comment the above config and un comment the below config -->
   <!--   <str name="config">go-data-config.xml</str> -->
     
     </lst>
