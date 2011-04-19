@@ -54,7 +54,8 @@
      <mapping resource="org/geneontology/gaf/hibernate/GafDocument.hbm.xml"/>
      <mapping resource="org/geneontology/gaf/hibernate/WithInfo.hbm.xml"/>
 
-
+	<!-- added by Sven -->
+	<mapping resource="org/geneontology/gold/hibernate/model/Family.hbm.xml"/>
   
  </session-factory>
 </hibernate-configuration>
