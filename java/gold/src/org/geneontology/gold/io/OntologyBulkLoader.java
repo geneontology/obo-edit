@@ -394,11 +394,12 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 	
 	
 	private void dumpObjSubset(OWLObject obj, String id) throws IOException{
-		String subset = graphWrapper.getSubset(obj);
+		String subsets[] = graphWrapper.getSubsets(obj);
 		
-		if(subset != null){
+		if(subsets != null){
 			TableDumper obj_subsetDumper = tables.get("obj_subset");
-			obj_subsetDumper.dumpRow(id, subset);
+			for(String subset: subsets)
+				obj_subsetDumper.dumpRow(id, subset);
 		}
 		
 		

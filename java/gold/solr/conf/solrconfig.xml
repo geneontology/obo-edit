@@ -950,7 +950,9 @@
   <requestHandler name="/dataimport"
 		  class="org.apache.solr.handler.dataimport.DataImportHandler">
     <lst name="defaults">
-      <str name="config">gold-pg-config.xml</str>
+       <str name="config">gold-pg-config.xml</str>
+  <!--   <str name="config">go-data-config.xml</str> -->
+    
     </lst>
   </requestHandler>
   
