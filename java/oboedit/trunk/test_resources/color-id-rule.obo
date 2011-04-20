@@ -1,0 +1,60 @@
+format-version: 1.2
+date: 22:03:2011 16:38
+saved-by: mah79
+auto-generated-by: OBO-Edit 2.1-beta10
+namespace-id-rule: * COLOR:$sequence(7,1,9999999)$
+default-namespace: file:/Applications/OBO-Edit2/test_resources/car3.obo
+
+[Term]
+id: COLOR:0000001
+name: color
+namespace: color
+
+[Term]
+id: COLOR:0000002
+name: blue
+namespace: color
+is_a: COLOR:0000001 ! color
+
+[Term]
+id: COLOR:0000003
+name: red
+namespace: color
+is_a: COLOR:0000001 ! color
+
+[Term]
+id: COLOR:0000004
+name: light blue
+namespace: color
+is_a: COLOR:0000002 ! blue
+
+[Term]
+id: COLOR:0000005
+name: sky blue
+namespace: color
+is_a: COLOR:0000004 ! light blue
+
+[Term]
+id: COLOR:0000006
+name: yellow
+namespace: color
+is_a: COLOR:0000001 ! color
+
+[Term]
+id: COLOR:0000007
+name: lemon yellow
+namespace: color
+is_a: COLOR:0000006 ! yellow
+
+[Term]
+id: COLOR:0000008
+name: magenta
+namespace: color
+is_a: COLOR:0000001 ! color
+
+[Term]
+id: COLOR:0000009
+name: dark blue
+namespace: color
+is_a: COLOR:0000002 ! blue
+
