@@ -35,3 +35,15 @@ following links:
 	- http://www.wikihow.com/Generate-Hibernate-Pojo-Classes-from-DB-Tables
 	- http://docs.jboss.org/tools/3.1.0.GA/en/hibernatetools/html/reverseengineering.html
 	- http://docs.jboss.org/tools/3.1.0.GA/en/hibernatetools/html/plugins.html
+	
+###Solr
+
+Solr is pre-configured in the project. To access the solr admin interface visit the url http://localhost:8080/solr/admin.
+Data can be imported in two ways in the solr as:
+
+1) 	Through owl file: To load from OWL file change the configuration under this tag:  <requestHandler name="/dataimport"
+	in the solr/conf/solrconfig.xml file. See comments under the tag how to configure it.
+2)	Through rdbms: See comments under the tag <requestHandler name="/dataimport"
+	in the solr/conf/solrconfig.xml file for detail how to configure this option.
+	
+	

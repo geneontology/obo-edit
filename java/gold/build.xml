@@ -248,6 +248,9 @@
 		</target>
 	
 	
+	
+	<!-- This target builds a jar file for solr. -->
+	
 	<target name="make-solr-serv" depends="classes">		
 	
 		<jar destfile="solr/lib/apiproc.jar"

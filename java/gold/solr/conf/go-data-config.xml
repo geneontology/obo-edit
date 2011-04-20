@@ -1,49 +1,13 @@
 <dataConfig>
   <dataSource type="FileDataSource" /> 
 
+<!-- 
+	This data source load index from OWL file. See the OboOwlApiProcessor.java file for detail.
+ -->
  <document>
         <entity name="goterms"
-                processor="org.geneontology.solr.OboOwlApiProcessor"
-                path="/Users/shaid/work/go/java/gold/test_resources/caro.obo"
-                >
-          <!--    <field column="id"        name="id" />
-            <field column="lable"     name="label" />-->
+                processor="org.geneontology.solr.OboOwlApiProcessor">
        </entity>
         </document>
 
 </dataConfig>
-<!-- <dataConfig>
-  <dataSource type="JdbcDataSource" 
-              driver="com.mysql.jdbc.Driver"
-              url="jdbc:mysql://localhost/go_latest_lite"
-	      batchSize="-1"
-              user="sjcarbon" 
-              password=""/>
-  <document>
-    <entity name="term" 
-            query="SELECT term.id, term.acc AS idkey, term.name AS label, term.name AS descriptive_name, term.term_type AS type, term.term_type AS source, term.is_obsolete AS is_obsolete FROM term">
-      <field column="id" name="nothing" />
-      <field column="idkey" name="id" />
-      <entity name="term_synonym"
-              query="SELECT term_synonym.term_synonym AS synonym, term_synonym.acc_synonym AS alternate_id FROM term_synonym WHERE term_synonym.term_id='${term.id}'"/>
-      <entity name="term_definition" 
-              query="SELECT term_definition.term_definition AS description, term_definition.term_comment AS comment FROM term_definition WHERE term_definition.term_id='${term.id}'"/>
-      <entity name="term_subset" 
-              query="SELECT sterm.name AS subset FROM term_subset, term AS sterm WHERE (term_subset.subset_id = sterm.id) AND term_subset.term_id='${term.id}'"/>
-      <entity name="term_ancestors" 
-              query="SELECT DISTINCT aterm.acc AS term_closure FROM graph_path, term AS aterm WHERE aterm.id = graph_path.term1_id AND aterm.acc != 'all' AND graph_path.term2_id = '${term.id}'"/>
-    </entity>
-    <entity name="gene_product"
-            query="SELECT gene_product.id, symbol AS label, full_name AS descriptive_name, ncbi_taxa_id AS taxon, term.name AS type, concat(dbxref.xref_dbname, ':', dbxref.xref_key) AS idkey, dbxref.xref_dbname AS source FROM gene_product, species, term, dbxref WHERE gene_product.species_id=species.id AND gene_product.type_id=term.id AND gene_product.dbxref_id=dbxref.id">
-      <field column="id" name="nothing" />
-      <field column="idkey" name="id" />
-      <entity name="gene_product_synonym" 
-              query="SELECT gene_product_synonym.product_synonym AS synonym FROM gene_product_synonym WHERE gene_product_synonym.gene_product_id='${gene_product.id}'"/>
-      <entity name="direct_associations"
-              query="SELECT DISTINCT term.acc AS direct_annotation FROM gene_product AS gp2, association, term WHERE gp2.id = association.gene_product_id AND association.term_id = term.id AND association.is_not = 0 AND gene_product_id='${gene_product.id}'"/>
-      <entity name="all_associations"
-              query="SELECT DISTINCT term.acc AS annotation_closure FROM gene_product AS gp2, association, graph_path, term WHERE gp2.id = association.gene_product_id AND association.term_id = graph_path.term2_id AND graph_path.term1_id = term.id AND association.is_not = 0 AND term.acc != 'all' AND gene_product_id='${gene_product.id}'"/>
-    </entity>
-  </document>
-</dataConfig>
--->
