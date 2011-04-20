@@ -909,7 +909,9 @@ FieldCheck {
 
 			char finalChar = text.charAt(text.length() - 1);
 			if (doFinalPunctuationCheck(condition)
-					&& !(finalChar == '?' || finalChar == '.' || finalChar == '!')) {
+                            && !(finalChar == '?' || finalChar == '.' || finalChar == '!')
+                            // It was complaining about sentences that ended with "et al."
+                            && !(text.lastIndexOf("et al.") == text.length() - 7)) {
 				Collection<QuickFix> fixes = new ArrayList<QuickFix>();
 				fixes.add(new ReplacementFix("End sentence with a period",
 						path, text + "."));
@@ -980,6 +982,11 @@ FieldCheck {
 									break;
 							String secondWord = text.substring(i + 1,
 									secondWordIndex);
+                                                        // "et al." can be followed by punctuation (e.g., a comma).
+                                                        if (firstWord.indexOf("al.") >= 0) {
+//                                                          logger.debug("firstWord = " + firstWord + ", secondWord = " + secondWord); // DEL
+                                                          break;
+                                                        }
 							fixes
 							.add(new ReplacementFix(
 									"Add the missing space between \""
