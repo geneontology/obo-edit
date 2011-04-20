@@ -809,8 +809,11 @@ FieldCheck {
 										arg0.getInvalidWord());
 								// Add this word to the user defined dictionary: user.dict
 								saveWord(arg0.getInvalidWord(), Preferences.getUserDefDictionaryFile());
-								// refresh Text Editor to reflect changes
-								Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
+								// refresh Text Editor to reflect changes (so that red word will turn black)
+								// NO--can't do this because if we're in autocommit mode, it throws out any edits the user has made.
+								// For now, we'll just have to live with the newly-added word staying red until user does something
+								// that causes a commit (or moves to another term and then back).
+								// Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 							}
 						};
 
@@ -823,8 +826,11 @@ FieldCheck {
 										arg0.getInvalidWord());
 								// Add this word to the standard dictionary: standard.dict
 								saveWord(arg0.getInvalidWord(), Preferences.getStandardDictionaryFile());
-								// refresh Text Editor to reflect changes
-								Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
+								// refresh Text Editor to reflect changes (so that red word will turn black)
+								// NO--can't do this because if we're in autocommit mode, it throws out any edits the user has made.
+								// For now, we'll just have to live with the newly-added word staying red until user does something
+								// that causes a commit (or moves to another term and then back).
+								// Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 							}
 						};
 
