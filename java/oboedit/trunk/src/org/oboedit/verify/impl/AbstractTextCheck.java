@@ -43,7 +43,7 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 FieldCheck {
 
 	//	initialize logger
-	protected final static Logger logger = Logger.getLogger(CycleCheck.class);
+	protected final static Logger logger = Logger.getLogger(AbstractTextCheck.class);
 
 	public static class TooManyWarningsException extends RuntimeException {
 		protected Collection<CheckWarning> warnings;
