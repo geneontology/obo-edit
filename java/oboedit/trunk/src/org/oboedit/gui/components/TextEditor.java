@@ -104,6 +104,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 
 	protected ReconfigListener reconfigListener = new ReconfigListener() {
 
+		// Note that calling this seems to flush uncommitted edits!
 		public void configReloaded(ReconfigEvent e) {
 			reload();
 			setObject(getObject());
@@ -480,7 +481,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 	};
 
 	protected boolean runChecksAndCommit() {
-//		logger.debug("runChecksAndCommit: object = " + currentObject + ", hasChanges = " + hasChanges()); // DEL
+	    //		logger.debug("runChecksAndCommit: object = " + currentObject + ", hasChanges = " + hasChanges()); // DEL
 		if (currentObject == null || !hasChanges())
 			return true;
 		PostcompUtil.getNameExpression(currentObject, true);
