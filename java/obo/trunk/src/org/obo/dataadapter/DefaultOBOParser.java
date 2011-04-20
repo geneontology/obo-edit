@@ -742,6 +742,13 @@ public class DefaultOBOParser implements OBOParser {
 					+ " which does not support secondary " + "IDs.",
 					getCurrentPath(), engine.getCurrentLine(), engine
 					.getLineNum());
+                if (currentObject.getID().equals(id)) {
+                    // GO curators said this should be a fatal error.  --NH, 5/20/11
+		    throw new OBOParseException("alternate ID " + id + " is the same as the primary ID",
+						getCurrentPath(), engine.getCurrentLine(), engine
+						.getLineNum());
+                }
+
 		((MultiIDObject) currentObject).addSecondaryID(id);
 		if (nv != null)
 			((MultiIDObject) currentObject).addSecondaryIDExtension(id, nv);
@@ -1618,7 +1625,7 @@ public class DefaultOBOParser implements OBOParser {
 
 			if (!(subject instanceof ObsoletableObject)) {
 				throw new OBOParseException("Attempted to assign "
-						+ "replaced_by " + "value to non-obsoletable "
+						+ "replaced_by value to non-obsoletable "
 						+ "object " + subject, bm.getPath(), bm.getLine(), bm
 						.getLineNum());
 			}
@@ -1643,6 +1650,11 @@ public class DefaultOBOParser implements OBOParser {
 						+ "non-obsoletable value " + object, bm.getPath(), bm
 						.getLine(), bm.getLineNum());
 			}
+
+			if (object.getID().equals(subject.getID())) {
+			    throw new OBOParseException("replaced_by is the same as the ID for term " + subject.getID() + ".",
+							bm.getPath(), bm.getLine(), bm.getLineNum());
+			}
 			/*
 			 * ((ObsoletableObject) subject).
 			 * addConsiderRelacement((ObsoletableObject) object); if
@@ -1665,7 +1677,7 @@ public class DefaultOBOParser implements OBOParser {
 			if (((ObsoletableObject) object).isObsolete() && failFast)
 				throw new OBOParseException("Attempted to specify "
 						+ "obsolete value " + object + " for "
-						+ "replaced_by tag.", bm.getPath(), bm.getLine(), bm
+							    + "replaced_by tag for term " + subject.getID() + ".", bm.getPath(), bm.getLine(), bm
 						.getLineNum());
 
 			((ObsoletableObject) subject)
