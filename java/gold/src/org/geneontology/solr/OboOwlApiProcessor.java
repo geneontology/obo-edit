@@ -1,8 +1,11 @@
 package org.geneontology.solr;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.handler.dataimport.Context;
@@ -10,7 +13,10 @@ import org.apache.solr.handler.dataimport.EntityProcessorBase;
 import org.geneontology.web.services.GoldDbOperationsService;
 import org.geneontology.web.services.ServicesConfig;
 import org.semanticweb.owlapi.model.OWLClass;
+
+import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
+import owltools.graph.OWLQuantifiedProperty;
 
 /**
  * This import ontology from obo file into Solr. It uses OWL API with the
@@ -18,6 +24,11 @@ import owltools.graph.OWLGraphWrapper;
  * The instance of this class is created by Solr. Its nextRow method is called repeatedly
  * during data import until null value is returned. The class is needed to be configured in the  
  * solr/go-owl-config.xml.
+ * 
+ * 
+ * This file has to be packaged in a separate jar which is placed in the solr/lib directory. Use the target "make-solr-serv" in
+ * the build.xml file to build the jar.
+ * 
  * @author Shahid Manzoor
  *
  */
@@ -45,15 +56,6 @@ public class OboOwlApiProcessor extends EntityProcessorBase {
 	  public Map<String, Object> nextRow() {
 
 		if(rowIterator  == null && !ended){	  
-			 /* System.out.println("path1*********************************************");
-			  if (ended) return null;
-			DataSource<Reader> ds = context.getDataSource();
-		    String path = context.getVariableResolver().replaceTokens(context.getEntityAttribute("path"));
-		    System.out.println("path2*********************************************");
-		    Reader r = null;
-		    try {
-		      r = ds.getData(path);
-		      OWLGraphWrapper wrapper = getGraphWrapper(r);*/
 			
 			GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
 			
@@ -68,43 +70,10 @@ public class OboOwlApiProcessor extends EntityProcessorBase {
 		      
 		     ended = true;
 		      
-		    /*} catch (Exception e) {
-		      if (ABORT.equals(onError)) {
-		        wrapAndThrow(SEVERE, e, "Exception reading url : " + path);
-		      }
-		    }*/
 		}
 		
 		return getNext();
 	    
-	    
-	    
-	    /*
-	    StringWriter sw = new StringWriter();
-	    char[] buf = new char[1024];
-	    while (true) {
-	      int len = 0;
-	      try {
-	        len = r.read(buf);
-	      } catch (IOException e) {
-	        if (ABORT.equals(onError)) {
-	          wrapAndThrow(SEVERE, e, "Exception reading url : " + url);
-	        } else {
-	          LOG.warn("IOException while reading from data source", e);
-	          return null;
-	        }
-	      }
-	      if (len <= 0) break;
-	      sw.append(new String(buf, 0, len));
-	    }*/
-	   /* Map<String, Object> row = new HashMap<String, Object>();
-	    row.put("id", "id123");
-	    row.put("name", "label123");
-	    row.put("label", "label123");
-	    row.put("type", "label123");
-
-	    ended = true;
-	    return row;*/
 	  }
 	  
 	  /**
@@ -187,7 +156,69 @@ public class OboOwlApiProcessor extends EntityProcessorBase {
 			    	row.put("comment", comment);
 			    }
 
+			    //getting values for the isa_partof_closure, isa_partof_label_closure and regulates_closure fields
+				Set<OWLGraphEdge> outgoing = wrapper.getOutgoingEdges(cls);
+				List<String> closureIdList = new ArrayList<String>();
+				List<String> closureLabelList = new ArrayList<String>();
+				List<String> regulatesList = new ArrayList<String>();
+				List<String> regulatesLabelList = new ArrayList<String>();
+				
+				
+				for(OWLGraphEdge edge: outgoing){
+					
+					if(edge.getQuantifiedPropertyList().size()>1){
+					}else{
+						OWLQuantifiedProperty prop = edge.getSingleQuantifiedProperty();
+						String targetId = wrapper.getIdentifier( edge.getTarget() );
+						String targetLabel = wrapper.getLabel(edge.getTarget());
+
+						
+						if( prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.SOME ||
+								prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.SUBCLASS_OF ){
+							
+							if(targetId != null)
+								closureIdList.add(targetId);
+							
+							if(targetLabel != null)
+								closureLabelList.add(targetLabel);
+							
+							if(prop.getQuantifier() == OWLQuantifiedProperty.Quantifier.SOME){
+								String propId = wrapper.getIdentifier(prop.getProperty());
+							
+								
+								if("go:regulates".equals(propId)){
+
+									if(targetId != null)
+										regulatesList.add(targetId);
+									if(targetLabel != null){
+										regulatesLabelList.add(targetLabel);
+									}
+									
+								}
+							}
+						}
+						
+					}
+						
+				}
+				
+				if(closureIdList.size()>0){
+			    	row.put("isa_partof_closure", closureIdList.toArray());
+				}
+				
+				if(closureLabelList.size()>0){
+			    	row.put("isa_partof_label_closure", closureLabelList.toArray());
+				}
 			    
+			    if(regulatesList.size()>0){
+			    	row.put("regulates_closure", regulatesList.toArray());
+
+			    }
+			    
+			    if(regulatesLabelList.size()>0){
+			    	row.put("regulates_label_closure", regulatesLabelList.toArray());
+			    }
+				
 			    return row;
 				
 			}
