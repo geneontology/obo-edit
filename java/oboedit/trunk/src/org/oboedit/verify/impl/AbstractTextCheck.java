@@ -983,9 +983,10 @@ FieldCheck {
 							String secondWord = text.substring(i + 1,
 									secondWordIndex);
                                                         // "et al." can be followed by punctuation (e.g., a comma).
-                                                        if (firstWord.indexOf("al.") >= 0) {
-//                                                          logger.debug("firstWord = " + firstWord + ", secondWord = " + secondWord); // DEL
-                                                          break;
+                                                        if (firstWord.indexOf("al.") >= 0 ||
+							    // "www." doesn't require a space after it--don't complain about lack of whitespace.
+							    firstWord.indexOf("www.") >= 0) {
+							    break;
                                                         }
 							fixes
 							.add(new ReplacementFix(
