@@ -1,13 +1,47 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 =================================
-What's New in OBO-Edit v2.1-beta11
+What's New in OBO-Edit v2.1-beta12
 =================================
 
 Bug fixes:
-[ geneontology-Bugs-3203198 ] Words added to dictionary in unedited term don't
-  turn black immediately
+[ geneontology-Bugs-3256917 ] parent/child search problem in 2.1-b11
+- In 2.1-b11, when I try either 'Parent' or 'Child', the search box stops
+working. The Self/Root/Parent/Child selector blanks out, and hitting the
+'Search' button does nothing. I can no longer do anything with that search
+panel (but if I close it and open a new one, the new panel behaves OK for
+'Self' searches).
+[ geneontology-Bugs-3265595 ] Configuration manager not opening?
+- Configuration Manager wouldn't open on some Linuxes.
+[ geneontology-Bugs-3288972 ] The string "et al.," causes warning about whitespace
+- (I also exempted "www." from this complaint.)
+[ geneontology-Bugs-3288972 ] Infinite loop while loading fly_anatomy_XP -> can't save
+- The problem in fly_anatomy_XP.obo turned out to be that a term
+(FBbt:00001913) has an alt_id that is the same as its id.  When the
+obo parser is reading or getting ready to save the ontology, the
+verification check looks at FBbt:00001913 and then recursively looks
+at its alt_id to make sure it's ok, and thus it ends up in an infinite
+loop.
+I have fixed this with a two-pronged approach:
+1. At the recommendation of the OBO-Edit Working Group, the parser now
+throws a fatal exception if the alt_id (or replaced_by) is the same as
+the primary ID.
+2. The place in the verifier where it was going into an infinite loop
+now checks for that redundancy before recursing.
+- [ geneontology-Bugs-3289552 ] adding words to dictionary removes uncommitted text edits
+Unfortunately, this fix involved undoing a change I had made that fixed another, more minor bug:
+[ geneontology-Bugs-3203198 ] Words added to dictionary in unedited term don't turn black immediately.
+For now, we'll just have to live with the newly-added-to-dictionary word staying red until user does
+something that causes a commit (or moves to another term and then back).
 
+
+
+=================================
+What's New in OBO-Edit v2.1-beta11 (3/24/2011)
+=================================
+
+Bug fixes
+----------
 [ geneontology-Bugs-1899612] Some filters give wrong answers unless reasoner turned on
 [ geneontology-Bugs-3169726] Search term Filter returning wrong results
 - Since the Ancestor and Descendent aspects don't work unless the reasoner is
@@ -25,7 +59,8 @@ some newer explanation types (just the question, "Why is this link in the
 ontology?").  Now they show raw explanations for any explanation types that
 don't have a pretty form defined.
 
-Minor changes/improvements/additions to documentation:
+Minor changes/improvements/additions to documentation
+-----------------------------------------------------
 Made Configuration manager window a bit bigger so nothing is cut off.
 
 Not all the "Show warnings" checkboxes were visible with the Verification
