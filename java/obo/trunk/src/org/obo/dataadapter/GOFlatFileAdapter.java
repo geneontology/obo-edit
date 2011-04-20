@@ -1924,7 +1924,9 @@ public class GOFlatFileAdapter implements OBOAdapter {
 		return history;
 	}
 
+  // Is this ever called?
 	public OBOProperty getDefaultType() {
+          System.out.println("getDefaultType: returning IS_A"); // DEL
 		return OBOProperty.IS_A;
 	}
 
