@@ -1,15 +1,21 @@
 package org.geneontology.gold.io;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.zip.GZIPInputStream;
 
 import java.util.*;
 
-import org.geneontology.util.*;
-import org.geneontology.gaf.hibernate.*;
-
 import org.forester.io.parsers.nhx.NHXParser;
 import org.forester.phylogeny.Phylogeny;
+
+import org.geneontology.util.*;
+import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.gaf.hibernate.Bioentity;
+
+import org.geneontology.gold.hibernate.model.Family;
+import org.geneontology.gold.io.TableDumper;
+import org.geneontology.gold.io.postgres.TsvFileLoader;
 
 /**
  * loads phylogenetic trees into database
@@ -103,11 +109,21 @@ public class PhyloTreeLoader implements Loader {
 		return "[title:" + tree.getName() + ']' + tree.toString();
 	}
 	
+	
+	
 	/**
-	 * @return The name of the Panther cluster.
+	 * @return The name of the Panther cluster. Suitable for the family.label column?
 	 */
 	public String getName() {
 		return tree.getName();
+	}
+	
+	/**
+	 * @return Name suitable for family.id column.
+	 */
+	public String getId() {
+		String id = file.getName();
+		return "PANTHER:" + id.substring(0, id.indexOf('.'));
 	}
 	
 	/**
@@ -182,7 +198,7 @@ public class PhyloTreeLoader implements Loader {
 		return matches;
 	}
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, SQLException, ClassNotFoundException {
 		UniProtSpecies.debug = false;
 		TreeFileFilter tff = new TreeFileFilter();
 	
@@ -201,21 +217,52 @@ public class PhyloTreeLoader implements Loader {
 		} else {
 			System.err.println("Will load " + files.size() + " files");
 		}
-		
+
 		PhyloTreeLoader ptl = new PhyloTreeLoader();
+		
+		List<String> tableList = new Vector<String>(2);
+		tableList.add("family");
+		tableList.add("family_member");	
+		final String tsvDir = "/tmp"; // "/dev/shm";
+		TableDumper familyDumper        = new TableDumper(tableList.get(0), tsvDir);
+		TableDumper familyMemberDumper = new TableDumper(tableList.get(1), tsvDir);
+		
 		for (File file : files) {
 			ptl.setSource(file);
 			ptl.loadFromFile();
-			System.out.println(ptl.getBioentities());
+
+			System.err.println(ptl.getId());
+			Family f = new Family(ptl.getId());
+			f.setLabel(ptl.getName());
 			
+			familyDumper.dumpRow(ptl.getId(), ptl.getName(), null, "2011-04-21");
+			for (Bioentity be : ptl.getBioentities().values()) {
+				familyMemberDumper.dumpRow(ptl.getId(), be.getId());
+			}
+		
 		}
+		familyDumper.close();
+		familyMemberDumper.close();
+		
+		GeneOntologyManager manager = GeneOntologyManager.getInstance();
+		TsvFileLoader tsvLoader = new TsvFileLoader(manager.getGolddbUserName(),
+				manager.getGolddbUserPassword(), manager.getGolddbHostName(), 
+				manager.getGolddbName());
+		tsvLoader.loadTables(tsvDir, tableList);
+		
+		//GeneOntologyManager manager = GeneOntologyManager.getInstance();
 		
 		System.err.println("All Done.");
 	}
 
-
+	/*
+	private TableDumper createDumper(String tablename) throws IOException{
+		return new TableDumper(this.prefix + tablename, this.outputPath);
+	}
+	*/
+	
 	static public class TreeFileFilter implements FileFilter {
-		private final String[] suffixes = { ".tree", ".tree.gz" };
+		private final String[] suffixes = { ".tree.gz", ".tree" };
 		
 		public boolean accept(File pathname) {
 			if (pathname.isDirectory()) {
