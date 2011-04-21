@@ -424,6 +424,11 @@ public class IDUtil {
 			for (ObsoletableObject oo : ((ObsoletableObject) obj)
 					.getConsiderReplacements()) {
 				boolean isReplacementDangling = session.getObject(oo.getID()) == null;
+                                // WARNING--calling getWarning recursively can potentially send you into an infinite loop!
+                                if (oo.getID().equals(id)) {
+                                    logger.info("Consider ID " + oo.getID() + " is the same as primary ID " + id + "--not recursing");
+                                    continue;
+                                }
 				IDWarning rw = getWarning(oo.getID(), isReplacementDangling,
 						session, multiIDMap);
 				if (rw == null) {
@@ -442,6 +447,11 @@ public class IDUtil {
 			for (ObsoletableObject oo : ((ObsoletableObject) obj)
 					.getReplacedBy()) {
 				boolean isReplacementDangling = session.getObject(oo.getID()) == null;
+                                // WARNING--calling getWarning recursively can potentially send you into an infinite loop!
+                                if (oo.getID().equals(id)) {
+                                    logger.info("Replacement ID " + oo.getID() + " is the same as primary ID " + id + "--not recursing");
+                                    continue;
+                                }
 				IDWarning rw = getWarning(oo.getID(), isReplacementDangling,
 						session, multiIDMap);
 				if (rw == null) {
@@ -465,6 +475,15 @@ public class IDUtil {
 			Collection<IDResolution> resolutions = new LinkedList<IDResolution>();
 			for (IdentifiedObject io : terms) {
 				boolean isReplacementDangling = session.getObject(io.getID()) == null;
+                                // WARNING--calling getWarning recursively can potentially send you into an infinite loop!
+                                // This was happening when a term's alternate ID was the
+                                // same as its primary ID.  That is now handled in the parser (which
+                                // throws an exception in that case)
+                                // but watch out for other possible cycle-causing situations.
+                                if (io.getID().equals(id)) {
+                                    logger.info("Alternate ID " + io.getID() + " is the same as primary ID " + id + "--not recursing");
+                                    continue;
+                                }
 				IDWarning rw = getWarning(io.getID(), isReplacementDangling,
 						session, multiIDMap);
 				if (rw == null) {
