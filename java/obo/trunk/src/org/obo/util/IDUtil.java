@@ -425,6 +425,8 @@ public class IDUtil {
 					.getConsiderReplacements()) {
 				boolean isReplacementDangling = session.getObject(oo.getID()) == null;
                                 // WARNING--calling getWarning recursively can potentially send you into an infinite loop!
+                                // This test prevents a tight loop (calling getWarning on the same object again)
+                                // but it's still possible to loop infinitely if there's some sort of cycle.
                                 if (oo.getID().equals(id)) {
                                     logger.info("Consider ID " + oo.getID() + " is the same as primary ID " + id + "--not recursing");
                                     continue;
@@ -448,6 +450,8 @@ public class IDUtil {
 					.getReplacedBy()) {
 				boolean isReplacementDangling = session.getObject(oo.getID()) == null;
                                 // WARNING--calling getWarning recursively can potentially send you into an infinite loop!
+                                // This test prevents a tight loop (calling getWarning on the same object again)
+                                // but it's still possible to loop infinitely if there's some sort of cycle.
                                 if (oo.getID().equals(id)) {
                                     logger.info("Replacement ID " + oo.getID() + " is the same as primary ID " + id + "--not recursing");
                                     continue;
