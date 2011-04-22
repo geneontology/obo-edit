@@ -6,9 +6,20 @@ package org.geneontology.gold.hibernate.model;
  * @author Shahid Manzoor
  *
  */
-public class NeverSomeRelationship extends GOModel implements java.io.Serializable {
+public class NeverSomeRelationship extends ExistentialRelation implements java.io.Serializable {
 
-	private Cls cls;
+	public NeverSomeRelationship() {
+		super();
+	}
+
+	public NeverSomeRelationship(String cls, String relation, String targetCls,
+			String ontology) {
+		super(cls, relation, targetCls, ontology);
+	}
+
+	
+	
+	/*private Cls cls;
 	private Cls targetCls;
 	private Relation relation;
 	private Ontology ontology;
@@ -57,6 +68,6 @@ public class NeverSomeRelationship extends GOModel implements java.io.Serializab
 
 	public void setOntology(Ontology ontology) {
 		this.ontology = ontology;
-	}
+	}*/
 
 }

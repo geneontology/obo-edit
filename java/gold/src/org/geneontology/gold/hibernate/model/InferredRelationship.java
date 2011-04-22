@@ -8,22 +8,27 @@ package org.geneontology.gold.hibernate.model;
  */
 public class InferredRelationship extends GOModel implements java.io.Serializable {
 
-	private Cls cls;
-	private Cls targetCls;
-	private Relation relation;
+	private String cls;
+	private String targetCls;
+	private String relation;
 	private Boolean isDirect;
 	private Boolean isReflexive;
-	private Ontology ontology;
+	private String ontology;
 	private String quantifier;
+	
+	private Cls clsObject;
+	private Relation relationObject;
+	private Cls targetClsObject;
+	private Ontology ontologyObject;
 	
 	public InferredRelationship() {
 		String uniqueKeys[] = {"cls", "targetCls", "relation", "ontology"};
 		this.initUniqueConstraintFields(InferredRelationship.class, uniqueKeys);
 	}
 
-	public InferredRelationship(Cls cls, Cls targetCls,
-			Relation relation, Boolean isDirect, Boolean isReflexive,
-			Ontology ontology, String quantifier) {
+	public InferredRelationship(String cls, String targetCls,
+			String relation, Boolean isDirect, Boolean isReflexive,
+			String ontology, String quantifier) {
 		this();
 		this.cls = cls;
 		this.targetCls = targetCls;
@@ -42,27 +47,27 @@ public class InferredRelationship extends GOModel implements java.io.Serializabl
 		this.quantifier = quantifier;
 	}
 
-	public Cls getCls() {
+	public String getCls() {
 		return this.cls;
 	}
 
-	public void setCls(Cls cls) {
+	public void setCls(String cls) {
 		this.cls = cls;
 	}
 
-	public Cls getTargetCls() {
+	public String getTargetCls() {
 		return this.targetCls;
 	}
 
-	public void setTargetCls(Cls targetCls) {
+	public void setTargetCls(String targetCls) {
 		this.targetCls = targetCls;
 	}
 
-	public Relation getRelation() {
+	public String getRelation() {
 		return this.relation;
 	}
 
-	public void setRelation(Relation relation) {
+	public void setRelation(String relation) {
 		this.relation = relation;
 	}
 
@@ -82,12 +87,46 @@ public class InferredRelationship extends GOModel implements java.io.Serializabl
 		this.isReflexive = isReflexive;
 	}
 
-	public Ontology getOntology() {
+	public String getOntology() {
 		return this.ontology;
 	}
 
-	public void setOntology(Ontology ontology) {
+	public void setOntology(String ontology) {
 		this.ontology = ontology;
 	}
+	
+	public Cls getClsObject() {
+		if(clsObject == null && clsObject != null){
+			clsObject = (Cls) getHibernateObject(Cls.class, "id", getCls());			
+		}
+		
+		return clsObject;
+	}
+
+	public Relation getRelationObject() {
+		if(relationObject == null && relationObject != null){
+			relationObject =(Relation) getHibernateObject(Relation.class, "id", getRelation());
+		}
+		
+		return relationObject;
+	}
+
+	public Cls getTargetClsObject() {
+		if(targetClsObject == null && targetCls != null){
+			targetClsObject = (Cls)getHibernateObject(Cls.class, "id", getTargetCls());
+		}
+		
+		return targetClsObject;
+	}
+
+
+	public Ontology getOntologyObject() {
+		if(ontologyObject == null && ontology != null){
+			ontologyObject =(Ontology) getHibernateObject(Ontology.class, "id", this.ontology);
+		}
+		
+		return ontologyObject;
+	}
+	
 
 }

@@ -4,11 +4,17 @@
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.AllOnlyRelationship" table="all_only_relationship">
         <composite-id>
-	       <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
+	    <!--     <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
 	       <key-many-to-one name="targetCls" class="org.geneontology.gold.hibernate.model.Cls" column="target_cls" />
 	       <key-many-to-one name="cls" class="org.geneontology.gold.hibernate.model.Cls" column="cls" />
 	       <key-many-to-one name="relation" class="org.geneontology.gold.hibernate.model.Relation" column="relation" />
-            
+            -->
+
+	       <key-property name="ontology" column="ontology" type="string" />
+	       <key-property name="targetCls" column="target_cls" />
+	       <key-property name="cls" column="cls" type="string"/>
+	       <key-property name="relation" column="relation" type="string"/>
+
         </composite-id>
     </class>
 </hibernate-mapping>

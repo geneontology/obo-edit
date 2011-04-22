@@ -7,10 +7,13 @@ package org.geneontology.gold.hibernate.model;
  */
 public class OntologyAnnotation extends GOModel implements java.io.Serializable {
 
-	private Ontology ontology;
+	private String ontology;
 	private String property;
 	private String annotationValue;
 
+	private Ontology ontologyObject;
+	
+	
 	public OntologyAnnotation() {
 		
 		String keys[] = {"ontology", "property", "annotationValue"};
@@ -19,7 +22,7 @@ public class OntologyAnnotation extends GOModel implements java.io.Serializable 
 		
 	}
 
-	public OntologyAnnotation(Ontology ontology, String property,
+	public OntologyAnnotation(String ontology, String property,
 			String annotationValue) {
 		this();
 		this.ontology = ontology;
@@ -27,11 +30,11 @@ public class OntologyAnnotation extends GOModel implements java.io.Serializable 
 		this.annotationValue = annotationValue;
 	}
 
-	public Ontology getOntology() {
+	public String getOntology() {
 		return this.ontology;
 	}
 
-	public void setOntology(Ontology ontology) {
+	public void setOntology(String ontology) {
 		this.ontology = ontology;
 	}
 
@@ -50,5 +53,14 @@ public class OntologyAnnotation extends GOModel implements java.io.Serializable 
 	public void setAnnotationValue(String annotationValue) {
 		this.annotationValue = annotationValue;
 	}
+	
+	public Ontology getOntologyObject() {
+		if(ontologyObject == null && ontology != null){
+			ontologyObject =(Ontology) getHibernateObject(Ontology.class, "id", this.ontology);
+		}
+		
+		return ontologyObject;
+	}
+	
 
 }

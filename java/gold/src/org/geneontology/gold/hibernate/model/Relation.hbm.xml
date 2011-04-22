@@ -16,19 +16,13 @@
             </column>
         </property>
         
-         <many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" fetch="select" not-null="false">
+         <property name="ontology" type="string">
             <column name="ontology">
                 <comment>The ontology to which this class belongs.Examples: "GO", "CL". References ontology.idMAPPINGS:OBO: the idspace for the term idOWL: ontologyLEAD:
                 n/a</comment>
             </column>
-        </many-to-one>
+        </property>
         
-  <!--  -      <property name="ontology" type="string">
-            <column name="ontology">
-                <comment>The ontology to which this relation belongs.Examples: "RO", "GO". References ontology.idMAPPINGS:OBO: the idspace for the term idOWL: ontologyLEAD:
-                n/a</comment>
-            </column>
-        </property>-->
         <property name="oboNamespace" type="string">
             <column name="obo_namespace">
                 <comment>See comments for cls.namespaceMAPPINGS:OBO: term.namespaceOWL: n/aLEAD: term.term_typeExample: "biological_process".</comment>

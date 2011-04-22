@@ -85,8 +85,9 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			String id = rs.getString("id");
-			list.add(goldObjFactory.getClassById(id) );
+			Cls cls = new Cls(rs.getString("id"), rs.getString("label"), rs.getString("ontology"),
+					rs.getString("obo_namespace"), rs.getString("text_comment"), rs.getString("text_definition"), rs.getBoolean("is_obsolete") );
+			list.add(cls );
 		}
 		
 		return list;
@@ -98,17 +99,16 @@ public class GoldDeltaFactory {
 
 		Vector<Relation> list = new Vector<Relation>();
 
-		Session session = goldObjFactory.getSession();
-		
 		ResultSet rs = db.getDelaData("relation");
 		
 		if(rs == null)
 			return list;
 		
 		while(rs.next()){
-			String id = rs.getString("id");
-			//list.add(goldObjFactory.getRelation(id, session) );
-			Relation r = (Relation) session.load(Relation.class, id);
+			Relation r = new Relation(rs.getString("id"), rs.getString("label"), rs.getString("ontology"), 
+					rs.getString("obo_namespace"), rs.getString("text_comment"), rs.getString("text_definition"), 
+					rs.getBoolean("is_transitive"), rs.getBoolean("is_symmetric"), 
+					rs.getBoolean("is_reflexive"), rs.getBoolean("is_obsolete") );
 			list.add(r);
 		}
 		
@@ -128,8 +128,7 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			SubclassOf subc= goldObjFactory.getSubClassOf(rs.getString("ontology"), 
-					rs.getString("super_cls"), rs.getString("cls"));
+			SubclassOf subc= new SubclassOf(rs.getString("ontology"), rs.getString("super_cls"), rs.getString("cls"));
 			list.add(subc);
 		}
 		
@@ -150,8 +149,7 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			SubrelationOf subc= goldObjFactory.getSubrelationOf(rs.getString("ontology"), 
-					rs.getString("super_relation"), rs.getString("relation"));
+			SubrelationOf subc= new SubrelationOf(rs.getString("relation"), rs.getString("super_relation"),  rs.getString("ontology") );
 			list.add(subc);
 		}
 		
@@ -173,8 +171,8 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			ObjAlternateLabel al = goldObjFactory.getObjAlternateLabelByPk(rs.getString("obj"), 
-					rs.getString("label"));
+			ObjAlternateLabel al = new ObjAlternateLabel(rs.getString("obj"), rs.getString("label"), rs.getString("synonym_scope"), 
+					rs.getString("synonym_type"), rs.getString("synonym_xref") );
 			list.add(al);
 		}
 		
@@ -195,7 +193,8 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			OntologyAlternateLabelType al = goldObjFactory.getOntologyAlternateLabelType(rs.getString("id"));
+			OntologyAlternateLabelType al = new OntologyAlternateLabelType(rs.getString("id"), rs.getString("default_scope"), 
+					rs.getString("description") );
 			list.add(al);
 		}
 		
@@ -217,8 +216,8 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			NeverSomeRelationship asr = goldObjFactory.getNeverSomeRelationship(rs.getString("ontology"), 
-					rs.getString("target_cls"), rs.getString("cls"), rs.getString("relation"));
+			NeverSomeRelationship asr = new NeverSomeRelationship(rs.getString("cls"), rs.getString("relation"), 
+					rs.getString("target_cls"), rs.getString("ontology") );
 			list.add(asr);
 		}
 		
@@ -240,8 +239,8 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			AllOnlyRelationship asr = goldObjFactory.getAllOnlyRelationship(rs.getString("ontology"), 
-					rs.getString("target_cls"), rs.getString("cls"), rs.getString("relation"));
+			AllOnlyRelationship asr = new AllOnlyRelationship(rs.getString("cls"), rs.getString("relation"), 
+					rs.getString("targetCls"), rs.getString("ontology") );
 			list.add(asr);
 		}
 		
@@ -263,8 +262,8 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			AllSomeRelationship asr = goldObjFactory.getAllSomeRelationship(rs.getString("ontology"), 
-					rs.getString("target_cls"), rs.getString("cls"), rs.getString("relation"));
+			AllSomeRelationship asr = new AllSomeRelationship(rs.getString("cls"), rs.getString("relation"), 
+					rs.getString("target_cls"), rs.getString("ontology"));
 			list.add(asr);
 		}
 		
@@ -286,8 +285,7 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			ObjXref objxref = goldObjFactory.getObjXref(rs.getString("obj"), 
-					rs.getString("xref"));
+			ObjXref objxref = new ObjXref(rs.getString("obj"), rs.getString("xref"), rs.getString("xref_description") );
 			list.add(objxref);
 		}
 		return list;
@@ -308,8 +306,7 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			ObjDefinitionXref objxref = goldObjFactory.getObjDefinitionXref(rs.getString("obj"), 
-					rs.getString("xref"));
+			ObjDefinitionXref objxref = new ObjDefinitionXref(rs.getString("obj"), rs.getString("xref"));
 			list.add(objxref);
 		}
 		return list;
@@ -332,8 +329,7 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			RelationEquivalenTo equiv = goldObjFactory.getRelationEquivalenTo(rs.getString("relation"), 
-					rs.getString("equivalent_relation"), 
+			RelationEquivalenTo equiv = new RelationEquivalenTo(rs.getString("relation"), rs.getString("equivalent_relation"), 
 					rs.getString("ontology"));
 			list.add(equiv);
 		}
@@ -354,9 +350,7 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			EquivalentTo equiv = goldObjFactory.getEquivalentTo(rs.getString("cls"), 
-					rs.getString("equivalent_cls"), 
-					rs.getString("ontology"));
+			EquivalentTo equiv = new EquivalentTo(rs.getString("cls"), rs.getString("equivalent_cls"), rs.getString("ontology") );
 			list.add(equiv);
 		}
 		return list;
@@ -375,7 +369,7 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			Ontology ont = goldObjFactory.getOntology(rs.getString("id"));
+			Ontology ont = new Ontology( rs.getString("id"), rs.getString("label"), rs.getString("versionIRI"), rs.getString("creation_date"));
 			list.add(ont);
 		}
 		return list;
@@ -397,7 +391,7 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			ObjAlternateId ret = goldObjFactory.getObjAlternateId(rs.getString("obj"), rs.getString("id") );
+			ObjAlternateId ret = new ObjAlternateId(rs.getString("obj"), rs.getString("id") );
 			list.add(ret);
 		}
 		return list;
@@ -418,8 +412,8 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			RelationChain ret = goldObjFactory.getRelationChain(rs.getString("inferred_relation"),
-					rs.getString("relation1"), rs.getString("relation2"));
+			RelationChain ret = new RelationChain(rs.getString("inferred_relation"), rs.getString("relation1"), rs.getString("relation2"), 
+					rs.getBoolean("is_bidirectional") );
 			list.add(ret);
 		}
 		return list;
@@ -439,8 +433,8 @@ public class GoldDeltaFactory {
 		 	return list;
 		
 		while(rs.next()){
-			AnnotationAssertion ret = goldObjFactory.getAnnotationAssertion(rs.getString("ontology"),
-					rs.getString("obj"), rs.getString("target_obj"), rs.getString("relation"));
+			AnnotationAssertion ret = new AnnotationAssertion(rs.getString("relation"), rs.getString("obj"), 
+					rs.getString("target_obj"), rs.getString("ontology") );
 			list.add(ret);
 		}
 		return list;
@@ -460,7 +454,9 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			AnnotationProperty ret = goldObjFactory.getAnnotationProperty(rs.getString("id"));
+			AnnotationProperty ret = new AnnotationProperty(rs.getString("id"), rs.getString("label"), 
+					rs.getString("ontology"), rs.getString("obo_namespace"), rs.getString("text_comment"), rs.getString("text_definition"), 
+					rs.getBoolean("is_obsolete"));
 			list.add(ret);
 		}
 		return list;
@@ -480,8 +476,7 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			OntologyAnnotation ont = goldObjFactory.getOntologyAnnotation(rs.getString("ontology"), 
-					rs.getString("property"), rs.getString("annotation_value"));
+			OntologyAnnotation ont = new OntologyAnnotation(rs.getString("ontology"), rs.getString("property"), rs.getString("annotation_value") );
 			list.add(ont);
 		}
 		return list;
@@ -500,8 +495,7 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			OntologyImports ont = goldObjFactory.getOntologyImports(rs.getString("ontology"), 
-					rs.getString("imports_ontology"));
+			OntologyImports ont = new OntologyImports(rs.getString("ontology"), rs.getString("imports_ontology") );
 			list.add(ont);
 		}
 		return list;
@@ -520,7 +514,7 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			OntologySubset ont = goldObjFactory.getOntologySubset(rs.getString("id"));
+			OntologySubset ont = new OntologySubset(rs.getString("id"), rs.getString("label") );
 			list.add(ont);
 		}
 		return list;
@@ -540,7 +534,7 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			ObjSubset ont = goldObjFactory.getObjSubset(rs.getString("obj"), rs.getString("ontology_subset"));
+			ObjSubset ont = new ObjSubset(rs.getString("obj"), rs.getString("ontology_subset"));
 			list.add(ont);
 		}
 		return list;
@@ -561,9 +555,8 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			RelationDisjointWith disjoint = goldObjFactory.getRelationDisjointWith(rs.getString("relation"), 
-					rs.getString("disjoint_relation"), 
-					rs.getString("ontology"));
+			RelationDisjointWith disjoint = new RelationDisjointWith(rs.getString("relation"), rs.getString("disjoint_relation"), 
+					rs.getString(" ontology") );
 			list.add(disjoint);
 		}
 		return list;
@@ -583,9 +576,8 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			DisjointWith disjoint = goldObjFactory.getDisjointWith(rs.getString("cls"), 
-					rs.getString("disjoint_cls"), 
-					rs.getString("ontology"));
+			DisjointWith disjoint = new DisjointWith(rs.getString("ontology"), 
+					rs.getString("disjoint_cls"), rs.getString("cls") );
 			list.add(disjoint);
 		}
 		return list;
@@ -605,9 +597,7 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			ClsUnionOf disjoint = goldObjFactory.getClsUnionOf(rs.getString("cls"), 
-					rs.getString("target_cls"), 
-					rs.getString("ontology"));
+			ClsUnionOf disjoint = new ClsUnionOf(rs.getString("cls"), rs.getString("target_cls"), rs.getString("ontology") );
 			list.add(disjoint);
 		}
 		return list;
@@ -627,9 +617,8 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			ClsIntersectionOf disjoint = goldObjFactory.getClsIntersectionOf(rs.getString("cls"), 
-					rs.getString("target_cls"), 
-					rs.getString("ontology"));
+			ClsIntersectionOf disjoint = new ClsIntersectionOf(rs.getString("cls"), rs.getString("relation"), rs.getString("target_cls"), 
+					rs.getString("ontology") );
 			list.add(disjoint);
 		}
 		return list;
@@ -649,9 +638,9 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			InferredSubclassOf inferred = goldObjFactory.getInferredSubclassOf(rs.getString("cls"), 
-					rs.getString("target_cls"), 
-					rs.getString("ontology"));
+			InferredSubclassOf inferred = new InferredSubclassOf(rs.getString("cls"), rs.getString("target_cls"), 
+					rs.getString("relation"), rs.getBoolean("is_direct"), rs.getBoolean("is_reflexive"), rs.getString("ontology"), 
+					rs.getString("quantifier") );
 			list.add(inferred);
 		}
 		return list;
@@ -670,10 +659,9 @@ public class GoldDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			InferredAllSomeRelationship inferred = goldObjFactory.getInferredAllSomeRelationship(rs.getString("cls"), 
-					rs.getString("target_cls"), 
-					rs.getString("relation"),
-					rs.getString("ontology"));
+			InferredAllSomeRelationship inferred = new InferredAllSomeRelationship(rs.getString("cls"), 
+					rs.getString("target_cls"), rs.getString("relation"), 
+					rs.getBoolean("is_direct"), rs.getBoolean("is_reflexive"), rs.getString("ontology"), rs.getString("quantifier") );
 			list.add(inferred);
 		}
 		return list;

@@ -9,13 +9,13 @@ public class Cls extends GOModel implements java.io.Serializable{
 
 	private String id;
 	private String label;
-	private Ontology ontology;
+	private String ontology;
 	private String oboNamespace;
 	private String textComment;
 	private String textDefinition;
 	private Boolean isObsolete;
-//	private Set subclassOfsForCls = new HashSet(0);
-//	private Set subclassOfsForSuperCls = new HashSet(0);
+
+	private Ontology ontologyObject;
 
 	public Cls() {
 		String uniqueKeys[] = {"id"};
@@ -27,7 +27,7 @@ public class Cls extends GOModel implements java.io.Serializable{
 		this.id = id;
 	}
 
-	public Cls(String id, String label, Ontology ontology, String oboNamespace,
+	public Cls(String id, String label, String ontology, String oboNamespace,
 			String textComment, String textDefinition, Boolean isObsolete){
 			//,Set subclassOfsForCls, Set subclassOfsForSuperCls) {
 		this.id = id;
@@ -60,11 +60,11 @@ public class Cls extends GOModel implements java.io.Serializable{
 		this.label = label;
 	}
 
-	public Ontology getOntology() {
+	public String getOntology() {
 		return this.ontology;
 	}
 
-	public void setOntology(Ontology ontology) {
+	public void setOntology(String ontology) {
 		this.ontology = ontology;
 	}
 
@@ -100,20 +100,13 @@ public class Cls extends GOModel implements java.io.Serializable{
 		this.isObsolete = isObsolete;
 	}
 
-/*	public Set getSubclassOfsForCls() {
-		return this.subclassOfsForCls;
+	public Ontology getOntologyObject() {
+		if(ontologyObject == null && ontology != null){
+			ontologyObject =(Ontology) getHibernateObject(Ontology.class, "id", this.ontology);
+		}
+		
+		return ontologyObject;
 	}
-
-	public void setSubclassOfsForCls(Set subclassOfsForCls) {
-		this.subclassOfsForCls = subclassOfsForCls;
-	}
-
-	public Set getSubclassOfsForSuperCls() {
-		return this.subclassOfsForSuperCls;
-	}
-
-	public void setSubclassOfsForSuperCls(Set subclassOfsForSuperCls) {
-		this.subclassOfsForSuperCls = subclassOfsForSuperCls;
-	}*/
+	
 
 }

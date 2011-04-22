@@ -17,11 +17,12 @@
         <property name="creationDate" type="string">
             <column name="creation_date" />
         </property>
-        <set name="subclassOfs" table="subclass_of" inverse="true" lazy="true" fetch="select">
+       <!--   <set name="subclassOfs" table="subclass_of" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="ontology" not-null="true" />
             </key>
             <one-to-many class="org.geneontology.gold.hibernate.model.SubclassOf" />
         </set>
+        -->
     </class>
 </hibernate-mapping>

@@ -28,9 +28,9 @@
         -->
         
       	<composite-id>
-	       <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
-	       <key-many-to-one name="superCls" class="org.geneontology.gold.hibernate.model.Cls" column="super_cls" />
-	       <key-many-to-one name="cls" class="org.geneontology.gold.hibernate.model.Cls" column="cls" />
+	       <key-property name="ontology" column="ontology" type="string"/>
+	       <key-property name="superCls" column="super_cls" type="string"/>
+	       <key-property name="cls" column="cls" type="string"/>
     	</composite-id>
         
     </class>
