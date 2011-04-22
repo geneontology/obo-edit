@@ -41,7 +41,7 @@ public class HibernateTests extends TestCase {
 		//System.out.println(list);
 		
 		for(SubclassOf sub: list){
-			System.out.println(sub.getCls().getId() + ", " + sub.getSuperCls().getId() + ", " + sub.getOntology().getId());
+			System.out.println(sub.getCls() + ", " + sub.getSuperCls() + ", " + sub.getOntology());
 		}
 	}
 	
@@ -74,7 +74,7 @@ public class HibernateTests extends TestCase {
 		//System.out.println(list);
 		
 		for(AllSomeRelationship rel: list){
-			System.out.println(rel.getCls().getId() + ", " + rel.getRelation().getId() + ", " + rel.getTargetCls().getId());
+			System.out.println(rel.getCls() + ", " + rel.getRelation() + ", " + rel.getTargetCls());
 		}
 		
 	}

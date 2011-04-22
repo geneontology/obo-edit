@@ -14,7 +14,7 @@ public class Ontology implements java.io.Serializable {
 	private String label;
 	private String versioniri;
 	private String creationDate;
-	private Set subclassOfs = new HashSet(0);
+	//private Set subclassOfs = new HashSet(0);
 
 	public Ontology() {
 	}
@@ -24,12 +24,12 @@ public class Ontology implements java.io.Serializable {
 	}
 
 	public Ontology(String id, String label, String versioniri,
-			String creationDate, Set subclassOfs) {
+			String creationDate) {
 		this.id = id;
 		this.label = label;
 		this.versioniri = versioniri;
 		this.creationDate = creationDate;
-		this.subclassOfs = subclassOfs;
+		//this.subclassOfs = subclassOfs;
 	}
 
 	public String getId() {
@@ -64,12 +64,12 @@ public class Ontology implements java.io.Serializable {
 		this.creationDate = creationDate;
 	}
 
-	public Set getSubclassOfs() {
+/*	public Set getSubclassOfs() {
 		return this.subclassOfs;
 	}
 
 	public void setSubclassOfs(Set subclassOfs) {
 		this.subclassOfs = subclassOfs;
 	}
-
+*/
 }

@@ -9,9 +9,9 @@ public class InferredAllSomeRelationship extends InferredRelationship implements
 		super();
 	}
 
-	public InferredAllSomeRelationship(Cls cls, Cls targetCls,
-			Relation relation, Boolean isDirect, Boolean isReflexive,
-			Ontology ontology, String quantifier) {
+	public InferredAllSomeRelationship(String cls, String targetCls,
+			String relation, Boolean isDirect, Boolean isReflexive,
+			String ontology, String quantifier) {
 		super(cls, targetCls, relation, isDirect, isReflexive, ontology,
 				quantifier);
 	}

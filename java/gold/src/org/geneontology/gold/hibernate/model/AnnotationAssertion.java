@@ -7,18 +7,22 @@ package org.geneontology.gold.hibernate.model;
  */
 public class AnnotationAssertion extends GOModel implements java.io.Serializable {
 
-	private Relation relation;
+	private String relation;
 	private String obj;
 	private String targetObj;
-	private Ontology ontology;
+	private String ontology;
 
+	private Relation relationObject;
+	private Ontology ontologyObject;
+	
+	
 	public AnnotationAssertion() {
 		String keys[] = {"relation", "obj", "targetObj", "ontology"};
 		this.initUniqueConstraintFields(AnnotationAssertion.class, keys);
 	}
 
-	public AnnotationAssertion(Relation relation, String obj, String targetObj,
-			Ontology ontology) {
+	public AnnotationAssertion(String relation, String obj, String targetObj,
+			String ontology) {
 		this();
 		this.relation = relation;
 		this.obj = obj;
@@ -26,11 +30,11 @@ public class AnnotationAssertion extends GOModel implements java.io.Serializable
 		this.ontology = ontology;
 	}
 
-	public Relation getRelation() {
+	public String getRelation() {
 		return this.relation;
 	}
 
-	public void setRelation(Relation relation) {
+	public void setRelation(String relation) {
 		this.relation = relation;
 	}
 
@@ -50,12 +54,31 @@ public class AnnotationAssertion extends GOModel implements java.io.Serializable
 		this.targetObj = targetObj;
 	}
 
-	public Ontology getOntology() {
+	public String getOntology() {
 		return this.ontology;
 	}
 
-	public void setOntology(Ontology ontology) {
+	public void setOntology(String ontology) {
 		this.ontology = ontology;
 	}
 
+	public Relation getRelationObject() {
+		if(relationObject == null && relation != null){
+			relationObject =(Relation) getHibernateObject(Relation.class, "id", relation);
+		}
+		
+		return relationObject;
+	}
+
+	public Ontology getOntologyObject() {
+		if(ontologyObject == null && ontology != null){
+			ontologyObject = (Ontology) getHibernateObject(Ontology.class,"id", ontology);
+		}
+		
+		
+		return ontologyObject;
+	}
+
+	
+	
 }

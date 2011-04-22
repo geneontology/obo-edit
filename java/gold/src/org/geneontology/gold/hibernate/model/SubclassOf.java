@@ -7,36 +7,24 @@ package org.geneontology.gold.hibernate.model;
  */
 public class SubclassOf extends GOModel implements java.io.Serializable {
 
-	//private SubclassOfId id;
-	
-//	private String cls;
-//	private String superCls;
-//	private String ontology;
-//	private Ontology ontologyObject;
-//	private Cls clsBySuperCls;
-//	private Cls clsByCls;
 
-
-	private Ontology ontology;
-	private Cls cls;
-	private Cls superCls;
+	private String ontology;
+	private String cls;
+	private String superCls;
 	
+	private Ontology ontologyObject;
+	private Cls clsObject;
+	private Cls superClsObject;
 	
 	public SubclassOf() {
 	}
 
-//	public SubclassOf(String cls, String superCls, String ontology, Ontology ontologyObject, Cls clsBySuperCls,
-	//		Cls clsByCls) {
-	public SubclassOf(Ontology ontology, Cls superCls,
-			Cls cls) {
+	public SubclassOf(String ontology, String superCls,
+			String cls) {
 
-	//this.id = id;
 		this.cls = cls;
 		this.superCls = superCls;
 		this.ontology = ontology;
-		//this.ontologyObject = ontologyObject;
-	//	this.clsBySuperCls = clsBySuperCls;
-		//this.clsByCls = clsByCls;
 		
 		String[] uniqueConstraintFields = {"cls", "superCls", "ontology"};
 		this.initUniqueConstraintFields(SubclassOf.class, uniqueConstraintFields);
@@ -45,8 +33,17 @@ public class SubclassOf extends GOModel implements java.io.Serializable {
 	
 	
 
-	/*public String getCls() {
-		return this.cls;
+
+	public String getOntology() {
+		return ontology;
+	}
+
+	public void setOntology(String ontology) {
+		this.ontology = ontology;
+	}
+
+	public String getCls() {
+		return cls;
 	}
 
 	public void setCls(String cls) {
@@ -54,77 +51,37 @@ public class SubclassOf extends GOModel implements java.io.Serializable {
 	}
 
 	public String getSuperCls() {
-		return this.superCls;
+		return superCls;
 	}
 
 	public void setSuperCls(String superCls) {
 		this.superCls = superCls;
 	}
 
-	public String getOntology() {
-		return this.ontology;
+	
+	public Cls getClsObject() {
+		if(clsObject == null && clsObject != null){
+			clsObject = (Cls) getHibernateObject(Cls.class, "id", getCls());			
+		}
+		
+		return clsObject;
 	}
 
-	public void setOntology(String ontology) {
-		this.ontology = ontology;
-	}*/
-
-	public Ontology getOntology() {
-		return ontology;
+	public Ontology getOntologyObject() {
+		if(ontologyObject == null && ontology != null){
+			ontologyObject =(Ontology) getHibernateObject(Ontology.class, "id", this.ontology);
+		}
+		
+		return ontologyObject;
 	}
-
-	public void setOntology(Ontology ontology) {
-		this.ontology = ontology;
+	
+	public Cls getSuperClsObject() {
+		if(superClsObject == null && superCls != null){
+			superClsObject = (Cls) getHibernateObject(Cls.class, "id", superCls);
+		}
+		
+		return superClsObject;
 	}
-
-	public Cls getCls() {
-		return cls;
-	}
-
-	public void setCls(Cls cls) {
-		this.cls = cls;
-	}
-
-	public Cls getSuperCls() {
-		return superCls;
-	}
-
-	public void setSuperCls(Cls superCls) {
-		this.superCls = superCls;
-	}
-
 	
 	
-	/*public SubclassOfId getId() {
-		return this.id;
-	}
-
-	public void setId(SubclassOfId id) {
-		this.id = id;
-	}*/
-
-	/*public Ontology getOntologyObject() {
-		return this.ontologyObject;
-	}
-
-	public void setOntologyObject(Ontology ontologyObject) {
-		this.ontologyObject = ontologyObject;
-	}
-
-	public Cls getClsBySuperCls() {
-		return this.clsBySuperCls;
-	}
-
-	public void setClsBySuperCls(Cls clsBySuperCls) {
-		this.clsBySuperCls = clsBySuperCls;
-	}
-
-	public Cls getClsByCls() {
-		return this.clsByCls;
-	}
-
-	public void setClsByCls(Cls clsByCls) {
-		this.clsByCls = clsByCls;
-	}*/
-
 }

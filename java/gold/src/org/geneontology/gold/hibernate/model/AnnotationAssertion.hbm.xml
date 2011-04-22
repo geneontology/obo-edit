@@ -4,8 +4,8 @@
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.AnnotationAssertion" table="annotation_assertion">
          <composite-id>
-	       <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
-	       <key-many-to-one name="relation" class="org.geneontology.gold.hibernate.model.Relation" column="relation" />
+	       <key-property name="ontology" column="ontology" />
+	       <key-property name="relation" column="relation" />
             <key-property name="obj" type="string">
                 <column name="obj" />
             </key-property>
