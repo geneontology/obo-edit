@@ -9,7 +9,7 @@ public class Relation extends GOModel implements java.io.Serializable {
 
 	private String id;
 	private String label;
-	private Ontology ontology;
+	private String ontology;
 	private String oboNamespace;
 	private String textComment;
 	private String textDefinition;
@@ -18,6 +18,8 @@ public class Relation extends GOModel implements java.io.Serializable {
 	private Boolean isReflexive;
 	private Boolean isObsolete;
 
+	private Ontology ontologyObject;
+	
 	public Relation() {
 	}
 
@@ -25,7 +27,7 @@ public class Relation extends GOModel implements java.io.Serializable {
 		this.id = id;
 	}
 
-	public Relation(String id, String label, Ontology ontology,
+	public Relation(String id, String label, String ontology,
 			String oboNamespace, String textComment, String textDefinition,
 			Boolean isTransitive, Boolean isSymmetric, Boolean isReflexive,
 			Boolean isObsolete) {
@@ -60,11 +62,11 @@ public class Relation extends GOModel implements java.io.Serializable {
 		this.label = label;
 	}
 
-	public Ontology getOntology() {
+	public String getOntology() {
 		return this.ontology;
 	}
 
-	public void setOntology(Ontology ontology) {
+	public void setOntology(String ontology) {
 		this.ontology = ontology;
 	}
 
@@ -123,5 +125,14 @@ public class Relation extends GOModel implements java.io.Serializable {
 	public void setIsObsolete(Boolean isObsolete) {
 		this.isObsolete = isObsolete;
 	}
+	
+	public Ontology getOntologyObject() {
+		if(ontologyObject == null && ontology != null){
+			ontologyObject =(Ontology) getHibernateObject(Ontology.class, "id", this.ontology);
+		}
+		
+		return ontologyObject;
+	}
+	
 
 }

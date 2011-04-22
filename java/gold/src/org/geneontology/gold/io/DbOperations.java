@@ -582,9 +582,10 @@ public class DbOperations implements DbOperationsInterface{
 			
 			saveList(session, oatList);
 			
-			LOG.info("Database update is completed");
-			
 			session.getTransaction().commit();
+
+			LOG.info("Database update is completed");
+
 		}catch(Exception ex){
 			throw ex;
 		}finally{

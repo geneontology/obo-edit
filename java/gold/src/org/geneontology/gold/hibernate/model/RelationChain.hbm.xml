@@ -5,9 +5,9 @@
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.RelationChain" table="relation_chain">
         <composite-id>
-	       <key-many-to-one name="inferredRelation" class="org.geneontology.gold.hibernate.model.Relation" column="inferred_relation" />
-	       <key-many-to-one name="relation1" class="org.geneontology.gold.hibernate.model.Relation" column="relation1" />
-	       <key-many-to-one name="relation2" class="org.geneontology.gold.hibernate.model.Relation" column="relation2" />
+	       <key-property name="inferredRelation" column="inferred_relation" type="string"/>
+	       <key-property name="relation1" column="relation1" type="string"/>
+	       <key-property name="relation2" column="relation2" type="string"/>
         </composite-id>
         
         <property name="isBidirectional" type="java.lang.Boolean">

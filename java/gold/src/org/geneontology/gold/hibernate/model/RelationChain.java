@@ -7,18 +7,23 @@ package org.geneontology.gold.hibernate.model;
  */
 public class RelationChain extends GOModel implements java.io.Serializable {
 
-	private Relation inferredRelation;
-	private Relation relation1;
-	private Relation relation2;
+	private String inferredRelation;
+	private String relation1;
+	private String relation2;
 	private Boolean isBidirectional;
 
+	private Relation inferredRelationObject;
+	private Relation relation1Object;
+	private Relation relation2Object;
+	
+	
 	public RelationChain() {
 		String keys[] = {"inferredRelation", "relation1", "relation2"};
 		this.initUniqueConstraintFields(RelationChain.class, keys);
 	}
 
-	public RelationChain(Relation inferredRelation, Relation relation1,
-			Relation relation2, Boolean isBidirectional) {
+	public RelationChain(String inferredRelation, String relation1,
+			String relation2, Boolean isBidirectional) {
 		this();
 		this.inferredRelation = inferredRelation;
 		this.relation1 = relation1;
@@ -26,27 +31,27 @@ public class RelationChain extends GOModel implements java.io.Serializable {
 		this.isBidirectional = isBidirectional;
 	}
 
-	public Relation getInferredRelation() {
+	public String getInferredRelation() {
 		return this.inferredRelation;
 	}
 
-	public void setInferredRelation(Relation inferredRelation) {
+	public void setInferredRelation(String inferredRelation) {
 		this.inferredRelation = inferredRelation;
 	}
 
-	public Relation getRelation1() {
+	public String getRelation1() {
 		return this.relation1;
 	}
 
-	public void setRelation1(Relation relation1) {
+	public void setRelation1(String relation1) {
 		this.relation1 = relation1;
 	}
 
-	public Relation getRelation2() {
+	public String getRelation2() {
 		return this.relation2;
 	}
 
-	public void setRelation2(Relation relation2) {
+	public void setRelation2(String relation2) {
 		this.relation2 = relation2;
 	}
 
@@ -56,6 +61,30 @@ public class RelationChain extends GOModel implements java.io.Serializable {
 
 	public void setIsBidirectional(Boolean isBidirectional) {
 		this.isBidirectional = isBidirectional;
+	}
+
+	public Relation getInferredRelationObject() {
+		if(inferredRelationObject == null && inferredRelation != null){
+			inferredRelationObject = (Relation) getHibernateObject(Relation.class, "id", inferredRelation);
+		}
+		
+		return inferredRelationObject;
+	}
+
+	public Relation getRelation1Object() {
+		if(relation1Object == null && relation1 != null){
+			relation1Object = (Relation) getHibernateObject(Relation.class, "id", relation1);
+		}
+		
+		return relation1Object;
+	}
+
+	public Relation getRelation2Object() {
+		if(relation2Object == null && relation2 != null){
+			relation2Object = (Relation) getHibernateObject(Relation.class, "id", relation2);
+		}
+		
+		return relation2Object;
 	}
 
 }

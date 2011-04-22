@@ -13,22 +13,24 @@
 	            <key-property name="label" type="string">
 	                <column name="label" />
 	            </key-property>
-            </composite-id>
-            
-           <property name="synonymScope" type="string">
+
+           <key-property name="synonymScope" type="string">
 	            <column name="synonym_scope">
 	            </column>
-          </property>
+          </key-property>
             
-           <property name="synonymType" type="string">
+           <key-property name="synonymType" type="string">
 	            <column name="synonym_type">
 	            </column>
-          </property>
+          </key-property>
             
-           <property name="synonymXref" type="string">
+           <key-property name="synonymXref" type="string">
 	            <column name="synonym_xref">
 	            </column>
-          </property>
+          </key-property>
+
+            </composite-id>
+            
 
 <!--  
             <key-property name="synonymScope" type="string">

@@ -5,9 +5,9 @@
 <hibernate-mapping>
     <class name="org.geneontology.gold.hibernate.model.EquivalentTo" table="equivalent_to">
         <composite-id>
-  	       <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
-	       <key-many-to-one name="equivalentCls" class="org.geneontology.gold.hibernate.model.Cls" column="equivalent_cls" />
-	       <key-many-to-one name="cls" class="org.geneontology.gold.hibernate.model.Cls" column="cls" />
+  	       <key-property name="ontology"  column="ontology" type="string"/>
+	       <key-property name="equivalentCls"  column="equivalent_cls" type="string"/>
+	       <key-property name="cls"  column="cls" type="string"/>
         </composite-id>
     </class>
 </hibernate-mapping>

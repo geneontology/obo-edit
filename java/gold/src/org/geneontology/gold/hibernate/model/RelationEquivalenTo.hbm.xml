@@ -5,9 +5,9 @@
     <class name="org.geneontology.gold.hibernate.model.RelationEquivalenTo" table="relation_equivalent_to">
         <composite-id>
         
-	       <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
-	       <key-many-to-one name="equivalentRelation" class="org.geneontology.gold.hibernate.model.Relation" column="equivalent_relation" />
-	       <key-many-to-one name="relation" class="org.geneontology.gold.hibernate.model.Relation" column="relation" />
+	       <key-property name="ontology" column="ontology" type="string"/>
+	       <key-property name="equivalentRelation" column="equivalent_relation" type="string"/>
+	       <key-property name="relation" column="relation" type="string"/>
          
         </composite-id>
     </class>

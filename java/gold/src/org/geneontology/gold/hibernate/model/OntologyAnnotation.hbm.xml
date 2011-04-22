@@ -12,7 +12,7 @@
 >
 
     <composite-id>		
-	       <key-many-to-one name="ontology" class="org.geneontology.gold.hibernate.model.Ontology" column="ontology" />
+	        <key-property name="ontology" column="ontology" type="string"/>
 	        <key-property name="property" type="string">
 				<column name="property" />
 	        </key-property>
