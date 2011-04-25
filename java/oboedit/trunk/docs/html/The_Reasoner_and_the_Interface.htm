@@ -14,8 +14,7 @@
 <p> The reasoner is activated and deactivated via the Reasoner Manager.
 You can turn on the reasoner in OBO-Edit by showing the Reasoner Manager ([Reasoner] -> [Reasoner Manager]) and selecting a reasoner from the
 pulldown list.  Once you make your choice, you can get rid of the Reasoner Manager panel
-However, because the
-reasoner uses so much memory, it is generally a good idea to turn it on only
+However, because the reasoner uses so much memory, it is generally a good idea to turn it on only
 when you really need it, and turn it off when you're done.  Be sure to save your work
 <b>before</b> you turn on the reasoner, in case OBO-Edit runs out of memory
 and dies.
@@ -29,6 +28,26 @@ it will be on the next time you start OBO-Edit.  The entire application runs
   </p><p>
 When the reasoner is turned on, the titlebar of the OBO-Edit window says
   "(REASONER ON)" as a visual reminder.</p>
+<!-- <h2>RuleBasedReasoner and DirectLinkReasoner</h2> -->
+<!-- <p> Starting in version 2.1-b12 (11 April, 2011), OBO-Edit offers a choice of two -->
+<!-- reasoners:  the <i>RuleBasedReasoner</i> and the <i>DirectLinkReasoner</i>. -->
+<!-- The RuleBasedReasoner is the full reasoner.  The DirectLinkReasoner is a new, -->
+<!-- simpler reasoner that (unlike the RuleBasedReasoner) can only infer direct -->
+<!-- links. -->
+<!-- Direct links are typically trivial inferences that are useful for working in -->
+<!-- OBO-Edit, for example: -->
+<!-- <li> -->
+<!-- <ul> infer a simple link from an intersection link</ul> -->
+<!-- <ul> infer symmetric class-level axioms (e.g., X disjoint_from Y <-> Y -->
+<!--   disjoint_from X)</ul> -->
+<!-- </li> -->
+<!-- </p><p>Unlike the RuleBasedReasoner, which significantly slows down OBO-Edit -->
+<!-- and increases memory use, the DirectLinkReasoner has only a minimal impact on -->
+<!-- OBO-Edit's responsiveness. -->
+<!-- </p><p>In the rest of this discussion (and anywhere in the user guide where -->
+<!-- "the reasoner" is referred to), we will be describing the RuleBasedReasoner, -->
+<!-- not the DirectLinkReasoner. -->
+<!-- </p> -->
 <H2>Implied Links<A name=implied_links></A></H2>
 <p>The reasoner changes the way the 
 ontology is displayed in the ontology editor panel. 
@@ -49,7 +68,7 @@ width=185 border=0></P>
 <P>It's easy to imagine how confusing this would get with an ontology of any 
 complexity.</P>
 <P>To reduce this complexity, OBO-Edit <STRONG>trims</STRONG> the ontology 
-before displaying it. Trimming&nbsp;hides links that would unhelpfully clutter 
+before displaying it. Trimming hides links that would unhelpfully clutter 
 the display. The reasoner still knows about these links, but they are not shown 
 to the user.</P>
 <P>A link <STRONG>L</STRONG> is trimmed if it satisfies either of the following 
