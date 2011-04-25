@@ -55,15 +55,18 @@ public class IDManager {
 			if (currentProfile != null) {
 				IDProfile profile = SessionManager.getManager().getSession()
 						.getIDProfile();
-
+                                
 				if (!IDUtil.equals(currentProfile, profile)) {
-					int result = JOptionPane.showConfirmDialog(null,
-							"The ID generation profile in " + "this file\n"
-									+ "does not match the current "
-									+ "id generation profile.\n\n"
-									+ "Use the profile loaded from "
-									+ "the file?", "ID Profile Mismatch",
-							JOptionPane.YES_NO_OPTION);
+                                    String message = "The new ID generation profile (" + profile.getDefaultRule() + ")\n"
+                                        + "does not match the previously loaded one ("
+                                        + currentProfile.getDefaultRule() + ").";
+                                    logger.info(message);
+                                    int result = 
+                                        JOptionPane.showConfirmDialog(null, message
+                                                                      + "\n\nDo you want to use the new one (" +
+                                                                      profile.getDefaultRule() + ")?",
+                                                                      "ID Profile Mismatch",
+                                                                      JOptionPane.YES_NO_OPTION);
 					if (result == JOptionPane.YES_OPTION) {
 						idGen.setProfile(profile);
 					}
@@ -92,7 +95,7 @@ public class IDManager {
 				ex.printStackTrace();
 			}
 		} else {
-			IDProfile defaultProfile = new NamedIDProfile("default");
+			IDProfile defaultProfile = new NamedIDProfile("<default ID profile>");
 			currentProfile = defaultProfile;
 			defaultProfile.setDefaultRule("ID:$sequence(7,0,9999999)$");
 		}
@@ -116,7 +119,7 @@ public class IDManager {
 		}
 		if (profiles == null) {
 			profiles = new LinkedList<IDProfile>();
-			IDProfile defaultProfile = new NamedIDProfile("default");
+			IDProfile defaultProfile = new NamedIDProfile("<default ID profile>");
 			defaultProfile.setDefaultRule("ID:$sequence(7,0,9999999)$");
 			profiles.add(defaultProfile);
 		}
