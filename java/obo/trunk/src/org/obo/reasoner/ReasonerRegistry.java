@@ -37,12 +37,16 @@ public class ReasonerRegistry {
 		// defaults: these can be overridden at runtime
 		// Using strings as identifiers for reasoners seems a bit dangerous--shouldn't they have
 		// IDs or something?
-		defaultReasonerFactory = new ForwardChainingReasonerFactory();  // For now
-		defaultReasonerName = "ForwardChainingReasoner (old, faster)";  // For now
+                // These two lines were still present as of 4/25/11, but they seem wrong, so I'm changing them.  --NH
+                //		defaultReasonerFactory = new ForwardChainingReasonerFactory();  // For now
+                //		defaultReasonerName = "ForwardChainingReasoner (old, faster)";  // For now
+		defaultReasonerFactory = new RuleBasedReasonerFactory();  // For now
+		defaultReasonerName = "RuleBasedReasoner";  // For now
 //		registerReasoner("ForwardChainingReasoner (old, faster)", defaultReasonerFactory);
 //		registerReasoner("LinkPileReasoner (new, slower)", new LinkPileReasonerFactory());
 		registerReasoner("RuleBasedReasoner", new RuleBasedReasonerFactory());
-		registerReasoner("DirectLinkReasoner", new DirectLinkReasonerFactory());
+                // Commenting out DirectLinkReasoner for now.  --NH, 4/25/11
+                //		registerReasoner("DirectLinkReasoner", new DirectLinkReasonerFactory());
 		/*
 		for (Class cls : ReasonerFactory.class.getClasses()) {
 			try {
