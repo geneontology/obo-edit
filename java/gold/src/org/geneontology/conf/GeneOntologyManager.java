@@ -283,4 +283,10 @@ public class GeneOntologyManager {
 		.getString("geneontology.gold.gaf.qcfile", "test_resources/test_resources/annotation_qc.xml");
 	}
 	
+	public String getSolrUrl(){
+		
+		return config
+			.getString("geneontology.solr.url", "http://localhost:8080/solr");
+	}
+	
 }
