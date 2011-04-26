@@ -82,7 +82,7 @@ public class OboOwlApiProcessor extends EntityProcessorBase {
 	   * @author Shahid Manzoor
 	   *
 	   */
-	  private class RowsIterator implements  Iterator<Map<String, Object>>{
+	  protected class RowsIterator implements  Iterator<Map<String, Object>>{
 
 		  
 		  private OWLGraphWrapper wrapper;

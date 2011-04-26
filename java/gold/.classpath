@@ -72,5 +72,8 @@
 	<classpathentry kind="lib" path="lib/antlr-2.7.6.jar"/>
 	<classpathentry kind="lib" path="lib/jdom/jaxen.jar"/>
 	<classpathentry kind="lib" path="lib/jdom/jdom.jar"/>
+	<classpathentry kind="lib" path="lib/solrj/apache-solr-solrj-1.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/solrj/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/solrj/commons-httpclient-3.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
