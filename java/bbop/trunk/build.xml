@@ -82,7 +82,7 @@
 		</jar>
 	</target>
 	
-	<target name="backward_compatible_jar" depends="backward_compatible_classes, checkjar" description="Generate backwards-compatible (JDK 1.5) jar file">
+	<target name="backward_compatible_jar" depends="clean, backward_compatible_classes, checkjar" description="Generate backwards-compatible (JDK 1.5) jar file">
 		<jar destfile="${jarfile}" manifest="${main_jar_manifest}">
 			<fileset refid="main_jar_contents" />
 		</jar>
