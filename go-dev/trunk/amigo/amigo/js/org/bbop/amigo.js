@@ -181,8 +181,8 @@ org.bbop.amigo.core = function(){
 	return out;
     };
 
-    // // ...
-    // this.golr_response.documents = function(robj){
+    // // TODO: fq can be irritating single value or irritating array
+    // this.golr_response.query_filters(robj){
     // 	return robj.response.docs;
     // };
 
