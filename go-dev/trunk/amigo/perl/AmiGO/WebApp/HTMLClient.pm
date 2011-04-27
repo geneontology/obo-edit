@@ -765,6 +765,7 @@ sub mode_live_search_gold {
       #'com.jquery.redmond.custom',
       'com.jquery.jqamigo.custom',
       'org.bbop.amigo.ui.widgets'
+      #'org.bbop.amigo.ui.interactive'
      ],
      javascript_library =>
      [
@@ -773,7 +774,8 @@ sub mode_live_search_gold {
       'org.bbop.amigo',
       'org.bbop.amigo.go_meta',
       #'org.bbop.amigo.live_search',
-      'org.bbop.amigo.ui.widgets'
+      'org.bbop.amigo.ui.widgets',
+      'org.bbop.amigo.ui.interactive'
      ],
      javascript =>
      [
