@@ -161,6 +161,26 @@ org.bbop.amigo.core = function(){
 	return robj.response.docs;
     };
 
+    // ...
+    this.golr_response.facet_fields = function(robj){
+	return _get_hash_keys(robj.facet_counts.facet_fields);
+    };
+
+    this.golr_response.facet_counts = function(robj, in_field){
+
+	var solr_facet_list = robj.facet_counts.facet_fields[in_field];
+
+	var out = [];
+	for( var tc = 0; tc < solr_facet_list.length; tc = tc + 2 ){
+	    out.push({
+			 label: solr_facet_list[tc],
+			 count: solr_facet_list[tc + 1]
+		     });
+	}
+	//robj.facet_counts.facet_fields[in_field];
+	return out;
+    };
+
     // // ...
     // this.golr_response.documents = function(robj){
     // 	return robj.response.docs;
@@ -396,6 +416,21 @@ org.bbop.amigo.core = function(){
 	return ret_hash;
     };
     this.util.merge = _merge;
+
+    // Get the hash keys from a hash.
+    function _get_hash_keys (arg_hash){
+
+	if( ! arg_hash ){ arg_hash = {}; }
+	var out_keys = [];
+	for (var out_key in arg_hash) {
+	    if (arg_hash.hasOwnProperty(out_key)) {
+		out_keys.push(out_key);
+	    }
+	}
+
+	return out_keys;
+    };
+    this.util.get_hash_keys = _get_hash_keys;
 
     // Clone a thing down to its atoms.
     function _clone_object(thing){
