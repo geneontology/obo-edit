@@ -1,7 +1,6 @@
 package org.geneontology.util;
 // If org.geneontology.util.PantherID would go into go-perl, this would go into go-perl-db
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Vector;
 
