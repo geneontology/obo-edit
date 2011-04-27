@@ -19,6 +19,9 @@ var delay_in_ms = 350;
 // Our separate widget and notice object.
 var widgets = null;
 
+// Our discrete universal widgets.
+var type_widget = null;
+
 // Find newlines in text.
 var newline_finder = new RegExp("\n", "g");
 
@@ -81,9 +84,12 @@ function LiveSearchGOlrInit(){
     // var ontology_text =
     // 	widgets.form.multiselect('ontology', 'ontology', 4,
     // 				 ontology_data, 'Ontology');
-    var type_text =
-    	widgets.form.multiselect('type', 'type', 4,
-    				 type_data, 'GP type');
+    // var type_text = widgets.form.multiselect('type', 'type', 4,
+    // 					     type_data, 'GP type');
+    type_widget = new org.bbop.amigo.ui.interactive.multi('type', 'type', 4,
+    							  type_data, 'GP type');
+    var type_text = type_widget.render();
+
     var taxon_text =
     	widgets.form.multiselect('taxon', 'taxon', 4,
     				 species_data, 'Species');
@@ -104,6 +110,8 @@ function LiveSearchGOlrInit(){
     jQuery("#app-form-filters").append(taxon_text);
     jQuery("#app-form-filters").append(source_text);
     jQuery("#app-form-filters").append(evidence_type_text);
+
+    //core.kvetch('GP type text: ' + type_text );
 
     function _generate_action_to_server(marshaller, do_results){//, query_id){
 	return function(event){
@@ -355,6 +363,35 @@ function _process_meta_results (json_data){
 }
 
 
+// Update the GUI elements to reflect what came back from solr.
+function _update_gui (json_data){
+
+    // // Grab meta information.
+    // var total = core.golr_response.total_documents(json_data);
+    // var first = core.golr_response.start_document(json_data);
+    // var last = core.golr_response.end_document(json_data);
+
+    core.kvetch("Updating GUI...");
+
+    // TODO: Cycle through response and update GUI.
+    var type_counts = core.golr_response.facet_counts(json_data, 'type');
+    for( var tc = 0; tc < type_counts.length; tc++ ){
+	var type_count = type_counts[tc];
+	var f_label = type_count['label'];
+	var f_count = type_count['count'];
+	core.kvetch('foo: ' + f_label);
+	core.kvetch('bar: ' + f_count);
+	type_widget.update_data(f_label, 'count', f_count);
+    }
+
+    // TODO/BUG:
+    type_widget.update_data('_nil_', 'selected', false);
+
+    // Update it.
+    type_widget.update_gui();
+}
+
+
 // Convert the return JSON results into something usable...
 function _process_results (json_data, status){
 
@@ -392,6 +429,9 @@ function _process_results (json_data, status){
 	    
 	    // Set the text in the meta area.
 	    _process_meta_results(json_data);
+
+	    // Update filters to reflect solr's response contents.
+	    _update_gui(json_data);
 	    
 	}else{
 	    core.kvetch("Dropping packet.");
