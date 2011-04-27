@@ -30,18 +30,47 @@ public class TableDumper {
 	
 	private String nullString;
 	
+	private final static String defaultNullString = "\\N";
+	private final static String suffix = ".txt";
+	
 	public TableDumper(String table) throws IOException {
 		this(table, ".");
 	}
 	
 	public TableDumper(String table, String path) throws IOException{
-		this(table, path, "\\N");
+		this(table, path, defaultNullString);
 	}
 	
 	public TableDumper(String table, String path, String nullString) throws IOException{
 		this.table = table;
 		this.nullString = nullString;
-		writer = new FileWriter(new File(path,this.table+".txt"));
+		writer = new FileWriter(new File(path,this.table + suffix));
+	}
+
+	/**
+	 * Calls TableDumper(file,nullString) with the defaultNullString.
+	 * @param file
+	 * @throws IOException
+	 * @author Sven Heinicke
+	 */
+	public TableDumper(File file) throws IOException {
+		this(file, defaultNullString);
+	}
+	
+	/**
+	 * Constructs on object from a File rather then a String holding a path.  The table variable is filled with everything before the first '.' in file.getName().
+	 * @param file
+	 * @param nullString
+	 * @throws IOException
+	 * @author Sven Heinicke
+	 */
+	public TableDumper(File file, String nullString) throws IOException{
+		this.nullString = nullString;
+
+		String fileName = file.getName();
+		table = fileName.substring(0, fileName.indexOf('.')); // like TsvFileLoader does it
+		
+		writer = new FileWriter(file);
 	}
 	
 	public void dumpRow(String v1) throws IOException {
