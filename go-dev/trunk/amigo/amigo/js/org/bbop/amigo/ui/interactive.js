@@ -26,8 +26,7 @@ if ( typeof org.bbop.amigo.ui.interactive == "undefined" ){
 
 
 //
-org.bbop.amigo.ui.interactive.multi = function(in_id, in_name, in_size,
-					       in_data, in_label){
+org.bbop.amigo.ui.interactive.multi_model = function(in_data){
 
     var anchor = this; // top-level this
 
@@ -39,47 +38,146 @@ org.bbop.amigo.ui.interactive.multi = function(in_id, in_name, in_size,
     function ll(str){ core.kvetch(str); }
     ll("");
 
+    // 
+    this.initial_data = in_data;
+    this.current_data = {};
+
+
+    // (Re)set data to initial state.
+    function _reset_data(){
+	
+	anchor.current_data = {};
+	//anchor.initial_data[core.util.randomness()] =
+	anchor.current_data['_nil_'] =
+	    {
+		value: "",
+		label: "No Filter",
+		count: 0,
+		selected: true,
+		special: true
+	    };
+	for( var ms = 0; ms < anchor.initial_data.length; ms++ ){
+	    // anchor.current_data[core.util.randomness()] =
+	    anchor.current_data[anchor.initial_data[ms][1]] =
+		{
+		    value: anchor.initial_data[ms][1],
+		    label: anchor.initial_data[ms][0],
+		    count: 0,
+		    selected: false,
+		    special: false
+		};
+	}
+    };
+    this.reset_data = _reset_data;
+
+
+    // Update the underlying data structure. Can change count or
+    // selected or whatever.
+    function _update_value(inkey, intype, inval){
+
+	// Update the value in question.
+	var rval = false;
+	if( typeof anchor.current_data[inkey] != 'undefined' &&
+	    typeof anchor.current_data[inkey][intype] != 'undefined' ){
+		anchor.current_data[inkey][intype] = inval;
+		rval = true;
+		// core.kvetch("\tupdated: " + inkey +
+		// 	    "'s " + intype +
+		// 	    ' to ' + inval);
+	    }
+
+	// Bookkeeping to keep the "no filter" option selected
+	// or not in all cases.
+	if( _get_selected_filters().length == 0 ){
+	    anchor.current_data['_nil_']['selected'] = true;	    
+	}else{
+	    anchor.current_data['_nil_']['selected'] = false;
+	}
+
+	return rval;
+    };
+    this.update_value = _update_value;
+
+
+    // Give all possible current filters.
+    // Remove the nil/default-no filter manually.
+    function _get_all_filters(){
+	var ret_filters = [];
+	var complete_filters = core.util.get_hash_keys(anchor.current_data);
+	for( var cfi = 0; cfi < complete_filters.length; cfi++ ){
+	    var test_filter = complete_filters[cfi];
+	    if( test_filter != '_nil_' ){
+		ret_filters.push(test_filter);
+	    }
+	}
+	return ret_filters;
+    }
+    this.get_all_filters = _get_all_filters;
+
+
+    // Give all selected current filters.
+    function _get_selected_filters(){
+	
+	var ret_filters = [];
+
+	// Push out the filters that have selected == true.
+	var all_filters = _get_all_filters();
+	for( var afi = 0; afi < all_filters.length; afi++ ){
+	    var filter_name = all_filters[afi];
+	    var fconf = anchor.current_data[filter_name];
+	    if( fconf &&
+		typeof fconf['selected'] != 'undefined' &&
+		fconf['selected'] == true ){
+		    ret_filters.push(filter_name);
+		}
+	}
+
+	return ret_filters;
+    }
+    this.get_selected_filters = _get_selected_filters;
+
+
+    // Give current data.
+    function _get_state(){
+	return anchor.current_data;
+    }
+    this.get_state = _get_state;
+
+    ///
+    /// Constructor.
+    ///
+
+    _reset_data();
+};
+
+    
+//
+org.bbop.amigo.ui.interactive.multi_widget = function(in_id, in_name,
+						      in_size, in_label){
+
+    var anchor = this; // top-level this
+
+    // Bring in utilities.
+    var core = new org.bbop.amigo.core();
+    //var meta = new org.bbop.amigo.go_meta();
+
+    // We'll be doing a lot of debugging.
+    function ll(str){ core.kvetch(str); }
+    ll("");
+
     // Copy in atom arguments.
     this.mid = in_id;
     this.mname = in_name;
     this.msize = in_size;
     this.mlabel = in_label;
-
-    // Copy hash in safely.
     this.mdata = {};
-    //this.mdata[core.util.randomness()] =
-    this.mdata['_nil_'] =
-	{
-	    value: "",
-	    label: "No Filter",
-	    count: 0,
-	    selected: true,
-	    special: true
-	};
-    for( var ms = 0; ms < in_data.length; ms++ ){
-	// this.mdata[core.util.randomness()] = // value should be unique
-	this.mdata[in_data[ms][1]] =
-	    {
-		value: in_data[ms][1],
-		label: in_data[ms][0],
-		count: 0,
-		selected: false,
-		special: false
-	    };
+
+    function _update_with(in_data){
+	anchor.mdata = in_data;
     }
+    this.update_with = _update_with;
 
-    // Update the underlying data structure.
-    // Can change count or selected.
-    this.update_data = function(inkey, intype, inval){
-	var rval = false;
-	if( typeof anchor.mdata[inkey] != 'undefined' &&
-	    typeof anchor.mdata[inkey][intype] != 'undefined' ){
-		anchor.mdata[inkey][intype] = inval;
-		rval = true;
-	    }
-	return rval;
-    };
-
+    // Render the label to an HTML string.
     function _render_label(){
 	
 	var buf = new Array();
@@ -95,7 +193,8 @@ org.bbop.amigo.ui.interactive.multi = function(in_id, in_name, in_size,
     }
     this.render_label = _render_label;
 
-    // Render our widget to a string.
+
+    // Render the options to an HTML string.
     function _render_option(){
 
 	var buf = new Array();
@@ -156,7 +255,7 @@ org.bbop.amigo.ui.interactive.multi = function(in_id, in_name, in_size,
     this.render_option = _render_option;
 
 
-    // Render our widget to a string.
+    // Render the select frame to an HTML string.
     function _render_select(){
 
 	var buf = new Array();
@@ -180,8 +279,9 @@ org.bbop.amigo.ui.interactive.multi = function(in_id, in_name, in_size,
     this.render_select = _render_select;
 
 
-    // Initial rendering of our widget to a string.
-    this.render = function(){
+    // Initial rendering of our widget to a string. Should only be
+    // called once.
+    this.render_initial = function(){
 
 	var buf = new Array();
 
@@ -191,52 +291,10 @@ org.bbop.amigo.ui.interactive.multi = function(in_id, in_name, in_size,
 	return buf.join('');
     };
 
+
     // ...
-    this.update_gui = function(){
+    this.render_update = function(){
 	jQuery('#' + anchor.mid).html(_render_option());
     };
 
-    // // Create listener for actions on the form.
-    // this.form.create_jquery_marshal = function(form_id, form_fields){
-
-    // 	return function(event){
-
-    // 	    // These will actually be variables used during function
-    // 	    // generation in final form.
-    // 	    //var form_id = '#app-form';
-    // 	    //var form_fields = ['input', 'option:selected'];
-
-    // 	    // Create jQuery selector string.
-    // 	    var minibuf = new Array();
-    // 	    for( var q = 0; q < form_fields.length ; q++ ){
-    // 		minibuf.push( form_id + ' ' + form_fields[q] );
-    // 	    }
-    // 	    var selector_string = minibuf.join(', ');
-    // 	    // ll('selector string: ' + selector_string);
-	    
-    // 	    //
-    // 	    //var found = new Array();
-    // 	    var found = {};
-    // 	    var form_inputs = jQuery(selector_string);
-    // 	    form_inputs.each(function(i, item) {
-	    
-    // 		var value = jQuery(item).val();
-    // 		var name = null;
-    // 		if( item.name ){
-    // 		    name = item.name;
-    // 		}else{
-    // 		    name = jQuery(item).parent().attr('name');
-    // 		}
-    // 		// ll('_'+ i +':'+ name +':'+ value);
-
-    // 		if( ! found[name] ){
-    // 		    found[name] = [];
-    // 		}
-    // 		found[name].push(value);
-    // 	    });
-    // 	    return found;
-    // 	};
-    // };
 };
-
-    
