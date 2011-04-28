@@ -20,6 +20,7 @@ var delay_in_ms = 350;
 var widgets = null;
 
 // Our discrete universal widgets.
+var type_model = null;
 var type_widget = null;
 
 // Find newlines in text.
@@ -84,11 +85,16 @@ function LiveSearchGOlrInit(){
     // var ontology_text =
     // 	widgets.form.multiselect('ontology', 'ontology', 4,
     // 				 ontology_data, 'Ontology');
+
     // var type_text = widgets.form.multiselect('type', 'type', 4,
     // 					     type_data, 'GP type');
-    type_widget = new org.bbop.amigo.ui.interactive.multi('type', 'type', 4,
-    							  type_data, 'GP type');
-    var type_text = type_widget.render();
+    type_model = new org.bbop.amigo.ui.interactive.multi_model(type_data);
+    type_widget =
+	new org.bbop.amigo.ui.interactive.multi_widget('type', 'type',
+						       4, 'GP type');
+    type_widget.update_with(type_model.get_state());
+
+    var type_text = type_widget.render_initial();
 
     var taxon_text =
     	widgets.form.multiselect('taxon', 'taxon', 4,
@@ -373,22 +379,49 @@ function _update_gui (json_data){
 
     core.kvetch("Updating GUI...");
 
-    // TODO: Cycle through response and update GUI.
-    var type_counts = core.golr_response.facet_counts(json_data, 'type');
-    for( var tc = 0; tc < type_counts.length; tc++ ){
-	var type_count = type_counts[tc];
-	var f_label = type_count['label'];
-	var f_count = type_count['count'];
-	core.kvetch('foo: ' + f_label);
-	core.kvetch('bar: ' + f_count);
-	type_widget.update_data(f_label, 'count', f_count);
+    // Capture the current filters and facets. They come in as a hash
+    // of arrays.
+    var qfilters = core.golr_response.query_filters(json_data);
+    var qfacets = core.golr_response.facet_counts(json_data);
+
+    // Update the model with query filters and facet counts. Since the
+    // return data is considered comprehensive, if one is not found in
+    // the return data it is reset.
+    var all_filters = type_model.get_all_filters();
+    core.kvetch("all type filters: " + all_filters);
+    for( var ptfi = 0; ptfi < all_filters.length; ptfi++ ){
+     	var try_filter = all_filters[ptfi];
+     	// core.kvetch("try filter: " + try_filter);
+
+	// TODO: loop over each tryable filter...
+	// TODO: only show filters that have counts...
+
+	// Look at whether or not it was selected.
+	// core.kvetch("1: " + qfilters );
+	// core.kvetch("2: " + typeof qfilters );
+	// core.kvetch("3: " + qfilters['type'] );
+	// core.kvetch("4: " + typeof qfilters['type'] );
+     	if( qfilters['type'] && qfilters['type'][try_filter] ){
+	    type_model.update_value(try_filter, 'selected', true);
+	}else{
+	    type_model.update_value(try_filter, 'selected', false);
+	}
+
+	// Look at whether or not there is a count with it and add.
+     	if( qfacets['type'] &&
+	    typeof qfacets['type'][try_filter] != 'undefined' ){
+		type_model.update_value(try_filter, 'count',
+					qfacets['type'][try_filter]);
+	    }else{
+		type_model.update_value(try_filter, 'count', 0);
+	    }
     }
 
     // TODO/BUG:
-    type_widget.update_data('_nil_', 'selected', false);
+    type_widget.update_with(type_model.get_state());
 
     // Update it.
-    type_widget.update_gui();
+    type_widget.render_update();
 }
 
 
