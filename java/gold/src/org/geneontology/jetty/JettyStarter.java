@@ -151,16 +151,6 @@ public class JettyStarter {
         server.setStopAtShutdown(true);
         server.setSendServerVersion(true);
         
-		ShutdownMonitor monitor = new ShutdownMonitor();
-		
-		int delay = GeneOntologyManager.getInstance().getFileMonitorDelay();
-		FileMonitor goMonitor = new FileMonitor(GeneOntologyManager.getInstance().getDefaultOntologyLocations(), delay*60*1000);
-		goMonitor.addFileMonitorListener((GoldDbOperationsService)ServicesConfig.getService("gold-db-operations"));
-		goMonitor.startMonitoring();
-		LOG.info("Ontologies files monitor is started");
-		
-		
-		monitor.start();
 		
 		server.start();
 
@@ -168,11 +158,32 @@ public class JettyStarter {
 		LOG.info("Please visit the web application at the url : http://localhost:" + jetty_port + "/");
 		
 		
-		LOG.info("Initializing Services which include loading ontologies in memory. This step may take several mintues. ");
-		LOG.info("WAIT.............");
-		ServicesConfig.getServices();
 		
-		LOG.info("Services are initialized. The server is ready for performing services");
+		new Thread(new Runnable() {
+			
+			public void run() {
+				LOG.info("Initializing Services which include loading ontologies in memory. This step may take several mintues. ");
+				LOG.info("Please wait until services are initialized.............");
+
+				ServicesConfig.getServices();
+
+				LOG.info("Services are initialized. The server is ready for performing services");
+
+				
+				ShutdownMonitor monitor = new ShutdownMonitor();
+				
+				int delay = GeneOntologyManager.getInstance().getFileMonitorDelay();
+				FileMonitor goMonitor = new FileMonitor(GeneOntologyManager.getInstance().getDefaultOntologyLocations(), delay*60*1000);
+				goMonitor.addFileMonitorListener((GoldDbOperationsService)ServicesConfig.getService("gold-db-operations"));
+				goMonitor.startMonitoring();
+				LOG.info("Ontologies files monitor is started");
+				
+				
+				monitor.start();
+				
+			}
+		}).start();
+		
 		
 		/*LOG.info("Initializing gold database schema.");
 		LOG.info("WAIT.............");

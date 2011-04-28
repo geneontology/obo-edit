@@ -39,6 +39,12 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract implements F
 	private OWLGraphWrapper ontologyGraph;
 
 	/**
+	 * This reference holds taxanomies configured through the geneontology.gold.taxonomylocation
+	 * property in the conf/gold.properties file.
+	 */
+	private OWLGraphWrapper taxonomyGraph;
+	
+	/**
 	 * Path of the jsp file which renders the results of the computations of this service.
 	 */
 	private String viewPath;
@@ -63,7 +69,8 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract implements F
 	private String command;
 	
 	public GoldDbOperationsService(){
-		buildOWLGraphWrapper();
+		this.ontologyGraph = buildOWLGraphWrapper();
+		this.taxonomyGraph = buildOWLGraphWrapper(GeneOntologyManager.getInstance().getTaxonomiesLocations());
 		runner = null;
 	}
 	
@@ -139,6 +146,10 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract implements F
 		
 	}
 	
+	public OWLGraphWrapper getTaxonomiesGraph(){
+		return this.taxonomyGraph;
+	}
+	
 	public OWLGraphWrapper getGraphWrapper(){
 		return this.ontologyGraph;
 	}
@@ -152,10 +163,17 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract implements F
 		return this.viewPath;
 	}
 	
-	private void buildOWLGraphWrapper(){
+	private OWLGraphWrapper buildOWLGraphWrapper(){
+
+		List ontologies = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
+		
+		return buildOWLGraphWrapper(ontologies);
+	}
+	
+
+	private OWLGraphWrapper buildOWLGraphWrapper(List ontologies){
 		
 		DbOperations db = new DbOperations();
-		List ontologies = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
 		OWLGraphWrapper wrapper = null;
 		for(int i=0;i<ontologies.size();i++){
 			
@@ -175,13 +193,15 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract implements F
 					wrapper.mergeOntology(sont);
 				}
 				
-				if(ontologyGraph == null)
-					ontologyGraph = wrapper;
+	//			if(ontologyGraph == null)
+		//			ontologyGraph = wrapper;
 				//graphs.put(wrapper.getOntologyId(), wrapper); 
 			}catch(Exception ex){
 				LOG.error(ex.getMessage(), ex);
 			}
 		}
+		
+		return wrapper;
 		
 		
 		
@@ -219,9 +239,17 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract implements F
 			db.addDbOperationsListener(this);
 			
 			try{
+					OWLGraphWrapper wrapperHolder = null;
 					for(String ontLocation: ontLocations){
 						this.currentOntologyBeingProcessed = ontLocation;
 						OWLGraphWrapper graph = db.buildOWLGraphWrapper(ontLocation);
+						
+						if(wrapperHolder == null){
+							wrapperHolder = new OWLGraphWrapper(graph.getSourceOntology());
+						}else{
+							wrapperHolder.addSupportOntology(graph.getSourceOntology());
+							wrapperHolder.mergeOntology(graph.getSourceOntology());
+						}
 						
 						if("bulkload".equals(command))
 							db.bulkLoad(graph, force);
@@ -230,8 +258,8 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract implements F
 					}
 				if("update".equals(command)){
 					//rebuilt the merge because of change in one of the ontology
-					if(GeneOntologyManager.getInstance().getDefaultOntologyLocations().size()>0)
-						buildOWLGraphWrapper();
+					if(wrapperHolder != null)
+						ontologyGraph = wrapperHolder;
 					
 					
 				}
@@ -325,7 +353,7 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract implements F
 		LOG.info("filesModified event occured");
 
 		
-		buildOWLGraphWrapper();	
+		this.ontologyGraph = buildOWLGraphWrapper();	
 		
 		try{
 			DbOperations db = new DbOperations();

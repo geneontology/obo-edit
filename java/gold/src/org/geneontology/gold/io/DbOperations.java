@@ -222,6 +222,7 @@ public class DbOperations implements DbOperationsInterface{
 		if(ontologyLocation == null)
 			throw new FileNotFoundException("The file is not found");
 		
+		LOG.info("Loading Ontology file....."+ ontologyLocation);
 
 		for(DbOperationsListener listener: listeners){
 			listener.startOntologyLoad();
