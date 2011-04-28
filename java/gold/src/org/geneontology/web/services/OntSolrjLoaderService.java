@@ -15,14 +15,14 @@ import org.geneontology.web.Task;
  * @author shahidmanzoor
  *
  */
-public class OntSorjLoaderService extends ServiceHandlerAbstract {
+public class OntSolrjLoaderService extends ServiceHandlerAbstract {
 
-	private static Logger LOG = Logger.getLogger(OntSorjLoaderService.class);
+	private static Logger LOG = Logger.getLogger(OntSolrjLoaderService.class);
 	private static boolean DEBUG = LOG.isDebugEnabled();
 	
 	private Task runner;
 	
-	public OntSorjLoaderService(){
+	public OntSolrjLoaderService(){
 		
 	}
 	

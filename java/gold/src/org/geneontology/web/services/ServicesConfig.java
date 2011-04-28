@@ -31,7 +31,7 @@ public class ServicesConfig {
 		service = new InitializationService();
 		table.put(service.getServiceName(), service);
 		
-		service = new OntSorjLoaderService();
+		service = new OntSolrjLoaderService();
 		table.put(service.getServiceName(), service);
 		
 		return table;

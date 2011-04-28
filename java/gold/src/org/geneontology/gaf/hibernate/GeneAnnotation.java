@@ -1,6 +1,7 @@
 package org.geneontology.gaf.hibernate;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.geneontology.gold.hibernate.model.Cls;
@@ -35,6 +36,12 @@ public class GeneAnnotation extends GOModel implements Serializable {
 	private List<WithInfo> withInfoList;
 	private List<ExtensionExpression> extensionExpressionList;
 	private List<CompositeQualifier> compositeQualifierList;
+
+	
+	private static List<WithInfo> withInfoEmptyList = new ArrayList<WithInfo>();
+	private static List<ExtensionExpression> extensionExpressionEmptyList = new ArrayList<ExtensionExpression>();
+	private static List<CompositeQualifier> compositeQualifierEmptyList = new ArrayList<CompositeQualifier>();
+	
 	
 	private transient GafDocument gafDocumentObject;
 	
@@ -350,6 +357,9 @@ public class GeneAnnotation extends GOModel implements Serializable {
 			
 			if(gafDocumentObject != null){
 				extensionExpressionList = gafDocumentObject.getExpressions(getExtensionExpression());
+				
+				if(extensionExpressionList == null)
+					extensionExpressionList = extensionExpressionEmptyList;
 			}
 		}
 		
@@ -361,7 +371,12 @@ public class GeneAnnotation extends GOModel implements Serializable {
 			
 			if(gafDocumentObject != null)
 				withInfoList = gafDocumentObject.getWithInfos(getWithExpression());
+			
+			
+			if(withInfoList == null){
+				withInfoList = withInfoEmptyList;
 			}
+		}
 		
 		return withInfoList;
 	}
@@ -371,8 +386,9 @@ public class GeneAnnotation extends GOModel implements Serializable {
 			if(gafDocumentObject != null){
 				compositeQualifierList = gafDocumentObject.getCompositeQualifiers(getCompositeQualifier());
 			}
-			
-			//compositeQualifierList = getHibernateObjects(CompositeQualifier.class, "id", getCompositeQualifier());
+
+			if(compositeQualifierList == null)
+				compositeQualifierList = compositeQualifierEmptyList;
 		}
 		return compositeQualifierList;
 	}
