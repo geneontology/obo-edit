@@ -161,30 +161,90 @@ org.bbop.amigo.core = function(){
 	return robj.response.docs;
     };
 
-    // ...
-    this.golr_response.facet_fields = function(robj){
-	return _get_hash_keys(robj.facet_counts.facet_fields);
-    };
+    // // ...
+    // this.golr_response.facet_fields = function(robj){
+    // 	return _get_hash_keys(robj.facet_counts.facet_fields);
+    // };
 
     this.golr_response.facet_counts = function(robj, in_field){
 
-	var solr_facet_list = robj.facet_counts.facet_fields[in_field];
+	var ret_hash = {};
 
-	var out = [];
-	for( var tc = 0; tc < solr_facet_list.length; tc = tc + 2 ){
-	    out.push({
-			 label: solr_facet_list[tc],
-			 count: solr_facet_list[tc + 1]
-		     });
+	var facet_list = _get_hash_keys(robj.facet_counts.facet_fields);
+	for( var fli = 0; fli < facet_list.length; fli++ ){
+	    
+	    var facet_name = facet_list[fli];
+	    if( ! ret_hash[facet_name] ){
+		ret_hash[facet_name] = {};		
+	    }
+
+	    var facet_counts = robj.facet_counts.facet_fields[facet_name];
+	    for( var tc = 0; tc < facet_counts.length; tc = tc + 2 ){
+		var faspect = facet_counts[tc];
+		var fcount = facet_counts[tc + 1];
+		ret_hash[facet_name][faspect] = fcount;
+	    }
 	}
-	//robj.facet_counts.facet_fields[in_field];
-	return out;
+
+	return ret_hash;
     };
 
-    // // TODO: fq can be irritating single value or irritating array
-    // this.golr_response.query_filters(robj){
-    // 	return robj.response.docs;
-    // };
+    // TODO: fq can be irritating single value or irritating array
+    this.golr_response.query_filters = function(robj){
+
+	//sayer('fq 1a: ' + robj + "\n");
+	//sayer('fq 1b: ' + typeof(robj) + "\n");
+	//sayer('fq 2a: ' + robj.responseHeader + "\n");
+	//sayer('fq 2b: ' + typeof(robj.responseHeader) + "\n");
+
+	var ret_hash = {};
+	if( robj.responseHeader.params &&
+	    robj.responseHeader.params.fq ){
+
+		//sayer('fq in' + "\n");
+
+		var process_list = [];
+
+		// Check to see if it's not an array and copy it to be
+		// one. Otherwise, copy over the array contents.
+		if( typeof robj.responseHeader.params.fq == 'string'){
+		    process_list.push(robj.responseHeader.params.fq);
+		    //sayer('fq adjust for single' + "\n");
+		}else{
+		    for( var fqi = 0;
+			 fqi < robj.responseHeader.params.fq.length;
+			 fqi++ ){
+			     var new_bit = robj.responseHeader.params.fq[fqi];
+			     process_list.push(new_bit);
+			 }
+		}
+		    
+		//sayer('fq go through adjusted incoming' + "\n");
+
+		// Make the return fq more tolerable.
+		for( var pli = 0; pli < process_list.length; pli++ ){
+		    var list_item = process_list[pli];
+
+		    //sayer('fq process ' + list_item + "\n");
+
+		    var splits = list_item.split(":");
+		    var type = splits.shift();
+		    var value = splits.join(":");
+
+		    if( ! ret_hash[type] ){
+			ret_hash[type] = {};
+		    }
+
+		    ret_hash[type][value] = true;
+
+		    //sayer('fq done: ' + type + ':' + value + ":true\n");
+		}
+	    }else{
+		//ll('fq out');
+	    }
+
+    	return ret_hash;
+    };
 
     ///
     /// General AmiGO AJAX response checking (after parsing).
