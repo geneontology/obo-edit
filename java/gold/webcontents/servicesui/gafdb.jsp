@@ -116,17 +116,40 @@
 		<%
 		}
 	
-		if(!isTaskRunning){
+		if(!isTaskRunning && ex == null){
 		
 			%>
-			<hr />		
+			<hr />
+			
+			
+			<div>Select one option from the following options</div>
+			
+			<br />		
+			<form action=".">
+				<input type="hidden" name="runrules" />
+				<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
+				<input type="hidden" name="command" value="<%= request.getParameter("command") %>" />
+				<input type="submit" value="Run Annotation Rules" />
+			</form>
+			
+			<br />
+
 			<form action=".">
 				<input type="hidden" name="commit" />
 				<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
 				<input type="hidden" name="command" value="<%= request.getParameter("command") %>" />
-				<input type="submit" value="Commit GAF" />
+				<input type="submit" value="Save GAF into database" />
 			</form>
 			
+			<br />
+
+			<form action=".">
+				<input type="hidden" name="solrload" />
+				<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
+				<input type="hidden" name="command" value="<%= request.getParameter("command") %>" />
+				<input type="submit" value="Load GAF into Solr" />
+			</form>
+
 			<%
 		}
 	}

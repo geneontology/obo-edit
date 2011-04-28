@@ -22,6 +22,7 @@ import org.geneontology.gaf.io.GafURLFetch;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.rules.AnnotationRuleViolation;
 import org.geneontology.gold.rules.AnnotationRulesEngine;
+import org.geneontology.solrj.GafSolrLoader;
 import org.geneontology.web.Task;
 
 /**
@@ -66,8 +67,10 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	
 	private boolean commit;
 	
-//	private boolean isOPerationCompleted;
+	private boolean runAnnotationRules;
 	
+	private boolean solrLoad;
+
 	private List<GafDocument> gafDocuments;
 	
 	
@@ -94,73 +97,91 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 		//	this.force = "true".equals(request.getParameter("force"));
 			command = request.getParameter("command");
 			commit = request.getParameter("commit") == null ? false : true;
+			runAnnotationRules = request.getParameter("runrules") == null ? false : true;
+			solrLoad = request.getParameter("solrload") == null ? false : true;
+			
 			//set the default view
 			viewPath = "/servicesui/gafdb.jsp";
 			
-			String remoteGAF = request.getParameter("remote-gaf");
 			
-			//if there is no task running then create one for the update and bulkload commands
-//			if(isOPerationCompleted && !commit) {
-			if(remoteGAF != null){
-					gafLocations = new GafURLFetch(remoteGAF);
-			}else if(runner == null && !commit) {
-
-				String fileLocation = request
-				.getParameter("filelocation");
-		
-				if(fileLocation != null){
-					gafLocations = new ArrayList<String>();
-					((ArrayList)gafLocations).add(fileLocation);
-					gafDocuments = null;
-				}
+			if("getlastupdate".equals(command)){
+				viewPath = "/servicesui/gold-lastupdate.jsp";
+			}else {
+			
 				
-				GafObjectsFactory factory = new GafObjectsFactory();
-				
-				List list = factory.getGafDocument();
-				
-				//update command expects gaf location location in the parameter.
-				//If no gaflocatoin parameter is set then present 
-				//a form to user to select gaf file
-				if ("update".equals(command) && !list.isEmpty()) {
-		
-					if(fileLocation==null){
-						request.setAttribute("servicename", getServiceName());
-						request.setAttribute("locations", GeneOntologyManager.getInstance().getDefaultGafFileLocations());
-						
-						this.viewPath = "/servicesui/golddb-updateform.jsp";
-					}
-				}else if("bulkload".equals(command) || (list.isEmpty() && "update".equals(command)) ){
+				if(!commit && !runAnnotationRules && !solrLoad && runner == null){				
+					////////////////////start guessing gaf file location
+					String remoteGAF = request.getParameter("remote-gaf");
 					
-					if(fileLocation == null){
-						this.gafLocations = GeneOntologyManager.getInstance().getDefaultGafFileLocations();
-					}
-					gafDocuments = null;
-					command = "bulkload";
-				}else if("getlastupdate".equals(command)){
-					viewPath = "/servicesui/gold-lastupdate.jsp";
-				}
-			}
-			
-			//if commit is calld prior to the bulkload nand upate then throw error
-			if(commit && gafDocuments == null){
-				request.setAttribute("exception", new IllegalStateException("The commit is not allowed."));
-			}else if((commit || "bulkload".equals(command) || "update".equals(command)) && runner == null && this.gafLocations != null) {
-				annotationRuleViolations.clear();
-				runner = new GafDbTaskExecution();
-				runner.start();
+					//if there is no task running then create one for the update and bulkload commands
+		//			if(isOPerationCompleted && !commit) {
+					if(remoteGAF != null){
+							gafLocations = new GafURLFetch(remoteGAF);
+					}else{
+		
+						String fileLocation = request
+						.getParameter("filelocation");
 				
-			}
+						if(fileLocation != null){
+							gafLocations = new ArrayList<String>();
+							((ArrayList)gafLocations).add(fileLocation);
+							gafDocuments = null;
+						}else{
+						
+							GafObjectsFactory factory = new GafObjectsFactory();
+							
+							List list = factory.getGafDocument();
+							
+							//update command expects gaf location location in the parameter.
+							//If no gaflocatoin parameter is set then present 
+							//a form to user to select gaf file
+							if ("update".equals(command) && !list.isEmpty()) {
+					
+								if(fileLocation==null){
+									request.setAttribute("servicename", getServiceName());
+									request.setAttribute("locations", GeneOntologyManager.getInstance().getDefaultGafFileLocations());
+									
+									this.viewPath = "/servicesui/golddb-updateform.jsp";
+								}
+							}else if("bulkload".equals(command) || (list.isEmpty() && "update".equals(command)) ){
+								
+								if(fileLocation == null){
+									this.gafLocations = GeneOntologyManager.getInstance().getDefaultGafFileLocations();
+								}
+								gafDocuments = null;
+								command = "bulkload";
+							}
+						}
+					}
+		
+					//////////start guessing gaf file location
+				}
+	
+				
+				//if commit is calld prior to the bulkload nand upate then throw error
+				if((commit || runAnnotationRules || solrLoad) && gafDocuments == null){
+					request.setAttribute("exception", new IllegalStateException("The commit is not allowed."));
+				}else if(("bulkload".equals(command) || "update".equals(command)) && runner == null && (this.gafLocations != null || this.gafDocuments != null)) {
+					annotationRuleViolations.clear();
+					runner = new GafDbTaskExecution();
+					runner.start();
+					
+				}
+				
+				//store information in the request object. The request object is available in the 
+				//jsp file. The jsp use the objects data in print html.
+				if(runAnnotationRules || !commit || !solrLoad)
+					request.setAttribute("violations", annotationRuleViolations);
+				
+	//			request.setAttribute("dbname", "GAF");
+				
+				if(runner != null){
+					request.setAttribute("task", runner.getData());
+				}
+				
+				
+			} //end of else
 			
-			//store information in the request object. The request object is available in the 
-			//jsp file. The jsp use the objects data in print html.
-			if(!commit)
-				request.setAttribute("violations", annotationRuleViolations);
-			
-//			request.setAttribute("dbname", "GAF");
-			
-			if(runner != null){
-				request.setAttribute("task", runner.getData());
-			}
 		}finally{
 			
 			//if the task has completed its operation then set it to null
@@ -212,10 +233,6 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 		
 		@Override
 		public void execute() {
-		
-			
-			
-			
 			/*for(TaskExecutionListener l: listeners){
 				l.updateData(this);
 			}*/
@@ -224,7 +241,38 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			db.addDbOperationsListener(this);
 			
 			try{
-				if(!commit){
+				if(commit){
+					for(GafDocument gafDocument: gafDocuments){
+						this.currentOntologyBeingProcessed = gafDocument.getId();
+					
+						if("bulkload".equals(command)){
+							db.update(gafDocument);
+						}else if("update".equals(command)){
+							db.update(gafDocument);
+						}
+					}				
+				}else if(runAnnotationRules){
+					Object obj = gafDocuments;
+					for(GafDocument gafDocument: gafDocuments){
+						currentOntologyBeingProcessed = gafDocument.getDocumentPath();
+						performAnnotationChecks(gafDocument);
+					}
+					
+				}else if(solrLoad) {
+
+					GafSolrLoader loader = new GafSolrLoader(GeneOntologyManager.getInstance().getSolrUrl());
+
+					for(GafDocument gafDocument: gafDocuments){
+						currentOntologyBeingProcessed = gafDocument.getDocumentPath();
+						reportStartTime("Loading into Solr--" + currentOntologyBeingProcessed);
+
+						loader.load(gafDocument);
+						
+						reportEndTime("Loading into Solr--" + currentOntologyBeingProcessed);
+
+					}
+					
+				}else{
 					
 					if(gafLocations instanceof GafURLFetch){
 						GafURLFetch fetch = (GafURLFetch) gafLocations;
@@ -237,7 +285,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 							
 							GafDocument doc = db.buildGafDocument(new InputStreamReader(is), fetch.getCurrentGafFile(), fetch.getCurrentGafFilePath());
 							gafDocuments.add( doc);
-							performAnnotationChecks(doc);
+						//	performAnnotationChecks(doc);
 						}
 					}else{
 						List<String> files = (List<String>)gafLocations;
@@ -263,7 +311,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 									if("bulkload".equals(command) || "update".equals(command)){
 										GafDocument doc = db.buildGafDocument(ontLocation);
 										gafDocuments.add( doc );
-										performAnnotationChecks(doc);
+								//		performAnnotationChecks(doc);
 
 									}
 								}
@@ -271,30 +319,9 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	
 						
 						
-						/*GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
-						
-						OWLGraphWrapper graph = goldDb.getGraphWrapper();
-						
-						for (GafDocument doc : gafDocuments) {
-	
-							annotationRuleViolations.addAll(doc
-									.validateAnnotations(graph));
-						}*/
 					}
 					
-				//	wait();
-				}else{
-						
-						for(GafDocument gafDocument: gafDocuments){
-							this.currentOntologyBeingProcessed = gafDocument.getId();
-						
-							if("bulkload".equals(command)){
-								db.update(gafDocument);
-							}else if("update".equals(command)){
-								db.update(gafDocument);
-							}
-						}
-					}
+				}
 					
 					
 					
@@ -304,31 +331,12 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			}			
 		}
 
-/*		@Override
-		public Object getData() {
-			return this;
-		}
-
-		@Override
-		public void addTaskExecutionListener(TaskExecutionListener listener) {
-			listeners.add(listener);
-		}
-*/
 
 		
 		private void performAnnotationChecks(GafDocument doc){
 			reportStartTime("Performing Annotations Checks--" + currentOntologyBeingProcessed);
 		
 			
-			/*GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
-			
-			OWLGraphWrapper graph = goldDb.getGraphWrapper();
-			
-			//for (GafDocument doc : gafDocuments) {
-
-				annotationRuleViolations.addAll(doc
-						.validateAnnotations(graph));
-			//}*/
 			AnnotationRulesEngine engine = AnnotationRulesEngine.getInstance();
 			
 			Set<AnnotationRuleViolation> violations= engine.validateAnnotations(doc);
