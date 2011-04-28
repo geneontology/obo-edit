@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+import java.text.SimpleDateFormat;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -287,6 +288,19 @@ public class GeneOntologyManager {
 		
 		return config
 			.getString("geneontology.solr.url", "http://localhost:8080/solr");
+	}
+	
+	public String getDateFormat(){
+		return config
+			.getString("geneontology.gold.dateformat", "yyyy-MM-dd'T'HH:mm:ss");
+	}
+	
+	private SimpleDateFormat sdf = null;
+	public SimpleDateFormat SimpleDateFormat(){
+		if (sdf == null) {
+			sdf = new SimpleDateFormat(getDateFormat());
+		}
+		return sdf;
 	}
 	
 }
