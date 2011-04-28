@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.io.*;
 import java.util.zip.GZIPInputStream;
+//import java.text.SimpleDateFormat;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 
@@ -22,6 +23,7 @@ public class PhyloTreeLoader implements Loader {
 	final static FileFilter tff = new SuffixFileFilter(new String[] { ".tree.gz", ".tree" });
 	final static String tsvSuffix = ".tsv";
 	final static File tmpdir = null; //new File("/dev/shm");
+	final static GeneOntologyManager manager = GeneOntologyManager.getInstance();
 	
 	PhyloTreeLoader() {
 		sources = new HashSet<PhyloTree>();
@@ -56,8 +58,7 @@ public class PhyloTreeLoader implements Loader {
 			try {
 				pt.loadFromFile(parser);
 			} catch (IOException e) {
-				//e.printStackTrace();
-				System.err.println("Problems reading: " + pt);
+				e.printStackTrace();
 				removeMe.add(pt);
 			}
 		}
@@ -79,7 +80,7 @@ public class PhyloTreeLoader implements Loader {
 				String id = pt.getId();
 				//System.err.println(id);
 
-				familyDumper.dumpRow(id, pt.getName(), null, "2011-04-21"); // TODO: fix date
+				familyDumper.dumpRow(id, pt.getName(), null, pt.creationDate());
 				for (Bioentity be : pt.getBioentities()) {
 					familyMemberDumper.dumpRow(id, be.getId());
 				}
@@ -100,11 +101,9 @@ public class PhyloTreeLoader implements Loader {
 
 	
 	protected void hib(List<File> tmpfiles) throws SQLException, ClassNotFoundException, IOException {
-		GeneOntologyManager manager = GeneOntologyManager.getInstance();
 		TsvFileLoader tsvLoader = new TsvFileLoader(manager.getGolddbUserName(),
 				manager.getGolddbUserPassword(), manager.getGolddbHostName(), 
 				manager.getGolddbName());
-		List<String> tmpfileNames = new Vector<String>(tmpfiles.size());
 		tsvLoader.loadTables(tmpfiles);
 	}
 	
@@ -233,7 +232,14 @@ public class PhyloTreeLoader implements Loader {
 			return out;
 		}
 		
-	}
+		public long lastModified() {
+			return source.lastModified();
+		}
+		
+		public String creationDate(){
+			return manager.SimpleDateFormat().format(new Date(lastModified()));
+		}
 	
+	}
 
 }
