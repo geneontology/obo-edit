@@ -1,5 +1,6 @@
 package org.geneontology.gold.hibernate.model;
 
+
 public class ExistentialRelation extends GOModel {
 	private String cls;
 	private String relation;
