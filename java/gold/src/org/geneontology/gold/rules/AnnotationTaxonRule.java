@@ -2,24 +2,20 @@ package org.geneontology.gold.rules;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.Vector;
-
 import org.geneontology.gaf.hibernate.GeneAnnotation;
+import org.geneontology.web.services.GoldDbOperationsService;
+import org.geneontology.web.services.ServicesConfig;
 import org.obolibrary.oboformat.model.FrameMergeException;
 import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLObject;
-import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-
 import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 import owltools.graph.OWLQuantifiedProperty;
-import owltools.io.ParserWrapper;
 
 public class AnnotationTaxonRule extends AbstractAnnotatioRule implements AnnotationRule {
-	OWLGraphWrapper graphWrapper;
+	/*OWLGraphWrapper graphWrapper;
 	OWLGraphWrapper taxGraphWrapper;
 	List<String> files;
 	List<String> taxfiles;
@@ -28,51 +24,51 @@ public class AnnotationTaxonRule extends AbstractAnnotatioRule implements Annota
 	public String DEFAULT_ONTOL_TAXON_BRIDGE_LOC = "http://www.geneontology.org/quality_control/annotation_checks/taxon_checks/taxon_go_triggers.obo";
 	public String DEFAULT_TAXON_SLIM_LOC = "http://www.geneontology.org/quality_control/annotation_checks/taxon_checks/ncbi_taxon_slim.obo";
 	public String DEFAULT_TAXON_UNION_LOC = "http://www.geneontology.org/quality_control/annotation_checks/taxon_checks/taxon_union_terms.obo";
-	
+	*/
 	public AnnotationTaxonRule() throws OWLOntologyCreationException, IOException, FrameMergeException {
 		super();
-		files = new Vector<String>();
+		/*files = new Vector<String>();
 		files.add(DEFAULT_ONTOL_LOC);
 		files.add(DEFAULT_ONTOL_TAXON_BRIDGE_LOC);
 		taxfiles = new Vector<String>();
 		taxfiles.add(DEFAULT_TAXON_SLIM_LOC);
-		taxfiles.add(DEFAULT_TAXON_UNION_LOC);
+		taxfiles.add(DEFAULT_TAXON_UNION_LOC);*/
 		init();
 	}
 	
 	public AnnotationTaxonRule(String ontolLoc, String ontolTaxonBridgeLoc,
 			String taxonSlimLoc, String taxonUnionLoc) throws OWLOntologyCreationException, IOException, FrameMergeException {
 		super();
-		files = new Vector<String>();
+		/*files = new Vector<String>();
 		files.add(ontolLoc);
 		files.add(ontolTaxonBridgeLoc);
 		taxfiles = new Vector<String>();
 		taxfiles.add(taxonSlimLoc);
-		taxfiles.add(taxonUnionLoc);
+		taxfiles.add(taxonUnionLoc);*/
 		init();
 	}
 	
 		
 	private void init() throws OWLOntologyCreationException, IOException, FrameMergeException {
-		ParserWrapper pw = new ParserWrapper();
+		/*ParserWrapper pw = new ParserWrapper();
 		System.out.println("ATC PARSING:"+files);
 		OWLOntology ont = pw.parseOBOFiles(files);
 		ParserWrapper tpw = new ParserWrapper();
 		OWLOntology taxOnt = tpw.parseOBOFiles(taxfiles);
 
 		graphWrapper = new OWLGraphWrapper(ont);
-		taxGraphWrapper = new OWLGraphWrapper(taxOnt);
+		taxGraphWrapper = new OWLGraphWrapper(taxOnt);*/
 	}
 
 	
 
-	public OWLGraphWrapper getTaxGraphWrapper() {
+	/*public OWLGraphWrapper getTaxGraphWrapper() {
 		return taxGraphWrapper;
 	}
 
 	public void setTaxGraphWrapper(OWLGraphWrapper taxGraphWrapper) {
 		this.taxGraphWrapper = taxGraphWrapper;
-	}
+	}*/
 
 	public Set<AnnotationRuleViolation> getRuleViolations(GeneAnnotation a) {
 		return getRuleViolations(a.getCls(), a.getBioentityObject().getNcbiTaxonId());
@@ -88,6 +84,20 @@ public class AnnotationTaxonRule extends AbstractAnnotatioRule implements Annota
 	
 	public Set<AnnotationRuleViolation> getRuleViolations(String annotationCls, String taxonCls) {
 		Set<AnnotationRuleViolation> violations = new HashSet<AnnotationRuleViolation>();
+		
+		GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
+		if(goldDb == null){
+			throw new IllegalStateException("GoldDbOperationsService service is not initialized.");
+		}
+		
+		OWLGraphWrapper graphWrapper = goldDb.getGraphWrapper();
+		OWLGraphWrapper taxGraphWrapper = goldDb.getTaxonomiesGraph();
+
+		if(graphWrapper == null || taxGraphWrapper == null){
+			throw new IllegalStateException("OWLGraphWrapper is not initialzied in the GoldDbOperationsService");
+		}
+		
+		
 		OWLObject cls = graphWrapper.getOWLObjectByIdentifier(annotationCls);
 		OWLObject tax = taxGraphWrapper.getOWLObjectByIdentifier(taxonCls);
 		

@@ -629,7 +629,7 @@ WHERE  evidence.code = 'ND'
 		</status>
 	</rule>
 
-<!--   	
+   	
 <rule>
 	<id>GO_AR:0000013</id>
 	<title>GO_AR:0000013 Taxon Check</title>
@@ -644,7 +644,7 @@ WHERE  evidence.code = 'ND'
 	</implementation_list>
 	<status date="2011-04-12">Proposed</status>
 </rule>
-	-->
+	
 <rule>
 	<id>GO_AR:0000014</id>
 	<title>GO_AR:0000014 GO ID reference dangling check</title>
