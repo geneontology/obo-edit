@@ -737,7 +737,8 @@ org.bbop.amigo.core = function(){
 		type: [],
 		source: [],
 		taxon: [],
-		evidence_type: []
+		evidence_type: [],
+		isa_partof_label_closure: []
 	    };
 	var final_filter_args = _merge(default_filter_args, in_args);
 
