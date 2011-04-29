@@ -71,6 +71,32 @@ org.bbop.amigo.ui.interactive.multi_model = function(in_data){
     this.reset_data = _reset_data;
 
 
+    // See if data item exists by key.
+    function _has_item(in_arg_key){
+	var retval = false;
+	if( typeof anchor.current_data[in_arg_key] != 'undefined' ){
+	    retval = true;
+	}
+	return retval;
+    }
+    this.has_item = _has_item;
+
+
+    // Add a new data item to the model.
+    function _add_item(in_arg_key, data){
+
+	var retval = false;
+	if( typeof anchor.current_data[in_arg_key] == 'undefined' ){
+	    // BUG/TODO: this should be a copy.
+	    anchor.current_data[in_arg_key] = data;
+	    core.kvetch("add_item: adding key (w/data): " + in_arg_key);
+	    retval = true;
+	}
+	return retval;
+    }
+    this.add_item = _add_item;
+
+
     // Update the underlying data structure. Can change count or
     // selected or whatever.
     function _update_value(inkey, intype, inval){
@@ -88,7 +114,7 @@ org.bbop.amigo.ui.interactive.multi_model = function(in_data){
 
 	// Bookkeeping to keep the "no filter" option selected
 	// or not in all cases.
-	if( _get_selected_filters().length == 0 ){
+	if( _get_selected_items().length == 0 ){
 	    anchor.current_data['_nil_']['selected'] = true;	    
 	}else{
 	    anchor.current_data['_nil_']['selected'] = false;
@@ -99,9 +125,9 @@ org.bbop.amigo.ui.interactive.multi_model = function(in_data){
     this.update_value = _update_value;
 
 
-    // Give all possible current filters.
-    // Remove the nil/default-no filter manually.
-    function _get_all_filters(){
+    // Give all possible current filters except the nil/default-no
+    // filter.
+    function _get_all_items(){
 	var ret_filters = [];
 	var complete_filters = core.util.get_hash_keys(anchor.current_data);
 	for( var cfi = 0; cfi < complete_filters.length; cfi++ ){
@@ -112,16 +138,16 @@ org.bbop.amigo.ui.interactive.multi_model = function(in_data){
 	}
 	return ret_filters;
     }
-    this.get_all_filters = _get_all_filters;
+    this.get_all_items = _get_all_items;
 
 
     // Give all selected current filters.
-    function _get_selected_filters(){
+    function _get_selected_items(){
 	
 	var ret_filters = [];
 
 	// Push out the filters that have selected == true.
-	var all_filters = _get_all_filters();
+	var all_filters = _get_all_items();
 	for( var afi = 0; afi < all_filters.length; afi++ ){
 	    var filter_name = all_filters[afi];
 	    var fconf = anchor.current_data[filter_name];
@@ -134,7 +160,7 @@ org.bbop.amigo.ui.interactive.multi_model = function(in_data){
 
 	return ret_filters;
     }
-    this.get_selected_filters = _get_selected_filters;
+    this.get_selected_items = _get_selected_items;
 
 
     // Give current data.
@@ -200,6 +226,8 @@ org.bbop.amigo.ui.interactive.multi_widget = function(in_id, in_name,
 	var buf = new Array();
 
 	// Sort the items in the mdata array.
+	// Also keep a lookup for a "special" entry.
+	var default_on_p = false;
 	var mdata_keys = core.util.get_hash_keys(anchor.mdata);
 	function _data_comp(a, b){
 
@@ -207,10 +235,15 @@ org.bbop.amigo.ui.interactive.multi_widget = function(in_id, in_name,
 	    var a_data = anchor.mdata[a];
 	    var b_data = anchor.mdata[b];
 
+	    if( (a_data['special'] == true && a_data['selected'] == true) ||
+	    	(b_data['special'] == true && b_data['selected'] == true) ){
+	    	default_on_p = true;
+	    }
+
 	    //
 	    var retval = 0;
 	    if( a_data['special'] != b_data['special'] ){
-		if( a_data['count'] == true ){	    
+		if( a_data['count'] == true ){
 		    retval = 1;
 		}else{
 		    retval = -1;
@@ -235,21 +268,36 @@ org.bbop.amigo.ui.interactive.multi_widget = function(in_id, in_name,
 
 	//
 	for( var mski = 0; mski < mdata_keys.length; mski++ ){
-	    var write_data = anchor.mdata[mdata_keys[mski]];
-	    buf.push('<option value="');
-	    buf.push(write_data['value']);
-	    if( write_data['selected'] ){
-		buf.push('" selected="selected">');
-	    }else{
-		buf.push('">');		
-	    }
-	    buf.push(write_data['label']);
-	    if( write_data['count'] && write_data['count'] > 0 ){
-		buf.push(' (' + write_data['count'] + ')');
-	    }
-	    buf.push('</option>');
-	}
 
+	    var write_data = anchor.mdata[mdata_keys[mski]];
+	    
+	    // Write out option if:
+	    // 1) the default is selected (so we want to see everything)
+	    // 2) the selection is special
+	    // 3) if the default is not selected, either the item is selected or
+	    // 4) it has a count (and is thus interesting)
+	    if( default_on_p == true ||
+	    	write_data['selected'] == true ||
+	    	write_data['special'] == true ||
+	    	( write_data['count'] && write_data['count'] > 0 ) ){
+		    
+		    buf.push('<option value="');
+		    buf.push(write_data['value']);
+		    if( write_data['selected'] ){
+			buf.push('" selected="selected">');
+		    }else{
+			buf.push('">');		
+		    }
+		    buf.push(write_data['label']);
+		    
+		    if( write_data['count'] && write_data['count'] > 0 ){
+			buf.push(' (' + write_data['count'] + ')');
+		    }
+		    
+		    buf.push('</option>');
+		}
+		
+	}
 	return buf.join('');
     }
     this.render_option = _render_option;

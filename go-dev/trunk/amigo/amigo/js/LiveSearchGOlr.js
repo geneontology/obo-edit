@@ -22,6 +22,14 @@ var widgets = null;
 // Our discrete universal widgets.
 var type_model = null;
 var type_widget = null;
+var evidence_model = null;
+var evidence_widget = null;
+var source_model = null;
+var source_widget = null;
+var taxon_model = null;
+var taxon_widget = null;
+var ip_lc_model = null;
+var ip_lc_widget = null;
 
 // Find newlines in text.
 var newline_finder = new RegExp("\n", "g");
@@ -48,10 +56,21 @@ function LiveSearchGOlrInit(){
 
     // Pull in GO meta info.
     //var ontology_data = gm.ontologies();
-    var species_data = gm.species();
     var source_data = gm.sources();
     var type_data = gm.gp_types();
 
+    // TODO/BUG: Chris now seems to be including the "NCBIGene:"
+    // on top of the unique number--for now, just go through and add that.
+    var species_data = gm.species();
+    var taxon_set = [];
+    for( var si = 0; si < species_data.length; si++ ){
+	var slabel = species_data[si][0];
+	var skey = species_data[si][1];
+	taxon_set.push([slabel, 'NCBIGene:' + skey]); 
+    }
+
+
+    // Fix incoming data.
     var evidence_data = gm.evidence_codes();
     var evcode_set = []; 
     for( var eci = 0; eci < evidence_data.length; eci++ ){
@@ -70,6 +89,12 @@ function LiveSearchGOlrInit(){
 	widgets.form.hidden_input('facet.field', 'type');
     var hidden_facet_field_ev_type_text =
 	widgets.form.hidden_input('facet.field', 'evidence_type');
+    var hidden_facet_field_source_text =
+	widgets.form.hidden_input('facet.field', 'source');
+    var hidden_facet_field_taxon_text =
+	widgets.form.hidden_input('facet.field', 'taxon');
+    var hidden_facet_field_term_label_closure_text =
+	widgets.form.hidden_input('facet.field', 'isa_partof_label_closure');
     
     // Clear the controls' area.
     _clear_app_forms();
@@ -86,36 +111,69 @@ function LiveSearchGOlrInit(){
     // 	widgets.form.multiselect('ontology', 'ontology', 4,
     // 				 ontology_data, 'Ontology');
 
-    // var type_text = widgets.form.multiselect('type', 'type', 4,
-    // 					     type_data, 'GP type');
+    // Get type filter going.
     type_model = new org.bbop.amigo.ui.interactive.multi_model(type_data);
     type_widget =
 	new org.bbop.amigo.ui.interactive.multi_widget('type', 'type',
 						       4, 'GP type');
     type_widget.update_with(type_model.get_state());
-
     var type_text = type_widget.render_initial();
 
-    var taxon_text =
-    	widgets.form.multiselect('taxon', 'taxon', 4,
-    				 species_data, 'Species');
-    var source_text =
-    	widgets.form.multiselect('source', 'source', 4,
-    				 source_data, 'Data source');
-    var evidence_type_text =
-    	widgets.form.multiselect('evidence_type', 'evidence_type', 4,
-    				 evcode_set, 'Evidence');
+    // Get source filter going.
+    // var taxon_text =
+    // 	widgets.form.multiselect('taxon', 'taxon', 4,
+    // 				 species_data, 'Species');
+    taxon_model = new org.bbop.amigo.ui.interactive.multi_model(taxon_set);
+    taxon_widget =
+	new org.bbop.amigo.ui.interactive.multi_widget('taxon', 'taxon',
+						       4, 'Species');
+    taxon_widget.update_with(taxon_model.get_state());
+    var taxon_text = taxon_widget.render_initial();
+
+    // Get source filter going.
+    source_model = new org.bbop.amigo.ui.interactive.multi_model(source_data);
+    source_widget =
+	new org.bbop.amigo.ui.interactive.multi_widget('source', 'source',
+						       4, 'Data source');
+    source_widget.update_with(source_model.get_state());
+    var source_text = source_widget.render_initial();
+
+    // Get evidence filter going.
+    evidence_model =
+	new org.bbop.amigo.ui.interactive.multi_model(evcode_set);
+    evidence_widget =
+	new org.bbop.amigo.ui.interactive.multi_widget('evidence_type',
+						       'evidence_type',
+						       4, 'Evidence');
+    evidence_widget.update_with(evidence_model.get_state());
+    var evidence_type_text = evidence_widget.render_initial();
+
+    // Get isa_partof_label_closure filter going.
+    var ipl = 'isa_partof_label_closure';
+    ip_lc_model =
+	new org.bbop.amigo.ui.interactive.multi_model({});
+    ip_lc_widget =
+	new org.bbop.amigo.ui.interactive.multi_widget(ipl, ipl,
+						       4, 'Term closure');
+    ip_lc_widget.update_with(ip_lc_model.get_state());
+    var isa_partof_label_closure_text = ip_lc_widget.render_initial();
+
+    // Add in the order that we want things.
     //jQuery("#app-form").append(hidden_mode_search_text);
     jQuery("#app-form").append(hidden_count_text);
     jQuery("#app-form").append(hidden_facet_text);
     jQuery("#app-form").append(hidden_facet_field_type_text);
     jQuery("#app-form").append(hidden_facet_field_ev_type_text);
+    jQuery("#app-form").append(hidden_facet_field_source_text);
+    jQuery("#app-form").append(hidden_facet_field_taxon_text);
+    jQuery("#app-form").append(hidden_facet_field_term_label_closure_text);
     jQuery("#app-form-query").append(query_text);
     //jQuery("#app-form-filters").append(ontology_text);
     jQuery("#app-form-filters").append(type_text);
     jQuery("#app-form-filters").append(taxon_text);
     jQuery("#app-form-filters").append(source_text);
     jQuery("#app-form-filters").append(evidence_type_text);
+    jQuery("#app-form-filters").append(isa_partof_label_closure_text);
 
     //core.kvetch('GP type text: ' + type_text );
 
@@ -247,6 +305,7 @@ function LiveSearchGOlrInit(){
     jQuery("#taxon").change(server_action);
     jQuery("#source").change(server_action);
     jQuery("#evidence_type").change(server_action);
+    jQuery("#isa_partof_label_closure").change(server_action);
 
     // NOTE: we can either use this or the one above.
     // // Slow down the input on our typing fields.
@@ -384,44 +443,135 @@ function _update_gui (json_data){
     var qfilters = core.golr_response.query_filters(json_data);
     var qfacets = core.golr_response.facet_counts(json_data);
 
-    // Update the model with query filters and facet counts. Since the
-    // return data is considered comprehensive, if one is not found in
-    // the return data it is reset.
-    var all_filters = type_model.get_all_filters();
-    core.kvetch("all type filters: " + all_filters);
-    for( var ptfi = 0; ptfi < all_filters.length; ptfi++ ){
-     	var try_filter = all_filters[ptfi];
-     	// core.kvetch("try filter: " + try_filter);
+    // Define pre-defined filters.
+    var filterables = [
+	{
+	    filter_id: 'type',
+	    model: type_model,
+	    widget: type_widget
+	},
+	{
+	    filter_id: 'taxon',
+	    model: taxon_model,
+	    widget: taxon_widget
+	},
+	{
+	    filter_id: 'source',
+	    model: source_model,
+	    widget: source_widget
+	},
+	{
+	    filter_id: 'evidence_type',
+	    model: evidence_model,
+	    widget: evidence_widget
+	}
+    ];
 
-	// TODO: loop over each tryable filter...
-	// TODO: only show filters that have counts...
+    // Operate on filters that have a pre-defined base.
+    for( var fi = 0; fi < filterables.length ; fi++){
+	var filterable = filterables[fi];
+	var curr_filter_id = filterable['filter_id'];
+	var curr_model = filterable['model'];
+	var curr_widget = filterable['widget'];
 
-	// Look at whether or not it was selected.
-	// core.kvetch("1: " + qfilters );
-	// core.kvetch("2: " + typeof qfilters );
-	// core.kvetch("3: " + qfilters['type'] );
-	// core.kvetch("4: " + typeof qfilters['type'] );
-     	if( qfilters['type'] && qfilters['type'][try_filter] ){
-	    type_model.update_value(try_filter, 'selected', true);
-	}else{
-	    type_model.update_value(try_filter, 'selected', false);
+	// Update the model with query filters and facet counts. Since the
+	// return data is considered comprehensive, if one is not
+	var all_filters = curr_model.get_all_items();
+	//core.kvetch("all " + curr_filter_id + " filters: " + all_filters);
+	for( var ptfi = 0; ptfi < all_filters.length; ptfi++ ){
+     	    var try_filter = all_filters[ptfi];
+     	    // core.kvetch("try filter: " + try_filter);
+     	    if( qfilters[curr_filter_id] &&
+		qfilters[curr_filter_id][try_filter] ){
+		curr_model.update_value(try_filter, 'selected', true);
+	    }else{
+		curr_model.update_value(try_filter, 'selected', false);
+	    }
+
+	    // Look at whether or not there is a count with it and add.
+     	    if( qfacets[curr_filter_id] &&
+		typeof qfacets[curr_filter_id][try_filter] != 'undefined' ){
+		    var new_val = qfacets[curr_filter_id][try_filter];
+		    curr_model.update_value(try_filter, 'count', new_val);
+		}else{
+		    curr_model.update_value(try_filter, 'count', 0);
+		}
 	}
 
-	// Look at whether or not there is a count with it and add.
-     	if( qfacets['type'] &&
-	    typeof qfacets['type'][try_filter] != 'undefined' ){
-		type_model.update_value(try_filter, 'count',
-					qfacets['type'][try_filter]);
-	    }else{
-		type_model.update_value(try_filter, 'count', 0);
-	    }
+	// Update it.
+	curr_widget.update_with(curr_model.get_state());
+	curr_widget.render_update();
     }
 
-    // TODO/BUG:
-    type_widget.update_with(type_model.get_state());
+    // Define dynamic filters.
+    var dyn_filterables = [
+	{
+	    filter_id: 'isa_partof_label_closure',
+	    model: ip_lc_model,
+	    widget: ip_lc_widget
+	}
+    ];
 
-    // Update it.
-    type_widget.render_update();
+    // Operate on filters that have only return data to work with.
+    for( var dfi = 0; dfi < dyn_filterables.length ; dfi++){
+	var filterable = dyn_filterables[dfi];
+	var curr_filter_id = filterable['filter_id'];
+	var curr_model = filterable['model'];
+	var curr_widget = filterable['widget'];
+
+	// Iterate over all facet values.
+	var facet_keys = core.util.get_hash_keys(qfacets[curr_filter_id]);
+	core.kvetch("facet_keys: " + facet_keys);
+
+	// Get all things currently in the model.
+	var all_item_keys = curr_model.get_all_items();
+	core.kvetch("all_item_keys: " + all_item_keys);
+
+	// Join them and update over the whole set.
+	var all_keys = facet_keys.concat(all_item_keys);
+
+	core.kvetch("all " + curr_filter_id + " filters: " + all_keys);
+
+	for( var aki = 0; aki < all_keys.length; aki++ ){
+	    var curr_asp = all_keys[aki];
+	    //core.kvetch("looking at: " + curr_asp);
+	    
+	    // Add things to the model if they aren't there.
+	    if( ! curr_model.has_item(curr_asp) ){
+		curr_model.add_item(curr_asp, {
+					value: curr_asp,
+					label: curr_asp,
+					count: 0,
+					selected: false,
+					special: false
+ 				    });
+		core.kvetch("added: " + curr_asp);
+	    }
+
+	    // Look at whether or not there is a count with it. If
+	    // there is no facet there, the count is reset to zero.
+     	    if( typeof qfacets[curr_filter_id][curr_asp] == 'undefined' ){
+		curr_model.update_value(curr_asp, 'count', 0);
+	    }else{
+		var new_val = qfacets[curr_filter_id][curr_asp];
+		//core.kvetch("change " + curr_asp + ' to ' + new_val);
+		curr_model.update_value(curr_asp, 'count', new_val);
+	    }
+	    
+	    // ...
+     	    if( qfilters[curr_filter_id] &&
+		qfilters[curr_filter_id][curr_asp] ){
+		    curr_model.update_value(curr_asp, 'selected', true);
+		}else{
+		    curr_model.update_value(curr_asp, 'selected', false);
+		}
+	    
+	}
+
+	// Update it.
+	curr_widget.update_with(curr_model.get_state());
+	curr_widget.render_update();
+    }
 }
 
 
@@ -476,147 +626,6 @@ function _process_results (json_data, status){
     widgets.finish_wait();
 }
 
-
-// // Convert the return JSON results into something usable...
-// function _process_results (json_data, status){
-
-//     core.kvetch('checking results...');
-
-//     // Verify the incoming data. Only go if we got something.
-//     if( core.response.success(json_data) &&
-// 	core.response.type(json_data) == 'live_search_golr' ){
-// 	core.kvetch('assoc results okay...');
-
-// 	// Packet order checking.
-// 	var in_args = core.response.arguments(json_data);
-// 	var our_packet = parseInt(in_args.packet);
-// 	core.kvetch("packet: "+ our_packet +" (>? "+ last_received_packet +")");
-// 	if( our_packet && our_packet > last_received_packet ){
-
-// 	    core.kvetch("order usable packet: "+ our_packet);
-
-// 	    // Set last received.
-// 	    last_received_packet = our_packet;
-
-// 	    // Okay, get the results data.
-// 	    var ls = new org.bbop.amigo.live_search(json_data);
-// 	    var struct = ls.results();
-
-// 	    var species_map = gm.species_map();
-
-// 	    // Bulk change.
-// 	    var cache = new Array();
-// 	    cache.push('<table>');
-// 	    cache.push('<thead><tr>');
-
-// 	    cache.push('<th>score</th>');
-
-// 	    cache.push('<th>evidence</th>');
-
-// 	    cache.push('<th>acc</th>');
-// 	    cache.push('<th>name</th>');
-// 	    //cache.push('<th>ontology</th>');
-// 	    cache.push('<th>synonym(s)</th>');
-
-// 	    cache.push('<th>dbxref</th>');
-// 	    cache.push('<th>symbol</th>');
-// 	    cache.push('<th>full_name</th>');
-// 	    cache.push('<th>type</th>');
-// 	    cache.push('<th>source</th>');
-// 	    cache.push('<th>species</th>');
-// 	    cache.push('<th>gpsynonym(s)</th>');
-
-// 	    cache.push('</tr></thead><tbody>');
-// 	    for( var i = 0; i < struct.length; i++ ){
-
-// 		var r = struct[i];
-// 		// var encoded_acc = coder.encode(r.acc);
-// 		// var encoded_dbxref = coder.encode(r.dbxref);
-
-// 		// Create HTML.
-// 		if( i % 2 == 0 ){
-// 		    cache.push('<tr class="odd_row">');
-// 		}else{
-// 		    cache.push('<tr class="even_row">');
-// 		}
-
-// 		// Score.
-// 		cache.push('<td>');
-// 		cache.push(r.score + '%');
-// 		cache.push('</td>');
-
-// 		// Evidence.
-// 		cache.push('<td>');
-// 		cache.push(r.evidence);
-// 		cache.push('</td>');
-		
-// 		// Term section.
-// 		cache.push('<td>');
-// 		cache.push('<a title="link to information on ' + r.acc +
-// 			   '" href=\"' + r.term_link +
-// 			   '">' + r.hilite_acc +
-// 			   '</a>');
-// 		cache.push('</td>');
-// 		cache.push('<td>');
-// 		cache.push(r.hilite_name);
-// 		cache.push('</td>');
-// 		cache.push('<td>');
-// 		cache.push(r.hilite_ontology);
-// 		//cache.push('n/a');
-// 		cache.push('</td>');
-// 		cache.push('<td>');
-// 		//cache.push(r.hilite_synonym);
-// 		cache.push(r.hilite_synonym.replace(newline_finder, ", "));
-// 		cache.push('</td>');
-
-// 		// GP section.
-// 		cache.push('<td>');
-// 		cache.push('<a title="link to information on ' + r.dbxref +
-// 			   '" href=\"' + r.gene_product_link +
-// 			   '">' + r.hilite_dbxref +
-// 			   '</a>');
-// 		cache.push('</td>');
-// 		cache.push('<td>');
-// 		cache.push(r.hilite_symbol);
-// 		cache.push('</td>');
-// 		cache.push('<td>');
-// 		cache.push(r.hilite_full_name);
-// 		cache.push('</td>');
-// 		cache.push('<td>');
-// 		cache.push(r.hilite_gptype);
-// 		cache.push('</td>');
-// 		cache.push('<td>');
-// 		cache.push(r.hilite_source);
-// 		cache.push('</td>');
-// 		// Simple names aren't split, complicated ones are.
-// 		var s_name = species_map[r.species];
-// 		if( s_name && s_name.split(' ').length <= 2 ){
-// 		    cache.push('<td class="nowrap">');
-// 		}else{
-// 		    cache.push('<td class="">');
-// 		}
-// 		cache.push(species_map[r.species]);
-// 		cache.push('</td>');
-// 		cache.push('<td>');
-// 		//cache.push(r.hilite_synonym);
-// 		cache.push(r.hilite_gpsynonym.replace(newline_finder, ", "));
-// 		cache.push('</td>');
-// 		cache.push('</tr>');
-// 	    }
-// 	    cache.push('</tbody></table>');
-
-// 	    // Set div text.
-// 	    jQuery('#results_div').html('<p>' + cache.join('') + '</p>');
-
-// 	    _process_meta_results(ls, 'association',
-// 				  core.response.arguments(json_data));
-
-// 	}else{
-// 	    core.kvetch("dropping packet");
-// 	}
-//     }
-//     widgets.finish_wait();
-// }
 
 //
 function _table_cache_from_results (dlist){
