@@ -81,6 +81,7 @@ public class TsvFileLoader {
 		}
 	}
 	
+
 	public void loadTables(String tsvFilesDir, List<String> list) throws IOException, SQLException{
 		File dir = new File(tsvFilesDir);
 		for(String table: list){
@@ -88,6 +89,12 @@ public class TsvFileLoader {
 		}
 	}
 
+	/**
+	 * 
+	 * @param files Calls loadTable(File file) on each element in this list.
+	 * @throws IOException
+	 * @throws SQLException
+	 */
 	public void loadTables(List<File> files) throws IOException, SQLException {
 		for (File file : files) {
 			loadTable(file);
