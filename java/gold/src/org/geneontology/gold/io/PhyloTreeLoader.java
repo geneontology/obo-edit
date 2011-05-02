@@ -218,15 +218,11 @@ public class PhyloTreeLoader implements Loader {
 		public Collection<Bioentity> getBioentities() {
 			Collection<Bioentity> out = new HashSet<Bioentity>();
 			for (HibPantherID hpi : leaves.values()) {
-				Collection<Bioentity> shouldBeOne = hpi.bioentityMatch();
-				switch (shouldBeOne.size()) {
-				case 1:
-					out.addAll(shouldBeOne);
-					break;
-				case 0:
-					break;
-				default:
-					System.err.println(hpi.getPantherID() + ' ' + shouldBeOne);
+				Bioentity got = hpi.bioentity();
+				if (got == null) {
+					// TODO: warn about missing members
+				} else {
+					out.add(hpi.bioentity());
 				}
 			}
 			return out;
