@@ -47,10 +47,6 @@ public class GafSolrLoader {
 
 		GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
 		OWLGraphWrapper wrapper = goldDb.getGraphWrapper();
-    	for(Bioentity bioentity: doc.getBioentities()){
-            SolrInputDocument d = new SolrInputDocument();
-            docs.add(d);
-    	}
     	
 		for(GeneAnnotation a: doc.getGeneAnnotations()){
             SolrInputDocument d = new SolrInputDocument();
@@ -78,9 +74,9 @@ public class GafSolrLoader {
             OWLClass type_cls= wrapper.getOWLClass(type);
             String type_label = wrapper.getLabel(type_cls);
 
-            String withExpression = a.getWithExpression();
+//            String withExpression = a.getWithExpression();
             
-            String compositeQualifier = a.getCompositeQualifier();
+ //           String compositeQualifier = a.getCompositeQualifier();
             
             String referenceId = a.getReferenceId();
             
@@ -88,7 +84,7 @@ public class GafSolrLoader {
 
             String date = a.getLastUpdateDate();
             
-            String extensionExpression = a.getExtensionExpression();
+    //        String extensionExpression = a.getExtensionExpression();
             
             String taxon = bioentity.getNcbiTaxonId();
             
@@ -198,11 +194,11 @@ public class GafSolrLoader {
             if(type_label != null)
             	d.addField("type_label", type_label);
             
-            if(withExpression != null)
-            	d.addField("with_expression", withExpression);
+        //    if(withExpression != null)
+          //  	d.addField("with_expression", withExpression);
             
-            if(compositeQualifier != null)
-            	d.addField("composite_qualifier", compositeQualifier);
+//            if(compositeQualifier != null)
+//            	d.addField("composite_qualifier", compositeQualifier);
             
             if(referenceId != null)
             	d.addField("reference", referenceId);
@@ -213,8 +209,8 @@ public class GafSolrLoader {
             if(date != null)
             	d.addField("date", date);
 
-            if(extensionExpression != null)
-            	d.addField("extension_expression", extensionExpression);
+        //    if(extensionExpression != null)
+          //  	d.addField("extension_expression", extensionExpression);
             
             if(taxon != null)
             	d.addField("taxon", taxon);
