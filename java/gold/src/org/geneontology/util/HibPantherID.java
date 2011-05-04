@@ -27,7 +27,7 @@ public class HibPantherID extends PantherID {
 		return false;
 	}
 
-	List<Bioentity> bioentities = null;
+	private List<Bioentity> bioentities = null;
 	public List<Bioentity> bioentityMatch() {
 		if (null == bioentities) {
 			bioentities = new Vector<Bioentity>();
@@ -52,8 +52,7 @@ public class HibPantherID extends PantherID {
 						if (this.sameSpecies(match)) {
 							bioentities.add(match);
 						} else {
-							// Lets not be no verbose when it come to the guessed IDs
-							//System.out.println("NCBI Taxon ID Mismatch for " + this);
+							System.out.println("NCBI Taxon ID Mismatch for " + this);
 						}
 					}
 				}
@@ -76,34 +75,37 @@ public class HibPantherID extends PantherID {
 				out = pick("WB");
 				break;
 			case 10116: // Rattus norvegicus
-				out = pick("RGD"); //new String[]  { "RGD", "UniProtKB", "ENSEMBL"});
+				out = pick(new String[]  { "RGD", "UniProtKB", "ENSEMBL"});
 				break;
 			default:
 				System.err.println(this.getSpeciesCode() + " => " + pick);
 				System.exit(1);
-				//out = pick.get(0); // TODO: use logic here, not just take the first
-				//System.err.println(getPantherID() + " => " + out + " from " + pick);
 			}
 		}
 		
+		// if size == 0 return null
 		return out;
 	}
 	
 	protected Bioentity pick(String find) {
-		return pick(new String[] { find });
-	}
-	
-	protected Bioentity pick(String[] find) {	
-		for (String f : find) {
-			for (Bioentity b : bioentityMatch()) {
-				String id[] = b.getId().split(":", 2);
-				if (f.equalsIgnoreCase(id[0])) {
-					System.err.println("Picked " + b + " from " + bioentityMatch());
-					return b;
-				}
+		for (Bioentity b : bioentityMatch()) {
+			String id[] = b.getId().split(":", 2);
+			if (find.equalsIgnoreCase(id[0])) {
+				//System.err.println("Matched " + bioentityMatch() + " to " + b);
+				return b;
 			}
 		}
-		System.err.println("no id found for " + bioentityMatch());
+		return null;
+	}
+
+	protected Bioentity pick(String[] find) {	
+		for (String f : find) {
+			Bioentity got = pick(f);
+			if (null != got) {
+				return got;
+			}
+		}
+		System.err.println("no id picked for " + bioentityMatch());
 		System.exit(0);
 		
 		return null;
