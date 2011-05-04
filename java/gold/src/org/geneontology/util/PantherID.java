@@ -11,20 +11,27 @@ import java.util.LinkedHashSet;
 
 import java.util.Arrays;
 
+/**
+ * An object to hold protein IDs as presented from Panther.
+ * @author Sven Heinicke
+ *
+ */
 public class PantherID implements Comparable<PantherID> {
 	final static String[] refG = { "DANRE", "ARATH", "CHICK", "RAT", "MOUSE", "DICDI", "YEAST", "DROME", "CAEEL", "HUMAN", "SCHPO", "ECOLI" };
 	
-	static Set<String> needSpecies = new TreeSet<String>();
-	static Map<String,UniProtSpecies> haveSpecies = new TreeMap<String,UniProtSpecies>();
+	private static Set<String> needSpecies = new TreeSet<String>();
+	private static Map<String,UniProtSpecies> haveSpecies = new TreeMap<String,UniProtSpecies>();
 	
 	private String pantherID;
 	private String speciesCode;
 	private Collection<String> IDs;
 	
+
 	public int compareTo(PantherID o) {
 		return pantherID.compareTo(o.getPantherID());
 	}
-	
+
+
 	public PantherID(String pantherID) {
 		this.pantherID = pantherID;
 		String codeIDs[] = pantherID.split("\\|", 2);
@@ -41,7 +48,11 @@ public class PantherID implements Comparable<PantherID> {
 			needSpecies.add(this.speciesCode);
 		}
 	}
-	
+
+	/**
+	 * 
+	 * @throws IOException
+	 */
 	protected void flushNeededSpecies() throws IOException {
 		if (needSpecies.isEmpty()) {
 			return;
@@ -54,14 +65,25 @@ public class PantherID implements Comparable<PantherID> {
 		needSpecies.clear();
 	}
 	
+	/**
+	 * 
+	 * @return The Panther ID.
+	 */
 	public String getPantherID() {
 		return pantherID;
 	}
 	
+	/**
+	 * @return The Panther ID.
+	 */
 	public String toString() {
 		return pantherID;
 	}
 	
+	/**
+	 * 
+	 * @return Returns the NCBI Taxa id of the species of the Panther ID.
+	 */
 	public int getTaxonNode() {
 		try {
 			flushNeededSpecies();
@@ -72,6 +94,10 @@ public class PantherID implements Comparable<PantherID> {
 		return haveSpecies.get(speciesCode).getTaxonNode();
 	}
 
+	/**
+	 * Some Panther ID specias get mapped to more then one bioentity in the gold database. This will return a list of possibilities. 
+	 * @return Returns a list of possable NCBI Taxa ids.
+	 */
 	int[] getTaxonNodes() {
 		int taxonNode = this.getTaxonNode();
 		switch(taxonNode){
@@ -85,6 +111,10 @@ public class PantherID implements Comparable<PantherID> {
 		return out;
 	}
 	
+	/**
+	 * Sometimes the Panther IDs are not exactly those used in gold. Returns a list of alternative IDs if we know any.
+	 * @return List of ids to search the gold database with.
+	 */
 	public Collection<String> getIDguesses() {
 		Collection<String> out = new LinkedHashSet<String>();
 
