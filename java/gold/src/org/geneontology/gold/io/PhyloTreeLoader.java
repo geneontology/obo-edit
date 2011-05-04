@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.io.*;
 import java.util.zip.GZIPInputStream;
-//import java.text.SimpleDateFormat;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 
@@ -20,15 +19,19 @@ import org.geneontology.gold.io.postgres.TsvFileLoader;
 public class PhyloTreeLoader implements Loader {
 	private Collection<PhyloTree> sources;
 	
+
+	protected enum Status { FOUND, MISSING };
+	
 	final static FileFilter tff = new SuffixFileFilter(new String[] { ".tree.gz", ".tree" });
 	final static String tsvSuffix = ".tsv";
 	final static File tmpdir = null; //new File("/dev/shm");
 	final static GeneOntologyManager manager = GeneOntologyManager.getInstance();
+	static protected Map<String,Map<Status,Integer>> count = null;
 	
 	PhyloTreeLoader() {
 		sources = new HashSet<PhyloTree>();
 	}
-	
+		
 	@Override
 	public boolean isLoadRequired() {
 		// TODO loop through sources and check dates
@@ -132,11 +135,13 @@ public class PhyloTreeLoader implements Loader {
 	}
 	
 	public static void main(String[] args) throws IOException {
+		count = new HashMap<String,Map<Status,Integer>>();
 		Loader ptl = new PhyloTreeLoader();
 		ptl.setSource(args[0]);
 		if (ptl.isLoadRequired()) {
 			ptl.load();
 		}
+		System.out.println(count);
 	}
 	
 	class PhyloTree {
@@ -144,13 +149,34 @@ public class PhyloTreeLoader implements Loader {
 		private BufferedReader reader;
 		private Phylogeny tree;
 		private Map<String,HibPantherID> leaves;
-
 		
 		PhyloTree(File src) {
-			source = src;
+			this.source = src;
 			leaves = new HashMap<String,HibPantherID>();
 		}
-
+		
+		
+		private void addStat(String key, Status status) {
+			if (null == count) {
+				return;
+			}
+			
+			//System.err.println("addStat(" + key + "," + status + ')');
+			
+			if (count.containsKey(key)) {
+				Map<Status,Integer> value = count.get(key);
+				if (value.containsKey(status)) {
+					value.put(status, 1 + value.get(status));
+				} else {
+					value.put(status, 1);
+				}
+			} else {
+				Map<Status,Integer> value = new HashMap<Status,Integer>();
+				value.put(status, 1);
+				count.put(key, value);
+			}
+		}
+		
 		public void loadFromFile() throws IOException {
 			loadFromFile(new NHXParser());
 		}
@@ -220,8 +246,12 @@ public class PhyloTreeLoader implements Loader {
 			for (HibPantherID hpi : leaves.values()) {
 				Bioentity got = hpi.bioentity();
 				if (got == null) {
-					// TODO: warn about missing members
+					this.addStat(hpi.getSpeciesCode(), Status.MISSING);
+					if (hpi.isRefG()) { // only warn about missing refg members
+						System.err.println(hpi + " matched no bioentities");
+					}
 				} else {
+					this.addStat(hpi.getSpeciesCode(), Status.FOUND);
 					out.add(hpi.bioentity());
 				}
 			}
@@ -235,6 +265,7 @@ public class PhyloTreeLoader implements Loader {
 		public String creationDate(){
 			return manager.SimpleDateFormat().format(new Date(lastModified()));
 		}
+		
 	
 	}
 
