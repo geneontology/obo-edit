@@ -95,26 +95,6 @@
 	if(request.getParameter("commit") == null){
 	
 		Set<AnnotationRuleViolation> annotationRuleViolations = (Set<AnnotationRuleViolation>)request.getAttribute("violations");
-		if(annotationRuleViolations != null){
-		%>
-	
-			<hr />
-			<h3>Annotation Violations</h3>
-			<ul>
-			<%
-			
-			for(AnnotationRuleViolation v: annotationRuleViolations){
-				%>
-				<li> <%= v.getMessage() %> -- <%= v.getSourceAnnotation() %> </li>
-				<%			
-			}
-			
-			%>
-	
-			</ul>
-		
-		<%
-		}
 	
 		if(!isTaskRunning && ex == null){
 		
@@ -145,6 +125,7 @@
 
 			<form action=".">
 				<input type="hidden" name="solrload" />
+				<input type="hidden" name="commit" />
 				<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
 				<input type="hidden" name="command" value="<%= request.getParameter("command") %>" />
 				<input type="submit" value="Load GAF into Solr" />
@@ -152,6 +133,29 @@
 
 			<%
 		}
+		
+		
+		if(annotationRuleViolations != null){
+			%>
+		
+				<hr />
+				<h3>Annotation Violations</h3>
+				<ul>
+				<%
+				
+				for(AnnotationRuleViolation v: annotationRuleViolations){
+					%>
+					<li> <%= v.getMessage() %> -- <%= v.getSourceAnnotation() %> </li>
+					<%			
+				}
+				
+				%>
+		
+				</ul>
+			
+			<%
+			}
+		
 	}
 	%>
 
