@@ -146,10 +146,10 @@ public class GAFParser {
 							+ expectedNumCols
 							+ ", got "
 							+ currentCols.length
-							+ "): " + this.currentRow + ". The row will be ignored" );
-				}else{
+							+ "): " + this.currentRow + "." );
+				}/*else{
 					performBasicChecks(this.currentCols);
-				}
+				}*/
 		}
 			
 			return true;
