@@ -99,7 +99,7 @@ then
 	fi
 fi
 
-CMD="$JAVAPATH -Xmx2048M -Xms2048M -Djava.library.path=$PATH_TO_ME/../lib -classpath $CLASSPATH:gold.jar -DlauncherDir=$PATH_TO_ME $JAVAARGS org.geneontology.cli.GoldCommandLine $CMDARGS"
+CMD="$JAVAPATH -Xmx2048M -Xms2048M -Djava.library.path=$PATH_TO_ME/../lib -classpath $CLASSPATH:gold.jar -DlauncherDir=$PATH_TO_ME $JAVAARGS org.geneontology.cli.GafCommandLine $CMDARGS"
 sh -c "$CMD"
 
 

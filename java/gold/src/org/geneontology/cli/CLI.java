@@ -53,6 +53,8 @@ public class CLI {
 			GoldCommandLine.main(ar);
 		}else if ("jetty".equals(command)){
 			JettyStarter.main(ar);
+		}else if("gaf".equals(command)){
+			GafCommandLine.main(ar);
 		}
 	}
 	
