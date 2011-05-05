@@ -82,6 +82,7 @@ public class GafURLFetch implements Iterator {
 		
 		try{
 			if(this.httpURL != null){
+				LOG.info("Reading URL :" + httpURL);
 				InputStream is = this.httpURL.openStream();
 				
 				if(url.endsWith(".gz")){
@@ -103,8 +104,7 @@ public class GafURLFetch implements Iterator {
 					currentGafFilePath += file;
 				
 				
-				if(DEBUG)
-					LOG.debug("Returning input stream for the file: " + file);
+				LOG.debug("Returning input stream for the file: " + file);
 				
 				InputStream is = ftpClient.retrieveFileStream(file);
 				
