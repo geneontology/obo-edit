@@ -231,6 +231,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 
 	}
 	public GafDocument buildGafDocument(String locaiton) throws IOException{
+		LOG.info("Loading GAF document from the '" + locaiton + "' location.");
 		File f = new File(locaiton);		
 		
 		InputStream is = new FileInputStream(f);
@@ -424,7 +425,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 	
 		session.getTransaction().commit();
 		
-		LOG.info("Bulk Load completed successfully");
+		LOG.info("Update completed successfully");
 
 		for(DbOperationsListener listener: listeners){
 			listener.updateEnd();

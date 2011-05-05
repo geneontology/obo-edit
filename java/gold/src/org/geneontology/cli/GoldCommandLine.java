@@ -1,16 +1,24 @@
 package org.geneontology.cli;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
-import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.io.DbOperationsListenerToReportTime;
-
-import owltools.graph.OWLGraphWrapper;
 
 /**
  * The class provides command line interface to users to run the db operations from
@@ -150,6 +158,7 @@ public class GoldCommandLine {
 		}else
 			exit("Not valid arguments are passed. Please the usage");
 	}
+	
 	
 	
 	private static void usage(){
