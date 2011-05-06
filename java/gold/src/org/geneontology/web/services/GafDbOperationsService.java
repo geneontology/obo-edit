@@ -94,12 +94,14 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	 * The jsp file prints the values during its rendering process.   
 	 * update and bulkload is a two stage process. In the first stage GAF file parsed and annotation rules are run. A summary
 	 * of rules voilation is represented to the user. The second stage is commit which makes changes in the database.
+	 * 
+	 * This service performs some of the tasks in multiple steps. The first step for the task except the 'getlastupdate'
+	 * is to load gaf documents. It tries to load three locations: 1)system default location, 2) remote location (http/ftp urls)
+	 * and (3) through the filelocation parameter.
 	 */
 	public void handleService(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
 
-	
-		
 		try{
 		
 			this.noReloadMode = false;
@@ -108,105 +110,102 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			commit = request.getParameter("commit") == null ? false : true;
 			runAnnotationRules = request.getParameter("runrules") == null ? false : true;
 			solrLoad = request.getParameter("solrload") == null ? false : true;
+			String format = request.getParameter("format");
+			String remoteGAF = request.getParameter("remote-gaf");
+			String fileLocation = request
+			.getParameter("filelocation");
 			
 			//set the default view
 			viewPath = "/servicesui/gafdb.jsp";
 			
 			
-			if("getlastupdate".equals(command)){
-				viewPath = "/servicesui/gold-lastupdate.jsp";
-			}else {
+			if(runner == null){
 			
-				
-				if(!commit && !solrLoad && runner == null && this.gafDocuments == null){				
-					////////////////////start guessing gaf file location
-					String remoteGAF = request.getParameter("remote-gaf");
-					
-					//if there is no task running then create one for the update and bulkload commands
-		//			if(isOPerationCompleted && !commit) {
-					if(remoteGAF != null){
-							gafLocations = new GafURLFetch(remoteGAF);
-					}else{
-		
-						String fileLocation = request
-						.getParameter("filelocation");
-				
-						if(fileLocation != null){
-							gafLocations = new ArrayList<String>();
-							((ArrayList)gafLocations).add(fileLocation);
-						}else{
-						
-							GafObjectsFactory factory = new GafObjectsFactory();
-							
-							List list = factory.getGafDocument();
-							
-							//update command expects gaf location location in the parameter.
-							//If no gaflocatoin parameter is set then present 
-							//a form to user to select gaf file
-							if ("update".equals(command) && !list.isEmpty()) {
-					
-								if(fileLocation==null){
-									request.setAttribute("servicename", getServiceName());
-									request.setAttribute("locations", GeneOntologyManager.getInstance().getDefaultGafFileLocations());
-									
-									this.viewPath = "/servicesui/golddb-updateform.jsp";
-								}
-							}else if("bulkload".equals(command) || (list.isEmpty() && "update".equals(command)) ){
-								
-								if(fileLocation == null){
-									this.gafLocations = GeneOntologyManager.getInstance().getDefaultGafFileLocations();
-								}
-								command = "bulkload";
-							}
-						}
-					}
-		
-					//////////start guessing gaf file location
-				}
-	
-				String format = request.getParameter("format");
 				if("json".equals(format)){
 					viewPath = "/servicesui/gafjson.jsp";
 					this.noReloadMode = true;
 				}
 				
-				//if commit is calld prior to the bulkload nand upate then throw error
-				if((commit || solrLoad) && gafDocuments == null && runner == null){
-					request.setAttribute("exception", new IllegalStateException("The commit is not allowed."));
-				}else if(("bulkload".equals(command) || "update".equals(command) || runAnnotationRules) && runner == null && (this.gafLocations != null || this.gafDocuments != null)) {
+				if("getlastupdate".equals(command)){
+					viewPath = "/servicesui/gold-lastupdate.jsp";
+				}else {
+				
+					
+					if(!commit && !solrLoad && this.gafDocuments == null){				
+						////////////////////start guessing gaf file location
+						
+						//if there is no task running then create one for the update and bulkload commands
+			//			if(isOPerationCompleted && !commit) {
+						if(remoteGAF != null){
+								gafLocations = new GafURLFetch(remoteGAF);
+						}else{
+			
+					
+							if(fileLocation != null){
+								gafLocations = new ArrayList<String>();
+								((ArrayList)gafLocations).add(fileLocation);
+							}else{
+							
+								GafObjectsFactory factory = new GafObjectsFactory();
+								
+								List list = factory.getGafDocument();
+								
+								//update command expects gaf location location in the parameter.
+								//If no gaflocatoin parameter is set then present 
+								//a form to user to select gaf file
+								if ("update".equals(command) && !list.isEmpty()) {
+						
+									if(fileLocation==null){
+										request.setAttribute("servicename", getServiceName());
+										request.setAttribute("locations", GeneOntologyManager.getInstance().getDefaultGafFileLocations());
+										
+										this.viewPath = "/servicesui/golddb-updateform.jsp";
+									}
+								}else if("bulkload".equals(command) || (list.isEmpty() && "update".equals(command)) ){
+									
+									if(fileLocation == null){
+										this.gafLocations = GeneOntologyManager.getInstance().getDefaultGafFileLocations();
+									}
+									command = "bulkload";
+								}
+							}
+						}
+			
+						//////////start guessing gaf file location
+					}else if(gafDocuments == null){//if commit is calld prior to the bulkload nand upate then throw error
+						request.setAttribute("exception", new IllegalStateException("The commit is not allowed."));
+					}
+					
+				 //if(("bulkload".equals(command) || "update".equals(command) || runAnnotationRules) && (this.gafLocations != null || this.gafDocuments != null)) {
 					annotationRuleViolations.clear();
 					runner = new GafDbTaskExecution();
 					runner.start();
+						
 					
 				}
 				
-				//store information in the request object. The request object is available in the 
-				//jsp file. The jsp use the objects data in print html.
-				if(runAnnotationRules || !commit || !solrLoad)
-					request.setAttribute("violations", annotationRuleViolations);
-				
-	//			request.setAttribute("dbname", "GAF");
-				
-				if(runner != null){
-					request.setAttribute("task", runner.getData());
-				}
-				
-				
-			} //end of else
+			} 
+			
+			
+			//store information in the request object. The request object is available in the 
+			//jsp file. The jsp use the objects data in print html.
+			if(runAnnotationRules || !commit || !solrLoad)
+				request.setAttribute("violations", annotationRuleViolations);
+			
+			if(runner != null){
+				request.setAttribute("task", runner.getData());
+			}
+			
 			
 		}finally{
+			request.setAttribute("isTaskRunning", runner == null ? false: runner.isRunning());
 			
 			//if the task has completed its operation then set it to null
 			if(runner != null && !runner.isRunning()){
 				runner = null;
-				//				isOPerationCompleted = true;
 			}
 			
-			request.setAttribute("isTaskRunning", runner == null ? false: runner.isRunning());
-			
 		}
-		
-		
 		
 		
 	}

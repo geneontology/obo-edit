@@ -13,6 +13,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.eclipse.jetty.util.log.Log;
 import org.geneontology.conf.GeneOntologyManager;
 
 public class GafCommandLine {
@@ -33,18 +34,14 @@ public class GafCommandLine {
 				"\n\tin the conf/gold.properties file. The gafile-path/url can refer to a in the local system and http or ftp url.");
 		System.out.println();
 		System.out.println("\tExamples:");
-		System.out.println("\t\tgaf-runner http://www.geneontology.org/gene-associations/gene_association.GeneDB_Spombe.gz");
-		System.out.println("\t\tgaf-runner -server http://localhost:8080/gold/ -o out.json  http://www.geneontology.org/gene-associations/gene_association.GeneDB_Spombe.gz");
+		System.out.println("\t\tbin/gaf-runner http://www.geneontology.org/gene-associations/gene_association.GeneDB_Spombe.gz");
+		System.out.println("\t\tbin/gaf-runner -server http://localhost:8080/gold/ -o out.json  http://www.geneontology.org/gene-associations/gene_association.GeneDB_Spombe.gz");
+		System.out.println("\t\tbin/gaf-runner -o out.json");
 		
 		System.exit(0);
 	}
 	
 	public static void main(String args[]){
-		
-//		if(args.length==0){
-	//		usage();
-	//	}
-		
 		
 		String serverURL = "http://localhost:8080/gold/";
 		String gafFileLocation = GeneOntologyManager.getInstance().getDefaultGafFileLocations().get(0).toString();
@@ -81,10 +78,6 @@ public class GafCommandLine {
 			annotationFilePath = f.toURI().toString();
 		}
 		
-	    
-	  /*  params.setParameter("servicename", "gaf-db-operations");
-	    params.setParameter("command", "runrules");
-	    params.setParameter("format", "json");*/
 		GetMethod method = null;
 	    try {
 		    String encodedPath = URLEncoder.encode(annotationFilePath, "UTF-8");
