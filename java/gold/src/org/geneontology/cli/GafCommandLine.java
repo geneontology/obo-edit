@@ -4,16 +4,24 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
-import java.io.Writer;
+import java.net.URI;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.eclipse.jetty.util.log.Log;
 import org.geneontology.conf.GeneOntologyManager;
 
 public class GafCommandLine {
@@ -25,7 +33,8 @@ public class GafCommandLine {
 		System.out.println("*********Gene Association File (GAF) tool**********");
 		System.out.println("The tool submit a GAF file to the admin servlet, the  \n" +
 				"servlet parse the GAF file and runs QC checks on the file. The output is returned as a \n" +
-				"json which can be saved in a file or printed on the standard output.");
+				"json which can be saved in a file or printed on the standard output."
+				+ "\nThe tool can be run remotely, and a local gaf file is uploaded to the server for parsing and annotation checks." );
 		System.out.println("gaf-tools [-serverurl url -o outfilepath  gafile-path/url] ");
 		System.out.println();
 		System.out.println("\tAll arguments are optional. The default server url is http://localhost:8080/gold/. The" +
@@ -44,7 +53,7 @@ public class GafCommandLine {
 	public static void main(String args[]){
 		
 		String serverURL = "http://localhost:8080/gold/";
-		String gafFileLocation = GeneOntologyManager.getInstance().getDefaultGafFileLocations().get(0).toString();
+		String annotationFilePath = GeneOntologyManager.getInstance().getDefaultGafFileLocations().get(0).toString();
 		String outFile = null;
 		for(int i=0;i<args.length;i++){
 			String arg = args[i];
@@ -58,13 +67,19 @@ public class GafCommandLine {
 				i++;
 				outFile = args[i];
 			}else{
-				gafFileLocation = arg;
+				annotationFilePath = arg;
 			}
 				
 		}
 		
+		if(!(annotationFilePath.startsWith("http://") || annotationFilePath.startsWith("file:/") 
+				|| annotationFilePath.startsWith("ftp://"))){
+			File f = new File(annotationFilePath);
+			annotationFilePath = f.toURI().toString();
+		}
 		
-		checkAnnotations(serverURL, gafFileLocation, outFile);
+		
+		checkAnnotations(serverURL, annotationFilePath, outFile);
 		
 	}
 	
@@ -72,34 +87,49 @@ public class GafCommandLine {
 	private static void checkAnnotations(String adminServletURL, String annotationFilePath, String outFile){
 	
 		
-		if(!(annotationFilePath.startsWith("http://") || annotationFilePath.startsWith("file:///") 
-				|| annotationFilePath.startsWith("ftp://"))){
-			File f = new File(annotationFilePath);
-			annotationFilePath = f.toURI().toString();
-		}
 		
-		GetMethod method = null;
+		HttpMethod method = null;
+        PrintStream ps = System.out;
+		
 	    try {
-		    String encodedPath = URLEncoder.encode(annotationFilePath, "UTF-8");
+	    	if(!annotationFilePath.trim().startsWith("file:")){
+			    String encodedPath = URLEncoder.encode(annotationFilePath, "UTF-8");
+		
+				//build query String
+				String queryString = "?servicename=gaf-db-operations&runrules=&format=json";
+			    
+			    if(annotationFilePath.startsWith("http://") || annotationFilePath.startsWith("ftp://")){
+			    	queryString += "&remote-gaf="+ encodedPath;   	
+			    }else
+			    	queryString += "&filelocation="+ encodedPath;   	
 	
-			//build query String
-			String queryString = "?servicename=gaf-db-operations&runrules=&format=json";
-		    
-		    if(annotationFilePath.startsWith("file:/")){
-		    	queryString += "&filelocation="+ encodedPath;   	
-		    }else
-		    	queryString += "&remote-gaf="+ encodedPath;   	
+			    method = new GetMethod(adminServletURL+queryString);
+			    
+			    // Provide custom retry handler is necessary
+			    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
+			    		new DefaultHttpMethodRetryHandler(3, false));		
+	    	}else{
+	    		PostMethod post = new PostMethod(adminServletURL);
+	    		method = post;
+	    		List<Part> parts = new ArrayList<Part>();
+	    		File f = new File( new URI(annotationFilePath));
+	    		FilePart filePart = new FilePart(f.getName(), f);
+	    		
+	    		parts.add(filePart);
+	    		parts.add(new StringPart("servicename", "gaf-db-operations", "UTF-8"));
+	    		parts.add(new StringPart("format", "json", "UTF-8"));
+	    		parts.add(new StringPart("runrules", "", "UTF-8"));
 
+	    		post.setRequestEntity(new MultipartRequestEntity(parts.toArray(new Part[parts.size()]), post.getParams()));	    		
+	    		
+	    		
+	    	}
+		    
 //		    	params.setParameter("remote-gaf", encodedPath);
 
 			HttpClient httpclient = new HttpClient();
 			
 			  // Create a method instance.
-		    method = new GetMethod(adminServletURL+queryString);
-		    
-		    // Provide custom retry handler is necessary
-		    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
-		    		new DefaultHttpMethodRetryHandler(3, false));		
 	    	
 	    	// Execute the method.
 	        int statusCode = httpclient.executeMethod(method);
@@ -114,16 +144,27 @@ public class GafCommandLine {
 	         
 	         String line = null;
 	     
-	         PrintStream ps = System.out;
-	         
+	         StringBuffer buf = new StringBuffer();
 	         if(outFile != null){
 	        	 ps = new PrintStream(new File(outFile));
 	         }
 	         
+	         Pattern pattern = Pattern.compile("name\\s*=\\s*\"filelocation\"\\s*value\\s*=\\s*\"([^\"]*)\"");
 	         while((line = reader.readLine()) != null ){
-	        	 ps.println(line);
+	        	 buf.append(line + "\n");
+	        	 Matcher matcher = pattern.matcher(line);
+	        	 if(matcher.find()){
+	        		 annotationFilePath = matcher.group();
+	        		 String[] s= annotationFilePath.split("=");
+	        		 annotationFilePath = s[2].trim();
+	        		 annotationFilePath = annotationFilePath.replaceAll("\"", "");
+	        		 checkAnnotations(adminServletURL, annotationFilePath, outFile);
+	        		 return;
+	        	 }
+	        	 // ps.println(line);
 	         }
 	        
+	         ps.print(buf.toString());
 
 	      } catch (Exception e) {
 	        System.err.println("Fatal protocol violation: " + e.getMessage());
@@ -131,6 +172,9 @@ public class GafCommandLine {
 	      } finally {
 	        // Release the connection.
 	        method.releaseConnection();
+	        if(outFile != null){
+	        	ps.close();
+	        }
 	      }  	    
 	    
 	}
