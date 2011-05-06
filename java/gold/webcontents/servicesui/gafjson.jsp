@@ -38,9 +38,14 @@
 				int i=0;
 				int Annsize = annotationRuleViolations.size();
 				for(AnnotationRuleViolation v: annotationRuleViolations){
+					String msg = v.getMessage();
+					msg = msg.replaceAll("\t", "\\\\t");
+					String s = v.getSourceAnnotation() + "";
+					s = s.replaceAll("\t", "\\\\t");
+					
 					out.println("\t\t\"voilation\": {");
-					out.println("\t\t\t\"message\": \"" + v.getMessage() + "\",");
-					out.println("\t\t\t\"annotation\": \"" + v.getSourceAnnotation() + "\"");
+					out.println("\t\t\t\"message\": \"" + msg + "\",");
+					out.println("\t\t\t\"annotation\": \"" + s + "\"");
 					out.println("\t\t}");
 					i++;
 					
@@ -57,7 +62,9 @@
 			out.println("\t{\"error\": \"The server internal error: Please contect to the system administrator.\"}");
 		}
 
+		out.println("\t}");
 		out.println("}");
+		
 	
 %>
 

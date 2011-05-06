@@ -21,7 +21,7 @@ CLASSPATH_RELATIVE=../lib/*.jar
 PATH_SEP=":"
 
 JAVAARGS=" "
-CMDARGS=" -gaf "
+CMDARGS=""
 
 PATH_TO_ME=`which $0`;
 
