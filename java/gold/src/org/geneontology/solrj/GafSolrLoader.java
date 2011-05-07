@@ -37,7 +37,7 @@ public class GafSolrLoader {
             server = new CommonsHttpSolrServer(url);
         }catch(Exception ex){
         	LOG.error(ex.getMessage(), ex);
-            throw new RuntimeException("Cann't instantiate Solr Server", ex);
+            throw new RuntimeException("Can't instantiate Solr Server", ex);
         }
     }
 

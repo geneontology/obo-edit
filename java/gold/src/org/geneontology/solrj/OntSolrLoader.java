@@ -41,7 +41,7 @@ public class OntSolrLoader extends OboOwlApiProcessor {
         try{
             server = new CommonsHttpSolrServer(url);
         }catch(Exception ex){
-            throw new RuntimeException("Cann't instantiate Solr Server", ex);
+            throw new RuntimeException("Can't instantiate Solr Server", ex);
         }
     }
     
