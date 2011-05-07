@@ -89,7 +89,7 @@ org.bbop.amigo.ui.interactive.multi_model = function(in_data){
 	if( typeof anchor.current_data[in_arg_key] == 'undefined' ){
 	    // BUG/TODO: this should be a copy.
 	    anchor.current_data[in_arg_key] = data;
-	    core.kvetch("add_item: adding key (w/data): " + in_arg_key);
+	    //core.kvetch("add_item: adding key (w/data): " + in_arg_key);
 	    retval = true;
 	}
 	return retval;
@@ -281,14 +281,21 @@ org.bbop.amigo.ui.interactive.multi_widget = function(in_id, in_name,
 	    	write_data['special'] == true ||
 	    	( write_data['count'] && write_data['count'] > 0 ) ){
 		    
-		    buf.push('<option value="');
+		    buf.push('<option');
+		    // Title.
+		    buf.push(' title="');
 		    buf.push(write_data['value']);
+		    buf.push('"');		
+		    // Value.
+		    buf.push(' value="');
+		    buf.push(write_data['value']);
+		    buf.push('"');		
 		    if( write_data['selected'] ){
-			buf.push('" selected="selected">');
-		    }else{
-			buf.push('">');		
+			buf.push(' selected="selected"');
 		    }
-		    buf.push(write_data['label']);
+		    buf.push('>');
+		    //buf.push(core.util.crop(write_data['label']));
+		    buf.push(core.util.crop(write_data['label'], 40));
 		    
 		    if( write_data['count'] && write_data['count'] > 0 ){
 			buf.push(' (' + write_data['count'] + ')');
