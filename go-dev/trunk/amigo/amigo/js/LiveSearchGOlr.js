@@ -106,7 +106,7 @@ function LiveSearchGOlrInit(){
     // 	widgets.form.hidden_input('mode', 'live_search_association_golr');
     var query_text =
     	widgets.form.text_input('q', 'q', 25, 
-				'Search GO for ???<br />');
+				'Search GO for annotations<br />');
     // var ontology_text =
     // 	widgets.form.multiselect('ontology', 'ontology', 4,
     // 				 ontology_data, 'Ontology');
@@ -354,8 +354,8 @@ function _process_meta_results (json_data){
     meta_cache.push('Total: ' + total);
 
     // Only have paging headers is necessary.
-    if( total > 10 ){
-	meta_cache.push('&nbsp;&nbsp;&nbsp;First: ' + first);
+    if( total > 0 ){
+	meta_cache.push('&nbsp;&nbsp;&nbsp;First: ' + (first + 1));
 	meta_cache.push('&nbsp;&nbsp;&nbsp;Last: ' + last);
     }
 
@@ -383,13 +383,15 @@ function _process_meta_results (json_data){
 	var b_args = null;
 	//b_args = core.util.clone(args);
 	b_args = core.util.clone(core.golr_response.parameters(json_data));
-	if( ! b_args['index'] ){ b_args['index'] = 2; }
-	b_args['index'] = parseInt(b_args['index']) - 1;
+	//if( ! b_args['index'] ){ b_args['index'] = 2; }
+	b_args['start'] = parseInt(b_args['start']) -
+	    core.golr_response.row_step(json_data);
 	var f_args = null;
 	//f_args = core.util.clone(args);
 	f_args = core.util.clone(core.golr_response.parameters(json_data));
-	if( ! f_args['index'] ){ f_args['index'] = 1; }
-	f_args['index'] = parseInt(f_args['index']) + 1;
+	//if( ! f_args['index'] ){ f_args['index'] = 1; }
+	f_args['start'] = parseInt(f_args['start']) +
+	    core.golr_response.row_step(json_data);
 
 	// Increment packet (async ordering).
 	b_args['packet'] = last_sent_packet++;
@@ -401,11 +403,11 @@ function _process_meta_results (json_data){
 	var backward_url = null;
 	var forward_url = null;
 	proc = _process_results;
-	backward_url = core.api.live_search.golr(b_args);
-	forward_url = core.api.live_search.golr(f_args);
+	backward_url = gm.golr_base() + '/' + core.api.live_search.golr(b_args);
+	forward_url = gm.golr_base() + '/' + core.api.live_search.golr(f_args);
 	
 	// Generate the necessary paging html.
-	if( first > 1 ){
+	if( first > 0 ){
 	    meta_cache.push(' <a href="#results_block" id="' +
 			    backward_id + '"><- back</a>');
 	}
@@ -419,7 +421,7 @@ function _process_meta_results (json_data){
     jQuery('#meta_results').html(meta_cache.join(''));
 
     // Where necessary, add forwards and backwards click bindings.
-    if( first > 1 ){
+    if( first > 0 ){
 	_paging_binding(backward_id, backward_url, proc);
     }
     if( last < total ){
@@ -436,7 +438,7 @@ function _update_gui (json_data){
     // var first = core.golr_response.start_document(json_data);
     // var last = core.golr_response.end_document(json_data);
 
-    core.kvetch("Updating GUI...");
+    core.kvetch("GUI: Updating...");
 
     // Capture the current filters and facets. They come in as a hash
     // of arrays.
@@ -521,16 +523,16 @@ function _update_gui (json_data){
 
 	// Iterate over all facet values.
 	var facet_keys = core.util.get_hash_keys(qfacets[curr_filter_id]);
-	core.kvetch("facet_keys: " + facet_keys);
+	//core.kvetch("facet_keys: " + facet_keys);
 
 	// Get all things currently in the model.
 	var all_item_keys = curr_model.get_all_items();
-	core.kvetch("all_item_keys: " + all_item_keys);
+	//core.kvetch("all_item_keys: " + all_item_keys);
 
 	// Join them and update over the whole set.
 	var all_keys = facet_keys.concat(all_item_keys);
 
-	core.kvetch("all " + curr_filter_id + " filters: " + all_keys);
+	//core.kvetch("all " + curr_filter_id + " filters: " + all_keys);
 
 	for( var aki = 0; aki < all_keys.length; aki++ ){
 	    var curr_asp = all_keys[aki];
@@ -545,7 +547,7 @@ function _update_gui (json_data){
 					selected: false,
 					special: false
  				    });
-		core.kvetch("added: " + curr_asp);
+		//core.kvetch("added: " + curr_asp);
 	    }
 
 	    // Look at whether or not there is a count with it. If
@@ -598,7 +600,7 @@ function _process_results (json_data, status){
 	    
 	    // Check to see if there is someting there first
 	    var cache = new Array();
-	    if( core.golr_response.total_documents(json_data) == 0 ){
+	    if( core.golr_response.total_documents(json_data) < 1 ){
 		core.kvetch("No results (empty).");
 	    }else{
 		// Process main results table.
@@ -621,6 +623,20 @@ function _process_results (json_data, status){
 	}
     }else{
 	core.kvetch("Invalid response.");
+	core.kvetch("Data: " + json_data);
+	core.kvetch("Status: " + status);
+	if( json_data ){
+	    core.kvetch("Data okay.");
+	}
+	if( json_data.response ){
+	    core.kvetch("Response okay.");
+	}
+	if( json_data.responseHeader ){
+	    core.kvetch("Header okay.");
+	}
+	if( json_data.facet_counts ){
+	    core.kvetch("Facets okay.");
+	}
     }
     //core.kvetch("finish wait");
     widgets.finish_wait();
@@ -630,21 +646,22 @@ function _process_results (json_data, status){
 //
 function _table_cache_from_results (dlist){
     
-    var species_map = gm.species_map();
+    core.kvetch("Table: Refreshing...");
+    //core.kvetch("Table: dlist.length: " + dlist.length);
 
     // Bulk change.
     var cache = new Array();
     cache.push('<table>');
     cache.push('<thead><tr>');
     cache.push('<th>score</th>');
-    cache.push('<th>acc</th>');
-    cache.push('<th>ev</th>');
+    //cache.push('<th>acc</th>');
     cache.push('<th>symbol</th>');
-    cache.push('<th>name</th>');
+    cache.push('<th>ev</th>');
+    cache.push('<th>term</th>');
     cache.push('<th>type</th>');
     cache.push('<th>source</th>');
     cache.push('<th>species</th>');
-    cache.push('<th>synonym(s)</th>');
+    // cache.push('<th>synonym(s)</th>');
     cache.push('</tr></thead><tbody>');
     for( var i = 0; i < dlist.length; i++ ){
 
@@ -660,16 +677,13 @@ function _table_cache_from_results (dlist){
 
 	// Score.
 	cache.push('<td>');
-	cache.push(r.score + '%');
+	cache.push((parseInt(r.score) * 100.00) + '%');
 	cache.push('</td>');
 
-	// GO term acc.
+	// GP symbol.
 	cache.push('<td>');
-	cache.push(r.annotation_class);
-	// cache.push('<a title="link to information on ' + r.dbxref +
-	// 	   '" href=\"' + r.link +
-	// 	   '">' + r.hilite_dbxref +
-	// 	   '</a>');
+	cache.push(core.html.gene_product_link(r.bioentity_id,
+					       r.bioentity_label));
 	cache.push('</td>');
 
 	// Evidence.
@@ -684,15 +698,20 @@ function _table_cache_from_results (dlist){
 	// }
 	cache.push('</td>');
 
-	// GP symbol.
+	// Term info.
+	//var tlink = core.link.term({acc: r.annotation_class});
 	cache.push('<td>');
-	cache.push(r.bioentity_label);
+	cache.push(core.html.term_link(r.annotation_class,
+				       r.annotation_class_label));
 	cache.push('</td>');
 
-	// Full name.
-	cache.push('<td>');
-	cache.push(r.annotation_class_label);
-	cache.push('</td>');
+	// // GO term acc.
+	// cache.push('<td>');
+	// // cache.push('<a title="link to information on ' + r.dbxref +
+	// // 	   '" href=\"' + r.link +
+	// // 	   '">' + r.hilite_dbxref +
+	// // 	   '</a>');
+	// cache.push('</td>');
 
 	// Type.
 	cache.push('<td>');
@@ -713,15 +732,24 @@ function _table_cache_from_results (dlist){
 	//     cache.push('<td class="">');
 	// }
 	// cache.push(species_map[r.species]);
-	cache.push('<td>');
-	cache.push(r.taxon);
+	var species_map = gm.species_map();
+	var tax_splits = r.taxon.split(":");
+	var simple_taxon_id = tax_splits[1];
+	var s_name = species_map[simple_taxon_id];
+	if( s_name && s_name.split(' ').length <= 2 ){
+	    cache.push('<td class="nowrap">');
+	}else{
+	    cache.push('<td class="">');
+	}
+	cache.push(s_name);
+	//cache.push(r.taxon);
 	cache.push('</td>');
 	
-	// Synonyms.
-	cache.push('<td>');
-	//cache.push(r.hilite_gpsynonym.replace(newline_finder, ", "));
-	cache.push('nil');
-	cache.push('</td>');
+	// // Synonyms.
+	// cache.push('<td>');
+	// //cache.push(r.hilite_gpsynonym.replace(newline_finder, ", "));
+	// cache.push('nil');
+	// cache.push('</td>');
 	
 	cache.push('</tr>');
     }
@@ -752,7 +780,8 @@ function _paging_binding(elt_id, url, processor){
 	    jQuery.ajax({
 	    	type: "GET",
 	    	url: url,
-	    	dataType: 'json',
+	    	dataType: 'jsonp',
+		jsonp: 'json.wrf',
 	    	success: processor,
 	    	error: function (result, status, error) {
 	    	    core.kvetch('Failed server request (paging): ' + status);

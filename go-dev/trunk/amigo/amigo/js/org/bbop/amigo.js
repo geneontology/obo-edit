@@ -131,29 +131,28 @@ org.bbop.amigo.core = function(){
 	return robj.responseHeader.params;
     };
 
-    // BUG: Hand bug fix for:
-    this.golr_response.total = function(robj){
-	return (robj.response.numFound - 1);
+    // ...
+    this.golr_response.row_step = function(robj){	
+	return parseInt(robj.responseHeader.params.rows);
     };
 
     // ...
-    this.golr_response.total_documents = function(robj){
-	return robj.response.numFound;
-    };
+    function _golr_response_total_documents(robj){
+	return parseInt(robj.response.numFound);
+    }
+    this.golr_response.total_documents = _golr_response_total_documents;
 
     // ...
-    this.golr_response.start_document = function(robj){
-	return robj.response.start;
-    };
+    function _golr_response_start_document(robj){
+	//return parseInt(robj.response.start) + 1;
+	return parseInt(robj.response.start);
+    }
+    this.golr_response.start_document = _golr_response_start_document;
 
     // ...
     this.golr_response.end_document = function(robj){
-	return robj.response.start + robj.response.docs.length;
-    };
-
-    // ...
-    this.golr_response.total = function(robj){
-	return robj.response.numFound;
+	return _golr_response_start_document(robj) +
+	    parseInt(robj.response.docs.length);
     };
 
     // ...
@@ -447,6 +446,7 @@ org.bbop.amigo.core = function(){
     this.util = {};
     this.api = {};
     this.link = {};
+    this.html = {};
 
     // Crop a string to a certain limit and add ellipses.
     this.util.crop = function(str, lim){
@@ -454,7 +454,7 @@ org.bbop.amigo.core = function(){
 	var limit = 10;
 	if( lim ){ limit = lim; }
 	if( str.length > limit ){
-	    ret = str.substring(0, limit - 3) + '...';
+	    ret = str.substring(0, (limit - 3)) + '...';
 	}
 	return ret;
     };
@@ -715,12 +715,16 @@ org.bbop.amigo.core = function(){
 		wt: 'json',
 		version: '2.2',
 		rows: 10,
-		start: 1,
+		//start: 1,
+		start: 0, // Solr is offset indexing
 		fl: '*%2Cscore',
 
 		// Control of facets.
 		facet: '',
 		'facet.field': [],
+
+		// Facet filtering.
+		fq: [],
 
 		// Query-type stuff.
 		q: '',
@@ -857,7 +861,7 @@ org.bbop.amigo.core = function(){
     /// Links for terms and gene products.
     ///
 
-    this.link.term = function(in_args){
+    function _term_link(in_args){
 
 	if( ! in_args ){ in_args = {}; }
 	var default_args =
@@ -869,8 +873,17 @@ org.bbop.amigo.core = function(){
 	var acc = final_args['acc'];
 	return 'term_details?term=' + acc;
     };
+    this.link.term = _term_link;
 
-    this.link.gene_product = function(in_args){
+    // BUG/TODO: should this actually be in widgets? How core is this
+    // convenience?
+    this.html.term_link = function(acc, label){
+	if( ! label ){ label = acc; }
+	return '<a title="Go to term details page for ' + label +
+	    '." href="' + _term_link({acc: acc}) + '">' + label +'</a>';
+    };
+
+    function _gene_product_link(in_args){
 
 	if( ! in_args ){ in_args = {}; }
 	var default_args =
@@ -881,6 +894,15 @@ org.bbop.amigo.core = function(){
 	
 	var acc = final_args['acc'];
 	return 'gp-details.cgi?gp=' + acc;
+    };
+    this.link.gene_product = _gene_product_link;
+
+    // BUG/TODO: should this actually be in widgets? How core is this
+    // convenience?
+    this.html.gene_product_link = function(acc, label){
+	if( ! label ){ label = acc; }
+	return '<a title="Go to term details page for ' + label +
+	    '." href="' + _gene_product_link({acc: acc}) + '">' + label +'</a>';
     };
 
     ///
