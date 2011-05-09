@@ -20,9 +20,9 @@ How to report bugs
 
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
-=================================
-What's New in OBO-Edit v2.1-beta12
-=================================
+================================
+What's New in OBO-Edit v2.1-beta12 (4/25/2011)
+================================
 
 Bug fixes:
 [ geneontology-Bugs-3256917 ] parent/child search problem in 2.1-b11
@@ -45,7 +45,7 @@ getting ready to save the ontology, the verification check looks at
 FBbt:00001913 and then recursively looks at its alt_id to make sure it's ok,
 and thus it ends up in an infinite loop.
 I have fixed this with a two-pronged approach:
-1. At the recommendation of the OBO-Edit Working Group, the parser now throws
+1. At the recommendation of the OBO-Edit Working Group, the OBO parser now throws
 a fatal exception if the alt_id (or replaced_by) is the same as the primary ID.
 2. The place in the verifier where it was going into an infinite loop now
 checks for that redundancy before recursing.
