@@ -20,16 +20,33 @@ public class ChildSearchAspect implements SearchAspect {
 	}
 
 	public Collection getObjects(Collection c, ReasonedLinkDatabase reasoner,
-			Filter traversalFilter, Object o) {
+                                     Filter traversalFilter, Object o) {
+            // This method ends up getting called on a lot of built-in objects that can't be cast to LinkedObject,
+            // e.g., xsd:integer
+            // This was throwing an exception and the search was failing.
+            // Now we check whether we can do the cast.
+            LinkedObject lo;
+            try {
+                lo = (LinkedObject) o;
+            } catch (ClassCastException e) {
+                //                logger.debug("ChildSearchAspect.getObjects: can't cast " + o + ", class = " + o.getClass() + " to LinkedObject");
+                return c;
+            }
+
+            // Until I fixed this in version 2.1-b13, a search for children
+            // wasn't finding all the children unless the reasoner was on.
+            // This turned out to be because TermUtil.getChildren wasn't working
+            // right.  (With the reasoner on, the children were being gotten a
+            // different way.)
 		if (reasoner != null) {
 //			for (Link link : reasoner.getChildren((LinkedObject) o)) 
 //				c.add(link.getChild());
 			LinkDatabase trimmedReasoner = new TrimmedLinkDatabase(reasoner);
-			for (Link link : trimmedReasoner.getChildren((LinkedObject) o)) 
-			c.add(link.getChild());
-
+                        Collection<Link> children = trimmedReasoner.getChildren(lo);
+			for (Link link : children) 
+                            c.add(link.getChild());
 		} else {
-			c.addAll(TermUtil.getChildren((LinkedObject) o));
+                    c.addAll(TermUtil.getChildren(lo));
 		}
 		return c;
 	}
@@ -55,6 +72,7 @@ public class ChildSearchAspect implements SearchAspect {
 		return "Children";
 	}
 
+        // Not currently used
         public boolean requiresReasoner() {
           return false;
         }
