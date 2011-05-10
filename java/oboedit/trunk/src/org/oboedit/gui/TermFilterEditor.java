@@ -109,7 +109,10 @@ public class TermFilterEditor extends JPanel {
 		}
 	}
 
-    //	protected ActionListener aspectBoxListener = new BasicActionListener();
+    // Fix for bug (reported in two redundant bug reports):
+    // [ geneontology-Bugs-3296528 ] Search aspect is missing the "can be reached via" selector
+    // [ geneontology-Bugs-3297446 ] Can't restrict ancestor search by relation type in 2.1b12
+
 	protected ActionListener aspectBoxListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
                     boolean showTypeBox = !(aspectBox.getSelectedItem() instanceof SelfSearchAspect);
