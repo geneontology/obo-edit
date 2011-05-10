@@ -71,7 +71,7 @@ public class AnnotationTaxonRule extends AbstractAnnotatioRule implements Annota
 	}*/
 
 	public Set<AnnotationRuleViolation> getRuleViolations(GeneAnnotation a) {
-		return getRuleViolations(a.getCls(), a.getBioentityObject().getNcbiTaxonId());
+		return _getRuleViolations(a.getCls(), a.getBioentityObject().getNcbiTaxonId(),a);
 	}
 	/*public Set<AnnotationRuleViolation> getRuleViolations(String annotationCls, String ncbiTaxonId) {
 		return getRuleViolations(annotationCls, cbiTaxonId);
@@ -81,8 +81,12 @@ public class AnnotationTaxonRule extends AbstractAnnotatioRule implements Annota
 		return getRuleViolations(annotationCls, taxonCls).size() == 0;
 	
 	}
-	
+
 	public Set<AnnotationRuleViolation> getRuleViolations(String annotationCls, String taxonCls) {
+		return _getRuleViolations(annotationCls, taxonCls,null);
+	}
+	
+	private Set<AnnotationRuleViolation> _getRuleViolations(String annotationCls, String taxonCls, GeneAnnotation a) {
 		Set<AnnotationRuleViolation> violations = new HashSet<AnnotationRuleViolation>();
 		
 		GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
@@ -101,10 +105,11 @@ public class AnnotationTaxonRule extends AbstractAnnotatioRule implements Annota
 		OWLObject cls = graphWrapper.getOWLObjectByIdentifier(annotationCls);
 		OWLObject tax = taxGraphWrapper.getOWLObjectByIdentifier(taxonCls);
 		
-		OWLObject rNever = graphWrapper.getOWLObjectPropertyByIdentifier("never_in_taxon");
-		OWLObject rOnly = graphWrapper.getOWLObjectPropertyByIdentifier("only_in_taxon");
+		OWLObject rNever = graphWrapper.getOWLObjectPropertyByIdentifier("RO:0002161");
+		OWLObject rOnly = graphWrapper.getOWLObjectPropertyByIdentifier("RO:0002160");
 
-		Set<OWLGraphEdge> edges = graphWrapper.getOutgoingEdgesClosure(cls);
+//		Set<OWLGraphEdge> edges = graphWrapper.getOutgoingEdgesClosure(cls);
+		Set<OWLGraphEdge> edges = taxGraphWrapper.getOutgoingEdgesClosure(cls);
 
 		// TODO - requires correct obo2owl translation for negation and only constructs
 		// ALTERNATIVE HACK - load taxonomy into separate ontology
@@ -122,7 +127,7 @@ public class AnnotationTaxonRule extends AbstractAnnotatioRule implements Annota
 				// ONLY
 				if (!taxGraphWrapper.getAncestorsReflexive(tax).contains(p)) {
 					//System.out.println("   ANCESTORS OF "+tax+" DOES NOT CONTAIN "+p);
-					violations.add(new AnnotationRuleViolation("ANCESTORS OF "+tax+" DOES NOT CONTAIN "+p));
+					violations.add(new AnnotationRuleViolation("ANCESTORS OF "+tax+" DOES NOT CONTAIN "+p, a));
 					isValid = false;
 				}
 			}
@@ -131,7 +136,7 @@ public class AnnotationTaxonRule extends AbstractAnnotatioRule implements Annota
 				//System.out.println("   NEVER: "+rOnly+" p:"+p);
 				// NEVER
 				if (taxGraphWrapper.getAncestorsReflexive(tax).contains(p)) {
-					violations.add(new AnnotationRuleViolation("ANCESTORS OF "+tax+" CONTAINS "+p));
+					violations.add(new AnnotationRuleViolation("ANCESTORS OF "+tax+" CONTAINS "+p, a));
 					isValid = false;
 				}
 			}
