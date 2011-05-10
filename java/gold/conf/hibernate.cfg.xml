@@ -4,9 +4,9 @@
 <hibernate-configuration>
  <session-factory name="">
   <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-  <property name="hibernate.connection.password">postgres</property>
-  <property name="hibernate.connection.url">jdbc:postgresql://localhost/gold</property>
-  <property name="hibernate.connection.username">postgres</property>
+  <property name="hibernate.connection.password">gold_pass</property>
+  <property name="hibernate.connection.url">jdbc:postgresql://localhost/gold_test</property>
+  <property name="hibernate.connection.username">gold_user</property>
   <property name="hibernate.default_schema">public</property>
   <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
   <!-- Enable Hibernate's automatic session context management -->
