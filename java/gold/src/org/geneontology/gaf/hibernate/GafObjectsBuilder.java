@@ -81,7 +81,7 @@ public class GafObjectsBuilder {
 		
 		String db = parser.getDbObjectSynonym();
 		
-		Bioentity entity = new Bioentity(id, symbol, fullName, typeCls, "NCBIGene:" + ncbiTaxonId, db, gafDocument.getId());
+		Bioentity entity = new Bioentity(id, symbol, fullName, typeCls, "NCBITaxon:" + ncbiTaxonId, db, gafDocument.getId());
 		
 		gafDocument.addBioentity(entity);
 		
@@ -147,7 +147,7 @@ public class GafObjectsBuilder {
 		String taxons[] = parser.getTaxon().split("\\|");
 		if(taxons.length>1){
 			taxons = taxons[1].split(":");
-			actsOnTaxonId = "NCBIGene:" + taxons[1];
+			actsOnTaxonId = "NCBITaxon:" + taxons[1];
 		}
 		
 		String lastUpdateDate = parser.getDate();
