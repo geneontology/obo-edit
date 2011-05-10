@@ -1,13 +1,26 @@
 <dataConfig>
   <dataSource type="JdbcDataSource" 
               driver="org.postgresql.Driver"
-              url="jdbc:postgresql://localhost:5432/gold"
-              user="postgres" 
-              password="postgres"/>
+              url="jdbc:postgresql://XXXX.:XXXX/XXXX"
+              user="XXXX"
+              password="XXXX"/>
+
   <document>
-     <entity name="gene_annotation"
-              query="
-SELECT DISTINCT 
+    <!-- Add terms. -->
+    <entity name="terms"
+	    query="SELECT DISTINCT
+		   'ontology_class' AS document_category,
+		   id,
+		   obo_namespace AS source,
+		   label,
+		   text_comment AS comment,
+		   text_definition AS description
+		   FROM cls WHERE is_obsolete = false"></entity>
+
+    <!-- Add gene_annotations. -->
+    <entity name="gene_annotation"
+	    query="
+SELECT DISTINCT
         'annotation' AS document_category,
         g.id || c.id || gene_annotation.reference_id || gene_annotation.assigned_by || gene_annotation.evidence_cls AS id,
         g.id AS bioentity_id,
@@ -32,14 +45,14 @@ SELECT DISTINCT
           query="SELECT qualifier_obj AS qualifier FROM composite_qualifier WHERE composite_qualifier.id='${gene_annotation.composite_qualifier}'"></entity>
         
         <!-- TODO: ensure the _reflexive_ closure is stored -->
-         <entity name="isa_partof_closure" 
-          query="SELECT target_cls AS isa_partof_closure FROM inferred_isa_or_partof WHERE cls='${gene_annotation.annotation_class}'"></entity> 
+         <entity name="isa_partof_closure"
+          query="SELECT target_cls AS isa_partof_closure FROM inferred_isa_or_partof WHERE cls='${gene_annotation.annotation_class}'"></entity>
         <entity name="isa_partof_label_closure"
-           query="SELECT c.label AS isa_partof_label_closure FROM inferred_isa_or_partof AS i INNER JOIN cls AS c ON (i.target_cls=c.id) WHERE i.cls='${gene_annotation.annotation_class}'"></entity> 
+           query="SELECT c.label AS isa_partof_label_closure FROM inferred_isa_or_partof AS i INNER JOIN cls AS c ON (i.target_cls=c.id) WHERE i.cls='${gene_annotation.annotation_class}'"></entity>
 
-        <entity name="regulates_closure" 
-           query="SELECT target_cls AS regulates_closure FROM inferred_regulates WHERE cls='${gene_annotation.annotation_class}'"></entity> 
-        <entity name="regulates_label_closure" 
+        <entity name="regulates_closure"
+           query="SELECT target_cls AS regulates_closure FROM inferred_regulates WHERE cls='${gene_annotation.annotation_class}'"></entity>
+        <entity name="regulates_label_closure"
           query="SELECT c.label AS regulates_label_closure FROM inferred_regulates AS i INNER JOIN cls AS c ON (i.target_cls=c.id) WHERE i.cls='${gene_annotation.annotation_class}'"></entity>
 
         <entity name="annotation_extension_class"
@@ -47,13 +60,13 @@ SELECT DISTINCT
 
         <entity name="annotation_extension_class_label"
           query="SELECT c.label AS annotation_extension_class_label FROM extension_expression AS x INNER JOIN cls AS c ON (x.cls=c.id) WHERE x.id='${gene_annotation.extension_expression}'"></entity>
-        <entity name="annotation_extension_class_closure" 
-           query="SELECT target_cls AS annotation_extension_class_closure FROM extension_expression AS x INNER JOIN inferred_subclass_of AS i ON (x.cls=i.cls) WHERE x.id='${gene_annotation.extension_expression}'"></entity> 
-        <entity name="annotation_extension_class_label_closure" 
+        <entity name="annotation_extension_class_closure"
+           query="SELECT target_cls AS annotation_extension_class_closure FROM extension_expression AS x INNER JOIN inferred_subclass_of AS i ON (x.cls=i.cls) WHERE x.id='${gene_annotation.extension_expression}'"></entity>
+        <entity name="annotation_extension_class_label_closure"
           query="SELECT c.label AS annotation_extension_class_label_closure FROM extension_expression AS x INNER JOIN inferred_subclass_of AS i ON (x.cls=i.cls) INNER JOIN cls AS c ON (c.id=i.target_cls) WHERE x.id='${gene_annotation.extension_expression}'"></entity>
         
-    </entity>
+     </entity>
 
   </document>
-</dataConfig>
 
+</dataConfig>
