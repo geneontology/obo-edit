@@ -47,6 +47,7 @@
 	   required="true" />
 
     <!-- Lead: (both): (term.term_type|gp.db) -->
+    <!-- GOLD: term: obo_namespace? -->
     <!-- Ann:  c15 -->
     <field name="source"
 	   type="string"
@@ -214,8 +215,6 @@
     <!--               -->
     <!-- only apply to bioentities or ontology classes -->
 
-
-
     <!-- Both (term.name|gp.symbol) -->
     <!-- Gene: bioentity.label -->
     <!-- Ont:  cls.label -->
@@ -253,6 +252,7 @@
 	   multiValued="true"
  	   required="false" />
     <!-- Lead: (both): (term def|gp def (NOTE: not there yet)) -->
+    <!-- GOLD: term: cls.text_definition? -->
     <field name="description"
 	   type="text_ws"
 	   indexed="true"

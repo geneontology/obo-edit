@@ -51,6 +51,7 @@
   
 <!--     <lib path="/Users/shaid/work/go/java/solr/geneontology-solr.jar" />-->
    <lib dir="../lib/" />
+   <lib dir="/usr/lib/jar/" />
   
   
   <!-- When a regex is specified in addition to a directory, only the files in that
@@ -952,9 +953,10 @@
     <lst name="defaults">
     
     	<!-- Please select only one from the following configurations -->
-    	
-     <!--   <str name="config">gold-pg-config.xml</str> --> <!-- This option loads index from rbms -->
-  			<str name="config">go-data-config.xml</str>  <!-- This option load index from OWL file. -->
+	<!-- This option loads index from rbms -->
+	<str name="config">gold-pg-config.xml</str>
+	<!-- This option load index from OWL file. -->
+	<!-- <str name="config">go-data-config.xml</str> -->
     
     </lst>
   </requestHandler>
