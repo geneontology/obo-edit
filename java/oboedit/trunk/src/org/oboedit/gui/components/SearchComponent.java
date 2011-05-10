@@ -11,6 +11,7 @@ import javax.swing.Box;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.framework.ComponentConfiguration;
@@ -212,11 +213,23 @@ public class SearchComponent extends AbstractGUIComponent {
 		Class<?> resultType = factory.getResultType();
 		LinkDatabase linkDatabase = null;
 
-		if(filter.toString().equals("Link has Is implied")){
-			logger.debug("Search component - IsImplied link search");
+                // Isn't it a bit risky to rely on the toString returning exactly that string?
+                // What if some developer decided to change the toString wording to, say, "Link has is_implied"?
+                // Then this test would fail!  --NH, 5/2/11
+                // Also, what happens here if the reasoner isn't on?  We just get an empty reasoner?
+                // Maybe it should create a new reasoner like OBOSerialization does.
+		if(filter.toString().equalsIgnoreCase("Link has Is implied")){
+			logger.debug("Search component - IsImplied link search.  Using reasoner to get link database.  Filter = " + filter);
 			ReasonedLinkDatabase reasoner = SessionManager.getManager().getReasoner();
 			linkDatabase = reasoner.getLinkDatabase();
-
+                } else if (requiresReasoner(filter)) {
+                    ReasonedLinkDatabase reasoner = SessionManager.getManager().getReasoner();
+                    if (reasoner == null) {
+                        JOptionPane.showMessageDialog(null, "If you want to search Ancestors or Descendants, you must first\nturn on the Reasoner (use the Reasoner Manager component to do that).\nBe aware that the Reasoner makes OBO-Edit run more slowly,\nand it uses a lot of memory.");
+                        return;
+                    } else {
+                        linkDatabase = SessionManager.getManager().getCurrentLinkDatabase();
+                    }
 		}else {
 			linkDatabase = SessionManager.getManager().getCurrentLinkDatabase();
 		}
@@ -274,4 +287,14 @@ public class SearchComponent extends AbstractGUIComponent {
 		else
 			this.labelType = labelType;
 	}
+
+    /** I'd rather not rely on the filter's string, but there's no
+        filter.getAspect method.  Maybe I should add it to all the filters? */
+    private boolean requiresReasoner(Filter filter) {
+        if ((filter.toString().indexOf("Ancestor") >= 0) ||
+            (filter.toString().indexOf("Descend") >= 0))
+            return true;
+        else
+            return false;
+    }
 }
