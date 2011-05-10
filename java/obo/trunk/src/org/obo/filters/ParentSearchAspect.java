@@ -22,6 +22,16 @@ public class ParentSearchAspect implements SearchAspect {
 
 	public Collection getObjects(Collection c, ReasonedLinkDatabase reasoner,
 			Filter traversalFilter, Object o) {
+            LinkedObject lo;
+            try {
+                lo = (LinkedObject) o;
+            } catch (ClassCastException e) {
+                // In ChildSearchAspect, this happens a lot, but it doesn't seem to happen
+                // in ParentSearchAspect, for some reason.
+                //                logger.debug("ChildSearchAspect.getObjects: can't cast " + o + ", class = " + o.getClass() + " to LinkedObject");
+                return c;
+            }
+
 		if(o instanceof LinkedObject){
 			if(reasoner != null && !(reasoner instanceof OnTheFlyReasoner)){
 				LinkDatabase trimmedReasoner = new TrimmedLinkDatabase(reasoner);
@@ -58,6 +68,7 @@ public class ParentSearchAspect implements SearchAspect {
 		return "Parent";
 	}
 
+        // Not currently used
         public boolean requiresReasoner() {
           return false;
         }
