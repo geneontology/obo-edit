@@ -406,6 +406,9 @@ public class DefaultTermModel implements TermModel {
 	protected void buildFilteredDatabase() {
 		// I think this may be the reason that filters that are in place at load time don't go away
 		// when removed by the user:  it is going back to the session to get the original link database.
+            // Why build the filteredLinkDatabase here if we then build it
+            // in both the if and the else?  Maybe don't need this? --NH, 5/2/11
+            //            logger.debug("Building filtered database with term filter " + getMergedTermFilter());
 		FilteredLinkDatabase filteredLinkDatabase = new FilteredLinkDatabase(
 				SessionManager.getManager().getCurrentLinkDatabase());
 		if (SessionManager.getManager().getUseReasoner()) {
