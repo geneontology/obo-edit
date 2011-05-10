@@ -56,7 +56,8 @@ public class AncestorSearchAspect implements SearchAspect {
 		return "Ancestor";
 	}
 
-  public boolean requiresReasoner() {
-    return true;
-  }
+    // Not currently used
+    public boolean requiresReasoner() {
+        return true;
+    }
 }
