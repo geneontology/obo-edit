@@ -647,7 +647,9 @@ public class TermUtil {
 	public static Collection<LinkedObject> getChildren(LinkedObject lo) {
 		HashSet<LinkedObject> children = new HashSet<LinkedObject>();
 		for (Link link : lo.getChildren()) {
-			children.add(link.getParent());
+                    // 5/10/11: I can't believe this typo was not noticed before!
+                    //			children.add(link.getParent());
+			children.add(link.getChild());
 		}
 		return children;
 	}
