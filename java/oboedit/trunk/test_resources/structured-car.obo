@@ -1,0 +1,45 @@
+format-version: 1.2
+date: 10:05:2011 11:25
+saved-by: nomi
+auto-generated-by: OBO-Edit 2.1-beta13
+default-namespace: file:/Users/nomi/Documents/workspace/OBO-Edit/test_resources/car.obo
+
+[Term]
+id: TEST:0000001
+name: car
+synonym: "automobile" EXACT []
+
+[Term]
+id: TEST:0000002
+name: blue
+
+[Term]
+id: TEST:0000003
+name: blue car
+is_a: TEST:0000001 ! car
+relationship: has_color TEST:0000002 ! blue
+
+[Term]
+id: TEST:0000004
+name: blue VW
+is_a: TEST:0000005 ! VW
+relationship: has_color TEST:0000002 ! blue
+
+[Term]
+id: TEST:0000005
+name: VW
+is_a: TEST:0000001 ! car
+
+[Term]
+id: TEST:0000006
+name: automobile
+is_obsolete: true
+
+[Typedef]
+id: has_color
+name: has_color
+
+[Typedef]
+id: has_make
+name: has_make
+
