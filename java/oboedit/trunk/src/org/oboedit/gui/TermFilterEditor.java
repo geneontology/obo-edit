@@ -97,16 +97,27 @@ public class TermFilterEditor extends JPanel {
                   // This call to updateFields is needed by the Link Search when the user
                   // selects a different item from the "Find links where" menu.
                   // 3/31/2011: Is it?  It doesn't seem to be, and having it there breaks
-                  // the aspect field (in [self, child, etc.]) in the Search Panel.
+                  // the aspect field (in [self, child, etc.]) in the Search Panel (it
+                  // always selects the first thing, "self", rather than what you actually
+                  // tried to select).
                   // Oh, I see...if you don't updateFields, the status label
                   // (the text that has a descriptin of the search, e.g., "all_text_fields contains 'blue'")
                   // (it's in FilterComponent.java) doesn't update when you change the search.
-//                  updateFields();
-                  fireUpdateEvent(); // This seems to do the trick--statusLabel updates as it should.
+                    //                  updateFields();
+                    //                    logger.debug("TermFilterEditor.actionPerformed: " + e); // DEL
+                    fireUpdateEvent(); // This seems to do the trick--statusLabel updates as it should.
 		}
 	}
 
-	protected ActionListener aspectBoxListener = new BasicActionListener();
+    //	protected ActionListener aspectBoxListener = new BasicActionListener();
+	protected ActionListener aspectBoxListener = new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+                    boolean showTypeBox = !(aspectBox.getSelectedItem() instanceof SelfSearchAspect);
+                    //                    logger.debug("aspectBoxListener: aspectBox.getSelectedItem = " + aspectBox.getSelectedItem() + ", showTypeBox = " + showTypeBox); // DEL
+                    reachedViaLabel.setVisible(showTypeBox);
+                    typeBox.setVisible(showTypeBox);
+		}
+	};
 
 	protected ActionListener comparisonBoxListener = new BasicActionListener();
 
@@ -182,14 +193,15 @@ public class TermFilterEditor extends JPanel {
 //                logger.debug("criterionBox.setSelectedItem(" + criterion + ")");
 		criterionBox.setSelectedItem(criterion);
 
-                // Update aspects too--some might have become valid or invalid due to
-                // change in reasoner state.
-//                logger.debug("updateFields: updating aspects.");
-		aspectBox.removeAllItems();
-		for (SearchAspect aspect : FilterManager.getManager().getAspects()) {
-                  if (isValid(aspect))
-			aspectBox.addItem(aspect);
-		}
+                // 5/9/11: No longer doing this
+                // // Update aspects too--some might have become valid or invalid due to
+                // // change in reasoner state.
+                // //                logger.debug("updateFields: updating aspects."); // DEL
+		// aspectBox.removeAllItems();
+		// for (SearchAspect aspect : FilterManager.getManager().getAspects()) {
+                //   if (isValid(aspect))
+		// 	aspectBox.addItem(aspect);
+		// }
 
 		containsCurrentSelection = false;
 		typeBox.removeAllItems();
@@ -207,6 +219,7 @@ public class TermFilterEditor extends JPanel {
 		} else
 			typeBox.setSelectedIndex(0);
 		boolean showTypeBox = !(aspectBox.getSelectedItem() instanceof SelfSearchAspect);
+                //                logger.debug("aspectBox.getSelectedItem = " + aspectBox.getSelectedItem() + ", showTypeBox = " + showTypeBox); // DEL
 		reachedViaLabel.setVisible(showTypeBox);
 		typeBox.setVisible(showTypeBox);
 
@@ -284,7 +297,6 @@ public class TermFilterEditor extends JPanel {
 		mainPanel.setLayout(new TableLayout(sizes));
 		// setLayout(new GridLayout(3, 1));
 		valueField = new AutocompleteBox<String>(model);
-//		logger.info("TermFilterEditor: valueField = new"); // DEL
 //		model.clear();  // Need?
 		valueField.setAllowNonModelValues(true);
 		valueField.setMinLength(1);
@@ -306,9 +318,11 @@ public class TermFilterEditor extends JPanel {
 			}
 		});
 
-//                logger.info("TermFilterEditor.init: getting aspects");
 		for (SearchAspect aspect : FilterManager.getManager().getAspects()) {
-                  if (isValid(aspect))
+                    // 5/9/11: No longer calling isValid(aspect)--instead, we leave all the aspects in the aspect menu,
+                    // and if user selects Ancestor or Descendent when reasoner is not on, they get a
+                    // pop-up error message.
+                    //                  if (isValid(aspect))
 			aspectBox.addItem(aspect);
 		}
 
@@ -370,15 +384,16 @@ public class TermFilterEditor extends JPanel {
 		typeBox.addActionListener(typeBoxListener);
 		valueField.addUpdateListener(valueFieldListener);
 
-                // If reasoner is turned on or off, may need to update the choices (for aspect or criterion)
-		SessionManager.getManager().addReasonerStatusListener(
-                  new ReasonerStatusListener() {
-                    // For some reason, this gets triggered like 24 times when the reasoner is turned on or off...
-                    public void statusChanged(ReasonerStatusEvent e) {
-//                      logger.debug("TermFilterEditor: reasoning statusChanged"); // DEL
-                      updateFields();
-                    }
-                  });
+                // 5/9/11: No longer doing this
+//                 // If reasoner is turned on or off, may need to update the choices (for aspect or criterion)
+// 		SessionManager.getManager().addReasonerStatusListener(
+//                   new ReasonerStatusListener() {
+//                     // For some reason, this gets triggered like 24 times when the reasoner is turned on or off...
+//                     public void statusChanged(ReasonerStatusEvent e) {
+// //                      logger.debug("TermFilterEditor: reasoning statusChanged"); // DEL
+//                       updateFields();
+//                     }
+//                   });
 
 		timer.start();
 		layoutGUI();
@@ -490,11 +505,14 @@ public class TermFilterEditor extends JPanel {
       unless the reasoner is on. 
       This method returns false if the specified SearchAspect requires the reasoner
       and the reasoner is not on. */
-  private boolean isValid(SearchAspect aspect) {
-    if (aspect.requiresReasoner() && !(SessionManager.getManager().getUseReasoner()))
-      return false;
-    else
-      return true;
-  }
+    /** 5/9/11: No longer doing this--instead, we leave all the aspects in the aspect menu,
+        and if user selects Ancestor or Descendent when reasoner is not on, they get a
+        pop-up error message. */
+  // private boolean isValid(SearchAspect aspect) {
+  //   if (aspect.requiresReasoner() && !(SessionManager.getManager().getUseReasoner()))
+  //     return false;
+  //   else
+  //     return true;
+  // }
 
 }
