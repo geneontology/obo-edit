@@ -107,7 +107,7 @@ public class ObjectFilterImpl implements ObjectFilter {
 //			logger.debug("satisfies(" +  object+ "): criterion is null"); 
 			return false;
 		}
-		//          logger.debug("ObjectFilterImpl.satisfies -- input type = " + criterion.getInputType() + "; evaluating object: " + object); // DEL
+                //                logger.debug("ObjectFilterImpl.satisfies -- input type = " + criterion.getInputType() + "; evaluating object: " + object + ", isAssignableFrom(" + object.getClass() + ") =" +  criterion.getInputType().isAssignableFrom(object.getClass())); // DEL
 		if (!criterion.getInputType().isAssignableFrom(object.getClass()))
 			return false;
 		else {
