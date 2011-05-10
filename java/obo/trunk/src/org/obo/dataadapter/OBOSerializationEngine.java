@@ -497,7 +497,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				if (!filteredPath.getDoTagFilter())
 					tagFilter = null;
 
-				logger.debug("OBOSerializationEngine.serialize initiating writeFile.. checking tagFilter: " + tagFilter);
+                                //				logger.debug("OBOSerializationEngine.serialize initiating writeFile.. checking tagFilter: " + tagFilter);
 				writeFile(session, objectFilter, linkFilter, tagFilter, serializer, stream, filteredPath);
 			} catch (IOException ex) {
 				throw new DataAdapterException("Write error", ex);
@@ -1100,6 +1100,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		OBOProperty prefilterProperty = null;
 		if (filteredPath.getPrefilterProperty() != null)
 			prefilterProperty = (OBOProperty) session.getObject(filteredPath.getPrefilterProperty());
+                logger.debug("writeFile: prefilterProperty = " + prefilterProperty); // DEL
 
 		String rootAlgorithm = filteredPath.getRootAlgorithm();
 
@@ -1117,17 +1118,24 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		LinkDatabase database = session.getLinkDatabase();
 
-		if (saveImplied || prefilterProperty != null) {
+		if (saveImplied || prefilterProperty != null || requiresReasoner(objectFilter)) {
 			ReasonedLinkDatabase fullReasoner;
 			if (filteredPath.getUseSessionReasoner() && getReasoner() != null) {
 				fullReasoner = getReasoner();
 			} else {
+                            // If filtered save requires reasoner and reasoner isn't currently on,
+                            // start a new one.
+                            logger.info("User requested a filtered save that requires the reasoner (" +
+                                        objectFilter + ") but reasoner isn't on.  Starting reasoner--this may take a while.");
+                            setProgressString("This filtered save requires the reasoner--please be patient.");
 				fullReasoner = reasonerFactory.createReasoner();
 				fullReasoner.setLinkDatabase(new DefaultLinkDatabase(session));
 				fullReasoner.recache();
+                                setProgressString("Filtering objects...");
 			}
 
 			if (prefilterProperty != null) {
+                            setProgressString("Prefiltering...");
 				final FilteredLinkDatabase propertyFiltered = new FilteredLinkDatabase(
 						fullReasoner);
 				propertyFiltered
@@ -1137,6 +1145,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				if (saveAll) {
 					database = propertyFiltered;
 				} else {
+                                    setProgressString("Filtering links...");
 					final ReasonedLinkDatabase rld = fullReasoner;
 					FilteredLinkDatabase trimFiltered = new FilteredLinkDatabase(
 							propertyFiltered);
@@ -1302,10 +1311,10 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				}
 
 			}
-			setProgressString("Sorting objects: " + path);
+			setProgressString("Sorting objects");
 			Collections.sort(writeObjects, objectComparator);
 
-			setProgressString("Writing objects: " + path);
+			setProgressString("Writing objects to file: " + path);
 
 			for(Object writeo : writeObjects){
 				IdentifiedObject io = (IdentifiedObject) writeo;
@@ -1373,5 +1382,18 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
+    /** I'd rather not rely on the filter's string, but there's no
+        Filter.getAspect method (there's one in.ObjectFilter, but we just have a Filter). */
+    private boolean requiresReasoner(Filter filter) {
+        if (filter == null)
+            return false;
+
+        if ((filter.toString().indexOf("Ancestor") >= 0) ||
+            (filter.toString().indexOf("Descend") >= 0))
+            return true;
+        else
+            return false;
+    }
 
 }
