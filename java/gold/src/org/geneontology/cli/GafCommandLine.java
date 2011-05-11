@@ -37,7 +37,7 @@ public class GafCommandLine {
 				+ "\nThe tool can be run remotely, and a local gaf file is uploaded to the server for parsing and annotation checks." );
 		System.out.println("gaf-tools [-serverurl url -o outfilepath  gafile-path/url] ");
 		System.out.println();
-		System.out.println("\tAll arguments are optional. The default server url is http://localhost:8080/gold/. The" +
+		System.out.println("\tAll arguments are optional. The default server url is http://localhost:"+GeneOntologyManager.getInstance().getJettyPort()+"/gold/. The" +
 				"\n\tThe default output is printed on stdout. " +
 				"\n\tThe default gaf file read through the geneontology.gold.ontologylocation property" +
 				"\n\tin the conf/gold.properties file. The gafile-path/url can refer to a in the local system and http or ftp url.");
@@ -52,7 +52,7 @@ public class GafCommandLine {
 	
 	public static void main(String args[]){
 		
-		String serverURL = "http://localhost:8080/gold/";
+		String serverURL = "http://localhost:"+GeneOntologyManager.getInstance().getJettyPort()+"/gold/";
 		String annotationFilePath = GeneOntologyManager.getInstance().getDefaultGafFileLocations().get(0).toString();
 		String outFile = null;
 		for(int i=0;i<args.length;i++){

@@ -68,7 +68,7 @@ public class SchemaManager {
 		
 		//if connection is null then try to create database.
 		if(connection == null){
-			connection = DriverManager.getConnection("jdbc:postgresql://localhost/", username, password);
+			connection = DriverManager.getConnection("jdbc:postgresql://localhost/postgres", username, password);
 			
 			connection.createStatement().executeUpdate("CREATE DATABASE " + db);
 			
