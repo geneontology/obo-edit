@@ -69,39 +69,6 @@ public class GAFParser {
 	private List<AnnotationRuleViolation> voilations;
 	
 	
-	private static final HashSet<String> db_abbreviations = buildAbbreviations();
-	
-	private static HashSet<String> buildAbbreviations(){
-		HashSet<String> set = new HashSet<String>();
-		
-		try{
-			
-			BufferedReader reader = new BufferedReader(new FileReader(new File(GeneOntologyManager.getInstance().getGoXrfAbbsLocation())));
-			
-			String line = null;
-			while ((line =reader.readLine()) != null) {
-	
-				if(line.startsWith("!"))
-					continue;
-					
-				String data[] = line.split(":");
-				
-				if(data.length==2 && "abbreviation".equals(data[0]) ){
-					set.add(data[1].trim());
-				}
-				
-			}			
-			
-		}catch(Exception ex){
-			LOG.error("Cann't read Go.xrf_abbs file at the location " + GeneOntologyManager.getInstance().getGoXrfAbbsLocation(),
-					ex);
-		}
-		
-		return set;
-		
-	}
-	
-	
 	public List<AnnotationRuleViolation> getAnnotationRuleViolations(){
 		return this.voilations;
 	}

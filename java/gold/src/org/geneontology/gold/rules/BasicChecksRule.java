@@ -2,7 +2,12 @@ package org.geneontology.gold.rules;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,7 +30,15 @@ public class BasicChecksRule extends AbstractAnnotatioRule {
 		
 		try{
 			
-			BufferedReader reader = new BufferedReader(new FileReader(new File(GeneOntologyManager.getInstance().getGoXrfAbbsLocation())));
+			InputStream is = null;
+			String path = GeneOntologyManager.getInstance().getGoXrfAbbsLocation();
+			
+			if(path.startsWith("http://") || path.startsWith("file:/")){
+				is = new URL(path).openStream();
+			}else
+				is = new FileInputStream(new File(path));
+			
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 			
 			String line = null;
 			while ((line =reader.readLine()) != null) {
@@ -34,8 +47,8 @@ public class BasicChecksRule extends AbstractAnnotatioRule {
 					continue;
 					
 				String data[] = line.split(":");
-				
-				if(data.length==2 && "abbreviation".equals(data[0].trim()) ){
+				String tag = data[0].trim();
+				if(data.length==2 && ("abbreviation".equals(tag) || "synonym".equals(tag) ) ){
 					set.add(data[1].trim());
 				}
 				
