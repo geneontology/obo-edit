@@ -250,8 +250,8 @@ public class GeneOntologyManager {
 	}
 	
 	public String getGoXrfAbbsLocation(){
-		return guessAbsolutePath(config
-				.getString("geneontology.gold.gaf.xrfabbslocation"));
+		return config
+				.getString("geneontology.gold.gaf.xrfabbslocation");
 	}
 	
 	public int getFileMonitorDelay(){
