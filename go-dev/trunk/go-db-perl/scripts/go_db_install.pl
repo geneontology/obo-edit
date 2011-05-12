@@ -677,8 +677,11 @@ if( $opt_j ){
       $ENV{GO_DBAUTH} = $local{DB_PASS} if defined $local{DB_PASS};
       $ENV{GO_DBPORT} = $local{DB_PORT} if defined $local{DB_PORT};
       my $script = "go-db-perl/scripts/load-phylotree-properties.pl";
-      my @args = ($go_dev_path . $script,
-		  $panther_newick_path);
+      my @args = ($go_dev_path . $script, $panther_newick_path);
+      if( $ENV{GOBO_ROOT} ){ # add the path to gobo if it's there
+	@args = ('perl', '-I', $ENV{GOBO_ROOT},
+		 $go_dev_path . $script, $panther_newick_path);
+      }
       my $argstr = join(' ', @args);
       ll("[SYSTEM] \"$argstr\"");
       eval {
