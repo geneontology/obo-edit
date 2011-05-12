@@ -52,7 +52,7 @@ public class JettyStarter {
         String jetty_home = System.getProperty("jetty.home",".");
         System.setProperty("jetty.home",jetty_home);
 
-        Server server = new Server(jetty_port);
+        server = new Server(jetty_port);
 //        server.setDumpAfterStart(true);
  //       server.setDumpBeforeStop(true);
     
@@ -75,6 +75,7 @@ public class JettyStarter {
         connector.setMaxIdleTime(30000);
         connector.setConfidentialPort(8443);
         connector.setStatsOn(true);
+        server.setGracefulShutdown(1000);
         
         server.setConnectors(new Connector[]
         { connector });
