@@ -1644,6 +1644,68 @@ sub mode_scratch {
 }
 
 
+##
+sub mode_exhibit_exp {
+
+  my $self = shift;
+
+  ###
+  ### Page settings.
+  ###
+
+  ## Non-standard settings.
+  $self->set_template_parameter('STANDARD_YUI', 'no'); # no YUI please
+  $self->set_template_parameter('STANDARD_CSS', 'no');
+
+  ## Our AmiGO services CSS.
+  my $prep =
+    {
+     css_library =>
+     [
+      'standard', # basic GO-styles
+      #'org.bbop.amigo.ui.standard',
+      #'org.bbop.amigo.ui.widgets',
+      'com.jquery.redmond.custom'
+     ],
+     javascript_library =>
+     [
+      'com.jquery',
+      'com.jquery-ui',
+      'org.bbop.amigo',
+      'org.bbop.amigo.go_meta',
+      'as.core.core',
+      'as.core.abstractmanager',
+      'as.managers.jquery',
+      'as.core.parameter',
+      'as.core.parameterstore',
+      'as.core.abstractwidget'
+      #'org.bbop.amigo.workspace',
+      #'org.bbop.amigo.ui.workspace',
+      #'org.bbop.amigo.ui.widgets',
+      #'org.bbop.amigo.ui.cart',
+      #'org.bbop.amigo.ui.shield',
+      #'org.bbop.amigo.ui.wait',
+      #'org.bbop.amigo.ui.shopping'
+     ],
+     javascript =>
+     [
+      $self->{JS}->get_lib('LiveSearchAS.js')
+     ],
+     javascript_init =>
+     [
+      'LiveSearchASInit();'
+     ],
+     content =>
+     [
+      'html/main/exhibit_exp.tmpl'
+     ]
+    };
+  $self->add_template_bulk($prep);
+
+  return $self->generate_template_page();
+}
+
+
 ## Go to main.
 sub mode_kick_to_main {
 
