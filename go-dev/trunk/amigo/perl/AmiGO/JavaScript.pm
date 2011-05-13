@@ -70,7 +70,6 @@ my $sig2path =
    'com.jquery.tablesorter'       => 'com/jquery.tablesorter.min.js',
    'com.jquery.tablesorter.pager' => 'com/jquery.tablesorter.pager.js',
 
-
    ## TODO/BUG: temporary newick locations and links. These are not
    ## automatically copied at installation time at this point as they
    ## are kept in SVN, not CVS. This will be taken care of after the
@@ -104,6 +103,38 @@ my $sig2path =
    'javascript/graph/render/exp.js',
    'pthr10170' =>
    'javascript/graph/render/pthr10170.js',
+
+   ## TODO/BUG: better layout for Ajax-Solr libs
+   'as.core.abstractfacetwidget' =>
+   'com/github/ajax-solr/core/AbstractFacetWidget.js',
+   'as.core.abstractmanager' =>
+   'com/github/ajax-solr/core/AbstractManager.js',
+   'as.core.abstractspatialwidget' =>
+   'com/github/ajax-solr/core/AbstractSpatialWidget.js',
+   'as.core.abstractspellcheckwidget' =>
+   'com/github/ajax-solr/core/AbstractSpellcheckWidget.js',
+   'as.core.abstracttextwidget' =>
+   'com/github/ajax-solr/core/AbstractTextWidget.js',
+   'as.core.abstractwidget' =>
+   'com/github/ajax-solr/core/AbstractWidget.js',
+   'as.core.core' =>
+   'com/github/ajax-solr/core/Core.js',
+   'as.core.parameterhashstore' =>
+   'com/github/ajax-solr/core/ParameterHashStore.js',
+   'as.core.parameter' =>
+   'com/github/ajax-solr/core/Parameter.js',
+   'as.core.parameterstore' =>
+   'com/github/ajax-solr/core/ParameterStore.js',
+   'as.helpers.ajaxsolr.support' =>
+   'com/github/ajax-solr/helpers/ajaxsolr.support.js',
+   'as.helpers.ajaxsolr.theme' =>
+   'com/github/ajax-solr/helpers/ajaxsolr.theme.js',
+   'as.helpers.jquery.ajaxsolr.theme' =>
+   'com/github/ajax-solr/helpers/jquery/ajaxsolr.theme.js',
+   'as.managers.jquery' =>
+   'com/github/ajax-solr/managers/Manager.jquery.js',
+   'as.widgets.jquery.pagerwidget' =>
+   'com/github/ajax-solr/widgets/jquery/PagerWidget.js',
 
    ## EXT JS.
    'com.ext' =>
