@@ -1678,7 +1678,10 @@ sub mode_exhibit_exp {
       'as.managers.jquery',
       'as.core.parameter',
       'as.core.parameterstore',
-      'as.core.abstractwidget'
+      'as.core.abstractwidget',
+      'as.helpers.jquery.ajaxsolr.theme',
+      'as.widgets.jquery.pagerwidget',
+      'as.core.abstractfacetwidget'
       #'org.bbop.amigo.workspace',
       #'org.bbop.amigo.ui.workspace',
       #'org.bbop.amigo.ui.widgets',
