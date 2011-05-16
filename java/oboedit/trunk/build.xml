@@ -85,6 +85,8 @@
 	</target>
 
         <!-- For making installers - make backwards-compatible so users who have only JDK 1.5 can still run it. -->
+        <!-- Developers may want to change this target to jar for faster compiling, but be sure to
+             change the target back to backward_compatible_jar before making release! -->
 	<ant dir="${bbop_dest}" target="backward_compatible_jar" inheritAll="false" />
 	<target name="buildbbop" if="bbop_dest">
 		<copy file="${bbop_dest}/bbop.jar" todir="${librarydir}/runlibs" />
@@ -184,6 +186,8 @@
 	</fileset>
 
 	<target name="buildobo" if="obo_dest">
+          <!-- Developers may want to change this target to jar for faster compiling, but be sure to
+               change the target back to backward_compatible_jar before making release! -->
 		<ant dir="${obo_dest}" target="backward_compatible_jar" inheritAll="false" />
 		<copy file="${obo_dest}/obo.jar" todir="${librarydir}/runlibs" />
 		<copy todir="${librarydir}/runlibs">
