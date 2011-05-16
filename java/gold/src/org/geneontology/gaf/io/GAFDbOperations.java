@@ -413,6 +413,8 @@ public class GAFDbOperations implements DbOperationsInterface{
 		Collection<ExtensionExpression> expressions = deltaFactory.buildExtensionExpressions();
 		Collection<WithInfo> infos = deltaFactory.buildWithInfos();
 		
+		deltaFactory.closeConnection();
+		
 		Session session = factory.getSession();
 		
 		session.saveOrUpdate(gafDocument);
