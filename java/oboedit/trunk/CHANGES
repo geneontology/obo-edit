@@ -1,7 +1,7 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 ================================
-What's New in OBO-Edit v2.1-beta13
+What's New in OBO-Edit v2.1-beta13 (5/16/2011)
 ================================
 
 Bug fixes:
@@ -32,6 +32,8 @@ that the progress string is limited in length--if you make it longer than that
 it gets cut off.)
 
 [ geneontology-Feature Requests-3302649 ] Add verification check for single intersection_of tag
+
+Made messages about maximum memory allocation clearer (they now mention 64-bit JVMs).
 
 
 ================================
