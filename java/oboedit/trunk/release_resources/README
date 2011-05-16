@@ -21,6 +21,40 @@ How to report bugs
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 ================================
+What's New in OBO-Edit v2.1-beta13
+================================
+
+Bug fixes:
+[ geneontology-Bugs-3296528 ] Search aspect is missing the "can be reached via" selector
+[ geneontology-Bugs-3297446 ] Can't restrict ancestor search by relation type in 2.1b12
+(Two reports of same bug)
+
+[ geneontology-Bugs-3265376] Search for children is missing some (unless reasoner on)
+
+[ geneontology-Bugs-3265349 ] Filtered save with "child" aspect throws exception
+
+Changes/improvements:
+As suggested by OEWG, all search aspects are once again available in search
+aspect menu.  If user selects an aspect (Ancestor or Descendant) that requires
+reasoning and the reasoner isn't on, they get a pop-up error message.
+(The previous solution--leaving Ancestor and Descendant out of the aspect menu
+when reasoner was off--confused users.)
+(Chris M. said it should be possible to make OE invoke a simple reasoner, such
+as the OnTheFly reasoner, to answer these searches correctly, but this is a
+feature request for the future.)
+- Also, you can (once again) do filtered saves with Ancestor and Descendant
+even when the reasoner is off, because the filtered save method can start a
+reasoner.
+- Some users complained that these filtered saves that silently invoked the
+reasoner took so long they thought OE had crashed. Now the Progress window
+says "This filtered save requires the reasoner--please be patient."  (Note
+that the progress string is limited in length--if you make it longer than that
+it gets cut off.)
+
+[ geneontology-Feature Requests-3302649 ] Add verification check for single intersection_of tag
+
+
+================================
 What's New in OBO-Edit v2.1-beta12 (4/25/2011)
 ================================
 
