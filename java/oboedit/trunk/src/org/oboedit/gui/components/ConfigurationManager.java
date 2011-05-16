@@ -1264,7 +1264,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
                 String numMem = mem.substring(0, mem.indexOf("M"));
 		int intMem = Integer.parseInt(numMem);
 		if(intMem > 1860){
-			if (JOptionPane.showConfirmDialog( GUIManager.getManager().getFrame(), "WARNING -- On most systems, Java limits the maximum memory allocation to 1860M. " +
+			if (JOptionPane.showConfirmDialog( GUIManager.getManager().getFrame(), "WARNING -- unless you have a 64-bit JVM, the maximum amount of memory Java allows is 1860M. " +
 					"\n Do you really want to set it to " + mem + "?", "Warning", JOptionPane.OK_CANCEL_OPTION)
 				!= JOptionPane.OK_OPTION) mem = "1860M";
 		} 
