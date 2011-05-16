@@ -614,7 +614,7 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 
 	@Override
 	public String getDescription() {
-		return "Dbxref check";
+		return "Dbxref Check";
 	}
 
 	public Collection<CheckWarning> check(OBOSession session, FieldPath path,
