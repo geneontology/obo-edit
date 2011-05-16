@@ -31,7 +31,7 @@ public abstract class AbstractBulkLoader {
 	
 	// TODO - abstract this
 	public OWLOntology getOwlOntology() {
-		return graphWrapper.getOntology();
+		return graphWrapper.getSourceOntology();
 	}
 	
 	protected void flushTables() throws IOException{
