@@ -31,6 +31,9 @@ says "This filtered save requires the reasoner--please be patient."  (Note
 that the progress string is limited in length--if you make it longer than that
 it gets cut off.)
 
+[ geneontology-Feature Requests-3302649 ] Add verification check for single intersection_of tag
+
+
 ================================
 What's New in OBO-Edit v2.1-beta12 (4/25/2011)
 ================================
