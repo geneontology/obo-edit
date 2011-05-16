@@ -26,6 +26,7 @@ import org.oboedit.verify.impl.DisjointednessCheck;
 import org.oboedit.verify.impl.IDCheck;
 import org.oboedit.verify.impl.NameCheck;
 import org.oboedit.verify.impl.NameRedundancyCheck;
+import org.oboedit.verify.impl.SingleIntersectionCheck;
 import org.oboedit.verify.impl.SynonymCheck;
 
 import org.apache.log4j.*;
@@ -140,6 +141,7 @@ public class VerificationManager {
 		out.add(new NameCheck());
 		out.add(new NameRedundancyCheck());
 		out.add(new DanglingIntersectionCheck());
+		out.add(new SingleIntersectionCheck());
 		out.add(new CycleCheck());
 		out.add(new DisjointednessCheck());
 		out.add(new IDCheck());
