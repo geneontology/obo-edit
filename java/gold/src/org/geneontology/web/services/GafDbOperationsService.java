@@ -26,6 +26,8 @@ import org.geneontology.gold.rules.AnnotationRulesEngine;
 import org.geneontology.solrj.GafSolrLoader;
 import org.geneontology.web.Task;
 
+import com.sun.tools.hat.internal.parser.Reader;
+
 /**
  * This class performs bulkload and update operations for GAF database against the
  * web based requests.
@@ -131,11 +133,14 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 				}else {
 				
 					
-					if(!commit && !solrLoad && this.gafDocuments == null){				
-						////////////////////start guessing gaf file location
+//					if(!commit && !solrLoad && this.gafDocuments == null){				
+					if((!commit && !solrLoad && !runAnnotationRules) || noReloadMode){				
+
+					////////////////////start guessing gaf file location
 						
 						//if there is no task running then create one for the update and bulkload commands
 			//			if(isOPerationCompleted && !commit) {
+						this.gafDocuments = null;
 						if(remoteGAF != null){
 								gafLocations = new GafURLFetch(remoteGAF);
 						}else{
@@ -292,9 +297,12 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	
 								InputStream is = (InputStream)fetch.next();
 								this.currentOntologyBeingProcessed = fetch.getCurrentGafFile();
-								
-								GafDocument doc = db.buildGafDocument(new InputStreamReader(is), fetch.getCurrentGafFile(), fetch.getCurrentGafFilePath());
+								java.io.Reader reader = new InputStreamReader(is);
+								GafDocument doc = db.buildGafDocument(reader, fetch.getCurrentGafFile(), fetch.getCurrentGafFilePath());
 								gafDocuments.add( doc);
+								reader.close();
+								is.close();
+								fetch.completeDownload();
 							//	performAnnotationChecks(doc);
 							}
 						}else{

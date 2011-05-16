@@ -91,10 +91,9 @@ public class GAFParser {
 			}
 
 			if (this.currentRow.trim().length() == 0) {
-				System.err.println("Blank line found.");
-			}
-			
-			if (currentRow.startsWith(GAF_COMMENT)) {
+				LOG.warn("Blank Line");
+				next();
+			}else if (currentRow.startsWith(GAF_COMMENT)) {
 				
 				if(gafVersion<1){
 				
@@ -117,9 +116,9 @@ public class GAFParser {
 				}/*else{
 					performBasicChecks(this.currentCols);
 				}*/
-		}
+				return true;
+			}
 			
-			return true;
 		}
 		
 		return false;

@@ -44,7 +44,7 @@ public class GafCommandLine {
 		System.out.println();
 		System.out.println("\tExamples:");
 		System.out.println("\t\tbin/gaf-runner http://www.geneontology.org/gene-associations/gene_association.GeneDB_Spombe.gz");
-		System.out.println("\t\tbin/gaf-runner -server http://localhost:8080/gold/ -o out.json  http://www.geneontology.org/gene-associations/gene_association.GeneDB_Spombe.gz");
+		System.out.println("\t\tbin/gaf-runner -serverurl http://localhost:8080/gold/ -o out.json  http://www.geneontology.org/gene-associations/gene_association.GeneDB_Spombe.gz");
 		System.out.println("\t\tbin/gaf-runner -o out.json");
 		
 		System.exit(0);

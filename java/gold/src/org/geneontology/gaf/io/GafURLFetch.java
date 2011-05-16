@@ -104,7 +104,7 @@ public class GafURLFetch implements Iterator {
 					currentGafFilePath += file;
 				
 				
-				LOG.debug("Returning input stream for the file: " + file);
+				LOG.info("Returning input stream for the file: " + file);
 				
 				InputStream is = ftpClient.retrieveFileStream(file);
 				

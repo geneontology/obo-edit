@@ -171,4 +171,15 @@ public class GafDeltaFactory {
 		
 	}
 	
+	public void closeConnection(){
+		if(db == null)
+			return;
+		
+		try{
+			db.getConnect().close();
+		}catch (Exception e) {
+
+		}
+	}
+	
 }
