@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gaf.hibernate.GeneAnnotation;
 
-public class DbAbbreviationsRule extends AbstractAnnotatioRule {
+public class DbAbbreviationsRule extends AbstractAnnotationRule {
 
 	private static final Logger LOG = Logger.getLogger(DbAbbreviationsRule.class);
 	

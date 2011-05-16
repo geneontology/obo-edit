@@ -134,7 +134,7 @@ public class AdminServlet extends HttpServlet {
 			//find the service object
 			ServiceHandler handler= ServicesConfig.getService(servicename);	
 			if(handler == null){
-				error = "The service '"+ servicename + "' is not supproted by the server";
+				error = "The service '"+ servicename + "' is not supported by the server";
 			}else{
 				
 				handler.handleService(request, response);

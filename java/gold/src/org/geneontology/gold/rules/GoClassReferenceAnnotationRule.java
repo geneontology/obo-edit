@@ -11,7 +11,7 @@ import org.semanticweb.owlapi.model.OWLClass;
 
 import owltools.graph.OWLGraphWrapper;
 
-public class GoClassReferenceAnnotationRule extends AbstractAnnotatioRule {
+public class GoClassReferenceAnnotationRule extends AbstractAnnotationRule {
 
 	
 //	private OWLGraphWrapper graph;

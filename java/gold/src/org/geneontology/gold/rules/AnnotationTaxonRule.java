@@ -14,7 +14,7 @@ import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 import owltools.graph.OWLQuantifiedProperty;
 
-public class AnnotationTaxonRule extends AbstractAnnotatioRule implements AnnotationRule {
+public class AnnotationTaxonRule extends AbstractAnnotationRule implements AnnotationRule {
 	/*OWLGraphWrapper graphWrapper;
 	OWLGraphWrapper taxGraphWrapper;
 	List<String> files;
