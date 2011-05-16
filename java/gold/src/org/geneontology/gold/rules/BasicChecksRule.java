@@ -16,7 +16,7 @@ import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gaf.hibernate.GeneAnnotation;
 import org.geneontology.gaf.parser.GAFParser;
 
-public class BasicChecksRule extends AbstractAnnotatioRule {
+public class BasicChecksRule extends AbstractAnnotationRule {
 
 	private static Logger LOG = Logger.getLogger(BasicChecksRule.class);
 	

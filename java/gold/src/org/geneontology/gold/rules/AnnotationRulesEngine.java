@@ -18,7 +18,7 @@ import org.jdom.xpath.XPath;
 
 public class AnnotationRulesEngine {
 
-	private List<AbstractAnnotatioRule> rules;
+	private List<AbstractAnnotationRule> rules;
 	
 	private static AnnotationRulesEngine engine;
 	
@@ -55,7 +55,7 @@ public class AnnotationRulesEngine {
 		return engine;
 	}
 	
-	public List<AbstractAnnotatioRule> getRules(){
+	public List<AbstractAnnotationRule> getRules(){
 		return rules;
 	}
 	
@@ -66,7 +66,7 @@ public class AnnotationRulesEngine {
 		try{
 		
 			for(GeneAnnotation annotation: doc.getGeneAnnotations()){
-				for(AbstractAnnotatioRule rule: rules){
+				for(AbstractAnnotationRule rule: rules){
 					set.addAll( rule.getRuleViolations(annotation) );
 				}
 			}
@@ -80,7 +80,7 @@ public class AnnotationRulesEngine {
 	
 	
 	private  void init(){
-		rules = new ArrayList<AbstractAnnotatioRule>();
+		rules = new ArrayList<AbstractAnnotationRule>();
 		SAXBuilder builder = new SAXBuilder();
 		Document doc = null;
 		try {
@@ -104,7 +104,7 @@ public class AnnotationRulesEngine {
 			XPath regexRule = XPath.newInstance("//implementation/script[@language='regex']");			
 		    List regexRules = regexRule.selectNodes(doc);
 	
-		    AbstractAnnotatioRule rule = new AnnotationRuglarExpressionFromXMLRule(regexRules);
+		    AbstractAnnotationRule rule = new AnnotationRuglarExpressionFromXMLRule(regexRules);
 		    rules.add(rule);
 		}catch(Exception ex){
 			LOG.error(ex.getMessage(), ex);
@@ -120,7 +120,7 @@ public class AnnotationRulesEngine {
 		    	String className = script.getAttributeValue("source");
 		    	if(className != null){
 		    		try{
-		    			AbstractAnnotatioRule rule= (AbstractAnnotatioRule) Class.forName(className).newInstance();
+		    			AbstractAnnotationRule rule= (AbstractAnnotationRule) Class.forName(className).newInstance();
 		    			rules.add(rule);
 		    		}catch(Exception ex){
 		    			LOG.error(ex.getMessage(), ex);

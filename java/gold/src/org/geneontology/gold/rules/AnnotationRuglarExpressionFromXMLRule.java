@@ -18,7 +18,7 @@ import org.jdom.Element;
  *
  */
 public class AnnotationRuglarExpressionFromXMLRule extends
-		AbstractAnnotatioRule {
+		AbstractAnnotationRule {
 
 	/**
 	 * 

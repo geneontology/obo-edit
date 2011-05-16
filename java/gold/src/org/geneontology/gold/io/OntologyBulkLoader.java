@@ -150,7 +150,7 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 		TableDumper ontology_alternate_label_typeDumper = tables.get("ontology_alternate_label_type");
 		
 		String id = graphWrapper.getOntologyId();
-		Set<OWLAnnotationAssertionAxiom> anns = graphWrapper.getOntology().getAnnotationAssertionAxioms(graphWrapper.getOntology().getOntologyID().getOntologyIRI());
+		Set<OWLAnnotationAssertionAxiom> anns = graphWrapper.getSourceOntology().getAnnotationAssertionAxioms(graphWrapper.getSourceOntology().getOntologyID().getOntologyIRI());
 		
 		String dt = null;
 		for(OWLAnnotationAssertionAxiom ann: anns){
@@ -172,7 +172,7 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 			
 		}
 		
-		for(OWLClassAssertionAxiom ax: graphWrapper.getOntology().getAxioms(AxiomType.CLASS_ASSERTION)){
+		for(OWLClassAssertionAxiom ax: graphWrapper.getSourceOntology().getAxioms(AxiomType.CLASS_ASSERTION)){
 
 			
 			//String clsId = graphWrapper.getIdentifier(ax.getClassExpression());
@@ -228,7 +228,7 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 			
 		}
 
-		IRI version = graphWrapper.getOntology().getOntologyID().getVersionIRI();
+		IRI version = graphWrapper.getSourceOntology().getOntologyID().getVersionIRI();
 		String versionString = null;
 		if(version != null)
 			versionString = version.toString();
@@ -239,6 +239,17 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 		
 	}
 
+	/**
+	 * dumps annotation assertions
+	 * 
+	 * (note that this is annotations in the sense defined by the OWL2 spec, **not** annotations
+	 * in the sense used by GO)
+	 * 
+	 * @param obj
+	 * @param objId
+	 * @param ontology
+	 * @throws IOException
+	 */
 	private void dumpAnnotations(OWLObject obj,String objId, String ontology)
 	throws IOException{
 
@@ -488,7 +499,9 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 			TableDumper inferred_all_only_relationshipDumper =tables.get("inferred_all_only_relationship");
 			TableDumper inferred_never_some_relationshipDumper=tables.get("inferred_never_some_relationship");
 			
-			
+			// populate reflexive closure for subclassof
+			inferred_subclass_ofDumper.dumpRow(id, id, "false" , "true", "is_a", null ,ontologyId);
+
 			//TODO: Inferred relationship
 			Set<OWLGraphEdge> outgoing = graphWrapper.getOutgoingEdges(cls);
 			for(OWLGraphEdge edge: outgoing){

@@ -18,7 +18,7 @@ import owltools.graph.OWLGraphWrapper;
 import owltools.graph.OWLQuantifiedProperty;
 import owltools.io.ParserWrapper;
 
-public class AbstractAnnotatioRule implements AnnotationRule {
+public class AbstractAnnotationRule implements AnnotationRule {
 
 	public Set<AnnotationRuleViolation> getRuleViolations(GeneAnnotation a) {
 		throw new Error("not implemented");

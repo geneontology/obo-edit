@@ -175,6 +175,12 @@ public class DbOperations implements DbOperationsInterface{
 		
 	}
 	
+	/**
+	 * 
+	 * @param wrapper
+	 * @param force
+	 * @throws Exception
+	 */
 	public void bulkLoad(OWLGraphWrapper wrapper, boolean force) throws Exception{
 		for(DbOperationsListener listener: listeners){
 			listener.bulkLoadStart();

@@ -94,7 +94,7 @@ public class OboOwlApiProcessor extends EntityProcessorBase {
 			  
 		  }
 		  
-		@Override
+//		@Override
 		public boolean hasNext() {
 			if(itr == null)
 				itr = this.wrapper.getOntology().getClassesInSignature().iterator();
@@ -103,7 +103,7 @@ public class OboOwlApiProcessor extends EntityProcessorBase {
 			return itr.hasNext();
 		}
 
-		@Override
+//		@Override
 		public Map<String, Object> next() {
 			if(hasNext()){
 				OWLClass cls = itr.next();
@@ -226,7 +226,7 @@ public class OboOwlApiProcessor extends EntityProcessorBase {
 			return null;
 		}
 
-		@Override
+//		@Override
 		public void remove() {
 			//do nothing
 			
