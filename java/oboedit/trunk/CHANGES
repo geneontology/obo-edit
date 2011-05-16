@@ -9,7 +9,7 @@ Bug fixes:
 [ geneontology-Bugs-3297446 ] Can't restrict ancestor search by relation type in 2.1b12
 (Two reports of same bug)
 
-[ geneontology-Bugs-3265376 Search for children is missing some (unless reasoner on)]
+[ geneontology-Bugs-3265376] Search for children is missing some (unless reasoner on)
 
 [ geneontology-Bugs-3265349 ] Filtered save with "child" aspect throws exception
 
