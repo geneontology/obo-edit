@@ -1,8 +1,12 @@
 package org.geneontology.gold.io;
 
-import java.sql.SQLException;
 import java.util.*;
+import java.util.Date;
 import java.io.*;
+import java.sql.*;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
@@ -27,15 +31,40 @@ public class PhyloTreeLoader implements Loader {
 	final static File tmpdir = null; //new File("/dev/shm");
 	final static GeneOntologyManager manager = GeneOntologyManager.getInstance();
 	static protected Map<String,Map<Status,Integer>> count = null;
+	static protected Connection connection ;
 	
 	PhyloTreeLoader() {
 		sources = new HashSet<PhyloTree>();
+
+		if (null == connection) {
+			//String host = manager.getGolddbHostName();
+			String user = manager.getGolddbUserName();
+			String pw   = manager.getGolddbUserPassword();
+			String db   = manager.getGolddbName();
+		
+			try {
+				connection = DriverManager.getConnection("jdbc:postgresql://localhost/" + db, user, pw);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+		}
 	}
 		
 	@Override
 	public boolean isLoadRequired() {
-		// TODO loop through sources and check dates
-		return true;
+		for (PhyloTree pt : sources) {
+			//System.err.print(pt + ": ");
+			if (pt.isLoadRequired()) {
+				//System.err.print("Loading..");
+				return true;
+			} else {
+				//System.err.print("Skipping..");
+			}
+			//System.err.println("done.");
+		}
+
+		return false;
 	}
 
 	@Override
@@ -80,12 +109,13 @@ public class PhyloTreeLoader implements Loader {
 			TableDumper familyDumper       = new TableDumper(tmpfiles.get(0));
 			TableDumper familyMemberDumper = new TableDumper(tmpfiles.get(1));
 			for (PhyloTree pt : sources) {
-				String id = pt.getId();
-				//System.err.println(id);
+				if (pt.isLoadRequired()) {
+					String id = pt.getId();
 
-				familyDumper.dumpRow(id, pt.getName(), null, pt.creationDate());
-				for (Bioentity be : pt.getBioentities()) {
-					familyMemberDumper.dumpRow(id, be.getId());
+					familyDumper.dumpRow(id, pt.getName(), null, pt.creationDate());
+					for (Bioentity be : pt.getBioentities()) {
+						familyMemberDumper.dumpRow(id, be.getId());
+					}
 				}
 			}
 			familyDumper.close();
@@ -116,6 +146,7 @@ public class PhyloTreeLoader implements Loader {
 	}
 	
 	public void setSource(File src) {
+		System.err.println("setSource(" + src + ")");
 		sources.clear();
 		addSource(src);
 	}
@@ -141,7 +172,10 @@ public class PhyloTreeLoader implements Loader {
 		if (ptl.isLoadRequired()) {
 			ptl.load();
 		}
-		System.out.println(count);
+		
+		for (String key : new TreeSet<String>(count.keySet())) {
+			System.out.println(key + '=' + count.get(key));
+		}
 	}
 	
 	class PhyloTree {
@@ -149,12 +183,46 @@ public class PhyloTreeLoader implements Loader {
 		private BufferedReader reader;
 		private Phylogeny tree;
 		private Map<String,HibPantherID> leaves;
+		private Boolean loadRequired = null;
 		
 		PhyloTree(File src) {
 			this.source = src;
 			leaves = new HashMap<String,HibPantherID>();
 		}
 		
+		private PreparedStatement selectFamily = null;
+		
+		/**
+		 * Currently it only checks if the tree has already been loaded. Nothing else.
+		 * @return true if the tree needs to be loaded
+		 */
+		boolean isLoadRequired(){
+			if (null != loadRequired) {
+				return loadRequired;
+			}
+
+			try {
+				if (null == selectFamily) {
+					selectFamily = connection.prepareStatement("SELECT id FROM FAMILY WHERE id=?");
+				}
+				selectFamily.setString(1, getId());
+				ResultSet rs = selectFamily.executeQuery();
+				if (rs.next()) {
+					System.err.println(rs.getString(1));
+					loadRequired = false;
+					if (rs.next()) {
+						throw new SQLDataException("Expecting <=1 row, got more then 1.");
+					}
+				} else {
+					loadRequired = true;
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+			
+			return loadRequired;
+		}
 		
 		private void addStat(String key, Status status) {
 			if (null == count) {
@@ -266,6 +334,9 @@ public class PhyloTreeLoader implements Loader {
 			return manager.SimpleDateFormat().format(new Date(lastModified()));
 		}
 		
+		public String toString(){
+			return source.toString();
+		}
 	
 	}
 
