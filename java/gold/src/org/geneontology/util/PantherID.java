@@ -122,9 +122,9 @@ public class PantherID implements Comparable<PantherID> {
 		case 83333: // ECOLI
 			for (String id : this.getIDs()) {
 				if (id.startsWith("ECOLI:")) {
-					String guess = id.replaceFirst("ECOLI:", "EcoCyc:");
-					//System.err.println(id + " ----->" + guess);
-					out.add(guess);
+					out.add(id.replaceFirst("ECOLI:", "EcoCyc:"));
+//				} else if (id.startsWith("NCBI:")) {
+//					out.add(id.replaceFirst("NCBI:", "RefSeq:"));
 				}
 			}
 			break;
