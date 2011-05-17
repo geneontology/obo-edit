@@ -74,6 +74,9 @@ public class HibPantherID extends PantherID {
 			case 6239:  // Caenorhabditis elegans
 				out = pick("WB");
 				break;
+			case 10090: // Mus musculus
+				out = pick(new String[] { "MGI", "UniProtKB", "ENSEMBL"});
+				break;
 			case 10116: // Rattus norvegicus
 				out = pick(new String[]  { "RGD", "UniProtKB", "ENSEMBL"});
 				break;

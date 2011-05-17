@@ -7,7 +7,8 @@ public class Family extends GOModel {
 	 private String versioniri;
 	 private String creationDate;
 	 
-	 public Family() {}
+	 public Family(){
+	 }
 
 	 public Family(String id) {
 		 this.id = id;
