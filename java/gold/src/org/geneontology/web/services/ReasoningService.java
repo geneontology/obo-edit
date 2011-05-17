@@ -9,9 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.geneontology.web.Task;
 import org.semanticweb.owlapi.model.OWLAxiom;
-
 import owltools.InferenceBuilder;
-import owltools.graph.OWLGraphEdge;
 
 public class ReasoningService extends ServiceHandlerAbstract {
 
@@ -27,6 +25,11 @@ public class ReasoningService extends ServiceHandlerAbstract {
 	
 	private Task runner;
 	
+	
+	private String command;
+	
+	private String viewPath;
+	
 	public ReasoningService(){
 		inf = null;
 		runner = null;
@@ -39,9 +42,15 @@ public class ReasoningService extends ServiceHandlerAbstract {
 			LOG.debug("--");
 		
 	
-		String command = request.getParameter("command");
+		command = request.getParameter("command");
 
-		if(runner == null && "find-inferences".equals(command)){
+		viewPath = "/servicesui/reasoning.jsp";
+		
+		if("checkconsistency".equals(command)){
+			viewPath = "/servicesui/consistencycheck.jsp";
+		}
+		
+		if(runner == null){
 			inf = getInferenceBuilder();
 			if(runner == null){
 				runner = new InferenceBuilderTask();
@@ -49,37 +58,44 @@ public class ReasoningService extends ServiceHandlerAbstract {
 			}
 		}
 		
-		List<OWLAxiom> axioms = null;
 		
 		
 		String completedTime = "--";
-		if(runner != null){
-			axioms = (List<OWLAxiom>)runner.getData();
-			long st = runner.getStartTime("build-inferences");
-			long et = runner.getEndTime("build-inferences");
+		if(runner != null ){
+
+			long st = runner.getStartTime("processing-time");
+			long et = runner.getEndTime("processing-time");
 			
 			if(!(st == -1 || et <=0)){
 				completedTime = (et - st)/1000 + "";
 			}
+			request.setAttribute("taskCompletionTime", completedTime);
+			request.setAttribute("graph", inf.getOWLGraphWrapper());
+			
+			
+			if("find-inferences".equals(command)){
+				List<OWLAxiom> axioms = null;
+				axioms = (List<OWLAxiom>)runner.getData();
+				if(axioms == null){
+					axioms = new ArrayList<OWLAxiom>();
+				}
+	
+				request.setAttribute("axioms", axioms);
+			}else if("checkconsistency".equals(command)){
+				request.setAttribute("errors", runner.getData());
+			}
 		}
 
 		request.setAttribute("isTaskRunning", runner == null ? false: runner.isRunning());
-		request.setAttribute("taskCompletionTime", completedTime);
 		
 		if(runner != null && !runner.isRunning()){
 			runner = null;
 		}
 
-		if(axioms == null){
-			axioms = new ArrayList<OWLAxiom>();
-		}
-
-		request.setAttribute("axioms", axioms);
-		request.setAttribute("graph", inf.getOWLGraphWrapper());
 	}
 
 	public String getViewPath(){
-		return "/servicesui/reasoning.jsp";
+		return viewPath;
 	}
 	
 	
@@ -103,19 +119,25 @@ public class ReasoningService extends ServiceHandlerAbstract {
 	}
 	
 	class InferenceBuilderTask extends Task{
-		private List<OWLAxiom> edges;
+		private Object data;
 
 		@Override
 		public void execute() {
-			this.addInProgress("build-inferences");
-			edges = inf.buildInferences();
-			this.addCompleted("build-inferences");
+			this.addInProgress("processing-time");
+			
+			if("find-inferences".equals(command)){			
+				data = inf.buildInferences();
+			}else if("checkconsistency".equals(command)){
+				data = inf.performConsistencyChecks();
+			}
+			this.addCompleted("processing-time");
+			
 		}
 		
 		
 		@Override
 		public Object getData(){
-			return edges;
+			return data;
 		}
 		
 	}
