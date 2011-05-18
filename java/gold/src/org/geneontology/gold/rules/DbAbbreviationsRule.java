@@ -52,7 +52,9 @@ public class DbAbbreviationsRule extends AbstractAnnotationRule {
 		HashSet<AnnotationRuleViolation> set = new HashSet<AnnotationRuleViolation>();
 		
 	 	if (!abbreviations.contains( a.getBioentityObject().getDb() )){
-	 		set.add(new AnnotationRuleViolation("DB reference is not found in the Go.xref_abbs file", a));
+	 		AnnotationRuleViolation v =  new AnnotationRuleViolation("DB reference is not found in the Go.xref_abbs file", a);
+	 		v.setRuleId(getRuleId());
+	 		set.add(v);
 	 	}
 		
 	 	String id = a.getBioentityObject().getId();

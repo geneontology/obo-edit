@@ -46,6 +46,7 @@
 					out.println("\t\t\"voilation\": {");
 					out.println("\t\t\t\"message\": \"" + msg + "\",");
 					out.println("\t\t\t\"annotation\": \"" + s + "\"");
+					out.println("\t\t\t\"rule-id\": \"" + v.getRuleId() + "\"");
 					out.println("\t\t}");
 					i++;
 					

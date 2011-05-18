@@ -13,4 +13,7 @@ public interface AnnotationRule {
 	 */
 	public Set<AnnotationRuleViolation> getRuleViolations(GeneAnnotation a);	
 
+	public void setRuleId(String ruleId);
+	public String getRuleId();
+	
 }

@@ -55,6 +55,7 @@ public class AnnotationRuglarExpressionFromXMLRule extends
 		
 		if(m.find()){
 			AnnotationRuleViolation v = new AnnotationRuleViolation(data.errorMsg, ann);
+			v.setRuleId(data.ruleId);
 			voilations.add(v);
 		}
 		
@@ -86,9 +87,17 @@ public class AnnotationRuglarExpressionFromXMLRule extends
 		    	
 		    	//title is child of the rule element
 		    	Element title= script.getParentElement().getParentElement().getParentElement().getChild("title");
+		    	
+		    	
 		    	String titleString = "";
 		    	if(title != null){
 		    		titleString = title.getTextNormalize();
+		    	}
+		    	
+		    	Element idElement = title.getParentElement().getChild("id");
+		    	String id = "";
+		    	if(idElement != null){
+		    		id = idElement.getTextNormalize();
 		    	}
 		    	
 		    	Pattern pattern = null;
@@ -98,7 +107,7 @@ public class AnnotationRuglarExpressionFromXMLRule extends
 		    	else
 		    		pattern = Pattern.compile(regex);
 		    	
-		    	RuleData data = new RuleData(pattern, titleString);
+		    	RuleData data = new RuleData(pattern, titleString, id);
 		    	
 		    	rules.add(data);
 		    }
@@ -111,13 +120,15 @@ public class AnnotationRuglarExpressionFromXMLRule extends
 	
 	private class RuleData{
 		
-		public RuleData(Pattern pattern, String errorMsg){
+		public RuleData(Pattern pattern, String errorMsg, String ruleId){
 			this.pattern = pattern;
 			this.errorMsg = errorMsg;
+			this.ruleId = ruleId;
 		}
 		
 		private Pattern pattern;
 		private String errorMsg;
+		private String ruleId;
 	}
 	
 }
