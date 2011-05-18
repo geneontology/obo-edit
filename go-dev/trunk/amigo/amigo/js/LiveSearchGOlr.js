@@ -30,9 +30,183 @@ var taxon_model = null;
 var taxon_widget = null;
 var ip_lc_model = null;
 var ip_lc_widget = null;
+var document_category_model = null;
+var document_category_widget = null;
+var aecl_model = null;
+var aecl_widget = null;
+var aecl_closure_model = null;
+var aecl_closure_widget = null;
 
 // Find newlines in text.
 var newline_finder = new RegExp("\n", "g");
+
+
+// TODO/BUG: make work, split out
+// Thinking about lessons learned from solr ajax.
+// Updatable model that connects to the Solr server.
+// Makes no attempt to join to a form--entirely held as an internal model.
+// {url: 'http://theplace', facets: ['foo', 'bar']}
+function SolrManager(in_args){
+
+    // Check args.
+    if( ! in_args ){
+	core.kvetch('ERROR: no argument');
+    }
+    // There should be a string url argument.
+    if( in_args && ! in_args['url'] ){
+	core.kvetch('ERROR: no url argument');
+    }
+    if( in_args && in_args['url'] && typeof in_args['url'] != 'string' ){
+	core.kvetch('ERROR: no url string argument');
+    }
+    // There should be an array facets argument.
+    if( in_args && ! in_args['facets'] ){
+	core.kvetch('ERROR: no facets argument');
+    }
+    if( in_args && in_args['facets'] &&
+	( typeof in_args['facets'] != 'object' || 
+	  typeof in_args['facets'].length )){
+	      core.kvetch('ERROR: no url string argument');
+	  }
+    
+    // Our default target url.
+    this.solr_url = in_args['url'];
+    
+    // Our default query args, with facet fields plugged in.
+    this.query_args =
+	{
+	    // TODO/BUG? need jsonp things here?
+	    qt: 'standard',
+	    indent: 'on',
+	    wt: 'json',
+	    version: '2.2',
+	    rows: 10,
+	    //start: 1,
+	    start: 0, // Solr is offset indexing
+	    fl: '*%2Cscore',
+	    
+	    // Control of facets.
+	    facet: 'true',
+	    'facet.field': in_args['facets'],
+	    
+	    // Facet filtering.
+	    fq: [],
+	    
+	    // Query-type stuff.
+	    q: '*:*', // start by going after everything
+	    
+	    // Our bookkeeping.
+	    packet: 0
+	};
+    //var final_query_args = _merge(default_query_args, in_args);
+		
+    // Ready possible filterable facets.
+    this.facet_filters = {};
+    for( var in_facets in in_args['facets'] ){
+	this.facet_filters[in_facets] = {};
+    }
+    //var final_filter_args = _merge(default_filter_args, in_args);
+
+    // TODO:
+    this._make_query_url = function(){
+
+	//var resrc = core.api.live_search.golr(all_inputs);
+	//var url = gm.golr_base() + '/' + resrc;
+
+	var shead = this.solr_url + 'select?';
+
+	var qbuff = [];
+	
+	var qargs = core.utils.get_hash_keys(this.query_args);
+	for( var qname in qargs ){
+	    var nano_buff = [];
+
+	    var qval = qargs[qname];
+	    if( typeof qval == 'string' ||
+		typeof qval == 'number' ){
+		    // Is standard name/valie pair.
+		    nano_buff.push(qname);
+		    nano_buff.push('=');
+		    nano_buff.push(qval);
+		    qbuff.push(nano_buff.join(''));
+		}else if( typeof qval == 'object' ){
+		    if( typeof qval.length != 'undefined' ){
+			// Is array (probably).
+		    }else{
+			// Is hash.
+		    }
+		}else{
+		    core.kvetch('make link unknown type!');
+		}
+	}
+
+	// ...
+	//return _abstract_link_template('select', segments);	
+	var complete_query = _abstract_head_template('select') +
+	    _abstract_segment_template(final_query_args);
+
+
+	var addable_filters = _abstract_filter_template(final_filter_args);
+	if( addable_filters.length > 0 ){
+	    complete_query = complete_query + '&' + addable_filters;
+	}
+	return complete_query;	
+	};
+    
+    // ...
+    this.update = function(){
+	
+	// Increment packet.
+	//this.query_args['packet'] = this.query_args['packet'] + 1;
+	
+	core.kvetch('try: ' + url);		    
+	//widgets.start_wait('Updating...');
+			
+	// TODO/BUG: JSONP for solr looks like?
+	var argvars = {
+	    type: "GET",
+	    url: url,
+	    //data: myQueryParameters,
+	    //dataType: 'json',
+	    dataType: 'jsonp',
+	    jsonp: 'json.wrf',
+	    success: do_results,
+	    error: function (result, status, error) {
+		
+	    	core.kvetch('Failed server request ('+
+			    query_id + '): ' + status);
+		
+		// Get the error out if possible.
+		var jreq = result.responseText;
+		var req = jQuery.parseJSON(jreq);
+		if( req && req['errors'] &&
+		    req['errors'].length > 0 ){
+			var in_error = req['errors'][0];
+			core.kvetch('ERROR:' + in_error);
+					
+			// Split on newline if possible to get
+			// at the nice part before the perl
+			// error.
+			var reg = new RegExp("\n+", "g");
+			var clean_error_split =
+			    in_error.split(reg);
+			var clean_error = clean_error_split[0];
+			//widgets.error(clean_error);
+		    }
+		
+		// Close wait no matter what.
+		//widgets.finish_wait();
+	    }
+	};
+	jQuery.ajax(argvars);
+    };
+    
+    // TODO?
+    this.add_facet = function(){	
+    };
+    this.remove_facet = function(){	
+    };
+}
 
 
 // Get the layout done and request GO meta-info.
@@ -95,18 +269,26 @@ function LiveSearchGOlrInit(){
 	widgets.form.hidden_input('facet.field', 'taxon');
     var hidden_facet_field_term_label_closure_text =
 	widgets.form.hidden_input('facet.field', 'isa_partof_label_closure');
+    var hidden_facet_field_document_category_text =
+	widgets.form.hidden_input('facet.field', 'document_category');
+    var hidden_facet_field_aecl_text =
+	widgets.form.hidden_input('facet.field',
+				  'annotation_extension_class_label');
+    var hidden_facet_field_aecl_closure_text =
+	widgets.form.hidden_input('facet.field',
+				  'annotation_extension_class_label_closure');
     
     // Clear the controls' area.
     _clear_app_forms();
 
     // Create the new form for a GOlr search.
-    var hidden_document_category = // TODO: make dynamic later
-    	widgets.form.hidden_input('document_category', 'annotation');
+    // var hidden_document_category = // TODO: make dynamic later
+    // 	widgets.form.hidden_input('document_category', 'annotation');
     // var hidden_mode_search_text =
     // 	widgets.form.hidden_input('mode', 'live_search_association_golr');
     var query_text =
     	widgets.form.text_input('q', 'q', 25, 
-				'Search GO for annotations<br />');
+				'Search GO for<br />');
     // var ontology_text =
     // 	widgets.form.multiselect('ontology', 'ontology', 4,
     // 				 ontology_data, 'Ontology');
@@ -158,22 +340,56 @@ function LiveSearchGOlrInit(){
     ip_lc_widget.update_with(ip_lc_model.get_state());
     var isa_partof_label_closure_text = ip_lc_widget.render_initial();
 
+    // Get document_category filter going.
+    var dcid = 'document_category';
+    document_category_model = new org.bbop.amigo.ui.interactive.multi_model({});
+    document_category_widget =
+	new org.bbop.amigo.ui.interactive.multi_widget(dcid, dcid,
+						       3, 'Document type');
+    document_category_widget.update_with(document_category_model.get_state());
+    var document_category_text = document_category_widget.render_initial();
+
+    // Get annotation_extension_class_label filter going.
+    var aecl_id = 'annotation_extension_class_label';
+    aecl_model = new org.bbop.amigo.ui.interactive.multi_model({});
+    aecl_widget =
+	new org.bbop.amigo.ui.interactive.multi_widget(aecl_id, aecl_id, 4,
+						       'Annotation extension');
+    aecl_widget.update_with(aecl_model.get_state());
+    var aecl_text = aecl_widget.render_initial();
+
+    // Get annotation_extension_class_label filter going.
+    var aecl_closure_id = 'annotation_extension_class_label';
+    aecl_closure_model = new org.bbop.amigo.ui.interactive.multi_model({});
+    aecl_closure_widget =
+	new org.bbop.amigo.ui.interactive.multi_widget(aecl_closure_id,
+						       aecl_closure_id, 4,
+						       'Annotation extension');
+    aecl_closure_widget.update_with(aecl_closure_model.get_state());
+    var aecl_closure_text = aecl_closure_widget.render_initial();
+
     // Add in the order that we want things.
     //jQuery("#app-form").append(hidden_mode_search_text);
     jQuery("#app-form").append(hidden_count_text);
     jQuery("#app-form").append(hidden_facet_text);
+    jQuery("#app-form").append(hidden_facet_field_document_category_text);
     jQuery("#app-form").append(hidden_facet_field_type_text);
     jQuery("#app-form").append(hidden_facet_field_ev_type_text);
     jQuery("#app-form").append(hidden_facet_field_source_text);
     jQuery("#app-form").append(hidden_facet_field_taxon_text);
     jQuery("#app-form").append(hidden_facet_field_term_label_closure_text);
+    jQuery("#app-form").append(hidden_facet_field_aecl_text);
+    jQuery("#app-form").append(hidden_facet_field_aecl_closure_text);
     jQuery("#app-form-query").append(query_text);
     //jQuery("#app-form-filters").append(ontology_text);
+    jQuery("#app-form-filters").append(document_category_text);
     jQuery("#app-form-filters").append(type_text);
     jQuery("#app-form-filters").append(taxon_text);
     jQuery("#app-form-filters").append(source_text);
     jQuery("#app-form-filters").append(evidence_type_text);
     jQuery("#app-form-filters").append(isa_partof_label_closure_text);
+    jQuery("#app-form-filters").append(aecl_text);
+    jQuery("#app-form-filters").append(aecl_closure_text);
 
     //core.kvetch('GP type text: ' + type_text );
 
@@ -274,7 +490,7 @@ function LiveSearchGOlrInit(){
 					var clean_error_split =
 					    in_error.split(reg);
 					var clean_error = clean_error_split[0];
-					widgets.error(clean_error);
+				widgets.error(clean_error);
 				    }
 				
 				// Close wait no matter what.
@@ -301,11 +517,14 @@ function LiveSearchGOlrInit(){
     // Attach listeners to the form.
     jQuery("#q").keyup(server_action);
     //jQuery("#ontology").change(assoc_saction);
+    jQuery("#document_category").change(server_action);
     jQuery("#type").change(server_action);
     jQuery("#taxon").change(server_action);
     jQuery("#source").change(server_action);
     jQuery("#evidence_type").change(server_action);
     jQuery("#isa_partof_label_closure").change(server_action);
+    jQuery("#annotation_extension_class_label").change(server_action);
+    jQuery("#annotation_extension_class_label_closure").change(server_action);
 
     // NOTE: we can either use this or the one above.
     // // Slow down the input on our typing fields.
@@ -321,6 +540,9 @@ function LiveSearchGOlrInit(){
 
     // Make the forms unsubmitable.
     jQuery("#app-form").submit(function(){return false;});
+
+    // TODO: first pass update on all facets.
+    
 }
 
 
@@ -476,6 +698,10 @@ function _update_gui (json_data){
 	var curr_model = filterable['model'];
 	var curr_widget = filterable['widget'];
 
+	core.kvetch("looking at facet: " + curr_filter_id);
+	core.kvetch("\tmodel: " + curr_model);
+	core.kvetch("\twidget: " + curr_widget);
+
 	// Update the model with query filters and facet counts. Since the
 	// return data is considered comprehensive, if one is not
 	var all_filters = curr_model.get_all_items();
@@ -508,9 +734,24 @@ function _update_gui (json_data){
     // Define dynamic filters.
     var dyn_filterables = [
 	{
+	    filter_id: 'document_category',
+	    model: document_category_model,
+	    widget: document_category_widget
+	},
+	{
 	    filter_id: 'isa_partof_label_closure',
 	    model: ip_lc_model,
 	    widget: ip_lc_widget
+	},
+	{
+	    filter_id: 'annotation_extension_class_label',
+	    model: aecl_model,
+	    widget: aecl_widget
+	},
+	{
+	    filter_id: 'annotation_extension_class_label_closure',
+	    model: aecl_closure_model,
+	    widget: aecl_closure_widget
 	}
     ];
 
