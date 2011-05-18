@@ -65,7 +65,6 @@ public class UniProtSpecies
     }
     
     /**
-     * 
      * @return The UniProt Species code.
      */
     public String getCode() {
@@ -73,7 +72,6 @@ public class UniProtSpecies
     }
     
     /**
-     * 
      * @return The NCBI Taxon Node id.
      */
     int getTaxonNode() {
@@ -81,7 +79,7 @@ public class UniProtSpecies
     }
 
     /**
-     * Scrubs the input, pops it in a Set, and sends it off to the other factory() function.
+     * Scrubs the input, pops it in a Set, and sends it off to the other factory(Set<String>) function.
      * @param codes An array of UniProt species codes.
      * @return
      * @throws java.io.IOException

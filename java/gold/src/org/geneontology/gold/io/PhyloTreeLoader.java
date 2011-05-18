@@ -19,19 +19,29 @@ import org.geneontology.gaf.hibernate.Bioentity;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.io.postgres.TsvFileLoader;
 
-
+/**
+ * 
+ * @author Sven Heinicke
+ *
+ */
 public class PhyloTreeLoader implements Loader {
 	private Collection<PhyloTree> sources;
 	
 
 	protected enum Status { FOUND, MISSING };
 	
+	/**
+	 * Try to match files that are created by the {@link org.paint.util.PaintScraper} class.
+	 */
 	final static FileFilter tff = new SuffixFileFilter(new String[] { ".tree.gz", ".tree" });
+	
 	final static String tsvSuffix = ".tsv";
 	final static File tmpdir = null; //new File("/dev/shm");
 	final static GeneOntologyManager manager = GeneOntologyManager.getInstance();
+
+	static private PreparedStatement selectFamily = null;
 	static protected Map<String,Map<Status,Integer>> count = null;
-	static protected Connection connection ;
+	static protected Connection connection;
 	
 	PhyloTreeLoader() {
 		sources = new HashSet<PhyloTree>();
@@ -54,14 +64,9 @@ public class PhyloTreeLoader implements Loader {
 	@Override
 	public boolean isLoadRequired() {
 		for (PhyloTree pt : sources) {
-			//System.err.print(pt + ": ");
 			if (pt.isLoadRequired()) {
-				//System.err.print("Loading..");
 				return true;
-			} else {
-				//System.err.print("Skipping..");
 			}
-			//System.err.println("done.");
 		}
 
 		return false;
@@ -80,7 +85,9 @@ public class PhyloTreeLoader implements Loader {
 	}
 
 	/**
-	 * Load tree files into memory.
+	 * Load sources into memory, assumes the files are created by the {@link org.paint.util.PaintScraper} class.
+	 *
+	 * If there is a problem loading the files it prints a stack trace, and removes that files from the source collection.
 	 */
 	protected void loadFromFile() {
 		NHXParser parser = new NHXParser();
@@ -145,12 +152,19 @@ public class PhyloTreeLoader implements Loader {
 		setSource(new File(src));
 	}
 	
+	/**
+	 * Clears the current set of sources.
+	 * @param src Passed as: addSource(src);
+	 */
 	public void setSource(File src) {
 		System.err.println("setSource(" + src + ")");
 		sources.clear();
 		addSource(src);
 	}
 	
+	/**
+	 * @param src Passed as: addSource(new File(src));
+	 */
 	public void addSource(String src) {
 		addSource(new File(src));
 	}
@@ -165,10 +179,17 @@ public class PhyloTreeLoader implements Loader {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param args List of paths that point to files created by the {@link org.paint.util.PaintScraper} class.
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 		count = new HashMap<String,Map<Status,Integer>>();
 		Loader ptl = new PhyloTreeLoader();
-		ptl.setSource(args[0]);
+		for (String arg : args) {
+			ptl.setSource(arg);
+		}
 		if (ptl.isLoadRequired()) {
 			ptl.load();
 		}
@@ -178,6 +199,10 @@ public class PhyloTreeLoader implements Loader {
 		}
 	}
 	
+	/**
+	 * An individual file created by the {@link org.paint.util.PaintScraper} class.
+	 *
+	 */
 	class PhyloTree {
 		private File source;
 		private BufferedReader reader;
@@ -185,12 +210,16 @@ public class PhyloTreeLoader implements Loader {
 		private Map<String,HibPantherID> leaves;
 		private Boolean loadRequired = null;
 		
+		/**
+		 * 
+		 * @param src A File object that should represent a file created by the {@link org.paint.util.PaintScraper} class.
+		 */
 		PhyloTree(File src) {
 			this.source = src;
 			leaves = new HashMap<String,HibPantherID>();
 		}
 		
-		private PreparedStatement selectFamily = null;
+
 		
 		/**
 		 * Currently it only checks if the tree has already been loaded. Nothing else.
@@ -208,7 +237,7 @@ public class PhyloTreeLoader implements Loader {
 				selectFamily.setString(1, getId());
 				ResultSet rs = selectFamily.executeQuery();
 				if (rs.next()) {
-					System.err.println(rs.getString(1));
+					//System.err.println(rs.getString(1));
 					loadRequired = false;
 					if (rs.next()) {
 						throw new SQLDataException("Expecting <=1 row, got more then 1.");
@@ -245,10 +274,18 @@ public class PhyloTreeLoader implements Loader {
 			}
 		}
 		
+		/**
+		 * Calls loadFromFile(NHXParser) with a newly created {@link org.forester.io.parsers.nhx.NHXParser} object.
+		 * @throws IOException
+		 */
 		public void loadFromFile() throws IOException {
 			loadFromFile(new NHXParser());
 		}
-		
+
+		/**
+		 * @param parser
+		 * @throws IOException
+		 */
 		public void loadFromFile(NHXParser parser) throws IOException {
 			open();
 
@@ -300,6 +337,9 @@ public class PhyloTreeLoader implements Loader {
 			return source.getName().endsWith(".gz");
 		}
 		
+		/**
+		 * @return What goes into the family.id column.
+		 */
 		public String getId() {
 			String id = source.getName();
 			return "PANTHER:" + id.substring(0, id.indexOf('.'));
