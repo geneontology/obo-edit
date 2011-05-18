@@ -17,6 +17,9 @@ import java.util.Arrays;
  *
  */
 public class PantherID implements Comparable<PantherID> {
+	/**
+	 * List of UniProt Specie IDs codes that are reference genomes.
+	 */
 	final static String[] refG = { "DANRE", "ARATH", "CHICK", "RAT", "MOUSE", "DICDI", "YEAST", "DROME", "CAEEL", "HUMAN", "SCHPO", "ECOLI" };
 	
 	private static Set<String> needSpecies = new TreeSet<String>();
@@ -26,7 +29,9 @@ public class PantherID implements Comparable<PantherID> {
 	private String speciesCode;
 	private Collection<String> IDs;
 	
-
+	/**
+	 * Really, just compares the Panther ID strings.
+	 */
 	public int compareTo(PantherID o) {
 		return pantherID.compareTo(o.getPantherID());
 	}
@@ -50,7 +55,6 @@ public class PantherID implements Comparable<PantherID> {
 	}
 
 	/**
-	 * 
 	 * @throws IOException
 	 */
 	protected void flushNeededSpecies() throws IOException {
@@ -66,7 +70,6 @@ public class PantherID implements Comparable<PantherID> {
 	}
 	
 	/**
-	 * 
 	 * @return The Panther ID.
 	 */
 	public String getPantherID() {
@@ -81,7 +84,6 @@ public class PantherID implements Comparable<PantherID> {
 	}
 	
 	/**
-	 * 
 	 * @return Returns the NCBI Taxa id of the species of the Panther ID.
 	 */
 	public int getTaxonNode() {
