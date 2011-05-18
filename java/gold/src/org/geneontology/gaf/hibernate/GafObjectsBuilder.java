@@ -69,15 +69,14 @@ public class GafObjectsBuilder {
 		String symbol = parser.getDbObjectSymbol();
 		String fullName = parser.getDbObjectName();
 		String typeCls = parser.getDBObjectType();
-		int ncbiTaxonId =-1;
+		String ncbiTaxonId ="";
 		String taxons[] = parser.getTaxon().split("\\|");
 		taxons = taxons[0].split(":");
 		
-		try{
-			ncbiTaxonId = Integer.parseInt(taxons[1]);
-		}catch(Exception ex){
-			LOG.error(ex.getMessage(), ex);
-		}
+		if(taxons.length>1){
+			ncbiTaxonId = taxons[1];
+		}else
+			ncbiTaxonId = taxons[0];
 		
 		String db = parser.getDbObjectSynonym();
 		

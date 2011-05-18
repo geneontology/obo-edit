@@ -40,13 +40,16 @@ public class GoClassReferenceAnnotationRule extends AbstractAnnotationRule {
 		HashSet<AnnotationRuleViolation> set = new HashSet<AnnotationRuleViolation>();
 		
 		if(owlClass == null){
-			set.add(new AnnotationRuleViolation("The GO id in the annotation is a dangling reference", a));
+			AnnotationRuleViolation v = new AnnotationRuleViolation("The GO id in the annotation is a dangling reference", a);
+			v.setRuleId(getRuleId());
+			set.add(v);
 		}
 		
 		boolean isObsolete = graph.getIsObsolete(owlClass);
 		
 		if(isObsolete){
 			AnnotationRuleViolation arv = new AnnotationRuleViolation("The GO id in the annotation is a obsolete class", a);
+			arv.setRuleId(getRuleId());
 			//arv.setSuggestedReplacements(suggestedReplacements)
 			set.add(arv);
 		}

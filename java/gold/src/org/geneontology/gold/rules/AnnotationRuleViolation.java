@@ -10,6 +10,18 @@ public class AnnotationRuleViolation {
 	private Set<GeneAnnotation> suggestedReplacements;
 	private GeneAnnotation sourceAnnotation;
 	
+	private String ruleId;
+	
+	public String getRuleId() {
+		return ruleId;
+	}
+
+
+	public void setRuleId(String ruleId) {
+		this.ruleId = ruleId;
+	}
+
+
 	public AnnotationRuleViolation(String msg) {
 		message = msg;
 	}

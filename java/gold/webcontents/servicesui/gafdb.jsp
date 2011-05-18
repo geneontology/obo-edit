@@ -1,3 +1,6 @@
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.Hashtable"%>
 <%@page import="java.io.PrintWriter"%>
 <%@page import="org.geneontology.gold.rules.AnnotationRuleViolation"%>
 <%@page import="java.util.Set"%>
@@ -140,16 +143,44 @@
 		
 				<hr />
 				<h3>Annotation Violations</h3>
-				<ul>
 				<%
-				
+				Hashtable<String, List<AnnotationRuleViolation>> table = new Hashtable<String, List<AnnotationRuleViolation>>();
 				for(AnnotationRuleViolation v: annotationRuleViolations){
-					%>
-					<li> <%= v.getMessage() %> -- <%= v.getSourceAnnotation() %> </li>
-					<%			
+					String ruleId = v.getRuleId() + "";
+					List<AnnotationRuleViolation> list = table.get(ruleId);
+					
+					if(list == null){
+						list = new ArrayList<AnnotationRuleViolation>();
+						table.put(ruleId, list);
+					}
+					
+					list.add(v);
+				
 				}
 				
 				%>
+				<ul>
+
+					<%
+					for(String rule: table.keySet()){
+						List<AnnotationRuleViolation> list = table.get(rule);
+						for(AnnotationRuleViolation v: list){
+							%>
+							<li>
+								<div style="font-size: 1.1em;font-weight:bold"><%=v.getRuleId()  %> ---- <%= v.getMessage() %> </div>
+								<ul>
+									<li>
+										<div style="color:red"><%=v.getSourceAnnotation()  %> </div>
+									</li>
+								</ul>
+							</li>
+							<% 
+						}
+						
+						
+					}
+					
+					%>
 		
 				</ul>
 			
