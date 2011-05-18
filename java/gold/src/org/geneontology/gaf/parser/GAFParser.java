@@ -92,7 +92,7 @@ public class GAFParser {
 
 			if (this.currentRow.trim().length() == 0) {
 				LOG.warn("Blank Line");
-				next();
+				return next();
 			}else if (currentRow.startsWith(GAF_COMMENT)) {
 				
 				if(gafVersion<1){
@@ -104,7 +104,7 @@ public class GAFParser {
 						}
 					}
 				}
-				next();
+				return next();
 			}else{
 				this.currentCols = this.currentRow.split("\\t", -1);
 				if (currentCols.length != expectedNumCols) {

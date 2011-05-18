@@ -127,7 +127,9 @@ public class AnnotationTaxonRule extends AbstractAnnotationRule implements Annot
 				// ONLY
 				if (!taxGraphWrapper.getAncestorsReflexive(tax).contains(p)) {
 					//System.out.println("   ANCESTORS OF "+tax+" DOES NOT CONTAIN "+p);
-					violations.add(new AnnotationRuleViolation("ANCESTORS OF "+tax+" DOES NOT CONTAIN "+p, a));
+					AnnotationRuleViolation v = new AnnotationRuleViolation("ANCESTORS OF "+tax+" DOES NOT CONTAIN "+p, a);
+					v.setRuleId(getRuleId());
+					violations.add(v);
 					isValid = false;
 				}
 			}
@@ -136,7 +138,9 @@ public class AnnotationTaxonRule extends AbstractAnnotationRule implements Annot
 				//System.out.println("   NEVER: "+rOnly+" p:"+p);
 				// NEVER
 				if (taxGraphWrapper.getAncestorsReflexive(tax).contains(p)) {
-					violations.add(new AnnotationRuleViolation("ANCESTORS OF "+tax+" CONTAINS "+p, a));
+					AnnotationRuleViolation v = new AnnotationRuleViolation("ANCESTORS OF "+tax+" CONTAINS "+p, a);
+					v.setRuleId(getRuleId());
+					violations.add(v);
 					isValid = false;
 				}
 			}

@@ -117,10 +117,18 @@ public class AnnotationRulesEngine {
 		    
 		    while(itr.hasNext()){
 		    	Element script = (Element)itr.next();
+		    	Element idElement = script.getParentElement().getParentElement().getParentElement().getChild("id");
+		    	String id = "";
+		    	
+		    	if(idElement != null){
+		    		id = idElement.getTextNormalize();
+		    	}
+		    	
 		    	String className = script.getAttributeValue("source");
 		    	if(className != null){
 		    		try{
 		    			AbstractAnnotationRule rule= (AbstractAnnotationRule) Class.forName(className).newInstance();
+		    			rule.setRuleId(id);
 		    			rules.add(rule);
 		    		}catch(Exception ex){
 		    			LOG.error(ex.getMessage(), ex);
