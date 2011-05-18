@@ -903,7 +903,7 @@ org.bbop.amigo.core = function(){
     // convenience?
     this.html.gene_product_link = function(acc, label){
 	if( ! label ){ label = acc; }
-	return '<a title="Go to term details page for ' + label +
+	return '<a title="Go to gene product details page for ' + label +
 	    '." href="' + _gene_product_link({acc: acc}) + '">' + label +'</a>';
     };
 

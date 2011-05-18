@@ -288,7 +288,7 @@ function LiveSearchGOlrInit(){
     // 	widgets.form.hidden_input('mode', 'live_search_association_golr');
     var query_text =
     	widgets.form.text_input('q', 'q', 25, 
-				'Search GO for<br />');
+				'Search for<br />');
     // var ontology_text =
     // 	widgets.form.multiselect('ontology', 'ontology', 4,
     // 				 ontology_data, 'Ontology');
@@ -359,12 +359,12 @@ function LiveSearchGOlrInit(){
     var aecl_text = aecl_widget.render_initial();
 
     // Get annotation_extension_class_label filter going.
-    var aecl_closure_id = 'annotation_extension_class_label';
+    var aecl_closure_id = 'annotation_extension_class_label_closure';
     aecl_closure_model = new org.bbop.amigo.ui.interactive.multi_model({});
     aecl_closure_widget =
 	new org.bbop.amigo.ui.interactive.multi_widget(aecl_closure_id,
 						       aecl_closure_id, 4,
-						       'Annotation extension');
+						       'Annotation extension closure');
     aecl_closure_widget.update_with(aecl_closure_model.get_state());
     var aecl_closure_text = aecl_closure_widget.render_initial();
 
@@ -437,75 +437,83 @@ function LiveSearchGOlrInit(){
 		var all_inputs = marshaller();
 		//all_inputs['q'] = all_inputs[query_id];
 		
-		// Cut down on overhead a little.
-		if( all_inputs &&
-		    all_inputs['q'] &&
+		// // Cut down on overhead a little.
+		// if( all_inputs &&
+		//     all_inputs['q'] &&
+		//     all_inputs['q'][0] &&
+		//     all_inputs['q'][0].length >= 3 ){
+			
+		//core.kvetch('input q: ' + all_inputs['q'][0]);
+
+		// Increment packet (async ordering).
+		last_sent_packet++;
+		all_inputs['packet'] = last_sent_packet;
+
+		// BUG/TODO: a switch to dismax will eliminate
+		// this, this is just here to bootstrap
+		// debugging for now.
+		// Also, for now, when no input is coming in, 
+		if( all_inputs['q'] &&
 		    all_inputs['q'][0] &&
-		    all_inputs['q'][0].length >= 3 ){
-			
-			core.kvetch('input q: ' + all_inputs['q'][0]);
-
-			// Increment packet (async ordering).
-			last_sent_packet++;
-			all_inputs['packet'] = last_sent_packet;
-
-			// BUG/TODO: a switch to dismax will eliminate
-			// this, this is just here to bootstrap
-			// debugging for now.
+		    all_inputs['q'][0].length >= 1 ){
 			all_inputs['q'][0] =
-			    'annotation_class_label:' + all_inputs['q'][0];
-
-			var resrc = core.api.live_search.golr(all_inputs);
-			var url = gm.golr_base() + '/' + resrc;
-
-			core.kvetch('try: ' + url);		    
-			widgets.start_wait('Updating...');
-			
-			// TODO/BUG: JSONP for solr looks like?
-			var argvars = {
-	    		    type: "GET",
-	    		    url: url,
-			    //data: myQueryParameters,
-	    		    //dataType: 'json',
-	    		    dataType: 'jsonp',
-			    jsonp: 'json.wrf',
-	    		    success: do_results,
-	    		    error: function (result, status, error) {
-				
-	    			core.kvetch('Failed server request ('+
-					    query_id + '): ' + status);
-				
-				// Get the error out if possible.
-				var jreq = result.responseText;
-				var req = jQuery.parseJSON(jreq);
-				if( req && req['errors'] &&
-				    req['errors'].length > 0 ){
-					var in_error = req['errors'][0];
-					core.kvetch('ERROR:' + in_error);
-					
-					// Split on newline if possible to get
-					// at the nice part before the perl
-					// error.
-					var reg = new RegExp("\n+", "g");
-					var clean_error_split =
-					    in_error.split(reg);
-					var clean_error = clean_error_split[0];
-				widgets.error(clean_error);
-				    }
-				
-				// Close wait no matter what.
-				widgets.finish_wait();
-			    }
-			};
-			jQuery.ajax(argvars);
-	    	    }else{
-			core.kvetch('Threshold not passed with: ' +
-				    all_inputs['q'][0]);
+			    'label:' + all_inputs['q'][0] +
+			    ' OR annotation_class_label:' + all_inputs['q'][0];
+		    }else{
+			all_inputs['q'][0] = '*:*';
 		    }
+
+		var resrc = core.api.live_search.golr(all_inputs);
+		var url = gm.golr_base() + '/' + resrc;
+
+		core.kvetch('try: ' + url);		    
+		widgets.start_wait('Updating...');
+			
+		// TODO/BUG: JSONP for solr looks like?
+		var argvars = {
+	    	    type: "GET",
+	    	    url: url,
+		    //data: myQueryParameters,
+	    	    //dataType: 'json',
+	    	    dataType: 'jsonp',
+		    jsonp: 'json.wrf',
+	    	    success: do_results,
+	    	    error: function (result, status, error) {
+			
+	    		core.kvetch('Failed server request ('+
+				    query_id + '): ' + status);
+			
+			// Get the error out if possible.
+			var jreq = result.responseText;
+			var req = jQuery.parseJSON(jreq);
+			if( req && req['errors'] &&
+			    req['errors'].length > 0 ){
+				var in_error = req['errors'][0];
+				core.kvetch('ERROR:' + in_error);
+				
+				// Split on newline if possible to get
+				// at the nice part before the perl
+				// error.
+				var reg = new RegExp("\n+", "g");
+				var clean_error_split =
+				    in_error.split(reg);
+				var clean_error = clean_error_split[0];
+				widgets.error(clean_error);
+			    }
+			
+			// Close wait no matter what.
+			widgets.finish_wait();
+		    }
+		};
+		jQuery.ajax(argvars);
+		// }else{
+		// 	core.kvetch('Threshold not passed with: ' +
+		// 		    all_inputs['q'][0]);
+		// }
 	    }
 	};
     };
-
+    
     // Create our callback function for this case.
     var marshal_form = 
     	widgets.form.create_jquery_marshal('#app-form',
@@ -542,7 +550,19 @@ function LiveSearchGOlrInit(){
     jQuery("#app-form").submit(function(){return false;});
 
     // TODO: first pass update on all facets.
-    
+    var init_url = gm.golr_base() + '/select?qt=standard&indent=on&wt=json&version=2.2&rows=10&start=0&fl=*%2Cscore&facet=true&facet.field=document_category&facet.field=type&facet.field=evidence_type&facet.field=source&facet.field=taxon&facet.field=isa_partof_label_closure&facet.field=annotation_extension_class_label&facet.field=annotation_extension_class_label_closure&q=*:*&packet=1';
+    core.kvetch('trying initialization: ' + init_url);
+    var init_argvars = {
+	type: "GET",
+	url: init_url,
+	dataType: 'jsonp',
+	jsonp: 'json.wrf',
+	success: _process_results,
+	error: function (result, status, error) {
+	    core.kvetch('ERROR: Failed initial request');
+	}
+    };
+    jQuery.ajax(init_argvars);
 }
 
 
@@ -667,8 +687,52 @@ function _update_gui (json_data){
     var qfilters = core.golr_response.query_filters(json_data);
     var qfacets = core.golr_response.facet_counts(json_data);
 
-    // Define pre-defined filters.
-    var filterables = [
+    // // Define pre-defined filters.
+    // var filterables = [
+    // ];
+
+    // // Operate on filters that have a pre-defined base.
+    // for( var fi = 0; fi < filterables.length ; fi++){
+    // 	var filterable = filterables[fi];
+    // 	var curr_filter_id = filterable['filter_id'];
+    // 	var curr_model = filterable['model'];
+    // 	var curr_widget = filterable['widget'];
+
+    // 	// core.kvetch("looking at facet: " + curr_filter_id);
+    // 	// core.kvetch("\tmodel: " + curr_model);
+    // 	// core.kvetch("\twidget: " + curr_widget);
+
+    // 	// Update the model with query filters and facet counts. Since the
+    // 	// return data is considered comprehensive, if one is not
+    // 	var all_filters = curr_model.get_all_items();
+    // 	//core.kvetch("all " + curr_filter_id + " filters: " + all_filters);
+    // 	for( var ptfi = 0; ptfi < all_filters.length; ptfi++ ){
+    //  	    var try_filter = all_filters[ptfi];
+    //  	    // core.kvetch("try filter: " + try_filter);
+    //  	    if( qfilters[curr_filter_id] &&
+    // 		qfilters[curr_filter_id][try_filter] ){
+    // 		curr_model.update_value(try_filter, 'selected', true);
+    // 	    }else{
+    // 		curr_model.update_value(try_filter, 'selected', false);
+    // 	    }
+
+    // 	    // Look at whether or not there is a count with it and add.
+    //  	    if( qfacets[curr_filter_id] &&
+    // 		typeof qfacets[curr_filter_id][try_filter] != 'undefined' ){
+    // 		    var new_val = qfacets[curr_filter_id][try_filter];
+    // 		    curr_model.update_value(try_filter, 'count', new_val);
+    // 		}else{
+    // 		    curr_model.update_value(try_filter, 'count', 0);
+    // 		}
+    // 	}
+
+    // 	// Update it.
+    // 	curr_widget.update_with(curr_model.get_state());
+    // 	curr_widget.render_update();
+    // }
+
+    // Define dynamic filters.
+    var dyn_filterables = [
 	{
 	    filter_id: 'type',
 	    model: type_model,
@@ -688,51 +752,7 @@ function _update_gui (json_data){
 	    filter_id: 'evidence_type',
 	    model: evidence_model,
 	    widget: evidence_widget
-	}
-    ];
-
-    // Operate on filters that have a pre-defined base.
-    for( var fi = 0; fi < filterables.length ; fi++){
-	var filterable = filterables[fi];
-	var curr_filter_id = filterable['filter_id'];
-	var curr_model = filterable['model'];
-	var curr_widget = filterable['widget'];
-
-	core.kvetch("looking at facet: " + curr_filter_id);
-	core.kvetch("\tmodel: " + curr_model);
-	core.kvetch("\twidget: " + curr_widget);
-
-	// Update the model with query filters and facet counts. Since the
-	// return data is considered comprehensive, if one is not
-	var all_filters = curr_model.get_all_items();
-	//core.kvetch("all " + curr_filter_id + " filters: " + all_filters);
-	for( var ptfi = 0; ptfi < all_filters.length; ptfi++ ){
-     	    var try_filter = all_filters[ptfi];
-     	    // core.kvetch("try filter: " + try_filter);
-     	    if( qfilters[curr_filter_id] &&
-		qfilters[curr_filter_id][try_filter] ){
-		curr_model.update_value(try_filter, 'selected', true);
-	    }else{
-		curr_model.update_value(try_filter, 'selected', false);
-	    }
-
-	    // Look at whether or not there is a count with it and add.
-     	    if( qfacets[curr_filter_id] &&
-		typeof qfacets[curr_filter_id][try_filter] != 'undefined' ){
-		    var new_val = qfacets[curr_filter_id][try_filter];
-		    curr_model.update_value(try_filter, 'count', new_val);
-		}else{
-		    curr_model.update_value(try_filter, 'count', 0);
-		}
-	}
-
-	// Update it.
-	curr_widget.update_with(curr_model.get_state());
-	curr_widget.render_update();
-    }
-
-    // Define dynamic filters.
-    var dyn_filterables = [
+	},
 	{
 	    filter_id: 'document_category',
 	    model: document_category_model,
@@ -761,6 +781,10 @@ function _update_gui (json_data){
 	var curr_filter_id = filterable['filter_id'];
 	var curr_model = filterable['model'];
 	var curr_widget = filterable['widget'];
+
+    	core.kvetch("looking at facet: " + curr_filter_id);
+    	core.kvetch("\tmodel: " + curr_model);
+    	core.kvetch("\twidget: " + curr_widget);
 
 	// Iterate over all facet values.
 	var facet_keys = core.util.get_hash_keys(qfacets[curr_filter_id]);
@@ -894,15 +918,16 @@ function _table_cache_from_results (dlist){
     var cache = new Array();
     cache.push('<table>');
     cache.push('<thead><tr>');
-    cache.push('<th>score</th>');
-    //cache.push('<th>acc</th>');
-    cache.push('<th>symbol</th>');
-    cache.push('<th>ev</th>');
-    cache.push('<th>term</th>');
-    cache.push('<th>type</th>');
-    cache.push('<th>source</th>');
-    cache.push('<th>species</th>');
-    // cache.push('<th>synonym(s)</th>');
+    cache.push('<th>Results</th>');
+    // cache.push('<th>score</th>');
+    // //cache.push('<th>acc</th>');
+    // cache.push('<th>symbol</th>');
+    // cache.push('<th>ev</th>');
+    // cache.push('<th>term</th>');
+    // cache.push('<th>type</th>');
+    // cache.push('<th>source</th>');
+    // cache.push('<th>species</th>');
+    // // cache.push('<th>synonym(s)</th>');
     cache.push('</tr></thead><tbody>');
     for( var i = 0; i < dlist.length; i++ ){
 
@@ -916,87 +941,222 @@ function _table_cache_from_results (dlist){
 	    cache.push('<tr class="even_row">');
 	}
 
-	// Score.
-	cache.push('<td>');
-	cache.push((parseInt(r.score) * 100.00) + '%');
-	cache.push('</td>');
-
-	// GP symbol.
-	cache.push('<td>');
-	cache.push(core.html.gene_product_link(r.bioentity_id,
-					       r.bioentity_label));
-	cache.push('</td>');
-
-	// Evidence.
-	cache.push('<td>');
-	cache.push(r.evidence_type);
-	// //core.kvetch('homolset status: ' + r.homolset);
-	// if( r.homolset == 'included' ){
-	//     cache.push('<img src="' + gm.get_image_resource('star') + '"');
-	//     cache.push(' title="This gene product is a member of a homolset." />');
-	// }else{
-	//     cache.push('&nbsp;');
-	// }
-	cache.push('</td>');
-
-	// Term info.
-	//var tlink = core.link.term({acc: r.annotation_class});
-	cache.push('<td>');
-	cache.push(core.html.term_link(r.annotation_class,
-				       r.annotation_class_label));
-	cache.push('</td>');
-
-	// // GO term acc.
-	// cache.push('<td>');
-	// // cache.push('<a title="link to information on ' + r.dbxref +
-	// // 	   '" href=\"' + r.link +
-	// // 	   '">' + r.hilite_dbxref +
-	// // 	   '</a>');
-	// cache.push('</td>');
-
-	// Type.
-	cache.push('<td>');
-	cache.push(r.type);
-	cache.push('</td>');
-
-	// Source.
-	cache.push('<td>');
-	cache.push(r.source);
-	cache.push('</td>');
-
-	// // Species. Simple names aren't split, but complicated
-	// // ones are.
-	// var s_name = species_map[r.species];
-	// if( s_name && s_name.split(' ').length <= 2 ){
-	//     cache.push('<td class="nowrap">');
-	// }else{
-	//     cache.push('<td class="">');
-	// }
-	// cache.push(species_map[r.species]);
-	var species_map = gm.species_map();
-	var tax_splits = r.taxon.split(":");
-	var simple_taxon_id = tax_splits[1];
-	var s_name = species_map[simple_taxon_id];
-	if( s_name && s_name.split(' ').length <= 2 ){
-	    cache.push('<td class="nowrap">');
+	// TODO: document type identification.
+	if( r.document_category ){
+	    if( 'annotation' == r.document_category ){
+		cache.push(_annotation_line(r));
+	    }else if( 'ontology_class' == r.document_category ){
+		cache.push(_term_line(r));
+		// }else if( 'bioentity' == doc.document_category ){
+		//     mbuf.push(_bioentity_line(doc));
+	    }else{
+		cache.push('Unknown document category: '+ r.document_category );
+	    }
 	}else{
-	    cache.push('<td class="">');
+	    cache.push('WTFBBQ!');
 	}
-	cache.push(s_name);
-	//cache.push(r.taxon);
-	cache.push('</td>');
-	
-	// // Synonyms.
-	// cache.push('<td>');
-	// //cache.push(r.hilite_gpsynonym.replace(newline_finder, ", "));
-	// cache.push('nil');
-	// cache.push('</td>');
-	
+
 	cache.push('</tr>');
     }
     cache.push('</tbody></table>');
     
     return cache;
+}
+
+
+// Write an annotation line.
+function _annotation_line(r){
+    
+    core.kvetch("Writing annotation line...");
+    var cache = new Array();
+
+    // Score.
+    cache.push('<td>');
+    //cache.push((parseInt(r.score) * 100.00) + '%');
+    cache.push(parseInt(r.score) + '%');
+    cache.push('</td>');
+
+    cache.push('<td>');
+    cache.push('annotation');
+    cache.push('</td>');
+
+    // GP symbol.
+    cache.push('<td>');
+    cache.push(core.html.gene_product_link(r.bioentity_id,
+					   r.bioentity_label));
+    cache.push('</td>');
+
+    // Evidence.
+    cache.push('<td>');
+    cache.push(r.evidence_type);
+    // //core.kvetch('homolset status: ' + r.homolset);
+    // if( r.homolset == 'included' ){
+    //     cache.push('<img src="' + gm.get_image_resource('star') + '"');
+    //     cache.push(' title="This gene product is a member of a homolset." />');
+    // }else{
+    //     cache.push('&nbsp;');
+    // }
+    cache.push('</td>');
+
+    // Term info.
+    //var tlink = core.link.term({acc: r.annotation_class});
+    cache.push('<td>');
+    cache.push(core.html.term_link(r.annotation_class,
+				   r.annotation_class_label));
+    cache.push(' (');
+    cache.push(r.annotation_class);
+    cache.push(')');
+    cache.push('</td>');
+    
+    // // GO term acc.
+    // cache.push('<td>');
+    // // cache.push('<a title="link to information on ' + r.dbxref +
+    // // 	   '" href=\"' + r.link +
+    // // 	   '">' + r.hilite_dbxref +
+    // // 	   '</a>');
+    // cache.push('</td>');
+    
+    // Type.
+    cache.push('<td>');
+    cache.push(r.type);
+    cache.push('</td>');
+    
+    // Source.
+    cache.push('<td>');
+    cache.push(r.source);
+    cache.push('</td>');
+    
+    // // Species. Simple names aren't split, but complicated
+    // // ones are.
+    // var s_name = species_map[r.species];
+    // if( s_name && s_name.split(' ').length <= 2 ){
+    //     cache.push('<td class="nowrap">');
+    // }else{
+    //     cache.push('<td class="">');
+    // }
+    // cache.push(species_map[r.species]);
+    var species_map = gm.species_map();
+    var tax_splits = r.taxon.split(":");
+    var simple_taxon_id = tax_splits[1];
+    var s_name = species_map[simple_taxon_id];
+    if( s_name && s_name.split(' ').length <= 2 ){
+	cache.push('<td class="nowrap">');
+    }else{
+	cache.push('<td class="">');
+    }
+    if( ! s_name ){
+	s_name = r.taxon;
+    }    
+    cache.push(s_name);
+    //cache.push(r.taxon);
+    cache.push('</td>');
+	
+    // // Synonyms.
+    // cache.push('<td>');
+    // //cache.push(r.hilite_gpsynonym.replace(newline_finder, ", "));
+    // cache.push('nil');
+    // cache.push('</td>');
+
+    return cache.join('');
+}
+
+
+// Write an term line.
+function _term_line(r){
+    
+    core.kvetch("Writing annotation line...");
+    var cache = new Array();
+
+    // Score.
+    cache.push('<td>');
+    //cache.push((parseInt(r.score) * 100.00) + '%');
+    cache.push(parseInt(r.score) + '%');
+    cache.push('</td>');
+
+    cache.push('<td>');
+    cache.push('term');
+    cache.push('</td>');
+
+    // ...
+    cache.push('<td>');
+    cache.push(r.label);
+    cache.push(' (');
+    cache.push(r.id);
+    cache.push(')');
+    if( r.description ){
+	cache.push('<p>');
+	cache.push(r.description);
+	cache.push('</p>');
+    }
+    cache.push('</td>');
+
+
+    // // Evidence.
+    // cache.push('<td>');
+    // cache.push(r.evidence_type);
+    // // //core.kvetch('homolset status: ' + r.homolset);
+    // // if( r.homolset == 'included' ){
+    // //     cache.push('<img src="' + gm.get_image_resource('star') + '"');
+    // //     cache.push(' title="This gene product is a member of a homolset." />');
+    // // }else{
+    // //     cache.push('&nbsp;');
+    // // }
+    // cache.push('</td>');
+
+    // // Term info.
+    // //var tlink = core.link.term({acc: r.annotation_class});
+    // cache.push('<td>');
+    // cache.push(core.html.term_link(r.annotation_class,
+    // 				   r.annotation_class_label));
+    // cache.push('</td>');
+    
+    // // // GO term acc.
+    // // cache.push('<td>');
+    // // // cache.push('<a title="link to information on ' + r.dbxref +
+    // // // 	   '" href=\"' + r.link +
+    // // // 	   '">' + r.hilite_dbxref +
+    // // // 	   '</a>');
+    // // cache.push('</td>');
+    
+    // // Type.
+    // cache.push('<td>');
+    // cache.push(r.type);
+    // cache.push('</td>');
+    
+    // // Source.
+    // cache.push('<td>');
+    // cache.push(r.source);
+    // cache.push('</td>');
+    
+    // // // Species. Simple names aren't split, but complicated
+    // // // ones are.
+    // // var s_name = species_map[r.species];
+    // // if( s_name && s_name.split(' ').length <= 2 ){
+    // //     cache.push('<td class="nowrap">');
+    // // }else{
+    // //     cache.push('<td class="">');
+    // // }
+    // // cache.push(species_map[r.species]);
+    // var species_map = gm.species_map();
+    // var tax_splits = r.taxon.split(":");
+    // var simple_taxon_id = tax_splits[1];
+    // var s_name = species_map[simple_taxon_id];
+    // if( s_name && s_name.split(' ').length <= 2 ){
+    // 	cache.push('<td class="nowrap">');
+    // }else{
+    // 	cache.push('<td class="">');
+    // }
+    // cache.push(s_name);
+    // //cache.push(r.taxon);
+    // cache.push('</td>');
+	
+    // // // Synonyms.
+    // // cache.push('<td>');
+    // // //cache.push(r.hilite_gpsynonym.replace(newline_finder, ", "));
+    // // cache.push('nil');
+    // // cache.push('</td>');
+
+    return cache.join('');
 }
 
 
