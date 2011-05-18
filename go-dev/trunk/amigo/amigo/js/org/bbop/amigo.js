@@ -737,12 +737,14 @@ org.bbop.amigo.core = function(){
 	var default_filter_args =
 	    {
 		// Filter stuff.
-		//ontology: [],
+		document_category: [],
 		type: [],
 		source: [],
 		taxon: [],
 		evidence_type: [],
-		isa_partof_label_closure: []
+		isa_partof_label_closure: [],
+		annotation_extension_class_label: [],
+		annotation_extension_class_label_closure: []
 	    };
 	var final_filter_args = _merge(default_filter_args, in_args);
 
