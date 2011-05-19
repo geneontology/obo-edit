@@ -63,7 +63,7 @@ public class GAFParser {
 	
 	private int expectedNumCols;
 	
-	private List<String> errors;
+//	private List<String> errors;
 
 	
 	private List<AnnotationRuleViolation> voilations;
@@ -114,10 +114,13 @@ public class GAFParser {
 						+ expectedNumCols
 						+ ", got "
 						+ currentCols.length
-						+ "). The row is ignored: " + this.currentRow + ".";
-					
-					errors.add(error);
-					LOG.error(error);
+						+ "). The row is ignored.";
+	
+					AnnotationRuleViolation v = new AnnotationRuleViolation(error, this.currentRow);
+					v.setRuleId("Parsing Error");
+					voilations.add(v);
+//					errors.add(error);
+					LOG.error(error + " : " + this.currentRow);
 					return next();
 				}/*else{
 					performBasicChecks(this.currentCols);
@@ -142,7 +145,7 @@ public class GAFParser {
 	private void init(){
 		this.gafVersion = 0;
 		this.reader = null;
-		this.errors = new ArrayList<String>();
+		//this.errors = new ArrayList<String>();
 		this.expectedNumCols = 15;
 		voilations = new ArrayList<AnnotationRuleViolation>();
 	}
@@ -316,9 +319,9 @@ public class GAFParser {
 	}
 	
 
-	public List<String> getErrors(){
+	/*public List<String> getErrors(){
 		return errors;
-	}
+	}*/
 	
 	/*private boolean isValidPath(String file_name) {
 		if (file_name == null)
@@ -343,7 +346,7 @@ public class GAFParser {
 	
 	private void performBasicChecks(String cols[]){
 
-		String row = this.currentRow;
+		/*String row = this.currentRow;
 		
 		if(this.gafVersion == 2.0){
 			if(cols.length != 17){
@@ -353,7 +356,7 @@ public class GAFParser {
 			if(cols.length != 15){
 				voilations.add(new AnnotationRuleViolation(" The row '"+ row + "' does not contain required columns number"));
 			}
-		}
+		}*/
  
 		/*//cardinality checks
 		checkCardinality(cols[0],0, "Column 1: DB", row,1,1);
@@ -415,7 +418,7 @@ public class GAFParser {
  		*/
 	}
 	
-	private void checkTaxon(String value, String row){
+/*	private void checkTaxon(String value, String row){
 		if(!value.startsWith("taxon"))
 			voilations.add(new AnnotationRuleViolation("The taxon id in the column 13 is of in correct format in the row :" + row));
 		
@@ -473,7 +476,7 @@ public class GAFParser {
 			voilations.add(new AnnotationRuleViolation("White Spaces are found in the " + columnName+ " column in the row: " + row));
 		}
 		
-	}
+	}*/
 	
 	
 	

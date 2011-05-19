@@ -283,10 +283,10 @@ public class DbOperationsTask extends Task implements DbOperationsListener {
 			this.annotationRuleViolations.addAll(builder.getParser()
 					.getAnnotationRuleViolations());
 
-			for (String s : builder.getParser().getErrors()) {
+			/*for (String s : builder.getParser().getErrors()) {
 				this.annotationRuleViolations
 						.add(new AnnotationRuleViolation(s));
-			}
+			}*/
 
 		}
 	}
