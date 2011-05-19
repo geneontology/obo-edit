@@ -86,6 +86,8 @@ public class GAFParser {
 	public boolean next() throws IOException{
 		if(reader != null){
 			currentRow  = reader.readLine();
+			if(DEBUG)
+				LOG.debug("Parsing Row -- "+currentRow);
 			if(currentRow == null){
 				return false;
 			}
@@ -108,11 +110,15 @@ public class GAFParser {
 			}else{
 				this.currentCols = this.currentRow.split("\\t", -1);
 				if (currentCols.length != expectedNumCols) {
-					errors.add("Got invalid number of columns for row (expected "
-							+ expectedNumCols
-							+ ", got "
-							+ currentCols.length
-							+ "): " + this.currentRow + "." );
+					String error = "Got invalid number of columns for row (expected "
+						+ expectedNumCols
+						+ ", got "
+						+ currentCols.length
+						+ "). The row is ignored: " + this.currentRow + ".";
+					
+					errors.add(error);
+					LOG.error(error);
+					return next();
 				}/*else{
 					performBasicChecks(this.currentCols);
 				}*/
