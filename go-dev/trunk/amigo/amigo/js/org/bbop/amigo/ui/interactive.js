@@ -227,7 +227,7 @@ org.bbop.amigo.ui.interactive.multi_widget = function(in_id, in_name,
 
 	// Sort the items in the mdata array.
 	// Also keep a lookup for a "special" entry.
-	var default_on_p = false;
+	// var default_on_p = false;
 	var mdata_keys = core.util.get_hash_keys(anchor.mdata);
 	function _data_comp(a, b){
 
@@ -235,10 +235,10 @@ org.bbop.amigo.ui.interactive.multi_widget = function(in_id, in_name,
 	    var a_data = anchor.mdata[a];
 	    var b_data = anchor.mdata[b];
 
-	    if( (a_data['special'] == true && a_data['selected'] == true) ||
-	    	(b_data['special'] == true && b_data['selected'] == true) ){
-	    	default_on_p = true;
-	    }
+	    // if( (a_data['special'] == true && a_data['selected'] == true) ||
+	    // 	(b_data['special'] == true && b_data['selected'] == true) ){
+	    // 	default_on_p = true;
+	    // }
 
 	    //
 	    var retval = 0;
@@ -276,7 +276,7 @@ org.bbop.amigo.ui.interactive.multi_widget = function(in_id, in_name,
 	    // 2) the selection is special
 	    // 3) if the default is not selected, either the item is selected or
 	    // 4) it has a count (and is thus interesting)
-	    if( default_on_p == true ||
+	    if( // default_on_p == true ||
 	    	write_data['selected'] == true ||
 	    	write_data['special'] == true ||
 	    	( write_data['count'] && write_data['count'] > 0 ) ){

@@ -87,6 +87,7 @@ function SolrManager(in_args){
 	    
 	    // Control of facets.
 	    facet: 'true',
+	    'facet.mincount': 1,
 	    'facet.field': in_args['facets'],
 	    
 	    // Facet filtering.
@@ -422,10 +423,18 @@ function LiveSearchGOlrInit(){
 			kc == 20 || // ctl?
 			kc == 17 || // ctl?
 			kc == 16 || // shift
-			kc ==  8 || // delete
+			//kc ==  8 || // delete // I want resets, and this goes
 			kc ==  0 ){ // super
+			    // // I want to allow zero-length resets, so
+			    // // if the length is 0, let them through.
+			    // if( all_inputs['q'] &&
+			    // 	all_inputs['q'][0] &&
+			    // 	all_inputs['q'][0].length == 0 ){
+			    // 	    core.kvetch('non-ignorable 0 event');
+			    // 	}else{				    
 			    core.kvetch('ignorable key event: ' + kc);
 			    ignorable_event_p = true;
+			    // }
 			}
 		}
 	    }
@@ -550,7 +559,8 @@ function LiveSearchGOlrInit(){
     jQuery("#app-form").submit(function(){return false;});
 
     // TODO: first pass update on all facets.
-    var init_url = gm.golr_base() + '/select?qt=standard&indent=on&wt=json&version=2.2&rows=10&start=0&fl=*%2Cscore&facet=true&facet.field=document_category&facet.field=type&facet.field=evidence_type&facet.field=source&facet.field=taxon&facet.field=isa_partof_label_closure&facet.field=annotation_extension_class_label&facet.field=annotation_extension_class_label_closure&q=*:*&packet=1';
+    var init_url = gm.golr_base() + '/select?qt=standard&indent=on&wt=json&version=2.2&rows=10&start=0&fl=*%2Cscore&facet=true&facet.mincount=1&facet.field=document_category&facet.field=type&facet.field=evidence_type&facet.field=source&facet.field=taxon&facet.field=isa_partof_label_closure&facet.field=annotation_extension_class_label&facet.field=annotation_extension_class_label_closure&q=*:*&packet=1';
+    last_sent_packet = 1; // TODO/BUG: Packeting getting awkward--class?
     core.kvetch('trying initialization: ' + init_url);
     var init_argvars = {
 	type: "GET",
@@ -782,9 +792,9 @@ function _update_gui (json_data){
 	var curr_model = filterable['model'];
 	var curr_widget = filterable['widget'];
 
-    	core.kvetch("looking at facet: " + curr_filter_id);
-    	core.kvetch("\tmodel: " + curr_model);
-    	core.kvetch("\twidget: " + curr_widget);
+    	// core.kvetch("looking at facet: " + curr_filter_id);
+    	// core.kvetch("\tmodel: " + curr_model);
+    	// core.kvetch("\twidget: " + curr_widget);
 
 	// Iterate over all facet values.
 	var facet_keys = core.util.get_hash_keys(qfacets[curr_filter_id]);
@@ -905,6 +915,7 @@ function _process_results (json_data, status){
     }
     //core.kvetch("finish wait");
     widgets.finish_wait();
+    core.kvetch("Pass finish.");
 }
 
 
@@ -967,7 +978,7 @@ function _table_cache_from_results (dlist){
 // Write an annotation line.
 function _annotation_line(r){
     
-    core.kvetch("Writing annotation line...");
+    //core.kvetch("Writing annotation line...");
     var cache = new Array();
 
     // Score.
@@ -1064,7 +1075,7 @@ function _annotation_line(r){
 // Write an term line.
 function _term_line(r){
     
-    core.kvetch("Writing annotation line...");
+    //core.kvetch("Writing annotation line...");
     var cache = new Array();
 
     // Score.
