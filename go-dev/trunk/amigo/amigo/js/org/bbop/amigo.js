@@ -226,6 +226,7 @@ org.bbop.amigo.core = function(){
 
 		    //sayer('fq process ' + list_item + "\n");
 
+		    // Split on the colon.
 		    var splits = list_item.split(":");
 		    var type = splits.shift();
 		    var value = splits.join(":");
@@ -233,6 +234,17 @@ org.bbop.amigo.core = function(){
 		    if( ! ret_hash[type] ){
 			ret_hash[type] = {};
 		    }
+
+		    // Remove internal quotes.
+		    // Actually, I want just the first quote and the
+		    // final quote.
+		    if( value.charAt(0) == '"' &&
+			value.charAt(value.length -1) == '"' ){
+			    //sayer('fq needs cropping: ' + value + "\n");
+			    value = value.substring(1, value.length -1);
+			    //sayer('fq cropped to: ' + value + "\n");
+			}
+
 
 		    ret_hash[type][value] = true;
 
@@ -352,7 +364,7 @@ org.bbop.amigo.core = function(){
     }
 
     // Similar to the above, but creating a solr filter set.
-    function _abstract_filter_template(filters){
+    function _abstract_solr_filter_template(filters){
 	
 	var allbuf = new Array();
 	for( var filter_key in filters ){
@@ -374,21 +386,24 @@ org.bbop.amigo.core = function(){
 			    minibuf.push('fq=');
 			    minibuf.push(filter_key);
 			    minibuf.push(':');
+			    minibuf.push('"');
 			    minibuf.push(filter_val[i]);
+			    minibuf.push('"');
 			    allbuf.push(minibuf.join(''));
 			}
-		    }
-		    
+		    }		    
 		}else{
 		    var minibuf = new Array();
 		    if( typeof(filter_val) != 'undefined' &&
 			filter_val != '' ){
-			minibuf.push('fq=');
-			minibuf.push(filter_key);
-			minibuf.push(':');
-			minibuf.push(filter_val);
-			allbuf.push(minibuf.join(''));
-		    }
+			    minibuf.push('fq=');
+			    minibuf.push(filter_key);
+			    minibuf.push(':');
+			    minibuf.push('"');
+			    minibuf.push(filter_val);
+			    minibuf.push('"');
+			    allbuf.push(minibuf.join(''));
+			}
 		}
 	}
 	return allbuf.join('&');
@@ -752,7 +767,7 @@ org.bbop.amigo.core = function(){
 	//return _abstract_link_template('select', segments);	
 	var complete_query = _abstract_head_template('select') +
 	    _abstract_segment_template(final_query_args);
-	var addable_filters = _abstract_filter_template(final_filter_args);
+	var addable_filters = _abstract_solr_filter_template(final_filter_args);
 	if( addable_filters.length > 0 ){
 	    complete_query = complete_query + '&' + addable_filters;
 	}
