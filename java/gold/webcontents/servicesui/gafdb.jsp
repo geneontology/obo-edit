@@ -139,10 +139,15 @@
 		
 		
 		if(annotationRuleViolations != null){
+			boolean runRules  = request.getParameter("runrules")== null ? false: true;
+			String heading = "Annotation Violations";
+			if(!runRules){
+				heading = "Annotaiton Parsing Errors";
+			}
 			%>
 		
 				<hr />
-				<h3>Annotation Violations</h3>
+				<h3><%= heading %></h3>
 				<%
 				Hashtable<String, List<AnnotationRuleViolation>> table = new Hashtable<String, List<AnnotationRuleViolation>>();
 				for(AnnotationRuleViolation v: annotationRuleViolations){
@@ -170,7 +175,7 @@
 								<div style="font-size: 1.1em;font-weight:bold"><%=v.getRuleId()  %> ---- <%= v.getMessage() %> </div>
 								<ul>
 									<li>
-										<div style="color:red"><%=v.getSourceAnnotation()  %> </div>
+										<div style="color:red"><%=v.getAnnotationRow()  %> </div>
 									</li>
 								</ul>
 							</li>

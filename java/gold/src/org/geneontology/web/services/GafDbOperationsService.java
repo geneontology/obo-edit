@@ -201,6 +201,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			
 		}finally{
 			request.setAttribute("isTaskRunning", runner == null ? false: runner.isRunning());
+			request.setAttribute("command", command);
 			
 			//if the task has completed its operation then set it to null
 			if(runner != null && !runner.isRunning()){
@@ -450,9 +451,9 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 				annotationRuleViolations.addAll(builder.getParser()
 						.getAnnotationRuleViolations());
 
-				for (String s : builder.getParser().getErrors()) {
+				for (AnnotationRuleViolation v : builder.getParser().getAnnotationRuleViolations()) {
 					annotationRuleViolations
-							.add(new AnnotationRuleViolation(s));
+							.add(v);
 				}
 
 			}

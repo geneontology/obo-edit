@@ -9,6 +9,7 @@ public class AnnotationRuleViolation {
 	private final String message;
 	private Set<GeneAnnotation> suggestedReplacements;
 	private GeneAnnotation sourceAnnotation;
+	private String annotationRow;
 	
 	private String ruleId;
 	
@@ -32,9 +33,17 @@ public class AnnotationRuleViolation {
 		super();
 		this.message = message;
 		this.sourceAnnotation = sourceAnnotation;
+		this.annotationRow = sourceAnnotation != null ? sourceAnnotation.toString() : null;
 	}
 
 
+	public AnnotationRuleViolation(String message, String annotationRow) {
+		super();
+		this.message = message;
+		this.annotationRow = annotationRow;
+	}
+	
+	
 	public String getMessage() {
 		return message;
 	}
@@ -57,6 +66,18 @@ public class AnnotationRuleViolation {
 
 	public void setSourceAnnotation(GeneAnnotation sourceAnnotation) {
 		this.sourceAnnotation = sourceAnnotation;
+		this.annotationRow = sourceAnnotation != null ? sourceAnnotation.toString() : null;
+
+	}
+
+
+	public String getAnnotationRow() {
+		return annotationRow;
+	}
+
+
+	public void setAnnotationRow(String annotationRow) {
+		this.annotationRow = annotationRow;
 	}
 	
 
