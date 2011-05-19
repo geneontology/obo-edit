@@ -32,8 +32,8 @@ var ip_lc_model = null;
 var ip_lc_widget = null;
 var document_category_model = null;
 var document_category_widget = null;
-var aecl_model = null;
-var aecl_widget = null;
+//var aecl_model = null;
+//var aecl_widget = null;
 var aecl_closure_model = null;
 var aecl_closure_widget = null;
 
@@ -272,9 +272,9 @@ function LiveSearchGOlrInit(){
 	widgets.form.hidden_input('facet.field', 'isa_partof_label_closure');
     var hidden_facet_field_document_category_text =
 	widgets.form.hidden_input('facet.field', 'document_category');
-    var hidden_facet_field_aecl_text =
-	widgets.form.hidden_input('facet.field',
-				  'annotation_extension_class_label');
+    // var hidden_facet_field_aecl_text =
+    // 	widgets.form.hidden_input('facet.field',
+    // 				  'annotation_extension_class_label');
     var hidden_facet_field_aecl_closure_text =
 	widgets.form.hidden_input('facet.field',
 				  'annotation_extension_class_label_closure');
@@ -350,14 +350,14 @@ function LiveSearchGOlrInit(){
     document_category_widget.update_with(document_category_model.get_state());
     var document_category_text = document_category_widget.render_initial();
 
-    // Get annotation_extension_class_label filter going.
-    var aecl_id = 'annotation_extension_class_label';
-    aecl_model = new org.bbop.amigo.ui.interactive.multi_model({});
-    aecl_widget =
-	new org.bbop.amigo.ui.interactive.multi_widget(aecl_id, aecl_id, 4,
-						       'Annotation extension');
-    aecl_widget.update_with(aecl_model.get_state());
-    var aecl_text = aecl_widget.render_initial();
+    // // Get annotation_extension_class_label filter going.
+    // var aecl_id = 'annotation_extension_class_label';
+    // aecl_model = new org.bbop.amigo.ui.interactive.multi_model({});
+    // aecl_widget =
+    // 	new org.bbop.amigo.ui.interactive.multi_widget(aecl_id, aecl_id, 4,
+    // 						       'Annotation extension');
+    // aecl_widget.update_with(aecl_model.get_state());
+    // var aecl_text = aecl_widget.render_initial();
 
     // Get annotation_extension_class_label filter going.
     var aecl_closure_id = 'annotation_extension_class_label_closure';
@@ -379,7 +379,7 @@ function LiveSearchGOlrInit(){
     jQuery("#app-form").append(hidden_facet_field_source_text);
     jQuery("#app-form").append(hidden_facet_field_taxon_text);
     jQuery("#app-form").append(hidden_facet_field_term_label_closure_text);
-    jQuery("#app-form").append(hidden_facet_field_aecl_text);
+    // jQuery("#app-form").append(hidden_facet_field_aecl_text);
     jQuery("#app-form").append(hidden_facet_field_aecl_closure_text);
     jQuery("#app-form-query").append(query_text);
     //jQuery("#app-form-filters").append(ontology_text);
@@ -389,7 +389,7 @@ function LiveSearchGOlrInit(){
     jQuery("#app-form-filters").append(source_text);
     jQuery("#app-form-filters").append(evidence_type_text);
     jQuery("#app-form-filters").append(isa_partof_label_closure_text);
-    jQuery("#app-form-filters").append(aecl_text);
+    // jQuery("#app-form-filters").append(aecl_text);
     jQuery("#app-form-filters").append(aecl_closure_text);
 
     //core.kvetch('GP type text: ' + type_text );
@@ -773,11 +773,11 @@ function _update_gui (json_data){
 	    model: ip_lc_model,
 	    widget: ip_lc_widget
 	},
-	{
-	    filter_id: 'annotation_extension_class_label',
-	    model: aecl_model,
-	    widget: aecl_widget
-	},
+	// {
+	//     filter_id: 'annotation_extension_class_label',
+	//     model: aecl_model,
+	//     widget: aecl_widget
+	// },
 	{
 	    filter_id: 'annotation_extension_class_label_closure',
 	    model: aecl_closure_model,
@@ -925,21 +925,10 @@ function _table_cache_from_results (dlist){
     core.kvetch("Table: Refreshing...");
     //core.kvetch("Table: dlist.length: " + dlist.length);
 
-    // Bulk change.
-    var cache = new Array();
-    cache.push('<table>');
-    cache.push('<thead><tr>');
-    cache.push('<th>Results</th>');
-    // cache.push('<th>score</th>');
-    // //cache.push('<th>acc</th>');
-    // cache.push('<th>symbol</th>');
-    // cache.push('<th>ev</th>');
-    // cache.push('<th>term</th>');
-    // cache.push('<th>type</th>');
-    // cache.push('<th>source</th>');
-    // cache.push('<th>species</th>');
-    // // cache.push('<th>synonym(s)</th>');
-    cache.push('</tr></thead><tbody>');
+    // Results rows first to see what's in there.
+    var row_cache = [];
+    var has_term_p = false;
+    var has_annotation_p = false;
     for( var i = 0; i < dlist.length; i++ ){
 
 	var r = dlist[i];
@@ -947,69 +936,129 @@ function _table_cache_from_results (dlist){
 
 	// Create HTML.
 	if( i % 2 == 0 ){
-	    cache.push('<tr class="odd_row">');
+	    row_cache.push('<tr class="odd_row">');
 	}else{
-	    cache.push('<tr class="even_row">');
+	    row_cache.push('<tr class="even_row">');
 	}
 
 	// TODO: document type identification.
 	if( r.document_category ){
 	    if( 'annotation' == r.document_category ){
-		cache.push(_annotation_line(r));
+		row_cache.push(_annotation_line(r));
+		has_annotation_p = true;
 	    }else if( 'ontology_class' == r.document_category ){
-		cache.push(_term_line(r));
+		row_cache.push(_term_line(r));
+		has_term_p = true;
 		// }else if( 'bioentity' == doc.document_category ){
 		//     mbuf.push(_bioentity_line(doc));
 	    }else{
-		cache.push('Unknown document category: '+ r.document_category );
+		row_cache.push('Unknown document category: '+
+			       r.document_category );
 	    }
 	}else{
-	    cache.push('WTFBBQ!');
+	    row_cache.push('WTFBBQ!');
 	}
 
-	cache.push('</tr>');
+	row_cache.push('</tr>');
     }
-    cache.push('</tbody></table>');
+
+    // Bulk change.
+    var head_cache = new Array();
+    // Term.
+    if( has_term_p && has_annotation_p ){	
+	head_cache.push('<tr>');
+	head_cache.push('<th colspan="1" rowspan="2">score</th>');
+	head_cache.push('<th colspan="1" rowspan="2">category</th>');
+	head_cache.push('<th colspan="7">label/description</th>');
+	head_cache.push('</tr>');
+	head_cache.push('<tr>');
+	head_cache.push('<th>symbol</th>');
+	head_cache.push('<th>ev</th>');
+	head_cache.push('<th>term</th>');
+	head_cache.push('<th>type</th>');
+	head_cache.push('<th>extension</th>');
+	head_cache.push('<th>source</th>');
+	head_cache.push('<th>species</th>');
+	head_cache.push('</tr>');
+    }else if( has_annotation_p ){
+	// Annotation.
+	head_cache.push('<tr>');
+	head_cache.push('<th>score</th>');
+	head_cache.push('<th>category</th>');
+	head_cache.push('<th>symbol</th>');
+	head_cache.push('<th>ev</th>');
+	head_cache.push('<th>term</th>');
+	head_cache.push('<th>type</th>');
+	head_cache.push('<th>extension</th>');
+	head_cache.push('<th>source</th>');
+	head_cache.push('<th>species</th>');
+	// // cache.push('<th>synonym(s)</th>');
+	head_cache.push('</tr>');
+    }else if( has_term_p ){	
+	head_cache.push('<tr>');
+	head_cache.push('<th colspan="1">score</th>');
+	head_cache.push('<th colspan="1">category</th>');
+	head_cache.push('<th colspan="7">label/description</th>');
+	head_cache.push('</tr>');
+    }else{
+	head_cache.push('<tr>');
+	head_cache.push('<th colspan="9">???</th>');
+	head_cache.push('</tr>');	
+    }
+    // TODO: Now add the rows that we cached.
     
-    return cache;
+    var over_cache = [];
+    over_cache.push('<table>');
+    over_cache.push('<thead>');
+    for( var qwe = 0; qwe < head_cache.length; qwe++ ){
+	over_cache.push(head_cache[qwe]);
+    }
+    over_cache.push('</thead><tbody>');
+    for( var rty = 0; rty < row_cache.length; rty++ ){
+	over_cache.push(row_cache[rty]);
+    }
+    over_cache.push('</tbody></table>');
+    
+    return over_cache;
 }
 
 
-// Write an annotation line.
+// Write an annotation line. Currently 9 columns.
 function _annotation_line(r){
     
     //core.kvetch("Writing annotation line...");
     var cache = new Array();
 
-    // Score.
+    // 1 Score.
     cache.push('<td>');
     //cache.push((parseInt(r.score) * 100.00) + '%');
     cache.push(parseInt(r.score) + '%');
     cache.push('</td>');
 
+    // 2
     cache.push('<td>');
     cache.push('annotation');
     cache.push('</td>');
 
-    // GP symbol.
+    // 3 GP symbol.
     cache.push('<td>');
     cache.push(core.html.gene_product_link(r.bioentity_id,
 					   r.bioentity_label));
     cache.push('</td>');
 
-    // Evidence.
+    // 4 Evidence.
     cache.push('<td>');
     cache.push(r.evidence_type);
     // //core.kvetch('homolset status: ' + r.homolset);
     // if( r.homolset == 'included' ){
-    //     cache.push('<img src="' + gm.get_image_resource('star') + '"');
-    //     cache.push(' title="This gene product is a member of a homolset." />');
+    //   cache.push('<img src="' + gm.get_image_resource('star') + '"');
+    //   cache.push(' title="This gene product is a member of a homolset." />');
     // }else{
     //     cache.push('&nbsp;');
     // }
     cache.push('</td>');
 
-    // Term info.
+    // 5 Term info.
     //var tlink = core.link.term({acc: r.annotation_class});
     cache.push('<td>');
     cache.push(core.html.term_link(r.annotation_class,
@@ -1019,33 +1068,39 @@ function _annotation_line(r){
     cache.push(')');
     cache.push('</td>');
     
-    // // GO term acc.
-    // cache.push('<td>');
-    // // cache.push('<a title="link to information on ' + r.dbxref +
-    // // 	   '" href=\"' + r.link +
-    // // 	   '">' + r.hilite_dbxref +
-    // // 	   '</a>');
-    // cache.push('</td>');
-    
-    // Type.
+    // 6 Type.
     cache.push('<td>');
     cache.push(r.type);
     cache.push('</td>');
     
-    // Source.
+    // 7 Extension.
+    function _no_wrap(in_str){
+	return '<span class="nowrap">' + in_str + '</span>';
+    }
+    cache.push('<td>');
+    var aebuf = [];
+    if( r.annotation_extension_class_label ){
+	if( typeof r.annotation_extension_class_label == 'string' ){
+	    aebuf.push(_no_wrap(r.annotation_extension_class_label));
+	}else{
+	    for( var aecli = 0;
+		 aecli < r.annotation_extension_class_label.length;
+		 aecli++ ){
+		     var aeitem = r.annotation_extension_class_label[aecli];
+		     aebuf.push(_no_wrap(aeitem));
+	    	 }
+	}
+    }
+    cache.push(aebuf.join('<br />'));
+    cache.push('</td>');
+    
+    // 8 Source.
     cache.push('<td>');
     cache.push(r.source);
     cache.push('</td>');
     
-    // // Species. Simple names aren't split, but complicated
-    // // ones are.
-    // var s_name = species_map[r.species];
-    // if( s_name && s_name.split(' ').length <= 2 ){
-    //     cache.push('<td class="nowrap">');
-    // }else{
-    //     cache.push('<td class="">');
-    // }
-    // cache.push(species_map[r.species]);
+    // 9 Species. Simple names aren't split, but complicated
+    // ones are.
     var species_map = gm.species_map();
     var tax_splits = r.taxon.split(":");
     var simple_taxon_id = tax_splits[1];
@@ -1072,24 +1127,25 @@ function _annotation_line(r){
 }
 
 
-// Write an term line.
+// Write an term line. Currently 3 columns.
 function _term_line(r){
     
     //core.kvetch("Writing annotation line...");
     var cache = new Array();
 
-    // Score.
-    cache.push('<td>');
+    // 1 Score.
+    cache.push('<td colspan="1">');
     //cache.push((parseInt(r.score) * 100.00) + '%');
     cache.push(parseInt(r.score) + '%');
     cache.push('</td>');
 
-    cache.push('<td>');
+    // 2 
+    cache.push('<td colspan="1">');
     cache.push('term');
     cache.push('</td>');
 
-    // ...
-    cache.push('<td>');
+    // 3 ...
+    cache.push('<td colspan="7">');
     cache.push(r.label);
     cache.push(' (');
     cache.push(r.id);
@@ -1100,72 +1156,6 @@ function _term_line(r){
 	cache.push('</p>');
     }
     cache.push('</td>');
-
-
-    // // Evidence.
-    // cache.push('<td>');
-    // cache.push(r.evidence_type);
-    // // //core.kvetch('homolset status: ' + r.homolset);
-    // // if( r.homolset == 'included' ){
-    // //     cache.push('<img src="' + gm.get_image_resource('star') + '"');
-    // //     cache.push(' title="This gene product is a member of a homolset." />');
-    // // }else{
-    // //     cache.push('&nbsp;');
-    // // }
-    // cache.push('</td>');
-
-    // // Term info.
-    // //var tlink = core.link.term({acc: r.annotation_class});
-    // cache.push('<td>');
-    // cache.push(core.html.term_link(r.annotation_class,
-    // 				   r.annotation_class_label));
-    // cache.push('</td>');
-    
-    // // // GO term acc.
-    // // cache.push('<td>');
-    // // // cache.push('<a title="link to information on ' + r.dbxref +
-    // // // 	   '" href=\"' + r.link +
-    // // // 	   '">' + r.hilite_dbxref +
-    // // // 	   '</a>');
-    // // cache.push('</td>');
-    
-    // // Type.
-    // cache.push('<td>');
-    // cache.push(r.type);
-    // cache.push('</td>');
-    
-    // // Source.
-    // cache.push('<td>');
-    // cache.push(r.source);
-    // cache.push('</td>');
-    
-    // // // Species. Simple names aren't split, but complicated
-    // // // ones are.
-    // // var s_name = species_map[r.species];
-    // // if( s_name && s_name.split(' ').length <= 2 ){
-    // //     cache.push('<td class="nowrap">');
-    // // }else{
-    // //     cache.push('<td class="">');
-    // // }
-    // // cache.push(species_map[r.species]);
-    // var species_map = gm.species_map();
-    // var tax_splits = r.taxon.split(":");
-    // var simple_taxon_id = tax_splits[1];
-    // var s_name = species_map[simple_taxon_id];
-    // if( s_name && s_name.split(' ').length <= 2 ){
-    // 	cache.push('<td class="nowrap">');
-    // }else{
-    // 	cache.push('<td class="">');
-    // }
-    // cache.push(s_name);
-    // //cache.push(r.taxon);
-    // cache.push('</td>');
-	
-    // // // Synonyms.
-    // // cache.push('<td>');
-    // // //cache.push(r.hilite_gpsynonym.replace(newline_finder, ", "));
-    // // cache.push('nil');
-    // // cache.push('</td>');
 
     return cache.join('');
 }
