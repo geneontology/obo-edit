@@ -37,7 +37,7 @@ public interface OntologyGenerationComponentServiceInterface<T, R> {
 
 	public abstract void showProgressDlg(boolean displayDlg, String displayMsg);
 
-	public abstract void updateAllDependedOnSelectedTerm();
+	public abstract void updateAllDependedOnSelectedCandidateTerm();
 
 	public abstract void updateOnOntologyTermSelectionChange(String label);
 

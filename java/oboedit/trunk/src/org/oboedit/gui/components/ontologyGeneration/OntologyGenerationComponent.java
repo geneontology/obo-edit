@@ -520,7 +520,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 				if (selectedRow >= 0) {
 					selectedCandidateTerm = candidateTermsTable.getModel().getTermAt(selectedRow);
 					logger.info("Selected: " + selectedCandidateTerm);
-					updateAllDependedOnSelectedTerm();
+					updateAllDependedOnSelectedCandidateTerm();
 				}
 			}
 		});
@@ -728,7 +728,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 				if (selectedCandidateTerm != null) {
 					final String userDefinedDefinition = selectedCandidateTerm.getUserDefinedDefinition();
 					final String definitionForExistingTerm = adapter
-							.getDefinitionForExistingOntologyTerm(selectedCandidateTerm);
+							.getDefinitionForCandidateTermAsExistingOntologyTerm(selectedCandidateTerm);
 					if (userDefinedDefinition == null && definitionForExistingTerm == null
 							&& currentDefinition.length() == 0) {
 						updateSaveDefWarningLabel(false);
@@ -1526,7 +1526,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	 * Displays term selected in the termsTable and updates all depending gui
 	 * components
 	 */
-	public void updateAllDependedOnSelectedTerm() {
+	public void updateAllDependedOnSelectedCandidateTerm() {
 		logger.trace("UPDATE updatedAllDependedOnSelectedTerm() for :" + selectedCandidateTerm);
 
 		if (null == selectedCandidateTerm) {
@@ -2044,7 +2044,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 					definition.append(selectedCandidateTerm.getUserDefinedDefinition());
 				}
 			}
-			String definitionForExistingTerm = adapter.getDefinitionForExistingOntologyTerm(selectedCandidateTerm);
+			String definitionForExistingTerm = adapter.getDefinitionForCandidateTermAsExistingOntologyTerm(selectedCandidateTerm);
 			if (null != definitionForExistingTerm && !definition.toString().equals(definitionForExistingTerm)) {
 				if (definition.length() > 0) {
 					definition.append("\n-----\n");
