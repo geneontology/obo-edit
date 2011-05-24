@@ -12,6 +12,7 @@ import java.net.URLConnection;
 import java.util.StringTokenizer;
 
 import javax.swing.JTable;
+import javax.swing.SwingWorker;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import javax.swing.text.ElementIterator;
@@ -19,13 +20,14 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import org.apache.log4j.Logger;
-import org.jdesktop.swingworker.SwingWorker;
 import org.oboedit.gui.components.ontologyGeneration.CandidateDefinition;
 import org.oboedit.gui.components.ontologyGeneration.ProxyInfo;
 
 /**
  * Tries to extend an existing definition by looking up its source HTML content.
  * If no extension could be found, the definition is left as it is.
+ * 
+ * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2010
  */
 public class DefinitionExtensionWorker extends SwingWorker<Boolean, Object>
 {
@@ -44,9 +46,9 @@ public class DefinitionExtensionWorker extends SwingWorker<Boolean, Object>
 	@Override
 	public Boolean doInBackground()
 	{
-		logger.info("try to extend definition:\t" + this.definition.getDefinition());
+		logger.trace("try to extend definition:\t" + this.definition.getDefinition());
 		if (definitionExtraction()) {
-			logger.info("new extended definition:\t" + this.definition.getDefinition());
+			logger.trace("new extended definition:\t" + this.definition.getDefinition());
 			return true;
 		}
 		return false;

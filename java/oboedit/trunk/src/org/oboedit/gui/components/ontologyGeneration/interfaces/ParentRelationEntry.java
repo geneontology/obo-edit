@@ -1,5 +1,12 @@
-package org.oboedit.gui.components.ontologyGeneration.oboAdapter;
+package org.oboedit.gui.components.ontologyGeneration.interfaces;
 
+/**
+ * Entry for a binary relation
+ * 
+ * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2010
+ *
+ * @param <R> relationShipType used in the external ontology model
+ */
 public class ParentRelationEntry<R>
 {
 	private String parentTermId;

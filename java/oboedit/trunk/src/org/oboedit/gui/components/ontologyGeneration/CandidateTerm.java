@@ -6,14 +6,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.oboedit.gui.components.ontologyGeneration.oboAdapter.OBOOntologyModelAdapter;
-
 import de.tud.biotec.gopubmedOntologyLookupService.xsd.OBOLookupRelation;
 import de.tud.biotec.gopubmedOntologyLookupService.xsd.OBOLookupTerm;
 
 /**
  * Internal representation of a candidate term
- * 
+ *
  * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2008
  */
 public class CandidateTerm
@@ -41,7 +39,9 @@ public class CandidateTerm
 	private double score;
 	private String userDefinedDefinition;
 	private String userDefinedLabel;
-	private List<CandidateDefinition> generatedDefinitions;
+    private String existingLabel;
+
+    private List<CandidateDefinition> generatedDefinitions;
 
 	/**
 	 * Constructs a {@link CandidateTerm}
@@ -53,7 +53,7 @@ public class CandidateTerm
 
 	/**
 	 * Constructs a {@link CandidateTerm}
-	 * 
+	 *
 	 * @param name
 	 * @param abbreviations
 	 * @param lexicalRepresentations
@@ -193,7 +193,7 @@ public class CandidateTerm
 	 */
 	public void setExistingOntologyTerms(List<OBOLookupTerm> existingOntologyTerms)
 	{
-		this.existingOntologyTerms = new ArrayList<OBOLookupTerm>(existingOntologyTerms); 
+		this.existingOntologyTerms = new ArrayList<OBOLookupTerm>(existingOntologyTerms);
 	}
 
 	/**
@@ -335,7 +335,7 @@ public class CandidateTerm
 
 	/**
 	 * String representation of a {@link CandidateTerm}
-	 * 
+	 *
 	 * @return
 	 * @see java.lang.Object#toString()
 	 */
@@ -364,12 +364,12 @@ public class CandidateTerm
 	    if (userDefinedLabel != null) {
 	    	label = userDefinedLabel;
 	    } else if (isInLoadedOntology()) {
-	    	label = OBOOntologyModelAdapter.getInstance().getLabelForExistingTerm(this);
+	    	label = existingLabel; // TODO set this label at some point
 	    }
 	    if (label == null) {
 	    	label = generatedLabel;
 	    }
-    	return label;	
+    	return label;
     }
 
 	/**
@@ -404,4 +404,21 @@ public class CandidateTerm
     {
 	    return existingIdOfLoadedTerm;
     }
+
+    /**
+     * @return the existingLabel
+     */
+    public String getExistingLabel()
+    {
+        return this.existingLabel;
+    }
+
+    /**
+     * @param existingLabel the existingLabel to set
+     */
+    public void setExistingLabel(String existingLabel)
+    {
+        this.existingLabel = existingLabel;
+    }
+
 }

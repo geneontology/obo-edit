@@ -2,11 +2,11 @@ package org.oboedit.gui.components.ontologyGeneration;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
@@ -14,6 +14,7 @@ import javax.swing.table.TableModel;
 import javax.swing.text.TableView.TableRow;
 
 import org.jdesktop.swingx.PatternModel.RegexCreator;
+
 
 /**
  * Model for definitionsTable, holds candidateDefinition objects and provide operation on definitionsTable
@@ -46,7 +47,7 @@ public class DefinitionsTableModel extends AbstractTableModel
      */
     public int getColumnCount()
     {
-    	return 3;
+    	return 4;
     }
 
 	/**
@@ -73,7 +74,11 @@ public class DefinitionsTableModel extends AbstractTableModel
 		List<CandidateDefinition> visibleElements = getVisibleElements();
 		if (rowIndex < visibleElements.size()) {
 			CandidateDefinition definition = visibleElements.get(rowIndex);
+			
 			if (columnIndex == 1) {
+				return definition.getFavicon();
+			}
+			if (columnIndex == 2) {
 				return definition.getDefinitionHTMLFormatted();
 			}
 		}
@@ -87,7 +92,7 @@ public class DefinitionsTableModel extends AbstractTableModel
 	@Override
 	public String getColumnName(int column)
 	{
-		if (column == 1) {
+		if (column == 2) {
 			return "Definitions";
 		}
 		else {
@@ -101,6 +106,8 @@ public class DefinitionsTableModel extends AbstractTableModel
 	{
 		if (columnIndex == 0) {
 			return JButton.class;
+		} else if (columnIndex == 1) {
+			return ImageIcon.class;
 		}
 		else {
 			return super.getColumnClass(columnIndex);
@@ -134,34 +141,29 @@ public class DefinitionsTableModel extends AbstractTableModel
 	 */
 	public void applyFilter(String regex)
 	{
+		if (regex == null || lastRegex.equals(regex))
+			return;
+		
+		lastRegex = regex;
+		Pattern p = null;
 
-		if (regex != null && !lastRegex.equals(regex)) {
-			lastRegex = regex;
-			Pattern p = null;
-
-			try {
-				p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-			}
-			catch (PatternSyntaxException exception) {
-				return;
-			}
-
-			Iterator<CandidateDefinition> it = definitions.iterator();
-			while (it.hasNext()) {
-				CandidateDefinition definition = it.next();
-				String name = definition.getDefinition();
-				if (regex.length() == 0) {
-					definition.setVisible(true);
-				}
-				else if (p.matcher(name).find()) {
-					definition.setVisible(true);
-				}
-				else {
-					definition.setVisible(false);
-				}
-			}
-			fireTableDataChanged();
+		try {
+			p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+		} catch (PatternSyntaxException exception) {
+			return;
 		}
+
+		for (CandidateDefinition definition : definitions) {
+			String name = definition.getDefinition();
+			String baseURL = definition.getFaviconBaseURL();
+			if (regex.length() == 0 || p.matcher(name).find() || (baseURL != null && p.matcher(baseURL).find())) {
+				definition.setVisible(true);
+			} else {
+				definition.setVisible(false);
+			}
+		}
+
+		fireTableDataChanged();
 	}
 
 	/**

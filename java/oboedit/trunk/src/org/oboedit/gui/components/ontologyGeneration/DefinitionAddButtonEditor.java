@@ -9,35 +9,13 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JTable;
-import javax.swing.table.TableCellRenderer;
 
-public class ButtonRenderer extends JButton implements TableCellRenderer
-{
-	private static final long serialVersionUID = -5256351123337745486L;
-
-	public ButtonRenderer() 
-	{
-		setOpaque(true);
-		this.setText("+");
-		this.setToolTipText(Messages.getString("ButtonRenderer.AddDefinitionButton")); //$NON-NLS-1$
-		this.setFont(this.getFont().deriveFont(12.0f));
-		this.setMargin(new Insets(1,1,1,1));
-	}
-	
-	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-			int row, int column)
-	{
-		return this;
-	}
-}
-
-class ButtonEditor extends DefaultCellEditor 
-{
+class DefinitionAddButtonEditor extends DefaultCellEditor {
 	private static final long serialVersionUID = -8076884317274517175L;
 
 	protected JButton button;
 
-	public ButtonEditor(JCheckBox checkBox) {
+	public DefinitionAddButtonEditor(JCheckBox checkBox) {
 		super(checkBox);
 		button = new JButton("+");
 		button.setToolTipText(Messages.getString("ButtonRenderer.AddDefinitionButton")); //$NON-NLS-1$
@@ -52,22 +30,22 @@ class ButtonEditor extends DefaultCellEditor
 	}
 
 	@Override
-    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+	public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
 		return button;
 	}
 
 	@Override
-    public Object getCellEditorValue() {
+	public Object getCellEditorValue() {
 		return new String("+");
 	}
 
 	@Override
-    public boolean stopCellEditing() {
+	public boolean stopCellEditing() {
 		return super.stopCellEditing();
 	}
 
 	@Override
-    protected void fireEditingStopped() {
+	protected void fireEditingStopped() {
 		super.fireEditingStopped();
-	} 
+	}
 }

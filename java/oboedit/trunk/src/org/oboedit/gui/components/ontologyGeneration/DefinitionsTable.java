@@ -11,6 +11,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
+
 /**
  * JTable to show instances of {@link CandidateDefinition}.
  * 
@@ -23,8 +24,12 @@ public class DefinitionsTable extends JTable
 	private int minScrollableViewPortHeight = 40;
 	private int maxScrollableViewPortHeight = 200;
 
-	private ButtonRenderer buttonRenderer;
-	private DefinitionsTableCellRenderer definitionsTableCellRenderer;
+	private DefinitionAddButtonRenderer buttonRenderer;
+	private DefinitionsColumnCellRenderer definitionsColumnCellRenderer;
+	private FaviconsColumnCellRenderer faviconsColumnCellRenderer;
+	
+	private int firstVisibleRow = -1;
+	private int lastVisibleRow = -1;
 	
 	/**
 	 * Constructs a {@link DefinitionsTable}
@@ -38,13 +43,15 @@ public class DefinitionsTable extends JTable
 		setAlignmentX(LEFT_ALIGNMENT);
 		getColumnModel().getColumn(0).setMaxWidth(50);
 		getColumnModel().getColumn(0).setResizable(false);
-		getColumnModel().getColumn(2).setMaxWidth(30);
-		getColumnModel().getColumn(0).setCellEditor(new ButtonEditor(new JCheckBox()));
+		getColumnModel().getColumn(1).setMaxWidth(30);
+		getColumnModel().getColumn(3).setMaxWidth(30);
+		getColumnModel().getColumn(0).setCellEditor(new DefinitionAddButtonEditor(new JCheckBox()));
 		setPreferredScrollableViewportSize(new Dimension(minScrollableViewPortHeight, maxScrollableViewPortHeight));
 		tableHeader.setReorderingAllowed(false);
 		
-		buttonRenderer = new ButtonRenderer();
-		definitionsTableCellRenderer = new DefinitionsTableCellRenderer();
+		buttonRenderer = new DefinitionAddButtonRenderer();
+		definitionsColumnCellRenderer = new DefinitionsColumnCellRenderer();
+		faviconsColumnCellRenderer = new FaviconsColumnCellRenderer();
 	}
 
 	/**
@@ -56,6 +63,9 @@ public class DefinitionsTable extends JTable
 	{
 		getModel().setDefinitions(definitions);
 		JTableHelper.recalculateScrollableViewportSize(this, minScrollableViewPortHeight, maxScrollableViewPortHeight);
+		
+		firstVisibleRow = -1;
+		lastVisibleRow = -1;
 	}
 
 	/**
@@ -63,7 +73,7 @@ public class DefinitionsTable extends JTable
 	 * 
 	 * @param minHeight
 	 */
-	public void setMinimumPreferedeScrollableViewportHeight(int minHeight)
+	public void setMinimumPreferredScrollableViewportHeight(int minHeight)
 	{
 		this.minScrollableViewPortHeight = minHeight;
 	}
@@ -73,7 +83,7 @@ public class DefinitionsTable extends JTable
 	 * 
 	 * @param maxHeight
 	 */
-	public void setMaximumPreferedeScrollableViewportHeight(int maxHeight)
+	public void setMaximumPreferredScrollableViewportHeight(int maxHeight)
 	{
 		this.maxScrollableViewPortHeight = maxHeight;
 	}
@@ -90,6 +100,9 @@ public class DefinitionsTable extends JTable
 	{
 		this.getModel().removeAllDefinitions();
 		JTableHelper.recalculateScrollableViewportSize(this, minScrollableViewPortHeight, maxScrollableViewPortHeight);
+		
+		firstVisibleRow = -1;
+		lastVisibleRow = -1;
 	}
 
 	@Override
@@ -102,13 +115,14 @@ public class DefinitionsTable extends JTable
 	@Override
 	public TableCellRenderer getCellRenderer(int row, int column)
 	{
-		if (column == 0) {
+		switch (column) {
+		case 0:
 			return buttonRenderer;
-		}
-		else if (column == 1) {
-			return definitionsTableCellRenderer;
-		}
-		else {
+		case 1:
+			return faviconsColumnCellRenderer;
+		case 2:
+			return definitionsColumnCellRenderer;
+		default:
 			return super.getCellRenderer(row, column);
 		}
 	}
@@ -157,9 +171,29 @@ public class DefinitionsTable extends JTable
 		
 		return toolTipText;
 	}
+	
 
+	public int getFirstVisibleRow()
+    {
+    	return firstVisibleRow;
+    }
 
-	private class DefinitionsTableCellRenderer extends DefaultTableCellRenderer {
+	public void setFirstVisibleRow(int firstVisibleRow)
+    {
+    	this.firstVisibleRow = firstVisibleRow;
+    }
+
+	public int getLastVisibleRow()
+    {
+    	return lastVisibleRow;
+    }
+
+	public void setLastVisibleRow(int lastVisibleRow)
+    {
+    	this.lastVisibleRow = lastVisibleRow;
+    }
+
+	private class DefinitionsColumnCellRenderer extends DefaultTableCellRenderer {
 
 		private static final long serialVersionUID = -8655538136483302823L;
 
@@ -180,5 +214,26 @@ public class DefinitionsTable extends JTable
 			
 			return comp;
 		}
+	}
+	
+	private class FaviconsColumnCellRenderer extends DefaultTableCellRenderer {
+
+        private static final long serialVersionUID = -7238091320241977404L;
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+        			    boolean hasFocus, int row, int column)
+        {
+        	JLabel label = (JLabel)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        	
+        	CandidateDefinition candidateDefinition = getModel().getDefinitionAt(row);
+
+        	label.setText("");
+        	label.setIcon(candidateDefinition.getFavicon());
+        	label.setHorizontalAlignment(JLabel.CENTER);
+        	label.setToolTipText(candidateDefinition.getFaviconBaseURL());
+        	
+        	return label;
+        }
 	}
 }
