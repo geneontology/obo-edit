@@ -19,9 +19,6 @@ import org.oboedit.gui.components.ontologyGeneration.CandidateTerm;
  *            relationShipType used in the external ontology model
  */
 public interface OntologyModelAdapterInterface<T, R> {
-	/*
-	 * Needed interface methods
-	 */
 
 	public abstract String getOntologyEditorVersion();
 
@@ -33,11 +30,11 @@ public interface OntologyModelAdapterInterface<T, R> {
 
 	public abstract List<String> lookupOntologyTermIdsFromIndexFuzzy(Collection<String> queries);
 
-	public abstract String getLabelForExistingOntologyTerm(CandidateTerm candidateTerm);
+	public abstract String getLabelForCandidateTermAsExistingOntologyTerm(CandidateTerm candidateTerm);
 
 	public abstract List<String> getSynonymsForOntologyTerm(T linkedObject);
-
-	public abstract String getDefinitionForExistingOntologyTerm(CandidateTerm candidateTerm);
+	
+	public abstract String getDefinitionForCandidateTermAsExistingOntologyTerm(CandidateTerm candidateTerm);
 
 	public abstract Map<String, String> getParentsForExistingTerm(CandidateTerm candidateTerm);
 
@@ -51,14 +48,16 @@ public interface OntologyModelAdapterInterface<T, R> {
 			Collection<ParentRelationEntry<R>> parentRelations, boolean includeChildren, boolean includeBranch);
 
 	public abstract Locale getLocale();
+
 	public abstract void setLocale(Locale locale);
-	
-		/*
+
+	/*
 	 * Wrapper organizational methods
 	 */
 
 	public abstract void setService(OntologyGenerationComponentServiceInterface<T, R> service);
 
 	public abstract void cleanup();
+
 
 }
