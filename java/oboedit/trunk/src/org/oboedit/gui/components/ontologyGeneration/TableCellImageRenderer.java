@@ -1,6 +1,7 @@
 package org.oboedit.gui.components.ontologyGeneration;
 
 import java.awt.Component;
+import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -23,6 +24,11 @@ public class TableCellImageRenderer extends DefaultTableCellRenderer
 	TableCellImageRenderer(String pathToImage)
 	{
 		icon = new ImageIcon(getClass().getResource(pathToImage));
+	}
+	
+	TableCellImageRenderer(BufferedImage bufferedImage)
+	{
+		icon = new ImageIcon(bufferedImage);
 	}
 
 	@Override

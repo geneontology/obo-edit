@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.oboedit.gui.components.ontologyGeneration.CandidateDefinition;
 
 /**
+ * Extraction of text from HTML to extend truncated {@link CandidateDefinition}
  * 
  * @author Marcel Hanke
  * @author Goetz Fabian

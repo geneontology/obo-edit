@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -18,12 +19,12 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.store.RAMDirectory;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOClass;
@@ -44,6 +45,7 @@ public class OBOOntologyIndexManager
 	private QueryParser queryParser;
 	private int docCount = 0;
 	private static OBOOntologyIndexManager theInstance;
+	private static Pattern luceneQuerySyntaxPattern = Pattern.compile("[\"|+|-|(|)|!|%|\\[|\\]]+");
 	private static boolean isIndexInitializedOnce = false;
 
 	/**
@@ -68,8 +70,7 @@ public class OBOOntologyIndexManager
 	}
 
 	/**
-	 * Recreating the Lucene in memory index for the specified
-	 * {@link Collection} of {@link OBOClass} instances
+	 * Recreating the Lucene in memory index for the specified {@link Collection} of {@link OBOClass} instances
 	 * 
 	 * @param presentTerms
 	 */
@@ -113,8 +114,7 @@ public class OBOOntologyIndexManager
 	}
 
 	/**
-	 * Find all ids for {@link LinkedObject} loaded in OBO-Edit which overlap
-	 * with the specified strings
+	 * Find all ids for {@link LinkedObject} loaded in OBO-Edit which overlap with the specified strings
 	 * 
 	 * @param queryList
 	 * @return List of ids for {@link LinkedObject}
@@ -152,8 +152,7 @@ public class OBOOntologyIndexManager
 	/**
 	 * Returns the ontology terms which match the full query
 	 * 
-	 * @param collection
-	 *            of query strings
+	 * @param collection of query strings
 	 * @return list of matching ontology term ids
 	 */
 	public List<String> lookupExact(Collection<String> collection)
@@ -163,8 +162,8 @@ public class OBOOntologyIndexManager
 		for (String string : collection) {
 			if (string != null && string.length() > 0) {
 				try {
-					String escape = QueryParser.escape(string);
-					Query parsedQuery = queryParser.parse("\"" + escape + "\"");
+					string = luceneQuerySyntaxPattern.matcher(string).replaceAll("");
+					Query parsedQuery = queryParser.parse("\"" + string + "\"");
 					queries.add(parsedQuery);
 				}
 				catch (ParseException exception) {
@@ -175,10 +174,8 @@ public class OBOOntologyIndexManager
 				if (testString.charAt(testString.length() - 1) == 's') {
 					testSet.add(testString.substring(0, testString.length() - 1).toLowerCase());
 				}
-				if (testString.contains("-")) {
-					testSet.add(testString.replace('-', ' ').toLowerCase());
-				}
 			}
+
 		}
 
 		List<String> idList = lookup(queries);
@@ -215,15 +212,32 @@ public class OBOOntologyIndexManager
 	}
 
 	/**
-	 * Returns ontology terms, where all parts of the term (document) are
-	 * contained in the query
+	 * Returns ontology terms, where all parts of the term (document) are contained in the query
 	 * 
 	 * @param queryStrings
 	 * @return
 	 */
 	public List<String> lookupStrict(Collection<String> queryStrings)
 	{
-		List<Query> queries = buildLuceneQueryConnectByShould(queryStrings);
+		List<Query> queries = new ArrayList<Query>();
+		Set<Query> querySet = new HashSet<Query>();
+		for (String string : queryStrings) {
+			BooleanQuery query = new BooleanQuery();
+			try {
+				string = luceneQuerySyntaxPattern.matcher(string).replaceAll("");
+				if (string.length() != 0) {
+					Query parseQuery = queryParser.parse(string);
+					if (!querySet.contains(parseQuery)) {
+						query.add(parseQuery, Occur.SHOULD);
+						querySet.add(parseQuery);
+					}
+				}
+			}
+			catch (ParseException exception) {
+				logger.error("Error parsing query: " + exception.getMessage());
+			}
+			queries.add(query);
+		}
 		List<String> idList = lookup(queries);
 		List<String> filteredIdList = new ArrayList<String>(idList.size());
 		Set<String> set = new HashSet<String>();
@@ -248,8 +262,22 @@ public class OBOOntologyIndexManager
 	}
 
 	/**
-	 * Returns ontology terms, where some parts of the term (document) are
-	 * contained in the query
+	 * Initializing the index searcher
+	 */
+	private void initSearcher()
+	{
+		synchronized (theInstance) {
+			try {
+				searcher = new IndexSearcher(ramDirectory);
+			}
+			catch (IOException exception) {
+				logger.error("Lucene index could not be initialized", exception);
+			}
+		}
+	}
+
+	/**
+	 * Returns ontology terms, where some parts of the term (document) are contained in the query
 	 * 
 	 * @param queryStrings
 	 * @return
@@ -285,18 +313,4 @@ public class OBOOntologyIndexManager
 		return queries;
 	}
 
-	/**
-	 * Initializing the index searcher
-	 */
-	private void initSearcher()
-	{
-		synchronized (theInstance) {
-			try {
-				searcher = new IndexSearcher(ramDirectory);
-			}
-			catch (IOException exception) {
-				logger.error("Lucene index could not be initialized", exception);
-			}
-		}
-	}
 }

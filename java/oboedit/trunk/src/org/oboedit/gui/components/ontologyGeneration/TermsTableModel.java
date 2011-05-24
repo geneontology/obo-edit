@@ -31,7 +31,7 @@ public class TermsTableModel extends AbstractTableModel
 	private final CandidateTermCache clipboard;
 	private final boolean isMainTermsTable;
 	private boolean onlyShowExistingTerms;
-	private final OntologyModelAdapterInterface adapter;
+	private final OntologyModelAdapterInterface<?, ?> adapter;
 
 	/**
 	 * Constructs a {@link TermsTableModel}.
@@ -39,7 +39,7 @@ public class TermsTableModel extends AbstractTableModel
 	 * @param isMainTermsTable
 	 * @param clipboard
 	 */
-	public TermsTableModel(OntologyModelAdapterInterface adapter, CandidateTermCache clipboard, int numberOfColumnsToShow, boolean isMainTermsTable)
+	public TermsTableModel(OntologyModelAdapterInterface<?, ?> adapter, CandidateTermCache clipboard, int numberOfColumnsToShow, boolean isMainTermsTable)
 	{
 		this.adapter = adapter;
 		this.numberOfColumnsToShow = numberOfColumnsToShow;

@@ -17,6 +17,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -29,21 +30,22 @@ import javax.swing.table.TableCellRenderer;
 
 import org.apache.log4j.Logger;
 import org.oboedit.gui.components.ontologyGeneration.extraction.DefinitionExtensionWorker;
-import org.oboedit.gui.components.ontologyGeneration.oboAdapter.OBOOntologyGenerationGUIComponent;
+import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyGenerationComponentServiceInterface;
 
 /**
  * A popup showing the different kinds of the definition and its respective URLs.
- * 
+ *
  * @author Goetz Fabian
  * @author Marcel Hanke
  */
-public class DefinitionsPopup extends JDialog
+public class DefinitionsPopup<T, R> extends JDialog
 {
 
 	private static final long serialVersionUID = -9159196480683973991L;
 	protected final static Logger logger = Logger.getLogger(DefinitionsPopup.class);
 
-	private OBOOntologyGenerationGUIComponent parent;
+	private JComponent parent;
+	private OntologyGenerationComponentServiceInterface<T, R> service;
 
 	private CandidateDefinition originalDefinition;
 	private List<DefPosPair> candidateDefinitionList;
@@ -54,9 +56,10 @@ public class DefinitionsPopup extends JDialog
 	private JButton closeButton;
 	private int numberOfCallsToSummarizeDefinition;
 
-	public DefinitionsPopup(final OBOOntologyGenerationGUIComponent parent)
+	public DefinitionsPopup(final JComponent parent, final OntologyGenerationComponentServiceInterface<T, R> service)
 	{
 		this.parent = parent;
+		this.service = service;
 		this.setModal(true);
 		this.setResizable(false);
 	}
@@ -144,7 +147,7 @@ public class DefinitionsPopup extends JDialog
 		/*
 		 * Fill the List: The first entry (position=0) is always for the definition itself (html-formatted). The rest of
 		 * the entries (position=1 ... position=def.getUrl().size()) are the URLs.
-		 * 
+		 *
 		 * In the first loop, the original definition is inserted, in the second loop the alternative definitions are
 		 * inserted.
 		 */
@@ -259,7 +262,7 @@ public class DefinitionsPopup extends JDialog
 		{
 			getColumnModel().getColumn(0).setMaxWidth(50);
 			getColumnModel().getColumn(0).setResizable(false);
-			getColumnModel().getColumn(0).setCellEditor(new ButtonEditor(new JCheckBox()));
+			getColumnModel().getColumn(0).setCellEditor(new DefinitionAddButtonEditor(new JCheckBox()));
 			getColumnModel().getColumn(2).setMaxWidth(30);
 			this.tableHeader.setReorderingAllowed(false);
 
@@ -315,9 +318,9 @@ public class DefinitionsPopup extends JDialog
 			}
 			else if (column == 0) {
 				if (candidateDefinitionList.get(row).isDef()) {
-					return new ButtonRenderer();
+					return new DefinitionAddButtonRenderer();
 				}
-				else 
+				else
 				return new DefaultTableCellRenderer()
 				{
 					private static final long serialVersionUID = -4293679914935943300L;
@@ -337,9 +340,9 @@ public class DefinitionsPopup extends JDialog
 				return new DefaultTableCellRenderer()
 				{
 					private static final long serialVersionUID = 1L;
-					
+
 					private static final int MAX_LINE_LENGTH = 40;
-					
+
 					@Override
                     public Component getTableCellRendererComponent(JTable pTable, Object value, boolean isSelected,
 						    boolean hasFocus, int pRow, int pColumn)
@@ -349,12 +352,12 @@ public class DefinitionsPopup extends JDialog
 								JLabel comp = (JLabel) super.getTableCellRendererComponent(pTable, value, isSelected,
 								    hasFocus, pRow, pColumn);
 								comp.setText((String)getModel().getValueAt(pRow, pColumn));
-								
+
 								// add multi-line tooltip displaying the full HTML-formatted definition.
 								String htmlDef = getModel().getDefinitionForRow(pRow).def.getDefinitionHTMLFormatted();
-								
+
 								String toolTipText = "";
-								
+
 								int lineCount = 0;
 								// counts the number of characters outside HTML tags
 								int numberOfCharsRead = 0;
@@ -363,7 +366,7 @@ public class DefinitionsPopup extends JDialog
 									if (!openedTag) {
 										if (htmlDef.charAt(i) == '<') {
 											openedTag = true;
-										} 
+										}
 										else {
 											numberOfCharsRead++;
 										}
@@ -384,16 +387,16 @@ public class DefinitionsPopup extends JDialog
 											else {
 												toolTipText += htmlDef.substring(i);
 											}
-											
+
 										}
 										lineCount++;
 									}
-									
+
 									toolTipText += htmlDef.charAt(i);
 								}
-								
+
 								comp.setToolTipText(toolTipText);
-								
+
 								return comp;
 							}
 							return pTable.getDefaultRenderer(pTable.getColumnClass(pColumn)).getTableCellRendererComponent(
@@ -407,7 +410,7 @@ public class DefinitionsPopup extends JDialog
 		}
 
 		/*
-		 * CLICKLISTENER
+		 * Mouse Click Actions
 		 */
 
 		/**
@@ -448,14 +451,18 @@ public class DefinitionsPopup extends JDialog
 
 		/**
 		 * Adds the definition in the given row to the editDefArea in the main plugin component.
-		 * 
+		 *
 		 * @param rowIndex
 		 * @param columnIndex
 		 */
 		private void onClickAddDefinition(int rowIndex, int columnIndex)
 		{
-			candidateDefinitionList.get(rowIndex).def.setTicked();
-			parent.updateEditDefArea();
+			CandidateDefinition definition;
+			definition = candidateDefinitionList.get(rowIndex).def;
+			
+			definition.setTicked();
+			service.updateEditDefArea(definition.getDefinition());
+			// TODO add listener of editDefArea to this ticked status
 		}
 
 	}
@@ -465,17 +472,17 @@ public class DefinitionsPopup extends JDialog
 		private static final long serialVersionUID = 7816649265967843550L;
 
 		private static final int MAX_SHORTDEF_LENGTH = 145;
-		
+
 		public int getColumnCount()
 		{
 			return 3;
 		}
-		
+
 		public int getRowCount()
 		{
 			return candidateDefinitionList.size();
 		}
-		
+
 		public Object getValueAt(int rowIndex, int columnIndex)
 		{
 			DefPosPair defPosPair = candidateDefinitionList.get(rowIndex);
@@ -487,7 +494,7 @@ public class DefinitionsPopup extends JDialog
 						String shortDef = fullDef.substring(0, MAX_SHORTDEF_LENGTH);
 						int lastSpace = shortDef.lastIndexOf(" ");
 						return shortDef.substring(0, lastSpace) + " ...";
-					} 
+					}
 					else {
 						return fullDef;
 					}
@@ -530,13 +537,13 @@ public class DefinitionsPopup extends JDialog
 		{
 			return candidateDefinitionList.get(rowIndex);
 		}
-	}	
+	}
 
 	/**
 	 * DefPosPair describes a pair of a definition and the position of the needed (cached-)URL in the definition
 	 * (cached-)URL list. This is needed for finding the appropriate cachedURL for the displayed URL in the
 	 * DefinitionPopupTable.
-	 * 
+	 *
 	 * @author Goetz Fabian
 	 */
 	private class DefPosPair

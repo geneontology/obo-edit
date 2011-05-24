@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,6 +45,7 @@ import org.oboedit.gui.components.ontologyGeneration.CandidateTerm;
 import org.oboedit.gui.components.ontologyGeneration.interfaces.AbstractOntologyTermsTable;
 import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyGenerationComponentServiceInterface;
 import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyModelAdapterInterface;
+import org.oboedit.gui.components.ontologyGeneration.interfaces.ParentRelationEntry;
 import org.oboedit.gui.event.HistoryAppliedEvent;
 import org.oboedit.gui.event.HistoryListener;
 import org.oboedit.gui.event.OntologyReloadListener;
@@ -67,12 +69,24 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 
 	private OntologyGenerationComponentServiceInterface<LinkedObject, OBOProperty> service;
 	private SessionManager sessionManager;
+	
+	private Locale locale;
+	private String language;
+
+
 
 	/**
 	 * private constructor of the singleton
 	 */
 	private OBOOntologyModelAdapter()
 	{
+		locale = Locale.getDefault();
+		if (locale != null) {
+			this.setLocale(locale);
+		} else {
+			this.setLocale(new Locale("en", "us"));
+		}
+
 		sessionManager = SessionManager.getManager();
 		addListeners();
 		updateRelationTypes();
@@ -131,7 +145,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 		{
 			updateRelationTypes();
 			updateOntologyIndex();
-			refillOBOTermsTableWithExistingTerms();
+			refillOntologyTermsTableWithExistingOntologyTerms();
 		}
 
 		public void reversed(HistoryAppliedEvent arg0)
@@ -155,7 +169,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 			Collection<LinkedObject> terms = SelectionManager.getManager().getSelection().getTerms();
 			if (terms.size() == 1) {
 				LinkedObject source = terms.iterator().next();
-				service.updateInputFieldsForSelectedLinkedObjectLabel(source.getName());
+				service.updateOnOntologyTermSelectionChange(source.getName());
 			}
 		}
 	};
@@ -287,7 +301,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 	 * @return
 	 * @see org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyModelAdapterInterface#getLabelForExistingTerm(org.oboedit.gui.components.ontologyGeneration.CandidateTerm)
 	 */
-	public String getLabelForExistingTerm(CandidateTerm candidateTerm)
+	public String getLabelForExistingOntologyTerm(CandidateTerm candidateTerm)
 	{
 		String id = candidateTerm.getExistingIdOfLoadedTerm();
 		String label = null;
@@ -322,7 +336,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 		return Collections.emptyList();
 	}
 
-	public String getDefinitionForExistingTerm(CandidateTerm candidateTerm)
+	public String getDefinitionForExistingOntologyTerm(CandidateTerm candidateTerm)
 	{
 		// search the term with that id
 		String id = findTermId(candidateTerm);
@@ -380,7 +394,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 	/**
 	 * Feed all terms known to OBOEdit into the {@link AbstractOntologyTermsTable}
 	 */
-	public void refillOBOTermsTableWithExistingTerms()
+	public void refillOntologyTermsTableWithExistingOntologyTerms()
 	{
 		List<LinkedObject> linkedObjects = new ArrayList<LinkedObject>();
 		for (IdentifiedObject identifiedObject : sessionManager.getCurrentLinkDatabase().getObjects()) {
@@ -409,7 +423,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 		if (externalOntologyModelChanged) {
 			updateRelationTypes();
 			updateOntologyIndex();
-			refillOBOTermsTableWithExistingTerms();
+			refillOntologyTermsTableWithExistingOntologyTerms();
 		}
 		// updateCandidateTermToOBOTermMapping();
 		service.updateAllDependedOnSelectedTerm();
@@ -434,7 +448,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 	 * @param includeChildren
 	 * @param includeBranch
 	 */
-	public void commitAddToOntologyAsChildOfLinkedObject(CandidateTerm selectedCandidateTerm, Collection<ParentRelationEntry<OBOProperty>> parentRelations,
+	public void commitAddToOntologyAsChildOfOntologyTerm(CandidateTerm selectedCandidateTerm, Collection<ParentRelationEntry<OBOProperty>> parentRelations,
 	    boolean includeChildren, boolean includeBranch)
 	{
 		if (parentRelations == null || parentRelations.size() == 0) {
@@ -737,6 +751,40 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 			}
 		}
 		return relationIdToUse;
+	}
+
+	/** 
+     * DOC Edit description
+     *
+     * @return
+     * @see org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyModelAdapterInterface#getOntologyEditorVersion()
+     */
+    @Override
+    public String getOntologyEditorVersion()
+    {
+	    // DOC Auto-generated method stub
+	    return null;
+    }
+
+	public Locale getLocale() {
+		return this.locale;
+	}
+
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+
+		this.language = locale.getLanguage();
+
+		if (service != null) {
+			service.getOntologyTermsTable().getModel().setLanguage(language);
+
+			updateOntologyIndex();
+			refillOntologyTermsTableWithExistingOntologyTerms();
+		}
+	}
+
+	public String getLanguage() {
+		return this.language;
 	}
 
 }

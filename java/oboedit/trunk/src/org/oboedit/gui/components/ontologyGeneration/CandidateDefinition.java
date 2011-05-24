@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.ImageIcon;
+
 /**
  * Internal representation of a definition
  * 
@@ -32,7 +34,11 @@ public class CandidateDefinition implements Cloneable
 	private int parentTermCount;
 	private boolean isTicked;
 	private boolean isVisible;
-
+	
+	private boolean faviconRetrieved;
+	private ImageIcon favicon;
+	private String faviconURL;
+	private String faviconBaseURL;
 
 	/**
 	 * Constructs a {@link CandidateDefinition}
@@ -86,6 +92,8 @@ public class CandidateDefinition implements Cloneable
 		this.parentTermCount = termCount;
 		this.isTicked = select;
 		this.isVisible = true;
+		
+		this.setFaviconRetrieved(false);
 	}
 
 	@Override
@@ -317,4 +325,44 @@ public class CandidateDefinition implements Cloneable
 	{
 		this.cachedURLs.add(cachedURL);
 	}
+	
+	public void setFaviconRetrieved(boolean faviconRetrieved)
+    {
+	    this.faviconRetrieved = faviconRetrieved;
+    }
+
+	public boolean isFaviconRetrieved()
+    {
+	    return faviconRetrieved;
+    }
+
+	public ImageIcon getFavicon()
+	{
+		return this.favicon;
+	}
+	
+	public void setFavicon(ImageIcon favicon)
+	{
+		this.favicon = favicon;
+	}
+
+	public void setFaviconURL(String faviconURL)
+    {
+	    this.faviconURL = faviconURL;
+    }
+
+	public String getFaviconURL()
+    {
+	    return faviconURL;
+    }
+
+	public void setFaviconBaseURL(String faviconBaseURL)
+    {
+	    this.faviconBaseURL = faviconBaseURL;
+    }
+
+	public String getFaviconBaseURL()
+    {
+	    return faviconBaseURL;
+    }
 }

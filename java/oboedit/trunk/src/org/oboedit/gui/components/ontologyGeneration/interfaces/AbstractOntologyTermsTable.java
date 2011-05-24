@@ -2,6 +2,7 @@ package org.oboedit.gui.components.ontologyGeneration.interfaces;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.util.Collection;
 import java.util.List;
 
@@ -14,12 +15,13 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import org.oboedit.gui.components.ontologyGeneration.JTableHelper;
 import org.oboedit.gui.components.ontologyGeneration.TermsTable;
 
 /**
- * {@link JTable} to display {@link List} of {@link T}.
+ * {@link JTable} to display {@link List} of T.
  * 
  * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2008
  */
@@ -38,28 +40,40 @@ public abstract class AbstractOntologyTermsTable<T, R> extends JTable
 		super(tableModel);
 		setGridColor(Color.LIGHT_GRAY);
 		setRowHeight(getRowHeight() + 4);
-		getColumnModel().getColumn(AbstractOntologyTermsTableModel.columns.Selector.ordinal()).setMaxWidth(50);
-		getColumnModel().getColumn(AbstractOntologyTermsTableModel.columns.Selector.ordinal()).setResizable(false);
+		
+		TableColumnModel columnModel = this.getColumnModel();
+		
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Selector.ordinal()).setMinWidth(50);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Selector.ordinal()).setMaxWidth(50);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Selector.ordinal()).setResizable(false);
 
-		getColumnModel().getColumn(AbstractOntologyTermsTableModel.columns.Term.ordinal()).setMinWidth(250);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Open.ordinal()).setMinWidth(20);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Open.ordinal()).setMaxWidth(20);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Open.ordinal()).setResizable(false);
 
-		getColumnModel().getColumn(AbstractOntologyTermsTableModel.columns.Relation.ordinal()).setMinWidth(80);
-		getColumnModel().getColumn(AbstractOntologyTermsTableModel.columns.Relation.ordinal()).setMaxWidth(80);
-		getColumnModel().getColumn(AbstractOntologyTermsTableModel.columns.Relation.ordinal()).setResizable(false);
-		TableColumn col = this.getColumnModel().getColumn(AbstractOntologyTermsTableModel.columns.Relation.ordinal());
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Term.ordinal()).setMinWidth(50);
+		TableColumn termColumn = columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Term.ordinal());
+		termColumn.setCellRenderer(new TermCellRenderer());
+		
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Identifier.ordinal()).setMinWidth(300);
 
-		col.setCellEditor(new RelationComboBoxEditor());
-		col.setCellRenderer(new RelationComboBoxRenderer());
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Relation.ordinal()).setMinWidth(80);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Relation.ordinal()).setMaxWidth(80);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Relation.ordinal()).setResizable(false);
+		
+		TableColumn relationColumn = columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Relation.ordinal());
+		relationColumn.setCellEditor(new RelationComboBoxEditor());
+		relationColumn.setCellRenderer(new RelationComboBoxRenderer());
 
-		getColumnModel().getColumn(AbstractOntologyTermsTableModel.columns.Predicted.ordinal()).setMinWidth(80);
-		getColumnModel().getColumn(AbstractOntologyTermsTableModel.columns.Predicted.ordinal()).setMaxWidth(80);
-		getColumnModel().getColumn(AbstractOntologyTermsTableModel.columns.Predicted.ordinal()).setResizable(false);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Predicted.ordinal()).setMinWidth(80);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Predicted.ordinal()).setMaxWidth(80);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Predicted.ordinal()).setResizable(false);
 
-		getColumnModel().getColumn(AbstractOntologyTermsTableModel.columns.Comment.ordinal()).setMinWidth(130);
-		getColumnModel().getColumn(AbstractOntologyTermsTableModel.columns.Comment.ordinal()).setMaxWidth(130);
-		getColumnModel().getColumn(AbstractOntologyTermsTableModel.columns.Comment.ordinal()).setResizable(false);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Comment.ordinal()).setMinWidth(130);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Comment.ordinal()).setMaxWidth(130);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Comment.ordinal()).setResizable(false);
 
-		getColumnModel().getSelectionModel().addListSelectionListener(this);
+		columnModel.getSelectionModel().addListSelectionListener(this);
 		tableHeader.setReorderingAllowed(false);
 	}
 
@@ -235,6 +249,20 @@ public abstract class AbstractOntologyTermsTable<T, R> extends JTable
 				throw new RuntimeException("Not my event");
 			}
 		}
+	}
+	
+	private class TermCellRenderer extends DefaultTableCellRenderer
+	{
+        private static final long serialVersionUID = -6619355461941335706L;
 
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {    	
+        	Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        	
+        	component.setFont(component.getFont().deriveFont(Font.BOLD));
+        	
+        	return component;
+        }
+        
 	}
 }

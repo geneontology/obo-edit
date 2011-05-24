@@ -48,7 +48,7 @@ public class OBOOntologyGenerationGUIComponent extends AbstractGUIComponent
 		innerComponent.initListener();
 		validate();
 		innerComponent.initClipboardAndWorker();
-		adapter.refillOBOTermsTableWithExistingTerms();
+		adapter.refillOntologyTermsTableWithExistingOntologyTerms();
 	}
 
 	@Override
@@ -70,6 +70,6 @@ public class OBOOntologyGenerationGUIComponent extends AbstractGUIComponent
 
 	public void updateEditDefArea()
 	{
-		innerComponent.updateEditDefArea();
+		innerComponent.updateEditDefArea(null);
 	}
 }
