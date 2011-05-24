@@ -364,7 +364,7 @@ public class CandidateTerm
 	    if (userDefinedLabel != null) {
 	    	label = userDefinedLabel;
 	    } else if (isInLoadedOntology()) {
-	    	label = existingLabel; // TODO set this label at some point
+	    	label = existingLabel;
 	    }
 	    if (label == null) {
 	    	label = generatedLabel;
