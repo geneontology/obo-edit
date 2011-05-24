@@ -69,6 +69,12 @@ public class JTableHelper
 		int requiredHeight = table.getModel().getRowCount() * table.getRowHeight();
 		requiredHeight = Math.max(requiredHeight, minScrollableViewPortHeight);
 		requiredHeight = Math.min(requiredHeight, maxScrollableViewPortHeight);
+		
+		table.setMaximumSize(new Dimension(table.getPreferredScrollableViewportSize().width, requiredHeight));
+		table.setMinimumSize(new Dimension(table.getPreferredScrollableViewportSize().width, requiredHeight));
 		table.setPreferredScrollableViewportSize(new Dimension(table.getPreferredScrollableViewportSize().width, requiredHeight));
+		
+		if (table.getTopLevelAncestor() != null) 
+			table.getTopLevelAncestor().repaint();
 	}
 }

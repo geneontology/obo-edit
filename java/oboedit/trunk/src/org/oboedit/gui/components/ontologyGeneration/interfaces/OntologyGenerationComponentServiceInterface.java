@@ -2,12 +2,24 @@ package org.oboedit.gui.components.ontologyGeneration.interfaces;
 
 import javax.swing.JComponent;
 
+import org.oboedit.gui.components.ontologyGeneration.CandidateTerm;
 import org.oboedit.gui.components.ontologyGeneration.DefinitionsTable;
 import org.oboedit.gui.components.ontologyGeneration.TermsTable;
 
-public interface OntologyGenerationComponentServiceInterface<T,R> {
+/**
+ * Interface holding methods of the internal ontology generation tool to allow
+ * access from Protege and OBO-Edit
+ * 
+ * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2010
+ * 
+ * @param <T>
+ *            concept type of the external ontology model
+ * @param <R>
+ *            relationShipType used in the external ontology model
+ */
+public interface OntologyGenerationComponentServiceInterface<T, R> {
 
-	public abstract AbstractOntologyTermsTable<T,R> getOntologyTermsTable();
+	public abstract AbstractOntologyTermsTable<T, R> getOntologyTermsTable();
 
 	public abstract JComponent buildGUI();
 
@@ -21,11 +33,15 @@ public interface OntologyGenerationComponentServiceInterface<T,R> {
 
 	public abstract void initListener();
 
-	public abstract void setTextSelectedLinkedObjectField(String s);
+	public abstract void setTextSelectedOntologyTermField(String s);
 
 	public abstract void showProgressDlg(boolean displayDlg, String displayMsg);
 
 	public abstract void updateAllDependedOnSelectedTerm();
+
+	public abstract void updateOnOntologyTermSelectionChange(String label);
+
+	public abstract CandidateTerm getSelectedCandidateTerm();
 	
-	public abstract void updateInputFieldsForSelectedLinkedObjectLabel(String label);
+	public abstract void updateEditDefArea(String definition);
 }

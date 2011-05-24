@@ -2,20 +2,30 @@ package org.oboedit.gui.components.ontologyGeneration.interfaces;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-import org.obo.datamodel.LinkedObject;
 import org.oboedit.gui.components.ontologyGeneration.CandidateTerm;
-import org.oboedit.gui.components.ontologyGeneration.oboAdapter.ParentRelationEntry;
 
-public interface OntologyModelAdapterInterface<T, R>
-{
-
+/**
+ * Interface holding common methods to enable generic implemetation of the
+ * ontology generation tool in Protege and OBO-Edit
+ * 
+ * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2010
+ * 
+ * @param <T>
+ *            concept type of the external ontology model
+ * @param <R>
+ *            relationShipType used in the external ontology model
+ */
+public interface OntologyModelAdapterInterface<T, R> {
 	/*
 	 * Needed interface methods
 	 */
 
-	public abstract void refillOBOTermsTableWithExistingTerms();
+	public abstract String getOntologyEditorVersion();
+
+	public abstract void refillOntologyTermsTableWithExistingOntologyTerms();
 
 	public abstract String findTermId(CandidateTerm candidateTerm);
 
@@ -23,11 +33,11 @@ public interface OntologyModelAdapterInterface<T, R>
 
 	public abstract List<String> lookupOntologyTermIdsFromIndexFuzzy(Collection<String> queries);
 
-	public abstract String getLabelForExistingTerm(CandidateTerm candidateTerm);
+	public abstract String getLabelForExistingOntologyTerm(CandidateTerm candidateTerm);
 
-	public abstract List<String> getSynonymsForOntologyTerm(LinkedObject linkedObject);
+	public abstract List<String> getSynonymsForOntologyTerm(T linkedObject);
 
-	public abstract String getDefinitionForExistingTerm(CandidateTerm candidateTerm);
+	public abstract String getDefinitionForExistingOntologyTerm(CandidateTerm candidateTerm);
 
 	public abstract Map<String, String> getParentsForExistingTerm(CandidateTerm candidateTerm);
 
@@ -37,10 +47,13 @@ public interface OntologyModelAdapterInterface<T, R>
 
 	public abstract void commitDefinition(CandidateTerm candidateTerm);
 
-	public abstract void commitAddToOntologyAsChildOfLinkedObject(CandidateTerm selectedCandidateTerm, Collection<ParentRelationEntry<R>> parentRelations, boolean includeChildren,
-	    boolean includeBranch);
+	public abstract void commitAddToOntologyAsChildOfOntologyTerm(CandidateTerm selectedCandidateTerm,
+			Collection<ParentRelationEntry<R>> parentRelations, boolean includeChildren, boolean includeBranch);
 
-	/*
+	public abstract Locale getLocale();
+	public abstract void setLocale(Locale locale);
+	
+		/*
 	 * Wrapper organizational methods
 	 */
 
