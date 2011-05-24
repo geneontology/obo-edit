@@ -43,34 +43,30 @@ public abstract class AbstractOntologyTermsTable<T, R> extends JTable
 		
 		TableColumnModel columnModel = this.getColumnModel();
 		
-		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Selector.ordinal()).setMinWidth(50);
-		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Selector.ordinal()).setMaxWidth(50);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Selector.ordinal()).setMinWidth(40);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Selector.ordinal()).setMaxWidth(40);
 		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Selector.ordinal()).setResizable(false);
 
 		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Open.ordinal()).setMinWidth(20);
 		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Open.ordinal()).setMaxWidth(20);
 		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Open.ordinal()).setResizable(false);
 
-		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Term.ordinal()).setMinWidth(50);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Term.ordinal()).setMinWidth(150);
 		TableColumn termColumn = columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Term.ordinal());
 		termColumn.setCellRenderer(new TermCellRenderer());
 		
-		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Identifier.ordinal()).setMinWidth(300);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Identifier.ordinal()).setMinWidth(50);
 
-		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Relation.ordinal()).setMinWidth(80);
-		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Relation.ordinal()).setMaxWidth(80);
-		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Relation.ordinal()).setResizable(false);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Relation.ordinal()).setMinWidth(70);
 		
 		TableColumn relationColumn = columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Relation.ordinal());
 		relationColumn.setCellEditor(new RelationComboBoxEditor());
 		relationColumn.setCellRenderer(new RelationComboBoxRenderer());
 
-		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Predicted.ordinal()).setMinWidth(80);
-		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Predicted.ordinal()).setMaxWidth(80);
-		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Predicted.ordinal()).setResizable(false);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Predicted.ordinal()).setMinWidth(50);
 
-		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Comment.ordinal()).setMinWidth(130);
-		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Comment.ordinal()).setMaxWidth(130);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Comment.ordinal()).setMinWidth(100);
+		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Comment.ordinal()).setMaxWidth(100);
 		columnModel.getColumn(AbstractOntologyTermsTableModel.columns.Comment.ordinal()).setResizable(false);
 
 		columnModel.getSelectionModel().addListSelectionListener(this);
@@ -132,48 +128,6 @@ public abstract class AbstractOntologyTermsTable<T, R> extends JTable
 	{
 		this.maxScrollableViewPortHeight = maxHeight;
 	}
-
-//	/**
-//	 * Update displayed candidate terms. Filter by regex provided.
-//	 * 
-//	 * @param regex
-//	 */
-//	public void findTerm(String regex)
-//	{
-//		if (regex != null && !lastRegex.equals(regex)) {
-//			lastRegex = regex;
-//			Pattern p = null;
-//
-//			try {
-//				p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-//			}
-//			catch (PatternSyntaxException exception) {
-//				return;
-//			}
-//			Iterator<T> it = getModel().getAllTerms().iterator();
-//			int index = 0;
-//			while (it.hasNext()) {
-//				T term = it.next();
-//				{
-//					String name = getModel().getTermName(term);
-//					if (p.matcher(name).find()) {
-//						getSelectionModel().setSelectionInterval(index, index);
-//						JTableHelper.scrollToCenter(this, index, 2);
-//						return;
-//					}
-//				}
-//				Collection<String> synonyms = getModel().getSynonymNames(term);
-//				for (String syn : synonyms) {
-//					if (p.matcher(syn).find()) {
-//						getSelectionModel().setSelectionInterval(index, index);
-//						JTableHelper.scrollToCenter(this, index, 2);
-//						return;
-//					}
-//				}
-//				index++;
-//			}
-//		}
-//	}
 
 	@SuppressWarnings("unchecked")
 	@Override
