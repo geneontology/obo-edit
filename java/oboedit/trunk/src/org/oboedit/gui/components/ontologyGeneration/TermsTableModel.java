@@ -377,6 +377,10 @@ public class TermsTableModel extends AbstractTableModel
 			String id = adapter.findTermId(candidateTerm);
 			if (id != null) {
 				candidateTerm.setExistingIdOfLoadedTerm(id);
+				String existingLabel = adapter.getLabelForExistingOntologyTerm(candidateTerm);
+				if (existingLabel != null) {
+					candidateTerm.setExistingLabel(existingLabel);
+				}
 			}
 		}		
 	}
