@@ -1,10 +1,7 @@
 package org.oboedit.gui.components.graphvizViewer;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Vector;
 
@@ -31,9 +28,6 @@ import org.bbop.swing.widget.FontChooser;
 import org.obo.datamodel.Link;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.components.graphvizViewer.*;
-
-import sun.awt.image.PixelConverter.Bgrx;
-
 
 
 public class GraphvizConfigPanel extends ConfigurationPanel {
