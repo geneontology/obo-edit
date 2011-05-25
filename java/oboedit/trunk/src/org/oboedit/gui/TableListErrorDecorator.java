@@ -2,7 +2,6 @@ package org.oboedit.gui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -10,7 +9,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -24,8 +22,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import org.bbop.swing.widget.TableList;
-import org.bbop.util.MultiHashMap;
-import org.bbop.util.MultiMap;
 import org.obo.datamodel.FieldPath;
 import org.obo.datamodel.FieldPathSpec;
 import org.obo.datamodel.IdentifiedObject;
@@ -37,9 +33,6 @@ import org.oboedit.verify.CheckWarning;
 import org.oboedit.verify.HistoryQuickFix;
 import org.oboedit.verify.ImmediateQuickFix;
 import org.oboedit.verify.QuickFix;
-import org.oboedit.verify.TextReplaceQuickFix;
-
-import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 
 import org.apache.log4j.*;
 
