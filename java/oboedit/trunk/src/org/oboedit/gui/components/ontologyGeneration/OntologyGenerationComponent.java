@@ -79,7 +79,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.CaretEvent;
@@ -97,6 +96,7 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.axis2.AxisFault;
 import org.apache.log4j.Logger;
+import org.jdesktop.swingworker.SwingWorker;
 import org.oboedit.gui.components.ontologyGeneration.extraction.DefinitionExtensionWorker;
 import org.oboedit.gui.components.ontologyGeneration.extraction.PdfToTextExtraction;
 import org.oboedit.gui.components.ontologyGeneration.interfaces.AbstractOntologyTermsTable;
@@ -646,7 +646,6 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 		});
 
 		scrollPaneForDefinitionsTable.getViewport().addChangeListener(new ChangeListener() {
-			@Override
 			public void stateChanged(ChangeEvent e) {
 				updateDefinitionsTableWithFavicons(definitionTable);
 			}
@@ -766,17 +765,14 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 		});
 
 		DocumentListener proxyDocumentListener = new DocumentListener() {
-			@Override
 			public void changedUpdate(DocumentEvent event) {
 				onChangeProxyTextField();
 			}
 
-			@Override
 			public void insertUpdate(DocumentEvent event) {
 				onChangeProxyTextField();
 			}
 
-			@Override
 			public void removeUpdate(DocumentEvent event) {
 				onChangeProxyTextField();
 			}
@@ -788,21 +784,18 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 		proxyPasswordField.getDocument().addDocumentListener(proxyDocumentListener);
 
 		proxyResetButton.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				onClickProxyResetButton();
 			}
 		});
 
 		proxySaveButton.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				onClickProxySaveButton();
 			}
 		});
 
 		saveLabelButton.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				onClickSaveLabel();
 			}
@@ -1236,7 +1229,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 		}
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	private static void openExternalWebPage(String url, Component guiComponent) {
 		String errMsg = "Error attempting to launch web browser";
 
@@ -3038,7 +3031,6 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 					if (file.isDirectory()) {
 						String extractedString = "";
 						File[] fileArray = file.listFiles(new FilenameFilter() {
-							@Override
 							public boolean accept(File dir, String name) {
 								return (!name.startsWith("."));
 							}
@@ -3252,7 +3244,6 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 
 		}
 
-		@Override
 		public void done() {
 			List<CandidateDefinition> defList = new ArrayList<CandidateDefinition>();
 			DefinitionContainer[] defs = null;
@@ -3333,7 +3324,6 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 					continue;
 
 				Callable<Void> task = new Callable<Void>() {
-					@Override
 					public Void call() throws Exception {
 						for (final String url : definition.getUrls()) {
 							ImageIcon favicon = retriever.getFavicon(url);

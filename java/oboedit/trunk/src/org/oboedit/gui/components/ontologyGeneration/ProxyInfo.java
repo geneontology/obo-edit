@@ -86,7 +86,7 @@ public class ProxyInfo {
 	public static void prepareProxySettings(org.apache.axis2.client.Stub stub) {
 
 		initializeSettings();
-		if (null != host && null != port && !host.isEmpty() && !port.isEmpty()) {
+		if (null != host && null != port && !(host.length() == 0) && !(port.length() == 0)) {
 			testConnection();
 		}
 

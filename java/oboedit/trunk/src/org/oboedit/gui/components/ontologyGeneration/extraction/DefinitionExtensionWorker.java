@@ -12,7 +12,6 @@ import java.net.URLConnection;
 import java.util.StringTokenizer;
 
 import javax.swing.JTable;
-import javax.swing.SwingWorker;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import javax.swing.text.ElementIterator;
@@ -20,6 +19,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import org.apache.log4j.Logger;
+import org.jdesktop.swingworker.SwingWorker;
 import org.oboedit.gui.components.ontologyGeneration.CandidateDefinition;
 import org.oboedit.gui.components.ontologyGeneration.ProxyInfo;
 

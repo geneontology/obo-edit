@@ -264,7 +264,6 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 	 * @return
 	 * @see org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyModelAdapterInterface#getOntologyEditorVersion()
 	 */
-	@Override
 	public String getOntologyEditorVersion() {
 		VersionNumber version = Preferences.getVersion();
 		return version.getMajorVersion() + "." + version.getMinorVersion() + "." + version.getBetaVersion() + " "
