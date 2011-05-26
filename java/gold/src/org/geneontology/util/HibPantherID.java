@@ -74,6 +74,8 @@ public class HibPantherID extends PantherID {
 			case 6239:  // Caenorhabditis elegans
 				out = pick("WB");
 				break;
+			case 7955: // Danio rerio
+				out = pick("ZFIN");
 			case 10090: // Mus musculus
 				out = pick(new String[] { "MGI", "UniProtKB", "ENSEMBL"});
 				break;
@@ -81,7 +83,7 @@ public class HibPantherID extends PantherID {
 				out = pick(new String[]  { "RGD", "UniProtKB", "ENSEMBL"});
 				break;
 			default:
-				System.err.println(this.getSpeciesCode() + " => " + pick);
+				System.err.println(getSpeciesCode() + '(' + getTaxonNode() + ") => " + pick);
 				System.exit(1);
 			}
 		}
