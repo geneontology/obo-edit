@@ -26,14 +26,37 @@
 		
 		
 		if(isTaskRunning){
+			String id = request.getParameter("id");
+			HttpSession s = request.getSession(true);
+			if(id == null){
+				id = s.getId();
+			}
 	%>
+			<center><img src="/images/progress-indicator.gif" alt="Request is in Progress" /></center>
+			<p align="center">Your Request is in Progress</p>
+
+			<form id="reloadform" action="/gold">
+				<%
+				for(Object param: request.getParameterMap().keySet()){
+					%>
+					<input type="hidden" name="<%= param %>" value="<%= request.getParameter(param.toString()) %>" />
+					<%
+				}
+				
+				%>
+				<input type="hidden" name="id" value="<%= id %>" />	
+							
+			</form>
 
 		<script type='text/javascript'>
-			setTimeout("location.reload(true)", 9000);
+			setTimeout('submitForm()', 9000);
+			
+			function submitForm(){
+				document.forms[0].submit();
+			}
+			
 		</script>
 	
-		<center><img src="/images/progress-indicator.gif" alt="Request is in Progress" /></center>
-		<p align="center">Your Request is in Progress</p>
 	
 	<%
 		}

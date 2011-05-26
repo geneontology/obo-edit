@@ -18,6 +18,8 @@ public class InitializationService extends ServiceHandlerAbstract {
 
 	private static Logger LOG = Logger.getLogger(InitializationService.class);
 	
+	public static final String SERVICE_NAME="initialization";
+	
 	private boolean isInitialized;
 	
 	private String viewPath;
@@ -69,7 +71,7 @@ public class InitializationService extends ServiceHandlerAbstract {
 	
 //	@Override
 	public String getServiceName() {
-		return "initialization";
+		return SERVICE_NAME;
 	}
 
 //	@Override

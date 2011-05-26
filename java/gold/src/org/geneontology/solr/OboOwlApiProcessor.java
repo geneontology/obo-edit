@@ -6,14 +6,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.apache.solr.handler.dataimport.Context;
 import org.apache.solr.handler.dataimport.EntityProcessorBase;
 import org.geneontology.web.services.GoldDbOperationsService;
-import org.geneontology.web.services.ServicesConfig;
 import org.semanticweb.owlapi.model.OWLClass;
-
 import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 import owltools.graph.OWLQuantifiedProperty;
@@ -57,16 +54,16 @@ public class OboOwlApiProcessor extends EntityProcessorBase {
 
 		if(rowIterator  == null && !ended){	  
 			
-			GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
+			//GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
 			
 			
 			
-			if(goldDb != null){
-				OWLGraphWrapper graph = goldDb.getGraphWrapper();
+		//	if(goldDb != null){
+				OWLGraphWrapper graph = GoldDbOperationsService.getGraphWrapper();
 				rowIterator = new RowsIterator(graph);
 				
 				System.out.println("****************Importinng ontology '"+ graph.getOntologyId() +"'****************");
-			}
+		//	}
 		      
 		     ended = true;
 		      

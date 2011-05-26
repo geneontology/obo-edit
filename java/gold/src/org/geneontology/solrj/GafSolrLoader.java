@@ -16,7 +16,6 @@ import org.geneontology.gaf.hibernate.GeneAnnotation;
 import org.geneontology.gaf.hibernate.WithInfo;
 import org.geneontology.gold.io.GoldIOException;
 import org.geneontology.web.services.GoldDbOperationsService;
-import org.geneontology.web.services.ServicesConfig;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLObject;
 
@@ -45,8 +44,8 @@ public class GafSolrLoader {
 		
     	docs = new ArrayList<SolrInputDocument>();
 
-		GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
-		OWLGraphWrapper wrapper = goldDb.getGraphWrapper();
+//		GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
+		OWLGraphWrapper wrapper = GoldDbOperationsService.getGraphWrapper();
     	
 		for(GeneAnnotation a: doc.getGeneAnnotations()){
             SolrInputDocument d = new SolrInputDocument();
