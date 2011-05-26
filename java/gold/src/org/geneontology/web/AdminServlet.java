@@ -2,7 +2,6 @@ package org.geneontology.web;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +12,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+import net.sf.ehcache.config.CacheConfiguration;
+import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -24,7 +30,7 @@ import org.geneontology.web.services.GoldDbOperationsService;
 import org.geneontology.web.services.InitializationService;
 import org.geneontology.web.services.ReasoningService;
 import org.geneontology.web.services.ServiceHandler;
-import org.geneontology.web.services.ServicesConfig;
+import org.geneontology.web.services.ServicesFactory;
 
 
 /**
@@ -47,6 +53,27 @@ import org.geneontology.web.services.ServicesConfig;
  */
 public class AdminServlet extends HttpServlet {
 
+	
+	private static Cache servicesCache = createServicesCache();
+	
+	private static Cache createServicesCache(){
+		
+		CacheManager manager = new CacheManager();
+		
+		Cache cache = new Cache(
+			     new CacheConfiguration("servicesCache", 1000)
+			       .memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.LFU)
+			       .overflowToDisk(true)
+			       .eternal(false)
+			       .timeToLiveSeconds(180)
+			       .timeToIdleSeconds(60)
+			       .diskPersistent(false)
+			       .diskExpiryThreadIntervalSeconds(0));		
+		
+		manager.addCache(cache);
+		return cache;
+	}
+	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -117,10 +144,15 @@ public class AdminServlet extends HttpServlet {
 			HttpServletResponse response)
 			throws ServletException, IOException {
 
-		InitializationService initHandler =(InitializationService) ServicesConfig.getService("initialization");
+		HttpSession session = request.getSession(true);
+		
+		System.out.println("cache..........................."+servicesCache.getKeys());
+		
+		InitializationService initHandler =(InitializationService) ServicesFactory.getInstance().createServiceHandler(InitializationService.SERVICE_NAME);
 		initHandler.handleService(request, response);
 		String view = initHandler.getViewPath();
-		
+		String id = request.getParameter("id");
+		ServiceHandler handler = null;
 		if(initHandler.isInitialized()){
 			//get the service name from the parameter
 			String servicename= request.getParameter("servicename");
@@ -129,14 +161,21 @@ public class AdminServlet extends HttpServlet {
 			
 			if(servicename == null){
 				error = "servicename parameter is missing in the parameter";
+			}else if(id != null && servicesCache.get(id) == null){
+					error = "The service session id '" + id + "' is expired. Please call this service wihout id parameter to run a new task.";
+			}else if(id != null){
+				handler = (ServiceHandler) servicesCache.get(id).getObjectValue();
+			}else{
+				handler = ServicesFactory.getInstance().createServiceHandler(servicename);
+				if(handler == null){
+					error = "The service '"+ servicename + "' is not supported by the server";
+				}else{
+					servicesCache.put(new Element(session.getId(), handler));
+				}
 			}
 			
 			//find the service object
-			ServiceHandler handler= ServicesConfig.getService(servicename);	
-			if(handler == null){
-				error = "The service '"+ servicename + "' is not supported by the server";
-			}else{
-				
+			if(handler != null){
 				handler.handleService(request, response);
 				view = handler.getViewPath();
 			}
@@ -157,6 +196,5 @@ public class AdminServlet extends HttpServlet {
 		
 	
 	}
-
-
+	
 }

@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 import org.geneontology.gaf.hibernate.GeneAnnotation;
 import org.geneontology.web.services.GoldDbOperationsService;
-import org.geneontology.web.services.ServicesConfig;
 import org.obolibrary.oboformat.model.FrameMergeException;
 import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLObject;
@@ -89,13 +88,13 @@ public class AnnotationTaxonRule extends AbstractAnnotationRule implements Annot
 	private Set<AnnotationRuleViolation> _getRuleViolations(String annotationCls, String taxonCls, GeneAnnotation a) {
 		Set<AnnotationRuleViolation> violations = new HashSet<AnnotationRuleViolation>();
 		
-		GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
+/*		GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
 		if(goldDb == null){
 			throw new IllegalStateException("GoldDbOperationsService service is not initialized.");
 		}
-		
-		OWLGraphWrapper graphWrapper = goldDb.getGraphWrapper();
-		OWLGraphWrapper taxGraphWrapper = goldDb.getTaxonomiesGraph();
+*/		
+		OWLGraphWrapper graphWrapper = GoldDbOperationsService.getGraphWrapper();
+		OWLGraphWrapper taxGraphWrapper = GoldDbOperationsService.getTaxonomiesGraph();
 
 		if(graphWrapper == null || taxGraphWrapper == null){
 			throw new IllegalStateException("OWLGraphWrapper is not initialzied in the GoldDbOperationsService");

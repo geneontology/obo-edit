@@ -16,6 +16,8 @@ public class ReasoningService extends ServiceHandlerAbstract {
 	private static Logger LOG = Logger.getLogger(ReasoningService.class);
 	private static boolean DEBUG = LOG.isDebugEnabled();
 	
+	public static final String SERVICE_NAME="reasoning-service";
+	
 	/**
 	 * The reference of the inference builder is kept alive
 	 * until the life of the servlet. The inference builder cache
@@ -100,18 +102,18 @@ public class ReasoningService extends ServiceHandlerAbstract {
 	
 	
 	public String getServiceName() {
-		return "reasoning-service";
+		return SERVICE_NAME;
 	}
 
 	private InferenceBuilder getInferenceBuilder(){
-		GoldDbOperationsService dbService =(GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
+		//GoldDbOperationsService dbService =(GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
 		if(this.inf == null){
-			inf = new InferenceBuilder(dbService.getGraphWrapper());
+			inf = new InferenceBuilder(GoldDbOperationsService.getGraphWrapper());
 		}else{
 			//if the ontolgoy reference is changed then reset the ontology reference
 			//reasoner reference in the InferenceBuilder class.
-			if(inf.getOWLGraphWrapper() != dbService.getGraphWrapper()){
-				inf.setOWLGraphWrapper(dbService.getGraphWrapper());
+			if(inf.getOWLGraphWrapper() != GoldDbOperationsService.getGraphWrapper()){
+				inf.setOWLGraphWrapper(GoldDbOperationsService.getGraphWrapper());
 			}
 		}
 		

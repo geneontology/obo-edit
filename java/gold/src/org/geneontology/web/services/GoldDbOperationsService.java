@@ -28,21 +28,25 @@ import owltools.graph.OWLGraphWrapper;
  * @author Shahid Manzoor
  *
  */
-public class GoldDbOperationsService extends ServiceHandlerAbstract implements FileMonitorListener {
+public class GoldDbOperationsService extends ServiceHandlerAbstract{
 
 	private static Logger LOG = Logger.getLogger(GoldDbOperationsService.class);
 	
 	
+	public static final String SERVICE_NAME="gold-db-operations";
+	
+	private static FileMonitorListenerImp fileMonitor = new FileMonitorListenerImp();
+	
 	/**
 	 * this instance is shared with the other service
 	 */
-	private OWLGraphWrapper ontologyGraph;
+	private static OWLGraphWrapper ontologyGraph = buildOWLGraphWrapper();
 
 	/**
 	 * This reference holds taxanomies configured through the geneontology.gold.taxonomylocation
 	 * property in the conf/gold.properties file.
 	 */
-	private OWLGraphWrapper taxonomyGraph;
+	private static OWLGraphWrapper taxonomyGraph = buildTaxonomyGraph();
 	
 	/**
 	 * Path of the jsp file which renders the results of the computations of this service.
@@ -68,9 +72,15 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract implements F
 	
 	private String command;
 	
+	private static OWLGraphWrapper buildTaxonomyGraph(){
+		return buildOWLGraphWrapper(GeneOntologyManager.getInstance().getTaxonomiesLocations());
+	}
+	
 	public GoldDbOperationsService(){
-		this.ontologyGraph = buildOWLGraphWrapper();
-		this.taxonomyGraph = buildOWLGraphWrapper(GeneOntologyManager.getInstance().getTaxonomiesLocations());
+		
+		
+			//ontologyGraph = buildOWLGraphWrapper();
+			//taxonomyGraph = buildOWLGraphWrapper(GeneOntologyManager.getInstance().getTaxonomiesLocations());
 		runner = null;
 	}
 	
@@ -146,24 +156,24 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract implements F
 		
 	}
 	
-	public OWLGraphWrapper getTaxonomiesGraph(){
-		return this.taxonomyGraph;
+	public synchronized static  OWLGraphWrapper getTaxonomiesGraph(){
+		return taxonomyGraph;
 	}
 	
-	public OWLGraphWrapper getGraphWrapper(){
-		return this.ontologyGraph;
+	public synchronized static OWLGraphWrapper getGraphWrapper(){
+		return ontologyGraph;
 	}
 
 	public String getServiceName() {
 		// TODO Auto-generated method stub
-		return "gold-db-operations";
+		return SERVICE_NAME;
 	}
 
 	public String getViewPath(){
 		return this.viewPath;
 	}
 	
-	private OWLGraphWrapper buildOWLGraphWrapper(){
+	private static OWLGraphWrapper buildOWLGraphWrapper(){
 
 		List ontologies = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
 		
@@ -171,7 +181,7 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract implements F
 	}
 	
 
-	private OWLGraphWrapper buildOWLGraphWrapper(List ontologies){
+	private static OWLGraphWrapper buildOWLGraphWrapper(List ontologies){
 		
 		DbOperations db = new DbOperations();
 		OWLGraphWrapper wrapper = null;
@@ -346,25 +356,33 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract implements F
 		
 	}
 
-	/**
-	 * Rebuild the ontologyGraph when ontology files are modified
-	 */
-	public void filesModified(String[] files) {
-		LOG.info("filesModified event occured");
+	private static class FileMonitorListenerImp implements FileMonitorListener{
+		/**
+		 * Rebuild the ontologyGraph when ontology files are modified
+		 */
+		public void filesModified(String[] files) {
+			LOG.info("filesModified event occured");
 
-		
-		this.ontologyGraph = buildOWLGraphWrapper();	
-		
-		try{
-			DbOperations db = new DbOperations();
-			for(String file: files){
-				db.update(file);
+			
+			ontologyGraph = buildOWLGraphWrapper();	
+			
+			try{
+				DbOperations db = new DbOperations();
+				for(String file: files){
+					db.update(file);
+				}
+			}catch(Exception ex){
+				LOG.error(ex.getMessage(), ex);
 			}
-		}catch(Exception ex){
-			LOG.error(ex.getMessage(), ex);
-		}
-	
 		
+			
+		}
+		
+	}
+	
+	
+	public static FileMonitorListener getFileMonitorListener(){
+		return fileMonitor;
 	}
 	
 }

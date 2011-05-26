@@ -13,6 +13,9 @@ public class AnnotationRuleViolation {
 	
 	private String ruleId;
 	
+	private int lineNumber;
+	
+	
 	public String getRuleId() {
 		return ruleId;
 	}
@@ -79,7 +82,18 @@ public class AnnotationRuleViolation {
 	public void setAnnotationRow(String annotationRow) {
 		this.annotationRow = annotationRow;
 	}
+
+
+	public int getLineNumber() {
+		return lineNumber;
+	}
+
+
+	public void setLineNumber(int lineNumber) {
+		this.lineNumber = lineNumber;
+	}
 	
 
+	
 
 }

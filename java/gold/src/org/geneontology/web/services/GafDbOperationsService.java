@@ -36,6 +36,8 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 	private static Logger LOG = Logger.getLogger(GafDbOperationsService.class);
 	
+	public static final String SERVICE_NAME="gaf-db-operations";
+	
 	/**
 	 * Path of the jsp file which renders the results of the computations of this service.
 	 */
@@ -214,7 +216,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	}
 	
 	public String getServiceName() {
-		return "gaf-db-operations";
+		return SERVICE_NAME;
 	}
 
 	public String getViewPath(){

@@ -20,10 +20,13 @@ public abstract class Task extends Thread {
 	
 	protected Object data;
 	
+	private long taskCompletionTime;
+	
 	public Task(){
 		completedOperations = new Hashtable<String, long[]>();
 		opsOrder = new ArrayList<String>();
 		running = true;
+		taskCompletionTime = -1;
 	}
 	
 	
@@ -89,12 +92,17 @@ public abstract class Task extends Thread {
 		execute();
 		
 		running = false;
+		taskCompletionTime = System.currentTimeMillis();
 	}
 	
 	public Object getData(){
 		return data;
 	}
 	
+	
+	public long getTaskCompletionTime(){
+		return taskCompletionTime;
+	}
 	
 	//sub classes must implement this method
 	public abstract void execute();
