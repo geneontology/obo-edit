@@ -3,6 +3,7 @@ package org.oboedit.gui.components.ontologyGeneration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -343,11 +344,20 @@ public class CandidateTerm
 	public String toString()
 	{
 		StringBuffer buffer = new StringBuffer();
+		buffer.append("'");
 		buffer.append(this.getGeneratedLabel());
+		buffer.append("'");
 		if (this.getAbbreviations().size() > 0) {
-			buffer.append(" [");
-			for (String abbrString : this.getAbbreviations()) {
+			buffer.append("  abbrev=[");
+			Iterator<String> iterator = this.getAbbreviations().iterator();
+			while (iterator.hasNext()) {
+				String abbrString = (String) iterator.next();
+				buffer.append("'");
 				buffer.append(abbrString);
+				buffer.append("'");
+				if (iterator.hasNext()) {
+					buffer.append(",");
+				}
 			}
 			buffer.append("]");
 		}
