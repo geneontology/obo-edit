@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.Vector;
-
 import org.apache.log4j.Logger;
 import org.geneontology.gaf.hibernate.GafDocument;
 import org.geneontology.gaf.hibernate.GafObjectsBuilder;
@@ -17,7 +16,6 @@ import org.geneontology.gold.io.DbOperationsInterface;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.rules.AnnotationRuleViolation;
 import org.geneontology.web.services.DbOperationsService;
-import org.geneontology.web.services.ServicesConfig;
 import org.obolibrary.obo2owl.Owl2Obo;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
@@ -118,11 +116,11 @@ public class DbOperationsTask extends Task implements DbOperationsListener {
 		OWLGraphWrapper graph = null;
 		if ("gaf".equals(this.dbType)) {
 
-			DbOperationsService dbservice = (DbOperationsService) ServicesConfig
-					.getService("db-operations");
-			if (dbservice != null) {
-				graph = dbservice.getOntologyGraph();
-			}
+		//	DbOperationsService dbservice = (DbOperationsService) ServicesConfig
+			//		.getService("db-operations");
+		//	if (dbservice != null) {
+			//	graph = dbservice.getOntologyGraph();
+			//}
 			db = new GAFDbOperations();
 
 		} else

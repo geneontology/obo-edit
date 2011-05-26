@@ -22,7 +22,6 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.geneontology.web.services.GoldDbOperationsService;
-import org.geneontology.web.services.ServicesConfig;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gold.io.FileMonitor;
 import org.geneontology.gold.io.postgres.SchemaManager;
@@ -163,11 +162,11 @@ public class JettyStarter {
 		new Thread(new Runnable() {
 			
 			public void run() {
-				LOG.info("Initializing Services which include loading ontologies in memory. This step may take several mintues. ");
+
 				LOG.info("Please wait until services are initialized.............");
 
-				ServicesConfig.getServices();
-
+				new GoldDbOperationsService();
+				
 				LOG.info("Services are initialized. The server is ready for performing services");
 
 				
@@ -175,7 +174,7 @@ public class JettyStarter {
 				
 				int delay = GeneOntologyManager.getInstance().getFileMonitorDelay();
 				FileMonitor goMonitor = new FileMonitor(GeneOntologyManager.getInstance().getDefaultOntologyLocations(), delay*60*1000);
-				goMonitor.addFileMonitorListener((GoldDbOperationsService)ServicesConfig.getService("gold-db-operations"));
+				goMonitor.addFileMonitorListener(GoldDbOperationsService.getFileMonitorListener());
 				goMonitor.startMonitoring();
 				LOG.info("Ontologies files monitor is started");
 				

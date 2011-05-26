@@ -21,14 +21,37 @@
 		boolean  isTaskRunning = (Boolean)request.getAttribute("isTaskRunning");
 	
 		if(isTaskRunning){
+			String id = request.getParameter("id");
+			HttpSession s = request.getSession(true);
+			if(id == null){
+				id = s.getId();
+			}
 	%>
+			<center><img src="/images/progress-indicator.gif" alt="Request is in Progress" /></center>
+			<p align="center">Your Request is in Progress</p>
+
+			<form id="reloadform" action="/gold">
+				<%
+				for(Object param: request.getParameterMap().keySet()){
+					%>
+					<input type="hidden" name="<%= param %>" value="<%= request.getParameter(param.toString()) %>" />
+					<%
+				}
+				
+				%>
+				<input type="hidden" name="id" value="<%= id %>" />	
+							
+			</form>
 
 		<script type='text/javascript'>
-			setTimeout("location.reload(true)", 9000);
+			setTimeout('submitForm()', 9000);
+			
+			function submitForm(){
+				document.forms[0].submit();
+			}
+			
 		</script>
 	
-		<center><img src="/images/progress-indicator.gif" alt="Request is in Progress" /></center>
-		<p align="center">Your Request is in Progress</p>
 	
 	<%
 		}
@@ -112,6 +135,7 @@
 				<input type="hidden" name="runrules" />
 				<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
 				<input type="hidden" name="command" value="<%= request.getParameter("command") %>" />
+				<input type="hidden" name="id" value="<%= request.getParameter("id") %>" />	
 				<input type="submit" value="Run Annotation Rules" />
 			</form>
 			
@@ -120,6 +144,7 @@
 			<form action=".">
 				<input type="hidden" name="commit" />
 				<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
+				<input type="hidden" name="id" value="<%= request.getParameter("id") %>" />	
 				<input type="hidden" name="command" value="<%= request.getParameter("command") %>" />
 				<input type="submit" value="Save GAF into database" />
 			</form>
@@ -131,6 +156,7 @@
 				<input type="hidden" name="commit" />
 				<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
 				<input type="hidden" name="command" value="<%= request.getParameter("command") %>" />
+				<input type="hidden" name="id" value="<%= request.getParameter("id") %>" />	
 				<input type="submit" value="Load GAF into Solr" />
 			</form>
 

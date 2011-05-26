@@ -2,10 +2,8 @@ package org.geneontology.gold.rules;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import org.geneontology.gaf.hibernate.GeneAnnotation;
 import org.geneontology.web.services.GoldDbOperationsService;
-import org.geneontology.web.services.ServicesConfig;
 import org.obolibrary.obo2owl.Obo2OWLConstants;
 import org.semanticweb.owlapi.model.OWLClass;
 
@@ -31,9 +29,9 @@ public class GoClassReferenceAnnotationRule extends AbstractAnnotationRule {
 		
 		String cls = a.getCls().replace(":", "_");
 		
-		GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
+	//	GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
 
-		OWLGraphWrapper graph = goldDb.getGraphWrapper();
+		OWLGraphWrapper graph = GoldDbOperationsService.getGraphWrapper();
 		
 		OWLClass owlClass= graph.getOWLClass(Obo2OWLConstants.DEFAULT_IRI_PREFIX + cls);
 		

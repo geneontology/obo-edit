@@ -63,6 +63,8 @@ public class GAFParser {
 	
 	private int expectedNumCols;
 	
+	private int lineNumber;
+	
 //	private List<String> errors;
 
 	
@@ -86,11 +88,13 @@ public class GAFParser {
 	public boolean next() throws IOException{
 		if(reader != null){
 			currentRow  = reader.readLine();
-			if(DEBUG)
-				LOG.debug("Parsing Row -- "+currentRow);
 			if(currentRow == null){
 				return false;
 			}
+
+			lineNumber++;
+			if(DEBUG)
+				LOG.debug("Parsing Row: " +lineNumber + " -- " +currentRow);
 
 			if (this.currentRow.trim().length() == 0) {
 				LOG.warn("Blank Line");
@@ -118,6 +122,7 @@ public class GAFParser {
 	
 					AnnotationRuleViolation v = new AnnotationRuleViolation(error, this.currentRow);
 					v.setRuleId("Parsing Error");
+					v.setLineNumber(getLineNumber());
 					voilations.add(v);
 //					errors.add(error);
 					LOG.error(error + " : " + this.currentRow);
@@ -148,6 +153,7 @@ public class GAFParser {
 		//this.errors = new ArrayList<String>();
 		this.expectedNumCols = 15;
 		voilations = new ArrayList<AnnotationRuleViolation>();
+		lineNumber = 0;
 	}
 	
 
@@ -319,17 +325,6 @@ public class GAFParser {
 	}
 	
 
-	/*public List<String> getErrors(){
-		return errors;
-	}*/
-	
-	/*private boolean isValidPath(String file_name) {
-		if (file_name == null)
-			return false;
-
-		return new File(file_name).canRead();
-	}*/
-
 	private boolean isFormatDeclaration(String line) {
 		return line.startsWith(GAF_VERSION);
 	}
@@ -342,142 +337,9 @@ public class GAFParser {
 		}
 		return 0;
 	}
-	
-	
-	private void performBasicChecks(String cols[]){
 
-		/*String row = this.currentRow;
-		
-		if(this.gafVersion == 2.0){
-			if(cols.length != 17){
-				voilations.add(new AnnotationRuleViolation(" The row '"+ row + "' does not contain required columns number"));
-			}
-		}else{
-			if(cols.length != 15){
-				voilations.add(new AnnotationRuleViolation(" The row '"+ row + "' does not contain required columns number"));
-			}
-		}*/
- 
-		/*//cardinality checks
-		checkCardinality(cols[0],0, "Column 1: DB", row,1,1);
-		checkCardinality(cols[1], 1,"Column 2: DB Object ID", row,1,1);
-		checkCardinality(cols[2], 2,"Column 3: DB Object Symbol", row,1,1);
-		checkCardinality(cols[3], 3,"Column 4: Qualifier", row, 0, 3);
-		checkCardinality(cols[4], 4,"Column 5: GO ID", row,1,1);
-		checkCardinality(cols[5], 5,"Column 6: DB Reference", row,1,3);
-		checkCardinality(cols[6], 6,"Column 7: Evidence Code", row,1,3);
-		checkCardinality(cols[7], 7,"Column 8: With or From", row,0,3);
-		checkCardinality(cols[8], 8,"Column 9: Aspect", row,1,1);
-		checkCardinality(cols[9], 9,"Column 10: DB Object Name", row,0,1);
-		checkCardinality(cols[10], 10,"Column 11: DB Object Synonym",  row, 0,3);
-		checkCardinality(cols[11], 11,"Column 12: DB Object Type", row, 1,1);
-		checkCardinality(cols[12], 12,"Column 13: Taxon", row, 1,2);
-		checkCardinality(cols[13], 13,"Column 14: Date", row, 1,1);
-		checkCardinality(cols[14], 14,"Column 15: DB Object Type", row, 1,1);
-		
-		if(this.expectedNumCols>15){
-			checkCardinality(cols[15], 15,"Column 16: DB Object Type", row, 0,3);
-			checkCardinality(cols[16], 16,"Column 17: DB Object Type", row, 0,3);
-		}*/
-
-		//check internal spaces
-		
-		//check date format
-		/*String dtString = cols[DATE];
-		try{
-			dtFormat.parse(dtString);
-		}catch(Exception ex){
-			voilations.add(new AnnotationRuleViolation("The date in the column 14 is of incorrect format in the row: " + row));
-		}
-		
-		//taxon check
-		String[] taxons  = cols[TAXON].split("\\|");
-		checkTaxon(taxons[0], row);
-		if(taxons.length>1){
-			checkTaxon(taxons[1], row);
-		}*/
-		
-		
-		//check qualifier value
-	/*	if(cols[3].length()>0){
-			Qualifier qaulifer = Qualifier.valueOf(cols[3]);
-			if(qaulifer == null){
-				voilations.add(new AnnotationRuleViolation("The qualifier '" + cols[3] + "' in the column 4 is incorrect in the row " + row));
-			}
-		}*/
-		
-		//check evidence code
-	/*	EvidenceCode evidenceCode = EvidenceCode.valueOf( cols[6] );
-		if(evidenceCode == null){
-			voilations.add(new AnnotationRuleViolation("The evidence code '" + cols[6] + "' in the column 7 is incorrect in the row " + row));
-		}*/
-		
-		/*//check db abbreviations
-		if(!db_abbreviations.contains(cols[0]))
-			voilations.add(new AnnotationRuleViolation("The DB '" + cols[0] + "'  referred in the column 1 is incorrect in the row: " + row));
- 		*/
+	public int getLineNumber() {
+		return lineNumber;
 	}
-	
-/*	private void checkTaxon(String value, String row){
-		if(!value.startsWith("taxon"))
-			voilations.add(new AnnotationRuleViolation("The taxon id in the column 13 is of in correct format in the row :" + row));
-		
-		try{
-			String taxon = value.substring("taxon:".length());
-			Integer.parseInt(taxon);
-		}catch(Exception ex){
-			voilations.add(new AnnotationRuleViolation("The taxon id in the column 13 is not an integer value :" + row));
-		}
-	}
-	
-	private void checkCardinality(String value,int col, String columnName, String row, int min, int max){
-
-		if(min>0 && value.length() != value.trim().length()){
-			voilations.add(new AnnotationRuleViolation("White Spaces are found in the " + columnName+ " column in the row: " + row));
-		}
-
-		if(min==0 && value != null && value.length() != value.trim().length()){
-			voilations.add(new AnnotationRuleViolation("White Spaces are found in the " + columnName+ " column in the row: " + row));
-		}
-		
-		if(min>=1 && value.length()==0){
-			voilations.add(new AnnotationRuleViolation(columnName +" value is not supplied in the row: " + row ));
-		}
-		
-		if(max==1 && value.contains("|")){
-			voilations.add(new AnnotationRuleViolation(columnName +" cardinality is found greate than 1 in the row: " + row));
-		}
-		
-		
-		if(value != null){
-			String tokens[] = value.split("\\|");
-			
-			if(max==2 && tokens.length>2){
-				voilations.add(new AnnotationRuleViolation(columnName +" cardinality is found greate than 2 in the row: " + row));
-			}
-			
-			if(tokens.length>1){
-				for(int i =1;i<tokens.length;i++){
-					String token = tokens[i]; 
-					checkWhiteSpaces(token, col, columnName, row);
-				}
-			}
-		}
-		
-		
-	}
-	
-	private void checkWhiteSpaces(String value,int col, String columnName, String row){
-
-		if(col == DB_OBJECT_NAME || col == DB_OBJECT_SYNONYM || col == DB_OBJECT_SYMBOL)
-			return;
-		
-		if(value.contains(" ")){
-			voilations.add(new AnnotationRuleViolation("White Spaces are found in the " + columnName+ " column in the row: " + row));
-		}
-		
-	}*/
-	
-	
 	
 }
