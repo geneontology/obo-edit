@@ -5,8 +5,6 @@ import java.awt.geom.Point2D;
 
 import org.bbop.swing.EndpointShapeExtender;
 import org.bbop.swing.ShapeExtender;
-import org.oboedit.verify.ImmediateQuickFix;
-
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.activities.PInterpolatingActivity;
 import edu.umd.cs.piccolo.nodes.PPath;

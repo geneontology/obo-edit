@@ -1,7 +1,6 @@
 package org.oboedit.gui.factory;
 
 import org.bbop.framework.AbstractComponentFactory;
-import org.bbop.framework.GUIComponentFactory.FactoryCategory;
 import org.oboedit.gui.components.CrossProductMatrixEditorComponent;
 
 import org.apache.log4j.*;

@@ -73,7 +73,7 @@ public class LinkingButtonBehavior implements ToolbarButtonBehavior {
 		public void mousePressed(PInputEvent event) {
 			if (event.isLeftMouseButton()) {
 				panHandler = canvas.getPanEventHandler();
-				OENode originNode = (OENode) PiccoloUtil.getNodeOfClass(event
+				OENode originNode = PiccoloUtil.getNodeOfClass(event
 						.getPath(), OENode.class);
 				dummyLinks.clear();
 				originNodes.clear();
@@ -119,7 +119,7 @@ public class LinkingButtonBehavior implements ToolbarButtonBehavior {
 					arrowGhost.setChildrenPickable(false);
 					MouseEvent me = (MouseEvent) event.getSourceSwingEvent();
 
-					OENode thisDestNode = (OENode) PiccoloUtil.getNodeOfClass(
+					OENode thisDestNode = PiccoloUtil.getNodeOfClass(
 							canvas.getCamera().pick(me.getX(), me.getY(), 1), OENode.class);
 					
 					if (thisDestNode != originNode) {
@@ -145,8 +145,7 @@ public class LinkingButtonBehavior implements ToolbarButtonBehavior {
 
 		@Override
 		public void mouseEntered(PInputEvent event) {
-			OENode node = (OENode) PiccoloUtil.getNodeOfClass(event.getPath(),
-					OENode.class);
+			OENode node = PiccoloUtil.getNodeOfClass(event.getPath(), OENode.class);
 			if (node != null) {
 				canvas.setCursor(Cursor
 						.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
@@ -177,7 +176,7 @@ public class LinkingButtonBehavior implements ToolbarButtonBehavior {
 					originNodes.remove(redundantNode);
 				
 				NamedChildProvider provider = canvas.getNamedChildProvider();
-				PNode arrowGhost = (PNode) provider.getNamedChild(ARROW_GHOST_KEY, canvas.getLayer());
+				PNode arrowGhost = provider.getNamedChild(ARROW_GHOST_KEY, canvas.getLayer());
 				if (arrowGhost != null) {
 					provider.setNamedChild(ARROW_GHOST_KEY, canvas.getLayer(), null);
 					canvas.decorate();

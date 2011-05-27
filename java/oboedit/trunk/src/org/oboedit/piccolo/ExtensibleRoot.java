@@ -1,12 +1,8 @@
 package org.oboedit.piccolo;
 
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 
 import edu.umd.cs.piccolo.PCamera;
 import edu.umd.cs.piccolo.PInputManager;
@@ -23,7 +19,7 @@ public class ExtensibleRoot extends PRoot {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(ExtensibleRoot.class);
 	private PInputManager defaultInputManager;
-	private transient List inputSources;
+	private transient List<PRoot.InputSource> inputSources;
 	private transient long globalTime;
 	private PActivityScheduler activityScheduler;
 	protected boolean noAnimations = false;
@@ -48,7 +44,7 @@ public class ExtensibleRoot extends PRoot {
 	 */
 	public ExtensibleRoot() {
 		super();
-		inputSources = new ArrayList();
+		inputSources = new ArrayList<PRoot.InputSource>();
 		globalTime = System.currentTimeMillis();
 		activityScheduler = createActivityScheduler();
 		defaultInputManager = getDefaultInputManager();
@@ -108,7 +104,7 @@ public class ExtensibleRoot extends PRoot {
 
 		while (getActivityScheduler().getActivitiesReference().size() > 0) {
 			processInputs();
-			Iterator i = getAllNodes(cameraWithCanvas, null).iterator();
+			Iterator<?> i = getAllNodes(cameraWithCanvas, null).iterator();
 			while (i.hasNext()) {
 				PCamera each = (PCamera) i.next();
 				each.getComponent().paintImmediately();
@@ -160,10 +156,10 @@ public class ExtensibleRoot extends PRoot {
 		processingInputs = true;
 
 		globalTime = System.currentTimeMillis();
-		List l = inputSources;
-		int count = inputSources == null ? 0 : inputSources.size();
+		List<PRoot.InputSource> l = inputSources;
+		int count = l == null ? 0 : l.size();
 		for (int i = 0; i < count; i++) {
-			PRoot.InputSource each = (PRoot.InputSource) inputSources.get(i);
+			PRoot.InputSource each = l.get(i);
 			each.processInput();
 		}
 

@@ -1,6 +1,5 @@
 package org.oboedit.verify.impl;
 
-import org.bbop.util.*;
 import org.obo.datamodel.*;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.VerificationManager;
@@ -21,14 +20,14 @@ public class NameRedundancyCheck extends AbstractCheck implements OntologyCheck 
 				| VerificationManager.SAVE | VerificationManager.MANUAL));
 	}
 
-	public Collection check(OBOSession session, IdentifiedObject currentObject,
+	public Collection<CheckWarning> check(OBOSession session, IdentifiedObject currentObject,
 			byte condition, boolean checkObsoletes) {
-		List out = new LinkedList();
+		List<CheckWarning> out = new LinkedList<CheckWarning>();
 		if (currentObject == null) {
-			Map nameMap = new HashMap();
-			Iterator it = session.getObjects().iterator();
+			Map<String, Collection<IdentifiedObject>> nameMap = new HashMap<String, Collection<IdentifiedObject>>();
+			Iterator<IdentifiedObject> it = session.getObjects().iterator();
 			for (int i = 0; it.hasNext(); i++) {
-				IdentifiedObject io = (IdentifiedObject) it.next();
+				IdentifiedObject io = it.next();
 				int percentage = 50 * i / session.getObjects().size();
 				setProgressValue(percentage);
 				setProgressString("checking object " + (i + 1) + " of "
@@ -38,27 +37,27 @@ public class NameRedundancyCheck extends AbstractCheck implements OntologyCheck 
 				createMapping(nameMap, io.getName(), io);
 				if (io instanceof SynonymedObject) {
 					SynonymedObject so = (SynonymedObject) io;
-					Iterator it2 = so.getSynonyms().iterator();
+					Iterator<Synonym> it2 = so.getSynonyms().iterator();
 					while (it2.hasNext()) {
-						Synonym s = (Synonym) it2.next();
+						Synonym s = it2.next();
 						if (s.getScope() == Synonym.EXACT_SYNONYM)
 							createMapping(nameMap, s.getText(), io);
 					}
 				}
 			}
-			it = nameMap.keySet().iterator();
-			for (int j = 0; it.hasNext(); j++) {
-				String name = (String) it.next();
+			Iterator<String> its = nameMap.keySet().iterator();
+			for (int j = 0; its.hasNext(); j++) {
+				String name = its.next();
 				int percentage = 50 + (50 * j / nameMap.keySet().size());
 				setProgressValue(percentage);
 				setProgressString("checking object " + (j + 1) + " of "
 						+ session.getObjects().size());
-				Collection c = (Collection) nameMap.get(name);
+				Collection<IdentifiedObject> c = nameMap.get(name);
 				if (c.size() > 1) {
 					StringBuffer termList = new StringBuffer();
-					Iterator it2 = c.iterator();
+					Iterator<IdentifiedObject> it2 = c.iterator();
 					for (int i = 0; i < c.size(); i++) {
-						IdentifiedObject io = (IdentifiedObject) it2.next();
+						IdentifiedObject io = it2.next();
 						if (!checkObsoletes && TermUtil.isObsolete(io))
 							continue;
 						if (i > 0 && c.size() > 2)
@@ -70,7 +69,7 @@ public class NameRedundancyCheck extends AbstractCheck implements OntologyCheck 
 					}
 					it2 = c.iterator();
 					while (it2.hasNext()) {
-						IdentifiedObject io = (IdentifiedObject) it2.next();
+						IdentifiedObject io = it2.next();
 						if (!checkObsoletes && TermUtil.isObsolete(io))
 							continue;
 						CheckWarning warning = new CheckWarning(
@@ -86,21 +85,20 @@ public class NameRedundancyCheck extends AbstractCheck implements OntologyCheck 
 			}
 		} else {
 			if (!checkObsoletes && TermUtil.isObsolete(currentObject))
-				return Collections.EMPTY_LIST;
-			Iterator it;
-			Collection names = new HashSet();
+				return Collections.emptyList();
+			Collection<String> names = new HashSet<String>();
 			if (currentObject instanceof SynonymedObject) {
-				it = ((SynonymedObject) currentObject).getSynonyms().iterator();
+				Iterator<Synonym> it = ((SynonymedObject) currentObject).getSynonyms().iterator();
 				while (it.hasNext()) {
-					Synonym s = (Synonym) it.next();
+					Synonym s = it.next();
 					if (s.getScope() == Synonym.EXACT_SYNONYM)
 						names.add(s.getText());
 				}
 			}
 
-			it = session.getObjects().iterator();
+			Iterator<IdentifiedObject> it = session.getObjects().iterator();
 			while (it.hasNext()) {
-				IdentifiedObject io = (IdentifiedObject) it.next();
+				IdentifiedObject io = it.next();
 				if (io.equals(currentObject))
 					continue;
 				if (!checkObsoletes && TermUtil.isObsolete(io))
@@ -117,10 +115,7 @@ public class NameRedundancyCheck extends AbstractCheck implements OntologyCheck 
 				}
 
 				if (io instanceof SynonymedObject) {
-					Iterator it2 = ((SynonymedObject) io).getSynonyms()
-							.iterator();
-					while (it2.hasNext()) {
-						Synonym s = (Synonym) it2.next();
+					for(Synonym s : ((SynonymedObject) io).getSynonyms()) {
 						if (s.getScope() == Synonym.EXACT_SYNONYM
 								&& s.getText().equals(currentObject.getName())) {
 							CheckWarning warning = new CheckWarning(
@@ -157,10 +152,10 @@ public class NameRedundancyCheck extends AbstractCheck implements OntologyCheck 
 		return out;
 	}
 
-	protected void createMapping(Map nameMap, String name, IdentifiedObject io) {
-		Collection c = (Collection) nameMap.get(name);
+	protected void createMapping(Map<String, Collection<IdentifiedObject>> nameMap, String name, IdentifiedObject io) {
+		Collection<IdentifiedObject> c = nameMap.get(name);
 		if (c == null) {
-			c = new HashSet();
+			c = new HashSet<IdentifiedObject>();
 			nameMap.put(name, c);
 		}
 		c.add(io);

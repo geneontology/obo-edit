@@ -34,7 +34,7 @@ public class AddConsiderAction implements DropMenuAction {
 		return "Add consider term";
 	}
 
-	public List getSubActions() {
+	public List<EditAction> getSubActions() {
 		return null;
 	}
 
@@ -95,9 +95,9 @@ public class AddConsiderAction implements DropMenuAction {
 		TermMacroHistoryItem item = new TermMacroHistoryItem(
 				"add obsolete consider term");
 
-		Iterator it = considerTerms.iterator();
+		Iterator<ObsoletableObject> it = considerTerms.iterator();
 		while (it.hasNext()) {
-			ObsoletableObject considerTerm = (ObsoletableObject) it.next();
+			ObsoletableObject considerTerm = it.next();
 			AddConsiderHistoryItem addItem = new AddConsiderHistoryItem(target,
 					considerTerm);
 			item.addItem(addItem);

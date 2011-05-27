@@ -3,10 +3,8 @@ package org.oboedit.graph;
 import java.awt.geom.Rectangle2D;
 
 import org.oboedit.gui.components.LinkDatabaseCanvas;
-import org.oboedit.piccolo.BoundsUtil;
 
 import edu.umd.cs.piccolo.PNode;
-import edu.umd.cs.piccolo.util.PBounds;
 
 import org.apache.log4j.*;
 

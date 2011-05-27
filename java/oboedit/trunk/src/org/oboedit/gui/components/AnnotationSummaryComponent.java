@@ -2,7 +2,6 @@ package org.oboedit.gui.components;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
@@ -18,7 +17,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
@@ -35,8 +33,6 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 import org.bbop.framework.AbstractGUIComponent;
-import org.bbop.util.MultiHashMap;
-import org.bbop.util.MultiMap;
 import org.bbop.util.TinySet;
 
 import org.obo.annotation.datamodel.Annotation;
@@ -44,10 +40,8 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOClass;
-import org.obo.datamodel.OBOObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.util.AnnotationUtil;
-import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
@@ -227,13 +221,13 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 		return "Cross Product Matrix Editor Plugin";
 	}
 	
-	private JButton addButton(String name,ActionListener al,JPanel parent) {
-		JButton button = new JButton(name);
-		button.setActionCommand(name);
-		button.addActionListener(al);
-		parent.add(button);
-		return button;
-	}
+//	private JButton addButton(String name,ActionListener al,JPanel parent) {
+//		JButton button = new JButton(name);
+//		button.setActionCommand(name);
+//		button.addActionListener(al);
+//		parent.add(button);
+//		return button;
+//	}
 	
 	
 
@@ -358,7 +352,7 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 							obj2subj.get(obj).add(annot.getSubject());
 						else
 							obj2subj.put(obj, 
-									new HashSet(Collections.singleton(annot.getSubject())));
+									new HashSet<LinkedObject>(Collections.singleton(annot.getSubject())));
 
 				Collection<LinkedObject> filteredObjSet =  objSet;
 

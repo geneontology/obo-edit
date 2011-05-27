@@ -8,12 +8,8 @@ import org.bbop.expression.ExpressionException;
 import org.bbop.util.*;
 import org.obo.datamodel.*;
 import org.obo.filters.CommentSearchCriterion;
-import org.obo.filters.DefinitionDbxrefSearchCriterion;
 import org.obo.history.*;
-import org.oboedit.controller.VerificationManager;
 import org.oboedit.gui.AbstractTextEditComponent;
-import org.oboedit.gui.Preferences;
-
 import org.apache.log4j.*;
 
 public class CommentEditorComponent extends AbstractTextEditComponent {
@@ -107,16 +103,16 @@ public class CommentEditorComponent extends AbstractTextEditComponent {
 				new FieldPathSpec(CommentSearchCriterion.CRITERION), textField);
 	}
 
-	public java.util.List getChanges() {
-				if (currentObject != null && currentObject instanceof CommentedObject) {
+	public java.util.List<HistoryItem> getChanges() {
+		if (currentObject != null && currentObject instanceof CommentedObject) {
 			CommentedObject co = (CommentedObject) currentObject;
 			if (!ObjectUtil.equals(getText(), co.getComment())) {
 				HistoryItem item = new CommentChangeHistoryItem(co, getText());
 				return Collections.singletonList(item);
 			} else {
-				return Collections.EMPTY_LIST;
+				return Collections.emptyList();
 			}
 		} else
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 	}
 }

@@ -8,7 +8,7 @@ import javax.swing.KeyStroke;
 
 public interface EditAction {
 
-	public List<EditAction> getSubActions();
+	public List<? extends EditAction> getSubActions();
 
 	public String getName();
 

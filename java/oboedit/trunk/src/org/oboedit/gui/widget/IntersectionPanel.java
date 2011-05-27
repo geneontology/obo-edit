@@ -8,19 +8,15 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.*;
 import java.util.*;
+
 import javax.swing.*;
 import javax.swing.border.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.tree.*;
-
 import org.bbop.swing.*;
 import org.bbop.swing.widget.AutocompleteBox;
 import org.obo.datamodel.*;
 import org.obo.datamodel.impl.*;
 import org.obo.history.*;
 import org.obo.postcomp.PostcompUtil;
-import org.obo.query.QueryEngine;
 import org.obo.util.HistoryUtil;
 import org.obo.util.IDUtil;
 import org.obo.util.TermUtil;
@@ -32,9 +28,6 @@ import org.oboedit.gui.DropUtil;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.TermAutocompleteModel;
-import org.oboedit.gui.event.RootChangeEvent;
-import org.oboedit.gui.event.RootChangeListener;
-
 import org.apache.log4j.*;
 
 public class IntersectionPanel extends AbstractTextEditComponent {
@@ -229,9 +222,9 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 
 			menu.addSeparator();
 
-			Iterator it = TermUtil.getRelationshipTypes(session).iterator();
+			Iterator<OBOProperty> it = TermUtil.getRelationshipTypes(session).iterator();
 			while (it.hasNext()) {
-				final OBOProperty prop = (OBOProperty) it.next();
+				final OBOProperty prop = it.next();
 
 				if (prop.equals(OBOProperty.IS_A))
 					continue;
@@ -403,7 +396,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 		}
 	}
 
-	public java.util.List getChanges() {
+	public java.util.List<HistoryItem> getChanges() {
 		java.util.List<HistoryItem> historyList = new LinkedList<HistoryItem>();
 		if (createNewObject) {
 			historyList
@@ -419,18 +412,17 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 		}
 		if (currentObject instanceof LinkedObject) {
 			// Find any intersection links that have been deleted
-			Iterator it = ((LinkedObject) currentObject).getParents()
-			.iterator();
+			Iterator<Link> it = ((LinkedObject) currentObject).getParents().iterator();
 			while (it.hasNext()) {
-				Link link = (Link) it.next();
+				Link link = it.next();
 
 				if (!TermUtil.isIntersection(link))
 					continue;
 
 				boolean found = false;
-				Iterator it2 = getRelationshipList().iterator();
+				Iterator<Link> it2 = getRelationshipList().iterator();
 				while (it2.hasNext()) {
-					Link completeDefLink = (Link) it2.next();
+					Link completeDefLink = it2.next();
 					if (completeDefLink.equals(link)) {
 						found = true;
 						break;
@@ -669,9 +661,9 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 	public void populateFields(IdentifiedObject currentObject) {
 		if (!(currentObject instanceof OBOClass))
 			return;
-		Iterator it = getRelationshipList().iterator();
+		Iterator<Link> it = getRelationshipList().iterator();
 		while (it.hasNext()) {
-			Link link = (Link) it.next();
+			Link link = it.next();
 			if (!((OBOClass) currentObject).getParents().contains(link)) {
 				((OBOClass) currentObject).atomicAddParent(link);
 			}
@@ -696,9 +688,8 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 //		logger.info("IntersectionPanel.setClass: parents of " + oboClass + " = "
 //		+ oboClass.getParents());
 
-		Iterator it = oboClass.getParents().iterator();
-		while (it.hasNext()) {
-			OBORestriction link = (OBORestriction) it.next();
+		for(Link l : oboClass.getParents()) {
+			OBORestriction link = (OBORestriction) l;
 			if (!link.getCompletes())
 				continue;
 			LinkedObject parent = link.getParent();

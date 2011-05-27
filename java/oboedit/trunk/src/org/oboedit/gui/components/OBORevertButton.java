@@ -14,7 +14,6 @@ import org.bbop.framework.ConfigurationPanel;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.history.HistoryItem;
 import org.oboedit.gui.OBOTextEditComponent;
-import org.oboedit.gui.Preferences;
 import org.oboedit.gui.RootTextEditComponent;
 import org.oboedit.gui.event.TermLoadEvent;
 import org.oboedit.gui.event.TermLoadListener;

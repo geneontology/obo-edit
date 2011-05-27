@@ -67,7 +67,7 @@ public class SpecificMoveAction implements ClickMenuAction {
 		return getName();
 	}
 
-	public List getSubActions() {
+	public List<EditAction> getSubActions() {
 		return null;
 	}
 
@@ -122,8 +122,8 @@ public class SpecificMoveAction implements ClickMenuAction {
 
 	public HistoryItem execute() {
 
-		List historyList = new Vector();
-		List pathouts = new Vector();
+		List<HistoryItem> historyList = new Vector<HistoryItem>();
+		List<TreePath> pathouts = new Vector<TreePath>();
 
 		LinkedObject target = dest.getTerm();
 
@@ -143,18 +143,17 @@ public class SpecificMoveAction implements ClickMenuAction {
 
 		HistoryItem item;
 		if (historyList.size() == 1) {
-			item = (HistoryItem) historyList.get(0);
+			item = historyList.get(0);
 		} else {
 			item = new TermMacroHistoryItem("Moved terms");
 			for (int i = 0; i < historyList.size(); i++) {
-				((TermMacroHistoryItem) item).addItem((HistoryItem) historyList
-						.get(i));
+				((TermMacroHistoryItem) item).addItem(historyList.get(i));
 			}
 		}
 
 		TreePath[] outpatharr = new TreePath[pathouts.size()];
 		for (int i = 0; i < outpatharr.length; i++)
-			outpatharr[i] = (TreePath) pathouts.get(i);
+			outpatharr[i] = pathouts.get(i);
 		GUIUtil.setSelections(item, sources, SelectionManager
 				.createSelectionFromPaths(null, outpatharr, null,
 						SessionManager.getManager().getCurrentLinkDatabase(),

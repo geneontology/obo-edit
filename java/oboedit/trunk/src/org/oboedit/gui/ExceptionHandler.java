@@ -1,7 +1,6 @@
 package org.oboedit.gui;
 
 import javax.swing.JOptionPane;
-import java.io.File;
 import org.bbop.framework.GUIManager;
 
 import org.apache.log4j.*;

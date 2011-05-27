@@ -5,7 +5,6 @@ import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.IOManager;
 import org.bbop.swing.*;
-import org.bbop.util.*;
 import org.obo.dataadapter.*;
 import org.obo.datamodel.*;
 import org.obo.history.HistoryGenerator;
@@ -215,7 +214,7 @@ public class OntologyChangeTracker extends AbstractGUIComponent {
 				DataAdapterRegistry registry = IOManager.getManager()
 						.getAdapterRegistry();
 
-				GraphicalAdapterChooser gac = new GraphicalAdapterChooser(
+				GraphicalAdapterChooser<HistoryList, Void> gac = new GraphicalAdapterChooser<HistoryList, Void>(
 						registry, OBOAdapter.WRITE_HISTORY, GUIManager
 								.getManager().getScreenLockQueue(), GUIManager
 								.getManager().getFrame(), true,

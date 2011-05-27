@@ -104,7 +104,7 @@ public class IDManager {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List loadIDProfiles() {
+	public static List<IDProfile> loadIDProfiles() {
 		File profileFile = new File(GUIManager.getPrefsDir(), "idprofiles.xml");
 		List<IDProfile> profiles = null;
 		if (profileFile.exists()) {

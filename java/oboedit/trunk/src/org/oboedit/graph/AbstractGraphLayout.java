@@ -8,8 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.oboedit.graph.HierarchicalGraphLayout.NodeObj;
-
 public abstract class AbstractGraphLayout implements GraphLayout {
 	protected DummyEdge scratchEdge = new DummyEdge(new NodeObj("parent_str", -1),
 			new NodeObj("parent_str", -2), true);

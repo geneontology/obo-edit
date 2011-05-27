@@ -1,6 +1,5 @@
 package org.oboedit.verify.impl;
 
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
@@ -12,10 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -32,9 +28,7 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.Synonym;
 import org.obo.datamodel.SynonymedObject;
-import org.obo.filters.DbxrefSearchCriterion;
 import org.obo.filters.DefinitionDbxrefSearchCriterion;
-import org.obo.filters.DefinitionSearchCriterion;
 import org.obo.filters.GeneralDbxrefSearchCriterion;
 import org.obo.filters.SynonymDbxrefSearchCriterion;
 import org.obo.filters.SynonymSearchCriterion;
@@ -46,12 +40,10 @@ import org.obo.util.TermUtil;
 import org.obo.util.TextUtil;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.controller.VerificationManager;
-import org.oboedit.gui.Preferences;
 import org.oboedit.verify.AbstractCheck;
 import org.oboedit.verify.CheckConfiguration;
 import org.oboedit.verify.CheckWarning;
 import org.oboedit.verify.FieldCheck;
-import org.oboedit.verify.HistoryQuickFix;
 import org.oboedit.verify.OntologyCheck;
 import org.oboedit.verify.QuickFix;
 
@@ -209,24 +201,24 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 		return configurationPanel;
 	}
 
-	public Collection check(OBOSession session, IdentifiedObject currentObject,
+	public Collection<CheckWarning> check(OBOSession session, IdentifiedObject currentObject,
 			byte condition, boolean checkObsoletes) {
-		LinkedList out = new LinkedList();
-		Collection checkSet;
-		Map descMap = null;
+		LinkedList<CheckWarning> out = new LinkedList<CheckWarning>();
+		Collection<IdentifiedObject> checkSet;
+		Map<String, Collection<DbxrefDescRecord>> descMap = null;
 		boolean doDescCheck = ((DbxrefCheckConfiguration) configuration)
 				.getDoDescriptionsCheck();
 		if (doDescCheck)
-			descMap = new HashMap();
+			descMap = new HashMap<String, Collection<DbxrefDescRecord>>();
 
 		if (currentObject != null && !doDescCheck) {
 			checkSet = Collections.singleton(currentObject);
 		} else
 			checkSet = session.getObjects();
 
-		Iterator it = checkSet.iterator();
+		Iterator<IdentifiedObject> it = checkSet.iterator();
 		for (int i = 0; it.hasNext(); i++) {
-			IdentifiedObject io = (IdentifiedObject) it.next();
+			IdentifiedObject io = it.next();
 			int percentage = 100 * i / session.getObjects().size();
 			setProgressValue(percentage);
 			setProgressString("checking object " + (i + 1) + " of "
@@ -247,9 +239,9 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 						"Definition dbxref");
 			}
 			if (io instanceof SynonymedObject) {
-				Iterator it2 = ((SynonymedObject) io).getSynonyms().iterator();
+				Iterator<Synonym> it2 = ((SynonymedObject) io).getSynonyms().iterator();
 				for (int sindex = 0; it2.hasNext(); sindex++) {
-					Synonym s = (Synonym) it2.next();
+					Synonym s = it2.next();
 					checkDbxrefs(s.getXrefs(), io, out, "Synonym " + i
 							+ " dbxref ");
 				}
@@ -260,22 +252,17 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 		}
 
 		if (doDescCheck) {
-			it = descMap.keySet().iterator();
-			while (it.hasNext()) {
-				String key = (String) it.next();
-				final Collection c = (Collection) descMap.get(key);
+			for(String key : descMap.keySet()) {
+				final Collection<DbxrefDescRecord> c = descMap.get(key);
 				if (c != null && c.size() > 1) {
-					final Map textMap = new HashMap();
-					Iterator it2 = c.iterator();
-					while (it2.hasNext()) {
-						DbxrefDescRecord record = (DbxrefDescRecord) it2.next();
+					final Map<String, Collection<DbxrefDescRecord>> textMap = new HashMap<String, Collection<DbxrefDescRecord>>();
+					for (final DbxrefDescRecord record : c) {
 						if (currentObject != null
 								&& !currentObject.equals(record.getObj()))
 							continue;
-						Collection records = (Collection) textMap.get(record
-								.getDesc());
+						Collection<DbxrefDescRecord> records = textMap.get(record.getDesc());
 						if (records == null) {
-							records = new LinkedList();
+							records = new LinkedList<DbxrefDescRecord>();
 							textMap.put(record.getDesc(), records);
 						}
 						records.add(record);
@@ -283,48 +270,34 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 					if (textMap.size() > 1) {
 						StringBuffer message = new StringBuffer("The dbxref "
 								+ key + " has several different descriptions: ");
-						it2 = textMap.keySet().iterator();
-						LinkedList fixes = new LinkedList();
+						
+						LinkedList<QuickFix> fixes = new LinkedList<QuickFix>();
 						if (condition != VerificationManager.TEXT_EDIT_COMMIT) {
-							Action fixAction = new AbstractAction(
-									"Remove all dbxref descriptions.") {
-								public void actionPerformed(ActionEvent e) {
-									HistoryItem item = getDbxrefDescItem(
-											textMap, null);
-									SessionManager.getManager().apply(item);
-								}
-							};
-							fixes.add(fixAction);
+							HistoryItem item = getDbxrefDescItem(textMap, null);
+							fixes.add(new DefaultHistoryQuickFix(message.toString(), item));
 						}
-						for (int i = 0; it2.hasNext(); i++) {
+						int i = -1;
+						for (final String desc : textMap.keySet()) {
+							i++;
 							if (i > 0 && textMap.keySet().size() > 2)
 								message.append(", ");
 							if (i > 0 && i == textMap.keySet().size() - 1)
 								message.append(" and ");
 
-							final String desc = (String) it2.next();
-							if (desc != null
+							if (desc != null 
 									&& condition != VerificationManager.TEXT_EDIT_COMMIT) {
-								Action fixAction = new AbstractAction(
-										"Set all dbxref " + "descriptions to '"
-												+ desc + "'.") {
-									public void actionPerformed(ActionEvent e) {
-										HistoryItem item = getDbxrefDescItem(
-												textMap, desc);
-										SessionManager.getManager().apply(item);
-									}
-								};
-								fixes.add(fixAction);
+								HistoryItem item = getDbxrefDescItem(textMap, desc);
+								String msg = "Set all dbxref " + "descriptions to '" + desc + "'.";
+								fixes.add(new DefaultHistoryQuickFix(msg, item));
 							}
-							Collection records = (Collection) textMap.get(desc);
+							Collection<DbxrefDescRecord> records = textMap.get(desc);
 							if (desc == null)
 								message.append("no description in ");
 							else
 								message.append("'" + desc + "' in ");
-							Iterator it3 = records.iterator();
-							for (int j = 0; it3.hasNext(); j++) {
-								DbxrefDescRecord record = (DbxrefDescRecord) it3
-										.next();
+							int j = -1;
+							for (DbxrefDescRecord record : records) {
+								j++;
 								if (j > 0 && records.size() > 2)
 									message.append(", ");
 								if (j > 0 && j == records.size() - 1)
@@ -348,23 +321,16 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 		return out;
 	}
 
-	protected static HistoryItem getDbxrefDescItem(Map textMap, String desc) {
+	protected static HistoryItem getDbxrefDescItem(Map<String, Collection<DbxrefDescRecord>> textMap, String desc) {
 		TermMacroHistoryItem mitem = new TermMacroHistoryItem(
 				"Set dbxref descriptions to " + desc);
-		Iterator it = textMap.values().iterator();
-		while (it.hasNext()) {
-			Collection c = (Collection) it.next();
-			Iterator it2 = c.iterator();
-			while (it2.hasNext()) {
-				DbxrefDescRecord record = (DbxrefDescRecord) it2.next();
+		for(Collection<DbxrefDescRecord> records : textMap.values()) {
+			for (DbxrefDescRecord record : records) {
 				IdentifiedObject io = record.getObj();
 				if (io instanceof DbxrefedObject) {
 					DbxrefedObject dbo = (DbxrefedObject) io;
-					Iterator dit = dbo.getDbxrefs().iterator();
-					while (dit.hasNext()) {
-						Dbxref ref = (Dbxref) dit.next();
-						String key = ref.getDatabase() + ":"
-								+ ref.getDatabaseID();
+					for(Dbxref ref : dbo.getDbxrefs()) {
+						String key = ref.getDatabase() + ":" + ref.getDatabaseID();
 						if (key.equals(record.getDbxref())
 								&& !ObjectUtil.equals(ref.getDesc(), desc)) {
 							HistoryItem item = new DelDbxrefHistoryItem(record
@@ -380,11 +346,8 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 				}
 				if (io instanceof DefinedObject) {
 					DefinedObject dbo = (DefinedObject) io;
-					Iterator dit = dbo.getDefDbxrefs().iterator();
-					while (dit.hasNext()) {
-						Dbxref ref = (Dbxref) dit.next();
-						String key = ref.getDatabase() + ":"
-								+ ref.getDatabaseID();
+					for(Dbxref ref : dbo.getDefDbxrefs()) {
+						String key = ref.getDatabase() + ":" + ref.getDatabaseID();
 						if (key.equals(record.getDbxref())
 								&& !ObjectUtil.equals(ref.getDesc(), desc)) {
 							HistoryItem item = new DelDbxrefHistoryItem(record
@@ -400,14 +363,9 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 				}
 				if (io instanceof SynonymedObject) {
 					SynonymedObject dbo = (SynonymedObject) io;
-					Iterator sit = dbo.getSynonyms().iterator();
-					while (sit.hasNext()) {
-						Synonym s = (Synonym) sit.next();
-						Iterator dit = s.getXrefs().iterator();
-						while (dit.hasNext()) {
-							Dbxref ref = (Dbxref) dit.next();
-							String key = ref.getDatabase() + ":"
-									+ ref.getDatabaseID();
+					for(Synonym s : dbo.getSynonyms()) {
+						for(Dbxref ref : s.getXrefs()) {
+							String key = ref.getDatabase() + ":" + ref.getDatabaseID();
 							if (key.equals(record.getDbxref())
 									&& !ObjectUtil.equals(ref.getDesc(), desc)) {
 								HistoryItem item = new DelDbxrefHistoryItem(
@@ -428,28 +386,25 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 		return mitem;
 	}
 
-	protected void mapDbxrefs(Map descMap, IdentifiedObject io) {
-		Collection c = TextUtil.getAllDbxrefs(io);
-		Iterator it = c.iterator();
-		while (it.hasNext()) {
-			Dbxref dbxref = (Dbxref) it.next();
+	protected void mapDbxrefs(Map<String, Collection<DbxrefDescRecord>> descMap, IdentifiedObject io) {
+		for(Dbxref dbxref : TextUtil.getAllDbxrefs(io)) {
 			addMapRecord(descMap, dbxref, io);
 		}
 	}
 
-	protected void addMapRecord(Map descMap, Dbxref ref, IdentifiedObject obj) {
+	protected void addMapRecord(Map<String, Collection<DbxrefDescRecord>> descMap, Dbxref ref, IdentifiedObject obj) {
 		String key = ref.getDatabase() + ":" + ref.getDatabaseID();
 		DbxrefDescRecord record = new DbxrefDescRecord(obj, key, ref.getDesc());
-		Collection c = (Collection) descMap.get(key);
+		Collection<DbxrefDescRecord> c = descMap.get(key);
 		if (c == null) {
-			c = new LinkedList();
+			c = new LinkedList<DbxrefDescRecord>();
 			descMap.put(key, c);
 		}
 		c.add(record);
 	}
 
 	protected void checkDbxrefs(Collection<Dbxref> dbxrefs,
-			IdentifiedObject currentObject, LinkedList out, String title) {
+			IdentifiedObject currentObject, LinkedList<CheckWarning> out, String title) {
 		int i = 0;
 		for (Dbxref ref : dbxrefs) {
 			checkDbxref(ref, currentObject, out, i++, title);
@@ -519,11 +474,11 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 	}
 
 	protected void checkDbxref(Dbxref ref, IdentifiedObject currentObject,
-			LinkedList out, int index, String title) {
+			LinkedList<CheckWarning> out, int index, String title) {
 		checkDbxref(ref, new FieldPath(currentObject), out, index, title);
 	}
 
-	protected void checkDbxref(Dbxref ref, FieldPath field, LinkedList out,
+	protected void checkDbxref(Dbxref ref, FieldPath field, LinkedList<CheckWarning> out,
 			int index, String title) {
 		DbxrefCheckConfiguration dbconfig = (DbxrefCheckConfiguration) configuration;
 		if (dbconfig.getDoMissingDbCheck() && ref.getDatabase().length() == 0) {
@@ -540,12 +495,10 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 			try {
 				new URL(ref.getDatabase() + ":" + ref.getDatabaseID());
 			} catch (MalformedURLException ex) {
-				out
-						.add(new CheckWarning(
-								getWarningHeader(title, index, field
-										.getObject())
-										+ " has a database prefix that looks like a URL prefix, but is not a valid URL.",
-								false, this, field));
+				out.add(new CheckWarning(getWarningHeader(title, index, field
+						.getObject())
+						+ " has a database prefix that looks like a URL prefix, but is not a valid URL.",
+						false, this, field));
 			}
 		}
 		if (dbconfig.getDoBadCharactersCheck()) {

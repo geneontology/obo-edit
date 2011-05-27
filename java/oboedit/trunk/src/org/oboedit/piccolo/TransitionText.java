@@ -1,21 +1,12 @@
 package org.oboedit.piccolo;
 
-import java.awt.Color;
 import java.awt.geom.Point2D;
 
-import javax.swing.text.Document;
 import javax.swing.text.ViewFactory;
-import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.parser.ParserDelegator;
-
-import org.bbop.swing.CustomLinebreakHTMLEditorKit;
-
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.activities.PActivity;
 import edu.umd.cs.piccolo.util.PPaintContext;
-import edu.umd.cs.piccolox.nodes.PStyledText;
-
 import org.apache.log4j.*;
 
 public class TransitionText extends ViewRenderedStyleText implements Morphable {

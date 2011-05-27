@@ -39,7 +39,7 @@ public class SpecificCompletesAction implements ClickMenuAction {
 		return getName();
 	}
 
-	public List getSubActions() {
+	public List<EditAction> getSubActions() {
 		return null;
 	}
 
@@ -82,12 +82,12 @@ public class SpecificCompletesAction implements ClickMenuAction {
 
 		HistoryItem item;
 		if (items.size() == 1)
-			item = (HistoryItem) items.get(0);
+			item = items.get(0);
 		else {
 			item = new TermMacroHistoryItem("Changed intersection status");
 			for (int i = 0; i < items.size(); i++)
 				((TermMacroHistoryItem) item)
-						.addItem((HistoryItem) items.get(i));
+						.addItem(items.get(i));
 		}
 		
 		GUIUtil.setSelections(item, sources, sources);

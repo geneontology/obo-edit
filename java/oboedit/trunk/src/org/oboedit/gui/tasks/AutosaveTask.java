@@ -5,17 +5,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Timer;
-import java.util.TimerTask;
-
-import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.dataadapter.DataAdapterOperationTask;
 import org.bbop.dataadapter.FileAdapterConfiguration;
-import org.bbop.dataadapter.IOOperation;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.GUITask;
-import org.bbop.swing.ModalProgressMonitor;
 import org.bbop.util.RunnableTimerTask;
+import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
+import org.obo.datamodel.OBOSession;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.event.ReconfigEvent;
@@ -111,8 +108,8 @@ public class AutosaveTask implements GUITask, Runnable {
 			logger.info("Autosaving backup file " + saveFile + " at " + (new Date()));
 			final FileAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 			config.setWritePath(saveFile);
-			DataAdapterOperationTask task = new DataAdapterOperationTask(
-					adapter, adapter.WRITE_ONTOLOGY, config, SessionManager
+			DataAdapterOperationTask<OBOSession, OBOSession> task = new DataAdapterOperationTask<OBOSession, OBOSession>(
+					adapter, OBOAdapter.WRITE_ONTOLOGY, config, SessionManager
 							.getManager().getSession());
 //			GUIManager.getManager().scheduleTask(task, true);
 			// false means *don't* grab focus

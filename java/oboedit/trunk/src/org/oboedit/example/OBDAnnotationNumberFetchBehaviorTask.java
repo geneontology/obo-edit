@@ -3,11 +3,6 @@ package org.oboedit.example;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -18,10 +13,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.bbop.framework.ComponentConfiguration;
 import org.bbop.swing.ColorUtil;
 import org.obo.datamodel.IdentifiedObject;
-import org.oboedit.connect.GODBConnect;
 import org.oboedit.connect.OBDConnect;
 import org.oboedit.graph.AbstractFetchTask;
 import org.oboedit.gui.FilteredRenderable;

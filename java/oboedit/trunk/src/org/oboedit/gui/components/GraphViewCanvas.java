@@ -6,7 +6,6 @@ import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -398,7 +397,7 @@ FilteredRenderable {
 			MutableLinkDatabase mutable = new DefaultMutableLinkDatabase(true);
 			for (Link link : parents) {
 				if (TermUtil.isImplied(link)) {
-					Collection<Link> implied = ReasonerUtil.getGivenSupportingLinks((ReasonedLinkDatabase) reasoner, link);
+					Collection<Link> implied = ReasonerUtil.getGivenSupportingLinks(reasoner, link);
 					for (Link backingLink : implied) {
 						mutable.addParent(backingLink);
 					}
@@ -419,7 +418,7 @@ FilteredRenderable {
 			for (Link link : parents) {
 				if (reasoner.isSubPropertyOf(link.getType(), type)) {
 					if (TermUtil.isImplied(link)) {
-						Collection<Link> implied = ReasonerUtil.getGivenSupportingLinks((ReasonedLinkDatabase) reasoner, link);
+						Collection<Link> implied = ReasonerUtil.getGivenSupportingLinks(reasoner, link);
 						for (Link backingLink : implied) {
 							if (reasoner.isSubPropertyOf(backingLink.getType(), type))
 								objects.add(backingLink.getParent());

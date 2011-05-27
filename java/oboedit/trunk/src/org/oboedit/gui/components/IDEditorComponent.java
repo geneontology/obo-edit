@@ -7,9 +7,8 @@ import java.util.List;
 import javax.swing.*;
 
 import org.obo.datamodel.*;
+import org.obo.history.HistoryItem;
 import org.oboedit.gui.AbstractTextEditComponent;
-import org.oboedit.gui.Preferences;
-
 import org.apache.log4j.*;
 
 public class IDEditorComponent extends AbstractTextEditComponent {
@@ -79,14 +78,14 @@ public class IDEditorComponent extends AbstractTextEditComponent {
 			idLabel.setText(currentObject.getID());
 			secondaryIDLabel.setEnabled(true);
 			if (currentObject instanceof MultiIDObject) {
-				List list = new ArrayList();
+				List<String> list = new ArrayList<String>();
 				list.addAll(((MultiIDObject) currentObject).getSecondaryIDs());
 				setSecondariesVisible(list.size() > 0);
 				Collections.sort(list);
 				StringBuffer sb = new StringBuffer();
-				Iterator it = list.iterator();
+				Iterator<String> it = list.iterator();
 				for (int i = 0; it.hasNext(); i++) {
-					String s = (String) it.next();
+					String s = it.next();
 					if (i > 0)
 						sb.append(", ");
 					sb.append(s);
@@ -139,7 +138,7 @@ public class IDEditorComponent extends AbstractTextEditComponent {
 	public void populateFields(IdentifiedObject io) {
 	}
 
-	public List getChanges() {
-		return Collections.EMPTY_LIST;
+	public List<HistoryItem> getChanges() {
+		return Collections.emptyList();
 	}
 }

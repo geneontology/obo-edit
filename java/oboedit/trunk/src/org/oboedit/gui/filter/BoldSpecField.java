@@ -1,7 +1,5 @@
 package org.oboedit.gui.filter;
 
-import org.bbop.swing.SwingUtil;
-import org.obo.util.HTMLUtil;
 import org.oboedit.gui.FilteredRenderable;
 
 import org.apache.log4j.*;

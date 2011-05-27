@@ -1,11 +1,9 @@
 package org.oboedit.gui.actions;
 
 import java.util.*;
-import org.obo.datamodel.*;
 import org.obo.history.HistoryItem;
 import org.oboedit.gui.*;
 
-import javax.swing.tree.TreePath;
 import javax.swing.*;
 
 import org.apache.log4j.*;

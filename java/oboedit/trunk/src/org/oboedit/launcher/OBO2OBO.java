@@ -103,7 +103,7 @@ public class OBO2OBO {
 			boolean parseObsoleteComments, boolean writeObsoleteComments,
 			boolean fixDbxrefs, List scripts) throws Exception {
 		OBOFileAdapter adapter = new OBOFileAdapter();
-		OBOSession session = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY,
+		OBOSession session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY,
 				readConfig, null);
 		if (parseObsoleteComments) {
 			parseComments(session);

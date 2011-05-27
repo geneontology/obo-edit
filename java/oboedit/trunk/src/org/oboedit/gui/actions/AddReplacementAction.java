@@ -34,7 +34,7 @@ public class AddReplacementAction implements DropMenuAction {
 		return "Add replacement term";
 	}
 
-	public List getSubActions() {
+	public List<EditAction> getSubActions() {
 		return null;
 	}
 
@@ -95,9 +95,9 @@ public class AddReplacementAction implements DropMenuAction {
 		TermMacroHistoryItem item = new TermMacroHistoryItem(
 				"add obsolete replacement term");
 
-		Iterator it = replacementTerms.iterator();
+		Iterator<ObsoletableObject> it = replacementTerms.iterator();
 		while (it.hasNext()) {
-			ObsoletableObject replacementTerm = (ObsoletableObject) it.next();
+			ObsoletableObject replacementTerm = it.next();
 			AddReplacementHistoryItem addItem = new AddReplacementHistoryItem(
 					target, replacementTerm);
 			item.addItem(addItem);

@@ -78,7 +78,7 @@ public class SpecificInvNecessaryAction implements ClickMenuAction {
 	public HistoryItem execute() {
 		List<HistoryItem> items = new LinkedList<HistoryItem>();
 
-		Iterator it = sources.getLinks().iterator();
+		Iterator<Link> it = sources.getLinks().iterator();
 		while(it.hasNext()) {
 			OBORestriction tr = (OBORestriction) it.next();
 
@@ -89,12 +89,12 @@ public class SpecificInvNecessaryAction implements ClickMenuAction {
 
 		HistoryItem item;
 		if (items.size() == 1)
-			item = (HistoryItem) items.get(0);
+			item = items.get(0);
 		else {
 			item = new TermMacroHistoryItem("Changed inverse necessity");
 			for (int i = 0; i < items.size(); i++)
 				((TermMacroHistoryItem) item)
-						.addItem((HistoryItem) items.get(i));
+						.addItem(items.get(i));
 		}
 
 		GUIUtil.setSelections(item, sources, sources);

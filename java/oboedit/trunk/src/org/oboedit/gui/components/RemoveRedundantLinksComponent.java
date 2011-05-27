@@ -121,7 +121,7 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 		for(int i=0; i<selectedIx.size(); i++){
 			logger.debug("Remove selectedIx[" + i + "]: " + selectedIx.get(i));
 			logger.debug("which is link: " + links.get(selectedIx.get(i)));
-			removeLinks.add((Link) links.get(selectedIx.get(i)));
+			removeLinks.add(links.get(selectedIx.get(i)));
 			redundantLinks.remove(links.get(selectedIx.get(i)));
 
 		}
@@ -210,7 +210,7 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 				return false;
 		}
 
-		public Class getColumnClass(final int columnIndex) {
+		public Class<?> getColumnClass(final int columnIndex) {
 			if (data == null || data.length == 0) {
 				return Object.class;
 			}
@@ -314,7 +314,6 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 				protected JTableHeader createDefaultTableHeader() {
 					return new JTableHeader(columnModel) {
 						public String getToolTipText(MouseEvent e) {
-							String tip = null;
 							java.awt.Point p = e.getPoint();
 							int index = columnModel.getColumnIndexAtX(p.x);
 							int realIndex = columnModel.getColumn(index).getModelIndex();

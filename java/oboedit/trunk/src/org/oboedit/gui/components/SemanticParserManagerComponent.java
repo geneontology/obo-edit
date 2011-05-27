@@ -1,15 +1,10 @@
 package org.oboedit.gui.components;
 
 import org.bbop.framework.AbstractGUIComponent;
-import org.bbop.util.*;
-import org.obo.datamodel.impl.*;
 import org.obo.history.TermMacroHistoryItem;
 import org.obo.nlp.SemanticParser;
 import org.obo.nlp.impl.RegulationTermParser;
-import org.obo.reasoner.ReasonerListener;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.*;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;

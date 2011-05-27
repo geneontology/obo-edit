@@ -6,7 +6,6 @@ import org.obo.datamodel.*;
 import org.obo.history.*;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.*;
 import org.oboedit.gui.event.*;
 import org.oboedit.util.GUIUtil;
 
@@ -141,7 +140,7 @@ public class NamespaceManager extends AbstractGUIComponent {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setPreferredSize(new Dimension(400, 300));
 		nsList = new ListEditor(new NamespaceEditor(), noNamespaceLabel,
-				new Vector(), true, true, true, true, false);
+				new Vector<Object>(), true, true, true, true, false);
 
 		Box commitBox = new Box(BoxLayout.X_AXIS);
 		commitBox.add(Box.createHorizontalGlue());
@@ -184,31 +183,31 @@ public class NamespaceManager extends AbstractGUIComponent {
 	};
 
 	protected void loadNamespaces() {
-		Vector v = new Vector();
+		Vector<NamespaceWrapper> v = new Vector<NamespaceWrapper>();
 
-		Iterator it = SessionManager.getManager().getSession().getNamespaces()
+		Iterator<Namespace> it = SessionManager.getManager().getSession().getNamespaces()
 				.iterator();
 		while (it.hasNext()) {
-			Namespace ns = (Namespace) it.next();
+			Namespace ns = it.next();
 			v.add(new NamespaceWrapper(ns));
 		}
 		nsList.setData(v);
 	}
 
 	protected boolean isInUse(Namespace ns) {
-		Iterator it2 = SessionManager.getManager().getSession().getObjects()
+		Iterator<IdentifiedObject> it2 = SessionManager.getManager().getSession().getObjects()
 				.iterator();
 		boolean inUse = false;
 		while (it2.hasNext()) {
-			IdentifiedObject term = (IdentifiedObject) it2.next();
+			IdentifiedObject term = it2.next();
 			if (term.getNamespace() != null && term.getNamespace().equals(ns)) {
 				inUse = true;
 				break;
 			}
 			if (term instanceof LinkedObject) {
-				Iterator it = ((LinkedObject) term).getParents().iterator();
+				Iterator<Link> it = ((LinkedObject) term).getParents().iterator();
 				while (it.hasNext()) {
-					Link tr = (Link) it.next();
+					Link tr = it.next();
 					if (tr.getNamespace() != null
 							&& tr.getNamespace().equals(ns)) {
 						inUse = true;
@@ -224,8 +223,8 @@ public class NamespaceManager extends AbstractGUIComponent {
 	}
 
 	protected void saveNamespaces() {
-		Set v = new HashSet();
-		Vector data = nsList.getData();
+		Set<NamespaceWrapper> v = new HashSet<NamespaceWrapper>();
+		Vector<?> data = nsList.getData();
 		for (int i = 0; i < data.size(); i++) {
 			NamespaceWrapper ns = (NamespaceWrapper) data.get(i);
 			if (v.contains(ns)) {
@@ -235,15 +234,15 @@ public class NamespaceManager extends AbstractGUIComponent {
 			}
 			v.add(ns);
 		}
-		Iterator it = SessionManager.getManager().getSession().getNamespaces()
+		Iterator<Namespace> it = SessionManager.getManager().getSession().getNamespaces()
 				.iterator();
 		TermMacroHistoryItem item = new TermMacroHistoryItem("Namespace edits");
 		while (it.hasNext()) {
-			Namespace ns = (Namespace) it.next();
+			Namespace ns = it.next();
 			boolean removed = true;
-			Iterator it2 = v.iterator();
+			Iterator<NamespaceWrapper> it2 = v.iterator();
 			while (it2.hasNext()) {
-				NamespaceWrapper nw = (NamespaceWrapper) it2.next();
+				NamespaceWrapper nw = it2.next();
 				if (nw.getNamespace() != null && nw.getNamespace().equals(ns)) {
 					removed = false;
 					break;
@@ -263,9 +262,9 @@ public class NamespaceManager extends AbstractGUIComponent {
 			}
 		}
 
-		it = v.iterator();
+		Iterator<NamespaceWrapper> it2 = v.iterator();
 		while (it.hasNext()) {
-			NamespaceWrapper nw = (NamespaceWrapper) it.next();
+			NamespaceWrapper nw = it2.next();
 			if (nw.getNamespace() == null) {
 				item.addItem(new TermNamespaceHistoryItem(null, nw.getID(),
 						true, false));

@@ -36,7 +36,7 @@ public class StyledText extends PStyledText {
 	public void recomputeLayout() {
 		if (stringContents == null) return;
 
-		ArrayList linesList = new ArrayList();
+		ArrayList<LineInfo> linesList = new ArrayList<LineInfo>();
 
 		double textWidth = 0;
 		double textHeight = 0;
@@ -47,14 +47,14 @@ public class StyledText extends PStyledText {
 			AttributedCharacterIterator itr = ats.getIterator();
 						
 			LineBreakMeasurer measurer;
-			ArrayList breakList = null;
+			ArrayList<Integer> breakList = null;
 			
 			// First we have to do an initial pass with a LineBreakMeasurer to
 			// find out where Swing is going to break the lines - i.e.
 			// because it doesn't use fractional metrics
 
 			measurer = new LineBreakMeasurer(itr, SWING_FRC);
-			breakList = new ArrayList();
+			breakList = new ArrayList<Integer>();
 			while(measurer.getPosition() < itr.getEndIndex()) {
 				if (constrainWidthToTextWidth) {
 					measurer.nextLayout(Float.MAX_VALUE);
@@ -90,7 +90,7 @@ public class StyledText extends PStyledText {
 				    linesList.add(lineInfo);				    
 				}
 				
-			    int lineEnd = ((Integer)breakList.get(0)).intValue();			    
+			    int lineEnd = breakList.get(0);			    
 			    if (lineEnd <= itr.getRunLimit()) {
 			        breakList.remove(0);
 			        newLine = true;
@@ -128,7 +128,7 @@ public class StyledText extends PStyledText {
 		    textWidth = Math.max(textWidth,lineWidth);
 		}
 		
-		lines = (LineInfo[])linesList.toArray(new LineInfo[0]);
+		lines = linesList.toArray(new LineInfo[linesList.size()]);
 		
 		if (constrainWidthToTextWidth || constrainHeightToTextHeight) {
 			double newWidth = getWidth();
@@ -147,7 +147,7 @@ public class StyledText extends PStyledText {
 	}
 	public void syncWithDocument() {
 		// The paragraph start and end indices
-		ArrayList pEnds = null;
+		ArrayList<RunInfo> pEnds = null;
 		
 		// The current position in the specified range
 		int pos = 0;
@@ -155,8 +155,8 @@ public class StyledText extends PStyledText {
 		// First get the actual text and stick it in an Attributed String
 		try {
 
-			stringContents = new ArrayList();
-			pEnds = new ArrayList();
+			stringContents = new ArrayList<AttributedString>();
+			pEnds = new ArrayList<RunInfo>();
 			
 			String s = document.getText(0,document.getLength());
 			StringTokenizer tokenizer = new StringTokenizer(s,"\n",true);
@@ -219,13 +219,13 @@ public class StyledText extends PStyledText {
 		// The default style context - which will be reused
 		StyleContext style;
 		if (document instanceof HTMLDocument)
-			style = (StyleContext) ((HTMLDocument) document).getStyleSheet();
+			style = ((HTMLDocument) document).getStyleSheet();
 		else
 			style = StyleContext.getDefaultStyleContext();
 
 		RunInfo pEnd = null;
 		for (int i = 0; i < stringContents.size(); i++) {
-			pEnd = (RunInfo)pEnds.get(i);
+			pEnd = pEnds.get(i);
 			pos = pEnd.runStart;
 
 			// The current element will be used as a temp variable while searching
@@ -258,8 +258,8 @@ public class StyledText extends PStyledText {
 					((AttributedString)stringContents.get(i)).addAttribute(
 						TextAttribute.FOREGROUND,
 						foreground,
-						(int)Math.max(0,curElement.getStartOffset()-pEnd.runStart),
-						(int)Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));
+						Math.max(0,curElement.getStartOffset()-pEnd.runStart),
+						Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));
 					
 					Font font = (attributes.isDefined(StyleConstants.FontSize) || attributes.isDefined(StyleConstants.FontFamily)) ? style.getFont(attributes) : null;
 					if (font == null) {
@@ -280,8 +280,8 @@ public class StyledText extends PStyledText {
 						((AttributedString)stringContents.get(i)).addAttribute(
 								TextAttribute.FONT,
 								font,
-								(int)Math.max(0,curElement.getStartOffset()-pEnd.runStart),
-								(int)Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));				    
+								Math.max(0,curElement.getStartOffset()-pEnd.runStart),
+								Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));				    
 					}
 					
 					// These are the optional attributes
@@ -291,8 +291,8 @@ public class StyledText extends PStyledText {
 						((AttributedString)stringContents.get(i)).addAttribute(
 								TextAttribute.BACKGROUND,
 								background,
-								(int)Math.max(0,curElement.getStartOffset()-pEnd.runStart),
-								(int)Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));					    
+								Math.max(0,curElement.getStartOffset()-pEnd.runStart),
+								Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));					    
 					}
 					
 					boolean underline = StyleConstants.isUnderline(attributes);
@@ -300,8 +300,8 @@ public class StyledText extends PStyledText {
 						((AttributedString)stringContents.get(i)).addAttribute(
 							TextAttribute.UNDERLINE,
 							Boolean.TRUE,
-							(int)Math.max(0,curElement.getStartOffset()-pEnd.runStart),
-							(int)Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));						
+							Math.max(0,curElement.getStartOffset()-pEnd.runStart),
+							Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));						
 					}
 					
 					boolean strikethrough = StyleConstants.isStrikeThrough(attributes);
@@ -309,8 +309,8 @@ public class StyledText extends PStyledText {
 						((AttributedString)stringContents.get(i)).addAttribute(
 							TextAttribute.STRIKETHROUGH,
 							Boolean.TRUE,
-							(int)Math.max(0,curElement.getStartOffset()-pEnd.runStart),
-							(int)Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));						
+							Math.max(0,curElement.getStartOffset()-pEnd.runStart),
+							Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));						
 					}
 	
 					// And set the position to the end of the given attribute
@@ -335,8 +335,8 @@ public class StyledText extends PStyledText {
 				((AttributedString)stringContents.get(i)).addAttribute(
 					TextAttribute.FOREGROUND,
 					foreground,
-					(int)Math.max(0,curElement.getStartOffset()-pEnd.runStart),
-					(int)Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));			
+					Math.max(0,curElement.getStartOffset()-pEnd.runStart),
+					Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));			
 
 				// These are the optional attributes
 
@@ -359,8 +359,8 @@ public class StyledText extends PStyledText {
 					((AttributedString)stringContents.get(i)).addAttribute(
 							TextAttribute.FONT,
 							font,
-							(int)Math.max(0,curElement.getStartOffset()-pEnd.runStart),
-							(int)Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));				    
+							Math.max(0,curElement.getStartOffset()-pEnd.runStart),
+							Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));				    
 				}				
 				
 				Color background = (attributes.isDefined(StyleConstants.Background)) ? style.getBackground(attributes) : null;
@@ -368,8 +368,8 @@ public class StyledText extends PStyledText {
 					((AttributedString)stringContents.get(i)).addAttribute(
 							TextAttribute.BACKGROUND,
 							background,
-							(int)Math.max(0,curElement.getStartOffset()-pEnd.runStart),
-							(int)Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));					    
+							Math.max(0,curElement.getStartOffset()-pEnd.runStart),
+							Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));					    
 				}
 				
 				boolean underline = StyleConstants.isUnderline(attributes);
@@ -377,8 +377,8 @@ public class StyledText extends PStyledText {
 					((AttributedString)stringContents.get(i)).addAttribute(
 						TextAttribute.UNDERLINE,
 						Boolean.TRUE,
-						(int)Math.max(0,curElement.getStartOffset()-pEnd.runStart),
-						(int)Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));						
+						Math.max(0,curElement.getStartOffset()-pEnd.runStart),
+						Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));						
 				}
 					
 				boolean strikethrough = StyleConstants.isStrikeThrough(attributes);
@@ -386,8 +386,8 @@ public class StyledText extends PStyledText {
 					((AttributedString)stringContents.get(i)).addAttribute(
 						TextAttribute.STRIKETHROUGH,
 						Boolean.TRUE,
-						(int)Math.max(0,curElement.getStartOffset()-pEnd.runStart),
-						(int)Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));						
+						Math.max(0,curElement.getStartOffset()-pEnd.runStart),
+						Math.min(pEnd.runLimit-pEnd.runStart,curElement.getEndOffset()-pEnd.runStart));						
 				}
 			}
 		}

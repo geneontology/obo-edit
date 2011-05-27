@@ -121,7 +121,7 @@ public class SubsetManagerComponent extends AbstractGUIComponent {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setPreferredSize(new Dimension(400, 300));
 		subsetList = new ListEditor(new SubsetEditor(), noSubsetLabel,
-				new Vector(), true, true, true, true, false);
+				new Vector<Object>(), true, true, true, true, false);
 		Box commitBox = new Box(BoxLayout.X_AXIS);
 		commitBox.add(Box.createHorizontalGlue());
 		commitBox.add(commitButton);
@@ -195,7 +195,7 @@ public class SubsetManagerComponent extends AbstractGUIComponent {
 	}
 
 	protected void loadSubsets() {
-		Vector v = new Vector();
+		Vector<SubsetWrapper> v = new Vector<SubsetWrapper>();
 		
 		for(TermSubset termSub : SessionManager.getManager().getSession().getSubsets()){
 			
@@ -210,9 +210,9 @@ public class SubsetManagerComponent extends AbstractGUIComponent {
 	}
 
 	protected void saveSubsets() {
-		Set v = new HashSet();
-		Vector data = subsetList.getData();
-		Set names = new HashSet();
+		Set<TermSubset> v = new HashSet<TermSubset>();
+		Vector<?> data = subsetList.getData();
+		Set<String> names = new HashSet<String>();
 		for (int i = 0; i < data.size(); i++) {
 			SubsetWrapper rtw = (SubsetWrapper) data.get(i);
 			if (names.contains(rtw.getName())) {
@@ -237,11 +237,11 @@ public class SubsetManagerComponent extends AbstractGUIComponent {
 			}
 		}
 
-		Vector oldsets = new Vector(SessionManager.getManager().getSession().getSubsets());
+		Vector<TermSubset> oldsets = new Vector<TermSubset>(SessionManager.getManager().getSession().getSubsets());
 		TermMacroHistoryItem item = new TermMacroHistoryItem("Subset edits");
-		Vector newsets = (Vector) data.clone();
+		Vector<?> newsets = (Vector) data.clone();
 		for (int i = 0; i < oldsets.size(); i++) {
-			TermSubset subset = (TermSubset) oldsets.get(i);
+			TermSubset subset = oldsets.get(i);
 			boolean found = false;
 			for (int j = 0; j < data.size(); j++) {
 				SubsetWrapper tw = (SubsetWrapper) data.get(j);

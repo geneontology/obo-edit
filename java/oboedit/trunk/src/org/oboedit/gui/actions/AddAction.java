@@ -3,6 +3,7 @@ package org.oboedit.gui.actions;
 import org.bbop.framework.GUIManager;
 
 import java.util.*;
+
 import org.obo.datamodel.*;
 import org.obo.datamodel.impl.DanglingLinkImpl;
 import org.obo.history.*;
@@ -41,7 +42,7 @@ public class AddAction implements ClickMenuAction {
 		return "Create new child";
 	}
 
-	public List getSubActions() {
+	public List<EditAction> getSubActions() {
 		return null;
 	}
 
@@ -114,10 +115,10 @@ public class AddAction implements ClickMenuAction {
 		if (Preferences.getPreferences().getUsePersonalDefinition()) {
 			item.addItem(new DefinitionChangeHistoryItem(null, Preferences
 					.getPreferences().getPersonalDefinition(), id));
-			Iterator it = Preferences.getPreferences().getPersonalDbxrefs()
-					.iterator();
+			Iterator<Dbxref> it = Preferences.getPreferences()
+					.getPersonalDbxrefs().iterator();
 			while (it.hasNext()) {
-				Dbxref ref = (Dbxref) it.next();
+				Dbxref ref = it.next();
 				item.addItem(new AddDbxrefHistoryItem(id, ref, true, null));
 			}
 		}

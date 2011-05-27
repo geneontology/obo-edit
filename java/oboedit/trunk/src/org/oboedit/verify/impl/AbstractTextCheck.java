@@ -1,14 +1,11 @@
 package org.oboedit.verify.impl;
 
-import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.lang.Character.UnicodeBlock;
 import java.net.*;
 import java.util.*;
 
 import javax.swing.*;
-import org.apache.log4j.*;
 
 import org.apache.log4j.Logger;
 import org.bbop.framework.GUIManager;
@@ -18,10 +15,8 @@ import org.obo.datamodel.*;
 import org.obo.history.HistoryItem;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.util.TermUtil;
-import org.oboedit.controller.SessionManager;
 import org.oboedit.controller.VerificationManager;
 import org.oboedit.gui.Preferences;
-import org.oboedit.gui.event.ReconfigEvent;
 import org.oboedit.verify.*;
 
 import com.swabunga.spell.engine.SpellDictionary;
@@ -209,13 +204,13 @@ FieldCheck {
 
 	protected boolean sentenceStructureChecks = false;
 
-	protected static Collection defaultPeriodWords = new LinkedList();
+	protected static Collection<String> defaultPeriodWords = new LinkedList<String>();
 
-	protected static Set periodWords = null;
+	protected static Set<String> periodWords = null;
 
-	protected static Set allowedRepeats = null;
+	protected static Set<String> allowedRepeats = null;
 
-	protected static Set alwaysLowercaseWords = null;
+	protected static Set<String> alwaysLowercaseWords = null;
 
 	//	{
 	//		defaultPeriodWords.add("i.e.");
@@ -255,7 +250,7 @@ FieldCheck {
 		return stdspellChecker;
 	}
 
-	protected static Set getAllowedRepeats() {
+	protected static Set<String> getAllowedRepeats() {
 		if (allowedRepeats == null){
 			reloadWordSets();
 			//logger.debug("getAllowedRepeats: allowedRepeats = " + allowedRepeats.toString());
@@ -278,7 +273,7 @@ FieldCheck {
 		return allowedRepeats;
 	}
 
-	protected static Set getPeriodWords() {
+	protected static Set<String> getPeriodWords() {
 		if (periodWords == null){
 			reloadWordSets();
 			//logger.debug("getPeriodWords: periodWords = " + periodWords.toString());
@@ -301,7 +296,7 @@ FieldCheck {
 		return periodWords;
 	}
 
-	protected static Set getAlwaysLowercaseWords() {
+	protected static Set<String> getAlwaysLowercaseWords() {
 		if (alwaysLowercaseWords == null){
 			reloadWordSets();
 			//logger.debug("getAlwaysLowercaseWords: alwaysLowercaseWords = " + alwaysLowercaseWords.toString());
@@ -338,8 +333,8 @@ FieldCheck {
 		writeWordSet(alwaysLowercaseWords, "alwayslowercase.dict");
 	}
 
-	protected static Set loadWordSet(String filename) {
-		Set out = new HashSet();
+	protected static Set<String> loadWordSet(String filename) {
+		Set<String> out = new HashSet<String>();
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(new File(
 					GUIManager.getPrefsDir(), filename)));
@@ -352,10 +347,10 @@ FieldCheck {
 		return out;
 	}
 
-	protected static void writeWordSet(Collection words, String filename) {
+	protected static void writeWordSet(Collection<String> words, String filename) {
 		//logger.debug("words = " + words.toString());
 		StringBuffer buf = new StringBuffer();
-		Iterator it = words.iterator();
+		Iterator<String> it = words.iterator();
 		//logger.debug("writeWordSet: it = " + it.toString());
 		while (it.hasNext()) {
 			buf.append(it.next()).append("%n");
@@ -431,7 +426,7 @@ FieldCheck {
 				| VerificationManager.SAVE | VerificationManager.MANUAL));
 	}
 
-	protected abstract Collection getStrings(IdentifiedObject io);
+	protected abstract Collection<String> getStrings(IdentifiedObject io);
 
 	protected abstract String getWarningLabel(IdentifiedObject io,
 			byte condition, int index);
@@ -573,11 +568,11 @@ FieldCheck {
 		return out;
 	}
 
-	protected void appendAdditionalWarnings(Collection out, OBOSession session,
+	protected void appendAdditionalWarnings(Collection<CheckWarning> out, OBOSession session,
 			FieldPath path, byte condition) {
 	}
 
-	protected void appendAdditionalWarnings(Collection out, OBOSession session,
+	protected void appendAdditionalWarnings(Collection<CheckWarning> out, OBOSession session,
 			IdentifiedObject currentObject, byte condition) {
 	}
 
@@ -738,13 +733,13 @@ FieldCheck {
 		out.add(w);
 	}
 
-	protected Collection getWarnings(final FieldPath path,
+	protected Collection<CheckWarning> getWarnings(final FieldPath path,
 			boolean allowNewlines, boolean allowBlank, boolean allowExtended,
 			boolean sentenceStructureChecks, final byte condition)
 	throws TooManyWarningsException {
 //		logger.debug("getWarnings: path = " + path);
 		if (!(path.getLastValue() instanceof String))
-			return new LinkedList();
+			return new LinkedList<CheckWarning>();
 		final Collection<CheckWarning> out = new LinkedList<CheckWarning>();
 		try {
 			final String text = path.getLastValue().toString();

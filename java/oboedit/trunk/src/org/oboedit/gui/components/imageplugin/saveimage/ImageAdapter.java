@@ -5,11 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
-
 import javax.imageio.ImageIO;
-import javax.imageio.ImageWriter;
-
 import org.bbop.dataadapter.DataAdapterException;
 
 public class ImageAdapter extends AbstractGraphicsAdapter {

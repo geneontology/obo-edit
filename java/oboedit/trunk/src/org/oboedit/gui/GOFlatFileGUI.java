@@ -16,8 +16,6 @@ import org.obo.dataadapter.OBOAdapter;
 import org.obo.datamodel.*;
 import org.obo.datamodel.impl.*;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.*;
-
 import org.apache.log4j.*;
 
 public class GOFlatFileGUI extends JPanel implements GraphicalUI {

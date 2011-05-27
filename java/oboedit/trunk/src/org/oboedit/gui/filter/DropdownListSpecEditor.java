@@ -1,11 +1,7 @@
 package org.oboedit.gui.filter;
 
-import java.awt.GridLayout;
-
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
-
 import org.apache.log4j.*;
 
 public class DropdownListSpecEditor<T> extends JPanel implements

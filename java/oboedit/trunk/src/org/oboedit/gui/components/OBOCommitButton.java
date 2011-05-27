@@ -12,6 +12,7 @@ import org.bbop.expression.JexlContext;
 import org.bbop.framework.ComponentConfiguration;
 import org.bbop.framework.ConfigurationPanel;
 import org.obo.datamodel.IdentifiedObject;
+import org.obo.history.HistoryItem;
 import org.oboedit.gui.OBOTextEditComponent;
 import org.oboedit.gui.RootTextEditComponent;
 import org.oboedit.gui.event.TermLoadEvent;
@@ -126,9 +127,9 @@ public class OBOCommitButton extends JButton implements OBOTextEditComponent {
 		// do nothing
 	}
 
-	public List getChanges() {
+	public List<HistoryItem> getChanges() {
 		// do nothing, this is just a wrapper
-		return Collections.EMPTY_LIST;
+		return Collections.emptyList();
 	}
 
 	public boolean hasChanges() {

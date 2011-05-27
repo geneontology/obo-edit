@@ -19,15 +19,11 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.PathCapable;
 import org.obo.reasoner.ReasonedLinkDatabase;
-import org.obo.reasoner.impl.OnTheFlyReasoner;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SelectionManager;
-import org.oboedit.graph.VisiblesProvider.EnabledCheckDelegate;
-import org.oboedit.graph.VisiblesProvider.SelectionProvider;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 import edu.umd.cs.piccolo.event.PInputEvent;
-import org.oboedit.controller.SessionManager;
 import org.apache.log4j.*;
 
 public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {

@@ -19,7 +19,6 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.bbop.swing.ShapeUtil;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.Synonym;
@@ -232,7 +231,7 @@ public class QuickSearchBehavior implements ViewBehavior, NodeDecorator {
 		Collection<IdentifiedObject> vis = new LinkedList<IdentifiedObject>();
 		for(IdentifiedObject io : canvas.getCollapsibleLinkDatabase().getObjects()) {
 			if (io instanceof LinkedObject)
-				vis.add((LinkedObject) io);
+				vis.add(io);
 		}
 		for (SearchResult result : results) {
 			vis.add(result.getResult());

@@ -1,32 +1,20 @@
 package org.oboedit.graph;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
-
 import org.bbop.swing.ShapeUtil;
 import org.bbop.swing.ZigZagStroke;
-import org.bbop.util.StringUtil;
 import org.obo.datamodel.Link;
-import org.obo.datamodel.PathCapable;
-import org.obo.reasoner.ReasonedLinkDatabase;
-import org.obo.util.ExplanationUtil;
-import org.obo.util.HTMLUtil;
-import org.obo.util.TermUtil;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.gui.LineType;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 import org.oboedit.gui.filter.ColorProvider;
-import org.oboedit.gui.filter.ConfiguredColor;
 import org.oboedit.gui.filter.ForegroundColorSpecField;
 import org.oboedit.gui.filter.GeneralRendererSpec;
 import org.oboedit.gui.filter.LineTypeSpecField;
@@ -34,17 +22,11 @@ import org.oboedit.gui.filter.LineWidthSpecField;
 import org.oboedit.gui.filter.RenderSpec;
 import org.oboedit.piccolo.IconNode;
 import org.oboedit.piccolo.Morphable;
-import org.oboedit.piccolo.PiccoloUtil;
-import org.oboedit.piccolo.StyledText;
-import org.oboedit.piccolo.ViewRenderedStyleText;
 import org.oboedit.util.GUIUtil;
 
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.activities.PActivity;
 import edu.umd.cs.piccolo.nodes.PPath;
-import edu.umd.cs.piccolo.nodes.PText;
-import edu.umd.cs.piccolox.nodes.P3DRect;
-import edu.umd.cs.piccolox.nodes.PStyledText;
 
 // TODO Modify OELink to create a distinct path node so decorations can appear behind it6
 

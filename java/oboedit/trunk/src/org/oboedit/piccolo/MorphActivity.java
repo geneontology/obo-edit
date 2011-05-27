@@ -6,7 +6,6 @@ import java.awt.geom.GeneralPath;
 import org.bbop.swing.ShapeExtender;
 import org.bbop.swing.ShapeMorpher;
 
-import edu.umd.cs.piccolo.activities.PActivity;
 import edu.umd.cs.piccolo.activities.PInterpolatingActivity;
 import edu.umd.cs.piccolo.nodes.PPath;
 import edu.umd.cs.piccolo.util.PUtil;

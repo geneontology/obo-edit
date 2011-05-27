@@ -3,25 +3,20 @@ package org.oboedit.gui.components;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.border.TitledBorder;
 
 import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.swing.widget.TableList;
 import org.bbop.util.CollectionUtil;
-import org.obo.filters.Filter;
+
 import org.oboedit.controller.FilterManager;
 import org.oboedit.gui.FilterComponent;
-import org.oboedit.gui.FilteredRenderable;
 import org.oboedit.gui.LinkFilterEditorFactory;
 import org.oboedit.gui.TermFilterEditorFactory;
-import org.oboedit.gui.filter.RenderSpec;
+import org.oboedit.gui.filter.RenderedFilter;
 
 import org.apache.log4j.*;
 
@@ -36,8 +31,8 @@ public class GlobalFilterManagerComponent extends AbstractGUIComponent {
 
 	protected FilterComponent termFilterComponent;
 	protected FilterComponent linkFilterComponent;
-	protected TableList termRendererList;
-	protected TableList linkRendererList;
+	protected TableList<RenderedFilter> termRendererList;
+	protected TableList<RenderedFilter> linkRendererList;
 
 	public GlobalFilterManagerComponent(String id) {
 		super(id);
@@ -47,11 +42,11 @@ public class GlobalFilterManagerComponent extends AbstractGUIComponent {
 		linkFilterComponent = new FilterComponent(new LinkFilterEditorFactory());
 		linkFilterComponent.setButtonVisible(false);
 		
-		termRendererList = new TableList(true, true);
+		termRendererList = new TableList<RenderedFilter>(true, true);
 		termRendererList.setRenderer(new RendererRenderer(false));
 		termRendererList.setEditor(new RendererEditor(false));
 		
-		linkRendererList = new TableList(true, true);
+		linkRendererList = new TableList<RenderedFilter>(true, true);
 		linkRendererList.setRenderer(new RendererRenderer(true));
 		linkRendererList.setEditor(new RendererEditor(true));
 

@@ -1,27 +1,19 @@
 package org.oboedit.gui.components;
 
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
-import java.io.IOException;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
-import javax.swing.tree.*;
-
-import org.bbop.swing.*;
 import org.bbop.util.*;
 import org.obo.datamodel.*;
 import org.obo.history.*;
 import org.oboedit.gui.AbstractTextEditComponent;
 import org.oboedit.gui.DropUtil;
-import org.oboedit.gui.Preferences;
 import org.oboedit.gui.Selection;
 
 import org.apache.log4j.*;
@@ -179,17 +171,16 @@ public class RangeEditorComponent extends AbstractTextEditComponent {
 		}
 	}
 
-	public java.util.List getChanges() {
+	public java.util.List<HistoryItem> getChanges() {
 		if (currentObject != null && currentObject instanceof OBOProperty) {
-			java.util.List out = new LinkedList();
+			java.util.List<HistoryItem> out = new LinkedList<HistoryItem>();
 			if (!ObjectUtil.equals(range, ((OBOProperty) currentObject)
 					.getRange())) {
-				out
-						.add(new RangeHistoryItem((OBOProperty) currentObject,
+				out.add(new RangeHistoryItem((OBOProperty) currentObject,
 								range));
 			}
 			return out;
 		} else
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 	}
 }

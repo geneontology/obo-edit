@@ -6,8 +6,6 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.*;
 import java.util.*;
-import javax.swing.tree.TreePath;
-
 import org.obo.datamodel.*;
 import org.obo.history.*;
 import org.obo.util.TermUtil;
@@ -62,7 +60,7 @@ public class MergeAction implements ClickMenuAction, DropMenuAction,
 		return "Merging";
 	}
 
-	public List getSubActions() {
+	public List<EditAction> getSubActions() {
 		return null;
 	}
 
@@ -131,8 +129,7 @@ public class MergeAction implements ClickMenuAction, DropMenuAction,
 			return;
 		}
 
-		init((LinkedObject) destPath.getTerm(), (LinkedObject) paths
-				.getTermSubSelection());
+		init(destPath.getTerm(), paths.getTermSubSelection());
 	}
 
 	public void init(LinkedObject master, LinkedObject slave) {

@@ -1,8 +1,5 @@
 package org.oboedit.graph;
 
-import java.awt.event.MouseEvent;
-
-import edu.umd.cs.piccolo.PCamera;
 import edu.umd.cs.piccolo.PCanvas;
 import edu.umd.cs.piccolo.event.PInputEvent;
 import edu.umd.cs.piccolo.event.PPanEventHandler;

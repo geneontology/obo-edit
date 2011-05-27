@@ -12,8 +12,6 @@ import org.obo.history.*;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.AbstractTextEditComponent;
-import org.oboedit.gui.Preferences;
-
 import org.apache.log4j.*;
 
 public class NamespaceEditorComponent extends AbstractTextEditComponent {
@@ -57,7 +55,7 @@ public class NamespaceEditorComponent extends AbstractTextEditComponent {
 
 			namespaceList.setEnabled(true);
 			namespaceList.removeAllItems();
-			ArrayList namespaces = new ArrayList();
+			ArrayList<Namespace> namespaces = new ArrayList<Namespace>();
 			namespaces.addAll(SessionManager.getManager().getSession()
 					.getNamespaces());
 			Collections.sort(namespaces, Namespace.COMPARATOR);
@@ -90,17 +88,15 @@ public class NamespaceEditorComponent extends AbstractTextEditComponent {
 		io.setNamespace((Namespace) namespaceList.getSelectedItem());
 	}
 
-	public List getChanges() {
+	public List<HistoryItem> getChanges() {
 		if (currentObject != null) {
 			if (!ObjectUtil.equals(namespaceList.getSelectedItem(),
 					currentObject.getNamespace())) {
 				HistoryItem item = new NamespaceHistoryItem(currentObject,
 						(Namespace) namespaceList.getSelectedItem());
 				return Collections.singletonList(item);
-			} else {
-				return Collections.EMPTY_LIST;
 			}
-		} else
-			return Collections.EMPTY_LIST;
+		}
+		return Collections.emptyList();
 	}
 }

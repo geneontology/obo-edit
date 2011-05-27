@@ -77,7 +77,7 @@ public class SelectionMouseListener extends PBasicInputEventHandler {
 					MARQUEE_KEY, canvas.getLayer());
 			if (selectionMarquee != null) {
 				Collection<PathCapable> selected = new LinkedList<PathCapable>();
-				Iterator it = canvas.getLayer().getAllNodes().iterator();
+				Iterator<?> it = canvas.getLayer().getAllNodes().iterator();
 				while (it.hasNext()) {
 					PNode child = (PNode) it.next();
 					PBounds marqueeBounds = selectionMarquee.getGlobalBounds();
@@ -115,8 +115,7 @@ public class SelectionMouseListener extends PBasicInputEventHandler {
 		} else if (event.isLeftMouseButton()) {
 			PPickPath path = canvas.getCamera().pick(
 					event.getPosition().getX(), event.getPosition().getY(), 1);
-			PCNode node = (PCNode) PiccoloUtil.getNodeOfClass(event.getPath(),
-					PCNode.class);
+			PCNode node = PiccoloUtil.getNodeOfClass(event.getPath(), PCNode.class);
 			if (node == null)
 				return;
 

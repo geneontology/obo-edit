@@ -1,10 +1,7 @@
 package org.oboedit.verify;
 
-import java.util.*;
 import javax.swing.*;
 
-import org.bbop.util.*;
-import org.obo.datamodel.*;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.oboedit.controller.VerificationManager;
 

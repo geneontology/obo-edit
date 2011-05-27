@@ -3,8 +3,6 @@ package org.oboedit.gui.filter;
 import org.oboedit.gui.FilteredRenderable;
 import org.oboedit.gui.LineType;
 
-import net.infonode.gui.icon.button.ArrowIcon;
-
 import org.apache.log4j.*;
 
 public class LineTypeSpecField extends AbstractRendererSpecField<LineType> {

@@ -13,8 +13,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.obo.datamodel.Dbxref;
-import org.oboedit.gui.components.AbstractDbxrefEditorComponent;
-
 import org.apache.log4j.*;
 
 public class DbxrefTableRenderer extends DefaultTableCellRenderer {

@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JMenuItem;
@@ -17,7 +16,6 @@ import javax.swing.KeyStroke;
 import org.bbop.framework.ComponentManager;
 import org.bbop.swing.AbstractDynamicMenuItem;
 import org.bbop.swing.DynamicMenu;
-import org.bbop.swing.DynamicMenuItem;
 import org.bbop.util.CollectionUtil;
 import org.obo.datamodel.Namespace;
 import org.obo.identifier.LinkIDResolution;
@@ -56,10 +54,8 @@ public class EditMenu extends DynamicMenu {
 				"Set default namespace", false, true, true) {
 			public List<? extends Component> getItems() {
 				List<Component> out = new ArrayList<Component>();
-				Iterator it = SessionManager.getManager().getSession()
-						.getNamespaces().iterator();
-				while (it.hasNext()) {
-					final Namespace ns = (Namespace) it.next();
+				for(final Namespace ns : SessionManager.getManager()
+						.getSession().getNamespaces()) {
 					boolean setBold = SessionManager.getManager().getSession()
 							.getDefaultNamespace().equals(ns);
 

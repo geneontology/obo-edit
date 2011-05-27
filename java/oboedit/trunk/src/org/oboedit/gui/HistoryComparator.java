@@ -1,6 +1,5 @@
 package org.oboedit.gui;
 
-import org.obo.datamodel.*;
 import org.obo.history.SessionHistoryList;
 
 import java.util.Comparator;

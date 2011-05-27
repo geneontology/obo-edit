@@ -33,7 +33,7 @@ public class AddRootAction implements ClickMenuAction {
 		return null;
 	}
 
-	public List getSubActions() {
+	public List<EditAction> getSubActions() {
 		return subActions;
 	}
 

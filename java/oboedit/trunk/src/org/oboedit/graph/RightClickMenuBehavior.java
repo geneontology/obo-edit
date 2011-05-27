@@ -9,9 +9,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.oboedit.gui.components.LinkDatabaseCanvas;
-import org.oboedit.piccolo.PiccoloUtil;
 
-import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.event.PBasicInputEventHandler;
 import edu.umd.cs.piccolo.event.PInputEvent;
 
@@ -64,6 +62,6 @@ public class RightClickMenuBehavior implements ViewBehavior {
 		}
 		MouseEvent e = (MouseEvent) event.getSourceSwingEvent();
 		if (menu.getComponentCount() > 0)
-			menu.show(canvas, (int) e.getX(), (int) e.getY());
+			menu.show(canvas, e.getX(), e.getY());
 	}
 }

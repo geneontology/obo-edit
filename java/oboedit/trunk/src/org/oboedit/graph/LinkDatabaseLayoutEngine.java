@@ -13,8 +13,6 @@ import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.util.TermUtil;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
-import org.oboedit.piccolo.TransitionText;
-import org.oboedit.piccolo.ViewRenderedStyleText;
 
 import edu.umd.cs.piccolo.PNode;
 

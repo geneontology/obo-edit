@@ -3,7 +3,6 @@ package org.oboedit.gui.filter;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -22,17 +21,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.plaf.basic.BasicBorders.RadioButtonBorder;
-
 import org.bbop.swing.SwingUtil;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOSession;
-import org.obo.datamodel.PathCapable;
 import org.obo.datamodel.Relationship;
 import org.obo.filters.SearchCriterion;
 import org.oboedit.controller.FilterManager;
-
-import net.infonode.util.ColorUtil;
 
 import org.apache.log4j.*;
 

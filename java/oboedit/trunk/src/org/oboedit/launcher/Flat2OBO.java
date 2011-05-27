@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.obo.dataadapter.GOFlatFileAdapter;
+import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.Namespace;
@@ -144,10 +145,10 @@ public class Flat2OBO {
 	}
 
 	private static class ConvertRecord {
-		Vector flatfiles = new Vector();
-		Vector obsHolders = new Vector();
-		Vector dels = new Vector();
-		HashMap newroots = new HashMap();
+		Vector<String> flatfiles = new Vector<String>();
+		Vector<String> obsHolders = new Vector<String>();
+		Vector<String> dels = new Vector<String>();
+		HashMap<String, String> newroots = new HashMap<String, String>();
 		String defFile;
 		String outFile;
 		String defaultNamespace;
@@ -160,8 +161,8 @@ public class Flat2OBO {
 	protected static double oldValue;
 	protected static boolean starting = true;
 
-	public static void convert(Vector flatfiles, Vector obsHolders,
-			HashMap newroots, Vector dels, String defFile, String outfile,
+	public static void convert(Vector<String> flatfiles, Vector<String> obsHolders,
+			HashMap<String, String> newroots, Vector<String> dels, String defFile, String outfile,
 			String defaultNamespace, boolean verbose, boolean allowDangling,
 			boolean translateTypes, boolean allowCycles) throws Exception {
 		if (verbose) {
@@ -181,7 +182,7 @@ public class Flat2OBO {
 		starting = true;
 
 		OBOSession history = (OBOSession) indriver.doOperation(
-				indriver.READ_ONTOLOGY, config, null);
+				OBOAdapter.READ_ONTOLOGY, config, null);
 
 		if (verbose) {
 			logger.info("done");
@@ -199,11 +200,11 @@ public class Flat2OBO {
 		if (defaultNamespace != null)
 			history.setDefaultNamespace(new Namespace(defaultNamespace));
 
-		Iterator it = newroots.keySet().iterator();
+		Iterator<String> it = newroots.keySet().iterator();
 		while (it.hasNext()) {
-			String id = (String) it.next();
+			String id = it.next();
 			OBOClass t = (OBOClass) history.getObject(id);
-			String ns_name = (String) newroots.get(id);
+			String ns_name = newroots.get(id);
 			if (t.getNamespace() == null) {
 				Namespace ns = new Namespace(ns_name);
 				if (!history.getNamespaces().contains(ns))
@@ -232,7 +233,7 @@ public class Flat2OBO {
 		 * OBOSerializationEngine.FilteredPath(null, outfile);
 		 */
 		outconfig.setWritePath(outfile);
-		outdriver.doOperation(outdriver.WRITE_ONTOLOGY, outconfig, history);
+		outdriver.doOperation(OBOAdapter.WRITE_ONTOLOGY, outconfig, history);
 		/*
 		 * GOBOAdapter.IOProfile profile = GOBOAdapter.
 		 * getDefaultIOProfile(history, outfile);
@@ -244,19 +245,19 @@ public class Flat2OBO {
 	}
 
 	public static TermMacroHistoryItem getChangeItem(OBOSession history,
-			HashMap newroots, Vector obsHolders, Vector dels) {
+			HashMap<String, String> newroots, Vector<String> obsHolders, Vector<String> dels) {
 		TermMacroHistoryItem item = new TermMacroHistoryItem(
 				"Flat File conversion");
 
-		Iterator it = newroots.keySet().iterator();
+		Iterator<String> it = newroots.keySet().iterator();
 		while (it.hasNext()) {
-			String id = (String) it.next();
+			String id = it.next();
 			OBOClass t = (OBOClass) history.getObject(id);
 			addDeleteMacro(item, t.getParents());
 		}
 
 		for (int i = 0; i < obsHolders.size(); i++) {
-			String id = (String) obsHolders.get(i);
+			String id = obsHolders.get(i);
 			OBOClass t = (OBOClass) history.getObject(id);
 			addDeleteMacro(item, t.getChildren());
 			addDeleteMacro(item, t.getParents());
@@ -264,7 +265,7 @@ public class Flat2OBO {
 		}
 
 		for (int i = 0; i < dels.size(); i++) {
-			String id = (String) dels.get(i);
+			String id = dels.get(i);
 			OBOClass t = (OBOClass) history.getObject(id);
 			if (t.getChildren().size() > 0) {
 				addDeleteMacro(item, t.getChildren());
@@ -285,10 +286,10 @@ public class Flat2OBO {
 		return item;
 	}
 
-	protected static void addDeleteMacro(TermMacroHistoryItem item, Collection parents) {
-		Iterator it = parents.iterator();
+	protected static void addDeleteMacro(TermMacroHistoryItem item, Collection<Link> parents) {
+		Iterator<Link> it = parents.iterator();
 		while (it.hasNext()) {
-			Link link = (Link) it.next();
+			Link link = it.next();
 			item.addItem(new DeleteLinkHistoryItem(link));
 		}
 	}

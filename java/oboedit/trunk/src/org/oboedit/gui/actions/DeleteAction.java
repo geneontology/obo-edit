@@ -87,7 +87,7 @@ public class DeleteAction implements ClickMenuAction {
 
 
 
-	HashMap<String, Collection> obsoleteTermsLinkedToAllTerms;
+	HashMap<String, Collection<Object>> obsoleteTermsLinkedToAllTerms;
 
 
 
@@ -422,7 +422,7 @@ public class DeleteAction implements ClickMenuAction {
 	 * </p><p>
 	 * This collection is copied and the copy is modified to get the list of terms the user wishes to obsolete. </p>
 	 */
-	public HashMap<String, Collection> getObsoletesLinkedToThese() {
+	public HashMap<String, Collection<Object>> getObsoletesLinkedToThese() {
 
 		List<PathCapable> modifiedDeleteThese = new ArrayList<PathCapable>();
 
@@ -430,7 +430,7 @@ public class DeleteAction implements ClickMenuAction {
 		//and we only want the term names. 
 		modifiedDeleteThese.addAll(deleteThese);
 
-		obsoleteTermsLinkedToAllTerms = new HashMap<String, Collection>();
+		obsoleteTermsLinkedToAllTerms = new HashMap<String, Collection<Object>>();
 		for(Object termToObsolete : modifiedDeleteThese){
 			//If it is a link rather than a term name.
 			if(termToObsolete.getClass().getSimpleName().equals("OBOClassImpl")){
@@ -510,7 +510,7 @@ public class DeleteAction implements ClickMenuAction {
 				//logger.debug("DeleteAction: filterLinks: obsoleteObject.getReplacedBy() " + obsoleteObject.getReplacedBy());
 
 				//For each obsolete term get the set of terms linked by consider or replaced_by tags. 
-				Set replacedBySet = obsoleteObject.getReplacedBy();
+				Set<?> replacedBySet = obsoleteObject.getReplacedBy();
 
 				for(Object replacementTerm : replacedBySet){
 					if (filter.satisfies(replacementTerm)){
@@ -521,7 +521,7 @@ public class DeleteAction implements ClickMenuAction {
 					}
 				}
 
-				Set considerSet = obsoleteObject.getConsiderReplacements();
+				Set<?> considerSet = obsoleteObject.getConsiderReplacements();
 				for(Object considerTerm : considerSet){
 					if (filter.satisfies(considerTerm)){
 						setUsedInReplacementTag(true);

@@ -2,11 +2,9 @@ package org.oboedit.gui.components;
 
 import org.bbop.framework.AbstractGUIComponent;
 import org.obo.datamodel.*;
-import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.util.AnnotationUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.*;
 import org.oboedit.gui.event.*;
 import org.oboedit.util.GUIUtil;
 
@@ -33,7 +31,7 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 
 	protected static final int MAX_PARENTAGE = 100;
 
-	protected HashMap scratch = new HashMap();
+//	protected HashMap scratch = new HashMap();
 
 	public ExtendedInfoComponent(String id) {
 		super(id);
@@ -53,7 +51,7 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 
 	public void update() {
 		removeAll();
-		scratch.clear();
+//		scratch.clear();
 		OBOSession session = SessionManager.getManager().getSession();
 
 		JLabel totalTermsLabel = new JLabel("Total terms = 00000000");
@@ -64,19 +62,19 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 		List<JLabel> labels = new Vector<JLabel>();
 		labels.add(totalTermsLabel);
 
-		Hashtable catHash = new Hashtable();
-		Iterator it = SessionManager.getManager().getSession().getSubsets()
-		.iterator();
+		Hashtable<TermSubset, Integer> catHash = new Hashtable<TermSubset, Integer>();
+		Iterator<TermSubset> it = SessionManager.getManager().getSession()
+				.getSubsets().iterator();
 		while (it.hasNext()) {
-			TermSubset ct = (TermSubset) it.next();
+			TermSubset ct = it.next();
 			catHash.put(ct, new Integer(0));
 		}
 
 		int[] parentCounts = new int[MAX_PARENTAGE];
-		Iterator iter = TermUtil.getTerms(
+		Iterator<OBOClass> iter = TermUtil.getTerms(
 				SessionManager.getManager().getSession()).iterator();
 		while (iter.hasNext()) {
-			OBOClass term = (OBOClass) iter.next();
+			OBOClass term = iter.next();
 			if (term.isBuiltIn() || term.isObsolete())
 				continue;
 			int count = 0;
@@ -90,8 +88,8 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 
 			it = term.getSubsets().iterator();
 			while (it.hasNext()) {
-				TermSubset tc = (TermSubset) it.next();
-				Integer integerCount = (Integer) catHash.get(tc);
+				TermSubset tc = it.next();
+				Integer integerCount = catHash.get(tc);
 				int intCount = integerCount.intValue();
 				intCount++;
 				catHash.put(tc, new Integer(intCount));
@@ -158,10 +156,10 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 			}
 		}
 
-		Enumeration e = catHash.keys();
+		Enumeration<TermSubset> e = catHash.keys();
 		while (e.hasMoreElements()) {
-			TermSubset tc = (TermSubset) e.nextElement();
-			Integer tcCount = (Integer) catHash.get(tc);
+			TermSubset tc = e.nextElement();
+			Integer tcCount = catHash.get(tc);
 			JLabel catLabel = new JLabel("Subset: " + tc.getDesc() + " has "
 					+ tcCount + " members");
 			catLabel.setFont(getFont());
@@ -208,7 +206,7 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 		labels.add(memoryLabel);
 
 		for (int i = 0; i < labels.size(); i++) {
-			add((JLabel) labels.get(i));
+			add(labels.get(i));
 		}
 
 		revalidate();

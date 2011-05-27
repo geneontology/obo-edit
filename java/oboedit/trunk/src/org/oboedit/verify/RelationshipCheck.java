@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface RelationshipCheck extends Check {
 
-	public List checkRelationship(Link rel, OBOSession history);
+	public List<CheckWarning> checkRelationship(Link rel, OBOSession history);
 }

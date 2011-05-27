@@ -14,13 +14,13 @@ public class TermSecondaryIDTest extends OperationTest {
 	protected final static Logger logger = Logger.getLogger(TermSecondaryIDTest.class);
 
 	@Override
-	public Collection getTestBundles() {
-		Collection testBundles = new LinkedList();
+	public Collection<TestBundle> getTestBundles() {
+		Collection<TestBundle> testBundles = new LinkedList<TestBundle>();
 
 		OBOClass oboClass = testUtil.getRandomClass();
 		OBOClass resultClass = (OBOClass) oboClass.clone();
 
-		String newText = testUtil.getRandomID();
+		String newText = TestUtil.getRandomID();
 
 		resultClass.addSecondaryID(newText);
 
@@ -30,7 +30,7 @@ public class TermSecondaryIDTest extends OperationTest {
 				+ ", newids = " + resultClass.getSecondaryIDs());
 
 		ObjectPair pair = new ObjectPair(oboClass, resultClass);
-		Collection pairs = new LinkedList();
+		Collection<ObjectPair> pairs = new LinkedList<ObjectPair>();
 		pairs.add(pair);
 		TestBundle out = new TestBundle(item, pairs);
 		testBundles.add(out);

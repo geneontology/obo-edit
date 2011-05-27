@@ -1,6 +1,5 @@
 package org.oboedit.piccolo;
 
-import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,9 +27,9 @@ public class PSnapshotLayoutNode extends PLayoutNode {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(PSnapshotLayoutNode.class);
-	protected Map objectToCloneMap;
-	protected Map cloneToObjectMap;
-	protected List stateRestorers = new LinkedList();
+	protected Map<PNode, PNode> objectToCloneMap;
+	protected Map<PNode, PNode> cloneToObjectMap;
+	protected List<PNodeRestorer> stateRestorers = new LinkedList<PNodeRestorer>();
 	protected ShapeExtender shapeExtender = new EndpointShapeExtender();
 
 	public PSnapshotLayoutNode() {
@@ -38,25 +37,25 @@ public class PSnapshotLayoutNode extends PLayoutNode {
 	}
 
 	public void takeSnapshot() {
-		objectToCloneMap = new HashMap();
-		cloneToObjectMap = new HashMap();
+		objectToCloneMap = new HashMap<PNode, PNode>();
+		cloneToObjectMap = new HashMap<PNode, PNode>();
 		cloneAndFile(this);
 	}
 
 	protected PActivity animateRestoreState(final PNode node,
 			final PNode clone, long duration, boolean currentState) {
-		final Collection preAnimateNodeChildren = new LinkedList(node
-				.getChildrenReference());
-		final Collection postAnimateKillList = new LinkedList();
+		final Collection<PNode> preAnimateNodeChildren = 
+			new LinkedList<PNode>(node.getChildrenReference());
+		final Collection<PNode> postAnimateKillList = new LinkedList<PNode>();
 		if (node == null) {
 			preAnimateNodeChildren.add(clone);
 			postAnimateKillList.add(clone);
 		}
 		PCompoundActivity out = new PCompoundActivity();
 
-		Iterator it = stateRestorers.iterator();
-		while (it.hasNext()) {
-			PNodeRestorer restorer = (PNodeRestorer) it.next();
+		Iterator<PNodeRestorer> itr = stateRestorers.iterator();
+		while (itr.hasNext()) {
+			PNodeRestorer restorer = itr.next();
 			PActivity a;
 			if (currentState)
 				a = restorer.animateRestoreState(node, node, duration);
@@ -67,27 +66,27 @@ public class PSnapshotLayoutNode extends PLayoutNode {
 				out.addActivity(a);
 		}
 		if (node != null && clone != null) {
-			Collection nodeChildren = new LinkedList(preAnimateNodeChildren);
-			it = clone.getChildrenIterator();
+			Collection<PNode> nodeChildren = new LinkedList(preAnimateNodeChildren);
+			Iterator it = clone.getChildrenIterator();
 			while (it.hasNext()) {
 				PNode cloneChild = (PNode) it.next();
-				PNode realChild = (PNode) cloneToObjectMap.get(cloneChild);
+				PNode realChild = cloneToObjectMap.get(cloneChild);
 				out.addActivity(animateRestoreState(realChild, cloneChild,
 						duration, currentState));
 				nodeChildren.remove(realChild);
 			}
-			it = nodeChildren.iterator();
-			while (it.hasNext()) {
-				PNode realChild = (PNode) it.next();
+			Iterator<PNode> itp = nodeChildren.iterator();
+			while (itp.hasNext()) {
+				PNode realChild = itp.next();
 				out.addActivity(animateRestoreState(realChild, null, duration, currentState));
 			}
 		}
 		out.setDelegate(new PActivityDelegate() {
 
 			public void activityFinished(PActivity activity) {
-				Iterator it = postAnimateKillList.iterator();
+				Iterator<PNode> it = postAnimateKillList.iterator();
 				while (it.hasNext()) {
-					PNode child = (PNode) it.next();
+					PNode child = it.next();
 					if (node.getChildrenReference().contains(child))
 						node.removeChild(child);
 
@@ -96,9 +95,9 @@ public class PSnapshotLayoutNode extends PLayoutNode {
 
 			public void activityStarted(PActivity activity) {
 				node.removeAllChildren();
-				Iterator it = preAnimateNodeChildren.iterator();
+				Iterator<PNode> it = preAnimateNodeChildren.iterator();
 				while (it.hasNext()) {
-					PNode child = (PNode) it.next();
+					PNode child = it.next();
 					node.addChild(child);
 					logger.info("adding child " + child + " to " + node);
 				}
@@ -113,18 +112,18 @@ public class PSnapshotLayoutNode extends PLayoutNode {
 	}
 
 	public void restoreState(PNode node, PNode clone) {
-		Iterator it = stateRestorers.iterator();
+		Iterator<PNodeRestorer> itr = stateRestorers.iterator();
 
-		while (it.hasNext()) {
-			PNodeRestorer restorer = (PNodeRestorer) it.next();
+		while (itr.hasNext()) {
+			PNodeRestorer restorer = itr.next();
 			restorer.restoreState(node, clone);
 		}
-		Collection nodeChildren = new LinkedList(node.getChildrenReference());
+		Collection<PNode> nodeChildren = new LinkedList<PNode>(node.getChildrenReference());
 		node.removeAllChildren();
-		it = clone.getChildrenIterator();
+		Iterator<PNode> it = clone.getChildrenIterator();
 		while (it.hasNext()) {
-			PNode cloneChild = (PNode) it.next();
-			PNode realChild = (PNode) cloneToObjectMap.get(cloneChild);
+			PNode cloneChild = it.next();
+			PNode realChild = cloneToObjectMap.get(cloneChild);
 			if (realChild == null) {
 				node.addChild(cloneChild);
 			} else {
@@ -136,7 +135,7 @@ public class PSnapshotLayoutNode extends PLayoutNode {
 		}
 		it = nodeChildren.iterator();
 		while (it.hasNext()) {
-			PNode child = (PNode) it.next();
+			PNode child = it.next();
 			if (node.getChildrenReference().contains(child))
 				node.removeChild(child);
 		}
@@ -144,7 +143,7 @@ public class PSnapshotLayoutNode extends PLayoutNode {
 
 	public void restoreState() {
 		PNode node = this;
-		PNode clone = (PNode) objectToCloneMap.get(node);
+		PNode clone = objectToCloneMap.get(node);
 		restoreState(node, clone);
 		objectToCloneMap = null;
 		cloneToObjectMap = null;
@@ -152,14 +151,14 @@ public class PSnapshotLayoutNode extends PLayoutNode {
 
 	public PActivity getAnimationToSnapshotState(long duration) {
 		PNode node = this;
-		PNode clone = (PNode) objectToCloneMap.get(node);
+		PNode clone = objectToCloneMap.get(node);
 		PActivity out = animateRestoreState(node, clone, duration, false);
 		return out;
 	}
 
 	public PActivity getAnimationToCurrentState(long duration) {
 		PNode node = this;
-		PNode clone = (PNode) objectToCloneMap.get(node);
+		PNode clone = objectToCloneMap.get(node);
 		PActivity out = animateRestoreState(node, clone, duration, true);
 		return out;
 	}
@@ -173,13 +172,13 @@ public class PSnapshotLayoutNode extends PLayoutNode {
 	}
 
 	protected PNode cloneAndFile(PNode node) {
-		List childList = new LinkedList(node.getChildrenReference());
+		List<PNode> childList = new LinkedList<PNode>(node.getChildrenReference());
 		PNode clone = (PNode) node.clone();
 		clone.removeAllChildren();
 
-		Iterator it = childList.iterator();
+		Iterator<PNode> it = childList.iterator();
 		for (int i = 0; it.hasNext(); i++) {
-			PNode child = (PNode) it.next();
+			PNode child = it.next();
 			clone.addChild(cloneAndFile(child));
 		}
 		objectToCloneMap.put(node, clone);

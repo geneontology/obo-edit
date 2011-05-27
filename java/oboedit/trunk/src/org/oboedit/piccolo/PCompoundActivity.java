@@ -82,9 +82,9 @@ public class PCompoundActivity extends PInterpolatingActivity {
 	protected void activityStarted() {
 		for (Runnable r : startupList)
 			r.run();
-		Iterator it = activityList.iterator();
+		Iterator<PActivity> it = activityList.iterator();
 		while (it.hasNext()) {
-			PActivity activity = (PActivity) it.next();
+			PActivity activity = it.next();
 			getActivityScheduler().addActivity(activity);
 		}
 		super.activityStarted();
@@ -126,18 +126,18 @@ public class PCompoundActivity extends PInterpolatingActivity {
 
 	public long getDuration() {
 		long out = 0;
-		Iterator it = activityList.iterator();
+		Iterator<PActivity> it = activityList.iterator();
 		while (it.hasNext()) {
-			PActivity activity = (PActivity) it.next();
+			PActivity activity = it.next();
 			out = Math.max(out, activity.getDuration());
 		}
 		return out;
 	}
 
 	public void terminate(int terminationBehavior) {
-		Iterator it = activityList.iterator();
+		Iterator<PActivity> it = activityList.iterator();
 		while (it.hasNext()) {
-			PActivity activity = (PActivity) it.next();
+			PActivity activity = it.next();
 			activity.terminate(terminationBehavior);
 		}
 		super.terminate(terminationBehavior);

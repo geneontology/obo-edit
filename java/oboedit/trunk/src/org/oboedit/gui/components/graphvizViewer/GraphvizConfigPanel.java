@@ -27,7 +27,6 @@ import org.bbop.swing.ListEditor;
 import org.bbop.swing.widget.FontChooser;
 import org.obo.datamodel.Link;
 import org.oboedit.gui.Preferences;
-import org.oboedit.gui.components.graphvizViewer.*;
 
 
 public class GraphvizConfigPanel extends ConfigurationPanel {
@@ -83,11 +82,11 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 	GraphvizSettings graphvizSettings;
 	JTextField appPathField;
 	final ListEditor typeColorList = new ListEditor(new ColorEditor(),
-			noTypeLabel, new Vector(), true, true, false, true, false);
+			noTypeLabel, new Vector<Object>(), true, true, false, true, false);
 	final JDialog pane = new JDialog((Frame) null, true);
 	protected JPanel backgroundColorPanel = new JPanel();
 	protected JColorChooser backgroundColorChooser = new JColorChooser();
-	Vector data;
+	Vector<Object> data;
 
 
 
@@ -386,8 +385,7 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 		//logger.debug("GraphvizConfigPanel: ColorPair getColor() method");
 
 		
-		ColorPair c = (ColorPair) graphvizSettings.getColorMap().get(
-				tr.getType().getID());
+		ColorPair c = graphvizSettings.getColorMap().get(tr.getType().getID());
 		if (c == null)
 			c = GraphvizCanvas.defaultLabelColors;
 		// if (TermUtil.isRedundant(tr)) {

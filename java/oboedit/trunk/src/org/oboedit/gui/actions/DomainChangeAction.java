@@ -40,7 +40,7 @@ public class DomainChangeAction implements DropMenuAction {
 		return "Change domain";
 	}
 
-	public List getSubActions() {
+	public List<EditAction> getSubActions() {
 		return null;
 	}
 

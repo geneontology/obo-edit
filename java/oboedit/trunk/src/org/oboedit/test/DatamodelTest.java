@@ -2,7 +2,6 @@ package org.oboedit.test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 
 import junit.framework.TestCase;
 
@@ -59,9 +58,7 @@ public class DatamodelTest extends TestCase {
 		assertTrue(
 				"OBO and Serial versions of ontology should have the same number of objects",
 				session.getObjects().size() == session.getObjects().size());
-		Iterator it = session.getObjects().iterator();
-		while (it.hasNext()) {
-			IdentifiedObject io = (IdentifiedObject) it.next();
+		for(IdentifiedObject io : session.getObjects()) {
 			IdentifiedObject sio = serialSession.getObject(io.getID());
 			assertNotNull("Serial session did not contain " + io, sio);
 			assertTrue("Serial version of " + io + " should equal obo version",
@@ -81,15 +78,9 @@ public class DatamodelTest extends TestCase {
 				assertTrue("Serial version of " + io
 						+ " should have same parents as obo version", lio
 						.getParents().equals(slio.getParents()));
-				Iterator it2;
-
-				it2 = lio.getParents().iterator();
-				while (it2.hasNext()) {
-					Link link = (Link) it2.next();
+				for (Link link : lio.getParents()) {
 					Link slink = null;
-					Iterator it3 = slio.getParents().iterator();
-					while (it3.hasNext()) {
-						Link temp = (Link) it3.next();
+					for(Link temp : slio.getParents()) {
 						if (temp.equals(link)) {
 							slink = temp;
 							break;
@@ -108,9 +99,7 @@ public class DatamodelTest extends TestCase {
 									+ slio.getParents(), slio.getParents()
 									.contains(link));
 				}
-				it2 = slio.getParents().iterator();
-				while (it2.hasNext()) {
-					Link link = (Link) it2.next();
+				for (Link link : slio.getParents()) {
 					assertTrue(
 							"OBO version of "
 									+ link
@@ -126,18 +115,12 @@ public class DatamodelTest extends TestCase {
 
 	protected void doLinkTest(OBOSession session) throws DataAdapterException,
 			IOException {
-		Iterator it = session.getObjects().iterator();
-		while (it.hasNext()) {
-			IdentifiedObject io = (IdentifiedObject) it.next();
+		for(IdentifiedObject io : session.getObjects()) {
 			if (io instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject) io;
-				Iterator it2 = lo.getParents().iterator();
-				while (it2.hasNext()) {
-					Link link = (Link) it2.next();
+				for(Link link : lo.getParents()) {
 					boolean found = false;
-					Iterator it3 = link.getParent().getChildren().iterator();
-					while (it3.hasNext()) {
-						Link tlink = (Link) it3.next();
+					for(Link tlink : link.getParent().getChildren()) {
 						if (tlink.equals(link)) {
 							assertTrue(
 									"Twinned parent child links should be equal AND identical: "
@@ -149,13 +132,9 @@ public class DatamodelTest extends TestCase {
 							"Parent links should be twinned with child links: "
 									+ link, found);
 				}
-				it2 = lo.getChildren().iterator();
-				while (it2.hasNext()) {
-					Link link = (Link) it2.next();
+				for(Link link : lo.getChildren()) {
 					boolean found = false;
-					Iterator it3 = link.getChild().getParents().iterator();
-					while (it3.hasNext()) {
-						Link tlink = (Link) it3.next();
+					for(Link tlink : link.getChild().getParents()) {
 						if (tlink.equals(link)) {
 							assertTrue(
 									"Twinned parent child links should be equal AND identical: "
