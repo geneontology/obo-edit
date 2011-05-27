@@ -200,7 +200,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		return new AbstractAction("About") {
 
 			public void actionPerformed(ActionEvent actionEvent) {
-				(new OEHelpMenu()).showAboutFrame();
+				OEHelpMenu.showAboutFrame();
 			}
 		};
 	}
@@ -212,7 +212,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 	@Override
 	protected Collection<GUIComponentFactory<?>> getDefaultComponentFactories() {
-		return (Collection) CollectionUtil.list(
+		return CollectionUtil.<GUIComponentFactory<?>>list(
 				new TermPanelFactory(),
 				new TermImageComponentFactory(),
 				new GraphEditorFactory(), 
@@ -517,7 +517,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 	@Override
 	protected Collection<DataAdapter> getDefaultDataAdapters() {
-		List<DataAdapter> adapters = new LinkedList();
+		List<DataAdapter> adapters = new LinkedList<DataAdapter>();
 		final OBOFileAdapter oboadapter = new OBOFileAdapter();
 		oboadapter.setAdvancedUI(new AdvancedOBOUI());
 		final OWLAdapter owladapter = new OWLAdapter();

@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface TermCheck extends Check {
 
-	public List checkTerm(OBOClass term, OBOSession history, boolean expectObs,
+	public List<CheckWarning> checkTerm(OBOClass term, OBOSession history, boolean expectObs,
 			boolean expectType);
 }

@@ -11,7 +11,6 @@ import java.util.*;
 import org.bbop.dataadapter.*;
 import org.bbop.swing.*;
 import org.bbop.util.*;
-import org.obo.dataadapter.OBOAdapter;
 import org.obo.owl.dataadapter.OWLAdapter;
 import org.obo.owl.datamodel.MetadataMapping;
 import org.obo.owl.datamodel.impl.AxiomAnnotationBasedOWLMetadataMapping;
@@ -19,8 +18,8 @@ import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping;
 import org.obo.owl.datamodel.impl.SAO_1_2_OWLMetadataMapping;
 import org.obo.owl.datamodel.impl.SimpleOWLMetadataMapping;
 import org.obo.dataadapter.OBOSerializationEngine;
+import org.obo.dataadapter.OBOSerializationEngine.FilteredPath;
 import org.obo.datamodel.*;
-import org.obo.filters.*;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SessionManager;
 
@@ -83,9 +82,7 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 
 	protected int currentSelectedIndex = -1;
 
-	protected Vector paths = new Vector();
-
-	protected HashMap nsmap = new HashMap();
+	protected Vector<String> paths = new Vector<String>();
 
 	protected OBOSession currentHistory;
 
@@ -119,12 +116,10 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 			throws DataAdapterUIException {
 		collectParams();
 		if (!storeonly && op.equals(OWLAdapter.WRITE_ONTOLOGY)) {
-			java.util.List overwrite = new LinkedList();
-			Iterator it = currentProfile.getSaveRecords().iterator();
+			java.util.List<String> overwrite = new LinkedList<String>();
+			Iterator<FilteredPath> it = currentProfile.getSaveRecords().iterator();
 			while (it.hasNext()) {
-				Object o = it.next();
-
-				OBOSerializationEngine.FilteredPath path = (OBOSerializationEngine.FilteredPath) o;
+				FilteredPath path = it.next();
 				if (path.getPath().length() == 0) {
 					throw new DataAdapterUIException("Cannot save to empty "
 							+ "path.");
@@ -135,9 +130,9 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 			if (overwrite.size() > 0) {
 				StringBuffer out = new StringBuffer();
 				out.append("The following files exist:\n");
-				it = overwrite.iterator();
-				while (it.hasNext()) {
-					String s = (String) it.next();
+				Iterator<String> it2 = overwrite.iterator();
+				while (it2.hasNext()) {
+					String s = it2.next();
 					out.append("   * " + s + "\n");
 				}
 				out.append("Overwrite these files?");
@@ -156,8 +151,8 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 	protected GraphicalUI simpleUI;
 
 
-	public Set getFiles(IOOperation op) {
-		return new HashSet();
+	public Set<?> getFiles(IOOperation<?,?> op) {
+		return new HashSet<Object>();
 	}
 
 	public GraphicalUI getAdvancedUI() {
@@ -252,10 +247,10 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 			rootAlgorithmChooser.addItem("STRICT");
 
 			currentHistory = SessionManager.getManager().getSession();
-			Iterator it = TermUtil.getRelationshipTypes(currentHistory)
+			Iterator<OBOProperty> it = TermUtil.getRelationshipTypes(currentHistory)
 					.iterator();
 			while (it.hasNext()) {
-				OBOProperty property = (OBOProperty) it.next();
+				OBOProperty property = it.next();
 				prefilterTypeChooser.addItem(property);
 			}
 
@@ -714,7 +709,7 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 	protected void storeProfile(OWLAdapter.OWLAdapterConfiguration profile) {
 
 		profile.getReadPaths().clear();
-		Vector temp = pathList.getData();
+		Vector<?> temp = pathList.getData();
 		for (int i = 0; i < temp.size(); i++)
 			profile.getReadPaths().add(temp.get(i).toString());
 		profile.setAllowDangling(allowDanglingBox.isSelected());
@@ -735,10 +730,10 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 	public void setConfiguration(AdapterConfiguration config) {
 		OWLAdapter.OWLAdapterConfiguration profile = (OWLAdapter.OWLAdapterConfiguration) config;
 		currentProfile = profile;
-		Vector out = new Vector();
-		Iterator it = profile.getReadPaths().iterator();
+		Vector<EditableString> out = new Vector<EditableString>();
+		Iterator<String> it = profile.getReadPaths().iterator();
 		while (it.hasNext()) {
-			out.add(new EditableString((String) it.next()));
+			out.add(new EditableString(it.next()));
 		}
 
 		pathList.setData(out);
@@ -748,7 +743,7 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 		allowLossyBox.setSelected(profile.isAllowLossy());
 		serializerBox.setSelectedItem(profile.getSerializer());
 
-		Vector v = new Vector();
+		Vector<OBOSerializationEngine.FilteredPath> v = new Vector<OBOSerializationEngine.FilteredPath>();
 		v.addAll(profile.getSaveRecords());
 
 		namespaceList.setData(v);
@@ -768,7 +763,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 		this.op = op;
 		currentHistory = (OBOSession) input;
 
-		// this.op = op;
 		pathBox.removeAll();
 		if (op.equals(OWLAdapter.READ_ONTOLOGY)) {
 			pathBox.add(pathList, "Center");
@@ -805,7 +799,7 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 	protected void collectParams() {
 		paths.clear();
 		namespaceList.commit();
-		Vector temp = pathList.getData();
+		Vector<?> temp = pathList.getData();
 		for (int i = 0; i < temp.size(); i++)
 			paths.add(temp.get(i).toString());
 		storeProfile(currentProfile);

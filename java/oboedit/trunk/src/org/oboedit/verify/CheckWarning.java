@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import javax.swing.Action;
-
 import org.bbop.util.ObjectUtil;
 import org.obo.datamodel.*;
 
@@ -89,7 +87,7 @@ public class CheckWarning {
 	}
 
 	/**
-	 * Returns a list of zero or more {@link javax.swing.Action} objects that
+	 * Returns a list of zero or more {@link QuickFix} objects that
 	 * can be used to fix the current warning. The actions are displayed in the
 	 * status report when the user clicks the "quick fix" button. If a quick-fix
 	 * was successful, it should set the "SUCCESS" property of the action to

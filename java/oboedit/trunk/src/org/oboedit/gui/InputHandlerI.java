@@ -1,8 +1,6 @@
 package org.oboedit.gui;
 
 import java.awt.Point;
-import java.awt.dnd.DragSourceEvent;
-import java.awt.dnd.DropTargetEvent;
 import java.awt.event.*;
 
 import javax.swing.JComponent;

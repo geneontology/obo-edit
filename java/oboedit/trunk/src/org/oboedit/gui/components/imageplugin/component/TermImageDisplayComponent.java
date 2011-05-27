@@ -1,22 +1,9 @@
 package org.oboedit.gui.components.imageplugin.component;
 
-import java.awt.AWTEvent;
 import java.awt.BorderLayout;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.image.ImageObserver;
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
@@ -24,13 +11,10 @@ import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.framework.GUIManager;
 import org.bbop.io.FileUtil;
 import org.bbop.swing.ScalingComponent;
-import org.bbop.swing.SwingUtil;
 import org.bbop.util.ClassUtil;
-import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
 import org.obo.reasoner.ReasonedLinkDatabase;
-import org.obo.util.ReasonerUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
@@ -133,7 +117,6 @@ public class TermImageDisplayComponent extends AbstractGUIComponent {
 		if (!directory.exists())
 			directory.mkdirs();
 //		System.err.println("directory = " + directory);
-		File[] files = directory.listFiles();
 		for (File file : directory.listFiles()) {
 			String name = file.getName();
 			int dotIndex = name.indexOf(".");

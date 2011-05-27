@@ -3,7 +3,6 @@ package org.oboedit.gui.filter;
 import java.util.Comparator;
 
 import org.oboedit.gui.FilteredRenderable;
-import org.oboedit.gui.ObjectSelector;
 
 public interface GeneralRendererSpecField<T> {
 

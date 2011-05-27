@@ -96,7 +96,7 @@ public class HierarchicalGraphLayout implements GraphLayout {
 
 	private int orientation = PARENT_TOP;
 
-	private ArrayList levels = new ArrayList();
+	private ArrayList<Level> levels = new ArrayList<Level>();
 
 	private Collection<DummyEdge> originalEdges;
 
@@ -218,14 +218,14 @@ public class HierarchicalGraphLayout implements GraphLayout {
 		void reorder(Level above, Level below) {
 			for (int j = 0; j < nodes.size(); j++) {
 
-				NodeObj nj = (NodeObj) nodes.get(j);
+				NodeObj nj = nodes.get(j);
 
 				double total = 0;
 				int connected = 0;
 
 				if (above != null)
 					for (int i = 0; i < above.nodes.size(); i++) {
-						NodeObj ni = (NodeObj) above.nodes.get(i);
+						NodeObj ni = above.nodes.get(i);
 
 						if (isConnected(ni, nj)) {
 							connected++;
@@ -235,7 +235,7 @@ public class HierarchicalGraphLayout implements GraphLayout {
 
 				if (below != null)
 					for (int i = 0; i < below.nodes.size(); i++) {
-						NodeObj ni = (NodeObj) below.nodes.get(i);
+						NodeObj ni = below.nodes.get(i);
 
 						if (isConnected(ni, nj)) {
 							connected++;
@@ -258,8 +258,8 @@ public class HierarchicalGraphLayout implements GraphLayout {
 
 				boolean foundOverlap = false;
 				for (int i = 1; i < nodes.size(); i++) {
-					NodeObj a = (NodeObj) nodes.get(i - 1);
-					NodeObj b = (NodeObj) nodes.get(i);
+					NodeObj a = nodes.get(i - 1);
+					NodeObj b = nodes.get(i);
 
 					int overlap = minLevelGap
 					+ (a.getLocation() + a.getLayoutWidth() / 2)
@@ -279,7 +279,7 @@ public class HierarchicalGraphLayout implements GraphLayout {
 
 			int width = 0;
 			for (int i = 0; i < nodes.size(); i++) {
-				NodeObj n = (NodeObj) nodes.get(i);
+				NodeObj n = nodes.get(i);
 
 				n.setLocation(width + n.getLayoutWidth() / 2);
 				width += n.getLayoutWidth() + withinLevelGap;
@@ -289,9 +289,8 @@ public class HierarchicalGraphLayout implements GraphLayout {
 
 		void shiftLeft(int delta) {
 			for (int i = 0; i < nodes.size(); i++) {
-				NodeObj node = (NodeObj) nodes.get(i);
-				((NodeObj) nodes.get(i))
-				.setLocation(node.getLocation() - delta);
+				NodeObj node = nodes.get(i);
+				nodes.get(i).setLocation(node.getLocation() - delta);
 			}
 		}
 
@@ -305,12 +304,12 @@ public class HierarchicalGraphLayout implements GraphLayout {
 		}
 
 		int getWidth() {
-			final NodeObj nd = ((NodeObj) nodes.get(nodes.size() - 1));
+			final NodeObj nd = nodes.get(nodes.size() - 1);
 			return nd.getLocation() + nd.getLayoutWidth() / 2;
 		}
 
 		int getStart() {
-			final NodeObj nd = ((NodeObj) nodes.get(0));
+			final NodeObj nd = nodes.get(0);
 			return nd.getLocation() - nd.getLayoutWidth() / 2;
 		}
 
@@ -330,8 +329,8 @@ public class HierarchicalGraphLayout implements GraphLayout {
 	public int getWidth() {
 		int maxWidth = 0;
 
-		for (Iterator i = levels.iterator(); i.hasNext();)
-			maxWidth = Math.max(maxWidth, ((Level) i.next()).getWidth());
+		for (Iterator<Level> i = levels.iterator(); i.hasNext();)
+			maxWidth = Math.max(maxWidth, i.next().getWidth());
 
 		return maxWidth;
 
@@ -339,21 +338,19 @@ public class HierarchicalGraphLayout implements GraphLayout {
 
 	/** See getWidth() */
 	public int getHeight() {
-		Level l = (Level) levels.get(levels.size() - 1);
+		Level l = levels.get(levels.size() - 1);
 		return l.location + l.depth / 2;
 	}
 
-	private Comparator nodeLayoutComparator = new Comparator() {
-		// Classcast exception if not NodeLayoutData
-		public int compare(Object o1, Object o2) {
-			int val = ((NodeObj) o1).getLocation()
-			- ((NodeObj) o2).getLocation();
-			if (val == 0 && o1 instanceof NodeObj && o2 instanceof NodeObj)
-				return objectComparator.compare((NodeObj) o1, (NodeObj) o2);
+	private Comparator<NodeObj> nodeLayoutComparator = new Comparator<NodeObj>() {
+		
+		public int compare(NodeObj o1, NodeObj o2) {
+			int val = o1.getLocation() - o2.getLocation();
+			if (val == 0)
+				return objectComparator.compare(o1, o2);
 			else
 				return val;
 		}
-
 	};
 
 	public boolean isConnected(NodeObj a, NodeObj b) {
@@ -440,17 +437,16 @@ public class HierarchicalGraphLayout implements GraphLayout {
 			}
 		});
 
-		for (Iterator i = nodeList.iterator(); i.hasNext();) {
-			NodeObj n = (NodeObj) i.next();
+		for (Iterator<NodeObj> i = nodeList.iterator(); i.hasNext();) {
+			NodeObj n = i.next();
 			findLevel(maxLevelSize, n, seenem);
 		}
 
 		rationalise();
 
-		for (Iterator i = levels.iterator(); i.hasNext();) {
-			Level l = (Level) i.next();
+		for (Iterator<Level> i = levels.iterator(); i.hasNext();) {
+			Level l = i.next();
 			l.calcInitialPositions();
-
 		}
 
 		orderNodesInLevels();
@@ -459,11 +455,11 @@ public class HierarchicalGraphLayout implements GraphLayout {
 
 		int minStart = Integer.MAX_VALUE;
 
-		for (Iterator i = levels.iterator(); i.hasNext();)
-			minStart = Math.min(minStart, ((Level) i.next()).getStart());
+		for (Iterator<Level> i = levels.iterator(); i.hasNext();)
+			minStart = Math.min(minStart, i.next().getStart());
 
-		for (Iterator i = levels.iterator(); i.hasNext();)
-			((Level) i.next()).shiftLeft(minStart);
+		for (Iterator<Level> i = levels.iterator(); i.hasNext();)
+			i.next().shiftLeft(minStart);
 		posMap = new HashMap<Object, Shape>();
 		edgeShapes = new HashMap<DummyEdge, Shape>();
 
@@ -590,13 +586,13 @@ public class HierarchicalGraphLayout implements GraphLayout {
 			while (levelNumber >= levels.size())
 				levels.add(new Level(levels.size()));
 
-			if (((Level) levels.get(levelNumber)).nodes.size() < maxLevelSize)
+			if (levels.get(levelNumber).nodes.size() < maxLevelSize)
 				break;
 
 			levelNumber++;
 		}
 
-		node.setLevel((Level) levels.get(levelNumber));
+		node.setLevel(levels.get(levelNumber));
 
 		node.getLevel().addNode(node);
 
@@ -620,7 +616,7 @@ public class HierarchicalGraphLayout implements GraphLayout {
 					b = new NodeObj(o, -1, true);
 					b.setHeight(-1);
 					b.setWidth(insertedEdgeWidth);
-					b.setLevel((Level) levels.get(i));
+					b.setLevel(levels.get(i));
 					b.getLevel().addNode(b);
 				}
 				if (!nodes.containsKey(b.getNode()))
@@ -653,16 +649,16 @@ public class HierarchicalGraphLayout implements GraphLayout {
 		for (int j = 0; j < reorderIterations; j++) {
 
 			for (int i = 0; i < s; i++) {
-				Level p = (i == 0) ? null : (Level) levels.get(i - 1);
-				Level l = (Level) levels.get(i);
-				Level n = (i == s - 1) ? null : (Level) levels.get(i + 1);
+				Level p = (i == 0) ? null : levels.get(i - 1);
+				Level l = levels.get(i);
+				Level n = (i == s - 1) ? null : levels.get(i + 1);
 				l.reorder(p, n);
 			}
 
 			for (int i = s - 1; i >= 0; i--) {
-				Level p = (i == 0) ? null : (Level) levels.get(i - 1);
-				Level l = (Level) levels.get(i);
-				Level n = (i == s - 1) ? null : (Level) levels.get(i + 1);
+				Level p = (i == 0) ? null : levels.get(i - 1);
+				Level l = levels.get(i);
+				Level n = (i == s - 1) ? null : levels.get(i + 1);
 				l.reorder(p, n);
 			}
 
@@ -674,19 +670,16 @@ public class HierarchicalGraphLayout implements GraphLayout {
 
 		Level p = null;
 
-		for (Iterator i = levels.iterator(); i.hasNext();) {
-
-			Level l = (Level) i.next();
-
+		for (Iterator<Level> i = levels.iterator(); i.hasNext();) {
+			Level l = i.next();
 			int maxLength = 0;
 
 			// Calculate maximum edge length
-
 			if (p != null) {
-				for (Iterator i2 = l.nodes.iterator(); i2.hasNext();) {
-					NodeObj n1 = (NodeObj) i2.next();
-					for (Iterator i3 = p.nodes.iterator(); i3.hasNext();) {
-						NodeObj n2 = (NodeObj) i3.next();
+				for (Iterator<NodeObj> i2 = l.nodes.iterator(); i2.hasNext();) {
+					NodeObj n1 = i2.next();
+					for (Iterator<NodeObj> i3 = p.nodes.iterator(); i3.hasNext();) {
+						NodeObj n2 = i3.next();
 						if (isConnected(n1, n2)) {
 							maxLength = Math.max(maxLength, Math.abs(n1
 									.getLocation()
@@ -700,9 +693,8 @@ public class HierarchicalGraphLayout implements GraphLayout {
 
 			int maxHeight = 0;
 
-			for (Iterator i2 = l.nodes.iterator(); i2.hasNext();) {
-				maxHeight = Math.max(maxHeight, ((NodeObj) i2.next())
-						.getLayoutHeight());
+			for (Iterator<NodeObj> i2 = l.nodes.iterator(); i2.hasNext();) {
+				maxHeight = Math.max(maxHeight, i2.next().getLayoutHeight());
 			}
 
 			l.setDepth(maxHeight);

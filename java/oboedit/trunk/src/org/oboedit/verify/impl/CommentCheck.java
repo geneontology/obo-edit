@@ -2,12 +2,10 @@ package org.oboedit.verify.impl;
 
 import org.obo.datamodel.*;
 import org.obo.filters.CommentSearchCriterion;
-import org.obo.filters.DefinitionSearchCriterion;
 import org.obo.history.CommentChangeHistoryItem;
 import org.obo.history.HistoryItem;
 import org.oboedit.controller.VerificationManager;
 import org.oboedit.gui.*;
-import org.oboedit.verify.*;
 
 import java.util.*;
 
@@ -68,13 +66,13 @@ public class CommentCheck extends AbstractTextCheck {
 	}
 
 	@Override
-	public Collection getStrings(IdentifiedObject io) {
+	public Collection<String> getStrings(IdentifiedObject io) {
 		if (io instanceof CommentedObject) {
-			Collection out = new LinkedList();
+			Collection<String> out = new LinkedList<String>();
 			out.add(((CommentedObject) io).getComment());
 			return out;
 		} else
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 	}
 
 	public Collection<FieldPathSpec> getPaths() {

@@ -3,7 +3,6 @@ package org.oboedit.verify;
 import javax.swing.JComponent;
 
 import org.bbop.util.*;
-import org.obo.datamodel.*;
 import org.obo.reasoner.ReasonedLinkDatabase;
 
 public interface Check extends ProgressValued {

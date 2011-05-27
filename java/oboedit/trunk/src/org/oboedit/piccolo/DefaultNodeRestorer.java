@@ -1,10 +1,5 @@
 package org.oboedit.piccolo;
 
-import java.awt.geom.Point2D;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-
 import org.bbop.swing.EndpointShapeExtender;
 import org.bbop.swing.ShapeExtender;
 

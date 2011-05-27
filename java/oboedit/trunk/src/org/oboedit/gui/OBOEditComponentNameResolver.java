@@ -1,11 +1,8 @@
 package org.oboedit.gui;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -18,9 +15,6 @@ import org.bbop.framework.ComponentConfiguration;
 import org.bbop.framework.ComponentManager;
 import org.bbop.framework.GUIComponent;
 import org.bbop.swing.*;
-import org.oboedit.controller.ExpressionManager;
-import org.oboedit.gui.event.*;
-
 import org.apache.log4j.*;
 
 public class OBOEditComponentNameResolver implements ComponentNameResolver {
@@ -28,7 +22,7 @@ public class OBOEditComponentNameResolver implements ComponentNameResolver {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(OBOEditComponentNameResolver.class);
 
-	protected Map buttonGroups;
+	protected Map<String, ButtonGroup> buttonGroups;
 
 	protected List<ComponentNameResolver> resolverExtensions = new LinkedList<ComponentNameResolver>();
 
@@ -52,8 +46,8 @@ public class OBOEditComponentNameResolver implements ComponentNameResolver {
 		if (name == null)
 			return null;
 		if (buttonGroups == null)
-			buttonGroups = new HashMap();
-		ButtonGroup group = (ButtonGroup) buttonGroups.get(name);
+			buttonGroups = new HashMap<String, ButtonGroup>();
+		ButtonGroup group = buttonGroups.get(name);
 		if (group == null) {
 			group = new ButtonGroup();
 			buttonGroups.put(name, group);
@@ -123,17 +117,17 @@ public class OBOEditComponentNameResolver implements ComponentNameResolver {
 
 			out.init();
 			out.setXML(xml);
-			Map configMap;
+			Map<String,?> configMap;
 			if (out instanceof AbstractGUIComponent) {
-				configMap = new HashMap();
+				configMap = new HashMap<String, Object>();
 				ComponentConfiguration cc = (ComponentConfiguration) configMap
 						.get(out.getID());
 
 				if (cc != null)
 					out.setConfiguration(cc);
 			} else {
-				configMap = new HashMap();
-				java.util.List configList = (java.util.List) configMap.get(out
+				configMap = new HashMap<String, Object>();
+				java.util.List<?> configList = (java.util.List) configMap.get(out
 						.getID());
 				ComponentConfiguration config = null;
 				if (configList != null && configList.size() > 0) {

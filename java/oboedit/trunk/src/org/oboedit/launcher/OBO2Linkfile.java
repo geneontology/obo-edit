@@ -29,13 +29,13 @@ public class OBO2Linkfile {
 	protected static class ScriptWrapper {
 		protected String script;
 
-		protected LinkedList args = new LinkedList();
+		protected LinkedList<String> args = new LinkedList<String>();
 
-		public LinkedList getArgs() {
+		public LinkedList<String> getArgs() {
 			return args;
 		}
 
-		public void setArgs(LinkedList args) {
+		public void setArgs(LinkedList<String> args) {
 			this.args = args;
 		}
 
@@ -52,13 +52,13 @@ public class OBO2Linkfile {
 	public static void convertFiles(
 			OBOFileAdapter.OBOAdapterConfiguration readConfig,
 			OBOFileAdapter.OBOAdapterConfiguration writeConfig,
-			List scripts) throws Exception {
+			List<ScriptWrapper> scripts) throws Exception {
 		OBOFileAdapter adapter = new OBOFileAdapter();
-		OBOSession session = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY,
+		OBOSession session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY,
 				readConfig, null);
-		Iterator it = scripts.iterator();
+		Iterator<ScriptWrapper> it = scripts.iterator();
 		while (it.hasNext()) {
-			ScriptWrapper wrapper = (ScriptWrapper) it.next();
+			ScriptWrapper wrapper = it.next();
 			runScript(session, wrapper.getScript(), wrapper.getArgs());
 		}
 		logger.info("About to write files..., session object count = "
@@ -71,7 +71,7 @@ public class OBO2Linkfile {
 		writer.doOperation(OBOAdapter.WRITE_ONTOLOGY, writeConfig, session);
 	}
 
-	public static void runScript(OBOSession session, String script, List args)
+	public static void runScript(OBOSession session, String script, List<String> args)
 			throws ExpressionException {
 		JexlContext context = ExpressionManager.getManager().getContext();
 		context.setGlobalVariable("session", session, false);
@@ -90,7 +90,7 @@ public class OBO2Linkfile {
 		OBOFileAdapter.OBOAdapterConfiguration writeConfig = new OBOFileAdapter.OBOAdapterConfiguration();
 		
 		writeConfig.setBasicSave(false);
-		LinkedList scripts = new LinkedList();
+		LinkedList<ScriptWrapper> scripts = new LinkedList<ScriptWrapper>();
 		String formatVersion = "OBO_1_2";
 		for (int i = 0; i < args.length; i++)
 			logger.info("args[" + i + "] = |" + args[i] + "|");

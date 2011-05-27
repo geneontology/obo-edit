@@ -112,8 +112,7 @@ public class TestUtil extends TestCase {
 		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 		config.getReadPaths().add("test_resources/testfile.1.0.obo");
 		try {
-			OBOSession session = (OBOSession) adapter.doOperation(
-					OBOAdapter.READ_ONTOLOGY, config, null);
+			OBOSession session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
 			return session;
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
@@ -154,22 +153,22 @@ public class TestUtil extends TestCase {
 	}
 
 	public Namespace getRandomNamespace() {
-		Iterator it = session.getNamespaces().iterator();
+		Iterator<Namespace> it = session.getNamespaces().iterator();
 		int index = (int) (Math.random() * session.getNamespaces().size());
 		logger.info("random_index = " + index);
 		Namespace o = null;
 		for (int i = 0; it.hasNext() && (i < index || o == null); i++) {
-			o = (Namespace) it.next();
+			o = it.next();
 		}
 		return o;
 	}
 
-	public IdentifiedObject getRandomObject(Class c) {
-		Iterator it = session.getObjects().iterator();
+	public IdentifiedObject getRandomObject(Class<?> c) {
+		Iterator<IdentifiedObject> it = session.getObjects().iterator();
 		int index = (int) (Math.random() * session.getObjects().size());
 		Object o = null;
 		for (int i = 0; it.hasNext() && (i < index || o == null); i++) {
-			IdentifiedObject temp = (IdentifiedObject) it.next();
+			IdentifiedObject temp = it.next();
 			if (!TermUtil.isObsolete(temp) && c.isInstance(temp))
 				o = temp;
 		}
@@ -178,21 +177,15 @@ public class TestUtil extends TestCase {
 
 	public Link getRandomLink() {
 		int count = 0;
-		Iterator it = session.getObjects().iterator();
-		while (it.hasNext()) {
-			IdentifiedObject io = (IdentifiedObject) it.next();
+		for(IdentifiedObject io : session.getObjects()) {
 			if (io instanceof LinkedObject) {
 				count += ((LinkedObject) io).getParents().size();
 			}
 		}
 		int index = (int) (Math.random() * count);
-		it = session.getObjects().iterator();
-		while (it.hasNext()) {
-			IdentifiedObject io = (IdentifiedObject) it.next();
+		for(IdentifiedObject io : session.getObjects()) {
 			if (io instanceof LinkedObject) {
-				Iterator it2 = ((LinkedObject) io).getParents().iterator();
-				while (it2.hasNext()) {
-					Link link = (Link) it2.next();
+				for(Link link : ((LinkedObject) io).getParents()) {
 					if (index == 0)
 						return link;
 					index--;
@@ -207,14 +200,13 @@ public class TestUtil extends TestCase {
 		OBOFileAdapter adapter = new OBOFileAdapter();
 		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 		config.getReadPaths().add(path);
-		OBOSession session = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY,
-				config, null);
+		OBOSession session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
 		return session;
 	}
 
 	public static void sessionCheck(TestCase test, OBOSession a, OBOSession b) {
 		HistoryList allChanges = HistoryGenerator.getHistory(a, b);
-		test.assertTrue("Differences found in sessions " + a + " and " + b,
+		assertTrue("Differences found in sessions " + a + " and " + b,
 				allChanges.size() == 0);
 	}
 
@@ -230,7 +222,7 @@ public class TestUtil extends TestCase {
 
 			if (astr == null || bstr == null) {
 				if (astr != bstr)
-					test.fail("Different numbers of lines in files to compare");
+					fail("Different numbers of lines in files to compare");
 				else
 					break;
 			}
@@ -241,7 +233,7 @@ public class TestUtil extends TestCase {
 					|| astr.startsWith("data-version")
 					|| astr.startsWith("remark") || astr.startsWith("!"))
 					|| (astr.startsWith("!") && astr.startsWith("type")))
-				test.assertTrue("Lines '" + astr + "' & '" + bstr
+				assertTrue("Lines '" + astr + "' & '" + bstr
 						+ "' don't match", astr.equals(bstr));
 		} while (astr != null && bstr != null);
 	}

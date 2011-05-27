@@ -1,6 +1,5 @@
 package org.oboedit.gui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -30,7 +29,6 @@ import org.obo.filters.LinkFilter;
 import org.obo.filters.LinkFilterImpl;
 import org.obo.filters.ObjectFilter;
 import org.obo.filters.ObjectFilterImpl;
-import org.obo.filters.PathCapableFilter;
 import org.obo.filters.SearchAspect;
 import org.obo.filters.SearchComparison;
 import org.obo.filters.SearchCriterion;
@@ -40,9 +38,6 @@ import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.event.GUIUpdateEvent;
 import org.oboedit.gui.event.GUIUpdateListener;
-import org.oboedit.gui.event.ReasonerStatusListener;
-import org.oboedit.gui.event.ReasonerStatusEvent;
-
 import org.apache.log4j.*;
 
 public class TermFilterEditor extends JPanel {
@@ -147,7 +142,7 @@ public class TermFilterEditor extends JPanel {
 
 	});
 
-	protected Class getInputClass() {
+	protected Class<?> getInputClass() {
 		return IdentifiedObject.class;
 	}
 
@@ -230,9 +225,9 @@ public class TermFilterEditor extends JPanel {
 		Collection<SearchComparison> comparisons = FilterManager.getManager()
 				.getComparisons();
 		for (SearchComparison c : comparisons) {
-			Class[] acceptedTypes = c.getAcceptedTypes();
+			Class<?>[] acceptedTypes = c.getAcceptedTypes();
 			boolean match = false;
-			for (Class atype : acceptedTypes) {
+			for (Class<?> atype : acceptedTypes) {
 				boolean isNumeric = Number.class.isAssignableFrom(criterion
 						.getReturnType());
 				boolean isString = String.class.isAssignableFrom(atype);
@@ -439,10 +434,8 @@ public class TermFilterEditor extends JPanel {
 				out.setTraversalFilter(linkFilter);
 			}
 		}
-		if (out instanceof PathCapableFilter) {
-			if (SessionManager.getManager().getUseReasoner())
-				((PathCapableFilter) out).setReasoner(SessionManager.getManager().getReasoner());
-		}
+		if (SessionManager.getManager().getUseReasoner())
+			out.setReasoner(SessionManager.getManager().getReasoner());
 		return out;
 	}
 

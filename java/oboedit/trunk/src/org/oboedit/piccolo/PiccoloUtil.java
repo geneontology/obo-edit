@@ -80,7 +80,7 @@ public class PiccoloUtil {
 				out.add(new Area(pnode.getStroke().createStrokedShape(shape)));
 			}
 		}
-		Iterator it = node.getChildrenIterator();
+		Iterator<?> it = node.getChildrenIterator();
 		while (it.hasNext()) {
 			PNode c = (PNode) it.next();
 			out.add(new Area(createSilhouette(parent, c, c.getXOffset()
@@ -182,9 +182,10 @@ public class PiccoloUtil {
 		return node.animateToTransform(a, duration);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> T getNodeOfClass(PPickPath path, Class<T> targetClass) {
 		PStack stack = path.getNodeStackReference();
-		Iterator it = stack.iterator();
+		Iterator<?> it = stack.iterator();
 		while (it.hasNext()) {
 			PNode n = (PNode) it.next();
 			if (targetClass.isAssignableFrom(n.getClass())) {
@@ -194,11 +195,10 @@ public class PiccoloUtil {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	public static PNode getNodeOfClass(PPickPath path, Class... targetClasses) {
-		for (Class targetClass : targetClasses) {
+	public static PNode getNodeOfClass(PPickPath path, Class<?>... targetClasses) {
+		for (Class<?> targetClass : targetClasses) {
 			PStack stack = path.getNodeStackReference();
-			Iterator it = stack.iterator();
+			Iterator<?> it = stack.iterator();
 			while (it.hasNext()) {
 				PNode n = (PNode) it.next();
 				if (targetClass.isAssignableFrom(n.getClass())) {
@@ -218,8 +218,8 @@ public class PiccoloUtil {
 		Collection<Object> allKeys = new HashSet<Object>();
 		allKeys.addAll(rectMap.keySet());
 		allKeys.addAll(newRectMap.keySet());
-		final Collection<PNode> addSet = new LinkedHashSet();
-		final Collection<PNode> delSet = new LinkedHashSet();
+		final Collection<PNode> addSet = new LinkedHashSet<PNode>();
+		final Collection<PNode> delSet = new LinkedHashSet<PNode>();
 
 		for (Object key : allKeys) {
 			PNode oldNode = rectMap.get(key);

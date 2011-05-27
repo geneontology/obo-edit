@@ -364,7 +364,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 	 * change reporter for CPEC
 	 * called by AbstractTextEditComponent.hasChanges()
 	 * */
-	public List getChanges() {
+	public List<HistoryItem> getChanges() {
 		List<HistoryItem> historyList = new LinkedList<HistoryItem>();
 
 		if (currentObject instanceof LinkedObject && !(currentObject instanceof OBOPropertyImpl)) {
@@ -441,7 +441,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 	 */
 	public Collection<Link> getRelationshipList() {
 		LinkedList<Link> out = new LinkedList<Link>();
-		Object intersectionGenus = (OBOClass) genusField.getValue();
+		IdentifiedObject intersectionGenus = genusField.getValue();
 		//compute and add genus link to relations list
 		if ( intersectionGenus!= null && intersectionGenus instanceof LinkedObject) {
 			OBORestriction isaLink = new OBORestrictionImpl(oboClass,

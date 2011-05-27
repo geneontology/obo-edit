@@ -21,16 +21,16 @@ public class SingleIntersectionCheck extends AbstractCheck implements OntologyCh
 	    configuration.setCondition((byte) (VerificationManager.LOAD | VerificationManager.MANUAL | VerificationManager.SAVE));
 	}
 
-	public Collection check(OBOSession history, IdentifiedObject currentObject,
+	public Collection<CheckWarning> check(OBOSession history, IdentifiedObject currentObject,
 				byte condition, boolean checkObsoletes) {
-		List out = new LinkedList();
+		List<CheckWarning> out = new LinkedList<CheckWarning>();
 		if (currentObject != null) {
 			if (currentObject instanceof LinkedObject)
 				check((LinkedObject) currentObject, out);
 		} else {
-			Iterator it = history.getObjects().iterator();
+			Iterator<IdentifiedObject> it = history.getObjects().iterator();
 			while (it.hasNext()) {
-				Object o = it.next();
+				IdentifiedObject o = it.next();
 				if (o instanceof LinkedObject) {
 					LinkedObject lo = (LinkedObject) o;
 					check(lo, out);
@@ -43,11 +43,11 @@ public class SingleIntersectionCheck extends AbstractCheck implements OntologyCh
 		return out;
 	}
 
-	protected void check(LinkedObject object, List warnings) {
-		Iterator it = object.getParents().iterator();
+	protected void check(LinkedObject object, List<CheckWarning> warnings) {
+		Iterator<Link> it = object.getParents().iterator();
 		int intersectionLinks = 0;
 		while (it.hasNext()) {
-		    Link link = (Link) it.next();
+		    Link link = it.next();
 		    if (TermUtil.isIntersection(link))
 			++intersectionLinks;
 		}

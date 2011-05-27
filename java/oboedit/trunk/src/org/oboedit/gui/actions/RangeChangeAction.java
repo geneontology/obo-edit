@@ -37,7 +37,7 @@ public class RangeChangeAction implements DropMenuAction {
 		return "Change range";
 	}
 
-	public List getSubActions() {
+	public List<EditAction> getSubActions() {
 		return null;
 	}
 

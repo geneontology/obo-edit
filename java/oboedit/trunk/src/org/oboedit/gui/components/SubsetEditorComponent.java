@@ -11,8 +11,6 @@ import org.obo.datamodel.*;
 import org.obo.history.*;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.AbstractTextEditComponent;
-import org.oboedit.gui.Preferences;
-
 import org.apache.log4j.*;
 
 public class SubsetEditorComponent extends AbstractTextEditComponent {
@@ -24,11 +22,9 @@ public class SubsetEditorComponent extends AbstractTextEditComponent {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	protected Comparator subsetComparator = new Comparator() {
-		public int compare(Object a, Object b) {
-			TermSubset tca = (TermSubset) a;
-			TermSubset tcb = (TermSubset) b;
-			return tca.toString().compareTo(tcb.toString());
+	protected Comparator<TermSubset> subsetComparator = new Comparator<TermSubset>() {
+		public int compare(TermSubset a, TermSubset b) {
+			return a.toString().compareTo(b.toString());
 		}
 	};
 
@@ -37,8 +33,8 @@ public class SubsetEditorComponent extends AbstractTextEditComponent {
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		protected Vector subsetList = new Vector();
-		protected Vector valList = new Vector();
+		protected Vector<TermSubset> subsetList = new Vector<TermSubset>();
+		protected Vector<Object> valList = new Vector<Object>();
 
 		public SubsetTableModel() {
 		}
@@ -49,9 +45,9 @@ public class SubsetEditorComponent extends AbstractTextEditComponent {
 			subsetList.addAll(SessionManager.getManager().getSession()
 					.getSubsets());
 			Collections.sort(subsetList, subsetComparator);
-			Iterator it = subsetList.iterator();
+			Iterator<TermSubset> it = subsetList.iterator();
 			while (it.hasNext()) {
-				TermSubset sub = (TermSubset) it.next();
+				TermSubset sub = it.next();
 				if (currentObject != null
 						&& currentObject instanceof SubsetObject)
 					valList.add(new Boolean(((SubsetObject) currentObject)
@@ -62,7 +58,7 @@ public class SubsetEditorComponent extends AbstractTextEditComponent {
 		}
 
 		@Override
-		public Class getColumnClass(int col) {
+		public Class<?> getColumnClass(int col) {
 			if (col == 0)
 				return TermSubset.class;
 			else
@@ -188,9 +184,9 @@ public class SubsetEditorComponent extends AbstractTextEditComponent {
 		}
 	}
 
-	public List getChanges() {
+	public List<HistoryItem> getChanges() {
 		if (currentObject != null) {
-			List out = new LinkedList();
+			List<HistoryItem> out = new LinkedList<HistoryItem>();
 			if (currentObject instanceof SubsetObject) {
 				for (int i = 0; i < subsetTableModel.getRowCount(); i++) {
 					TermSubset sub = (TermSubset) subsetTableModel
@@ -207,6 +203,6 @@ public class SubsetEditorComponent extends AbstractTextEditComponent {
 			}
 			return out;
 		} else
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 	}
 }

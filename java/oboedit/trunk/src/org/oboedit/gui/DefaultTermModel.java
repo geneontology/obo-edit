@@ -12,15 +12,12 @@ import org.obo.datamodel.impl.FilteredLinkDatabase;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.datamodel.impl.TrivialLink;
 import org.obo.filters.*;
-import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.impl.TrimmedLinkDatabase;
 import org.obo.util.FilterUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.*;
 import org.oboedit.gui.event.*;
-import org.oboedit.util.GUIUtil;
 import org.oboedit.util.PathUtil;
 
 import org.apache.log4j.*;

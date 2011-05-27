@@ -1,7 +1,6 @@
 package org.oboedit.gui.actions;
 
 import java.util.*;
-import org.obo.datamodel.*;
 import org.obo.history.HistoryItem;
 import org.oboedit.gui.*;
 

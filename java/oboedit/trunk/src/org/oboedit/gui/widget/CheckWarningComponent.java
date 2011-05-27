@@ -2,7 +2,6 @@ package org.oboedit.gui.widget;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
@@ -17,7 +16,6 @@ import org.bbop.swing.*;
 import org.bbop.util.MultiHashMap;
 import org.bbop.util.MultiMap;
 import org.obo.datamodel.*;
-import org.obo.history.HistoryItem;
 import org.obo.util.HTMLUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
@@ -37,7 +35,7 @@ public class CheckWarningComponent extends JEditorPane {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	protected List warnings = new LinkedList();
+	protected List<CheckWarning> warnings = new LinkedList<CheckWarning>();
 
 	protected boolean showFatal = true;
 
@@ -90,7 +88,7 @@ public class CheckWarningComponent extends JEditorPane {
 			if (globalReload)
 				redoCheck();
 			else {
-				CheckWarning warning = (CheckWarning) action.getWarning();
+				CheckWarning warning = action.getWarning();
 				redoCheck(warning.getSource());
 			}
 		}
@@ -104,7 +102,7 @@ public class CheckWarningComponent extends JEditorPane {
 					int index = Integer.parseInt(path.substring(14, path
 							.length()));
 //					logger.info("path = " + path + ", index = " + index + ", num warnings = " + warnings.size()); // DEL
-					CheckWarning warning = (CheckWarning) warnings.get(index);
+					CheckWarning warning = warnings.get(index);
 					JPopupMenu menu = new JPopupMenu();
 					Iterator<QuickFix> it = warning.getFixes().iterator();
 					while (it.hasNext()) {
@@ -159,16 +157,16 @@ public class CheckWarningComponent extends JEditorPane {
 			@Override
 			public void run() {
 				locked = true;
-				Collection oldWarnings = new LinkedList(warnings);
-				Iterator it = warnings.iterator();
+				Collection<CheckWarning> oldWarnings = new LinkedList<CheckWarning>(warnings);
+				Iterator<CheckWarning> it = warnings.iterator();
 				while (it.hasNext()) {
-					CheckWarning warning = (CheckWarning) it.next();
+					CheckWarning warning = it.next();
 					if (warning.getSource().equals(source)) {
 						it.remove();
 					}
 				}
 
-				Collection newWarnings = VerificationManager.getManager()
+				Collection<CheckWarning> newWarnings = VerificationManager.getManager()
 						.runCheck(source, session, currentObject, condition);
 				warnings.addAll(newWarnings);
 //				logger.debug("oldWarnings = " + oldWarnings.size());
@@ -197,17 +195,17 @@ public class CheckWarningComponent extends JEditorPane {
 		}
 	}
 
-	public void setWarnings(Collection warnings) {
+	public void setWarnings(Collection<CheckWarning> warnings) {
 		setWarnings(warnings, null, null, true, true, true);
 	}
 
-	public void setWarnings(Collection warnings, String header, String footer,
+	public void setWarnings(Collection<CheckWarning> warnings, String header, String footer,
 			boolean showFatal, boolean showWarnings, boolean showTermNames) {
 		if (locked)
 			return;
 		if (warnings == null)
 		    return;
-		this.warnings = new ArrayList(warnings);
+		this.warnings = new ArrayList<CheckWarning>(warnings);
 		this.header = header;
 		this.footer = footer;
 		this.showFatal = showFatal;
@@ -293,13 +291,11 @@ public class CheckWarningComponent extends JEditorPane {
 		updateGUI();
 	}
 
-	protected Comparator warningSorter = new Comparator() {
-		public int compare(Object a, Object b) {
-			CheckWarning ca = (CheckWarning) a;
-			CheckWarning cb = (CheckWarning) b;
-			if (ca.isFatal() && cb.isFatal())
+	protected Comparator<CheckWarning> warningSorter = new Comparator<CheckWarning>() {
+		public int compare(CheckWarning a, CheckWarning b) {
+			if (a.isFatal() && b.isFatal())
 				return 0;
-			else if (ca.isFatal())
+			else if (a.isFatal())
 				return -1;
 			else
 				return 1;
@@ -328,8 +324,8 @@ public class CheckWarningComponent extends JEditorPane {
 		}
 	};
 
-	protected static void generateHTMLList(StringBuffer html, Collection c,
-			List warnings, IdentifiedObject io, boolean showTermNames,
+	protected static void generateHTMLList(StringBuffer html, Collection<CheckWarning> c,
+			List<CheckWarning> warnings, IdentifiedObject io, boolean showTermNames,
 			boolean showWarnings, boolean showErrors,
 			boolean deleteShownWarnings, boolean allowRerun) {
 		int errorCount = 0;
@@ -368,9 +364,9 @@ public class CheckWarningComponent extends JEditorPane {
 //			logger.debug(warningMessage); // DEL
 			html.append("<ul style='list-style-type:none;'>");
 		}
-		Iterator it2 = c.iterator();
+		Iterator<CheckWarning> it2 = c.iterator();
 		while (it2.hasNext()) {
-			CheckWarning warning = (CheckWarning) it2.next();
+			CheckWarning warning = it2.next();
 			if (!showWarnings && !warning.isFatal())
 				continue;
 			if (!showErrors && warning.isFatal())
@@ -426,7 +422,7 @@ public class CheckWarningComponent extends JEditorPane {
 
 	public static String getHTML(
 			Map<IdentifiedObject, Collection<CheckWarning>> warningMap,
-			List warnings, String header, String footer,
+			List<CheckWarning> warnings, String header, String footer,
 			int globalWarningCount, int globalErrorCount,
 			boolean separateWarningErrorSections, boolean allowRerun,
 			boolean showTermNames, boolean hyperlinksEnabled) {
@@ -447,10 +443,10 @@ public class CheckWarningComponent extends JEditorPane {
 							+ " fatal error"
 							+ (globalErrorCount != 1 ? "s" : "") + ":</p>\n");
 					html.append("<ul style='list-style-type:none;'>");
-					Iterator it = termList.iterator();
+					Iterator<IdentifiedObject> it = termList.iterator();
 					while (it.hasNext()) {
-						IdentifiedObject io = (IdentifiedObject) it.next();
-						Collection c = (Collection) warningMap.get(io);
+						IdentifiedObject io = it.next();
+						Collection<CheckWarning> c = warningMap.get(io);
 						generateHTMLList(html, c, warnings, io, showTermNames
 								|| warningMap.size() > 1, false, true, true,
 								allowRerun);
@@ -468,10 +464,10 @@ public class CheckWarningComponent extends JEditorPane {
 			}
 
 			html.append("<ul style='list-style-type:none;'>");
-			Iterator it = termList.iterator();
+			Iterator<IdentifiedObject> it = termList.iterator();
 			while (it.hasNext()) {
-				IdentifiedObject io = (IdentifiedObject) it.next();
-				Collection c = (Collection) warningMap.get(io);
+				IdentifiedObject io = it.next();
+				Collection<CheckWarning> c = warningMap.get(io);
 				generateHTMLList(html, c, warnings, io, showTermNames
 						|| warningMap.size() > 1, true, true, false, allowRerun);
 			}
@@ -499,7 +495,7 @@ public class CheckWarningComponent extends JEditorPane {
 
 	protected void initComponent(
 			Map<IdentifiedObject, Collection<CheckWarning>> warningMap,
-			List warnings, String header, String footer,
+			List<CheckWarning> warnings, String header, String footer,
 			int globalWarningCount, int globalErrorCount,
 			boolean separateWarningErrorSections, boolean allowRerun,
 			boolean showTermNames, boolean hyperlinksEnabled) {
@@ -512,24 +508,24 @@ public class CheckWarningComponent extends JEditorPane {
 	}
 
 	protected void updateGUI() {
-		Map warningMap = new LinkedHashMap();
+		Map<IdentifiedObject, Collection<CheckWarning>> warningMap = new LinkedHashMap<IdentifiedObject, Collection<CheckWarning>>();
 
 		int warningCount = 0;
 		int fatalCount = 0;
-		Iterator it = warnings.iterator();
+		Iterator<CheckWarning> it = warnings.iterator();
 //		logger.info("updategui warnings = " + warnings.size());
 		while (it.hasNext()) {
-			CheckWarning warning = (CheckWarning) it.next();
+			CheckWarning warning = it.next();
 			if (warning.isFatal() && !showFatal) {
 				continue;
 			}
 			if (!warning.isFatal() && !showWarnings) {
 				continue;
 			}
-			java.util.List c = (java.util.List) warningMap.get(warning
+			java.util.List<CheckWarning> c = (java.util.List<CheckWarning>) warningMap.get(warning
 					.getObject());
 			if (c == null) {
-				c = new ArrayList();
+				c = new ArrayList<CheckWarning>();
 				warningMap.put(warning.getObject(), c);
 			}
 			int pos = Collections.binarySearch(c, warning, warningSorter);

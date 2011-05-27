@@ -217,8 +217,7 @@ public class HistoryTest extends TestCase {
 		// URL testFile = ClassLoader.getSystemClassLoader().getResource(
 		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 		config.getReadPaths().add("test_resources/testfile.1.0.obo");
-		session = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config,
-				null);
+		session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
 		testUtil = new TestUtil(session);
 		operationModel = new DefaultOperationModel();
 		operationModel.setSession(session);

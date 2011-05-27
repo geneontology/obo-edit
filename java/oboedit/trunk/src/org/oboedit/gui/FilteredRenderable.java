@@ -2,7 +2,6 @@ package org.oboedit.gui;
 
 import java.util.List;
 
-import org.obo.filters.*;
 import org.oboedit.gui.filter.RenderedFilter;
 
 public interface FilteredRenderable extends ObjectSelector {

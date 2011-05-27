@@ -142,7 +142,7 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 				recache();
 				fireExpansionStateChanged(added, deleted);
 			} else {
-				setDefaultVisibleObjects(Collections.EMPTY_SET);
+				setDefaultVisibleObjects(Collections.<IdentifiedObject>emptySet());
 				recache();
 				visibleObjects.addAll(objects);
 				fireExpansionStateChanged(added, deleted);
@@ -156,8 +156,7 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 		ExpansionEvent e = null;
 		int size = listeners.size();
 		for (int i = 0; i < size && i < listeners.size(); i++) {
-			ExpandCollapseListener listener = (ExpandCollapseListener) listeners
-					.get(i);
+			ExpandCollapseListener listener = listeners.get(i);
 			if (e == null) {
 				e = new ExpansionEvent(this, shown, hidden);
 			}
@@ -211,7 +210,7 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 	}
 
 	public Collection<Link> getChildren(LinkedObject lo, boolean ignoreTrimming) {
-		Set children = new HashSet();
+		Set<Link> children = new HashSet<Link>();
 		for(Link link : linkDatabase.getChildren(lo)){
 			if (isVisible(link.getChild())
 					&& (ignoreTrimming || !shouldBeTrimmed(link)))
@@ -225,7 +224,7 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 	}
 
 	public Collection<Link> getParents(LinkedObject lo, boolean ignoreTrimming) {
-		Set parents = new HashSet();
+		Set<Link> parents = new HashSet<Link>();
 		for(Link link : linkDatabase.getParents(lo)){
 			if (isVisible(link.getParent())
 					&& (ignoreTrimming || !shouldBeTrimmed(link)))

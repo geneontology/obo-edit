@@ -1,7 +1,6 @@
 package org.oboedit.piccolo;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -21,8 +20,8 @@ public class PageLayoutAnimator extends PLayoutNode {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(PageLayoutAnimator.class);
-	protected Map objectToCloneMap = new HashMap();
-	protected Map cloneToObjectMap = new HashMap();
+	protected Map<PNode, PNode> objectToCloneMap = new HashMap<PNode, PNode>();
+	protected Map<PNode, PNode> cloneToObjectMap = new HashMap<PNode, PNode>();
 	
 	public void addChild(PNode node) {
 		PNode clone = cloneAndFile(node);
@@ -31,15 +30,15 @@ public class PageLayoutAnimator extends PLayoutNode {
 	}
 	
 	public PNode getSurrogate(PNode original) {
-		return (PNode) objectToCloneMap.get(original);
+		return objectToCloneMap.get(original);
 	}
 	
 	protected PNode cloneAndFile(PNode node) {
-		List childList = new LinkedList(node.getChildrenReference());
+		List<?> childList = new LinkedList<Object>(node.getChildrenReference());
 		PNode clone = (PNode) node.clone();
 		clone.removeAllChildren();
 		
-		Iterator it = childList.iterator();
+		Iterator<?> it = childList.iterator();
 		for(int i=0; it.hasNext(); i++) {
 			PNode child = (PNode) it.next();
 			clone.addChild(cloneAndFile(child));
@@ -49,15 +48,15 @@ public class PageLayoutAnimator extends PLayoutNode {
 		return clone;
 	}
 	
-	public PActivity animateToLayout(Collection objects, ShapeExtender shapeExtender, long duration) {
+	public PActivity animateToLayout(Collection<PNode> objects, ShapeExtender shapeExtender, long duration) {
 		layoutChildren();
 		Point2D myOffset = getOffset();
 		setOffset(0,0);
 		PCompoundActivity out = new PCompoundActivity();
-		Iterator it = objects.iterator();
+		Iterator<PNode> it = objects.iterator();
 		while(it.hasNext()) {
-			PNode node = (PNode) it.next();
-			PNode clone = (PNode) objectToCloneMap.get(node);
+			PNode node = it.next();
+			PNode clone = objectToCloneMap.get(node);
 			Point2D newCoords = globalToLocal(clone.getGlobalTranslation());
 			double newScale = clone.getGlobalScale() / getGlobalScale();
 			double newRotate = clone.getGlobalRotation() - getGlobalRotation();

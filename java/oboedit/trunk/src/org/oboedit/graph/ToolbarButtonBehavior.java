@@ -1,7 +1,5 @@
 package org.oboedit.graph;
 
-import java.awt.Cursor;
-
 import javax.swing.Icon;
 import javax.swing.JComponent;
 

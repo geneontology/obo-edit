@@ -8,7 +8,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Line2D;
 import java.util.HashMap;
 
@@ -16,9 +15,6 @@ import javax.swing.Icon;
 import javax.swing.tree.TreePath;
 
 import org.bbop.swing.ZigZagStroke;
-import org.obo.datamodel.Link;
-import org.oboedit.gui.filter.LinkRenderSpec;
-
 import org.apache.log4j.*;
 
 public class ArrowIcon implements Icon {
@@ -50,7 +46,7 @@ public class ArrowIcon implements Icon {
 
 	protected boolean doubleHeaded = false;
 
-	protected static HashMap strokeHash = new HashMap();
+	protected static HashMap<String, Stroke> strokeHash = new HashMap<String, Stroke>();
 
 	// protected int right = 20;
 

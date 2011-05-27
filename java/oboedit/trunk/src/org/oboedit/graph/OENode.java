@@ -6,17 +6,12 @@ import java.awt.Shape;
 import javax.swing.text.html.HTMLEditorKit;
 
 import org.bbop.swing.ShapeUtil;
-import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.LinkedObject;
-import org.obo.util.FilterUtil;
-import org.obo.util.HTMLUtil;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 import org.oboedit.gui.filter.BackgroundColorSpecField;
 import org.oboedit.gui.filter.ColorProvider;
-import org.oboedit.gui.filter.ConfiguredColor;
 import org.oboedit.gui.filter.GeneralRendererSpec;
-import org.oboedit.gui.filter.GeneralRendererSpecField;
 import org.oboedit.gui.filter.RenderSpec;
 import org.oboedit.piccolo.Morphable;
 import org.oboedit.piccolo.PiccoloUtil;
@@ -26,8 +21,6 @@ import org.oboedit.util.GUIUtil;
 
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.activities.PActivity;
-import edu.umd.cs.piccolo.activities.PActivity.PActivityDelegate;
-
 import org.apache.log4j.*;
 
 public class OENode extends PCNode implements Morphable {

@@ -6,8 +6,6 @@ package org.oboedit.gui.components.imageplugin.saveimage;
 
 import java.awt.Component;
 import java.awt.Graphics2D;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
@@ -41,7 +39,6 @@ public class InstallTask implements GUITask {
 
 	public void install() {
 		ImageIO.scanForPlugins();
-		Collection<String> formats = new ArrayList<String>();
 		for (String s : ImageIO.getWriterMIMETypes()) {
 			Iterator<ImageWriter> it = ImageIO.getImageWritersByMIMEType(s);
 			while (it.hasNext()) {

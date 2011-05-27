@@ -1,13 +1,9 @@
 package org.oboedit.gui.tasks;
 
-import org.bbop.framework.GUIManager;
-import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.IdentifiedObject;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
-import javax.swing.Icon;
-
 import org.apache.log4j.*;
 
 /** Load icons (used in Ontology Tree Editor, Graph Editor, etc.) for relationships that were in the input */

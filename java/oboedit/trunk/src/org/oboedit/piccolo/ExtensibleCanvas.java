@@ -4,8 +4,6 @@ import edu.umd.cs.piccolo.PCamera;
 import edu.umd.cs.piccolo.PCanvas;
 import edu.umd.cs.piccolo.PLayer;
 import edu.umd.cs.piccolo.PRoot;
-import edu.umd.cs.piccolo.util.PUtil;
-
 import org.apache.log4j.*;
 
 public class ExtensibleCanvas extends PCanvas {

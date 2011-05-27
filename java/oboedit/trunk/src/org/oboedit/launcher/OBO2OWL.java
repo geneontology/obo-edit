@@ -22,8 +22,6 @@ import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.dataadapter.OBOSerializationEngine;
 import org.obo.datamodel.CommentedObject;
-import org.obo.datamodel.Dbxref;
-import org.obo.datamodel.DefinedObject;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOSession;
@@ -93,7 +91,7 @@ public class OBO2OWL {
 			boolean parseObsoleteComments, boolean writeObsoleteComments,
 			boolean fixDbxrefs, List scripts) throws Exception {
 		OBOFileAdapter adapter = new OBOFileAdapter();
-		OBOSession session = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY,
+		OBOSession session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY,
 				readConfig, null);
 		if (parseObsoleteComments) {
 			parseComments(session);

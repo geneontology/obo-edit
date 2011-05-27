@@ -1,10 +1,7 @@
 package org.oboedit.gui.components.imageplugin.filter;
 
-import java.io.File;
-import java.net.MalformedURLException;
 import java.util.Collection;
 
-import org.bbop.framework.GUIManager;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.LinkedObject;
 import org.obo.filters.AbstractStringCriterion;

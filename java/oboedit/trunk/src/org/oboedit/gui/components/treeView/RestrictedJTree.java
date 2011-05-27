@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.JTree;
-import javax.swing.SwingUtilities;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 import org.obo.datamodel.Link;

@@ -1,9 +1,6 @@
 package org.oboedit.gui;
 
 import javax.swing.JComponent;
-import javax.swing.JTable;
-import javax.swing.text.JTextComponent;
-
 import org.bbop.swing.widget.TableList;
 import org.obo.datamodel.FieldPathSpec;
 

@@ -2,7 +2,6 @@ package org.oboedit.graph;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -13,17 +12,12 @@ import java.beans.PropertyChangeListener;
 import org.bbop.swing.ShapeUtil;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
-import org.oboedit.piccolo.PiccoloUtil;
 
 import edu.umd.cs.piccolo.PCamera;
-import edu.umd.cs.piccolo.PCanvas;
-import edu.umd.cs.piccolo.PLayer;
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.event.PBasicInputEventHandler;
 import edu.umd.cs.piccolo.event.PInputEvent;
-import edu.umd.cs.piccolo.event.PInputEventListener;
 import edu.umd.cs.piccolo.nodes.PPath;
-import edu.umd.cs.piccolo.util.PAffineTransform;
 import edu.umd.cs.piccolo.util.PPaintContext;
 import edu.umd.cs.piccolox.handles.PBoundsHandle;
 import edu.umd.cs.piccolox.nodes.PClip;

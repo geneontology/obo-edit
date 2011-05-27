@@ -61,7 +61,7 @@ public class SpecificCopyAction implements ClickMenuAction {
 		return getName();
 	}
 
-	public List getSubActions() {
+	public List<EditAction> getSubActions() {
 		return null;
 	}
 
@@ -155,7 +155,7 @@ public class SpecificCopyAction implements ClickMenuAction {
 
 		TreePath[] outpatharr = new TreePath[pathouts.size()];
 		for (int i = 0; i < outpatharr.length; i++)
-			outpatharr[i] = (TreePath) pathouts.get(i);
+			outpatharr[i] = pathouts.get(i);
 		GUIUtil.setSelections(item, sources, SelectionManager
 				.createSelectionFromPaths(null, outpatharr, null,
 						SessionManager.getManager().getCurrentLinkDatabase(),

@@ -1,6 +1,5 @@
 package org.oboedit.gui.event;
 
-import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,7 +12,6 @@ import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
-import org.oboedit.verify.impl.CycleCheck;
 
 public abstract class TermHyperlinkListener implements HyperlinkListener {
 

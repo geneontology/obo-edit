@@ -1,15 +1,11 @@
 package org.oboedit.gui;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
-
 import javax.swing.tree.TreePath;
 
 import org.bbop.util.AbstractTaskDelegate;
@@ -51,9 +47,9 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 	@Override
 	public void execute() throws Exception {
 		Collection<TreePath> out = new LinkedList<TreePath>();
-		Iterator it = terms.iterator();
+		Iterator<LinkedObject> it = terms.iterator();
 		while(it.hasNext()) {
-			LinkedObject term = (LinkedObject) it.next();
+			LinkedObject term = it.next();
 			progress = 0;
 			setProgressString("Finding all paths to " + term);
 			//logger.debug("PathTask: execute: term = " + term);
@@ -79,7 +75,7 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 						term);
 				for (Link tr : linkDatabase.getParents(term)) {
 					MultiMap<Link, TreePath> lookedAt = new MultiHashMap<Link, TreePath>();
-					Map lookedAtCount = new HashMap();
+					Map<Link, Integer> lookedAtCount = new HashMap<Link, Integer>();
 					out.addAll(getPathsAsVector(incSize, tr, lookedAt, lookedAtCount));
 					if (isCancelled()) {
 						return;
@@ -93,15 +89,15 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 	}
 
 	protected Collection<TreePath> getPathsAsVector(double incSize, Link link,
-			MultiMap<Link, TreePath> lookedAt, Map lookedAtCount) {
+			MultiMap<Link, TreePath> lookedAt, Map<Link, Integer> lookedAtCount) {
 
 //		logger.debug("PathTask.getPathsAsVector calls counter: " + i);
-		Collection out = new LinkedList();
+		Collection<TreePath> out = new LinkedList<TreePath>();
 
 		if (isCancelled())
 			return out;
 
-		Integer lookedAtNum = (Integer) lookedAtCount.get(link);
+		Integer lookedAtNum = lookedAtCount.get(link);
 //		logger.debug("lookedAtNum: " + lookedAtNum);
 		if (lookedAtNum == null) {
 			lookedAtNum = new Integer(0);
@@ -145,7 +141,7 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 			return out;
 		}
 		if (lookedAt.containsKey(link)) {
-			out = (Collection) lookedAt.get(link);
+			out = lookedAt.get(link);
 			progress = progress + incSize;
 //			setProgressValue((int) (progress / terms.size())
 //					+ (100 * currentTermIndex / terms.size()));
@@ -157,15 +153,11 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 
 		Collection<Link> links = linkDatabase.getParents(link.getParent());
 		Collection<Link> filteredLinks = filterDisjointRels(links);
-		Iterator it = filteredLinks.iterator();
-		while (it.hasNext()) { 
-			Link parentRel = (Link) it.next(); 
-			Collection parentVector = getPathsAsVector(incSize
+		for (Link parentRel : filteredLinks) {
+			Collection<TreePath> parentVector = getPathsAsVector(incSize
 					/ TermUtil.getParentCount(linkDatabase, link.getParent()), parentRel,
 					lookedAt, lookedAtCount);
-			Iterator it2 = parentVector.iterator();
-			while (it2.hasNext()) {
-				TreePath path = (TreePath) it2.next();
+			for (TreePath path : parentVector) {
 				TreePath pathByAddingChild = path.pathByAddingChild(link);
 				if (!out.contains(pathByAddingChild))
 					out.add(pathByAddingChild);
@@ -184,9 +176,9 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 	 */
 	protected Collection<Link> filterDisjointRels(Collection<Link> links) {
 		Collection<Link> linksClone = links; 
-		Iterator it = links.iterator();
+		Iterator<Link> it = links.iterator();
 		while (it.hasNext()){
-			Link parentRel = (Link) it.next();
+			Link parentRel = it.next();
 			if(parentRel.getType().getID().equals("disjoint_from")){
 				//logger.debug("PathTask: filterDisjointRels: disjoint_from link");
 				it.remove();

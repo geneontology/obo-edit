@@ -28,16 +28,16 @@ public class DisjointednessCheck extends AbstractCheck implements OntologyCheck 
 		return true;
 	}
 
-	public Collection check(OBOSession history, IdentifiedObject currentObject,
+	public Collection<CheckWarning> check(OBOSession history, IdentifiedObject currentObject,
 			byte condition, boolean checkObsoletes) {
 
-		Set out = new HashSet();
+		Set<CheckWarning> out = new HashSet<CheckWarning>();
 		int badItems = 0;
 		int historyObjsSize = history.getObjects().size();
 
-		Iterator it = history.getObjects().iterator();
+		Iterator<IdentifiedObject> it = history.getObjects().iterator();
 		for (int i = 0; badItems < MAX_BAD_ITEMS && it.hasNext(); i++) {
-			Object historyObject = it.next();
+			IdentifiedObject historyObject = it.next();
 			boolean isBad = false;
 			int percentage = 100 * i / historyObjsSize;
 			setProgressValue(percentage);
@@ -45,7 +45,7 @@ public class DisjointednessCheck extends AbstractCheck implements OntologyCheck 
 
 			if (historyObject instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject) historyObject;
-				Collection superClasses = new HashSet();
+				Collection<LinkedObject> superClasses = new HashSet<LinkedObject>();
 
 				for(Link link : linkDatabase.getParents(lo)){
 					if (link.getParent() instanceof OBOClass

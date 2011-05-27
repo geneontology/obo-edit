@@ -21,16 +21,16 @@ public class DanglingIntersectionCheck extends AbstractCheck implements
 				.setCondition((byte) (VerificationManager.LOAD | VerificationManager.MANUAL));
 	}
 
-	public Collection check(OBOSession history, IdentifiedObject currentObject,
+	public Collection<CheckWarning> check(OBOSession history, IdentifiedObject currentObject,
 			byte condition, boolean checkObsoletes) {
-		List out = new LinkedList();
+		List<CheckWarning> out = new LinkedList<CheckWarning>();
 		if (currentObject != null) {
 			if (currentObject instanceof LinkedObject)
 				check((LinkedObject) currentObject, out);
 		} else {
-			Iterator it = history.getObjects().iterator();
+			Iterator<IdentifiedObject> it = history.getObjects().iterator();
 			while (it.hasNext()) {
-				Object o = it.next();
+				IdentifiedObject o = it.next();
 				if (o instanceof LinkedObject) {
 					LinkedObject lo = (LinkedObject) o;
 					check(lo, out);
@@ -43,10 +43,10 @@ public class DanglingIntersectionCheck extends AbstractCheck implements
 		return out;
 	}
 
-	protected void check(LinkedObject object, List warnings) {
-		Iterator it = object.getParents().iterator();
+	protected void check(LinkedObject object, List<CheckWarning> warnings) {
+		Iterator<Link> it = object.getParents().iterator();
 		while (it.hasNext()) {
-			Link link = (Link) it.next();
+			Link link = it.next();
 			if (TermUtil.isIntersection(link)
 					&& link.getParent() instanceof DanglingObject) {
 				CheckWarning warning = new CheckWarning(

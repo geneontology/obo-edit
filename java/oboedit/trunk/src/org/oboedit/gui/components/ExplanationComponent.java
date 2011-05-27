@@ -51,7 +51,7 @@ public class ExplanationComponent extends AbstractGUIComponent {
 		public void linkSelected(String param, Link link) {
 			if (ObjectUtil.equals(param, "EXPAND")) {
 				subExplanations.add(link);
-				Collection links = SelectionManager.getGlobalSelection()
+				Collection<Link> links = SelectionManager.getGlobalSelection()
 						.getLinks();
 				field.setText(getExplanation(links, subExplanations));
 				field.scrollToReference(link.getChild().getID().replace(':',
@@ -62,7 +62,7 @@ public class ExplanationComponent extends AbstractGUIComponent {
 						+ link.getParent().getID().replace(':', '_'));
 			} else if (ObjectUtil.equals(param, "HIDE")) {
 				subExplanations.remove(link);
-				Collection links = SelectionManager.getGlobalSelection()
+				Collection<Link> links = SelectionManager.getGlobalSelection()
 						.getLinks();
 				field.setText(getExplanation(links, subExplanations));
 				field.scrollToReference(link.getChild().getID().replace(':',
@@ -121,10 +121,10 @@ public class ExplanationComponent extends AbstractGUIComponent {
 		field.setText(getExplanation(links, subExplanations));
 	}
 
-	protected String getExplanation(Collection<Link> links, Collection subExplanations) {
+	protected String getExplanation(Collection<Link> links, Collection<Link> subExplanations) {
 		StringBuffer out = new StringBuffer();
 		ReasonedLinkDatabase reasoner = SessionManager.getManager().getReasoner();
-		Map cache = new HashMap();
+		Map<Link, String> cache = new HashMap<Link, String>();
 		for(Link link : links){
 			out.append(ExplanationUtil.getDescriptionReasoned(reasoner,
 							SelectionManager.getGlobalSelection().getLinkDatabase(),

@@ -1,8 +1,5 @@
 package org.oboedit.graph;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 
 import org.apache.log4j.*;

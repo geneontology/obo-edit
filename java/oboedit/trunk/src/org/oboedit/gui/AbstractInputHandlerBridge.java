@@ -1,6 +1,5 @@
 package org.oboedit.gui;
 
-import java.awt.Point;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
@@ -118,7 +117,7 @@ public abstract class AbstractInputHandlerBridge implements DropTargetListener,
 		setCurrentHandler(null);
 		java.util.List<InputHandlerI> l = getAllDragInputHandlers();
 		for (int i = 0; i < l.size(); i++) {
-			InputHandlerI handler = (InputHandlerI) l.get(i);
+			InputHandlerI handler = l.get(i);
 			if (ObjectUtil.equals(handler, getDefaultInputHandler()))
 				continue;
 			int allowDropVal = handler.allowDrop(component, data, target, e
@@ -176,7 +175,7 @@ public abstract class AbstractInputHandlerBridge implements DropTargetListener,
 		GestureTarget target = getTarget(e.getX(), e.getY());
 		java.util.List<InputHandlerI> l = getAllClickInputHandlers();
 		for (int i = 0; i < l.size(); i++) {
-			InputHandlerI handler = (InputHandlerI) l.get(i);
+			InputHandlerI handler = l.get(i);
 			if (ObjectUtil.equals(handler, getDefaultInputHandler()))
 				continue;
 			if (handler.click(component, target, e, EditActionManager
@@ -222,7 +221,7 @@ public abstract class AbstractInputHandlerBridge implements DropTargetListener,
 	protected void processPress(KeyEvent e) {
 		java.util.List<InputHandlerI> l = getAllClickInputHandlers();
 		for (int i = 0; i < l.size(); i++) {
-			InputHandlerI handler = (InputHandlerI) l.get(i);
+			InputHandlerI handler = l.get(i);
 			if (ObjectUtil.equals(handler, getDefaultInputHandler()))
 				continue;
 			if (handler.press(component, e, EditActionManager.getManager()

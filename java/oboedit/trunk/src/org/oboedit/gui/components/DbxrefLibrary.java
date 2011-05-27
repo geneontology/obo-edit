@@ -50,7 +50,7 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 	 */
 	static String noGUIReloadOnSelection = "noGUIReloadOnSelection";
 
-	Vector dbxrefs = new Vector();
+	Vector<Dbxref> dbxrefs = new Vector<Dbxref>();
 
 	JDialog dialog;
 
@@ -80,21 +80,21 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 
 	public static class DbxrefLibraryConfiguration implements
 	ComponentConfiguration {
-		protected Vector library;
+		protected Vector<Dbxref> library;
 
 		public DbxrefLibraryConfiguration() {
-			library = new Vector();
+			library = new Vector<Dbxref>();
 		}
 
-		public DbxrefLibraryConfiguration(Vector library) {
+		public DbxrefLibraryConfiguration(Vector<Dbxref> library) {
 			setLibrary(library);
 		}
 
-		public void setLibrary(Vector library) {
+		public void setLibrary(Vector<Dbxref> library) {
 			this.library = library;
 		}
 
-		public Vector getLibrary() {
+		public Vector<Dbxref> getLibrary() {
 			return library;
 		}
 	}
@@ -116,7 +116,7 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 		return new DbxrefLibraryConfiguration(dbxrefs);
 	}
 
-	protected Vector getDbxrefList() {
+	protected Vector<Dbxref> getDbxrefList() {
 		return dbxrefs;
 	}
 
@@ -194,7 +194,7 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 	protected void saveConfiguration() {
 		dbxrefs = editor.getData();
 		if (dbxrefs == null)
-			dbxrefs = new Vector();
+			dbxrefs = new Vector<Dbxref>();
 		Collections.sort(dbxrefs);
 		refList.setListData(dbxrefs);
 		refList.repaint();
@@ -256,7 +256,7 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 			try {
 				PrintWriter writer = new PrintWriter(new FileWriter(file));
 				for (int i = 0; i < dbxrefs.size(); i++) {
-					Dbxref ref = (Dbxref) dbxrefs.get(i);
+					Dbxref ref = dbxrefs.get(i);
 					String line = ref.getDatabase() + ":" + ref.getDatabaseID();
 					if (ref.getDesc() != null) {
 						line += " " + ref.getDesc();

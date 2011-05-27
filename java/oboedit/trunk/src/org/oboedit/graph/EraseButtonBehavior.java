@@ -10,19 +10,11 @@ import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 
-import org.obo.datamodel.RootAlgorithm;
-import org.oboedit.controller.SelectionManager;
-import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.ClickMenuAction;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.actions.DeleteAction;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
-import org.oboedit.piccolo.PiccoloUtil;
-
-import edu.umd.cs.piccolo.event.PBasicInputEventHandler;
-import edu.umd.cs.piccolo.event.PInputEvent;
-import edu.umd.cs.piccolo.event.PInputEventListener;
 
 import org.apache.log4j.*;
 

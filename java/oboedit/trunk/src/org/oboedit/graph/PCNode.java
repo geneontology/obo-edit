@@ -1,18 +1,13 @@
 package org.oboedit.graph;
 
-import java.awt.Graphics2D;
-import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.Line2D;
 
 import org.bbop.swing.ShapeUtil;
-import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.PathCapable;
 
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.nodes.PPath;
-import edu.umd.cs.piccolo.util.PPaintContext;
 
 import org.apache.log4j.*;
 

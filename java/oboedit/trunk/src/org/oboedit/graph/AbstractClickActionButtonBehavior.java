@@ -54,8 +54,7 @@ public abstract class AbstractClickActionButtonBehavior implements
 	}
 	
 	protected Cursor getCursor(PInputEvent e) {
-		PCNode node = (PCNode) PiccoloUtil.getNodeOfClass(e.getPath(),
-				PCNode.class);
+		PCNode node = PiccoloUtil.getNodeOfClass(e.getPath(), PCNode.class);
 		if (node != null && isLegalTarget(node))
 			return getActiveCursor();
 		else

@@ -8,7 +8,6 @@ import java.awt.event.MouseEvent;
 import java.util.Collection;
 
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -17,9 +16,7 @@ import javax.swing.table.TableColumnModel;
 
 import org.bbop.swing.ReselectListSelectionModel;
 import org.obo.datamodel.IdentifiedObject;
-import org.obo.datamodel.LinkedObject;
 import org.obo.query.impl.SearchHit;
-import org.oboedit.controller.SelectionManager;
 import org.oboedit.gui.Preferences;
 
 import org.apache.log4j.*;

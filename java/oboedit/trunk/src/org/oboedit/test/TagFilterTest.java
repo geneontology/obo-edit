@@ -42,8 +42,7 @@ public class TagFilterTest extends TestCase {
 			OBOFileAdapter adapter = new OBOFileAdapter();
 			OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 			config.getReadPaths().add(testFiles[i].toString());
-			OBOSession session = (OBOSession) adapter.doOperation(
-					OBOAdapter.READ_ONTOLOGY, config, null);
+			OBOSession session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
 			config = new OBOFileAdapter.OBOAdapterConfiguration();
 			File outFile = File.createTempFile("test", ".obo");
 			// Save 1.0 input file as as 1.0 and 1.2 as 1.2
@@ -57,8 +56,7 @@ public class TagFilterTest extends TestCase {
 			// Read in the round-tripped file
 			config = new OBOFileAdapter.OBOAdapterConfiguration();
 			config.getReadPaths().add(outFile.getAbsolutePath());
-			OBOSession session2 = (OBOSession) adapter.doOperation(
-					OBOAdapter.READ_ONTOLOGY, config, null);
+			OBOSession session2 = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
 
 			// get the history generator version of the changes
 			HistoryList allChanges = HistoryGenerator.getHistory(session, session2);
@@ -83,8 +81,7 @@ public class TagFilterTest extends TestCase {
 			OBOFileAdapter adapter = new OBOFileAdapter();
 			OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 			config.getReadPaths().add(testFiles[i].toString());
-			OBOSession session = (OBOSession) adapter.doOperation(
-					OBOAdapter.READ_ONTOLOGY, config, null);
+			OBOSession session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
 			config = new OBOFileAdapter.OBOAdapterConfiguration();
 			File outFile = File.createTempFile("test", ".obo");
 			// Save 1.0 input file as as 1.0 and 1.2 as 1.2
@@ -98,8 +95,7 @@ public class TagFilterTest extends TestCase {
 			// Read in the round-tripped file
 			config = new OBOFileAdapter.OBOAdapterConfiguration();
 			config.getReadPaths().add(outFile.getAbsolutePath());
-			OBOSession session2 = (OBOSession) adapter.doOperation(
-					OBOAdapter.READ_ONTOLOGY, config, null);
+			OBOSession session2 = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
 
 			// get the history generator version of the changes
 			HistoryList allChanges = HistoryGenerator.getHistory(session, session2);

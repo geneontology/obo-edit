@@ -2,7 +2,6 @@ package org.oboedit.verify.impl;
 
 import org.oboedit.verify.CheckWarning;
 import org.oboedit.verify.ImmediateQuickFix;
-import org.oboedit.verify.QuickFix.ReloadLevel;
 
 public abstract class AbstractImmediateQuickFix implements ImmediateQuickFix {
 

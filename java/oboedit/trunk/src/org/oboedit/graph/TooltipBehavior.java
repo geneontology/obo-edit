@@ -6,7 +6,6 @@ import java.awt.geom.Point2D;
 
 import javax.swing.Timer;
 
-import org.obo.datamodel.Link;
 import org.oboedit.graph.TooltipFactory;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 import org.oboedit.piccolo.WordBubbleNode;

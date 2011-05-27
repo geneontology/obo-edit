@@ -1,12 +1,9 @@
 package org.oboedit.gui;
 
-import java.awt.Component;
 import java.util.Collection;
 import java.util.Collections;
 
 import javax.swing.JComponent;
-import javax.swing.JTable;
-
 import org.bbop.util.MultiHashMap;
 import org.bbop.util.MultiMap;
 import org.obo.datamodel.FieldPath;

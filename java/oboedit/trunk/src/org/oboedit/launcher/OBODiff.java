@@ -3,8 +3,6 @@ package org.oboedit.launcher;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -26,7 +24,7 @@ public class OBODiff {
 
 	public static void main(String[] args) throws IOException,
 	DataAdapterException {
-		Vector filelist = new Vector();
+		Vector<String> filelist = new Vector<String>();
 		OBOAdapter historyAdapter = null;
 		String outPath = null;
 		File outFile = null;
@@ -55,8 +53,8 @@ public class OBODiff {
 		if (filelist.size() != 2)
 			printUsage();
 		else {
-			OBOSession a = getHistory((String) filelist.get(0));
-			OBOSession b = getHistory((String) filelist.get(1));
+			OBOSession a = getHistory(filelist.get(0));
+			OBOSession b = getHistory(filelist.get(1));
 			HistoryList changes = HistoryGenerator.getHistory(a, b, null);
 
 			if (historyAdapter == null)

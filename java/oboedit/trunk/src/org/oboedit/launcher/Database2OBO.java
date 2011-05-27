@@ -49,13 +49,13 @@ public class Database2OBO {
 	protected static class ScriptWrapper {
 		protected String script;
 
-		protected LinkedList args = new LinkedList();
+		protected LinkedList<String> args = new LinkedList<String>();
 
-		public LinkedList getArgs() {
+		public LinkedList<String> getArgs() {
 			return args;
 		}
 
-		public void setArgs(LinkedList args) {
+		public void setArgs(LinkedList<String> args) {
 			this.args = args;
 		}
 
@@ -71,15 +71,15 @@ public class Database2OBO {
 
 	public static void convertFiles(
 			OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration readConfig,
-			OBOFileAdapter.OBOAdapterConfiguration writeConfig, List scripts, OBOAdapter writer) throws Exception {
+			OBOFileAdapter.OBOAdapterConfiguration writeConfig, List<ScriptWrapper> scripts, OBOAdapter writer) throws Exception {
 		OBDSQLDatabaseAdapter adapter = new OBDSQLDatabaseAdapter();
 		
 		/// TODO: some way of passing in a query
-		OBOSession session = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY,
+		OBOSession session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY,
 				readConfig, null);
-		Iterator it = scripts.iterator();
+		Iterator<ScriptWrapper> it = scripts.iterator();
 		while (it.hasNext()) {
-			ScriptWrapper wrapper = (ScriptWrapper) it.next();
+			ScriptWrapper wrapper = it.next();
 			runScript(session, wrapper.getScript(), wrapper.getArgs());
 		}
 		
@@ -92,7 +92,7 @@ public class Database2OBO {
 		writer.doOperation(OBOAdapter.WRITE_ONTOLOGY, writeConfig, session);
 	}
 
-	public static void runScript(OBOSession session, String script, List args)
+	public static void runScript(OBOSession session, String script, List<String> args)
 			throws ExpressionException {
 		JexlContext context = ExpressionManager.getManager().getContext();
 		context.setGlobalVariable("session", session, false);
@@ -109,7 +109,7 @@ public class Database2OBO {
 		readConfig.setBasicSave(false);
 		OBOAdapterConfiguration writeConfig = new OBOFileAdapter.OBOAdapterConfiguration();
 		writeConfig.setBasicSave(false);
-		LinkedList scripts = new LinkedList();
+		LinkedList<ScriptWrapper> scripts = new LinkedList<ScriptWrapper>();
 		
 		OBOAdapter writer = new OBOFileAdapter();
 		

@@ -28,7 +28,6 @@ import org.obo.datamodel.PathCapable;
 import org.obo.datamodel.RootAlgorithm;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
 import org.obo.datamodel.impl.OBORestrictionImpl;
-import org.obo.history.HistoryItem;
 import org.obo.history.StringRelationship;
 import org.obo.util.HistoryUtil;
 import org.obo.util.TermUtil;
@@ -41,7 +40,7 @@ public class PathUtil {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(PathUtil.class);
 
-	public static TreePath[] getPaths(Collection items,
+	public static TreePath[] getPaths(Collection<PathCapable> items,
 			ObjectSelector displayer, boolean shortestPathOnly) {
 		if (displayer == null) {
 			return PathUtil.getPaths(items, RootAlgorithm.GREEDY,
@@ -51,16 +50,16 @@ public class PathUtil {
 					displayer.getLinkDatabase(), shortestPathOnly);
 	}
 
-	public static TreePath[] getPaths(Collection items,
+	public static TreePath[] getPaths(Collection<? extends PathCapable> items,
 			RootAlgorithm rootAlgorithm, LinkDatabase linkDatabase,
 			boolean bestPathOnly) {
 		if (items == null)
 			return new TreePath[0];
 
-		Set pathVector = new HashSet();
-		Iterator it = items.iterator();
+		Set<TreePath> pathVector = new HashSet<TreePath>();
+		Iterator<? extends PathCapable> it = items.iterator();
 		while (it.hasNext()) {
-			PathCapable lo = (PathCapable) it.next();
+			PathCapable lo = it.next();
 			if (bestPathOnly) {
 				TreePath path = PathUtil.getBestPath(lo, rootAlgorithm,
 						linkDatabase);
@@ -72,9 +71,9 @@ public class PathUtil {
 		}
 
 		TreePath[] selectPaths = new TreePath[pathVector.size()];
-		it = pathVector.iterator();
-		for (int i = 0; it.hasNext(); i++) {
-			selectPaths[i] = (TreePath) it.next();
+		Iterator<TreePath> itp = pathVector.iterator();
+		for (int i = 0; itp.hasNext(); i++) {
+			selectPaths[i] = itp.next();
 		}
 
 		return selectPaths;
@@ -143,12 +142,12 @@ public class PathUtil {
 				DefaultLinkDatabase.getDefault());
 	}
 
-	public static List getPathsAsVector(Link link) {
+	public static List<TreePath> getPathsAsVector(Link link) {
 		return PathUtil.getPathsAsVector(link, RootAlgorithm.GREEDY,
 				DefaultLinkDatabase.getDefault());
 	}
 
-	public static List getPathsAsVector(LinkedObject term) {
+	public static List<TreePath> getPathsAsVector(LinkedObject term) {
 		return PathUtil.getPathsAsVector(term, RootAlgorithm.GREEDY,
 				DefaultLinkDatabase.getDefault());
 	}
@@ -164,30 +163,30 @@ public class PathUtil {
 
 	public static TreePath[] getPaths(LinkedObject term,
 			RootAlgorithm rootAlgorithm, LinkDatabase linkDatabase) {
-		List v = PathUtil.getPathsAsVector(term, rootAlgorithm, linkDatabase);
-		Iterator it = v.iterator();
+		List<TreePath> v = PathUtil.getPathsAsVector(term, rootAlgorithm, linkDatabase);
+		Iterator<TreePath> it = v.iterator();
 		TreePath[] out = new TreePath[v.size()];
 		for (int i = 0; it.hasNext(); i++) {
-			out[i] = (TreePath) it.next();
+			out[i] = it.next();
 		}
 		return out;
 	}
 
 	public static TreePath[] getPaths(Link link, RootAlgorithm rootAlgorithm,
 			LinkDatabase linkDatabase) {
-		List paths = PathUtil.getPathsAsVector(link, rootAlgorithm,
+		List<TreePath> paths = PathUtil.getPathsAsVector(link, rootAlgorithm,
 				linkDatabase);
 		TreePath[] out = new TreePath[paths.size()];
 		for (int i = 0; i < paths.size(); i++) {
-			out[i] = (TreePath) paths.get(i);
+			out[i] = paths.get(i);
 		}
 		return out;
 	}
 
-	public static List getPathsAsVector(Link link, RootAlgorithm rootAlgorithm,
+	public static List<TreePath> getPathsAsVector(Link link, RootAlgorithm rootAlgorithm,
 			LinkDatabase linkDatabase, int nBest) {
-		Map lookedAt = new HashMap();
-		Vector out = PathUtil.getPathsAsVector(link, rootAlgorithm,
+		Map<Link, Vector<TreePath>> lookedAt = new HashMap<Link, Vector<TreePath>>();
+		Vector<TreePath> out = PathUtil.getPathsAsVector(link, rootAlgorithm,
 				linkDatabase, lookedAt, nBest);
 		return out;
 	}
@@ -228,34 +227,34 @@ public class PathUtil {
 		return val;
 	}
 
-	public static TreePath[] getBestPaths(Collection c,
+	public static TreePath[] getBestPaths(Collection<PathCapable> c,
 			RootAlgorithm rootAlgorithm, LinkDatabase linkDatabase) {
-		LinkedList out = new LinkedList();
-		Iterator it = c.iterator();
+		LinkedList<TreePath> out = new LinkedList<TreePath>();
+		Iterator<PathCapable> it = c.iterator();
 		while (it.hasNext()) {
-			PathCapable pc = (PathCapable) it.next();
+			PathCapable pc = it.next();
 			TreePath best = PathUtil.getBestPath(pc, rootAlgorithm,
 					linkDatabase);
 			if (best != null)
 				out.add(best);
 		}
 		TreePath[] paths = new TreePath[out.size()];
-		it = out.iterator();
-		for (int i = 0; it.hasNext(); i++) {
-			paths[i] = (TreePath) it.next();
+		Iterator<TreePath> itp = out.iterator();
+		for (int i = 0; itp.hasNext(); i++) {
+			paths[i] = itp.next();
 		}
 		return paths;
 	}
 
 	public static TreePath getBestPath(PathCapable lo,
 			RootAlgorithm rootAlgorithm, LinkDatabase linkDatabase) {
-		java.util.List v = PathUtil.getPathsAsVector(lo, rootAlgorithm,
+		java.util.List<TreePath> v = PathUtil.getPathsAsVector(lo, rootAlgorithm,
 				linkDatabase, 2);
 		TreePath bestPath = null;
 		int minRating = Integer.MAX_VALUE;
-		Iterator it = v.iterator();
+		Iterator<TreePath> it = v.iterator();
 		while (it.hasNext()) {
-			TreePath path = (TreePath) it.next();
+			TreePath path = it.next();
 			int rating = getPathRating(path);
 			if (rating < minRating) {
 				bestPath = path;
@@ -292,11 +291,11 @@ public class PathUtil {
 		} else if (lo.getParents().size() == 0 && !rootAlgorithm.isRoot(lo)) {
 			return null;
 		} else {
-			Map lookedAt = new HashMap();
-			Iterator it = linkDatabase.getParents(lo).iterator();
+			Map<Link, TreePath> lookedAt = new HashMap<Link, TreePath>();
+			Iterator<Link> it = linkDatabase.getParents(lo).iterator();
 			TreePath shortest = null;
 			while (it.hasNext()) {
-				Link parent = (Link) it.next();
+				Link parent = it.next();
 				TreePath path = PathUtil.getShortestPath(parent, rootAlgorithm,
 						linkDatabase, lookedAt, null, 0);
 				if (path == null)
@@ -315,12 +314,12 @@ public class PathUtil {
 		}
 	}
 
-	public static List getPathsAsVector(PathCapable pc,
+	public static List<TreePath> getPathsAsVector(PathCapable pc,
 			RootAlgorithm rootAlgorithm, LinkDatabase linkDatabase) {
 		return PathUtil.getPathsAsVector(pc, rootAlgorithm, linkDatabase, -1);
 	}
 
-	public static List getPathsAsVector(PathCapable pc,
+	public static List<TreePath> getPathsAsVector(PathCapable pc,
 			RootAlgorithm rootAlgorithm, LinkDatabase linkDatabase, int nBest) {
 		if (pc instanceof Link)
 			return getPathsAsVector((Link) pc, rootAlgorithm, linkDatabase,
@@ -348,15 +347,15 @@ public class PathUtil {
 	public static TreePath getShortestPath(Link link,
 			RootAlgorithm rootAlgorithm, LinkDatabase linkDatabase) {
 		TreePath out = PathUtil.getShortestPath(link, rootAlgorithm,
-				linkDatabase, new HashMap(), null, 0);
+				linkDatabase, new HashMap<Link, TreePath>(), null, 0);
 		return out;
 	}
 
 	public static TreePath getShortestPath(Link link,
 			RootAlgorithm rootAlgorithm, LinkDatabase linkDatabase,
-			Map lookedAt, TreePath best, int currentDepth) {
+			Map<Link, TreePath> lookedAt, TreePath best, int currentDepth) {
 		if (lookedAt.containsKey(link))
-			return (TreePath) lookedAt.get(link);
+			return lookedAt.get(link);
 
 		rootAlgorithm.setLinkDatabase(linkDatabase);
 
@@ -401,9 +400,9 @@ public class PathUtil {
 //		rootAlgorithm.setLinkDatabase(linkDatabase);
 		TreePath shortestPath = null;
 
-		Iterator it = linkDatabase.getParents(link.getParent()).iterator();
+		Iterator<Link> it = linkDatabase.getParents(link.getParent()).iterator();
 		while (it.hasNext()) {
-			Link parentRel = (Link) it.next();
+			Link parentRel = it.next();
 			TreePath parentPath = getShortestPath(parentRel, rootAlgorithm,
 					linkDatabase, lookedAt, shortestPath, currentDepth + 1);
 			if (parentPath == null)
@@ -424,21 +423,17 @@ public class PathUtil {
 		return shortestPath;
 	}
 
-	public static Comparator pathComparator = new Comparator() {
-		public int compare(Object a, Object b) {
-			TreePath pa = (TreePath) a;
-			TreePath pb = (TreePath) b;
-			int paVal = getPathRating(pa);
-			int pbVal = getPathRating(pb);
+	public static Comparator<TreePath> pathComparator = new Comparator<TreePath>() {
+		public int compare(TreePath a, TreePath b) {
+			int paVal = getPathRating(a);
+			int pbVal = getPathRating(b);
 			return pbVal - paVal;
 		}
 	};
 
-	public static Comparator linkRatingComparator = new Comparator() {
+	public static Comparator<Link> linkRatingComparator = new Comparator<Link>() {
 
-		public int compare(Object o1, Object o2) {
-			Link l1 = (Link) o1;
-			Link l2 = (Link) o2;
+		public int compare(Link l1, Link l2) {
 			return getLinkRating(l1) - getLinkRating(l2);
 		}
 
@@ -452,8 +447,8 @@ public class PathUtil {
 		// make the change here!
 		// Make WHAT change here??? --NH
 		if (lookedAt.containsKey(link)) {
-			out = (Vector) lookedAt.get(link);
-			return (Vector) out.clone();
+			out = lookedAt.get(link);
+			return (Vector<TreePath>) out.clone();
 		}
 
 		lookedAt.put(link, out);
@@ -478,11 +473,11 @@ public class PathUtil {
 		rootAlgorithm.setLinkDatabase(linkDatabase);
 
 		if (rootAlgorithm.isRoot(link.getParent())) {
-			List v = getPathsAsVector(link.getParent(), rootAlgorithm,
+			List<TreePath> v = getPathsAsVector(link.getParent(), rootAlgorithm,
 					linkDatabase);
-			Iterator it = v.iterator();
+			Iterator<TreePath> it = v.iterator();
 			while (it.hasNext()) {
-				TreePath path = ((TreePath) it.next()).pathByAddingChild(link);
+				TreePath path = it.next().pathByAddingChild(link);
 				out.add(path);
 			}
 			return out;
@@ -497,25 +492,25 @@ public class PathUtil {
 		 * OBORestrictionImpl(link.getParent()); TreePath path = new
 		 * TreePath(os); out.add(path); return out; }
 		 */
-		Collection parents;
+		Collection<Link> parents;
 		if (nBest < 0) {
 			parents = linkDatabase.getParents(link.getParent());
 		} else {
-			parents = new ArrayList();
+			parents = new ArrayList<Link>();
 			parents.addAll(linkDatabase.getParents(link.getParent()));
-			Collections.sort((List) parents, linkRatingComparator);
+			Collections.sort((List<Link>) parents, linkRatingComparator);
 			int count = parents.size() - nBest;
 			for (int i = 0; i < count; i++)
-				((List) parents).remove(parents.size() - 1);
+				((List<Link>) parents).remove(parents.size() - 1);
 		}
 
-		Iterator it = parents.iterator();
+		Iterator<Link> it = parents.iterator();
 		while (it.hasNext()) {
-			Link parentRel = (Link) it.next();
-			Vector parentVector = getPathsAsVector(parentRel, rootAlgorithm,
+			Link parentRel = it.next();
+			Vector<TreePath> parentVector = getPathsAsVector(parentRel, rootAlgorithm,
 					linkDatabase, lookedAt, nBest);
 			for (int j = 0; j < parentVector.size(); j++) {
-				TreePath path = (TreePath) parentVector.get(j);
+				TreePath path = parentVector.get(j);
 				TreePath pathByAddingChild = path.pathByAddingChild(link);
 				if (!out.contains(pathByAddingChild))
 					out.add(pathByAddingChild);
@@ -525,9 +520,9 @@ public class PathUtil {
 		return out;
 	}
 
-	public static Vector getPathsAsVector(LinkedObject term,
+	public static Vector<TreePath> getPathsAsVector(LinkedObject term,
 			RootAlgorithm rootAlgorithm, LinkDatabase linkDatabase, int nBest) {
-		Vector out = new Vector();
+		Vector<TreePath> out = new Vector<TreePath>();
 		rootAlgorithm.setLinkDatabase(linkDatabase);
 		if (rootAlgorithm.isRoot(term)) {
 			Object[] os = new Object[3];
@@ -543,25 +538,25 @@ public class PathUtil {
 			os[2] = new OBORestrictionImpl(term);
 			out.add(new TreePath(os));
 		} else {
-			Collection parents;
+			Collection<Link> parents;
 			if (nBest < 0) {
 				parents = linkDatabase.getParents(term);
 			} else {
-				parents = new ArrayList();
+				parents = new ArrayList<Link>();
 				parents.addAll(linkDatabase.getParents(term));
-				Collections.sort((List) parents, linkRatingComparator);
+				Collections.sort((List<Link>) parents, linkRatingComparator);
 				int count = parents.size() - nBest;
 				for (int i = 0; i < count; i++)
-					((List) parents).remove(parents.size() - 1);
+					((List<Link>) parents).remove(parents.size() - 1);
 			}
 
-			Iterator it = parents.iterator();
+			Iterator<Link> it = parents.iterator();
 			while (it.hasNext()) {
-				Link tr = (Link) it.next();
-				List paths = getPathsAsVector(tr, rootAlgorithm, linkDatabase,
+				Link tr = it.next();
+				List<TreePath> paths = getPathsAsVector(tr, rootAlgorithm, linkDatabase,
 						nBest);
 				for (int j = 0; j < paths.size(); j++) {
-					TreePath path = (TreePath) paths.get(j);
+					TreePath path = paths.get(j);
 					if (!out.contains(path))
 						out.add(path);
 				}
@@ -644,15 +639,13 @@ public class PathUtil {
 			OBOSession history) {
 		if (paths == null)
 			return null;
-		List temp = new LinkedList();
+		List<TreePath> temp = new LinkedList<TreePath>();
 		for (int i = 0; i < paths.length; i++) {
 			TreePath path = convertPathToObjects(paths[i], history);
 			if (path != null)
 				temp.add(path);
 		}
-		TreePath[] out = new TreePath[temp.size()];
-		temp.toArray(out);
-		return out;
+		return temp.toArray(new TreePath[temp.size()]);
 	}
 
 	public static boolean pathContainsNonTransitive(TreePath path) {

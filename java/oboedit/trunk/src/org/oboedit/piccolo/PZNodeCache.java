@@ -1,11 +1,7 @@
 package org.oboedit.piccolo;
 
 import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
 import java.awt.Image;
-import java.awt.Paint;
-import java.awt.Transparency;
 import java.awt.geom.Dimension2D;
 import java.awt.image.BufferedImage;
 

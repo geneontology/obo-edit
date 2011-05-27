@@ -1,7 +1,6 @@
 package org.oboedit.launcher;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -97,7 +96,7 @@ public class OBO2Flat {
 			System.exit(1);
 		}
 		ConvertRecord record = new ConvertRecord();
-		HashMap temp = new HashMap();
+		HashMap<String, Vector<String>> temp = new HashMap<String, Vector<String>>();
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-v") || args[i].equals("-verbose")) {
 				record.verbose = true;
@@ -182,9 +181,9 @@ public class OBO2Flat {
 					System.exit(1);
 				}
 				String dbxref = args[i];
-				Vector v = (Vector) record.refHash.get(id);
+				Vector<Dbxref> v = record.refHash.get(id);
 				if (v == null) {
-					v = new Vector();
+					v = new Vector<Dbxref>();
 					record.refHash.put(id, v);
 				}
 				int index = dbxref.indexOf(':');
@@ -230,9 +229,9 @@ public class OBO2Flat {
 					System.exit(1);
 				}
 				String obs_id = args[i];
-				Vector v = (Vector) temp.get(obs_id);
+				Vector<String> v = temp.get(obs_id);
 				if (v == null) {
-					v = new Vector();
+					v = new Vector<String>();
 					temp.put(obs_id, v);
 				}
 				v.add(ns);
@@ -364,7 +363,7 @@ public class OBO2Flat {
 				record.fakeRootID = ROOT_ID;
 				record.fakeRootName = "Gene_Ontology";
 
-				Vector v = new Vector();
+				Vector<Dbxref> v = new Vector<Dbxref>();
 				v.add(new DbxrefImpl("go", "curators", Dbxref.DEFINITION));
 
 				record.defHash
@@ -399,21 +398,20 @@ public class OBO2Flat {
 			}
 		}
 		for (int i = 0; i < record.obsoleteNodes.size(); i++) {
-			ObsoleteRecord or = (ObsoleteRecord) record.obsoleteNodes.get(i);
-			Vector v = (Vector) temp.get(or.id);
+			ObsoleteRecord or = record.obsoleteNodes.get(i);
+			Vector<String> v = temp.get(or.id);
 			if (v != null) {
 				or.namespaces.addAll(v);
 			}
 		}
 
-		Iterator it = record.defHash.keySet().iterator();
+		Iterator<String> it = record.defHash.keySet().iterator();
 		while (it.hasNext()) {
-			String id = (String) it.next();
+			String id = it.next();
 			boolean valid = false;
 
 			for (int i = 0; i < record.obsoleteNodes.size(); i++) {
-				ObsoleteRecord or = (ObsoleteRecord) record.obsoleteNodes
-						.get(i);
+				ObsoleteRecord or = record.obsoleteNodes.get(i);
 				if (or.id.equals(id)) {
 					valid = true;
 					break;
@@ -429,7 +427,7 @@ public class OBO2Flat {
 				System.exit(1);
 			}
 
-			Vector v = (Vector) record.refHash.get(id);
+			Vector<Dbxref> v = record.refHash.get(id);
 			if (v == null || v.size() == 0) {
 				logger.info("You must specify at least one dbxref if "
 						+ "you want to do an -adddef on " + id);
@@ -438,8 +436,8 @@ public class OBO2Flat {
 		}
 		it = record.refHash.keySet().iterator();
 		while (it.hasNext()) {
-			String id = (String) it.next();
-			String def = (String) record.defHash.get(id);
+			String id = it.next();
+			String def = record.defHash.get(id);
 			if (def == null) {
 				logger.info("You must specify a definition if "
 						+ "you want to do an -addref on " + id);
@@ -468,7 +466,7 @@ public class OBO2Flat {
 	private static class ObsoleteRecord extends CreateRecord {
 		String parent_id;
 
-		Vector namespaces = new Vector();
+		Vector<String> namespaces = new Vector<String>();
 	}
 
 	private static class ConvertRecord {
@@ -476,19 +474,19 @@ public class OBO2Flat {
 
 		boolean reducefilesize = false;
 
-		Vector inputFiles = new Vector();
+		Vector<String> inputFiles = new Vector<String>();
 
-		Map outHash = new HashMap();
+		Map<String, String> outHash = new HashMap<String, String>();
 
-		Map defHash = new HashMap();
+		Map<String, String> defHash = new HashMap<String, String>();
 
-		Map refHash = new HashMap();
+		Map<String, Vector<Dbxref>> refHash = new HashMap<String, Vector<Dbxref>>();
 
-		Map defFileHash = new HashMap();
+		Map<String, String> defFileHash = new HashMap<String, String>();
 
-		Vector obsoleteNodes = new Vector();
+		Vector<ObsoleteRecord> obsoleteNodes = new Vector<ObsoleteRecord>();
 
-		Vector reroots = new Vector();
+		Vector<RootRecord> reroots = new Vector<RootRecord>();
 
 		String defaultObsolete;
 
@@ -498,7 +496,7 @@ public class OBO2Flat {
 
 		String fakeRootName;
 
-		HashMap typeToChar = new HashMap();
+		HashMap<String, String> typeToChar = new HashMap<String, String>();
 
 		boolean allowDangling = false;
 	}
@@ -515,7 +513,7 @@ public class OBO2Flat {
 			System.err.flush();
 		}
 
-		OBOSession history = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY,
+		OBOSession history = adapter.doOperation(OBOAdapter.READ_ONTOLOGY,
 				config, null);
 		if (cr.verbose) {
 			logger.info("done");
@@ -525,20 +523,20 @@ public class OBO2Flat {
 		DefaultOperationModel opmodel = new DefaultOperationModel();
 		opmodel.setSession(history);
 
-		HashMap obsHash = new HashMap();
-		HashMap nsObsHash = new HashMap();
+		HashMap<String, ObsoleteRecord> obsHash = new HashMap<String, ObsoleteRecord>();
+		HashMap<String, ObsoleteRecord> nsObsHash = new HashMap<String, ObsoleteRecord>();
 		for (int i = 0; i < cr.obsoleteNodes.size(); i++) {
-			ObsoleteRecord or = (ObsoleteRecord) cr.obsoleteNodes.get(i);
+			ObsoleteRecord or = cr.obsoleteNodes.get(i);
 			obsHash.put(or.parent_id, or);
 			for (int j = 0; j < or.namespaces.size(); j++) {
-				String ns = (String) or.namespaces.get(j);
+				String ns = or.namespaces.get(j);
 				nsObsHash.put(ns, or);
 			}
 		}
 
-		HashMap rootHash = new HashMap();
+		HashMap<String, RootRecord> rootHash = new HashMap<String, RootRecord>();
 		for (int i = 0; i < cr.reroots.size(); i++) {
-			RootRecord rr = (RootRecord) cr.reroots.get(i);
+			RootRecord rr = cr.reroots.get(i);
 			rootHash.put(rr.id, rr);
 		}
 
@@ -568,11 +566,10 @@ public class OBO2Flat {
 		GOFlatFileAdapter fadapter = new GOFlatFileAdapter();
 		GOFlatFileAdapter.GOFlatFileConfiguration fconfig = new GOFlatFileAdapter.GOFlatFileConfiguration();
 
-		Iterator it = cr.typeToChar.keySet().iterator();
-		Hashtable typeToChar = new Hashtable();
+		Iterator<String> it = cr.typeToChar.keySet().iterator();
 		while (it.hasNext()) {
-			String id = (String) it.next();
-			String chr = (String) cr.typeToChar.get(id);
+			String id = it.next();
+			String chr = cr.typeToChar.get(id);
 			GOFlatFileAdapter.CharTypeMapping mapping = new GOFlatFileAdapter.CharTypeMapping(
 					chr, id, id);
 			fconfig.getTypeMappings().add(mapping);
@@ -583,12 +580,12 @@ public class OBO2Flat {
 		fconfig.setSaveDefFilename(cr.defFile);
 		fconfig.setReduceSize(cr.reducefilesize);
 
-		Map saveRecords = new HashMap();
+		Map<String, GOFlatFileAdapter.SaveRecord> saveRecords = new HashMap<String, GOFlatFileAdapter.SaveRecord>();
 
 		it = cr.outHash.keySet().iterator();
 		while (it.hasNext()) {
-			String id = (String) it.next();
-			String path = (String) cr.outHash.get(id);
+			String id = it.next();
+			String path = cr.outHash.get(id);
 
 			GOFlatFileAdapter.SaveRecord sr = new GOFlatFileAdapter.SaveRecord(
 					id, path);
@@ -597,15 +594,14 @@ public class OBO2Flat {
 		}
 		it = cr.defFileHash.keySet().iterator();
 		while (it.hasNext()) {
-			String id = (String) it.next();
-			GOFlatFileAdapter.SaveRecord sr = (GOFlatFileAdapter.SaveRecord) saveRecords
-					.get(id);
+			String id = it.next();
+			GOFlatFileAdapter.SaveRecord sr = saveRecords.get(id);
 			if (sr == null) {
 				sr = new GOFlatFileAdapter.SaveRecord(id, null);
 				saveRecords.put(id, sr);
 				fconfig.getSaveRecords().add(sr);
 			}
-			String defPath = (String) cr.defFileHash.get(id);
+			String defPath = cr.defFileHash.get(id);
 			sr.setDefFilename(defPath);
 		}
 
@@ -614,8 +610,8 @@ public class OBO2Flat {
 	}
 
 	public static TermMacroHistoryItem getChangeItem(OBOSession history,
-			String falseRoot, String falseRootName, Map obsHash, Map rootHash,
-			Map defHash, Map refHash) {
+			String falseRoot, String falseRootName, Map<String, ObsoleteRecord> obsHash, Map<String, RootRecord> rootHash,
+			Map<String, String> defHash, Map<String, Vector<Dbxref>> refHash) {
 		TermMacroHistoryItem item = new TermMacroHistoryItem(
 				"OBO to flatfile operations");
 		if (falseRoot != null) {
@@ -628,10 +624,10 @@ public class OBO2Flat {
 					falseRoot));
 		}
 
-		List roots = new LinkedList();
-		Iterator it = history.getObjects().iterator();
+		List<IdentifiedObject> roots = new LinkedList<IdentifiedObject>();
+		Iterator<IdentifiedObject> it = history.getObjects().iterator();
 		while (it.hasNext()) {
-			IdentifiedObject io = (IdentifiedObject) it.next();
+			IdentifiedObject io = it.next();
 			if (io instanceof OBOClass
 					&& ((OBOClass) io).getParents().size() == 0
 					&& !TermUtil.isObsolete(io) && !io.isBuiltIn())
@@ -643,7 +639,7 @@ public class OBO2Flat {
 			while (it.hasNext()) {
 				OBOClass t = (OBOClass) it.next();
 
-				RootRecord rr = (RootRecord) rootHash.get(t.getID());
+				RootRecord rr = rootHash.get(t.getID());
 				String type_id = OBOProperty.IS_A.getID();
 				if (rr != null) {
 //				    OBOClass type = (OBOClass) (history.getObject(rr.type_id));
@@ -663,63 +659,57 @@ public class OBO2Flat {
 			}
 		}
 
-		it = defHash.keySet().iterator();
+		Iterator<String> its = defHash.keySet().iterator();
 		while (it.hasNext()) {
-			String id = (String) it.next();
-			String def = (String) defHash.get(id);
+			String id = its.next();
+			String def = defHash.get(id);
 			if (def != null) {
-				Vector temp = (Vector) refHash.get(id);
+				Vector<Dbxref> temp = refHash.get(id);
 				for (int i = 0; i < temp.size(); i++) {
-					item.addItem(new AddDbxrefHistoryItem(id, (Dbxref) temp
-							.get(i), true, null));
+					item.addItem(new AddDbxrefHistoryItem(id, temp.get(i), true, null));
 				}
-
 				item.addItem(new DefinitionChangeHistoryItem("", def, id));
 			}
 		}
 
-		it = obsHash.values().iterator();
-		while (it.hasNext()) {
-			ObsoleteRecord or = (ObsoleteRecord) it.next();
+		Iterator<ObsoleteRecord> ito = obsHash.values().iterator();
+		while (its.hasNext()) {
+			ObsoleteRecord or = ito.next();
 
 			// destroy all the obsolete holder nodes, if they exist already
 			OBOClass destroyme = (OBOClass) history.getObject(or.id);
 			if (destroyme != null) {
-				Iterator it2 = destroyme.getParents().iterator();
+				Iterator<Link> it2 = destroyme.getParents().iterator();
 				while (it2.hasNext()) {
-					Link link = (Link) it2.next();
+					Link link = it2.next();
 					item.addItem(new DeleteLinkHistoryItem(link));
 				}
 				item.addItem(new DestroyObjectHistoryItem(destroyme));
 			}
 
-			item.addItem(new CreateObjectHistoryItem(or.id, OBOClass.OBO_CLASS
-					.getID()));
+			item.addItem(new CreateObjectHistoryItem(or.id, OBOClass.OBO_CLASS.getID()));
 			item.addItem(new CreateLinkHistoryItem(or.id, OBOProperty.IS_A.getID(),
 					or.parent_id));
 
-			item
-					.addItem(new NameChangeHistoryItem(or.name, or.id,
-							or.id));
+			item.addItem(new NameChangeHistoryItem(or.name, or.id, or.id));
 		}
 
 		return item;
 	}
 
 	public static HistoryItem getReverseItem(OBOSession history,
-			HashMap nsObsHash, String falseRoot, String defaultObsNode) {
+			HashMap<String, ObsoleteRecord> nsObsHash, String falseRoot, String defaultObsNode) {
 
 		TermMacroHistoryItem item = new TermMacroHistoryItem("");
-		Vector delList = new Vector();
 		Iterator<ObsoletableObject> it = TermUtil.getObsoletes(history)
 				.iterator();
 		while (it.hasNext()) {
-			ObsoletableObject oo = (ObsoletableObject) it.next();
+			ObsoletableObject oo = it.next();
 			if (oo instanceof OBOClass) {
 				OBOClass t = (OBOClass) oo;
 
 				String ns = t.getNamespace().getID();
-				ObsoleteRecord or = (ObsoleteRecord) nsObsHash.get(ns);
+				ObsoleteRecord or = nsObsHash.get(ns);
 				String obsNode = null;
 				if (or != null)
 					obsNode = or.id;

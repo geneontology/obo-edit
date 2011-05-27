@@ -2,15 +2,11 @@ package org.oboedit.gui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Collections;
 
 import javax.swing.JComponent;
-import javax.swing.JList;
 import javax.swing.JTable;
-import javax.swing.ListCellRenderer;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -21,8 +17,6 @@ import org.bbop.util.MultiMap;
 import org.obo.datamodel.FieldPath;
 import org.obo.datamodel.FieldPathSpec;
 import org.obo.datamodel.IdentifiedObject;
-import org.oboedit.controller.VerificationManager;
-import org.oboedit.gui.JListErrorDecorator.ListRendererWrapper;
 import org.oboedit.util.TextEditUtil;
 import org.oboedit.verify.CheckWarning;
 

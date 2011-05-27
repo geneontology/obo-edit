@@ -10,7 +10,6 @@ import javax.swing.SwingUtilities;
 import org.bbop.util.AbstractTaskDelegate;
 import org.obo.datamodel.FieldPath;
 import org.obo.datamodel.FieldPathSpec;
-import org.obo.datamodel.IdentifiableObject;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.util.TermUtil;
@@ -82,7 +81,7 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 		}
 	}
 
-	public Collection doRunCheck(FieldPath path, byte condition) {
+	public Collection<CheckWarning> doRunCheck(FieldPath path, byte condition) {
 		oindex = 0;
 		Collection<CheckWarning> out = new LinkedList<CheckWarning>();
 		// What if it needs the reasoner, but the reasoner is not currently on?  --NH
@@ -110,28 +109,22 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 			} else if (path.getLength() == 0 && path.getObject() != null) {
 				helpRunCheck(fcheck, path.getObject(), condition, out);
 			} else {
-				Iterator it2 = session.getObjects().iterator();
+				Iterator<IdentifiedObject> it2 = session.getObjects().iterator();
 				for (oindex = 0; it2.hasNext(); oindex++) {
 					if (cancelled)
 						break;
-					IdentifiableObject o = (IdentifiableObject) it2.next();
-					if (!(o instanceof IdentifiedObject))
-						continue;
-					IdentifiedObject io = (IdentifiedObject) o;
+					IdentifiedObject io = it2.next();
 					helpRunCheck(fcheck, io, condition, out);
 				}
 			}
 		} else if (currentCheck instanceof ObjectCheck) {
 			if (currentObject != null) {
 				ObjectCheck ocheck = (ObjectCheck) currentCheck;
-				Iterator it2 = session.getObjects().iterator();
+				Iterator<IdentifiedObject> it2 = session.getObjects().iterator();
 				for (oindex = 0; it2.hasNext(); oindex++) {
 					if (cancelled)
 						break;
-					IdentifiableObject o = (IdentifiableObject) it2.next();
-					if (!(o instanceof IdentifiedObject))
-						continue;
-					IdentifiedObject io = (IdentifiedObject) o;
+					IdentifiedObject io = it2.next();
 					if (io.isBuiltIn())
 						continue;
 					if (!getCheckObsoletes() && TermUtil.isObsolete(io))
@@ -141,14 +134,11 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 							getCheckObsoletes()));
 				}
 			} else {
-				Iterator it2 = session.getObjects().iterator();
+				Iterator<IdentifiedObject> it2 = session.getObjects().iterator();
 				for (oindex = 0; it2.hasNext(); oindex++) {
 					if (cancelled)
 						break;
-					IdentifiableObject o = (IdentifiableObject) it2.next();
-					if (!(o instanceof IdentifiedObject))
-						continue;
-					IdentifiedObject io = (IdentifiedObject) o;
+					IdentifiedObject io = it2.next();
 					if (io.isBuiltIn())
 						continue;
 					if (!getCheckObsoletes() && TermUtil.isObsolete(io))
@@ -168,7 +158,7 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 	public Collection<CheckWarning> runChecks() {
 		fireVerificationStartingEvent(new VerificationEvent(this, this, null,
 				session, path, condition));
-		Collection out = new LinkedList();
+		Collection<CheckWarning> out = new LinkedList<CheckWarning>();
 //		logger.debug("CheckTask.runChecks: running " + liveChecks.size() + " checks on " + path.getObject() + "...");
 		if (liveChecks.size() == 0) {
 			fireVerificationCompleteEvent(new VerificationEvent(this, this,
@@ -239,10 +229,7 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 	}
 
 	protected void fireVerificationStartingEvent(final VerificationEvent ve) {
-		Iterator it = verificationListeners.iterator();
-		while (it.hasNext()) {
-			final VerificationListener listener = (VerificationListener) it
-					.next();
+		for(final VerificationListener listener : verificationListeners) {
 			Runnable r = new Runnable() {
 				public void run() {
 					listener.verificationStarting(ve);
@@ -265,10 +252,7 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 	}
 
 	protected void fireVerificationCompleteEvent(final VerificationEvent ve) {
-		Iterator it = verificationListeners.iterator();
-		while (it.hasNext()) {
-			final VerificationListener listener = (VerificationListener) it
-					.next();
+		for(final VerificationListener listener : verificationListeners) {
 			Runnable r = new Runnable() {
 				public void run() {
 					listener.verificationComplete(ve);

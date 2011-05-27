@@ -6,8 +6,6 @@ import javax.swing.*;
 import org.obo.datamodel.*;
 import org.obo.history.*;
 import org.oboedit.gui.AbstractTextEditComponent;
-import org.oboedit.gui.Preferences;
-
 import org.apache.log4j.*;
 
 public class PropertyBoxesEditorComponent extends AbstractTextEditComponent {
@@ -52,10 +50,10 @@ public class PropertyBoxesEditorComponent extends AbstractTextEditComponent {
 		}
 	}
 
-	public java.util.List getChanges() {
+	public java.util.List<HistoryItem> getChanges() {
 		if (currentObject != null && currentObject instanceof OBOProperty) {
 			OBOProperty prop = (OBOProperty) currentObject;
-			java.util.List out = new LinkedList();
+			java.util.List<HistoryItem> out = new LinkedList<HistoryItem>();
 			if (prop.isTransitive() != transitivityCheckbox.isSelected())
 				out.add(new TransitiveHistoryItem(prop));
 			if (prop.isSymmetric() != symmetricalCheckbox.isSelected())
@@ -65,7 +63,7 @@ public class PropertyBoxesEditorComponent extends AbstractTextEditComponent {
 
 			return out;
 		} else
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 	}
 
 	@Override

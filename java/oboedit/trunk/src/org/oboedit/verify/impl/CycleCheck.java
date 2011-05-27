@@ -2,12 +2,10 @@ package org.oboedit.verify.impl;
 
 import java.util.*;
 
-import org.bbop.util.*;
 import org.obo.datamodel.*;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.controller.VerificationManager;
-import org.oboedit.gui.*;
 import org.oboedit.verify.*;
 
 import org.apache.log4j.*;
@@ -24,25 +22,25 @@ public class CycleCheck extends AbstractCheck implements OntologyCheck {
 						| VerificationManager.REASONER_ACTIVATED | VerificationManager.MANUAL));
 	}
 
-	public Collection check(OBOSession history, IdentifiedObject currentObject,
+	public Collection<CheckWarning> check(OBOSession history, IdentifiedObject currentObject,
 			byte condition, boolean checkObsoletes) {
 
-		Collection properties = new HashSet();
-		Iterator it = TermUtil.getRelationshipTypes(history).iterator();
+		Collection<OBOProperty> properties = new HashSet<OBOProperty>();
+		Iterator<OBOProperty> it = TermUtil.getRelationshipTypes(history).iterator();
 		while (it.hasNext()) {
-			OBOProperty property = (OBOProperty) it.next();
+			OBOProperty property = it.next();
 			if (property.isTransitive() && !property.isCyclic())
 				properties.add(property);
 		}
 //		logger.info("CycleCheck: properties = " + properties);
-		List out = new LinkedList();
+		List<CheckWarning> out = new LinkedList<CheckWarning>();
 		if (currentObject != null) {
 			if (currentObject instanceof LinkedObject)
 				check((LinkedObject) currentObject, properties, out);
 		} else {
-			it = history.getObjects().iterator();
-			for (int i = 0; it.hasNext(); i++) {
-				Object o = it.next();
+			Iterator<IdentifiedObject> ith = history.getObjects().iterator();
+			for (int i = 0; ith.hasNext(); i++) {
+				Object o = ith.next();
 				int percentage = 100 * i / history.getObjects().size();
 				setProgressValue(percentage);
 				setProgressString("checking object " + (i + 1) + " of "
@@ -58,12 +56,11 @@ public class CycleCheck extends AbstractCheck implements OntologyCheck {
 		return out;
 	}
 
-	protected void check(LinkedObject object, Collection properties,
-			List warnings) {
-		Iterator it = properties.iterator();
+	protected void check(LinkedObject object, Collection<OBOProperty> properties,
+			List<CheckWarning> warnings) {
+		Iterator<OBOProperty> it = properties.iterator();
 		while (it.hasNext()) {
-			OBOProperty property = (OBOProperty) it.next();
-			LinkDatabase linkDatabase;
+			OBOProperty property = it.next();
 			if (TermUtil.isCycle(SessionManager.getManager()
 					.getCurrentFullLinkDatabase(), property, object)) {
 				CheckWarning warning = new CheckWarning(object.getName() + " ("

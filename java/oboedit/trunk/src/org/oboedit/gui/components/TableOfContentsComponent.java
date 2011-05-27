@@ -2,7 +2,6 @@ package org.oboedit.gui.components;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,7 +15,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
@@ -32,8 +30,6 @@ import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.event.ReloadEvent;
 import org.oboedit.gui.event.ReloadListener;
-import org.oboedit.gui.event.SelectionEvent;
-import org.oboedit.gui.event.SelectionListener;
 import org.oboedit.gui.event.TermHyperlinkListener;
 import org.oboedit.util.GUIUtil;
 

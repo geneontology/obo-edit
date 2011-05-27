@@ -18,7 +18,7 @@ public class GraphvizSettings
 	
 		//initialize logger
 		protected final static Logger logger = Logger.getLogger(GraphvizSettings.class);
-		protected Map colorMap = new HashMap();
+		protected Map<String, ColorPair> colorMap = new HashMap<String, ColorPair>();
 		protected Color bgcolor = Color.black;
 
 		protected Color termBoxColor = Color.white;
@@ -57,7 +57,7 @@ public class GraphvizSettings
 			return bgcolor;
 		}
 
-		public Map getColorMap() {
+		public Map<String, ColorPair> getColorMap() {
 			//logger.debug("GraphvizSettings: colorMap = " + colorMap);
 			return colorMap;
 		}
@@ -145,7 +145,7 @@ public class GraphvizSettings
 			this.bgcolor = bgcolor;
 		}
 
-		public void setColorMap(Map colorMap) {
+		public void setColorMap(Map<String, ColorPair> colorMap) {
 			this.colorMap = colorMap;
 		}
 
@@ -248,8 +248,8 @@ public class GraphvizSettings
 			this.viewerFormat = viewerFormat;
 		}
 		
-		public Vector getNamedColorList() {
-			Vector data = new Vector();
+		public Vector<Object> getNamedColorList() {
+			Vector<Object> data = new Vector<Object>();
 			data.add(new NamedColor(GraphvizCanvas.BACKGROUND_COLOR, bgcolor));
 
 			data.add(new NamedColor(GraphvizCanvas.TERM_BACKGROUND_COLOR, termBoxColor));
@@ -266,12 +266,12 @@ public class GraphvizSettings
 					obsoleteStrokeColor));
 			data.add(new NamedColor(GraphvizCanvas.OBSOLETE_TEXT_COLOR, obsoleteFontColor));
 
-			Iterator it = TermUtil.getRelationshipTypes(SessionManager.getManager().getSession()).iterator();
+			Iterator<OBOProperty> it = TermUtil.getRelationshipTypes(SessionManager.getManager().getSession()).iterator();
 			while (it.hasNext()) {
-				OBOProperty type = (OBOProperty) it.next();
+				OBOProperty type = it.next();
 				ColorPair pair;
 				// something wrong?
-				pair = (ColorPair) colorMap.get(type.getID());
+				pair = colorMap.get(type.getID());
 				if (pair == null)
 					pair = (ColorPair) GraphvizCanvas.defaultLabelColors.clone();
 

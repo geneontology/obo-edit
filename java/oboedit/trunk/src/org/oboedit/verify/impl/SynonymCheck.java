@@ -80,17 +80,17 @@ public class SynonymCheck extends AbstractTextCheck {
 	}
 
 	@Override
-	public Collection getStrings(IdentifiedObject io) {
+	public Collection<String> getStrings(IdentifiedObject io) {
 		if (io instanceof SynonymedObject) {
-			Collection out = new LinkedList();
-			Iterator it = ((SynonymedObject) io).getSynonyms().iterator();
+			Collection<String> out = new LinkedList<String>();
+			Iterator<Synonym> it = ((SynonymedObject) io).getSynonyms().iterator();
 			while (it.hasNext()) {
-				Synonym s = (Synonym) it.next();
+				Synonym s = it.next();
 				out.add(s.getText());
 			}
 			return out;
 		} else
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 	}
 
 	public Collection<FieldPathSpec> getPaths() {

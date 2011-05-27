@@ -1,7 +1,6 @@
 package org.oboedit.graph;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 
 import edu.umd.cs.piccolo.PNode;

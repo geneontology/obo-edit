@@ -1,11 +1,9 @@
 package org.oboedit.verify.impl;
 
 import org.obo.datamodel.*;
-import org.obo.filters.CommentSearchCriterion;
 import org.obo.filters.NameSearchCriterion;
 import org.oboedit.controller.VerificationManager;
 import org.oboedit.gui.*;
-import org.oboedit.verify.*;
 
 import java.util.*;
 
@@ -59,8 +57,8 @@ public class NameCheck extends AbstractTextCheck {
 	}
 
 	@Override
-	public Collection getStrings(IdentifiedObject io) {
-		Collection out = new LinkedList();
+	public Collection<String> getStrings(IdentifiedObject io) {
+		Collection<String> out = new LinkedList<String>();
 		out.add(io.getName());
 		return out;
 	}

@@ -118,7 +118,7 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 	public CrossProductMatrixEditorComponent(String id) {
 		super(id);
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		TitledBorder rborder = new TitledBorder("Referenced by");
+//		TitledBorder rborder = new TitledBorder("Referenced by");
 
 		TitledBorder cborder = new TitledBorder("Cross product defs");
 		crossProductPane.setBorder(cborder);
@@ -372,8 +372,8 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 		protected LinkedObject[][] matrix;
 		protected CellStatus[][] cellStatus;
 		
-		protected Map<LinkedObject, Object> obj2row = 
-			new HashMap<LinkedObject, Object>();
+		protected Map<LinkedObject, Integer> obj2row = 
+			new HashMap<LinkedObject, Integer>();
 		protected Map<LinkedObject, Integer> obj2col = 
 			new HashMap<LinkedObject, Integer>();
 		TinySet<LinkedObject> objSet = new TinySet<LinkedObject>();
@@ -457,12 +457,12 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 		
 		// xp coords
 		public int getObjectRow(LinkedObject lo) {
-			return (Integer)obj2row.get(lo);
+			return obj2row.get(lo);
 		}
 		
 		// xp coords
 		public int getObjectColumn(LinkedObject lo) {
-			return (Integer)obj2col.get(lo);
+			return obj2col.get(lo);
 		}
 		
 		public TinySet<LinkedObject> getAllObjects() {

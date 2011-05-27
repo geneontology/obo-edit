@@ -16,13 +16,13 @@ public class TermSynonymTest extends OperationTest {
 	protected final static Logger logger = Logger.getLogger(TermSynonymTest.class);
 
 	@Override
-	public Collection getTestBundles() {
-		Collection testBundles = new LinkedList();
+	public Collection<TestBundle> getTestBundles() {
+		Collection<TestBundle> testBundles = new LinkedList<TestBundle>();
 
 		OBOClass oboClass = testUtil.getRandomClass();
 		OBOClass resultClass = (OBOClass) oboClass.clone();
 
-		String newText = testUtil.getRandomString(20);
+		String newText = TestUtil.getRandomString(20);
 
 		Synonym syn = new SynonymImpl(newText);
 
@@ -31,7 +31,7 @@ public class TermSynonymTest extends OperationTest {
 		HistoryItem item = new AddSynonymHistoryItem(oboClass, newText);
 
 		ObjectPair pair = new ObjectPair(oboClass, resultClass);
-		Collection pairs = new LinkedList();
+		Collection<ObjectPair> pairs = new LinkedList<ObjectPair>();
 		pairs.add(pair);
 		TestBundle out = new TestBundle(item, pairs);
 		testBundles.add(out);

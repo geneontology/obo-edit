@@ -77,7 +77,7 @@ public class SpecificNecessaryAction implements ClickMenuAction {
 	public HistoryItem execute() {
 		Vector<HistoryItem> items = new Vector<HistoryItem>();
 
-		Iterator it = sources.getLinks().iterator();
+		Iterator<Link> it = sources.getLinks().iterator();
 		while (it.hasNext()) {
 			OBORestriction tr = (OBORestriction) it.next();
 
@@ -88,12 +88,11 @@ public class SpecificNecessaryAction implements ClickMenuAction {
 
 		HistoryItem item;
 		if (items.size() == 1)
-			item = (HistoryItem) items.get(0);
+			item = items.get(0);
 		else {
 			item = new TermMacroHistoryItem("Changed necessity");
 			for (int i = 0; i < items.size(); i++)
-				((TermMacroHistoryItem) item).addItem((HistoryItem) items
-						.get(i));
+				((TermMacroHistoryItem) item).addItem(items.get(i));
 		}
 
 		GUIUtil.setSelections(item, sources, sources);

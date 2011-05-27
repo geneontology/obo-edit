@@ -17,7 +17,6 @@ import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
 import org.oboedit.gui.event.*;
 
-import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -40,7 +39,7 @@ public class HistoryBrowser extends AbstractGUIComponent {
 
 	public final static int TAB_SIZE = 3;
 
-	Vector histories;
+//	Vector histories;
 	JTree sessionList;
 	HistoryTreeModel model;
 	HistoryListener historyListener;
@@ -100,7 +99,7 @@ public class HistoryBrowser extends AbstractGUIComponent {
 
 	@Override
 	public void init() {
-		histories = new Vector();
+//		histories = new Vector();
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		layoutPlugin();
 		attachListeners();
@@ -114,7 +113,7 @@ public class HistoryBrowser extends AbstractGUIComponent {
 			DataAdapterRegistry registry = IOManager.getManager()
 					.getAdapterRegistry();
 
-			GraphicalAdapterChooser gac = new GraphicalAdapterChooser(registry,
+			GraphicalAdapterChooser<HistoryList, Void> gac = new GraphicalAdapterChooser<HistoryList, Void>(registry,
 					OBOAdapter.WRITE_HISTORY, GUIManager.getManager()
 							.getScreenLockQueue(), GUIManager.getManager()
 							.getFrame(), Preferences.getPreferences()

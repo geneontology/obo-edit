@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -14,7 +13,6 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -41,7 +39,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import org.bbop.framework.AbstractGUIComponent;
-import org.bbop.framework.GUIManager;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.Namespace;
@@ -124,7 +121,7 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 		for(int i=0; i<selectedIx.size(); i++){
 			//logger.debug("Assert selectedIx[" + i + "]: " + selectedIx.get(i));
 			//logger.debug("which is link: " + links.get(selectedIx.get(i)));
-			assertLinks.add((Link) links.get(selectedIx.get(i)));
+			assertLinks.add(links.get(selectedIx.get(i)));
 			impliedLinks.remove(links.get(selectedIx.get(i)));
 
 		}
@@ -233,7 +230,7 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 				return false;
 		}
 
-		public Class getColumnClass(final int columnIndex) {
+		public Class<?> getColumnClass(final int columnIndex) {
 			if (data == null || data.length == 0) {
 				return Object.class;
 			}
@@ -342,7 +339,6 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 				protected JTableHeader createDefaultTableHeader() {
 					return new JTableHeader(columnModel) {
 						public String getToolTipText(MouseEvent e) {
-							String tip = null;
 							java.awt.Point p = e.getPoint();
 							int index = columnModel.getColumnIndexAtX(p.x);
 							int realIndex = columnModel.getColumn(index).getModelIndex();
@@ -389,7 +385,7 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 	//	}
 
 	// object comparator
-	class ColumnSorter implements Comparator {
+	class ColumnSorter implements Comparator<Object> {
 		int colIndex;
 		boolean ascending;
 		ColumnSorter(int colIndex, boolean ascending) {

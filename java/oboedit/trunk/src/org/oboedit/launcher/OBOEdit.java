@@ -2,9 +2,7 @@ package org.oboedit.launcher;
 
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 
 import javax.swing.SwingUtilities;
 
@@ -103,7 +101,7 @@ public class OBOEdit {
 			Tag topLevel,
 			String[] args) throws DataAdapterException, DataAdapterUIException {
 
-		Class[] classes = { ParameterUI.class };
+		Class<?>[] classes = { ParameterUI.class };
 
 		CommandLineActions actions = new CommandLineActions();
 
@@ -124,12 +122,12 @@ public class OBOEdit {
 			logger.info("Assuming " + path + " is an obo file of obo version " + oboVersion);
 			config.setSerializer(oboVersion);
 			OBOFileAdapter adapter = new OBOFileAdapter();
-			OBOSession o = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
+			OBOSession o = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
 			actions.setLoadMe(o);
 			return actions;
 		}
 
-		Iterator it = topLevel.getArguments().iterator();
+		Iterator<?> it = topLevel.getArguments().iterator();
 		while (it.hasNext()) {
 			Tag tag = (Tag) it.next();
 //			logger.info("getActions: tag = " + tag.getName() + ", args = " + tag.getArguments()); // DEL
@@ -139,7 +137,7 @@ public class OBOEdit {
 				System.exit(0);
 			}
 			else if (tag.getName().equals("-load")) {
-				Iterator it2 = tag.getArguments().iterator();
+				Iterator<?> it2 = tag.getArguments().iterator();
 //				logger.info("getActions: tag is load, args = " + tag.getArguments()); // DEL
 				while (it2.hasNext()) {
 					Tag t = (Tag) it2.next();
@@ -164,8 +162,6 @@ public class OBOEdit {
 			}
 		}
 		if (loadTag != null) {
-			List progressListeners = new Vector();
-
 			// Actually read in the command line file
 			logger.info("Loading file " + loadTag);
 			OBOSession o = (OBOSession) CommandLineWidget.execute(registry,
@@ -295,7 +291,7 @@ public class OBOEdit {
 
 	private static void printAdapters() {
 		DataAdapterRegistry registry = IOManager.getManager().getAdapterRegistry();
-		Class[] classes = { ParameterUI.class };
+		Class<?>[] classes = { ParameterUI.class };
 		DataAdapter[] adapters = DataAdapterUtil.getAdapters(
 				registry, OBOAdapter.READ_ONTOLOGY, classes);
 		for (int i = 0; i < adapters.length; i++)

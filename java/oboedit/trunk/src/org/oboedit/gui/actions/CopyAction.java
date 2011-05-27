@@ -85,13 +85,13 @@ public class CopyAction implements ClickMenuAction, DropMenuAction,
 		}
 	};
 
-	public List getSubActions() {
+	public List<SpecificCopyAction> getSubActions() {
 		actionList.clear();
 
-		Iterator it = TermUtil
+		Iterator<OBOProperty> it = TermUtil
 				.getRelationshipTypes(sessionManager.getSession()).iterator();
 		while (it.hasNext()) {
-			OBOProperty type = (OBOProperty) it.next();
+			OBOProperty type = it.next();
 			actionList.add(new SpecificCopyAction(type, copyChild));
 		}
 		Collections.sort(actionList, copyActionSorter);

@@ -10,7 +10,6 @@ import org.bbop.framework.GUITask;
 import org.bbop.framework.IOEvent;
 import org.bbop.framework.IOListener;
 import org.bbop.framework.IOManager;
-import org.bbop.swing.BackgroundUtil;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.datamodel.IdentifiedObject;
 import org.oboedit.controller.SessionManager;
@@ -37,7 +36,7 @@ public class PreSaveVerifyTask implements GUITask {
 			if (!e.getOperation().equals(OBOAdapter.WRITE_ONTOLOGY))
 				return true;
 			fatal = false;
-			byte condition = (byte) VerificationManager.SAVE;
+			byte condition = VerificationManager.SAVE;
 
 			final CheckTask task = VerificationManager.getManager()
 					.getCheckTask(SessionManager.getManager().getSession(),

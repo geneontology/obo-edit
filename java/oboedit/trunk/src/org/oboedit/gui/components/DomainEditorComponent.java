@@ -1,9 +1,6 @@
 package org.oboedit.gui.components;
 
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
@@ -18,7 +15,6 @@ import org.obo.datamodel.*;
 import org.obo.history.*;
 import org.oboedit.gui.AbstractTextEditComponent;
 import org.oboedit.gui.DropUtil;
-import org.oboedit.gui.Preferences;
 import org.oboedit.gui.Selection;
 
 import org.apache.log4j.*;
@@ -143,9 +139,9 @@ public class DomainEditorComponent extends AbstractTextEditComponent {
 		}
 	}
 
-	public java.util.List getChanges() {
+	public java.util.List<HistoryItem> getChanges() {
 		if (currentObject != null && currentObject instanceof OBOProperty) {
-			java.util.List out = new LinkedList();
+			java.util.List<HistoryItem> out = new LinkedList<HistoryItem>();
 			if (!ObjectUtil.equals(domain, ((OBOProperty) currentObject)
 					.getDomain())) {
 				out.add(new DomainHistoryItem((OBOProperty) currentObject,
@@ -153,6 +149,6 @@ public class DomainEditorComponent extends AbstractTextEditComponent {
 			}
 			return out;
 		} else
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 	}
 }

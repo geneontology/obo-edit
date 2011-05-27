@@ -16,8 +16,6 @@ import org.obo.filters.Filter;
 import org.obo.filters.LinkFilter;
 import org.obo.filters.LinkFilterImpl;
 import org.obo.filters.ObjectFilter;
-import org.oboedit.gui.TermFilterEditor.BasicActionListener;
-
 import org.apache.log4j.*;
 
 public class LinkFilterEditor extends TermFilterEditor {

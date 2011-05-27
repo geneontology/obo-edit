@@ -3,8 +3,6 @@ package org.oboedit.gui;
 import org.obo.datamodel.OBOSession;
 import org.obo.history.*;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.*;
-
 import java.util.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
@@ -15,25 +13,25 @@ public class HistoryTreeModel implements TreeModel {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(HistoryTreeModel.class);
-	protected Vector histories;
-	private Vector listeners;
+	protected Vector<HistoryList> histories;
+	private Vector<TreeModelListener> listeners;
 	private Object root = "All histories";
 
 	public HistoryTreeModel(OBOSession history) {
-		histories = new Vector();
+		histories = new Vector<HistoryList>();
 		histories.addAll(history.getArchivedHistories());
 		histories.add(history.getCurrentHistory());
-		listeners = new Vector();
+		listeners = new Vector<TreeModelListener>();
 	}
 
 	public HistoryTreeModel(HistoryList historyList) {
-		histories = new Vector();
+		histories = new Vector<HistoryList>();
 		histories.add(historyList);
-		listeners = new Vector();
+		listeners = new Vector<TreeModelListener>();
 	}
 
-	public HistoryTreeModel(Vector histories) {
-		listeners = new Vector();
+	public HistoryTreeModel(Vector<HistoryList> histories) {
+		listeners = new Vector<TreeModelListener>();
 		this.histories = histories;
 	}
 
@@ -43,7 +41,7 @@ public class HistoryTreeModel implements TreeModel {
 
 	protected void fireTreeStructureChanged(TreeModelEvent e) {
 		for (int i = 0; i < listeners.size(); i++) {
-			TreeModelListener tml = (TreeModelListener) listeners.elementAt(i);
+			TreeModelListener tml = listeners.elementAt(i);
 			tml.treeStructureChanged(e);
 		}
 	}

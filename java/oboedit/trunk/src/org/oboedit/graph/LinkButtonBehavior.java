@@ -1,7 +1,6 @@
 package org.oboedit.graph;
 
 import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics;
@@ -13,7 +12,6 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,7 +22,6 @@ import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -37,17 +34,11 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.PathCapable;
 import org.obo.util.TermUtil;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
-import org.oboedit.gui.event.HistoryAppliedEvent;
-import org.oboedit.gui.event.HistoryListener;
 import org.oboedit.piccolo.PiccoloUtil;
 
-import edu.umd.cs.piccolo.PNode;
-import edu.umd.cs.piccolo.activities.PActivity;
 import edu.umd.cs.piccolo.event.PBasicInputEventHandler;
 import edu.umd.cs.piccolo.event.PInputEvent;
-import edu.umd.cs.piccolo.event.PInputEventListener;
 import edu.umd.cs.piccolo.nodes.PPath;
-import edu.umd.cs.piccolo.util.PPickPath;
 
 import org.apache.log4j.*;
 

@@ -1,18 +1,13 @@
 package org.oboedit.gui.components;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -153,12 +148,6 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 
 
 	public static final int HIDE_ON_CLOSE = 1;
-	private static void addAComponentXAlignment(JComponent componentName, Container container) {
-		container.add(componentName);
-	}
-	private static void addAComponentYAlignment(JComponent componentName, Container container) {
-		container.add(componentName);
-	}
 	private int defaultCloseOperation = HIDE_ON_CLOSE;
 	protected LayoutListener layoutListener = new LayoutAdapter() {
 		@Override
@@ -787,11 +776,6 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 			parentFileTextField.setText(parentFileTextFieldString);
 			//			logger.info("arg = " + parentFileTextFieldString);
 		}
-	}
-
-
-	private void showFeedbkInWin() {
-		feedbackTextArea.setText(feedbackFileOutputStream.toString());
 	}
 
 	private void updateIDsComboboxActionPerformed(ActionEvent e) {

@@ -5,10 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-
 import javax.swing.JDialog;
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.WindowConstants;
 
@@ -16,7 +13,6 @@ import org.bbop.framework.GUIManager;
 import org.bbop.framework.HelpMenu;
 import org.bbop.swing.BackgroundImagePanel;
 import org.bbop.swing.SwingUtil;
-import org.oboedit.gui.Preferences;
 import org.oboedit.gui.widget.SplashScreen;
 
 import org.apache.log4j.*;

@@ -3,9 +3,6 @@ package org.oboedit.gui.components;
 import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.swing.*;
 import org.obo.filters.Filter;
-import org.obo.filters.LinkFilterFactory;
-import org.obo.filters.ObjectFilterFactory;
-import org.oboedit.controller.FilterManager;
 import org.oboedit.gui.*;
 import org.oboedit.gui.filter.RenderedFilter;
 
@@ -153,16 +150,16 @@ public class GlobalFilterManager extends AbstractGUIComponent {
 		rendererPanel.setLayout(new GridLayout(2, 1));
 
 		linkFilterList = new ListEditor(new FilterEditor(true), noObjectLabel,
-				new Vector(), true, true, true, true, false);
+				new Vector<Object>(), true, true, true, true, false);
 
 		termFilterList = new ListEditor(new FilterEditor(false), noObjectLabel,
-				new Vector(), true, true, true, true, false);
+				new Vector<Object>(), true, true, true, true, false);
 
 		linkSpecFilterList = new ListEditor(new RenderEditor(true),
-				noObjectLabel, new Vector(), true, true, true, true, false);
+				noObjectLabel, new Vector<Object>(), true, true, true, true, false);
 
 		termSpecFilterList = new ListEditor(new RenderEditor(false),
-				noObjectLabel, new Vector(), true, true, true, true, false);
+				noObjectLabel, new Vector<Object>(), true, true, true, true, false);
 
 		Box commitBox = new Box(BoxLayout.X_AXIS);
 		commitBox.add(Box.createHorizontalGlue());

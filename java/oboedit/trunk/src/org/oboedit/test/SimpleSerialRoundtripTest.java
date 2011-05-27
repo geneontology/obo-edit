@@ -25,8 +25,7 @@ public class SimpleSerialRoundtripTest extends TestCase {
 			OBOFileAdapter adapter = new OBOFileAdapter();
 			OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 			config.getReadPaths().add(testFiles[i].toString());
-			OBOSession session = (OBOSession) adapter.doOperation(
-					OBOAdapter.READ_ONTOLOGY, config, null);
+			OBOSession session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
 
 			SerialAdapter serialadapter = new SerialAdapter();
 			FileAdapterConfiguration serialconfig = new FileAdapterConfiguration();

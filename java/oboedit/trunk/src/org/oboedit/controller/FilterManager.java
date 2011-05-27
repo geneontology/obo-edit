@@ -53,7 +53,6 @@ import org.obo.filters.IsRedundantLinkCriterion;
 import org.obo.filters.IsTransitiveCriterion;
 import org.obo.filters.IsaCompleteCriterion;
 import org.obo.filters.IsaParentCountCriterion;
-import org.obo.filters.KeywordSearchCriterion;
 import org.obo.filters.LessThanComparison;
 import org.obo.filters.LessThanEqualsComparison;
 import org.obo.filters.LinkFilter;
@@ -513,7 +512,6 @@ public class FilterManager {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	protected Map<String, Object> getGlobalFilterConfig() {
 		Map<String, Object> out = new HashMap<String, Object>();
 
@@ -546,11 +544,9 @@ public class FilterManager {
 		setGlobalLinkFilter((Filter) configMap
 				.get("Controller.globalLinkFilter"));
 
-		setGlobalTermRenderers((Collection) configMap
-				.get("Controller.globalTermRenderers"));
+		setGlobalTermRenderers(configMap.get("Controller.globalTermRenderers"));
 
-		setGlobalLinkRenderers((Collection) configMap
-				.get("Controller.globalLinkRenderers"));
+		setGlobalLinkRenderers(configMap.get("Controller.globalLinkRenderers"));
 
 		if (globalTermFilter == null)
 			buildDefaultGlobalTermFilter();

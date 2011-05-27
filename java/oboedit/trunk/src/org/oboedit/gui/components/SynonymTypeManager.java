@@ -169,7 +169,7 @@ public class SynonymTypeManager extends AbstractGUIComponent {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setPreferredSize(new Dimension(400, 300));
 		typeList = new ListEditor(new TypeEditor(), noTypeLabel,
-				new Vector(), true, true, true, true, false);
+				new Vector<Object>(), true, true, true, true, false);
 		Box commitBox = new Box(BoxLayout.X_AXIS);
 		commitBox.add(Box.createHorizontalGlue());
 		commitBox.add(commitButton);
@@ -255,22 +255,22 @@ public class SynonymTypeManager extends AbstractGUIComponent {
 	}
 
 	protected void loadTypes() {
-		Vector v = new Vector();
+		Vector<TypeWrapper> v = new Vector<TypeWrapper>();
 		
-		Iterator it = SessionManager.getManager().getSession()
+		Iterator<SynonymType> it = SessionManager.getManager().getSession()
 				.getSynonymTypes().iterator();
 		while (it.hasNext()) {
-			SynonymType syntype = (SynonymType) it.next();
+			SynonymType syntype = it.next();
 			v.add(new TypeWrapper(syntype));
 		}
 		typeList.setData(v);
 	}
 
 	protected void saveTypes() {
-		Set v = new HashSet();
+		Set<SynonymType> v = new HashSet<SynonymType>();
 		typeList.commit();
-		Vector data = typeList.getData();
-		Set names = new HashSet();
+		Vector<?> data = typeList.getData();
+		Set<String> names = new HashSet<String>();
 		for (int i = 0; i < data.size(); i++) {
 			TypeWrapper rtw = (TypeWrapper) data.get(i);
 			if (names.contains(rtw.getID())) {
@@ -296,12 +296,12 @@ public class SynonymTypeManager extends AbstractGUIComponent {
 			names.add(rtw.getID());
 		}
 
-		Vector oldtypes = new Vector(SessionManager.getManager().getSession()
+		Vector<SynonymType> oldtypes = new Vector<SynonymType>(SessionManager.getManager().getSession()
 				.getSynonymTypes());
 		TermMacroHistoryItem item = new TermMacroHistoryItem("Type edits");
-		Vector newtypes = (Vector) data.clone();
+		Vector<?> newtypes = (Vector) data.clone();
 		for (int i = 0; i < oldtypes.size(); i++) {
-			SynonymType syntype = (SynonymType) oldtypes.get(i);
+			SynonymType syntype = oldtypes.get(i);
 			boolean found = false;
 			for (int j = 0; j < data.size(); j++) {
 				TypeWrapper tw = (TypeWrapper) data.get(j);
@@ -320,16 +320,16 @@ public class SynonymTypeManager extends AbstractGUIComponent {
 				}
 			}
 			if (!found) {
-				Iterator it = SessionManager.getManager().getSession()
+				Iterator<IdentifiedObject> it = SessionManager.getManager().getSession()
 						.getObjects().iterator();
 				while (it.hasNext()) {
-					IdentifiedObject io = (IdentifiedObject) it.next();
+					IdentifiedObject io = it.next();
 					if (!(io instanceof SynonymedObject))
 						continue;
 					SynonymedObject term = (SynonymedObject) io;
-					Iterator it2 = term.getSynonyms().iterator();
+					Iterator<Synonym> it2 = term.getSynonyms().iterator();
 					while (it2.hasNext()) {
-						Synonym s = (Synonym) it2.next();
+						Synonym s = it2.next();
 						if (s.getSynonymType() != null) {
 							if (s.getSynonymType().equals(syntype)) {
 								JOptionPane.showMessageDialog(this,

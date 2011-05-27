@@ -31,7 +31,7 @@ public class TextEditorUpdateEvent extends EventObject {
 	 */
 	private static final long serialVersionUID = 1L;
 	protected String newDefinition = null;
-	protected Vector dbxrefChanges;
+	protected Vector<Dbxref> dbxrefChanges;
 
 	public TextEditorUpdateEvent(Object source) {
 		super(source);
@@ -68,11 +68,11 @@ public class TextEditorUpdateEvent extends EventObject {
 		}
 	}
 
-	public void setDbxrefUpdates(Vector in) {
+	public void setDbxrefUpdates(Vector<Dbxref> in) {
 		dbxrefChanges = in;
 	}
 
-	public Vector getDbxrefUpdates() {
+	public Vector<Dbxref> getDbxrefUpdates() {
 		return dbxrefChanges;
 	}
 
