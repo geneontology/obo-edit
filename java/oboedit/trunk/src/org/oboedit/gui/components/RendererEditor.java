@@ -19,9 +19,6 @@ import org.oboedit.gui.filter.LinkRenderSpec;
 import org.oboedit.gui.filter.ObjectRenderSpec;
 import org.oboedit.gui.filter.RenderedFilter;
 import org.oboedit.gui.filter.SpecEditor;
-import org.oboedit.gui.widget.LinkSpecEditor;
-import org.oboedit.gui.widget.ObjectSpecEditor;
-
 import org.apache.log4j.*;
 
 public class RendererEditor extends AbstractListTableEditor<RenderedFilter> {

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,12 +13,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import org.obo.datamodel.IdentifiableObject;
-import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.PathCapable;
 import org.obo.query.impl.SearchHit;
 import org.oboedit.controller.SelectionManager;
-import org.oboedit.controller.SessionManager;
-
 import org.apache.log4j.*;
 
 public abstract class AbstractSearchResultsTableModel<T extends IdentifiableObject>
@@ -88,7 +84,7 @@ extends AbstractTableModel implements SearchResultsTableModel<T> {
 	public ListSelectionListener getSelectionListener(final JTable table) {
 		ListSelectionListener listener = new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
-				SearchResultsTableModel model = (SearchResultsTableModel) table
+				SearchResultsTableModel<?> model = (SearchResultsTableModel<?>) table
 				.getModel();
 				Collection<PathCapable> selection = new LinkedList<PathCapable>();
 				for (int rowNum : table.getSelectedRows()) {

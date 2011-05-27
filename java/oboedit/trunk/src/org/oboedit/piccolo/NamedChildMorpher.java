@@ -1,23 +1,15 @@
 package org.oboedit.piccolo;
 
-import java.awt.Color;
-import java.awt.geom.Ellipse2D;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Map;
 
 import org.oboedit.graph.DefaultNamedChildProvider;
 import org.oboedit.graph.NamedChildProvider;
 
 import edu.umd.cs.piccolo.PNode;
-import edu.umd.cs.piccolo.activities.PActivity;
-import edu.umd.cs.piccolo.activities.PActivity.PActivityDelegate;
 import edu.umd.cs.piccolo.nodes.PPath;
-import edu.umd.cs.piccolo.nodes.PText;
-
 import org.apache.log4j.*;
 
 public class NamedChildMorpher extends MorphableMorpher {

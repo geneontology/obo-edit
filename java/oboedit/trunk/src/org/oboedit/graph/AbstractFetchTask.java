@@ -38,7 +38,6 @@ import org.obo.filters.ObjectFilter;
 import org.obo.filters.ObjectFilterImpl;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.gui.FilteredRenderable;
-import org.oboedit.gui.Preferences;
 import org.oboedit.gui.event.ExpandCollapseListener;
 import org.oboedit.gui.event.ExpansionEvent;
 import org.oboedit.gui.filter.GeneralRendererSpec;

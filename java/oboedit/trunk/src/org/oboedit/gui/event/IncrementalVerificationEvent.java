@@ -4,7 +4,6 @@ import java.util.EventObject;
 
 import org.bbop.util.MultiMap;
 import org.obo.datamodel.FieldPath;
-import org.obo.datamodel.FieldPathSpec;
 import org.oboedit.verify.CheckWarning;
 
 import org.apache.log4j.*;

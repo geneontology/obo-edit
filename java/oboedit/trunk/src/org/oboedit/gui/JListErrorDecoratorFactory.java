@@ -2,8 +2,6 @@ package org.oboedit.gui;
 
 import javax.swing.JComponent;
 import javax.swing.JList;
-import javax.swing.text.JTextComponent;
-
 import org.obo.datamodel.FieldPathSpec;
 
 import org.apache.log4j.*;

@@ -9,15 +9,11 @@ import java.util.Collections;
 
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import org.bbop.util.MultiHashMap;
 import org.bbop.util.MultiMap;
 import org.obo.datamodel.FieldPath;
 import org.obo.datamodel.FieldPathSpec;
 import org.obo.datamodel.IdentifiedObject;
-import org.oboedit.controller.VerificationManager;
 import org.oboedit.util.TextEditUtil;
 import org.oboedit.verify.CheckWarning;
 

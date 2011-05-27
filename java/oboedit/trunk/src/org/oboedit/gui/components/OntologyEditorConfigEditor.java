@@ -22,6 +22,7 @@ import org.bbop.swing.widget.TableList;
 import org.oboedit.gui.FilterComponent;
 import org.oboedit.gui.LinkFilterEditorFactory;
 import org.oboedit.gui.TermFilterEditorFactory;
+import org.oboedit.gui.filter.RenderedFilter;
 
 import org.apache.log4j.*;
 
@@ -32,8 +33,8 @@ public class OntologyEditorConfigEditor extends ConfigurationPanel {
 
 	protected FilterComponent termFilterComponent;
 	protected FilterComponent linkFilterComponent;
-	protected TableList termRendererList;
-	protected TableList linkRendererList;
+	protected TableList<RenderedFilter> termRendererList;
+	protected TableList<RenderedFilter> linkRendererList;
 	protected JTabbedPane configTabbedPane = new JTabbedPane();
 	protected JComboBox showToolbarBox = new JComboBox();
 	protected JCheckBox linkFilterButton = new JCheckBox("Filter links");
@@ -51,10 +52,10 @@ public class OntologyEditorConfigEditor extends ConfigurationPanel {
 		add(configTabbedPane, "Center");
 		validate();
 
-		termRendererList = new TableList(true, true);
+		termRendererList = new TableList<RenderedFilter>(true, true);
 		termRendererList.setRenderer(new RendererRenderer(false));
 		termRendererList.setEditor(new RendererEditor(false));
-		linkRendererList = new TableList(true, true);
+		linkRendererList = new TableList<RenderedFilter>(true, true);
 		linkRendererList.setRenderer(new RendererRenderer(true));
 		linkRendererList.setEditor(new RendererEditor(true));
 

@@ -2,10 +2,7 @@ package org.oboedit.gui.components.imageplugin.saveimage;
 
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.util.Arrays;
-
 import org.bbop.dataadapter.AdapterConfiguration;
-import org.bbop.dataadapter.DataAdapter;
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.dataadapter.DataAdapterUI;
 import org.bbop.dataadapter.DefaultIOOperation;

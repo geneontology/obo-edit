@@ -1,8 +1,6 @@
 package org.oboedit.gui.event;
 
 import org.bbop.framework.AbstractGUIComponent;
-import org.oboedit.gui.*;
-
 import java.util.EventObject;
 
 import org.apache.log4j.*;

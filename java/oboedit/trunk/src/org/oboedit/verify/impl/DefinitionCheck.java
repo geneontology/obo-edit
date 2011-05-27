@@ -1,8 +1,6 @@
 package org.oboedit.verify.impl;
 
-import org.bbop.util.ObjectUtil;
 import org.obo.datamodel.*;
-import org.obo.filters.DbxrefSearchCriterion;
 import org.obo.filters.DefinitionDbxrefSearchCriterion;
 import org.obo.filters.DefinitionSearchCriterion;
 import org.obo.history.DefinitionChangeHistoryItem;
@@ -81,16 +79,16 @@ public class DefinitionCheck extends AbstractTextCheck implements FieldCheck {
 	}
 
 	@Override
-	public Collection getStrings(IdentifiedObject io) {
+	public Collection<String> getStrings(IdentifiedObject io) {
 		if (io instanceof DefinedObject) {
-			Collection out = new LinkedList();
+			Collection<String> out = new LinkedList<String>();
 			out.add(((DefinedObject) io).getDefinition());
 			return out;
 		} else
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 	}
 
-	protected void appendAdditionalWarnings(Collection out, OBOSession session,
+	protected void appendAdditionalWarnings(Collection<CheckWarning> out, OBOSession session,
 			FieldPath path, byte condition) {
 
 		IdentifiedObject currentObject = path.getObject();

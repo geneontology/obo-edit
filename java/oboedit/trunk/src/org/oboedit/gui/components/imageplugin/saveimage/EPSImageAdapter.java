@@ -2,7 +2,6 @@ package org.oboedit.gui.components.imageplugin.saveimage;
 
 import java.awt.Graphics2D;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 

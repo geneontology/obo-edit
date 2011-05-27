@@ -12,9 +12,6 @@ import java.util.List;
 
 import javax.swing.*;
 import javax.swing.border.*;
-import javax.swing.tree.*;
-
-import org.bbop.swing.*;
 import org.obo.datamodel.*;
 import org.obo.datamodel.impl.*;
 import org.obo.history.*;
@@ -115,9 +112,9 @@ public class CompleteDefPanel extends AbstractTextEditComponent {
 
 			menu.addSeparator();
 
-			Iterator it = TermUtil.getRelationshipTypes(session).iterator();
+			Iterator<OBOProperty> it = TermUtil.getRelationshipTypes(session).iterator();
 			while (it.hasNext()) {
-				final OBOProperty prop = (OBOProperty) it.next();
+				final OBOProperty prop = it.next();
 
 				if (prop.equals(OBOProperty.IS_A))
 					continue;
@@ -348,7 +345,7 @@ public class CompleteDefPanel extends AbstractTextEditComponent {
 		genusSelectButton.removeActionListener(genusSelectListener);
 	}
 
-	public List getChanges() {
+	public List<HistoryItem> getChanges() {
 		List<HistoryItem> historyList = new LinkedList<HistoryItem>();
 		if (currentObject instanceof LinkedObject) {
 			// Find any intersection links that have been deleted

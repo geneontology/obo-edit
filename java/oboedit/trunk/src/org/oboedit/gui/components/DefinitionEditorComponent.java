@@ -8,7 +8,6 @@ import javax.swing.border.*;
 
 import org.bbop.util.*;
 import org.obo.datamodel.*;
-import org.obo.filters.DefinitionDbxrefSearchCriterion;
 import org.obo.filters.DefinitionSearchCriterion;
 import org.obo.history.*;
 import org.obo.util.TermUtil;

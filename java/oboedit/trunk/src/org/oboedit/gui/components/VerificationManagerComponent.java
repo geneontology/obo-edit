@@ -2,12 +2,10 @@ package org.oboedit.gui.components;
 
 import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.framework.GUIManager;
-import org.bbop.util.*;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOSession;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.controller.VerificationManager;
-import org.oboedit.gui.*;
 import org.oboedit.gui.event.*;
 import org.oboedit.gui.widget.CheckWarningComponent;
 import org.oboedit.verify.*;
@@ -61,7 +59,7 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 
 	protected JPanel progressPanel = new JPanel();
 				
-	protected java.util.List checkList = new ArrayList();
+	protected java.util.List<Check> checkList = new ArrayList<Check>();
 
 	protected VerificationListener verificationListener = new VerificationListener() {
 		public void verificationComplete(VerificationEvent e) {
@@ -85,10 +83,10 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 
 		protected boolean reverseOrder = false;
 
-		protected Comparator comparator = new Comparator() {
-			public int compare(Object a, Object b) {
-				Object aval = getValue((Check) a, sortCol);
-				Object bval = getValue((Check) b, sortCol);
+		protected Comparator<Check> comparator = new Comparator<Check>() {
+			public int compare(Check a, Check b) {
+				Object aval = getValue(a, sortCol);
+				Object bval = getValue(b, sortCol);
 				int compVal = 0;
 				if (aval instanceof Comparable && bval instanceof Comparable) {
 					compVal = ((Comparable) aval).compareTo(bval);
@@ -103,7 +101,7 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 		public VerificationTableModel() {
 		}
 
-		public void setData(Collection checks) {
+		public void setData(Collection<Check> checks) {
 			checkList.clear();
 			checkList.addAll(checks);
 			doSort();
@@ -111,7 +109,7 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 		}
 
 		public Check getCheck(int row) {
-			return (Check) checkList.get(row);
+			return checkList.get(row);
 		}
 
 		public void removeCheck(int row) {
@@ -191,7 +189,7 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 		}
 
 		@Override
-		public Class getColumnClass(int col) {
+		public Class<?> getColumnClass(int col) {
 			if (col == 0) {
 				return String.class;
 			} else if (col == 1) {
@@ -244,7 +242,7 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 		}
 
 		public Object getValueAt(int row, int column) {
-			Check check = (Check) checkList.get(row);
+			Check check = checkList.get(row);
 			return getValue(check, column);
 		}
 
@@ -255,7 +253,7 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 
 		@Override
 		public void setValueAt(Object val, int row, int col) {
-			Check check = (Check) checkList.get(row);
+			Check check = checkList.get(row);
 			setValue(check, col, val);
 		}
 	}
@@ -273,7 +271,7 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean isSelected, boolean hasFocus, int row,
 				int column) {
-			Check check = (Check) checkList.get(row);
+			Check check = checkList.get(row);
 			setEnabled(check.getConfigurationPanel() != null);
 			return this;
 		}
@@ -288,7 +286,7 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 
 		public Component getTableCellEditorComponent(JTable table,
 				Object value, boolean isSelected, int row, int column) {
-			final Check check = (Check) checkList.get(row);
+			final Check check = checkList.get(row);
 			JButton configButton = new JButton("Configure");
 			configButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -520,7 +518,7 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 		tabbedPane.setSelectedIndex(1);
 	}
 
-	protected void setLastResults(Collection c, OBOSession session,
+	protected void setLastResults(Collection<CheckWarning> c, OBOSession session,
 			IdentifiedObject currentObject, byte condition) {
 		boolean showCondition = VerificationManager.getConditionAtField(
 				VerificationManager.getManager().getWarningConditions(),

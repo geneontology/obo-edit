@@ -1,19 +1,10 @@
 package org.oboedit.graph;
 
 import java.awt.geom.Rectangle2D;
-import java.util.Map;
 
-import org.bbop.swing.ShapeUtil;
-import org.bbop.util.CycleState;
-import org.oboedit.gui.components.LinkDatabaseCanvas;
 import org.oboedit.piccolo.BoundsUtil;
-import org.oboedit.piccolo.PiccoloUtil;
 
-import edu.umd.cs.piccolo.PCamera;
-import edu.umd.cs.piccolo.PCanvas;
-import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.activities.PActivity;
-import edu.umd.cs.piccolo.util.PBounds;
 
 import org.apache.log4j.*;
 

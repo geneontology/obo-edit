@@ -1,14 +1,12 @@
 package org.oboedit.gui.components;
 
 import org.obo.datamodel.Dbxref;
-import org.obo.datamodel.DbxrefedObject;
 import org.obo.datamodel.DefinedObject;
 import org.obo.datamodel.FieldPath;
 import org.obo.datamodel.FieldPathSpec;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.impl.DbxrefImpl;
 import org.obo.filters.DefinitionDbxrefSearchCriterion;
-import org.obo.filters.GeneralDbxrefSearchCriterion;
 import org.obo.history.AddDbxrefHistoryItem;
 import org.obo.history.DelDbxrefHistoryItem;
 import org.obo.history.HistoryItem;

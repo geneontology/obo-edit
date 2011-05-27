@@ -1,35 +1,20 @@
 package org.oboedit.gui.actions;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
-import org.obo.datamodel.Link;
-import org.obo.datamodel.Namespace;
-import org.obo.datamodel.OBOProperty;
-import org.obo.history.CreateLinkHistoryItem;
 import org.obo.history.HistoryItem;
 import org.obo.history.TermMacroHistoryItem;
 import org.obo.nlp.NamerUtil;
-import org.obo.reasoner.Explanation;
-import org.obo.reasoner.ExplanationType;
-import org.obo.reasoner.ReasonedLinkDatabase;
-import org.obo.util.ReasonerUtil;
-import org.obo.util.TermUtil;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.ClickMenuAction;
 import org.oboedit.gui.EditAction;

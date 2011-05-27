@@ -3,29 +3,17 @@ package org.oboedit.graph;
 import java.awt.BasicStroke;
 import java.awt.Paint;
 import java.awt.Shape;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
 
 import org.obo.datamodel.PathCapable;
-import org.oboedit.controller.SelectionManager;
 import org.oboedit.gui.Preferences;
-import org.oboedit.gui.Selection;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 import org.oboedit.gui.event.SelectionEvent;
 import org.oboedit.gui.event.SelectionListener;
-import org.oboedit.piccolo.PiccoloUtil;
 
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.activities.PActivity;
-import edu.umd.cs.piccolo.event.PBasicInputEventHandler;
-import edu.umd.cs.piccolo.event.PInputEvent;
 import edu.umd.cs.piccolo.event.PInputEventListener;
 import edu.umd.cs.piccolo.nodes.PPath;
-import edu.umd.cs.piccolo.util.PBounds;
-import edu.umd.cs.piccolo.util.PPickPath;
 
 import org.apache.log4j.*;
 

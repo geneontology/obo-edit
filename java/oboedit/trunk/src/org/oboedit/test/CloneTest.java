@@ -3,7 +3,6 @@ package org.oboedit.test;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +30,6 @@ public class CloneTest extends TestCase {
 	protected final static Logger logger = Logger.getLogger(CloneTest.class);
 
 	public void testClone() {
-		Iterator it;
 		TestUtil testUtil = TestUtil.getInstance();
 
 		// copy the original set of terms
@@ -52,22 +50,22 @@ public class CloneTest extends TestCase {
 
 		Collection<HistoryItem> historyItems = new LinkedList<HistoryItem>();
 
-		Set newTerms = new HashSet();
+		Set<OBOClass> newTerms = new HashSet<OBOClass>();
 
-		Map itemObjectMap = new HashMap();
+		Map<HistoryItem, OBOClass> itemObjectMap = new HashMap<HistoryItem, OBOClass>();
 
 		int newTermCount = 10;  // ?
 		for (int i = 0; i < newTermCount; i++) {
 			HistoryItem item = cloneAction.execute();
 			historyItems.add(item);
 			testUtil.apply(item);
-			Set tempSet = new HashSet();
+			Set<OBOClass> tempSet = new HashSet<OBOClass>();
 			tempSet.addAll(TermUtil.getTerms(testUtil.getSession()));
 			tempSet.removeAll(oldTerms);
 			tempSet.removeAll(newTerms);
 			assertTrue("Exactly one new term should be created per cycle",
 				   tempSet.size() == 1);  // ?
-			OBOClass newTerm = (OBOClass) tempSet.iterator().next();
+			OBOClass newTerm = tempSet.iterator().next();
 			newTerms.add(newTerm);
 			itemObjectMap.put(item, newTerm);
 		}
@@ -76,9 +74,7 @@ public class CloneTest extends TestCase {
 			   + " terms; actually created " + newTerms.size(),
 			   newTerms.size() == newTermCount);
 
-		it = newTerms.iterator();
-		while (it.hasNext()) {
-			OBOClass oboClass = (OBOClass) it.next();
+		for(OBOClass oboClass : newTerms) {
 			assertNotNull("Null ids should not be generated", oboClass.getID());
 			// Terms don't necessarily have just one parent.  Need better test.
 //			assertTrue("Each new term should have only one parent--" + oboClass.getName() + " has these parents:\n " +
@@ -98,13 +94,11 @@ public class CloneTest extends TestCase {
 						     .getNamespace()));
 		}
 
-		it = historyItems.iterator();
-		while (it.hasNext()) {
+		for(HistoryItem item : historyItems) {
 			Collection<OBOClass> terms = TermUtil.getTerms(testUtil
 					.getSession());
 			int termCount = terms.size();
-			HistoryItem item = (HistoryItem) it.next();
-			OBOClass currentClass = (OBOClass) itemObjectMap.get(item);
+			OBOClass currentClass = itemObjectMap.get(item);
 			logger.info("currentClass = " + item); // DEL
 			assertTrue("Current object collection should contain " + currentClass,
 				   terms.contains(currentClass));

@@ -1,10 +1,6 @@
 package org.oboedit.graph;
 
 import java.awt.Shape;
-import java.util.Collection;
-import java.util.LinkedList;
-
-import org.oboedit.graph.HierarchicalGraphLayout.NodeObj;
 
 public interface GraphLayout {
 

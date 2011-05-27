@@ -16,7 +16,6 @@ import org.obo.history.HistoryItem;
 import org.obo.history.NameChangeHistoryItem;
 import org.obo.history.NamespaceHistoryItem;
 import org.obo.history.TermMacroHistoryItem;
-import org.obo.util.IDUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.GestureTarget;
@@ -87,10 +86,10 @@ public class TypedAddAction extends AddAction {
 		if (Preferences.getPreferences().getUsePersonalDefinition()) {
 			item.addItem(new DefinitionChangeHistoryItem(null, Preferences
 					.getPreferences().getPersonalDefinition(), id));
-			Iterator it = Preferences.getPreferences().getPersonalDbxrefs()
-					.iterator();
+			Iterator<Dbxref> it = Preferences.getPreferences()
+					.getPersonalDbxrefs().iterator();
 			while (it.hasNext()) {
-				Dbxref ref = (Dbxref) it.next();
+				Dbxref ref = it.next();
 				item.addItem(new AddDbxrefHistoryItem(id, ref, true, null));
 			}
 		}

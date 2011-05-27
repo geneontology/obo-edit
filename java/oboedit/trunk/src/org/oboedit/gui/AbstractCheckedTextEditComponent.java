@@ -5,10 +5,8 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.*;
@@ -34,7 +32,6 @@ import javax.swing.text.StyledDocument;
 import org.bbop.expression.ExpressionException;
 import org.bbop.expression.JexlContext;
 import org.bbop.swing.XMLLayoutUtil;
-import org.obo.datamodel.FieldPathSpec;
 import org.obo.datamodel.IdentifiedObject;
 import org.oboedit.controller.ExpressionManager;
 import org.oboedit.controller.SessionManager;
@@ -42,7 +39,6 @@ import org.oboedit.controller.VerificationManager;
 import org.oboedit.verify.CheckWarning;
 import org.oboedit.verify.ObjectCheck;
 import org.oboedit.verify.TextCheckWarning;
-import org.oboedit.verify.impl.CycleCheck;
 
 public abstract class AbstractCheckedTextEditComponent extends
 		AbstractTextEditComponent implements CheckedTextEditComponent {

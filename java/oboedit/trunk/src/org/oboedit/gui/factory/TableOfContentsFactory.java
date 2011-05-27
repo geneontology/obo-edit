@@ -1,7 +1,6 @@
 package org.oboedit.gui.factory;
 
 import org.bbop.framework.AbstractComponentFactory;
-import org.oboedit.gui.components.ExtendedInfoComponent;
 import org.oboedit.gui.components.TableOfContentsComponent;
 
 import org.apache.log4j.*;

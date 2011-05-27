@@ -54,7 +54,7 @@ public class ExpressionManager {
 	}
 
 	protected static void initializeContext(JexlContext context) {
-		Class[] printArgs = { String.class };
+		Class<?>[] printArgs = { String.class };
 		try {
 			Method m = System.out.getClass().getMethod("print", printArgs);
 			context.defineGlobalFunction("print", new FunctionMappingImpl(

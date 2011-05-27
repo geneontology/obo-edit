@@ -3,6 +3,7 @@ package org.oboedit.verify;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+
 import javax.swing.*;
 
 import org.obo.datamodel.*;
@@ -183,18 +184,16 @@ public class UserFilterCheck extends AbstractCheck implements ObjectCheck,
 		return ((UserFilterConfiguration) configuration).isLink();
 	}
 
-	public Collection check(OBOSession session, IdentifiedObject currentObject,
+	public Collection<CheckWarning> check(OBOSession session, IdentifiedObject currentObject,
 			byte condition, boolean checkObsoletes) {
-		Collection out = new LinkedList();
+		Collection<CheckWarning> out = new LinkedList<CheckWarning>();
 		if (isLink()) {
 			if (currentObject instanceof LinkedObject) {
-				Iterator it = ((LinkedObject) currentObject).getParents()
-						.iterator();
+				Iterator<Link> it = ((LinkedObject) currentObject).getParents().iterator();
 				while (it.hasNext()) {
-					Link link = (Link) it.next();
+					Link link = it.next();
 					if (getFilter().satisfies(link)) {
-						out
-								.add(new CheckWarning("Link " + link + " "
+						out.add(new CheckWarning("Link " + link + " "
 										+ getMessage(), isFatal(), this,
 										currentObject));
 						break;

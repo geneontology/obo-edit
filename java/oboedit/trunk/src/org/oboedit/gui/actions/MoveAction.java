@@ -81,10 +81,10 @@ public class MoveAction implements ClickMenuAction, DropMenuAction,
 		actionList.clear();
 		actionList.add(new SpecificMoveAction(type, true));
 
-		Iterator it = TermUtil.getRelationshipTypes(
+		Iterator<OBOProperty> it = TermUtil.getRelationshipTypes(
 				SessionManager.getManager().getSession()).iterator();
 		while (it.hasNext()) {
-			OBOProperty type = (OBOProperty) it.next();
+			OBOProperty type = it.next();
 			actionList.add(new SpecificMoveAction(type, false));
 		}
 

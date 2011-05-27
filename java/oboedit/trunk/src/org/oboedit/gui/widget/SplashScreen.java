@@ -42,7 +42,7 @@ public class SplashScreen extends JWindow {
 							setVisible(true);
 						}
 					});
-					thread.sleep(waitTime);
+					Thread.sleep(waitTime);
 				} catch (Exception ex) {
 				}
 			}

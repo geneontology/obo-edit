@@ -3,7 +3,6 @@ package org.oboedit.verify.impl;
 import org.obo.history.HistoryItem;
 import org.oboedit.verify.CheckWarning;
 import org.oboedit.verify.HistoryQuickFix;
-import org.oboedit.verify.QuickFix.ReloadLevel;
 
 import org.apache.log4j.*;
 

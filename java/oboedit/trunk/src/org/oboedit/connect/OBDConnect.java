@@ -1,8 +1,6 @@
 package org.oboedit.connect;
 
 import java.sql.*;
-import org.obo.datamodel.LinkedObject;
-import org.oboedit.graph.OENode;
 
 import org.apache.log4j.*;
 

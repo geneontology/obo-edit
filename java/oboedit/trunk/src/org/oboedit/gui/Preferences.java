@@ -118,7 +118,7 @@ public class Preferences {
 
 	protected Dbxref personalDbxref;
 
-	protected List personalDbxrefs = null;
+	protected List<Dbxref> personalDbxrefs = null;
 
 	protected String defaultDef;
 
@@ -245,7 +245,7 @@ public class Preferences {
 				d = new XMLDecoder(new BufferedInputStream(new FileInputStream(
 						Preferences.getPrefsXMLFile())));
 				Preferences p = (Preferences) d.readObject();
-				preferences = (Preferences) p;
+				preferences = p;
 				d.close();
 			} catch (Exception e) {
 				logger.info("Could not read preferences file from "
@@ -747,7 +747,7 @@ public class Preferences {
 		return personalDbxrefs;
 	}
 
-	public void setPersonalDbxrefs(java.util.List personalDbxrefs) {
+	public void setPersonalDbxrefs(java.util.List<Dbxref> personalDbxrefs) {
 		this.personalDbxrefs = personalDbxrefs;
 	}
 
@@ -774,8 +774,8 @@ public class Preferences {
 	public void setFont(Font font) {
 		this.font = font;
 		FontUIResource resource = new FontUIResource(font);
-		Hashtable defaults = UIManager.getDefaults();
-		Enumeration keys = defaults.keys();
+		UIDefaults defaults = UIManager.getDefaults();
+		Enumeration<Object> keys = defaults.keys();
 		while (keys.hasMoreElements()) {
 			Object o = keys.nextElement();
 			if (o instanceof String) {
@@ -810,7 +810,7 @@ public class Preferences {
 				getAppName()
 				+ ".app/Contents/Info.plist");
 		logger.info("infoPlist = " + infoPlist); // DEL
-		Map params = new HashMap();
+		Map<String, String> params = new HashMap<String, String>();
 		params.put("memoryOption", mem);
 		try {
 			XMLUtil.transform(Preferences.PLIST_TRANSFORM, infoPlist, params);
@@ -1061,7 +1061,7 @@ public class Preferences {
 	}
 
 	public Icon getIconForRelationshipType(String id, String name) {
-		Icon out = (Icon) iconIndex.get(id);
+		Icon out = iconIndex.get(id);
 		//		logger.info("getIconForRelationshipType: id = " + id + ", name = " + name + ", out = " + out); // DEL
 		if (out == null) {
 			String iconURL = iconURLIndex.get(id);

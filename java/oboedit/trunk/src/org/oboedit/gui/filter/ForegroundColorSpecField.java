@@ -3,7 +3,6 @@ package org.oboedit.gui.filter;
 import java.awt.Color;
 
 import org.bbop.swing.ColorUtil;
-import org.obo.util.HTMLUtil;
 import org.oboedit.gui.FilteredRenderable;
 
 import org.apache.log4j.*;

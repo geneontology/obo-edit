@@ -10,18 +10,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-
-import org.bbop.swing.tablelist.AbstractListTableEditor;
 import org.bbop.swing.widget.TableList;
 import org.obo.datamodel.*;
-import org.obo.datamodel.impl.SynonymImpl;
 import org.obo.filters.SynonymSearchCriterion;
-import org.obo.filters.SynonymTextSearchCriterion;
 import org.obo.history.*;
 import org.oboedit.gui.AbstractTextEditComponent;
-import org.oboedit.gui.RootTextEditComponent;
 import org.oboedit.gui.SynonymTableCellEditor;
 
 import org.apache.log4j.*;
@@ -210,19 +203,18 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 		return synonymList.getData();
 	}
 
-	public java.util.List getChanges() {
+	public java.util.List<HistoryItem> getChanges() {
 		if (currentObject != null && currentObject instanceof SynonymedObject) {
 			SynonymedObject synonymed = (SynonymedObject) currentObject;
-			java.util.List out = new LinkedList();
-			Iterator it;
+			java.util.List<HistoryItem> out = new LinkedList<HistoryItem>();
 
-			it = synonymed.getSynonyms().iterator();
+			Iterator<Synonym> it = synonymed.getSynonyms().iterator();
 			while (it.hasNext()) {
-				Synonym ref = (Synonym) it.next();
+				Synonym ref = it.next();
 				boolean found = false;
-				Iterator it2 = getEditedSynonyms().iterator();
+				Iterator<Synonym> it2 = getEditedSynonyms().iterator();
 				while (it2.hasNext()) {
-					Synonym eref = (Synonym) it2.next();
+					Synonym eref = it2.next();
 					if (ref.equals(eref)) {
 						found = true;
 						break;
@@ -242,9 +234,9 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 						out.add(titem);
 					}
 
-					Iterator it3 = ref.getXrefs().iterator();
+					Iterator<Dbxref> it3 = ref.getXrefs().iterator();
 					while (it3.hasNext()) {
-						Dbxref xref = (Dbxref) it3.next();
+						Dbxref xref = it3.next();
 						DelDbxrefHistoryItem ritem = new DelDbxrefHistoryItem(
 								synonymed.getID(), xref, false, ref.getText());
 						out.add(ritem);
@@ -258,11 +250,11 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 
 			it = getEditedSynonyms().iterator();
 			while (it.hasNext()) {
-				Synonym ref = (Synonym) it.next();
+				Synonym ref = it.next();
 				boolean found = false;
-				Iterator it2 = synonymed.getSynonyms().iterator();
+				Iterator<Synonym> it2 = synonymed.getSynonyms().iterator();
 				while (it2.hasNext()) {
-					Synonym eref = (Synonym) it2.next();
+					Synonym eref = it2.next();
 					if (ref.equals(eref)) {
 						found = true;
 						break;
@@ -273,9 +265,9 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 							synonymed.getID(), ref.getText());
 					out.add(item);
 
-					Iterator it3 = ref.getXrefs().iterator();
+					Iterator<Dbxref> it3 = ref.getXrefs().iterator();
 					while (it3.hasNext()) {
-						Dbxref xref = (Dbxref) it3.next();
+						Dbxref xref = it3.next();
 						AddDbxrefHistoryItem ritem = new AddDbxrefHistoryItem(
 								synonymed.getID(), xref, false, ref.getText());
 						out.add(ritem);
@@ -296,7 +288,7 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 			}
 			return out;
 		} else
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 	}
 
 	@Override

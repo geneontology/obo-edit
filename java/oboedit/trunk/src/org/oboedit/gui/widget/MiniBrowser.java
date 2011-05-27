@@ -19,7 +19,7 @@ public class MiniBrowser extends JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	protected Vector history;
+	protected Vector<String> history;
 	protected JEditorPane htmlPane;
 
 	protected int historyPos;
@@ -74,7 +74,7 @@ public class MiniBrowser extends JDialog {
 		statusField.setStringPainted(true);
 		statusField.setBorderPainted(true);
 		// statusField.setBorder(null);
-		history = new Vector();
+		history = new Vector<String>();
 		htmlPane = new JEditorPane();
 		htmlPane.setEditable(false);
 		htmlPane.addHyperlinkListener(linkListener);
@@ -144,7 +144,7 @@ public class MiniBrowser extends JDialog {
 	}
 
 	protected void loadAtPos() {
-		String url = (String) history.get(historyPos);
+		String url = history.get(historyPos);
 		try {
 			htmlPane.setPage(url);
 			String title = (String) htmlPane.getDocument().getProperty(

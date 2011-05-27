@@ -94,8 +94,8 @@ public class NameEditorComponent extends AbstractTextEditComponent {
 
 	@Override
 	protected void loadGUI() {
-		if (currentObject != null && currentObject instanceof IdentifiedObject) {
-			textField.setText(((IdentifiedObject) currentObject).getName());
+		if (currentObject != null) {
+			textField.setText(currentObject.getName());
 
 			boolean enable = !TermUtil.isObsolete(currentObject);
 			textField.setEnabled(enable);
@@ -153,9 +153,9 @@ public class NameEditorComponent extends AbstractTextEditComponent {
 
 
 	public List<HistoryItem> getChanges(){
-		if (currentObject != null && currentObject instanceof IdentifiedObject) {
+		if (currentObject != null) {
 			LinkedList<HistoryItem> out = new LinkedList<HistoryItem>();
-			IdentifiedObject obj = (IdentifiedObject) currentObject;
+			IdentifiedObject obj = currentObject;
 
 			if (!ObjectUtil.equals(textField.getText(), obj.getName())) {
 				HistoryItem item = new NameChangeHistoryItem(obj, textField.getText());
@@ -163,6 +163,6 @@ public class NameEditorComponent extends AbstractTextEditComponent {
 			}
 			return out;
 		} else
-			return Collections.EMPTY_LIST;	
+			return Collections.emptyList();	
 	}
 }

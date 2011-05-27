@@ -46,7 +46,7 @@ public class SpecificTypeChangeAction implements ClickMenuAction {
 		return type.toString();
 	}
 
-	public List getSubActions() {
+	public List<EditAction> getSubActions() {
 		return null;
 	}
 

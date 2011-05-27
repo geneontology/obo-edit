@@ -1,10 +1,7 @@
 package org.oboedit.gui.components.treeView;
 
-import java.awt.Font;
-
 import org.apache.log4j.Logger;
 import org.bbop.framework.ComponentConfiguration;
-import org.oboedit.gui.Preferences;
 
 /**
   * @author John Day-Richter, Jennifer Deegan, and Nicolas Rodriguez.<br>

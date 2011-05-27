@@ -6,7 +6,7 @@ import org.oboedit.gui.components.ConfigurableTextComponent;
 
 import org.apache.log4j.*;
 
-public class ConfigurableMessageComponentFactory extends AbstractComponentFactory {
+public class ConfigurableMessageComponentFactory extends AbstractComponentFactory<GUIComponent> {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(ConfigurableMessageComponentFactory.class);

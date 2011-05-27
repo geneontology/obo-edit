@@ -4,17 +4,16 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-
 import edu.umd.cs.piccolo.PNode;
 
 public abstract class AbstractTooltipFactory implements TooltipFactory {
 
-	protected Collection listeners = new LinkedList();
+	protected Collection<TooltipChangeListener> listeners = new LinkedList<TooltipChangeListener>();
 
 	protected void fireTooltipChanged() {
-		Iterator it = listeners .iterator();
+		Iterator<TooltipChangeListener> it = listeners.iterator();
 		while(it.hasNext()) {
-			TooltipChangeListener listener = (TooltipChangeListener) it.next();
+			TooltipChangeListener listener = it.next();
 			listener.tooltipChanged();
 		}
 	}

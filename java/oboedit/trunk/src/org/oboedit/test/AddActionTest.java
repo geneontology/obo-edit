@@ -3,7 +3,6 @@ package org.oboedit.test;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -140,7 +139,6 @@ public class AddActionTest extends TestCase {
 	};
 
 	public void testAddTerms() {
-		Iterator it;
 		TestUtil testUtil = TestUtil.getInstance();
 
 		// copy the original set of terms
@@ -168,9 +166,9 @@ public class AddActionTest extends TestCase {
 
 		Collection<HistoryItem> historyItems = new LinkedList<HistoryItem>();
 
-		Set newTerms = new HashSet();
+		Set<OBOClass> newTerms = new HashSet<OBOClass>();
 
-		Map itemObjectMap = new HashMap();
+		Map<HistoryItem, OBOClass> itemObjectMap = new HashMap<HistoryItem, OBOClass>();
 
 		int newTermCount = 100;
 		for (int i = 0; i < newTermCount; i++) {
@@ -178,13 +176,13 @@ public class AddActionTest extends TestCase {
 			HistoryItem item = addAction.execute();
 			historyItems.add(item);
 			testUtil.apply(item);
-			Set tempSet = new HashSet();
+			Set<OBOClass> tempSet = new HashSet<OBOClass>();
 			tempSet.addAll(TermUtil.getTerms(testUtil.getSession()));
 			tempSet.removeAll(oldTerms);
 			tempSet.removeAll(newTerms);
 			assertTrue("Exactly one new term should be created per cycle",
 					tempSet.size() == 1);
-			OBOClass newTerm = (OBOClass) tempSet.iterator().next();
+			OBOClass newTerm = tempSet.iterator().next();
 			newTerms.add(newTerm);
 			itemObjectMap.put(item, newTerm);
 		}
@@ -197,9 +195,7 @@ public class AddActionTest extends TestCase {
 				+ " terms, but actually " + "created " + newTerms.size(),
 				newTerms.size() == newTermCount);
 
-		it = newTerms.iterator();
-		while (it.hasNext()) {
-			OBOClass oboClass = (OBOClass) it.next();
+		for(OBOClass oboClass : newTerms) {
 			assertNotNull("Null ids should not be generated", oboClass.getID());
 			assertTrue("Unexpected id generated!", expectedIDs
 					.contains(oboClass.getID()));
@@ -217,13 +213,11 @@ public class AddActionTest extends TestCase {
 							.getNamespace()));
 		}
 
-		it = historyItems.iterator();
-		while (it.hasNext()) {
+		for(HistoryItem item : historyItems) {
 			Collection<OBOClass> terms = TermUtil.getTerms(testUtil
 					.getSession());
 			int termCount = terms.size();
-			HistoryItem item = (HistoryItem) it.next();
-			OBOClass currentClass = (OBOClass) itemObjectMap.get(item);
+			OBOClass currentClass = itemObjectMap.get(item);
 			assertTrue("Current object collection should contain "
 					+ currentClass, terms.contains(currentClass));
 			testUtil.reverse(item);

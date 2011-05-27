@@ -252,7 +252,7 @@ public class MultiAddAction implements ClickMenuAction {
 		return "Create multiple child terms...";
 	}
 
-	public List getSubActions() {
+	public List<EditAction> getSubActions() {
 		return null;
 	}
 

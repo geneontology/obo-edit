@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import javax.swing.JComponent;
 
 import org.obo.datamodel.IdentifiedObject;
-import org.obo.datamodel.PathCapable;
 import org.obo.filters.Filter;
 import org.obo.query.impl.BasicSearchHit;
 import org.obo.query.impl.SearchHit;

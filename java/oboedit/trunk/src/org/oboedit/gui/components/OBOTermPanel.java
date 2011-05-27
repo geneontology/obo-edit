@@ -288,8 +288,7 @@ RightClickMenuProvider, Autoscroll {
 		ExpansionEvent e = null;
 		int size = expansionListeners.size();
 		for (int i = 0; i < size && i < expansionListeners.size(); i++) {
-			ExpandCollapseListener listener = (ExpandCollapseListener) expansionListeners
-			.get(i);
+			ExpandCollapseListener listener = expansionListeners.get(i);
 			if (e == null) {
 				e = new ExpansionEvent(this, shown, hidden);
 			}
@@ -773,7 +772,7 @@ RightClickMenuProvider, Autoscroll {
 	 * */
 	public void setLockedPath(TreePath lockedPath) {
 		this.lockedPath = lockedPath;
-		FreezableScrollPane scrollPane = (FreezableScrollPane) SwingUtil.getAncestorOfClass(FreezableScrollPane.class, this);
+		FreezableScrollPane scrollPane = SwingUtil.getAncestorOfClass(FreezableScrollPane.class, this);
 		if (scrollPane != null) {
 			scrollPane.setFrozen(lockedPath != null);
 			if (lockedPath != null) {
@@ -1238,9 +1237,9 @@ RightClickMenuProvider, Autoscroll {
 		}
 
 		menu.addSeparator();
-		Vector v = getFilterMenuItems();
+		Vector<JMenuItem> v = getFilterMenuItems();
 		for (int i = 0; i < v.size(); i++) {
-			JMenuItem item = (JMenuItem) v.get(i);
+			JMenuItem item = v.get(i);
 			menu.add(item);
 		}
 		menu.addSeparator();
@@ -1274,14 +1273,14 @@ RightClickMenuProvider, Autoscroll {
 	public void synchronize(OBOTermPanel panel) {
 		TreePath rootPath = new TreePath(PathUtil.ROOT);
 		//		logger.debug("OBOTermPanel.synchronize");
-		Enumeration e = panel.getExpandedDescendants(rootPath);
+		Enumeration<TreePath> e = panel.getExpandedDescendants(rootPath);
 		while (e.hasMoreElements()) {
-			expandPath((TreePath) e.nextElement());
+			expandPath(e.nextElement());
 		}
 		setSelectionPaths(panel.getSelectionPaths());
 	}
 
-	protected static class SingletonEnumeration implements Enumeration {
+	protected static class SingletonEnumeration implements Enumeration<Object> {
 		protected Object object;
 
 		public SingletonEnumeration() {
@@ -1392,7 +1391,7 @@ RightClickMenuProvider, Autoscroll {
 		//		reload(); // Need?  Every time?
 	}
 
-	protected Vector getFilterMenuItems() {
+	protected Vector<JMenuItem> getFilterMenuItems() {
 		Vector<JMenuItem> v = new Vector<JMenuItem>();
 
 		JMenuItem removeAllDecorationAndFilters = new JMenuItem(

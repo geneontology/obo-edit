@@ -249,7 +249,7 @@ public class SelectionManager implements ObjectSelector {
 
 	public static Selection removeFromSelection(Selection selection,
 			Collection<? extends PathCapable> pcs) {
-		Collection<TreePath> pathCollection = new HashSet();
+		Collection<TreePath> pathCollection = new HashSet<TreePath>();
 		if (selection.getPaths() != null) {
 			for (TreePath path : selection.getPaths()) {
 				pathCollection.add(path);
@@ -260,7 +260,7 @@ public class SelectionManager implements ObjectSelector {
 				selection.getTerms());
 		for (PathCapable pc : pcs) {
 			if (pc instanceof Link) {
-				links.remove((Link) pc);
+				links.remove(pc);
 				Iterator<TreePath> it = pathCollection.iterator();
 				while (it.hasNext()) {
 					TreePath path = it.next();
@@ -270,7 +270,7 @@ public class SelectionManager implements ObjectSelector {
 				}
 			}
 			if (pc instanceof LinkedObject) {
-				terms.remove((LinkedObject) pc);
+				terms.remove(pc);
 				Iterator<TreePath> it = pathCollection.iterator();
 				while (it.hasNext()) {
 					TreePath path = it.next();

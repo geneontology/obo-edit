@@ -3,29 +3,16 @@ package org.oboedit.graph;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.Icon;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 
-import org.obo.datamodel.RootAlgorithm;
-import org.oboedit.controller.SelectionManager;
-import org.oboedit.controller.SessionManager;
+import org.apache.log4j.Logger;
 import org.oboedit.gui.ClickMenuAction;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.actions.CloneAction;
-import org.oboedit.gui.actions.DeleteAction;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
-import org.oboedit.piccolo.PiccoloUtil;
-
-import edu.umd.cs.piccolo.event.PBasicInputEventHandler;
-import edu.umd.cs.piccolo.event.PInputEvent;
-import edu.umd.cs.piccolo.event.PInputEventListener;
-
-import org.apache.log4j.*;
 
 public class CloneButtonBehavior extends AbstractClickActionButtonBehavior {
 

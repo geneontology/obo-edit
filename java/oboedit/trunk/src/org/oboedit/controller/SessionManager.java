@@ -485,7 +485,7 @@ public class SessionManager {
 	}
 
 	public HistoryItem getRedoItem() {
-		return (HistoryItem) redoHistoryItems.get(redoHistoryItems.size() - 1);
+		return redoHistoryItems.get(redoHistoryItems.size() - 1);
 	}
 
 	public HistoryItem getUndoItem() {
@@ -529,8 +529,7 @@ public class SessionManager {
 	}
 
 	public void redo() {
-		HistoryItem item = (HistoryItem) redoHistoryItems
-		.remove(redoHistoryItems.size() - 1);
+		HistoryItem item = redoHistoryItems.remove(redoHistoryItems.size() - 1);
 		doApply(item);
 	}
 

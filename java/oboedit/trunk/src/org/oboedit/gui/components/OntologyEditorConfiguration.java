@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.bbop.framework.ComponentConfiguration;
 import org.obo.filters.Filter;
-import org.oboedit.gui.FilteredRenderable;
 import org.oboedit.gui.filter.RenderedFilter;
 
 import org.apache.log4j.*;

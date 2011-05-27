@@ -3,7 +3,6 @@ package org.oboedit.test;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -27,9 +26,9 @@ public abstract class OperationTest extends TestCase {
 
 	public static class TestBundle {
 		protected HistoryItem item;
-		protected Collection objectPairs;
+		protected Collection<ObjectPair> objectPairs;
 
-		public TestBundle(HistoryItem item, Collection objectPairs) {
+		public TestBundle(HistoryItem item, Collection<ObjectPair> objectPairs) {
 			this.item = item;
 			this.objectPairs = objectPairs;
 		}
@@ -38,7 +37,7 @@ public abstract class OperationTest extends TestCase {
 			return item;
 		}
 
-		public Collection getObjectPairs() {
+		public Collection<ObjectPair> getObjectPairs() {
 			return objectPairs;
 		}
 	}
@@ -73,7 +72,7 @@ public abstract class OperationTest extends TestCase {
 		}
 	}
 
-	protected abstract Collection getTestBundles();
+	protected abstract Collection<TestBundle> getTestBundles();
 
 	@Override
 	public void setUp() throws Exception {
@@ -81,20 +80,15 @@ public abstract class OperationTest extends TestCase {
 	}
 
 	public void testOperation() throws Exception {
-		Iterator it = getTestBundles().iterator();
-		while (it.hasNext()) {
-			TestBundle testBundle = (TestBundle) it.next();
+		for(TestBundle testBundle : getTestBundles()) {
 			doBundleTest(testBundle);
 		}
 	}
 
 	public void doBundleTest(TestBundle testBundle) throws Exception {
-		Iterator it;
 		// get the history generator version of the changes
 		HistoryList allChanges = new DefaultHistoryList();
-		it = testBundle.getObjectPairs().iterator();
-		while (it.hasNext()) {
-			ObjectPair op = (ObjectPair) it.next();
+		for(ObjectPair op : testBundle.getObjectPairs()) {
 			if (op.getOriginal() != null && op.getResult() != null) {
 				HistoryGenerator.getChanges(op.getOriginal(), op.getResult(),
 						allChanges);
@@ -113,9 +107,7 @@ public abstract class OperationTest extends TestCase {
 		testUtil.apply(testBundle.getHistoryItem());
 
 		// make sure the expected outcomes match the real outcomes
-		it = testBundle.getObjectPairs().iterator();
-		while (it.hasNext()) {
-			ObjectPair op = (ObjectPair) it.next();
+		for(ObjectPair op : testBundle.getObjectPairs()) {
 			// NOTICE: We need special handling for term generation
 
 			IdentifiedObject modifiedObject = session
@@ -133,9 +125,7 @@ public abstract class OperationTest extends TestCase {
 		testUtil.reverse(testBundle.getHistoryItem());
 
 		// make sure the undone values match the original values
-		it = testBundle.getObjectPairs().iterator();
-		while (it.hasNext()) {
-			ObjectPair op = (ObjectPair) it.next();
+		for(ObjectPair op : testBundle.getObjectPairs()) {
 			IdentifiedObject modifiedObject = session
 			.getObject(op.getOriginal().getID());
 			if (modifiedObject != null && op.getResult() != null) {
@@ -153,9 +143,7 @@ public abstract class OperationTest extends TestCase {
 		}
 
 		// make sure the expected outcomes match the real outcomes
-		it = testBundle.getObjectPairs().iterator();
-		while (it.hasNext()) {
-			ObjectPair op = (ObjectPair) it.next();
+		for(ObjectPair op : testBundle.getObjectPairs()) {
 			// NOTICE: We need special handling for term generation
 
 			IdentifiedObject modifiedObject = session
@@ -171,21 +159,17 @@ public abstract class OperationTest extends TestCase {
 		}
 
 		// reverse history generator version of the changes
-		List allChangesList = new ArrayList();
+		List<HistoryItem> allChangesList = new ArrayList<HistoryItem>();
 		for(HistoryItem hi : allChanges.getHistoryItems()){
 			allChangesList.add(hi);
 		}
 		Collections.reverse(allChangesList);
-		it = allChangesList.iterator();
-		while (it.hasNext()) {
-			HistoryItem item = (HistoryItem) it.next();
+		for(HistoryItem item : allChangesList) {
 			testUtil.reverse(item);
 		}
 
 		// make sure the undone values match the original values
-		it = testBundle.getObjectPairs().iterator();
-		while (it.hasNext()) {
-			ObjectPair op = (ObjectPair) it.next();
+		for(ObjectPair op : testBundle.getObjectPairs()) {
 			IdentifiedObject modifiedObject = session
 			.getObject(op.getOriginal().getID());
 			if (modifiedObject != null && op.getResult() != null) {

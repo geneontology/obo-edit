@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 
@@ -14,7 +13,6 @@ import org.apache.batik.bridge.UserAgentAdapter;
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.util.XMLResourceDescriptor;
-import org.bbop.swing.HTMLLabel;
 import org.bbop.swing.HyperlinkLabel;
 import org.bbop.swing.IconFactory;
 import org.bbop.swing.PluggableImageHTMLEditorKit;

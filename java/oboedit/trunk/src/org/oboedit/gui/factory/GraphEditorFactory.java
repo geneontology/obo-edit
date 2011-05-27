@@ -4,8 +4,6 @@ package org.oboedit.gui.factory;
 
 import org.bbop.framework.AbstractComponentFactory;
 import org.oboedit.gui.components.GraphEditor;
-import org.oboedit.gui.components.LinkDatabaseCanvas;
-
 import org.apache.log4j.*;
 
 public class GraphEditorFactory extends AbstractComponentFactory<GraphEditor> {

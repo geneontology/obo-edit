@@ -29,8 +29,7 @@ public class FocusPicker implements ViewBehavior, NodeDecorator {
 		@Override
 		public void mousePressed(PInputEvent event) {
 			if (event.getClickCount() == 1) {
-				PCNode node = (PCNode) PiccoloUtil.getNodeOfClass(event
-						.getPath(), PCNode.class);
+				PCNode node = PiccoloUtil.getNodeOfClass(event.getPath(), PCNode.class);
 				if (node != null) {
 					if (node instanceof OENode)
 //						logger.info("node dim = " + node.getWidth()
@@ -86,7 +85,7 @@ public class FocusPicker implements ViewBehavior, NodeDecorator {
 	}
 
 	public PActivity decorate(PathCapable pc, boolean noAnimation) {
-		PCNode node = (PCNode) canvas.getNode(pc);
+		PCNode node = canvas.getNode(pc);
 		if (node == null)
 			return null;
 		else

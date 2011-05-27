@@ -1,21 +1,13 @@
 package org.oboedit.gui.components;
 
-import java.awt.AlphaComposite;
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Composite;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetListener;
-import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -24,7 +16,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -32,7 +23,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,17 +34,13 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
 import javax.swing.tree.TreePath;
 
-import org.bbop.framework.GUIManager;
 import org.bbop.swing.DropTargetListenerMulticaster;
 import org.bbop.swing.FocusHierarchyListener;
 import org.bbop.swing.FocusHierarchyManager;
-import org.bbop.util.AbstractTaskDelegate;
 import org.bbop.util.CollectionUtil;
 import org.bbop.util.ObjectUtil;
 import org.bbop.util.TaskDelegate;
@@ -73,7 +59,6 @@ import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.graph.CollapsibleLinkDatabase;
-import org.oboedit.graph.DefaultNamedChildProvider;
 import org.oboedit.graph.DefaultNodeFactory;
 import org.oboedit.graph.DefaultTypeColorManager;
 import org.oboedit.graph.FocusedNodeListener;
@@ -108,33 +93,23 @@ import org.oboedit.gui.event.SelectionEvent;
 import org.oboedit.gui.event.SelectionListener;
 import org.oboedit.gui.filter.BackgroundColorSpecField;
 import org.oboedit.gui.filter.GeneralRendererSpec;
-import org.oboedit.gui.filter.HTMLSpecEditor;
 import org.oboedit.gui.filter.HTMLSpecField;
 import org.oboedit.gui.filter.RenderedFilter;
 import org.oboedit.piccolo.ExtensibleCanvas;
 import org.oboedit.piccolo.ExtensibleRoot;
 import org.oboedit.piccolo.FullPaintCamera;
 import org.oboedit.piccolo.NamedChildMorpher;
-import org.oboedit.piccolo.PCompoundActivity;
 import org.oboedit.piccolo.PiccoloUtil;
-import org.oboedit.util.GUIUtil;
 import org.oboedit.util.PathUtil;
 
 import edu.umd.cs.piccolo.PCamera;
-import edu.umd.cs.piccolo.PCanvas;
-import edu.umd.cs.piccolo.PInputManager;
-import edu.umd.cs.piccolo.PLayer;
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.PRoot;
-import edu.umd.cs.piccolo.PRoot.InputSource;
 import edu.umd.cs.piccolo.activities.PActivity;
-import edu.umd.cs.piccolo.activities.PActivityScheduler;
 import edu.umd.cs.piccolo.activities.PInterpolatingActivity;
 import edu.umd.cs.piccolo.activities.PActivity.PActivityDelegate;
 import edu.umd.cs.piccolo.event.PInputEvent;
 import edu.umd.cs.piccolo.util.PBounds;
-import edu.umd.cs.piccolo.util.PDebug;
-import edu.umd.cs.piccolo.util.PNodeFilter;
 import edu.umd.cs.piccolo.util.PPickPath;
 
 import org.apache.log4j.*;
@@ -155,7 +130,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	// If user selects (in another component) too many things at once, Graph Editor will ignore the selection event.
 	public static final short TOO_MANY_SELECTED = 10;
 
-	public static final Comparator LAYOUT_ORDERING_COMPARATOR = new Comparator() {
+	public static final Comparator<Object> LAYOUT_ORDERING_COMPARATOR = new Comparator<Object>() {
 
 		public int compare(Object o1, Object o2) {
 			if (o1 instanceof PNode && o2 instanceof PNode) {
@@ -471,10 +446,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	public void addVisibleObjects(Collection<? extends PathCapable> visible) {
 		Collection<IdentifiedObject> current = new HashSet<IdentifiedObject>();
 		for (IdentifiedObject io : linkDatabase.getObjects()) {
-			if (io instanceof LinkedObject) {
 //				logger.debug("GE: adding visible object " + io); // DEL
-				current.add((LinkedObject) io);
-			}
+			current.add(io);
 		}
 		Collection<IdentifiedObject> loCol = getLinkedObjectCollection(visible);
 		current.addAll(loCol);
@@ -694,7 +667,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	}
 
 	public Selection getPickedAsSelection(PInputEvent event) {
-		PCNode originNode = (PCNode) PiccoloUtil.getNodeOfClass(
+		PCNode originNode = PiccoloUtil.getNodeOfClass(
 				event.getPath(), PCNode.class);
 		if (originNode == null)
 			return SelectionManager.createEmptySelection(this);
@@ -1335,8 +1308,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		Collection<IdentifiedObject> current = new HashSet<IdentifiedObject>();
 		// ! Why do we have to rebuild current?  Couldn't we cache it?
 		for (IdentifiedObject io : linkDatabase.getObjects()) {
-			if (io instanceof LinkedObject)
-				current.add((LinkedObject) io);
+			current.add(io);
 		}
 		current.removeAll(getLinkedObjectCollection(visible));
 		// linkDatabase.setVisibleObjects(current, true);

@@ -6,6 +6,7 @@ import org.obo.datamodel.FieldPath;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOSession;
 import org.oboedit.verify.CheckTask;
+import org.oboedit.verify.CheckWarning;
 
 import org.apache.log4j.*;
 
@@ -14,18 +15,15 @@ public class VerificationEvent extends EventObject {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(VerificationEvent.class);
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	protected byte condition;
-	protected Collection warnings;
+	protected Collection<CheckWarning> warnings;
 	protected OBOSession session;
 	protected FieldPath path;
 	protected CheckTask checkTask;
 
 	public VerificationEvent(Object source, CheckTask checkTask,
-			Collection warnings, OBOSession session,
+			Collection<CheckWarning> warnings, OBOSession session,
 			FieldPath path, byte condition) {
 		super(source);
 		this.checkTask = checkTask;
@@ -54,7 +52,7 @@ public class VerificationEvent extends EventObject {
 		return condition;
 	}
 
-	public Collection getWarnings() {
+	public Collection<CheckWarning> getWarnings() {
 		return warnings;
 	}
 }

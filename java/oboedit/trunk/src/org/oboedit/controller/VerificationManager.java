@@ -12,7 +12,6 @@ import java.util.*;
 import org.bbop.framework.GUIManager;
 import org.bbop.io.IOUtil;
 import org.obo.datamodel.*;
-import org.oboedit.gui.*;
 import org.oboedit.gui.event.VerificationListener;
 import org.oboedit.verify.Check;
 import org.oboedit.verify.CheckTask;
@@ -62,7 +61,7 @@ public class VerificationManager {
 
 		protected boolean checkObsoletes = false;
 
-		protected Collection checks = new LinkedList();
+		protected Collection<Check> checks = new LinkedList<Check>();
 
 		public VerificationConfiguration() {
 		}
@@ -83,15 +82,15 @@ public class VerificationManager {
 			this.warningConditions = warningConditions;
 		}
 
-		public Collection getChecks() {
+		public Collection<Check> getChecks() {
 			return checks;
 		}
 
-		public void setChecks(Collection checks) {
+		public void setChecks(Collection<Check> checks) {
 			this.checks.clear();
-			Iterator it = checks.iterator();
+			Iterator<Check> it = checks.iterator();
 			while (it.hasNext()) {
-				Check check = (Check) it.next();
+				Check check = it.next();
 				addCheck(check);
 			}
 		}
@@ -171,13 +170,13 @@ public class VerificationManager {
 		if (config == null) {
 			config = getConfiguration();
 		}
-		Iterator it = getDefaultChecks().iterator();
+		Iterator<Check> it = getDefaultChecks().iterator();
 		while (it.hasNext()) {
-			Check check = (Check) it.next();
+			Check check = it.next();
 			boolean found = false;
-			Iterator it2 = config.getChecks().iterator();
+			Iterator<Check> it2 = config.getChecks().iterator();
 			while (it2.hasNext()) {
-				Check check2 = (Check) it2.next();
+				Check check2 = it2.next();
 				if (check2 == null)
 					continue;
 				if (check.getClass().equals(check2.getClass())) {
@@ -191,7 +190,7 @@ public class VerificationManager {
 		// make sure there aren't any nulls hanging around
 		it = config.getChecks().iterator();
 		while (it.hasNext()) {
-			Check check = (Check) it.next();
+			Check check = it.next();
 			if (check == null) {
 				it.remove();
 			}
@@ -238,7 +237,7 @@ public class VerificationManager {
 		return configuration.getCheckObsoletes();
 	}
 
-	public Collection getChecks() {
+	public Collection<Check> getChecks() {
 		return configuration.getChecks();
 	}
 
@@ -313,7 +312,7 @@ public class VerificationManager {
 		return reasonerCondition && bytes > 0;
 	}
 
-	public static String getMessage(Collection warnings, String prefixText,
+	public static String getMessage(Collection<CheckWarning> warnings, String prefixText,
 			String suffixText, boolean useHTML) {
 
 		boolean isFatal = isFatal(warnings);
@@ -328,9 +327,9 @@ public class VerificationManager {
 			if (useHTML)
 				out.append("</center>");
 		}
-		Iterator it = warnings.iterator();
+		Iterator<CheckWarning> it = warnings.iterator();
 		for (int i = 1; it.hasNext(); i++) {
-			CheckWarning warning = (CheckWarning) it.next();
+			CheckWarning warning = it.next();
 			if (warning.isFatal() != isFatal)
 				continue;
 
@@ -356,34 +355,34 @@ public class VerificationManager {
 		return out.toString();
 	}
 
-	public static boolean isFatal(Collection warnings) {
-		Iterator it = warnings.iterator();
+	public static boolean isFatal(Collection<CheckWarning> warnings) {
+		Iterator<CheckWarning> it = warnings.iterator();
 		while (it.hasNext()) {
-			CheckWarning warning = (CheckWarning) it.next();
+			CheckWarning warning = it.next();
 			if (warning.isFatal())
 				return true;
 		}
 		return false;
 	}
 
-	public static int countFatal(Collection warnings) {
+	public static int countFatal(Collection<CheckWarning> warnings) {
 		int count = 0;
-		Iterator it = warnings.iterator();
+		Iterator<CheckWarning> it = warnings.iterator();
 		while (it.hasNext()) {
-			CheckWarning warning = (CheckWarning) it.next();
+			CheckWarning warning = it.next();
 			if (warning.isFatal())
 				count++;
 		}
 		return count;
 	}
 
-	public Collection runCheck(Check check, OBOSession session,
+	public Collection<CheckWarning> runCheck(Check check, OBOSession session,
 			IdentifiedObject currentObject, byte condition) {
 		return runChecks(Collections.singleton(check), session, new FieldPath(
 				currentObject), condition);
 	}
 
-	public Collection runChecks(OBOSession session, IdentifiedObject io,
+	public Collection<CheckWarning> runChecks(OBOSession session, IdentifiedObject io,
 			byte condition) {
 		return runChecks(session, new FieldPath(io), condition);
 	}

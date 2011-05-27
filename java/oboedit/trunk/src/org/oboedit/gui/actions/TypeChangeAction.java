@@ -5,6 +5,7 @@ import org.bbop.swing.KeyRecorder;
 import java.awt.Point;
 import java.awt.event.*;
 import java.util.*;
+
 import javax.swing.tree.TreePath;
 
 import org.obo.datamodel.*;
@@ -35,7 +36,7 @@ public class TypeChangeAction implements ClickMenuAction, DropMenuAction,
 
 	protected OBOProperty dropType;
 
-	protected List actionList = new Vector();
+	protected List<SpecificTypeChangeAction> actionList = new Vector<SpecificTypeChangeAction>();
 
 	public int allowDrop(JComponent dropPanel, Object o, GestureTarget dest,
 			Point p, KeyRecorder.KeyChecker keyChecker) {
@@ -113,24 +114,22 @@ public class TypeChangeAction implements ClickMenuAction, DropMenuAction,
 		return "Change relationship type";
 	}
 
-	protected Comparator typeChangeActionSorter = new Comparator() {
-		public int compare(Object a, Object b) {
-			SpecificTypeChangeAction sa = (SpecificTypeChangeAction) a;
-			SpecificTypeChangeAction sb = (SpecificTypeChangeAction) b;
-			return sa.getType().getID().compareToIgnoreCase(
-					sb.getType().getID());
+	protected Comparator<SpecificTypeChangeAction> typeChangeActionSorter = new Comparator<SpecificTypeChangeAction>() {
+		public int compare(SpecificTypeChangeAction a, SpecificTypeChangeAction b) {
+			return a.getType().getID().compareToIgnoreCase(
+					b.getType().getID());
 		}
 	};
 
-	public List getSubActions() {
+	public List<SpecificTypeChangeAction> getSubActions() {
 		if (fromDrop) {
 			return null;
 		} else {
 			actionList.clear();
-			Iterator it = TermUtil.getRelationshipTypes(
+			Iterator<OBOProperty> it = TermUtil.getRelationshipTypes(
 					SessionManager.getManager().getSession()).iterator();
 			while (it.hasNext()) {
-				OBOProperty type = (OBOProperty) it.next();
+				OBOProperty type = it.next();
 				actionList.add(new SpecificTypeChangeAction(type));
 			}
 			Collections.sort(actionList, typeChangeActionSorter);

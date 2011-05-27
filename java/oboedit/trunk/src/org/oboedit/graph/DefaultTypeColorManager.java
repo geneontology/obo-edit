@@ -3,7 +3,6 @@ package org.oboedit.graph;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Paint;
-import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
@@ -12,13 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.bbop.swing.ShapeUtil;
 import org.obo.datamodel.OBOProperty;
-import org.oboedit.piccolo.PZNodeCache;
 
 import edu.umd.cs.piccolo.PNode;
-import edu.umd.cs.piccolo.nodes.PPath;
-import edu.umd.cs.piccolo.nodes.PText;
 
 import org.apache.log4j.*;
 
@@ -27,9 +22,9 @@ public class DefaultTypeColorManager implements TypeColorManager, TypeIconManage
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(DefaultTypeColorManager.class);
 	
-	protected Map colorMap = new HashMap();
-	protected Map iconMap = new HashMap();
-	protected List defaultColors = new LinkedList();
+	protected Map<OBOProperty, Paint> colorMap = new HashMap<OBOProperty, Paint>();
+	protected Map<String, PNode> iconMap = new HashMap<String, PNode>();
+	protected List<Paint> defaultColors = new LinkedList<Paint>();
 
 	public static int ICON_HEIGHT = 10;
 	public static int ICON_WIDTH = 10;
@@ -44,7 +39,7 @@ public class DefaultTypeColorManager implements TypeColorManager, TypeIconManage
 	}
 	
 	public PNode getIcon(OBOProperty type) {
-		PNode icon = (PNode) iconMap.get(type.getID());
+		PNode icon = iconMap.get(type.getID());
 		if (icon != null) {
 			return (PNode) icon.clone();
 		} else

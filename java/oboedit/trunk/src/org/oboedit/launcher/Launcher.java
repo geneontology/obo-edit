@@ -48,9 +48,9 @@ public class Launcher {
 		for (int i = 0; i < args.length; i++)
 			argList.add(args[i]);
 		String[] newargs = new String[argList.size()];
-		Iterator it = argList.iterator();
+		Iterator<String> it = argList.iterator();
 		for (int i = 0; it.hasNext(); i++)
-			newargs[i] = (String) it.next();
+			newargs[i] = it.next();
 		Runtime rt = Runtime.getRuntime();
 		Process proc = rt.exec(newargs);
 

@@ -69,13 +69,13 @@ public class OWL2OBO {
 	protected static class ScriptWrapper {
 		protected String script;
 
-		protected LinkedList args = new LinkedList();
+		protected LinkedList<String> args = new LinkedList<String>();
 
-		public LinkedList getArgs() {
+		public LinkedList<String> getArgs() {
 			return args;
 		}
 
-		public void setArgs(LinkedList args) {
+		public void setArgs(LinkedList<String> args) {
 			this.args = args;
 		}
 
@@ -93,14 +93,14 @@ public class OWL2OBO {
 			OWLAdapter.OWLAdapterConfiguration readConfig,
 			OBOFileAdapter.OBOAdapterConfiguration writeConfig,
 			boolean parseObsoleteComments, boolean writeObsoleteComments,
-			boolean fixDbxrefs, List scripts) throws Exception {
+			boolean fixDbxrefs, List<ScriptWrapper> scripts) throws Exception {
 		OWLAdapter adapter = new OWLAdapter();
 		OBOFileAdapter wadapter = new OBOFileAdapter();
-		OBOSession session = (OBOSession) adapter.doOperation(OWLAdapter.READ_ONTOLOGY,
+		OBOSession session = adapter.doOperation(OWLAdapter.READ_ONTOLOGY,
 				readConfig, null);
-		Iterator it = scripts.iterator();
+		Iterator<ScriptWrapper> it = scripts.iterator();
 		while (it.hasNext()) {
-			ScriptWrapper wrapper = (ScriptWrapper) it.next();
+			ScriptWrapper wrapper = it.next();
 			runScript(session, wrapper.getScript(), wrapper.getArgs());
 		}
 		logger.info("About to write files..., session object count = "
@@ -119,19 +119,19 @@ public class OWL2OBO {
 	}
 
 	protected static void fixDbxrefs(OBOSession session) {
-		Iterator it = session.getObjects().iterator();
+		Iterator<IdentifiedObject> it = session.getObjects().iterator();
 		while (it.hasNext()) {
-			IdentifiedObject io = (IdentifiedObject) it.next();
+			IdentifiedObject io = it.next();
 			if (io instanceof DefinedObject) {
 				DefinedObject dfo = (DefinedObject) io;
-				Iterator it2 = dfo.getDefDbxrefs().iterator();
+				Iterator<Dbxref> it2 = dfo.getDefDbxrefs().iterator();
 				Dbxref metacycRef = null;
 				Dbxref brokenRef = null;
 				Dbxref otherRef = null;
 				int metacycCount = 0;
 				int brokenCount = 0;
 				while (it2.hasNext()) {
-					Dbxref ref = (Dbxref) it2.next();
+					Dbxref ref = it2.next();
 					if (ref.getDatabase().equalsIgnoreCase("metacyc")) {
 						metacycCount++;
 						metacycRef = ref;

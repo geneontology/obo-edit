@@ -1,11 +1,9 @@
 package org.oboedit.gui.actions;
 
 import java.util.*;
-import org.obo.datamodel.*;
 import org.obo.history.HistoryItem;
 import org.oboedit.gui.*;
 
-import javax.swing.tree.TreePath;
 import javax.swing.*;
 
 import org.apache.log4j.*;
@@ -19,7 +17,7 @@ public class NecessaryAction implements ClickMenuAction {
 
 	protected boolean isLegal = false;
 
-	protected List subActions = new Vector();
+	protected List<EditAction> subActions = new Vector<EditAction>();
 
 	public NecessaryAction() {
 		subActions.add(new SpecificNecessaryAction(true));
@@ -38,7 +36,7 @@ public class NecessaryAction implements ClickMenuAction {
 		return "Change necessity";
 	}
 
-	public List getSubActions() {
+	public List<EditAction> getSubActions() {
 		return subActions;
 	}
 

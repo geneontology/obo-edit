@@ -12,11 +12,8 @@ import org.oboedit.gui.event.*;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Set;
 import java.net.URL;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -119,7 +116,7 @@ public class CrossProductInfoComponent extends AbstractGUIComponent {
 				if (TermUtil.isIntersection(lo)) {
 //					TermUtil.isGenusDifferentia(lo)) {
 					xpObjs.add(lo);
-					xpGenusObjs.add((LinkedObject)(ReasonerUtil.getGenus((OBOClass)lo)));
+					xpGenusObjs.add((ReasonerUtil.getGenus((OBOClass)lo)));
 					for (Link linkUp : lo.getChildren()) {
 						if (TermUtil.isIntersection(linkUp)) {
 							if (linkUp.getType().equals(OBOProperty.IS_A)) {

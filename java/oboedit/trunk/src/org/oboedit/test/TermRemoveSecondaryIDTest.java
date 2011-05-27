@@ -14,12 +14,12 @@ public class TermRemoveSecondaryIDTest extends OperationTest {
 	protected final static Logger logger = Logger.getLogger(TermRemoveSecondaryIDTest.class);
 
 	@Override
-	public Collection getTestBundles() {
-		Collection testBundles = new LinkedList();
+	public Collection<TestBundle> getTestBundles() {
+		Collection<TestBundle> testBundles = new LinkedList<TestBundle>();
 
 		OBOClass oboClass = testUtil.getRandomClass();
 
-		String newText = testUtil.getRandomID();
+		String newText = TestUtil.getRandomID();
 		oboClass.addSecondaryID(newText);
 
 		OBOClass resultClass = (OBOClass) oboClass.clone();
@@ -28,7 +28,7 @@ public class TermRemoveSecondaryIDTest extends OperationTest {
 		HistoryItem item = new SecondaryIDHistoryItem(oboClass, newText, true);
 
 		ObjectPair pair = new ObjectPair(oboClass, resultClass);
-		Collection pairs = new LinkedList();
+		Collection<ObjectPair> pairs = new LinkedList<ObjectPair>();
 		pairs.add(pair);
 		TestBundle out = new TestBundle(item, pairs);
 		testBundles.add(out);

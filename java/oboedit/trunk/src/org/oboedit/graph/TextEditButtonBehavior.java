@@ -36,8 +36,7 @@ public class TextEditButtonBehavior implements ToolbarButtonBehavior {
 	protected PBasicInputEventHandler handler = new PBasicInputEventHandler() {
 		@Override
 		public void mousePressed(PInputEvent event) {
-			OENode node = (OENode) PiccoloUtil.getNodeOfClass(event.getPath(),
-					OENode.class);
+			OENode node = PiccoloUtil.getNodeOfClass(event.getPath(), OENode.class);
 			if (node != null) {
 				showEditor(node, canvas);
 			}
@@ -45,8 +44,7 @@ public class TextEditButtonBehavior implements ToolbarButtonBehavior {
 
 		@Override
 		public void mouseEntered(PInputEvent event) {
-			OENode node = (OENode) PiccoloUtil.getNodeOfClass(event.getPath(),
-					OENode.class);
+			OENode node = PiccoloUtil.getNodeOfClass(event.getPath(), OENode.class);
 			if (node != null) {
 				canvas
 						.setCursor(Cursor

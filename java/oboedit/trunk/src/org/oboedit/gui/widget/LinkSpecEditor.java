@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import org.obo.filters.*;
 import org.oboedit.gui.filter.LinkRenderSpec;
 import org.oboedit.gui.filter.ObjectRenderSpec;
 import org.oboedit.gui.filter.RenderSpec;

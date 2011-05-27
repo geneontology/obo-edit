@@ -42,7 +42,7 @@ public class PiccoloBoxLayout implements PiccoloLayoutManager {
 		double currentSize = 0;
 		double maxHeight = 0;
 		double maxWidth = 0;
-		Iterator it = parent.getChildrenIterator();
+		Iterator<?> it = parent.getChildrenIterator();
 		while (it.hasNext()) {
 			PNode node = (PNode) it.next();
 			maxWidth = Math.max(node.getFullBoundsReference().getWidth(),

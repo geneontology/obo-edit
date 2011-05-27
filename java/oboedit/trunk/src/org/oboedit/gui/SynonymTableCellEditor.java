@@ -26,7 +26,6 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
-import org.bbop.framework.GUIManager;
 import org.bbop.swing.tablelist.AbstractListTableEditor;
 import org.bbop.swing.widget.TableList;
 import org.obo.datamodel.Dbxref;
@@ -86,9 +85,9 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 		typeList.addItem("<no synonym type>");
 //		logger.debug("typeList.getSelectedIndex(): " + typeList.getSelectedIndex());
 
-		Iterator it = SessionManager.getManager().getSession().getSynonymTypes().iterator();
+		Iterator<SynonymType> it = SessionManager.getManager().getSession().getSynonymTypes().iterator();
 		while (it.hasNext()){
-			SynonymType syntype = (SynonymType) it.next();
+			SynonymType syntype = it.next();
 			typeList.addItem(syntype);
 		}
 

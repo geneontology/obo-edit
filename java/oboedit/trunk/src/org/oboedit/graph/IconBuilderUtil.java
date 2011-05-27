@@ -13,8 +13,6 @@ import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.nodes.PImage;
 import edu.umd.cs.piccolo.nodes.PPath;
 import edu.umd.cs.piccolo.nodes.PText;
-import edu.umd.cs.piccolox.nodes.PComposite;
-import edu.umd.cs.piccolox.nodes.PNodeCache;
 
 import org.apache.log4j.*;
 

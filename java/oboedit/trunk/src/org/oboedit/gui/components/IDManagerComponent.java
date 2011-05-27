@@ -3,8 +3,6 @@ package org.oboedit.gui.components;
 import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.framework.GUIManager;
 import org.bbop.swing.*;
-import org.obo.dataadapter.*;
-import org.obo.datamodel.*;
 import org.obo.datamodel.impl.*;
 import org.obo.filters.*;
 import org.obo.identifier.DefaultIDGenerator;
@@ -46,7 +44,7 @@ public class IDManagerComponent extends AbstractGUIComponent {
 	protected JButton removeButton = new JButton(minusIcon);
 
 	protected IDProfile currentProfile;
-	protected List profiles = null;
+	protected List<IDProfile> profiles = null;
 
 	protected ListEditor idList;
 	protected JTextField nameField = new JTextField();
@@ -102,12 +100,12 @@ public class IDManagerComponent extends AbstractGUIComponent {
 		removeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int index = profiles.indexOf(profileSelector.getSelectedItem());
-				IDProfile profileToDelete = (IDProfile) profiles.get(index);
+				IDProfile profileToDelete = profiles.get(index);
 				IDProfile nextProfile = null;
 				if (index == 0)
-					nextProfile = (IDProfile) profiles.get(index + 1);
+					nextProfile = profiles.get(index + 1);
 				else
-					nextProfile = (IDProfile) profiles.get(index - 1);
+					nextProfile = profiles.get(index - 1);
 
 				selectProfile(nextProfile);
 				profiles.remove(profileToDelete);
@@ -127,7 +125,7 @@ public class IDManagerComponent extends AbstractGUIComponent {
 		add(buttonBox, "North");
 
 		JLabel noRuleLabel = new JLabel("Press 'Add' to create a new rule");
-		idList = new ListEditor(new IDRuleEditor(), noRuleLabel, new Vector(),
+		idList = new ListEditor(new IDRuleEditor(), noRuleLabel, new Vector<Object>(),
 				true, true, true, true, false);
 
 		JLabel nameLabel = new JLabel("Profile name");
@@ -205,7 +203,7 @@ public class IDManagerComponent extends AbstractGUIComponent {
 			throw new Exception("Syntax error in default rule \""
 					+ defaultRuleField.getText() + "\"");
 		}
-		Iterator it = idList.getData().iterator();
+		Iterator<?> it = idList.getData().iterator();
 		while (it.hasNext()) {
 			IDRule rule = (IDRule) it.next();
 			if (!testRule(rule.getRule())) {
@@ -223,7 +221,7 @@ public class IDManagerComponent extends AbstractGUIComponent {
 	}
 
 	protected void configure() {
-		Vector v = new Vector();
+		Vector<IDRule> v = new Vector<IDRule>();
 		v.addAll(currentProfile.getRules());
 		idList.setData(v);
 		nameField.setText(currentProfile.getName());
@@ -275,9 +273,9 @@ public class IDManagerComponent extends AbstractGUIComponent {
 			currentProfile = idGen.getProfile();
 		}
 
-		Iterator it = profiles.iterator();
+		Iterator<IDProfile> it = profiles.iterator();
 		while (it.hasNext()) {
-			IDProfile profile = (IDProfile) it.next();
+			IDProfile profile = it.next();
 
 			if (IDUtil.equals(currentProfile, profile))
 				matched = true;

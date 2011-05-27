@@ -3,8 +3,6 @@ package org.oboedit.gui;
 import org.bbop.swing.*;
 import org.bbop.util.ObjectUtil;
 import org.obo.datamodel.*;
-import org.obo.filters.*;
-import org.obo.util.FilterUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.SelectionManager;
@@ -12,15 +10,12 @@ import org.oboedit.gui.components.OBOTermPanel;
 import org.oboedit.gui.filter.BackgroundColorSpecField;
 import org.oboedit.gui.filter.ColorProvider;
 import org.oboedit.gui.filter.ForegroundColorSpecField;
-import org.oboedit.gui.filter.ConfiguredColor;
 import org.oboedit.gui.filter.GeneralRendererSpec;
-import org.oboedit.gui.filter.GeneralRendererSpecField;
 import org.oboedit.gui.filter.LineTypeSpecField;
 import org.oboedit.gui.filter.LineWidthSpecField;
 import org.oboedit.gui.filter.LinkRenderSpec;
 import org.oboedit.gui.filter.ObjectRenderSpec;
 import org.oboedit.gui.filter.RenderSpec;
-import org.oboedit.gui.filter.RenderedFilter;
 import org.oboedit.gui.widget.TextIcon;
 import org.oboedit.util.GUIUtil;
 import org.oboedit.util.PathUtil;
@@ -29,8 +24,6 @@ import javax.swing.tree.*;
 import javax.swing.border.*;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.*;
-import java.net.*;
 import java.util.*;
 
 import org.apache.log4j.*;
@@ -41,9 +34,6 @@ ListCellRenderer {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(OBOCellRenderer.class);
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	protected final static Color ignoreSelectionColor = new Color(204, 255, 204);
@@ -61,11 +51,7 @@ ListCellRenderer {
 
 	protected LinkRenderSpec linkSpec = new LinkRenderSpec();
 
-	protected static HashMap fontHash = new HashMap();
-
-	protected static HashMap strokeHash = new HashMap();
-
-	protected java.util.List defaultSpecs = new ArrayList();
+	protected static HashMap<String, Font> fontHash = new HashMap<String, Font>();
 
 	protected MultiIcon multiIcon = new MultiIcon();
 
@@ -79,12 +65,8 @@ ListCellRenderer {
 
 	protected JComponent renderComponent = this;
 
-	protected void createDefaultSpecs() {
-	}
-
 	public OBOCellRenderer() {
 		super();
-//		createDefaultSpecs();
 		nec_inv_icon = Preferences.loadLibraryIcon("inv_and_nec_icon.gif");
 		inv_icon = Preferences.loadLibraryIcon("inv_icon.gif");
 		nec_icon = Preferences.loadLibraryIcon("nec_icon.gif");
@@ -152,7 +134,7 @@ ListCellRenderer {
 
 		String hashval = fontName + "-" + size + "-" + style;
 
-		font = (Font) fontHash.get(hashval);
+		font = fontHash.get(hashval);
 		if (font == null) {
 			font = new Font(fontName, style, size);
 			fontHash.put(hashval, font);

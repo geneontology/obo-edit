@@ -75,7 +75,7 @@ public class FisheyeToyDemo extends PFrame {
 	}
 
 	protected void prepFisheye() {
-		Iterator it = getCanvas().getLayer().getChildrenIterator();
+		Iterator<?> it = getCanvas().getLayer().getChildrenIterator();
 		while (it.hasNext()) {
 			PNode node = (PNode) it.next();
 			node.scaleAboutPoint(MIN_SCALE / node.getScale(), node
@@ -86,7 +86,7 @@ public class FisheyeToyDemo extends PFrame {
 	}
 
 	protected Point2D lastFisheye;
-	protected Map pointMap = new HashMap();
+	protected Map<PNode, Point2D> pointMap = new HashMap<PNode, Point2D>();
 
 	protected void refisheye() {
 		if (lastFisheye == null)
@@ -122,7 +122,7 @@ public class FisheyeToyDemo extends PFrame {
 
 	protected void fisheye(Point2D focus) {
 		lastFisheye = focus;
-		Iterator it = getCanvas().getLayer().getChildrenIterator();
+		Iterator<?> it = getCanvas().getLayer().getChildrenIterator();
 		double largestScale = 0;
 		PNode largestNode = null;
 		while (it.hasNext()) {
@@ -139,7 +139,7 @@ public class FisheyeToyDemo extends PFrame {
 				double height = node.getBoundsReference().height;
 				double scaledWidth = node.getScale() * width;
 				double scaledHeight = node.getScale() * height;
-				Point2D mapPoint = (Point2D) pointMap.get(node);
+				Point2D mapPoint = pointMap.get(node);
 				Point2D centerPoint = new Point2D.Double();
 				centerPoint.setLocation(mapPoint.getX() + width / 2, mapPoint
 						.getY()
@@ -178,7 +178,7 @@ public class FisheyeToyDemo extends PFrame {
 	}
 
 	public void initialize() {
-		final Collection nodes = new LinkedList();
+		final Collection<PPath> nodes = new LinkedList<PPath>();
 		getCanvas().setPanEventHandler(null);
 		getCanvas().addMouseMotionListener(new MouseMotionAdapter() {
 			public void mouseMoved(MouseEvent e) {
@@ -233,18 +233,18 @@ public class FisheyeToyDemo extends PFrame {
 		// getCanvas().addInputEventListener(new PNavigationEventHandler());
 	}
 
-	protected Collection animatingNodes = new HashSet();
-	protected Collection formerCollection = Collections.EMPTY_SET;
+	protected Collection<PNode> animatingNodes = new HashSet<PNode>();
+	protected Collection<?> formerCollection = Collections.EMPTY_SET;
 
 	public void selectionChanged(PNotification notfication) {
-		Collection selection = selectionEventHandler.getSelection();
+		Collection<?> selection = selectionEventHandler.getSelection();
 
-		Collection newNodes = new HashSet(selection);
+		Collection<?> newNodes = new HashSet<Object>(selection);
 		newNodes.removeAll(formerCollection);
-		Collection missingNodes = new HashSet(formerCollection);
+		Collection<?> missingNodes = new HashSet<Object>(formerCollection);
 		missingNodes.removeAll(selection);
 
-		Iterator it = newNodes.iterator();
+		Iterator<?> it = newNodes.iterator();
 		while (it.hasNext()) {
 			final PNode node = (PNode) it.next();
 			node.moveToFront();

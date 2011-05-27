@@ -10,7 +10,6 @@ import org.oboedit.controller.SelectionManager;
 import org.oboedit.gui.*;
 import org.oboedit.util.GUIUtil;
 
-import javax.swing.tree.TreePath;
 import javax.swing.*;
 
 import org.apache.log4j.*;
@@ -41,7 +40,7 @@ public class RemoveReplacementAction implements ClickMenuAction {
 		return getName();
 	}
 
-	public List getSubActions() {
+	public List<EditAction> getSubActions() {
 		return null;
 	}
 

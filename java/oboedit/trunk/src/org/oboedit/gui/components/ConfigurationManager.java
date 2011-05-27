@@ -10,7 +10,6 @@ import org.bbop.io.FileUtil;
 import org.bbop.io.IOUtil;
 import org.bbop.swing.*;
 import org.obo.datamodel.*;
-import org.oboedit.controller.FilterManager;
 import org.oboedit.gui.*;
 import org.oboedit.gui.event.ReconfigEvent;
 import org.oboedit.gui.widget.DbxrefListEditor;
@@ -116,7 +115,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 	JTextField logFilePath = new JTextField(Preferences.getPreferences().getLogfile());
 
-	private Vector icons;
+	private Vector<IconWrapper> icons;
 
 	private class IconWrapper {
 		private String type;
@@ -174,7 +173,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 		JLabel previewLabel = new JLabel();
 
-		JLabel previewTextLabel = new JLabel("Icon preview");
+//		JLabel previewTextLabel = new JLabel("Icon preview");
 
 		JButton browseButton = new JButton("Browse files");
 
@@ -378,7 +377,6 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				dialog.setVisible(true);
 			} catch (Throwable t) {
 				t.printStackTrace();
-				int out = 0;
 			}
 		}
 
@@ -488,12 +486,12 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		JLabel fullnameLabel = new JLabel("Full Name", JLabel.TRAILING);
 		JLabel emailLabel = new JLabel("Email Address", JLabel.TRAILING);
 
-		JLabel startLabel = new JLabel("Start of ID range", JLabel.TRAILING);
-		JLabel endLabel = new JLabel("End of ID range", JLabel.TRAILING);
-		JLabel prefixLabel = new JLabel("Default ID prefix", JLabel.TRAILING);
-		JLabel idLengthLabel = new JLabel("Default ID length", JLabel.TRAILING);
-		JLabel idAdapterLabel = new JLabel("Default ID adapter name",
-				JLabel.TRAILING);
+//		JLabel startLabel = new JLabel("Start of ID range", JLabel.TRAILING);
+//		JLabel endLabel = new JLabel("End of ID range", JLabel.TRAILING);
+//		JLabel prefixLabel = new JLabel("Default ID prefix", JLabel.TRAILING);
+//		JLabel idLengthLabel = new JLabel("Default ID length", JLabel.TRAILING);
+//		JLabel idAdapterLabel = new JLabel("Default ID adapter name",
+//				JLabel.TRAILING);
 		JLabel selectionBatchLabel = new JLabel("Selection batch size",
 				JLabel.TRAILING);
 		JTextArea noDbxLabel = new JTextArea("Select a dbxref from the list "
@@ -519,7 +517,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		dbxrefEditor = new DbxrefListEditor(Dbxref.UNKNOWN);
 		defDbxrefListEditor = new DbxrefListEditor(Dbxref.DEFINITION);
 		defDbxrefList = new ListEditor(defDbxrefListEditor, noDbxLabel,
-				new Vector(0), true, true, true, true, true);
+				new Vector<Object>(0), true, true, true, true, true);
 		allowExtendedCheckbox = new JCheckBox("Allow extended characters");
 		dbxrefEditor.setBorder(new TitledBorder("Personal Dbxref"));
 
@@ -635,7 +633,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			defDbxrefList.setData(v);
 		} else {
 			defTextArea.setText("");
-			defDbxrefList.setData(new Vector());
+			defDbxrefList.setData(new Vector<Object>());
 		}
 
 		updatePersonalDefFields(Preferences.getPreferences()
@@ -1277,7 +1275,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		Map<String, String> iconURLIndex = new HashMap<String, String>();
 		Map<String, Color> colorIndex = new HashMap<String, Color>();
 		for (int i = 0; i < icons.size(); i++) {
-			IconWrapper iw = (IconWrapper) icons.elementAt(i);
+			IconWrapper iw = icons.elementAt(i);
 			iconURLIndex.put(iw.getType(), iw.getURL());
 			colorIndex.put(iw.getType(), iw.getColor());
 		}
@@ -1288,7 +1286,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		if (personalDefCheckbox.isSelected()) {
 			preferences.setPersonalDefinition(defTextArea.getText());
 			if (preferences.getPersonalDbxrefs() == null)
-				preferences.setPersonalDbxrefs(new LinkedList());
+				preferences.setPersonalDbxrefs(new LinkedList<Dbxref>());
 			else
 				preferences.getPersonalDbxrefs().clear();
 			preferences.getPersonalDbxrefs().addAll(defDbxrefList.getData());

@@ -1,7 +1,5 @@
 package org.oboedit.graph;
 
-import org.oboedit.gui.components.LinkDatabaseCanvas;
-
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.activities.PActivity;
 

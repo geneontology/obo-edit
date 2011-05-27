@@ -1,8 +1,5 @@
 package org.oboedit.gui;
 
-import java.awt.Container;
-import java.util.Collection;
-
 import javax.swing.JComponent;
 
 import org.bbop.expression.JexlContext;
@@ -10,8 +7,6 @@ import org.bbop.framework.ComponentConfiguration;
 import org.bbop.framework.GUIComponent;
 import org.bbop.swing.ComponentNameResolver;
 import org.bbop.swing.XMLLayoutPanel;
-import org.oboedit.gui.event.TermLoadEvent;
-import org.oboedit.gui.event.TermLoadListener;
 
 public abstract class AbstractXMLOBOEditComponent extends XMLLayoutPanel
 		implements GUIComponent {
