@@ -114,19 +114,24 @@ public class GAFParser {
 			}else{
 				this.currentCols = this.currentRow.split("\\t", -1);
 				if (currentCols.length != expectedNumCols) {
+
 					String error = "Got invalid number of columns for row (expected "
 						+ expectedNumCols
 						+ ", got "
 						+ currentCols.length
 						+ "). The row is ignored.";
 	
-					AnnotationRuleViolation v = new AnnotationRuleViolation(error, this.currentRow);
-					v.setRuleId("Parsing Error");
-					v.setLineNumber(getLineNumber());
-					voilations.add(v);
-//					errors.add(error);
-					LOG.error(error + " : " + this.currentRow);
-					return next();
+					if(currentCols.length<expectedNumCols){
+						AnnotationRuleViolation v = new AnnotationRuleViolation(error, this.currentRow);
+						v.setRuleId("Parsing Error");
+						v.setLineNumber(getLineNumber());
+						voilations.add(v);
+	//					errors.add(error);
+						LOG.error(error + " : " + this.currentRow);
+						return next();
+					}else{
+						LOG.warn(error + " : " + this.currentRow);
+					}
 				}/*else{
 					performBasicChecks(this.currentCols);
 				}*/
