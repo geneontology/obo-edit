@@ -269,7 +269,7 @@ public class DeleteAction implements ClickMenuAction {
 					((lastInstanceCount > 1) ?
 							"\nThese are the last appearances of the following terms:"
 							: "\nThis is the last appearance of the following term:")
-							+ "\n" + instanceString +
+							+ "\n" + instanceString
 							+ "\nAre you sure you want to make "
 							+ ((lastInstanceCount > 1) ?
 									"these terms" : "this term")
@@ -298,12 +298,7 @@ public class DeleteAction implements ClickMenuAction {
 							"Please update the replaced_by or consider tags that reference these terms:"
 							: "This is the last appearance of the selected term. " +
 					"Please update the replaced_by or consider tags that reference this term:")
-					+ replacedMessage +
-                                    "\nAlso note that after you make "+ ((lastInstanceCount > 1) ?
-                                                                         "these terms" : "this term") +
-                                    " obsolete, you will not be able to edit " +
-                                    ((lastInstanceCount > 1) ? "their" : "its") +
-                                    " definition!"
+					+ replacedMessage
 					+ "\nAre you sure you want to make "
 					+ ((lastInstanceCount > 1) ?
 							"these terms" : "this term")
