@@ -1,6 +1,20 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 ================================
+What's New in OBO-Edit v2.1-beta14
+================================
+
+Bug fixes:
+[ geneontology-Bugs-3303596 ] Made definitions of obsolete terms editable
+
+Changes/Improvements:
+Made titlebar of Text Editor say "(OBSOLETE TERM)" in red if it's showing a
+term that's obsolete.
+
+Ontology Term Generation plugin fixed by its authors
+
+
+================================
 What's New in OBO-Edit v2.1-beta13 (5/16/2011)
 ================================
 
