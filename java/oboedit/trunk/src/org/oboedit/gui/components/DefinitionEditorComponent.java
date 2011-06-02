@@ -115,11 +115,13 @@ public class DefinitionEditorComponent extends AbstractTextEditComponent {
 			 * Collections.sort(dbxrefs, Dbxref.COMPARATOR); defDbxrefList.set
 			 */
 			boolean enable = !TermUtil.isObsolete(currentObject);
-			defField.setEnabled(enable);
+                        // Leave Definition edit-enabled even for obsolete objects
+                        //			defField.setEnabled(enable);
+                        defField.setEnabled(true);
 			if (enable)
 				defField.setForeground(Color.black);
 			else
-				defField.setForeground(Color.gray);
+                            defField.setForeground(Color.red);  // red for obsolete
 			defDbxrefList.setEnabled(enable);
 		} else {
 			defField.setText("<no selection>");
