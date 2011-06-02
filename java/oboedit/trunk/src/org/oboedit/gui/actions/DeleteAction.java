@@ -270,11 +270,6 @@ public class DeleteAction implements ClickMenuAction {
 							"\nThese are the last appearances of the following terms:"
 							: "\nThis is the last appearance of the following term:")
 							+ "\n" + instanceString +
-                                    "After you make "+ ((lastInstanceCount > 1) ?
-                                                        "these terms" : "this term") +
-                                    " obsolete, you will not be able to edit " +
-                                    ((lastInstanceCount > 1) ? "their" : "its") +
-                                    " definition!"
 							+ "\nAre you sure you want to make "
 							+ ((lastInstanceCount > 1) ?
 									"these terms" : "this term")
