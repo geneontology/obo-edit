@@ -42,6 +42,7 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.history.HistoryItem;
 import org.obo.history.TermMacroHistoryItem;
 import org.obo.postcomp.PostcompUtil;
+import org.obo.util.TermUtil;
 import org.oboedit.controller.ExpressionManager;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
@@ -315,12 +316,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 		if (warningMap.isEmpty()) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					ComponentManager.getManager().setLabel(TextEditor.this,
-					"Text Editor");
-					ComponentManager.getManager().setTitlebarTooltip(
-							TextEditor.this, null);
-					ComponentManager.getManager().setTitlebarColor(
-							TextEditor.this, Color.black);
+                                    resetTitlebar();
 					errorPanel.setVisible(false);
 					validate();
 					repaint();
@@ -369,19 +365,25 @@ RootTextEditComponent, SelectionDrivenComponent {
 			final int errorCountFinal = errorCount;
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					String tooltip = CheckWarningComponent.getHTML(warnings,
-							"", "", true, false, false, false);
+                                    boolean isObsolete = TermUtil.isObsolete(getObject());
+					String tooltip = CheckWarningComponent.getHTML
+                                            (warnings, "",
+                                             "", true, false, false, false);
 					// Color warningColor = Color.orange;
 //					Color warningColor = new Color(255, 153, 51);
 					Color warningColor = Color.black;  // for now
 					ComponentManager.getManager().setLabel(TextEditor.this,
-							"Text Editor (" + buffer.toString() + ")");
+                                                                               "Text Editor (" + buffer.toString() + ")" +
+                                                                               (isObsolete ? " (OBSOLETE TERM)" : ""));
 					ComponentManager.getManager().setTitlebarTooltip(
 							TextEditor.this, tooltip);
 					if (errorCountFinal > 0)
 						ComponentManager.getManager().setTitlebarColor(
 								TextEditor.this, titlebarErrorColor);
-					else
+					else if (isObsolete)
+						ComponentManager.getManager().setTitlebarColor(
+								TextEditor.this, titlebarErrorColor);
+                                        else
 						ComponentManager.getManager().setTitlebarColor(
 								TextEditor.this, warningColor);
 					errorLabel.setText(htmlWrapperBuffer.toString());
@@ -394,6 +396,15 @@ RootTextEditComponent, SelectionDrivenComponent {
 			});
 		}
 	}
+
+    private void resetTitlebar() {
+        boolean isObsolete = TermUtil.isObsolete(getObject());
+        ComponentManager.getManager().setLabel(TextEditor.this,
+                                               "Text Editor" + (isObsolete ? " (OBSOLETE TERM)" : ""));
+        ComponentManager.getManager().setTitlebarTooltip(TextEditor.this, null);
+        ComponentManager.getManager().setTitlebarColor(TextEditor.this,
+                                                       (isObsolete ? Color.red : Color.black));
+    }
 
 	protected JPanel errorPanel = new JPanel();
 
@@ -594,7 +605,6 @@ RootTextEditComponent, SelectionDrivenComponent {
 
 			"<box orientation='vert'>"
 			+
-
 			"<compactgrid cols='2' yPad='3'>"
 			+ "<label text='ID'/>"
 			+ "<component id='ID_EDITOR' leftmargin='10'>"
@@ -632,9 +642,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 			+ "<component id='NAME_EDITOR' leftmargin='10'>"
 			+ " <component id='field'/>"
 			+ "</component>"
-			+
-
-			"</compactgrid>"
+                        + "</compactgrid>"
 			+
 
 			"<panel>"
@@ -717,8 +725,6 @@ RootTextEditComponent, SelectionDrivenComponent {
 		return defaultLayout;
 	}
 
-
-
 	public List<HistoryItem> getChanges() {
 		List<HistoryItem> out = new LinkedList<HistoryItem>();
 		for (OBOTextEditComponent c : getMyResolver().getRegisteredComponents()) {
@@ -767,6 +773,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 		dirtyPaths = new LinkedList<FieldPath>();
 		warningMap.clear();
 		setWarningMap(warningMap);
+                resetTitlebar();
 		doTimedTextChecks(false, false);
 		fireLoadEvent(new TermLoadEvent(this, io));
 	}
