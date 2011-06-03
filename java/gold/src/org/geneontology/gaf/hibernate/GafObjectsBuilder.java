@@ -15,8 +15,18 @@ public class GafObjectsBuilder {
 	
 	private GAFParser parser;
 	
+	private int sizeThreshold = 20000000;
+	
+	private int counter;
+	
+	private String docId;
+	private String documentPath;
+	
+	private boolean isSplitted;
+	
 	public GafObjectsBuilder(){
 		gafDocument = new GafDocument();
+		
 	}
 	
 	public GafDocument getGafDocument(){
@@ -35,13 +45,24 @@ public class GafObjectsBuilder {
 	
 	public GafDocument buildDocument(Reader reader, String docId, String path) throws IOException{
 	
-		gafDocument = new GafDocument(docId, path);
+		this.docId = docId;
+		this.documentPath = path;
+
+		parser = new GAFParser();
+		parser.parse(reader);
+		
+		isSplitted = false;
+		
+/*		gafDocument = new GafDocument(docId, path);
 		
 		parser = new GAFParser();
 		
 		parser.parse(reader);
 		
 		while(parser.next()){
+			if(counter>= this.sizeThreshold){
+				break;
+			}
 			Bioentity entity= addBioEntity(parser);
 			addGeneAnnotation(parser, entity);
 			addWithInfo(parser);
@@ -52,8 +73,44 @@ public class GafObjectsBuilder {
 		
 		
 		return gafDocument;
+*/		
 		
+		return getNextSplitDocument();
 	
+	}
+	
+	
+	
+	public GafDocument getNextSplitDocument() throws IOException{
+		if(parser == null){
+			throw new IllegalStateException("the buildDocument method is not called yet.");
+		}
+
+		counter = 0;
+		gafDocument = new GafDocument(docId, this.documentPath);
+		
+		while(parser.next()){
+			if(counter>= this.sizeThreshold){
+				isSplitted= true;
+				counter = 0;
+				break;
+			}
+			
+			counter++;
+			Bioentity entity= addBioEntity(parser);
+			addGeneAnnotation(parser, entity);
+			addWithInfo(parser);
+			addCompositeQualifier(parser);
+			addExtensionExpression(parser);
+		}
+		
+		
+		
+		return gafDocument.getBioentities().size()==0?null: gafDocument;
+	}
+	
+	public boolean isDocumentSplitted(){
+		return this.isSplitted;
 	}
 		
 	

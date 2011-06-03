@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -74,6 +75,8 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	private boolean solrLoad;
 
 	private List<GafDocument> gafDocuments;
+	
+	private List<String> splittedDocuments;
 	
 	/**
 	 * Each GAF operation runs a thread in background. The web browser calls the handle service method
@@ -289,17 +292,23 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 				}else{
 					
 					if(gafDocuments == null){
+						gafDocuments = new ArrayList<GafDocument>();
+						splittedDocuments = new ArrayList<String>();
+
 						if(gafLocations instanceof GafURLFetch){
 							GafURLFetch fetch = (GafURLFetch) gafLocations;
 							fetch.connect();
-							gafDocuments = new ArrayList<GafDocument>();
 							while(fetch.hasNext()){
 	
 								InputStream is = (InputStream)fetch.next();
-								this.currentOntologyBeingProcessed = fetch.getCurrentGafFile();
+								/*this.currentOntologyBeingProcessed = fetch.getCurrentGafFile();
 								java.io.Reader reader = new InputStreamReader(is);
 								GafDocument doc = db.buildGafDocument(reader, fetch.getCurrentGafFile(), fetch.getCurrentGafFilePath());
-								gafDocuments.add( doc);
+								gafDocuments.add( doc);*/
+								java.io.Reader reader = new InputStreamReader(is);
+								GafDocument doc = buildGafDocument(reader, fetch.getCurrentGafFile(), fetch.getCurrentGafFilePath());
+								if(doc != null)
+									gafDocuments.add(doc);
 								reader.close();
 								is.close();
 								fetch.completeDownload();
@@ -308,7 +317,6 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 						}else{
 							
 							List<String> files = (List<String>)gafLocations;
-							gafDocuments = new ArrayList<GafDocument>();
 							for(String ontLocation: files){
 								
 								File file = null;
@@ -462,6 +470,29 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			
 			
 		}
+		
+		
+		private GafDocument buildGafDocument(Reader reader, String docId, String path) throws IOException{
+			this.currentOntologyBeingProcessed = path;
+			startOntologyLoad();
+
+			GafObjectsBuilder builder = new GafObjectsBuilder();
+			
+			GafDocument doc = builder.buildDocument(reader, docId, path);
+
+			GafDocument d = null;
+			
+			while((d = builder.getNextSplitDocument() ) != null){
+				LOG.info("Splitting the '" + path + "' document");
+				splittedDocuments.add(path);
+				doc = null;
+			}
+			
+			endOntologyLoad(builder);
+
+			return doc;
+		}
+
 		
 		
 	}
