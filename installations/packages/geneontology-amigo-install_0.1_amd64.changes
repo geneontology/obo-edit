@@ -1,0 +1,28 @@
+Format: 1.8
+Date: Thu, 26 May 2011 18:06:59 -0700
+Source: geneontology-amigo-install
+Binary: geneontology-amigo-install
+Architecture: source all
+Version: 0.1
+Distribution: unstable
+Urgency: low
+Maintainer: Seth Carbon <sjcarbon@lbl.gov>
+Changed-By: Seth Carbon <sjcarbon@lbl.gov>
+Description: 
+ geneontology-amigo-install - Meta-package to help with AmiGO installations.
+Changes: 
+ geneontology-amigo-install (0.1) unstable; urgency=low
+ .
+   * Initial Release.
+Checksums-Sha1: 
+ 02b4b3515cb41780930522aa0ee7cc5847bc6b2a 583 geneontology-amigo-install_0.1.dsc
+ 930bad4df4d4e16a2ad6df96ba5bd25e52b8c46f 5405 geneontology-amigo-install_0.1.tar.gz
+ 193bd70e36f4e36548946a6c7eaeeaee4303d755 2322 geneontology-amigo-install_0.1_all.deb
+Checksums-Sha256: 
+ 5867bb8c7d8a6fee23ce14bba7db3d2c40c13202aa6f94007ef72115ef86c702 583 geneontology-amigo-install_0.1.dsc
+ 9a9cdabcad48b626b174bbce4cb16804c66cf9c30eb3bd36cd1c1159b383b9ae 5405 geneontology-amigo-install_0.1.tar.gz
+ 071026f2f363c38205b46548fac035431b869965707501b5226c252e5a016279 2322 geneontology-amigo-install_0.1_all.deb
+Files: 
+ a89db2dc5809cf308e29aa70cfd7764c 583 misc extra geneontology-amigo-install_0.1.dsc
+ 1e6a7b93ccccacde3984179458f63f70 5405 misc extra geneontology-amigo-install_0.1.tar.gz
+ eaa54eac2b142ca49db6214cfe4d7286 2322 misc extra geneontology-amigo-install_0.1_all.deb
