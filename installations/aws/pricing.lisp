@@ -39,12 +39,13 @@
 ;;;;
 
 ;;;
-;;; Variables.
+;;; Invariables.
 ;;;
 
 ;; Useful definitions.
-(defvar *weeks-per-month* 4.2)
-(defvar *hours-per-month* (* 1.0 24.0 31.0))
+(defvar *days-per-year* 365.242199)
+(defvar *days-per-month* (/ *days-per-year* 12.0))
+(defvar *hours-per-month* (* 1.0 24.0 *days-per-month*))
 (defvar *seconds-per-month* (* 1.0 60.0 60.0 *hours-per-month*))
 
 ;; Amazon global charges.

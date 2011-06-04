@@ -1,0 +1,14 @@
+Package: geneontology-amigo-install
+Version: 0.1
+Architecture: all
+Maintainer: Seth Carbon <sjcarbon@lbl.gov>
+Installed-Size: 32
+Depends: apache2, libcgi-application-perl, libcgi-application-basic-plugin-bundle-perl, libcgi-application-extra-plugin-bundle-perl, libgraphviz-perl, graphviz, libdbix-class-perl (>= 0.08123), libdbd-sqlite3-perl, libtest-www-mechanize-cgiapp-perl, libossp-uuid-perl, libfile-slurp-perl, libhtml-highlight-perl, bioperl, perl-doc, libjson-perl
+Recommends: mysql-server, subversion
+Section: misc
+Priority: extra
+Homepage: http://amigo.geneontology.org
+Description: Meta-package to help with AmiGO installations.
+ Meta-package to help with AmiGO installations. TODO.
+ .
+ This is a second paragraph.
