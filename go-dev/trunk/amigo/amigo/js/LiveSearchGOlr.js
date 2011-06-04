@@ -46,27 +46,50 @@ var newline_finder = new RegExp("\n", "g");
 // Updatable model that connects to the Solr server.
 // Makes no attempt to join to a form--entirely held as an internal model.
 // {url: 'http://theplace', facets: ['foo', 'bar']}
+
+// This should act as a model--since we start with a completely open
+// query (whether we display it or not), we will have all possible
+// facets and can build the initial model off of that.
 function SolrManager(in_args){
+
+    // TODO: Block requests from the past from haunting us.
+    this.last_sent_packet = 0;
+    this.last_received_packet = 0;
+
+    // TODO:
+    this.register = function(fun_id, in_function){
+    };
+    // 
+    this.vanish = function(fun_id){
+    };
+    this.reveal = function(fun_id){
+    };
+    // TODO?
+    this.add_facet = function(){	
+    };
+    this.remove_facet = function(){	
+    };
 
     // Check args.
     if( ! in_args ){
-	core.kvetch('ERROR: no argument');
+	core.kvetch('SM: ERROR: no argument');
     }
     // There should be a string url argument.
     if( in_args && ! in_args['url'] ){
-	core.kvetch('ERROR: no url argument');
+	core.kvetch('SM: ERROR: no url argument');
     }
     if( in_args && in_args['url'] && typeof in_args['url'] != 'string' ){
-	core.kvetch('ERROR: no url string argument');
+	core.kvetch('SM: ERROR: no url string argument');
     }
     // There should be an array facets argument.
     if( in_args && ! in_args['facets'] ){
-	core.kvetch('ERROR: no facets argument');
+	core.kvetch('SM: ERROR: no facets argument');
     }
     if( in_args && in_args['facets'] &&
 	( typeof in_args['facets'] != 'object' || 
-	  typeof in_args['facets'].length )){
-	      core.kvetch('ERROR: no url string argument');
+	  typeof in_args['facets'].length == 'undefined' ||
+	  typeof in_args['facets'].length == 0 )){
+	      core.kvetch('SM: ERROR: no facets sanely specified');
 	  }
     
     // Our default target url.
@@ -88,44 +111,52 @@ function SolrManager(in_args){
 	    // Control of facets.
 	    facet: 'true',
 	    'facet.mincount': 1,
+	    // TODO?: 'facet.limit': 20,
+	    // TODO?: 'f.???.facet.limit': 50,
 	    'facet.field': in_args['facets'],
-	    
+	    // TODO: 'json.nl': [flat|map|arrarr]
+	    'json.nl': 'arrarr',
+
 	    // Facet filtering.
-	    fq: [],
-	    
+	    // TODO: This needs to be left to a different part of the
+	    // model.
+	    //fq: [],
 	    // Query-type stuff.
-	    q: '*:*', // start by going after everything
+	    //q: '*:*', // start by going after everything
 	    
 	    // Our bookkeeping.
 	    packet: 0
 	};
     //var final_query_args = _merge(default_query_args, in_args);
 		
-    // Ready possible filterable facets.
-    this.facet_filters = {};
-    for( var in_facets in in_args['facets'] ){
-	this.facet_filters[in_facets] = {};
-    }
-    //var final_filter_args = _merge(default_filter_args, in_args);
+    // // Ready possible filterable facets.
+    // filter_state: a combination of q and fq to produce a result
+    // results: 
+    // // This should include, set_type: intersection/union
+    // this.facet_filters = {};
+    // for( var in_facets in in_args['facets'] ){
+    // 	this.facet_filters[in_facets] = {};
+    // }
+    // //var final_filter_args = _merge(default_filter_args, in_args);
 
-    // TODO:
-    this._make_query_url = function(){
+    // ...
+    this._make_always_needed_section = function(){
 
 	//var resrc = core.api.live_search.golr(all_inputs);
 	//var url = gm.golr_base() + '/' + resrc;
 
-	var shead = this.solr_url + 'select?';
+	var qbuff = [];	
+	var qargs = core.util.get_hash_keys(this.query_args);
+	for( var qname_i in qargs ){
+	    var qname = qargs[qname_i];
+	    var qval = this.query_args[qname];
+	    //core.kvetch('SM: qname:' + qname);
+	    //core.kvetch('SM: qval:' + qval);
 
-	var qbuff = [];
-	
-	var qargs = core.utils.get_hash_keys(this.query_args);
-	for( var qname in qargs ){
-	    var nano_buff = [];
-
-	    var qval = qargs[qname];
 	    if( typeof qval == 'string' ||
 		typeof qval == 'number' ){
-		    // Is standard name/valie pair.
+		    // Is standard name/value pair.
+		    var nano_buff = [];
 		    nano_buff.push(qname);
 		    nano_buff.push('=');
 		    nano_buff.push(qval);
@@ -133,48 +164,81 @@ function SolrManager(in_args){
 		}else if( typeof qval == 'object' ){
 		    if( typeof qval.length != 'undefined' ){
 			// Is array (probably).
+			// Iterate through and double on.
+			for(var qval_i = 0; qval_i < qval.length ; qval_i++){
+			    var nano_buff = [];
+			    nano_buff.push(qname);
+			    nano_buff.push('=');
+			    nano_buff.push(qval[qval_i]);
+			    qbuff.push(nano_buff.join(''));
+			}
 		    }else{
-			// Is hash.
+			core.kvetch('SM: ERROR: no hash possible');
+			// // Is hash.
+			// // Use the a parser to change into
+			// // arbitrary sql-like request.
+			// core.kvetch('SM: ERROR: hash not done yet');
+			// // TODO: The "and" case is pretty much like
+			// // the array, the "or" case needs to be
+			// // handled carfeully. In both cases, care will
+			// // be needed to show which filters are marked.
 		    }
 		}else{
-		    core.kvetch('make link unknown type!');
+		    core.kvetch('SM: make link unknown type!');
 		}
 	}
 
-	// ...
-	//return _abstract_link_template('select', segments);	
-	var complete_query = _abstract_head_template('select') +
-	    _abstract_segment_template(final_query_args);
-
-
-	var addable_filters = _abstract_filter_template(final_filter_args);
-	if( addable_filters.length > 0 ){
-	    complete_query = complete_query + '&' + addable_filters;
-	}
-	return complete_query;	
-	};
+	return qbuff.join('&');
+    };
     
+    // The main callback function called after a successful AJAX call
+    // in the update function.
+    this._rerender = function(json_data){
+	core.kvetch('SM: in rerender...');
+	
+	// // Grab meta information.
+	// var total = core.golr_response.total_documents(json_data);
+	// var first = core.golr_response.start_document(json_data);
+	// var last = core.golr_response.end_document(json_data);
+	// var meta_cache = new Array();
+	// meta_cache.push('Total: ' + total);
+    };
+
     // ...
-    this.update = function(){
+    this.update = function(in_arg){
 	
+	// TODO?
 	// Increment packet.
-	//this.query_args['packet'] = this.query_args['packet'] + 1;
+	// this.query_args['packet'] = this.query_args['packet'] + 1;
 	
-	core.kvetch('try: ' + url);		    
+	// Condintional join of all the parts.
+	var qshead = this.solr_url + 'select?';
+	var always_needed = this._make_always_needed_section();
+	var qurl = qshead + always_needed;
+	if( in_arg && in_arg == 'reset' ){
+	    // Reset and do completely open query.
+	    qurl = qurl + '&q=*:*';
+	}else{
+	    // TODO: standard assemble with filter and state.
+	}
+	    
+	core.kvetch('SM: try: ' + qurl);
 	//widgets.start_wait('Updating...');
-			
+
+	// TODO: 
+		
 	// TODO/BUG: JSONP for solr looks like?
 	var argvars = {
 	    type: "GET",
-	    url: url,
+	    url: qurl,
 	    //data: myQueryParameters,
 	    //dataType: 'json',
 	    dataType: 'jsonp',
 	    jsonp: 'json.wrf',
-	    success: do_results,
+	    success: this._rerender,
 	    error: function (result, status, error) {
 		
-	    	core.kvetch('Failed server request ('+
+	    	core.kvetch('SM: Failed server request ('+
 			    query_id + '): ' + status);
 		
 		// Get the error out if possible.
@@ -183,7 +247,7 @@ function SolrManager(in_args){
 		if( req && req['errors'] &&
 		    req['errors'].length > 0 ){
 			var in_error = req['errors'][0];
-			core.kvetch('ERROR:' + in_error);
+			core.kvetch('SM: ERROR:' + in_error);
 					
 			// Split on newline if possible to get
 			// at the nice part before the perl
@@ -201,12 +265,6 @@ function SolrManager(in_args){
 	};
 	jQuery.ajax(argvars);
     };
-    
-    // TODO?
-    this.add_facet = function(){	
-    };
-    this.remove_facet = function(){	
-    };
 }
 
 
@@ -215,6 +273,15 @@ function LiveSearchGOlrInit(){
 
     core.kvetch('');
     core.kvetch('LiveSearchGOlrInit start.');
+
+    ///
+    /// Manager test.
+    ///
+
+    var sm = new SolrManager({url: 'http://accordion.lbl.gov:8080/solr/',
+			      facets: ['document_category', 'type']});
+
+    sm.update('reset');
 
     ///
     /// Try and get UI ready.
