@@ -43,7 +43,7 @@
 	</target>
 
 	<target name="buildbbop" if="bbop_dest">
-		<ant dir="${bbop_dest}" target="jar" inheritAll="false"/>
+		<ant dir="${bbop_dest}" target="backward_compatible_jar" inheritAll="false"/>
 		<copy file="${bbop_dest}/bbop.jar" todir="${librarydir}"/>
 	</target>
 	
