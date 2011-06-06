@@ -15,8 +15,8 @@ public class GafObjectsBuilder {
 	
 	private GAFParser parser;
 	
-//	private int sizeThreshold = 600000;
-	private int sizeThreshold = 6000;
+	private int sizeThreshold = 600000;
+	//private int sizeThreshold = 6000;
 	
 	private int counter;
 	
