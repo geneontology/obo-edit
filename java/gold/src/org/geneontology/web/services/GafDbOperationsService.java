@@ -1,6 +1,7 @@
 package org.geneontology.web.services;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,6 +26,8 @@ import org.geneontology.gold.rules.AnnotationRuleViolation;
 import org.geneontology.gold.rules.AnnotationRulesEngine;
 import org.geneontology.solrj.GafSolrLoader;
 import org.geneontology.web.Task;
+
+import sun.util.BuddhistCalendar;
 
 /**
  * This class performs bulkload and update operations for GAF database against the
@@ -274,8 +277,10 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 						reportEndTime("Loading into Solr--" + currentOntologyBeingProcessed);
 
 					}
-					
+
+					buildSplittedDocuments();
 					gafDocuments = null;
+					splittedDocuments = null;
 					
 				}else				
 				if(commit){
@@ -288,7 +293,11 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 							db.update(gafDocument);
 						}
 					}
+					
+					buildSplittedDocuments();
+					
 					gafDocuments = null;
+					splittedDocuments = null;
 				}else{
 					
 					if(gafDocuments == null){
@@ -341,8 +350,11 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 									ontLocation = f.getAbsolutePath();
 									this.currentOntologyBeingProcessed = ontLocation;
 										if("bulkload".equals(command) || "update".equals(command) || runAnnotationRules){
-											GafDocument doc = db.buildGafDocument(ontLocation);
-											gafDocuments.add( doc );
+										//	GafDocument doc = db.buildGafDocument(ontLocation);
+											FileReader reader = new FileReader(file);
+											GafDocument doc = buildGafDocument(reader, f.getName(), ontLocation);
+											if(doc != null)
+												gafDocuments.add( doc );
 									//		performAnnotationChecks(doc);
 	
 										}
@@ -355,10 +367,17 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 					
 					
 					if(runAnnotationRules){
+
 						for(GafDocument gafDocument: gafDocuments){
 							currentOntologyBeingProcessed = gafDocument.getDocumentPath();
-							performAnnotationChecks(gafDocument);
+							reportStartTime("Performing Annotations Checks--" + currentOntologyBeingProcessed);
+							_performAnnotationChecks(gafDocument);
+							reportEndTime("Performing Annotations Checks--" + currentOntologyBeingProcessed);
+
 						}
+						
+						buildSplittedDocuments();
+						
 						
 					}						
 					
@@ -382,9 +401,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 
 		
-		private void performAnnotationChecks(GafDocument doc){
-			reportStartTime("Performing Annotations Checks--" + currentOntologyBeingProcessed);
-		
+		private void _performAnnotationChecks(GafDocument doc){
 			
 			AnnotationRulesEngine engine = AnnotationRulesEngine.getInstance();
 			
@@ -392,10 +409,10 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			
 			annotationRuleViolations.addAll(violations);
 
-			reportEndTime("Performing Annotations Checks--" + currentOntologyBeingProcessed);
 			
 			
 		}
+		
 		
 		protected void reportStartTime(String name) {
 			this.addInProgress(name);
@@ -471,7 +488,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			
 		}
 		
-		
+		/*
 		private GafDocument buildGafDocument(Reader reader, String docId, String path) throws IOException{
 			this.currentOntologyBeingProcessed = path;
 			startOntologyLoad();
@@ -490,9 +507,86 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			
 			endOntologyLoad(builder);
 
+			return buildGafDocument(reader, docId, path, false);
+		}*/
+
+		
+		private void buildSplittedDocuments() throws Exception{
+			for(String path: splittedDocuments){
+				if(path.startsWith("http://") || path.startsWith("ftp:/")){
+					GafURLFetch fetch = new GafURLFetch(path);
+					fetch.connect();
+					InputStream is=(InputStream) fetch.next();
+					
+					InputStreamReader reader = new InputStreamReader(is);
+					buildGafDocument(reader, fetch.getCurrentGafFile(), path);
+					is.close();
+					reader.close();
+					fetch.completeDownload();
+				}else{
+					File f = new File(path);
+					FileReader reader = new FileReader(f);
+					buildGafDocument(reader, f.getName(), path);
+				}
+			}
+		}
+		
+		private GafDocument buildGafDocument(Reader reader, String docId, String path) throws Exception{
+			this.currentOntologyBeingProcessed = path;
+
+			startOntologyLoad();
+
+			GafObjectsBuilder builder = new GafObjectsBuilder();
+			
+			GafDocument doc = builder.buildDocument(reader, docId, path);
+
+			GafDocument d = null;
+			
+			GAFDbOperations db = null;
+			if(commit){
+				db = new GAFDbOperations();
+				db.addDbOperationsListener(this);
+			}
+			
+			while((d = builder.getNextSplitDocument() ) != null){
+				LOG.info("Splitting the '" + path + "' document");
+			
+				if(doc != null && !splittedDocuments.contains(path))
+					splittedDocuments.add(path);
+				
+				if(commit){
+					if(doc != null){
+						db.update(doc);
+					}
+					
+					db.update(d);
+				}
+				
+				else if(solrLoad){
+					GafSolrLoader loader = new GafSolrLoader(GeneOntologyManager.getInstance().getSolrUrl());
+
+					if(doc != null){
+						loader.load(doc);
+					}
+					
+					loader.load(d);
+				}
+				
+				else if(runAnnotationRules){
+					if(doc != null){
+						_performAnnotationChecks(doc);
+					}
+					_performAnnotationChecks(d);
+				}
+				
+				
+				doc = null;
+			}
+			
+			endOntologyLoad(builder);
+
 			return doc;
 		}
-
 		
 		
 	}
