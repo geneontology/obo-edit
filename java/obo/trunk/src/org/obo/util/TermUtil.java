@@ -100,6 +100,7 @@ public class TermUtil {
 				LinkDatabase linkDatabase, LinkedObject term,
 				Map<LinkedObject, Collection<LinkedObject>> memoizeTable) {
 
+                    //                                        logger.debug("getAncestors: term = " + term); // DEL
 			if (linkDatabase == null)
 				linkDatabase = DefaultLinkDatabase.getDefault();
 
@@ -111,7 +112,9 @@ public class TermUtil {
 			out = new HashSet<LinkedObject>();
 			memoizeTable.put(term, out);
 			for (Link tr : linkDatabase.getParents(term)) {
-				if(linkFilter == null || !linkFilter.satisfies(tr))
+                            // Wasn't this test backwards?  How did this ever work??
+                            //	if(linkFilter == null || !linkFilter.satisfies(tr))
+				if(linkFilter == null || linkFilter.satisfies(tr))
 					out.add(tr.getParent());
 				out.addAll(getAncestors(incSize / term.getParents().size(),
 						linkDatabase, tr.getParent(), memoizeTable));
@@ -161,7 +164,9 @@ public class TermUtil {
 			memoizeTable.put(term, out);
 
 			for(Link tr : linkDatabase.getChildren(term)){
-				if(linkFilter == null || !linkFilter.satisfies(tr))
+                            // Wasn't this test backwards?  How did this ever work??
+                            // if(linkFilter == null || !linkFilter.satisfies(tr))
+				if(linkFilter == null || linkFilter.satisfies(tr))
 					out.add(tr.getChild());
 				out.addAll(getDescendants(incSize / term.getChildren().size(),
 						linkDatabase, tr.getChild(), memoizeTable, linkFilter));
@@ -400,13 +405,15 @@ public class TermUtil {
 			LinkDatabase linkDatabase, boolean includeSelf) {
 		//LinkFilter set through interface = Select links where "Type" that "have" a "ID" that "equals" the value "OBO_REL:is_a"
 		// LinkFilter translation = Link type has ID equals "OBO_REL:is_a"
-		LinkFilter lf = new LinkFilterImpl(OBOProperty.IS_A);
-		AncestorTask task = getAncestors(term, linkDatabase, lf);
+	    LinkFilter lf = new LinkFilterImpl(OBOProperty.IS_A);
+            AncestorTask task = getAncestors(term, linkDatabase,lf);
+
 		task.execute();
 		Collection<LinkedObject> out = task.getResults();
 
 		if (includeSelf)
 			out.add(term);
+                //		logger.debug("TermUtil.getisaAncestors: isa ancestors of " + term + " = " + out); // DEL
 		return out;
 	}
 

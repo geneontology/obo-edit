@@ -1100,7 +1100,13 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		OBOProperty prefilterProperty = null;
 		if (filteredPath.getPrefilterProperty() != null)
 			prefilterProperty = (OBOProperty) session.getObject(filteredPath.getPrefilterProperty());
-                logger.debug("writeFile: prefilterProperty = " + prefilterProperty); // DEL
+                logger.debug("writeFile: objectFilter = " + objectFilter);
+
+                String comment = session.getCurrentHistory().getComment();
+                if (comment == null || comment.equals("")) {
+                    comment = "Filtered by " + objectFilter.toString() + (followIsaClosure ? " (follow is_a closure)" : "");
+                    session.getCurrentHistory().setComment(comment);
+                }
 
 		String rootAlgorithm = filteredPath.getRootAlgorithm();
 
@@ -1208,45 +1214,67 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			writeList.add(o);
 		}
 
-		// Include is_a closure for cross referenced terms
-		
-		//set linkFilter to get is_a relations only: Select links where "child" that "have" a "Has is_a parent"  
-		// Link child has Has is_a parent
-		
-		//Set of all referenced objects that are not present in the original writeList
-		HashSet allRefsSet = new HashSet();
-		//		logger.debug("database equals FilteredLinkDatabse? : " + database.getClass().getSimpleName().equals("FilteredLinkDatabase"));
+		// If requested, include is_a closure for cross referenced terms
+		//List of all referenced objects that are not present in the original writeList (will contain duplicate entries -- adding to a HashSet later to remove redundant objects)
+		Collection allRefsList = new ArrayList();
 		if( database.getClass().getSimpleName().equals("FilteredLinkDatabase") && (((FilteredLinkDatabase) database).getFollowIsaClosure()) ){
-			for(Object obj : writeList){
-				if (cancelled)
-					doHalt();
-				LinkedObject lo = (LinkedObject) obj;
-				//identify if term has intersection links 
-				if(TermUtil.isIntersection(lo)){
-					for(Link link : lo.getParents()){
-						//check if this is an  intersection link
-//						if(TermUtil.isIntersection(link) && link.getType().equals("OBO_REL:is_a")){
-							if(TermUtil.isIntersection(link)){
-							//get ancestors of cross referenced parent term
-							for(Object o : TermUtil.getisaAncestors(link.getParent())){
-								IdentifiedObject refParent = (IdentifiedObject) o;
-								//get ancestors of cross referenced child term
-								for(Object co : TermUtil.getisaAncestors(link.getChild())){
-									IdentifiedObject refChild = (IdentifiedObject) co;					
-									allRefsSet.add(refChild);
-									allRefsSet.add(refParent);
-								}
-							}
-						}// isIntersection(link)
-					}
-				} 
-			}
+                    for(Object obj : writeList){
+                        if (cancelled)
+                            doHalt();
+                        LinkedObject lo = (LinkedObject) obj;
+                        //if term has intersection links...
+                        if(TermUtil.isIntersection(lo)){
+                            for(Link link : lo.getParents()){
+                                //check if this is an  intersection link
+                                // (Include all intersections, not just is_a intersections)
+                                if(TermUtil.isIntersection(link)) { // && link.getType().equals(OBOProperty.IS_A)) {
+                                    // logger.debug("is_intersection: lo = " + lo + ", link = " + link + ", type = " + link.getType()); // DEL
+                                    //get ancestors of cross referenced parent term
+                                    // for(Object o : TermUtil.getAncestors(link.getParent(), null)){
+                                    for(Object o :
+                                            TermUtil.getisaAncestors(link.getParent(),
+                                                                     true)) {
+                                        // logger.debug("For link " + link + ", IsAancestors = " + TermUtil.getisaAncestors(link.getParent())); // DEL
+                                        IdentifiedObject refParent = (IdentifiedObject) o;
+                                        //get ancestors of cross referenced child term
+                                        // for(Object co : TermUtil.getAncestors(link.getChild(), null)){
+                                        for(Object co : TermUtil.getisaAncestors(link.getChild(), true)){
+                                            IdentifiedObject refChild = (IdentifiedObject) co;
+                                            // logger.debug("For link " + link + ", refParent = " + refParent + ", refChild = " + refChild); // DEL
+									
+                                            //check if terms exists in filteredObjects. filo: filtered object, filio: filtered identified object
+                                            boolean pexists = false;
+                                            boolean cexists = false;
+                                            for(Object filo : writeList){
+                                                IdentifiedObject filio = (IdentifiedObject) filo;
+                                                if(filio.getName().equals(refParent.getName()))
+                                                    pexists = true;		
+                                                if(filio.getName().equals(refChild.getName()))
+                                                    cexists = true;
+                                            }								
+                                            if(!pexists) {
+                                                allRefsList.add(refParent);
+                                            }
+                                            if(!cexists) {
+                                                allRefsList.add(refChild);
+                                            }
+                                            // Broken version from r3092
+                                            // for(Object co : TermUtil.getisaAncestors(link.getChild())){
+                                            // 	IdentifiedObject refChild = (IdentifiedObject) co;					
+                                            // 	allRefsSet.add(refChild);
+                                            // 	allRefsSet.add(refParent);
+                                        }
+                                    }
+                                }// isIntersection(link)
+                            }
+                        } 
+                    }
 
-			for(Object o : allRefsSet){
-				writeList.add(o);
-			}
-
-
+                    //remove duplicate objects from allRefsList
+                    HashSet refshs = new HashSet(allRefsList);
+                    for(Object o : refshs){
+                        writeList.add(o);
+                    }
 		}
 
 		if (rootAlgorithm.equals("STRICT")) {
