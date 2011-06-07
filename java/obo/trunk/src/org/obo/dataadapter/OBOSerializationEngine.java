@@ -1100,10 +1100,10 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		OBOProperty prefilterProperty = null;
 		if (filteredPath.getPrefilterProperty() != null)
 			prefilterProperty = (OBOProperty) session.getObject(filteredPath.getPrefilterProperty());
-                logger.debug("writeFile: objectFilter = " + objectFilter);
 
                 String comment = session.getCurrentHistory().getComment();
-                if (comment == null || comment.equals("")) {
+                if (objectFilter != null && (comment == null || comment.equals(""))) {
+		    logger.debug("writeFile: objectFilter = " + objectFilter);
                     comment = "Filtered by " + objectFilter.toString() + (followIsaClosure ? " (follow is_a closure)" : "");
                     session.getCurrentHistory().setComment(comment);
                 }
