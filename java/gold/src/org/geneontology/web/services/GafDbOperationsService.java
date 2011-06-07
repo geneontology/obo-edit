@@ -1,6 +1,7 @@
 package org.geneontology.web.services;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -351,8 +354,15 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 									this.currentOntologyBeingProcessed = ontLocation;
 										if("bulkload".equals(command) || "update".equals(command) || runAnnotationRules){
 										//	GafDocument doc = db.buildGafDocument(ontLocation);
-											FileReader reader = new FileReader(file);
-											GafDocument doc = buildGafDocument(reader, f.getName(), ontLocation);
+									
+											InputStream is = new FileInputStream(f);
+											
+											if(f.getName().endsWith(".gz")){
+												is = new GZIPInputStream(is);
+											}
+											
+											//		FileReader reader = new FileReader(file);
+											GafDocument doc = buildGafDocument(new InputStreamReader(is), f.getName(), ontLocation);
 											if(doc != null)
 												gafDocuments.add( doc );
 									//		performAnnotationChecks(doc);
@@ -525,8 +535,12 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 					fetch.completeDownload();
 				}else{
 					File f = new File(path);
-					FileReader reader = new FileReader(f);
-					buildGafDocument(reader, f.getName(), path);
+					InputStream is = new FileInputStream(f);
+					
+					if(f.getName().endsWith(".gz")){
+						is = new GZIPInputStream(is);
+					}
+					buildGafDocument(new InputStreamReader(is), f.getName(), path);
 				}
 			}
 		}
