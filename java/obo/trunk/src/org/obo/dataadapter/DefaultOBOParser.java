@@ -1284,8 +1284,13 @@ public class DefaultOBOParser implements OBOParser {
 			
 			if (type == null) {
 				if (allowDanglingParents) {
-					type = (OBOProperty) objectFactory.createDanglingObject(rs.getType(), true);
-					logger.info("No type for child of " + child + " (parent = " + parent + ")--added dangling type object " + type);
+                                    //					type = (OBOProperty) objectFactory.createDanglingObject(rs.getType(), true);
+                                   type = objectFactory.createObject(rs.getType(), OBOClass.OBO_PROPERTY, true);
+                                   type.setName(rs.getType() + " (UNDECLARED)");
+                                   session.addObject(type);
+                                   // Should this be a pop-up message rather than just a likely-to-be-ignored
+                                   // logger info message?
+                                   logger.info("Warning: creating relation '" + type.getName() + "' for undeclared type " + rs.getType() + " for relationship between parent " + parent + " and child " + child + " at line " + rs.getLineNum() + ":\n " + rs.getLine());
 				} else {
 					throw new OBOParseException("Unrecognized type "
 							+ rs.getType(), rs.getPath(), rs.getLine(), rs
