@@ -1285,7 +1285,7 @@ public class DefaultOBOParser implements OBOParser {
 			if (type == null) {
 				if (allowDanglingParents) {
                                     //					type = (OBOProperty) objectFactory.createDanglingObject(rs.getType(), true);
-                                   type = objectFactory.createObject(rs.getType(), OBOClass.OBO_PROPERTY, true);
+                                   type = objectFactory.createObject(rs.getType(), OBOClass.OBO_PROPERTY, false);
                                    type.setName(rs.getType() + " (UNDECLARED)");
                                    session.addObject(type);
                                    // Should this be a pop-up message rather than just a likely-to-be-ignored
