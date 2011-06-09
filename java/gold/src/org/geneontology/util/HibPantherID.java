@@ -62,7 +62,7 @@ public class HibPantherID extends PantherID {
 		return bioentities;
 	}
 
-	public Bioentity bioentity(){
+	public Bioentity bioentity(String gafDocument){
 		List<Bioentity> pick = bioentityMatch();
 		Bioentity out = null;
 		int size = pick.size();
@@ -86,9 +86,9 @@ public class HibPantherID extends PantherID {
 				System.err.println(getSpeciesCode() + '(' + getTaxonNode() + ") => " + pick);
 				System.exit(1);
 			}
+		} else { // is (0 == size)
+			out = new Bioentity(getPantherID(), "", "", "protein", "NCBITaxon:" + getTaxonNode(), null, gafDocument);
 		}
-		
-		// if size == 0 return null
 		return out;
 	}
 	

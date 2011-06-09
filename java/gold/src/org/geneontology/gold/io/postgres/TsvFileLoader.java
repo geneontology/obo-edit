@@ -97,6 +97,7 @@ public class TsvFileLoader {
 	 */
 	public void loadTables(List<File> files) throws IOException, SQLException {
 		for (File file : files) {
+			System.err.println(file);
 			loadTable(file);
 		}
 	}
