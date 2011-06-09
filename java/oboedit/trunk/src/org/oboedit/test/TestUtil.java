@@ -103,7 +103,7 @@ public class TestUtil extends TestCase {
 		return (char) (2 + Math.random() * 126);
 	}
 
-	public static TestUtil getInstance() {
+	public static synchronized TestUtil getInstance() {
 		return new TestUtil(createSession());
 	}
 

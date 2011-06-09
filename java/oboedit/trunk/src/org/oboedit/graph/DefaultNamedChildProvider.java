@@ -3,9 +3,9 @@ package org.oboedit.graph;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-import edu.umd.cs.piccolo.PNode;
+import org.apache.log4j.Logger;
 
-import org.apache.log4j.*;
+import edu.umd.cs.piccolo.PNode;
 
 public class DefaultNamedChildProvider implements NamedChildProvider {
 
@@ -14,7 +14,7 @@ public class DefaultNamedChildProvider implements NamedChildProvider {
 
 	protected static DefaultNamedChildProvider instance;
 	
-	public static DefaultNamedChildProvider getInstance() {
+	public static synchronized DefaultNamedChildProvider getInstance() {
 		if (instance == null)
 			instance = new DefaultNamedChildProvider();
 		return instance;
