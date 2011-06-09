@@ -36,9 +36,10 @@ public class PhyloTreeLoader implements Loader {
 	final static FileFilter tff = new SuffixFileFilter(new String[] { ".tree.gz", ".tree" });
 	
 	final static String tsvSuffix = ".tsv";
-	final static File tmpdir = null; //new File("/dev/shm");
 	final static GeneOntologyManager manager = GeneOntologyManager.getInstance();
+	final static String PANTHER = "PANTHER";
 
+	static private File tmpdir = null;
 	static private PreparedStatement selectFamily = null;
 	static protected Map<String,Map<Status,Integer>> count = null;
 	static protected Connection connection;
@@ -109,24 +110,44 @@ public class PhyloTreeLoader implements Loader {
 	 * @return A list of tables to pass to hib()
 	 */
 	protected List<File> writeTSV() {
-		List<File> tmpfiles = new Vector<File>(2);
+		if (tmpdir == null) {
+			File shm = new File("/dev/shm");
+			if (shm.isDirectory()) {
+				tmpdir = shm;
+			}
+		}
+		List<File> tmpfiles = new Vector<File>(3);
 		try {
 			tmpfiles.add(java.io.File.createTempFile("family.",        tsvSuffix, tmpdir));
 			tmpfiles.add(java.io.File.createTempFile("family_member.", tsvSuffix, tmpdir));
+			tmpfiles.add(java.io.File.createTempFile("bioentity.",     tsvSuffix, tmpdir));
 			TableDumper familyDumper       = new TableDumper(tmpfiles.get(0));
 			TableDumper familyMemberDumper = new TableDumper(tmpfiles.get(1));
+			TableDumper bioentityDumper    = new TableDumper(tmpfiles.get(2));
+			
+			Set<String> have = new HashSet<String>(); // avoid dups
 			for (PhyloTree pt : sources) {
 				if (pt.isLoadRequired()) {
-					String id = pt.getId();
+					String ptId = pt.getId();
 
-					familyDumper.dumpRow(id, pt.getName(), null, pt.creationDate());
+					familyDumper.dumpRow(ptId, pt.getName(), null, pt.creationDate());
 					for (Bioentity be : pt.getBioentities()) {
-						familyMemberDumper.dumpRow(id, be.getId());
+						String beId = be.getId();
+						familyMemberDumper.dumpRow(ptId, beId);
+						if (be.getGafDocument().contentEquals(PANTHER))
+							if (have.contains(beId)) {
+								//System.err.println("dup: " + beId);
+							} else {
+								bioentityDumper.dumpRow(beId, be.getSymbol(), be.getFullName(), be.getTypeCls(), be.getNcbiTaxonId(), be.getDb(), PANTHER);
+								have.add(beId);
+							}
+						}
 					}
 				}
-			}
+			
 			familyDumper.close();
 			familyMemberDumper.close();
+			bioentityDumper.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -215,6 +236,7 @@ public class PhyloTreeLoader implements Loader {
 		 * @param src A File object that should represent a file created by the {@link org.paint.util.PaintScraper} class.
 		 */
 		PhyloTree(File src) {
+			//System.err.println(src);
 			this.source = src;
 			leaves = new HashMap<String,HibPantherID>();
 		}
@@ -342,7 +364,7 @@ public class PhyloTreeLoader implements Loader {
 		 */
 		public String getId() {
 			String id = source.getName();
-			return "PANTHER:" + id.substring(0, id.indexOf('.'));
+			return PANTHER + ':' + id.substring(0, id.indexOf('.'));
 		}
 		
 		public String getName() {
@@ -352,16 +374,14 @@ public class PhyloTreeLoader implements Loader {
 		public Collection<Bioentity> getBioentities() {
 			Collection<Bioentity> out = new HashSet<Bioentity>();
 			for (HibPantherID hpi : leaves.values()) {
-				Bioentity got = hpi.bioentity();
-				if (got == null) {
+				Bioentity got = hpi.bioentity(PANTHER);
+				if (got.getGafDocument().contentEquals(PANTHER)) {
 					this.addStat(hpi.getSpeciesCode(), Status.MISSING);
-					if (hpi.isRefG()) { // only warn about missing refg members
-						System.err.println(hpi + " matched no bioentities");
-					}
 				} else {
 					this.addStat(hpi.getSpeciesCode(), Status.FOUND);
-					out.add(hpi.bioentity());
 				}
+
+				out.add(got);
 			}
 			return out;
 		}
