@@ -1,11 +1,10 @@
 package org.oboedit.graph;
 
+import org.apache.log4j.Logger;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.nodes.PText;
-
-import org.apache.log4j.*;
 
 public class SimpleTooltipFactory extends AbstractTooltipFactory {
 
@@ -14,7 +13,7 @@ public class SimpleTooltipFactory extends AbstractTooltipFactory {
 	
 	protected static SimpleTooltipFactory factory;
 	
-	public static SimpleTooltipFactory getInstance() {
+	public static synchronized SimpleTooltipFactory getInstance() {
 		if (factory == null)
 			factory = new SimpleTooltipFactory();
 		return factory;
