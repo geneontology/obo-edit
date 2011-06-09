@@ -3,6 +3,9 @@
 //// work directly off of the server for giggles/testing.
 ////
 
+// Make sure there is no problem.
+// TODO/BUG: Should be right after jQuery load.
+//jQuery.noConflict();
 
 // Bring in the AmiGO core and keep a coder handy.
 // TODO/BUG: switch DEBUG to false for release.
@@ -39,6 +42,32 @@ var aecl_closure_widget = null;
 
 // Find newlines in text.
 var newline_finder = new RegExp("\n", "g");
+
+// Server detection watchdog.
+// Set a timeout to see if we can find the solr server in a reasonable
+// amount of time. If we can't, display an error message.
+// TODO: Ideally, this should be done with the error function slot on the
+// jQuery ajax or getJSON functions, but after fiddling around, upgraging to 
+// 1.5.1, and then 1.6.1, I was never able to get a satisfactory solution for
+// all cases. See annoying JSONP behavior at:
+//  http://api.jquery.com/jQuery.ajax/
+//  http://api.jquery.com/jQuery.getJSON/
+//  http://bugs.jquery.com/ticket/1863
+//  http://bugs.jquery.com/ticket/3442
+// I get the feeling that the complete fix was never added, but I want
+// to move on.
+// There was also the option of plugins and writing something myself, but 
+// this is sufficient for now and can act as a placeholder until a better
+// solution is worked out.
+var watchdog_solr_is_responding = false;
+function _server_response_warning(){
+    if( watchdog_solr_is_responding == false ){
+	core.kvetch("ERROR: can't seem to find the solr server...");
+	//jQuery	
+    }
+}
+// 3 second timeout to find the server.
+window.setTimeout(_server_response_warning, 3000);
 
 
 // TODO/BUG: make work, split out
@@ -203,6 +232,7 @@ function SolrManager(in_args){
 	// var meta_cache = new Array();
 	// meta_cache.push('Total: ' + total);
     };
+    var _reren = this._rerender;
 
     // ...
     this.update = function(in_arg){
@@ -222,6 +252,8 @@ function SolrManager(in_args){
 	    // TODO: standard assemble with filter and state.
 	}
 	    
+	//qurl = 'http://accordion.lbl.gov:8080/solr/select?qt=standard&indent=on&wt=json&version=2.2&rows=10&start=0&fl=*%2Cscore&facet=true&facet.mincount=1&facet.field=document_category&facet.field=type&facet.field=evidence_type&facet.field=source&facet.field=taxon&facet.field=isa_partof_label_closure&facet.field=annotation_extension_class_label&facet.field=annotation_extension_class_label_closure&q=*:*&packet=1';
+
 	core.kvetch('SM: try: ' + qurl);
 	//widgets.start_wait('Updating...');
 
@@ -231,39 +263,39 @@ function SolrManager(in_args){
 	var argvars = {
 	    type: "GET",
 	    url: qurl,
-	    //data: myQueryParameters,
-	    //dataType: 'json',
-	    dataType: 'jsonp',
+	    dataType: 'json',
 	    jsonp: 'json.wrf',
-	    success: this._rerender,
+	    success: _reren,
 	    error: function (result, status, error) {
 		
-	    	core.kvetch('SM: Failed server request ('+
-			    query_id + '): ' + status);
+	    	core.kvetch('SM: Failed server request: ' +
+			    result + ', ' +
+			    status + ', ' +
+			    error);
 		
-		// Get the error out if possible.
-		var jreq = result.responseText;
-		var req = jQuery.parseJSON(jreq);
-		if( req && req['errors'] &&
-		    req['errors'].length > 0 ){
-			var in_error = req['errors'][0];
-			core.kvetch('SM: ERROR:' + in_error);
+		// // Get the error out if possible.
+		// var jreq = result.responseText;
+		// var req = jQuery.parseJSON(jreq);
+		// if( req && req['errors'] &&
+		//     req['errors'].length > 0 ){
+		// 	var in_error = req['errors'][0];
+		// 	core.kvetch('SM: ERROR:' + in_error);
 					
-			// Split on newline if possible to get
-			// at the nice part before the perl
-			// error.
-			var reg = new RegExp("\n+", "g");
-			var clean_error_split =
-			    in_error.split(reg);
-			var clean_error = clean_error_split[0];
-			//widgets.error(clean_error);
-		    }
+		// 	// Split on newline if possible to get
+		// 	// at the nice part before the perl
+		// 	// error.
+		// 	var reg = new RegExp("\n+", "g");
+		// 	var clean_error_split =
+		// 	    in_error.split(reg);
+		// 	var clean_error = clean_error_split[0];
+		// 	//widgets.error(clean_error);
+		//     }
 		
-		// Close wait no matter what.
-		//widgets.finish_wait();
+		// // Close wait no matter what.
+		// //widgets.finish_wait();
 	    }
 	};
-	jQuery.ajax(argvars);
+	//jQuery.ajax(argvars);
     };
 }
 
@@ -288,9 +320,9 @@ function LiveSearchGOlrInit(){
     ///
 
     //
-    core.kvetch('Apply tabs...');
-    jQuery("#search-tabs").tabs();
-    jQuery("#search-tabs").tabs('select', 0);
+    //core.kvetch('Apply tabs...');
+    //jQuery("#search-tabs").tabs();
+    //jQuery("#search-tabs").tabs('select', 0);
 
     widgets = new org.bbop.amigo.ui.widgets();
 
@@ -461,7 +493,7 @@ function LiveSearchGOlrInit(){
 
     //core.kvetch('GP type text: ' + type_text );
 
-    function _generate_action_to_server(marshaller, do_results){//, query_id){
+    function _generate_action_to_server(marshaller, do_results){
 	return function(event){
 
 	    // core.kvetch('EV: ' + event );
@@ -551,13 +583,13 @@ function LiveSearchGOlrInit(){
 	    	    url: url,
 		    //data: myQueryParameters,
 	    	    //dataType: 'json',
-	    	    dataType: 'jsonp',
+	    	    dataType: 'json',
 		    jsonp: 'json.wrf',
 	    	    success: do_results,
 	    	    error: function (result, status, error) {
 			
 	    		core.kvetch('Failed server request ('+
-				    query_id + '): ' + status);
+				    status + '): ' + error);
 			
 			// Get the error out if possible.
 			var jreq = result.responseText;
@@ -629,17 +661,25 @@ function LiveSearchGOlrInit(){
     var init_url = gm.golr_base() + '/select?qt=standard&indent=on&wt=json&version=2.2&rows=10&start=0&fl=*%2Cscore&facet=true&facet.mincount=1&facet.field=document_category&facet.field=type&facet.field=evidence_type&facet.field=source&facet.field=taxon&facet.field=isa_partof_label_closure&facet.field=annotation_extension_class_label&facet.field=annotation_extension_class_label_closure&q=*:*&packet=1';
     last_sent_packet = 1; // TODO/BUG: Packeting getting awkward--class?
     core.kvetch('trying initialization: ' + init_url);
+    // JSONP errors are hard to catch.
+    // http://bugs.jquery.com/ticket/3442
     var init_argvars = {
 	type: "GET",
 	url: init_url,
-	dataType: 'jsonp',
+	dataType: 'json',
 	jsonp: 'json.wrf',
 	success: _process_results,
 	error: function (result, status, error) {
-	    core.kvetch('ERROR: Failed initial request');
+	    core.kvetch('ERROR: Failed initialization request (1)');
 	}
     };
     jQuery.ajax(init_argvars);
+    //var req = jQuery.ajax(init_argvars);
+    //var req = jQuery.getJSON(init_argvars, _process_results);
+    //req.error(function (result, status, error) {
+    // 		  core.kvetch('ERROR: Failed initialization request: ' +
+    // 			     status + ', ' + error);
+    // 	      });
 }
 
 
@@ -923,6 +963,9 @@ function _update_gui (json_data){
 function _process_results (json_data, status){
 
     core.kvetch('Checking results...');    
+
+    // Clear the watchdog:
+    watchdog_solr_is_responding = true;
 
     // Some trivial validation here.
     if( core.golr_response.success(json_data) ){
@@ -1249,7 +1292,7 @@ function _paging_binding(elt_id, url, processor){
 	    jQuery.ajax({
 	    	type: "GET",
 	    	url: url,
-	    	dataType: 'jsonp',
+	    	dataType: 'json',
 		jsonp: 'json.wrf',
 	    	success: processor,
 	    	error: function (result, status, error) {
