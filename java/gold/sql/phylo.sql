@@ -16,8 +16,8 @@
 
 -- One entry per family
 CREATE TABLE family (
-       id VARCHAR PRIMARY KEY, -- internal reference
-       label VARCHAR,          -- name to display?
+       id VARCHAR PRIMARY KEY, -- internal reference. Should be a standard ID of the form <DB>:<LocalID>
+       label VARCHAR,          -- name to display? E.g. PHOSPHOSERINE PHOSPHATASE for PTHR10000.tree
        versionIRI VARCHAR,     -- whats this?
        creation_date VARCHAR   -- date created (should this be automated?)
 );
@@ -49,8 +49,8 @@ CREATE TABLE family_member (
 
 -- text representations of the entire family
 CREATE TABLE family_data_dump (
-       family VARCHAR,
+       family VARCHAR, -- FK to family table
        data_source TEXT,
        data_dump TEXT,
-       data_format VARCHAR -- e.g. nhx
+       data_format VARCHAR -- e.g. nhx, phyloxml
 );
