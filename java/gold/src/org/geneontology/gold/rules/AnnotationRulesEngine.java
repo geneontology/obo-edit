@@ -139,7 +139,7 @@ public class AnnotationRulesEngine {
 			LOG.error(ex.getMessage(), ex);
 		}
 	    
-	    
+	    System.out.println("****************************total Rules are: " + rules.size() + ",  " + rules);
 
 	}
 	

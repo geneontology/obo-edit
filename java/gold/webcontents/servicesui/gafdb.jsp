@@ -14,46 +14,54 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<title>Gold Db Operation Status</title>
 
+	<script type="text/javascript" src="/scripts/jquery-1.5.1.min.js" language="javascript"></script>
+
+
 </head>
 <body>
 
 	<%
 		boolean  isTaskRunning = (Boolean)request.getAttribute("isTaskRunning");
-	
+//		boolean  isLargeFile = (Boolean)request.getAttribute("isLargeFile");
+		boolean runAnnotationRules = request.getParameter("runrules") == null ? false : true;
+		String id = request.getParameter("id");
+		HttpSession s = request.getSession(true);
+		if(id == null){
+			id = s.getId();
+		}
+
 		if(isTaskRunning){
-			String id = request.getParameter("id");
-			HttpSession s = request.getSession(true);
-			if(id == null){
-				id = s.getId();
-			}
 	%>
-			<center><img src="/images/progress-indicator.gif" alt="Request is in Progress" /></center>
-			<p align="center">Your Request is in Progress</p>
+			<center><img class="progress" src="/images/progress-indicator.gif" alt="Request is in Progress" /></center>
+			<p class="progress" align="center">Your Request is in Progress</p>
 
-			<form id="reloadform" action="/gold">
-				<%
-				for(Object param: request.getParameterMap().keySet()){
-					%>
-					<input type="hidden" name="<%= param %>" value="<%= request.getParameter(param.toString()) %>" />
-					<%
-				}
-				
-				%>
-				<input type="hidden" name="id" value="<%= id %>" />	
-							
-			</form>
-
-		<script type='text/javascript'>
-			setTimeout('submitForm()', 9000);
 			
-			function submitForm(){
-				document.forms[0].submit();
-			}
+			<% if(!runAnnotationRules){ %>
 			
-		</script>
-	
+					<form id="reloadform" action="/gold">
+						<%
+						for(Object param: request.getParameterMap().keySet()){
+							%>
+							<input type="hidden" name="<%= param %>" value="<%= request.getParameter(param.toString()) %>" />
+							<%
+						}
+						
+						%>
+						<input type="hidden" name="id" value="<%= id %>" />	
+									
+					</form>
+		
+					<script type='text/javascript'>
+						setTimeout('submitForm()', 30000);
+						
+						function submitForm(){
+							document.forms[0].submit();
+						}
+						
+					</script>
 	
 	<%
+			}
 		}
 	%>
 
@@ -96,7 +104,7 @@
 					status = "failed";
 				}
 			%>
-				<tr><td> <%= opLocalName %>  </td><td bgcolor='<%= isCompleted ? "green" : "" %>') > <%= status %> </td></tr>
+				<tr><td> <%= opLocalName %>  </td><td bgcolor='<%= isCompleted ? "green" : "" %>' class="inprogress" > <%= status %> </td></tr>
 			<% 			
 			}
 	
@@ -122,101 +130,110 @@
 	
 		Set<AnnotationRuleViolation> annotationRuleViolations = (Set<AnnotationRuleViolation>)request.getAttribute("violations");
 	
-		if(!isTaskRunning && ex == null){
+		if(isTaskRunning || ex != null){
 		
 			%>
-			<hr />
+			<script type="text/javascript" language="javasript">
 			
+				jQuery(document).ready(function() {
+					  jQuery(".commands").hide();
+				});	
+			</script>
+			<%
+		}
 			
-			<div>Select one option from the following options</div>
+			%>
+		
+			<div class="commands">
+				<hr />
+				
+				
+				<div>Select one option from the following options</div>
+				
+				<br />		
+				<form action=".">
+					<input type="hidden" name="runrules" />
+					<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
+					<input type="hidden" name="command" value="<%= request.getParameter("command") %>" />
+					<input type="hidden" name="id" value="<%= request.getParameter("id") %>" />	
+					<input type="submit" value="Run Annotation Rules" />
+				</form>
+				
+				<br />
+	
+				<form action=".">
+					<input type="hidden" name="commit" />
+					<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
+					<input type="hidden" name="id" value="<%= request.getParameter("id") %>" />	
+					<input type="hidden" name="command" value="<%= request.getParameter("command") %>" />
+					<input type="submit" value="Save GAF into database" />
+				</form>
+				
+				<br />
+	
+				<form action=".">
+					<input type="hidden" name="solrload" />
+					<input type="hidden" name="commit" />
+					<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
+					<input type="hidden" name="command" value="<%= request.getParameter("command") %>" />
+					<input type="hidden" name="id" value="<%= request.getParameter("id") %>" />	
+					<input type="submit" value="Load GAF into Solr" />
+				</form>
+		</div>
+			<%
+		//}
+		
+		
+
+		if(runAnnotationRules){
+			%>
 			
-			<br />		
-			<form action=".">
-				<input type="hidden" name="runrules" />
-				<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
-				<input type="hidden" name="command" value="<%= request.getParameter("command") %>" />
-				<input type="hidden" name="id" value="<%= request.getParameter("id") %>" />	
-				<input type="submit" value="Run Annotation Rules" />
-			</form>
+					<script type='text/javascript'>
+						var interval= setInterval('getVoilations()', 30000);
+						//var isTaskRunning = true;
+						function getVoilations() {
+							
+						//	alert("before condition");
+							//if(isTaskRunning){
+								//alert("before condition");
+								jQuery.ajax({
+									  url: window.location.pathname + window.location.search + "&view=annotationchecks&id=<%=id%>",
+									  success: function(data) {
+										  data = jQuery.trim(data);
+									//	  alert('Load was performed.: "' + data + '"');
+										  var error = data.indexOf('.ServletException');
+										  if(data == 'NO_DATA' || error != -1){
+											//  isTaskRunning = false;  
+											  clearInterval(interval);
+											  jQuery(".progress").hide();
+											  jQuery(".commands").show();
+											  jQuery(".inprogress").attr('bgcolor', 'green')
+											  	.html('completed');
+											  if(error == -1)
+											  	data = "";
+											  
+											  
+										  }
+										jQuery('#voilations').append(data);
+										
+										
+										jQuery('.totalvoilations').html(jQuery('#voilations').children().size());
+									  }
+									});
+							//}
+						}
+						
+					</script>
+			
 			
 			<br />
-
-			<form action=".">
-				<input type="hidden" name="commit" />
-				<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
-				<input type="hidden" name="id" value="<%= request.getParameter("id") %>" />	
-				<input type="hidden" name="command" value="<%= request.getParameter("command") %>" />
-				<input type="submit" value="Save GAF into database" />
-			</form>
+			<div><h1>Annotation Voilations (<span class="totalvoilations">0</span>)</h1></div>
+			<ul id="voilations">
 			
-			<br />
-
-			<form action=".">
-				<input type="hidden" name="solrload" />
-				<input type="hidden" name="commit" />
-				<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
-				<input type="hidden" name="command" value="<%= request.getParameter("command") %>" />
-				<input type="hidden" name="id" value="<%= request.getParameter("id") %>" />	
-				<input type="submit" value="Load GAF into Solr" />
-			</form>
-
+			</ul>
 			<%
 		}
 		
-		
-		if(annotationRuleViolations != null){
-			boolean runRules  = request.getParameter("runrules")== null ? false: true;
-			String heading = "Annotation Violations";
-			if(!runRules){
-				heading = "Annotaiton Parsing Errors";
-			}
-			%>
-		
-				<hr />
-				<h3><%= heading %></h3>
-				<%
-				Hashtable<String, List<AnnotationRuleViolation>> table = new Hashtable<String, List<AnnotationRuleViolation>>();
-				for(AnnotationRuleViolation v: annotationRuleViolations){
-					String ruleId = v.getRuleId() + "";
-					List<AnnotationRuleViolation> list = table.get(ruleId);
-					
-					if(list == null){
-						list = new ArrayList<AnnotationRuleViolation>();
-						table.put(ruleId, list);
-					}
-					
-					list.add(v);
-				
-				}
-				
-				%>
-				<ul>
-
-					<%
-					for(String rule: table.keySet()){
-						List<AnnotationRuleViolation> list = table.get(rule);
-						for(AnnotationRuleViolation v: list){
-							%>
-							<li>
-								<div style="font-size: 1.1em;font-weight:bold"><%=v.getRuleId()  %> ---- <%= v.getMessage() %> </div>
-								<ul>
-									<li>
-										<div style="color:red"><%=v.getAnnotationRow()  %> </div>
-									</li>
-								</ul>
-							</li>
-							<% 
-						}
-						
-						
-					}
-					
-					%>
-		
-				</ul>
-			
-			<%
-			}
 		
 	}
 	%>
