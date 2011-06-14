@@ -1,4 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@page import="org.geneontology.conf.GeneOntologyManager"%>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -16,7 +17,8 @@ function loadTaxonomies(){
 	var yes = confirm("Are you are sure you want to load ontology into database?");
 
 	if(yes){
-		window.location="gold?servicename=gold-db-operations&command=update";
+		//window.location="gold?servicename=gold-db-operations&command=update";
+		document.getElementById("loadtax").submit();
 	}
 }
 
@@ -36,6 +38,23 @@ function getLastUpdateDate(){
 </script>
 </head>
 <body>
+
+<form id="loadtax" action="/gold">
+	<input type="hidden" name="servicename" value="gold-db-operations" />
+	<input type="hidden" name="command" value="update" />
+	
+	<%
+		for(Object location: GeneOntologyManager.getInstance().getTaxonomiesLocations()){
+	%>
+	
+			<input type="hidden" name="filelocation" value="<%= location%>" />
+	<%
+	
+		}
+	%>
+
+</form>
+
 <h1>Welcome to the Admin site of the Gene Ontology project</h1>
 
 <p>Activities:</p>

@@ -2,18 +2,17 @@ package org.geneontology.web.services;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,8 +28,6 @@ import org.geneontology.gold.rules.AnnotationRuleViolation;
 import org.geneontology.gold.rules.AnnotationRulesEngine;
 import org.geneontology.solrj.GafSolrLoader;
 import org.geneontology.web.Task;
-
-import sun.util.BuddhistCalendar;
 
 /**
  * This class performs bulkload and update operations for GAF database against the
@@ -84,6 +81,11 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	
 	private List<String> splittedDocuments;
 	
+	private boolean annotationChecksCompleted;
+	private boolean commitCompleted;
+	
+	private boolean isLargefile;
+	
 	/**
 	 * Each GAF operation runs a thread in background. The web browser calls the handle service method
 	 * in intervals to check whether the operation is completed or not. On the last call all the variables 
@@ -96,6 +98,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 		runner = null;
 	//	isOPerationCompleted = true;
 		annotationRuleViolations = new HashSet<AnnotationRuleViolation>();
+		annotationRuleViolations = Collections.synchronizedSet(annotationRuleViolations);
 	}
 	
 	/**
@@ -125,16 +128,26 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			String fileLocation = request
 			.getParameter("filelocation");
 			
+			String view = request.getParameter("view");
 			//set the default view
 			viewPath = "/servicesui/gafdb.jsp";
 			
+			if(view != null){
+				viewPath = "/servicesui/"+view + ".jsp";
+				
+				if("gafjson".equals(view)){
+					noReloadMode = true;
+				}
+				
+			}
 			
-			if(runner == null){
 			
-				if("json".equals(format)){
+			if(runner == null && !(runAnnotationRules && annotationChecksCompleted) && !(commit && commitCompleted)){
+			
+				/*if("json".equals(format)){
 					viewPath = "/servicesui/gafjson.jsp";
 					this.noReloadMode = true;
-				}
+				}*/
 				
 				if("getlastupdate".equals(command)){
 					viewPath = "/servicesui/gold-lastupdate.jsp";
@@ -190,7 +203,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 					}
 					
 				 //if(("bulkload".equals(command) || "update".equals(command) || runAnnotationRules) && (this.gafLocations != null || this.gafDocuments != null)) {
-					annotationRuleViolations.clear();
+				//	annotationRuleViolations.clear();
 					runner = new GafDbTaskExecution();
 					runner.start();
 						
@@ -213,6 +226,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 		}finally{
 			request.setAttribute("isTaskRunning", runner == null ? false: runner.isRunning());
 			request.setAttribute("command", command);
+			request.setAttribute("isLargeFile", isLargefile);
 			
 			//if the task has completed its operation then set it to null
 			if(runner != null && !runner.isRunning()){
@@ -248,6 +262,8 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 		// id of the current
 		private String currentOntologyBeingProcessed;
+		
+		
 		
 	//	private Exception exception;
 		
@@ -301,6 +317,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 					
 					gafDocuments = null;
 					splittedDocuments = null;
+					commitCompleted = true;
 				}else{
 					
 					if(gafDocuments == null){
@@ -388,7 +405,8 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 						
 						buildSplittedDocuments();
 						
-						
+						LOG.info("Annotations checks completed.");
+						annotationChecksCompleted = true;
 					}						
 					
 					
@@ -412,14 +430,13 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 		
 		private void _performAnnotationChecks(GafDocument doc){
-			
+			LOG.info("Performing Annotation Checks");
 			AnnotationRulesEngine engine = AnnotationRulesEngine.getInstance();
 			
 			Set<AnnotationRuleViolation> violations= engine.validateAnnotations(doc);
 			
 			annotationRuleViolations.addAll(violations);
 
-			
 			
 		}
 		
@@ -541,6 +558,8 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 						is = new GZIPInputStream(is);
 					}
 					buildGafDocument(new InputStreamReader(is), f.getName(), path);
+					
+					is.close();
 				}
 			}
 		}
@@ -561,12 +580,21 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 				db = new GAFDbOperations();
 				db.addDbOperationsListener(this);
 			}
-			
+
+			int splitSize = GeneOntologyManager.getInstance().getSplitSize()*4;
 			while((d = builder.getNextSplitDocument() ) != null){
+				
+				if(annotationRuleViolations.size()>=splitSize){
+					throw new Exception("The annotations check is terminated as the annotations voilations messages are being consumed.");
+				}
+				
+				
 				LOG.info("Splitting the '" + path + "' document");
 			
-				if(doc != null && !splittedDocuments.contains(path))
+				if(doc != null && !splittedDocuments.contains(path)){
 					splittedDocuments.add(path);
+					isLargefile = true;
+				}
 				
 				if(commit){
 					if(doc != null){

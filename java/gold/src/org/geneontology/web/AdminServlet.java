@@ -65,7 +65,7 @@ public class AdminServlet extends HttpServlet {
 			       .memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.LFU)
 			       .overflowToDisk(true)
 			       .eternal(false)
-			       .timeToLiveSeconds(36000)
+			       .timeToLiveSeconds(0)
 			       .timeToIdleSeconds(3600)
 			       .diskPersistent(false)
 			       .diskExpiryThreadIntervalSeconds(0));		

@@ -296,4 +296,20 @@ public class GeneOntologyManager {
 		return sdf;
 	}
 	
+	public int getSplitSize(){
+		
+		int splitsize = 30000;
+		
+		try{
+			splitsize = Integer.parseInt( config
+			.getString("geneontology.gold.splitsize", "300000")
+			);		
+		}catch(Exception ex){
+			//ignore
+		}
+		
+		return splitsize;
+	}
+	
+	
 }

@@ -22,10 +22,13 @@ import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.log4j.Logger;
 import org.geneontology.conf.GeneOntologyManager;
 
 public class GafCommandLine {
 
+	private static Logger LOG = Logger.getLogger(GafCommandLine.class);
+	
 	private static void usage(){
 		System.out.println();
 		System.out.println();
@@ -92,79 +95,127 @@ public class GafCommandLine {
         PrintStream ps = System.out;
 		
 	    try {
-	    	if(!annotationFilePath.trim().startsWith("file:")){
-			    String encodedPath = URLEncoder.encode(annotationFilePath, "UTF-8");
-		
-				//build query String
-				String queryString = "?servicename=gaf-db-operations&runrules=&format=json";
-			    
-			    if(annotationFilePath.startsWith("http://") || annotationFilePath.startsWith("ftp://")){
-			    	queryString += "&remote-gaf="+ encodedPath;   	
-			    }else
-			    	queryString += "&filelocation="+ encodedPath;   	
-	
-			    method = new GetMethod(adminServletURL+queryString);
-			    
-			    // Provide custom retry handler is necessary
-			    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
-			    		new DefaultHttpMethodRetryHandler(3, false));		
-	    	}else{
-	    		PostMethod post = new PostMethod(adminServletURL);
-	    		method = post;
-	    		List<Part> parts = new ArrayList<Part>();
-	    		File f = new File( new URI(annotationFilePath));
-	    		FilePart filePart = new FilePart(f.getName(), f);
-	    		
-	    		parts.add(filePart);
-	    		parts.add(new StringPart("servicename", "gaf-db-operations", "UTF-8"));
-	    		parts.add(new StringPart("format", "json", "UTF-8"));
-	    		parts.add(new StringPart("runrules", "", "UTF-8"));
 
-	    		post.setRequestEntity(new MultipartRequestEntity(parts.toArray(new Part[parts.size()]), post.getParams()));	    		
-	    		
-	    		
-	    	}
-		    
-//		    	params.setParameter("remote-gaf", encodedPath);
+	    	if(outFile != null){
+	          	 ps = new PrintStream(new File(outFile));
+	           }
 
-			HttpClient httpclient = new HttpClient();
+	    	boolean postSent = false;
+	        Pattern pattern = Pattern.compile("name\\s*=\\s*\"filelocation\"\\s*value\\s*=\\s*\"([^\"]*)\"");
+	        String sessionId = null;
+	    	while(true){
+		    	if(!annotationFilePath.trim().startsWith("file:")){
+				    String encodedPath = URLEncoder.encode(annotationFilePath, "UTF-8");
 			
-			  // Create a method instance.
-	    	
-	    	// Execute the method.
-	        int statusCode = httpclient.executeMethod(method);
-
-	        if (statusCode != HttpStatus.SC_OK) {
-	          System.err.println("Method failed: " + method.getStatusLine());
-	        }
-
-	        InputStream is = method.getResponseBodyAsStream();
-	        
-	         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-	         
-	         String line = null;
-	     
-	         StringBuffer buf = new StringBuffer();
-	         if(outFile != null){
-	        	 ps = new PrintStream(new File(outFile));
-	         }
-	         
-	         Pattern pattern = Pattern.compile("name\\s*=\\s*\"filelocation\"\\s*value\\s*=\\s*\"([^\"]*)\"");
-	         while((line = reader.readLine()) != null ){
-	        	 buf.append(line + "\n");
-	        	 Matcher matcher = pattern.matcher(line);
-	        	 if(matcher.find()){
-	        		 annotationFilePath = matcher.group();
-	        		 String[] s= annotationFilePath.split("=");
-	        		 annotationFilePath = s[2].trim();
-	        		 annotationFilePath = annotationFilePath.replaceAll("\"", "");
-	        		 checkAnnotations(adminServletURL, annotationFilePath, outFile);
-	        		 return;
-	        	 }
-	        	 // ps.println(line);
-	         }
-	        
-	         ps.print(buf.toString());
+					//build query String
+					String queryString = "?servicename=gaf-db-operations&runrules=&view=gafjson";
+				    
+				    if(annotationFilePath.startsWith("http://") || annotationFilePath.startsWith("ftp://")){
+				    	queryString += "&remote-gaf="+ encodedPath;   	
+				    }else
+				    	queryString += "&filelocation="+ encodedPath;   	
+		
+				    if(sessionId != null){
+				    	queryString += "&id=" + sessionId;
+				    }
+				    
+				    LOG.info("Sending GET Request: "+ adminServletURL+queryString);
+				    method = new GetMethod(adminServletURL+queryString);
+				    
+				    // Provide custom retry handler is necessary
+				    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
+				    		new DefaultHttpMethodRetryHandler(3, false));		
+		    	}else{
+		    		LOG.info("Sending request with POST method");
+	
+		    		PostMethod post = new PostMethod(adminServletURL);
+		    		method = post;
+		    		List<Part> parts = new ArrayList<Part>();
+		    		File f = new File( new URI(annotationFilePath));
+		    		FilePart filePart = new FilePart(f.getName(), f);
+		    		
+		    		parts.add(filePart);
+		    		parts.add(new StringPart("servicename", "gaf-db-operations", "UTF-8"));
+		    		parts.add(new StringPart("view", "gafjson", "UTF-8"));
+		    		parts.add(new StringPart("runrules", "", "UTF-8"));
+	
+		    		post.setRequestEntity(new MultipartRequestEntity(parts.toArray(new Part[parts.size()]), post.getParams()));	    		
+		    		
+		    		
+		    	}
+			    
+	//		    	params.setParameter("remote-gaf", encodedPath);
+	
+				HttpClient httpclient = new HttpClient();
+				
+				  // Create a method instance.
+		    	
+		    	// Execute the method.
+		        int statusCode = httpclient.executeMethod(method);
+	
+		        if (statusCode != HttpStatus.SC_OK) {
+		          System.err.println("Method failed: " + method.getStatusLine());
+		        }
+	
+		        InputStream is = method.getResponseBodyAsStream();
+		        
+		        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		         
+		         String line = null;
+		     
+		     //    StringBuffer buf = new StringBuffer();
+		         boolean breakLoop = false;
+		         while((line = reader.readLine()) != null ){
+		        	// buf.append(line + "\n");
+		        	 if(!postSent){
+			        	 Matcher matcher = pattern.matcher(line);
+			        	 if(matcher.find()){
+			        		 annotationFilePath = matcher.group();
+			        		 String[] s= annotationFilePath.split("=");
+			        		 annotationFilePath = s[2].trim();
+			        		 postSent = true;
+			        		 annotationFilePath = annotationFilePath.replaceAll("\"", "");
+			        		 //checkAnnotations(adminServletURL, annotationFilePath, outFile);
+			        		// return;
+			        		break;
+			        	 }
+		        	 }else{
+			        	 // ps.println(line);
+	
+			        	 if(sessionId == null && line.trim().contains("session:")){
+			        		 sessionId = line.split(":")[1].trim();
+			        	 }		        	 
+			        	 
+			        	 else if(line.trim().contains("NO_DATA")){
+			        		 System.out.println("...............End of Data reached");
+			        		 breakLoop = true;
+			        		 break;
+			        	 }else{
+			        		 ps.println(line);
+			        	 }
+	
+			        	 if(line.contains("\"error\"")){
+			        		 breakLoop = true;
+			        		 break;
+			        	 }
+		        	 }
+		        	 
+		        	 
+		         }
+		         
+		        if(breakLoop)
+		        	break;
+		         
+		        Thread.sleep(30000); 
+	      
+        	 
+	    	} 
+        	 
+        	 
+        	 
+        	 
+        	 
+	       //  ps.print(buf.toString());
 
 	      } catch (Exception e) {
 	        System.err.println("Fatal protocol violation: " + e.getMessage());
