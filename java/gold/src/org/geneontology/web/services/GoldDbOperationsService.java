@@ -102,12 +102,13 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract{
 			GoldObjectFactory factory = GoldObjectFactory.buildDefaultFactory();
 			List list = factory.getOntologies();
 			if ("update".equals(command) && !list.isEmpty()) {
-					String ontologylocation = request
-							.getParameter("filelocation");
+					String ontologylocation[] = request
+							.getParameterValues("filelocation");
 					
 					if(ontologylocation != null){
 						ontLocations = new ArrayList<String>();
-						ontLocations.add(ontologylocation);
+						for(String l: ontologylocation)
+							ontLocations.add(l);
 						runner = new GoldDbTaskExecution();
 					}else{
 						request.setAttribute("servicename", getServiceName());

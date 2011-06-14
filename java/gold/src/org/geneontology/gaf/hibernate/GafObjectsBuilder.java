@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import org.apache.log4j.Logger;
+import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gaf.parser.GAFParser;
 
 public class GafObjectsBuilder {
@@ -14,8 +15,9 @@ public class GafObjectsBuilder {
 	private GafDocument gafDocument;
 	
 	private GAFParser parser;
-	
-	private int sizeThreshold = 600000;
+
+	//private int sizeThreshold = 80000;
+	//private int sizeThreshold = 200000;
 	//private int sizeThreshold = 6000;
 	
 	private int counter;
@@ -91,7 +93,7 @@ public class GafObjectsBuilder {
 		gafDocument = new GafDocument(docId, this.documentPath);
 		
 		while(parser.next()){
-			if(counter>= this.sizeThreshold){
+			if(counter>= GeneOntologyManager.getInstance().getSplitSize()){
 				isSplitted= true;
 				counter = 0;
 				break;
