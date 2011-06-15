@@ -58,13 +58,13 @@ sub _create_url {
 }
 
 
-=item get
+=item get_by_id
 
 Args: document id (string)
 Return: perl hash structure (see TODO) or undef
 
 =cut
-sub get {
+sub get_by_id {
 
   my $self = shift;
   my $in_id = shift || die "need to have and id argument";
