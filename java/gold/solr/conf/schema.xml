@@ -47,7 +47,7 @@
 	   required="true" />
 
     <!-- Lead: (both): (term.term_type|gp.db) -->
-    <!-- GOLD: term: obo_namespace? -->
+    <!-- GOLD: term: obo_namespace? ; gp: bioentity.db? -->
     <!-- Ann:  c15 -->
     <field name="source"
 	   type="string"

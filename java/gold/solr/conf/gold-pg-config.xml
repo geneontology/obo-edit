@@ -6,6 +6,7 @@
               password="XXXX"/>
 
   <document>
+
     <!-- Add terms. -->
     <entity name="terms"
 	    query="SELECT DISTINCT
@@ -16,6 +17,18 @@
 		   text_comment AS comment,
 		   text_definition AS description
 		   FROM cls WHERE is_obsolete = false"></entity>
+
+    <!-- Add gene products. -->
+    <entity name="gene_products"
+	    query="SELECT DISTINCT
+		   'bioentity' AS document_category,
+		   g.id AS id,
+		   g.symbol AS label,
+		   g.full_name AS descriptive_name,
+		   g.type_cls AS type,
+		   g.taxon_cls AS taxon,
+		   g.db AS source
+		   FROM bioentity AS g"></entity>
 
     <!-- Add gene_annotations. -->
     <entity name="gene_annotation"
