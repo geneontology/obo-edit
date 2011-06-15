@@ -1,5 +1,7 @@
 =head1 AmiGO::Worker::GeneProduct
 
+DEPRECATED
+
 Generates consumable static information about gene products.
 This is not a search tool, but a (hopefully efficient) data retrieval tool.
 

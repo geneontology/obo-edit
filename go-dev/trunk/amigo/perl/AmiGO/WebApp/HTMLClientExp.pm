@@ -54,10 +54,12 @@ use AmiGO::Cache::ReferenceGenome;
 use AmiGO::Worker::NMatrix;
 
 use AmiGO::Worker::Term;
-use AmiGO::Worker::Solr::Term;
 use AmiGO::Worker::GeneProduct;
 use AmiGO::Worker::GeneProductCount;
 use AmiGO::Worker::PANTHERTree;
+
+use AmiGO::Worker::Solr::Term;
+use AmiGO::Worker::Solr::GeneProduct;
 
 # use Cache::Memcached; # TODO: can't go bigger than 1MB (still,
 #                       # probably best to explore);
@@ -123,6 +125,8 @@ sub setup {
 		   'homolset_summary'    => 'mode_homolset_summary',
 
 		   'golr_term_details'   =>  'mode_golr_term_details',
+		   'golr_gene_product_details' =>
+		   'mode_golr_gene_product_details',
 
 		   #'report_1'            => 'mode_report_1',
 		   #'lexical_search'      => 'mode_lexical_search',
@@ -859,11 +863,9 @@ sub mode_homolset_summary {
 
 ## Experimental try at the term details page, in perl, backed by the
 ## solr index.
-## TODO: we're starting with a copy of the current td page.
 sub mode_golr_term_details {
 
   my $self = shift;
-  my $type = shift || 'basic'; # TODO: temporary muxing until final.
 
   ##
   my $i = AmiGO::WebApp::Input->new();
@@ -891,7 +893,7 @@ sub mode_golr_term_details {
 					" in the index!");
   }
 
-  $self->{CORE}->kvetch('solr doc: ' . Dumper($term_info_hash));
+  $self->{CORE}->kvetch('solr docs: ' . Dumper($term_info_hash));
 
   ## Should just be one now, yeah?
   #my $foo = (keys %$term_info_hash)[0];
@@ -1142,6 +1144,93 @@ sub mode_golr_term_details {
   # }else{
   #   $self->add_template_content('html/main/subset_details.tmpl');
   # }
+
+  return $self->generate_template_page();
+}
+
+
+## Experimental try at the gp details page, in perl, backed by the
+## solr index.
+sub mode_golr_gene_product_details {
+
+  my $self = shift;
+
+  ##
+  my $i = AmiGO::WebApp::Input->new();
+  my $params = $i->input_profile('gp');
+  my $input_gp_id = $params->{gp};
+  $self->_common_params_settings({'title' =>
+				  'AmiGO: Gene Product Details for ' .
+				  $input_gp_id});
+
+  ## Input sanity check.
+  if( ! $input_gp_id ){
+    return $self->mode_die_with_message("GP acc could not be found! Is it".
+					" possible that what you're looking".
+					" for is not a GP acc?");
+  }
+
+  ###
+  ### Get full gp info.
+  ###
+
+  my $gp_worker = AmiGO::Worker::Solr::GeneProduct->new();
+  my $gp_info_hash = $gp_worker->get_info($input_gp_id);
+  if( ! defined($gp_info_hash) || $self->{CORE}->empty_hash_p($gp_info_hash) ){
+    return $self->mode_die_with_message("GP acc could not be found" .
+					" in the index!");
+  }
+
+  $self->{CORE}->kvetch('solr docs: ' . Dumper($gp_info_hash));
+  $self->set_template_parameter('GP_INFO', $gp_info_hash->{$input_gp_id});
+
+  ###
+  ### TODO: pull in additional annotation, etc. info.
+  ###
+
+  ###
+  ### Standard setup.
+  ###
+
+  ## Non-standard settings.
+  $self->set_template_parameter('STANDARD_YUI', 'no'); # no YUI please
+
+  ## Our AmiGO services CSS.
+  my $prep =
+    {
+     css_library =>
+     [
+      # 'standard', # basic GO-styles
+      # 'org.bbop.amigo.ui.autocomplete'
+      'standard', # basic GO-styles
+      'com.jquery.jqamigo.custom',
+      #'com.jquery.tablesorter',
+      'org.bbop.amigo.ui.widgets'
+     ],
+     javascript_library =>
+     [
+      'com.jquery',
+      'com.jquery-ui',
+      'com.jquery.tablesorter',
+      'org.bbop.amigo',
+      'org.bbop.amigo.go_meta',
+      'org.bbop.amigo.ui.widgets'
+     ],
+     javascript =>
+     [
+      # $self->{JS}->make_var('global_count_data', $gpc_info),
+      # $self->{JS}->make_var('global_rand_to_acc', $rand_to_acc),
+      # $self->{JS}->make_var('global_acc_to_rand', $acc_to_rand),
+      $self->{JS}->make_var('global_acc', $input_gp_id)
+     ]
+    };
+  $self->add_template_bulk($prep);
+
+  # ## Initialize javascript app.
+  # $self->add_template_javascript($self->{JS}->get_lib('GPDetails.js'));
+  # $self->add_template_javascript($self->{JS}->initializer_jquery('GPDetailsInit();'));
+
+  $self->add_template_content('html/main/gene_product_details.tmpl');
 
   return $self->generate_template_page();
 }
