@@ -1,5 +1,7 @@
 =head1 AmiGO::Worker::Term
 
+DEPRECATED
+
 Generates consumable static information about ontology terms.
 This is not a search tool, but a (hopefully efficient) data retrieval tool.
 

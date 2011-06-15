@@ -91,6 +91,8 @@ sub relationship_color {
 
 =item term_information
 
+DEPRECATED
+
 Given an array ref of our DBIx term objects, return a hash ref of
 useful term information. This done be core information.
 

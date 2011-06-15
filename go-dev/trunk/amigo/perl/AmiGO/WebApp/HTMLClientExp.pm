@@ -17,7 +17,6 @@ use AmiGO::External::Raw;
 use AmiGO::External::QuickGO::Term;
 use AmiGO::External::JSON::LiveSearch::Term;
 use AmiGO::External::JSON::LiveSearch::GeneProduct;
-use AmiGO::External::JSON::SolrDocument;
 use AmiGO::External::GODB::Query;
 #use mapscript;
 
@@ -55,6 +54,7 @@ use AmiGO::Cache::ReferenceGenome;
 use AmiGO::Worker::NMatrix;
 
 use AmiGO::Worker::Term;
+use AmiGO::Worker::Solr::Term;
 use AmiGO::Worker::GeneProduct;
 use AmiGO::Worker::GeneProductCount;
 use AmiGO::Worker::PANTHERTree;
@@ -880,60 +880,50 @@ sub mode_golr_term_details {
   }
 
   ###
-  ### Try and get it out of GOlr.
+  ### Get full term info.
   ###
 
-  my $solr_doc = AmiGO::External::JSON::SolrDocument->new();
-  my $found_doc = $solr_doc->get($input_term_id);
-  if( ! $found_doc ){
+  my $term_worker = AmiGO::Worker::Solr::Term->new();
+  my $term_info_hash = $term_worker->get_info($input_term_id);
+  if( ! defined($term_info_hash) ||
+      $self->{CORE}->empty_hash_p($term_info_hash) ){
     return $self->mode_die_with_message("Term acc could not be found" .
 					" in the index!");
   }
 
-  $self->{CORE}->kvetch('solr doc: ' . Dumper($found_doc));
+  $self->{CORE}->kvetch('solr doc: ' . Dumper($term_info_hash));
 
-  # ###
-  # ### Get full term info.
-  # ###
+  ## Should just be one now, yeah?
+  #my $foo = (keys %$term_info_hash)[0];
+  #$self->{CORE}->kvetch('$term_info: ' . Dumper($term_info->{$foo}));
+  $self->set_template_parameter('TERM_INFO',
+				$term_info_hash->{$input_term_id});
 
-  # # my $term_q = AmiGO::Worker::Term->new("excessive");
-  # my $term_q = AmiGO::Worker::Term->new();
-  # my $term_info = $term_q->get_info($input_term_id);
-  # if( ! defined($term_info) || $self->{CORE}->empty_hash_p($term_info) ){
-  #   return $self->mode_die_with_message("The acc you're looking for could".
-  # 					" not be found in the database!");
-  # }
+  ## First switch on term vs. subset.
+  my $is_term_acc_p = $self->{CORE}->is_term_acc_p($input_term_id);
+  my $acc_list_for_gpc_info = [];
+  my $input_term_id_list = [];
+  if( $is_term_acc_p ){
 
-  # ## Should just be one now, yeah?
-  # my $foo = (keys %$term_info)[0];
-  # #$self->{CORE}->kvetch('$term_info: ' . Dumper($term_info->{$foo}));
-  # $self->set_template_parameter('TERM_INFO', $term_info->{$foo});
+    $self->{CORE}->kvetch('Looks like a term acc...');
 
-  # ## First switch on term vs. subset.
-  # my $is_term_acc_p = $self->{CORE}->is_term_acc_p($input_term_id);
-  # my $acc_list_for_gpc_info = [];
-  # my $input_term_id_list = [];
-  # if( $is_term_acc_p ){
+    #   ## Even if just a single acc, put it into list form--that's what
+    #   ## we'll be using.
+    #   $input_term_id_list = [$input_term_id];
+    #   push @$acc_list_for_gpc_info, $input_term_id;
 
-  #   $self->{CORE}->kvetch('Looks like a term acc...');
+  }else{
 
-  #   ## Even if just a single acc, put it into list form--that's what
-  #   ## we'll be using.
-  #   $input_term_id_list = [$input_term_id];
-  #   push @$acc_list_for_gpc_info, $input_term_id;
+    $self->{CORE}->kvetch('Looks like a subset acc...');
 
-  # }else{
-
-  #   $self->{CORE}->kvetch('Looks like a subset acc...');
-
-  #   ## Convert input subset acc to term accs.
-  #   my $sget = AmiGO::Worker::Subset->new();
-  #   my @subset_term_list = keys(%{$sget->get_term_accs($input_term_id)});
-  #   foreach my $k (@subset_term_list){
-  #     push @$input_term_id_list, $k;
-  #     push @$acc_list_for_gpc_info, $k;
-  #   }
-  # }
+    #   ## Convert input subset acc to term accs.
+    #   my $sget = AmiGO::Worker::Subset->new();
+    #   my @subset_term_list = keys(%{$sget->get_term_accs($input_term_id)});
+    #   foreach my $k (@subset_term_list){
+    #     push @$input_term_id_list, $k;
+    #     push @$acc_list_for_gpc_info, $k;
+    #   }
+  }
 
   # ###
   # ### Get neighborhood below term.
