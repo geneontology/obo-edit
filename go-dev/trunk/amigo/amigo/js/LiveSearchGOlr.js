@@ -1039,6 +1039,7 @@ function _table_cache_from_results (dlist){
     var row_cache = [];
     var has_term_p = false;
     var has_annotation_p = false;
+    var has_bioentity_p = false;
     for( var i = 0; i < dlist.length; i++ ){
 
 	var r = dlist[i];
@@ -1059,8 +1060,9 @@ function _table_cache_from_results (dlist){
 	    }else if( 'ontology_class' == r.document_category ){
 		row_cache.push(_term_line(r));
 		has_term_p = true;
-		// }else if( 'bioentity' == doc.document_category ){
-		//     mbuf.push(_bioentity_line(doc));
+	    }else if( 'bioentity' == r.document_category ){
+		row_cache.push(_bioentity_line(r));
+		has_bioentity_p = true;
 	    }else{
 		row_cache.push('Unknown document category: '+
 			       r.document_category );
@@ -1076,11 +1078,23 @@ function _table_cache_from_results (dlist){
     var head_cache = new Array();
     // Term.
     if( has_term_p && has_annotation_p ){	
+	// Term.
 	head_cache.push('<tr>');
 	head_cache.push('<th colspan="1" rowspan="2">score</th>');
 	head_cache.push('<th colspan="1" rowspan="2">category</th>');
 	head_cache.push('<th colspan="7">label/description</th>');
 	head_cache.push('</tr>');
+	// GP.
+	head_cache.push('<tr>');
+	head_cache.push('<th>score</th>');
+	head_cache.push('<th>category</th>');
+	head_cache.push('<th>symbol</th>');
+	head_cache.push('<th>type</th>');
+	head_cache.push('<th>description</th>');
+	head_cache.push('<th>source</th>');
+	head_cache.push('<th>species</th>');
+	head_cache.push('</tr>');
+	// Annotation.
 	head_cache.push('<tr>');
 	head_cache.push('<th>symbol</th>');
 	head_cache.push('<th>ev</th>');
@@ -1103,6 +1117,17 @@ function _table_cache_from_results (dlist){
 	head_cache.push('<th>source</th>');
 	head_cache.push('<th>species</th>');
 	// // cache.push('<th>synonym(s)</th>');
+	head_cache.push('</tr>');
+    }else if( has_bioentity_p ){
+	// GP/Bioentity.
+	head_cache.push('<tr>');
+	head_cache.push('<th>score</th>');
+	head_cache.push('<th>category</th>');
+	head_cache.push('<th>symbol</th>');
+	head_cache.push('<th>type</th>');
+	head_cache.push('<th>description</th>');
+	head_cache.push('<th>source</th>');
+	head_cache.push('<th>species</th>');
 	head_cache.push('</tr>');
     }else if( has_term_p ){	
 	head_cache.push('<tr>');
@@ -1237,7 +1262,7 @@ function _annotation_line(r){
 }
 
 
-// Write an term line. Currently 3 columns.
+// Write an term line. Currently 3 (of 9) columns.
 function _term_line(r){
     
     //core.kvetch("Writing annotation line...");
@@ -1267,6 +1292,52 @@ function _term_line(r){
     }
     cache.push('</td>');
 
+    return cache.join('');
+}
+
+
+// Write a bioentity line. Currently X (of Y) columns.
+function _bioentity_line(r){
+    
+    //core.kvetch("Writing bioentity line...");
+    var cache = new Array();
+
+    // 1 Score.
+    cache.push('<td colspan="1">');
+    //cache.push((parseInt(r.score) * 100.00) + '%');
+    cache.push(parseInt(r.score) + '%');
+    cache.push('</td>');
+
+    // 2 Doc category.
+    cache.push('<td colspan="1">');
+    cache.push('bioentity');
+    cache.push('</td>');
+
+    // 3 GP symbol.
+    cache.push('<td>');
+    cache.push(core.html.gene_product_link(r.id, r.label));
+    cache.push('</td>');
+
+    // 4 Type.
+    cache.push('<td>');
+    cache.push(r.type);
+    cache.push('</td>');
+    
+    // 5 Descriptive name.
+    cache.push('<td>');
+    cache.push(r.descriptive_name);
+    cache.push('</td>');
+    
+    // 6 Source.
+    cache.push('<td>');
+    cache.push(r.source);
+    cache.push('</td>');
+
+    // 7 Taxon.
+    cache.push('<td>');
+    cache.push(r.taxon);
+    cache.push('</td>');
+    
     return cache.join('');
 }
 
