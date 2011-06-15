@@ -13,31 +13,11 @@ use strict;
 
 package AmiGO::Worker::Solr::Term;
 
-use base ("AmiGO::Worker");
+use base ("AmiGO::Worker::Solr");
 
 use Data::Dumper;
 use AmiGO::Aid;
 use AmiGO::External::JSON::SolrDocument;
-#use GOBO::DBIC::GODBModel::Graph;
-
-=item new
-
-Constructor.
-
-=cut
-sub new {
-
-  ##
-  my $class = shift;
-  my $self = $class->SUPER::new();
-
-  $self->{AW_AID} = AmiGO::Aid->new();
-  $self->{AEJ_SOLR} = AmiGO::External::JSON::SolrDocument->new();
-  $self->{AWST_DOC} = undef;
-
-  bless $self, $class;
-  return $self;
-}
 
 
 =item get_info
@@ -59,9 +39,8 @@ sub get_info {
   ## incoming data is so much easier to work with, we remove the extra
   ## layer of abstraction.
   my $term_info = {};
-  my $solr_worker = AmiGO::External::JSON::SolrDocument->new();
   foreach my $arg (@$args){
-    my $found_doc = $solr_worker->get_by_id($arg);
+    my $found_doc = $self->{AEJ_SOLR}->get_by_id($arg);
 
     my $intermediate = undef;
     if( $found_doc ){
@@ -69,7 +48,7 @@ sub get_info {
 	{
 	 acc => $found_doc->{id},
 	 name => $found_doc->{label},
-	 ontology_readable => $self->{AW_AID}->readable($found_doc->{source}),
+	 ontology_readable => $self->{A_AID}->readable($found_doc->{source}),
 	 ontology => $found_doc->{source},
 	 term_link =>
 	 $self->get_interlink({mode=>'term-details',
