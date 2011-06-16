@@ -108,7 +108,7 @@ public class GafCommandLine {
 				    String encodedPath = URLEncoder.encode(annotationFilePath, "UTF-8");
 			
 					//build query String
-					String queryString = "?servicename=gaf-db-operations&runrules=&view=gafjson";
+					String queryString = "?servicename=gaf-db-operations&command=runrules&view=gafjson";
 				    
 				    if(annotationFilePath.startsWith("http://") || annotationFilePath.startsWith("ftp://")){
 				    	queryString += "&remote-gaf="+ encodedPath;   	
@@ -137,7 +137,7 @@ public class GafCommandLine {
 		    		parts.add(filePart);
 		    		parts.add(new StringPart("servicename", "gaf-db-operations", "UTF-8"));
 		    		parts.add(new StringPart("view", "gafjson", "UTF-8"));
-		    		parts.add(new StringPart("runrules", "", "UTF-8"));
+		    		parts.add(new StringPart("command", "runrules", "UTF-8"));
 	
 		    		post.setRequestEntity(new MultipartRequestEntity(parts.toArray(new Part[parts.size()]), post.getParams()));	    		
 		    		
@@ -187,7 +187,6 @@ public class GafCommandLine {
 			        	 }		        	 
 			        	 
 			        	 else if(line.trim().contains("NO_DATA")){
-			        		 System.out.println("...............End of Data reached");
 			        		 breakLoop = true;
 			        		 break;
 			        	 }else{

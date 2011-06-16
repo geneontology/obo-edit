@@ -1,3 +1,7 @@
+<%@page import="java.util.Comparator"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.Collections"%>
 <%@page import="java.io.PrintWriter"%>
 <%@page import="org.geneontology.gold.rules.AnnotationRuleViolation"%>
 <%@page import="java.util.Set"%>
@@ -44,6 +48,7 @@
 						//if(annotationRuleViolations != null){
 							int i=0;
 							int Annsize = annotationRuleViolations.size();
+							
 							for(AnnotationRuleViolation v: annotationRuleViolations){
 								String msg = v.getMessage();
 								msg = msg.replaceAll("\t", "\\\\t");
@@ -65,6 +70,8 @@
 							
 							System.out.println("......................Clearing the annotations: " + annotationRuleViolations.size());
 							annotationRuleViolations.clear();
+							
+							
 						}
 						
 						

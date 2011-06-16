@@ -23,7 +23,8 @@
 	<%
 		boolean  isTaskRunning = (Boolean)request.getAttribute("isTaskRunning");
 //		boolean  isLargeFile = (Boolean)request.getAttribute("isLargeFile");
-		boolean runAnnotationRules = request.getParameter("runrules") == null ? false : true;
+		boolean runAnnotationRules = "runrules".equals(request.getParameter("command"));
+		boolean commit = "commit".equals(request.getParameter("command"));
 		String id = request.getParameter("id");
 		HttpSession s = request.getSession(true);
 		if(id == null){
@@ -126,7 +127,7 @@
 	%>
 
 	<%
-	if(request.getParameter("commit") == null){
+	if(!commit){
 	
 		Set<AnnotationRuleViolation> annotationRuleViolations = (Set<AnnotationRuleViolation>)request.getAttribute("violations");
 	
@@ -152,9 +153,8 @@
 				
 				<br />		
 				<form action=".">
-					<input type="hidden" name="runrules" />
 					<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
-					<input type="hidden" name="command" value="<%= request.getParameter("command") %>" />
+					<input type="hidden" name="command" value="runrules" />
 					<input type="hidden" name="id" value="<%= request.getParameter("id") %>" />	
 					<input type="submit" value="Run Annotation Rules" />
 				</form>
@@ -162,20 +162,18 @@
 				<br />
 	
 				<form action=".">
-					<input type="hidden" name="commit" />
 					<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
 					<input type="hidden" name="id" value="<%= request.getParameter("id") %>" />	
-					<input type="hidden" name="command" value="<%= request.getParameter("command") %>" />
+					<input type="hidden" name="command" value="commit" />
 					<input type="submit" value="Save GAF into database" />
 				</form>
 				
 				<br />
 	
 				<form action=".">
-					<input type="hidden" name="solrload" />
 					<input type="hidden" name="commit" />
 					<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
-					<input type="hidden" name="command" value="<%= request.getParameter("command") %>" />
+					<input type="hidden" name="command" value="solrload" />
 					<input type="hidden" name="id" value="<%= request.getParameter("id") %>" />	
 					<input type="submit" value="Load GAF into Solr" />
 				</form>
