@@ -248,6 +248,11 @@ function TermDetailsInit(){
 		}
 	    }
 	    
+	    // BUG/TODO: ensure this during development.
+	    if( typeof global_count_data == 'undefined' ){
+		global_count_data = {};
+	    }
+		
 	    // We'll default to
 	    var ccount = {};
 	    for( var tacc in global_count_data ){
@@ -269,22 +274,27 @@ function TermDetailsInit(){
 		    }else if( filter == 'source' ){
 			if( curr_item['dbname'] &&
 			    source_hash[curr_item['dbname']] ){
-			    ccount[tacc] =
-				ccount[tacc] + parseInt(curr_item['count']);
-			}
+				ccount[tacc] =
+				    ccount[tacc] + parseInt(curr_item['count']);
+			    }
 		    }else{
 			//core.kvetch('_in_: ' + tacc + ', ' + ind);
 			if( curr_item['ncbi_taxa_id'] &&
 			    species_hash[curr_item['ncbi_taxa_id']] ){
-			    //core.kvetch('_n1_: ' + '');
-			    ccount[tacc] =
-				ccount[tacc] + parseInt(curr_item['count']);
-			}
+				//core.kvetch('_n1_: ' + '');
+				ccount[tacc] =
+				    ccount[tacc] + parseInt(curr_item['count']);
+			    }
 		    }
 		}
 		//core.kvetch('_c_ ' + tacc + ': ' + ccount[tacc]);
 	    }
 
+	    // BUG/TODO: ensure this during development.
+	    if( typeof global_acc_to_rand == 'undefined' ){
+		global_acc_to_rand = {};
+	    }
+		
 	    // ...
 	    for( var racc in global_acc_to_rand ){
 
