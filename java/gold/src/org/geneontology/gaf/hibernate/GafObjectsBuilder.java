@@ -236,6 +236,8 @@ public class GafObjectsBuilder {
 		ga.setCompositeQualifier(compositeQualifier);
 		ga.setGafDocument(gafDocument.getId());*/
 		ga.setBioentityObject(entity);
+		AnnotationSource source = new AnnotationSource(parser.getCurrentRow(), parser.getLineNumber(), gafDocument.getId());
+		ga.setSource(source);
 		gafDocument.addGeneAnnotation(ga);
 		
 	}
