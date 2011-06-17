@@ -1,153 +1,105 @@
 <!-- START template: gene_product_details.tmpl -->
 
-<div class="contents term">
-  <h1 class="name">[% GP_INFO.name %]</h1>
+<div class="contents">
+  <h1 class="symbol">[% GP_INFO.name %]</h1>
   
-  [% IF GP_INFO.obsolete_p %]
-  <div class="block obsolete" id="info">
-  [% ELSE %]
-    <ul id="navPage" class="inline C">
-      <li><a href="#info" title="View term information">Term information <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
-      <li><a href="#lineage" title="View the placement of the term in the tree">Term neighborhood <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
-      <li><a href="#xrefs" title="View cross-references to external databases">External references <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
-      <li>
-	<a href="[% GENE_PRODUCT_ASSOCIATIONS_LINK %]"
-	   title="View gene products associated with this term">
-	  [% IF GENE_PRODUCT_ASSOCIATIONS_LINK || ( GENE_PRODUCT_ASSOCIATIONS_COUNT && GENE_PRODUCT_ASSOCIATIONS_COUNT == 0 ) %]
-	  [%    IF GENE_PRODUCT_ASSOCIATIONS_COUNT %]
-	  [%       IF GENE_PRODUCT_ASSOCIATIONS_COUNT == 1 %]
-	  1 gene product association
-	  [%       ELSE %]
-	  [% GENE_PRODUCT_ASSOCIATIONS_COUNT %] gene product associations
-	  [%       END %]
-	  [%    ELSE %]
-	  Gene product associations
-	  [%    END %]
-	  <img src="[% image_dir %]/left.png" alt="link to another page" />
-	</a>
+  <ul id="navPage" class="inline C">
+    <li><a href="#info" title="View gene product information">
+	Gene product information
+	<img src="[% image_dir %]/down.png" alt="in-page link" />
+      </a>
+    </li>
+    <li><a href="#sequence"
+	   title="View peptide sequence"
+	   id="barSeqToggle">Peptide sequence
+	<img src="[% image_dir %]/down.png" alt="in-page link" />
+      </a>
+    </li>
+    <li><a href="#seq-info" title="View sequence information">
+	Sequence information
+	<img src="[% image_dir %]/down.png" alt="in-page link" />
+      </a>
+    </li>
+    <li>
+      [% IF TERM_ASSOCIATIONS_LINK || ( TERM_ASSOCIATIONS_COUNT && TERM_ASSOCIATIONS_COUNT == 0 ) %]
+      <a href="[% TERM_ASSOCIATIONS_LINK %]"
+	 title="View terms associated with this term">
+	[%    IF TERM_ASSOCIATIONS_COUNT %]
+	[%       IF TERM_ASSOCIATIONS_COUNT == 1 %]
+	1 term association
+	[%       ELSE %]
+	[% TERM_ASSOCIATIONS_COUNT %] term associations
+	[%       END %]
+	[%    ELSE %]
+	Term associations
+	[%    END %]
+	<img src="[% image_dir %]/left.png"
+	     alt="link to term association page" />
+      </a>
+      [%   ELSE %]
+      No term associations
+      [%   END %]
+    </li>
+  </ul>
+  
+  <div class="block" id="info">
+
+    <h2>Gene Product Information</h2>
+
+      <dl class="gp">
+	
+	<dt>Symbol</dt> 
+	<dd class="symbol">[% GP_INFO.label %]</dd>
+	
+	<dt>Name(s)</dt>
+	<dd class="full_name">[% GP_INFO.descriptive_name %]</dd>
+	
+	<dt>Type</dt> 
+	<dd class="type">[% GP_INFO.type %]</dd>
+	
+	<dt>Taxon</dt>
+	<dd class="spp">[% GP_INFO.taxon %]</dd>
+	<!-- TODO: Oo! Copy below. -->
+	<!-- <dd class="spp"><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=44689" title="View Dictyostelium discoideum details on the NCBI taxonomy website">Dictyostelium discoideum</a></dd> -->
+	
+	<!-- Synonyms -->
+	<dt>Synonyms</dt>
+	[% sl = GP_INFO.synonyms %]
+	[% IF sl.size == 0 %]
+	<dd>None</dd>
+	[% ELSE %]
+	[%    FOREACH synh IN sl %]
+	<dd class="syn">[% IF synh.scope %]<span class="type">[% synh.scope %]</span>: [% END %][% synh.acc %]</dd>
+	[%    END %]
 	[% END %]
-      </li>
-      <!-- gp_assoc_text = GP_INFO.n_deep_products _ ' gene product association'; -->
-      <!-- IF GP_INFO.n_deep_products != 1; -->
-      <!-- gp_assoc_text = gp_assoc_text _ 's'; -->
-      <!-- <li><a href="term-assoc.cgi?term=[% GP_INFO.acc %]&amp;session_id=[% session_id %]" title="View gene products associated with this term">[% gp_assoc_text %] <img src="[% image_dir %]/left.png" alt="link to another page"></a></li> -->
-      [% END %]
-    </ul>
 
-    <div class="block" id="info">
+	<dt>Database</dt>
+	<dd>dictyBase, <a href="http://dictybase.org/gene/DDB_G0267178" title="View details of DDB_G0267178_RTE at dictyBase">dictyBase:DDB_G0267178</a>
+	</dd>
 
-      <h2>Term Information</h2>
+	<dt>Sequence</dt>				
+	<dd><a href="#sequence" title="View DDB_G0267178_RTE sequence" id="seqToggle">View sequence</a>; 
+	  <a class="blast-link" href="blast.cgi?action=blast&amp;seq_id=dictyBase:DDB_G0267178&amp;session_id=5582amigo1308272909" title="Use sequence as BLAST query">use as BLAST query sequence</a></dd>
+	
+	<!-- DEV BREAK -->
 
-      <dl class="term-info">
+      </dl>
 
-     <!-- Acc and ont. -->
-     <dt>Accession</dt>
-     <dd class="acc">[% GP_INFO.acc %]</dd>
-     <dt>Ontology</dt>
-     <dd class="type">[% GP_INFO.ontology_readable %]</dd>
-
-     <!-- Synonyms -->
-     <dt>Synonyms</dt>
-     [% sl = GP_INFO.synonyms %]
-     [% IF sl.size == 0 %]
-     <dd>None</dd>
-     [% ELSE %]
-     [%    FOREACH synh IN sl %]
-     <dd class="syn">[% IF synh.scope %]<span class="type">[% synh.scope %]</span>: [% END %][% synh.acc %]</dd>
-     [%    END %]
-     [% END %]
-
-     <!-- Definition -->
-     <dt>Definition</dt>
-     [% IF GP_INFO.definition %]
-     <dd class="def">[% GP_INFO.definition %]
-       [% IF GP_INFO.term_dbxrefs && GP_INFO.term_dbxrefs.size > 0 %]
-       <br /><i>Source:</i>
-       [%    txref_count = GP_INFO.term_dbxrefs.size %]
-       [%    txref_counter = 1 %]
-       [%    FOREACH txref = GP_INFO.term_dbxrefs %]
-       [% #      href = txref.link %]
-       [%       vis = txref.id %]
-       [%       IF txref.dbname == "URL" %]
-       [% #         href = txref.key %]
-       [%          vis = txref.key %]
-       [%       END %]
-       [%    IF  txref.dbname == 'PMID' || txref.dbname == 'DOI' %]
-       <cite class="paper">[% ELSE %]<cite>[% END %][% IF txref.link %]<a title="Go to [% vis %]" href="[% txref.link %]">[% vis %]</a>[% ELSE %][% vis %][% END %]</cite>[% IF txref_counter < txref_count; txref_counter = txref_counter + 1 %],[% END %]
-       [%    END %]
-       [% ELSE %]
-       [ source: unknown ]
-       [% END %]
-     </dd>
-     [% ELSE %]
-     <dd>None</dd>
-     [% END %]
-
-     <!-- Comment -->
-     <dt>Comment</dt>
-     [% IF GP_INFO.comment %]
-     <dd class="comment">[% GP_INFO.comment %]</dd>
-     [% ELSE %]
-     <dd>None</dd>
-     [% END %]
-     [%	IF GP_INFO.is_obsolete;
-     IF GP_INFO.replaced_by_list;
-     '<dd>Replaced by';
-       FOREACH t = GP_INFO.replaced_by_list %]
-       <a href="term_details?term=[% t.acc %]&amp;session_id=[% session_id %]">[% t.acc %] : [% t.name %]</a>
-       [%				END;
-       '</dd>';
-     END;
-     IF GP_INFO.consider_list;
-     '<dd>Consider';
-       FOREACH t = GP_INFO.consider_list %]
-       <a href="term_details?term=[% t.acc %]&amp;session_id=[% session_id %]">[% t.acc %] : [% t.name %]</a>
-       [%				END;
-       '</dd>';
-     END;
-     END %]
-
-     <!-- Subsets -->
-     <dt>Subset</dt>
-     [% IF GP_INFO.subsets.size != 0 %]
-     <dd><ul class="subset">
-	 [% FOREACH sub = GP_INFO.subsets %]
-	 [% #   IF sub.link %]
-	 [%    IF sub.acc.search('goslim') %]
-	 <li><a href="[% sub.link %]" title="View details of the [% sub.name %] GO slim">[% sub.name %]</a></li>
-	 [%    ELSE %]
-	 <!-- <li>Unavailable</li> -->
-	 <li>[% sub.name %]</li>
-	 [%    END %]
-	 [% END %]
-     </ul></dd>
-     [% ELSE %]
-     <dd>None</dd>
-     [% END %]
-     
-     [% INCLUDE includes/term_details_gonuts.tmpl %]
-
-   </dl>
-
-   <p class="toTop">
-     <a href="#top" title="Back to the top of the page">Back to top</a> 
-   </p>
- </div>
+    <p class="toTop">
+      <a href="#top" title="Back to the top of the page">Back to top</a> 
+    </p>
+  </div>
  
- <!-- Hrm... -->
- [% UNLESS GP_INFO.obsolete_p %]
- [% # IF graph %]
- [% IF 1 == 1 %]
-
- <noscript>
-   <div class="block warning">
-     <h2>Notice</h2>
-     <p>
-       Enable JavaScript in your browser and reload for gene product
-       count filters and links.
-     </p>
-   </div>
- </noscript>
+  <!-- Hrm... -->
+  <noscript>
+    <div class="block warning">
+      <h2>Notice</h2>
+      <p>
+	Enable JavaScript in your browser and reload for gene product
+	count filters and links.
+      </p>
+    </div>
+  </noscript>
 
  <div class="block" id="lineage">
    <h2>Term Neighborhood for [% GP_INFO.name %] ([% GP_INFO.acc %])</h2>
@@ -479,8 +431,6 @@
      <a href="#top" title="Back to the top of the page">Back to top</a> 
    </p>
  </div>
- [% END %]
  
- [% END %]
 </div>
 <!-- END template: gene_product_details.tmpl -->

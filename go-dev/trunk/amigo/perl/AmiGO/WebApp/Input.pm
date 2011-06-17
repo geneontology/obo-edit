@@ -909,7 +909,7 @@ sub _add_gp_set {
   ## GPs.
   push @{$profile->{optional}}, 'gp';
   ## TODO: get a tighter definition of a gene product.
-  $profile->{constraint_methods}{gp} = qr/^[\w\d]+$/i;
+  $profile->{constraint_methods}{gp} = qr/^[\w\d\:]+$/i;
 }
 
 

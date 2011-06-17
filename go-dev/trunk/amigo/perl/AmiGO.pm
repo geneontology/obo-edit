@@ -1225,9 +1225,21 @@ sub get_interlink {
 	 $gp = $db . ':' . $acc;
        }
        my $sid = $args->{session_id} || '';
-       $ilink = 'gp-details.cgi?gp=' .
-	 #$self->html_safe($gp) . '&session_id=' . $sid;
-	 $gp . '&session_id=' . $sid;
+       # $ilink = 'gp-details.cgi?gp=' .
+       # 	 #$self->html_safe($gp) . '&session_id=' . $sid;
+       # 	 $gp . '&session_id=' . $sid;
+       $ilink = 'amigo_exp?mode=golr_gene_product_details&gp=' . $gp;
+     },
+     'gp_details' =>
+     sub {
+       die "interlink mode 'gp_details' requires args" if ! defined $args;
+       my $gp = $args->{gp} || '';
+       my $acc = $args->{acc} || undef;
+       my $db = $args->{db} || undef;
+       if( defined($acc) && defined($db) ){
+	 $gp = $db . ':' . $acc;
+       }
+       $ilink = 'amigo_exp?mode=golr_gene_product_details&gp=' . $gp;
      },
 
      'term-assoc' =>
@@ -1273,13 +1285,13 @@ sub get_interlink {
 	 . '&session_id=' . $sid;
      },
 
-     ## TODO: Yes, this is intentionally close to 'term-details',
-     ## hopefully this will fully bump the former soon.
+     ## NOTE: Should now be the same as term-details.
      'term_details' =>
      sub {
        die "interlink mode 'term_details' requires args" if ! defined $args;
        my $acc = $args->{acc} || '';
-       $ilink = 'term_details?term=' . $acc;
+       #$ilink = 'term_details?term=' . $acc;
+       $ilink = 'amigo_exp?mode=golr_term_details&term=' . $acc;
      },
 
      ## Switch over to using the new pages.
@@ -1288,10 +1300,11 @@ sub get_interlink {
        die "interlink mode 'term-details' requires args" if ! defined $args;
        my $acc = $args->{acc} || '';
        my $sid = $args->{session_id} || '';
-       #$ilink = 'term-details.cgi?term=' .
-       $ilink = 'term_details?term=' .
-	 #$self->html_safe($acc) . '&session_id=' . $sid;
-	 $acc . '&session_id=' . $sid;
+       # #$ilink = 'term-details.cgi?term=' .
+       # $ilink = 'term_details?term=' .
+       # 	 #$self->html_safe($acc) . '&session_id=' . $sid;
+       # 	 $acc . '&session_id=' . $sid;
+       $ilink = 'amigo_exp?mode=golr_term_details&term=' . $acc;
      },
 
      'browse' =>
