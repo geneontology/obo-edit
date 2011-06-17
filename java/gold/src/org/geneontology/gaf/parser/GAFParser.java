@@ -115,7 +115,7 @@ public class GAFParser {
 						+ expectedNumCols
 						+ ", got "
 						+ currentCols.length
-						+ "). The row is ignored.";
+						+ "). The '"+lineNumber+"' row is ignored.";
 	
 					if(currentCols.length<expectedNumCols){
 						AnnotationRuleViolation v = new AnnotationRuleViolation(error, this.currentRow);
