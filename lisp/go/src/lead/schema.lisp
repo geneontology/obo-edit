@@ -13,7 +13,7 @@
 
 (require :clsql)
 (require :clsql-mysql)
-(require
+;;(require
 (defpackage :go-schema
   (:use :cl
 	:clsql

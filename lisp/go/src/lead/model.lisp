@@ -6,11 +6,11 @@
 ;;;; graph_path and t2t fixed-up a bit...
 ;;;;
 
-;;(clc:clc-require :go-engine)
-(clc:clc-require :clsql)
-(clc:clc-require :clsql-mysql)
-(clc:clc-require :go-schema)
-(clc:clc-require :go-engine)
+(require :clsql)
+(require :clsql-mysql)
+;(require :go-schema)
+;(require :go-engine)
+(require :day-to-day)
 (defpackage :go-model
   (:use :cl
 	:clsql-mysql
@@ -172,7 +172,7 @@
   "Print a little info on a GO term."
   (let ((plist (info term)))
     (loop
-     for prop in (toolkit-conv:plist-keys plist)
+     for prop in (day-to-day:plist-keys plist)
      do (format t "~a: ~a~%" prop (getf plist prop)))))
 
 ;; ;; Specialized on object.
@@ -180,7 +180,7 @@
   "Print a little info on a GO term."
   (let ((plist (info obj)))
     (loop
-     for prop in (toolkit-conv:plist-keys plist)
+     for prop in (day-to-day:plist-keys plist)
      do (format t "~a: ~a~%" prop (getf plist prop)))))
 
 ;;;
