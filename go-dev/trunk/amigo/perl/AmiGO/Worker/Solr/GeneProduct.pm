@@ -44,18 +44,22 @@ sub get_info {
       $intermediate =
 	{
 	 acc => $found_doc->{id},
+	 id => $found_doc->{id},
 	 name => $found_doc->{label},
-	 ontology_readable => $self->{A_AID}->readable($found_doc->{source}),
+	 label => $found_doc->{label},
+	 type => $found_doc->{type},
+	 source => $found_doc->{source},
+	 taxon => $found_doc->{taxon},
+	 taxon_readable => $found_doc->{taxon},
+	 #ontology_readable => $self->{A_AID}->readable($found_doc->{source}),
 	 gp_link =>
 	 $self->get_interlink({mode=>'gp-details',
-			       arg=>{acc=>$found_doc->{id}}}),
-	 definition => $found_doc->{description},
-	 comment => $found_doc->{comment},
-	 obsolete_p => 0,
-	 subsets => [],
+			       arg=>{gp=>$found_doc->{id}}}),
+	 descriptive_name => $found_doc->{descriptive_name},
+	 #comment => $found_doc->{comment},
 	 synonyms => [],
-	 dbxrefs => [],
-	 gp_dbxrefs => [],
+	 #dbxrefs => [],
+	 #gp_dbxrefs => [],
 	};
     }
     $gp_info->{$arg} = $intermediate;

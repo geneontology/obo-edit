@@ -888,7 +888,8 @@ org.bbop.amigo.core = function(){
 	var final_args = _merge(default_args, in_args);
 	
 	var acc = final_args['acc'];
-	return 'term_details?term=' + acc;
+	//return 'term_details?term=' + acc;
+	return 'amigo_exp?mode=golr_term_details&term=' + acc;
     };
     this.link.term = _term_link;
 
@@ -910,7 +911,8 @@ org.bbop.amigo.core = function(){
 	var final_args = _merge(default_args, in_args);
 	
 	var acc = final_args['acc'];
-	return 'gp-details.cgi?gp=' + acc;
+	//return 'gp-details.cgi?gp=' + acc;
+	return 'amigo_exp?mode=golr_gene_product_details&gp=' + acc;
     };
     this.link.gene_product = _gene_product_link;
 

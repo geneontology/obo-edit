@@ -1281,7 +1281,8 @@ function _term_line(r){
 
     // 3 ...
     cache.push('<td colspan="7">');
-    cache.push(r.label);
+    //cache.push(r.label);
+    cache.push(core.html.term_link(r.id, r.label));
     cache.push(' (');
     cache.push(r.id);
     cache.push(')');
