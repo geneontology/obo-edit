@@ -42,8 +42,9 @@ public class GeneAnnotation extends GOModel implements Serializable {
 	private static List<ExtensionExpression> extensionExpressionEmptyList = new ArrayList<ExtensionExpression>();
 	private static List<CompositeQualifier> compositeQualifierEmptyList = new ArrayList<CompositeQualifier>();
 	
-	
 	private transient GafDocument gafDocumentObject;
+
+	private transient AnnotationSource annotationSource;
 	
 	/**
 	 * If value of this variable is true then toString is re-calculated
@@ -400,7 +401,18 @@ public class GeneAnnotation extends GOModel implements Serializable {
 		
 		return actsOnTaxonIdObject;
 	}
+
+	public AnnotationSource getSource() {
+		return annotationSource;
+	}
+
+	void setSource(AnnotationSource annotationSource) {
+		this.annotationSource = annotationSource;
+		this.toString = annotationSource.getRow();
+		isChanged = false;
+	}
 	
 
+	
 
 }

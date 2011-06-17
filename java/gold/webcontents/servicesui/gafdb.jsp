@@ -66,7 +66,7 @@
 		}
 	%>
 
-	<h1>Status of the execution of the <%= request.getParameter("command") %>' command on the GAF database.</h1>
+	<h1>Status of the execution of the <%= request.getParameter("command") %> command on the GAF database.</h1>
 
 	<%
 		Task task = (Task)request.getAttribute("task");
@@ -216,7 +216,18 @@
 										
 										
 										jQuery('.totalvoilations').html(jQuery('#voilations').children().size());
-									  }
+									  },
+									  
+									  
+									  error:function (xhr, ajaxOptions, thrownError){
+										  clearInterval(interval);
+										  jQuery(".progress").hide();
+										  jQuery(".commands").show();
+										  jQuery(".inprogress").attr('bgcolor', 'red')
+										  	.html('failed');
+
+										  jQuery('#voilations').parent().append('<div class="server-error">'+xhr.responseText+'</div>');
+						                }    									  
 									});
 							//}
 						}

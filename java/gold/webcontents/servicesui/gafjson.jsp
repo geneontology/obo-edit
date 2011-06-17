@@ -59,6 +59,7 @@
 								out.println("\t\t\t\"message\": \"" + msg + "\",");
 								out.println("\t\t\t\"annotation\": \"" + s + "\"");
 								out.println("\t\t\t\"rule-id\": \"" + v.getRuleId() + "\"");
+								out.println("\t\t\t\"line-number\": \"" + v.getSourceAnnotation().getSource() != null ? v.getSourceAnnotation().getSource().getLineNumber() : "" + "\"");
 								out.println("\t\t}");
 								i++;
 								

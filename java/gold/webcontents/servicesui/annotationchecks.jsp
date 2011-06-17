@@ -1,3 +1,4 @@
+<%@page import="org.geneontology.gaf.hibernate.GeneAnnotation"%>
 <%@page import="java.io.PrintWriter"%>
 <%@page import="org.geneontology.gold.rules.AnnotationRuleViolation"%>
 <%@page import="java.util.Set"%>
@@ -6,9 +7,12 @@
     pageEncoding="ISO-8859-1" trimDirectiveWhitespaces="true"%>
 
 	<%
+	
 		Task task = (Task)request.getAttribute("task");
 		Set<AnnotationRuleViolation> annotationRuleViolations = (Set<AnnotationRuleViolation>)request.getAttribute("violations");
-	
+
+		
+		
 		Throwable ex = null;
 		
 		if(task != null && annotationRuleViolations != null && annotationRuleViolations.size()>0){
@@ -25,9 +29,13 @@
 					String msg = v.getMessage();
 					String s = v.getSourceAnnotation() + "";
 					String ruleId = v.getRuleId();
+					GeneAnnotation ga = v.getSourceAnnotation();
+					String lineNr = "";
+					if(ga != null)
+						lineNr =  ga.getSource() != null ? ga.getSource().getLineNumber() + "" : "";
 					%>
                     <li>
-                    	<div style="font-size: 1.1em;font-weight:bold"><%=ruleId  %> ---- <%= msg %> </div>
+                    	<div style="font-size: 1.1em;font-weight:bold">Rule Id: <%=ruleId  %> --- Line Number: <%=lineNr  %> --- <%= msg %> </div>
                     	    <ul>
                     	       <li>
                     				<div style="color:red"><%= s  %> </div>
