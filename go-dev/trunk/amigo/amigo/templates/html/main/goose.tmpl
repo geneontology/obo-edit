@@ -49,7 +49,7 @@
 	</select>
 	[% ELSE %]
 	<!-- Unable to assemble the examples table. -->
-	(The GO SQL wiki page could not be contacted so SQL exaamples
+	(The GO SQL wiki page could not be contacted so SQL examples
 	are not available.)
 	[% END %]
       </div>
@@ -98,7 +98,7 @@
 
 	  [% FOREACH mirror = all_mirrors %]
 
-	  <li>
+	  <li[% IF mirror_info.$mirror.type != 'mysql' %] style="color:#999999"[% END %]>
 	    <input type="radio" 
 		   name="mirror" 
 		   value="[% mirror %]" 
