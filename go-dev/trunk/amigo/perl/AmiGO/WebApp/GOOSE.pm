@@ -18,8 +18,10 @@ use CGI::Application::Plugin::TT;
 use Utility::Sanitize;
 use AmiGO::WebApp::Input;
 use AmiGO::External::HTML::SQLWiki;
-use AmiGO::External::GODB::Status;
-use AmiGO::External::GODB::Query;
+use AmiGO::External::LEAD::Status;
+use AmiGO::External::LEAD::Query;
+use AmiGO::External::GOLD::Status;
+use AmiGO::External::GOLD::Query;
 
 
 ##
@@ -112,8 +114,9 @@ sub mode_goose {
   ### information to the mirror information hash.
   ###
 
-  my $mirror_loc = $self->{CORE}->amigo_env('GO_DEV_ROOT') .
-    '/amigo/amigo/cgi-bin/experimental/go_mirrors.json';
+  my $mirror_loc =
+    $self->{CORE}->amigo_env('GO_DEV_ROOT') .
+      '/amigo/amigo/cgi-bin/experimental/go_mirrors.json';
   my $mirror_info = $self->{JS}->parse_json_file($mirror_loc);
   #$self->{CORE}->kvetch("_mirror_info_dump_:" . Dumper($mirror_info));
 
@@ -145,10 +148,22 @@ sub mode_goose {
        'host' => $mirror->{host} || undef,
        'port' => $mirror->{port} || '3306',
        'database' => $mirror->{database} || undef,
+       'type' => $mirror->{type} || undef,
       };
 
+    ## Get the right status worker.
+    my $status = undef;
+    if( $mirror->{type} eq 'mysql' ){
+      $status = AmiGO::External::LEAD::Status->new($props);
+    }elsif( $mirror->{type} eq 'psql' ){
+      $status = AmiGO::External::GOLD::Status->new($props);
+    }else{
+      $self->{CORE}->kvetch("_unknown database_");
+      $tmpl_args->{message} = "_unknown database_";
+      return $self->mode_generic_message($tmpl_args);
+    }
+
     ## Check aliveness status and mark/cache accordingly.
-    my $status = AmiGO::External::GODB::Status->new($props);
     if( defined $status ){
       if( ! $status->alive() ){
 	#$self->{CORE}->kvetch("DEAD DEAD DEAD " . $m);
@@ -221,9 +236,22 @@ sub mode_goose {
        'host' => $mirror->{host} || undef,
        'port' => $mirror->{port} || '3306',
        'database' => $mirror->{database} || undef,
+       'type' => $mirror->{type} || undef,
       };
 
-    my $q = AmiGO::External::GODB::Query->new($props, $in_limit);
+    ## Get the right query worker.
+    my $q = undef;
+    if( $mirror->{type} eq 'mysql' ){
+      $q = AmiGO::External::LEAD::Query->new($props);
+    }elsif( $mirror->{type} eq 'psql' ){
+      $q = AmiGO::External::GOLD::Query->new($props);
+    }else{
+      $self->{CORE}->kvetch("_unknown database_");
+      $tmpl_args->{message} = "_unknown database_";
+      return $self->mode_generic_message($tmpl_args);
+    }
+
+    ## Try sql.
     $self->{CORE}->kvetch("trying sql:" . $in_sql);
     $self->{CORE}->kvetch("using limit: " . $in_limit);
     $results = $q->try($in_sql);
@@ -297,7 +325,7 @@ sub mode_goose {
 	    if( $col =~ /($treg)/ ){
 	      my $link =
 		$self->{CORE}->get_interlink({
-					      mode => 'term-details',
+					      mode => 'term-details-old',
 					      optional => { public => 1 },
 					      arg => { acc => $1 }
 					     });

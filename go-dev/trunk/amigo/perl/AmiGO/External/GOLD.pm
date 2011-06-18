@@ -1,4 +1,4 @@
-=head1 AmiGO::External::GODB
+=head1 AmiGO::External::GOLD
 
 TODO: Specialize onto external database resources. We don't even need
 an HTTP agent for this so we'll ignore some of our parentage in the
@@ -10,7 +10,7 @@ use utf8;
 use strict;
 use Carp;
 
-package AmiGO::External::GODB;
+package AmiGO::External::GOLD;
 
 use base ("AmiGO::External");
 
@@ -30,13 +30,13 @@ sub new {
   my $login = $args->{login} || '';
   my $password = $args->{password} || '';
   my $host = $args->{host} || die "need a host: $!";
-  my $port = $args->{port} || '3306';
+  my $port = $args->{port} || '5432';
   my $database = $args->{database} || die "need a database: $!";
 
   $self->{EXT_DB} = undef;
   eval{
     $self->{EXT_DB} =
-      DBI->connect("DBI:mysql:" . $database . ":" . $host . ":" . $port,
+      DBI->connect("DBI:Pg:dbname=$database;host=$host;port=$port;",
 		   $login,
 		   $password)
 	|| die "Unable to connect: $DBI::errstr\n";
@@ -52,6 +52,10 @@ sub new {
 
 =item count
 
+BUG: redo for postgres, can it even be redone?
+
+See: http://archives.postgresql.org/pgsql-novice/2007-07/msg00108.php
+
 Get a row count after trying a statement. Remember to set your CALC if
 you want it...
 
@@ -61,21 +65,22 @@ sub count {
   my $self = shift;
   my $retval = undef;
 
-  ## Run.
-  my $statement = undef;
-  $statement = $self->{EXT_DB}->prepare("SELECT FOUND_ROWS()")
-    or die "Couldn't prepare query.";
-  $statement->execute()
-    or die "Couldn't run count.";
+  # ## Run.
+  # my $statement = undef;
+  # $statement = $self->{EXT_DB}->prepare("SELECT FOUND_ROWS()")
+  #   or die "Couldn't prepare query.";
+  # $statement->execute()
+  #   or die "Couldn't run count.";
 
-  ## Grab the count.
-  my @meta_info = $statement->fetchrow_array();
-  $retval = $meta_info[0] if $meta_info[0];
+  # ## Grab the count.
+  # my @meta_info = $statement->fetchrow_array();
+  # $retval = $meta_info[0] if $meta_info[0];
 
-  ## Close connection.
-  $statement->finish();
+  # ## Close connection.
+  # $statement->finish();
 
-  return $retval;
+  #return $retval;
+  return '???';
 }
 
 
@@ -88,41 +93,6 @@ sub DESTROY {
     $self->{EXT_DB} = undef;
   }
 }
-
-
-# =item get_external_data
-
-# ...
-
-# =cut
-# sub get_external_data {
-
-#   ##
-#   my $self = shift;
-#   my $url = shift || '';
-#   my $mech = $self->{MECH};
-
-#   ## Go and try and get the external document.
-#   my $doc = '';
-#   eval {
-#     $mech->get($url);
-#   };
-#   if( $@ ){
-#     $self->kvetch("error in GETing the document from: '$url': $@");
-#   }else{
-
-#     if ( ! $mech->success() ){
-#       $self->kvetch("failed to contact data source at: $url");
-#     }else{
-
-#       ## Grab the content.
-#       $doc = $mech->content();
-#       $self->{EXT_DATA} = $doc;
-#     }
-#   }
-
-#   return $doc;
-# }
 
 
 

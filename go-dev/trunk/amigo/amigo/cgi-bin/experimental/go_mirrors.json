@@ -8,6 +8,7 @@
      "password": "amigoer",
      "database": "go_latest",
      "host": "spitz.lbl.gov",
+     "type": "mysql",
      "port": "3306"
  },
 "princeton":
@@ -19,6 +20,7 @@
      "password": "g00dness",
      "database": "go_latest",
      "host": "gomirror.princeton.edu",
+     "type": "mysql",
      "port": "13309"
  },
 "ebi":
@@ -30,6 +32,7 @@
      "password": "amigo",
      "database": "go_latest",
      "host": "mysql.ebi.ac.uk",
+     "type": "mysql",
      "port": "4085"
  },
 "princeton_lite":
@@ -41,6 +44,7 @@
      "password": "g00dness",
      "database": "go_latest_lite",
      "host": "gomirror.princeton.edu",
+     "type": "mysql",
      "port": "13309"
  },
 "bbop_lite":
@@ -52,6 +56,19 @@
      "password": "amigoer",
      "database": "go_latest_lite",
      "host": "spitz.lbl.gov",
+     "type": "mysql",
      "port": "3306"
+ },
+"gold_exp":
+ {
+     "label": "Experimental GOLD",
+     "location": "in Berkeley, CA",
+     "is_main_p": false,
+     "login": "gold_user",
+     "password": "gold_pass",
+     "database": "gold",
+     "host": "ladle.lbl.gov",
+     "type": "psql",
+     "port": "5432"
  }
 }

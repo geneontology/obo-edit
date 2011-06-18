@@ -1307,6 +1307,19 @@ sub get_interlink {
        $ilink = 'amigo_exp?mode=golr_term_details&term=' . $acc;
      },
 
+     ## The old way for things like GOOSE as we transition.
+     'term-details-old' =>
+     sub {
+       die "interlink mode 'term-details' requires args" if ! defined $args;
+       my $acc = $args->{acc} || '';
+       my $sid = $args->{session_id} || '';
+       #$ilink = 'term-details.cgi?term=' .
+       $ilink = 'term_details?term=' .
+       	 #$self->html_safe($acc) . '&session_id=' . $sid;
+       	 $acc . '&session_id=' . $sid;
+       #$ilink = 'amigo_exp?mode=golr_term_details&term=' . $acc;
+     },
+
      'browse' =>
      sub {
        die "interlink mode 'browse' requires args" if ! defined $args;

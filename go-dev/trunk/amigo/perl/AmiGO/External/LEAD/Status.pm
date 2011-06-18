@@ -1,4 +1,4 @@
-=head1 AmiGO::External::GODB::Status
+=head1 AmiGO::External::LEAD::Status
 
 ...
 
@@ -10,9 +10,9 @@ Usage:
 use utf8;
 use strict;
 
-package AmiGO::External::GODB::Status;
+package AmiGO::External::LEAD::Status;
 
-use base ("AmiGO::External::GODB");
+use base ("AmiGO::External::LEAD");
 use Date::Format;
 
 

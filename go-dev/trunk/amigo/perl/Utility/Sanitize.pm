@@ -72,8 +72,15 @@ sub rationalize {
 }
 
 
-## Does some fixes depending on the input.
-## If we're going to use a limit, let's change the query a little:
+=item limit_fix
+
+Does some fixes depending on the input--if we're going to use a limit,
+let's change the query a little to add the ability to count rows as
+well.
+
+NOTE: MYSQL ONLY!
+
+=cut
 sub limit_fix {
 
   my $self = shift;
@@ -84,6 +91,29 @@ sub limit_fix {
   if ( $str !~ /\s+SQL_CALC_FOUND_ROWS\s+/i ){
     $str =~ s/SELECT/SELECT SQL_CALC_FOUND_ROWS/i;
   }
+
+  ## Semicolon check and add limit.
+  if ( ! $self->{ALREADY_HAS_LIMIT} ) {
+    $str =~ tr/\;//d;
+    $str = $str . ' LIMIT ' . $limit . ';';
+  }
+
+  return $str;
+}
+
+=item add_limit
+
+Does some fixes depending on the input.
+If we're going to use a limit, let's change the query a little:
+
+NOTE: Should work for all SQL.
+
+=cut
+sub add_limit {
+
+  my $self = shift;
+  my $str = shift || '';
+  my $limit = shift || 0;
 
   ## Semicolon check and add limit.
   if ( ! $self->{ALREADY_HAS_LIMIT} ) {
