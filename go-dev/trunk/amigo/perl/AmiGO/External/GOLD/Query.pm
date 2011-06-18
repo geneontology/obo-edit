@@ -1,4 +1,4 @@
-=head1 AmiGO::External::GODB::Query
+=head1 AmiGO::External::GOLD::Query
 
 Very low level SQL handling-as-client that tries to be safe for the
 server (i.e. the incoming SQL may not be trusted). It also tries to
@@ -7,9 +7,9 @@ much as possible (hopefully preventing schema probes).
 
 =cut
 
-package AmiGO::External::GODB::Query;
+package AmiGO::External::GOLD::Query;
 
-use base 'AmiGO::External::GODB';
+use base 'AmiGO::External::GOLD';
 use utf8;
 use strict;
 use Utility::Sanitize;
@@ -82,7 +82,7 @@ sub try {
 
     $in_sql = $sane->rationalize($in_sql);
     $sane->check($in_sql);
-    $in_sql = $sane->limit_fix($in_sql, $limit) if $limit;
+    $in_sql = $sane->add_limit($in_sql, $limit) if $limit;
 
     ## If something went wrong with the sanitation, do a hard bail
     ## while passing the errors out. Keep in mind that sane and amigo

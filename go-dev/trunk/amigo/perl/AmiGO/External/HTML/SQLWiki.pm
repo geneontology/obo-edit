@@ -26,6 +26,7 @@ This is the URL that points to the GO SQL wiki.
 
 =cut
 my $URL_FOR_SQLWIKI = 'http://wiki.geneontology.org/index.php/Example_Queries';
+my $MATCH_FOR_SQLWIKI = '<span class=\"mw-headline\" id=\"[\w\s\_\-\:\;\,\.]*\">\s*([^\n]*?)<\/span><\/h[3-4]>.*?<pre>\s*(.*?)<\/pre>';
 
 
 =item new
@@ -56,11 +57,15 @@ sub extract_sql {
   my $self = shift;
   my $retval = [];
 
+  #$self->kvetch("Extracted: " . $self->{EXT_DATA});
+
   if( ! defined $self->{EXAMPLES} ){
 
     my $wikimatch = $self->{MATCH};
-    my %examples = $self->{EXT_DATA} =~ /$wikimatch/gs;
+    my %examples = $self->{EXT_DATA} =~ /$MATCH_FOR_SQLWIKI/gs;
     foreach my $title (sort keys %examples){
+
+      #$self->kvetch("Extracted: " . $self->{EXT_DATA});
 
       ## Transform any problem causing characters.
       my $munched = $examples{$title};
