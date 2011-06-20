@@ -7,6 +7,15 @@ What's New in OBO-Edit v2.1-beta14
 Bug fixes:
 [ geneontology-Bugs-3303596 ] Made definitions of obsolete terms editable
 
+[ geneontology-Bugs-2309391 ] OE2 handling of unrecognized relation (text editor et al.)
+Unrecognized relation was shown wrong or misleadingly in many components,
+including Ontology Tree Editor (the unrecognized relation didn't show up under
+'Relations', and the child didn't appear under the parent to which it is
+linked with the unrecognized relation), Parent Editor (unrecognized relation
+shown as "is_a"), and more.
+
+[ geneontology-Bugs-2679772 ] Don't save dbxref lib description to obo file
+
 Changes/Improvements:
 Made titlebar of Text Editor say "(OBSOLETE TERM)" in red if it's showing a
 term that's obsolete.
