@@ -1,10 +1,10 @@
 Copyright (C) 2011, Gene Ontology Consortium
 Original author:  John Day-Richter
-Version:  2.1-beta8
-Release date:  January 24, 2011
+Version:  2.1-beta14
+Release date:  July, 2011
 
 OBO-Edit is an open source tool written in Java for browsing, searching, and
-modifying OBO ontologies.
+modifying ontologies.
 
 Contacting us
 -----------
@@ -19,6 +19,22 @@ How to report bugs
 
 
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
+
+================================
+What's New in OBO-Edit v2.1-beta14
+================================
+
+Bug fixes:
+[ geneontology-Bugs-3303596 ] Made definitions of obsolete terms editable
+[ geneontology-Bugs-3176685 ] Is_a closure broken
+When doing a filtered save with is_a closure, it wasn't saving the right terms.
+
+Changes/Improvements:
+Made titlebar of Text Editor say "(OBSOLETE TERM)" in red if it's showing a
+term that's obsolete.
+
+Ontology Term Generation plugin fixed by its authors
+
 
 ================================
 What's New in OBO-Edit v2.1-beta13 (5/16/2011)
