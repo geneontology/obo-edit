@@ -273,7 +273,7 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 				SelectionManager.selectTerm(table, (LinkedObject) colobj);
 			}
 			//Select link and show explanation in explanation component
-			if(table.getSelectedColumn() ==3){
+			if(table.getSelectedColumn() ==3 && table.getSelectedRow() >= 0){
 				Link rowobj = links.get(table.getSelectedRow());
 				SelectionManager.selectLink(table, rowobj, false);
 			}
