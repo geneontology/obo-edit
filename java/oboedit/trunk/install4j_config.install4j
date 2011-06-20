@@ -316,7 +316,7 @@
               <java class="java.beans.XMLDecoder">
                 <object class="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent">
                   <void property="labelText">
-                    <string>Because OBO-Edit2 is a Java application, it cannot use an arbitrary amount of system memory like a native application. Instead, you must set a fixed maximum amount of memory that OBO-Edit2 can use. Unless you have a 64-bit JVM, Java sets a limit of 1860M of allocated memory, even if you are using a computer with more memory. You can change the memory setting after installation via the Configuration Manager or by editing oboedit.vmoptions (located in the OBO-Edit installation directory).</string>
+                    <string>Because OBO-Edit2 is a Java application, it cannot use an arbitrary amount of system memory like a native application. Instead, you must set a fixed maximum amount of memory that OBO-Edit2 can use. Unless you have a 64-bit JVM, Java sets a limit of 1860M of allocated memory, even if you are using a computer with more memory. You can change the memory setting after installation via OBO-Edit's Configuration Manager or by hand-editing oboedit.vmoptions (located in the OBO-Edit installation directory).  NOTE: Windows users should choose a value of 1024M--Windows seems to have trouble with higher memory allocations than that.</string>
                   </void>
                 </object>
               </java>
