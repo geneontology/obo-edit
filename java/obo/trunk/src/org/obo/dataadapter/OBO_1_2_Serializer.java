@@ -15,6 +15,10 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(OBO_1_2_Serializer.class);
 
+        // 6/20/2011: By default, don't write dbxref description in output
+        // (http://sourceforge.net/tracker/?func=detail&aid=2679772&group_id=36855&atid=418257)
+        protected static boolean SAVE_DBXREF_DESC = false;
+
 	protected PrintStream stream;
 
 	LinkedList serializer_1_2_tagOrdering = new LinkedList();
@@ -611,9 +615,13 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 		print(escapeDbxref(dbxref.getDatabase()));
 		print(":");
 		print(escapeDbxref(dbxref.getDatabaseID()));
-		if (dbxref.getDesc() != null && dbxref.getDesc().length() > 0) {
-			print(" \"" + escapeQuoted(dbxref.getDesc()) + "\"");
-		}
+                // 6/20/2011: By default, don't write dbxref description in output
+                // (http://sourceforge.net/tracker/?func=detail&aid=2679772&group_id=36855&atid=418257)
+                if (SAVE_DBXREF_DESC) {
+                    if (dbxref.getDesc() != null && dbxref.getDesc().length() > 0) {
+                        print(" \"" + escapeQuoted(dbxref.getDesc()) + "\"");
+                    }
+                }
 		writeNestedValue(dbxref.getNestedValue());
 	}
 
