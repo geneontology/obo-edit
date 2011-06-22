@@ -1,9 +1,9 @@
 <dataConfig>
   <dataSource type="JdbcDataSource" 
               driver="org.postgresql.Driver"
-              url="jdbc:postgresql://XXXX.:XXXX/XXXX"
-              user="XXXX"
-              password="XXXX"/>
+              url="jdbc:postgresql://localhost/gold_test"
+              user="gold_user"
+              password="gold_pass"/>
 
   <document>
 
