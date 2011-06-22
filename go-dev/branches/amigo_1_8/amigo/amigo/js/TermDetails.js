@@ -301,7 +301,7 @@ function TermDetailsInit(){
 
 		for( var did = 0; did <= different_ids.length; did++ ){
 
-		    did_acc = different_ids[did];
+		    var did_acc = different_ids[did];
 		    
 		    //var relt = jQuery('#' + global_acc_to_rand[racc]);
 		    var relt = jQuery('#' + did_acc);
