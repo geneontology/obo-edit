@@ -22,6 +22,19 @@ term that's obsolete.
 
 Ontology Term Generation plugin fixed by its authors
 
+[ geneontology-Bugs-3314676 ] Ancestor/descendant relationships missing
+In the search panel, when looking for descendants/ancestors of a term, the
+pulldown menu for relationships only includes default obo-edit relationships
+and not ontology-specific relationships.
+NOTE: I accidentally broke this a few months ago when fixing some other
+aspects of aspect search (descendant, parent, etc.).  I have now restored it
+to approximately the same slightly broken behavior as it had before: the
+ontology-specific relationships are added to the pulldown menu but only when
+you do something to change the search panel--e.g., open the aspect selector,
+change the aspect, etc.  If you are restarting OE and the search panel already
+showed the aspect search that you still want to do, it won't include the
+ontology-specific relationships.  I tried to fix this, but because of the
+control flow in OE, I couldn't find a way to make it work.
 
 ================================
 What's New in OBO-Edit v2.1-beta13 (5/16/2011)
