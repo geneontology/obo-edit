@@ -99,7 +99,7 @@ public class TermFilterEditor extends JPanel {
                   // (the text that has a descriptin of the search, e.g., "all_text_fields contains 'blue'")
                   // (it's in FilterComponent.java) doesn't update when you change the search.
                     //                  updateFields();
-                    //                    logger.debug("TermFilterEditor.actionPerformed: " + e); // DEL
+                    //                                        logger.debug("TermFilterEditor.actionPerformed: " + e); // DEL
                     fireUpdateEvent(); // This seems to do the trick--statusLabel updates as it should.
 		}
 	}
@@ -114,6 +114,7 @@ public class TermFilterEditor extends JPanel {
                     //                    logger.debug("aspectBoxListener: aspectBox.getSelectedItem = " + aspectBox.getSelectedItem() + ", showTypeBox = " + showTypeBox); // DEL
                     reachedViaLabel.setVisible(showTypeBox);
                     typeBox.setVisible(showTypeBox);
+                    updateFields();
 		}
 	};
 
@@ -127,7 +128,9 @@ public class TermFilterEditor extends JPanel {
 
 	protected ActionListener valueFieldListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
+                    //                    logger.debug("valueFieldListener.actionPerformed: " + e); // DEL
 			fireUpdateEvent();
+                        updateFields();
 		}
 	};
 
@@ -284,7 +287,10 @@ public class TermFilterEditor extends JPanel {
 		advancedButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
+                            //                            logger.debug("advancedButton.actionPerformed: " + e); // DEL
 				setAspectControlsVisible(!aspectVisible);
+                                if (!aspectVisible)
+                                    updateFields();
 			}
 
 		});
@@ -310,9 +316,10 @@ public class TermFilterEditor extends JPanel {
 		criterionBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.clear();
-//				logger.info("criterionBox.actionPerformed: " + e); // DEL
+                                //				logger.info("criterionBox.actionPerformed: " + e); // DEL
 				model.addCriterion((SearchCriterion) criterionBox
 						.getSelectedItem());
+                                updateFields();
 			}
 		});
 
