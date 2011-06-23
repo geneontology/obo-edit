@@ -28,7 +28,7 @@ public class ParentSearchAspect implements SearchAspect {
             } catch (ClassCastException e) {
                 // In ChildSearchAspect, this happens a lot, but it doesn't seem to happen
                 // in ParentSearchAspect, for some reason.
-                //                logger.debug("ChildSearchAspect.getObjects: can't cast " + o + ", class = " + o.getClass() + " to LinkedObject");
+                logger.debug("ParentSearchAspect.getObjects: can't cast " + o + ", class = " + o.getClass() + " to LinkedObject");
                 return c;
             }
 

@@ -149,6 +149,7 @@ public class TermUtil {
 			setResults(getDescendants(100, linkDatabase, term, memoizeTable, linkFilter));
 		}
 
+                /** This is analagous to getParents, not to getAncestors!  Is this right? */
 		protected Collection<LinkedObject> getDescendants(double incSize,
 				LinkDatabase linkDatabase, LinkedObject term,
 				Map<LinkedObject, Collection<LinkedObject>> memoizeTable, LinkFilter linkFilter) {
@@ -218,10 +219,64 @@ public class TermUtil {
 			for(Link tr : linkDatabase.getParents(term)){
 				if(linkFilter == null || linkFilter.satisfies(tr))
 					out.add(tr.getParent());
+                                // I don't get this part--doesn't recursing like this
+                                // get the ancestors rather than just the parents?
 				out.addAll(getParents(incSize / term.getChildren().size(),
 						linkDatabase, tr.getChild(), memoizeTable, linkFilter));
 			}
 			if (term.getParents().size() == 0) {
+				progress += (int) incSize;
+			}
+			return out;
+		}
+	}
+
+        /** Like ParentTask */
+	public static class ChildTask extends AbstractTaskDelegate<Collection<LinkedObject>> {
+		protected Map<LinkedObject, Collection<LinkedObject>> memoizeTable;
+		protected LinkedObject term;
+		protected LinkDatabase linkDatabase;
+		protected LinkFilter linkFilter;
+
+		public ChildTask(LinkDatabase linkDatabase, LinkedObject term,
+				Map<LinkedObject, Collection<LinkedObject>> memoizeTable, LinkFilter linkFilter) {
+			this.linkDatabase = linkDatabase;
+			this.term = term;
+			this.memoizeTable = memoizeTable;
+			this.linkFilter = linkFilter;
+		}
+
+		public void execute() {
+			setProgressString("Finding children");
+			if (memoizeTable == null)
+				memoizeTable = new MultiHashMap<LinkedObject, LinkedObject>();
+			progress = 0;
+			setResults(getChildren(100, linkDatabase, term, memoizeTable, linkFilter));
+		}
+
+		protected Collection<LinkedObject> getChildren(double incSize,
+				LinkDatabase linkDatabase, LinkedObject term,
+				Map<LinkedObject, Collection<LinkedObject>> memoizeTable, LinkFilter linkFilter) {
+			if (linkDatabase == null)
+				linkDatabase = DefaultLinkDatabase.getDefault();
+
+			Collection<LinkedObject> out = memoizeTable.get(term);
+			if (memoizeTable.containsKey(term)) {
+				progress += (int) incSize;
+				return out;
+			}
+			out = new HashSet<LinkedObject>();
+			memoizeTable.put(term, out);
+
+			for(Link tr : linkDatabase.getChildren(term)){
+				if(linkFilter == null || linkFilter.satisfies(tr))
+					out.add(tr.getChild());
+                                // Why recurse here?  Wouldn't this get all the descendants,
+                                // not just the children?
+                                //				out.addAll(getChildren(incSize / term.getChildren().size(),
+                                //						linkDatabase, tr.getChild(), memoizeTable, linkFilter));
+			}
+			if (term.getChildren().size() == 0) {
 				progress += (int) incSize;
 			}
 			return out;
@@ -502,8 +557,7 @@ public class TermUtil {
 		return linkDatabase.getChildren(lo).size();
 	}
 
-	/**
-	 * Returns the descendants of the given term. Does not include self by default
+	/* Returns the descendants of the given term. Does not include self by default
 	 */
 	public static Collection<LinkedObject> getDescendants(LinkedObject term, LinkFilter lf) {
 		return getDescendants(term,false,lf);
@@ -541,7 +595,6 @@ public class TermUtil {
 		return out;
 	}
 
-	////////////
 	/**
 	 * Returns the parents of the given term.
 	 */
@@ -640,6 +693,7 @@ public class TermUtil {
 		return linkDatabase.getParents(lo).size();
 	}
 
+    /** This doesn't seem to get called anywhere. */
 	public static Collection<LinkedObject> getParentsByType(LinkedObject lo, OBOProperty type) {
 		HashSet<LinkedObject> parents = new HashSet<LinkedObject>();
 		for (Link link : lo.getParents()) {
@@ -647,6 +701,7 @@ public class TermUtil {
 				parents.add(link.getParent());
 			}
 		}
+                logger.debug("getParentsByType(" + lo + "): type = " + type + ", parents = " + parents); // DEL
 		return parents;
 	}
 
@@ -658,9 +713,25 @@ public class TermUtil {
                     //			children.add(link.getParent());
 			children.add(link.getChild());
 		}
+                logger.debug("TermUtil.getChildren(" + lo + "): " + children); // DEL
 		return children;
 	}
 
+    /** Adapted from getParents */
+    public static Collection<LinkedObject> getChildren(LinkedObject term, boolean includeSelf, LinkFilter lf) {
+		return getChildren(term, null, includeSelf, lf);
+	}
+
+    /** Adapted from getParents */
+    protected static Collection<LinkedObject> getChildren(LinkedObject term,
+			LinkDatabase linkDatabase, boolean includeSelf, LinkFilter lf) {
+        ChildTask task = new ChildTask(linkDatabase, term, null, lf);
+		task.execute();
+		Collection<LinkedObject> out = task.getResults();
+		if (includeSelf)
+			out.add(term);
+		return out;
+    }
 
 	/**
 	 * Returns a single value for a given property from a given instance. If the

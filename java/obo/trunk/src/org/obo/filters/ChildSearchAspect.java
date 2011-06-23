@@ -29,7 +29,7 @@ public class ChildSearchAspect implements SearchAspect {
             try {
                 lo = (LinkedObject) o;
             } catch (ClassCastException e) {
-                //                logger.debug("ChildSearchAspect.getObjects: can't cast " + o + ", class = " + o.getClass() + " to LinkedObject");
+                logger.debug("ChildSearchAspect.getObjects: can't cast " + o + ", class = " + o.getClass() + " to LinkedObject");
                 return c;
             }
 
@@ -38,18 +38,27 @@ public class ChildSearchAspect implements SearchAspect {
             // This turned out to be because TermUtil.getChildren wasn't working
             // right.  (With the reasoner on, the children were being gotten a
             // different way.)
-		if (reasoner != null) {
-//			for (Link link : reasoner.getChildren((LinkedObject) o)) 
-//				c.add(link.getChild());
-			LinkDatabase trimmedReasoner = new TrimmedLinkDatabase(reasoner);
-                        Collection<Link> children = trimmedReasoner.getChildren(lo);
-			for (Link link : children) 
+            //		if (reasoner != null) {
+            ////			for (Link link : reasoner.getChildren((LinkedObject) o)) 
+            ////				c.add(link.getChild());
+            //			LinkDatabase trimmedReasoner = new TrimmedLinkDatabase(reasoner);
+            //                        Collection<Link> children = trimmedReasoner.getChildren(lo);
+            //			for (Link link : children) 
+            //                            c.add(link.getChild());
+            if(o instanceof LinkedObject){
+                if(reasoner != null) {
+                    LinkDatabase trimmedReasoner = new TrimmedLinkDatabase(reasoner);
+                    for (Link link : trimmedReasoner.getChildren((LinkedObject) o))
+                        if(traversalFilter == null || traversalFilter.satisfies(link))
                             c.add(link.getChild());
 		} else {
-                    c.addAll(TermUtil.getChildren(lo));
+                    //                    c.addAll(TermUtil.getChildren(lo));
+                    // Like ParentSearchAspect
+                    c.addAll(TermUtil.getChildren((LinkedObject) o, false, (LinkFilter) traversalFilter));
 		}
-		return c;
-	}
+            }
+            return c;
+        }
 
 
 	public boolean equals(Object o) {
