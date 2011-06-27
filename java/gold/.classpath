@@ -3,7 +3,7 @@
 	<classpathentry kind="src" output="classes" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/jetty7/jetty-ajp-7.3.1.v20110307.jar"/>
+	<classpathentry kind="lib" path="lib/jetty7/jetty-ajp-7.3.1.v20110307.jar" sourcepath="/Users/shahidmanzoor/.m2/repository/org/eclipse/jetty/jetty-ajp/7.3.1.v20110307/jetty-ajp-7.3.1.v20110307-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jetty7/jetty-annotations-7.3.1.v20110307.jar"/>
 	<classpathentry kind="lib" path="lib/jetty7/jetty-client-7.3.1.v20110307.jar"/>
 	<classpathentry kind="lib" path="lib/jetty7/jetty-continuation-7.3.1.v20110307.jar"/>
@@ -75,6 +75,5 @@
 	<classpathentry kind="lib" path="lib/solrj/commons-httpclient-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/jdom/jaxen.jar"/>
 	<classpathentry kind="lib" path="lib/jdom/jdom.jar"/>
-	<classpathentry kind="lib" path="lib/ehcache/ehcache-core-2.4.2.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
