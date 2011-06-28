@@ -45,6 +45,12 @@ public class GafURLFetch implements Iterator {
 	
 	private String currentGafFilePath;
 	
+	private String host;
+	
+	private int port;
+	
+	private String path;
+	
 	public GafURLFetch(String url){
 		this.url =  url ;
 		ftpClient = new FTPClient();
@@ -105,7 +111,11 @@ public class GafURLFetch implements Iterator {
 				
 				
 				LOG.info("Returning input stream for the file: " + file);
+	
+				_connect();
 				
+				ftpClient.changeWorkingDirectory(path);
+
 				InputStream is = ftpClient.retrieveFileStream(file);
 				
 				if(file.endsWith(".gz")){
@@ -128,6 +138,21 @@ public class GafURLFetch implements Iterator {
 	public void remove() {
 	}
 
+	
+	private void _connect() throws SocketException, IOException{
+		try{
+			ftpClient.disconnect();
+		}catch(Exception ex){
+			
+		}
+		
+		
+		ftpClient.connect( host, port );
+		ftpClient.login("anonymous", "");
+		ftpClient.enterLocalActiveMode();
+		
+	}
+	
 	public boolean connect() throws SocketException, IOException, URISyntaxException{
 		if(this.isConnected)
 			return true;
@@ -144,26 +169,24 @@ public class GafURLFetch implements Iterator {
 		}
 		
 		this.isConnected = false;
-		String host = uri.getHost();
-		int port = uri.getPort();
+		this.host = uri.getHost();
+		this.port = uri.getPort();
 		
 		if(port == -1)
 			port = 21;
 		
-		ftpClient.connect( host, port );
-		ftpClient.login("anonymous", "");
-		ftpClient.enterLocalActiveMode();
+		
+		_connect();
 		
 		this.files = ftpClient.listFiles( uri.getPath() );
 
-		String path = uri.getPath();
+		path = uri.getPath();
 		
 		if(this.files.length==1){
 			path = path.substring(0, path.lastIndexOf("/")) + "/";
 			
 		}
 		
-		ftpClient.changeWorkingDirectory(path);
 		
 		this.isConnected = true;
 		
