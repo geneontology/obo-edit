@@ -174,6 +174,9 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 					runner = new GafDbTaskExecution();
 					runner.start();
 				}
+				
+				if(update)
+					updateInProgress = true;
 
 			}
 
@@ -353,7 +356,6 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 					splittedDocuments = null;
 
 				} else if (update) {
-					updateInProgress = true;
 					for (GafDocument gafDocument : gafDocuments) {
 						this.currentOntologyBeingProcessed = gafDocument
 								.getId();
