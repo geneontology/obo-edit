@@ -38,16 +38,6 @@
 			<center><img class="progress" src="/images/progress-indicator.gif" alt="Request is in Progress" /></center>
 			<p class="progress" align="center">Your Request is in Progress</p>
 
-			<%
-				if(GafDbOperationsService.isDbUpdateInProgress()){
-					%>
-					
-					<h1>DB Update is already in progress. Please the call the update operation later.</h1>
-					<%
-				}
-			
-			%>
-
 			
 			<% if(!runAnnotationRules){ %>
 			
@@ -75,7 +65,13 @@
 	
 	<%
 			}
+		}else if(GafDbOperationsService.isDbUpdateInProgress()){
+			%>
+			
+			<h1>DB Update is already in progress. Please the call the update operation later.</h1>
+			<%
 		}
+
 	%>
 
 	<h1>Status of the execution of the <%= request.getParameter("command") %> command on the GAF database.</h1>
