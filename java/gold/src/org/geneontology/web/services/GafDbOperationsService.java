@@ -304,24 +304,28 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 			try {
 
-				//gafDocuments = new ArrayList<GafDocument>();
-				//splittedDocuments = new ArrayList<String>();
 
 				if (gafLocations instanceof GafURLFetch) {
 					GafURLFetch fetch = (GafURLFetch) gafLocations;
 					fetch.connect();
 					while (fetch.hasNext()) {
 
-						InputStream is = (InputStream) fetch.next();
-						java.io.Reader reader = new InputStreamReader(is);
-						buildGafDocument(reader,
-								fetch.getCurrentGafFile(),
-								fetch.getCurrentGafFilePath());
-							
-							//gafDocuments.add(doc);
-						reader.close();
-						is.close();
-						fetch.completeDownload();
+						
+						try{
+							InputStream is = (InputStream) fetch.next();
+							java.io.Reader reader = new InputStreamReader(is);
+							buildGafDocument(reader,
+									fetch.getCurrentGafFile(),
+									fetch.getCurrentGafFilePath());
+								
+								//gafDocuments.add(doc);
+							reader.close();
+							is.close();
+							fetch.completeDownload();
+						}catch (Exception ex) {
+							this.exception = ex;
+							LOG.error(ex, ex);
+						}
 					}
 				} else {
 
@@ -350,15 +354,21 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 							ontLocation = f.getAbsolutePath();
 							this.currentOntologyBeingProcessed = ontLocation;
 
-							InputStream is = new FileInputStream(f);
-
-							if (f.getName().endsWith(".gz")) {
-								is = new GZIPInputStream(is);
+							
+							try{
+								InputStream is = new FileInputStream(f);
+	
+								if (f.getName().endsWith(".gz")) {
+									is = new GZIPInputStream(is);
+								}
+	
+								buildGafDocument(
+										new InputStreamReader(is), f.getName(),
+										ontLocation);
+							}catch(Exception ex){
+								this.exception = ex;
+								LOG.error(ex, ex);
 							}
-
-							buildGafDocument(
-									new InputStreamReader(is), f.getName(),
-									ontLocation);
 								//gafDocuments.add(doc);
 
 						}
