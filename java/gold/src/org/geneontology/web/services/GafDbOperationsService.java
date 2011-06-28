@@ -71,7 +71,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 	private String command;
 
-	private boolean commit;
+	private boolean update;
 
 	private boolean runAnnotationRules;
 
@@ -80,11 +80,12 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	private List<GafDocument> gafDocuments;
 
 	private List<String> splittedDocuments;
-	
-	
+
 	private boolean complete;
+
+	private static boolean updateInProgress;
 	
-	private boolean annotationRulesComplete;
+	// private boolean annotationRulesComplete;
 
 	// When annotation checks completed this variable set to true
 	// This variable helps to prevent re-run the annotation checks
@@ -104,7 +105,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	 * situation the service for a specific operation will be called once so in
 	 * those cases after the end of operation variables reset.
 	 */
-	//private boolean noReloadMode;
+	// private boolean noReloadMode;
 
 	public GafDbOperationsService() {
 		runner = null;
@@ -133,17 +134,10 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 		try {
 
-		//	this.noReloadMode = false;
-			// this.force = "true".equals(request.getParameter("force"));
 			command = request.getParameter("command");
-			commit = "commit".equals(request.getParameter("command"));
-			// runAnnotationRules = request.getParameter("runrules") == null ?
-			// false : true;
+			update = "update".equals(request.getParameter("command"));
 			runAnnotationRules = "runrules".equals(command) ? true : false;
 			solrLoad = "solrload".equals(command) ? true : false;
-			// solrLoad = request.getParameter("solrload") == null ? false :
-			// true;
-			// String format = request.getParameter("format");
 			String remoteGAF = request.getParameter("remote-gaf");
 			String fileLocation = request.getParameter("filelocation");
 
@@ -154,10 +148,6 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			if (view != null) {
 				viewPath = "/servicesui/" + view + ".jsp";
 
-				/*if ("gafjson".equals(view)) {
-					noReloadMode = true;
-				}*/
-
 			}
 
 			if ("getlastupdate".equals(command)) {
@@ -166,74 +156,24 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			/**
 			 * The below condition sets gaf documents location
 			 */
-			else if (runner == null && ((!runAnnotationRules && !complete) || (runAnnotationRules && !annotationRulesComplete) )) {
+			else if (runner == null && !complete) {
 
-				// if ((!commit && !solrLoad && !runAnnotationRules)
-				// || noReloadMode) {
+				if (remoteGAF != null) {
+					gafLocations = new GafURLFetch(remoteGAF);
+				} else if (fileLocation != null) {
+					gafLocations = new ArrayList<String>();
+					((ArrayList) gafLocations).add(fileLocation);
+				} else {
 
-				// //////////////////start guessing gaf file location
+					this.gafLocations = GeneOntologyManager.getInstance()
+							.getDefaultGafFileLocations();
 
-				// if there is no task running then create one for the
-				// update and bulkload commands
-				// if(isOPerationCompleted && !commit) {
-				// this.gafDocuments = null;
-
-				if (this.gafDocuments == null) {
-
-					if (remoteGAF != null) {
-						gafLocations = new GafURLFetch(remoteGAF);
-					} else if (fileLocation != null) {
-						gafLocations = new ArrayList<String>();
-						((ArrayList) gafLocations).add(fileLocation);
-					} else {
-
-						/*
-						 * GafObjectsFactory factory = new GafObjectsFactory();
-						 * 
-						 * List list = factory.getGafDocument();
-						 * 
-						 * // update command expects gaf location location // in
-						 * the parameter. // If no gaflocatoin parameter is set
-						 * then // present // a form to user to select gaf file
-						 * if ("update".equals(command) && !list.isEmpty()) {
-						 * 
-						 * if (fileLocation == null) {
-						 * request.setAttribute("servicename",
-						 * getServiceName()); request.setAttribute("locations",
-						 * GeneOntologyManager.getInstance()
-						 * .getDefaultGafFileLocations());
-						 * 
-						 * this.viewPath = "/servicesui/golddb-updateform.jsp";
-						 * } } else if ("bulkload".equals(command) ||
-						 * (list.isEmpty() && "update".equals(command))) {
-						 * 
-						 * // if(fileLocation == null){ this.gafLocations =
-						 * GeneOntologyManager
-						 * .getInstance().getDefaultGafFileLocations(); // }
-						 * command = "bulkload"; }
-						 */
-
-						this.gafLocations = GeneOntologyManager.getInstance()
-								.getDefaultGafFileLocations();
-
-					}
 				}
-
-				// ////////start guessing gaf file location
-				/*
-				 * } else if (gafDocuments == null) {// if commit is calld //
-				 * prior to the bulkload // nand upate then throw // error
-				 * request.setAttribute("exception", new IllegalStateException(
-				 * "The commit is not allowed.")); }
-				 */
-
-				// if(("bulkload".equals(command) ||
-				// "update".equals(command) || runAnnotationRules) &&
-				// (this.gafLocations != null || this.gafDocuments != null))
-				// {
-				// annotationRuleViolations.clear();
-				runner = new GafDbTaskExecution();
-				runner.start();
+				
+				if(!(update && updateInProgress)){
+					runner = new GafDbTaskExecution();
+					runner.start();
+				}
 
 			}
 
@@ -242,11 +182,12 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			// store information in the request object. The request object is
 			// available in the
 			// jsp file. The jsp use the objects data in print html.
-			if (!commit && !solrLoad)
-				request.setAttribute("violations", annotationRuleViolations);
+			//if (runAnnotationRules)
+			request.setAttribute("violations", annotationRuleViolations);
 
 			if (runner != null) {
 				request.setAttribute("task", runner);
+				request.setAttribute("exception", runner.getException());
 			}
 			request.setAttribute("isTaskRunning", runner == null ? false
 					: runner.isRunning());
@@ -262,6 +203,10 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 	}
 
+	public static boolean isDbUpdateInProgress(){
+		return updateInProgress;
+	}
+	
 	public String getServiceName() {
 		return SERVICE_NAME;
 	}
@@ -297,14 +242,94 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 		@Override
 		public void execute() {
-			/*
-			 * for(TaskExecutionListener l: listeners){ l.updateData(this); }
-			 */
 
 			GAFDbOperations db = new GAFDbOperations();
 			db.addDbOperationsListener(this);
 
 			try {
+
+				gafDocuments = new ArrayList<GafDocument>();
+				splittedDocuments = new ArrayList<String>();
+
+				if (gafLocations instanceof GafURLFetch) {
+					GafURLFetch fetch = (GafURLFetch) gafLocations;
+					fetch.connect();
+					while (fetch.hasNext()) {
+
+						InputStream is = (InputStream) fetch.next();
+						java.io.Reader reader = new InputStreamReader(is);
+						GafDocument doc = buildGafDocument(reader,
+								fetch.getCurrentGafFile(),
+								fetch.getCurrentGafFilePath());
+						if (doc != null)
+							gafDocuments.add(doc);
+						reader.close();
+						is.close();
+						fetch.completeDownload();
+					}
+				} else {
+
+					List<String> files = (List<String>) gafLocations;
+					for (String ontLocation : files) {
+
+						File file = null;
+
+						if (ontLocation.startsWith("http:/")
+								|| ontLocation.startsWith("file:/")) {
+							file = new File(new URI(ontLocation));
+						} else
+							file = new File(ontLocation);
+
+						File dirFiles[] = null;
+
+						if (file.isDirectory()) {
+							dirFiles = file.listFiles();
+						} else {
+							dirFiles = new File[] { file };
+						}
+
+						for (File f : dirFiles) {
+							if (!f.isFile() || f.getName().startsWith("."))
+								continue;
+							ontLocation = f.getAbsolutePath();
+							this.currentOntologyBeingProcessed = ontLocation;
+
+							InputStream is = new FileInputStream(f);
+
+							if (f.getName().endsWith(".gz")) {
+								is = new GZIPInputStream(is);
+							}
+
+							GafDocument doc = buildGafDocument(
+									new InputStreamReader(is), f.getName(),
+									ontLocation);
+							if (doc != null)
+								gafDocuments.add(doc);
+
+						}
+					}
+
+				}
+
+				if (runAnnotationRules) {
+
+					for (GafDocument gafDocument : gafDocuments) {
+						currentOntologyBeingProcessed = gafDocument
+								.getDocumentPath();
+						reportStartTime("Performing Annotations Checks--"
+								+ currentOntologyBeingProcessed);
+						_performAnnotationChecks(gafDocument);
+						reportEndTime("Performing Annotations Checks--"
+								+ currentOntologyBeingProcessed);
+
+					}
+
+					buildSplittedDocuments();
+
+					LOG.info("Annotations checks completed.");
+
+				} else
+
 				if (solrLoad) {
 
 					GafSolrLoader loader = new GafSolrLoader(
@@ -326,151 +351,31 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 					buildSplittedDocuments();
 					gafDocuments = null;
 					splittedDocuments = null;
-					complete = true;
 
-				} else if (commit) {
+				} else if (update) {
+					updateInProgress = true;
 					for (GafDocument gafDocument : gafDocuments) {
 						this.currentOntologyBeingProcessed = gafDocument
 								.getId();
 
 						db.update(gafDocument);
 
-						/*if ("bulkload".equals(command)) {
-							db.update(gafDocument);
-						} else if ("update".equals(command)) {
-							db.update(gafDocument);
-						}*/
 					}
 
 					buildSplittedDocuments();
 
-					gafDocuments = null;
-					splittedDocuments = null;
-					complete = true;
-					// commitCompleted = true;
-				} else {
-
-					if (gafDocuments == null) {
-						gafDocuments = new ArrayList<GafDocument>();
-						splittedDocuments = new ArrayList<String>();
-
-						if (gafLocations instanceof GafURLFetch) {
-							GafURLFetch fetch = (GafURLFetch) gafLocations;
-							fetch.connect();
-							while (fetch.hasNext()) {
-
-								InputStream is = (InputStream) fetch.next();
-								/*
-								 * this.currentOntologyBeingProcessed =
-								 * fetch.getCurrentGafFile(); java.io.Reader
-								 * reader = new InputStreamReader(is);
-								 * GafDocument doc = db.buildGafDocument(reader,
-								 * fetch.getCurrentGafFile(),
-								 * fetch.getCurrentGafFilePath());
-								 * gafDocuments.add( doc);
-								 */
-								java.io.Reader reader = new InputStreamReader(
-										is);
-								GafDocument doc = buildGafDocument(reader,
-										fetch.getCurrentGafFile(),
-										fetch.getCurrentGafFilePath());
-								if (doc != null)
-									gafDocuments.add(doc);
-								reader.close();
-								is.close();
-								fetch.completeDownload();
-								// performAnnotationChecks(doc);
-							}
-						} else {
-
-							List<String> files = (List<String>) gafLocations;
-							for (String ontLocation : files) {
-
-								File file = null;
-
-								if (ontLocation.startsWith("http:/")
-										|| ontLocation.startsWith("file:/")) {
-									file = new File(new URI(ontLocation));
-								} else
-									file = new File(ontLocation);
-
-								File dirFiles[] = null;
-
-								if (file.isDirectory()) {
-									dirFiles = file.listFiles();
-								} else {
-									dirFiles = new File[] { file };
-								}
-
-								for (File f : dirFiles) {
-									if (!f.isFile()
-											|| f.getName().startsWith("."))
-										continue;
-									ontLocation = f.getAbsolutePath();
-									this.currentOntologyBeingProcessed = ontLocation;
-									// if("bulkload".equals(command) ||
-									// "update".equals(command) ||
-									// runAnnotationRules){
-									// GafDocument doc =
-									// db.buildGafDocument(ontLocation);
-
-									InputStream is = new FileInputStream(f);
-
-									if (f.getName().endsWith(".gz")) {
-										is = new GZIPInputStream(is);
-									}
-
-									// FileReader reader = new FileReader(file);
-									GafDocument doc = buildGafDocument(
-											new InputStreamReader(is),
-											f.getName(), ontLocation);
-									if (doc != null)
-										gafDocuments.add(doc);
-									// performAnnotationChecks(doc);
-
-								}
-								// }
-							}
-
-						}
-
-					}
-
-					if (runAnnotationRules) {
-
-						for (GafDocument gafDocument : gafDocuments) {
-							currentOntologyBeingProcessed = gafDocument
-									.getDocumentPath();
-							reportStartTime("Performing Annotations Checks--"
-									+ currentOntologyBeingProcessed);
-							_performAnnotationChecks(gafDocument);
-							reportEndTime("Performing Annotations Checks--"
-									+ currentOntologyBeingProcessed);
-
-						}
-
-						buildSplittedDocuments();
-
-						annotationRulesComplete = true;
-
-						LOG.info("Annotations checks completed.");
-						// annotationChecksCompleted = true;
-
-					}
-					
-
 				}
 
 			} catch (Throwable ex) {
-				gafDocuments = null;
 				this.exception = ex;
 				LOG.error(ex, ex);
 
+			}finally{
+				gafDocuments = null;
+				splittedDocuments = null;
+				complete = true;
+				updateInProgress = false;
 			}
-
-			/*
-			 * if (noReloadMode) { runner = null; gafDocuments = null; }
-			 */
 		}
 
 		private void _performAnnotationChecks(GafDocument doc) {
@@ -611,7 +516,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			GafDocument d = null;
 
 			GAFDbOperations db = null;
-			if (commit) {
+			if (update) {
 				db = new GAFDbOperations();
 				db.addDbOperationsListener(this);
 			}
@@ -631,7 +536,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 					// isLargefile = true;
 				}
 
-				if (commit) {
+				if (update) {
 					if (doc != null) {
 						db.update(doc);
 					}
