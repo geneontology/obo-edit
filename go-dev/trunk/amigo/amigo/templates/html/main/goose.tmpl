@@ -154,8 +154,20 @@
       [% ELSE %]
       <b>[% results_count %]</b>
       [% END %]
+
+      result(s).<br />
       
-      result(s):<br />
+      [% IF terms_count > 0 AND terms_limit > terms_count %]
+      <a href="[% viz_link %]"
+	 title="Visualize the terms from this query.">
+	Visualize</a>
+      the terms from this query.
+      [% ELSIF terms_count > 0 %]
+      <a href="[% viz_link %]"
+	 title="Visualize the first [% terms_count %] terms from this query.">
+	Visualize</a>
+      the first [% terms_count %] terms from this query.
+      [% END %]
       
       <form style="display: inline;"
 	    action="goose"

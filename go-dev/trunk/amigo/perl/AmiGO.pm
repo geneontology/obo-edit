@@ -1401,6 +1401,27 @@ sub get_interlink {
        #$ilink = $self->uri_safe( _fuse_hash($ihash));
      },
 
+     ## Takes an array ref of term ids.
+     'visualize_term_list' =>
+     sub {
+       my $in_terms = $args->{terms} || [];
+
+       my $final_data = $self->uri_safe(join(' ', @$in_terms));
+       $ihash = {
+		 action => 'visualize',
+		 arguments =>
+		 {
+		  mode => 'basic',
+		  inline => 'false',
+		  format => 'png',
+		  term_data_type => 'string',
+		  term_data => $final_data,
+		 },
+		};
+
+       $ilink = $self->_fuse_hash($ihash);
+     },
+
      'visualize_simple' =>
      sub {
        my $engine = $args->{engine} || '';

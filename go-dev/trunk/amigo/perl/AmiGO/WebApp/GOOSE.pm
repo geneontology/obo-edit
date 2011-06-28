@@ -23,6 +23,7 @@ use AmiGO::External::LEAD::Query;
 use AmiGO::External::GOLD::Status;
 use AmiGO::External::GOLD::Query;
 
+my $VISUALIZE_LIMIT = 50;
 
 ##
 sub setup {
@@ -305,6 +306,8 @@ sub mode_goose {
     ## Cycle through results and webify them. This may include
     ## cleaning, text IDing for linking, etc.
     my $htmled_results = [];
+    my $found_terms = [];
+    my $found_terms_i = 0;
     if( defined $results ){
 
       ## TODO: fix headers
@@ -330,6 +333,10 @@ sub mode_goose {
 					      arg => { acc => $1 }
 					     });
 	      $col = '<a title="'. $1 .'" href="'. $link .'">'. $1 .'</a>';
+	      if( $found_terms_i < $VISUALIZE_LIMIT ){
+		$found_terms_i++;
+		push @$found_terms, $1;
+	      }
 	    }
 	  }
 	  push @$rowbuf, $col;
@@ -341,6 +348,12 @@ sub mode_goose {
     $self->set_template_parameter('results_count', $count);
     $self->set_template_parameter('results_headers', $headers);
     $self->set_template_parameter('results', $htmled_results);
+
+    ## Things that worry about term visualization.
+    $self->set_template_parameter('terms_count', scalar(@$found_terms));
+    $self->set_template_parameter('terms_limit', $VISUALIZE_LIMIT);
+    $self->set_template_parameter('viz_link',
+				  $self->{CORE}->get_interlink({mode=>'visualize_term_list', arg=>{terms=>$found_terms}}));
 
     ## Sort mirrors into ordered list.
     my $mlist = [];
