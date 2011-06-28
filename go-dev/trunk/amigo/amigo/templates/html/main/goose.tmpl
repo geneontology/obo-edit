@@ -159,14 +159,14 @@
       
       [% IF terms_count > 0 AND terms_limit > terms_count %]
       <a href="[% viz_link %]"
-	 title="Visualize the terms in this query.">
+	 title="Visualize the terms found in this query.">
 	Visualize</a>
       the terms found in this query.
       [% ELSIF terms_count > 0 %]
       <a href="[% viz_link %]"
-	 title="Visualize the first [% terms_count %] terms in this query.">
+	 title="Visualize the first [% terms_count %] terms found in this query.">
 	Visualize</a>
-      the first [% terms_count %] terms in this query.
+      the first [% terms_count %] terms found in this query.
       [% END %]
       
       <form style="display: inline;"
