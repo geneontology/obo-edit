@@ -1,3 +1,5 @@
+<%@page import="org.geneontology.web.services.GafDbOperationsService"%>
+<%@page import="org.geneontology.gaf.hibernate.GeneAnnotation"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Hashtable"%>
@@ -24,7 +26,7 @@
 		boolean  isTaskRunning = (Boolean)request.getAttribute("isTaskRunning");
 //		boolean  isLargeFile = (Boolean)request.getAttribute("isLargeFile");
 		boolean runAnnotationRules = "runrules".equals(request.getParameter("command"));
-		boolean commit = "commit".equals(request.getParameter("command"));
+//		boolean commit = "commit".equals(request.getParameter("command"));
 		String id = request.getParameter("id");
 		HttpSession s = request.getSession(true);
 		if(id == null){
@@ -35,6 +37,16 @@
 	%>
 			<center><img class="progress" src="/images/progress-indicator.gif" alt="Request is in Progress" /></center>
 			<p class="progress" align="center">Your Request is in Progress</p>
+
+			<%
+				if(GafDbOperationsService.isDbUpdateInProgress()){
+					%>
+					
+					<h1>DB Update is already in progress. Please the call the update operation later.</h1>
+					<%
+				}
+			
+			%>
 
 			
 			<% if(!runAnnotationRules){ %>
@@ -127,62 +139,10 @@
 	%>
 
 	<%
-	if(!commit){
+//	if(!commit){
 	
 		Set<AnnotationRuleViolation> annotationRuleViolations = (Set<AnnotationRuleViolation>)request.getAttribute("violations");
 	
-		if(isTaskRunning || ex != null){
-		
-			%>
-			<script type="text/javascript" language="javasript">
-			
-				jQuery(document).ready(function() {
-					  jQuery(".commands").hide();
-				});	
-			</script>
-			<%
-		}
-			
-			%>
-		
-			<div class="commands">
-				<hr />
-				
-				
-				<div>Select one option from the following options</div>
-				
-				<br />		
-				<form action=".">
-					<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
-					<input type="hidden" name="command" value="runrules" />
-					<input type="hidden" name="id" value="<%= request.getParameter("id") %>" />	
-					<input type="submit" value="Run Annotation Rules" />
-				</form>
-				
-				<br />
-	
-				<form action=".">
-					<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
-					<input type="hidden" name="id" value="<%= request.getParameter("id") %>" />	
-					<input type="hidden" name="command" value="commit" />
-					<input type="submit" value="Save GAF into database" />
-				</form>
-				
-				<br />
-	
-				<form action=".">
-					<input type="hidden" name="commit" />
-					<input type="hidden" name="servicename" value="<%= request.getParameter("servicename") %>" />
-					<input type="hidden" name="command" value="solrload" />
-					<input type="hidden" name="id" value="<%= request.getParameter("id") %>" />	
-					<input type="submit" value="Load GAF into Solr" />
-				</form>
-		</div>
-			<%
-		//}
-		
-		
-
 		if(runAnnotationRules){
 			%>
 			
@@ -233,18 +193,46 @@
 						}
 						
 					</script>
-			
+			<% } %>
 			
 			<br />
-			<div><h1>Annotation Voilations (<span class="totalvoilations">0</span>)</h1></div>
+			<div><h1>Annotation Voilations (<span class="totalvoilations"><%=annotationRuleViolations.size()%></span>)</h1></div>
 			<ul id="voilations">
+			
+			<%
+			
+			if(!runAnnotationRules){
+				for(AnnotationRuleViolation v: annotationRuleViolations){
+					String msg = v.getMessage();
+					String source = v.getSourceAnnotation() + "";
+					String ruleId = v.getRuleId();
+					GeneAnnotation ga = v.getSourceAnnotation();
+					String lineNr = "";
+					if(ga != null)
+						lineNr =  ga.getSource() != null ? ga.getSource().getLineNumber() + "" : "";
+					%>
+	                <li>
+	                	<div style="font-size: 1.1em;font-weight:bold">Rule Id: <%=ruleId  %> --- Line Number: <%=lineNr  %> --- <%= msg %> </div>
+	                	    <ul>
+	                	       <li>
+	                				<div style="color:red"><%= source  %> </div>
+	                			</li>
+	                		</ul>
+	                </li>
+	                <%
+				}
+			}
+			//annotationRuleViolations.clear();
+			
+			
+			%>
 			
 			</ul>
 			<%
-		}
+	//	}
 		
 		
-	}
+	//}
 	%>
 
 
