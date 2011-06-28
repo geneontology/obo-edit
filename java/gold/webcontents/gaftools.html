@@ -28,7 +28,8 @@ Please select one method to submit a gaf file. In the next step after parsing th
 			<td>
 				<form action="/gold" id="defaultload">
 					<input type="hidden" name="servicename" value="gaf-db-operations" />
-					<input type="hidden" name="command" value="update" />
+					<input type="hidden" name="command" value=""/>
+	
 				</form>
 			</td>
 		</tr>
@@ -42,7 +43,8 @@ Please select one method to submit a gaf file. In the next step after parsing th
 				<form action="/gold" id="remoteload">
 					<input id="remote_text" type="text" name="remote-gaf" size="100" />
 					<input type="hidden" name="servicename" value="gaf-db-operations" />
-					<input type="hidden" name="command" value="update" />
+					<input type="hidden" name="command" value=""/>
+
 				</form>
 			</td>
 		</tr>
@@ -55,10 +57,27 @@ Please select one method to submit a gaf file. In the next step after parsing th
 			</td>
 			<td>
 				<form action="gold/" id="upload" method="post" enctype="multipart/form-data">
-					<input type="text"  name="command" value="update" style="display: none"/>
 					<input type="text" name="servicename" value="gaf-db-operations" style="display: none"/>
 					<input type="file" name="uploadfile" id="uploadfield"/>
+					<input type="hidden" name="command" value=""/>
+
 				</form>
+			</td>
+		</tr>
+
+
+		<tr>
+		
+			<td>
+				Action
+			</td>
+
+			<td>
+				<input type="radio" name="command" value="" group="command" checked="true"/> Parsing GAF <br/>
+				<input type="radio" name="command" value="update" group="command"/> Update DB <br/>
+				<input type="radio" name="command" value="runrules" group="command"/> Run Annotation Rules <br/>
+				<input type="radio" name="command" value="solrload" group="command"/> Solr Load <br/>
+
 			</td>
 		</tr>
 
@@ -97,7 +116,11 @@ function uploadRadioClick(){
 }
 
 function submitForm(){
-	var formid= $('input:radio:checked').val();
+	var formid= $('input:radio[name="formid"]:checked').val();
+
+	var command= $('input:radio[name="command"]:checked');
+	
+	$("#"+formid + " input[name='command']").val(command.val());
 	$("#"+formid).submit();
 	
 	return false;
