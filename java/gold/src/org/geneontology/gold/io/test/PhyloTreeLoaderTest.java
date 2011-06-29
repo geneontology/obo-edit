@@ -17,16 +17,15 @@ public class PhyloTreeLoaderTest extends junit.framework.TestCase {
 		ptl.setSource(paintScrapped);
 	}
 	
-	// modified of PhyloTreeLoader.load()
+	// modified from PhyloTreeLoader.load()
 	public void testLoad() throws Exception{
 		// loades sources into memory
 		ptl.loadFromFile();
 		
 		// writeTSV() marks the tmpfiles as to be deleted on exit, so they don't need to be cleaned up
-		List<File> tmpfiles = ptl.writeTSV();
+		tmpfiles = ptl.writeTSV();
 
-		// commented out as ptl.hib() writes to the database
-		
+		// Write to the database
 		ptl.hib(tmpfiles);
 	
 	}
