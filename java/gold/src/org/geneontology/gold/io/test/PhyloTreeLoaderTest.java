@@ -11,14 +11,14 @@ public class PhyloTreeLoaderTest extends junit.framework.TestCase {
 	PhyloTreeLoader ptl;
 	List<File> tmpfiles;
 	
-	public void SetUp(){
+	public void setUp(){
 		ptl = new PhyloTreeLoader();
 		File paintScrapped = new File("test_resources/PTHR10000.tree");
 		ptl.setSource(paintScrapped);
 	}
 	
 	// modified of PhyloTreeLoader.load()
-	public void test(){
+	public void testLoad() throws Exception{
 		// loades sources into memory
 		ptl.loadFromFile();
 		
@@ -26,13 +26,8 @@ public class PhyloTreeLoaderTest extends junit.framework.TestCase {
 		List<File> tmpfiles = ptl.writeTSV();
 
 		// commented out as ptl.hib() writes to the database
-		/*
-		try {
-			ptl.hib(tmpfiles);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		*/
+		
+		ptl.hib(tmpfiles);
+	
 	}
 }
