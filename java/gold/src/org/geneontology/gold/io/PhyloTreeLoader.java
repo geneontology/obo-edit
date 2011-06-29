@@ -45,7 +45,7 @@ public class PhyloTreeLoader implements Loader {
 	static protected Map<String,Map<Status,Integer>> count = null;
 	static protected Connection connection;
 	
-	PhyloTreeLoader() {
+	public PhyloTreeLoader() {
 		sources = new HashSet<PhyloTree>();
 
 		if (null == connection) {
@@ -91,7 +91,7 @@ public class PhyloTreeLoader implements Loader {
 	 *
 	 * If there is a problem loading the files it prints a stack trace, and removes that files from the source collection.
 	 */
-	protected void loadFromFile() {
+	public void loadFromFile() {
 		Collection<PhyloTree> removeMe = new HashSet<PhyloTree>();
 		
 		for (PhyloTree pt : sources) {
@@ -109,7 +109,7 @@ public class PhyloTreeLoader implements Loader {
 	 * Writes files loaded to TSV files, loadFromFile() needs to be run first.
 	 * @return A list of tables to pass to hib()
 	 */
-	protected List<File> writeTSV() {
+	public List<File> writeTSV() {
 		if (tmpdir == null) {
 			File shm = new File("/dev/shm");
 			if (shm.isDirectory()) {
@@ -178,7 +178,7 @@ public class PhyloTreeLoader implements Loader {
 	
 
 	
-	protected void hib(List<File> tmpfiles) throws SQLException, ClassNotFoundException, IOException {
+	public void hib(List<File> tmpfiles) throws SQLException, ClassNotFoundException, IOException {
 		TsvFileLoader tsvLoader = new TsvFileLoader(manager.getGolddbUserName(),
 				manager.getGolddbUserPassword(), manager.getGolddbHostName(), 
 				manager.getGolddbName());
