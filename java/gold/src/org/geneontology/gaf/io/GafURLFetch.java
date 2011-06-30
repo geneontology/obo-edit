@@ -1,7 +1,13 @@
 package org.geneontology.gaf.io;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -9,9 +15,12 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.zip.GZIPInputStream;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.log4j.Logger;
+import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gaf.io.test.GafURLFetchTest;
 import org.geneontology.web.services.GafDbOperationsService;
 
@@ -90,6 +99,18 @@ public class GafURLFetch implements Iterator {
 			if(this.httpURL != null){
 				LOG.info("Reading URL :" + httpURL);
 				InputStream is = this.httpURL.openStream();
+			
+				int index = this.httpURL.toString().lastIndexOf('/');
+				
+				String file = this.httpURL.toString().substring(index+1);
+				File downloadLocation = new File(GeneOntologyManager.getInstance().getGafUploadDir(), file);
+				OutputStream out = 
+						new FileOutputStream(downloadLocation);
+
+				IOUtils.copy(is, out);
+				out.close();
+				
+				is = new FileInputStream(downloadLocation);
 				
 				if(url.endsWith(".gz")){
 					is = new GZIPInputStream(is);
@@ -117,6 +138,25 @@ public class GafURLFetch implements Iterator {
 				ftpClient.changeWorkingDirectory(path);
 
 				InputStream is = ftpClient.retrieveFileStream(file);
+				File downloadLocation = new File(GeneOntologyManager.getInstance().getGafUploadDir(), file);
+				OutputStream out = 
+						new FileOutputStream(downloadLocation);
+				
+				
+				/*int b;
+				while((b=is.read()) != -1){
+					out.write(b);
+				}*/
+				
+				
+				IOUtils.copy(is, out);
+				
+				out.close();
+				
+				System.out.println("Download complete.....");
+				//ftpClient.completePendingCommand();
+
+				is = new FileInputStream(downloadLocation);
 				
 				if(file.endsWith(".gz")){
 					is = new GZIPInputStream(is);
@@ -131,8 +171,8 @@ public class GafURLFetch implements Iterator {
 	}
 	
 	public void completeDownload() throws IOException{
-		if(this.url.startsWith("ftp:"))
-			ftpClient.completePendingCommand();
+		/*if(this.url.startsWith("ftp:"))
+			ftpClient.completePendingCommand();*/
 	}
 
 	public void remove() {
