@@ -401,7 +401,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 		
 		List<String> list = dumpFiles(manager.getGoldDetlaTablePrefix(), gafDocument);
 
-		buildSchema(true, manager.getGoldDetlaTablePrefix());
+	//	buildSchema(false, manager.getGoldDetlaTablePrefix());
 
 		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
 		
