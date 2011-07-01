@@ -49,8 +49,10 @@ public class GafDeltaFactory {
 		
 		annotations = new Hashtable<String, GeneAnnotation>();
 		
-		for(GeneAnnotation ga: doc.getGeneAnnotations()){
-			annotations.put(ga.getBioentity() + ga.getCls() + ga.getReferenceId() + ga.getEvidenceCls(), ga);
+		if(doc != null){
+			for(GeneAnnotation ga: doc.getGeneAnnotations()){
+				annotations.put(ga.getBioentity() + ga.getCls() + ga.getReferenceId() + ga.getEvidenceCls(), ga);
+			}
 		}
 	}
 	
@@ -73,8 +75,18 @@ public class GafDeltaFactory {
 			return list;
 		
 		while(rs.next()){
-			list.add( doc.getBioentity(rs.getString("id"))
-					);
+			if(doc != null){
+				list.add( doc.getBioentity(rs.getString("id"))
+						);
+			}else{
+				Bioentity entity = new Bioentity
+				(rs.getString("id"), rs.getString("symbol"), 
+						rs.getString("full_name"), rs.getString("type_cls"), rs.getString("taxon_cls"), 
+						rs.getString("db"), rs.getString("gaf_document") );
+				
+				list.add(entity);
+			}
+				
 		}
 		
 		return list;
@@ -93,10 +105,21 @@ public class GafDeltaFactory {
 		
 		while(rs.next()){
 		
-			String key = rs.getString("bioentity") + rs.getString("cls") + rs.getString("reference_id") + rs.getString("evidence_cls");
-			GeneAnnotation ga =  annotations.get(key);
+			if(doc != null){
+				String key = rs.getString("bioentity") + rs.getString("cls") + rs.getString("reference_id") + rs.getString("evidence_cls");
+				GeneAnnotation ga =  annotations.get(key);
+					
+				list.add(ga);
+			}else{
+				GeneAnnotation ga = new GeneAnnotation( rs.getString("bioentity"), rs.getBoolean("is_contributes_to"), 
+						rs.getBoolean("is_integral_to"), rs.getString("composite_qualifier"), 
+						rs.getString("cls"), rs.getString("reference_id"), rs.getString("evidence_cls"), 
+						rs.getString("with_expression"), rs.getString("acts_on_taxon_id"), rs.getString("last_update_date"), 
+						rs.getString("assigned_by"), rs.getString("extension_expression"), rs.getString("gene_product_form"), 
+						rs.getString("gaf_document") );
 				
-			list.add(ga);
+				list.add(ga);
+			}
 		
 		}
 		
@@ -119,9 +142,14 @@ public class GafDeltaFactory {
 		
 		while(rs.next()){
 			
-			set.addAll(
-			doc.getCompositeQualifiers(rs.getString("id"))
-			);
+			if(doc != null){
+				set.addAll(
+				doc.getCompositeQualifiers(rs.getString("id"))
+				);
+			}else{
+				CompositeQualifier cq  =new CompositeQualifier(rs.getString("id"), rs.getString("qualifier_obj") );
+				set.add(cq);
+			}
 		}
 		
 		return set;
@@ -141,9 +169,15 @@ public class GafDeltaFactory {
 		
 		while(rs.next()){
 			
-			set.addAll(
-			doc.getExpressions(rs.getString("id"))
-			);
+			if(doc != null){
+				set.addAll(
+				doc.getExpressions(rs.getString("id"))
+				);
+			}else{
+				ExtensionExpression ex = new ExtensionExpression( rs.getString("id"), rs.getString("relation"), rs.getString("cls") );
+				set.add(ex);
+			}
+			
 		}
 		
 		return set;
@@ -162,9 +196,14 @@ public class GafDeltaFactory {
 		
 		while(rs.next()){
 			
-			set.addAll(
-			doc.getWithInfos(rs.getString("id"))
-			);
+			if(doc != null){
+				set.addAll(
+				doc.getWithInfos(rs.getString("id"))
+				);
+			}else{
+				WithInfo withinfo = new WithInfo(rs.getString("id"),rs.getString("with_xref") );
+				set.add(withinfo);
+			}
 		}
 		
 		return set;

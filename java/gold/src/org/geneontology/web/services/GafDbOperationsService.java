@@ -553,7 +553,8 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 				}*/
 
 				if (update) {
-					db.update(d);
+				//	db.update(d);
+					db.update(d, true);
 				}
 
 				else if (solrLoad) {
@@ -583,6 +584,11 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 			}while ((d = builder.getNextSplitDocument()) != null);
 
+			
+			if(update){
+				db.update(null, true);
+			}
+			
 			endOntologyLoad(builder);
 
 		}
