@@ -276,6 +276,10 @@ sub mode_advanced {
       my $border = '';
       my $fill = '';
       my $font = '';
+      my $box_width = undef;
+      my $box_height = undef;
+      # my $node_width = undef;
+      # my $node_height = undef;
 
       ## BUG: this bit is great, except it shouldn't be here--it
       ## should be generated on the "client" side. How should I do
@@ -290,6 +294,14 @@ sub mode_advanced {
 	$fill = $data_hash->{fill} if defined $data_hash->{fill};
 	$font = $data_hash->{font} if defined $data_hash->{font};
 	# ($fill, $font) = $aid->pval_to_color($term_hash->{$acc});
+	$box_width = $data_hash->{box_width}
+	  if defined $data_hash->{box_width};
+	$box_height = $data_hash->{box_height}
+	  if defined $data_hash->{box_height};
+	# $node_width = $data_hash->{node_width}
+	#   if defined $data_hash->{node_width};
+	# $node_height = $data_hash->{node_height}
+	#   if defined $data_hash->{node_height};
       }
 
       ## Back to standard adding.
@@ -298,6 +310,10 @@ sub mode_advanced {
 		     color => $border,
 		     fillcolor => $fill,
 		     fontcolor => $font,
+		     box_width => $box_width,
+		     box_height => $box_height,
+		     # node_width => $node_width,
+		     # node_height => $node_height,
 		    });
       if( ! $amigo_terms->{$title} ){
 	$amigo_terms->{$title} = {
