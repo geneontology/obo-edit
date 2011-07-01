@@ -263,35 +263,58 @@ sub add_node {
   my $acc = shift || '';
   my $title = shift || '';
   my $body = shift || '';
-  my $coloration = shift || {};
+  my $additional = shift || {};
 
   my $color = '#000000';
   my $fillcolor = '#ffffff';
   my $fontcolor = '#000000';
 
+  my $box_width = undef;
+  my $box_height = undef;
+  # my $node_width = undef;
+  # my $node_height = undef;
+
   ## Get additional values if extant.
-  $color = $coloration->{color}
-    if defined $coloration->{color} && $coloration->{color};
-  $fillcolor = $coloration->{fillcolor}
-    if defined $coloration->{fillcolor} && $coloration->{fillcolor};
-  $fontcolor = $coloration->{fontcolor}
-    if defined $coloration->{fontcolor} && $coloration->{fontcolor};
+  $color = $additional->{color}
+    if defined $additional->{color} && $additional->{color};
+  $fillcolor = $additional->{fillcolor}
+    if defined $additional->{fillcolor} && $additional->{fillcolor};
+  $fontcolor = $additional->{fontcolor}
+    if defined $additional->{fontcolor} && $additional->{fontcolor};
+  $box_width = $additional->{box_width}
+    if defined $additional->{box_width} && $additional->{box_width};
+  $box_height = $additional->{box_height}
+    if defined $additional->{box_height} && $additional->{box_height};
+  # $node_width = $additional->{node_width}
+  #   if defined $additional->{node_width} && $additional->{node_width};
+  # $node_height = $additional->{node_height}
+  #   if defined $additional->{node_height} && $additional->{node_height};
 
   #my $wnum = 12;
   my $wnum = 20; # TODO: this protection no longer needed?
   $body = _name_wrap($body, $wnum);
 
   my $label_str = join '<br/>', ($title, $body);
-  $self->{GV}->add_node($acc,
-			 label => "<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD>$label_str</TD></TR></TABLE>>",
-			 shape => 'plaintext',
-			#fontname => 'Times Roman',
-			#fontname => 'monospace',
- 			color => $color,
- 			fillcolor => $fillcolor,
- 			fontcolor => $fontcolor,
-			)
-    if $acc;
+  # my $node_width_str = '';
+  # my $node_height_str = '';
+  # if( $node_width ){ $node_width_str = "WIDTH=\"$node_width\""; }
+  # if( $node_height ){ $node_height_str = "HEIGHT=\"$node_height\""; }
+  my $flabel = "<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD>$label_str</TD></TR></TABLE>>";
+  if( $acc ){
+    my %href =
+      (
+       label => $flabel,
+       shape => 'plaintext',
+       color => $color,
+       #fontname => 'Times Roman',
+       #fontname => 'monospace',
+       fillcolor => $fillcolor,
+       fontcolor => $fontcolor,
+      );
+    if( defined $box_width ){ $href{width} = $box_width; }
+    if( defined $box_height ){ $href{height} = $box_height; }
+    $self->{GV}->add_node($acc, %href);
+  }
 
   #print STDERR "_nodes_" . $acc . "\n";
 }
