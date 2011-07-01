@@ -17,7 +17,7 @@ use AmiGO::External::Raw;
 use AmiGO::External::QuickGO::Term;
 use AmiGO::External::JSON::LiveSearch::Term;
 use AmiGO::External::JSON::LiveSearch::GeneProduct;
-use AmiGO::External::GODB::Query;
+use AmiGO::External::LEAD::Query;
 #use mapscript;
 
 # ## Take SuGR from a test drive.
@@ -2138,7 +2138,7 @@ sub mode_report_slimmerish_1 {
        #'port' => $mirror->{port} || '3306',
        'database' => $self->{CORE}->amigo_env('GO_DBNAME') || undef,
       };
-    my $q = AmiGO::External::GODB::Query->new($props, 10000000, 10000000);
+    my $q = AmiGO::External::LEAD::Query->new($props, 10000000, 10000000);
 
     ## NOTE/BUG: If it turns out that there are problems with DBI and
     ## getting submitting
