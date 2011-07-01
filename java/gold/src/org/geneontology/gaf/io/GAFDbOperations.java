@@ -381,29 +381,43 @@ public class GAFDbOperations implements DbOperationsInterface{
 	 * @throws Exception
 	 */
 	public void update(GafDocument gafDocument) throws Exception{
+		update(gafDocument, false);
+	}
+	
+	
+	
+	public void update(GafDocument gafDocument, boolean splitt) throws Exception{
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
 		
 		GafObjectsFactory factory = new GafObjectsFactory();
 
-		if(factory.getGafDocument().isEmpty()){
-			bulkLoad(gafDocument, false);
-			return;
+		
+		if(gafDocument != null){
+		
+			this.gafDocument = gafDocument;
+			/*if(factory.getGafDocument().isEmpty()){
+				bulkLoad(gafDocument, false);
+				return;
+			}*/
+			
+			for(DbOperationsListener listener: listeners){
+				listener.updateStart();
+			}
+			
+			
+			GeneOntologyManager manager = GeneOntologyManager.getInstance();
+			
+			List<String> list = dumpFiles(manager.getGoldDetlaTablePrefix(), gafDocument);
+	
+			buildSchema(true, manager.getGoldDetlaTablePrefix());
+	
+			loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
+		
+			if(splitt)
+				return;
 		}
-		
-		for(DbOperationsListener listener: listeners){
-			listener.updateStart();
-		}
-		
-		
-		GeneOntologyManager manager = GeneOntologyManager.getInstance();
-		
-		List<String> list = dumpFiles(manager.getGoldDetlaTablePrefix(), gafDocument);
-
-	//	buildSchema(false, manager.getGoldDetlaTablePrefix());
-
-		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
 		
 		GafDeltaFactory deltaFactory = new GafDeltaFactory(gafDocument);
 		
@@ -417,7 +431,8 @@ public class GAFDbOperations implements DbOperationsInterface{
 		
 		Session session = factory.getSession();
 		
-		session.saveOrUpdate(gafDocument);
+		
+		session.saveOrUpdate(this.gafDocument);
 		saveOrUpdate(session, entities);
 		saveOrUpdate(session, annotations);
 		saveOrUpdate(session, qualifiers);

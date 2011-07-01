@@ -53,7 +53,8 @@ public abstract class Task extends Thread {
 	protected void addInProgress(String opName){
 		currentRunningOperation = opName;
 		completedOperations.put(opName, new long[]{Calendar.getInstance().getTimeInMillis(),0});
-		opsOrder.add(opName);
+		if(!opsOrder.contains(opName))
+			opsOrder.add(opName);
 	}
 	
 	protected boolean addCompleted(String opName){
