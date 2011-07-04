@@ -99,7 +99,7 @@ public class TermFilterEditor extends JPanel {
                   // (the text that has a descriptin of the search, e.g., "all_text_fields contains 'blue'")
                   // (it's in FilterComponent.java) doesn't update when you change the search.
                     //                  updateFields();
-                    //                                        logger.debug("TermFilterEditor.actionPerformed: " + e); // DEL
+		    //		    logger.debug("TermFilterEditor.actionPerformed: " + e); // DEL
                     fireUpdateEvent(); // This seems to do the trick--statusLabel updates as it should.
 		}
 	}
@@ -111,7 +111,7 @@ public class TermFilterEditor extends JPanel {
 	protected ActionListener aspectBoxListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
                     boolean showTypeBox = !(aspectBox.getSelectedItem() instanceof SelfSearchAspect);
-                    //                    logger.debug("aspectBoxListener: aspectBox.getSelectedItem = " + aspectBox.getSelectedItem() + ", showTypeBox = " + showTypeBox); // DEL
+		    //		    logger.debug("aspectBoxListener: aspectBox.getSelectedItem = " + aspectBox.getSelectedItem() + ", showTypeBox = " + showTypeBox); // DEL
                     reachedViaLabel.setVisible(showTypeBox);
                     typeBox.setVisible(showTypeBox);
                     updateFields();
@@ -220,7 +220,7 @@ public class TermFilterEditor extends JPanel {
 		} else
 			typeBox.setSelectedIndex(0);
 		boolean showTypeBox = !(aspectBox.getSelectedItem() instanceof SelfSearchAspect);
-                //                logger.debug("aspectBox.getSelectedItem = " + aspectBox.getSelectedItem() + ", showTypeBox = " + showTypeBox); // DEL
+		//		logger.debug("TermFilterEditor: aspectBox.getSelectedItem = " + aspectBox.getSelectedItem() + ", showTypeBox = " + showTypeBox); // DEL
 		reachedViaLabel.setVisible(showTypeBox);
 		typeBox.setVisible(showTypeBox);
 
@@ -272,6 +272,7 @@ public class TermFilterEditor extends JPanel {
 	}
 
 	public TermFilterEditor() {
+	    logger.debug("TermFilterEditor()"); // DEL
 		setOpaque(false);
 		mainPanel.setOpaque(false);
 		rightIcon = new MultiIcon();
@@ -440,6 +441,9 @@ public class TermFilterEditor extends JPanel {
 				LinkFilter linkFilter = new LinkFilterImpl(p);
 				out.setTraversalFilter(linkFilter);
 			}
+			//			logger.debug("TermFilterEditor.getFilter: calling updateFields.  But first a stack trace:"); // DEL
+			//			(new Exception()).printStackTrace(); // DEL
+			updateFields(); // This is needed in order to properly update pulldown menus, although getFilter gets called like 30 times, so it seems a bit wasteful.
 		}
 		if (SessionManager.getManager().getUseReasoner())
 			out.setReasoner(SessionManager.getManager().getReasoner());
