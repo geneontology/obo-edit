@@ -31,6 +31,7 @@ public class LinkFilterEditor extends TermFilterEditor {
 
 	public LinkFilterEditor() {
 		super();
+		logger.debug("LinkFilterEditor init"); // DEL
 		aspectBox.addActionListener(linkAspectBoxListener);
 	}
 	
@@ -120,7 +121,9 @@ public class LinkFilterEditor extends TermFilterEditor {
 		linkFilter.setFilter(filter);
 		linkFilter.setAspect(getValueForName((String) aspectBox
 				.getSelectedItem()));
-//		logger.debug("linkFilter: " + linkFilter);
+		//		logger.debug("linkFilter.getFilter " + linkFilter);
+		//		logger.debug("linkFilter.getFilter: calling updateFields"); // DEL
+		updateFields(); // This is needed in order to properly update pulldown menus, although getFilter gets called like 30 times, so it seems a bit wasteful.
 		return linkFilter;
 	}
 }
