@@ -1,10 +1,10 @@
 Copyright (C) 2011, Gene Ontology Consortium
 Original author:  John Day-Richter
-Version:  2.1-beta14
-Release date:  July, 2011
+Version:  2.1-beta8
+Release date:  January 24, 2011
 
 OBO-Edit is an open source tool written in Java for browsing, searching, and
-modifying ontologies.
+modifying OBO ontologies.
 
 Contacting us
 -----------
@@ -21,19 +21,33 @@ How to report bugs
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 ================================
-What's New in OBO-Edit v2.1-beta14
+What's New in OBO-Edit v2.1-beta14-15
 ================================
 
 Bug fixes:
 [ geneontology-Bugs-3303596 ] Made definitions of obsolete terms editable
-[ geneontology-Bugs-3176685 ] Is_a closure broken
-When doing a filtered save with is_a closure, it wasn't saving the right terms.
+
+[ geneontology-Bugs-2309391 ] OE2 handling of unrecognized relation (text editor et al.)
+Unrecognized relation was shown wrong or misleadingly in many components,
+including Ontology Tree Editor (the unrecognized relation didn't show up under
+'Relations', and the child didn't appear under the parent to which it is
+linked with the unrecognized relation), Parent Editor (unrecognized relation
+shown as "is_a"), and more.
+
+[ geneontology-Bugs-2679772 ] Don't save dbxref lib description to obo file
 
 Changes/Improvements:
 Made titlebar of Text Editor say "(OBSOLETE TERM)" in red if it's showing a
 term that's obsolete.
 
 Ontology Term Generation plugin fixed by its authors
+
+[ geneontology-Bugs-3314676 ] Ancestor/descendant relationships missing
+In the search panel, when looking for descendants/ancestors of a term, the
+pulldown menu for relationships only includes default obo-edit relationships
+and not ontology-specific relationships.
+
+[ geneontology-Bugs-3346958 ] Type menu needs to refresh for non-binary link search
 
 
 ================================
