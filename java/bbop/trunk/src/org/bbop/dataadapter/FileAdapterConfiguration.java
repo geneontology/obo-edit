@@ -51,6 +51,6 @@ public class FileAdapterConfiguration implements AdapterConfiguration {
 
     @Override
 	public String toString() {
-	return "readPaths = "+readPaths;
+	return "readPaths = "+readPaths + "; writePath = " + writePath;
     }
 }
