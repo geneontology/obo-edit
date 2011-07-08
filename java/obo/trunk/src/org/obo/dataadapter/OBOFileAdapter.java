@@ -290,6 +290,7 @@ public class OBOFileAdapter implements OBOAdapter {
 			try {
 				cancelled = false;
 				OBOSerializer serializer = null;
+                                //                                logger.debug("OBOFileAdapter.doOperation: this.ioprofile was " + ioprofile + "; setting it to passed configuration " + configuration); // DEL
 				this.ioprofile = (OBOAdapterConfiguration) configuration;
 
 				if (ioprofile.getSerializer().equals("OBO_1_2"))
@@ -319,10 +320,25 @@ public class OBOFileAdapter implements OBOAdapter {
 				 * explicitly setting allowdangling as per ioprofile settings since the ioprofile.getSaveRecords does not import that modifier.
 				 * 
 				 * */
-					for(FilteredPath filteredPath : filteredPaths)
-						filteredPath.setAllowDangling(ioprofile.allowDangling);
-
+                                // Using the ioprofile to setAllowDangling for the filteredPath(s)
+                                // fixed that problem with obo2obo but broke saves with allowDangling true
+                                // in OBO-Edit.  Commenting out the filteredPath.setAllowDangling(ioprofile.allowDangling)
+                                // calls fixed OE but broke obo2obo.
+                                // In trying to debug this, I was startled to find that the ioprofile
+                                // that was available in this method was often not the right ioprofile.
+                                // I'm not sure what's up with that and why it doesn't have more bad effects.
+                                // My compromise fix is to propagate ioprofile's allowDangling setting
+                                // to the filteredPaths only if ioprofile.allowDangling is true.
+                                // This seems to work for both obo2obo and OBO-Edit for the cases I tried,
+                                // but more testing would be good.
+                                if (ioprofile.allowDangling) {
+                                    for(FilteredPath filteredPath : filteredPaths) {
+                                        //                                        logger.debug("OBOFileAdapter: filteredPath = " + filteredPath + "; filteredPath.getAllowDangling = " + filteredPath.getAllowDangling()); // DEL
+                                        filteredPath.setAllowDangling(ioprofile.allowDangling);
+                                    }
+                                }
 				logger.info("Writing " + filteredPaths + " (serializer = " + ioprofile.getSerializer() + ", basicSave = " + ioprofile.getBasicSave() + ")");
+                                logger.debug("ioprofile = " + ioprofile + "; ioprofile.allowDangling = " + ioprofile.allowDangling); // DEL
 
 				serializeEngine.serialize((OBOSession) input, serializer,filteredPaths);
 
