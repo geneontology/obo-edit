@@ -1744,7 +1744,6 @@ public class OWLGraphWrapper {
 		return Owl2Obo.getOntologyId(this.ontology);
 	}
 
-
 	public String getIdentifier(OWLObject owlObject) {
 		return Owl2Obo.getIdentifier(owlObject);
 	}
