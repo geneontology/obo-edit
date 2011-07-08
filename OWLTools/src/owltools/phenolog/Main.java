@@ -8,6 +8,34 @@ import org.apache.commons.math.distribution.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+/**
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Set;
+
+import org.obolibrary.obo2owl.Obo2Owl;
+import org.obolibrary.oboformat.model.Frame;
+import org.obolibrary.oboformat.model.OBODoc;
+import org.obolibrary.oboformat.model.Xref;
+import org.obolibrary.oboformat.parser.OBOFormatParser;
+import org.semanticweb.owlapi.io.OWLXMLOntologyFormat;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyFormat;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+
+import owltools.gfx.OWLGraphLayoutRenderer;
+import owltools.graph.OWLGraphEdge;
+import owltools.graph.OWLGraphWrapper;
+import owltools.io.ParserWrapper;
+
+
+**/
+
 
 /**
  *
@@ -89,13 +117,96 @@ public class Main {
         }
     }
 
+    public static void createSIF(String sifname, String attname, ArrayList<Pheno> rs_list, double cutoff, int flip, HashMap<String, IndividualPair> hm_indpair) {
+        try {
+            HashMap<String, Individual> tmp_ind = new HashMap<String, Individual>();
+            BufferedWriter out1 = new BufferedWriter(new FileWriter(sifname));
+            BufferedWriter out2 = new BufferedWriter(new FileWriter(attname));
+
+            for (Pheno mp : rs_list) {
+                if ((mp.getClosest() != null) && (mp.getClosestDistance() <= cutoff)) {
+                    if (mp.getClosest().getId() != null) {
+                        out1.write(mp.getId() + "\t is_correlated \t" + mp.getClosest().getId());                        
+                        out2.write(mp.getId() + " (is_correlated) " + mp.getClosest().getId() + " = " + -Math.log10(mp.getClosestDistance()));
+
+                        for (Individual ind : (HashSet<Individual>) mp.getIndividuals()) {
+                            out1.write("\n" + mp.getId() + "\t is_associated \t" + ind.getId());
+                            if (tmp_ind.get(ind.getId()) == null) {
+                                if (flip == 0) {
+                                    out1.write("\n" + ind.getId() + "\t is_ortholog \t" + hm_indpair.get(ind.getId()).getMember2().getId());
+                                } else {
+                                    out1.write("\n" + ind.getId() + "\t is_ortholog \t" + hm_indpair.get(ind.getId()).getMember1().getId());
+                                }
+                                tmp_ind.put(ind.getId(), ind);
+                            }
+                        }
+                        out1.write("\n");
+                        out2.write("\n");
+                    }
+                }
+            }
+            out1.close();
+            out2.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
     /*
      * The main() method is the first method that gets called.
      * All relevant programming blocks are either implemented inline within the method
      * or through functionality offered through methods residing within other classes.
      */
+
+
+
+
+
     public static void main(String[] args) {
+
+
+        /**
+        try {
+            ParserWrapper pw = new ParserWrapper();
+            OWLGraphWrapper g =
+                    pw.parseToOWLGraph("http://purl.org/obo/obo/MP.obo");
+            OWLGraphLayoutRenderer r = new OWLGraphLayoutRenderer(g);
+            OWLObject ob1 = g.getOWLObjectByIdentifier("MP:0001963");
+            System.out.println("drawing: " + ob1);
+            r.addObject(ob1);
+
+            
+            OWLGraphWrapper g2 = pw.parseToOWLGraph("http://purl.org/obo/obo/HP.obo");
+            g.mergeOntology(g2.getSourceOntology());
+            g2 = pw.parseToOWLGraph("test_resources/testrel.obo");
+            g.mergeOntology(g2.getSourceOntology());
+
+            OWLObject ob2 = g.getOWLObjectByIdentifier("HP:0000407");
+            System.out.println("drawing: " + ob2);
+            r.addObject(ob2);
+
+            OWLObject rel = g.getOWLObjectByIdentifier("TEST:0000001");
+            System.out.println("drawing: " + rel);
+            r.addObject(rel);
+
+            r.addEdge(new OWLGraphEdge(rel, ob1,  g.getSourceOntology()));
+            r.addEdge(new OWLGraphEdge(rel, ob2,  g.getSourceOntology()));
+
+            r.renderHTML();
+
+
+
+        } catch (Exception e) {
+            System.out.println("Exception:");
+            e.printStackTrace();
+        }
+
+        if(1==1)
+            return;
+
+        **/
+
+
         long mainstart = System.currentTimeMillis();
         long mainend;
         double timespent;
@@ -423,6 +534,7 @@ public class Main {
                     && (indpair.getMember1().getAttributes().size() > 0) && (indpair.getMember2().getAttributes().size() > 0)) {
                 hs_indpair1.add(indpair);
                 hm_indpair1.put(indpair.getMember1().getId(), indpair);
+                hm_indpair1.put(indpair.getMember2().getId(), indpair);
 
             }
         }
@@ -684,6 +796,8 @@ public class Main {
                     p_tmp.setClosest(cp);
                 }                
             }
+
+            p_tmp.setIndividuals(p1.getIndividuals());
             rs_ph1.add(p_tmp);
         }
 
@@ -741,6 +855,7 @@ public class Main {
                     p_tmp.setClosest(cp);
                 }
             }
+            p_tmp.setIndividuals(p2.getIndividuals());
             rs_ph2.add(p_tmp);
         }
 
@@ -750,12 +865,40 @@ public class Main {
         Collections.sort(overall_list1, distancecompare);
 
         printresults(out_path.concat("/overall_sp1.xls"), overall_list1, 1, 0);
+        createSIF(out_path.concat("/" + sp1_name + "_" + sp2_name +".SIF"),
+                  out_path.concat("/" + sp1_name + "_" + sp2_name +".EA"),
+                  overall_list1, 1, 0, hm_indpair1);
 
         ArrayList<Pheno> overall_list2 = new ArrayList<Pheno>(rs_ph2);
         distancecompare = new DistanceCompare();
         Collections.sort(overall_list2, distancecompare);
 
         printresults(out_path.concat("/overall_sp2.xls"), overall_list2, 1, 1);
+        createSIF(out_path.concat("/" + sp2_name + "_" + sp1_name +".SIF"), 
+                  out_path.concat("/" + sp2_name + "_" + sp1_name +".EA"),
+                  overall_list2, 1, 1, hm_indpair1);
+
+        // REMOVE THIS LATER: BEGIN
+        ArrayList<Pheno> reciprocal_list = new ArrayList<Pheno>();
+        for (Pheno mp : overall_list1) {
+            //If (mp, mp.closest()) is a reciprocal hit pair, add mp to reciprocal best hit list
+            p = mp.getClosest();
+            if (p !=null)
+                p = p.getClosest();
+            if (p != null) {
+                if (mp.getId().equals(p.getId())) {
+                    reciprocal_list.add(mp);
+                }
+            }
+        }
+        printresults(out_path.concat("/reciprocal_pairs.xls"), reciprocal_list, 1, 0);
+
+
+        if (1 == 1) {
+            return;
+        }
+
+        // REMOVE THIS LATER: END
 
 
         /* CODE FOR BOOTSTRAPING */
@@ -937,7 +1080,7 @@ public class Main {
         distancecompare = new DistanceCompare();
         Collections.sort(overall_list2, distancecompare);
 
-        ArrayList<Pheno> reciprocal_list = new ArrayList<Pheno>();
+        //ArrayList<Pheno> reciprocal_list = new ArrayList<Pheno>();
         printresults(out_path.concat("/bootstrap_sp1.xls"), overall_list1, avgcutoff1, 0);
         for (Pheno mp : overall_list1) {
             //If (mp, mp.closest()) is a reciprocal hit pair, add mp to reciprocal best hit list
