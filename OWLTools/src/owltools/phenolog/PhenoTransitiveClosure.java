@@ -69,11 +69,12 @@ public class PhenoTransitiveClosure {
             for (Pheno p : hsp) {
                 p.setancestors(new HashSet<Pheno>());
                 tset = p.getancestors();
-                ancs = owlg.getAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId()));
+                ancs = owlg.getNamedAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId()));
 
-                for (OWLObject c : ancs) {
+                for (OWLObject c : ancs) {                
                     if (owlg.getIdentifier(c).equals(p.getId()) && p.getLabel()==null)
                         p.setLabel(owlg.getLabel(c));
+                    
                     if (owlg.getIdentifier(c).contains(prefix) && !(owlg.getIdentifier(c).equals(p.getId()))) {
                         if (hmp.get(owlg.getIdentifier(c)) == null) {
                             tmpi = new HashSet<Individual>();
@@ -106,6 +107,7 @@ public class PhenoTransitiveClosure {
                         
         } catch (Exception e) {
             System.out.println("EXCEPTION IN OWL GRAPH:");
+            e.printStackTrace();
         }
 
         return aux;
