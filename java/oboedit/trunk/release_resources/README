@@ -1,7 +1,7 @@
 Copyright (C) 2011, Gene Ontology Consortium
 Original author:  John Day-Richter
-Version:  2.1-beta8
-Release date:  January 24, 2011
+Version:  2.1-beta16
+Release date:  July 7, 2011
 
 OBO-Edit is an open source tool written in Java for browsing, searching, and
 modifying OBO ontologies.
@@ -20,9 +20,9 @@ How to report bugs
 
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
-================================
-What's New in OBO-Edit v2.1-beta14-15
-================================
+=================================
+What's New in OBO-Edit v2.1-beta14-16 (7/8/2011)
+=================================
 
 Bug fixes:
 [ geneontology-Bugs-3303596 ] Made definitions of obsolete terms editable
@@ -36,18 +36,38 @@ shown as "is_a"), and more.
 
 [ geneontology-Bugs-2679772 ] Don't save dbxref lib description to obo file
 
-Changes/Improvements:
-Made titlebar of Text Editor say "(OBSOLETE TERM)" in red if it's showing a
-term that's obsolete.
-
-Ontology Term Generation plugin fixed by its authors
-
 [ geneontology-Bugs-3314676 ] Ancestor/descendant relationships missing
 In the search panel, when looking for descendants/ancestors of a term, the
 pulldown menu for relationships only includes default obo-edit relationships
 and not ontology-specific relationships.
 
 [ geneontology-Bugs-3346958 ] Type menu needs to refresh for non-binary link search
+
+[ geneontology-Bugs-2872910 ] child search ignores relationship type
+
+[ geneontology-Bugs-3316815 ] filtered save doesn't save dangling parents
+Dangling parent save was broken (not by me) in r2703 on 5/14/2010.
+The change that broke it was these two lines that were added to
+OBOFileAdapter.doOperation (to fix a problem with obo2obo not setting
+allowdangling to true when it should):
+            for(FilteredPath filteredPath : filteredPaths)
+                   filteredPath.setAllowDangling(ioprofile.allowDangling);
+Commenting out those lines fixed dangling save in OBO-Edit but broke it in
+obo2obo.  My compromise fix is to propagate ioprofile's allowDangling setting
+to the filteredPaths only if ioprofile.allowDangling is true.  This seems to
+work for both obo2obo and OBO-Edit for the cases I tried, but more testing
+would be good.
+(By the way, in debugging this, I discovered that the ioprofile that is passed
+to doOperation doesn't always seem to be the right ioprofile, and I'm
+surprised that this doesn't result in other incorrect parameter settings for
+load/save.)
+
+
+Changes/Improvements:
+Made titlebar of Text Editor say "(OBSOLETE TERM)" in red if it's showing a
+term that's obsolete.
+
+Ontology Term Generation plugin fixed by its authors
 
 
 ================================
