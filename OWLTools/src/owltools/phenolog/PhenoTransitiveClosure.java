@@ -72,13 +72,15 @@ public class PhenoTransitiveClosure {
                 ancs = owlg.getNamedAncestorsReflexive(owlg.getOWLObjectByIdentifier(p.getId()));
 
                 for (OWLObject c : ancs) {                
-                    if (owlg.getIdentifier(c).equals(p.getId()) && p.getLabel()==null)
+                    if (owlg.getIdentifier(c).equals(p.getId()) && p.getLabel()==null){
                         p.setLabel(owlg.getLabel(c));
+                    }
                     
                     if (owlg.getIdentifier(c).contains(prefix) && !(owlg.getIdentifier(c).equals(p.getId()))) {
                         if (hmp.get(owlg.getIdentifier(c)) == null) {
                             tmpi = new HashSet<Individual>();
                             tmpi.addAll(p.getIndividuals());
+                            
                             tmp = new Pheno(owlg.getIdentifier(c), owlg.getLabel(c), tmpi, true);
                             chsp.add(tmp);
                             hmp.put(tmp.getId(), tmp);
