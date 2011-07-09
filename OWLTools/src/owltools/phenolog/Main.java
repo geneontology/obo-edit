@@ -291,6 +291,7 @@ public class Main {
                 if (result.length == 2) {
                     if ((result[0] != null) && (result[1] != null)) {
                         //System.out.println("1: "+result[0]+", 2: "+result[1]+", prefix: "+sp1_ph_pfx);
+
                         if (result[1].contains(sp1_ph_pfx)) {
                             gpset.add(new GenePheno(result[0], result[1]));
                         }
@@ -357,7 +358,7 @@ public class Main {
                     // result[0] : Gene ID
                     // result[1] : Phenotype ID
                     if ((result[0] != null) && (result[1] != null)) {
-                        if (result[1].contains(sp2_ph_pfx)) {
+                        if (result[1].contains(sp2_ph_pfx + ":")) {
                             gpset.add(new GenePheno(result[0], result[1]));
                         }
                     }
@@ -664,7 +665,6 @@ public class Main {
         HashSet<IndividualPair> clpair = null;
 
 
-
         for (Pheno t_ph1 : ph1) {
             t_ph1.setClosest(null);
             t_ph1.setClosestDistance(1);
@@ -682,8 +682,20 @@ public class Main {
         int i;
         Pheno p = null;
         start = System.currentTimeMillis();
+        HashSet<Pheno> rs_ph1 = new HashSet<Pheno>();
+        HashSet<Pheno> rs_ph2 = new HashSet<Pheno>();
+
+        try{
+        BufferedWriter out = new BufferedWriter(new FileWriter("C:\\Berkeley Research\\outputs\\heatmap_input.txt"));
+        BufferedWriter out1 = new BufferedWriter(new FileWriter("C:\\Berkeley Research\\outputs\\sp1_names.txt"));
+        BufferedWriter out2 = new BufferedWriter(new FileWriter("C:\\Berkeley Research\\outputs\\sp2_names.txt"));
+        int counter = 0;
+        
         for (Pheno t_ph1 : ph1) {
+            out1.write(t_ph1.getId() + " (" + t_ph1.getLabel() + ") \n");
             for (Pheno t_ph2 : ph2) {
+                if (counter == 0)
+                    out2.write(t_ph2.getId() + " (" + t_ph2.getLabel() + ") \n");
                 overlap = 0;
                 clpair = null;
 
@@ -708,9 +720,7 @@ public class Main {
 
                     // Calculate HyperGeometric probability between t_ph1 and t_ph2
                     pvalue = 0;
-                    for (i = overlap; i <= Math.min(mval, nval); i++) {
-                        pvalue += hg.probability(overlap);
-                    }
+                    pvalue = hg.upperCumulativeProbability(overlap);
                     //pvalue = hg.probability(overlap);
 
                     if (pvalue < t_ph1.getClosestDistance()) {
@@ -725,15 +735,23 @@ public class Main {
                         t_ph2.setClosestOverlap(overlap);
                         t_ph2.setClosestOverlapPairs(clpair);
                     }
+
+                    out.write((1-pvalue)*100 + " $ ");
                 }
+                else out.write("0 $ ");
             }
+            out.write("\n");
+            counter++;
         }
+
+        out.close();
+        out1.close();
+        out2.close();
 
         end = System.currentTimeMillis();
         total = end - start;
         System.out.println("2) Total Time Taken: " + total);
 
-        HashSet<Pheno> rs_ph1 = new HashSet<Pheno>();
         HashSet<IndividualPair> ip_tmp = null;
         Pheno p_tmp = null;
         HashMap<String, Pheno> hm_cp = new HashMap<String, Pheno>();
@@ -802,7 +820,7 @@ public class Main {
         }
 
 
-        HashSet<Pheno> rs_ph2 = new HashSet<Pheno>();
+        
         ip_tmp = null;
         p_tmp = null;
         for (Pheno p2 : ph2) {
@@ -859,6 +877,10 @@ public class Main {
             rs_ph2.add(p_tmp);
         }
 
+        }
+        catch(Exception e){
+
+        }
 
         ArrayList<Pheno> overall_list1 = new ArrayList<Pheno>(rs_ph1);
         DistanceCompare distancecompare = new DistanceCompare();
