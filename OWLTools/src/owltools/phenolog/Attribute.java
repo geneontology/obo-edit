@@ -20,7 +20,6 @@ public class Attribute {
 
         public Attribute(String id){
             this.id = id;
-            this.label = label;
         }
 
 	public String getId() {
