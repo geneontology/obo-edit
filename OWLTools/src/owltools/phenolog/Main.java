@@ -686,9 +686,9 @@ public class Main {
         HashSet<Pheno> rs_ph2 = new HashSet<Pheno>();
 
         try{
-        BufferedWriter out = new BufferedWriter(new FileWriter("C:\\Berkeley Research\\outputs\\heatmap_input.txt"));
-        BufferedWriter out1 = new BufferedWriter(new FileWriter("C:\\Berkeley Research\\outputs\\sp1_names.txt"));
-        BufferedWriter out2 = new BufferedWriter(new FileWriter("C:\\Berkeley Research\\outputs\\sp2_names.txt"));
+        BufferedWriter out = new BufferedWriter(new FileWriter(out_path.concat("/heatmap_input.txt")));
+        BufferedWriter out1 = new BufferedWriter(new FileWriter(out_path.concat("/sp1_names.txt")));
+        BufferedWriter out2 = new BufferedWriter(new FileWriter(out_path.concat("/sp2_names.txt")));
         int counter = 0;
         
         for (Pheno t_ph1 : ph1) {
