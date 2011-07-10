@@ -39,7 +39,6 @@ public class Individual implements Comparable<Individual>{
 
     public Individual(String id, Set<Attribute> attributes) {
         this.id = id;
-        this.label = label;
         this.attributes = attributes;
     }
 
