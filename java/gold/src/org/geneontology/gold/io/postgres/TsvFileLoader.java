@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Collection;
 
 import org.postgresql.copy.CopyManager;
 import org.postgresql.core.BaseConnection;
@@ -95,7 +96,7 @@ public class TsvFileLoader {
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	public void loadTables(List<File> files) throws IOException, SQLException {
+	public void loadTables(Collection<File> files) throws IOException, SQLException {
 		for (File file : files) {
 			//System.err.println(file);
 			loadTable(file);
