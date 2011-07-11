@@ -9,7 +9,6 @@ import org.geneontology.gold.io.PhyloTreeLoader;
 
 public class PhyloTreeLoaderTest extends junit.framework.TestCase {
 	PhyloTreeLoader ptl;
-	List<File> tmpfiles;
 	
 	public void setUp(){
 		ptl = new PhyloTreeLoader();
@@ -17,16 +16,7 @@ public class PhyloTreeLoaderTest extends junit.framework.TestCase {
 		ptl.setSource(paintScrapped);
 	}
 	
-	// modified from PhyloTreeLoader.load()
 	public void testLoad() throws Exception{
-		// loades sources into memory
-		ptl.loadFromFile();
-		
-		// writeTSV() marks the tmpfiles as to be deleted on exit, so they don't need to be cleaned up
-		tmpfiles = ptl.writeTSV();
-
-		// Write to the database
-		ptl.hib(tmpfiles);
-	
+		ptl.loadThrow();
 	}
 }

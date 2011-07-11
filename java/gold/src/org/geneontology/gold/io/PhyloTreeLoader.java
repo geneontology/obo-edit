@@ -1,52 +1,48 @@
 package org.geneontology.gold.io;
 
-import java.util.*;
-import java.util.Date;
 import java.io.*;
-import java.sql.*;
-
+import java.net.SocketException;
+import java.net.URISyntaxException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLDataException;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 import java.util.Map.Entry;
-import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.forester.phylogeny.Phylogeny;
+import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.gaf.hibernate.Bioentity;
+import org.geneontology.gaf.io.GafURLFetch;
+import org.geneontology.gold.io.postgres.TsvFileLoader;
+import org.geneontology.util.HibPantherID;
 
 import org.forester.io.parsers.nhx.NHXParser;
-import org.forester.phylogeny.Phylogeny;
-import org.forester.phylogeny.PhylogenyNode;
+//import org.forester.phylogeny.Phylogeny;
+//import org.forester.phylogeny.PhylogenyNode;
 
-import org.geneontology.util.*;
-import org.geneontology.gaf.hibernate.Bioentity;
-import org.geneontology.conf.GeneOntologyManager;
-import org.geneontology.gold.io.postgres.TsvFileLoader;
-
-/**
- * 
- * @author Sven Heinicke
- *
- */
 public class PhyloTreeLoader implements Loader {
-	private Collection<PhyloTree> sources;
-	
-
-	protected enum Status { FOUND, MISSING };
-	
-	/**
-	 * Try to match files that are created by the {@link org.paint.util.PaintScraper} class.
-	 */
-	final static FileFilter tff = new SuffixFileFilter(new String[] { ".tree.gz", ".tree" });
+	GafURLFetch source;
+	Collection<PhyloTree> pts = null;
 	
 	final static String tsvSuffix = ".tsv";
-	final static GeneOntologyManager manager = GeneOntologyManager.getInstance();
 	final static String PANTHER = "PANTHER";
-
-	static private File tmpdir = null;
-	static private PreparedStatement selectFamily = null;
-	//static private PreparedStatement hasPanther = null;
-	static protected Map<String,Map<Status,Integer>> count = null;
-	static protected Connection connection;
+	final static GeneOntologyManager manager = GeneOntologyManager.getInstance();
 	
+	static private File tmpdir = null;
+	static protected Connection connection;
+	static private PreparedStatement selectFamily = null;
+
 	public PhyloTreeLoader() {
-		sources = new HashSet<PhyloTree>();
+		pts = new HashSet<PhyloTree>();
 
 		if (null == connection) {
 			//String host = manager.getGolddbHostName();
@@ -62,54 +58,64 @@ public class PhyloTreeLoader implements Loader {
 			}
 		}
 	}
-		
+	
+	/**
+	 * getTrees() needs to be run before this can be used.
+	 * @throws  
+	 */
 	@Override
 	public boolean isLoadRequired() {
-		for (PhyloTree pt : sources) {
+		for (PhyloTree pt : pts) {
 			if (pt.isLoadRequired()) {
 				return true;
 			}
 		}
-
 		return false;
 	}
+	
+	public void getTrees() throws IOException{
+		while(source.hasNext()){
+			InputStream is = (InputStream)source.next();
+			pts.add(new PhyloTree(source.getCurrentGafFile(), is));
+		}
+	}
 
+	public void loadThrow() throws SocketException, IOException, URISyntaxException, SQLException, ClassNotFoundException{
+		source.connect();
+		pts = new HashSet<PhyloTree>();
+		getTrees();
+		if (isLoadRequired()){
+			hib(writeTSV(pts));
+		}
+	}
+	
+	/**
+	 * Call's loadThrow() but dies if there is an error.
+	 */
 	@Override
 	public void load() {
-		loadFromFile();
-		List<File> tmpfiles = writeTSV();
 		try {
-			hib(tmpfiles);
+			loadThrow();
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
 	}
 
-	/**
-	 * Load sources into memory, assumes the files are created by the {@link org.paint.util.PaintScraper} class.
-	 *
-	 * If there is a problem loading the files it prints a stack trace, and removes that files from the source collection.
-	 */
-	public void loadFromFile() {
-		Collection<PhyloTree> removeMe = new HashSet<PhyloTree>();
-		
-		for (PhyloTree pt : sources) {
-			try {
-				pt.loadFromFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-				removeMe.add(pt);
-			}
-		}
-		sources.removeAll(removeMe);		
+	@Override
+	public void setSource(String src) {
+		source = new GafURLFetch(src);
+	}
+	
+	public void setSource(File src){
+		setSource(src.toURI().toString());
 	}
 	
 	/**
 	 * Writes files loaded to TSV files, loadFromFile() needs to be run first.
 	 * @return A list of tables to pass to hib()
 	 */
-	public List<File> writeTSV() {
+	public Collection<File> writeTSV(Collection<PhyloTree> pts){
 		if (tmpdir == null) {
 			File shm = new File("/dev/shm");
 			if (shm.isDirectory()) {
@@ -128,14 +134,14 @@ public class PhyloTreeLoader implements Loader {
 			TableDumper familyDataDumpDumper = new TableDumper(tmpfiles.get(3));
 			
 			Set<String> have = new HashSet<String>(); // avoid dups
-			for (PhyloTree pt : sources) {
+			for (PhyloTree pt : pts) {
 				if (pt.isLoadRequired()) {
 					boolean complete = true;
 					String ptId = pt.getId();
 
 					familyDataDumpDumper.dumpRow(ptId, PANTHER, pt.getNHX(), "nhx");
 
-					familyDumper.dumpRow(ptId, pt.getName(), null, pt.creationDate());
+					familyDumper.dumpRow(ptId, pt.getName(), null, "2011-07-11"); //pt.creationDate());
 					for (Bioentity be : pt.getBioentities()) {
 
 						String beId = be.getId();
@@ -168,116 +174,72 @@ public class PhyloTreeLoader implements Loader {
 			System.exit(1);
 		}
 		
-
 		for (File tmpfile : tmpfiles) {
 			tmpfile.deleteOnExit();
 		}
-
+		
 		return tmpfiles;
 	}
 	
-
-	
-	public void hib(List<File> tmpfiles) throws SQLException, ClassNotFoundException, IOException {
+	public void hib(Collection<File> tmpfiles) throws SQLException, ClassNotFoundException, IOException {
 		TsvFileLoader tsvLoader = new TsvFileLoader(manager.getGolddbUserName(),
 				manager.getGolddbUserPassword(), manager.getGolddbHostName(), 
 				manager.getGolddbName());
 		tsvLoader.loadTables(tmpfiles);
 	}
-
-
 	
-	@Override
-	public void setSource(String src) {
-		setSource(new File(src));
-	}
 	
-	/**
-	 * Clears the current set of sources.
-	 * @param src Passed as: addSource(src);
-	 */
-	public void setSource(File src) {
-		//System.err.println("setSource(" + src + ")");
-		sources.clear();
-		addSource(src);
-	}
-	
-	/**
-	 * @param src Passed as: addSource(new File(src));
-	 */
-	public void addSource(String src) {
-		addSource(new File(src));
-	}
-	
-	public void addSource(File src) {
-		if (src.isDirectory()) {
-			for (File s : src.listFiles(tff)) {
-				sources.add(new PhyloTree(s));
-			}		
-		} else {
-			sources.add(new PhyloTree(src));
-		}
-	}
-	
-	/**
-	 * 
-	 * @param args List of paths that point to files created by the {@link org.paint.util.PaintScraper} class.
-	 * @throws IOException
-	 */
-	public static void main(String[] args) throws IOException {
-		count = new HashMap<String,Map<Status,Integer>>();
+	public static void main(String[] arg) throws SocketException, IOException, URISyntaxException, SQLException, ClassNotFoundException{
 		PhyloTreeLoader ptl = new PhyloTreeLoader();
-		for (String arg : args) {
-			//System.out.println("addSource(" + arg + ')');
-			ptl.addSource(arg);
-		}
-		if (ptl.isLoadRequired()) {
-			ptl.load();
-		}
-		
-		for (String key : new TreeSet<String>(count.keySet())) {
-			System.out.println(key + '=' + count.get(key));
-		}
+		ptl.setSource(arg[0]);
+		ptl.loadThrow();
 	}
-	
-	/**
-	 * An individual file created by the {@link org.paint.util.PaintScraper} class.
-	 *
-	 */
-	class PhyloTree {
-		private File source;
-		private BufferedReader reader;
+
+	class PhyloTree{
+		private String id;
 		private Phylogeny tree;
 		private Map<String,HibPantherID> leaves;
 		private Boolean loadRequired = null;
 		
-		/**
-		 * 
-		 * @param src A File object that should represent a file created by the {@link org.paint.util.PaintScraper} class.
-		 */
-		PhyloTree(File src) {
-			this.source = src;
+		private PhyloTree(String id, BufferedReader br) throws IOException{
+			this.id = id;
 			leaves = new HashMap<String,HibPantherID>();
+			parse(br);
+		}
+		
+		private PhyloTree(String id, Reader r) throws IOException{
+			this(id, new BufferedReader(r));
+		}
+		
+		private PhyloTree(String id, InputStream is) throws IOException{
+			this(id, new InputStreamReader(is));
 		}
 				
-		public Collection<PhylogenyNode> getPhylogenyNodes() {
-			//return tree.getExternalNodes();
-			
-			PhylogenyNode root = tree.getRoot();
-			return root.getDescendants();
-		}
+		private void parse(BufferedReader br) throws IOException{
+			// I tried reusing a NHXParser but got some weird results
+			NHXParser parser = new NHXParser();
 
-		/**
-		 * Currently it only checks if the tree has already been loaded. Nothing else.
-		 * @return true if the tree needs to be loaded
-		 */
-		boolean isLoadRequired(){
+			// get the title and remove the prefix "[title:" and "]"
+			String line = br.readLine().substring(7).replaceFirst(".$", "");
+
+			parser.setSource(br.readLine());
+			Phylogeny oneTree[] = parser.parse();
+			tree = oneTree[0];
+			tree.setName(line);
+
+			while ((line = br.readLine()) != null) {
+				String[] kv = line.replaceFirst(".$", "").split(":", 2);
+				leaves.put(kv[0], new HibPantherID(kv[1].replace('=', ':')));
+			}
+			br.close();
+		}
+		
+		public boolean isLoadRequired(){
 			if (null != loadRequired) {
 				return loadRequired;
 			}
 
-			// check if it is the family is in the table
-			try {
+			try{
 				if (null == selectFamily) {
 					selectFamily = connection.prepareStatement("SELECT id FROM FAMILY WHERE id=?");
 				}
@@ -295,151 +257,8 @@ public class PhyloTreeLoader implements Loader {
 			} catch (SQLException e) {
 				e.printStackTrace();
 				System.exit(1);
-			}
-
-			/*
-			if (false == loadRequired) {
-				if (hasPantherBioentities()) {
-					loadRequired = true;
-				}
-			}
-			*/
-			
+			}	
 			return loadRequired;
-		}
-		
-		/*
-		protected void loadExistingBioentities() {
-			boolean out = false;
-			try {
-				if (null == hasPanther) {
-					hasPanther = connection.prepareStatement("SELECT id,gaf_document FROM bioentity WHERE gaf_document=? AND id IN (SELECT bioentity WHERE family=?)");
-				}
-				hasPanther.setString(0, PANTHER);
-				hasPanther.setString(1, getName());
-				ResultSet rs = selectFamily.executeQuery();
-				if (rs.next()) {
-					out = true;
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-				System.exit(1);
-			}
-			return out;
-		}
-		*/
-		
-		private void addStat(String key, Status status) {
-			if (null == count) {
-				return;
-			}
-			
-			//System.err.println("addStat(" + key + "," + status + ')');
-			
-			if (count.containsKey(key)) {
-				Map<Status,Integer> value = count.get(key);
-				if (value.containsKey(status)) {
-					value.put(status, 1 + value.get(status));
-				} else {
-					value.put(status, 1);
-				}
-			} else {
-				Map<Status,Integer> value = new HashMap<Status,Integer>();
-				value.put(status, 1);
-				count.put(key, value);
-			}
-		}
-		
-
-		public void loadFromFile() throws IOException {
-			// I tried reusing a NHXParser but got some weird results
-			NHXParser parser = new NHXParser();
-			open();
-
-			// get the title and remove the prefix "[title:" and "]"
-			String line = reader.readLine().substring(7).replaceFirst(".$", "");
-
-			parser.setSource(reader.readLine());
-			Phylogeny oneTree[] = parser.parse();
-			tree = oneTree[0];
-
-			while ((line = reader.readLine()) != null) {
-				String[] kv = line.replaceFirst(".$", "").split(":", 2);
-				leaves.put(kv[0], new HibPantherID(kv[1].replace('=', ':')));
-			}
-
-			close();
-		}
-		
-		/**
-		 * 
-		 * @return A BufferedReader class of the file.
-		 * @throws IOException
-		 */
-		public BufferedReader open() throws IOException
-		{
-			FileInputStream fis = new FileInputStream(source);
-			InputStreamReader isr = null;
-			if (gzipped()) {
-				GZIPInputStream gis = new GZIPInputStream(fis);
-				isr = new InputStreamReader(gis);
-			} else {
-				isr = new InputStreamReader(fis);
-			}
-			reader = new BufferedReader(isr);
-			return reader;
-		}
-		
-		/**
-		 * Closes the reader opened by open().
-		 * @throws IOException
-		 */
-		public void close() throws IOException
-		{
-			reader.close();
-		}
-
-		protected boolean gzipped() {
-			return source.getName().endsWith(".gz");
-		}
-		
-		/**
-		 * @return What goes into the family.id column.
-		 */
-		public String getId() {
-			String id = source.getName();
-			return PANTHER + ':' + id.substring(0, id.indexOf('.'));
-		}
-		
-		public String getName() {
-			return tree.getName();
-		}
-		
-		public Collection<Bioentity> getBioentities() {
-			Collection<Bioentity> out = new HashSet<Bioentity>();
-			for (HibPantherID hpi : leaves.values()) {
-				Bioentity got = hpi.bioentity(PANTHER);
-				if (got.getGafDocument().contentEquals(PANTHER)) {
-					this.addStat(hpi.getSpeciesCode(), Status.MISSING);
-				} else {
-					this.addStat(hpi.getSpeciesCode(), Status.FOUND);
-				}
-
-				out.add(got);
-			}
-			return out;
-		}
-		
-		public long lastModified() {
-			return source.lastModified();
-		}
-		
-		public String creationDate(){
-			return manager.SimpleDateFormat().format(new Date(lastModified()));
-		}
-		
-		public String toString(){
-			return source.toString();
 		}
 		
 		public String getNHX(){
@@ -449,7 +268,36 @@ public class PhyloTreeLoader implements Loader {
 			}
 			return out.toNewHampshireX();
 		}
-	
-	}
+		
+		public Collection<Bioentity> getBioentities() {
+			Collection<Bioentity> out = new HashSet<Bioentity>();
+			for (HibPantherID hpi : leaves.values()) {
+				Bioentity got = hpi.bioentity(PANTHER);
+				/*
+				if (got.getGafDocument().contentEquals(PANTHER)) {
+					this.addStat(hpi.getSpeciesCode(), Status.MISSING);
+				} else {
+					this.addStat(hpi.getSpeciesCode(), Status.FOUND);
+				}
+				*/
+				out.add(got);
+			}
+			return out;
+		}
+		
 
+		
+		
+		/**
+		 * @return What goes into the family.id column.
+		 */
+		public String getId() {
+			return PANTHER + ':' + id.substring(0, id.indexOf('.'));
+		}
+		
+		public String getName() {
+			return tree.getName();
+		}
+		
+	}
 }
