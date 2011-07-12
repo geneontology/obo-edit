@@ -13,6 +13,7 @@ import org.geneontology.db.model.DBXref;
 import org.geneontology.db.model.GeneProduct;
 import org.geneontology.db.model.Species;
 import org.geneontology.db.model.Term;
+import org.geneontology.db.model.TermSynonym;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -57,6 +58,16 @@ public class GOobjectFactory {
 	public synchronized Term getTermByAcc(String acc){
 		Session session = getSession();
 		return (Term)session.createQuery("from Term where acc = ?").setString(0, acc).uniqueResult();
+	}
+	
+	public synchronized Term getTermByAlternateAcc(String acc) {
+		Session session = getSession();
+		String query = "from TermSynonym where alternateID = ?";
+		TermSynonym ts = (TermSynonym)session.createQuery(query).setString(0, acc).uniqueResult();
+		if (ts == null) {
+			return null;
+		}
+		return ts.getTerm();
 	}
 
 	/**
