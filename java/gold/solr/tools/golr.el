@@ -1,8 +1,8 @@
 #!/usr/bin/emacs --script
 ;;;; 
 ;;;; Commands for redeploying a package manager distributed Solr/Jetty
-;;;; instance with GO data. Can be used from the command line or from
-;;;; within Emacs after loading this file.
+;;;; instance with GO data. Tested on Ubuntu 11.04. Can be used from
+;;;; the command line or from within Emacs after loading this file.
 ;;;;
 ;;;; Usage (cli):
 ;;;;    sudo ./golr.el
@@ -49,6 +49,11 @@ repository."
   :type 'string
   :group 'golr)
 
+(defcustom golr-solr-data-dir "/srv/solr/data"
+  "The location of the solr index data. This should be in sync with the value of daraDir in solrconfig.xml."
+  :type 'string
+  :group 'golr)
+
 (defcustom golr-transfer-schema
   '(("apache" ("golr") "/etc/apache2/sites-available/")
     ("jetty" ("jetty.conf" "jetty-rewrite.xml" "jetty.xml") "/etc/jetty/")
@@ -91,6 +96,12 @@ system services. It is an ordered list of strings."
   "Warm-up sudo for other commands."
   (golr-shell-command (concat "sudo cp " src " " dest)))
 
+(defun golr-ready-data-dir ()
+  "Create the data directory for the Solr data."
+  (golr-shell-command (concat "sudo mkdir -p " golr-solr-data-dir))
+  (golr-shell-command (concat "sudo chmod 755 " golr-solr-data-dir))
+  (golr-shell-command (concat "sudo chown jetty " golr-solr-data-dir)))
+
 (defun golr-file-rollout ()
   "Moves the SVN files into place. Uses golr-transfer-schema as struct."
   (dolist (x golr-transfer-schema)
@@ -118,6 +129,7 @@ system services. It is an ordered list of strings."
   (interactive)
   (cd golr-location)
   (golr-file-rollout)
+  (golr-ready-data-dir)
   (golr-services-restart)
   (princ "golr-restart completed--Solr restarting!\n"))
 
@@ -136,6 +148,10 @@ system services. It is an ordered list of strings."
     (browse-url full-url)
     (princ (concat "Tried to visit: " full-url "\n"))
     (princ "golr-update completed--Solr update has started!\n")))
+
+;;;
+;;; Run from the command line.
+;;;
 
 (defun golr-cli ()
   "Command switch for command line use."

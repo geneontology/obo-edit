@@ -84,7 +84,8 @@
   <!-- Used to specify an alternate directory to hold all index data
        other than the default ./data under the Solr home.
        If replication is in use, this should match the replication configuration. -->
-  <dataDir>${solr.data.dir:./solr/data}</dataDir>
+  <!-- <dataDir>${solr.data.dir:./solr/data}</dataDir> -->
+  <dataDir>/srv/solr/data</dataDir>
 
 
   <!-- WARNING: this <indexDefaults> section only provides defaults for index writers
@@ -252,6 +253,10 @@
       <maxTime>1000</maxTime> 
     </autoCommit>
     -->
+    <autoCommit> 
+      <maxDocs>10000</maxDocs>
+      <maxTime>10000</maxTime> 
+    </autoCommit>
 
 
     <!-- The RunExecutableListener executes an external command from a
