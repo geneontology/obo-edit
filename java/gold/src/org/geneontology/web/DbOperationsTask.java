@@ -335,7 +335,7 @@ public class DbOperationsTask extends Task implements DbOperationsListener {
 					continue;
 				reasonerComputationsResults
 						.append("&nbsp;&nbsp;&nbsp;-unsatisfiable: "
-								+ Owl2Obo.getIdentifier(cls) + "<br />");
+								+ Owl2Obo.getIdentifierFromObject(cls, graph.getSourceOntology()) + "<br />");
 			}
 		} else {
 			reasonerComputationsResults
