@@ -243,9 +243,9 @@ sub mode_goose {
     ## Get the right query worker.
     my $q = undef;
     if( $mirror->{type} eq 'mysql' ){
-      $q = AmiGO::External::LEAD::Query->new($props);
+      $q = AmiGO::External::LEAD::Query->new($props, $in_limit);
     }elsif( $mirror->{type} eq 'psql' ){
-      $q = AmiGO::External::GOLD::Query->new($props);
+      $q = AmiGO::External::GOLD::Query->new($props, $in_limit);
     }else{
       $self->{CORE}->kvetch("_unknown database_");
       $tmpl_args->{message} = "_unknown database_";
