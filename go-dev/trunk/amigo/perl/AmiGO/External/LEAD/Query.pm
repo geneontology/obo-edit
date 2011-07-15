@@ -43,7 +43,7 @@ sub new {
   ## to 5000.
   if( ! defined($max_query_len) ){
     $max_query_len = 5000;
-    $self->kvetch("using default query length: " . $limit);
+    $self->kvetch("using default query length: " . $max_query_len);
   }
 
   ## Set up sanitizer.
