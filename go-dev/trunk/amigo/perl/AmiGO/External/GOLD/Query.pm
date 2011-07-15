@@ -36,12 +36,14 @@ sub new {
   ## to 1000.
   if( ! defined($limit) ){
     $limit = 1000;
+    $self->kvetch("using default limit: " . $limit);
   }
 
   ## Zero and undef are different. If nothing is really there, default
   ## to 5000.
   if( ! defined($max_query_len) ){
     $max_query_len = 5000;
+    $self->kvetch("using default query length: " . $limit);
   }
 
   ## Set up sanitizer.
