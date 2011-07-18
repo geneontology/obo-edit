@@ -11,7 +11,7 @@ the help about the usage of the command line interface by running the following 
 ####Web Application Interface
 The application contains the pre-configured jetty server. The jetty server can
 be run by the 'bin/jetty-runner start' command. The main web application interface is located at
-http://localhost:8080
+http://localhost:8888
 
 ###Hibernate documentation
 
