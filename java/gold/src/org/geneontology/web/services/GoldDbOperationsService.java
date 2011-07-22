@@ -330,13 +330,13 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract{
 			reportEndTime("Update/TotalTime--" + currentOntologyBeingProcessed);
 		}
 
-		public void startOntologyLoad() {
+		public void startDomLoad() {
 			reportStartTime("Obo To OWL Conversion--"
 					+ currentOntologyBeingProcessed);
 		}
 
 		// public void endOntologyLoad(OWLGraphWrapper graph) {
-		public void endOntologyLoad(Object object) {
+		public void endDomLoad(Object object) {
 			reportEndTime("Obo To OWL Conversion--" + currentOntologyBeingProcessed);
 
 			if (object instanceof OWLOntology) {

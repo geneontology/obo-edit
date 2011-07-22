@@ -231,7 +231,7 @@ public class DbOperations implements DbOperationsInterface{
 		LOG.info("Loading Ontology file....."+ ontologyLocation);
 
 		for(DbOperationsListener listener: listeners){
-			listener.startOntologyLoad();
+			listener.startDomLoad();
 		}
 		
 		OWLOntology ontology = null;
@@ -253,7 +253,7 @@ public class DbOperations implements DbOperationsInterface{
 		}
 		
 		for(DbOperationsListener listener: listeners){
-			listener.endOntologyLoad(ontology);
+			listener.endDomLoad(ontology);
 		}
 		
 		return ontology;
