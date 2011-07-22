@@ -61,11 +61,11 @@ public interface DbOperationsListener {
 	 */
 	public void updateEnd();
 	
-	public void startOntologyLoad();
+	public void startDomLoad();
 	
 //	public void endOntologyLoad(OWLGraphWrapper graph);
 	
-	public void endOntologyLoad(Object object);
+	public void endDomLoad(Object object);
 	
 	
 }

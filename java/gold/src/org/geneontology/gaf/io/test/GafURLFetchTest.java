@@ -75,6 +75,22 @@ public class GafURLFetchTest  extends TestCase {
 		}
 	}
 	
+	public void testAbsoluteFilePath() throws Exception{
+		GafURLFetch fetch = new GafURLFetch("file:/Users/shahidmanzoor/work/lbnl/oboformat/oboformat/test_resources/caro.obo");
+		fetch.connect();
+		while(fetch.hasNext()){
+			InputStream is = (InputStream)fetch.next();
+			
+			BufferedReader reader = new BufferedReader( new InputStreamReader(is) );
+			
+			System.out.println( reader.readLine());
+			
+			reader.close();
+			is.close();
+			fetch.completeDownload();
+			
+		}
+	}
 	
 	
 }

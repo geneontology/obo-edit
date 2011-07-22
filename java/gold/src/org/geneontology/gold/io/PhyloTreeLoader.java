@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLDataException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Collection;
@@ -41,23 +42,42 @@ public class PhyloTreeLoader implements Loader {
 	static protected Connection connection;
 	static private PreparedStatement selectFamily = null;
 
+	private List<DbOperationsListener> dbOperationListeners;
+	
+	/**
+	 * This variable holds the current file path being loaded into database 
+	 */
+	private String currentSourceFile;
+	
 	public PhyloTreeLoader() {
 		pts = new HashSet<PhyloTree>();
 
+		dbOperationListeners = new ArrayList<DbOperationsListener>();
+		
 		if (null == connection) {
 			//String host = manager.getGolddbHostName();
 			String user = manager.getGolddbUserName();
 			String pw   = manager.getGolddbUserPassword();
 			String db   = manager.getGolddbName();
+			String host = manager.getGolddbHostName();
 		
 			try {
-				connection = DriverManager.getConnection("jdbc:postgresql://localhost/" + db, user, pw);
+				connection = DriverManager.getConnection("jdbc:postgresql://" + host +"/" + db, user, pw);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				System.exit(1);
 			}
 		}
 	}
+	
+	public void addDbOperationListener(DbOperationsListener listener){
+		dbOperationListeners.add(listener);
+	}
+	
+	public void removeDbOperationListener(DbOperationsListener listener){
+		dbOperationListeners.remove(listener);
+	}
+	
 	
 	/**
 	 * getTrees() needs to be run before this can be used.
@@ -75,18 +95,32 @@ public class PhyloTreeLoader implements Loader {
 	
 	public void getTrees() throws IOException{
 		while(source.hasNext()){
+
 			InputStream is = (InputStream)source.next();
-			pts.add(new PhyloTree(source.getCurrentGafFile(), is));
+			this.currentSourceFile = source.getCurrentGafFile();
+			pts.add(new PhyloTree(this.currentSourceFile, is));
+
+			
 		}
 	}
 
 	public void loadThrow() throws SocketException, IOException, URISyntaxException, SQLException, ClassNotFoundException{
+
+		for(DbOperationsListener listener: dbOperationListeners){
+			listener.bulkLoadStart();
+		}
+		
 		source.connect();
 		pts = new HashSet<PhyloTree>();
 		getTrees();
 		if (isLoadRequired()){
 			hib(writeTSV(pts));
 		}
+		
+		for(DbOperationsListener listener: dbOperationListeners){
+			listener.bulkLoadEnd();
+		}
+		
 	}
 	
 	/**
@@ -116,6 +150,7 @@ public class PhyloTreeLoader implements Loader {
 	 * @return A list of tables to pass to hib()
 	 */
 	public Collection<File> writeTSV(Collection<PhyloTree> pts){
+		
 		if (tmpdir == null) {
 			File shm = new File("/dev/shm");
 			if (shm.isDirectory()) {
