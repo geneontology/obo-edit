@@ -216,7 +216,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 	
 	public GafDocument buildGafDocument(Reader reader, String docId, String path) throws IOException{
 		for(DbOperationsListener listener: listeners){
-			listener.startOntologyLoad();
+			listener.startDomLoad();
 		}
 
 		GafObjectsBuilder builder = new GafObjectsBuilder();
@@ -224,7 +224,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 		GafDocument doc = builder.buildDocument(reader, docId, path);
 
 		for(DbOperationsListener listener: listeners){
-			listener.endOntologyLoad(builder);
+			listener.endDomLoad(builder);
 		}
 		
 		return doc;

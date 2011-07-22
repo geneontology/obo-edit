@@ -450,11 +450,11 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			reportEndTime("Load/TotalTime--" + currentOntologyBeingProcessed);
 		}
 
-		public void startOntologyLoad() {
+		public void startDomLoad() {
 			reportStartTime("Parsing GAF--" + currentOntologyBeingProcessed);
 		}
 
-		public void endOntologyLoad(Object object) {
+		public void endDomLoad(Object object) {
 			reportEndTime("Parsing GAF--" + currentOntologyBeingProcessed);
 
 			if (object instanceof GafObjectsBuilder) {
@@ -519,7 +519,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 				String path) throws Exception {
 			this.currentOntologyBeingProcessed = path;
 
-			startOntologyLoad();
+			startDomLoad();
 
 			GafObjectsBuilder builder = new GafObjectsBuilder();
 
@@ -589,7 +589,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 				db.update(null, true);
 			}
 			
-			endOntologyLoad(builder);
+			endDomLoad(builder);
 
 		}
 

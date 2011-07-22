@@ -201,7 +201,7 @@ public class GafURLFetch implements Iterator {
 		
 		this.currentGafFile = null;
 		
-		if(this.url.startsWith("http://")){
+		if(this.url.startsWith("http://") || this.url.startsWith("file:")){
 			this.httpURL = uri.toURL();
 			this.isConnected = true;
 			this.files = new FTPFile[]{};

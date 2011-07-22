@@ -507,6 +507,18 @@ public class DbOperationsTask extends Task implements DbOperationsListener {
 		
 	}
 
+	@Override
+	public void startDomLoad() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void endDomLoad(Object object) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	/*private static String getLabel(OWLClass cls, OWLGraphWrapper graph) {
 		return "[" + Owl2Obo.getIdentifier(cls) + " ! " + graph.getLabel(cls) + "]";
 	}*/
