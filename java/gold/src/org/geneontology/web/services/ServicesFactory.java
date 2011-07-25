@@ -95,6 +95,8 @@ public class ServicesFactory {
 			return new GoldDbOperationsService();
 		}else if(ReasoningService.SERVICE_NAME.equals(name)){
 			return reasoningService;
+		}else if(PhyloTreeLoaderService.SERVICE_NAME.equals(name)){
+			return new PhyloTreeLoaderService();
 		}
 		
 		return null;

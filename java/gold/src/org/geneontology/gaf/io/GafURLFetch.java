@@ -103,7 +103,7 @@ public class GafURLFetch implements Iterator {
 				int index = this.httpURL.toString().lastIndexOf('/');
 				
 				String file = this.httpURL.toString().substring(index+1);
-				File downloadLocation = new File(GeneOntologyManager.getInstance().getGafUploadDir(), file);
+				File downloadLocation = new File(GeneOntologyManager.getInstance().getGafUploadDir(), "tmp-"+file);
 				OutputStream out = 
 						new FileOutputStream(downloadLocation);
 
