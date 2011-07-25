@@ -1,36 +1,15 @@
 package org.geneontology.web.services;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.zip.GZIPInputStream;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
-import org.geneontology.conf.GeneOntologyManager;
-import org.geneontology.gaf.hibernate.GafDocument;
-import org.geneontology.gaf.hibernate.GafObjectsBuilder;
 import org.geneontology.gaf.io.GAFDbOperations;
-import org.geneontology.gaf.io.GafURLFetch;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.io.PhyloTreeLoader;
-import org.geneontology.gold.rules.AnnotationRuleViolation;
-import org.geneontology.gold.rules.AnnotationRulesEngine;
-import org.geneontology.solrj.GafSolrLoader;
 import org.geneontology.web.Task;
-import org.geneontology.web.services.GafDbOperationsService.GafDbTaskExecution;
 
 public class PhyloTreeLoaderService extends ServiceHandlerAbstract {
 
@@ -79,7 +58,7 @@ public class PhyloTreeLoaderService extends ServiceHandlerAbstract {
 
 		try {
 
-			String command = request.getParameter("command");
+//			String command = request.getParameter("command");
 //			String remoteLocation = request.getParameter("remote-file");
 			String fileLocation = request.getParameter("filelocation");
 
@@ -166,10 +145,12 @@ public class PhyloTreeLoaderService extends ServiceHandlerAbstract {
 
 			try {
 				
+				reportStartTime("Loading");
 				PhyloTreeLoader loader = new PhyloTreeLoader();
 				loader.setSource((String)fileLocations );
 				loader.loadThrow();
 
+				reportEndTime("Loading");
 
 
 			} catch (Throwable ex) {
