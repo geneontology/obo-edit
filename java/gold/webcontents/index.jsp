@@ -61,6 +61,7 @@ function getLastUpdateDate(){
 <ul>
 <li><a href="javascript:loadOntology();">Load ontology into database</a></li>
 <li><a href="javascript:loadTaxonomies();">Load Taxonomies into database</a></li>
+<li><a href="phylotools.jsp">Load Phylo trees into database</a></li>
 <li><a href="javascript:getLastUpdateDate()">Last Update of Ontololgy database</a></li>
 <li><a href="gold?servicename=reasoning-service&command=checkconsistency">Perform Ontology Consistency Check</a></li>
 <li><a href="gold?servicename=reasoning-service&command=find-inferences">Find Ontology Inferences</a></li>
