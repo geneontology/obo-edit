@@ -7,7 +7,7 @@
 		* geneontology.gold.host
 		* geneontology.gold.ontologylocation
 		* geneontology.gold.jetty.port (optional)
-		
+-	Make sure that the geneontology.gold.gafuploaddir points to valid path in your system
 -	Jetty server is embedded in the project. To start it run the command as: bin/jetty-runner start		 
 -	Access to the application web admin interface via linke as: http:8888/localhost
 - 	To have the port be other than the default 8888, you must change the following files:
