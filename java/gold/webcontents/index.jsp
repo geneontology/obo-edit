@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<%@page import="org.geneontology.conf.GeneOntologyManager"%>
+<%@page import="org.geneontology.conf.GoConfigManager"%>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -44,7 +44,7 @@ function getLastUpdateDate(){
 	<input type="hidden" name="command" value="update" />
 	
 	<%
-		for(Object location: GeneOntologyManager.getInstance().getTaxonomiesLocations()){
+		for(Object location: GoConfigManager.getInstance().getTaxonomiesLocations()){
 	%>
 	
 			<input type="hidden" name="filelocation" value="<%= location%>" />

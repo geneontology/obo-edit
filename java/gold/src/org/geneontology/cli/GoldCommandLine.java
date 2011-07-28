@@ -17,7 +17,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gold.io.DbOperationsListenerToReportTime;
 
 /**
@@ -86,7 +86,7 @@ public class GoldCommandLine {
 			if(!operations.contains(operation)){
 				exit("The '" + operation + "' operation is not valid option. Please see the usage.");
 			}
-			GeneOntologyManager manager= GeneOntologyManager.getInstance();
+			GoConfigManager manager= GoConfigManager.getInstance();
 			//validate the options
 			//update properties in the GeneOntologyManager at the system level with the
 			//options provided through command line arguments

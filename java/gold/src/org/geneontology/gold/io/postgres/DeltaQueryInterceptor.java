@@ -1,6 +1,6 @@
 package org.geneontology.gold.io.postgres;
 
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gold.hibernate.factory.GoldDeltaFactory;
 import org.hibernate.EmptyInterceptor;
 
@@ -16,7 +16,7 @@ public class DeltaQueryInterceptor extends EmptyInterceptor {
 
 	@Override
 	public String onPrepareStatement(String sql) {
-		sql = sql.replaceAll("public\\.", "public."+GeneOntologyManager.getInstance().getGoldDetlaTablePrefix());
+		sql = sql.replaceAll("public\\.", "public."+GoConfigManager.getInstance().getGoldDetlaTablePrefix());
 		return super.onPrepareStatement(sql);
 	}
 

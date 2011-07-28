@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gold.hibernate.factory.GoldDeltaFactory;
 import org.geneontology.gold.hibernate.factory.GoldObjectFactory;
 import org.geneontology.gold.hibernate.model.AllOnlyRelationship;
@@ -106,7 +106,7 @@ public class DbOperations implements DbOperationsInterface{
 		if(DEBUG){
 			LOG.debug("-");
 		}
-		List files = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
+		List files = GoConfigManager.getInstance().getDefaultOntologyLocations();
 		
 		if(files == null || files.size()==0){
 			throw new Exception("Ontology File Location is not Found specified in the geneontology.gold.ontologylocation property" );
@@ -159,7 +159,7 @@ public class DbOperations implements DbOperationsInterface{
 				buildSchema(force, "");
 			
 			dbCreate = true;*/
-			loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
+			loadTsvFiles(GoConfigManager.getInstance().getTsvFilesDir(), list);
 			
 			LOG.info("Bulk Load completed successfully");
 	
@@ -211,7 +211,7 @@ public class DbOperations implements DbOperationsInterface{
 	 */
 	public OWLGraphWrapper[] buildOWLGraphWrappers() throws IOException, OWLOntologyCreationException{
 		
-		List  list = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
+		List  list = GoConfigManager.getInstance().getDefaultOntologyLocations();
 		
 		OWLGraphWrapper graph[] = new OWLGraphWrapper[list.size()];
 		
@@ -308,7 +308,7 @@ public class DbOperations implements DbOperationsInterface{
 		}
 		
 		
-		GeneOntologyManager manager = GeneOntologyManager.getInstance();
+		GoConfigManager manager = GoConfigManager.getInstance();
 		/*OWLGraphWrapper wrapper = new OWLGraphWrapper( 	
 			new Obo2Owl().convert(oboFile));
 		*/
@@ -344,7 +344,7 @@ public class DbOperations implements DbOperationsInterface{
 		}
 
 		SchemaManager sm = new SchemaManager();
-		GeneOntologyManager manager = GeneOntologyManager.getInstance();
+		GoConfigManager manager = GoConfigManager.getInstance();
 		sm.loadSchemaSQL(manager.getGolddbHostName(),
 				manager.getGolddbUserName(),
 				manager.getGolddbUserPassword(), manager.getGolddbName(),
@@ -374,7 +374,7 @@ public class DbOperations implements DbOperationsInterface{
 			LOG.debug(list + " files being loaded");
 		}
 
-		GeneOntologyManager manager = GeneOntologyManager.getInstance();
+		GoConfigManager manager = GoConfigManager.getInstance();
 		TsvFileLoader tsvLoader = new TsvFileLoader(manager.getGolddbUserName(),
 				manager.getGolddbUserPassword(), manager.getGolddbHostName(), 
 				manager.getGolddbName());
@@ -433,7 +433,7 @@ public class DbOperations implements DbOperationsInterface{
 			LOG.debug("-");
 		}
 
-		List list = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
+		List list = GoConfigManager.getInstance().getDefaultOntologyLocations();
 		
 		if(list == null || list.size()==0){
 			throw new Exception("Ontology File Locations are not specified in the geneontology.gold.ontologylocation property" );
@@ -471,12 +471,12 @@ public class DbOperations implements DbOperationsInterface{
 		isOperationRunning = true;
 		
 		try{
-			GeneOntologyManager manager = GeneOntologyManager.getInstance();
+			GoConfigManager manager = GoConfigManager.getInstance();
 			
 			List<String> list = dumpFiles(manager.getGoldDetlaTablePrefix(), wrapper);
 			buildSchema(true, manager.getGoldDetlaTablePrefix());
 	
-			loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
+			loadTsvFiles(GoConfigManager.getInstance().getTsvFilesDir(), list);
 			
 			GoldDeltaFactory gdf = new GoldDeltaFactory();
 	

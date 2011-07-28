@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gold.io.DatabaseDialect;
 
 public class PostgresDialect implements DatabaseDialect {
@@ -35,7 +35,7 @@ public class PostgresDialect implements DatabaseDialect {
 		if(connection == null){
 			try{
 				Class.forName("org.postgresql.Driver");
-				GeneOntologyManager manager = GeneOntologyManager.getInstance();
+				GoConfigManager manager = GoConfigManager.getInstance();
 				connection = DriverManager.getConnection("jdbc:postgresql://"+ manager.getGolddbHostName() +"/"+manager.getGolddbName(), 
 						manager.getGolddbUserName(), manager.getGolddbUserPassword());
 			}catch(Exception ex){
@@ -49,7 +49,7 @@ public class PostgresDialect implements DatabaseDialect {
 //	@Override
 	public String getDeltaQuery(String tableName) {
 		//if(tables.contains(tableName)){
-			return "SELECT * from " + GeneOntologyManager.getInstance().getGoldDetlaTablePrefix() + tableName +" EXCEPT SELECT * from "+tableName;
+			return "SELECT * from " + GoConfigManager.getInstance().getGoldDetlaTablePrefix() + tableName +" EXCEPT SELECT * from "+tableName;
 	//	}
 		
 		//return null;

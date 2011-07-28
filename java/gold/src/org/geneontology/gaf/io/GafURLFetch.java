@@ -20,7 +20,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.log4j.Logger;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.io.test.GafURLFetchTest;
 import org.geneontology.web.services.GafDbOperationsService;
 
@@ -103,7 +103,7 @@ public class GafURLFetch implements Iterator {
 				int index = this.httpURL.toString().lastIndexOf('/');
 				
 				String file = this.httpURL.toString().substring(index+1);
-				File downloadLocation = new File(GeneOntologyManager.getInstance().getGafUploadDir(), "tmp-"+file);
+				File downloadLocation = new File(GoConfigManager.getInstance().getGafUploadDir(), "tmp-"+file);
 				OutputStream out = 
 						new FileOutputStream(downloadLocation);
 
@@ -138,7 +138,7 @@ public class GafURLFetch implements Iterator {
 				ftpClient.changeWorkingDirectory(path);
 
 				InputStream is = ftpClient.retrieveFileStream(file);
-				File downloadLocation = new File(GeneOntologyManager.getInstance().getGafUploadDir(), file);
+				File downloadLocation = new File(GoConfigManager.getInstance().getGafUploadDir(), file);
 				OutputStream out = 
 						new FileOutputStream(downloadLocation);
 				

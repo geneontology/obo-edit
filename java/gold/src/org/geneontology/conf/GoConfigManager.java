@@ -24,15 +24,15 @@ import org.geneontology.gold.io.DatabaseDialect;
  *         .html#Properties_files}
  * 
  */
-public class GeneOntologyManager {
+public class GoConfigManager {
 
 	/* Want logging here too. */
-	private static Logger LOG = Logger.getLogger(GeneOntologyManager.class);
+	private static Logger LOG = Logger.getLogger(GoConfigManager.class);
 
 	/**
 	 * Singleton instance
 	 */
-	private static GeneOntologyManager instance;
+	private static GoConfigManager instance;
 
 	/**
 	 * properties in properties files are loaded into this object.
@@ -45,7 +45,7 @@ public class GeneOntologyManager {
 	 * @throws ConfigurationException
 	 */
 
-	private GeneOntologyManager() throws ConfigurationException {
+	private GoConfigManager() throws ConfigurationException {
 		init();
 	}
 
@@ -105,11 +105,11 @@ public class GeneOntologyManager {
 		}
 	}
 
-	public static GeneOntologyManager getInstance()
+	public static GoConfigManager getInstance()
 			{
 		try{
 			if (instance == null) {
-				instance = new GeneOntologyManager();
+				instance = new GoConfigManager();
 			}
 		}catch(Exception ex){
 			throw new RuntimeException("Can't create instance of OntologyManager", ex);

@@ -22,7 +22,7 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.geneontology.web.services.GoldDbOperationsService;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gold.io.FileMonitor;
 import org.geneontology.gold.io.postgres.SchemaManager;
 
@@ -44,7 +44,7 @@ public class JettyStarter {
 
 	public void start() throws Exception {
 		
-		GeneOntologyManager manager = GeneOntologyManager.getInstance();
+		GoConfigManager manager = GoConfigManager.getInstance();
 		int jetty_port = manager.getJettyPort();
 		
 		
@@ -172,8 +172,8 @@ public class JettyStarter {
 				
 				ShutdownMonitor monitor = new ShutdownMonitor();
 				
-				int delay = GeneOntologyManager.getInstance().getFileMonitorDelay();
-				FileMonitor goMonitor = new FileMonitor(GeneOntologyManager.getInstance().getDefaultOntologyLocations(), delay*60*1000);
+				int delay = GoConfigManager.getInstance().getFileMonitorDelay();
+				FileMonitor goMonitor = new FileMonitor(GoConfigManager.getInstance().getDefaultOntologyLocations(), delay*60*1000);
 				goMonitor.addFileMonitorListener(GoldDbOperationsService.getFileMonitorListener());
 				goMonitor.startMonitoring();
 				LOG.info("Ontologies files monitor is started");

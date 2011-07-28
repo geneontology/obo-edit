@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 import org.apache.log4j.Logger;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.io.GAFDbOperations;
 import org.geneontology.gold.io.DatabaseDialect;
 import org.geneontology.gold.io.postgres.PostgresDialect;
@@ -60,7 +60,7 @@ public class GafDeltaFactory {
 		if(LOG.isDebugEnabled())
 			LOG.debug("-");
 
-		db = GeneOntologyManager.getInstance().buildDatabaseDialect();
+		db = GoConfigManager.getInstance().buildDatabaseDialect();
 	}
 	
 	public List<Bioentity> buildBioentityDelta() throws SQLException{

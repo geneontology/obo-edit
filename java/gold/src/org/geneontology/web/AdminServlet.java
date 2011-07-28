@@ -31,7 +31,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.NullArgumentException;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.web.services.GafDbOperationsService;
 import org.geneontology.web.services.GoldDbOperationsService;
 import org.geneontology.web.services.InitializationService;
@@ -119,7 +119,7 @@ public class AdminServlet extends HttpServlet {
 					  String fileName = uploadFile.getName();
 					  fileName = FilenameUtils.getName(fileName);
 					  
-					  String dirName = GeneOntologyManager.getInstance().getGafUploadDir();
+					  String dirName = GoConfigManager.getInstance().getGafUploadDir();
 					  
 					  File file = new File(dirName, fileName);
 					  

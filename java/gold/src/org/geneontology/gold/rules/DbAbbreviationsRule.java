@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.hibernate.GeneAnnotation;
 
 public class DbAbbreviationsRule extends AbstractAnnotationRule {
@@ -21,7 +21,7 @@ public class DbAbbreviationsRule extends AbstractAnnotationRule {
 		
 		try{
 			
-			BufferedReader reader = new BufferedReader(new FileReader(new File(GeneOntologyManager.getInstance().getGoXrfAbbsLocation())));
+			BufferedReader reader = new BufferedReader(new FileReader(new File(GoConfigManager.getInstance().getGoXrfAbbsLocation())));
 			
 			String line = null;
 			while ((line =reader.readLine()) != null) {
@@ -38,7 +38,7 @@ public class DbAbbreviationsRule extends AbstractAnnotationRule {
 			}			
 			
 		}catch(Exception ex){
-			LOG.error("Cann't read Go.xrf_abbs file at the location " + GeneOntologyManager.getInstance().getGoXrfAbbsLocation(),
+			LOG.error("Cann't read Go.xrf_abbs file at the location " + GoConfigManager.getInstance().getGoXrfAbbsLocation(),
 					ex);
 		}
 		

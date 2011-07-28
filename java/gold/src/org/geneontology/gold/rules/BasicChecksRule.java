@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.log4j.Logger;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.hibernate.GeneAnnotation;
 import org.geneontology.gaf.parser.GAFParser;
 
@@ -29,7 +29,7 @@ public class BasicChecksRule extends AbstractAnnotationRule {
 		try{
 			
 			InputStream is = null;
-			String path = GeneOntologyManager.getInstance().getGoXrfAbbsLocation();
+			String path = GoConfigManager.getInstance().getGoXrfAbbsLocation();
 			
 			if(path.startsWith("http://") || path.startsWith("file:/")){
 				is = new URL(path).openStream();
@@ -53,7 +53,7 @@ public class BasicChecksRule extends AbstractAnnotationRule {
 			}			
 			
 		}catch(Exception ex){
-			LOG.error("Cann't read Go.xrf_abbs file at the location " + GeneOntologyManager.getInstance().getGoXrfAbbsLocation(),
+			LOG.error("Cann't read Go.xrf_abbs file at the location " + GoConfigManager.getInstance().getGoXrfAbbsLocation(),
 					ex);
 		}
 		
