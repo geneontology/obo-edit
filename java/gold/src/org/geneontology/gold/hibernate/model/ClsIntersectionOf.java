@@ -6,7 +6,7 @@ package org.geneontology.gold.hibernate.model;
  * @author Shahid Manzoor
  *
  */
-public class ClsIntersectionOf extends ExistentialRelation implements java.io.Serializable {
+public class ClsIntersectionOf extends LogicalRelationship implements java.io.Serializable {
 
 	public ClsIntersectionOf() {
 		super();
