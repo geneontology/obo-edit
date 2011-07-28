@@ -5,7 +5,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.solrj.OntSolrLoader;
 import org.geneontology.web.Task;
 
@@ -77,7 +77,7 @@ public class OntSolrjLoaderService extends ServiceHandlerAbstract {
 
 			try{
 				this.addInProgress("load-ontology");
-				OntSolrLoader loader = new OntSolrLoader(GeneOntologyManager.getInstance().getSolrUrl());
+				OntSolrLoader loader = new OntSolrLoader(GoConfigManager.getInstance().getSolrUrl());
 				loader.load();
 				this.addCompleted("load-ontology");
 			}catch(Exception ex){

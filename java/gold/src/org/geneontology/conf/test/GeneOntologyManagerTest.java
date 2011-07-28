@@ -1,7 +1,7 @@
 package org.geneontology.conf.test;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 
 import junit.framework.TestCase;
 
@@ -9,7 +9,7 @@ public class GeneOntologyManagerTest extends TestCase {
 
 	
 	public static void testGoldDbConfigurations() throws ConfigurationException{
-		GeneOntologyManager manager = GeneOntologyManager.getInstance();
+		GoConfigManager manager = GoConfigManager.getInstance();
 
 		assertNotNull(manager.getGolddbName());
 

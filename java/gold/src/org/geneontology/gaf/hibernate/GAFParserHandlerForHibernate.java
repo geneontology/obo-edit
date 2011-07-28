@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.hibernate.GafConstants.EvidenceCode;
 import org.geneontology.gaf.hibernate.GafConstants.Qualifier;
 import org.geneontology.gaf.parser.GAFParserHandler;
@@ -47,7 +47,7 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 		
 		try{
 			
-			BufferedReader reader = new BufferedReader(new FileReader(new File(GeneOntologyManager.getInstance().getGoXrfAbbsLocation())));
+			BufferedReader reader = new BufferedReader(new FileReader(new File(GoConfigManager.getInstance().getGoXrfAbbsLocation())));
 			
 			String line = null;
 			while ((line =reader.readLine()) != null) {
@@ -64,7 +64,7 @@ public class GAFParserHandlerForHibernate implements GAFParserHandler {
 			}			
 			
 		}catch(Exception ex){
-			LOG.error("Cann't read Go.xrf_abbs file at the location " + GeneOntologyManager.getInstance().getGoXrfAbbsLocation(),
+			LOG.error("Cann't read Go.xrf_abbs file at the location " + GoConfigManager.getInstance().getGoXrfAbbsLocation(),
 					ex);
 		}
 		

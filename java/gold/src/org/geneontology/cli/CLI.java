@@ -1,6 +1,6 @@
 package org.geneontology.cli;
 
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.jetty.JettyStarter;
 
 /**
@@ -35,7 +35,7 @@ public class CLI {
 	public static void main(String args[]) throws Exception{
 	
 		//initialize the system
-		GeneOntologyManager.getInstance();
+		GoConfigManager.getInstance();
 		
 		if(args.length==0){
 			exit("Invalid arguments");

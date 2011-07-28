@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.apache.log4j.Logger;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.hibernate.GafDocument;
 import org.geneontology.gaf.hibernate.GeneAnnotation;
 import org.jdom.Document;
@@ -84,7 +84,7 @@ public class AnnotationRulesEngine {
 		SAXBuilder builder = new SAXBuilder();
 		Document doc = null;
 		try {
-			String path = GeneOntologyManager.getInstance().getAnnotationQCFile();
+			String path = GoConfigManager.getInstance().getAnnotationQCFile();
 			
 			if(!(path.startsWith("http://") || path.startsWith("file:///"))){
 				File f = new File(path);

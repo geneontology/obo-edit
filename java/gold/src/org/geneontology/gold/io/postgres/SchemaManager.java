@@ -15,7 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 
 
 /**
@@ -85,7 +85,7 @@ public class SchemaManager {
 
 	private Connection getConnection() throws ClassNotFoundException, SQLException{
 		
-		GeneOntologyManager manager = GeneOntologyManager.getInstance();
+		GoConfigManager manager = GoConfigManager.getInstance();
 		String dbHostName = manager.getGolddbHostName();
 		String dbUserName = 		manager.getGolddbUserName();
 		String dbUserPassword =		manager.getGolddbUserPassword();
@@ -118,7 +118,7 @@ public class SchemaManager {
 	public void loadSchemaSQL() throws ClassNotFoundException, SQLException, FileNotFoundException{
 		Connection connection = getConnection();		
 
-		GeneOntologyManager manager = GeneOntologyManager.getInstance();
+		GoConfigManager manager = GoConfigManager.getInstance();
 		String sqlFile = manager.getOntSqlSchemaFileLocation();
 		
 		if(sqlFile == null){

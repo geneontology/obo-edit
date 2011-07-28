@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.util.log.Log;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.hibernate.Bioentity;
 import org.geneontology.gaf.hibernate.CompositeQualifier;
 import org.geneontology.gaf.hibernate.ExtensionExpression;
@@ -63,7 +63,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
-		List files = GeneOntologyManager.getInstance().getDefaultGafFileLocations();
+		List files = GoConfigManager.getInstance().getDefaultGafFileLocations();
 		
 		if(files == null || files.size()==0){
 			throw new Exception("Ontology File Location is not Found specified in the geneontology.gold.ontologylocation property" );
@@ -106,7 +106,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 			buildSchema(force, "");
 		
 		dbCreate = true;*/
-		loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
+		loadTsvFiles(GoConfigManager.getInstance().getTsvFilesDir(), list);
 
 		GafObjectsFactory factory = new GafObjectsFactory();
 		Session session = factory.getSession();
@@ -197,7 +197,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 		}
 		
 		
-		GeneOntologyManager manager = GeneOntologyManager.getInstance();
+		GoConfigManager manager = GoConfigManager.getInstance();
 
 		GafBulkLoader loader = new GafBulkLoader(gafDocument, manager.getTsvFilesDir(), tablePrefix);
 		
@@ -261,7 +261,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 		}
 
 		SchemaManager sm = new SchemaManager();
-		GeneOntologyManager manager = GeneOntologyManager.getInstance();
+		GoConfigManager manager = GoConfigManager.getInstance();
 		sm.loadSchemaSQL(manager.getGolddbHostName(),
 				manager.getGolddbUserName(),
 				manager.getGolddbUserPassword(), manager.getGolddbName(),
@@ -291,7 +291,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 			LOG.debug(list + " files being loaded");
 		}
 
-		GeneOntologyManager manager = GeneOntologyManager.getInstance();
+		GoConfigManager manager = GoConfigManager.getInstance();
 		TsvFileLoader tsvLoader = new TsvFileLoader(manager.getGolddbUserName(),
 				manager.getGolddbUserPassword(), manager.getGolddbHostName(), 
 				manager.getGolddbName());
@@ -350,7 +350,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 			LOG.debug("-");
 		}
 		
-		List list = GeneOntologyManager.getInstance().getDefaultGafFileLocations();
+		List list = GoConfigManager.getInstance().getDefaultGafFileLocations();
 		
 		if(list == null || list.size()==0){
 			throw new Exception("Gaf File Locations are not specified in the geneontology.gold.gaflocation property" );
@@ -407,7 +407,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 				listener.updateStart();
 			}
 			
-			GeneOntologyManager manager = GeneOntologyManager.getInstance();
+			GoConfigManager manager = GoConfigManager.getInstance();
 
 			if(!splitt || (splitt && !isSchemaCreted)){
 				
@@ -424,7 +424,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 			
 			ll.add(manager.getGoldDetlaTablePrefix()+"gene_annotation");
 			
-			loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), ll);
+			loadTsvFiles(GoConfigManager.getInstance().getTsvFilesDir(), ll);
 			isSchemaCreted = true;
 			
 			Log.info("updating bioentity table.");

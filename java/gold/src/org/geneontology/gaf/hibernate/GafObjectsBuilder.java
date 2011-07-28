@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import org.apache.log4j.Logger;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.parser.GAFParser;
 
 public class GafObjectsBuilder {
@@ -93,7 +93,7 @@ public class GafObjectsBuilder {
 		gafDocument = new GafDocument(docId, this.documentPath);
 		
 		while(parser.next()){
-			if(counter>= GeneOntologyManager.getInstance().getSplitSize()){
+			if(counter>= GoConfigManager.getInstance().getSplitSize()){
 				isSplitted= true;
 				counter = 0;
 				break;
