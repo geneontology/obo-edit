@@ -8,7 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.io.GAFDbOperations;
 import org.geneontology.gold.hibernate.factory.GoldObjectFactory;
 import org.geneontology.gold.hibernate.model.Ontology;
@@ -73,7 +73,7 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract{
 	private String command;
 	
 	private static OWLGraphWrapper buildTaxonomyGraph(){
-		return buildOWLGraphWrapper(GeneOntologyManager.getInstance().getTaxonomiesLocations());
+		return buildOWLGraphWrapper(GoConfigManager.getInstance().getTaxonomiesLocations());
 	}
 	
 	public GoldDbOperationsService(){
@@ -112,11 +112,11 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract{
 						runner = new GoldDbTaskExecution();
 					}else{
 						request.setAttribute("servicename", getServiceName());
-						request.setAttribute("locations", GeneOntologyManager.getInstance().getDefaultOntologyLocations());
+						request.setAttribute("locations", GoConfigManager.getInstance().getDefaultOntologyLocations());
 						this.viewPath = "/servicesui/golddb-updateform.jsp";
 					}
 			}else if("bulkload".equals(command) || ("update".equals(command) && list.isEmpty()) ){
-				this.ontLocations = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
+				this.ontLocations = GoConfigManager.getInstance().getDefaultOntologyLocations();
 				runner = new GoldDbTaskExecution();
 				command = "bulkload";
 			}else if("getlastupdate".equals(command)){
@@ -176,7 +176,7 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract{
 	
 	private static OWLGraphWrapper buildOWLGraphWrapper(){
 
-		List ontologies = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
+		List ontologies = GoConfigManager.getInstance().getDefaultOntologyLocations();
 		
 		return buildOWLGraphWrapper(ontologies);
 	}

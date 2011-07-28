@@ -17,7 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.hibernate.GafDocument;
 import org.geneontology.gaf.hibernate.GafObjectsBuilder;
 import org.geneontology.gaf.io.GAFDbOperations;
@@ -165,7 +165,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 					((ArrayList) gafLocations).add(fileLocation);
 				} else {
 
-					this.gafLocations = GeneOntologyManager.getInstance()
+					this.gafLocations = GoConfigManager.getInstance()
 							.getDefaultGafFileLocations();
 
 				}
@@ -533,7 +533,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 				db.addDbOperationsListener(this);
 			}*/
 
-			int splitSize = GeneOntologyManager.getInstance().getSplitSize() * 4;
+			int splitSize = GoConfigManager.getInstance().getSplitSize() * 4;
 			do {
 				if(d == null)
 					break;
@@ -559,7 +559,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 				else if (solrLoad) {
 					GafSolrLoader loader = new GafSolrLoader(
-							GeneOntologyManager.getInstance().getSolrUrl());
+							GoConfigManager.getInstance().getSolrUrl());
 
 					reportStartTime("Loading into Solr--"
 							+ currentOntologyBeingProcessed);

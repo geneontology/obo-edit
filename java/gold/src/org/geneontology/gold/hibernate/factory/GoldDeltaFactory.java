@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gold.hibernate.model.AllOnlyRelationship;
 import org.geneontology.gold.hibernate.model.AllSomeRelationship;
 import org.geneontology.gold.hibernate.model.AnnotationAssertion;
@@ -69,7 +69,7 @@ public class GoldDeltaFactory {
 		if(LOG.isDebugEnabled())
 			LOG.debug("-");
 
-		db = GeneOntologyManager.getInstance().buildDatabaseDialect();
+		db = GoConfigManager.getInstance().buildDatabaseDialect();
 		goldObjFactory = GoldObjectFactory.buildDeltaObjectFactory();
 	}
 	

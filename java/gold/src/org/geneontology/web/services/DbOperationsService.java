@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.rules.AnnotationRuleViolation;
@@ -54,7 +54,7 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 	//	graphs = new Hashtable<String, OWLGraphWrapper>();
 		
 		DbOperations db = new DbOperations();
-		List ontologies = GeneOntologyManager.getInstance().getDefaultOntologyLocations();
+		List ontologies = GoConfigManager.getInstance().getDefaultOntologyLocations();
 		OWLGraphWrapper wrapper = null;
 		for(int i=0;i<ontologies.size();i++){
 			String location = ontologies.get(i).toString();
@@ -138,11 +138,11 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 				}
 
 			} else if ("bulkload".equals(command) ||  "checkconsistency".equals(command) || "find-inferences".equals(command)) {
-				List list = GeneOntologyManager.getInstance()
+				List list = GoConfigManager.getInstance()
 						.getDefaultOntologyLocations();
 				
 				if("gaf".equals(dbType)){
-					list = GeneOntologyManager.getInstance().getDefaultGafFileLocations();
+					list = GoConfigManager.getInstance().getDefaultGafFileLocations();
 				}
 				
 				String locations[] = new String[list.size()];
@@ -332,7 +332,7 @@ public class DbOperationsService extends ServiceHandlerAbstract {
 		writer.write("<input type='hidden' name='command' value='" + command
 				+ "' />");
 		writer.write("<label>Please select ontology</label><br />");
-		for (Object obj : GeneOntologyManager.getInstance()
+		for (Object obj : GoConfigManager.getInstance()
 				.getDefaultOntologyLocations()) {
 			writer.write("<input type='radio' name='ontologylocation' value='"
 					+ obj + "' />" + obj + "<br />");

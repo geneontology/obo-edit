@@ -1,6 +1,6 @@
 package org.geneontology.gold.io.test;
 
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gold.io.FileMonitor;
 import org.geneontology.gold.io.FileMonitorListener;
 
@@ -20,7 +20,7 @@ public class FileMonitorTest extends TestCase {
 			}
 		};
 		
-		FileMonitor monitor = new FileMonitor(GeneOntologyManager.getInstance().getDefaultOntologyLocations(), 1*60*100);
+		FileMonitor monitor = new FileMonitor(GoConfigManager.getInstance().getDefaultOntologyLocations(), 1*60*100);
 		monitor.addFileMonitorListener(fileListener);
 		monitor.startMonitoring();
 		

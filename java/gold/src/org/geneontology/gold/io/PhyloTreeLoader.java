@@ -20,7 +20,7 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.forester.phylogeny.Phylogeny;
-import org.geneontology.conf.GeneOntologyManager;
+import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.hibernate.Bioentity;
 import org.geneontology.gaf.io.GafURLFetch;
 import org.geneontology.gold.io.postgres.TsvFileLoader;
@@ -36,7 +36,7 @@ public class PhyloTreeLoader implements Loader {
 	
 	final static String tsvSuffix = ".tsv";
 	final static String PANTHER = "PANTHER";
-	final static GeneOntologyManager manager = GeneOntologyManager.getInstance();
+	final static GoConfigManager manager = GoConfigManager.getInstance();
 	
 	static private File tmpdir = null;
 	static protected Connection connection;
