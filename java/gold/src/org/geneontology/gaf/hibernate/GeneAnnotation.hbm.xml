@@ -17,12 +17,36 @@
                 <column name="evidence_cls" />
             </key-property>
 
+           <key-property name="compositeQualifier" type="string">
+                <column name="composite_qualifier" />
+            </key-property>
+
+            <key-property name="withExpression" type="string">
+                <column name="with_expression" />
+            </key-property>
+
+              <key-property name="actsOnTaxonId" type="string">
+                <column name="acts_on_taxon_id" />
+            </key-property>
+         
+            <key-property name="lastUpdateDate" type="string">
+                <column name="last_update_date" />
+            </key-property>
+         
+            <key-property name="assignedBy" type="string">
+                <column name="assigned_by" />
+            </key-property>
+          
 
         </composite-id>
 
   
-           <property name="compositeQualifier" type="string">
-                <column name="composite_qualifier" />
+           <property name="extensionExpression" type="string">
+                <column name="extension_expression" />
+            </property>
+          
+           <property name="geneProductForm" type="string">
+                <column name="gene_product_form" />
             </property>
  
            <property name="isContributesTo" type="boolean">
@@ -35,29 +59,7 @@
                 <column name="is_integral_to" />
             </property>
 
-            <property name="withExpression" type="string">
-                <column name="with_expression" />
-            </property>
          
-              <property name="actsOnTaxonId" type="string">
-                <column name="acts_on_taxon_id" />
-            </property>
-         
-            <property name="lastUpdateDate" type="string">
-                <column name="last_update_date" />
-            </property>
-         
-            <property name="assignedBy" type="string">
-                <column name="assigned_by" />
-            </property>
-          
-           <property name="extensionExpression" type="string">
-                <column name="extension_expression" />
-            </property>
-          
-           <property name="geneProductForm" type="string">
-                <column name="gene_product_form" />
-            </property>
 
            <property name="gafDocument" type="string">
                 <column name="gaf_document" />

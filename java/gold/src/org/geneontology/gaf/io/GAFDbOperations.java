@@ -3,7 +3,6 @@ package org.geneontology.gaf.io;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,8 +11,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
-
 import org.apache.log4j.Logger;
+import org.eclipse.jetty.util.log.Log;
 import org.geneontology.conf.GeneOntologyManager;
 import org.geneontology.gaf.hibernate.Bioentity;
 import org.geneontology.gaf.hibernate.CompositeQualifier;
@@ -384,15 +383,17 @@ public class GAFDbOperations implements DbOperationsInterface{
 		update(gafDocument, false);
 	}
 	
-	
+	/**
+	 * This variable is set to true only when a big document loaded
+	 * through split methodology
+	 */
+	private boolean isSchemaCreted;
 	
 	public void update(GafDocument gafDocument, boolean splitt) throws Exception{
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
 		
-		GafObjectsFactory factory = new GafObjectsFactory();
-
 		
 		if(gafDocument != null){
 		
@@ -406,26 +407,70 @@ public class GAFDbOperations implements DbOperationsInterface{
 				listener.updateStart();
 			}
 			
-			
 			GeneOntologyManager manager = GeneOntologyManager.getInstance();
+
+			if(!splitt || (splitt && !isSchemaCreted)){
+				
+				buildSchema(true, manager.getGoldDetlaTablePrefix());
+				isSchemaCreted = true;
+
+			}
+
 			
 			List<String> list = dumpFiles(manager.getGoldDetlaTablePrefix(), gafDocument);
-	
-			buildSchema(true, manager.getGoldDetlaTablePrefix());
-	
-			loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), list);
-		
+			
+			
+			List<String> ll = new ArrayList<String>();
+			
+			ll.add(manager.getGoldDetlaTablePrefix()+"gene_annotation");
+			
+			loadTsvFiles(GeneOntologyManager.getInstance().getTsvFilesDir(), ll);
+			isSchemaCreted = true;
+			
+			Log.info("updating bioentity table.");
+			
+				GafObjectsFactory f = new GafObjectsFactory();
+				Session ssn = f.getSession();
+			
+				for(Bioentity be: gafDocument.getBioentities()){
+					ssn.saveOrUpdate(be);
+				}
+				
+				for(String id: gafDocument.getWithInfosIds()){
+					for(WithInfo wi: gafDocument.getWithInfos(id)){
+						ssn.saveOrUpdate(wi);
+					}
+				}
+				
+				for(String id: gafDocument.getExtensionExpressionIds()){
+					for(ExtensionExpression ee: gafDocument.getExpressions(id)){
+						ssn.saveOrUpdate(ee);
+					}
+				}
+				
+				for(String id: gafDocument.getCompositeQualifiersIds()){
+					for(CompositeQualifier cq: gafDocument.getCompositeQualifiers(id)){
+						ssn.saveOrUpdate(cq);
+					}
+				}
+				
+				ssn.getTransaction().commit();
+			
 			if(splitt)
 				return;
 		}
 		
+		Log.info("last step of update.");
+		isSchemaCreted = false;
+
 		GafDeltaFactory deltaFactory = new GafDeltaFactory(gafDocument);
+		GafObjectsFactory factory = new GafObjectsFactory();
 		
-		Collection<Bioentity> entities = deltaFactory.buildBioentityDelta();
+//		Collection<Bioentity> entities = deltaFactory.buildBioentityDelta();
 		Collection<GeneAnnotation> annotations = deltaFactory.buildGeneAnnotations();
-		Collection<CompositeQualifier> qualifiers = deltaFactory.buildCompositeQualifiers();
-		Collection<ExtensionExpression> expressions = deltaFactory.buildExtensionExpressions();
-		Collection<WithInfo> infos = deltaFactory.buildWithInfos();
+//		Collection<CompositeQualifier> qualifiers = deltaFactory.buildCompositeQualifiers();
+//		Collection<ExtensionExpression> expressions = deltaFactory.buildExtensionExpressions();
+//		Collection<WithInfo> infos = deltaFactory.buildWithInfos();
 		
 		deltaFactory.closeConnection();
 		
@@ -433,11 +478,11 @@ public class GAFDbOperations implements DbOperationsInterface{
 		
 		
 		session.saveOrUpdate(this.gafDocument);
-		saveOrUpdate(session, entities);
+//		saveOrUpdate(session, entities);
 		saveOrUpdate(session, annotations);
-		saveOrUpdate(session, qualifiers);
-		saveOrUpdate(session, expressions);
-		saveOrUpdate(session, infos);
+//		saveOrUpdate(session, qualifiers);
+///		saveOrUpdate(session, expressions);
+//		saveOrUpdate(session, infos);
 		
 	
 		session.getTransaction().commit();
