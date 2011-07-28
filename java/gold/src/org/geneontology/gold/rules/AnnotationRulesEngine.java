@@ -24,6 +24,8 @@ public class AnnotationRulesEngine {
 	
 	private static Logger LOG = Logger.getLogger(AnnotationRulesEngine.class);
 	
+	private Exception initException;
+	
 	private AnnotationRulesEngine(){
 		init();
 	//	AbstractAnnotatioRule rule = new AnnotationRuglarExpressionFromXMLRule();
@@ -61,6 +63,11 @@ public class AnnotationRulesEngine {
 	
 	
 	public Set<AnnotationRuleViolation> validateAnnotations(GafDocument doc){
+		if(initException != null){
+			throw new RuntimeException("Rules are not initialized. Please check the annotation_qc.xml file for errors and restart the server", initException);
+		}
+		
+		
 		HashSet<AnnotationRuleViolation> set = new HashSet<AnnotationRuleViolation>();
 		
 		try{
@@ -108,6 +115,8 @@ public class AnnotationRulesEngine {
 		    rules.add(rule);
 		}catch(Exception ex){
 			LOG.error(ex.getMessage(), ex);
+			this.initException = ex;
+			
 		}
 	    
 		
@@ -137,9 +146,9 @@ public class AnnotationRulesEngine {
 		    }
 		}catch(Exception ex){
 			LOG.error(ex.getMessage(), ex);
+			this.initException = ex;
 		}
 	    
-	    System.out.println("****************************total Rules are: " + rules.size() + ",  " + rules);
 
 	}
 	
