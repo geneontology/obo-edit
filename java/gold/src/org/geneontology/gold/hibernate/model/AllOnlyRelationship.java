@@ -6,7 +6,7 @@ package org.geneontology.gold.hibernate.model;
  * @author Shahid Manzoor
  *
  */
-public class AllOnlyRelationship extends ExistentialRelation implements java.io.Serializable {
+public class AllOnlyRelationship extends LogicalRelationship implements java.io.Serializable {
 
 	
 	public AllOnlyRelationship() {

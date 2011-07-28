@@ -1,7 +1,7 @@
 package org.geneontology.gold.hibernate.model;
 
 
-public class ExistentialRelation extends GOModel {
+public class LogicalRelationship extends GOModel {
 	private String cls;
 	private String relation;
 	private String targetCls;
@@ -13,12 +13,12 @@ public class ExistentialRelation extends GOModel {
 	private Ontology ontologyObject;
 	
 	
-	public ExistentialRelation() {
+	public LogicalRelationship() {
 		String uniqueKeys[] = {"cls", "relation", "targetCls", "ontology"};
-		this.initUniqueConstraintFields(AllOnlyRelationship.class, uniqueKeys);
+		this.initUniqueConstraintFields(LogicalRelationship.class, uniqueKeys);
 	}
 
-	public ExistentialRelation(String cls, String relation, String targetCls,
+	public LogicalRelationship(String cls, String relation, String targetCls,
 			String ontology) {
 		this();
 		this.cls = cls;
