@@ -272,7 +272,10 @@ public class GAFParser {
 	public String  getDbObjectName(){
 		checkNext();
 		
-		return this.currentCols[DB_OBJECT_NAME];
+		String s = this.currentCols[DB_OBJECT_NAME];
+		s = s.replace("\\", "\\\\");
+		
+		return s;
 
 	}
 	public String  getDbObjectSynonym(){

@@ -84,7 +84,7 @@ public class AdminServlet extends HttpServlet {
 	private ServicesCache servicesCache;
 	
 	public AdminServlet(){
-		servicesCache = new ServicesCache(300);
+		servicesCache = new ServicesCache(5*60*1000);
 	}
 	
 	@Override
@@ -215,7 +215,7 @@ public class AdminServlet extends HttpServlet {
 		private Map<String, Element> cache;
 		
 		/**
-		 * Time in seconds. 
+		 * Time in milliseconds. 
 		 */
 		private int timeToIdleInSeconds;
 		
@@ -227,7 +227,7 @@ public class AdminServlet extends HttpServlet {
 			this.timeToIdleInSeconds = timeToIdleInSeconds;
 			
 			timer = new Timer();
-			timer.scheduleAtFixedRate(this, Calendar.getInstance().getTime(), 1000*60*1);
+			timer.scheduleAtFixedRate(this, Calendar.getInstance().getTime(), timeToIdleInSeconds);
 		}
 		
 		@Override

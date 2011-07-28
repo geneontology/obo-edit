@@ -169,7 +169,9 @@ public class GeneAnnotation extends GOModel implements Serializable {
 			String extensionExpression, String geneProductForm,
 			String gafDocument) {
 
-		String keys[] = {"bioentity", "cls", "referenceId", "evidenceCls"};
+		String keys[] = {"bioentity", "cls", "referenceId", "evidenceCls", 
+				"compositeQualifier", "withExpression", "actsOnTaxonId", "lastUpdateDate",
+				"assignedBy"};
 		this.initUniqueConstraintFields(GeneAnnotation.class, keys);
 		
 		this.bioentity = bioentity;
