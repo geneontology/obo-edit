@@ -153,25 +153,30 @@
 								jQuery.ajax({
 									  url: window.location.pathname + window.location.search + "&view=annotationchecks&id=<%=id%>",
 									  success: function(data) {
-										  data = jQuery.trim(data);
+
+										jQuery('#voilations').append(data);
+										jQuery('.totalvoilations').html(jQuery('#voilations').children().size());
+
+										  data = jQuery.trim(data) + "";
 									//	  alert('Load was performed.: "' + data + '"');
-										  var error = data.indexOf('.ServletException');
-										  if(data == 'NO_DATA' || error != -1){
+										  var error = data.indexOf('ServletException');
+										  
+										 if(error == -1){
+											  error = data.indexOf('AnnotationRuleCheckException');
+										 }
+										  
+										  if(data.match('NO_DATA$') == 'NO_DATA' || error != -1){
 											//  isTaskRunning = false;  
 											  clearInterval(interval);
 											  jQuery(".progress").hide();
 											  jQuery(".commands").show();
-											  jQuery(".inprogress").attr('bgcolor', 'green')
+											  jQuery(".inprogress").attr('bgcolor', error != -1 ? 'red' : 'green')
 											  	.html('completed');
 											  if(error == -1)
 											  	data = "";
 											  
 											  
 										  }
-										jQuery('#voilations').append(data);
-										
-										
-										jQuery('.totalvoilations').html(jQuery('#voilations').children().size());
 									  },
 									  
 									  

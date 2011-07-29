@@ -23,6 +23,7 @@ import org.geneontology.gaf.hibernate.GafObjectsBuilder;
 import org.geneontology.gaf.io.GAFDbOperations;
 import org.geneontology.gaf.io.GafURLFetch;
 import org.geneontology.gold.io.DbOperationsListener;
+import org.geneontology.gold.rules.AnnotationRuleCheckException;
 import org.geneontology.gold.rules.AnnotationRuleViolation;
 import org.geneontology.gold.rules.AnnotationRulesEngine;
 import org.geneontology.solrj.GafSolrLoader;
@@ -390,7 +391,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			}
 		}
 
-		private void _performAnnotationChecks(GafDocument doc) {
+		private void _performAnnotationChecks(GafDocument doc) throws AnnotationRuleCheckException {
 			LOG.info("Performing Annotation Checks");
 			AnnotationRulesEngine engine = AnnotationRulesEngine.getInstance();
 

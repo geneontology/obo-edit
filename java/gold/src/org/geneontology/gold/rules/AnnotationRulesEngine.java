@@ -62,9 +62,9 @@ public class AnnotationRulesEngine {
 	}
 	
 	
-	public Set<AnnotationRuleViolation> validateAnnotations(GafDocument doc){
+	public Set<AnnotationRuleViolation> validateAnnotations(GafDocument doc) throws AnnotationRuleCheckException{
 		if(initException != null){
-			throw new RuntimeException("Rules are not initialized. Please check the annotation_qc.xml file for errors and restart the server", initException);
+			throw new AnnotationRuleCheckException("Rules are not initialized. Please check the annotation_qc.xml file for errors and restart the server", initException);
 		}
 		
 		
@@ -101,6 +101,7 @@ public class AnnotationRulesEngine {
 			doc = builder.build(uri.toURL());
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
+			this.initException = e;
 		}
 		
 		if(doc == null)
