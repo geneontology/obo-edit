@@ -199,10 +199,10 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			// request.setAttribute("isLargeFile", isLargefile);
 
 			// if the task has completed its operation then set it to null
-			if (runner != null && !runner.isRunning()) {
+		/*	if (runner != null && !runner.isRunning()) {
 				runner = null;
-			}
-
+			}*/
+			
 		}
 
 	}
@@ -247,58 +247,6 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			db.addDbOperationsListener(this);
 		}
 
-		/*
-		private void runCommand(GafDocument gafDocument) throws Exception{
-			
-			
-			if (runAnnotationRules) {
-
-				currentOntologyBeingProcessed = gafDocument
-						.getDocumentPath();
-				reportStartTime("Performing Annotations Checks--"
-						+ currentOntologyBeingProcessed);
-				_performAnnotationChecks(gafDocument);
-				reportEndTime("Performing Annotations Checks--"
-						+ currentOntologyBeingProcessed);
-
-				buildSplittedDocuments();
-
-				LOG.info("Annotations checks completed.");
-
-			} else
-
-			if (solrLoad) {
-
-				GafSolrLoader loader = new GafSolrLoader(
-						GeneOntologyManager.getInstance().getSolrUrl());
-
-					currentOntologyBeingProcessed = gafDocument
-							.getDocumentPath();
-					reportStartTime("Loading into Solr--"
-							+ currentOntologyBeingProcessed);
-	
-					loader.load(gafDocument);
-	
-					reportEndTime("Loading into Solr--"
-							+ currentOntologyBeingProcessed);
-
-
-				buildSplittedDocuments();
-				gafDocuments = null;
-				splittedDocuments = null;
-
-			} else if (update) {
-				this.currentOntologyBeingProcessed = gafDocument
-						.getId();
-
-				db.update(gafDocument);
-				buildSplittedDocuments();
-
-			}else{
-				buildSplittedDocuments();
-			}
-		}*/
-		
 		@Override
 		public void execute() {
 
