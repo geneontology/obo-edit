@@ -139,7 +139,7 @@
 	
 		Set<AnnotationRuleViolation> annotationRuleViolations = (Set<AnnotationRuleViolation>)request.getAttribute("violations");
 	
-		if(runAnnotationRules){
+		if(runAnnotationRules && ex == null){
 			%>
 			
 					<script type='text/javascript'>
@@ -171,7 +171,7 @@
 											  jQuery(".progress").hide();
 											  jQuery(".commands").show();
 											  jQuery(".inprogress").attr('bgcolor', error != -1 ? 'red' : 'green')
-											  	.html('completed');
+											  	.html(error != -1 ? 'failed' : 'completed');
 											  if(error == -1)
 											  	data = "";
 											  

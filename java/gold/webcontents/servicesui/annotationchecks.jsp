@@ -25,35 +25,34 @@
 				pw.flush();
 			}
 			
-			
-			if(annotationRuleViolations != null && annotationRuleViolations.size()>0){			
-			
-					for(AnnotationRuleViolation v: annotationRuleViolations){
-						String msg = v.getMessage();
-						String s = v.getSourceAnnotation() + "";
-						String ruleId = v.getRuleId();
-						GeneAnnotation ga = v.getSourceAnnotation();
-						String lineNr = "";
-						if(ga != null)
-							lineNr =  ga.getSource() != null ? ga.getSource().getLineNumber() + "" : "";
-						%>
-	                    <li>
-	                    	<div style="font-size: 1.1em;font-weight:bold">Rule Id: <%=ruleId  %> --- Line Number: <%=lineNr  %> --- <%= msg %> </div>
-	                    	    <ul>
-	                    	       <li>
-	                    				<div style="color:red"><%= s  %> </div>
-	                    			</li>
-	                    		</ul>
-	                    </li>
-	                    <%
-					}
-					annotationRuleViolations.clear();
-				
-			}else if(task == null || (task != null && !task.isRunning())){
-				%>NO_DATA<%
-			}
-	}
+		}	
+		if(annotationRuleViolations != null && annotationRuleViolations.size()>0){			
 		
+				for(AnnotationRuleViolation v: annotationRuleViolations){
+					String msg = v.getMessage();
+					String s = v.getSourceAnnotation() + "";
+					String ruleId = v.getRuleId();
+					GeneAnnotation ga = v.getSourceAnnotation();
+					String lineNr = "";
+					if(ga != null)
+						lineNr =  ga.getSource() != null ? ga.getSource().getLineNumber() + "" : "";
+					%>
+                    <li>
+                    	<div style="font-size: 1.1em;font-weight:bold">Rule Id: <%=ruleId  %> --- Line Number: <%=lineNr  %> --- <%= msg %> </div>
+                    	    <ul>
+                    	       <li>
+                    				<div style="color:red"><%= s  %> </div>
+                    			</li>
+                    		</ul>
+                    </li>
+                    <%
+				}
+				annotationRuleViolations.clear();
+			
+		}else if(task == null || (task != null && !task.isRunning())){
+			%>NO_DATA<%
+		}
+	
 %>
 
 
