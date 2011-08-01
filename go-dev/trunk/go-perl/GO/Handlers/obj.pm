@@ -286,7 +286,7 @@ sub stanza {
             $term->add_disjoint_from_term($v);
         }
         else {
-            warn("add method for $k");
+#            warn("add method for $k");
             $term->stag->add($k, $v);
 
 #            $self->throw("don't know what to do with $k");
