@@ -22,7 +22,7 @@ sub e_header {
         $self->factq('metadata_db:idspace_uri'=>[$1,$2]);
     }
     if ($hdr->get_ontology) {
-        $self->factq('ontology'=>[$hdr->get_ontology]);
+        $self->factq('ontology'=>[$hdr->sget_ontology]);
     }
     foreach ($hdr->get_subsetdef) {
         my $id = $_->sget_id;
