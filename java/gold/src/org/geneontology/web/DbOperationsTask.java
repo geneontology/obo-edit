@@ -121,7 +121,7 @@ public class DbOperationsTask extends Task implements DbOperationsListener {
 		//	if (dbservice != null) {
 			//	graph = dbservice.getOntologyGraph();
 			//}
-			db = new GAFDbOperations();
+		//	db = new GAFDbOperations();
 
 		} else
 			db = new DbOperations();
