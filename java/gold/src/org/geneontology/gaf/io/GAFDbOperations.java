@@ -17,20 +17,18 @@ import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.hibernate.Bioentity;
 import org.geneontology.gaf.hibernate.CompositeQualifier;
 import org.geneontology.gaf.hibernate.ExtensionExpression;
-import org.geneontology.gaf.hibernate.GafDeltaFactory;
 import org.geneontology.gaf.hibernate.GafDocument;
 import org.geneontology.gaf.hibernate.GafObjectsBuilder;
 import org.geneontology.gaf.hibernate.GafObjectsFactory;
 import org.geneontology.gaf.hibernate.GeneAnnotation;
 import org.geneontology.gaf.hibernate.WithInfo;
 import org.geneontology.gold.hibernate.model.Ontology;
-import org.geneontology.gold.io.DbOperationsInterface;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.io.postgres.SchemaManager;
 import org.geneontology.gold.io.postgres.TsvFileLoader;
 import org.hibernate.Session;
 
-public class GAFDbOperations implements DbOperationsInterface{
+public class GAFDbOperations{
 
 	private List<DbOperationsListener> listeners;
 	
@@ -59,14 +57,14 @@ public class GAFDbOperations implements DbOperationsInterface{
 	 * @param force
 	 * @throws Exception
 	 */
-	public void bulkLoad(boolean force) throws Exception{
+	public void bulkLoad(boolean force) throws GafDbOperationsException{
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
 		List files = GoConfigManager.getInstance().getDefaultGafFileLocations();
 		
 		if(files == null || files.size()==0){
-			throw new Exception("Ontology File Location is not Found specified in the geneontology.gold.ontologylocation property" );
+			throw new GafDbOperationsException("Ontology File Location is not Found specified in the geneontology.gold.ontologylocation property" );
 		}
 		
 	//	dbCreate = false;
@@ -83,15 +81,19 @@ public class GAFDbOperations implements DbOperationsInterface{
 	 * 			creates new ones.
 	 * @throws Exception
 	 */
-	public void bulkLoad(String gafLocation, boolean force) throws Exception{
+	public void bulkLoad(String gafLocation, boolean force) throws GafDbOperationsException{
 
-		gafDocument = buildGafDocument(gafLocation);
+		try{
+			gafDocument = buildGafDocument(gafLocation);
+		}catch(IOException ex){
+			throw new GafDbOperationsException("An Error occured while building GAF document", ex);
+		}
 		
 		bulkLoad(gafDocument, force);
 	
 	}
 	
-	public void bulkLoad(GafDocument gafDocument, boolean force) throws Exception{
+	public void bulkLoad(GafDocument gafDocument, boolean force) throws GafDbOperationsException{
 		if(DEBUG)
 			LOG.debug("--");
 		
@@ -158,7 +160,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 	 * @return It returns the name of the tables for which the files are dumped
 	 * @throws Exception
 	 */
-	public List<String> dumpFiles(String tablePrefix, String gafFile) throws Exception{
+	public List<String> dumpFiles(String tablePrefix, String gafFile) throws GafDbOperationsException{
 		/*for(DbOperationsListener listener: listeners){
 			listener.dumpFilesStart();
 		}
@@ -183,11 +185,17 @@ public class GAFDbOperations implements DbOperationsInterface{
 		
 		return list;*/
 		
-		gafDocument = buildGafDocument(gafFile);
+		try{
+			gafDocument = buildGafDocument(gafFile);
+		}catch(IOException ex){
+			throw new GafDbOperationsException("An Error occured while building GAF document", ex);
+		}
+			
+
 		return dumpFiles(tablePrefix, gafDocument);
 	}
 
-	public List<String> dumpFiles(String tablePrefix, GafDocument gafDocument) throws Exception{
+	public List<String> dumpFiles(String tablePrefix, GafDocument gafDocument) throws GafDbOperationsException{
 		for(DbOperationsListener listener: listeners){
 			listener.dumpFilesStart();
 		}
@@ -201,7 +209,13 @@ public class GAFDbOperations implements DbOperationsInterface{
 
 		GafBulkLoader loader = new GafBulkLoader(gafDocument, manager.getTsvFilesDir(), tablePrefix);
 		
-		List<String> list = loader.loadAll();
+		List<String> list = null;
+			
+		try{
+			list= loader.loadAll();
+		}catch(IOException ex){
+			throw new GafDbOperationsException(ex);
+		}
 		
 		LOG.info("Tables dump completed");
 		
@@ -251,7 +265,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 	 * @throws Exception
 	 */
 
-	public void buildSchema(boolean force, String tablePrefix) throws Exception{
+	public void buildSchema(boolean force, String tablePrefix) throws GafDbOperationsException{
 		for(DbOperationsListener listener: listeners){
 			listener.buildSchemaStart();
 		}
@@ -262,10 +276,15 @@ public class GAFDbOperations implements DbOperationsInterface{
 
 		SchemaManager sm = new SchemaManager();
 		GoConfigManager manager = GoConfigManager.getInstance();
-		sm.loadSchemaSQL(manager.getGolddbHostName(),
-				manager.getGolddbUserName(),
-				manager.getGolddbUserPassword(), manager.getGolddbName(),
-				manager.getGafSqlSchemaFileLocation(), tablePrefix, force);
+		
+		try{
+			sm.loadSchemaSQL(manager.getGolddbHostName(),
+					manager.getGolddbUserName(),
+					manager.getGolddbUserPassword(), manager.getGolddbName(),
+					manager.getGafSqlSchemaFileLocation(), tablePrefix, force);
+		}catch(Exception ex){
+			throw new GafDbOperationsException(ex);
+		}
 		
 		
 		for(DbOperationsListener listener: listeners){
@@ -281,7 +300,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 	 * 		to be loaded in the GOLD database
 	 * @throws Exception
 	 */
-	public void loadTsvFiles(String tsvFilesDir, List<String> list) throws Exception{
+	public void loadTsvFiles(String tsvFilesDir, List<String> list) throws GafDbOperationsException{
 		for(DbOperationsListener listener: listeners){
 			listener.loadTsvFilesStart();
 		}
@@ -292,11 +311,16 @@ public class GAFDbOperations implements DbOperationsInterface{
 		}
 
 		GoConfigManager manager = GoConfigManager.getInstance();
-		TsvFileLoader tsvLoader = new TsvFileLoader(manager.getGolddbUserName(),
-				manager.getGolddbUserPassword(), manager.getGolddbHostName(), 
-				manager.getGolddbName());
-		
-		tsvLoader.loadTables(tsvFilesDir, list);
+
+		try{
+			TsvFileLoader tsvLoader = new TsvFileLoader(manager.getGolddbUserName(),
+					manager.getGolddbUserPassword(), manager.getGolddbHostName(), 
+					manager.getGolddbName());
+			
+			tsvLoader.loadTables(tsvFilesDir, list);
+		}catch(Exception ex){
+			throw new GafDbOperationsException(ex);
+		}
 		
 		
 		LOG.info("TSV files load completed");
@@ -312,7 +336,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 	 * @param tsvFilesDir
 	 * @throws Exception
 	 */
-	public void loadTsvFiles(String tsvFilesDir) throws Exception{
+	public void loadTsvFiles(String tsvFilesDir) throws GafDbOperationsException{
 		
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
@@ -345,7 +369,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 	 * located the default location.
 	 * @throws Exception
 	 */
-	public void update() throws Exception{
+	public void update() throws GafDbOperationsException{
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
@@ -353,7 +377,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 		List list = GoConfigManager.getInstance().getDefaultGafFileLocations();
 		
 		if(list == null || list.size()==0){
-			throw new Exception("Gaf File Locations are not specified in the geneontology.gold.gaflocation property" );
+			throw new GafDbOperationsException("Gaf File Locations are not specified in the geneontology.gold.gaflocation property" );
 		}
 		
 		for(Object obj: list)
@@ -362,12 +386,16 @@ public class GAFDbOperations implements DbOperationsInterface{
 
 	}	
 	
-	public void update(String gafLocation) throws Exception{
+	public void update(String gafLocation) throws GafDbOperationsException{
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
 		
-		gafDocument = buildGafDocument(gafLocation);
+		try{
+			gafDocument = buildGafDocument(gafLocation);
+		}catch(IOException ex){
+			throw new GafDbOperationsException("An Error occured while building GAF document", ex);
+		}
 		
 		update(gafDocument);
 	}
@@ -379,7 +407,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 	 * @param oboFile
 	 * @throws Exception
 	 */
-	public void update(GafDocument gafDocument) throws Exception{
+	public void update(GafDocument gafDocument) throws GafDbOperationsException{
 		update(gafDocument, false);
 	}
 	
@@ -389,7 +417,7 @@ public class GAFDbOperations implements DbOperationsInterface{
 	 */
 	private boolean isSchemaCreted;
 	
-	public void update(GafDocument gafDocument, boolean splitt) throws Exception{
+	public void update(GafDocument gafDocument, boolean splitt) throws GafDbOperationsException{
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
@@ -454,6 +482,14 @@ public class GAFDbOperations implements DbOperationsInterface{
 					}
 				}
 				
+				
+				
+				for(GeneAnnotation ga: gafDocument.getGeneAnnotations()){
+					ssn.saveOrUpdate(ga);
+				}
+				
+				ssn.saveOrUpdate(gafDocument);
+				
 				ssn.getTransaction().commit();
 			
 			if(splitt)
@@ -463,29 +499,29 @@ public class GAFDbOperations implements DbOperationsInterface{
 		Log.info("last step of update.");
 		isSchemaCreted = false;
 
-		GafDeltaFactory deltaFactory = new GafDeltaFactory(gafDocument);
-		GafObjectsFactory factory = new GafObjectsFactory();
+//		GafDeltaFactory deltaFactory = new GafDeltaFactory(gafDocument);
+//		GafObjectsFactory factory = new GafObjectsFactory();
 		
 //		Collection<Bioentity> entities = deltaFactory.buildBioentityDelta();
-		Collection<GeneAnnotation> annotations = deltaFactory.buildGeneAnnotations();
+//		Collection<GeneAnnotation> annotations = deltaFactory.buildGeneAnnotations();
 //		Collection<CompositeQualifier> qualifiers = deltaFactory.buildCompositeQualifiers();
 //		Collection<ExtensionExpression> expressions = deltaFactory.buildExtensionExpressions();
 //		Collection<WithInfo> infos = deltaFactory.buildWithInfos();
 		
-		deltaFactory.closeConnection();
+//		deltaFactory.closeConnection();
 		
-		Session session = factory.getSession();
+//		Session session = factory.getSession();
 		
 		
-		session.saveOrUpdate(this.gafDocument);
+//		session.saveOrUpdate(this.gafDocument);
 //		saveOrUpdate(session, entities);
-		saveOrUpdate(session, annotations);
+//s		saveOrUpdate(session, annotations);
 //		saveOrUpdate(session, qualifiers);
 ///		saveOrUpdate(session, expressions);
 //		saveOrUpdate(session, infos);
 		
 	
-		session.getTransaction().commit();
+	//	session.getTransaction().commit();
 		
 		LOG.info("Update completed successfully");
 
