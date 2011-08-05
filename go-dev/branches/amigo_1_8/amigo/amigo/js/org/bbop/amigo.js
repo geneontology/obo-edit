@@ -78,7 +78,7 @@ org.bbop.amigo.core = function(){
 	// "defaults write com.apple.Safari IncludeDebugMenu 1"
 	// Need the wrapper function because safari has personality
 	// problems.
-	sayer = function(msg){ window.console.log(msg); }
+	sayer = function(msg){ window.console.log(msg); };
 	ender = "\n";
     }else if( typeof(console) != 'undefined' &&
 	      typeof(console.log) != 'undefined' ){
@@ -254,7 +254,7 @@ org.bbop.amigo.core = function(){
 	var limit = 10;
 	if( lim ){ limit = lim; }
 	if( str.length > limit ){
-	    ret = str.substring(0, limit - 3) + '...';
+	    ret = str.substring(0, (limit - 3)) + '...';
 	}
 	return ret;
     };
@@ -325,7 +325,7 @@ org.bbop.amigo.core = function(){
     var random_base =
 	['1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
 	 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-	 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+	 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
     function _randomness(len){
 	var length = 10;
 	if( len ){
@@ -362,14 +362,14 @@ org.bbop.amigo.core = function(){
 	    // TODO:
 	    // str.replace(en_re, "-_-");
 	    return new_str;
-	}
+	};
 	this.decode = function(str){	    
 	    // Decode and demangle.
 	    var new_str = str.substring(mangle_str.length + space_size + 1);
 	    // TODO:
 	    // str.replace(de_re, ":");
 	    return new_str;
-	}
+	};
     };
 
 //     // Some handling for a workspace object once we get one.
@@ -389,7 +389,7 @@ org.bbop.amigo.core = function(){
     /// JSON? JS? API functions for workspaces.
     ///
 
-    this.api.workspace = {}
+    this.api.workspace = {};
 
     this.api.workspace.remove = function(ws_name){
 	return _ws_template({
