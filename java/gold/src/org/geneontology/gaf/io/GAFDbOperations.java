@@ -402,7 +402,7 @@ public class GAFDbOperations{
 
 	
 	/**
-	 * Incrementa update of the GOLD database from the contents of the obo file
+	 * Incremental update of the GOLD database from the contents of the GAF document
 	 * located at the path supplied in the parameter
 	 * @param oboFile
 	 * @throws Exception
