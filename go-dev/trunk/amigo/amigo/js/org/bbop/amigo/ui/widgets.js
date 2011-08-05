@@ -421,4 +421,3 @@ org.bbop.amigo.ui.widgets = function(){
     };
 };
 
-    
