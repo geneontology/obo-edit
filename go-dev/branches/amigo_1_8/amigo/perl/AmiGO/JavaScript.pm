@@ -54,24 +54,24 @@ my $sig2path =
    ## JQuery. I think this is layout 1.2, aimed for 1.3
    ## and 1.7.
    'com.jquery' =>
-   'com/jquery-1.4.2.min.js',
+   'com/jquery-1.5.1.min.js',
+   #'com/jquery-1.6.1.min.js',
+   #'com/jquery-1.4.2.min.js',
    #'com/jquery-1.4.2.js',
    #'com/jquery-1.3.2.min.js',
 
    ## UI plugin; we'll likely be using this a bit.
    'com.jquery-ui' =>
-   'com/jquery-ui-1.7.1.custom.min.js',
+   #'com/jquery-ui-1.7.1.custom.min.js',
+   'com/jquery-ui-1.8.13.custom.min.js',
    'com.jquery-layout' =>
    'com/jquery.layout.min.js',
 
    ## More plugins.
-   'com.jquery.treeview' =>
-   'com/jquery.treeview.js',
-   'com.jquery.treeview.async' =>
-   'com/jquery.treeview.async.js',
-   'com.jquery.tablesorter' =>
-   'com/jquery.tablesorter.min.js',
-   #'com/jquery.tablesorter.js',
+   'com.jquery.treeview'          => 'com/jquery.treeview.js',
+   'com.jquery.treeview.async'    => 'com/jquery.treeview.async.js',
+   'com.jquery.tablesorter'       => 'com/jquery.tablesorter.min.js',
+   'com.jquery.tablesorter.pager' => 'com/jquery.tablesorter.pager.js',
 
    ## TODO/BUG: temporary newick locations and links. These are not
    ## automatically copied at installation time at this point as they
