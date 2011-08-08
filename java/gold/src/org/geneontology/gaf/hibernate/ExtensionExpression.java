@@ -3,6 +3,7 @@ package org.geneontology.gaf.hibernate;
 import java.io.Serializable;
 
 import org.geneontology.gold.hibernate.model.Cls;
+import org.geneontology.gold.hibernate.model.GOModel;
 import org.geneontology.gold.hibernate.model.Relation;
 
 
@@ -10,8 +11,11 @@ public class ExtensionExpression extends owltools.gaf.ExtensionExpression implem
 
 	
 	private Relation relationObj;
+	private boolean isRelationObjLoaded;
+	
 	private Cls clsObj;
-
+	private boolean isClsObjLoaded;
+	
 	public ExtensionExpression() {
 		super();
 	}
@@ -20,8 +24,10 @@ public class ExtensionExpression extends owltools.gaf.ExtensionExpression implem
 	}
 
 	public Relation getRelationObj() {
-	//	if(relationObj == null)
-	//		relationObj = (Relation)getHibernateObject(Relation.class, "id", getRelation());
+		if(relationObj == null && relation != null && !isRelationObjLoaded){
+			isRelationObjLoaded = true;
+			relationObj = (Relation)GOModel.getHibernateObject(Relation.class, "id", getRelation());
+		}
 		
 		return relationObj;
 	}
@@ -29,9 +35,10 @@ public class ExtensionExpression extends owltools.gaf.ExtensionExpression implem
 		this.relationObj = relationObj;
 	}
 	public Cls getClsObj() {
-		//if(clsObj == null)
-			//clsObj = (Cls) getHibernateObject(Cls.class, "id", getCls());
-		
+		if(clsObj == null && cls != null && !isClsObjLoaded){
+			isClsObjLoaded = true;
+			clsObj = (Cls) GOModel.getHibernateObject(Cls.class, "id", getCls());
+		}
 		
 		return clsObj;
 	}
