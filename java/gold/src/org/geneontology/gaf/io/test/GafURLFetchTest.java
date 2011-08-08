@@ -1,15 +1,12 @@
 package org.geneontology.gaf.io.test;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-
 import junit.framework.TestCase;
-
 import org.geneontology.gaf.hibernate.GafDocument;
-import org.geneontology.gaf.hibernate.GafObjectsBuilder;
+import org.geneontology.gaf.hibernate.GafHibObjectsBuilder;
 import org.geneontology.gaf.io.GafURLFetch;
 
 public class GafURLFetchTest  extends TestCase {
@@ -38,7 +35,7 @@ public class GafURLFetchTest  extends TestCase {
 		while(fetch.hasNext()){
 			InputStream is = (InputStream)fetch.next();
 			
-			GafObjectsBuilder  builder = new GafObjectsBuilder();
+			GafHibObjectsBuilder  builder = new GafHibObjectsBuilder();
 
 			Reader reader = new InputStreamReader(is);
 			

@@ -9,13 +9,12 @@ import java.util.UUID;
 import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.geneontology.gaf.hibernate.GafDocument;
-import org.geneontology.gaf.hibernate.GafObjectsBuilder;
+import org.geneontology.gaf.hibernate.GafHibObjectsBuilder;
 import org.geneontology.gaf.io.GAFDbOperations;
 import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.io.DbOperationsInterface;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.rules.AnnotationRuleViolation;
-import org.geneontology.web.services.DbOperationsService;
 import org.obolibrary.obo2owl.Owl2Obo;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
@@ -149,8 +148,8 @@ public class DbOperationsTask extends Task implements DbOperationsListener {
 							db.bulkLoad(location, force);
 							for (GafDocument doc : gafDocuments) {
 
-								annotationRuleViolations.addAll(doc
-										.validateAnnotations(graph));
+							//	annotationRuleViolations.addAll(doc
+								//		.validateAnnotations(graph));
 								/*
 								 * for(AnnotationRuleViolation arv:
 								 * doc.validateAnnotations(graph)){
@@ -274,8 +273,8 @@ public class DbOperationsTask extends Task implements DbOperationsListener {
 			} else {
 				graph.addSupportOntology(ont);
 			}
-		} else if (object instanceof GafObjectsBuilder) {
-			GafObjectsBuilder builder = (GafObjectsBuilder) object;
+		} else if (object instanceof GafHibObjectsBuilder) {
+			GafHibObjectsBuilder builder = (GafHibObjectsBuilder) object;
 			gafDocuments.add(builder.getGafDocument());
 
 			this.annotationRuleViolations.addAll(builder.getParser()

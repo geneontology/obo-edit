@@ -3,11 +3,11 @@ package org.geneontology.gaf.io;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.geneontology.gaf.hibernate.Bioentity;
-import org.geneontology.gaf.hibernate.GafDocument;
-import org.geneontology.gaf.hibernate.GeneAnnotation;
 import org.geneontology.gold.io.TableDumper;
+
+import owltools.gaf.Bioentity;
+import owltools.gaf.GafDocument;
+import owltools.gaf.GeneAnnotation;
 
 public class GafBulkLoader {
 

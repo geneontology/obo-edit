@@ -12,7 +12,8 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.hibernate.GeneAnnotation;
-import org.geneontology.gaf.parser.GAFParser;
+
+import owltools.gaf.GAFParser;
 
 public class BasicChecksRule extends AbstractAnnotationRule {
 

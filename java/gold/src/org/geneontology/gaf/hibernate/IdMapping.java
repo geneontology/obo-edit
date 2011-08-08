@@ -2,64 +2,47 @@ package org.geneontology.gaf.hibernate;
 
 import java.io.Serializable;
 
-import org.geneontology.gold.hibernate.model.GOModel;
+public class IdMapping extends owltools.gaf.IdMapping implements Serializable {
 
-public class IdMapping extends GOModel implements Serializable {
-
-	private String sourceId;
-	private String targetId;
-	private String relationship;
-	private String mappingSource;
-	
-	public IdMapping(){
-		String keys[] = {"sourceId", "targetId", "relationship", "mappingSource"};
-		this.initUniqueConstraintFields(IdMapping.class, keys);
+	public IdMapping() {
+		super();
 	}
 
 	public IdMapping(String sourceId, String targetId, String relationship,
 			String mappingSource) {
-		this();
-		this.sourceId = sourceId;
-		this.targetId = targetId;
-		this.relationship = relationship;
-		this.mappingSource = mappingSource;
+		super(sourceId, targetId, relationship, mappingSource);
 	}
 
-	public String getSourceId() {
-		return sourceId;
-	}
-
-	public void setSourceId(String sourceId) {
-		this.sourceId = sourceId;
-	}
-
-	public String getTargetId() {
-		return targetId;
-	}
-
-	public void setTargetId(String targetId) {
-		this.targetId = targetId;
-	}
-
-	public String getRelationship() {
-		return relationship;
-	}
-
-	public void setRelationship(String relationship) {
-		this.relationship = relationship;
-	}
-
-	public String getMappingSource() {
-		return mappingSource;
-	}
-
-	public void setMappingSource(String mappingSource) {
-		this.mappingSource = mappingSource;
-	}
+	public int hashCode() {
+		int result = 17;
 	
+		result = 37 * result + (getSourceId() == null ? 0 : getSourceId().hashCode());
+		result = 37 * result + (getTargetId() == null ? 0 : getTargetId().hashCode());
+		result = 37 * result + (getRelationship() == null ? 0 : getRelationship().hashCode());
+		result = 37 * result + (getMappingSource() == null ? 0 : getMappingSource().hashCode());
+		
+		return result;
+	}
+
+	public boolean equals(Object other) {
+		if(this == other)
+			return true;
+		
+		if(other == null)
+			return false;
 	
-	
-	
-	
+		if(!(other instanceof IdMapping))
+			return false;
+		
+		IdMapping im = (IdMapping) other;
+		
+		boolean result =( getSourceId() == im.getSourceId() || getSourceId() != null && getSourceId().equals(im.getSourceId()) )
+			&& (getTargetId() == im.getTargetId() || getTargetId() != null && getTargetId().equals(im.getTargetId()))
+			&& (getRelationship() == im.getRelationship() || getRelationship() != null && getRelationship().equals(im.getRelationship()) ) 
+			&& (getMappingSource() == im.getMappingSource() || getMappingSource() != null && getMappingSource().equals(im.getMappingSource()))
+			;
+		
+		return result;
+	}	
 	
 }

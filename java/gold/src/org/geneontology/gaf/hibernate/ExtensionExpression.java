@@ -3,52 +3,25 @@ package org.geneontology.gaf.hibernate;
 import java.io.Serializable;
 
 import org.geneontology.gold.hibernate.model.Cls;
-import org.geneontology.gold.hibernate.model.GOModel;
 import org.geneontology.gold.hibernate.model.Relation;
 
-public class ExtensionExpression extends GOModel implements Serializable {
 
-	private String id;
-	private String relation;
-	private String cls;
+public class ExtensionExpression extends owltools.gaf.ExtensionExpression implements Serializable {
+
 	
 	private Relation relationObj;
 	private Cls clsObj;
 
-	
-	public ExtensionExpression(){
-		String keys[] = {"id", "relation", "cls"};
-		this.initUniqueConstraintFields(ExtensionExpression.class, keys);
+	public ExtensionExpression() {
+		super();
 	}
-	
-	
 	public ExtensionExpression(String id, String relation, String cls) {
-		this();
-		this.id = id;
-		this.relation = relation;
-		this.cls = cls;
+		super(id, relation, cls);
 	}
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	public String getRelation() {
-		return relation;
-	}
-	public void setRelation(String relation) {
-		this.relation = relation;
-	}
-	public String getCls() {
-		return cls;
-	}
-	public void setCls(String cls) {
-		this.cls = cls;
-	}
+
 	public Relation getRelationObj() {
-		if(relationObj == null)
-			relationObj = (Relation)getHibernateObject(Relation.class, "id", getRelation());
+	//	if(relationObj == null)
+	//		relationObj = (Relation)getHibernateObject(Relation.class, "id", getRelation());
 		
 		return relationObj;
 	}
@@ -56,8 +29,8 @@ public class ExtensionExpression extends GOModel implements Serializable {
 		this.relationObj = relationObj;
 	}
 	public Cls getClsObj() {
-		if(clsObj == null)
-			clsObj = (Cls) getHibernateObject(Cls.class, "id", getCls());
+		//if(clsObj == null)
+			//clsObj = (Cls) getHibernateObject(Cls.class, "id", getCls());
 		
 		
 		return clsObj;
@@ -66,6 +39,33 @@ public class ExtensionExpression extends GOModel implements Serializable {
 		this.clsObj = clsObj;
 	}
 	
+	public int hashCode() {
+		int result = 17;
 	
+		result = 37 * result + (this.getId() == null ? 0 : getId().hashCode());
+		result = 37 * result + (this.getCls() == null ? 0 : getCls().hashCode());
+		result = 37 * result + (this.getRelation() == null ? 0 : getRelation().hashCode());
+		
+		return result;
+	}	
+	
+	public boolean equals(Object other) {
+		if(this == other)
+			return true;
+		
+		if(other == null)
+			return false;
+		
+		if(!(other instanceof ExtensionExpression))
+			return false;
+		
+		ExtensionExpression ee = (ExtensionExpression) other;
+		
+		boolean result = ( getId() == ee.getId() || getId() != null && getId().equals(ee.getId()) )
+				&& (getCls() == ee.getCls() || getCls() != null && getCls().equals(ee.getCls()))
+				&& (getRelation() == ee.getRelation() || getRelation() != null && getRelation().equals(ee.getRelation()));
+		
+		return result;
+	}	
 	
 }

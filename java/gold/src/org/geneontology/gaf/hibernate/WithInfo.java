@@ -2,44 +2,47 @@ package org.geneontology.gaf.hibernate;
 
 import java.io.Serializable;
 
-import org.geneontology.gold.hibernate.model.GOModel;
 
-public class WithInfo extends GOModel implements Serializable {
+public class WithInfo extends owltools.gaf.WithInfo implements Serializable {
 
-	private String id;
-	private String withXref;
-	
-	public WithInfo(){
-		String keys[] = {"id", "withXref"};
-		this.initUniqueConstraintFields(WithInfo.class, keys);
+	public WithInfo() {
+		super();
 	}
 
 	public WithInfo(String id, String withXref) {
-		this();
-		this.id = id;
-		this.withXref = withXref;
+		super(id, withXref);
 	}
 
-	public String getId() {
-		return id;
+	public int hashCode() {
+		int result = 17;
+		
+		result = 37 * result + (getId() == null ? 0 : getId().hashCode());
+		result = 37 * result + (getWithXref() == null ? 0 : getWithXref().hashCode());
+		
+		return result;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public boolean equals(Object other) {
+		if(this == other)
+			return true;
+		
+		if(other == null)
+			return false;
+	
+		if(!(other instanceof WithInfo))
+			return false;
+		
+		
+		WithInfo wi = (WithInfo) other;
+		
+		boolean result = (getId() == wi.getId() || getId() != null && getId().equals(wi.getId()) )
+			&& (getWithXref() == wi.getWithXref() || getWithXref() != null && getWithXref().equals(wi.getWithXref()))
+		
+			;
+		
+		return result;
+	
 	}
-
-	public String getWithXref() {
-		return withXref;
-	}
-
-	public void setWithXref(String withXref) {
-		this.withXref = withXref;
-	}
-
-	public String toString(){
-		return "[" + this.id +", " + this.withXref + "]";
-	}
-
 	
 	
 }
