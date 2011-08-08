@@ -3,7 +3,6 @@ package org.geneontology.gold.hibernate.model;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -214,7 +213,7 @@ public class GOModel {
 	 * @param vaule
 	 * @return
 	 */
-	protected Object getHibernateObject(Class cls, String key, String value){
+	public static Object getHibernateObject(Class cls, String key, String value){
 		
 		GafObjectsFactory factory = new GafObjectsFactory();
 		Session session = factory.getSession();
@@ -222,6 +221,7 @@ public class GOModel {
 		String clsName = cls.getSimpleName();
 		
 		Object obj = session.createQuery("from " + clsName + " where " + key + "=?" ).setString(0, value).uniqueResult();
+		session.getTransaction().commit();
 		
 		if(obj == null){
 			
@@ -246,7 +246,7 @@ public class GOModel {
 	}
 	
 	
-	protected List getHibernateObjects(Class cls, String key, String value){
+	public static List getHibernateObjects(Class cls, String key, String value){
 		
 		GafObjectsFactory factory = new GafObjectsFactory();
 		Session session = factory.getSession();
@@ -254,6 +254,8 @@ public class GOModel {
 		String clsName = cls.getSimpleName();
 		
 		List list = session.createQuery("from " + clsName + " where " + key + "=?" ).setString(0, value).list();
+		session.getTransaction().commit();
+
 		
 		return list;
 	}

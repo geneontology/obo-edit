@@ -54,11 +54,11 @@ public class GafHibernateTest extends TestCase {
 		
 		System.out.println(ga.getBioentityObject());
 
-		System.out.println(ga.getClsObject());
+//		System.out.println(ga.getClsObject());
 	
 		assertNotNull( ga.getBioentityObject() );
 		
-		assertNotNull(ga.getClsObject());
+	//	assertNotNull(ga.getClsObject());
 		
 	}
 	
