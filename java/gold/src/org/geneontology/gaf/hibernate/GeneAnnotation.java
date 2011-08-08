@@ -2,6 +2,9 @@ package org.geneontology.gaf.hibernate;
 
 import java.io.Serializable;
 import org.geneontology.gold.hibernate.model.Cls;
+import org.geneontology.gold.hibernate.model.GOModel;
+
+import owltools.gaf.Bioentity;
 
 /**
  * 
@@ -11,9 +14,12 @@ import org.geneontology.gold.hibernate.model.Cls;
 public class GeneAnnotation extends owltools.gaf.GeneAnnotation implements Serializable {
 
 	private transient Cls clsObject;
+	private boolean isClsObjectLoaded;
 	
 	private Cls actsOnTaxonIdObject;
-
+	private boolean isActsOnTaxonIdObjectLoaded;
+	
+	private transient boolean isBioentityObjectLoaded;
 	
 	public GeneAnnotation() {
 		super();
@@ -24,10 +30,22 @@ public class GeneAnnotation extends owltools.gaf.GeneAnnotation implements Seria
 	}
 
 	public Cls getActsOnTaxonIdObject() {
+		if(actsOnTaxonIdObject == null && !isActsOnTaxonIdObjectLoaded && actsOnTaxonId != null){
+			isActsOnTaxonIdObjectLoaded = true;
+			this.isChanged = true;
+			actsOnTaxonIdObject = (Cls)GOModel.getHibernateObject(Cls.class, "id", getActsOnTaxonId());
+		}
+		
 		return actsOnTaxonIdObject;
 	}
 
 	public void setClsObject(Cls clsObject) {
+		if(this.cls != null && this.clsObject == null && !isClsObjectLoaded){
+			isClsObjectLoaded = true;
+			this.isChanged = true;
+			clsObject = (Cls) GOModel.getHibernateObject(Cls.class, "id", getCls());
+		}
+		
 		this.clsObject = clsObject;
 	}
 
@@ -37,7 +55,16 @@ public class GeneAnnotation extends owltools.gaf.GeneAnnotation implements Seria
 	}
 
 
+	public Bioentity getBioentityObject() {
+		if(bioentityObject == null && this.bioentity != null && !this.isBioentityObjectLoaded){
+			this.isBioentityObjectLoaded = true;
+			this.isChanged = true;
+			bioentityObject = (org.geneontology.gaf.hibernate.Bioentity) GOModel.getHibernateObject(org.geneontology.gaf.hibernate.Bioentity.class, "id", getBioentity());
+		}
+		return bioentityObject;
+	}
 
+	
 	public GeneAnnotation(String bioentity, boolean isContributesTo,
 			boolean isIntegralTo, String compositeQualifier, String cls,
 			String referenceId, String evidenceCls, String withExpression,

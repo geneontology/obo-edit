@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.geneontology.gold.hibernate.factory.GoldObjectFactory;
-import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.postgres.DeltaQueryInterceptor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -121,14 +120,14 @@ public class GafObjectsFactory {
 		return bioentity;
 	}
 
-	public synchronized List<GeneAnnotation> getGeneAnnotations(String gafDocument){
+	public synchronized List<GeneAnnotation> getGeneAnnotations(String bioentity){
 
 		if(LOG.isDebugEnabled())
 			LOG.debug("-");
 
 		Session session = getSession();
-		List<GeneAnnotation> list =session.createQuery("from GeneAnnotation where gaf_document=?")
-							.setString(0, gafDocument)
+		List<GeneAnnotation> list =session.createQuery("from GeneAnnotation where bioentity=?")
+							.setString(0, bioentity)
 							.list();
 		
 		session.getTransaction().commit();
