@@ -124,7 +124,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-         <launcher name="obo2linkfile" id="9" external="false" excludeFromMenu="true" menuName="" icnsFile="" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false">
+    <launcher name="obo2linkfile" id="9" external="false" excludeFromMenu="true" menuName="" icnsFile="" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false">
       <executable name="obo2linkfile" type="1" iconSet="false" iconFile="" executableDir="." redirectStderr="false" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="2" changeWorkingDirectory="false" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -146,7 +146,6 @@
         <scriptLines />
       </customScript>
     </launcher>
-    
     <launcher name="obo-mapper" id="10" external="false" excludeFromMenu="true" menuName="" icnsFile="" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false">
       <executable name="obo-mapper" type="1" iconSet="false" iconFile="" executableDir="." redirectStderr="false" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="2" changeWorkingDirectory="false" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
@@ -294,7 +293,7 @@
         <actions />
         <formComponents />
       </screen>
-      <screen name="" id="8729" beanClass="com.install4j.runtime.beans.screens.FormScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
+      <screen name="Set JVM memory" id="8729" beanClass="com.install4j.runtime.beans.screens.FormScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.screens.FormScreen">
@@ -307,7 +306,7 @@
             </object>
           </java>
         </serializedBean>
-        <condition />
+        <condition>!Util.isWindows()</condition>
         <validation />
         <actions />
         <formComponents>
@@ -316,7 +315,7 @@
               <java class="java.beans.XMLDecoder">
                 <object class="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent">
                   <void property="labelText">
-                    <string>Because OBO-Edit2 is a Java application, it cannot use an arbitrary amount of system memory like a native application. Instead, you must set a fixed maximum amount of memory that OBO-Edit2 can use. Unless you have a 64-bit JVM, Java sets a limit of 1860M of allocated memory, even if you are using a computer with more memory. You can change the memory setting after installation via OBO-Edit's Configuration Manager or by hand-editing oboedit.vmoptions (located in the OBO-Edit installation directory).  NOTE: Windows users should choose a value of 1024M--Windows seems to have trouble with higher memory allocations than that.</string>
+                    <string>Because OBO-Edit2 is a Java application, it cannot use an arbitrary amount of system memory like a native application. Instead, you must set a fixed maximum amount of memory that OBO-Edit2 can use. Unless you have a 64-bit JVM, Java sets a limit of 1860M of allocated memory, even if you are using a computer with more memory. You can change the memory setting after installation via OBO-Edit's Configuration Manager or by hand-editing oboedit.vmoptions (located in the OBO-Edit installation directory).</string>
                   </void>
                 </object>
               </java>
@@ -352,6 +351,68 @@
 val = new Integer((int) Math.max(1024,
 (Math.round(SystemInfo.getPhysicalMemory() * 0.6 / 1024 / 1024) / 128) *128));
 val = Math.min(val, 1860);
+configurationObject.setValue(val);</initScript>
+          </formComponent>
+        </formComponents>
+      </screen>
+      <screen name="Set JVM memory Windows" id="9338" beanClass="com.install4j.runtime.beans.screens.FormScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
+        <serializedBean>
+          <java class="java.beans.XMLDecoder">
+            <object class="com.install4j.runtime.beans.screens.FormScreen">
+              <void property="subTitle">
+                <string>Maximum Memory for OBO-Edit2</string>
+              </void>
+              <void property="title">
+                <string>Memory Settings</string>
+              </void>
+            </object>
+          </java>
+        </serializedBean>
+        <condition>Util.isWindows()</condition>
+        <validation />
+        <actions />
+        <formComponents>
+          <formComponent name="" id="9339" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent">
+                  <void property="labelText">
+                    <string>Because OBO-Edit2 is a Java application, it cannot use an arbitrary amount of system memory like a native application. Instead, you must set a fixed maximum amount of memory that OBO-Edit2 can use. Unless you have a 64-bit JVM, Java sets a limit of 1024M of allocated memory, even if you are using a computer with more memory. You can change the memory setting after installation via OBO-Edit's Configuration Manager or by hand-editing oboedit.vmoptions (located in the OBO-Edit installation directory).</string>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <initScript />
+          </formComponent>
+          <formComponent name="" id="9340" beanClass="com.install4j.runtime.beans.formcomponents.NumberSpinnerComponent" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.formcomponents.NumberSpinnerComponent">
+                  <void property="initialValue">
+                    <int>1024</int>
+                  </void>
+                  <void property="labelText">
+                    <string>Maximum Memory for OBO-Edit2 (in MB)</string>
+                  </void>
+                  <void property="maxValue">
+                    <int>1024</int>
+                  </void>
+                  <void property="minValue">
+                    <int>256</int>
+                  </void>
+                  <void property="stepSize">
+                    <int>128</int>
+                  </void>
+                  <void property="variableName">
+                    <string>oboedit.memoryAlloc</string>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <initScript>Integer val;
+val = new Integer((int) Math.max(1024,
+(Math.round(SystemInfo.getPhysicalMemory() * 0.6 / 1024 / 1024) / 128) *128));
+val = Math.min(val, 1024);
 configurationObject.setValue(val);</initScript>
           </formComponent>
         </formComponents>
