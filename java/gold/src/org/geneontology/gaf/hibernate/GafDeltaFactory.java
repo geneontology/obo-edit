@@ -44,7 +44,7 @@ public class GafDeltaFactory {
 	private Hashtable<String, GeneAnnotation> annotations;
 	
 	public GafDeltaFactory(GafDocument doc)throws Exception{
-		this();
+	/*	this();
 		this.doc = doc;
 		
 		annotations = new Hashtable<String, GeneAnnotation>();
@@ -53,9 +53,10 @@ public class GafDeltaFactory {
 			for(GeneAnnotation ga: doc.getGeneAnnotations()){
 				annotations.put(ga.getBioentity() + ga.getCls() + ga.getReferenceId() + ga.getEvidenceCls(), ga);
 			}
-		}
+		}*/
 	}
 	
+	/*
 	protected GafDeltaFactory()throws Exception{
 		if(LOG.isDebugEnabled())
 			LOG.debug("-");
@@ -219,6 +220,6 @@ public class GafDeltaFactory {
 		}catch (Exception e) {
 
 		}
-	}
+	}*/
 	
 }

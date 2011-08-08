@@ -37,33 +37,32 @@
                 <column name="assigned_by" />
             </key-property>
           
+           <key-property name="extensionExpression" type="string">
+                <column name="extension_expression" />
+            </key-property>
+          
+           <key-property name="geneProductForm" type="string">
+                <column name="gene_product_form" />
+            </key-property>
+ 
+           <key-property name="isContributesTo" type="boolean">
+                <column name="is_contributes_to" />
+            </key-property>
+ 
+            <key-property name="isIntegralTo" type="boolean">
+                <column name="is_integral_to" />
+            </key-property>
+
+           <key-property name="gafDocument" type="string">
+                <column name="gaf_document" />
+            </key-property>
 
         </composite-id>
 
   
-           <property name="extensionExpression" type="string">
-                <column name="extension_expression" />
-            </property>
-          
-           <property name="geneProductForm" type="string">
-                <column name="gene_product_form" />
-            </property>
- 
-           <property name="isContributesTo" type="boolean">
-                <column name="is_contributes_to" />
-            </property>
- 
- 
- 
-                 <property name="isIntegralTo" type="boolean">
-                <column name="is_integral_to" />
-            </property>
 
          
 
-           <property name="gafDocument" type="string">
-                <column name="gaf_document" />
-            </property>
             
               <!--  
               <many-to-one name="clsObject" class="org.geneontology.gold.hibernate.model.Cls" fetch="select" update="false" insert="false">

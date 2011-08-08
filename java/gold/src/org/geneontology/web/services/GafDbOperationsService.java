@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.hibernate.GafDocument;
-import org.geneontology.gaf.hibernate.GafObjectsBuilder;
+import org.geneontology.gaf.hibernate.GafHibObjectsBuilder;
 import org.geneontology.gaf.io.GAFDbOperations;
 import org.geneontology.gaf.io.GafURLFetch;
 import org.geneontology.gold.io.DbOperationsListener;
@@ -406,12 +406,12 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 		public void endDomLoad(Object object) {
 			reportEndTime("Parsing GAF--" + currentOntologyBeingProcessed);
 
-			if (object instanceof GafObjectsBuilder) {
-				GafObjectsBuilder builder = (GafObjectsBuilder) object;
+			if (object instanceof GafHibObjectsBuilder) {
+				GafHibObjectsBuilder builder = (GafHibObjectsBuilder) object;
 				// gafDocuments.add(builder.getGafDocument());
 
-				annotationRuleViolations.addAll(builder.getParser()
-						.getAnnotationRuleViolations());
+				for(Object v: builder.getParser().getAnnotationRuleViolations())
+					annotationRuleViolations.add(new AnnotationRuleViolation(v+""));
 
 			}
 
@@ -470,7 +470,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 			startDomLoad();
 
-			GafObjectsBuilder builder = new GafObjectsBuilder();
+			GafHibObjectsBuilder builder = new GafHibObjectsBuilder();
 
 			GafDocument doc = builder.buildDocument(reader, docId, path);
 
