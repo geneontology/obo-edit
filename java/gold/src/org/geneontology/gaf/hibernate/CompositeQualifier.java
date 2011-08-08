@@ -2,38 +2,43 @@ package org.geneontology.gaf.hibernate;
 
 import java.io.Serializable;
 
-import org.geneontology.gold.hibernate.model.GOModel;
+public class CompositeQualifier extends owltools.gaf.CompositeQualifier implements Serializable {
 
-public class CompositeQualifier extends GOModel implements Serializable {
-
-	private String id;
-	private String qualifierObj;
-	
-	public CompositeQualifier(){
-		String keys[] = {"id", "qualifierObj"};
-		this.initUniqueConstraintFields(CompositeQualifier.class, keys);
+	public CompositeQualifier() {
+		super();
 	}
 
 	public CompositeQualifier(String id, String qualifierObj) {
-		this();
-		this.id = id;
-		this.qualifierObj = qualifierObj;
+		super(id, qualifierObj);
 	}
 
-	public String getId() {
-		return id;
+	public int hashCode() {
+		int result = 37;
+		
+		result = 37 * result + (getId() == null ? 0 : getId().hashCode());
+		result = 37 * result + (getQualifierObj() == null ? 0 : getQualifierObj().hashCode());
+		
+		return result;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public boolean equals(Object other) {
+		if(this == other)
+			return true;
+		
+		if(other == null)
+			return false;
+		
+		if(!(other instanceof CompositeQualifier))
+			return false;
+		
+		CompositeQualifier cq = (CompositeQualifier) other;
+		
+		boolean result = ( getId() == cq.getId() || ( getId() != null && getId().equals(cq.getId()) ) )
+			&& (getQualifierObj() == cq.getQualifierObj() || (getQualifierObj() != null && getQualifierObj().equals(cq.getQualifierObj())))
+			;
+			
+		return result;
 	}
-
-	public String getQualifierObj() {
-		return qualifierObj;
-	}
-
-	public void setQualifierObj(String qualifierObj) {
-		this.qualifierObj = qualifierObj;
-	}
+		
 	
 }

@@ -123,6 +123,7 @@ public class GoldCommandLine {
 			if("loadtsv".equals(operation) || "buildschema".equals(operation)){
 				DbOperationsListenerToReportTime db = new DbOperationsListenerToReportTime(dbType , operation, null, force, tableprefix, manager.getTsvFilesDir());
 				db.run();
+				
 			}else if("bulkload".equals(operation) || "update".equals(operation) 
 					|| "buildtsv".equals(operation)){
 				

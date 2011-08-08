@@ -10,11 +10,12 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.hibernate.GafDocument;
-import org.geneontology.gaf.hibernate.GeneAnnotation;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
+
+import owltools.gaf.GeneAnnotation;
 
 public class AnnotationRulesEngine {
 
@@ -74,7 +75,7 @@ public class AnnotationRulesEngine {
 		
 			for(GeneAnnotation annotation: doc.getGeneAnnotations()){
 				for(AbstractAnnotationRule rule: rules){
-					set.addAll( rule.getRuleViolations(annotation) );
+					set.addAll( rule.getRuleViolations((org.geneontology.gaf.hibernate.GeneAnnotation)annotation) );
 				}
 			}
 		}catch(Exception ex){

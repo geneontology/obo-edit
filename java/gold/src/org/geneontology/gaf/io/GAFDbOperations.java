@@ -14,19 +14,19 @@ import java.util.zip.GZIPInputStream;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.util.log.Log;
 import org.geneontology.conf.GoConfigManager;
-import org.geneontology.gaf.hibernate.Bioentity;
-import org.geneontology.gaf.hibernate.CompositeQualifier;
-import org.geneontology.gaf.hibernate.ExtensionExpression;
 import org.geneontology.gaf.hibernate.GafDocument;
-import org.geneontology.gaf.hibernate.GafObjectsBuilder;
+import org.geneontology.gaf.hibernate.GafHibObjectsBuilder;
 import org.geneontology.gaf.hibernate.GafObjectsFactory;
-import org.geneontology.gaf.hibernate.GeneAnnotation;
-import org.geneontology.gaf.hibernate.WithInfo;
 import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.io.postgres.SchemaManager;
 import org.geneontology.gold.io.postgres.TsvFileLoader;
 import org.hibernate.Session;
+import owltools.gaf.Bioentity;
+import owltools.gaf.CompositeQualifier;
+import owltools.gaf.ExtensionExpression;
+import owltools.gaf.GeneAnnotation;
+import owltools.gaf.WithInfo;
 
 public class GAFDbOperations{
 
@@ -232,7 +232,7 @@ public class GAFDbOperations{
 			listener.startDomLoad();
 		}
 
-		GafObjectsBuilder builder = new GafObjectsBuilder();
+		GafHibObjectsBuilder builder = new GafHibObjectsBuilder();
 		
 		GafDocument doc = builder.buildDocument(reader, docId, path);
 
@@ -481,8 +481,6 @@ public class GAFDbOperations{
 						ssn.saveOrUpdate(cq);
 					}
 				}
-				
-				
 				
 				for(GeneAnnotation ga: gafDocument.getGeneAnnotations()){
 					ssn.saveOrUpdate(ga);
