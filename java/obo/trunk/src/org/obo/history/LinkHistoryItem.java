@@ -6,8 +6,6 @@ import java.util.Set;
 
 import org.bbop.util.ObjectUtil;
 
-import com.sun.org.apache.bcel.internal.generic.RETURN;
-
 public abstract class LinkHistoryItem extends HistoryItem {
 
 	protected StringRelationship rel;
