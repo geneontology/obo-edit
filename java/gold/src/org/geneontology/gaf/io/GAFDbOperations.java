@@ -94,7 +94,7 @@ public class GAFDbOperations{
 	}
 	
 	public void bulkLoad(GafDocument gafDocument, boolean force) throws GafDbOperationsException{
-		if(DEBUG)
+		/*if(DEBUG)
 			LOG.debug("--");
 		
 		for(DbOperationsListener listener: listeners){
@@ -104,17 +104,60 @@ public class GAFDbOperations{
 		
 		List<String> list = dumpFiles("", gafDocument);
 		
+		loadTsvFiles(GoConfigManager.getInstance().getTsvFilesDir(), list);
+
+		LOG.info("Bulk Load completed successfully");
+
+		for(DbOperationsListener listener: listeners){
+			listener.bulkLoadEnd();
+		}*/
+		
+		bulkLoad(gafDocument, "", force);
+		
+	}
+	
+	public void bulkLoad(GafDocument gafDocument, String prefix, boolean force) throws GafDbOperationsException{
+		if(DEBUG)
+			LOG.debug("--");
+		
+		for(DbOperationsListener listener: listeners){
+			listener.bulkLoadStart();
+		}
+		
+		
+		List<String> list = dumpFiles(prefix, gafDocument);
+		
 		/*if(!dbCreate)
 			buildSchema(force, "");
 		
 		dbCreate = true;*/
-		loadTsvFiles(GoConfigManager.getInstance().getTsvFilesDir(), list);
-
+		
 		GafObjectsFactory factory = new GafObjectsFactory();
+		List gafDocs = factory.getGafDocument();
 		Session session = factory.getSession();
 		
-		bulkLoadHibernate(session, gafDocument);
+		//with non-empty gold database the bulkload will fail with with_inf, extension_expression and composite_qualifiers tables.
+		if(!gafDocs.isEmpty()){
+			List<String> list2 = new ArrayList<String>();
+			for(String t: list){
+				if(t.endsWith("bioentity") || t.endsWith("gene_annotation"))
+					list2.add(t);
+			}
+			
+			list = list2;
+			
+			bulkLoadHibernate(session, gafDocument);
+			
+		}
+		
+		
+		loadTsvFiles(GoConfigManager.getInstance().getTsvFilesDir(), list, GoConfigManager.getInstance().getGolddbName());
+
+	//	GafObjectsFactory factory = new GafObjectsFactory();
+		
+		//bulkLoadHibernate(session, gafDocument);
 	
+		session.saveOrUpdate(gafDocument);
 		session.getTransaction().commit();
 		
 		LOG.info("Bulk Load completed successfully");
@@ -125,10 +168,12 @@ public class GAFDbOperations{
 		
 	}
 	
+	
+	
 	private void bulkLoadHibernate(Session session, GafDocument gafDocument){
 
 		
-		session.save(gafDocument);
+	//	session.save(gafDocument);
 		
 		for(String id: gafDocument.getCompositeQualifiersIds()){
 			for(CompositeQualifier cq: gafDocument.getCompositeQualifiers(id)){
@@ -301,7 +346,7 @@ public class GAFDbOperations{
 	 * @throws Exception
 	 */
 	public void loadTsvFiles(String tsvFilesDir, List<String> list) throws GafDbOperationsException{
-		for(DbOperationsListener listener: listeners){
+		/*for(DbOperationsListener listener: listeners){
 			listener.loadTsvFilesStart();
 		}
 	
@@ -327,10 +372,44 @@ public class GAFDbOperations{
 		
 		for(DbOperationsListener listener: listeners){
 			listener.loadTsvFilesEnd();
-		}
+		}*/
+		
+		loadTsvFiles(tsvFilesDir, list, GoConfigManager.getInstance().getGolddbName());
 		
 	}
 
+	public void loadTsvFiles(String tsvFilesDir, List<String> list, String db) throws GafDbOperationsException{
+		for(DbOperationsListener listener: listeners){
+			listener.loadTsvFilesStart();
+		}
+	
+		
+		if(LOG.isDebugEnabled()){
+			LOG.debug(list + " files being loaded");
+		}
+
+		GoConfigManager manager = GoConfigManager.getInstance();
+
+		try{
+			TsvFileLoader tsvLoader = new TsvFileLoader(manager.getGolddbUserName(),
+					manager.getGolddbUserPassword(), manager.getGolddbHostName(), 
+					db);
+			
+			tsvLoader.loadTables(tsvFilesDir, list);
+		}catch(Exception ex){
+			throw new GafDbOperationsException(ex);
+		}
+		
+		
+		LOG.info("TSV files load completed");
+		
+		for(DbOperationsListener listener: listeners){
+			listener.loadTsvFilesEnd();
+		}
+		
+	}
+	
+	
 	/**
 	 * Loads all files with extension .txt specified at the path tsvFilesDir
 	 * @param tsvFilesDir
@@ -416,20 +495,24 @@ public class GAFDbOperations{
 	 * through split methodology
 	 */
 	private boolean isSchemaCreted;
-	
+	private boolean isFirstUpdateIteration;
 	public void update(GafDocument gafDocument, boolean splitt) throws GafDbOperationsException{
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
 		
+		this.isFirstUpdateIteration = false;
+		
 		
 		if(gafDocument != null){
 		
+			GafObjectsFactory f = new GafObjectsFactory();
+			
 			this.gafDocument = gafDocument;
-			/*if(factory.getGafDocument().isEmpty()){
+			if(f.getGafDocument().isEmpty()){
 				bulkLoad(gafDocument, false);
 				return;
-			}*/
+			}
 			
 			for(DbOperationsListener listener: listeners){
 				listener.updateStart();
@@ -440,7 +523,9 @@ public class GAFDbOperations{
 			if(!splitt || (splitt && !isSchemaCreted)){
 				
 				buildSchema(true, manager.getGoldDetlaTablePrefix());
+				buildSchema(true, "tmp-"+manager.getGoldDetlaTablePrefix());
 				isSchemaCreted = true;
+				isFirstUpdateIteration = true;
 
 			}
 
@@ -457,7 +542,6 @@ public class GAFDbOperations{
 			
 			Log.info("updating bioentity table.");
 			
-				GafObjectsFactory f = new GafObjectsFactory();
 				Session ssn = f.getSession();
 			
 				for(Bioentity be: gafDocument.getBioentities()){

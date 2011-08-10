@@ -73,6 +73,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	private String command;
 
 	private boolean update;
+	private boolean bulkload;
 
 	private boolean runAnnotationRules;
 
@@ -137,6 +138,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 			command = request.getParameter("command");
 			update = "update".equals(request.getParameter("command"));
+			bulkload = "bulkload".equals(request.getParameter("command"));
 			runAnnotationRules = "runrules".equals(command) ? true : false;
 			solrLoad = "solrload".equals(command) ? true : false;
 			String remoteGAF = request.getParameter("remote-gaf");
@@ -171,12 +173,12 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 				}
 				
-				if(!(update && updateInProgress)){
+				if(!((update || bulkload )&& updateInProgress)){
 					runner = new GafDbTaskExecution();
 					runner.start();
 				}
 				
-				if(update)
+				if(update || bulkload)
 					updateInProgress = true;
 
 			}
@@ -504,6 +506,8 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 				if (update) {
 				//	db.update(d);
 					db.update(d, true);
+				}else if (bulkload){
+					db.bulkLoad(d, false);
 				}
 
 				else if (solrLoad) {

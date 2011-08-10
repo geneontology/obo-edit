@@ -6,8 +6,11 @@ import java.util.List;
 import org.geneontology.gold.io.TableDumper;
 
 import owltools.gaf.Bioentity;
+import owltools.gaf.CompositeQualifier;
+import owltools.gaf.ExtensionExpression;
 import owltools.gaf.GafDocument;
 import owltools.gaf.GeneAnnotation;
+import owltools.gaf.WithInfo;
 
 public class GafBulkLoader {
 
@@ -24,9 +27,6 @@ public class GafBulkLoader {
 		this.outputPath = outputPath;
 	}
 	
-	
-	
-	
 	/**
 	 * loads all bioentities and annotations into the database
 	 * 
@@ -41,6 +41,15 @@ public class GafBulkLoader {
 		tables.add(t);
 		
 		t = loadGeneAnnotations();
+		tables.add(t);
+		
+		t = loadWithInfos();
+		tables.add(t);
+		
+		t= loadExtensionExpressions();
+		tables.add(t);
+		
+		t = loadCompositeQualifiers();
 		tables.add(t);
 		
 		return tables;
@@ -84,5 +93,45 @@ public class GafBulkLoader {
 		return dumper.getTable();
 	}
 	
+	private String loadWithInfos() throws IOException{
+		TableDumper dumper = createDumper("with_info");
+
+		for(String id: doc.getWithInfosIds()){
+			for(WithInfo withinfo: doc.getWithInfos(id)){
+				dumper.dumpRow(withinfo.getId(), withinfo.getWithXref());
+			}
+		}
+		
+		dumper.close();
+		return dumper.getTable();
+	}
+	
+	private String loadExtensionExpressions() throws IOException{
+		TableDumper dumper = createDumper("extension_expression");
+		
+		for(String id: doc.getExtensionExpressionIds()){
+			for(ExtensionExpression ee: doc.getExpressions(id)){
+				dumper.dumpRow(ee.getId(), ee.getRelation(), ee.getCls());
+			}
+		}
+		
+		
+		dumper.close();
+		return dumper.getTable();
+	}
+	
+	private String loadCompositeQualifiers() throws IOException{
+		TableDumper dumper = createDumper("composite_qualifier");
+
+		for(String id: doc.getCompositeQualifiersIds()){
+			for(CompositeQualifier cq: doc.getCompositeQualifiers(id)){
+				dumper.dumpRow(cq.getId(), cq.getQualifierObj());
+			}
+		}
+		
+		dumper.close();
+		return dumper.getTable();
+		
+	}
 	
 }
