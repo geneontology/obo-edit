@@ -543,11 +543,11 @@ sub lineage {
   foreach my $gp (@$all){
 
     if( ! $gp->object->is_obsolete &&
-	$gp->object->acc ne 'all' ){ # GO specific control
+	$gp->object->acc ne 'all' ){ # GO-specific control
 
       #$self->kvetch('accs if: ' . $gp->object->acc);
 
-      ## Inc. depth if necessary.
+      ## Increment maximum depth if necessary.
       if( $gp->distance > $max_depth ){ $max_depth = $gp->distance; }
 
       ## We'll start by assuming that relations aren't direct unless
@@ -565,13 +565,6 @@ sub lineage {
 	$node_rel->{$gp->object->acc} = $gp->relationship_type->acc;
 	$node_depth->{$gp->object->acc} = $gp->distance;
 	$nodes->{$gp->object->acc} = $gp->object;
-	## Update if it looks like a direct.
-	if( $gp->distance == 1 ){
-	  $node_rel_inf->{$gp->object->acc} = 0;
-	}
-	# if( $gp->distance == 0 ){
-	#   $self->kvetch('0 dist: ' . $gp->object->acc);
-	# }
       }else{
 
 	## Take the dominating relation.
@@ -584,10 +577,6 @@ sub lineage {
 	#if( $curr_scale > $test_scale ){ # more specific
 	  $node_rel->{$gp->object->acc} = $gp->relationship_type->acc;
 	  #print STDERR "  :in>: $curr_scale $test_scale\n";
-	  ## Update if it looks like a direct.
-	  if( $gp->distance == 1 ){
-	    $node_rel_inf->{$gp->object->acc} = 0;
-	  }
 	}
 
 	## Take the greater distance.
@@ -595,8 +584,11 @@ sub lineage {
 	  $node_depth->{$gp->object->acc} = $gp->distance;
 	}
       }
-    # }else{
-    #   $self->kvetch('accs else: ' . $gp->object->acc);
+
+      ## Update if it looks like a direct relationship.
+      if( $gp->distance == 1 ){
+	$node_rel_inf->{$gp->object->acc} = 0;
+      }
     }
   }
 
