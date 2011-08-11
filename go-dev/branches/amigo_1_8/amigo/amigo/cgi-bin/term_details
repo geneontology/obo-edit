@@ -130,7 +130,7 @@ sub mode_term_details_core {
   # $graph->verbose(1);
 
   ###
-  ### Get neighborhood below term.
+  ### Get neighborhood (single-step children) below term.
   ###
 
   ## We're capable of getting multiple child relations from the
