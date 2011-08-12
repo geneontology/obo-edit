@@ -14,9 +14,11 @@
     		   id,
     		   obo_namespace AS source,
     		   label,
+		   is_obsolete,
     		   text_comment AS comment,
     		   text_definition AS description
-    		   FROM cls WHERE is_obsolete = false">
+    		   FROM cls">
+    		   <!-- FROM cls WHERE is_obsolete = false" -->
     <!-- <entity name="terms" -->
     <!-- 	    query="SELECT DISTINCT -->
     <!-- 		   'ontology_class' AS document_category, -->
@@ -49,6 +51,20 @@
       		     FROM
       		     cls, obj_alternate_id
       		     WHERE obj_alternate_id.obj = '${terms.id}'"></entity>
+      <!-- Example: gold_test=>  select cls.id, ontology_subset from cls left outer join obj_subset on (obj_subset.obj = cls.id) limit 5; -->
+      <entity name="subsets"
+      	      query="SELECT DISTINCT
+      		     obj_subset.ontology_subset as subset
+      		     FROM
+      		     cls, obj_subset
+      		     WHERE obj_subset.obj = '${terms.id}'"></entity>
+      <!-- Example: gold_test=>  select cls.id, obj_definition_xref.* from cls left outer join obj_definition_xref on (obj_definition_xref.obj = cls.id) limit 10; -->
+      <entity name="definition_xrefs"
+      	      query="SELECT DISTINCT
+      		     obj_definition_xref.xref as definition_xref
+      		     FROM
+      		     cls, obj_definition_xref
+      		     WHERE obj_definition_xref.obj = '${terms.id}'"></entity>
     </entity>
 
     <!-- Add gene products. -->
