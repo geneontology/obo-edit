@@ -278,6 +278,13 @@
 	   indexed="true"
 	   stored="true"
 	   required="false" />
+    <!-- Term. (term dbxref, for definition) -->
+    <field name="definition_xref"
+	   type="string"
+	   indexed="true"
+	   stored="true"
+	   multiValued="true"
+	   required="false" />
 
     <!-- GP. (direct terms associatied with GP - will be changed (testing)) -->
     <field name="direct_annotation"
