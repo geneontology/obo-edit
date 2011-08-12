@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,11 +20,13 @@ import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.hibernate.GafDocument;
 import org.geneontology.gaf.hibernate.GafHibObjectsBuilder;
 import org.geneontology.gaf.hibernate.GafObjectsFactory;
+import org.geneontology.gold.hibernate.factory.GoldObjectFactory;
 import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.io.postgres.SchemaManager;
 import org.geneontology.gold.io.postgres.TsvFileLoader;
 import org.hibernate.Session;
+import org.hibernate.jdbc.Work;
 import owltools.gaf.Bioentity;
 import owltools.gaf.CompositeQualifier;
 import owltools.gaf.ExtensionExpression;
@@ -93,6 +98,59 @@ public class GAFDbOperations{
 	
 	}
 	
+	public void bulkload(Reader reader, String docid, String path, boolean force) throws GafDbOperationsException{
+		GafHibObjectsBuilder builder = new GafHibObjectsBuilder();
+		
+		try{
+			GafDocument doc = builder.buildDocument(reader, docid, path);
+			ArrayList<GafDocument> docs = new ArrayList<GafDocument>();
+			docs.add(doc);
+			
+			doc = builder.getNextSplitDocument();
+			if(doc != null)
+				docs.add(doc);
+			
+			boolean split = docs.size()>1;
+			boolean _force = split || force;
+			
+			while(!docs.isEmpty()){
+				doc = docs.remove(0);
+				
+				bulkLoad(doc, split ? GoConfigManager.getInstance().getGoldDetlaTablePrefix() : "", _force, split);
+				
+				if(_force)
+					_force = false;
+				
+				doc = builder.getNextSplitDocument();
+				if(doc != null)
+					docs.add(doc);
+				
+			}
+
+			LOG.info("Commiting Bulk Load.");
+			if(split){
+				GafObjectsFactory factory = new GafObjectsFactory();
+				List docsList = factory.getGafDocument();
+
+				BulkSplitUpdate splitUpdateWork = new BulkSplitUpdate(GoConfigManager.getInstance().getGoldDetlaTablePrefix(), docsList.isEmpty());
+				Session session = factory.getSession();
+				session.doWork(splitUpdateWork);
+
+				for(Object obj: splitUpdateWork.objectsToBeUpdated){
+					session.update(obj);
+				}
+				
+				session.getTransaction().commit();
+				
+			}
+			LOG.info("Bulk load is commited");
+			
+			
+		}catch(Exception ex){
+			throw new GafDbOperationsException(ex);
+		}
+	}
+	
 	public void bulkLoad(GafDocument gafDocument, boolean force) throws GafDbOperationsException{
 		/*if(DEBUG)
 			LOG.debug("--");
@@ -117,47 +175,55 @@ public class GAFDbOperations{
 	}
 	
 	public void bulkLoad(GafDocument gafDocument, String prefix, boolean force) throws GafDbOperationsException{
+		bulkLoad(gafDocument, prefix, force, false);
+	}
+	
+	//private GafObjectsFactory factory;
+	//private Session session;
+	
+	private void bulkLoad(GafDocument gafDocument, String prefix, boolean force, boolean split) throws GafDbOperationsException{
 		if(DEBUG)
 			LOG.debug("--");
 		
 		for(DbOperationsListener listener: listeners){
 			listener.bulkLoadStart();
 		}
+
+		if(force){
+			buildSchema(true, prefix);
+		}
 		
-		
-		List<String> list = dumpFiles(prefix, gafDocument);
-		
-		/*if(!dbCreate)
-			buildSchema(force, "");
-		
-		dbCreate = true;*/
-		
-		GafObjectsFactory factory = new GafObjectsFactory();
+		//if(factory == null || !split || gafDocument == null){
+		GafObjectsFactory	factory = new GafObjectsFactory();
+		//}
+
 		List gafDocs = factory.getGafDocument();
-		Session session = factory.getSession();
 		
-		//with non-empty gold database the bulkload will fail with with_inf, extension_expression and composite_qualifiers tables.
-		if(!gafDocs.isEmpty()){
-			List<String> list2 = new ArrayList<String>();
-			for(String t: list){
-				if(t.endsWith("bioentity") || t.endsWith("gene_annotation"))
-					list2.add(t);
+		List<String> tablesNames = new ArrayList<String>();
+
+		Session session = null;
+		
+		if(split){
+			session =GoldObjectFactory.buildDeltaObjectFactory().getSession();
+		}else
+			session = factory.getSession();
+		
+		if(!gafDocs.isEmpty() || split){
+			tablesNames.add("gene_annotation");
+			if(!split){
+				tablesNames.add("bioentity");
 			}
 			
-			list = list2;
-			
-			bulkLoadHibernate(session, gafDocument);
+			bulkLoadHibernate(session, gafDocument, split);
 			
 		}
 		
+		List<String> list = dumpFiles(prefix, gafDocument, tablesNames);
 		
-		loadTsvFiles(GoConfigManager.getInstance().getTsvFilesDir(), list, GoConfigManager.getInstance().getGolddbName());
+		loadTsvFiles(GoConfigManager.getInstance().getTsvFilesDir(), list);
 
-	//	GafObjectsFactory factory = new GafObjectsFactory();
-		
-		//bulkLoadHibernate(session, gafDocument);
-	
 		session.saveOrUpdate(gafDocument);
+
 		session.getTransaction().commit();
 		
 		LOG.info("Bulk Load completed successfully");
@@ -170,10 +236,17 @@ public class GAFDbOperations{
 	
 	
 	
-	private void bulkLoadHibernate(Session session, GafDocument gafDocument){
+	private void bulkLoadHibernate(Session session, GafDocument gafDocument, boolean split){
 
 		
 	//	session.save(gafDocument);
+		for(String id: gafDocument.getWithInfosIds()){
+			List<WithInfo> list = gafDocument.getWithInfos(id);
+			for(WithInfo wi: list){
+				session.saveOrUpdate(wi);
+			}
+		}
+
 		
 		for(String id: gafDocument.getCompositeQualifiersIds()){
 			for(CompositeQualifier cq: gafDocument.getCompositeQualifiers(id)){
@@ -181,16 +254,15 @@ public class GAFDbOperations{
 			}
 		}
 		
-		for(String id: gafDocument.getWithInfosIds()){
-			List<WithInfo> list = gafDocument.getWithInfos(id);
-			for(WithInfo wi: list){
-				session.saveOrUpdate(wi);
-			}
-		}
-		
 		for(String id: gafDocument.getExtensionExpressionIds()){
 			for(ExtensionExpression ex: gafDocument.getExpressions(id)){
 				session.saveOrUpdate(ex);
+			}
+		}
+		
+		if(split){
+			for(Bioentity entity: gafDocument.getBioentities()){
+				session.saveOrUpdate(entity);
 			}
 		}
 		
@@ -241,6 +313,12 @@ public class GAFDbOperations{
 	}
 
 	public List<String> dumpFiles(String tablePrefix, GafDocument gafDocument) throws GafDbOperationsException{
+		return dumpFiles(tablePrefix, gafDocument, new ArrayList<String>());
+	}
+
+		
+	
+	public List<String> dumpFiles(String tablePrefix, GafDocument gafDocument, List<String> tables) throws GafDbOperationsException{
 		for(DbOperationsListener listener: listeners){
 			listener.dumpFilesStart();
 		}
@@ -257,7 +335,7 @@ public class GAFDbOperations{
 		List<String> list = null;
 			
 		try{
-			list= loader.loadAll();
+			list= loader.loadAll(tables);
 		}catch(IOException ex){
 			throw new GafDbOperationsException(ex);
 		}
@@ -345,8 +423,8 @@ public class GAFDbOperations{
 	 * 		to be loaded in the GOLD database
 	 * @throws Exception
 	 */
-	public void loadTsvFiles(String tsvFilesDir, List<String> list) throws GafDbOperationsException{
-		/*for(DbOperationsListener listener: listeners){
+	/*public void loadTsvFiles(String tsvFilesDir, List<String> list) throws GafDbOperationsException{
+	for(DbOperationsListener listener: listeners){
 			listener.loadTsvFilesStart();
 		}
 	
@@ -372,13 +450,13 @@ public class GAFDbOperations{
 		
 		for(DbOperationsListener listener: listeners){
 			listener.loadTsvFilesEnd();
-		}*/
+		}
 		
-		loadTsvFiles(tsvFilesDir, list, GoConfigManager.getInstance().getGolddbName());
+		loadTsvFiles(tsvFilesDir, list);
 		
-	}
+	}*/
 
-	public void loadTsvFiles(String tsvFilesDir, List<String> list, String db) throws GafDbOperationsException{
+	public void loadTsvFiles(String tsvFilesDir, List<String> list) throws GafDbOperationsException{
 		for(DbOperationsListener listener: listeners){
 			listener.loadTsvFilesStart();
 		}
@@ -393,7 +471,7 @@ public class GAFDbOperations{
 		try{
 			TsvFileLoader tsvLoader = new TsvFileLoader(manager.getGolddbUserName(),
 					manager.getGolddbUserPassword(), manager.getGolddbHostName(), 
-					db);
+					manager.getGolddbName());
 			
 			tsvLoader.loadTables(tsvFilesDir, list);
 		}catch(Exception ex){
@@ -630,5 +708,57 @@ public class GAFDbOperations{
 		listeners.remove(listener);
 	}
 	
+	private class BulkSplitUpdate implements Work{
+
+		private String prefix;
+		
+		private boolean isFirstTimeBulkload;
+		
+		private List objectsToBeUpdated;
+		
+		BulkSplitUpdate(String prefix, boolean isFirstTimeBulkload){
+			this.prefix = prefix;
+			this.isFirstTimeBulkload = isFirstTimeBulkload;
+			objectsToBeUpdated = new ArrayList();
+		}
+		
+		@Override
+		public void execute(Connection connection) throws SQLException {
+			Statement stmt= connection.createStatement();
+			stmt.executeUpdate("insert into gene_annotation (bioentity, composite_qualifier, is_contributes_to, is_integral_to, cls, reference_id, evidence_cls, with_expression, acts_on_taxon_id, last_update_date, assigned_by, extension_expression, gene_product_form, gaf_document) select bioentity, composite_qualifier, is_contributes_to, is_integral_to, cls, reference_id, evidence_cls, with_expression, acts_on_taxon_id, last_update_date, assigned_by, extension_expression, gene_product_form, gaf_document from " + prefix + "gene_annotation");
+
+			
+//			stmt= connection.createStatement();
+			stmt.executeUpdate("insert into bioentity (id, symbol, full_name, type_cls,taxon_cls, db, gaf_document) select id, symbol, full_name, type_cls,taxon_cls, db, gaf_document from " +prefix+ "bioentity");
+			
+			if(isFirstTimeBulkload){
+			
+	//			stmt = connection.createStatement();
+				stmt.executeUpdate("insert into composite_qualifier (id, qualifier_obj) select id, qualifier_obj from " + prefix + "composite_qualifier");
+			
+		//		stmt = connection.createStatement();
+				stmt.executeUpdate("insert into with_info (id, with_xref) select id, with_xref from " + prefix + "with_info");
+				
+			//	stmt = connection.createStatement();
+				stmt.execute("insert into extension_expression (id, relation, cls) select id, relation, cls from " + prefix + "extension_expression");
+			}else{
+				//stmt.execute("insert into composite_qualifier (id, qualifier_obj) select id, qualifier_obj from " + prefix + "composite_qualifier")
+				/*ResultSet rs= stmt.executeQuery("select t2.* from with_info t1, " + prefix+"with_info t2 where t1.id = t2.id");
+				while(rs.next()){
+					objectsToBeUpdated.add(new org.geneontology.gaf.hibernate.WithInfo(rs.getString("id"), rs.getString("with_xref")));
+				}*/
+				
+				stmt.execute("insert into with_info (id, with_xref) select id, with_xref from " + prefix + "with_info EXCEPT select id, with_xref from with_info");
+				
+				stmt.execute("insert into composite_qualifier (id, qualifier_obj) select id, qualifier_obj from " + prefix + "composite_qualifier except select id, qualifier_obj from composite_qualifier");
+				
+				stmt.execute("insert into extension_expression (id, relation, cls) select id, relation, cls from " + prefix + "extension_expression except select id, relation, cls from extension_expression");
+
+			}
+			
+			
+		}
+		
+	}
 	
 }

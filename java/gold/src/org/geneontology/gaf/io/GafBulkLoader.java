@@ -33,24 +33,36 @@ public class GafBulkLoader {
 	 * @return
 	 * @throws IOException
 	 */
-	public List<String> loadAll() throws IOException{
+	public List<String> loadAll(List<String> tablesNames) throws IOException{
 		
 		List<String> tables = new ArrayList<String>();
 		
-		String t = loadBioentity();
-		tables.add(t);
+		String t = null;
 		
-		t = loadGeneAnnotations();
-		tables.add(t);
+		if(tablesNames.isEmpty() || tablesNames.contains("bioentity")){
+			t=	loadBioentity();
+			tables.add(t);
+		}
+
+		if(tablesNames.isEmpty() || tablesNames.contains("gene_annotation")){
+			t = loadGeneAnnotations();
+			tables.add(t);
+		}
 		
-		t = loadWithInfos();
-		tables.add(t);
+		if(tablesNames.isEmpty() || tablesNames.contains("with_info")){
+			t = loadWithInfos();
+			tables.add(t);
+		}
 		
-		t= loadExtensionExpressions();
-		tables.add(t);
+		if(tablesNames.isEmpty() || tablesNames.contains("extension_expression")){
+			t= loadExtensionExpressions();
+			tables.add(t);
+		}
 		
-		t = loadCompositeQualifiers();
-		tables.add(t);
+		if(tablesNames.isEmpty() || tablesNames.contains("composite_qualifier")){
+			t = loadCompositeQualifiers();
+			tables.add(t);
+		}
 		
 		return tables;
 	}

@@ -16,7 +16,12 @@ public class DeltaQueryInterceptor extends EmptyInterceptor {
 
 	@Override
 	public String onPrepareStatement(String sql) {
+		
+		if(sql.contains("public."+GoConfigManager.getInstance().getGoldDetlaTablePrefix()))
+			return super.onPrepareStatement(sql);
+
 		sql = sql.replaceAll("public\\.", "public."+GoConfigManager.getInstance().getGoldDetlaTablePrefix());
+
 		return super.onPrepareStatement(sql);
 	}
 
