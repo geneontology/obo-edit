@@ -1,3 +1,4 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
 <html>
 <head>
@@ -11,13 +12,15 @@
 href="http://www.graphviz.org/">Graphviz</a> package to draw parts of an 
 OBO-Edit ontology as a graph (as opposed to the standard tree view).</p>
 <p><a href="http://www.graphviz.org/">Graphviz</a> is an 
-independent, external application available from <a 
-href="http://www.graphviz.org/">http://www.graphviz.org/</a>&nbsp;(the MacOS 
-version is at <a 
-href="http://www.pixelglow.com/graphviz/">http://www.pixelglow.com/graphviz/</a>).&nbsp;<a 
-href="http://www.graphviz.org/">Graphviz</a> <em>does not</em> come with 
+independent, external application that <em>does not</em> come with 
 OBO-Edit. It must be installed separately for the Graphviz Viewer to 
 work.</p>
+<p>
+<a href="http://www.graphviz.org/">Graphviz</a> is available from <a 
+href="http://www.graphviz.org/">http://www.graphviz.org/</a> for MacOSX, Linux and Windows.
+Note that if you have MacOSX 1.6 (Snow Leopard) or earlier, the version at <a 
+href="http://www.pixelglow.com/graphviz/">http://www.pixelglow.com/graphviz/</a> will probably work better.
+</p>
 <p>This Viewer requires a fair amount of configuration to 
 get it to work. See the <A href="#getting_started">Viewer Configuration</a> 
 section below to learn how to get started.</p>
@@ -61,8 +64,14 @@ The default locations for the dot utility on various platforms are:</p>
 <div><strong>Windows</strong> - C:\Program 
   Files\ATT\Graphviz\bin\dot.exe</div>
   <li>
-<div><strong>MacOS</strong> - 
-/Applications/Graphviz.app/Contents/MacOS/dot</div></li></ul>
+<div><strong>MacOSX 10.6 (Snow Leopard) and earlier</strong> - 
+/Applications/Graphviz.app/Contents/MacOS/dot</div>
+</li>
+  <li>
+<div><strong>MacOSX 10.7 (Lion)</strong> - 
+/usr/local/bin/dot</div>
+</li>
+</ul>
 <p>The Graphviz Viewer&nbsp;should now be working!</p>
 <h3>Detailed Configuration</h3>
 <p>To configure the Graphviz Viewer, click the wrench/spanner icon in the
