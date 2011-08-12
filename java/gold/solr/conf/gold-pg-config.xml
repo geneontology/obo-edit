@@ -9,14 +9,47 @@
 
     <!-- Add terms. -->
     <entity name="terms"
-	    query="SELECT DISTINCT
-		   'ontology_class' AS document_category,
-		   id,
-		   obo_namespace AS source,
-		   label,
-		   text_comment AS comment,
-		   text_definition AS description
-		   FROM cls WHERE is_obsolete = false"></entity>
+    	    query="SELECT DISTINCT
+    		   'ontology_class' AS document_category,
+    		   id,
+    		   obo_namespace AS source,
+    		   label,
+    		   text_comment AS comment,
+    		   text_definition AS description
+    		   FROM cls WHERE is_obsolete = false">
+    <!-- <entity name="terms" -->
+    <!-- 	    query="SELECT DISTINCT -->
+    <!-- 		   'ontology_class' AS document_category, -->
+    <!-- 		   cls.id, -->
+    <!-- 		   cls.obo_namespace AS source, -->
+    <!-- 		   cls.label, -->
+    <!-- 		   cls.text_comment AS comment, -->
+    <!-- 		   cls.text_definition AS description, -->
+    <!-- 		   obj_alternate_label.label as synonym, -->
+    <!-- 		   obj_alternate_id.id as alternate_id -->
+    <!-- 		   FROM cls -->
+    <!-- 		   LEFT OUTER JOIN obj_alternate_id -->
+    <!-- 		   ON (obj_alternate_id.obj = cls.id)  -->
+    <!-- 		   LEFT OUTER JOIN obj_alternate_label -->
+    <!-- 		   ON (obj_alternate_label.obj = cls.id) -->
+    <!-- 		   WHERE cls.is_obsolete = false"> -->
+
+      <!-- Add various types of term synonym. -->
+      <!-- Example: gold_test=> select distinct cls.id, obj_alternate_label.* from cls left outer join obj_alternate_label on (obj_alternate_label.obj = cls.id) limit 5; -->
+      <entity name="alternate_term_labels"
+      	      query="SELECT DISTINCT
+      		     obj_alternate_label.label as synonym
+      		     FROM
+      		     cls, obj_alternate_label
+      		     WHERE obj_alternate_label.obj = '${terms.id}'"></entity>
+      <!-- Example: gold_test=> select cls.id, obj_alternate_id.id from cls left outer join obj_alternate_id on (obj_alternate_id.obj = cls.id) limit 5; -->
+      <entity name="alternate_term_ids"
+      	      query="SELECT DISTINCT
+      		     obj_alternate_id.id as alternate_id
+      		     FROM
+      		     cls, obj_alternate_id
+      		     WHERE obj_alternate_id.obj = '${terms.id}'"></entity>
+    </entity>
 
     <!-- Add gene products. -->
     <entity name="gene_products"
