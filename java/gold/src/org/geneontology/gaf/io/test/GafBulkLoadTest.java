@@ -2,6 +2,7 @@ package org.geneontology.gaf.io.test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.geneontology.gaf.hibernate.GafDocument;
 import org.geneontology.gaf.hibernate.GafHibObjectsBuilder;
@@ -19,7 +20,7 @@ public class GafBulkLoadTest extends TestCase {
 		
 		GafBulkLoader loader = new GafBulkLoader(doc, "data", "");
 		
-		loader.loadAll();
+		loader.loadAll(new ArrayList<String>());
 	}
 	
 }

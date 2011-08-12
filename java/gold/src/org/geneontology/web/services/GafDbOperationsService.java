@@ -246,7 +246,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 		public GafDbTaskExecution() {
 			this.data = this;
 			db = new GAFDbOperations();
-			db.addDbOperationsListener(this);
+			//db.addDbOperationsListener(this);
 		}
 
 		@Override
@@ -470,6 +470,13 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 				String path) throws Exception {
 			this.currentOntologyBeingProcessed = path;
 
+			if(bulkload){
+				reportStartTime("bulkload");
+				db.bulkload(reader, docId, path, false);
+				reportEndTime("bulkload");
+				return;
+			}
+			
 			startDomLoad();
 
 			GafHibObjectsBuilder builder = new GafHibObjectsBuilder();

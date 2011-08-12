@@ -3,6 +3,7 @@ package org.geneontology.gaf.hibernate.test;
 import org.geneontology.gaf.hibernate.Bioentity;
 import org.geneontology.gaf.hibernate.GafObjectsFactory;
 import org.geneontology.gaf.hibernate.GeneAnnotation;
+import org.geneontology.gaf.hibernate.WithInfo;
 import org.hibernate.Session;
 
 import junit.framework.TestCase;
@@ -25,7 +26,10 @@ public class GafHibernateTest extends TestCase {
 		entity.setTypeCls("gene");
 		
 		
-		session.save(entity);
+		session.saveOrUpdate(entity);
+		
+		WithInfo wi = new WithInfo("abc123","idxref");
+		session.saveOrUpdate(wi);
 		
 		session.getTransaction().commit();
 	}
@@ -43,7 +47,7 @@ public class GafHibernateTest extends TestCase {
 		ga.setEvidenceCls("ND");
 		
 		
-		session.save(ga);
+		session.saveOrUpdate(ga);
 		session.getTransaction().commit();
 	}
 	

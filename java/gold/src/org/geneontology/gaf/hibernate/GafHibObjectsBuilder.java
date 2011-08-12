@@ -5,11 +5,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import org.apache.log4j.Logger;
-
-import owltools.gaf.Bioentity;
 import owltools.gaf.ExtensionExpression;
 import owltools.gaf.GAFParser;
 import owltools.gaf.WithInfo;
+import org.geneontology.conf.GoConfigManager;
 
 public class GafHibObjectsBuilder {
 
@@ -22,7 +21,7 @@ public class GafHibObjectsBuilder {
 	
 	public GafHibObjectsBuilder(){
 		
-		docBuilder = new owltools.gaf.GafObjectsBuilder();
+		docBuilder = new owltools.gaf.GafObjectsBuilder(GoConfigManager.getInstance().getSplitSize());
 		
 	}
 	
