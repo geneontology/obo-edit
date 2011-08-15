@@ -1,6 +1,18 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 =================================
+What's New in OBO-Edit v2.1-beta17
+=================================
+
+[ geneontology-Bugs-3366931 ] beta 16 removing Xref and DBXref information
+When saving, include the description for xrefs but not for definition and synonym dbxrefs
+(this behavior was agreed to by the GO committee).
+Might eventually want this behavior to be user-configurable.
+
+64-bit memory
+
+
+=================================
 What's New in OBO-Edit v2.1-beta14-16 (7/8/2011)
 =================================
 
