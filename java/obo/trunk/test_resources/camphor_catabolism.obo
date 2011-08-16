@@ -1,5 +1,6 @@
 id-mapping: results_in_division_of UCDHSC:results_in_division_of
 synonymtypedef: FORMULA "FORMULA"
+ontology: test
 
 [Term]
 id: GO:0009056
