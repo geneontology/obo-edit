@@ -5,7 +5,7 @@ name: ends_before_end_of
 [Typedef]
 id: starts_after_start_of
 name: starts_after_start_of
-holds_over_chain: preceded_by * starts_after_start_of
+holds_over_chain: preceded_by starts_after_start_of
 
 [Typedef]
 id: during
