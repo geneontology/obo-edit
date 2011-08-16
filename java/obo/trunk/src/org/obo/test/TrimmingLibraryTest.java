@@ -76,7 +76,6 @@ public class TrimmingLibraryTest extends AbstractReasonerTest {
 	}
 
 	public static Test suite() {
-		logger.info("foo");
 		PrintStream audited = new AuditedPrintStream(System.err, 25, true);
 
 		System.setErr(audited);
