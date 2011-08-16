@@ -1,0 +1,55 @@
+
+[Term]
+id: human_body
+relationship: has_part human_limb {cardinality="4"}
+relationship: has_part arm {cardinality="2"}
+relationship: has_part leg {cardinality="2"}
+
+[Term]
+id: human_limb
+relationship: has_part human_digit {cardinality="5"}
+relationship: part_of human_body
+
+[Term]
+id: arm
+is_a: human_limb
+relationship: has_part hand {cardinality="1"}
+
+[Term]
+id: hand
+relationship: has_part finger {cardinality="5"}
+relationship: has_part bone {cardinality="27"}
+
+[Term]
+id: leg
+is_a: human_limb
+relationship: has_part toe {cardinality="5"}
+
+[Term]
+id: human_digit
+relationship: part_of human_limb
+relationship: has_part bone {min_cardinality="2", max_cardinality="4"}
+
+[Term]
+id: finger
+is_a: human_digit
+relationship: part_of arm
+
+[Term]
+id: toe
+is_a: human_digit
+relationship: part_of leg
+
+[Term]
+id: bone
+
+[Typedef]
+id: has_part
+is_transitive: true
+
+[Typedef]
+id: part_of
+is_transitive: true
+inverse_of_on_instance_level: has_part
+
+
