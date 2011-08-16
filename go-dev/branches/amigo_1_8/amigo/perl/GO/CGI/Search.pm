@@ -994,14 +994,16 @@ sub search {
   my $filters = $self->get_param('filters') || undef;
   my $exact = $self->get_param('exact_match') || undef;
 
+  ## Using 'search_constraint' to specify the default field set--these
+  ## are the ones that are searched secondarily, if specified on the
+  ## input.
   my $to_check =
     {
      gp => [ 'full_name', 'symbol'],
      term => ['name', 'acc'],
      spp => [],
     };
-
-  my @fields = @{$to_check->{$sc}};
+  my @default_fields = @{$to_check->{$sc}};
 
   my $extra = '';
   if ($subset){
@@ -1013,18 +1015,15 @@ sub search {
 
   $core->kvetch("SQL search strings: ".Dumper($sql_search_strings));
 
-  # if our search list contains anything *other* than full_name and symbol,
-  # we search for these first
+  # if our search list contains anything *other* than full_name/symbol
+  # or name/acc, we search for these first
   my $other_matches;
-  my @names;
   my @others;
   my $combo_fields;
 
   if ($sc eq 'gp' || $sc eq 'term'){
     foreach my $s (keys %$search_fields){
-      if ( grep { $_ eq $s } @fields){
-	push @names, $s;
-      }else{
+      unless ( grep { $_ eq $s } @default_fields){
 	push @others, $s;
       }
     }
@@ -1045,8 +1044,10 @@ sub search {
     }
   }
 
+  $core->kvetch("Other fields: " . Dumper(\@others));
+
   if (@others){
-    $core->kvetch("Checking fields other than name and symbol/acc...");
+    $core->kvetch("First checking other fields...");
     my $base = __search_sql_data($sc, 'base');
 
     my $sql =
@@ -1114,7 +1115,7 @@ sub search {
   }
 
   if ($sc eq 'gp'){
-    foreach (@fields){
+    foreach (@default_fields){
       push @srch, $sql_search_strings->{$_} if $sql_search_strings->{$_};
     }
     # retrieve species info if the sort parameter is species
@@ -1127,7 +1128,7 @@ sub search {
       push @select, "species.genus, species.species";
     }
   }elsif ($sc eq 'term'){
-    foreach (@fields){
+    foreach (@default_fields){
       push @srch, $sql_search_strings->{$_} if $sql_search_strings->{$_};
     }
   }elsif ($sc eq 'spp'){ # NEW
@@ -1278,7 +1279,7 @@ sub search {
     $core->kvetch("Results found; returning data");
     #.Dumper($results)."\n";
   }else{
-    $core->kvetch("No results found. Sob!");
+    $core->kvetch("No results found.");
   }
 
   ## 
@@ -2954,7 +2955,7 @@ sub __search_field_list {
 		term => {
 			all => [ 'name', 'term_synonym', 'definition', 'comment', 'xref', 'subset', 'acc' ],
 			default => [ 'acc', 'name', 'term_synonym' ],
-			srch_options => ['name', 'term_synonym', 'definition', 'comment', 'dbxref', 'subset'],
+			srch_options => ['acc', 'name', 'term_synonym', 'definition', 'comment', 'dbxref', 'subset'],
 			ordered => ['acc', 'name', 'term_synonym', 'definition', 'dbxref', 'subset', 'comment', 'xref'],
 		},
 		spp => {
