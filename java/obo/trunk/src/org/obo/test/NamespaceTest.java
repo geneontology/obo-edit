@@ -13,6 +13,13 @@ import org.obo.datamodel.OBORestriction;
 
 import org.apache.log4j.*;
 
+/**
+ * @author cjm
+ *
+ * Link namespaces currently not supported
+ *
+ */
+@Deprecated
 public class NamespaceTest extends AbstractOBOTest {
 
 	//initialize logger
