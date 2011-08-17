@@ -116,8 +116,11 @@ public class ReasonerFilterTest extends AbstractReasonerTest {
 		LinkFilter lfilter = getLinkFilter("CARO:0000003", LinkFilter.PARENT);
 		Collection<Link> matches = filterLinks(lfilter);
 		logger.info(lfilter+" N_matches: "+matches.size());
+		for (Link match : matches) {
+			logger.info("  Match to 000003: "+match);
+		}
 		// note: if caro.obo changes, this may need changing
-		assertTrue(matches.size() == 10);
+		assertTrue(matches.size() == 37);
 		
 		
 		// set both child and parent tags
@@ -164,7 +167,7 @@ public class ReasonerFilterTest extends AbstractReasonerTest {
 		Collection<Link> matches = filterLinks(lfilter);
 		logger.info(lfilter+" N_matches: "+matches.size());
 		// note: if caro.obo changes, this may need changing
-		assertTrue(matches.size() == 1);
+		assertTrue(matches.size() == 2);
 
 	}
 	
