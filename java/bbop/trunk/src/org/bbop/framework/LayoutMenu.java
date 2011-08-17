@@ -17,6 +17,7 @@ import javax.swing.JSeparator;
 
 import org.bbop.framework.dock.Perspective;
 import org.bbop.swing.AbstractDynamicMenuItem;
+import org.bbop.swing.SelectDialog;
 import org.bbop.util.ObjectUtil;
 import org.apache.log4j.*;
 
@@ -51,9 +52,10 @@ public class LayoutMenu extends AbstractDynamicMenuItem {
 		JMenuItem importPerspectiveItem = new JMenuItem(
 				new AbstractAction("Import perspective...") {
 					public void actionPerformed(ActionEvent e) {
-						JFileChooser chooser = new JFileChooser();
-						if (chooser.showOpenDialog(GUIManager.getManager().getFrame()) == JFileChooser.APPROVE_OPTION) {
-							File file = chooser.getSelectedFile();
+						SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.LOAD, null);
+						dialog.show();
+						File file = dialog.getSelected();
+						if (file != null) {
 							if (!file.getName().endsWith(".idw")) {
 								JOptionPane.showMessageDialog(null, "File " + file + " doesn't end with .idw--can't import as perspective.");
 								return;
