@@ -66,6 +66,7 @@ public class RedundancyTest extends AbstractReasonerTest {
 		}
 		testForIsA("C","A");
 		testForRedundantIsA("C","A");
+		testForNonRedundantIsA("C","B");
 		
 		ObjectFilter ofilter = (ObjectFilter)off.createNewFilter();
 		ofilter = (ObjectFilter)off.createNewFilter();
