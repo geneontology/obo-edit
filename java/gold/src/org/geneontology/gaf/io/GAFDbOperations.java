@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import org.apache.log4j.Logger;
-import org.eclipse.jetty.util.log.Log;
 import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.hibernate.GafDocument;
 import org.geneontology.gaf.hibernate.GafHibObjectsBuilder;
@@ -618,7 +617,7 @@ public class GAFDbOperations{
 			loadTsvFiles(GoConfigManager.getInstance().getTsvFilesDir(), ll);
 			isSchemaCreted = true;
 			
-			Log.info("updating bioentity table.");
+			LOG.info("updating bioentity table.");
 			
 				Session ssn = f.getSession();
 			
@@ -656,7 +655,7 @@ public class GAFDbOperations{
 				return;
 		}
 		
-		Log.info("last step of update.");
+		LOG.info("last step of update.");
 		isSchemaCreted = false;
 
 //		GafDeltaFactory deltaFactory = new GafDeltaFactory(gafDocument);
