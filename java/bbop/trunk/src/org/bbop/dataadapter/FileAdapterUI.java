@@ -7,6 +7,7 @@ import java.util.*;
 import java.io.*;
 
 import org.bbop.io.IOUtil;
+import org.bbop.swing.SelectDialog;
 import org.bbop.util.*;
 
 import org.apache.log4j.*;
@@ -37,7 +38,7 @@ public class FileAdapterUI extends AbstractGraphicalUI implements ParameterUI {
 
 	protected JPanel writePanel = new JPanel();
 
-	protected boolean multiSelectEnabled = true;
+	protected boolean multiSelectEnabled = false;
 
 	protected IOOperation<?,?> readOperation;
 
@@ -152,26 +153,12 @@ public class FileAdapterUI extends AbstractGraphicalUI implements ParameterUI {
 			public void actionPerformed(ActionEvent e) {
 			    // Start FileChooser ("Browse...") at most recently selected directory
 			    String currentPath = (String) readField.getSelectedItem();
-				JFileChooser chooser = new JFileChooser(currentPath);
-				chooser.setMultiSelectionEnabled(multiSelectEnabled);
-
-				int returnVal = chooser.showOpenDialog(FileAdapterUI.this);
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					File[] selected = chooser.getSelectedFiles();
-					String paths = "";
-					for (int i = 0; i < selected.length; i++) {
-						if (i > 0)
-							paths += " ";
-						if (selected.length != 1) {
-							paths += "\""
-									+ escapePath(selected[i].getAbsolutePath(),
-											true) + "\"";
-						} else {
-							paths += escapePath(selected[i].getAbsolutePath(),
-									false);
-						}
-					}
-					readField.setSelectedItem(paths);
+			    
+			    SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.LOAD, currentPath);
+			    dialog.show();
+			    String selected = dialog.getSelectedCanonicalPath();
+			    if (selected != null) {
+			    	readField.setSelectedItem(escapePath(selected, false));
 				}
 			}
 		});
@@ -179,19 +166,23 @@ public class FileAdapterUI extends AbstractGraphicalUI implements ParameterUI {
 			public void actionPerformed(ActionEvent e) {
 			    // Start FileChooser ("Browse...") at most recently selected directory
 			    String currentPath = (String) writeField.getSelectedItem();
-			    JFileChooser chooser = new JFileChooser(currentPath);
-
-				int returnVal = chooser.showSaveDialog(FileAdapterUI.this);
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					writeField.setSelectedItem(chooser.getSelectedFile()
-							.getAbsolutePath());
+			    
+			    SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.SAVE, currentPath);
+			    dialog.show();
+				String selected = dialog.getSelectedCanonicalPath();
+				if (selected != null) {
+					writeField.setSelectedItem(selected);
 				}
 			}
 		});
 	}
 
 	public void setMultiSelectEnabled(boolean multiSelectEnabled) {
-		this.multiSelectEnabled = multiSelectEnabled;
+		/*
+		 * Until the limits with respect to the FileDialog are not fixed, this
+		 * setting is ignored.
+		 */
+		// this.multiSelectEnabled = multiSelectEnabled;
 		readLabel.setText(multiSelectEnabled ? "Load files" : "Load file");
 	}
 
