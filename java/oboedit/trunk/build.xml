@@ -500,6 +500,7 @@
               <fileset dir="${lib}">
                 <include name="*.jar"/>
                 <exclude name="oboedit.jar"/>
+                <exclude name="gopubmed-ontology-generation-service-clients-jar-with-dependencies.jar"/>
               </fileset>
             </classpath>
 	    <test name="${junit.test.class.name}" haltonfailure="no"/>
