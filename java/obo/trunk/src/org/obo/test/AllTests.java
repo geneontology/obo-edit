@@ -1,11 +1,8 @@
 package org.obo.test;
 
-
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 
 import org.apache.log4j.*;
 
@@ -37,7 +34,6 @@ public class AllTests extends TestCase {
 		out.addTestSuite(IDMapperTestWithIDLifecycle.class);
 		out.addTestSuite(IDMapperTestWithReasoner.class);
 		out.addTestSuite(IDUpdateTest.class);
-		out.addTestSuite(InverseAlwaysImpliedTest.class);
 		out.addTestSuite(NamespaceTest.class);
 		out.addTestSuite(PostcompSyntaxFileTest.class);
 		out.addTestSuite(PropertyIntersectionTest.class);
@@ -45,10 +41,8 @@ public class AllTests extends TestCase {
 		out.addTestSuite(RedundancyTest.class);
 		out.addTestSuite(RemoveRedundantLinksTest.class);
 		out.addTestSuite(TrimmingTest.class);
-		out.addTestSuite(TrimmingLibraryTest.class);
 		out.addTestSuite(WebSearchUtilTest.class);
 
 		return out;
 	}
 }
-
