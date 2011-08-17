@@ -9,7 +9,15 @@ When saving, include the description for xrefs but not for definition and synony
 (this behavior was agreed to by the GO committee).
 Might eventually want this behavior to be user-configurable.
 
-64-bit memory
+Heiko fixed the OE installer so that if you have a 64-bit machine, you can
+allocate more memory to OE and the launcher will use the correct
+JavaApplicationStub.  (This will mitigate the memory issues caused by the
+Reasoner.)
+
+Heiko also made the installer suggest a lower memory allocation for Windows
+users, which should take care of the issue where Windows users were unable to
+launch OBO-Edit if they allocated the amount of memory suggested by the
+installer.
 
 
 =================================
