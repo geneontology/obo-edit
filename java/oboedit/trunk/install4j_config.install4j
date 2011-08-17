@@ -47,7 +47,7 @@
     </entries>
     <components>
       <component name="OBO-Edit2" id="61" displayDescription="false" selected="true" mandatory="true" downloadable="false">
-        <description>OBO-Edit 2.000</description>
+        <description>OBO-Edit 2.1</description>
         <include all="false">
           <entry location="extensions" launcher="false" />
           <entry location="runtime" launcher="false" />

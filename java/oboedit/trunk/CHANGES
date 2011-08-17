@@ -1,8 +1,8 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
-=================================
-What's New in OBO-Edit v2.1-beta17
-=================================
+===============================
+What's New in OBO-Edit v2.1-beta17 (8/17/2011)
+===============================
 
 [ geneontology-Bugs-3366931 ] beta 16 removing Xref and DBXref information
 When saving, include the description for xrefs but not for definition and synonym dbxrefs
@@ -19,6 +19,20 @@ users, which should take care of the issue where Windows users were unable to
 launch OBO-Edit if they allocated the amount of memory suggested by the
 installer.
 
+[ geneontology-Bugs-3341954 ] File browser in Mac OBO-Edit doesn't show second hard drive
+Heiko fixed this by replacing the current file browser (JFileDialog) with a
+native one (FileDialog) that shows you (on a Mac) all the same things as in
+your Finder. The one downside is that you can't select multiple files at the
+same time in the Basic Load interface (you still can in the Advanced Load
+interface), but it sounds like most users weren't doing that anyway.
+
+[ geneontology-Bugs-3384594 ] Verification check, Name Redundancy check doesn't work
+The name redundancy check is now set by default to run "During text edit",
+since "On text commit" doesn't seem to work. Users can turn off that check if
+they don't like it.
+However, there seems to be a general problem with checks that are supposed to
+run "On text commit" not running (or at least not reporting their results in a
+visible way, such as when you hover over the Text Editor titlebar).
 
 =================================
 What's New in OBO-Edit v2.1-beta14-16 (7/8/2011)
