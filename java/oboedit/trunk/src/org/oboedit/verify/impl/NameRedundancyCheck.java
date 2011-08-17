@@ -16,7 +16,7 @@ public class NameRedundancyCheck extends AbstractCheck implements OntologyCheck 
 
 	@Override
 	protected void initConfiguration() {
-		configuration.setCondition((byte) (VerificationManager.TEXT_EDIT_COMMIT
+		configuration.setCondition((byte) (VerificationManager.TEXT_EDIT_COMMIT | VerificationManager.TEXT_EDIT_THREAD
 				| VerificationManager.SAVE | VerificationManager.MANUAL));
 	}
 
