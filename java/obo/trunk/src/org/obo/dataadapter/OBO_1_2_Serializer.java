@@ -15,8 +15,9 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(OBO_1_2_Serializer.class);
 
-        // 6/20/2011: By default, don't write dbxref description in output
-        // (http://sourceforge.net/tracker/?func=detail&aid=2679772&group_id=36855&atid=418257)
+        // By default, don't include dbxref description in output, unless requested.
+        // For now, xrefs are requested to include the description; definition and synonym dbxrefs
+        // do not.  Might eventually want this behavior to be user-configurable.
         protected static boolean SAVE_DBXREF_DESC = false;
 
 	protected PrintStream stream;
@@ -366,7 +367,7 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 
 	public void writeXrefTag(Dbxref ref) throws IOException {
 		print("xref: ");
-		writeDbxref(ref);
+		writeDbxref(ref, true);
 		println();
 	}
 
@@ -605,6 +606,9 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 			Dbxref dbxref = (Dbxref) it.next();
 			if (!first)
 				print(", ");
+                        // Note that whether or not dbxref description is saved
+                        // depends on the setting of SAVE_DBXREF_DESC.
+                        // Ultimately, might want to make this user-configurable.
 			writeDbxref(dbxref);
 			first = false;
 		}
@@ -612,12 +616,14 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 	}
 
 	protected void writeDbxref(Dbxref dbxref) throws IOException {
+            writeDbxref(dbxref, SAVE_DBXREF_DESC);
+        }
+
+        protected void writeDbxref(Dbxref dbxref, boolean includeDesc) throws IOException {
 		print(escapeDbxref(dbxref.getDatabase()));
 		print(":");
 		print(escapeDbxref(dbxref.getDatabaseID()));
-                // 6/20/2011: By default, don't write dbxref description in output
-                // (http://sourceforge.net/tracker/?func=detail&aid=2679772&group_id=36855&atid=418257)
-                if (SAVE_DBXREF_DESC) {
+                if (includeDesc) {
                     if (dbxref.getDesc() != null && dbxref.getDesc().length() > 0) {
                         print(" \"" + escapeQuoted(dbxref.getDesc()) + "\"");
                     }
