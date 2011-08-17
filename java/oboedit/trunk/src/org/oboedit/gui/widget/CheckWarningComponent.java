@@ -465,16 +465,19 @@ public class CheckWarningComponent extends JEditorPane {
 
 			html.append("<ul style='list-style-type:none;'>");
 			Iterator<IdentifiedObject> it = termList.iterator();
+                        IdentifiedObject firstObject = null;
 			while (it.hasNext()) {
-				IdentifiedObject io = it.next();
-				Collection<CheckWarning> c = warningMap.get(io);
+				IdentifiedObject io = (IdentifiedObject) it.next();
+                                if (firstObject == null)
+                                  firstObject = io;
+				Collection c = (Collection) warningMap.get(io);
 				generateHTMLList(html, c, warnings, io, showTermNames
 						|| warningMap.size() > 1, true, true, false, allowRerun);
 			}
 			html.append("</ul>");
 			if (footer != null)
 				html.append(footer);
-			logger.info("Found " + globalErrorCount + " errors and " + globalWarningCount + " warnings");
+//			logger.debug("Found " + globalErrorCount + " errors and " + globalWarningCount + " warnings in " + termList.size() + " terms, of which the first is " + firstObject);
 		} else {
 			html.append("No problems found.");
 		}

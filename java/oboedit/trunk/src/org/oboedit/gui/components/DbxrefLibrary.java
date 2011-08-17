@@ -250,11 +250,12 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 	}
 
 	protected void exportFile() {
-		JFileChooser chooser = new JFileChooser();
-		if (chooser.showSaveDialog(GUIManager.getManager().getFrame()) == JFileChooser.APPROVE_OPTION) {
-			File file = chooser.getSelectedFile();
+		SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.SAVE, null);
+		dialog.show();
+		File selected = dialog.getSelected();
+		if (selected != null) {
 			try {
-				PrintWriter writer = new PrintWriter(new FileWriter(file));
+				PrintWriter writer = new PrintWriter(new FileWriter(selected));
 				for (int i = 0; i < dbxrefs.size(); i++) {
 					Dbxref ref = dbxrefs.get(i);
 					String line = ref.getDatabase() + ":" + ref.getDatabaseID();
@@ -266,18 +267,19 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 				writer.close();
 			} catch (IOException ex) {
 				JOptionPane.showMessageDialog(GUIManager.getManager()
-						.getFrame(), "Could not write file " + file);
+						.getFrame(), "Could not write file " + selected);
 			}
 		}
 	}
 
 	protected void importFile() {
-		JFileChooser chooser = new JFileChooser();
-		if (chooser.showOpenDialog(GUIManager.getManager().getFrame()) == JFileChooser.APPROVE_OPTION) {
+		SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.LOAD, null);
+		dialog.show();
+		File selected = dialog.getSelected();
+		if (selected != null) {
 			dbxrefs.clear();
-			File file = chooser.getSelectedFile();
 			try {
-				BufferedReader reader = new BufferedReader(new FileReader(file));
+				BufferedReader reader = new BufferedReader(new FileReader(selected));
 				String line;
 				while ((line = reader.readLine()) != null) {
 					if (line.length() == 0)
@@ -303,7 +305,7 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 				refList.repaint();
 			} catch (IOException ex) {
 				JOptionPane.showMessageDialog(null, "Could not read file "
-						+ file);
+						+ selected);
 			}
 		}
 	}

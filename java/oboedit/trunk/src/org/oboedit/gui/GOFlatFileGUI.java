@@ -260,10 +260,11 @@ public class GOFlatFileGUI extends JPanel implements GraphicalUI {
 								startFile = temp;
 						}
 					}
-					JFileChooser chooser = new JFileChooser(startFile);
-					if (chooser.showSaveDialog(GOFlatFileGUI.this) == JFileChooser.APPROVE_OPTION) {
-						File file = chooser.getSelectedFile();
-						filenameField.setText(file.toString());
+					SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.SAVE, startFile.getAbsolutePath());
+					dialog.show();
+					String path = dialog.getSelectedCanonicalPath();
+					if (path != null) {
+						filenameField.setText(path);
 						editor.commit();
 					}
 				}
@@ -399,10 +400,11 @@ public class GOFlatFileGUI extends JPanel implements GraphicalUI {
 								startFile = temp;
 						}
 					}
-					JFileChooser chooser = new JFileChooser(startFile);
-					if (chooser.showOpenDialog(GOFlatFileGUI.this) == JFileChooser.APPROVE_OPTION) {
-						File file = chooser.getSelectedFile();
-						filenameField.setText(file.toString());
+					SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.LOAD, startFile.getAbsolutePath());
+					dialog.show();
+					String path = dialog.getSelectedCanonicalPath();
+					if (path != null) {
+						filenameField.setText(path);
 						editor.commit();
 					}
 				}
@@ -554,10 +556,11 @@ public class GOFlatFileGUI extends JPanel implements GraphicalUI {
 
 		filenameBrowseButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser();
-				if (chooser.showOpenDialog(GOFlatFileGUI.this) == JFileChooser.APPROVE_OPTION) {
-					File file = chooser.getSelectedFile();
-					filenameField.setText(file.toString());
+				SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.LOAD, null);
+				dialog.show();
+				String path = dialog.getSelectedCanonicalPath();
+				if (path != null) {
+					filenameField.setText(path);
 				}
 			}
 		});
@@ -804,10 +807,11 @@ public class GOFlatFileGUI extends JPanel implements GraphicalUI {
 							startFile = temp;
 					}
 				}
-				JFileChooser chooser = new JFileChooser(startFile);
-				if (chooser.showOpenDialog(GOFlatFileGUI.this) == JFileChooser.APPROVE_OPTION) {
-					File file = chooser.getSelectedFile();
-					definitionField.setText(file.toString());
+				SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.LOAD, startFile.getAbsolutePath());
+				dialog.show();
+				String path = dialog.getSelectedCanonicalPath();
+				if (path != null) {
+					definitionField.setText(path);
 				}
 			}
 		});

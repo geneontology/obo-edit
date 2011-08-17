@@ -294,14 +294,11 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 						startPath = startFile.getParent();
 					}
 
-					JFileChooser chooser;
-					if (startPath == null)
-						chooser = new JFileChooser();
-					else
-						chooser = new JFileChooser(startPath);
-					if (chooser.showSaveDialog(AdvancedOWLUI.this) == JFileChooser.APPROVE_OPTION) {
-						File file = chooser.getSelectedFile();
-						pathField.setText(file.toString());
+					SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.SAVE, startPath);
+					dialog.show();
+					String selected = dialog.getSelectedCanonicalPath();
+					if(selected != null) {
+						pathField.setText(selected);
 						editor.commit();
 					}
 				}
@@ -572,14 +569,11 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 						startPath = startFile.getParent();
 					}
 
-					JFileChooser chooser;
-					if (startPath == null)
-						chooser = new JFileChooser();
-					else
-						chooser = new JFileChooser(startPath);
-					if (chooser.showOpenDialog(AdvancedOWLUI.this) == JFileChooser.APPROVE_OPTION) {
-						File file = chooser.getSelectedFile();
-						pathField.setText(file.toString());
+					SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.LOAD, startPath);
+					dialog.show();
+					String selected = dialog.getSelectedCanonicalPath();
+					if(selected != null) {
+						pathField.setText(selected);
 						editor.commit();
 					}
 				}

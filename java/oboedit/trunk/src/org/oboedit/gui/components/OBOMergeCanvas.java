@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -33,6 +32,7 @@ import org.bbop.framework.GUIComponent;
 
 import org.bbop.framework.dock.LayoutAdapter;
 import org.bbop.framework.dock.LayoutListener;
+import org.bbop.swing.SelectDialog;
 
 import javax.swing.JFrame;
 
@@ -112,7 +112,7 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 	protected JTextField saveFeedbackToFileTextField = new JTextField();
 	protected JTextField ProgressTextField = new JTextField();
 	protected String saveFeedbackToFileTextFieldString = new String("C:\\output.txt");
-	protected JFileChooser fileChooser = new JFileChooser();
+	protected SelectDialog loadDialog = SelectDialog.getFileSelector(SelectDialog.LOAD, null);
 	protected String updateIDsChoiceString = new String("   ");
 	protected String failOnClashChoiceString = new String("IF_LIKELY");
 	protected String outputFormatChoiceString = new String("OBO_1_2");
@@ -600,24 +600,24 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 
 
 	private void branchFileBrowseButtonActionPerformed(ActionEvent e) {
-		int showOpenDialogReturnValue = fileChooser.showOpenDialog(null);
-		if (showOpenDialogReturnValue == JFileChooser.APPROVE_OPTION) {
-			File SecondaryEditedChosenFile = fileChooser.getSelectedFile();
-			branchFileTextField.setText(SecondaryEditedChosenFile.getAbsolutePath());
+		loadDialog.show();
+		File selected = loadDialog.getSelected();
+		if (selected != null) {
+			branchFileTextField.setText(selected.getAbsolutePath());
 			branchFileTextFieldString = branchFileTextField.getText();
-			//			logger.info("arg = " + branchFileTextFieldString);
+			// logger.info("arg = " + branchFileTextFieldString);
 		}
 	}
 
 	protected void saveFeedbackToFileSaveButtonActionPerformed(ActionEvent e) throws IOException {
-		JFileChooser feedbackFileChooser = new JFileChooser();
-		int returnVal = feedbackFileChooser.showSaveDialog(null);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File feedbackFile = feedbackFileChooser.getSelectedFile();
-			feedbackFile.createNewFile();
-			saveFeedbackToFileTextField.setText(feedbackFile.getAbsolutePath());
+		SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.SAVE, null);
+		dialog.show();
+		File selected = dialog.getSelected();
+		if (selected != null) {
+			selected.createNewFile();
+			saveFeedbackToFileTextField.setText(selected.getAbsolutePath());
 			String feedbackTextAreaContents = feedbackTextArea.getText();
-			BufferedWriter out = new BufferedWriter(new FileWriter(feedbackFile));
+			BufferedWriter out = new BufferedWriter(new FileWriter(selected));
 			out.write(feedbackTextAreaContents);
 			out.flush();
 			out.close();
@@ -745,34 +745,34 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 		//Write list of profiles out now.
 	}
 	private void mergedFileBrowseButtonActionPerformed(ActionEvent e) {
-		int returnVal = fileChooser.showOpenDialog(null);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			mergedFileTextFieldString = fileChooser.getSelectedFile()
-			.getAbsolutePath();
+		loadDialog.show();
+		String selected = loadDialog.getSelectedCanonicalPath();
+		if (selected != null) {
+			mergedFileTextFieldString = selected;
 			mergedFileTextField.setText(mergedFileTextFieldString);
-			//			logger.info("arg = " + mergedFileTextFieldString);
+			//logger.info("arg = " + mergedFileTextFieldString);
 		}
 	}
 	private void mergedFileFormatComboboxActionPerformed(ActionEvent e) {
 		outputFormatChoiceString = (String) mergedFileFormatCombobox.getSelectedItem();
 	}
 	private void mergedFileTextFieldActionPerformed(ActionEvent e) {
-		int returnVal = fileChooser.showOpenDialog(null);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			mergedFileTextFieldString = fileChooser.getSelectedFile()
-			.getAbsolutePath();
+		loadDialog.show();
+		String selected = loadDialog.getSelectedCanonicalPath();
+		if (selected != null) {
+			mergedFileTextFieldString = selected;
 			mergedFileTextField.setText(mergedFileTextFieldString);
-			//        logger.info("arg = " + mergedFileTextFieldString);
+			//logger.info("arg = " + mergedFileTextFieldString);
 		}
 
 	}
 
 
 	private void parentFileButtonActionPerformed(ActionEvent e) {
-		int returnVal = fileChooser.showOpenDialog(null);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			parentFileTextFieldString = fileChooser.getSelectedFile()
-			.getAbsolutePath();
+		loadDialog.show();
+		String selected = loadDialog.getSelectedCanonicalPath();
+		if (selected != null) {
+			parentFileTextFieldString = selected;
 			parentFileTextField.setText(parentFileTextFieldString);
 			//			logger.info("arg = " + parentFileTextFieldString);
 		}
@@ -793,10 +793,10 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 	}
 
 	protected void liveFileBrowseButtonActionPerformed(ActionEvent e) {
-		int returnVal = fileChooser.showOpenDialog(null);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			liveFileTextFieldString = fileChooser.getSelectedFile()
-			.getAbsolutePath();
+		loadDialog.show();
+		String selected = loadDialog.getSelectedCanonicalPath();
+		if (selected != null) {
+			liveFileTextFieldString = selected;
 			liveFileTextField.setText(liveFileTextFieldString);
 			//logger.info("arg = " + liveFileTextFieldString);
 		}
