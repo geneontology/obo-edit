@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 
 import org.bbop.framework.GUIManager;
 import org.bbop.io.IOUtil;
+import org.bbop.swing.SelectDialog;
 import org.obo.filters.Filter;
 import org.obo.filters.PathCapableFilter;
 import org.obo.reasoner.impl.OnTheFlyReasoner;
@@ -173,14 +174,13 @@ public class FilterComponent extends JPanel {
 	}
 
 	public void save() {
-		JFileChooser chooser = new JFileChooser();
-		int returnVal = chooser.showSaveDialog(GUIManager.getManager()
-				.getFrame());
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File file = chooser.getSelectedFile();
+		SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.SAVE, null);
+		dialog.show();
+		File selected = dialog.getSelected();
+		if (selected != null) {
 			try {
 				XMLEncoder e = new XMLEncoder(new BufferedOutputStream(
-						new FileOutputStream(file)));
+						new FileOutputStream(selected)));
 				e.writeObject(getFilter());
 				if (showRendererControls) {
 					e.writeObject(getRenderSpec());
@@ -193,17 +193,14 @@ public class FilterComponent extends JPanel {
 	}
 
 	public void load() {
-		JFileChooser chooser = new JFileChooser();
-		GUIManager.getManager().getFrame().setFocusable(true);
-		int returnVal = chooser.showOpenDialog(GUIManager.getManager()
-				.getFrame());
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File file = chooser.getSelectedFile();
+		SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.LOAD, null);
+		dialog.show();
+		String selected = dialog.getSelectedCanonicalPath();
+		if (selected != null) {
 			Filter result = null;
 			RenderSpec renderSpec = null;
 			try {
-				XMLDecoder d = new XMLDecoder(new BufferedInputStream(IOUtil
-						.getStream(file.getAbsolutePath())));
+				XMLDecoder d = new XMLDecoder(new BufferedInputStream(IOUtil.getStream(selected)));
 				d.setExceptionListener(new ExceptionListener() {
 					public void exceptionThrown(Exception ex) {
 						ex.printStackTrace();

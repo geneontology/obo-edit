@@ -381,14 +381,12 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		}
 
 		private void showFileChooser() {
-			JFileChooser chooser = new JFileChooser(System
-					.getProperty("user.dir"));
-			int returnVal = chooser.showOpenDialog(GUIManager.getManager()
-					.getFrame());
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				File path = chooser.getSelectedFile();
+			SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.LOAD, System.getProperty("user.dir"));
+			dialog.show();
+			File selected = dialog.getSelected();
+			if (selected != null) {
 				try {
-					urlField.setText(path.toURL().toString());
+					urlField.setText(selected.toURI().toURL().toString());
 					update();
 				} catch (MalformedURLException e) {
 				}

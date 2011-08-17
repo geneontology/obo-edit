@@ -548,7 +548,6 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 		CheckTask task = VerificationManager.getManager().getCheckTask(
 						SessionManager.getManager().getSession(),
 						(IdentifiedObject) null, VerificationManager.MANUAL);
-		logger.debug("VerificationManager.runChecks  task: " + task);
 		GUIManager.getManager().scheduleTask(task, true);
 	}
 
