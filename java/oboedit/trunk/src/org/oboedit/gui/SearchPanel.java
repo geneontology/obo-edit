@@ -25,7 +25,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -35,8 +34,8 @@ import javax.swing.ToolTipManager;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
-import org.bbop.framework.GUIManager;
 import org.bbop.swing.MultiIcon;
+import org.bbop.swing.SelectDialog;
 import org.bbop.swing.SwingUtil;
 import org.bbop.swing.dropbox.DropBoxContents;
 import org.bbop.swing.dropbox.DropBoxPanel;
@@ -354,14 +353,16 @@ public class SearchPanel extends JPanel {
 	}
 
 	public static Filter loadFilter() {
-		JFileChooser chooser = new JFileChooser();
-		int returnVal = chooser.showOpenDialog(GUIManager.getManager()
-				.getFrame());
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File file = chooser.getSelectedFile();
+		SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.LOAD, null);
+		dialog.show();
+		String path = dialog.getSelectedCanonicalPath();
+		if (path != null) {
 			try {
-				return FilterUtil.loadFilter(file.toString());
+				return FilterUtil.loadFilter(path);
 			} catch (IOException ex) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Could not load filter from file: " + path, ex);
+				}
 				return null;
 			}
 		} else
@@ -373,13 +374,11 @@ public class SearchPanel extends JPanel {
 	}
 
 	public static void save(Filter filterPair) {
-		JFileChooser chooser = new JFileChooser();
-		chooser.setDialogTitle("Save this filter");
-		int returnVal = chooser.showSaveDialog(GUIManager.getManager()
-						       .getFrame());
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File file = chooser.getSelectedFile();
-			FilterUtil.save(file.toString(), filterPair);
+		SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.SAVE, null);
+		dialog.show();
+		String path = dialog.getSelectedCanonicalPath();
+		if (path != null) {
+			FilterUtil.save(path, filterPair);
 		}
 	}
 
