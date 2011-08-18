@@ -285,8 +285,12 @@ public class Preferences {
 		return prefsDir;
 	}
 
+	public static String getUserDictDir() {
+            return getOBOEditPrefsDir()+"/dict";
+        }
+
 	public static File getStandardDictionaryFile() {
-		return new File(getOBOEditPrefsDir()+"/dict", "standard.dict");
+            return new File(getUserDictDir(), "standard.dict");
 	}
 
 	public static File getUserDefDictionaryFile() {
@@ -302,6 +306,7 @@ public class Preferences {
 	}
 
 	public static File getAllowedRepeatsFile() {
+            //            logger.debug("getAllowedRepeatsFile: returning " + new File(getOBOEditPrefsDir()+"/dict", "allowedrepeats.dict")); // DEL
 		return new File(getOBOEditPrefsDir()+"/dict", "allowedrepeats.dict");
 	}
 
