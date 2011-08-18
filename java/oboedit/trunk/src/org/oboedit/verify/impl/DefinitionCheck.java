@@ -110,7 +110,7 @@ public class DefinitionCheck extends AbstractTextCheck implements FieldCheck {
 				out.add(new CheckWarning(
 						getWarningLabel(currentObject, condition, 0)
 								+ " has definition references, "
-								+ "but no definition.", true, this, path));
+								+ "but no definition.", false, this, path));
 			}
 		}
 		if (path.matchesSpec(DEF_DBXREF_PATH_SPEC)) {
@@ -121,7 +121,7 @@ public class DefinitionCheck extends AbstractTextCheck implements FieldCheck {
                                                                  // !! This ends up coming out as "Definition has a definition with no references"--can we leave out "a definition with"
                                                                  // or are the situations where that won't be the right thing?
 							+ " has a definition with " + "no references.",
-							true, this, path));
+							false, this, path));
 			}
 		}
 	}
