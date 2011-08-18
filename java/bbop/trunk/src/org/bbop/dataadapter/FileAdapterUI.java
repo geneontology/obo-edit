@@ -38,7 +38,9 @@ public class FileAdapterUI extends AbstractGraphicalUI implements ParameterUI {
 
 	protected JPanel writePanel = new JPanel();
 
-	protected boolean multiSelectEnabled = false;
+	// keep set to true, otherwise the parsing of lists is disabled
+	// (required for advanced profiles, OBO-Edit bug #3393974)
+	protected boolean multiSelectEnabled = true;
 
 	protected IOOperation<?,?> readOperation;
 
@@ -180,7 +182,7 @@ public class FileAdapterUI extends AbstractGraphicalUI implements ParameterUI {
 	public void setMultiSelectEnabled(boolean multiSelectEnabled) {
 		/*
 		 * Until the limits with respect to the FileDialog are not fixed, this
-		 * setting is ignored.
+		 * setting is ignored. The default value is used.
 		 */
 		// this.multiSelectEnabled = multiSelectEnabled;
 		readLabel.setText(multiSelectEnabled ? "Load files" : "Load file");
