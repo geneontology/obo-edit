@@ -23,7 +23,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -43,6 +42,7 @@ import org.bbop.dataadapter.IOOperation;
 import org.bbop.dataadapter.UIConfiguration;
 import org.bbop.swing.GenericEditorComponent;
 import org.bbop.swing.ListEditor;
+import org.bbop.swing.SelectDialog;
 import org.bbop.util.EditableString;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOConstants;
@@ -334,14 +334,11 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 						startPath = startFile.getParent();
 					}
 
-					JFileChooser chooser;
-					if (startPath == null)
-						chooser = new JFileChooser();
-					else
-						chooser = new JFileChooser(startPath);
-					if (chooser.showSaveDialog(AdvancedOBOUI.this) == JFileChooser.APPROVE_OPTION) {
-						File file = chooser.getSelectedFile();
-						pathField.setText(file.toString());
+					SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.SAVE, startPath);
+					dialog.show();
+					String selected = dialog.getSelectedCanonicalPath();
+					if(selected != null) {
+						pathField.setText(selected);
 						editor.commit();
 					}
 				}
@@ -678,14 +675,11 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 						startPath = startFile.getParent();
 					}
 
-					JFileChooser chooser;
-					if (startPath == null)
-						chooser = new JFileChooser();
-					else
-						chooser = new JFileChooser(startPath);
-					if (chooser.showOpenDialog(AdvancedOBOUI.this) == JFileChooser.APPROVE_OPTION) {
-						File file = chooser.getSelectedFile();
-						pathField.setText(file.toString());
+					SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.LOAD, startPath);
+					dialog.show();
+					String selected = dialog.getSelectedCanonicalPath();
+					if(selected != null) {
+						pathField.setText(selected);
 						editor.commit();
 					}
 				}
