@@ -1,8 +1,22 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
-===============================
+================================
+What's New in OBO-Edit v2.1-beta17 (8/18/2011)
+================================
+
+[ geneontology-Bugs-3393974 ] Beta 17 wiped out my multiple load profile
+Fixed bug in new file browser
+
+DefinitionCheck (object "has definition references but no definition")
+DefinitionCheck (object "has a definition with no references")
+These are now warnings rather than fatal errors.
+
+[ geneontology-Bugs-3394041 ] Quick fix for repeated words etc. adds to wrong file
+(Was adding to files in oboedit_config instead of oboedit_config/dict)
+
+================================
 What's New in OBO-Edit v2.1-beta17 (8/17/2011)
-===============================
+================================
 
 [ geneontology-Bugs-3366931 ] beta 16 removing Xref and DBXref information
 When saving, include the description for xrefs but not for definition and synonym dbxrefs
@@ -33,6 +47,7 @@ they don't like it.
 However, there seems to be a general problem with checks that are supposed to
 run "On text commit" not running (or at least not reporting their results in a
 visible way, such as when you hover over the Text Editor titlebar).
+
 
 =================================
 What's New in OBO-Edit v2.1-beta14-16 (7/8/2011)
