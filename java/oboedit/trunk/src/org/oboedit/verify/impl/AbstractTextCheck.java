@@ -251,9 +251,9 @@ FieldCheck {
 	}
 
 	protected static Set<String> getAllowedRepeats() {
+            //            logger.debug("getAllowedRepeats: allowedRepeats = " + allowedRepeats);
 		if (allowedRepeats == null){
 			reloadWordSets();
-			//logger.debug("getAllowedRepeats: allowedRepeats = " + allowedRepeats.toString());
 		}
 		if (allowedRepeats.isEmpty()) {
 			try {
@@ -328,9 +328,9 @@ FieldCheck {
 	}
 
 	protected static void flushWordSets() {
-		writeWordSet(allowedRepeats, "allowedrepeats.dict");
-		writeWordSet(periodWords, "periodwords.dict");
-		writeWordSet(alwaysLowercaseWords, "alwayslowercase.dict");
+            writeWordSet(allowedRepeats, Preferences.getUserDictDir() + "/allowedrepeats.dict");
+            writeWordSet(periodWords, Preferences.getUserDictDir() + "/periodwords.dict");
+            writeWordSet(alwaysLowercaseWords, Preferences.getUserDictDir() + "/alwayslowercase.dict");
 	}
 
 	protected static Set<String> loadWordSet(String filename) {
@@ -356,19 +356,20 @@ FieldCheck {
 			buf.append(it.next()).append("%n");
 
 		}
+                //		logger.debug("writeWordSet: filename = " + filename);
 		writeWordSet(buf.toString(), filename);
-
-		//logger.debug("writeWordSet: buf.toString(), filename = " + buf.toString() + filename);
 	}
 
 
 	protected static void writeWordSet(String words, String filename) {
-		File file = new File(GUIManager.getPrefsDir(), filename);
+		logger.debug("writeWordSet: filename = " + filename);
+		File file = new File(filename);
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 			writer.write(words.trim());
 			writer.close();
 		} catch (Exception ex) {
+                    logger.error("Couldn't write word set to " + file);
 		}
 	}
 
