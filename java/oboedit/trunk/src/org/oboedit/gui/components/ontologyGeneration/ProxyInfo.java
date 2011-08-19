@@ -109,7 +109,7 @@ public class ProxyInfo {
 				}
 			}
 			boolean b = null != username && null != password;
-			logger.debug("Use Axis2 with proxy " + host + ":" + port + " with username/password=" + String.valueOf(b));
+			logger.info("Use Axis2 with proxy " + host + ":" + port + " with username/password=" + String.valueOf(b));
 
 			stub._getServiceClient().getOptions()
 					.setProperty(org.apache.axis2.transport.http.HTTPConstants.PROXY, proxyProperties);
@@ -166,7 +166,7 @@ public class ProxyInfo {
 				password = System.getProperty(PROXY_PASSWORD);
 
 			boolean b = null != username && null != password;
-			logger.debug("Initialized proxy from JVM arguments. proxy=" + host + ":" + port
+			logger.info("Initialized proxy from JVM arguments. proxy=" + host + ":" + port
 					+ " with username/password=" + String.valueOf(b));
 		} else {
 			/* CASE 2: properties set in system settings, get proxy object */
@@ -186,13 +186,13 @@ public class ProxyInfo {
 					if (addr == null) {
 						logger.trace("No Proxy");
 					} else {
-						logger.debug("proxy hostname : " + addr.getHostName() + ":" + addr.getPort());
+						logger.info("proxy hostname : " + addr.getHostName() + ":" + addr.getPort());
 						if (null == host)
 							ProxyInfo.setHost(addr.getHostName());
 						if (null == port)
 							ProxyInfo.setPort(String.valueOf(addr.getPort()));
 						boolean b = null != username && null != password;
-						logger.debug("Initialized proxy from System settings. proxy=" + host + ":" + port
+						logger.info("Initialized proxy from System settings. proxy=" + host + ":" + port
 								+ String.valueOf(b));
 					}
 				}

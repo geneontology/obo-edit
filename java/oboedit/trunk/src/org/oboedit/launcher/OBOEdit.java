@@ -267,10 +267,7 @@ public class OBOEdit {
 		private static void setupLog4j(Properties props, String configDir){
 
 		props.setProperty("log4j.rootLogger","DEBUG, A1, A2");
-		
-		props.setProperty("log4j.logger.org.apache.axis","ERROR");
-		props.setProperty("log4j.logger.org.apache.axis2","ERROR");
-		props.setProperty("log4j.logger.org.apache.axiom","ERROR");
+		props.setProperty("log4j.logger.org.apache","ERROR");
 		props.setProperty("log4j.logger.httpclient","ERROR");
 		props.setProperty("log4j.logger.org.apache.commons.httpclient","ERROR");
 
