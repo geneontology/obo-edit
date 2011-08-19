@@ -519,7 +519,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 				int selectedRow = candidateTermsTable.getSelectedRow();
 				if (selectedRow >= 0) {
 					selectedCandidateTerm = candidateTermsTable.getModel().getTermAt(selectedRow);
-					logger.info("Selected: " + selectedCandidateTerm);
+					logger.trace("Selected: " + selectedCandidateTerm);
 					updateAllDependedOnSelectedCandidateTerm();
 				}
 			}
@@ -1160,19 +1160,19 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 		if (source.equals(SOURCE_PUBMED)) {
 			String message = String.format("Terms generated for PubMed query '%s'", inputData);
 			candidateTermsTable.getColumnModel().getColumn(1).setHeaderValue(message);
-			logger.debug(message);
+			logger.trace(message);
 		} else if (source.equals(SOURCE_WEB)) {
 			String message = String.format("Terms generate terms for WEB query '%s'", inputData);
 			candidateTermsTable.getColumnModel().getColumn(1).setHeaderValue(message);
-			logger.debug(message);
+			logger.trace(message);
 		} else if (source.equals(SOURCE_TEXT)) {
 			String message = String.format("Terms generated for TEXT (%s kB)", inputData.length() / 1024);
 			candidateTermsTable.getColumnModel().getColumn(1).setHeaderValue(message);
-			logger.debug(message);
+			logger.trace(message);
 		} else if (source.equals(SOURCE_FOLDER)) {
 			String message = String.format("Terms generated from PDF documents: '%s'", inputData);
 			candidateTermsTable.getColumnModel().getColumn(1).setHeaderValue(message);
-			logger.debug(message);
+			logger.trace(message);
 		}
 		candidateTermsTable.getTableHeader().repaint();
 
@@ -1274,7 +1274,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 			// find DEFINITIONS
 			// call to definition web service to fetch definitions
 			String label = selectedCandidateTerm.getLabel();
-			logger.debug(String.format("Generate definitions for term '%s'", label));
+			logger.trace(String.format("Generate definitions for term '%s'", label));
 			startGenerateDefinitions(label);
 		}
 	}
@@ -1613,7 +1613,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	 * (!ontologyLookupChildrenQueue.contains(selectedCandidateTerm)) {
 	 * logger.trace("ADD to queue: " + selectedCandidateTerm); if
 	 * (ontologyLookupChildrenQueue.remainingCapacity() == 0) { CandidateTerm
-	 * remove = ontologyLookupChildrenQueue.remove(); logger.info("remove " +
+	 * remove = ontologyLookupChildrenQueue.remove(); logger.debug("remove " +
 	 * remove.getLabel()); }
 	 * ontologyLookupChildrenQueue.offer(selectedCandidateTerm); }
 	 * List<CandidateTerm> clipboardTerms =
@@ -1621,11 +1621,11 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	 * candidateTerm : clipboardTerms) { if
 	 * (candidateTermsTable.getModel().isInClipboard(candidateTerm) &&
 	 * !ontologyLookupChildrenQueue.contains(candidateTerm)) {
-	 * logger.info("ADD to queue clipboard term: " + candidateTerm); if
+	 * logger.debug("ADD to queue clipboard term: " + candidateTerm); if
 	 * (ontologyLookupChildrenQueue.remainingCapacity() == 0) { CandidateTerm
-	 * remove = ontologyLookupChildrenQueue.remove(); logger.info("remove " +
+	 * remove = ontologyLookupChildrenQueue.remove(); logger.debug("remove " +
 	 * remove.getLabel()); } ontologyLookupChildrenQueue.offer(candidateTerm); }
-	 * } } else { // render terms logger.info("RENDER: " +
+	 * } } else { // render terms logger.debug("RENDER: " +
 	 * selectedCandidateTerm); List<OBOLookupTerm> existingChildTerms =
 	 * selectedCandidateTerm.getExistingChildTerms(); List<OBOLookupRelation>
 	 * existingChildRelations =
@@ -2824,7 +2824,6 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 			while (true) {
 				try {
 					final CandidateTerm candidateTerm = ontologyLookupQueue.take();
-					// logger.info(candidateTerm.getLabel());
 					if (candidateTerm.getExistingOntologyTerms() == null) {
 						final Set<String> lexicalRepresentations = candidateTerm.getLexicalRepresentations();
 						String[] labels = new String[lexicalRepresentations.size()];
@@ -3269,7 +3268,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 						candidateTermCache.addTerm(selectedCandidateTerm);
 					}
 				} else {
-					logger.info("Invalid selection in termsTable, term is assumed to be selected");
+					logger.trace("Invalid selection in termsTable, term is assumed to be selected");
 				}
 				this.table.setDefinitions(defList);
 			} else {
