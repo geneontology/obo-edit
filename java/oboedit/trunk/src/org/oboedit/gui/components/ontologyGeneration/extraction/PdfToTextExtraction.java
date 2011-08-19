@@ -87,12 +87,12 @@ public class PdfToTextExtraction extends DataExtraction {
 	private boolean load(File file) {
 
 		if (!file.isFile()) {
-			logger.debug("File " + file + " does not exist.");
+			logger.warn("File " + file + " does not exist.");
 			return false;
 		}
 
 		if (!file.getAbsolutePath().endsWith(".pdf")) {
-			logger.debug("File " + file + " is not a pdf file.");
+			logger.warn("File " + file + " is not a pdf file.");
 			return false;
 		}
 
@@ -101,7 +101,7 @@ public class PdfToTextExtraction extends DataExtraction {
 			parser = new PDFParser(inStream);
 			return true;
 		} catch (IOException e) {
-			logger.debug("Unable to open PDF File.");
+			logger.warn("Unable to open PDF File.");
 			e.printStackTrace();
 		}
 		return false;

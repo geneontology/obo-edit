@@ -187,7 +187,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 		if (null != selectedCandidateTerm.getExistingIdOfLoadedTerm()) {
 			tryCommitDefinition(selectedCandidateTerm);
 		} else {
-			logger.info("Term does not exist, no definition commited");
+			logger.trace("Term does not exist, no definition commited");
 		}
 	}
 
@@ -195,7 +195,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 		if (null != candidateTerm.getExistingIdOfLoadedTerm()) {
 			tryCommitLabel(candidateTerm);
 		} else {
-			logger.info("Term does not exist, no label commited");
+			logger.trace("Term does not exist, no label commited");
 		}
 	}
 
