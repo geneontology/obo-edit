@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -131,14 +132,10 @@ public class GAFDbOperations{
 				GafObjectsFactory factory = new GafObjectsFactory();
 				List docsList = factory.getGafDocument();
 
-				BulkSplitUpdate splitUpdateWork = new BulkSplitUpdate(GoConfigManager.getInstance().getGoldDetlaTablePrefix(), docsList.isEmpty());
+				BulkloadWork splitUpdateWork = new BulkloadWork(GoConfigManager.getInstance().getGoldDetlaTablePrefix(), docsList.isEmpty());
 				Session session = factory.getSession();
 				session.doWork(splitUpdateWork);
 
-				for(Object obj: splitUpdateWork.objectsToBeUpdated){
-					session.update(obj);
-				}
-				
 				session.getTransaction().commit();
 				
 			}
@@ -202,7 +199,7 @@ public class GAFDbOperations{
 
 		Session session = null;
 		
-		if(split){
+		if(split || prefix.length()>0){
 			session =GoldObjectFactory.buildDeltaObjectFactory().getSession();
 		}else
 			session = factory.getSession();
@@ -691,12 +688,66 @@ public class GAFDbOperations{
 		
 	}
 	
-	private void saveOrUpdate(Session session, Collection objects){
+	/*private void saveOrUpdate(Session session, Collection objects){
 		
 		for(Object obj: objects){
 			session.saveOrUpdate(obj);
 		}
+	}*/
+	
+	
+	public void update(Reader reader, String docid, String path) throws GafDbOperationsException{
+		GafHibObjectsBuilder builder = new GafHibObjectsBuilder();
+		
+		try{
+			GafDocument doc = builder.buildDocument(reader, docid, path);
+			ArrayList<GafDocument> docs = new ArrayList<GafDocument>();
+			docs.add(doc);
+			
+			doc = builder.getNextSplitDocument();
+			if(doc != null)
+				docs.add(doc);
+			
+			boolean split = docs.size()>1;
+			boolean _force = true;
+			
+			while(!docs.isEmpty()){
+				doc = docs.remove(0);
+				
+				bulkLoad(doc, GoConfigManager.getInstance().getGoldDetlaTablePrefix(), _force, split);
+				
+				if(_force)
+					_force = false;
+				
+				doc = builder.getNextSplitDocument();
+				if(doc != null)
+					docs.add(doc);
+				
+			}
+
+			LOG.info("Commiting Update.");
+//			if(split){
+				GafObjectsFactory factory = new GafObjectsFactory();
+//				List docsList = factory.getGafDocument();
+
+				UpdateWork updateWork = new UpdateWork(GoConfigManager.getInstance().getGoldDetlaTablePrefix(), docid);
+				Session session = factory.getSession();
+				session.doWork(updateWork);
+
+				for(Object obj: updateWork.objectsToBeUpdated){
+					session.saveOrUpdate(obj);
+				}
+				
+				session.getTransaction().commit();
+				
+			LOG.info("Update is commited");
+			
+			
+		}catch(Exception ex){
+			throw new GafDbOperationsException(ex);
+		}
 	}
+	
 	
 	public void addDbOperationsListener(DbOperationsListener listener){
 		if(!listeners.contains(listener))
@@ -707,18 +758,15 @@ public class GAFDbOperations{
 		listeners.remove(listener);
 	}
 	
-	private class BulkSplitUpdate implements Work{
+	private class BulkloadWork implements Work{
 
 		private String prefix;
 		
 		private boolean isFirstTimeBulkload;
 		
-		private List objectsToBeUpdated;
-		
-		BulkSplitUpdate(String prefix, boolean isFirstTimeBulkload){
+		BulkloadWork(String prefix, boolean isFirstTimeBulkload){
 			this.prefix = prefix;
 			this.isFirstTimeBulkload = isFirstTimeBulkload;
-			objectsToBeUpdated = new ArrayList();
 		}
 		
 		@Override
@@ -755,6 +803,159 @@ public class GAFDbOperations{
 
 			}
 			
+			
+		}
+		
+	}
+	
+	private class UpdateWork implements Work{
+
+		private String prefix;
+		private String docid;
+		private List objectsToBeUpdated;
+		
+		private UpdateWork(String prefix, String docId){
+			this.prefix = prefix;
+			this.docid = docId;
+			this.objectsToBeUpdated = new ArrayList();
+			
+		}
+		
+		@Override
+		public void execute(Connection connection) throws SQLException {
+			Statement stmt= connection.createStatement();
+
+			/*try{
+				stmt.execute("drop table "+prefix+"tmpgene_annotation");
+			}catch(Exception ex){
+				//ignore this
+			}
+
+			try{
+				stmt.execute("drop table "+prefix+"tmpbioentity");
+			}catch(Exception ex){
+				//ignore this
+			}
+			
+			
+			
+			stmt.execute("create table abc (id varchar)");
+			
+			stmt.execute("create table "+prefix+"tmpgene_annotation  (bioentity VARCHAR NOT NULL, " +
+				"composite_qualifier VARCHAR, is_contributes_to BOOLEAN, is_integral_to BOOLEAN, " +
+				"cls VARCHAR NOT NULL, reference_id VARCHAR, evidence_cls VARCHAR, with_expression VARCHAR, " +
+				"acts_on_taxon_id VARCHAR, last_update_date VARCHAR, assigned_by VARCHAR, extension_expression VARCHAR, " +
+				"gene_product_form VARCHAR, gaf_document VARCHAR)");
+			
+			
+			stmt.execute("create table "+prefix+"tmpbioentity" +
+					  "id VARCHAR PRIMARY KEY, symbol VARCHAR NOT NULL, full_name VARCHAR NOT NULL," + 
+					  "type_cls VARCHAR NOT NULL, taxon_cls VARCHAR NOT NULL, db VARCHAR, gaf_document varchar)");*/
+			
+		
+			stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("select * from "+ prefix + "bioentity EXCEPT select * from bioentity where gaf_document='"+docid + "'");
+			
+			while(rs.next()){
+				org.geneontology.gaf.hibernate.Bioentity entity = new org.geneontology.gaf.hibernate.Bioentity(
+						rs.getString("id"), rs.getString("symbol"), rs.getString("full_name"), 
+						rs.getString("type_cls"), rs.getString("taxon_cls"), rs.getString("db"), rs.getString("gaf_document"));
+				this.objectsToBeUpdated.add(entity);
+			}
+			
+			stmt = connection.createStatement();
+			rs = stmt.executeQuery("select * from bioentity where gaf_document='"+docid + "' EXCEPT select * from "+ prefix + "bioentity");
+			
+			while(rs.next()){
+				stmt = connection.createStatement();
+				stmt.execute("delete from bioentity where id='"+rs.getString("id"));
+			}
+
+			stmt = connection.createStatement();
+			rs = stmt.executeQuery("select * from "+ prefix + "gene_annotation EXCEPT select * from gene_annotation where gaf_document='"+docid+"'");
+			
+			while(rs.next()){
+				org.geneontology.gaf.hibernate.GeneAnnotation ga = new org.geneontology.gaf.hibernate.GeneAnnotation(
+						rs.getString("bioentity"), rs.getBoolean("is_contributes_to") , rs.getBoolean("is_integral_to") 
+						, rs.getString("composite_qualifier") , rs.getString("cls"), 
+						rs.getString("reference_id") , rs.getString("evidence_cls") ,rs.getString("with_expression")  , 
+						rs.getString("acts_on_taxon_id") , rs.getString("last_update_date") , rs.getString("assigned_by"),
+						rs.getString("extension_expression") , rs.getString("gene_product_form") , 
+						rs.getString("gaf_document"));
+				this.objectsToBeUpdated.add(ga);
+			}
+			
+			
+			stmt = connection.createStatement();
+			String q= "select * from gene_annotation where gaf_document='"+docid+"' EXCEPT select * from "+ prefix + "gene_annotation ";
+			rs = stmt.executeQuery(q);
+
+			while(rs.next()){
+				String sql = "delete from gene_annotation where bioentity='"+rs.getString("bioentity")+
+						"' and gaf_document ='"+rs.getString("gaf_document")+ "' and composite_qualifier='" + rs.getString("composite_qualifier")
+						+ "' and cls='"+rs.getString("cls") + "' and reference_id='"+ rs.getString("reference_id") + "' and " +
+								"evidence_cls='"+rs.getString("evidence_cls") + "'";
+				stmt = connection.createStatement();
+				stmt.execute(sql);
+			}
+			
+			
+			/*stmt.execute("insert into "+prefix+"tmpbioentity (id, symbol, full_name, type_cls,taxon_cls, db, gaf_document) select id, symbol, full_name, type_cls,taxon_cls, db, gaf_document from bioentity where gaf_document='"+this.docid+"'");
+			
+			ResultSet rs = stmt.executeQuery("select * from "+ prefix + "tmpbioentity EXCEPT select * from "+prefix + "bioentity");
+			while(rs.next()){
+				stmt.execute("delete from bioentity where id='"+rs.getString("id")+"'");
+				stmt.execute("delete from " +prefix+ "tmpbioentity where id='"+rs.getString("id")+"'");
+
+			}
+			
+			stmt.execute("insert into " +prefix+ "tmpgene_annotation (bioentity, composite_qualifier, is_contributes_to, is_integral_to, cls, reference_id, evidence_cls, with_expression, acts_on_taxon_id, last_update_date, assigned_by, extension_expression, gene_product_form, gaf_document) select bioentity, composite_qualifier, is_contributes_to, is_integral_to, cls, reference_id, evidence_cls, with_expression, acts_on_taxon_id, last_update_date, assigned_by, extension_expression, gene_product_form, gaf_document from gene_annotation where gaf_document='"+this.docid+"'");
+			
+			rs = stmt.executeQuery("select * from "+ prefix + "tmpgene_annotation EXCEPT select * from "+prefix + "gene_annotation");
+			while(rs.next()){
+				stmt.execute("delete from gene_annotation where bioentity='"+rs.getString("bioentity")+
+						"' and gaf_document ='"+rs.getString("gaf_document")+ "' and composite_qualifier='" + rs.getString("composite_qualifier")
+						+ " and cls='"+rs.getString("cls") + "' and reference_id='"+ rs.getString("reference_id") + "' and " +
+								"evidence_cls='"+rs.getString("evidence_cls") + "' and ");
+								
+			}
+			
+			stmt.execute("insert into bioentity select * from "+prefix + "bioentity EXCEPT select * from "+ prefix +"tmpbioentity");
+
+			stmt.execute("insert into gene_annotation select * from "+prefix + "gene_annotation EXCEPT select * from "+ prefix +"tmpgene_annotation");*
+
+			/*
+			ResultSet rs= stmt.executeQuery("select * from " + prefix + "bioentity EXCEPT select * from bioentity");
+			while(rs.next()){
+				org.geneontology.gaf.hibernate.Bioentity entity = new org.geneontology.gaf.hibernate.Bioentity(
+						rs.getString("id"), rs.getString("symbol"), rs.getString("full_name"), 
+						rs.getString("type_cls"), rs.getString("taxon_cls"), rs.getString("db"), rs.getString("gaf_document"));
+				this.objectsToBeUpdated.add(entity);
+			}
+			
+			
+			rs = stmt.executeQuery("select * from "+ prefix + "gene_annotation EXCEPT select * from gene_annotation");
+			while(rs.next()){
+				org.geneontology.gaf.hibernate.GeneAnnotation ga = new org.geneontology.gaf.hibernate.GeneAnnotation(
+						rs.getString("bioentity"), rs.getBoolean("is_contributes_to") , rs.getBoolean("is_integral_to") 
+						, rs.getString("composite_qualifier") , rs.getString("cls"), 
+						rs.getString("reference_id") , rs.getString("evidence_cls") ,rs.getString("with_expression")  , 
+						rs.getString("acts_on_taxon_id") , rs.getString("last_update_date") , rs.getString("assigned_by"),
+						rs.getString("extension_expression") , rs.getString("gene_product_form") , 
+						rs.getString("gafDocument"));
+				this.objectsToBeUpdated.add(ga);
+			}
+			*/
+//			stmt.execut
+	//		stmt.executeQ
+			
+	//		stmt.execute("insert into bioentity (id, symbol, full_name, type_cls,taxon_cls, db, gaf_document) select * from "+prefix+"bioentity EXCEPT SELECT * from "+prefix+"tmpbioentity");
+	//		stmt.execute("insert into gene_annotation (bioentity, composite_qualifier, is_contributes_to, is_integral_to, cls, reference_id, evidence_cls, with_expression, acts_on_taxon_id, last_update_date, assigned_by, extension_expression, gene_product_form, gaf_document) select * from "+prefix+"gene_annotation EXCEPT select * from " + prefix +"tmpgene_annotation");
+			
+			
+			stmt.execute("insert into with_info (id, with_xref) select id, with_xref from " + prefix + "with_info EXCEPT select id, with_xref from with_info");
+			stmt.execute("insert into composite_qualifier (id, qualifier_obj) select id, qualifier_obj from " + prefix + "composite_qualifier except select id, qualifier_obj from composite_qualifier");
+			stmt.execute("insert into extension_expression (id, relation, cls) select id, relation, cls from " + prefix + "extension_expression except select id, relation, cls from extension_expression");
 			
 		}
 		
