@@ -258,4 +258,16 @@ public final class IOUtil {
 			}
 		}
 	}
+
+	public static void setUpLogging() throws Exception {
+		Properties props = new Properties();
+		props.setProperty("log4j.rootLogger","DEBUG, A1");
+		props.setProperty("log4j.appender.A1","org.apache.log4j.ConsoleAppender");
+		props.setProperty("log4j.appender.A1.layout","org.apache.log4j.PatternLayout");
+                //		props.setProperty("log4j.appender.A1.layout.ConversionPattern","%d [%t] %-5p %c - %m%n");
+		props.setProperty("log4j.appender.A1.layout.ConversionPattern","%-5p %d{HH:mm:ss} (%C{1}:%L) - %m%n");
+
+		PropertyConfigurator.configure(props);
+	}
+
 }
