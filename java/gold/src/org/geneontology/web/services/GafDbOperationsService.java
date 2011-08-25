@@ -478,7 +478,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			}else if(update){
 				reportStartTime("update");
 				db.update(reader, docId, path);
-				reportEndTime("updatenz,777hujnb bfrtgvgcb");
+				reportEndTime("update");
 				return;
 				
 			}
