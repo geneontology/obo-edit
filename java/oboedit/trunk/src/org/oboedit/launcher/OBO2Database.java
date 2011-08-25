@@ -82,6 +82,7 @@ public class OBO2Database {
 
 	public static void main(String[] args) throws Exception {
 		Preferences.setAppName("OBO2Database");
+                IOUtil.setUpLogging();
 		logger.info("Starting OBO2Database");
 		logger.info("OBO-Edit version = "+Preferences.getVersion());
 		if (args.length == 0)

@@ -24,6 +24,10 @@ public class OBODiff {
 
 	public static void main(String[] args) throws IOException,
 	DataAdapterException {
+            try {
+                IOUtil.setUpLogging();
+            } catch (Exception e) {}
+
 		Vector<String> filelist = new Vector<String>();
 		OBOAdapter historyAdapter = null;
 		String outPath = null;

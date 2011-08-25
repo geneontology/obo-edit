@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.bbop.io.IOUtil;
 import org.obo.dataadapter.GOFlatFileAdapter;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
@@ -61,6 +62,8 @@ public class OBO2Flat {
 	}
 
 	public static void main(String[] args) throws Exception {
+                IOUtil.setUpLogging();
+
 		ConvertRecord record = getRecord(args);
 
 		convert(record);
