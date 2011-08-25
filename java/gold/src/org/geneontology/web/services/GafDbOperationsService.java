@@ -475,6 +475,12 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 				db.bulkload(reader, docId, path, false);
 				reportEndTime("bulkload");
 				return;
+			}else if(update){
+				reportStartTime("update");
+				db.update(reader, docId, path);
+				reportEndTime("updatenz,777hujnb bfrtgvgcb");
+				return;
+				
 			}
 			
 			startDomLoad();
