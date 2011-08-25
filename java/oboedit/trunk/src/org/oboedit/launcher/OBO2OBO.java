@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
+
 import org.bbop.expression.ExpressionException;
 import org.bbop.expression.ExpressionUtil;
 import org.bbop.expression.JexlContext;
@@ -533,6 +534,7 @@ public class OBO2OBO {
 	}
 
 	public static void main(String[] args) throws Exception {
+                IOUtil.setUpLogging();
 		Preferences.setAppName("OBO2OBO");
 		logger.info("Starting OBO2OBO");
 		logger.info("OBO-Edit version = "+Preferences.getVersion());

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.bbop.io.IOUtil;
 import org.obo.dataadapter.GOFlatFileAdapter;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
@@ -37,7 +38,7 @@ public class Flat2OBO {
 	}
 
 	public static void main(String[] args) throws Exception {
-
+                IOUtil.setUpLogging();
 		ConvertRecord record = getRecord(args);
 
 		convert(record.flatfiles, record.obsHolders, record.newroots,
