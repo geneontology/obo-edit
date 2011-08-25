@@ -17,6 +17,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.bbop.io.IOUtil;
 import org.obo.datamodel.OBOObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.TermSubset;
@@ -98,8 +99,9 @@ public class OBOMapper {
 	}
 
 
-
 	public static void main(String[] args) throws Exception {
+                IOUtil.setUpLogging();
+
 		logger.info("version = "+Preferences.getVersion());
 		if (args.length == 0)
 			printUsage(1);

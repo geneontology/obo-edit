@@ -82,6 +82,8 @@ public class OBO2Linkfile {
 
 
 	public static void main(String[] args) throws Exception {
+                IOUtil.setUpLogging();
+
 		logger.info("version = "+Preferences.getVersion());
 		if (args.length == 0)
 			printUsage(1);

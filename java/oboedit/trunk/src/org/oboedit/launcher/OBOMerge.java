@@ -24,6 +24,7 @@ import org.bbop.commandline.TagSpec;
 import org.bbop.commandline.UnorderedArgumentSignature;
 import org.bbop.commandline.ValueSpec;
 import org.bbop.dataadapter.DataAdapterException;
+import org.bbop.io.IOUtil;
 import org.bbop.util.VectorFilter;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
@@ -300,6 +301,10 @@ public class OBOMerge {
 
 		HistoryList historyParentToLive;
 		HistoryList historyParentToBranch;
+
+                try {
+                    IOUtil.setUpLogging();
+                } catch (Exception e) {}
 
 		for (int i = 0; i < args.length; i++)
 			argList.add(args[i]);
