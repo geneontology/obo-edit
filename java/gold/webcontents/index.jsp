@@ -14,7 +14,7 @@ function loadOntology(){
 }
 
 function loadTaxonomies(){
-	var yes = confirm("Are you are sure you want to load ontology into database?");
+	var yes = confirm("Are you are sure you want to load taxonomies into database?");
 
 	if(yes){
 		//window.location="gold?servicename=gold-db-operations&command=update";
