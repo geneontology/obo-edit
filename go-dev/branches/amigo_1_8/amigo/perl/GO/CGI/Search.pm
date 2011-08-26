@@ -29,12 +29,10 @@ use GO::CGI::Query qw(get_gp_details get_term_in_graph get_seqs_for_gps get_gp_c
 use AmiGO;
 my $core = AmiGO->new();
 
-## BUG/NOTE: There were some issues in hilite/_hilite with
-## self-matching on multiple passes of the matcher (i.e., imagine what
-## d?* does to 'END_MATCH'), so I've cut it out to make it harder to
-## match. This means that it's also likely throwing off the relevance
-## metrics, but no complaints yet and it looks more intricate so I'm
-## leaving it be for now.
+## BUG/NOTE: There were some issues in relevance matching and
+## hilite/_hilite with self-matching on multiple passes of the matcher
+## (i.e., imagine what d?* does to 'END_MATCH'), so I've cut it out
+## and mangled it to make it harder to match.
 # my $STARTER = 'START_MATCH';
 # my $ENDER = 'END_MATCH';
 my $STARTER = '=====';
@@ -1879,14 +1877,14 @@ sub __relevance_algorithm {
 	{	my $matchstr = $original_matchstr;
 		$n = 1;
 		foreach (@$q)
-		{	next QUERY_LIST unless ($matchstr =~ s/($_)/START_MATCH $n: $1END_MATCH/gi);
+		{	next QUERY_LIST unless ($matchstr =~ s/($_)/$STARTER $n: $1$ENDER/gi);
 			$n++;
 		}
 
 		#	check for overlapping matches
-		my @matches = split('START_MATCH', $matchstr);
+		my @matches = split($STARTER, $matchstr);
 	#	print STDERR "matches: ".Dumper(\@matches)."\n" if $verbose;
-		next if grep { /END_MATCH.*?END_MATCH/ } @matches;
+		next if grep { /$ENDER.*?$ENDER/ } @matches;
 
 		#	delete the query from {query}{unmatched} (if it still exists)
 		#	as we have found a match for it
@@ -1912,22 +1910,22 @@ sub __relevance_algorithm {
 			$match =~ s/^$_\s// foreach &__common_prefixes;
 			$match =~ s/\s$_$// foreach &__common_suffixes;
 			
-			$match =~ s/START_MATCH (\d+): .*?END_MATCH/START_MATCH$1END_MATCH/g;
+			$match =~ s/$STARTER (\d+): .*?$ENDER/$STARTER$1$ENDER/g;
 			my $b = 0;
-			while ( $match =~ /(?<!END_MATCH)\b(?!START_MATCH)/g)
+			while ( $match =~ /(?<!$ENDER)\b(?!$STARTER)/g)
 			{	$b++;
 			}
 		
 			my $consec = 0;
 			if (scalar @$q > 1)
-			{	while ($match =~ /START_MATCH(\d+)END_MATCH(\s+)START_MATCH(\d+)END_MATCH/g)
+			{	while ($match =~ /$STARTER(\d+)$ENDER(\s+)$STARTER(\d+)$ENDER/g)
 				{	if ($3 == $1 + 1)
 					{	$consec += length($2);
 					}
 				}
 			}
 		
-			(my $match2 = $matchstr) =~ s/START_MATCH.*?END_MATCH//g;
+			(my $match2 = $matchstr) =~ s/$STARTER.*?$ENDER//g;
 			my $length_m = length($match2);
 			$match2 =~ s/\W//g;
 			my $w_chars = length($match2);
