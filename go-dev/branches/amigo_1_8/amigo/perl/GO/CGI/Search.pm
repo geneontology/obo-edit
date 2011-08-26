@@ -29,6 +29,17 @@ use GO::CGI::Query qw(get_gp_details get_term_in_graph get_seqs_for_gps get_gp_c
 use AmiGO;
 my $core = AmiGO->new();
 
+## BUG/NOTE: There were some issues in hilite/_hilite with
+## self-matching on multiple passes of the matcher (i.e., imagine what
+## d?* does to 'END_MATCH'), so I've cut it out to make it harder to
+## match. This means that it's also likely throwing off the relevance
+## metrics, but no complaints yet and it looks more intricate so I'm
+## leaving it be for now.
+# my $STARTER = 'START_MATCH';
+# my $ENDER = 'END_MATCH';
+my $STARTER = '=====';
+my $ENDER = '-----';
+
 our $verbose = get_environment_param('verbose');
 
 =head2 new
@@ -1965,33 +1976,36 @@ sub __relevance_algorithm {
 }
 
 sub hilite {
-	my $self = shift;
-	my $text = shift;
-	my $return_orig = shift || 0;
-	my $query = shift || $self->{query}{perllist};
+  my $self = shift;
+  my $text = shift;
+  my $return_orig = shift || 0;
+  my $query = shift || $self->{query}{perllist};
 
-	my $matchstr = $text;
+  my $matchstr = $text;
 
-	QUERY_LIST:
-	foreach my $q (@$query)
-	{	foreach (@$q)
-		{	next QUERY_LIST unless $matchstr =~ s/($_)/START_MATCH$1END_MATCH/gi;
-		}
-		my @matches = split('START_MATCH', $matchstr);
-		next if grep { /END_MATCH.*?END_MATCH/ } @matches;
-		return _hiliter($matchstr);
-	}
+ QUERY_LIST:
+  foreach my $q (@$query){
+    foreach (@$q){
+      next QUERY_LIST unless $matchstr =~ s/($_)/$STARTER$1$ENDER/gi;
+    }
+    my @matches = split($STARTER, $matchstr);
+    next if grep { /$ENDER.*?$ENDER/ } @matches;
+    return _hiliter($matchstr);
+  }
 
-	return $text if $return_orig;
+  return $text if $return_orig;
 
-	return undef;
+  return undef;
 }
 
 sub _hiliter {
-	my $str = shift;
-	my $encoded = encode_entities($str);
-	$encoded =~ s/START_MATCH( \d+: )?(.*?)END_MATCH/<em class="hilite">$2<\/em>/g;
-	return $encoded;
+  my $str = shift;
+  my $encoded = encode_entities($str);
+
+  $encoded =~
+    s/$STARTER( \d+: )?(.*?)$ENDER/<em class="hilite">$2<\/em>/g;
+
+  return $encoded;
 }
 
 sub _obsolete_check {
