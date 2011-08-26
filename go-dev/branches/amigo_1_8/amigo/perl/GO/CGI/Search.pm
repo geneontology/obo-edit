@@ -236,92 +236,95 @@ sub results {
 =cut
 
 sub getResultList {
-	my $self = shift;
-	my $args = shift;
-	my ($apph, $query, $option_h) = ($args->{apph}, $args->{query}, $args->{option_h});
-	$self->{error} = $args->{error};
-	
-#	my ($apph, $query, $option_h) = @_;
-#	$self->{error} = $option_h->{error};
+  my $self = shift;
+  my $args = shift;
+  my ($apph, $query, $option_h) =
+    ($args->{apph}, $args->{query}, $args->{option_h});
+  $self->{error} = $args->{error};
 
-	if ($verbose)
-	{	print STDERR "query: ". Dumper($query);
-		foreach (keys %$option_h)
-		{	print STDERR "$_: ".Dumper($option_h->{$_}) unless $_ eq 'cache';
-		}
-	}
+  # my ($apph, $query, $option_h) = @_;
+  # $self->{error} = $option_h->{error};
 
-	if (!$apph)
-	{	$self->set_msg('fatal', 'missing_apph');
-#		$self->success(0);
-		return;
-	}
-	
-	if (!$query)
-	{	$self->set_msg('fatal', 'missing_query');
-		print STDERR "No query found\n" if $verbose;
-#		$self->success(0);
-		return;
-	}
-	
-#	set up the important stuff
-	$self->set_param('query', $query);
-	$self->apph($apph);
-	my $sc = $option_h->{search_constraint};
-	$self->set_param('search_constraint', $sc);
-	
-	#	if we've got a cache, check everything is in order
-	#	and set the search params from it
-	if ($option_h->{cache})
-	{	my $cache = $option_h->{cache};
-		## get the data from the cache
-		$self->_set_search_fields($cache->{$sc.'fields'});
+  $core->kvetch("query: " . Dumper($query));
+  $core->kvetch("option_h: " . Dumper($option_h));
 
-	#	check the query and turn it into a structure that we can use
-		my $success = $self->_set_query($query);
-		return if !$success;
+  foreach (keys %$option_h){
+    $core->kvetch("$_: " . Dumper($option_h->{$_})) unless $_ eq 'cache';
+  }
 
-		$self->{query}{input} = $self->get_param('query');
-		$self->{query}{parsed} = $cache->{query}{parsed};
-		$self->{query}{perl} = $cache->{query}{perl};
+  if (!$apph){
+    $self->set_msg('fatal', 'missing_apph');
+    # $self->success(0);
+    return;
+  }
 
-		my @perl_qlist = 
-		map {
-			[
-			map { 
-				if ($self->{query}{perl}{$_})
-				{	qr/$self->{query}{perl}{$_}/i;
-				}
-				else
-				{	qr/$_/i;
-				}
-			} @$_ ];
-		} @{$self->{query}{parsed}};
-	
-		$self->{query}{perllist} = \@perl_qlist;
+  if (!$query){
+    $self->set_msg('fatal', 'missing_query');
+    print STDERR "No query found\n" if $verbose;
+    # $self->success(0);
+    return;
+  }
 
-		if ($verbose)
-		{	foreach my $qset qw(parsed perl perllist sql unmatched)
-			{	print STDERR "CACHED $qset query: ".Dumper($self->{query}{$qset})."\n";
-			}
-		}
+  # set up the important stuff
+  $self->set_param('query', $query);
+  ## Exact not well defined before, let's try it.
+  $self->set_param('exact_match', $option_h->{exact_match} || 0);
+  $self->apph($apph);
+  my $sc = $option_h->{search_constraint};
+  $self->set_param('search_constraint', $sc);
 
-		$self->{from_cache} = 1;
-		$self->cache($cache);
-		print STDERR "Using results from cache...\n" if $verbose;
-	}
+  # if we've got a cache, check everything is in order
+  # and set the search params from it
+  if ($option_h->{cache}) {
+    my $cache = $option_h->{cache};
+    ## get the data from the cache
+    $self->_set_search_fields($cache->{$sc.'fields'});
 
-	#	if there's no cache or something has gone wrong
-	if (!$self->{from_cache})
-	{	
-	#	check the query and turn it into a structure that we can use
-		my $success = $self->_set_query($query);
-		return if !$success;
-	
-	#	find out what fields we're going to search
-	#	if nothing is specified, use the default
-		$self->_set_search_fields($option_h->{$sc."fields"});
-	}
+    # check the query and turn it into a structure that we can use
+    my $success = $self->_set_query($query);
+    return if !$success;
+
+    $self->{query}{input} = $self->get_param('query');
+    $self->{query}{parsed} = $cache->{query}{parsed};
+    $self->{query}{perl} = $cache->{query}{perl};
+
+    my @perl_qlist = 
+      map {
+	[
+	 map {
+	   if ($self->{query}{perl}{$_}){
+	     qr/$self->{query}{perl}{$_}/i;
+	   }else{
+	     qr/$_/i;
+	   }
+	 } @$_ ];
+      } @{$self->{query}{parsed}};
+
+    $self->{query}{perllist} = \@perl_qlist;
+
+    # if ($verbose){
+    #   foreach my $qset qw(parsed perl perllist sql unmatched){
+    # 	print STDERR "CACHED $qset query: ".Dumper($self->{query}{$qset})."\n";
+    #   }
+    # }
+
+    $self->{from_cache} = 1;
+    $self->cache($cache);
+    $core->kvetch("Using results from cache...");
+  }
+
+  # if there's no cache or something has gone wrong
+  if (!$self->{from_cache}){
+    # check the query and turn it into a structure that we can use
+    $core->kvetch("not using cache...");
+    $core->kvetch('try with query: ' . Dumper($query));
+    my $success = $self->_set_query($query);
+    return if !$success;
+
+    #	find out what fields we're going to search
+    #	if nothing is specified, use the default
+    $self->_set_search_fields($option_h->{$sc."fields"});
+  }
 
 	foreach ($sc.'sort', 'exact_match', 'use_paging', 'page_size', 'page', 'show_gp_counts', 'show_term_counts') #, 'format')
 	{	$self->set_param($_, $option_h->{$_}) if $option_h->{$_};
@@ -598,81 +601,86 @@ using the values in the search parameter 'query'
 =cut
 
 sub _set_query {
-	my $self = shift;
+  my $self = shift;
 
-	my $query = $self->get_param('query');
-	my $exact =  $self->get_param('exact_match');
-	my $sc = $self->get_param('search_constraint');
-	my $min_length = __min_q_length($sc, $exact);
-	my $search_fields;
+  my $query = $self->get_param('query');
+  my $exact = $self->get_param('exact_match');
+  my $sc = $self->get_param('search_constraint');
+  my $min_length = __min_q_length($sc, $exact);
+  my $search_fields;
 
-#	sort queries by length, descending?
-#	ensure queries are unique
-#	query length constraints
+  # sort queries by length, descending?
+  # ensure queries are unique
+  # query length constraints
 
-	my @qlist;     	#	original query
-	my @perl_qlist;	#	perl versions of query
-	my %sql;       	#	SQL version
-	my %sql_regexp;
-	my %perl = ();
-	
-	my @too_short;
-	foreach (@$query)
-	{	#print STDERR "\$_: $_\n" if $verbose;
+  my @qlist;     	#	original query
+  my @perl_qlist;	#	perl versions of query
+  my %sql;       	#	SQL version
+  my %sql_regexp;
+  my %perl = ();
 
-		#	remove anything that isn't a digit or a letter
-		#	and check the query length is long enough to be valid
-		(my $temp = $_) =~ s/[^a-z0-9]//gi;
-		if (length $temp < $min_length)
-		{	#	this query is too short. Next!
-			print STDERR "Rejected $_: too short\n" if $verbose;
-			push @too_short, $_;
-			next;
-		}
+  my @too_short;
+  foreach (@$query){
+    #print STDERR "\$_: $_\n" if $verbose;
 
-		my @search_phrase;
-		if ($exact)
-		{	@search_phrase = ( $_ );
-			$perl{$_} = '^'.$_.'$';
-		}
-		elsif ($sc eq 'spp')
-		{#	do a little bit of checking to see
-		#	what kind of query we might have
-			if (/^\d+$/)
-			{	#	ncbi taxon
-				$search_fields->{ncbi_taxa_id} = 1;
-			}
-			elsif (/^[a-z]\.? .*/i)
-			{	#	probably a spp name in binomial format
-				$search_fields->{binomial} = 1;
-				$_ =~ s/\.//;
-				$self->{binomial_abbrev} = 1;
-				($self->{query}{perl}{$_} = $_) =~ s/^([a-z]) /$1.*? /i;
-			}
-			else
-			{	#	goodness only knows what this is!
-				#	search the common names just in case
-				$search_fields->{binomial} = 1 if ($_ =~ / /);
-				$search_fields->{common_name} = 1;
-			}
-			@search_phrase = ( $_ );
-		}
-		else
-		{	my @list = split /\s/, $_;
-			print STDERR "words found in query line: ".join(", ", @list)."\n" if $verbose;
-			my $c = 0;     # number indicating where the word appears in @list
-			my $last = ''; # previous word in @list
-			my %words;
-			my $colon = 0;
-			foreach (@list)
-			{	#	add repeated words to the word before
-				#	(assume the user actually wanted them)
-				if ($last eq $_)
-				{	push @{$words{$last." ".$_}}, $c;
-					pop @{$words{$last}};
-					next;
-				}
-	
+    # remove anything that isn't a digit or a letter
+    # and check the query length is long enough to be valid
+    (my $temp = $_) =~ s/[^a-z0-9]//gi;
+    # this query is too short. Next!
+    if (length $temp < $min_length){
+      print STDERR "Rejected $_: too short\n" if $verbose;
+      push @too_short, $_;
+      next;
+    }
+
+    $core->kvetch("exactness: " . $exact);
+    my @search_phrase;
+    if ($exact) {
+      @search_phrase = ( $_ );
+      $perl{$_} = '^'.$_.'$';
+    }elsif ($sc eq 'spp'){
+      # do a little bit of checking to see
+      #	what kind of query we might have
+      if (/^\d+$/){
+	# ncbi taxon
+	$search_fields->{ncbi_taxa_id} = 1;
+      }elsif (/^[a-z]\.? .*/i){
+	# probably a spp name in binomial format
+	$search_fields->{binomial} = 1;
+	$_ =~ s/\.//;
+	$self->{binomial_abbrev} = 1;
+	($self->{query}{perl}{$_} = $_) =~ s/^([a-z]) /$1.*? /i;
+      }else{
+	# goodness only knows what this is!
+	# search the common names just in case
+	$search_fields->{binomial} = 1 if ($_ =~ / /);
+	$search_fields->{common_name} = 1;
+      }
+      @search_phrase = ( $_ );
+    }else{
+      # ## There was a bug here where even if "exact match"
+      # ## was selected, there would be a split. We'll made
+      # ## "exact match" an exception.
+      # $core->kvetch("exactness: " . $exact);
+      # my @list = ($_);
+      # if( ! defined $exact || ! $exact ){
+      # 	@list = split /\s/, $_;
+      # }
+      my @list = split /\s/, $_;
+      $core->kvetch("words found in query line: ".join(", ",@list));
+      my $c = 0; # number indicating where the word appears in @list
+      my $last = ''; # previous word in @list
+      my %words;
+      my $colon = 0;
+      foreach (@list)
+	{	#	add repeated words to the word before
+	  #	(assume the user actually wanted them)
+	  if ($last eq $_)
+	    {	push @{$words{$last." ".$_}}, $c;
+		pop @{$words{$last}};
+		next;
+	      }
+
 				#	duplicate word
 				if ($words{$_})
 				{	push @{$words{$_}}, $c;
@@ -1013,7 +1021,7 @@ sub search {
   # hash containing the search phrases for the different search types
   my $sql_search_strings = $self->_set_sql_search_strings;
 
-  $core->kvetch("SQL search strings: ".Dumper($sql_search_strings));
+  $core->kvetch("SQL search strings: " . Dumper($sql_search_strings));
 
   # if our search list contains anything *other* than full_name/symbol
   # or name/acc, we search for these first

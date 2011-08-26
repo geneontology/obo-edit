@@ -41,10 +41,10 @@ my $core = AmiGO::Aid::ReferenceGenome->new();
 # Set up the relevant objects.
 #
 
-#	valid params (other than persisting params)
-#	termfields gpfields sppfields search_constraint exact_match
-#	query idfile
-#	action format
+# valid params (other than persisting params)
+# termfields gpfields sppfields search_constraint exact_match
+# query idfile
+# action format
 
 my $q = new CGI;
 my $cgi_error = $q->cgi_error;
@@ -70,90 +70,87 @@ my %params = $q->Vars;
 my $ses_type = 'front';
 my $query;
 
-if ($params{action})
-{	if ($params{action} eq 'advanced_query')
-	{	#	turn on the advanced query mode
-		$ses_type = 'advanced_query';
+if ($params{action}){
+  if ($params{action} eq 'advanced_query'){ # turn on the advanced query mode
+    $ses_type = 'advanced_query';
+  }elsif ($params{action} eq 'new-search'){
+    $ses_type = 'search';
+    # A new search. If a file was uploaded,
+    # move the contents into the 'query' param
+    my %q_hash;
+
+    if ($params{search_query_file}){
+      $core->kvetch("Found a search_query_file!");
+      # my $file = $params{search_query_file};
+      my $file = $q->upload('search_query_file');
+      if (-f $file) { # check for the file
+	while (<$file>) {
+	  # get rid of any tracts of whitespace
+	  s/(\t|\s{2,})/ /g;
+	  s/^\s*(\S+.*?)\s*$/$1/;
+	  if (/\w/){
+	    if (scalar keys %q_hash < $max_number_queries){
+	      $q_hash{$_}++;
+	    }else{
+	      $vars->{error} = set_message($vars->{error}, 'warning', 'AmiGO searches are limited to '.$max_number_queries.' queries; remaining queries will have to be processed in a separate search.');
+	      last;
+	    }
+	  }
+
+	  ## May be an incoming spammer--stop them.
+	  $vars->{error} =
+	    set_message($vars->{error},
+			'fatal',
+			'URLs are not allowed')
+	      if $q =~ /http\:\/\//gos;
 	}
-	elsif ($params{action} eq 'new-search')
-	{	$ses_type = 'search';
-	#	A new search. If a file was uploaded,
-	#	move the contents into the 'query' param
-		my %q_hash;
+      }else{
+	$core->kvetch("File is not a plain file");
+	$vars->{error} = set_message($vars->{error}, 'warning',
+				     'not_plain_file');
+      }
+    }
 
-		if ($params{search_query_file}){
-		  $core->kvetch("Found a search_query_file!");
-#			my $file = $params{search_query_file};
-			my $file = $q->upload('search_query_file');
-			if (-f $file)  # check for the file
-			{
-				while (<$file>) {
-				  #	get rid of any tracts of whitespace
-				  s/(\t|\s{2,})/ /g;
-				  s/^\s*(\S+.*?)\s*$/$1/;
-				  if (/\w/){
-				    if (scalar keys %q_hash < $max_number_queries){
-				      $q_hash{$_}++;
-				    }else{
-				      $vars->{error} = set_message($vars->{error}, 'warning', 'AmiGO searches are limited to '.$max_number_queries.' queries; remaining queries will have to be processed in a separate search.');
-				      last;
-				    }
-				  }
+    # similarly if something was added to the query box
+    if ($params{search_query}){
+      my @queries = split /(\n|\0)/, $params{search_query};
+      foreach my $q (@queries){
+	# get rid of any tracts of whitespace
+	$q =~ s/(\t|\s{2,})/ /g;
+	$q =~ s/^\s*(\S+.*?)\s*$/$1/;
+	# decode any funny characters
+	$q = decode_entities($q);
+	$q_hash{$q}++ if $q =~ /\w/;
 
-				  ## May be an incoming spammer--stop them.
-				  $vars->{error} =
-				    set_message($vars->{error},
-						'fatal',
-						'URLs are not allowed')
-				      if $q =~ /http\:\/\//gos;
-				}
-			}
-			else
-			{	$core->kvetch("File is not a plain file");
-				$vars->{error} = set_message($vars->{error}, 'warning', 'not_plain_file');
-			}
-		}
+	## May be an incoming spammer--stop them.
+	$vars->{error} =
+	  set_message($vars->{error},
+		      'fatal',
+		      'URLs are not allowed')
+	    if $q =~ /http\:\/\//gos;
 
-		#	similarly if something was added to the query box
-		if ($params{search_query})
-		{	my @queries = split /(\n|\0)/, $params{search_query};
-			foreach my $q (@queries)
-			{	#	get rid of any tracts of whitespace
-				$q =~ s/(\t|\s{2,})/ /g;
-				$q =~ s/^\s*(\S+.*?)\s*$/$1/;
-				#	decode any funny characters
-				$q = decode_entities($q);
-				$q_hash{$q}++ if $q =~ /\w/;
+	$core->kvetch("cleaned search_query: " . $q);
+      }
+    }
 
-				## May be an incoming spammer--stop them.
-				$vars->{error} =
-				  set_message($vars->{error},
-					      'fatal',
-					      'URLs are not allowed')
-				    if $q =~ /http\:\/\//gos;
-			}
-		}
-		
-		if (keys %q_hash)
-		{	#	put these values into the 'query' param of the cgi
-#			$q->param(-name=>'query', -'values'=>[ keys %q_hash ]);
-			$query = [ keys %q_hash ];
-		}
-		else
-		{	#	no valid query found! return an error
-			$core->kvetch("No query found!");
-			$vars->{error} = set_message($vars->{error}, 'fatal', 'no_valid_query');
-		}
-	}
+    if (keys %q_hash){	# put these values into the 'query' param of the cgi
+      #	$q->param(-name=>'query', -'values'=>[ keys %q_hash ]);
+      $query = [ keys %q_hash ];
+    }else{ # no valid query found! return an error
+      $core->kvetch("No query found!");
+      $vars->{error} = set_message($vars->{error}, 'fatal', 'no_valid_query');
+    }
+  }
 }
 
-#	if there's a query present, set the ses_type to search
-if ($params{query} && $ses_type eq 'front')
-{	$ses_type = 'search';
-	#	convert $params{query} into a list
-	$query = [ split(/\0|\n/, $params{query}) ];
+# if there's a query present, set the ses_type to search
+if ($params{query} && $ses_type eq 'front'){
+  $ses_type = 'search';
+  # convert $params{query} into a list
+  $query = [ split(/\0|\n/, $params{query}) ];
 }
 
+$core->kvetch('our $query: ' . Dumper($query));
 
 ## Check to see if the total query size is larger than we might want.
 if ( $query && @$query &&
@@ -161,85 +158,93 @@ if ( $query && @$query &&
   $vars->{error} = set_message($vars->{error}, 'fatal', 'AmiGO searches are limited to '.$max_number_queries.' queries. Please go back and retry with a shorter list; remaining queries will have to be processed in a separate search.');
 }
 
-
-#	check the search constraint is valid
-if ($params{search_constraint})
-{	if (!grep { $params{search_constraint} } @valid_search_constraints)
-	{	#	invalid search constraint
-		$core->kvetch("search constraint: ".$params{search_constraint}."");
-		$vars->{error} = set_message($vars->{error}, 'fatal', 'unknown_search_type', $params{search_constraint});
-	}
+# check the search constraint is valid
+if ($params{search_constraint}){
+  # invalid search constraint
+  if (!grep { $params{search_constraint} } @valid_search_constraints){
+    $core->kvetch("search constraint: ".$params{search_constraint}."");
+    $vars->{error} = set_message($vars->{error}, 'fatal',
+				 'unknown_search_type',
+				 $params{search_constraint});
+  }
 }
 
-
-
-#	die if there's a fatal message
-if ($vars->{error}{fatal})
-{	my $session = new GO::CGI::Session('-q'=>$q, -ses_type=>'amigo_message', -temp => 1);
-	process_page_template({ error => $vars->{error}, page_title => 'Search Error' }, $session, 'amigo_message');
-	exit;
+# die if there's a fatal message
+if ($vars->{error}{fatal}){
+  my $session = new GO::CGI::Session('-q'=>$q, -ses_type=>'amigo_message',
+				     -temp => 1);
+  process_page_template({ error => $vars->{error},
+			  page_title => 'Search Error' },
+			$session, 'amigo_message');
+  exit;
 }
 
-my $session = new GO::CGI::Session('-q'=>$q, -ses_type=>$ses_type, -read_only=>1);
+my $session = new GO::CGI::Session('-q'=>$q,
+				   -ses_type=>$ses_type, -read_only=>1);
 $session->save_session;
 
-if ($ses_type eq 'front' || $ses_type eq 'advanced_query')
-{	#	nothing to do for these pages
-	$vars->{search_constraint} = $params{search_constraint} || $session->get_param('search_constraint');
-	
-	if ($ses_type eq 'advanced_query')
-	{	#	set up the options for the page
-		$vars->{searchfields}{$_.'fields'} = $session->set_option($_.'fields') foreach @valid_search_constraints;
-		$vars->{max_upload_size} = $max_upload_size;
-	}
-	process_page_template($vars, $session);
-	exit;
+if ($ses_type eq 'front' || $ses_type eq 'advanced_query'){
+  # nothing to do for these pages
+  $vars->{search_constraint} =
+    $params{search_constraint} || $session->get_param('search_constraint');
+
+  if ($ses_type eq 'advanced_query'){
+    # set up the options for the page
+    $vars->{searchfields}{$_.'fields'} = $session->set_option($_.'fields')
+      foreach @valid_search_constraints;
+    $vars->{max_upload_size} = $max_upload_size;
+  }
+  process_page_template($vars, $session);
+  exit;
 }
 
-#	Performing a search.
-#	Create the search object
+# Performing a search.
+# Create the search object
 my $search = new GO::CGI::Search;
 
-#	Get the various values for the search ready
+# Get the various values for the search ready
 my $option_h;
 
-foreach ('exact_match', 'page') #, 'format') #format not yet in use
-{	$option_h->{$_} = $params{$_} if $params{$_};
+foreach ('exact_match', 'page'){ #, 'format') #format not yet in use
+  $option_h->{$_} = $params{$_} if $params{$_};
 }
 
-if ($params{action})
-{	if ($params{action} eq 'new-search' || $params{action} eq 'filter' || $params{action} eq 'reset-filters')
-	{	$option_h->{action} = 'search';
-	}
-	else
-	{	$option_h->{action} = $params{action};
-	}
+if ($params{action}){
+  if ($params{action} eq 'new-search' ||
+      $params{action} eq 'filter' ||
+      $params{action} eq 'reset-filters'){
+    $option_h->{action} = 'search';
+  }else{
+    $option_h->{action} = $params{action};
+  }
 
-	if ($params{action} eq 'sort')
-	{	$option_h->{page} = 1; # reset to the first page if we're sorting
-	}
+  if ($params{action} eq 'sort'){
+    $option_h->{page} = 1; # reset to the first page if we're sorting
+  }
 }
 
 if (($params{action} && $params{action} eq 'sort')
-	|| $params{page}
-	|| $params{page_size} && $params{page_size} eq 'all')
-#	|| $params{'format'}) # not yet in use
-{	#	this may well be a cached query. Load up the cache.
-	$core->kvetch("Loading the cache...");
-	my $cache = $session->load_cached_results($params{search_constraint}."_search");
+    || $params{page}
+    || $params{page_size} && $params{page_size} eq 'all'){
+  #	|| $params{'format'}) # not yet in use
+  #	this may well be a cached query. Load up the cache.
+  $core->kvetch("Loading the cache...");
+  my $cache = $session->load_cached_results($params{search_constraint}.
+					    "_search");
 
-	#	check the search parameters are the same as those in the cached query
-	if ($cache && $cache->{query} && $cache->{result_list})
-	{	#$core->kvetch("CACHE: query from cache: ".Dumper($cache->{query})."CACHE: params{query}: ".Dumper($query)."");
-		if ( join("\n", sort @{$cache->{query}{input}}) eq join("\n", sort @$query) )
-		{	#$core->kvetch("Cached query matches this query. Hurrah!");
-			$option_h->{cache} = $cache;
-		}
-	}
+  # check the search parameters are the same as those in the cached query
+  if ($cache && $cache->{query} && $cache->{result_list}){
+    #$core->kvetch("CACHE: query from cache: ".Dumper($cache->{query})."CACHE: params{query}: ".Dumper($query)."");
+    if ( join("\n", sort @{$cache->{query}{input}}) eq join("\n", sort @$query) ){
+      # $core->kvetch("Cached query matches this query. Hurrah!");
+      $option_h->{cache} = $cache;
+    }
+  }
 }
 
-#	set the page size
-$option_h->{page_size} = $params{page_size} || $session->get_saved_param('page_size');
+# set the page size
+$option_h->{page_size} = $params{page_size} ||
+  $session->get_saved_param('page_size');
 
 #	new stuff
 #	if there's a format specified OR the page size is 'all', don't use paging
