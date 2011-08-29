@@ -66,7 +66,10 @@ FieldCheck {
 	public static class AbstractCheckConfiguration extends CheckConfiguration {
 		protected byte repeatedWordCondition = VerificationManager.ALL;
 
-		protected byte repeatedWhitespaceCondition = VerificationManager.ALL;
+            //		protected byte repeatedWhitespaceCondition = VerificationManager.ALL;
+            //		protected byte repeatedWhitespaceCondition = VerificationManager.MANUAL;  // didn't work
+            // By default, turn off check for repeated whitespace. (User can turn it back on.)
+            protected byte repeatedWhitespaceCondition = 0;  // NONE
 
 		protected byte sentenceCaseCondition = VerificationManager.ALL;
 
@@ -456,6 +459,7 @@ FieldCheck {
 		return allowNewlines;
 	}
 
+        // Not currently used
 	public boolean getAllowExtended() {
 		return allowExtended;
 	}
@@ -753,13 +757,15 @@ FieldCheck {
 				int lastPos = -1;
 				while (tokenizer.hasMoreWords()) {  
 					final String word = tokenizer.nextWord();
-//					logger.debug("Repeated word check: next word is " + word); // DEL
 					int start = tokenizer.getCurrentWordPosition();
 					if (last != null) {
+                                            //                                            logger.debug("Repeated word check: current word is " + word + "; previous word is " + last + "; isNewSentence = " + tokenizer.isNewSentence()); // DEL
 						if (word.equalsIgnoreCase(last)
-								&& !isRepeatAllowed(word) && !tokenizer.isNewSentence()) {
-							// ! Should also check whether there is punctuation between the repeated words, e.g.
-							// "development. Development".
+                                                    // isNewSentence() is supposed to check for the case where there is a period and a space between the repeated words,
+                                                    // but it doesn't seem to work.
+                                                    && !isRepeatAllowed(word) && !tokenizer.isNewSentence()) {
+							// ! Should we also check whether there is other punctuation between the repeated words, e.g.,
+							// "development; development"?
 							QuickFix fixAction = new AbstractImmediateQuickFix(
 									"Add \"" + word
 									+ "\" to legally repeatable words") {
@@ -885,6 +891,7 @@ FieldCheck {
 				return out;
 			}
 			if (!allowExtended || !allowNewlines) {
+                            //                            logger.debug("allowExtended = " + allowExtended + ", text = " + text + ", foundExtended = " + foundExtended);
 				for (int i = 0; i < text.length(); i++) {
 					char c = text.charAt(i);
 					if (!allowExtended && !AbstractTextCheck.isLegal(c)
@@ -1077,6 +1084,10 @@ FieldCheck {
 					}
 				}
 
+                                // Should check whether it's just two spaces between sentences,
+                                // which should be permitted.
+                                // (But this is less important now that the repeated whitespace
+                                // check is turned off by default.)  8/2011
 				if (doRepeatedWhitespaceCheck(condition)
 						&& repeatedWhitespaceStart != -1
 						&& !Character.isWhitespace(c)
@@ -1159,6 +1170,7 @@ FieldCheck {
 		if (c == '\n' || c == '\t')
 			return true;
 		// no other iso control characters are allowed
+                //                logger.debug("isLegal(" + c + "): isISOControl = " + Character.isISOControl(c)); // DEL
 		if (Character.isISOControl(c))
 			return false;
 		// only BASIC_LATIN and LATIN_1_SUPPLEMENT characters
