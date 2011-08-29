@@ -13,7 +13,7 @@ section.  These text checks are run automatically when you commit a change
 made in the Text Editor.  You can also run text checks on all terms at once
 by going to the Configuration tab in the Verification Manager and clicking
 the button that says "Run manual check now".</P>
-<P>A text check looks for the following:</P>
+<P>A text check can look for any of the following:</P>
 <UL>
   <LI><STRONG>Misspelled words</STRONG> 
     - A warning will appear if the text includes a word that is not found in the
@@ -28,7 +28,7 @@ the button that says "Run manual check now".</P>
   href="The_Verification_Plugin.htm#quickfix">quick fix</A> to add a word to the 
   list of allowed repeats.
   <LI><STRONG>Repeated whitespace</STRONG> - A warning will appear if multiple 
-  whitespace characters (like spaces or tabs) appear in a row.
+  whitespace characters (like spaces or tabs) appear in a row (even between sentences).
   <LI><STRONG>Sentence case</STRONG> - A warning will appear if a new sentence 
   starts with a lower-case letter. Sometimes sentences should start with a lower 
   case letter, so OBO-Edit provides a <A 
@@ -44,23 +44,27 @@ the button that says "Run manual check now".</P>
   OBO-Edit provides a quick fix that adds a word to a list of legal 
   abbreviations. OBO-Edit knows the abbreviations "i.e.", "e.g." and "etc." by 
   default.</LI></UL>
-<P>A text check can be configured by clicking the "Configure" button in the 
+<P>You can configure which of these tests are done, and when, by clicking the
+  "Configure" button next to the check name in the 
 Verification Manager:</P>
 <P><IMG hspace=0 
 src="../images/verification_plugin_textedit_config.png" border=0></P>
-<P>Each line of the configuration window configures one of the checks listed 
-above. Each check can be configured to run under one of the following 
+<P>Each line of the configuration window configures one of the tests listed 
+above. Each test can be configured to run under one of the following 
 conditions:</P>
 <UL>
   <LI><STRONG>Threaded checks only</STRONG> - This part of the text
   check will always be run except on a manual check.
-  <LI><STRONG>On Text Edit</STRONG> - This 
-  part of the text check will only be run before committing a text edit 
+  <LI><STRONG>On Text Edit/Manual</STRONG> - This 
+  part of the text check will only be run before committing a text edit (or
+  when verification is run manually).
   <LI><STRONG>Always</STRONG> - This part 
   of the text check will always be run. 
   <LI><STRONG>Never</STRONG> - This part of the text check will never be 
   run.</LI></UL>
-<P>The default setting for all checks is <STRONG>Always</STRONG>.</P>
+<P>The default setting for most checks is <STRONG>Always</STRONG>. Repeated
+  whitespace check is turned off by default.
+  </P>
 <p>The <a href="Text_Editing.htm">Text Editor</a> performs text checks on the
 selected term.  If there are any errors or warnings, this is indicated in the
   Text Editor title bar.  To see the warnings, hover your
