@@ -272,7 +272,7 @@ public class TermFilterEditor extends JPanel {
 	}
 
 	public TermFilterEditor() {
-	    logger.debug("TermFilterEditor()"); // DEL
+            //	    logger.debug("TermFilterEditor()"); // DEL
 		setOpaque(false);
 		mainPanel.setOpaque(false);
 		rightIcon = new MultiIcon();
