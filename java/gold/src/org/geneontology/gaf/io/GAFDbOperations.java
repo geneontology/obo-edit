@@ -104,7 +104,8 @@ public class GAFDbOperations{
 		try{
 			GafDocument doc = builder.buildDocument(reader, docid, path);
 			ArrayList<GafDocument> docs = new ArrayList<GafDocument>();
-			docs.add(doc);
+			if(doc != null)
+				docs.add(doc);
 			
 			doc = builder.getNextSplitDocument();
 			if(doc != null)
@@ -115,6 +116,7 @@ public class GAFDbOperations{
 			
 			while(!docs.isEmpty()){
 				doc = docs.remove(0);
+				
 				
 				bulkLoad(doc, split ? GoConfigManager.getInstance().getGoldDetlaTablePrefix() : "", _force, split);
 				
