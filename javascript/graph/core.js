@@ -124,13 +124,16 @@ if( typeof(opera) != 'undefined' && typeof(opera.postError) != 'undefined' ){
     // This may detect SpiderMonkey on
     // the comand line.
     bbop.core.logger = function(msg){ print(msg); };
-}else if( typeof(Packages) !=  'undefined' &&
-	  typeof(Packages.java) !=  'undefined' ){
-    // This could be a Rhino environment.
-    bbop.core.logger = function(msg){ print(msg); };
-}
+}else if( typeof(org) != 'undefined' &&
+	  typeof(org.rhino) != 'undefined' &&
+	  typeof(print) == 'function' ){
+	      // This may detect Rhino on the comand line.
+	      sayer = print;
+	      ender = "";
+ }
 bbop.core.kvetch = function(string){
     if( bbop.core.DEBUG == true ){
+	if( typeof(string) == 'undefined' ){ string = ''; }
 	bbop.core.logger(string);
     }
 };
