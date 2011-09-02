@@ -34,10 +34,24 @@ public class PhyloTreeLoader implements Loader {
 	GafURLFetch source;
 	Collection<PhyloTree> pts = null;
 	
+	/**
+	 * Suffix to be used when writing tmp files.
+	 */
 	final static String tsvSuffix = ".tsv";
+
+	/**
+	 * Value written bioentity.gaf_document column if we need to create an entry in that table.
+	 */
 	final static String PANTHER = "PANTHER";
+	
+	/**
+	 * Used to get access information to the database
+	 */
 	final static GoConfigManager manager = GoConfigManager.getInstance();
 	
+	/**
+	 * Stores location for tmpdir.
+	 */
 	static private File tmpdir = null;
 	static protected Connection connection;
 	static private PreparedStatement selectFamily = null;
@@ -49,13 +63,15 @@ public class PhyloTreeLoader implements Loader {
 	 */
 	private String currentSourceFile;
 	
+	/**
+	 * Only ever need to make one of these. Connects to the database
+	 */
 	public PhyloTreeLoader() {
 		pts = new HashSet<PhyloTree>();
 
 		dbOperationListeners = new ArrayList<DbOperationsListener>();
 		
 		if (null == connection) {
-			//String host = manager.getGolddbHostName();
 			String user = manager.getGolddbUserName();
 			String pw   = manager.getGolddbUserPassword();
 			String db   = manager.getGolddbName();
@@ -93,6 +109,10 @@ public class PhyloTreeLoader implements Loader {
 		return false;
 	}
 	
+	/**
+	 * Load the next tree into memory.
+	 * @throws IOException
+	 */
 	public void getTrees() throws IOException{
 		while(source.hasNext()){
 
@@ -104,6 +124,15 @@ public class PhyloTreeLoader implements Loader {
 		}
 	}
 
+	/**
+	 * Loads the source into the database.
+	 * 
+	 * @throws SocketException
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
+	 */
 	public void loadThrow() throws SocketException, IOException, URISyntaxException, SQLException, ClassNotFoundException{
 
 		for(DbOperationsListener listener: dbOperationListeners){
@@ -137,10 +166,24 @@ public class PhyloTreeLoader implements Loader {
 	}
 
 	@Override
+	/**
+	 * Sets the source to the given argument.
+	 * 
+	 * Set the variable source to a newly created GafURLFetch(src) object.
+	 * 
+	 * @param src Value to set the source too.
+	 */
 	public void setSource(String src) {
 		source = new GafURLFetch(src);
 	}
 	
+	/**
+	 * Sets the source to the given argument.
+	 *
+	 * Really does src.toURL().toString() and passes that value to setSource(string).
+	 * 
+	 * @param src Value to set the source too.
+	 */
 	public void setSource(File src){
 		setSource(src.toURI().toString());
 	}
@@ -223,33 +266,70 @@ public class PhyloTreeLoader implements Loader {
 		tsvLoader.loadTables(tmpfiles);
 	}
 	
-	
+	/**
+	 * Load trees from command line.
+	 * 
+	 * @param arg[0] A path.
+	 * @throws SocketException
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
+	 */
 	public static void main(String[] arg) throws SocketException, IOException, URISyntaxException, SQLException, ClassNotFoundException{
 		PhyloTreeLoader ptl = new PhyloTreeLoader();
 		ptl.setSource(arg[0]);
 		ptl.loadThrow();
 	}
 
+	/**
+	 * Do stuff to an individual tree.
+	 * @author sven
+	 *
+	 */
 	class PhyloTree{
 		private String id;
 		private Phylogeny tree;
 		private Map<String,HibPantherID> leaves;
 		private Boolean loadRequired = null;
 		
+		/**
+		 * 
+		 * @param id Tree identifier: PTHR1234
+		 * @param br The place to load the tree from.
+		 * @throws IOException
+		 */
 		private PhyloTree(String id, BufferedReader br) throws IOException{
 			this.id = id;
 			leaves = new HashMap<String,HibPantherID>();
 			parse(br);
 		}
 		
+		/**
+		 * 
+		 * @param id Tree identifier: PTHR1234
+		 * @param r The place to load the tree from.
+		 * @throws IOException
+		 */
 		private PhyloTree(String id, Reader r) throws IOException{
 			this(id, new BufferedReader(r));
 		}
 		
+		/**
+		 * 
+		 * @param id Tree identifier: PTHR1234
+		 * @param is The place to load the tree from.
+		 * @throws IOException
+		 */
 		private PhyloTree(String id, InputStream is) throws IOException{
 			this(id, new InputStreamReader(is));
 		}
 				
+		/**
+		 * Loads the tree inte memory.
+		 * @param br Place to load the tree from.
+		 * @throws IOException
+		 */
 		private void parse(BufferedReader br) throws IOException{
 			// I tried reusing a NHXParser but got some weird results
 			NHXParser parser = new NHXParser();
@@ -269,6 +349,10 @@ public class PhyloTreeLoader implements Loader {
 			br.close();
 		}
 		
+		/**
+		 * Checks if the given tree is already in the database. Doesn't check if the nodes have changes or anything else.
+		 * @return
+		 */
 		public boolean isLoadRequired(){
 			if (null != loadRequired) {
 				return loadRequired;
@@ -296,6 +380,10 @@ public class PhyloTreeLoader implements Loader {
 			return loadRequired;
 		}
 		
+		/**
+		 * 
+		 * @return The tree in NHX format.
+		 */
 		public String getNHX(){
 			Phylogeny out = tree.copy();
 			for (Entry<String, HibPantherID> me : leaves.entrySet()) {
@@ -304,6 +392,10 @@ public class PhyloTreeLoader implements Loader {
 			return out.toNewHampshireX();
 		}
 		
+		/**
+		 * 
+		 * @return The leaves of the tree.
+		 */
 		public Collection<Bioentity> getBioentities() {
 			Collection<Bioentity> out = new HashSet<Bioentity>();
 			for (HibPantherID hpi : leaves.values()) {
