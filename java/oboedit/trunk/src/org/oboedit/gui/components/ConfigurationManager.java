@@ -516,7 +516,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		defDbxrefListEditor = new DbxrefListEditor(Dbxref.DEFINITION);
 		defDbxrefList = new ListEditor(defDbxrefListEditor, noDbxLabel,
 				new Vector<Object>(0), true, true, true, true, true);
-		allowExtendedCheckbox = new JCheckBox("Allow extended characters");
+		allowExtendedCheckbox = new JCheckBox("Allow extended characters (except in dbxrefs)");
 		dbxrefEditor.setBorder(new TitledBorder("Personal Dbxref"));
 
 		formatField(userLabel, userField);
