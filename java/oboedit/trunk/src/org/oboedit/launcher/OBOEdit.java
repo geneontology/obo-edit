@@ -264,24 +264,34 @@ public class OBOEdit {
 
 	}
 	
-		private static void setupLog4j(Properties props, String configDir){
+	private static void setupLog4j(Properties props, String configDir){
 
 		props.setProperty("log4j.rootLogger","DEBUG, A1, A2");
 		props.setProperty("log4j.logger.org.apache","ERROR");
 		props.setProperty("log4j.logger.httpclient","ERROR");
 		props.setProperty("log4j.logger.org.apache.commons.httpclient","ERROR");
 
+                // Send error messages to console (stdout)
 		props.setProperty("log4j.appender.A1","org.apache.log4j.ConsoleAppender");
 		props.setProperty("log4j.appender.A1.layout","org.apache.log4j.PatternLayout");
-		props.setProperty("log4j.appender.A1.layout.ConversionPattern","%m%n");
+                // 		props.setProperty("log4j.appender.A1.layout.ConversionPattern","%m%n");
+                // %L	Used to output the line number from where the logging request was issued.
+                // %M	Used to output the method name where the logging request was issued.
+                // WARNING Generating caller location information is extremely slow and should be avoided unless execution speed is not an issue.
+                // Can use %L, %M when debugging.
+                // %c (class) is cheap.
+    //		props.setProperty("log4j.appender.A1.layout.ConversionPattern","%C{1}:%L - %m%n");
+		props.setProperty("log4j.appender.A1.layout.ConversionPattern","%c{4} - %m%n");
 
+                // Also record in log file
 		props.setProperty("log4j.appender.A2","org.apache.log4j.RollingFileAppender");
 		props.setProperty("log4j.appender.A2.file",configDir + "/log/oboedit.log");
 		props.setProperty("log4j.appender.A2.MaxFileSize","1MB");
 		props.setProperty("log4j.appender.A2.MaxBackupIndex","10");
 		props.setProperty("log4j.appender.A2.append","true");
 		props.setProperty("log4j.appender.A2.layout","org.apache.log4j.PatternLayout");
-		props.setProperty("log4j.appender.A2.layout.ConversionPattern","%d [%t] %-5p %c - %m%n");
+                //		props.setProperty("log4j.appender.A2.layout.ConversionPattern","%d [%t] %-5p %c - %m%n");
+		props.setProperty("log4j.appender.A2.layout.ConversionPattern","[%d{yy-MM-dd HH:mm:ss}] %c{4}%m%n");
 		LogManager.resetConfiguration();
 		PropertyConfigurator.configure(props);
 	}
