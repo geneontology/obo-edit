@@ -1,6 +1,7 @@
 package org.geneontology.gold.hibernate.factory;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -11,6 +12,7 @@ import org.geneontology.gold.hibernate.model.AnnotationProperty;
 import org.geneontology.gold.hibernate.model.Cls;
 import org.geneontology.gold.hibernate.model.ClsIntersectionOf;
 import org.geneontology.gold.hibernate.model.ClsUnionOf;
+import org.geneontology.gold.hibernate.model.DatabaseChangesHistory;
 import org.geneontology.gold.hibernate.model.DisjointWith;
 import org.geneontology.gold.hibernate.model.EquivalentTo;
 import org.geneontology.gold.hibernate.model.InferredAllSomeRelationship;
@@ -33,9 +35,12 @@ import org.geneontology.gold.hibernate.model.RelationEquivalenTo;
 import org.geneontology.gold.hibernate.model.SubclassOf;
 import org.geneontology.gold.hibernate.model.SubrelationOf;
 import org.geneontology.gold.io.postgres.DeltaQueryInterceptor;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 
 public class GoldObjectFactory {
 
@@ -125,6 +130,29 @@ public class GoldObjectFactory {
 		session.getTransaction().commit();
 		
 		return list;
+	}
+	
+	
+	public synchronized DatabaseChangesHistory getLatestDatabaseChangeStatus(String objectId){
+		
+		if(LOG.isDebugEnabled())
+			LOG.debug("-");
+
+		Session session = getSession();
+		
+		Criteria query= session.createCriteria(DatabaseChangesHistory.class);
+		
+		query.add(Restrictions.eq("objectId", objectId));
+		query.setProjection(Projections.projectionList().add(Projections.max("changeTime")));
+		Object result = query.uniqueResult();
+		
+	//	System.out.println("------------------------"+result);
+		
+		DatabaseChangesHistory ch = new DatabaseChangesHistory();
+		ch.setObjectId(objectId);
+		ch.setChangeTime((Date)result);
+		
+		return ch;
 	}
 	
 	public synchronized Ontology getOntology(String id){

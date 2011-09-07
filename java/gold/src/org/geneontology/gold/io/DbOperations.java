@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
@@ -22,6 +23,7 @@ import org.geneontology.gold.hibernate.model.AnnotationProperty;
 import org.geneontology.gold.hibernate.model.Cls;
 import org.geneontology.gold.hibernate.model.ClsIntersectionOf;
 import org.geneontology.gold.hibernate.model.ClsUnionOf;
+import org.geneontology.gold.hibernate.model.DatabaseChangesHistory;
 import org.geneontology.gold.hibernate.model.DisjointWith;
 import org.geneontology.gold.hibernate.model.EquivalentTo;
 import org.geneontology.gold.hibernate.model.InferredAllSomeRelationship;
@@ -85,11 +87,11 @@ public class DbOperations implements DbOperationsInterface{
 		listeners = new ArrayList<DbOperationsListener>();
 	}
 	
-	public List<Ontology> getLastUpdateStatus(){
+	/*public List<Ontology> getLastUpdateStatus(){
 		GoldObjectFactory factory = GoldObjectFactory.buildDefaultFactory();
 		
 		return factory.getOntologies();
-	}
+	}*/
 	
 	public static boolean IsOperationRunning(){
 		return isOperationRunning;
@@ -139,6 +141,15 @@ public class DbOperations implements DbOperationsInterface{
 	}
 	
 
+	public static void saveChangesHistory(String objectId){
+		DatabaseChangesHistory changeHistory = new DatabaseChangesHistory(objectId, Calendar.getInstance().getTime());
+		
+		GoldObjectFactory factory =  GoldObjectFactory.buildDefaultFactory();
+		Session session= factory.getSession();
+		session.save(changeHistory);
+		session.getTransaction().commit();
+		
+	}
 
 	private void _bulkLoad(OWLGraphWrapper wrapper, boolean force) throws Exception{
 
@@ -160,6 +171,15 @@ public class DbOperations implements DbOperationsInterface{
 			
 			dbCreate = true;*/
 			loadTsvFiles(GoConfigManager.getInstance().getTsvFilesDir(), list);
+		
+			/*DatabaseChangesHistory changeHistory = new DatabaseChangesHistory(wrapper.getOntologyId(), Calendar.getInstance().getTime());
+			
+			GoldObjectFactory factory =  GoldObjectFactory.buildDefaultFactory();
+			Session session= factory.getSession();
+			session.save(changeHistory);
+			session.getTransaction().commit();*/
+			
+			saveChangesHistory(wrapper.getOntologyId());
 			
 			LOG.info("Bulk Load completed successfully");
 	
@@ -588,9 +608,13 @@ public class DbOperations implements DbOperationsInterface{
 			saveList(session, rcList);
 			
 			saveList(session, oatList);
-			
-			session.getTransaction().commit();
 
+			saveChangesHistory(wrapper.getOntologyId());
+			
+			if(session.isOpen())
+				session.getTransaction().commit();
+
+			
 			LOG.info("Database update is completed");
 
 		}catch(Exception ex){
