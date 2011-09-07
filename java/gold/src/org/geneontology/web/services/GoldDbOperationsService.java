@@ -123,13 +123,13 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract{
 
 				viewPath = "/servicesui/gold-lastupdate.jsp";
 				
-				DbOperations db = new DbOperations();
-				request.setAttribute("dbname", "Gold");
-				Hashtable<String, String[]> dbs = new Hashtable<String, String[]>();
+				//DbOperations db = new DbOperations();
+			//	request.setAttribute("dbname", "Gold");
+				Hashtable<String, String> dbs = new Hashtable<String, String>();
 				request.setAttribute("dbs", dbs);
-				
-				for(Ontology ont: db.getLastUpdateStatus()){
-					dbs.put(ont.getId(), new String[]{ont.getVersioniri(), ont.getCreationDate()});
+				//GoldObjectFactory factory = GoldObjectFactory.buildDefaultFactory();
+				for(Ontology ont: factory.getOntologies()){
+					dbs.put(ont.getId(), factory.getLatestDatabaseChangeStatus(ont.getId()).getChangeTime().toString());
 				}
 				
 			}
