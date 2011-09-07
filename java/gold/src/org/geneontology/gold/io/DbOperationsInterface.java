@@ -6,7 +6,7 @@ import org.geneontology.gold.hibernate.model.Ontology;
 public interface DbOperationsInterface {
 
 	
-	public List<Ontology> getLastUpdateStatus();
+	//public List<Ontology> getLastUpdateStatus();
 	
 	
 	public void bulkLoad(boolean force) throws Exception;

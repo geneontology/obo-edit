@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.geneontology.gold.hibernate.model.DatabaseChangesHistory" table="database_changes_history">
+      	<composite-id>
+	       <key-property name="objectId" column="object_id" type="string"/>
+	       <key-property name="changeTime" column="change_time" type="timestamp"/>
+    	</composite-id>
+        
+    </class>
+</hibernate-mapping>
