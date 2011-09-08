@@ -10,7 +10,7 @@
 
 
 // Load testing.
-load('bbop.test.js');
+load('test.js');
 var mr_t = new bbop.test();
 
 ///
