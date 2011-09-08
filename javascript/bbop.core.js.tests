@@ -8,11 +8,11 @@
 
 
 // Load testing.
-load('test.js');
+load('bbop.test.js');
 var mr_t = new bbop.test();
 
 // Correct environment.
-load('core.js');
+load('bbop.core.js');
 
 ///
 /// Start unit testing.
