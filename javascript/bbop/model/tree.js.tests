@@ -9,12 +9,12 @@
 
 
 // Load testing.
-load('test.js');
+load('../test.js');
 var mr_t = new bbop.test();
 
 // Correct environment.
-load('core.js');
-load('model.js');
+load('../core.js');
+load('../model.js');
 load('tree.js');
 
 
