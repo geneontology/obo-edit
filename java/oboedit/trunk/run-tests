@@ -1,10 +1,11 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 
 # Smoke tests for OBO-Edit.
 # This script runs either the OBO-Edit JUnit tests (default) or the OBO JUnit tests
 # (if you specify "obo" on the command line).
 # Results are printed on stdout.
-# Right now, runs out of Nomi's directory.
+# On Linux, runs out of Nomi's home directory.
+# Otherwise, runs from . (so run from your OBO directory if testing OBO, or OBO-Edit etc.)
 
 my $home = "/users/nomi";  # For now
 
@@ -32,29 +33,29 @@ my $projectHome;
 if (`uname -a` =~ /Linux/) {
     $projectHome = "$home/workspace/OBO";
 } else { # On my Mac
-    $projectHome = "$home/Documents/workspace/OBO";
+    chomp($projectHome = `pwd`);
 }
 chdir($projectHome);
-print "svn updating OBO...\n";
-`svn update 2>&1`;   # Should we save the output in case there were conflicts?
+#print "svn updating OBO...\n";
+#`svn update 2>&1`;   # Should we save the output in case there were conflicts?
 
 if ($project eq "oboedit") {
     if (`uname -a` =~ /Linux/) {
         $projectHome = "$home/workspace/oboedit";
     } else { # On my Mac
-        $projectHome = "$home/Documents/workspace/OBO-Edit";
+	chomp($projectHome = `pwd`);
     }
 
     chdir($projectHome);
-    print "svn updating $project...\n";
-    `svn update 2>&1`;   # Should we save the output in case there were conflicts?
+#    print "svn updating $project...\n";
+#    `svn update 2>&1`;   # Should we save the output in case there were conflicts?
 }
 
 print "Rebuilding...\n";
-my $ant = `ant clean; ant classes | grep BUILD`;
-if ($ant =~ /FAILED/) {
-    print "WARNING: build failed!\n\n";  # Should we give up at this point?
-}
+#my $ant = `ant clean; ant classes | grep BUILD`;
+#if ($ant =~ /FAILED/) {
+#    die "WARNING: build failed!\n\n";
+#}
 
 my $testLogs = "$projectHome/testlogs";
 
@@ -88,7 +89,7 @@ foreach my $class (@testClasses) {
     $class =~ s/.*\///;
     $class =~ s/.java.*//;
 
-    if ($class =~ /^All/ || $class =~ /TestUtil/ || $class =~ /^AA/ || $class =~ /^Abstract/) {
+    if ($class =~ /^All/ || $class =~ /TestUtil/ || $class =~ /^AA/ || $class =~ /^Abstract/ || $class =~ /Pellet/ || $class =~ /InverseAlwaysImplied/ || $class =~ /NamespaceTest/ || $class =~ /OBD/ || $class =~ /^ReasonerTest/ || $class =~ /^ReasonerUndoRedoTest/ || $class =~ /^TrimmingLibraryTest/ || $class =~ /^FixedCacheMutable/) {
         print "Skipping $class\n\n";
         next;
     }
