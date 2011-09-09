@@ -22,6 +22,7 @@ import org.geneontology.gaf.hibernate.GafHibObjectsBuilder;
 import org.geneontology.gaf.hibernate.GafObjectsFactory;
 import org.geneontology.gold.hibernate.factory.GoldObjectFactory;
 import org.geneontology.gold.hibernate.model.Ontology;
+import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.io.postgres.SchemaManager;
 import org.geneontology.gold.io.postgres.TsvFileLoader;
@@ -141,6 +142,9 @@ public class GAFDbOperations{
 				session.getTransaction().commit();
 				
 			}
+			
+			DbOperations.saveChangesHistory(docid);
+			
 			LOG.info("Bulk load is commited");
 			
 			
@@ -740,7 +744,10 @@ public class GAFDbOperations{
 					session.saveOrUpdate(obj);
 				}
 				
-				session.getTransaction().commit();
+				DbOperations.saveChangesHistory(docid);
+				
+				if(session.isOpen())
+					session.getTransaction().commit();
 				
 			LOG.info("Update is commited");
 			
