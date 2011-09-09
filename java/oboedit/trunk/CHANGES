@@ -1,6 +1,23 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 ================================
+What's New in OBO-Edit v2.1-beta19
+================================
+
+[ geneontology-Bugs-3388601 ] obo2obo no longer prints status messages to stdout
+(obo2obo and the other command-line utilities now do their own logger
+configuring so you once again see status messages on stdout.)
+
+Turned off repeated whitespace check by default (see bug 
+[ geneontology-Bugs-2784022 ] verification checks--repeated words, sentence
+boundaries)
+
+Since the "Allow extended characters" configuration option wasn't working,
+I have disabled it for now.  The current treatment of extended characters
+(permitted in synonyms, definitions, and comments; not permitted in
+dbxrefs) is what most people want anyway.
+
+================================
 What's New in OBO-Edit v2.1-beta18 (8/18/2011)
 ================================
 
