@@ -10,6 +10,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
@@ -20,8 +21,11 @@ import org.apache.log4j.Logger;
 import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.hibernate.GafDocument;
 import org.geneontology.gaf.hibernate.GafHibObjectsBuilder;
+import org.geneontology.gaf.hibernate.GafObjectsFactory;
 import org.geneontology.gaf.io.GAFDbOperations;
 import org.geneontology.gaf.io.GafURLFetch;
+import org.geneontology.gold.hibernate.factory.GoldObjectFactory;
+import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.rules.AnnotationRuleCheckException;
 import org.geneontology.gold.rules.AnnotationRuleViolation;
@@ -154,7 +158,17 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			}
 
 			if ("getlastupdate".equals(command)) {
-				viewPath = "/servicesui/gold-lastupdate.jsp";
+
+					viewPath = "/servicesui/gold-lastupdate.jsp";
+					
+					Hashtable<String, String> dbs = new Hashtable<String, String>();
+					request.setAttribute("dbs", dbs);
+					GoldObjectFactory f = GoldObjectFactory.buildDefaultFactory();
+					GafObjectsFactory factory = new GafObjectsFactory();
+					for(GafDocument doc: factory.getGafDocument()){
+						dbs.put(doc.getId(), f.getLatestDatabaseChangeStatus(doc.getId()).getChangeTime().toString());
+					}
+				
 			}
 			/**
 			 * The below condition sets gaf documents location

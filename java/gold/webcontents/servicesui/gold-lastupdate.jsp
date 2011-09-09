@@ -23,7 +23,7 @@
 		
 		<hr />
 
-		<h4>Ontology name : <%= ontology %></h4>
+		<h4>Document Id : <%= ontology %></h4>
 		Last Update Date : <%= data  %> <br />
 		
 		

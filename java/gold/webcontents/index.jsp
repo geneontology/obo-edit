@@ -33,6 +33,9 @@ function getLastUpdateDate(){
 	window.location="gold?servicename=gold-db-operations&command=getlastupdate";
 }
 
+function getLastUpdateDateOfGAF(){
+	window.location="gold?servicename=gaf-db-operations&command=getlastupdate";
+}
 
 
 </script>
@@ -63,6 +66,7 @@ function getLastUpdateDate(){
 <li><a href="javascript:loadTaxonomies();">Load Taxonomies into database</a></li>
 <li><a href="phylotools.jsp">Load Phylo trees into database</a></li>
 <li><a href="javascript:getLastUpdateDate()">Last Update of Ontololgy database</a></li>
+<li><a href="javascript:getLastUpdateDateOfGAF()">Last Update of GAF database</a></li>
 <li><a href="gold?servicename=reasoning-service&command=checkconsistency">Perform Ontology Consistency Check</a></li>
 <li><a href="gold?servicename=reasoning-service&command=find-inferences">Find Ontology Inferences</a></li>
 <li><a href="gaftools.html">Gene Annotation Files Tools</a></li>
