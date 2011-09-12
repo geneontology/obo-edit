@@ -293,7 +293,7 @@
         <actions />
         <formComponents />
       </screen>
-      <screen name="Set JVM memory" id="8729" beanClass="com.install4j.runtime.beans.screens.FormScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
+      <screen name="Set JVM memory Unix/Linux" id="8729" beanClass="com.install4j.runtime.beans.screens.FormScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.screens.FormScreen">
@@ -306,7 +306,7 @@
             </object>
           </java>
         </serializedBean>
-        <condition>!Util.isWindows()</condition>
+        <condition />
         <validation />
         <actions />
         <formComponents>
@@ -355,6 +355,68 @@ configurationObject.setValue(val);</initScript>
           </formComponent>
         </formComponents>
       </screen>
+      <screen name="Set JVM memory MacOSX" id="9368" beanClass="com.install4j.runtime.beans.screens.FormScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
+        <serializedBean>
+          <java class="java.beans.XMLDecoder">
+            <object class="com.install4j.runtime.beans.screens.FormScreen">
+              <void property="subTitle">
+                <string>Maximum Memory for OBO-Edit2</string>
+              </void>
+              <void property="title">
+                <string>Memory Settings</string>
+              </void>
+            </object>
+          </java>
+        </serializedBean>
+        <condition />
+        <validation />
+        <actions />
+        <formComponents>
+          <formComponent name="" id="9369" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent">
+                  <void property="labelText">
+                    <string>Because OBO-Edit2 is a Java application, it cannot use an arbitrary amount of system memory like a native application. Instead, you must set a fixed maximum amount of memory that OBO-Edit2 can use. Unless you have a 64-bit JVM, Java sets a limit of 1860M of allocated memory, even if you are using a computer with more memory. You can change the memory setting after installation via OBO-Edit's Configuration Manager or by hand-editing oboedit.vmoptions (located in the OBO-Edit installation directory).</string>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <initScript />
+          </formComponent>
+          <formComponent name="" id="9370" beanClass="com.install4j.runtime.beans.formcomponents.NumberSpinnerComponent" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.formcomponents.NumberSpinnerComponent">
+                  <void property="initialValue">
+                    <int>1024</int>
+                  </void>
+                  <void property="labelText">
+                    <string>Maximum Memory for OBO-Edit2 (in MB)</string>
+                  </void>
+                  <void property="maxValue">
+                    <int>1860</int>
+                  </void>
+                  <void property="minValue">
+                    <int>256</int>
+                  </void>
+                  <void property="stepSize">
+                    <int>128</int>
+                  </void>
+                  <void property="variableName">
+                    <string>oboedit.memoryAlloc</string>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <initScript>Integer val;
+val = new Integer((int) Math.max(1024,
+(Math.round(SystemInfo.getPhysicalMemory() * 0.6 / 1024 / 1024) / 128) *128));
+val = Math.min(val, 1860);
+configurationObject.setValue(val);</initScript>
+          </formComponent>
+        </formComponents>
+      </screen>
       <screen name="Set JVM memory Windows" id="9338" beanClass="com.install4j.runtime.beans.screens.FormScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
@@ -368,7 +430,7 @@ configurationObject.setValue(val);</initScript>
             </object>
           </java>
         </serializedBean>
-        <condition>Util.isWindows()</condition>
+        <condition />
         <validation />
         <actions />
         <formComponents>
@@ -776,7 +838,10 @@ configurationObject.setValue(val);</initScript>
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude />
       <variables />
-      <excludedInstallerScreens />
+      <excludedInstallerScreens>
+        <screen refId="8729" />
+        <screen refId="9368" />
+      </excludedInstallerScreens>
       <excludedUninstallerScreens />
     </win32>
     <macosFolder name="Mac OS X Folder" id="24" mediaFileName="" installDir="OBO-Edit2" overridePrincipalLanguage="true" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
@@ -785,7 +850,10 @@ configurationObject.setValue(val);</initScript>
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude />
       <variables />
-      <excludedInstallerScreens />
+      <excludedInstallerScreens>
+        <screen refId="8729" />
+        <screen refId="9338" />
+      </excludedInstallerScreens>
       <excludedUninstallerScreens />
     </macosFolder>
     <unixInstaller name="Unix Installer" id="26" mediaFileName="" installDir="OBO-Edit2" overridePrincipalLanguage="true" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
@@ -794,7 +862,10 @@ configurationObject.setValue(val);</initScript>
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude />
       <variables />
-      <excludedInstallerScreens />
+      <excludedInstallerScreens>
+        <screen refId="9368" />
+        <screen refId="9338" />
+      </excludedInstallerScreens>
       <excludedUninstallerScreens />
       <installerScript mode="1" file="">
         <scriptLines />
