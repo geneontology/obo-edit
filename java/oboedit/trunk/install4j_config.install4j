@@ -254,65 +254,88 @@
                   <void property="script">
                     <object class="com.install4j.api.beans.ScriptProperty">
                       <void property="value">
-                        <string>int maxMemory = new Long(SystemInfo.getPhysicalMemory() / 1024 / 1024).intValue();
-		
-// the 'os.arch' property gives you the bits for the running JavaVM not the OS.
-String arch = System.getProperty("os.arch");
-boolean is64bit = (arch != null) &amp;&amp; (arch.contains("x86_64") || arch.contains("amd64"));
-		
-if (Util.isMacOS()) {
-	// special case MacOS: the installer gives you the wrong values for max
-	// memory. Use system tools instead.
-	if (is64bit) {
-		// Try to call JavaApplicationstub to check, if it also is 64 bit capable
-		try {
-			// Execute command file for default JavaApplicationStub
-			String cmd1 = "file /System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub";
-			Process child1 = Runtime.getRuntime().exec(cmd1);
-
-			// Get the input stream and read from it
-			java.io.InputStream in1 = child1.getInputStream();
-			StringBuilder sb1 = new StringBuilder();
-			int c1;
-			while ((c1 = in1.read()) != -1) {
-				sb1.append((char) c1);
-			}
-			in1.close();
-			if (sb1.toString().contains("x86_64")) {
-				// find out max memory
-
+                        <string>int maxMemory = new Long(SystemInfo.getPhysicalMemory() / 1024 / 1024).intValue();		
+		if (Util.isMacOS()) {
+			// special case MacOS: the installer gives you too low values for max
+			// memory. Use system tools instead.
+			try {
 				// Execute command: system profiler for hardware infos
-				String cmd2 = "/usr/sbin/system_profiler SPHardwareDataType";
-				Process child2 = Runtime.getRuntime().exec(cmd2);
+				String cmd = "/usr/sbin/system_profiler SPHardwareDataType";
+				Process child = Runtime.getRuntime().exec(cmd);
 
 				// Get the input stream and read from it
-				java.io.InputStream in2 = child2.getInputStream();
-				StringBuilder sb2 = new StringBuilder();
-				int c2;
-				while ((c2 = in2.read()) != -1) {
-					sb2.append((char) c2);
+				java.io.InputStream in = child.getInputStream();
+				StringBuilder sb = new StringBuilder();
+				int c;
+				while ((c = in.read()) != -1) {
+					sb.append((char) c);
 				}
-				in2.close();
+				in.close();
 				java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("Memory:\\s+(\\d+)\\s*GB");
-				java.util.regex.Matcher matcher = pattern.matcher(sb2);
+				java.util.regex.Matcher matcher = pattern.matcher(sb);
 				if (matcher.find()) {
-					return Integer.parseInt(matcher.group(1)) * 1024;
+					maxMemory = Integer.parseInt(matcher.group(1)) * 1024;
+				}
+			} catch (java.io.IOException e) {
+			} catch (NumberFormatException e) {
+			}	
+
+			// The MacOS 64 bit check is two part: has 64-bit java version and 64-bit ApplicationStub
+			boolean is64bitDefaultJava = false;
+			try {
+				// Check default java if it is 64-bit
+				String cmd = "java -version";
+				Process child = Runtime.getRuntime().exec(cmd);
+
+				// Get the input stream and read from it
+				java.io.InputStream in = child.getErrorStream();
+				StringBuilder sb = new StringBuilder();
+				int c;
+				while ((c = in.read()) != -1) {
+					sb.append((char) c);
+				}
+				in.close();
+				is64bitDefaultJava = sb.toString().toLowerCase().contains("64-bit");
+			} catch (java.io.IOException e) {
+			}
+			boolean is64bit = false;
+			if (is64bitDefaultJava) {
+				try {
+					// Try to call JavaApplicationstub to check, if it also is 64 bit capable
+					// Execute command file for default JavaApplicationStub
+					String cmd = "file /System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub";
+					Process child = Runtime.getRuntime().exec(cmd);
+	
+					// Get the input stream and read from it
+					java.io.InputStream in = child.getInputStream();
+					StringBuilder sb = new StringBuilder();
+					int c;
+					while ((c = in.read()) != -1) {
+						sb.append((char) c);
+					}
+					in.close();
+					is64bit = sb.toString().toLowerCase().contains("x86_64");
+				} catch (java.io.IOException e) {
 				}
 			}
-		} catch (java.io.IOException e) {
-		} catch (NumberFormatException e) {
-		}
-	}
-}
-if (!is64bit) {
-	int limit = 1860;
-	if(Util.isWindows()) {
-		// 32 bit windows JavaVM has lower limits.
-		limit = 1024;
-	}
-	maxMemory = Math.min(maxMemory, limit);
-}
-return maxMemory;</string>
+			if(!is64bit) {
+				maxMemory = Math.min(maxMemory, 1860);
+			}
+			return maxMemory;
+		} else {
+			// the 'os.arch' property gives you the bits for the running JavaVM not the OS.
+			String arch = System.getProperty("os.arch");
+			boolean is64bit = (arch != null) &amp;&amp; (arch.contains("x86_64") || arch.contains("amd64"));
+			if(!is64bit) {
+				int limit = 1860;
+				if(Util.isWindows()) {
+					// 32 bit windows JavaVM has lower limits.
+					limit = 1024;
+				}
+				maxMemory = Math.min(maxMemory, limit);
+			}
+			return maxMemory;
+		}</string>
                       </void>
                     </object>
                   </void>
