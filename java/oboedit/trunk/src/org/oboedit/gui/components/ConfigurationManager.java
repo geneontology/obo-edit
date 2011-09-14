@@ -1384,6 +1384,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				if (matcher.find()) {
 					int maxKB = Integer.parseInt(matcher.group(1));
 					maxMemory = maxKB / 1024;
+					break;
 				}
 			}
 		} catch(NumberFormatException e) {
