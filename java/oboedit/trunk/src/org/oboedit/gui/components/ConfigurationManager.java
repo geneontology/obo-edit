@@ -9,6 +9,7 @@ import org.bbop.framework.dock.LayoutListener;
 import org.bbop.io.FileUtil;
 import org.bbop.io.IOUtil;
 import org.bbop.swing.*;
+import org.bbop.util.OSUtil;
 import org.obo.datamodel.*;
 import org.oboedit.gui.*;
 import org.oboedit.gui.event.ReconfigEvent;
@@ -19,6 +20,8 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.util.*;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.net.*;
 import java.io.*;
 import java.awt.*;
@@ -1255,22 +1258,56 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				.getSelectedItem(), (String) fontSizeList.getSelectedItem(),
 				(String) fontTypeList.getSelectedItem()));
 		
+		boolean isWindows = OSUtil.isWindows();
 		String mem = memoryField.getText();
-                if (mem == null || mem.toUpperCase().indexOf("M") < 1) {
-                  JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(), 
-                                                "Error: illegal memory setting " + ((mem == null) ? "" : mem) + ".\nMemory setting must be some number of megabytes (M) >800M and <= 1860M.\nSetting to 18060M.");
-                  mem = "1860M";
+		if (mem == null || mem.toUpperCase().indexOf("M") < 1) {
+			String newMem = isWindows ? "1024M" : "1860M";
+			JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(), 
+					"Error: illegal memory setting " + ((mem == null) ? "" : mem) + 
+					".\nMemory setting must be some number of megabytes (M).\nSetting to "+newMem+".");
+			mem = newMem;
 		}
-                String numMem = mem.substring(0, mem.indexOf("M"));
+		String numMem = mem.substring(0, mem.indexOf("M"));
 		int intMem = Integer.parseInt(numMem);
-		if(intMem > 1860){
-			if (JOptionPane.showConfirmDialog( GUIManager.getManager().getFrame(), "WARNING -- unless you have a 64-bit JVM, the maximum amount of memory Java allows is 1860M. " +
-					"\n Do you really want to set it to " + mem + "?", "Warning", JOptionPane.OK_CANCEL_OPTION)
-				!= JOptionPane.OK_OPTION) mem = "1860M";
-		} 
+		int memLimit = 1860;
+		if (is64Bit()) {
+			if (isWindows) {
+				// there is no easy way to get 
+				// the physical memory of a Windows OS
+				memLimit = Integer.MAX_VALUE;
+			}
+			else if(OSUtil.isLinux()) {
+				memLimit = getAvailableMaxMemoryLinux();
+			}
+			else if (OSUtil.isMacOSX()) {
+				memLimit = getAvailableMaxMemoryMacOS();
+			}
+		}
+		else {
+			if (isWindows) {
+				memLimit = 1024;
+			}
+		}
+		if(intMem > memLimit){
+			String message;
+			if (is64Bit()) {
+				message = "Error -- You are trying to set more memory for OBO-Edit than is physically available on you machine ("+memLimit+"M).";
+			}
+			else {
+				message = "Error -- Your current JVM (32-bit) does not support more than "+memLimit+"M of memory.";
+			}
+			JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(), message, "Error in Memory Settings.", JOptionPane.ERROR_MESSAGE);
+			mem = memLimit+"M";
+		} else if (isWindows && intMem > 2048) {
+			String message = "WARNING: You want to set the memory for OBO-Edit to more than 2GByte.\nDo you really want to set it to " + mem + "?";
+			int result = JOptionPane.showConfirmDialog(GUIManager.getManager().getFrame(), message, "Warning", JOptionPane.YES_NO_OPTION);
+			if (result != JOptionPane.YES_OPTION) {
+				mem = "2048M";
+			}
+		}
 		//sending mem value to preferences to update vmoptions file
 	    preferences.setMemoryValue(mem);
-	    //updating mem in config manager text field -- needed only when user cancels memory upgrade > 1860M operation
+	    //updating mem in config manager text field
 	    memoryField.setText(mem);
 	    
 
@@ -1298,6 +1335,73 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		}
 
 		reload();
+	}
+	
+	private static boolean is64Bit() {
+		String arch = OSUtil.getOSArch();
+		return (arch != null) && (arch.contains("x86_64") || arch.contains("amd64"));
+	}
+	
+	private static int getAvailableMaxMemoryMacOS() {
+		// If you can not read max memory, limit to an arbitrary default value of 4G
+		int maxMemory = 4096;
+		try {
+			// Execute command
+			String cmd = "sysctl hw.memsize";
+			Process child = Runtime.getRuntime().exec(cmd);
+
+			// Get the input stream and read from it
+			java.io.InputStream in = child.getInputStream();
+			StringBuilder sb = new StringBuilder();
+			int c;
+			while ((c = in.read()) != -1) {
+				sb.append((char) c);
+			}
+			in.close();
+			java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("hw.memsize:\\s+(\\d+)\\s*");
+			java.util.regex.Matcher matcher = pattern.matcher(sb);
+			if (matcher.find()) {
+				maxMemory = new Long(Long.parseLong(matcher.group(1)) / 1024L / 1024L).intValue();
+			}
+		} catch (java.io.IOException e) {
+		} catch (NumberFormatException e) {
+		}	
+		
+		return maxMemory;
+	}
+	
+	private static int getAvailableMaxMemoryLinux() {
+		// If you can not read max memory, limit to an arbitrary default value of 4G
+		int maxMemory = 4096;
+		
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new FileReader("/proc/meminfo"));
+			String s;
+			Pattern pattern = Pattern.compile("MemTotal:\\s+(\\d+)\\s*kB");
+			while ((s = reader.readLine()) != null) {
+				Matcher matcher = pattern.matcher(s);
+				if (matcher.find()) {
+					int maxKB = Integer.parseInt(matcher.group(1));
+					maxMemory = maxKB / 1024;
+				}
+			}
+		} catch(NumberFormatException e) {
+			logger.info("Could not read max memory: "+e.getMessage());
+		}
+		catch (IOException e) {
+			logger.info("Could not read max memory: "+e.getMessage());
+		}
+		finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					// ignore quietly
+				}
+			}
+		}
+		return maxMemory;
 	}
 
 	@Override
