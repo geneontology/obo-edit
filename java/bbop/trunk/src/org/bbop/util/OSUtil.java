@@ -20,6 +20,7 @@ public class OSUtil
    */
   public enum OS
   {
+	  // !! TODO Need to add Windows 8, when it becomes available
     LINUX,
     MAC_OS_X,
     WINDOWS_7,
