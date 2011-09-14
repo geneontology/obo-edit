@@ -22,6 +22,7 @@ public class OSUtil
   {
     LINUX,
     MAC_OS_X,
+    WINDOWS_7,
     WINDOWS_VISTA,
     WINDOWS_XP,
     WINDOWS_2000,
@@ -79,8 +80,13 @@ public class OSUtil
     //flavors of Windows...In case that 'osName' doesn't return the full
     //name of Windows, need to fall back on osVersion
     else if (osName.matches("^Windows.*$")) {
+    	 //Windows Vista
+      if (osName.equalsIgnoreCase("Windows 7") ||
+            osVersion.equals("6.1")) {
+         return OS.WINDOWS_7;
+      }
       //Windows Vista
-      if (osName.equalsIgnoreCase("Windows Vista") ||
+      else if (osName.equalsIgnoreCase("Windows Vista") ||
           osVersion.equals("6.0")) {
         return OS.WINDOWS_VISTA;
       }
@@ -139,6 +145,15 @@ public class OSUtil
     return getOS() == OS.MAC_OS_X;
   }
 
+  /** Check to see if the OS is Windows 7
+   *
+   *  @return true if the OS is Windows 7
+   */
+  public static boolean isWindows7()
+  {
+    return getOS() == OS.WINDOWS_7;
+  }
+  
   /** Check to see if the OS is Windows Vista
    *
    *  @return true if the OS is Windows Vista
@@ -190,7 +205,8 @@ public class OSUtil
    */
   public static boolean isWindows()
   {
-    if (isWindowsVista() || isWindowsXP() || isWindows2000() ||
+    if (isWindows7() || isWindowsVista() || 
+        isWindowsXP() || isWindows2000() ||
         isWindows98() || isWindowsME()) {
       return true;
     }
