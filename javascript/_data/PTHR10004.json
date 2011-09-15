@@ -2,7 +2,7 @@
    "edges" : [
       {
          "length" : 0,
-         "source_id" : "_anonymous_d6369964-4455-4515-a2a7-b3e4f25a593d",
+         "source_id" : "_anonymous_8d694a56-9352-4b5f-84de-47b77425a5f5",
          "sink_id" : "AN0"
       },
       {
@@ -73,34 +73,32 @@
          "speciations" : "1"
       },
       "AN9" : {
+         "gene_id" : "ENTREZ:2685286",
          "node_id" : "AN9",
-         "second" : "ENTREZ:2685286",
-         "species_symbol" : "GEOSL",
-         "third" : "UniProtKB:Q747I8"
+         "protein_id" : "UniProtKB:Q747I8"
       },
       "AN4" : {
+         "gene_id" : "ENTREZ:585745",
          "node_id" : "AN4",
-         "second" : "ENTREZ:585745",
-         "species_symbol" : "STRPU",
-         "third" : "NCBI:XP_790652"
+         "protein_id" : "NCBI:XP_790652"
       },
       "AN7" : {
+         "gene_id" : "ENTREZ:3830172",
          "node_id" : "AN7",
-         "second" : "ENTREZ:3830172",
-         "species_symbol" : "PLAYO",
-         "third" : "UniProtKB:Q7RKB3"
+         "protein_id" : "UniProtKB:Q7RKB3"
       },
       "AN8" : {
+         "gene_id" : "ENTREZ:3792133",
          "node_id" : "AN8",
-         "second" : "ENTREZ:3792133",
-         "species_symbol" : "PLAYO",
-         "third" : "UniProtKB:Q7RBF2"
+         "protein_id" : "UniProtKB:Q7RBF2"
+      },
+      "_anonymous_8d694a56-9352-4b5f-84de-47b77425a5f5" : {
+         "node_id" : "_anonymous_8d694a56-9352-4b5f-84de-47b77425a5f5"
       },
       "AN5" : {
+         "gene_id" : "ENTREZ:585807",
          "node_id" : "AN5",
-         "second" : "ENTREZ:585807",
-         "species_symbol" : "STRPU",
-         "third" : "NCBI:XP_800360"
+         "protein_id" : "NCBI:XP_800360"
       },
       "AN2" : {
          "duplications" : "1",
@@ -109,13 +107,9 @@
          "speciations" : "0"
       },
       "AN3" : {
+         "gene_id" : "ENTREZ:585787",
          "node_id" : "AN3",
-         "second" : "ENTREZ:585787",
-         "species_symbol" : "STRPU",
-         "third" : "NCBI:XP_800359"
-      },
-      "_anonymous_d6369964-4455-4515-a2a7-b3e4f25a593d" : {
-         "node_id" : "_anonymous_d6369964-4455-4515-a2a7-b3e4f25a593d"
+         "protein_id" : "NCBI:XP_800359"
       }
    },
    "meta" : {
