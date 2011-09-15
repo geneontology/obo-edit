@@ -1291,7 +1291,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		if(intMem > memLimit){
 			String message;
 			if (is64Bit()) {
-				message = "Error -- You are trying to set more memory for OBO-Edit than is physically available on you machine ("+memLimit+"M).";
+				message = "Error -- you cannot allocate more memory for OBO-Edit than is physically available on your machine ("+memLimit+"M).";
 			}
 			else {
 				message = "Error -- Your current JVM (32-bit) does not support more than "+memLimit+"M of memory.";
@@ -1299,7 +1299,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(), message, "Error in Memory Settings.", JOptionPane.ERROR_MESSAGE);
 			mem = memLimit+"M";
 		} else if (isWindows && intMem > 2048) {
-			String message = "WARNING: You want to set the memory for OBO-Edit to more than 2GByte.\nDo you really want to set it to " + mem + "?";
+			String message = "WARNING: You are attempting to set the memory for OBO-Edit to more than 2GByte.\nIf you set the memory allocation that high, OBO-Edit may not be able to launch.\nAre you sure you want to set it to " + mem + "?";
 			int result = JOptionPane.showConfirmDialog(GUIManager.getManager().getFrame(), message, "Warning", JOptionPane.YES_NO_OPTION);
 			if (result != JOptionPane.YES_OPTION) {
 				mem = "2048M";
