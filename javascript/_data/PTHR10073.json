@@ -1,8 +1,8 @@
 {
    "edges" : [
       {
-         "length" : 0,
-         "source_id" : "_anonymous_b1ae8e5d-a065-42ed-976a-083db4332a97",
+         "length" : "0",
+         "source_id" : "_anonymous_788c382a-c6c6-49a0-8342-82e7ddea0c83",
          "sink_id" : "AN0"
       },
       {
@@ -1358,10 +1358,9 @@
    ],
    "nodes" : {
       "AN114" : {
+         "gene_id" : "ENTREZ:3406788",
          "node_id" : "AN114",
-         "second" : "ENTREZ:3406788",
-         "species_symbol" : "ENTHI",
-         "third" : "NCBI:XP_652484"
+         "protein_id" : "NCBI:XP_652484"
       },
       "AN61" : {
          "duplications" : "0",
@@ -1378,40 +1377,34 @@
          "speciations" : "1"
       },
       "AN228" : {
+         "gene_id" : "SGD:S000005026",
          "node_id" : "AN228",
-         "second" : "SGD:S000005026",
-         "species_symbol" : "YEAST",
-         "third" : "UniProtKB:P14242"
+         "protein_id" : "UniProtKB:P14242"
       },
       "AN145" : {
+         "gene_id" : "RGD:1563556",
          "node_id" : "AN145",
-         "second" : "RGD:1563556",
-         "species_symbol" : "RAT",
-         "third" : "NCBI:XP_001072925"
+         "protein_id" : "NCBI:XP_001072925"
       },
       "AN249" : {
+         "gene_id" : "ENTREZ:5717917",
          "node_id" : "AN249",
-         "second" : "ENTREZ:5717917",
-         "species_symbol" : "CHLRE",
-         "third" : "UniProtKB:A8IT98"
+         "protein_id" : "UniProtKB:A8IT98"
       },
       "AN45" : {
+         "gene_id" : "ENSEMBL:AGAP012192",
          "node_id" : "AN45",
-         "second" : "ENSEMBL:AGAP012192",
-         "species_symbol" : "ANOGA",
-         "third" : "ENSEMBL:AGAP012192-PA"
+         "protein_id" : "ENSEMBL:AGAP012192-PA"
       },
       "AN209" : {
+         "gene_id" : "ENSEMBL:ENSOANG00000001944",
          "node_id" : "AN209",
-         "second" : "ENSEMBL:ENSOANG00000001944",
-         "species_symbol" : "ORNAN",
-         "third" : "ENSEMBL:ENSOANP00000003091"
+         "protein_id" : "ENSEMBL:ENSOANP00000003091"
       },
       "AN269" : {
+         "gene_id" : "ENTREZ:5355304",
          "node_id" : "AN269",
-         "second" : "ENTREZ:5355304",
-         "species_symbol" : "PSEA7",
-         "third" : "UniProtKB:A6VD59"
+         "protein_id" : "UniProtKB:A6VD59"
       },
       "AN113" : {
          "duplications" : "0",
@@ -1434,10 +1427,9 @@
          "speciations" : "1"
       },
       "AN93" : {
+         "gene_id" : "ENSEMBL:ENSCAFG00000017012",
          "node_id" : "AN93",
-         "second" : "ENSEMBL:ENSCAFG00000017012",
-         "species_symbol" : "CANFA",
-         "third" : "ENSEMBL:ENSCAFP00000025054"
+         "protein_id" : "ENSEMBL:ENSCAFP00000025054"
       },
       "AN205" : {
          "duplications" : "0",
@@ -1482,10 +1474,9 @@
          "speciations" : "1"
       },
       "AN20" : {
+         "gene_id" : "ENSEMBL:ENSPTRG00000014743",
          "node_id" : "AN20",
-         "second" : "ENSEMBL:ENSPTRG00000014743",
-         "species_symbol" : "PANTR",
-         "third" : "ENSEMBL:ENSPTRP00000058676"
+         "protein_id" : "ENSEMBL:ENSPTRP00000058676"
       },
       "AN255" : {
          "duplications" : "0",
@@ -1495,10 +1486,9 @@
          "speciations" : "1"
       },
       "AN176" : {
+         "gene_id" : "ENSEMBL:ENSPTRG00000018901",
          "node_id" : "AN176",
-         "second" : "ENSEMBL:ENSPTRG00000018901",
-         "species_symbol" : "PANTR",
-         "third" : "ENSEMBL:ENSPTRP00000032283"
+         "protein_id" : "ENSEMBL:ENSPTRP00000032283"
       },
       "AN265" : {
          "duplications" : "0",
@@ -1543,22 +1533,19 @@
          "speciations" : "1"
       },
       "AN160" : {
+         "gene_id" : "ENTREZ:760408",
          "node_id" : "AN160",
-         "second" : "ENTREZ:760408",
-         "species_symbol" : "STRPU",
-         "third" : "NCBI:XP_001188203"
+         "protein_id" : "NCBI:XP_001188203"
       },
       "AN159" : {
+         "gene_id" : "ENTREZ:756115",
          "node_id" : "AN159",
-         "second" : "ENTREZ:756115",
-         "species_symbol" : "STRPU",
-         "third" : "NCBI:XP_001193528"
+         "protein_id" : "NCBI:XP_001193528"
       },
       "AN97" : {
+         "gene_id" : "ENSEMBL:ENSOANG00000007010",
          "node_id" : "AN97",
-         "second" : "ENSEMBL:ENSOANG00000007010",
-         "species_symbol" : "ORNAN",
-         "third" : "ENSEMBL:ENSOANP00000011166"
+         "protein_id" : "ENSEMBL:ENSOANP00000011166"
       },
       "AN15" : {
          "duplications" : "0",
@@ -1568,16 +1555,14 @@
          "speciations" : "1"
       },
       "AN143" : {
+         "gene_id" : "MGI:MGI:1202302",
          "node_id" : "AN143",
-         "second" : "MGI:MGI=1202302",
-         "species_symbol" : "MOUSE",
-         "third" : "NCBI:NP_705784"
+         "protein_id" : "NCBI:NP_705784"
       },
       "AN190" : {
+         "gene_id" : "ENSEMBL:ENSG00000174368",
          "node_id" : "AN190",
-         "second" : "ENSEMBL:ENSG00000174368",
-         "species_symbol" : "HUMAN",
-         "third" : "UniProtKB:A8MQ11"
+         "protein_id" : "UniProtKB:A8MQ11"
       },
       "AN163" : {
          "duplications" : "0",
@@ -1587,16 +1572,14 @@
          "speciations" : "1"
       },
       "AN140" : {
+         "gene_id" : "ENSEMBL:ENSPTRG00000012737",
          "node_id" : "AN140",
-         "second" : "ENSEMBL:ENSPTRG00000012737",
-         "species_symbol" : "PANTR",
-         "third" : "ENSEMBL:ENSPTRP00000021776"
+         "protein_id" : "ENSEMBL:ENSPTRP00000021776"
       },
       "AN44" : {
+         "gene_id" : "FB:FBgn0011659",
          "node_id" : "AN44",
-         "second" : "FB:FBgn0011659",
-         "species_symbol" : "DROME",
-         "third" : "UniProtKB:A1Z7C1"
+         "protein_id" : "UniProtKB:A1Z7C1"
       },
       "AN120" : {
          "duplications" : "0",
@@ -1612,10 +1595,9 @@
          "speciations" : "0"
       },
       "AN156" : {
+         "gene_id" : "ZFIN:ZDB-GENE-030616-528",
          "node_id" : "AN156",
-         "second" : "ZFIN:ZDB-GENE-030616-528",
-         "species_symbol" : "DANRE",
-         "third" : "UniProtKB:Q8JFR9"
+         "protein_id" : "UniProtKB:Q8JFR9"
       },
       "AN171" : {
          "duplications" : "1",
@@ -1624,10 +1606,9 @@
          "speciations" : "0"
       },
       "AN204" : {
+         "gene_id" : "RGD:1305483",
          "node_id" : "AN204",
-         "second" : "RGD:1305483",
-         "species_symbol" : "RAT",
-         "third" : "NCBI:XP_001063043"
+         "protein_id" : "NCBI:XP_001063043"
       },
       "AN72" : {
          "duplications" : "0",
@@ -1637,16 +1618,14 @@
          "speciations" : "1"
       },
       "AN30" : {
+         "gene_id" : "ENTREZ:420729",
          "node_id" : "AN30",
-         "second" : "ENTREZ:420729",
-         "species_symbol" : "CHICK",
-         "third" : "NCBI:XP_418828"
+         "protein_id" : "NCBI:XP_418828"
       },
       "AN96" : {
+         "gene_id" : "ENSEMBL:ENSOANG00000011581",
          "node_id" : "AN96",
-         "second" : "ENSEMBL:ENSOANG00000011581",
-         "species_symbol" : "ORNAN",
-         "third" : "ENSEMBL:ENSOANP00000018348"
+         "protein_id" : "ENSEMBL:ENSOANP00000018348"
       },
       "AN1" : {
          "duplications" : "0",
@@ -1656,43 +1635,34 @@
          "speciations" : "1"
       },
       "AN216" : {
+         "gene_id" : "WB:WBGene00004064",
          "node_id" : "AN216",
-         "second" : "WB:WBGene00004064",
-         "species_symbol" : "CAEEL",
-         "third" : "UniProtKB:Q9TVL8"
+         "protein_id" : "UniProtKB:Q9TVL8"
       },
       "AN83" : {
+         "gene_id" : "ENSEMBL:ENSG00000119684",
          "node_id" : "AN83",
-         "second" : "ENSEMBL:ENSG00000119684",
-         "species_symbol" : "HUMAN",
-         "third" : "UniProtKB:Q9UHC1"
+         "protein_id" : "UniProtKB:Q9UHC1"
       },
       "AN66" : {
+         "gene_id" : "ENTREZ:5715471",
          "node_id" : "AN66",
-         "second" : "ENTREZ:5715471",
-         "species_symbol" : "CHLRE",
-         "third" : "UniProtKB:A8HM54"
+         "protein_id" : "UniProtKB:A8HM54"
       },
       "AN49" : {
+         "gene_id" : "SGD:S000004777",
          "node_id" : "AN49",
-         "second" : "SGD:S000004777",
-         "species_symbol" : "YEAST",
-         "third" : "UniProtKB:P38920"
-      },
-      "_anonymous_b1ae8e5d-a065-42ed-976a-083db4332a97" : {
-         "node_id" : "_anonymous_b1ae8e5d-a065-42ed-976a-083db4332a97"
+         "protein_id" : "UniProtKB:P38920"
       },
       "AN119" : {
+         "gene_id" : "ENTREZ:5725681",
          "node_id" : "AN119",
-         "second" : "ENTREZ:5725681",
-         "species_symbol" : "CHLRE",
-         "third" : "UniProtKB:A8JCH7"
+         "protein_id" : "UniProtKB:A8JCH7"
       },
       "AN235" : {
+         "gene_id" : "ENTREZ:2870963",
          "node_id" : "AN235",
-         "second" : "ENTREZ:2870963",
-         "species_symbol" : "EMENI",
-         "third" : "UniProtKB:Q5AZG4"
+         "protein_id" : "UniProtKB:Q5AZG4"
       },
       "AN102" : {
          "duplications" : "1",
@@ -1707,22 +1677,19 @@
          "speciations" : "0"
       },
       "AN226" : {
+         "gene_id" : "ENTREZ:4622035",
          "node_id" : "AN226",
-         "second" : "ENTREZ:4622035",
-         "species_symbol" : "ASHGO",
-         "third" : "UniProtKB:Q753U9"
+         "protein_id" : "UniProtKB:Q753U9"
       },
       "AN148" : {
+         "gene_id" : "ENSEMBL:ENSBTAG00000018795",
          "node_id" : "AN148",
-         "second" : "ENSEMBL:ENSBTAG00000018795",
-         "species_symbol" : "BOVIN",
-         "third" : "UniProtKB:A0JNP9"
+         "protein_id" : "UniProtKB:A0JNP9"
       },
       "AN139" : {
+         "gene_id" : "ENSEMBL:ENSG00000064933",
          "node_id" : "AN139",
-         "second" : "ENSEMBL:ENSG00000064933",
-         "species_symbol" : "HUMAN",
-         "third" : "UniProtKB:P54277"
+         "protein_id" : "UniProtKB:P54277"
       },
       "AN197" : {
          "duplications" : "0",
@@ -1746,22 +1713,19 @@
          "speciations" : "1"
       },
       "AN19" : {
+         "gene_id" : "ENSEMBL:ENSG00000076242",
          "node_id" : "AN19",
-         "second" : "ENSEMBL:ENSG00000076242",
-         "species_symbol" : "HUMAN",
-         "third" : "UniProtKB:P40692"
+         "protein_id" : "UniProtKB:P40692"
       },
       "AN217" : {
+         "gene_id" : "ENTREZ:5636459",
          "node_id" : "AN217",
-         "second" : "ENTREZ:5636459",
-         "species_symbol" : "CAEBR",
-         "third" : "NCBI:XP_001673667"
+         "protein_id" : "NCBI:XP_001673667"
       },
       "AN212" : {
+         "gene_id" : "ENSEMBL:ENSCING00000002674",
          "node_id" : "AN212",
-         "second" : "ENSEMBL:ENSCING00000002674",
-         "species_symbol" : "CIOIN",
-         "third" : "ENSEMBL:ENSCINP00000005459"
+         "protein_id" : "ENSEMBL:ENSCINP00000005459"
       },
       "AN110" : {
          "duplications" : "0",
@@ -1784,22 +1748,19 @@
          "speciations" : "1"
       },
       "AN193" : {
+         "gene_id" : "ENSEMBL:ENSG00000123965",
          "node_id" : "AN193",
-         "second" : "ENSEMBL:ENSG00000123965",
-         "species_symbol" : "HUMAN",
-         "third" : "UniProtKB:A8MQ11"
+         "protein_id" : "UniProtKB:A8MQ11"
       },
       "AN56" : {
+         "gene_id" : "ENTREZ:3406116",
          "node_id" : "AN56",
-         "second" : "ENTREZ:3406116",
-         "species_symbol" : "ENTHI",
-         "third" : "NCBI:XP_651821"
+         "protein_id" : "NCBI:XP_651821"
       },
       "AN117" : {
+         "gene_id" : "ENTREZ:5650802",
          "node_id" : "AN117",
-         "second" : "ENTREZ:5650802",
-         "species_symbol" : "LEIMA",
-         "third" : "UniProtKB:Q4QEC0"
+         "protein_id" : "UniProtKB:Q4QEC0"
       },
       "AN170" : {
          "duplications" : "0",
@@ -1816,10 +1777,9 @@
          "speciations" : "1"
       },
       "AN157" : {
+         "gene_id" : "ENSEMBL:ENSCING00000003685",
          "node_id" : "AN157",
-         "second" : "ENSEMBL:ENSCING00000003685",
-         "species_symbol" : "CIOIN",
-         "third" : "ENSEMBL:ENSCINP00000007598"
+         "protein_id" : "ENSEMBL:ENSCINP00000007598"
       },
       "AN268" : {
          "duplications" : "0",
@@ -1829,10 +1789,9 @@
          "speciations" : "1"
       },
       "AN254" : {
+         "gene_id" : "ENTREZ:1472414",
          "node_id" : "AN254",
-         "second" : "ENTREZ:1472414",
-         "species_symbol" : "METAC",
-         "third" : "UniProtKB:Q8TTB5"
+         "protein_id" : "UniProtKB:Q8TTB5"
       },
       "AN167" : {
          "duplications" : "0",
@@ -1842,10 +1801,9 @@
          "speciations" : "1"
       },
       "AN94" : {
+         "gene_id" : "ENSEMBL:ENSMODG00000006037",
          "node_id" : "AN94",
-         "second" : "ENSEMBL:ENSMODG00000006037",
-         "species_symbol" : "MONDO",
-         "third" : "ENSEMBL:ENSMODP00000007489"
+         "protein_id" : "ENSEMBL:ENSMODP00000007489"
       },
       "AN175" : {
          "duplications" : "1",
@@ -1854,10 +1812,9 @@
          "speciations" : "0"
       },
       "AN32" : {
+         "gene_id" : "ENSEMBL:ENSXETG00000004985",
          "node_id" : "AN32",
-         "second" : "ENSEMBL:ENSXETG00000004985",
-         "species_symbol" : "XENTR",
-         "third" : "ENSEMBL:ENSXETP00000010905"
+         "protein_id" : "ENSEMBL:ENSXETP00000010905"
       },
       "AN76" : {
          "duplications" : "0",
@@ -1867,64 +1824,54 @@
          "speciations" : "1"
       },
       "AN24" : {
+         "gene_id" : "RGD:620937",
          "node_id" : "AN24",
-         "second" : "RGD:620937",
-         "species_symbol" : "RAT",
-         "third" : "UniProtKB:P97679"
+         "protein_id" : "UniProtKB:P97679"
       },
       "AN116" : {
+         "gene_id" : "ENTREZ:4521609",
          "node_id" : "AN116",
-         "second" : "ENTREZ:4521609",
-         "species_symbol" : "TETTH",
-         "third" : "UniProtKB:Q22CH2"
+         "protein_id" : "UniProtKB:Q22CH2"
       },
       "AN87" : {
+         "gene_id" : "MGI:MGI:1353455",
          "node_id" : "AN87",
-         "second" : "MGI:MGI=1353455",
-         "species_symbol" : "MOUSE",
-         "third" : "NCBI:NP_780546"
+         "protein_id" : "NCBI:NP_780546"
       },
       "AN41" : {
+         "gene_id" : "WB:WBGene00003373",
          "node_id" : "AN41",
-         "second" : "WB:WBGene00003373",
-         "species_symbol" : "CAEEL",
-         "third" : "UniProtKB:Q9XU10"
+         "protein_id" : "UniProtKB:Q9XU10"
       },
       "AN266" : {
+         "gene_id" : "ENTREZ:2688110",
          "node_id" : "AN266",
-         "second" : "ENTREZ:2688110",
-         "species_symbol" : "GEOSL",
-         "third" : "UniProtKB:Q74BP0"
+         "protein_id" : "UniProtKB:Q74BP0"
       },
       "AN201" : {
+         "gene_id" : "ENSEMBL:ENSPTRG00000018902",
          "node_id" : "AN201",
-         "second" : "ENSEMBL:ENSPTRG00000018902",
-         "species_symbol" : "PANTR",
-         "third" : "ENSEMBL:ENSPTRP00000056990"
+         "protein_id" : "ENSEMBL:ENSPTRP00000056990"
       },
       "AN112" : {
+         "gene_id" : "ENTREZ:3879346",
          "node_id" : "AN112",
-         "second" : "ENTREZ:3879346",
-         "species_symbol" : "NEUCR",
-         "third" : "UniProtKB:Q9HE21"
+         "protein_id" : "UniProtKB:Q9HE21"
       },
       "AN37" : {
+         "gene_id" : "ENSEMBL:ENSCING00000002563",
          "node_id" : "AN37",
-         "second" : "ENSEMBL:ENSCING00000002563",
-         "species_symbol" : "CIOIN",
-         "third" : "ENSEMBL:ENSCINP00000005234"
+         "protein_id" : "ENSEMBL:ENSCINP00000005234"
       },
       "AN59" : {
+         "gene_id" : "ENSEMBL:ENSDARG00000069969",
          "node_id" : "AN59",
-         "second" : "ENSEMBL:ENSDARG00000069969",
-         "species_symbol" : "DANRE",
-         "third" : "ENSEMBL:ENSDARP00000093040"
+         "protein_id" : "ENSEMBL:ENSDARP00000093040"
       },
       "AN264" : {
+         "gene_id" : "ENTREZ:1193141",
          "node_id" : "AN264",
-         "second" : "ENTREZ:1193141",
-         "species_symbol" : "AQUAE",
-         "third" : "UniProtKB:O67518"
+         "protein_id" : "UniProtKB:O67518"
       },
       "AN185" : {
          "duplications" : "1",
@@ -1933,22 +1880,19 @@
          "speciations" : "0"
       },
       "AN259" : {
+         "gene_id" : "ENTREZ:5825934",
          "node_id" : "AN259",
-         "second" : "ENTREZ:5825934",
-         "species_symbol" : "CHLAA",
-         "third" : "UniProtKB:A9WJ86"
+         "protein_id" : "UniProtKB:A9WJ86"
       },
       "AN246" : {
+         "gene_id" : "ENTREZ:3684461",
          "node_id" : "AN246",
-         "second" : "ENTREZ:3684461",
-         "species_symbol" : "LEIMA",
-         "third" : "UniProtKB:Q4FWV4"
+         "protein_id" : "UniProtKB:Q4FWV4"
       },
       "AN239" : {
+         "gene_id" : "ENTREZ:3404941",
          "node_id" : "AN239",
-         "second" : "ENTREZ:3404941",
-         "species_symbol" : "ENTHI",
-         "third" : "NCBI:XP_650637"
+         "protein_id" : "NCBI:XP_650637"
       },
       "AN16" : {
          "duplications" : "0",
@@ -1985,6 +1929,9 @@
          "id" : "AN132",
          "speciations" : "1"
       },
+      "_anonymous_788c382a-c6c6-49a0-8342-82e7ddea0c83" : {
+         "node_id" : "_anonymous_788c382a-c6c6-49a0-8342-82e7ddea0c83"
+      },
       "AN9" : {
          "duplications" : "0",
          "node_id" : "AN9",
@@ -1993,22 +1940,19 @@
          "speciations" : "1"
       },
       "AN98" : {
+         "gene_id" : "ENSEMBL:ENSXETG00000013252",
          "node_id" : "AN98",
-         "second" : "ENSEMBL:ENSXETG00000013252",
-         "species_symbol" : "XENTR",
-         "third" : "ENSEMBL:ENSXETP00000029020"
+         "protein_id" : "ENSEMBL:ENSXETP00000029020"
       },
       "AN60" : {
+         "gene_id" : "ENSEMBL:ENSDARG00000068618",
          "node_id" : "AN60",
-         "second" : "ENSEMBL:ENSDARG00000068618",
-         "species_symbol" : "DANRE",
-         "third" : "ENSEMBL:ENSDARP00000090077"
+         "protein_id" : "ENSEMBL:ENSDARP00000090077"
       },
       "AN233" : {
+         "gene_id" : "ENTREZ:3879893",
          "node_id" : "AN233",
-         "second" : "ENTREZ:3879893",
-         "species_symbol" : "NEUCR",
-         "third" : "UniProtKB:Q7SCN8"
+         "protein_id" : "UniProtKB:Q7SCN8"
       },
       "AN10" : {
          "duplications" : "0",
@@ -2018,10 +1962,9 @@
          "speciations" : "1"
       },
       "AN42" : {
+         "gene_id" : "ENTREZ:5644284",
          "node_id" : "AN42",
-         "second" : "ENTREZ:5644284",
-         "species_symbol" : "CAEBR",
-         "third" : "NCBI:XP_001666723"
+         "protein_id" : "NCBI:XP_001666723"
       },
       "AN90" : {
          "duplications" : "1",
@@ -2036,10 +1979,9 @@
          "speciations" : "0"
       },
       "AN220" : {
+         "gene_id" : "ENSEMBL:AGAP007126",
          "node_id" : "AN220",
-         "second" : "ENSEMBL:AGAP007126",
-         "species_symbol" : "ANOGA",
-         "third" : "ENSEMBL:AGAP007126-PA"
+         "protein_id" : "ENSEMBL:AGAP007126-PA"
       },
       "AN202" : {
          "duplications" : "0",
@@ -2049,10 +1991,9 @@
          "speciations" : "1"
       },
       "AN149" : {
+         "gene_id" : "ENSEMBL:ENSCAFG00000009394",
          "node_id" : "AN149",
-         "second" : "ENSEMBL:ENSCAFG00000009394",
-         "species_symbol" : "CANFA",
-         "third" : "ENSEMBL:ENSCAFP00000034939"
+         "protein_id" : "ENSEMBL:ENSCAFP00000034939"
       },
       "AN80" : {
          "duplications" : "0",
@@ -2083,10 +2024,9 @@
          "speciations" : "1"
       },
       "AN103" : {
+         "gene_id" : "ENSEMBL:ENSCING00000013515",
          "node_id" : "AN103",
-         "second" : "ENSEMBL:ENSCING00000013515",
-         "species_symbol" : "CIOIN",
-         "third" : "ENSEMBL:ENSCINP00000024775"
+         "protein_id" : "ENSEMBL:ENSCINP00000024775"
       },
       "AN79" : {
          "duplications" : "0",
@@ -2096,10 +2036,9 @@
          "speciations" : "1"
       },
       "AN182" : {
+         "gene_id" : "ENSEMBL:ENSG00000188073",
          "node_id" : "AN182",
-         "second" : "ENSEMBL:ENSG00000188073",
-         "species_symbol" : "HUMAN",
-         "third" : "UniProtKB:O95744"
+         "protein_id" : "UniProtKB:O95744"
       },
       "AN95" : {
          "duplications" : "1",
@@ -2108,10 +2047,9 @@
          "speciations" : "0"
       },
       "AN153" : {
+         "gene_id" : "ENSEMBL:ENSXETG00000009885",
          "node_id" : "AN153",
-         "second" : "ENSEMBL:ENSXETG00000009885",
-         "species_symbol" : "XENTR",
-         "third" : "ENSEMBL:ENSXETP00000021769"
+         "protein_id" : "ENSEMBL:ENSXETP00000021769"
       },
       "AN107" : {
          "duplications" : "0",
@@ -2121,10 +2059,9 @@
          "speciations" : "1"
       },
       "AN54" : {
+         "gene_id" : "GeneDB_Spombe:SPBC1703.04",
          "node_id" : "AN54",
-         "second" : "GeneDB_Spombe:SPBC1703.04",
-         "species_symbol" : "SCHPO",
-         "third" : "UniProtKB:Q9P7W6"
+         "protein_id" : "UniProtKB:Q9P7W6"
       },
       "AN14" : {
          "duplications" : "0",
@@ -2141,10 +2078,9 @@
          "speciations" : "1"
       },
       "AN252" : {
+         "gene_id" : "ENTREZ:4329835",
          "node_id" : "AN252",
-         "second" : "ENTREZ:4329835",
-         "species_symbol" : "ORYSJ",
-         "third" : "UniProtKB:Q69L72"
+         "protein_id" : "UniProtKB:Q69L72"
       },
       "AN131" : {
          "duplications" : "0",
@@ -2160,28 +2096,24 @@
          "speciations" : "0"
       },
       "AN213" : {
+         "gene_id" : "ENTREZ:581506",
          "node_id" : "AN213",
-         "second" : "ENTREZ:581506",
-         "species_symbol" : "STRPU",
-         "third" : "NCBI:XP_001185952"
+         "protein_id" : "NCBI:XP_001185952"
       },
       "AN33" : {
+         "gene_id" : "ENSEMBL:ENSXETG00000024856",
          "node_id" : "AN33",
-         "second" : "ENSEMBL:ENSXETG00000024856",
-         "species_symbol" : "XENTR",
-         "third" : "ENSEMBL:ENSXETP00000010906"
+         "protein_id" : "ENSEMBL:ENSXETP00000010906"
       },
       "AN29" : {
+         "gene_id" : "ENSEMBL:ENSOANG00000015305",
          "node_id" : "AN29",
-         "second" : "ENSEMBL:ENSOANG00000015305",
-         "species_symbol" : "ORNAN",
-         "third" : "ENSEMBL:ENSOANP00000024093"
+         "protein_id" : "ENSEMBL:ENSOANP00000024093"
       },
       "AN57" : {
+         "gene_id" : "dictyBase:DDB_G0287393",
          "node_id" : "AN57",
-         "second" : "dictyBase:DDB_G0287393",
-         "species_symbol" : "DICDI",
-         "third" : "UniProtKB:Q54KD8"
+         "protein_id" : "UniProtKB:Q54KD8"
       },
       "AN67" : {
          "duplications" : "0",
@@ -2191,16 +2123,14 @@
          "speciations" : "1"
       },
       "AN108" : {
+         "gene_id" : "SGD:S000006085",
          "node_id" : "AN108",
-         "second" : "SGD:S000006085",
-         "species_symbol" : "YEAST",
-         "third" : "UniProtKB:Q12083"
+         "protein_id" : "UniProtKB:Q12083"
       },
       "AN260" : {
+         "gene_id" : "ENTREZ:2598842",
          "node_id" : "AN260",
-         "second" : "ENTREZ:2598842",
-         "species_symbol" : "GLOVI",
-         "third" : "UniProtKB:Q7NL47"
+         "protein_id" : "UniProtKB:Q7NL47"
       },
       "AN248" : {
          "duplications" : "1",
@@ -2242,22 +2172,19 @@
          "speciations" : "0"
       },
       "AN192" : {
+         "gene_id" : "ENSEMBL:ENSG00000198632",
          "node_id" : "AN192",
-         "second" : "ENSEMBL:ENSG00000198632",
-         "species_symbol" : "HUMAN",
-         "third" : "UniProtKB:A8MQ11"
+         "protein_id" : "UniProtKB:A8MQ11"
       },
       "AN91" : {
+         "gene_id" : "ENSEMBL:ENSBTAG00000019279",
          "node_id" : "AN91",
-         "second" : "ENSEMBL:ENSBTAG00000019279",
-         "species_symbol" : "BOVIN",
-         "third" : "ENSEMBL:ENSBTAP00000025669"
+         "protein_id" : "ENSEMBL:ENSBTAP00000025669"
       },
       "AN240" : {
+         "gene_id" : "dictyBase:DDB_G0283981",
          "node_id" : "AN240",
-         "second" : "dictyBase:DDB_G0283981",
-         "species_symbol" : "DICDI",
-         "third" : "UniProtKB:Q54QA0"
+         "protein_id" : "UniProtKB:Q54QA0"
       },
       "AN99" : {
          "duplications" : "0",
@@ -2267,16 +2194,14 @@
          "speciations" : "1"
       },
       "AN23" : {
+         "gene_id" : "MGI:MGI:101938",
          "node_id" : "AN23",
-         "second" : "MGI:MGI=101938",
-         "species_symbol" : "MOUSE",
-         "third" : "UniProtKB:Q9JK91"
+         "protein_id" : "UniProtKB:Q9JK91"
       },
       "AN183" : {
+         "gene_id" : "ENSEMBL:ENSG00000189011",
          "node_id" : "AN183",
-         "second" : "ENSEMBL:ENSG00000189011",
-         "species_symbol" : "HUMAN",
-         "third" : "UniProtKB:O95744"
+         "protein_id" : "UniProtKB:O95744"
       },
       "AN158" : {
          "duplications" : "1",
@@ -2285,22 +2210,19 @@
          "speciations" : "0"
       },
       "AN178" : {
+         "gene_id" : "ENSEMBL:ENSMMUG00000030421",
          "node_id" : "AN178",
-         "second" : "ENSEMBL:ENSMMUG00000030421",
-         "species_symbol" : "MACMU",
-         "third" : "ENSEMBL:ENSMMUP00000035509"
+         "protein_id" : "ENSEMBL:ENSMMUP00000035509"
       },
       "AN257" : {
+         "gene_id" : "ENTREZ:896837",
          "node_id" : "AN257",
-         "second" : "ENTREZ:896837",
-         "species_symbol" : "THEMA",
-         "third" : "UniProtKB:P74925"
+         "protein_id" : "UniProtKB:P74925"
       },
       "AN100" : {
+         "gene_id" : "ENSEMBL:ENSTRUG00000018306",
          "node_id" : "AN100",
-         "second" : "ENSEMBL:ENSTRUG00000018306",
-         "species_symbol" : "FUGRU",
-         "third" : "ENSEMBL:ENSTRUP00000046835"
+         "protein_id" : "ENSEMBL:ENSTRUP00000046835"
       },
       "AN136" : {
          "duplications" : "0",
@@ -2310,22 +2232,19 @@
          "speciations" : "1"
       },
       "AN210" : {
+         "gene_id" : "ENSEMBL:ENSXETG00000024066",
          "node_id" : "AN210",
-         "second" : "ENSEMBL:ENSXETG00000024066",
-         "species_symbol" : "XENTR",
-         "third" : "ENSEMBL:ENSXETP00000051912"
+         "protein_id" : "ENSEMBL:ENSXETP00000051912"
       },
       "AN245" : {
+         "gene_id" : "ENTREZ:4521180",
          "node_id" : "AN245",
-         "second" : "ENTREZ:4521180",
-         "species_symbol" : "TETTH",
-         "third" : "UniProtKB:Q22B61"
+         "protein_id" : "UniProtKB:Q22B61"
       },
       "AN237" : {
+         "gene_id" : "GeneDB_Spombe:SPAC19G12.02c",
          "node_id" : "AN237",
-         "second" : "GeneDB_Spombe:SPAC19G12.02c",
-         "species_symbol" : "SCHPO",
-         "third" : "UniProtKB:P54280"
+         "protein_id" : "UniProtKB:P54280"
       },
       "AN47" : {
          "duplications" : "0",
@@ -2348,16 +2267,14 @@
          "speciations" : "0"
       },
       "AN150" : {
+         "gene_id" : "ENSEMBL:ENSMODG00000011535",
          "node_id" : "AN150",
-         "second" : "ENSEMBL:ENSMODG00000011535",
-         "species_symbol" : "MONDO",
-         "third" : "ENSEMBL:ENSMODP00000014433"
+         "protein_id" : "ENSEMBL:ENSMODP00000014433"
       },
       "AN186" : {
+         "gene_id" : "ENSEMBL:ENSPTRG00000028443",
          "node_id" : "AN186",
-         "second" : "ENSEMBL:ENSPTRG00000028443",
-         "species_symbol" : "PANTR",
-         "third" : "ENSEMBL:ENSPTRP00000033345"
+         "protein_id" : "ENSEMBL:ENSPTRP00000033345"
       },
       "AN40" : {
          "duplications" : "0",
@@ -2374,22 +2291,19 @@
          "speciations" : "1"
       },
       "AN232" : {
+         "gene_id" : "ENTREZ:2875649",
          "node_id" : "AN232",
-         "second" : "ENTREZ:2875649",
-         "species_symbol" : "EMENI",
-         "third" : "UniProtKB:Q5BD16"
+         "protein_id" : "UniProtKB:Q5BD16"
       },
       "AN258" : {
+         "gene_id" : "ENTREZ:1800018",
          "node_id" : "AN258",
-         "second" : "ENTREZ:1800018",
-         "species_symbol" : "DEIRA",
-         "third" : "UniProtKB:Q9RTR0"
+         "protein_id" : "UniProtKB:Q9RTR0"
       },
       "AN63" : {
+         "gene_id" : "ENTREZ:4507047",
          "node_id" : "AN63",
-         "second" : "ENTREZ:4507047",
-         "species_symbol" : "TETTH",
-         "third" : "NCBI:XP_001016280"
+         "protein_id" : "NCBI:XP_001016280"
       },
       "AN43" : {
          "duplications" : "0",
@@ -2399,16 +2313,14 @@
          "speciations" : "1"
       },
       "AN84" : {
+         "gene_id" : "ENSEMBL:ENSPTRG00000006548",
          "node_id" : "AN84",
-         "second" : "ENSEMBL:ENSPTRG00000006548",
-         "species_symbol" : "PANTR",
-         "third" : "ENSEMBL:ENSPTRP00000011125"
+         "protein_id" : "ENSEMBL:ENSPTRP00000011125"
       },
       "AN88" : {
+         "gene_id" : "RGD:1309227",
          "node_id" : "AN88",
-         "second" : "RGD:1309227",
-         "species_symbol" : "RAT",
-         "third" : "NCBI:XP_234420"
+         "protein_id" : "NCBI:XP_234420"
       },
       "AN39" : {
          "duplications" : "0",
@@ -2425,10 +2337,9 @@
          "speciations" : "1"
       },
       "AN207" : {
+         "gene_id" : "ENSEMBL:ENSCAFG00000015559",
          "node_id" : "AN207",
-         "second" : "ENSEMBL:ENSCAFG00000015559",
-         "species_symbol" : "CANFA",
-         "third" : "ENSEMBL:ENSCAFP00000022932"
+         "protein_id" : "ENSEMBL:ENSCAFP00000022932"
       },
       "AN154" : {
          "duplications" : "0",
@@ -2438,22 +2349,19 @@
          "speciations" : "1"
       },
       "AN121" : {
+         "gene_id" : "ENTREZ:4347792",
          "node_id" : "AN121",
-         "second" : "ENTREZ:4347792",
-         "species_symbol" : "ORYSJ",
-         "third" : "UniProtKB:Q0IZT0"
+         "protein_id" : "UniProtKB:Q0IZT0"
       },
       "AN187" : {
+         "gene_id" : "ENSEMBL:ENSPTRG00000019483",
          "node_id" : "AN187",
-         "second" : "ENSEMBL:ENSPTRG00000019483",
-         "species_symbol" : "PANTR",
-         "third" : "ENSEMBL:ENSPTRP00000033344"
+         "protein_id" : "ENSEMBL:ENSPTRP00000033344"
       },
       "AN104" : {
+         "gene_id" : "ENSEMBL:ENSCING00000013516",
          "node_id" : "AN104",
-         "second" : "ENSEMBL:ENSCING00000013516",
-         "species_symbol" : "CIOIN",
-         "third" : "ENSEMBL:ENSCINP00000024776"
+         "protein_id" : "ENSEMBL:ENSCINP00000024776"
       },
       "AN130" : {
          "duplications" : "0",
@@ -2463,10 +2371,9 @@
          "speciations" : "1"
       },
       "AN53" : {
+         "gene_id" : "ENTREZ:3878663",
          "node_id" : "AN53",
-         "second" : "ENTREZ:3878663",
-         "species_symbol" : "NEUCR",
-         "third" : "UniProtKB:Q7SA79"
+         "protein_id" : "UniProtKB:Q7SA79"
       },
       "AN46" : {
          "duplications" : "0",
@@ -2497,10 +2404,9 @@
          "speciations" : "1"
       },
       "AN196" : {
+         "gene_id" : "ENSEMBL:ENSPTRG00000019302",
          "node_id" : "AN196",
-         "second" : "ENSEMBL:ENSPTRG00000019302",
-         "species_symbol" : "PANTR",
-         "third" : "ENSEMBL:ENSPTRP00000047918"
+         "protein_id" : "ENSEMBL:ENSPTRP00000047918"
       },
       "AN165" : {
          "duplications" : "0",
@@ -2510,22 +2416,19 @@
          "speciations" : "1"
       },
       "AN161" : {
+         "gene_id" : "ENTREZ:765911",
          "node_id" : "AN161",
-         "second" : "ENTREZ:765911",
-         "species_symbol" : "STRPU",
-         "third" : "NCBI:XP_001198900"
+         "protein_id" : "NCBI:XP_001198900"
       },
       "AN36" : {
+         "gene_id" : "ZFIN:ZDB-GENE-040426-1600",
          "node_id" : "AN36",
-         "second" : "ZFIN:ZDB-GENE-040426-1600",
-         "species_symbol" : "DANRE",
-         "third" : "UniProtKB:Q6PFL1"
+         "protein_id" : "UniProtKB:Q6PFL1"
       },
       "AN69" : {
+         "gene_id" : "TAIR:locus:2122388",
          "node_id" : "AN69",
-         "second" : "TAIR:locus=2122388",
-         "species_symbol" : "ARATH",
-         "third" : "NCBI:NP_567345"
+         "protein_id" : "NCBI:NP_567345"
       },
       "AN221" : {
          "duplications" : "0",
@@ -2549,10 +2452,9 @@
          "speciations" : "1"
       },
       "AN28" : {
+         "gene_id" : "ENSEMBL:ENSMODG00000013353",
          "node_id" : "AN28",
-         "second" : "ENSEMBL:ENSMODG00000013353",
-         "species_symbol" : "MONDO",
-         "third" : "ENSEMBL:ENSMODP00000016698"
+         "protein_id" : "ENSEMBL:ENSMODP00000016698"
       },
       "AN180" : {
          "duplications" : "0",
@@ -2562,10 +2464,9 @@
          "speciations" : "1"
       },
       "AN141" : {
+         "gene_id" : "ENSEMBL:ENSMMUG00000014318",
          "node_id" : "AN141",
-         "second" : "ENSEMBL:ENSMMUG00000014318",
-         "species_symbol" : "MACMU",
-         "third" : "ENSEMBL:ENSMMUP00000037989"
+         "protein_id" : "ENSEMBL:ENSMMUP00000037989"
       },
       "AN11" : {
          "duplications" : "0",
@@ -2582,10 +2483,9 @@
          "speciations" : "1"
       },
       "AN219" : {
+         "gene_id" : "FB:FBgn0011660",
          "node_id" : "AN219",
-         "second" : "FB:FBgn0011660",
-         "species_symbol" : "DROME",
-         "third" : "UniProtKB:A1ZA03"
+         "protein_id" : "UniProtKB:A1ZA03"
       },
       "AN129" : {
          "duplications" : "0",
@@ -2595,16 +2495,14 @@
          "speciations" : "1"
       },
       "AN64" : {
+         "gene_id" : "ENTREZ:5652309",
          "node_id" : "AN64",
-         "second" : "ENTREZ:5652309",
-         "species_symbol" : "LEIMA",
-         "third" : "UniProtKB:Q4QAI9"
+         "protein_id" : "UniProtKB:Q4QAI9"
       },
       "AN85" : {
+         "gene_id" : "ENSEMBL:ENSMMUG00000002911",
          "node_id" : "AN85",
-         "second" : "ENSEMBL:ENSMMUG00000002911",
-         "species_symbol" : "MACMU",
-         "third" : "ENSEMBL:ENSMMUP00000003899"
+         "protein_id" : "ENSEMBL:ENSMMUP00000003899"
       },
       "AN230" : {
          "duplications" : "1",
@@ -2613,46 +2511,39 @@
          "speciations" : "0"
       },
       "AN206" : {
+         "gene_id" : "ENSEMBL:ENSBTAG00000007364",
          "node_id" : "AN206",
-         "second" : "ENSEMBL:ENSBTAG00000007364",
-         "species_symbol" : "BOVIN",
-         "third" : "ENSEMBL:ENSBTAP00000036960"
+         "protein_id" : "ENSEMBL:ENSBTAP00000036960"
       },
       "AN243" : {
+         "gene_id" : "ENTREZ:3830000",
          "node_id" : "AN243",
-         "second" : "ENTREZ:3830000",
-         "species_symbol" : "PLAYO",
-         "third" : "UniProtKB:Q7RKQ6"
+         "protein_id" : "UniProtKB:Q7RKQ6"
       },
       "AN253" : {
+         "gene_id" : "TAIR:locus:2133274",
          "node_id" : "AN253",
-         "second" : "TAIR:locus=2133274",
-         "species_symbol" : "ARATH",
-         "third" : "NCBI:NP_567236"
+         "protein_id" : "NCBI:NP_567236"
       },
       "AN256" : {
+         "gene_id" : "ENTREZ:939455",
          "node_id" : "AN256",
-         "second" : "ENTREZ:939455",
-         "species_symbol" : "BACSU",
-         "third" : "UniProtKB:P49850"
+         "protein_id" : "UniProtKB:P49850"
       },
       "AN146" : {
+         "gene_id" : "RGD:1359511",
          "node_id" : "AN146",
-         "second" : "RGD:1359511",
-         "species_symbol" : "RAT",
-         "third" : "UniProtKB:Q6P7D0"
+         "protein_id" : "UniProtKB:Q6P7D0"
       },
       "AN151" : {
+         "gene_id" : "ENSEMBL:ENSOANG00000013059",
          "node_id" : "AN151",
-         "second" : "ENSEMBL:ENSOANG00000013059",
-         "species_symbol" : "ORNAN",
-         "third" : "ENSEMBL:ENSOANP00000020647"
+         "protein_id" : "ENSEMBL:ENSOANP00000020647"
       },
       "AN261" : {
+         "gene_id" : "ENTREZ:1150518",
          "node_id" : "AN261",
-         "second" : "ENTREZ:1150518",
-         "species_symbol" : "LEPIN",
-         "third" : "UniProtKB:Q8F6X4"
+         "protein_id" : "UniProtKB:Q8F6X4"
       },
       "AN78" : {
          "duplications" : "0",
@@ -2662,22 +2553,19 @@
          "speciations" : "1"
       },
       "AN26" : {
+         "gene_id" : "ENSEMBL:ENSBTAG00000016758",
          "node_id" : "AN26",
-         "second" : "ENSEMBL:ENSBTAG00000016758",
-         "species_symbol" : "BOVIN",
-         "third" : "UniProtKB:Q1RMN2"
+         "protein_id" : "UniProtKB:Q1RMN2"
       },
       "AN122" : {
+         "gene_id" : "TAIR:locus:2127923",
          "node_id" : "AN122",
-         "second" : "TAIR:locus=2127923",
-         "species_symbol" : "ARATH",
-         "third" : "NCBI:NP_195277"
+         "protein_id" : "NCBI:NP_195277"
       },
       "AN270" : {
+         "gene_id" : "ECOLI:EG11281-MONOMER",
          "node_id" : "AN270",
-         "second" : "ECOLI:EG11281-MONOMER",
-         "species_symbol" : "ECOLI",
-         "third" : "UniProtKB:P23367"
+         "protein_id" : "UniProtKB:P23367"
       },
       "AN134" : {
          "duplications" : "0",
@@ -2707,16 +2595,14 @@
          "speciations" : "1"
       },
       "AN184" : {
+         "gene_id" : "ENSEMBL:ENSG00000078319",
          "node_id" : "AN184",
-         "second" : "ENSEMBL:ENSG00000078319",
-         "species_symbol" : "HUMAN",
-         "third" : "UniProtKB:A4D2B8"
+         "protein_id" : "UniProtKB:A4D2B8"
       },
       "AN191" : {
+         "gene_id" : "ENSEMBL:ENSG00000174384",
          "node_id" : "AN191",
-         "second" : "ENSEMBL:ENSG00000174384",
-         "species_symbol" : "HUMAN",
-         "third" : "UniProtKB:A8MQ11"
+         "protein_id" : "UniProtKB:A8MQ11"
       },
       "AN241" : {
          "duplications" : "0",
@@ -2726,10 +2612,9 @@
          "speciations" : "1"
       },
       "AN105" : {
+         "gene_id" : "ENTREZ:575007",
          "node_id" : "AN105",
-         "second" : "ENTREZ:575007",
-         "species_symbol" : "STRPU",
-         "third" : "NCBI:XP_780519"
+         "protein_id" : "NCBI:XP_780519"
       },
       "AN189" : {
          "duplications" : "1",
@@ -2738,10 +2623,9 @@
          "speciations" : "0"
       },
       "AN111" : {
+         "gene_id" : "ENTREZ:2872164",
          "node_id" : "AN111",
-         "second" : "ENTREZ:2872164",
-         "species_symbol" : "EMENI",
-         "third" : "UniProtKB:Q5B515"
+         "protein_id" : "UniProtKB:Q5B515"
       },
       "AN82" : {
          "duplications" : "0",
@@ -2751,46 +2635,39 @@
          "speciations" : "1"
       },
       "AN244" : {
+         "gene_id" : "ENTREZ:3801758",
          "node_id" : "AN244",
-         "second" : "ENTREZ:3801758",
-         "species_symbol" : "PLAYO",
-         "third" : "UniProtKB:Q7RPM0"
+         "protein_id" : "UniProtKB:Q7RPM0"
       },
       "AN21" : {
+         "gene_id" : "ENSEMBL:ENSMMUG00000022533",
          "node_id" : "AN21",
-         "second" : "ENSEMBL:ENSMMUG00000022533",
-         "species_symbol" : "MACMU",
-         "third" : "ENSEMBL:ENSMMUP00000029670"
+         "protein_id" : "ENSEMBL:ENSMMUP00000029670"
       },
       "AN152" : {
+         "gene_id" : "ENTREZ:423980",
          "node_id" : "AN152",
-         "second" : "ENTREZ:423980",
-         "species_symbol" : "CHICK",
-         "third" : "UniProtKB:Q5ZKT5"
+         "protein_id" : "UniProtKB:Q5ZKT5"
       },
       "AN229" : {
+         "gene_id" : "ENTREZ:4621495",
          "node_id" : "AN229",
-         "second" : "ENTREZ:4621495",
-         "species_symbol" : "ASHGO",
-         "third" : "UniProtKB:Q755U7"
+         "protein_id" : "UniProtKB:Q755U7"
       },
       "AN62" : {
+         "gene_id" : "ENTREZ:3790985",
          "node_id" : "AN62",
-         "second" : "ENTREZ:3790985",
-         "species_symbol" : "PLAYO",
-         "third" : "UniProtKB:Q7RE54"
+         "protein_id" : "UniProtKB:Q7RE54"
       },
       "AN27" : {
+         "gene_id" : "ENSEMBL:ENSCAFG00000004783",
          "node_id" : "AN27",
-         "second" : "ENSEMBL:ENSCAFG00000004783",
-         "species_symbol" : "CANFA",
-         "third" : "ENSEMBL:ENSCAFP00000007136"
+         "protein_id" : "ENSEMBL:ENSCAFP00000007136"
       },
       "AN177" : {
+         "gene_id" : "ENSEMBL:ENSPTRG00000019325",
          "node_id" : "AN177",
-         "second" : "ENSEMBL:ENSPTRG00000019325",
-         "species_symbol" : "PANTR",
-         "third" : "ENSEMBL:ENSPTRP00000033057"
+         "protein_id" : "ENSEMBL:ENSPTRP00000033057"
       },
       "AN48" : {
          "duplications" : "0",
@@ -2807,28 +2684,24 @@
          "speciations" : "1"
       },
       "AN263" : {
+         "gene_id" : "ENTREZ:3687613",
          "node_id" : "AN263",
-         "second" : "ENTREZ:3687613",
-         "species_symbol" : "CHLTA",
-         "third" : "UniProtKB:Q3KLC2"
+         "protein_id" : "UniProtKB:Q3KLC2"
       },
       "AN115" : {
+         "gene_id" : "dictyBase:DDB_G0283883",
          "node_id" : "AN115",
-         "second" : "dictyBase:DDB_G0283883",
-         "species_symbol" : "DICDI",
-         "third" : "NCBI:EAL65556"
+         "protein_id" : "NCBI:EAL65556"
       },
       "AN109" : {
+         "gene_id" : "ENTREZ:4618574",
          "node_id" : "AN109",
-         "second" : "ENTREZ:4618574",
-         "species_symbol" : "ASHGO",
-         "third" : "UniProtKB:Q75F21"
+         "protein_id" : "UniProtKB:Q75F21"
       },
       "AN236" : {
+         "gene_id" : "ENTREZ:3878856",
          "node_id" : "AN236",
-         "second" : "ENTREZ:3878856",
-         "species_symbol" : "NEUCR",
-         "third" : "UniProtKB:Q7SAM1"
+         "protein_id" : "UniProtKB:Q7SAM1"
       },
       "AN169" : {
          "duplications" : "0",
@@ -2852,10 +2725,9 @@
          "speciations" : "1"
       },
       "AN211" : {
+         "gene_id" : "ENSEMBL:ENSTRUG00000016791",
          "node_id" : "AN211",
-         "second" : "ENSEMBL:ENSTRUG00000016791",
-         "species_symbol" : "FUGRU",
-         "third" : "ENSEMBL:ENSTRUP00000043003"
+         "protein_id" : "ENSEMBL:ENSTRUP00000043003"
       },
       "AN4" : {
          "duplications" : "1",
@@ -2885,28 +2757,24 @@
          "speciations" : "1"
       },
       "AN68" : {
+         "gene_id" : "ENTREZ:4325393",
          "node_id" : "AN68",
-         "second" : "ENTREZ:4325393",
-         "species_symbol" : "ORYSJ",
-         "third" : "UniProtKB:Q5JN46"
+         "protein_id" : "UniProtKB:Q5JN46"
       },
       "AN174" : {
+         "gene_id" : "ENSEMBL:ENSG00000186704",
          "node_id" : "AN174",
-         "second" : "ENSEMBL:ENSG00000186704",
-         "species_symbol" : "HUMAN",
-         "third" : "UniProtKB:Q13670"
+         "protein_id" : "UniProtKB:Q13670"
       },
       "AN262" : {
+         "gene_id" : "ENTREZ:1072957",
          "node_id" : "AN262",
-         "second" : "ENTREZ:1072957",
-         "species_symbol" : "BACTN",
-         "third" : "UniProtKB:Q8A120"
+         "protein_id" : "UniProtKB:Q8A120"
       },
       "AN35" : {
+         "gene_id" : "ENSEMBL:ENSTRUG00000017724",
          "node_id" : "AN35",
-         "second" : "ENSEMBL:ENSTRUG00000017724",
-         "species_symbol" : "FUGRU",
-         "third" : "ENSEMBL:ENSTRUP00000045441"
+         "protein_id" : "ENSEMBL:ENSTRUP00000045441"
       },
       "AN17" : {
          "duplications" : "0",
@@ -2916,16 +2784,14 @@
          "speciations" : "1"
       },
       "AN208" : {
+         "gene_id" : "ENSEMBL:ENSMODG00000008178",
          "node_id" : "AN208",
-         "second" : "ENSEMBL:ENSMODG00000008178",
-         "species_symbol" : "MONDO",
-         "third" : "ENSEMBL:ENSMODP00000010164"
+         "protein_id" : "ENSEMBL:ENSMODP00000010164"
       },
       "AN50" : {
+         "gene_id" : "ENTREZ:4621576",
          "node_id" : "AN50",
-         "second" : "ENTREZ:4621576",
-         "species_symbol" : "ASHGO",
-         "third" : "UniProtKB:Q755L3"
+         "protein_id" : "UniProtKB:Q755L3"
       },
       "AN128" : {
          "duplications" : "0",
@@ -2935,16 +2801,14 @@
          "speciations" : "1"
       },
       "AN101" : {
+         "gene_id" : "ENSEMBL:ENSDARG00000056334",
          "node_id" : "AN101",
-         "second" : "ENSEMBL:ENSDARG00000056334",
-         "species_symbol" : "DANRE",
-         "third" : "ENSEMBL:ENSDARP00000073262"
+         "protein_id" : "ENSEMBL:ENSDARP00000073262"
       },
       "AN38" : {
+         "gene_id" : "ENTREZ:588545",
          "node_id" : "AN38",
-         "second" : "ENTREZ:588545",
-         "species_symbol" : "STRPU",
-         "third" : "NCBI:XP_793318"
+         "protein_id" : "NCBI:XP_793318"
       },
       "AN166" : {
          "duplications" : "0",
@@ -2954,22 +2818,19 @@
          "speciations" : "1"
       },
       "AN203" : {
+         "gene_id" : "MGI:MGI:104288",
          "node_id" : "AN203",
-         "second" : "MGI:MGI=104288",
-         "species_symbol" : "MOUSE",
-         "third" : "UniProtKB:P54279"
+         "protein_id" : "UniProtKB:P54279"
       },
       "AN52" : {
+         "gene_id" : "ENTREZ:2875899",
          "node_id" : "AN52",
-         "second" : "ENTREZ:2875899",
-         "species_symbol" : "EMENI",
-         "third" : "UniProtKB:Q5BH54"
+         "protein_id" : "UniProtKB:Q5BH54"
       },
       "AN195" : {
+         "gene_id" : "ENSEMBL:ENSPTRG00000034361",
          "node_id" : "AN195",
-         "second" : "ENSEMBL:ENSPTRG00000034361",
-         "species_symbol" : "PANTR",
-         "third" : "ENSEMBL:ENSPTRP00000047744"
+         "protein_id" : "ENSEMBL:ENSPTRP00000047744"
       },
       "AN147" : {
          "duplications" : "0",
@@ -2993,10 +2854,9 @@
          "speciations" : "1"
       },
       "AN250" : {
+         "gene_id" : "ENTREZ:5725625",
          "node_id" : "AN250",
-         "second" : "ENTREZ:5725625",
-         "species_symbol" : "CHLRE",
-         "third" : "UniProtKB:A8JCH6"
+         "protein_id" : "UniProtKB:A8JCH6"
       },
       "AN12" : {
          "duplications" : "0",
@@ -3006,10 +2866,9 @@
          "speciations" : "1"
       },
       "AN162" : {
+         "gene_id" : "ENTREZ:592483",
          "node_id" : "AN162",
-         "second" : "ENTREZ:592483",
-         "species_symbol" : "STRPU",
-         "third" : "NCBI:XP_797096"
+         "protein_id" : "NCBI:XP_797096"
       },
       "AN188" : {
          "duplications" : "0",
@@ -3019,34 +2878,29 @@
          "speciations" : "1"
       },
       "AN225" : {
+         "gene_id" : "SGD:S000004025",
          "node_id" : "AN225",
-         "second" : "SGD:S000004025",
-         "species_symbol" : "YEAST",
-         "third" : "UniProtKB:Q07980"
+         "protein_id" : "UniProtKB:Q07980"
       },
       "AN200" : {
+         "gene_id" : "ENSEMBL:ENSPTRG00000028526",
          "node_id" : "AN200",
-         "second" : "ENSEMBL:ENSPTRG00000028526",
-         "species_symbol" : "PANTR",
-         "third" : "ENSEMBL:ENSPTRP00000047908"
+         "protein_id" : "ENSEMBL:ENSPTRP00000047908"
       },
       "AN198" : {
+         "gene_id" : "ENSEMBL:ENSG00000122512",
          "node_id" : "AN198",
-         "second" : "ENSEMBL:ENSG00000122512",
-         "species_symbol" : "HUMAN",
-         "third" : "UniProtKB:P54278"
+         "protein_id" : "UniProtKB:P54278"
       },
       "AN155" : {
+         "gene_id" : "ENSEMBL:ENSTRUG00000012846",
          "node_id" : "AN155",
-         "second" : "ENSEMBL:ENSTRUG00000012846",
-         "species_symbol" : "FUGRU",
-         "third" : "ENSEMBL:ENSTRUP00000032536"
+         "protein_id" : "ENSEMBL:ENSTRUP00000032536"
       },
       "AN267" : {
+         "gene_id" : "ENTREZ:1054324",
          "node_id" : "AN267",
-         "second" : "ENTREZ:1054324",
-         "species_symbol" : "BRAJA",
-         "third" : "UniProtKB:Q89DE6"
+         "protein_id" : "UniProtKB:Q89DE6"
       },
       "AN7" : {
          "duplications" : "0",
@@ -3063,10 +2917,9 @@
          "speciations" : "1"
       },
       "AN92" : {
+         "gene_id" : "ENSEMBL:ENSBTAG00000040194",
          "node_id" : "AN92",
-         "second" : "ENSEMBL:ENSBTAG00000040194",
-         "species_symbol" : "BOVIN",
-         "third" : "ENSEMBL:ENSBTAP00000048151"
+         "protein_id" : "ENSEMBL:ENSBTAP00000048151"
       },
       "AN194" : {
          "duplications" : "1",
