@@ -1,0 +1,125 @@
+{
+   "edges" : [
+      {
+         "length" : 0,
+         "source_id" : "_anonymous_d6369964-4455-4515-a2a7-b3e4f25a593d",
+         "sink_id" : "AN0"
+      },
+      {
+         "length" : "1.000",
+         "source_id" : "AN0",
+         "sink_id" : "AN1"
+      },
+      {
+         "length" : "0.473",
+         "source_id" : "AN1",
+         "sink_id" : "AN2"
+      },
+      {
+         "length" : "0.687",
+         "source_id" : "AN2",
+         "sink_id" : "AN3"
+      },
+      {
+         "length" : "0.774",
+         "source_id" : "AN2",
+         "sink_id" : "AN4"
+      },
+      {
+         "length" : "0.695",
+         "source_id" : "AN2",
+         "sink_id" : "AN5"
+      },
+      {
+         "length" : "0.223",
+         "source_id" : "AN1",
+         "sink_id" : "AN6"
+      },
+      {
+         "length" : "1.366",
+         "source_id" : "AN6",
+         "sink_id" : "AN7"
+      },
+      {
+         "length" : "1.208",
+         "source_id" : "AN6",
+         "sink_id" : "AN8"
+      },
+      {
+         "length" : "1.000",
+         "source_id" : "AN0",
+         "sink_id" : "AN9"
+      }
+   ],
+   "nodes" : {
+      "AN1" : {
+         "duplications" : "0",
+         "node_id" : "AN1",
+         "species" : "Eukaryota",
+         "id" : "AN1",
+         "speciations" : "1"
+      },
+      "AN6" : {
+         "duplications" : "1",
+         "node_id" : "AN6",
+         "id" : "AN6",
+         "speciations" : "0"
+      },
+      "AN0" : {
+         "duplications" : "0",
+         "node_id" : "AN0",
+         "species" : "LUCA",
+         "id" : "AN0",
+         "speciations" : "1"
+      },
+      "AN9" : {
+         "node_id" : "AN9",
+         "second" : "ENTREZ:2685286",
+         "species_symbol" : "GEOSL",
+         "third" : "UniProtKB:Q747I8"
+      },
+      "AN4" : {
+         "node_id" : "AN4",
+         "second" : "ENTREZ:585745",
+         "species_symbol" : "STRPU",
+         "third" : "NCBI:XP_790652"
+      },
+      "AN7" : {
+         "node_id" : "AN7",
+         "second" : "ENTREZ:3830172",
+         "species_symbol" : "PLAYO",
+         "third" : "UniProtKB:Q7RKB3"
+      },
+      "AN8" : {
+         "node_id" : "AN8",
+         "second" : "ENTREZ:3792133",
+         "species_symbol" : "PLAYO",
+         "third" : "UniProtKB:Q7RBF2"
+      },
+      "AN5" : {
+         "node_id" : "AN5",
+         "second" : "ENTREZ:585807",
+         "species_symbol" : "STRPU",
+         "third" : "NCBI:XP_800360"
+      },
+      "AN2" : {
+         "duplications" : "1",
+         "node_id" : "AN2",
+         "id" : "AN2",
+         "speciations" : "0"
+      },
+      "AN3" : {
+         "node_id" : "AN3",
+         "second" : "ENTREZ:585787",
+         "species_symbol" : "STRPU",
+         "third" : "NCBI:XP_800359"
+      },
+      "_anonymous_d6369964-4455-4515-a2a7-b3e4f25a593d" : {
+         "node_id" : "_anonymous_d6369964-4455-4515-a2a7-b3e4f25a593d"
+      }
+   },
+   "meta" : {
+      "title" : "FAMILY NOT NAMED"
+   }
+}
+

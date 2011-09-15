@@ -1,0 +1,3096 @@
+{
+   "edges" : [
+      {
+         "length" : 0,
+         "source_id" : "_anonymous_b1ae8e5d-a065-42ed-976a-083db4332a97",
+         "sink_id" : "AN0"
+      },
+      {
+         "length" : "0.241",
+         "source_id" : "AN0",
+         "sink_id" : "AN1"
+      },
+      {
+         "length" : "0.391",
+         "source_id" : "AN1",
+         "sink_id" : "AN2"
+      },
+      {
+         "length" : "0.912",
+         "source_id" : "AN2",
+         "sink_id" : "AN3"
+      },
+      {
+         "length" : "0.155",
+         "source_id" : "AN3",
+         "sink_id" : "AN4"
+      },
+      {
+         "length" : "0.307",
+         "source_id" : "AN4",
+         "sink_id" : "AN5"
+      },
+      {
+         "length" : "0.109",
+         "source_id" : "AN5",
+         "sink_id" : "AN6"
+      },
+      {
+         "length" : "0.143",
+         "source_id" : "AN6",
+         "sink_id" : "AN7"
+      },
+      {
+         "length" : "0.191",
+         "source_id" : "AN7",
+         "sink_id" : "AN8"
+      },
+      {
+         "length" : "0.126",
+         "source_id" : "AN8",
+         "sink_id" : "AN9"
+      },
+      {
+         "length" : "0.146",
+         "source_id" : "AN9",
+         "sink_id" : "AN10"
+      },
+      {
+         "length" : "0.075",
+         "source_id" : "AN10",
+         "sink_id" : "AN11"
+      },
+      {
+         "length" : "0.037",
+         "source_id" : "AN11",
+         "sink_id" : "AN12"
+      },
+      {
+         "length" : "0.480",
+         "source_id" : "AN12",
+         "sink_id" : "AN13"
+      },
+      {
+         "length" : "0.021",
+         "source_id" : "AN13",
+         "sink_id" : "AN14"
+      },
+      {
+         "length" : "0.122",
+         "source_id" : "AN14",
+         "sink_id" : "AN15"
+      },
+      {
+         "length" : "0.025",
+         "source_id" : "AN15",
+         "sink_id" : "AN16"
+      },
+      {
+         "length" : "0.089",
+         "source_id" : "AN16",
+         "sink_id" : "AN17"
+      },
+      {
+         "length" : "0.000",
+         "source_id" : "AN17",
+         "sink_id" : "AN18"
+      },
+      {
+         "length" : "0.060",
+         "source_id" : "AN18",
+         "sink_id" : "AN19"
+      },
+      {
+         "length" : "0.006",
+         "source_id" : "AN18",
+         "sink_id" : "AN20"
+      },
+      {
+         "length" : "0.017",
+         "source_id" : "AN17",
+         "sink_id" : "AN21"
+      },
+      {
+         "length" : "0.048",
+         "source_id" : "AN16",
+         "sink_id" : "AN22"
+      },
+      {
+         "length" : "0.019",
+         "source_id" : "AN22",
+         "sink_id" : "AN23"
+      },
+      {
+         "length" : "0.022",
+         "source_id" : "AN22",
+         "sink_id" : "AN24"
+      },
+      {
+         "length" : "0.015",
+         "source_id" : "AN15",
+         "sink_id" : "AN25"
+      },
+      {
+         "length" : "2.000",
+         "source_id" : "AN25",
+         "sink_id" : "AN26"
+      },
+      {
+         "length" : "0.481",
+         "source_id" : "AN25",
+         "sink_id" : "AN27"
+      },
+      {
+         "length" : "0.557",
+         "source_id" : "AN14",
+         "sink_id" : "AN28"
+      },
+      {
+         "length" : "0.881",
+         "source_id" : "AN13",
+         "sink_id" : "AN29"
+      },
+      {
+         "length" : "0.117",
+         "source_id" : "AN12",
+         "sink_id" : "AN30"
+      },
+      {
+         "length" : "0.070",
+         "source_id" : "AN11",
+         "sink_id" : "AN31"
+      },
+      {
+         "length" : "1.337",
+         "source_id" : "AN31",
+         "sink_id" : "AN32"
+      },
+      {
+         "length" : "0.091",
+         "source_id" : "AN31",
+         "sink_id" : "AN33"
+      },
+      {
+         "length" : "0.097",
+         "source_id" : "AN10",
+         "sink_id" : "AN34"
+      },
+      {
+         "length" : "0.102",
+         "source_id" : "AN34",
+         "sink_id" : "AN35"
+      },
+      {
+         "length" : "0.113",
+         "source_id" : "AN34",
+         "sink_id" : "AN36"
+      },
+      {
+         "length" : "0.352",
+         "source_id" : "AN9",
+         "sink_id" : "AN37"
+      },
+      {
+         "length" : "0.224",
+         "source_id" : "AN8",
+         "sink_id" : "AN38"
+      },
+      {
+         "length" : "0.184",
+         "source_id" : "AN7",
+         "sink_id" : "AN39"
+      },
+      {
+         "length" : "0.499",
+         "source_id" : "AN39",
+         "sink_id" : "AN40"
+      },
+      {
+         "length" : "0.127",
+         "source_id" : "AN40",
+         "sink_id" : "AN41"
+      },
+      {
+         "length" : "0.123",
+         "source_id" : "AN40",
+         "sink_id" : "AN42"
+      },
+      {
+         "length" : "0.182",
+         "source_id" : "AN39",
+         "sink_id" : "AN43"
+      },
+      {
+         "length" : "0.379",
+         "source_id" : "AN43",
+         "sink_id" : "AN44"
+      },
+      {
+         "length" : "0.366",
+         "source_id" : "AN43",
+         "sink_id" : "AN45"
+      },
+      {
+         "length" : "0.169",
+         "source_id" : "AN6",
+         "sink_id" : "AN46"
+      },
+      {
+         "length" : "0.226",
+         "source_id" : "AN46",
+         "sink_id" : "AN47"
+      },
+      {
+         "length" : "0.159",
+         "source_id" : "AN47",
+         "sink_id" : "AN48"
+      },
+      {
+         "length" : "0.241",
+         "source_id" : "AN48",
+         "sink_id" : "AN49"
+      },
+      {
+         "length" : "0.261",
+         "source_id" : "AN48",
+         "sink_id" : "AN50"
+      },
+      {
+         "length" : "0.156",
+         "source_id" : "AN47",
+         "sink_id" : "AN51"
+      },
+      {
+         "length" : "0.209",
+         "source_id" : "AN51",
+         "sink_id" : "AN52"
+      },
+      {
+         "length" : "0.198",
+         "source_id" : "AN51",
+         "sink_id" : "AN53"
+      },
+      {
+         "length" : "0.519",
+         "source_id" : "AN46",
+         "sink_id" : "AN54"
+      },
+      {
+         "length" : "0.138",
+         "source_id" : "AN5",
+         "sink_id" : "AN55"
+      },
+      {
+         "length" : "0.971",
+         "source_id" : "AN55",
+         "sink_id" : "AN56"
+      },
+      {
+         "length" : "0.549",
+         "source_id" : "AN55",
+         "sink_id" : "AN57"
+      },
+      {
+         "length" : "0.475",
+         "source_id" : "AN4",
+         "sink_id" : "AN58"
+      },
+      {
+         "length" : "0.006",
+         "source_id" : "AN58",
+         "sink_id" : "AN59"
+      },
+      {
+         "length" : "0.006",
+         "source_id" : "AN58",
+         "sink_id" : "AN60"
+      },
+      {
+         "length" : "0.300",
+         "source_id" : "AN3",
+         "sink_id" : "AN61"
+      },
+      {
+         "length" : "0.603",
+         "source_id" : "AN61",
+         "sink_id" : "AN62"
+      },
+      {
+         "length" : "0.772",
+         "source_id" : "AN61",
+         "sink_id" : "AN63"
+      },
+      {
+         "length" : "0.849",
+         "source_id" : "AN3",
+         "sink_id" : "AN64"
+      },
+      {
+         "length" : "0.196",
+         "source_id" : "AN3",
+         "sink_id" : "AN65"
+      },
+      {
+         "length" : "0.544",
+         "source_id" : "AN65",
+         "sink_id" : "AN66"
+      },
+      {
+         "length" : "0.203",
+         "source_id" : "AN65",
+         "sink_id" : "AN67"
+      },
+      {
+         "length" : "0.216",
+         "source_id" : "AN67",
+         "sink_id" : "AN68"
+      },
+      {
+         "length" : "0.232",
+         "source_id" : "AN67",
+         "sink_id" : "AN69"
+      },
+      {
+         "length" : "0.790",
+         "source_id" : "AN2",
+         "sink_id" : "AN70"
+      },
+      {
+         "length" : "0.462",
+         "source_id" : "AN70",
+         "sink_id" : "AN71"
+      },
+      {
+         "length" : "0.177",
+         "source_id" : "AN71",
+         "sink_id" : "AN72"
+      },
+      {
+         "length" : "0.179",
+         "source_id" : "AN72",
+         "sink_id" : "AN73"
+      },
+      {
+         "length" : "0.427",
+         "source_id" : "AN73",
+         "sink_id" : "AN74"
+      },
+      {
+         "length" : "0.308",
+         "source_id" : "AN74",
+         "sink_id" : "AN75"
+      },
+      {
+         "length" : "0.042",
+         "source_id" : "AN75",
+         "sink_id" : "AN76"
+      },
+      {
+         "length" : "0.152",
+         "source_id" : "AN76",
+         "sink_id" : "AN77"
+      },
+      {
+         "length" : "0.127",
+         "source_id" : "AN77",
+         "sink_id" : "AN78"
+      },
+      {
+         "length" : "0.060",
+         "source_id" : "AN78",
+         "sink_id" : "AN79"
+      },
+      {
+         "length" : "0.008",
+         "source_id" : "AN79",
+         "sink_id" : "AN80"
+      },
+      {
+         "length" : "0.017",
+         "source_id" : "AN80",
+         "sink_id" : "AN81"
+      },
+      {
+         "length" : "0.017",
+         "source_id" : "AN81",
+         "sink_id" : "AN82"
+      },
+      {
+         "length" : "0.000",
+         "source_id" : "AN82",
+         "sink_id" : "AN83"
+      },
+      {
+         "length" : "2.000",
+         "source_id" : "AN82",
+         "sink_id" : "AN84"
+      },
+      {
+         "length" : "2.000",
+         "source_id" : "AN81",
+         "sink_id" : "AN85"
+      },
+      {
+         "length" : "0.059",
+         "source_id" : "AN80",
+         "sink_id" : "AN86"
+      },
+      {
+         "length" : "0.039",
+         "source_id" : "AN86",
+         "sink_id" : "AN87"
+      },
+      {
+         "length" : "0.036",
+         "source_id" : "AN86",
+         "sink_id" : "AN88"
+      },
+      {
+         "length" : "0.043",
+         "source_id" : "AN79",
+         "sink_id" : "AN89"
+      },
+      {
+         "length" : "0.026",
+         "source_id" : "AN89",
+         "sink_id" : "AN90"
+      },
+      {
+         "length" : "2.000",
+         "source_id" : "AN90",
+         "sink_id" : "AN91"
+      },
+      {
+         "length" : "2.000",
+         "source_id" : "AN90",
+         "sink_id" : "AN92"
+      },
+      {
+         "length" : "2.000",
+         "source_id" : "AN89",
+         "sink_id" : "AN93"
+      },
+      {
+         "length" : "2.000",
+         "source_id" : "AN78",
+         "sink_id" : "AN94"
+      },
+      {
+         "length" : "0.039",
+         "source_id" : "AN77",
+         "sink_id" : "AN95"
+      },
+      {
+         "length" : "2.000",
+         "source_id" : "AN95",
+         "sink_id" : "AN96"
+      },
+      {
+         "length" : "1.728",
+         "source_id" : "AN95",
+         "sink_id" : "AN97"
+      },
+      {
+         "length" : "0.440",
+         "source_id" : "AN76",
+         "sink_id" : "AN98"
+      },
+      {
+         "length" : "0.153",
+         "source_id" : "AN75",
+         "sink_id" : "AN99"
+      },
+      {
+         "length" : "2.000",
+         "source_id" : "AN99",
+         "sink_id" : "AN100"
+      },
+      {
+         "length" : "2.000",
+         "source_id" : "AN99",
+         "sink_id" : "AN101"
+      },
+      {
+         "length" : "0.207",
+         "source_id" : "AN74",
+         "sink_id" : "AN102"
+      },
+      {
+         "length" : "2.000",
+         "source_id" : "AN102",
+         "sink_id" : "AN103"
+      },
+      {
+         "length" : "2.000",
+         "source_id" : "AN102",
+         "sink_id" : "AN104"
+      },
+      {
+         "length" : "0.655",
+         "source_id" : "AN73",
+         "sink_id" : "AN105"
+      },
+      {
+         "length" : "0.365",
+         "source_id" : "AN72",
+         "sink_id" : "AN106"
+      },
+      {
+         "length" : "0.231",
+         "source_id" : "AN106",
+         "sink_id" : "AN107"
+      },
+      {
+         "length" : "0.621",
+         "source_id" : "AN107",
+         "sink_id" : "AN108"
+      },
+      {
+         "length" : "0.627",
+         "source_id" : "AN107",
+         "sink_id" : "AN109"
+      },
+      {
+         "length" : "0.311",
+         "source_id" : "AN106",
+         "sink_id" : "AN110"
+      },
+      {
+         "length" : "0.562",
+         "source_id" : "AN110",
+         "sink_id" : "AN111"
+      },
+      {
+         "length" : "0.647",
+         "source_id" : "AN110",
+         "sink_id" : "AN112"
+      },
+      {
+         "length" : "0.341",
+         "source_id" : "AN71",
+         "sink_id" : "AN113"
+      },
+      {
+         "length" : "1.431",
+         "source_id" : "AN113",
+         "sink_id" : "AN114"
+      },
+      {
+         "length" : "1.280",
+         "source_id" : "AN113",
+         "sink_id" : "AN115"
+      },
+      {
+         "length" : "1.291",
+         "source_id" : "AN70",
+         "sink_id" : "AN116"
+      },
+      {
+         "length" : "1.401",
+         "source_id" : "AN70",
+         "sink_id" : "AN117"
+      },
+      {
+         "length" : "0.317",
+         "source_id" : "AN70",
+         "sink_id" : "AN118"
+      },
+      {
+         "length" : "2.000",
+         "source_id" : "AN118",
+         "sink_id" : "AN119"
+      },
+      {
+         "length" : "0.557",
+         "source_id" : "AN118",
+         "sink_id" : "AN120"
+      },
+      {
+         "length" : "0.433",
+         "source_id" : "AN120",
+         "sink_id" : "AN121"
+      },
+      {
+         "length" : "0.438",
+         "source_id" : "AN120",
+         "sink_id" : "AN122"
+      },
+      {
+         "length" : "0.767",
+         "source_id" : "AN2",
+         "sink_id" : "AN123"
+      },
+      {
+         "length" : "0.287",
+         "source_id" : "AN123",
+         "sink_id" : "AN124"
+      },
+      {
+         "length" : "0.100",
+         "source_id" : "AN124",
+         "sink_id" : "AN125"
+      },
+      {
+         "length" : "0.184",
+         "source_id" : "AN125",
+         "sink_id" : "AN126"
+      },
+      {
+         "length" : "0.042",
+         "source_id" : "AN126",
+         "sink_id" : "AN127"
+      },
+      {
+         "length" : "0.939",
+         "source_id" : "AN127",
+         "sink_id" : "AN128"
+      },
+      {
+         "length" : "0.143",
+         "source_id" : "AN128",
+         "sink_id" : "AN129"
+      },
+      {
+         "length" : "0.493",
+         "source_id" : "AN129",
+         "sink_id" : "AN130"
+      },
+      {
+         "length" : "0.135",
+         "source_id" : "AN130",
+         "sink_id" : "AN131"
+      },
+      {
+         "length" : "0.139",
+         "source_id" : "AN131",
+         "sink_id" : "AN132"
+      },
+      {
+         "length" : "0.105",
+         "source_id" : "AN132",
+         "sink_id" : "AN133"
+      },
+      {
+         "length" : "0.048",
+         "source_id" : "AN133",
+         "sink_id" : "AN134"
+      },
+      {
+         "length" : "0.106",
+         "source_id" : "AN134",
+         "sink_id" : "AN135"
+      },
+      {
+         "length" : "0.036",
+         "source_id" : "AN135",
+         "sink_id" : "AN136"
+      },
+      {
+         "length" : "0.035",
+         "source_id" : "AN136",
+         "sink_id" : "AN137"
+      },
+      {
+         "length" : "0.010",
+         "source_id" : "AN137",
+         "sink_id" : "AN138"
+      },
+      {
+         "length" : "0.022",
+         "source_id" : "AN138",
+         "sink_id" : "AN139"
+      },
+      {
+         "length" : "0.052",
+         "source_id" : "AN138",
+         "sink_id" : "AN140"
+      },
+      {
+         "length" : "0.000",
+         "source_id" : "AN137",
+         "sink_id" : "AN141"
+      },
+      {
+         "length" : "0.087",
+         "source_id" : "AN136",
+         "sink_id" : "AN142"
+      },
+      {
+         "length" : "0.038",
+         "source_id" : "AN142",
+         "sink_id" : "AN143"
+      },
+      {
+         "length" : "0.019",
+         "source_id" : "AN142",
+         "sink_id" : "AN144"
+      },
+      {
+         "length" : "1.203",
+         "source_id" : "AN144",
+         "sink_id" : "AN145"
+      },
+      {
+         "length" : "0.051",
+         "source_id" : "AN144",
+         "sink_id" : "AN146"
+      },
+      {
+         "length" : "0.018",
+         "source_id" : "AN135",
+         "sink_id" : "AN147"
+      },
+      {
+         "length" : "0.054",
+         "source_id" : "AN147",
+         "sink_id" : "AN148"
+      },
+      {
+         "length" : "0.050",
+         "source_id" : "AN147",
+         "sink_id" : "AN149"
+      },
+      {
+         "length" : "0.118",
+         "source_id" : "AN134",
+         "sink_id" : "AN150"
+      },
+      {
+         "length" : "0.129",
+         "source_id" : "AN133",
+         "sink_id" : "AN151"
+      },
+      {
+         "length" : "0.171",
+         "source_id" : "AN132",
+         "sink_id" : "AN152"
+      },
+      {
+         "length" : "0.267",
+         "source_id" : "AN131",
+         "sink_id" : "AN153"
+      },
+      {
+         "length" : "0.067",
+         "source_id" : "AN130",
+         "sink_id" : "AN154"
+      },
+      {
+         "length" : "0.296",
+         "source_id" : "AN154",
+         "sink_id" : "AN155"
+      },
+      {
+         "length" : "0.255",
+         "source_id" : "AN154",
+         "sink_id" : "AN156"
+      },
+      {
+         "length" : "0.717",
+         "source_id" : "AN129",
+         "sink_id" : "AN157"
+      },
+      {
+         "length" : "0.095",
+         "source_id" : "AN128",
+         "sink_id" : "AN158"
+      },
+      {
+         "length" : "2.000",
+         "source_id" : "AN158",
+         "sink_id" : "AN159"
+      },
+      {
+         "length" : "0.411",
+         "source_id" : "AN158",
+         "sink_id" : "AN160"
+      },
+      {
+         "length" : "2.000",
+         "source_id" : "AN158",
+         "sink_id" : "AN161"
+      },
+      {
+         "length" : "0.411",
+         "source_id" : "AN158",
+         "sink_id" : "AN162"
+      },
+      {
+         "length" : "0.242",
+         "source_id" : "AN127",
+         "sink_id" : "AN163"
+      },
+      {
+         "length" : "0.113",
+         "source_id" : "AN163",
+         "sink_id" : "AN164"
+      },
+      {
+         "length" : "0.111",
+         "source_id" : "AN164",
+         "sink_id" : "AN165"
+      },
+      {
+         "length" : "0.119",
+         "source_id" : "AN165",
+         "sink_id" : "AN166"
+      },
+      {
+         "length" : "0.097",
+         "source_id" : "AN166",
+         "sink_id" : "AN167"
+      },
+      {
+         "length" : "0.031",
+         "source_id" : "AN167",
+         "sink_id" : "AN168"
+      },
+      {
+         "length" : "0.123",
+         "source_id" : "AN168",
+         "sink_id" : "AN169"
+      },
+      {
+         "length" : "0.041",
+         "source_id" : "AN169",
+         "sink_id" : "AN170"
+      },
+      {
+         "length" : "0.382",
+         "source_id" : "AN170",
+         "sink_id" : "AN171"
+      },
+      {
+         "length" : "0.274",
+         "source_id" : "AN171",
+         "sink_id" : "AN172"
+      },
+      {
+         "length" : "0.074",
+         "source_id" : "AN172",
+         "sink_id" : "AN173"
+      },
+      {
+         "length" : "0.051",
+         "source_id" : "AN173",
+         "sink_id" : "AN174"
+      },
+      {
+         "length" : "0.000",
+         "source_id" : "AN173",
+         "sink_id" : "AN175"
+      },
+      {
+         "length" : "0.063",
+         "source_id" : "AN175",
+         "sink_id" : "AN176"
+      },
+      {
+         "length" : "0.010",
+         "source_id" : "AN175",
+         "sink_id" : "AN177"
+      },
+      {
+         "length" : "0.107",
+         "source_id" : "AN172",
+         "sink_id" : "AN178"
+      },
+      {
+         "length" : "0.039",
+         "source_id" : "AN171",
+         "sink_id" : "AN179"
+      },
+      {
+         "length" : "0.071",
+         "source_id" : "AN179",
+         "sink_id" : "AN180"
+      },
+      {
+         "length" : "0.000",
+         "source_id" : "AN180",
+         "sink_id" : "AN181"
+      },
+      {
+         "length" : "0.159",
+         "source_id" : "AN181",
+         "sink_id" : "AN182"
+      },
+      {
+         "length" : "0.159",
+         "source_id" : "AN181",
+         "sink_id" : "AN183"
+      },
+      {
+         "length" : "0.032",
+         "source_id" : "AN181",
+         "sink_id" : "AN184"
+      },
+      {
+         "length" : "0.005",
+         "source_id" : "AN180",
+         "sink_id" : "AN185"
+      },
+      {
+         "length" : "2.000",
+         "source_id" : "AN185",
+         "sink_id" : "AN186"
+      },
+      {
+         "length" : "0.016",
+         "source_id" : "AN185",
+         "sink_id" : "AN187"
+      },
+      {
+         "length" : "0.102",
+         "source_id" : "AN179",
+         "sink_id" : "AN188"
+      },
+      {
+         "length" : "0.010",
+         "source_id" : "AN188",
+         "sink_id" : "AN189"
+      },
+      {
+         "length" : "0.000",
+         "source_id" : "AN189",
+         "sink_id" : "AN190"
+      },
+      {
+         "length" : "0.000",
+         "source_id" : "AN189",
+         "sink_id" : "AN191"
+      },
+      {
+         "length" : "0.000",
+         "source_id" : "AN189",
+         "sink_id" : "AN192"
+      },
+      {
+         "length" : "0.000",
+         "source_id" : "AN189",
+         "sink_id" : "AN193"
+      },
+      {
+         "length" : "0.010",
+         "source_id" : "AN188",
+         "sink_id" : "AN194"
+      },
+      {
+         "length" : "2.000",
+         "source_id" : "AN194",
+         "sink_id" : "AN195"
+      },
+      {
+         "length" : "0.027",
+         "source_id" : "AN194",
+         "sink_id" : "AN196"
+      },
+      {
+         "length" : "0.605",
+         "source_id" : "AN179",
+         "sink_id" : "AN197"
+      },
+      {
+         "length" : "0.055",
+         "source_id" : "AN197",
+         "sink_id" : "AN198"
+      },
+      {
+         "length" : "0.000",
+         "source_id" : "AN197",
+         "sink_id" : "AN199"
+      },
+      {
+         "length" : "1.378",
+         "source_id" : "AN199",
+         "sink_id" : "AN200"
+      },
+      {
+         "length" : "0.000",
+         "source_id" : "AN199",
+         "sink_id" : "AN201"
+      },
+      {
+         "length" : "0.031",
+         "source_id" : "AN170",
+         "sink_id" : "AN202"
+      },
+      {
+         "length" : "0.034",
+         "source_id" : "AN202",
+         "sink_id" : "AN203"
+      },
+      {
+         "length" : "0.031",
+         "source_id" : "AN202",
+         "sink_id" : "AN204"
+      },
+      {
+         "length" : "0.017",
+         "source_id" : "AN169",
+         "sink_id" : "AN205"
+      },
+      {
+         "length" : "0.029",
+         "source_id" : "AN205",
+         "sink_id" : "AN206"
+      },
+      {
+         "length" : "0.055",
+         "source_id" : "AN205",
+         "sink_id" : "AN207"
+      },
+      {
+         "length" : "0.048",
+         "source_id" : "AN168",
+         "sink_id" : "AN208"
+      },
+      {
+         "length" : "0.041",
+         "source_id" : "AN167",
+         "sink_id" : "AN209"
+      },
+      {
+         "length" : "0.080",
+         "source_id" : "AN166",
+         "sink_id" : "AN210"
+      },
+      {
+         "length" : "0.147",
+         "source_id" : "AN165",
+         "sink_id" : "AN211"
+      },
+      {
+         "length" : "0.436",
+         "source_id" : "AN164",
+         "sink_id" : "AN212"
+      },
+      {
+         "length" : "0.255",
+         "source_id" : "AN163",
+         "sink_id" : "AN213"
+      },
+      {
+         "length" : "0.145",
+         "source_id" : "AN126",
+         "sink_id" : "AN214"
+      },
+      {
+         "length" : "0.527",
+         "source_id" : "AN214",
+         "sink_id" : "AN215"
+      },
+      {
+         "length" : "0.067",
+         "source_id" : "AN215",
+         "sink_id" : "AN216"
+      },
+      {
+         "length" : "0.067",
+         "source_id" : "AN215",
+         "sink_id" : "AN217"
+      },
+      {
+         "length" : "0.188",
+         "source_id" : "AN214",
+         "sink_id" : "AN218"
+      },
+      {
+         "length" : "0.232",
+         "source_id" : "AN218",
+         "sink_id" : "AN219"
+      },
+      {
+         "length" : "0.201",
+         "source_id" : "AN218",
+         "sink_id" : "AN220"
+      },
+      {
+         "length" : "0.228",
+         "source_id" : "AN125",
+         "sink_id" : "AN221"
+      },
+      {
+         "length" : "0.346",
+         "source_id" : "AN221",
+         "sink_id" : "AN222"
+      },
+      {
+         "length" : "0.290",
+         "source_id" : "AN222",
+         "sink_id" : "AN223"
+      },
+      {
+         "length" : "0.548",
+         "source_id" : "AN223",
+         "sink_id" : "AN224"
+      },
+      {
+         "length" : "0.775",
+         "source_id" : "AN224",
+         "sink_id" : "AN225"
+      },
+      {
+         "length" : "0.768",
+         "source_id" : "AN224",
+         "sink_id" : "AN226"
+      },
+      {
+         "length" : "0.455",
+         "source_id" : "AN223",
+         "sink_id" : "AN227"
+      },
+      {
+         "length" : "0.297",
+         "source_id" : "AN227",
+         "sink_id" : "AN228"
+      },
+      {
+         "length" : "0.336",
+         "source_id" : "AN227",
+         "sink_id" : "AN229"
+      },
+      {
+         "length" : "0.223",
+         "source_id" : "AN222",
+         "sink_id" : "AN230"
+      },
+      {
+         "length" : "0.447",
+         "source_id" : "AN230",
+         "sink_id" : "AN231"
+      },
+      {
+         "length" : "0.892",
+         "source_id" : "AN231",
+         "sink_id" : "AN232"
+      },
+      {
+         "length" : "0.751",
+         "source_id" : "AN231",
+         "sink_id" : "AN233"
+      },
+      {
+         "length" : "0.431",
+         "source_id" : "AN230",
+         "sink_id" : "AN234"
+      },
+      {
+         "length" : "0.344",
+         "source_id" : "AN234",
+         "sink_id" : "AN235"
+      },
+      {
+         "length" : "0.309",
+         "source_id" : "AN234",
+         "sink_id" : "AN236"
+      },
+      {
+         "length" : "0.600",
+         "source_id" : "AN221",
+         "sink_id" : "AN237"
+      },
+      {
+         "length" : "0.114",
+         "source_id" : "AN124",
+         "sink_id" : "AN238"
+      },
+      {
+         "length" : "0.822",
+         "source_id" : "AN238",
+         "sink_id" : "AN239"
+      },
+      {
+         "length" : "0.535",
+         "source_id" : "AN238",
+         "sink_id" : "AN240"
+      },
+      {
+         "length" : "0.422",
+         "source_id" : "AN123",
+         "sink_id" : "AN241"
+      },
+      {
+         "length" : "0.187",
+         "source_id" : "AN241",
+         "sink_id" : "AN242"
+      },
+      {
+         "length" : "1.284",
+         "source_id" : "AN242",
+         "sink_id" : "AN243"
+      },
+      {
+         "length" : "0.678",
+         "source_id" : "AN242",
+         "sink_id" : "AN244"
+      },
+      {
+         "length" : "0.538",
+         "source_id" : "AN241",
+         "sink_id" : "AN245"
+      },
+      {
+         "length" : "0.957",
+         "source_id" : "AN123",
+         "sink_id" : "AN246"
+      },
+      {
+         "length" : "0.259",
+         "source_id" : "AN123",
+         "sink_id" : "AN247"
+      },
+      {
+         "length" : "0.417",
+         "source_id" : "AN247",
+         "sink_id" : "AN248"
+      },
+      {
+         "length" : "2.000",
+         "source_id" : "AN248",
+         "sink_id" : "AN249"
+      },
+      {
+         "length" : "1.589",
+         "source_id" : "AN248",
+         "sink_id" : "AN250"
+      },
+      {
+         "length" : "0.299",
+         "source_id" : "AN247",
+         "sink_id" : "AN251"
+      },
+      {
+         "length" : "0.277",
+         "source_id" : "AN251",
+         "sink_id" : "AN252"
+      },
+      {
+         "length" : "0.252",
+         "source_id" : "AN251",
+         "sink_id" : "AN253"
+      },
+      {
+         "length" : "0.466",
+         "source_id" : "AN1",
+         "sink_id" : "AN254"
+      },
+      {
+         "length" : "0.241",
+         "source_id" : "AN0",
+         "sink_id" : "AN255"
+      },
+      {
+         "length" : "0.496",
+         "source_id" : "AN255",
+         "sink_id" : "AN256"
+      },
+      {
+         "length" : "0.636",
+         "source_id" : "AN255",
+         "sink_id" : "AN257"
+      },
+      {
+         "length" : "0.701",
+         "source_id" : "AN255",
+         "sink_id" : "AN258"
+      },
+      {
+         "length" : "0.545",
+         "source_id" : "AN255",
+         "sink_id" : "AN259"
+      },
+      {
+         "length" : "0.620",
+         "source_id" : "AN255",
+         "sink_id" : "AN260"
+      },
+      {
+         "length" : "0.545",
+         "source_id" : "AN255",
+         "sink_id" : "AN261"
+      },
+      {
+         "length" : "0.710",
+         "source_id" : "AN255",
+         "sink_id" : "AN262"
+      },
+      {
+         "length" : "0.754",
+         "source_id" : "AN255",
+         "sink_id" : "AN263"
+      },
+      {
+         "length" : "0.582",
+         "source_id" : "AN255",
+         "sink_id" : "AN264"
+      },
+      {
+         "length" : "0.359",
+         "source_id" : "AN255",
+         "sink_id" : "AN265"
+      },
+      {
+         "length" : "0.471",
+         "source_id" : "AN265",
+         "sink_id" : "AN266"
+      },
+      {
+         "length" : "0.366",
+         "source_id" : "AN265",
+         "sink_id" : "AN267"
+      },
+      {
+         "length" : "0.282",
+         "source_id" : "AN265",
+         "sink_id" : "AN268"
+      },
+      {
+         "length" : "0.350",
+         "source_id" : "AN268",
+         "sink_id" : "AN269"
+      },
+      {
+         "length" : "0.480",
+         "source_id" : "AN268",
+         "sink_id" : "AN270"
+      }
+   ],
+   "nodes" : {
+      "AN114" : {
+         "node_id" : "AN114",
+         "second" : "ENTREZ:3406788",
+         "species_symbol" : "ENTHI",
+         "third" : "NCBI:XP_652484"
+      },
+      "AN61" : {
+         "duplications" : "0",
+         "node_id" : "AN61",
+         "species" : "Alveolata",
+         "id" : "AN61",
+         "speciations" : "1"
+      },
+      "AN25" : {
+         "duplications" : "0",
+         "node_id" : "AN25",
+         "species" : "Laurasiatheria",
+         "id" : "AN25",
+         "speciations" : "1"
+      },
+      "AN228" : {
+         "node_id" : "AN228",
+         "second" : "SGD:S000005026",
+         "species_symbol" : "YEAST",
+         "third" : "UniProtKB:P14242"
+      },
+      "AN145" : {
+         "node_id" : "AN145",
+         "second" : "RGD:1563556",
+         "species_symbol" : "RAT",
+         "third" : "NCBI:XP_001072925"
+      },
+      "AN249" : {
+         "node_id" : "AN249",
+         "second" : "ENTREZ:5717917",
+         "species_symbol" : "CHLRE",
+         "third" : "UniProtKB:A8IT98"
+      },
+      "AN45" : {
+         "node_id" : "AN45",
+         "second" : "ENSEMBL:AGAP012192",
+         "species_symbol" : "ANOGA",
+         "third" : "ENSEMBL:AGAP012192-PA"
+      },
+      "AN209" : {
+         "node_id" : "AN209",
+         "second" : "ENSEMBL:ENSOANG00000001944",
+         "species_symbol" : "ORNAN",
+         "third" : "ENSEMBL:ENSOANP00000003091"
+      },
+      "AN269" : {
+         "node_id" : "AN269",
+         "second" : "ENTREZ:5355304",
+         "species_symbol" : "PSEA7",
+         "third" : "UniProtKB:A6VD59"
+      },
+      "AN113" : {
+         "duplications" : "0",
+         "node_id" : "AN113",
+         "species" : "Amoebozoa",
+         "id" : "AN113",
+         "speciations" : "1"
+      },
+      "AN223" : {
+         "duplications" : "1",
+         "node_id" : "AN223",
+         "id" : "AN223",
+         "speciations" : "0"
+      },
+      "AN124" : {
+         "duplications" : "0",
+         "node_id" : "AN124",
+         "species" : "Unikonts",
+         "id" : "AN124",
+         "speciations" : "1"
+      },
+      "AN93" : {
+         "node_id" : "AN93",
+         "second" : "ENSEMBL:ENSCAFG00000017012",
+         "species_symbol" : "CANFA",
+         "third" : "ENSEMBL:ENSCAFP00000025054"
+      },
+      "AN205" : {
+         "duplications" : "0",
+         "node_id" : "AN205",
+         "species" : "Laurasiatheria",
+         "id" : "AN205",
+         "speciations" : "1"
+      },
+      "AN106" : {
+         "duplications" : "0",
+         "node_id" : "AN106",
+         "species" : "Pezizomycotina-Saccharomycotina",
+         "id" : "AN106",
+         "speciations" : "1"
+      },
+      "AN8" : {
+         "duplications" : "0",
+         "node_id" : "AN8",
+         "species" : "Deuterostomia",
+         "id" : "AN8",
+         "speciations" : "1"
+      },
+      "AN135" : {
+         "duplications" : "0",
+         "node_id" : "AN135",
+         "species" : "Eutheria",
+         "id" : "AN135",
+         "speciations" : "1"
+      },
+      "AN251" : {
+         "duplications" : "0",
+         "node_id" : "AN251",
+         "species" : "Magnoliophyta",
+         "id" : "AN251",
+         "speciations" : "1"
+      },
+      "AN65" : {
+         "duplications" : "0",
+         "node_id" : "AN65",
+         "species" : "Viridiplantae",
+         "id" : "AN65",
+         "speciations" : "1"
+      },
+      "AN20" : {
+         "node_id" : "AN20",
+         "second" : "ENSEMBL:ENSPTRG00000014743",
+         "species_symbol" : "PANTR",
+         "third" : "ENSEMBL:ENSPTRP00000058676"
+      },
+      "AN255" : {
+         "duplications" : "0",
+         "node_id" : "AN255",
+         "species" : "Eubacteria",
+         "id" : "AN255",
+         "speciations" : "1"
+      },
+      "AN176" : {
+         "node_id" : "AN176",
+         "second" : "ENSEMBL:ENSPTRG00000018901",
+         "species_symbol" : "PANTR",
+         "third" : "ENSEMBL:ENSPTRP00000032283"
+      },
+      "AN265" : {
+         "duplications" : "0",
+         "node_id" : "AN265",
+         "species" : "Proteobacteria",
+         "id" : "AN265",
+         "speciations" : "1"
+      },
+      "AN6" : {
+         "duplications" : "0",
+         "node_id" : "AN6",
+         "species" : "Opisthokonts",
+         "id" : "AN6",
+         "speciations" : "1"
+      },
+      "AN247" : {
+         "duplications" : "0",
+         "node_id" : "AN247",
+         "species" : "Viridiplantae",
+         "id" : "AN247",
+         "speciations" : "1"
+      },
+      "AN123" : {
+         "duplications" : "0",
+         "node_id" : "AN123",
+         "species" : "Eukaryota",
+         "id" : "AN123",
+         "speciations" : "1"
+      },
+      "AN51" : {
+         "duplications" : "0",
+         "node_id" : "AN51",
+         "species" : "Pezizomycotina",
+         "id" : "AN51",
+         "speciations" : "1"
+      },
+      "AN0" : {
+         "duplications" : "0",
+         "node_id" : "AN0",
+         "species" : "LUCA",
+         "id" : "AN0",
+         "speciations" : "1"
+      },
+      "AN160" : {
+         "node_id" : "AN160",
+         "second" : "ENTREZ:760408",
+         "species_symbol" : "STRPU",
+         "third" : "NCBI:XP_001188203"
+      },
+      "AN159" : {
+         "node_id" : "AN159",
+         "second" : "ENTREZ:756115",
+         "species_symbol" : "STRPU",
+         "third" : "NCBI:XP_001193528"
+      },
+      "AN97" : {
+         "node_id" : "AN97",
+         "second" : "ENSEMBL:ENSOANG00000007010",
+         "species_symbol" : "ORNAN",
+         "third" : "ENSEMBL:ENSOANP00000011166"
+      },
+      "AN15" : {
+         "duplications" : "0",
+         "node_id" : "AN15",
+         "species" : "Eutheria",
+         "id" : "AN15",
+         "speciations" : "1"
+      },
+      "AN143" : {
+         "node_id" : "AN143",
+         "second" : "MGI:MGI=1202302",
+         "species_symbol" : "MOUSE",
+         "third" : "NCBI:NP_705784"
+      },
+      "AN190" : {
+         "node_id" : "AN190",
+         "second" : "ENSEMBL:ENSG00000174368",
+         "species_symbol" : "HUMAN",
+         "third" : "UniProtKB:A8MQ11"
+      },
+      "AN163" : {
+         "duplications" : "0",
+         "node_id" : "AN163",
+         "species" : "Deuterostomia",
+         "id" : "AN163",
+         "speciations" : "1"
+      },
+      "AN140" : {
+         "node_id" : "AN140",
+         "second" : "ENSEMBL:ENSPTRG00000012737",
+         "species_symbol" : "PANTR",
+         "third" : "ENSEMBL:ENSPTRP00000021776"
+      },
+      "AN44" : {
+         "node_id" : "AN44",
+         "second" : "FB:FBgn0011659",
+         "species_symbol" : "DROME",
+         "third" : "UniProtKB:A1Z7C1"
+      },
+      "AN120" : {
+         "duplications" : "0",
+         "node_id" : "AN120",
+         "species" : "Magnoliophyta",
+         "id" : "AN120",
+         "speciations" : "1"
+      },
+      "AN181" : {
+         "duplications" : "1",
+         "node_id" : "AN181",
+         "id" : "AN181",
+         "speciations" : "0"
+      },
+      "AN156" : {
+         "node_id" : "AN156",
+         "second" : "ZFIN:ZDB-GENE-030616-528",
+         "species_symbol" : "DANRE",
+         "third" : "UniProtKB:Q8JFR9"
+      },
+      "AN171" : {
+         "duplications" : "1",
+         "node_id" : "AN171",
+         "id" : "AN171",
+         "speciations" : "0"
+      },
+      "AN204" : {
+         "node_id" : "AN204",
+         "second" : "RGD:1305483",
+         "species_symbol" : "RAT",
+         "third" : "NCBI:XP_001063043"
+      },
+      "AN72" : {
+         "duplications" : "0",
+         "node_id" : "AN72",
+         "species" : "Opisthokonts",
+         "id" : "AN72",
+         "speciations" : "1"
+      },
+      "AN30" : {
+         "node_id" : "AN30",
+         "second" : "ENTREZ:420729",
+         "species_symbol" : "CHICK",
+         "third" : "NCBI:XP_418828"
+      },
+      "AN96" : {
+         "node_id" : "AN96",
+         "second" : "ENSEMBL:ENSOANG00000011581",
+         "species_symbol" : "ORNAN",
+         "third" : "ENSEMBL:ENSOANP00000018348"
+      },
+      "AN1" : {
+         "duplications" : "0",
+         "node_id" : "AN1",
+         "species" : "Archaea-Eukaryota",
+         "id" : "AN1",
+         "speciations" : "1"
+      },
+      "AN216" : {
+         "node_id" : "AN216",
+         "second" : "WB:WBGene00004064",
+         "species_symbol" : "CAEEL",
+         "third" : "UniProtKB:Q9TVL8"
+      },
+      "AN83" : {
+         "node_id" : "AN83",
+         "second" : "ENSEMBL:ENSG00000119684",
+         "species_symbol" : "HUMAN",
+         "third" : "UniProtKB:Q9UHC1"
+      },
+      "AN66" : {
+         "node_id" : "AN66",
+         "second" : "ENTREZ:5715471",
+         "species_symbol" : "CHLRE",
+         "third" : "UniProtKB:A8HM54"
+      },
+      "AN49" : {
+         "node_id" : "AN49",
+         "second" : "SGD:S000004777",
+         "species_symbol" : "YEAST",
+         "third" : "UniProtKB:P38920"
+      },
+      "_anonymous_b1ae8e5d-a065-42ed-976a-083db4332a97" : {
+         "node_id" : "_anonymous_b1ae8e5d-a065-42ed-976a-083db4332a97"
+      },
+      "AN119" : {
+         "node_id" : "AN119",
+         "second" : "ENTREZ:5725681",
+         "species_symbol" : "CHLRE",
+         "third" : "UniProtKB:A8JCH7"
+      },
+      "AN235" : {
+         "node_id" : "AN235",
+         "second" : "ENTREZ:2870963",
+         "species_symbol" : "EMENI",
+         "third" : "UniProtKB:Q5AZG4"
+      },
+      "AN102" : {
+         "duplications" : "1",
+         "node_id" : "AN102",
+         "id" : "AN102",
+         "speciations" : "0"
+      },
+      "AN199" : {
+         "duplications" : "1",
+         "node_id" : "AN199",
+         "id" : "AN199",
+         "speciations" : "0"
+      },
+      "AN226" : {
+         "node_id" : "AN226",
+         "second" : "ENTREZ:4622035",
+         "species_symbol" : "ASHGO",
+         "third" : "UniProtKB:Q753U9"
+      },
+      "AN148" : {
+         "node_id" : "AN148",
+         "second" : "ENSEMBL:ENSBTAG00000018795",
+         "species_symbol" : "BOVIN",
+         "third" : "UniProtKB:A0JNP9"
+      },
+      "AN139" : {
+         "node_id" : "AN139",
+         "second" : "ENSEMBL:ENSG00000064933",
+         "species_symbol" : "HUMAN",
+         "third" : "UniProtKB:P54277"
+      },
+      "AN197" : {
+         "duplications" : "0",
+         "node_id" : "AN197",
+         "species" : "Homo-Pan",
+         "id" : "AN197",
+         "speciations" : "1"
+      },
+      "AN34" : {
+         "duplications" : "0",
+         "node_id" : "AN34",
+         "species" : "Teleostei",
+         "id" : "AN34",
+         "speciations" : "1"
+      },
+      "AN13" : {
+         "duplications" : "0",
+         "node_id" : "AN13",
+         "species" : "Mammalia",
+         "id" : "AN13",
+         "speciations" : "1"
+      },
+      "AN19" : {
+         "node_id" : "AN19",
+         "second" : "ENSEMBL:ENSG00000076242",
+         "species_symbol" : "HUMAN",
+         "third" : "UniProtKB:P40692"
+      },
+      "AN217" : {
+         "node_id" : "AN217",
+         "second" : "ENTREZ:5636459",
+         "species_symbol" : "CAEBR",
+         "third" : "NCBI:XP_001673667"
+      },
+      "AN212" : {
+         "node_id" : "AN212",
+         "second" : "ENSEMBL:ENSCING00000002674",
+         "species_symbol" : "CIOIN",
+         "third" : "ENSEMBL:ENSCINP00000005459"
+      },
+      "AN110" : {
+         "duplications" : "0",
+         "node_id" : "AN110",
+         "species" : "Pezizomycotina",
+         "id" : "AN110",
+         "speciations" : "1"
+      },
+      "AN144" : {
+         "duplications" : "1",
+         "node_id" : "AN144",
+         "id" : "AN144",
+         "speciations" : "0"
+      },
+      "AN18" : {
+         "duplications" : "0",
+         "node_id" : "AN18",
+         "species" : "Homo-Pan",
+         "id" : "AN18",
+         "speciations" : "1"
+      },
+      "AN193" : {
+         "node_id" : "AN193",
+         "second" : "ENSEMBL:ENSG00000123965",
+         "species_symbol" : "HUMAN",
+         "third" : "UniProtKB:A8MQ11"
+      },
+      "AN56" : {
+         "node_id" : "AN56",
+         "second" : "ENTREZ:3406116",
+         "species_symbol" : "ENTHI",
+         "third" : "NCBI:XP_651821"
+      },
+      "AN117" : {
+         "node_id" : "AN117",
+         "second" : "ENTREZ:5650802",
+         "species_symbol" : "LEIMA",
+         "third" : "UniProtKB:Q4QEC0"
+      },
+      "AN170" : {
+         "duplications" : "0",
+         "node_id" : "AN170",
+         "species" : "Euarchontoglires",
+         "id" : "AN170",
+         "speciations" : "1"
+      },
+      "AN137" : {
+         "duplications" : "0",
+         "node_id" : "AN137",
+         "species" : "Catarrhini",
+         "id" : "AN137",
+         "speciations" : "1"
+      },
+      "AN157" : {
+         "node_id" : "AN157",
+         "second" : "ENSEMBL:ENSCING00000003685",
+         "species_symbol" : "CIOIN",
+         "third" : "ENSEMBL:ENSCINP00000007598"
+      },
+      "AN268" : {
+         "duplications" : "0",
+         "node_id" : "AN268",
+         "species" : "Gammaproteobacteria",
+         "id" : "AN268",
+         "speciations" : "1"
+      },
+      "AN254" : {
+         "node_id" : "AN254",
+         "second" : "ENTREZ:1472414",
+         "species_symbol" : "METAC",
+         "third" : "UniProtKB:Q8TTB5"
+      },
+      "AN167" : {
+         "duplications" : "0",
+         "node_id" : "AN167",
+         "species" : "Mammalia",
+         "id" : "AN167",
+         "speciations" : "1"
+      },
+      "AN94" : {
+         "node_id" : "AN94",
+         "second" : "ENSEMBL:ENSMODG00000006037",
+         "species_symbol" : "MONDO",
+         "third" : "ENSEMBL:ENSMODP00000007489"
+      },
+      "AN175" : {
+         "duplications" : "1",
+         "node_id" : "AN175",
+         "id" : "AN175",
+         "speciations" : "0"
+      },
+      "AN32" : {
+         "node_id" : "AN32",
+         "second" : "ENSEMBL:ENSXETG00000004985",
+         "species_symbol" : "XENTR",
+         "third" : "ENSEMBL:ENSXETP00000010905"
+      },
+      "AN76" : {
+         "duplications" : "0",
+         "node_id" : "AN76",
+         "species" : "Tetrapoda",
+         "id" : "AN76",
+         "speciations" : "1"
+      },
+      "AN24" : {
+         "node_id" : "AN24",
+         "second" : "RGD:620937",
+         "species_symbol" : "RAT",
+         "third" : "UniProtKB:P97679"
+      },
+      "AN116" : {
+         "node_id" : "AN116",
+         "second" : "ENTREZ:4521609",
+         "species_symbol" : "TETTH",
+         "third" : "UniProtKB:Q22CH2"
+      },
+      "AN87" : {
+         "node_id" : "AN87",
+         "second" : "MGI:MGI=1353455",
+         "species_symbol" : "MOUSE",
+         "third" : "NCBI:NP_780546"
+      },
+      "AN41" : {
+         "node_id" : "AN41",
+         "second" : "WB:WBGene00003373",
+         "species_symbol" : "CAEEL",
+         "third" : "UniProtKB:Q9XU10"
+      },
+      "AN266" : {
+         "node_id" : "AN266",
+         "second" : "ENTREZ:2688110",
+         "species_symbol" : "GEOSL",
+         "third" : "UniProtKB:Q74BP0"
+      },
+      "AN201" : {
+         "node_id" : "AN201",
+         "second" : "ENSEMBL:ENSPTRG00000018902",
+         "species_symbol" : "PANTR",
+         "third" : "ENSEMBL:ENSPTRP00000056990"
+      },
+      "AN112" : {
+         "node_id" : "AN112",
+         "second" : "ENTREZ:3879346",
+         "species_symbol" : "NEUCR",
+         "third" : "UniProtKB:Q9HE21"
+      },
+      "AN37" : {
+         "node_id" : "AN37",
+         "second" : "ENSEMBL:ENSCING00000002563",
+         "species_symbol" : "CIOIN",
+         "third" : "ENSEMBL:ENSCINP00000005234"
+      },
+      "AN59" : {
+         "node_id" : "AN59",
+         "second" : "ENSEMBL:ENSDARG00000069969",
+         "species_symbol" : "DANRE",
+         "third" : "ENSEMBL:ENSDARP00000093040"
+      },
+      "AN264" : {
+         "node_id" : "AN264",
+         "second" : "ENTREZ:1193141",
+         "species_symbol" : "AQUAE",
+         "third" : "UniProtKB:O67518"
+      },
+      "AN185" : {
+         "duplications" : "1",
+         "node_id" : "AN185",
+         "id" : "AN185",
+         "speciations" : "0"
+      },
+      "AN259" : {
+         "node_id" : "AN259",
+         "second" : "ENTREZ:5825934",
+         "species_symbol" : "CHLAA",
+         "third" : "UniProtKB:A9WJ86"
+      },
+      "AN246" : {
+         "node_id" : "AN246",
+         "second" : "ENTREZ:3684461",
+         "species_symbol" : "LEIMA",
+         "third" : "UniProtKB:Q4FWV4"
+      },
+      "AN239" : {
+         "node_id" : "AN239",
+         "second" : "ENTREZ:3404941",
+         "species_symbol" : "ENTHI",
+         "third" : "NCBI:XP_650637"
+      },
+      "AN16" : {
+         "duplications" : "0",
+         "node_id" : "AN16",
+         "species" : "Euarchontoglires",
+         "id" : "AN16",
+         "speciations" : "1"
+      },
+      "AN125" : {
+         "duplications" : "0",
+         "node_id" : "AN125",
+         "species" : "Opisthokonts",
+         "id" : "AN125",
+         "speciations" : "1"
+      },
+      "AN227" : {
+         "duplications" : "0",
+         "node_id" : "AN227",
+         "species" : "Saccharomycetaceae",
+         "id" : "AN227",
+         "speciations" : "1"
+      },
+      "AN172" : {
+         "duplications" : "0",
+         "node_id" : "AN172",
+         "species" : "Catarrhini",
+         "id" : "AN172",
+         "speciations" : "1"
+      },
+      "AN132" : {
+         "duplications" : "0",
+         "node_id" : "AN132",
+         "species" : "Amniota",
+         "id" : "AN132",
+         "speciations" : "1"
+      },
+      "AN9" : {
+         "duplications" : "0",
+         "node_id" : "AN9",
+         "species" : "Chordata",
+         "id" : "AN9",
+         "speciations" : "1"
+      },
+      "AN98" : {
+         "node_id" : "AN98",
+         "second" : "ENSEMBL:ENSXETG00000013252",
+         "species_symbol" : "XENTR",
+         "third" : "ENSEMBL:ENSXETP00000029020"
+      },
+      "AN60" : {
+         "node_id" : "AN60",
+         "second" : "ENSEMBL:ENSDARG00000068618",
+         "species_symbol" : "DANRE",
+         "third" : "ENSEMBL:ENSDARP00000090077"
+      },
+      "AN233" : {
+         "node_id" : "AN233",
+         "second" : "ENTREZ:3879893",
+         "species_symbol" : "NEUCR",
+         "third" : "UniProtKB:Q7SCN8"
+      },
+      "AN10" : {
+         "duplications" : "0",
+         "node_id" : "AN10",
+         "species" : "Osteichthyes",
+         "id" : "AN10",
+         "speciations" : "1"
+      },
+      "AN42" : {
+         "node_id" : "AN42",
+         "second" : "ENTREZ:5644284",
+         "species_symbol" : "CAEBR",
+         "third" : "NCBI:XP_001666723"
+      },
+      "AN90" : {
+         "duplications" : "1",
+         "node_id" : "AN90",
+         "id" : "AN90",
+         "speciations" : "0"
+      },
+      "AN127" : {
+         "duplications" : "1",
+         "node_id" : "AN127",
+         "id" : "AN127",
+         "speciations" : "0"
+      },
+      "AN220" : {
+         "node_id" : "AN220",
+         "second" : "ENSEMBL:AGAP007126",
+         "species_symbol" : "ANOGA",
+         "third" : "ENSEMBL:AGAP007126-PA"
+      },
+      "AN202" : {
+         "duplications" : "0",
+         "node_id" : "AN202",
+         "species" : "Murinae",
+         "id" : "AN202",
+         "speciations" : "1"
+      },
+      "AN149" : {
+         "node_id" : "AN149",
+         "second" : "ENSEMBL:ENSCAFG00000009394",
+         "species_symbol" : "CANFA",
+         "third" : "ENSEMBL:ENSCAFP00000034939"
+      },
+      "AN80" : {
+         "duplications" : "0",
+         "node_id" : "AN80",
+         "species" : "Euarchontoglires",
+         "id" : "AN80",
+         "speciations" : "1"
+      },
+      "AN164" : {
+         "duplications" : "0",
+         "node_id" : "AN164",
+         "species" : "Chordata",
+         "id" : "AN164",
+         "speciations" : "1"
+      },
+      "AN138" : {
+         "duplications" : "0",
+         "node_id" : "AN138",
+         "species" : "Homo-Pan",
+         "id" : "AN138",
+         "speciations" : "1"
+      },
+      "AN71" : {
+         "duplications" : "0",
+         "node_id" : "AN71",
+         "species" : "Unikonts",
+         "id" : "AN71",
+         "speciations" : "1"
+      },
+      "AN103" : {
+         "node_id" : "AN103",
+         "second" : "ENSEMBL:ENSCING00000013515",
+         "species_symbol" : "CIOIN",
+         "third" : "ENSEMBL:ENSCINP00000024775"
+      },
+      "AN79" : {
+         "duplications" : "0",
+         "node_id" : "AN79",
+         "species" : "Eutheria",
+         "id" : "AN79",
+         "speciations" : "1"
+      },
+      "AN182" : {
+         "node_id" : "AN182",
+         "second" : "ENSEMBL:ENSG00000188073",
+         "species_symbol" : "HUMAN",
+         "third" : "UniProtKB:O95744"
+      },
+      "AN95" : {
+         "duplications" : "1",
+         "node_id" : "AN95",
+         "id" : "AN95",
+         "speciations" : "0"
+      },
+      "AN153" : {
+         "node_id" : "AN153",
+         "second" : "ENSEMBL:ENSXETG00000009885",
+         "species_symbol" : "XENTR",
+         "third" : "ENSEMBL:ENSXETP00000021769"
+      },
+      "AN107" : {
+         "duplications" : "0",
+         "node_id" : "AN107",
+         "species" : "Saccharomycetaceae",
+         "id" : "AN107",
+         "speciations" : "1"
+      },
+      "AN54" : {
+         "node_id" : "AN54",
+         "second" : "GeneDB_Spombe:SPBC1703.04",
+         "species_symbol" : "SCHPO",
+         "third" : "UniProtKB:Q9P7W6"
+      },
+      "AN14" : {
+         "duplications" : "0",
+         "node_id" : "AN14",
+         "species" : "Theria",
+         "id" : "AN14",
+         "speciations" : "1"
+      },
+      "AN234" : {
+         "duplications" : "0",
+         "node_id" : "AN234",
+         "species" : "Pezizomycotina",
+         "id" : "AN234",
+         "speciations" : "1"
+      },
+      "AN252" : {
+         "node_id" : "AN252",
+         "second" : "ENTREZ:4329835",
+         "species_symbol" : "ORYSJ",
+         "third" : "UniProtKB:Q69L72"
+      },
+      "AN131" : {
+         "duplications" : "0",
+         "node_id" : "AN131",
+         "species" : "Tetrapoda",
+         "id" : "AN131",
+         "speciations" : "1"
+      },
+      "AN2" : {
+         "duplications" : "1",
+         "node_id" : "AN2",
+         "id" : "AN2",
+         "speciations" : "0"
+      },
+      "AN213" : {
+         "node_id" : "AN213",
+         "second" : "ENTREZ:581506",
+         "species_symbol" : "STRPU",
+         "third" : "NCBI:XP_001185952"
+      },
+      "AN33" : {
+         "node_id" : "AN33",
+         "second" : "ENSEMBL:ENSXETG00000024856",
+         "species_symbol" : "XENTR",
+         "third" : "ENSEMBL:ENSXETP00000010906"
+      },
+      "AN29" : {
+         "node_id" : "AN29",
+         "second" : "ENSEMBL:ENSOANG00000015305",
+         "species_symbol" : "ORNAN",
+         "third" : "ENSEMBL:ENSOANP00000024093"
+      },
+      "AN57" : {
+         "node_id" : "AN57",
+         "second" : "dictyBase:DDB_G0287393",
+         "species_symbol" : "DICDI",
+         "third" : "UniProtKB:Q54KD8"
+      },
+      "AN67" : {
+         "duplications" : "0",
+         "node_id" : "AN67",
+         "species" : "Magnoliophyta",
+         "id" : "AN67",
+         "speciations" : "1"
+      },
+      "AN108" : {
+         "node_id" : "AN108",
+         "second" : "SGD:S000006085",
+         "species_symbol" : "YEAST",
+         "third" : "UniProtKB:Q12083"
+      },
+      "AN260" : {
+         "node_id" : "AN260",
+         "second" : "ENTREZ:2598842",
+         "species_symbol" : "GLOVI",
+         "third" : "UniProtKB:Q7NL47"
+      },
+      "AN248" : {
+         "duplications" : "1",
+         "node_id" : "AN248",
+         "id" : "AN248",
+         "speciations" : "0"
+      },
+      "AN242" : {
+         "duplications" : "1",
+         "node_id" : "AN242",
+         "id" : "AN242",
+         "speciations" : "0"
+      },
+      "AN222" : {
+         "duplications" : "0",
+         "node_id" : "AN222",
+         "species" : "Pezizomycotina-Saccharomycotina",
+         "id" : "AN222",
+         "speciations" : "1"
+      },
+      "AN75" : {
+         "duplications" : "0",
+         "node_id" : "AN75",
+         "species" : "Osteichthyes",
+         "id" : "AN75",
+         "speciations" : "1"
+      },
+      "AN218" : {
+         "duplications" : "0",
+         "node_id" : "AN218",
+         "species" : "Insecta",
+         "id" : "AN218",
+         "speciations" : "1"
+      },
+      "AN179" : {
+         "duplications" : "1",
+         "node_id" : "AN179",
+         "id" : "AN179",
+         "speciations" : "0"
+      },
+      "AN192" : {
+         "node_id" : "AN192",
+         "second" : "ENSEMBL:ENSG00000198632",
+         "species_symbol" : "HUMAN",
+         "third" : "UniProtKB:A8MQ11"
+      },
+      "AN91" : {
+         "node_id" : "AN91",
+         "second" : "ENSEMBL:ENSBTAG00000019279",
+         "species_symbol" : "BOVIN",
+         "third" : "ENSEMBL:ENSBTAP00000025669"
+      },
+      "AN240" : {
+         "node_id" : "AN240",
+         "second" : "dictyBase:DDB_G0283981",
+         "species_symbol" : "DICDI",
+         "third" : "UniProtKB:Q54QA0"
+      },
+      "AN99" : {
+         "duplications" : "0",
+         "node_id" : "AN99",
+         "species" : "Teleostei",
+         "id" : "AN99",
+         "speciations" : "1"
+      },
+      "AN23" : {
+         "node_id" : "AN23",
+         "second" : "MGI:MGI=101938",
+         "species_symbol" : "MOUSE",
+         "third" : "UniProtKB:Q9JK91"
+      },
+      "AN183" : {
+         "node_id" : "AN183",
+         "second" : "ENSEMBL:ENSG00000189011",
+         "species_symbol" : "HUMAN",
+         "third" : "UniProtKB:O95744"
+      },
+      "AN158" : {
+         "duplications" : "1",
+         "node_id" : "AN158",
+         "id" : "AN158",
+         "speciations" : "0"
+      },
+      "AN178" : {
+         "node_id" : "AN178",
+         "second" : "ENSEMBL:ENSMMUG00000030421",
+         "species_symbol" : "MACMU",
+         "third" : "ENSEMBL:ENSMMUP00000035509"
+      },
+      "AN257" : {
+         "node_id" : "AN257",
+         "second" : "ENTREZ:896837",
+         "species_symbol" : "THEMA",
+         "third" : "UniProtKB:P74925"
+      },
+      "AN100" : {
+         "node_id" : "AN100",
+         "second" : "ENSEMBL:ENSTRUG00000018306",
+         "species_symbol" : "FUGRU",
+         "third" : "ENSEMBL:ENSTRUP00000046835"
+      },
+      "AN136" : {
+         "duplications" : "0",
+         "node_id" : "AN136",
+         "species" : "Euarchontoglires",
+         "id" : "AN136",
+         "speciations" : "1"
+      },
+      "AN210" : {
+         "node_id" : "AN210",
+         "second" : "ENSEMBL:ENSXETG00000024066",
+         "species_symbol" : "XENTR",
+         "third" : "ENSEMBL:ENSXETP00000051912"
+      },
+      "AN245" : {
+         "node_id" : "AN245",
+         "second" : "ENTREZ:4521180",
+         "species_symbol" : "TETTH",
+         "third" : "UniProtKB:Q22B61"
+      },
+      "AN237" : {
+         "node_id" : "AN237",
+         "second" : "GeneDB_Spombe:SPAC19G12.02c",
+         "species_symbol" : "SCHPO",
+         "third" : "UniProtKB:P54280"
+      },
+      "AN47" : {
+         "duplications" : "0",
+         "node_id" : "AN47",
+         "species" : "Pezizomycotina-Saccharomycotina",
+         "id" : "AN47",
+         "speciations" : "1"
+      },
+      "AN168" : {
+         "duplications" : "0",
+         "node_id" : "AN168",
+         "species" : "Theria",
+         "id" : "AN168",
+         "speciations" : "1"
+      },
+      "AN31" : {
+         "duplications" : "1",
+         "node_id" : "AN31",
+         "id" : "AN31",
+         "speciations" : "0"
+      },
+      "AN150" : {
+         "node_id" : "AN150",
+         "second" : "ENSEMBL:ENSMODG00000011535",
+         "species_symbol" : "MONDO",
+         "third" : "ENSEMBL:ENSMODP00000014433"
+      },
+      "AN186" : {
+         "node_id" : "AN186",
+         "second" : "ENSEMBL:ENSPTRG00000028443",
+         "species_symbol" : "PANTR",
+         "third" : "ENSEMBL:ENSPTRP00000033345"
+      },
+      "AN40" : {
+         "duplications" : "0",
+         "node_id" : "AN40",
+         "species" : "Caenorhabditis",
+         "id" : "AN40",
+         "speciations" : "1"
+      },
+      "AN22" : {
+         "duplications" : "0",
+         "node_id" : "AN22",
+         "species" : "Murinae",
+         "id" : "AN22",
+         "speciations" : "1"
+      },
+      "AN232" : {
+         "node_id" : "AN232",
+         "second" : "ENTREZ:2875649",
+         "species_symbol" : "EMENI",
+         "third" : "UniProtKB:Q5BD16"
+      },
+      "AN258" : {
+         "node_id" : "AN258",
+         "second" : "ENTREZ:1800018",
+         "species_symbol" : "DEIRA",
+         "third" : "UniProtKB:Q9RTR0"
+      },
+      "AN63" : {
+         "node_id" : "AN63",
+         "second" : "ENTREZ:4507047",
+         "species_symbol" : "TETTH",
+         "third" : "NCBI:XP_001016280"
+      },
+      "AN43" : {
+         "duplications" : "0",
+         "node_id" : "AN43",
+         "species" : "Insecta",
+         "id" : "AN43",
+         "speciations" : "1"
+      },
+      "AN84" : {
+         "node_id" : "AN84",
+         "second" : "ENSEMBL:ENSPTRG00000006548",
+         "species_symbol" : "PANTR",
+         "third" : "ENSEMBL:ENSPTRP00000011125"
+      },
+      "AN88" : {
+         "node_id" : "AN88",
+         "second" : "RGD:1309227",
+         "species_symbol" : "RAT",
+         "third" : "NCBI:XP_234420"
+      },
+      "AN39" : {
+         "duplications" : "0",
+         "node_id" : "AN39",
+         "species" : "Ecdysozoa",
+         "id" : "AN39",
+         "speciations" : "1"
+      },
+      "AN238" : {
+         "duplications" : "0",
+         "node_id" : "AN238",
+         "species" : "Amoebozoa",
+         "id" : "AN238",
+         "speciations" : "1"
+      },
+      "AN207" : {
+         "node_id" : "AN207",
+         "second" : "ENSEMBL:ENSCAFG00000015559",
+         "species_symbol" : "CANFA",
+         "third" : "ENSEMBL:ENSCAFP00000022932"
+      },
+      "AN154" : {
+         "duplications" : "0",
+         "node_id" : "AN154",
+         "species" : "Teleostei",
+         "id" : "AN154",
+         "speciations" : "1"
+      },
+      "AN121" : {
+         "node_id" : "AN121",
+         "second" : "ENTREZ:4347792",
+         "species_symbol" : "ORYSJ",
+         "third" : "UniProtKB:Q0IZT0"
+      },
+      "AN187" : {
+         "node_id" : "AN187",
+         "second" : "ENSEMBL:ENSPTRG00000019483",
+         "species_symbol" : "PANTR",
+         "third" : "ENSEMBL:ENSPTRP00000033344"
+      },
+      "AN104" : {
+         "node_id" : "AN104",
+         "second" : "ENSEMBL:ENSCING00000013516",
+         "species_symbol" : "CIOIN",
+         "third" : "ENSEMBL:ENSCINP00000024776"
+      },
+      "AN130" : {
+         "duplications" : "0",
+         "node_id" : "AN130",
+         "species" : "Osteichthyes",
+         "id" : "AN130",
+         "speciations" : "1"
+      },
+      "AN53" : {
+         "node_id" : "AN53",
+         "second" : "ENTREZ:3878663",
+         "species_symbol" : "NEUCR",
+         "third" : "UniProtKB:Q7SA79"
+      },
+      "AN46" : {
+         "duplications" : "0",
+         "node_id" : "AN46",
+         "species" : "Ascomycota",
+         "id" : "AN46",
+         "speciations" : "1"
+      },
+      "AN5" : {
+         "duplications" : "0",
+         "node_id" : "AN5",
+         "species" : "Unikonts",
+         "id" : "AN5",
+         "speciations" : "1"
+      },
+      "AN74" : {
+         "duplications" : "0",
+         "node_id" : "AN74",
+         "species" : "Chordata",
+         "id" : "AN74",
+         "speciations" : "1"
+      },
+      "AN214" : {
+         "duplications" : "0",
+         "node_id" : "AN214",
+         "species" : "Ecdysozoa",
+         "id" : "AN214",
+         "speciations" : "1"
+      },
+      "AN196" : {
+         "node_id" : "AN196",
+         "second" : "ENSEMBL:ENSPTRG00000019302",
+         "species_symbol" : "PANTR",
+         "third" : "ENSEMBL:ENSPTRP00000047918"
+      },
+      "AN165" : {
+         "duplications" : "0",
+         "node_id" : "AN165",
+         "species" : "Osteichthyes",
+         "id" : "AN165",
+         "speciations" : "1"
+      },
+      "AN161" : {
+         "node_id" : "AN161",
+         "second" : "ENTREZ:765911",
+         "species_symbol" : "STRPU",
+         "third" : "NCBI:XP_001198900"
+      },
+      "AN36" : {
+         "node_id" : "AN36",
+         "second" : "ZFIN:ZDB-GENE-040426-1600",
+         "species_symbol" : "DANRE",
+         "third" : "UniProtKB:Q6PFL1"
+      },
+      "AN69" : {
+         "node_id" : "AN69",
+         "second" : "TAIR:locus=2122388",
+         "species_symbol" : "ARATH",
+         "third" : "NCBI:NP_567345"
+      },
+      "AN221" : {
+         "duplications" : "0",
+         "node_id" : "AN221",
+         "species" : "Ascomycota",
+         "id" : "AN221",
+         "speciations" : "1"
+      },
+      "AN81" : {
+         "duplications" : "0",
+         "node_id" : "AN81",
+         "species" : "Catarrhini",
+         "id" : "AN81",
+         "speciations" : "1"
+      },
+      "AN126" : {
+         "duplications" : "0",
+         "node_id" : "AN126",
+         "species" : "Bilateria",
+         "id" : "AN126",
+         "speciations" : "1"
+      },
+      "AN28" : {
+         "node_id" : "AN28",
+         "second" : "ENSEMBL:ENSMODG00000013353",
+         "species_symbol" : "MONDO",
+         "third" : "ENSEMBL:ENSMODP00000016698"
+      },
+      "AN180" : {
+         "duplications" : "0",
+         "node_id" : "AN180",
+         "species" : "Homo-Pan",
+         "id" : "AN180",
+         "speciations" : "1"
+      },
+      "AN141" : {
+         "node_id" : "AN141",
+         "second" : "ENSEMBL:ENSMMUG00000014318",
+         "species_symbol" : "MACMU",
+         "third" : "ENSEMBL:ENSMMUP00000037989"
+      },
+      "AN11" : {
+         "duplications" : "0",
+         "node_id" : "AN11",
+         "species" : "Tetrapoda",
+         "id" : "AN11",
+         "speciations" : "1"
+      },
+      "AN224" : {
+         "duplications" : "0",
+         "node_id" : "AN224",
+         "species" : "Saccharomycetaceae",
+         "id" : "AN224",
+         "speciations" : "1"
+      },
+      "AN219" : {
+         "node_id" : "AN219",
+         "second" : "FB:FBgn0011660",
+         "species_symbol" : "DROME",
+         "third" : "UniProtKB:A1ZA03"
+      },
+      "AN129" : {
+         "duplications" : "0",
+         "node_id" : "AN129",
+         "species" : "Chordata",
+         "id" : "AN129",
+         "speciations" : "1"
+      },
+      "AN64" : {
+         "node_id" : "AN64",
+         "second" : "ENTREZ:5652309",
+         "species_symbol" : "LEIMA",
+         "third" : "UniProtKB:Q4QAI9"
+      },
+      "AN85" : {
+         "node_id" : "AN85",
+         "second" : "ENSEMBL:ENSMMUG00000002911",
+         "species_symbol" : "MACMU",
+         "third" : "ENSEMBL:ENSMMUP00000003899"
+      },
+      "AN230" : {
+         "duplications" : "1",
+         "node_id" : "AN230",
+         "id" : "AN230",
+         "speciations" : "0"
+      },
+      "AN206" : {
+         "node_id" : "AN206",
+         "second" : "ENSEMBL:ENSBTAG00000007364",
+         "species_symbol" : "BOVIN",
+         "third" : "ENSEMBL:ENSBTAP00000036960"
+      },
+      "AN243" : {
+         "node_id" : "AN243",
+         "second" : "ENTREZ:3830000",
+         "species_symbol" : "PLAYO",
+         "third" : "UniProtKB:Q7RKQ6"
+      },
+      "AN253" : {
+         "node_id" : "AN253",
+         "second" : "TAIR:locus=2133274",
+         "species_symbol" : "ARATH",
+         "third" : "NCBI:NP_567236"
+      },
+      "AN256" : {
+         "node_id" : "AN256",
+         "second" : "ENTREZ:939455",
+         "species_symbol" : "BACSU",
+         "third" : "UniProtKB:P49850"
+      },
+      "AN146" : {
+         "node_id" : "AN146",
+         "second" : "RGD:1359511",
+         "species_symbol" : "RAT",
+         "third" : "UniProtKB:Q6P7D0"
+      },
+      "AN151" : {
+         "node_id" : "AN151",
+         "second" : "ENSEMBL:ENSOANG00000013059",
+         "species_symbol" : "ORNAN",
+         "third" : "ENSEMBL:ENSOANP00000020647"
+      },
+      "AN261" : {
+         "node_id" : "AN261",
+         "second" : "ENTREZ:1150518",
+         "species_symbol" : "LEPIN",
+         "third" : "UniProtKB:Q8F6X4"
+      },
+      "AN78" : {
+         "duplications" : "0",
+         "node_id" : "AN78",
+         "species" : "Theria",
+         "id" : "AN78",
+         "speciations" : "1"
+      },
+      "AN26" : {
+         "node_id" : "AN26",
+         "second" : "ENSEMBL:ENSBTAG00000016758",
+         "species_symbol" : "BOVIN",
+         "third" : "UniProtKB:Q1RMN2"
+      },
+      "AN122" : {
+         "node_id" : "AN122",
+         "second" : "TAIR:locus=2127923",
+         "species_symbol" : "ARATH",
+         "third" : "NCBI:NP_195277"
+      },
+      "AN270" : {
+         "node_id" : "AN270",
+         "second" : "ECOLI:EG11281-MONOMER",
+         "species_symbol" : "ECOLI",
+         "third" : "UniProtKB:P23367"
+      },
+      "AN134" : {
+         "duplications" : "0",
+         "node_id" : "AN134",
+         "species" : "Theria",
+         "id" : "AN134",
+         "speciations" : "1"
+      },
+      "AN89" : {
+         "duplications" : "0",
+         "node_id" : "AN89",
+         "species" : "Laurasiatheria",
+         "id" : "AN89",
+         "speciations" : "1"
+      },
+      "AN58" : {
+         "duplications" : "1",
+         "node_id" : "AN58",
+         "id" : "AN58",
+         "speciations" : "0"
+      },
+      "AN70" : {
+         "duplications" : "0",
+         "node_id" : "AN70",
+         "species" : "Eukaryota",
+         "id" : "AN70",
+         "speciations" : "1"
+      },
+      "AN184" : {
+         "node_id" : "AN184",
+         "second" : "ENSEMBL:ENSG00000078319",
+         "species_symbol" : "HUMAN",
+         "third" : "UniProtKB:A4D2B8"
+      },
+      "AN191" : {
+         "node_id" : "AN191",
+         "second" : "ENSEMBL:ENSG00000174384",
+         "species_symbol" : "HUMAN",
+         "third" : "UniProtKB:A8MQ11"
+      },
+      "AN241" : {
+         "duplications" : "0",
+         "node_id" : "AN241",
+         "species" : "Alveolata",
+         "id" : "AN241",
+         "speciations" : "1"
+      },
+      "AN105" : {
+         "node_id" : "AN105",
+         "second" : "ENTREZ:575007",
+         "species_symbol" : "STRPU",
+         "third" : "NCBI:XP_780519"
+      },
+      "AN189" : {
+         "duplications" : "1",
+         "node_id" : "AN189",
+         "id" : "AN189",
+         "speciations" : "0"
+      },
+      "AN111" : {
+         "node_id" : "AN111",
+         "second" : "ENTREZ:2872164",
+         "species_symbol" : "EMENI",
+         "third" : "UniProtKB:Q5B515"
+      },
+      "AN82" : {
+         "duplications" : "0",
+         "node_id" : "AN82",
+         "species" : "Homo-Pan",
+         "id" : "AN82",
+         "speciations" : "1"
+      },
+      "AN244" : {
+         "node_id" : "AN244",
+         "second" : "ENTREZ:3801758",
+         "species_symbol" : "PLAYO",
+         "third" : "UniProtKB:Q7RPM0"
+      },
+      "AN21" : {
+         "node_id" : "AN21",
+         "second" : "ENSEMBL:ENSMMUG00000022533",
+         "species_symbol" : "MACMU",
+         "third" : "ENSEMBL:ENSMMUP00000029670"
+      },
+      "AN152" : {
+         "node_id" : "AN152",
+         "second" : "ENTREZ:423980",
+         "species_symbol" : "CHICK",
+         "third" : "UniProtKB:Q5ZKT5"
+      },
+      "AN229" : {
+         "node_id" : "AN229",
+         "second" : "ENTREZ:4621495",
+         "species_symbol" : "ASHGO",
+         "third" : "UniProtKB:Q755U7"
+      },
+      "AN62" : {
+         "node_id" : "AN62",
+         "second" : "ENTREZ:3790985",
+         "species_symbol" : "PLAYO",
+         "third" : "UniProtKB:Q7RE54"
+      },
+      "AN27" : {
+         "node_id" : "AN27",
+         "second" : "ENSEMBL:ENSCAFG00000004783",
+         "species_symbol" : "CANFA",
+         "third" : "ENSEMBL:ENSCAFP00000007136"
+      },
+      "AN177" : {
+         "node_id" : "AN177",
+         "second" : "ENSEMBL:ENSPTRG00000019325",
+         "species_symbol" : "PANTR",
+         "third" : "ENSEMBL:ENSPTRP00000033057"
+      },
+      "AN48" : {
+         "duplications" : "0",
+         "node_id" : "AN48",
+         "species" : "Saccharomycetaceae",
+         "id" : "AN48",
+         "speciations" : "1"
+      },
+      "AN86" : {
+         "duplications" : "0",
+         "node_id" : "AN86",
+         "species" : "Murinae",
+         "id" : "AN86",
+         "speciations" : "1"
+      },
+      "AN263" : {
+         "node_id" : "AN263",
+         "second" : "ENTREZ:3687613",
+         "species_symbol" : "CHLTA",
+         "third" : "UniProtKB:Q3KLC2"
+      },
+      "AN115" : {
+         "node_id" : "AN115",
+         "second" : "dictyBase:DDB_G0283883",
+         "species_symbol" : "DICDI",
+         "third" : "NCBI:EAL65556"
+      },
+      "AN109" : {
+         "node_id" : "AN109",
+         "second" : "ENTREZ:4618574",
+         "species_symbol" : "ASHGO",
+         "third" : "UniProtKB:Q75F21"
+      },
+      "AN236" : {
+         "node_id" : "AN236",
+         "second" : "ENTREZ:3878856",
+         "species_symbol" : "NEUCR",
+         "third" : "UniProtKB:Q7SAM1"
+      },
+      "AN169" : {
+         "duplications" : "0",
+         "node_id" : "AN169",
+         "species" : "Eutheria",
+         "id" : "AN169",
+         "speciations" : "1"
+      },
+      "AN173" : {
+         "duplications" : "0",
+         "node_id" : "AN173",
+         "species" : "Homo-Pan",
+         "id" : "AN173",
+         "speciations" : "1"
+      },
+      "AN118" : {
+         "duplications" : "0",
+         "node_id" : "AN118",
+         "species" : "Viridiplantae",
+         "id" : "AN118",
+         "speciations" : "1"
+      },
+      "AN211" : {
+         "node_id" : "AN211",
+         "second" : "ENSEMBL:ENSTRUG00000016791",
+         "species_symbol" : "FUGRU",
+         "third" : "ENSEMBL:ENSTRUP00000043003"
+      },
+      "AN4" : {
+         "duplications" : "1",
+         "node_id" : "AN4",
+         "id" : "AN4",
+         "speciations" : "0"
+      },
+      "AN55" : {
+         "duplications" : "0",
+         "node_id" : "AN55",
+         "species" : "Amoebozoa",
+         "id" : "AN55",
+         "speciations" : "1"
+      },
+      "AN73" : {
+         "duplications" : "0",
+         "node_id" : "AN73",
+         "species" : "Deuterostomia",
+         "id" : "AN73",
+         "speciations" : "1"
+      },
+      "AN142" : {
+         "duplications" : "0",
+         "node_id" : "AN142",
+         "species" : "Murinae",
+         "id" : "AN142",
+         "speciations" : "1"
+      },
+      "AN68" : {
+         "node_id" : "AN68",
+         "second" : "ENTREZ:4325393",
+         "species_symbol" : "ORYSJ",
+         "third" : "UniProtKB:Q5JN46"
+      },
+      "AN174" : {
+         "node_id" : "AN174",
+         "second" : "ENSEMBL:ENSG00000186704",
+         "species_symbol" : "HUMAN",
+         "third" : "UniProtKB:Q13670"
+      },
+      "AN262" : {
+         "node_id" : "AN262",
+         "second" : "ENTREZ:1072957",
+         "species_symbol" : "BACTN",
+         "third" : "UniProtKB:Q8A120"
+      },
+      "AN35" : {
+         "node_id" : "AN35",
+         "second" : "ENSEMBL:ENSTRUG00000017724",
+         "species_symbol" : "FUGRU",
+         "third" : "ENSEMBL:ENSTRUP00000045441"
+      },
+      "AN17" : {
+         "duplications" : "0",
+         "node_id" : "AN17",
+         "species" : "Catarrhini",
+         "id" : "AN17",
+         "speciations" : "1"
+      },
+      "AN208" : {
+         "node_id" : "AN208",
+         "second" : "ENSEMBL:ENSMODG00000008178",
+         "species_symbol" : "MONDO",
+         "third" : "ENSEMBL:ENSMODP00000010164"
+      },
+      "AN50" : {
+         "node_id" : "AN50",
+         "second" : "ENTREZ:4621576",
+         "species_symbol" : "ASHGO",
+         "third" : "UniProtKB:Q755L3"
+      },
+      "AN128" : {
+         "duplications" : "0",
+         "node_id" : "AN128",
+         "species" : "Deuterostomia",
+         "id" : "AN128",
+         "speciations" : "1"
+      },
+      "AN101" : {
+         "node_id" : "AN101",
+         "second" : "ENSEMBL:ENSDARG00000056334",
+         "species_symbol" : "DANRE",
+         "third" : "ENSEMBL:ENSDARP00000073262"
+      },
+      "AN38" : {
+         "node_id" : "AN38",
+         "second" : "ENTREZ:588545",
+         "species_symbol" : "STRPU",
+         "third" : "NCBI:XP_793318"
+      },
+      "AN166" : {
+         "duplications" : "0",
+         "node_id" : "AN166",
+         "species" : "Tetrapoda",
+         "id" : "AN166",
+         "speciations" : "1"
+      },
+      "AN203" : {
+         "node_id" : "AN203",
+         "second" : "MGI:MGI=104288",
+         "species_symbol" : "MOUSE",
+         "third" : "UniProtKB:P54279"
+      },
+      "AN52" : {
+         "node_id" : "AN52",
+         "second" : "ENTREZ:2875899",
+         "species_symbol" : "EMENI",
+         "third" : "UniProtKB:Q5BH54"
+      },
+      "AN195" : {
+         "node_id" : "AN195",
+         "second" : "ENSEMBL:ENSPTRG00000034361",
+         "species_symbol" : "PANTR",
+         "third" : "ENSEMBL:ENSPTRP00000047744"
+      },
+      "AN147" : {
+         "duplications" : "0",
+         "node_id" : "AN147",
+         "species" : "Laurasiatheria",
+         "id" : "AN147",
+         "speciations" : "1"
+      },
+      "AN133" : {
+         "duplications" : "0",
+         "node_id" : "AN133",
+         "species" : "Mammalia",
+         "id" : "AN133",
+         "speciations" : "1"
+      },
+      "AN231" : {
+         "duplications" : "0",
+         "node_id" : "AN231",
+         "species" : "Pezizomycotina",
+         "id" : "AN231",
+         "speciations" : "1"
+      },
+      "AN250" : {
+         "node_id" : "AN250",
+         "second" : "ENTREZ:5725625",
+         "species_symbol" : "CHLRE",
+         "third" : "UniProtKB:A8JCH6"
+      },
+      "AN12" : {
+         "duplications" : "0",
+         "node_id" : "AN12",
+         "species" : "Amniota",
+         "id" : "AN12",
+         "speciations" : "1"
+      },
+      "AN162" : {
+         "node_id" : "AN162",
+         "second" : "ENTREZ:592483",
+         "species_symbol" : "STRPU",
+         "third" : "NCBI:XP_797096"
+      },
+      "AN188" : {
+         "duplications" : "0",
+         "node_id" : "AN188",
+         "species" : "Homo-Pan",
+         "id" : "AN188",
+         "speciations" : "1"
+      },
+      "AN225" : {
+         "node_id" : "AN225",
+         "second" : "SGD:S000004025",
+         "species_symbol" : "YEAST",
+         "third" : "UniProtKB:Q07980"
+      },
+      "AN200" : {
+         "node_id" : "AN200",
+         "second" : "ENSEMBL:ENSPTRG00000028526",
+         "species_symbol" : "PANTR",
+         "third" : "ENSEMBL:ENSPTRP00000047908"
+      },
+      "AN198" : {
+         "node_id" : "AN198",
+         "second" : "ENSEMBL:ENSG00000122512",
+         "species_symbol" : "HUMAN",
+         "third" : "UniProtKB:P54278"
+      },
+      "AN155" : {
+         "node_id" : "AN155",
+         "second" : "ENSEMBL:ENSTRUG00000012846",
+         "species_symbol" : "FUGRU",
+         "third" : "ENSEMBL:ENSTRUP00000032536"
+      },
+      "AN267" : {
+         "node_id" : "AN267",
+         "second" : "ENTREZ:1054324",
+         "species_symbol" : "BRAJA",
+         "third" : "UniProtKB:Q89DE6"
+      },
+      "AN7" : {
+         "duplications" : "0",
+         "node_id" : "AN7",
+         "species" : "Bilateria",
+         "id" : "AN7",
+         "speciations" : "1"
+      },
+      "AN215" : {
+         "duplications" : "0",
+         "node_id" : "AN215",
+         "species" : "Caenorhabditis",
+         "id" : "AN215",
+         "speciations" : "1"
+      },
+      "AN92" : {
+         "node_id" : "AN92",
+         "second" : "ENSEMBL:ENSBTAG00000040194",
+         "species_symbol" : "BOVIN",
+         "third" : "ENSEMBL:ENSBTAP00000048151"
+      },
+      "AN194" : {
+         "duplications" : "1",
+         "node_id" : "AN194",
+         "id" : "AN194",
+         "speciations" : "0"
+      },
+      "AN77" : {
+         "duplications" : "0",
+         "node_id" : "AN77",
+         "species" : "Mammalia",
+         "id" : "AN77",
+         "speciations" : "1"
+      },
+      "AN3" : {
+         "duplications" : "0",
+         "node_id" : "AN3",
+         "species" : "Eukaryota",
+         "id" : "AN3",
+         "speciations" : "1"
+      }
+   },
+   "meta" : {
+      "title" : "DNA MISMATCH REPAIR PROTEIN (MLH, PMS, MUTL)"
+   }
+}
+
