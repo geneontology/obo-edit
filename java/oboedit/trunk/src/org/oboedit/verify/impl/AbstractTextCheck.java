@@ -731,7 +731,7 @@ FieldCheck {
 	protected static void addWarning(Collection<CheckWarning> out,
 			CheckWarning w) throws TooManyWarningsException {
 		//		logger.debug("out size = " + out.size() + ", addWarning " + w);  // DEL
-		if ((w.isFatal() && out.size() >= VerificationManager.MAX_WARNINGS)) {
+            if ((!w.isFatal() && out.size() >= VerificationManager.MAX_WARNINGS)) {
 			logger.debug("Too many warnings for one term: " + out.size() + "; last warning is " + w); // DEL
 			throw new TooManyWarningsException(out);
 		}
