@@ -172,7 +172,9 @@ foreach my $ifn (@ARGV){
 	{
 	 source_id => $n_id,
 	 sink_id => $k_id,
-	 length => $dist
+	 #length => $dist
+	 #length => sprintf("%f", $dist)
+	 length => $dist . ''
 	};
 
       ## Walk down.
@@ -191,29 +193,37 @@ foreach my $ifn (@ARGV){
   foreach my $gp_line (@$gp_list){
     chop $gp_line; # get trailing semicolon
     my @all = split(/\|/, $gp_line);
-    my $first = $all[0];
-    my $second = $all[1];
-    my $third = $all[2];
+    my $droppable_name = $all[0];
+    my $gene_part = $all[1];
+    my $protein_part = $all[2];
 
     ## Easy.
-    @first_all = split(/\:/, $first);
-    $first_a = $first_all[0];
-    $first_b = $first_all[1];
+    @droppable_name_all = split(/\:/, $droppable_name);
+    $droppable_name_a = $droppable_name_all[0];
+    #$droppable_name_b = $droppable_name_all[1];
 
     ## Annoying--there can be multiple equals.
-    my $index_2 = index($second, '=');
-    my $second_a = substr($second, 0, $index_2);
-    my $second_b = substr($second, $index_2 +1, length($second));
+    my $index_2 = index($gene_part, '=');
+    my $gene_part_a = substr($gene_part, 0, $index_2);
+    my $gene_part_b = substr($gene_part, $index_2 +1, length($gene_part));
+    ## Any remaining '=' (PANTHER bug) go back to ':'.
+    $gene_part_b =~ s/\=/\:/;
 
     ## Again.
-    my $index_3 = index($third, '=');
-    my $third_a = substr($third, 0, $index_3);
-    my $third_b = substr($third, $index_3 +1, length($third));
+    my $index_3 = index($protein_part, '=');
+    my $protein_part_a = substr($protein_part, 0, $index_3);
+    my $protein_part_b = substr($protein_part,$index_3+1,length($protein_part));
+    ## Any remaining '=' (PANTHER bug) go back to ':'.
+    $protein_part_b =~ s/\=/\:/;
 
-    if( defined $tree_struct->{nodes}{$first_a} ){
-      $tree_struct->{nodes}{$first_a}{species_symbol} = $first_b;
-      $tree_struct->{nodes}{$first_a}{second} = $second_a . ':' . $second_b;
-      $tree_struct->{nodes}{$first_a}{third} = $third_a . ':' . $third_b;
+    if( defined $tree_struct->{nodes}{$droppable_name_a} ){
+      ## Unecessary according to Chris.
+      # $tree_struct->{nodes}{$droppable_name_a}{internal_species_symbol} =
+      # 	$droppable_name_b;
+      $tree_struct->{nodes}{$droppable_name_a}{gene_id} =
+	$gene_part_a . ':' . $gene_part_b;
+      $tree_struct->{nodes}{$droppable_name_a}{protein_id} =
+	$protein_part_a . ':' . $protein_part_b;
     }else{
       die "what am I doing with this thing then: $gp_line";
     }
