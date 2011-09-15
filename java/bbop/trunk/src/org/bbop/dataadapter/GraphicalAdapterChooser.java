@@ -1022,7 +1022,8 @@ AdapterWidgetI {
 		dialog.setModal(true);
 		dialog.setTitle(title);
 		dialog.pack();
-		SwingUtil.center(owner, dialog);
+                if (owner != null)
+                    SwingUtil.center(owner, dialog);
 		dialog.setVisible(true);
 		dialog.dispose();
 		return committed;
