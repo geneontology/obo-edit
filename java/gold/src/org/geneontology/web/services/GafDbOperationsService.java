@@ -485,14 +485,14 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			this.currentOntologyBeingProcessed = path;
 
 			if(bulkload){
-				reportStartTime("bulkload");
+				reportStartTime(path+"bulkload");
 				db.bulkload(reader, docId, path, false);
-				reportEndTime("bulkload");
+				reportEndTime(path+"bulkload");
 				return;
 			}else if(update){
-				reportStartTime("update");
+				reportStartTime(path+"update");
 				db.update(reader, docId, path);
-				reportEndTime("update");
+				reportEndTime(path+"update");
 				return;
 				
 			}
