@@ -1343,11 +1343,14 @@ public class ConfigurationManager extends AbstractGUIComponent {
 	}
 	
 	private static int getAvailableMaxMemoryMacOS() {
-		// If you can not read max memory, limit to an arbitrary default value of 4G
-		int maxMemory = 4096;
+		int maxMemory = 1860; // default for 32-bit
+		// There are snow leopard version which have 64-bit java, 
+		// but are running the OS in 32-bit mode
+		boolean is64bitOS = false;
 		try {
+			// Try to call uname to check for 64-bit OS
 			// Execute command
-			String cmd = "sysctl hw.memsize";
+			String cmd = "uname -pm";
 			Process child = Runtime.getRuntime().exec(cmd);
 
 			// Get the input stream and read from it
@@ -1358,15 +1361,34 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				sb.append((char) c);
 			}
 			in.close();
-			java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("hw.memsize:\\s+(\\d+)\\s*");
-			java.util.regex.Matcher matcher = pattern.matcher(sb);
-			if (matcher.find()) {
-				maxMemory = new Long(Long.parseLong(matcher.group(1)) / 1024L / 1024L).intValue();
-			}
+			String uname = sb.toString().toLowerCase();
+			is64bitOS = uname.contains("x86_64");
 		} catch (java.io.IOException e) {
-		} catch (NumberFormatException e) {
-		}	
-		
+		}
+		if (is64bitOS) {
+			try {
+				// Execute command
+				String cmd = "sysctl hw.memsize";
+				Process child = Runtime.getRuntime().exec(cmd);
+
+				// Get the input stream and read from it
+				java.io.InputStream in = child.getInputStream();
+				StringBuilder sb = new StringBuilder();
+				int c;
+				while ((c = in.read()) != -1) {
+					sb.append((char) c);
+				}
+				in.close();
+				java.util.regex.Pattern pattern = java.util.regex.Pattern
+						.compile("hw.memsize:\\s+(\\d+)\\s*");
+				java.util.regex.Matcher matcher = pattern.matcher(sb);
+				if (matcher.find()) {
+					maxMemory = new Long(Long.parseLong(matcher.group(1)) / 1024L / 1024L).intValue();
+				}
+			} catch (java.io.IOException e) {
+			} catch (NumberFormatException e) {
+			}
+		}
 		return maxMemory;
 	}
 	
