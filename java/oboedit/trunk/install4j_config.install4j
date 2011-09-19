@@ -866,25 +866,6 @@ configurationObject.setModel(model);</initScript>
         <scriptLines />
       </installerScript>
     </unixInstaller>
-    <linuxRPM name="Linux RPM" id="35" mediaFileName="" installDir="/opt/OBO-Edit2" overridePrincipalLanguage="true" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" os="linux" arch="i386">
-      <excludedLaunchers />
-      <excludedComponents />
-      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
-      <exclude />
-      <variables />
-      <preInstallScript mode="1" file="">
-        <scriptLines />
-      </preInstallScript>
-      <postInstallScript mode="1" file="">
-        <scriptLines />
-      </postInstallScript>
-      <preUninstallScript mode="1" file="">
-        <scriptLines />
-      </preUninstallScript>
-      <postUninstallScript mode="1" file="">
-        <scriptLines />
-      </postUninstallScript>
-    </linuxRPM>
   </mediaSets>
   <buildIds buildAll="false">
     <mediaSet refId="24" />
