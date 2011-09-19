@@ -8,14 +8,26 @@ What's New in OBO-Edit v2.1-beta19
 (obo2obo and the other command-line utilities now do their own logger
 configuring so you once again see status messages on stdout.)
 
-Turned off repeated whitespace check by default (see bug 
-[ geneontology-Bugs-2784022 ] verification checks--repeated words, sentence
-boundaries)
+Turned off repeated whitespace check by default
+(see bug [ geneontology-Bugs-2784022 ] verification checks--repeated words,
+sentence boundaries)
 
 Since the "Allow extended characters" configuration option wasn't working,
 I have disabled it for now.  The current treatment of extended characters
 (permitted in synonyms, definitions, and comments; not permitted in
 dbxrefs) is what most people want anyway.
+
+[ geneontology-Feature Requests-3408075 ] Allow 64 bit to be chosen on install
+Heiko improved the installer so it now detects if you have a 64-bit machine and
+suggests a larger memory allocation. If you have a 64-bit computer, then when
+you install OBO-Edit, it will launch in 64-bit mode.
+
+[ geneontology-Bugs-2507049 ] b52 - history browser won't save history
+
+Made cutoff for number of warnings to show 500 instead of 300.
+
+[ geneontology-Feature Requests-1925380 ] Verification plugin should flag synonyms that match term
+
 
 ================================
 What's New in OBO-Edit v2.1-beta18 (8/18/2011)
