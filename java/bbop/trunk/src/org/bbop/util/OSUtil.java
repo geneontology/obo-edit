@@ -20,9 +20,9 @@ public class OSUtil
    */
   public enum OS
   {
-	  // !! TODO Need to add Windows 8, when it becomes available
     LINUX,
     MAC_OS_X,
+    WINDOWS_8,
     WINDOWS_7,
     WINDOWS_VISTA,
     WINDOWS_XP,
@@ -81,8 +81,13 @@ public class OSUtil
     //flavors of Windows...In case that 'osName' doesn't return the full
     //name of Windows, need to fall back on osVersion
     else if (osName.matches("^Windows.*$")) {
-    	 //Windows Vista
-      if (osName.equalsIgnoreCase("Windows 7") ||
+      //Windows 8
+      if (osName.equalsIgnoreCase("Windows 8") ||
+            osVersion.equals("6.2")) {
+         return OS.WINDOWS_8;
+      }
+      // Windows 7
+      else if (osName.equalsIgnoreCase("Windows 7") ||
             osVersion.equals("6.1")) {
          return OS.WINDOWS_7;
       }
@@ -146,6 +151,15 @@ public class OSUtil
     return getOS() == OS.MAC_OS_X;
   }
 
+  /** Check to see if the OS is Windows 8
+   *
+   *  @return true if the OS is Windows 8
+   */
+  public static boolean isWindows8()
+  {
+    return getOS() == OS.WINDOWS_8;
+  }
+  
   /** Check to see if the OS is Windows 7
    *
    *  @return true if the OS is Windows 7
@@ -206,7 +220,7 @@ public class OSUtil
    */
   public static boolean isWindows()
   {
-    if (isWindows7() || isWindowsVista() || 
+    if (isWindows8() || isWindows7() || isWindowsVista() || 
         isWindowsXP() || isWindows2000() ||
         isWindows98() || isWindowsME()) {
       return true;
