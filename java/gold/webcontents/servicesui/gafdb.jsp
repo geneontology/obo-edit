@@ -197,7 +197,7 @@
 			<% } %>
 			
 			<br />
-			<div><h1>Annotation Voilations (<span class="totalvoilations"><%=annotationRuleViolations.size()%></span>)</h1></div>
+			<div><h1>Annotation Violations (<span class="totalvoilations"><%=annotationRuleViolations.size()%></span>)</h1></div>
 			<ul id="voilations">
 			
 			<%
