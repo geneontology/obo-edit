@@ -471,11 +471,11 @@
             </serializedBean>
             <initScript>int val;
 int maxMemory = (Integer) context.getVariable("oboedit.maxMemorySize");
-if (maxMemory &lt;= 1024) {
+if (maxMemory &lt;= 1860) {
     val = maxMemory;
 }
 else {
-    val = (int) Math.max(((Math.round(maxMemory * 0.6) / 128) *128), 1024);
+    val = (int) Math.max(((Math.round(maxMemory * 0.6) / 128) *128), 1860);
 }
 // create a new model for the spinner
 javax.swing.SpinnerNumberModel model = new javax.swing.SpinnerNumberModel(val, 256, maxMemory, 128);
@@ -711,7 +711,7 @@ configurationObject.setModel(model);</initScript>
                 <object class="com.install4j.runtime.beans.actions.files.DeleteFileAction">
                   <void property="file">
                     <object class="java.io.File">
-                      <string>${installer:sys.installationDir}/OBO-Edit.apps/Contents/MacOS/JavaApplicationStub</string>
+                      <string>${installer:sys.installationDir}/OBO-Edit.app/Contents/MacOS/JavaApplicationStub</string>
                     </object>
                   </void>
                 </object>
@@ -730,7 +730,7 @@ configurationObject.setModel(model);</initScript>
                   </void>
                   <void property="linkFile">
                     <object class="java.io.File">
-                      <string>${installer:sys.installationDir}/OBO-Edit.apps/Contents/MacOS/JavaApplicationStub</string>
+                      <string>${installer:sys.installationDir}/OBO-Edit.app/Contents/MacOS/JavaApplicationStub</string>
                     </object>
                   </void>
                 </object>
