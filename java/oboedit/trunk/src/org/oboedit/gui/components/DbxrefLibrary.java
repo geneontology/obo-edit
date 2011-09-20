@@ -67,7 +67,7 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 		super(id);
 		setLayout(new BorderLayout());
 		useButton = new JButton("Add dbxref");
-		useAsDefButton = new JButton("Add as def dbxref");
+		useAsDefButton = new JButton("Add as definition dbxref");
 		useForAll = new JCheckBox("Apply to all selected terms");
 //		useForAllButton = new JButton("Add dbxref to ALL selected terms");
 //		useAsDefForAllButton = new JButton("Add as def dbxref to ALL selected terms");
