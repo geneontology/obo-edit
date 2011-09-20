@@ -81,16 +81,16 @@
 				
 				if(axiom instanceof OWLSubClassOfAxiom){
 					OWLSubClassOfAxiom ax = (OWLSubClassOfAxiom)axiom;
-					label1 = Owl2Obo.getIdentifier(ax.getSubClass()) +"[" + graph.getLabel(ax.getSubClass()) +"]";
-					label2 = Owl2Obo.getIdentifier(ax.getSuperClass()) +"[" + graph.getLabel(ax.getSuperClass()) +"]";
+					label1 = Owl2Obo.getIdentifierFromObject(ax.getSubClass(), graph.getSourceOntology()) +"[" + graph.getLabel(ax.getSubClass()) +"]";
+					label2 = Owl2Obo.getIdentifierFromObject(ax.getSuperClass(), graph.getSourceOntology()) +"[" + graph.getLabel(ax.getSuperClass()) +"]";
 					axiomType = "SUBCLASS_OF";
 				}else if(axiom instanceof OWLEquivalentClassesAxiom){
 					OWLEquivalentClassesAxiom ax = (OWLEquivalentClassesAxiom) axiom;
 					Iterator<OWLClassExpression> classes = ax.getClassExpressions().iterator();
 					OWLObject obj1 = classes.next();
 					OWLObject obj2 = classes.next();
-					label1 = Owl2Obo.getIdentifier(obj1) +"[" + graph.getLabel(obj1) +"]";
-					label2 = Owl2Obo.getIdentifier(obj2) +"[" + graph.getLabel(obj2) +"]";
+					label1 = Owl2Obo.getIdentifierFromObject(obj1, graph.getSourceOntology()) +"[" + graph.getLabel(obj1) +"]";
+					label2 = Owl2Obo.getIdentifierFromObject(obj2, graph.getSourceOntology()) +"[" + graph.getLabel(obj2) +"]";
 					axiomType = "EQUIVALENT";
 					
 				}else{
@@ -110,13 +110,26 @@
 		
 	</table>
 
+
 	<%
-	String taskCompletionTime = (String)request.getAttribute("taskCompletionTime");
+	
+	if(graph != null){
+	
+		String taskCompletionTime = (String)request.getAttribute("taskCompletionTime");
+		%>
+		<hr />
+		<h4>The inference computation is completed in <%= taskCompletionTime %> seconds</h4>	
+		<h4>Total Inferences found are: <%= axioms.size() %></h4>	
+		<h4>Ontology is : <%= graph.getOntologyId() %></h4>	
+		
+		<%
+	}else{
+		%>
+		
+		<h1>Ontology file is not loaded. Please see the log for the error detail</h1> <%
+	}
 	%>
-	<hr />
-	<h4>The inference computation is completed in <%= taskCompletionTime %> seconds</h4>	
-	<h4>Total Inferences found are: <%= axioms.size() %></h4>	
-	<h4>Ontology is : <%= graph.getOntologyId() %></h4>	
+		
 
 	
 </body>

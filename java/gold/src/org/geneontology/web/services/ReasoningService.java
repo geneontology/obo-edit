@@ -127,10 +127,15 @@ public class ReasoningService extends ServiceHandlerAbstract {
 		public void execute() {
 			this.addInProgress("processing-time");
 			
-			if("find-inferences".equals(command)){			
-				data = inf.buildInferences();
-			}else if("checkconsistency".equals(command)){
-				data = inf.performConsistencyChecks();
+			try{
+			
+				if("find-inferences".equals(command)){			
+					data = inf.buildInferences();
+				}else if("checkconsistency".equals(command)){
+					data = inf.performConsistencyChecks();
+				}
+			}catch(Exception ex){
+				exception = ex;
 			}
 			this.addCompleted("processing-time");
 			
