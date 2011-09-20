@@ -708,7 +708,8 @@ public class GAFDbOperations{
 		try{
 			GafDocument doc = builder.buildDocument(reader, docid, path);
 			ArrayList<GafDocument> docs = new ArrayList<GafDocument>();
-			docs.add(doc);
+			if(doc != null)
+				docs.add(doc);
 			
 			doc = builder.getNextSplitDocument();
 			if(doc != null)
@@ -716,7 +717,7 @@ public class GAFDbOperations{
 			
 			boolean split = docs.size()>1;
 			boolean _force = true;
-			
+			int docsNumber = docs.size();
 			while(!docs.isEmpty()){
 				doc = docs.remove(0);
 				
@@ -732,7 +733,7 @@ public class GAFDbOperations{
 			}
 
 			LOG.info("Commiting Update.");
-//			if(split){
+			if(docsNumber>0){
 				GafObjectsFactory factory = new GafObjectsFactory();
 //				List docsList = factory.getGafDocument();
 
@@ -748,6 +749,7 @@ public class GAFDbOperations{
 				
 				if(session.isOpen())
 					session.getTransaction().commit();
+			}
 				
 			LOG.info("Update is commited");
 			
