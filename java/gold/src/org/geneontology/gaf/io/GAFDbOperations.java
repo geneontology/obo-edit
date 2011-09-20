@@ -866,13 +866,20 @@ public class GAFDbOperations{
 		
 			stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery("select * from "+ prefix + "bioentity EXCEPT select * from bioentity where gaf_document='"+docid + "'");
-			
 			while(rs.next()){
 				org.geneontology.gaf.hibernate.Bioentity entity = new org.geneontology.gaf.hibernate.Bioentity(
 						rs.getString("id"), rs.getString("symbol"), rs.getString("full_name"), 
 						rs.getString("type_cls"), rs.getString("taxon_cls"), rs.getString("db"), rs.getString("gaf_document"));
 				this.objectsToBeUpdated.add(entity);
 			}
+
+			stmt = connection.createStatement();
+			rs = stmt.executeQuery("select * from "+ prefix + "gaf_document EXCEPT select * from gaf_document where id='"+docid + "'");
+			while(rs.next()){
+				org.geneontology.gaf.hibernate.GafDocument doc = new org.geneontology.gaf.hibernate.GafDocument(rs.getString("id"),rs.getString("document_path"));
+				this.objectsToBeUpdated.add(doc);
+			}
+			
 			
 			stmt = connection.createStatement();
 			rs = stmt.executeQuery("select * from bioentity where gaf_document='"+docid + "' EXCEPT select * from "+ prefix + "bioentity");
