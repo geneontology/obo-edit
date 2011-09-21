@@ -64,7 +64,7 @@ public class PhyloTreeLoader implements Loader {
 	private String currentSourceFile;
 	
 	/**
-	 * Only ever need to make one of these. Connects to the database
+	 * Only ever need to make one of these. Connects to the database.
 	 */
 	public PhyloTreeLoader() {
 		pts = new HashSet<PhyloTree>();
@@ -78,7 +78,7 @@ public class PhyloTreeLoader implements Loader {
 			String host = manager.getGolddbHostName();
 		
 			try {
-				connection = DriverManager.getConnection("jdbc:postgresql://" + host +"/" + db, user, pw);
+				connection = DriverManager.getConnection("jdbc:postgresql://" + host + "/" + db, user, pw);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				System.exit(1);
@@ -259,6 +259,14 @@ public class PhyloTreeLoader implements Loader {
 		return tmpfiles;
 	}
 	
+	/**
+	 * Uses org.geneontology.gold.io.postgres.TsvFileLoader to write a collection of tmpfiles to the database.  This is usually the output from the writeTSV() function.
+	 * 
+	 * @param tmpfiles Collection of tsv files.
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
 	public void hib(Collection<File> tmpfiles) throws SQLException, ClassNotFoundException, IOException {
 		TsvFileLoader tsvLoader = new TsvFileLoader(manager.getGolddbUserName(),
 				manager.getGolddbUserPassword(), manager.getGolddbHostName(), 
@@ -394,7 +402,7 @@ public class PhyloTreeLoader implements Loader {
 		
 		/**
 		 * 
-		 * @return The leaves of the tree.
+		 * @return A Collection of the leaves of the tree.
 		 */
 		public Collection<Bioentity> getBioentities() {
 			Collection<Bioentity> out = new HashSet<Bioentity>();
