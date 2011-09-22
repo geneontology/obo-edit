@@ -523,7 +523,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 				if (annotationRuleViolations.size() >= splitSize) {
 					throw new Exception(
-							"The annotations check is terminated as the annotations violations messages are being consumed.");
+							"The annotations check is terminated as the annotations violations messages are not being consumed.");
 				}
 
 				LOG.info("Splitting the '" + path + "' document");
