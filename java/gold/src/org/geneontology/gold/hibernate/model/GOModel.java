@@ -228,13 +228,13 @@ public class GOModel {
 			try{
 				obj = cls.newInstance();
 				
-				Field f = cls.getDeclaredField(key);
-				
-				String methodName = "set" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1);
-				Class<?>[] parameters = {f.getType()};
+				String methodName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1);
+				Class<?>[] parameters = {String.class};
 				Method method = cls.getMethod(methodName, parameters);
 				
 				method.invoke(obj, value);
+
+				System.out.println(obj+"________________________________");
 				
 			}catch(Exception ex){
 				LOG.error(ex.getMessage(), ex);

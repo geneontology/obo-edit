@@ -1,3 +1,4 @@
+<%@page import="java.util.Vector"%>
 <%@page import="org.geneontology.gaf.hibernate.GeneAnnotation"%>
 <%@page import="java.io.PrintWriter"%>
 <%@page import="org.geneontology.gold.rules.AnnotationRuleViolation"%>
@@ -28,7 +29,14 @@
 		}	
 		if(annotationRuleViolations != null && annotationRuleViolations.size()>0){			
 		
+				int i =0;
+				Vector<AnnotationRuleViolation> toRmove = new Vector<AnnotationRuleViolation>();
 				for(AnnotationRuleViolation v: annotationRuleViolations){
+					if(i>=2000){
+						i=0;
+						break;
+					}
+					toRmove.add(v);
 					String msg = v.getMessage();
 					String s = v.getSourceAnnotation() + "";
 					String ruleId = v.getRuleId();
@@ -46,8 +54,15 @@
                     		</ul>
                     </li>
                     <%
+                    i++;
 				}
-				annotationRuleViolations.clear();
+
+				
+				for(AnnotationRuleViolation v: toRmove){
+					annotationRuleViolations.remove(v);
+				}
+							
+			//annotationRuleViolations.clear();
 			
 		}else if(task == null || (task != null && !task.isRunning())){
 			%>NO_DATA<%
