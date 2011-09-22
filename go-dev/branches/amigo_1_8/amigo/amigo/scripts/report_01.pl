@@ -32,14 +32,16 @@ my $dbh = DBI->connect("DBI:mysql:$dbname;host=$dbhost", $uname, $upass) ||
 my $query = <<SQL;
 SELECT
  term.acc AS acc,
- COUNT(association.id) AS cnt
+ COUNT(distinct gene_product.id) AS cnt
 FROM
  term,
  graph_path,
- association
+ association,
+ gene_product
 WHERE
  term.id=graph_path.term1_id AND
  graph_path.term2_id=association.term_id AND
+ association.gene_product_id = gene_product.id AND
  NOT term.acc = 'all' AND
  association.id IN
  (SELECT
@@ -47,13 +49,13 @@ WHERE
   FROM
    association AS assoc,
    evidence,
-   gene_product,
+   gene_product AS gp,
    species,
    term AS t
   WHERE
    assoc.id = evidence.association_id AND
-   assoc.gene_product_id = gene_product.id AND
-   gene_product.species_id = species.id AND
+   assoc.gene_product_id = gp.id AND
+   gp.species_id = species.id AND
    assoc.term_id = t.id AND
    species.ncbi_taxa_id = ? AND
    evidence.code IN ('EXP', 'IDA', 'IPI', 'IMP', 'IGI', 'IEP') AND
