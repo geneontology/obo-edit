@@ -87,6 +87,13 @@ public class AnnotationTaxonRule extends AbstractAnnotationRule implements Annot
 	
 	private Set<AnnotationRuleViolation> _getRuleViolations(String annotationCls, String taxonCls, GeneAnnotation a) {
 		Set<AnnotationRuleViolation> violations = new HashSet<AnnotationRuleViolation>();
+	
+		if(taxonCls == null){
+			AnnotationRuleViolation v = new AnnotationRuleViolation("Taxon id is null", a);
+			v.setRuleId(getRuleId());
+			violations.add(v);
+			return violations;
+		}
 		
 /*		GoldDbOperationsService goldDb = (GoldDbOperationsService) ServicesConfig.getService("gold-db-operations");
 		if(goldDb == null){

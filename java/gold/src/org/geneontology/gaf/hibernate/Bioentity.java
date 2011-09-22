@@ -10,7 +10,6 @@ public class Bioentity extends owltools.gaf.Bioentity implements Serializable {
 	private Cls ncbiTaxonIdObject;
 	private boolean isNcbiTaxonIdObjectLoaded;
 	
-	
 	public Bioentity() {
 		super();
 	}
@@ -28,6 +27,20 @@ public class Bioentity extends owltools.gaf.Bioentity implements Serializable {
 		}
 		
 		return ncbiTaxonIdObject;
+	}
+
+
+	@Override
+	public String getId() {
+		// TODO Auto-generated method stub
+		return super.getId();
+	}
+
+
+	@Override
+	public void setId(String id) {
+		// TODO Auto-generated method stub
+		super.setId(id);
 	}
 
 	

@@ -174,7 +174,10 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			 * The below condition sets gaf documents location
 			 */
 			else if (runner == null && !complete) {
-
+				
+				//wait for ontologies to be loaded first then proceed.
+			//	GoldDbOperationsService.getGraphWrapper();
+				
 				if (remoteGAF != null) {
 					gafLocations = new GafURLFetch(remoteGAF);
 				} else if (fileLocation != null) {
