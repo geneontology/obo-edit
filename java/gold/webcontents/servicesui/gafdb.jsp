@@ -143,7 +143,7 @@
 			%>
 			
 					<script type='text/javascript'>
-						var interval= setInterval('getVoilations()', 30000);
+						var interval= setInterval('getVoilations()', 20000);
 						//var isTaskRunning = true;
 						function getVoilations() {
 							

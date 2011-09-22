@@ -61,6 +61,7 @@ public class GafHibObjectsBuilder {
 					ga.getCompositeQualifier(), ga.getCls(), ga.getReferenceId(), ga.getEvidenceCls(), 
 					ga.getWithExpression(), ga.getActsOnTaxonId(), ga.getLastUpdateDate(), ga.getAssignedBy(), 
 					ga.getExtensionExpression(), ga.getGeneProductForm(), ga.getGafDocument());
+					hibGa.setBioentityObject(ga.getBioentityObject());
 			hibDoc.addGeneAnnotation(hibGa);
 		}
 		
