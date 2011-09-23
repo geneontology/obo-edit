@@ -976,6 +976,11 @@ sub database_link {
     return 'http://www.reactome.org/cgi-bin/eventbrowser?DB=gk_current&ID='.$id;
   }
 
+  ## WARNING
+  ## Similar fix for TAIR.
+  # if( $db =~ /^TAIR$/i && $id =~ /^[0-9]+$/i ){
+  # }
+
   ## Revive the cache if we don't have it.
   if( ! defined($self->{DB_INFO}) ){
     ## Populate our hash.
