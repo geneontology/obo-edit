@@ -91,9 +91,9 @@ sub convert_list {
     if( $gp_label =~ /([.^\:]*):(.*)/ ){
       $self->kvetch("___hmmmm: " . $2 . ' from ' . $gp_label);
       $new_label = $2;
-    #}else{
-    #  $self->kvetch("___clear: " . $gp_label);
-    #  $new_label = $gp_l
+      # }else{
+      # $self->kvetch("___clear: " . $gp_label);
+      #  $new_label = $gp_l
     }
     $gp_label_hash{lc($new_label)} = undef;
   }
@@ -113,19 +113,19 @@ sub convert_list {
   look_in_db('synonym', \%gp_label_hash, $self->{DBH}, $self->{SPECIES}, $self)
     if scalar( @{$self->get_unbool_keys(\%gp_label_hash) });
 
-  #       ## TODO: Try again for the bad ones (MGI:)
-  #       ## Is this mecessary anymore?
-  #       $rem_gp_list = $self->get_unbool_keys(\%gp_label_hash);
-  #       $self->kvetch('_mid_unbool_count_ : ' . scalar(@$rem_gp_list), 0);
-  #       foreach my $bad_key (@$rem_gp_list){
-  # 	#$self->kvetch('_bad_key_ : ' . $bad_key, 0);
-  # 	#if( ! $bad_key =~ /([^:]*?:)(.*)/ ){
-  # 	if( $bad_key =~ /MGI:MGI:(.*)/ ){
-  # 	  my $alt_key = 'MGI:' . $1;
-  # 	  $self->kvetch('_bad_key_try_ : '.$bad_key.'->'.$alt_key, 0);
-  # 	  ## TODO delete bad key, add alt key.
-  # 	}
-  #       }
+  # ## TODO: Try again for the bad ones (MGI:)
+  # ## Is this mecessary anymore?
+  # $rem_gp_list = $self->get_unbool_keys(\%gp_label_hash);
+  # $self->kvetch('_mid_unbool_count_ : ' . scalar(@$rem_gp_list), 0);
+  # foreach my $bad_key (@$rem_gp_list){
+  #   #$self->kvetch('_bad_key_ : ' . $bad_key, 0);
+  #   #if( ! $bad_key =~ /([^:]*?:)(.*)/ ){
+  #   if( $bad_key =~ /MGI:MGI:(.*)/ ){
+  #     my $alt_key = 'MGI:' . $1;
+  #     $self->kvetch('_bad_key_try_ : '.$bad_key.'->'.$alt_key, 0);
+  #     ## TODO delete bad key, add alt key.
+  #   }
+  # }
 
   ## Final DEBUG check.
   #$rem_gp_list = $self->get_unbool_keys(\%gp_label_hash);
