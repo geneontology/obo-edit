@@ -26,7 +26,8 @@
 				pw.flush();
 			}
 			
-		}	
+		}
+		
 		if(annotationRuleViolations != null && annotationRuleViolations.size()>0){			
 		
 				int i =0;

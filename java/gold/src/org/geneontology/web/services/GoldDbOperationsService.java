@@ -70,6 +70,8 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract{
 	 */
 	private boolean force;
 	
+	private boolean isTaxonomiesUpdate;
+	
 	private String command;
 	
 	private static OWLGraphWrapper buildTaxonomyGraph(){
@@ -93,6 +95,7 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract{
 			HttpServletResponse response) throws IOException, ServletException {
 
 		command = request.getParameter("command");
+		isTaxonomiesUpdate = request.getParameter("taxload") != null;
 		//this.force = "true".equals(request.getParameter("force"));
 	
 		//set the default view
@@ -136,7 +139,7 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract{
 		
 
 			if(this.runner != null){
-				ontologyGraph = null;
+				//ontologyGraph = null;
 				runner.start();
 			}
 		}
@@ -269,8 +272,15 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract{
 					}
 				if("update".equals(command)){
 					//rebuilt the merge because of change in one of the ontology
-					if(wrapperHolder != null)
-						ontologyGraph = wrapperHolder;
+					//if(wrapperHolder != null)
+						//ontologyGraph = wrapperHolder;
+					
+					if(wrapperHolder != null){
+						if(isTaxonomiesUpdate)
+							taxonomyGraph = wrapperHolder;
+						else
+							ontologyGraph = wrapperHolder;
+					}
 					
 					
 				}
