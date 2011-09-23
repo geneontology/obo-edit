@@ -45,6 +45,7 @@ function getLastUpdateDateOfGAF(){
 <form id="loadtax" action="/gold">
 	<input type="hidden" name="servicename" value="gold-db-operations" />
 	<input type="hidden" name="command" value="update" />
+	<input type="hidden" name="taxload" value="" />
 	
 	<%
 		for(Object location: GoConfigManager.getInstance().getTaxonomiesLocations()){
