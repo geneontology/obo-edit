@@ -104,9 +104,10 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract{
 		if(runner == null){
 			GoldObjectFactory factory = GoldObjectFactory.buildDefaultFactory();
 			List list = factory.getOntologies();
+			String ontologylocation[] = request
+			.getParameterValues("filelocation");
+
 			if ("update".equals(command) && !list.isEmpty()) {
-					String ontologylocation[] = request
-							.getParameterValues("filelocation");
 					
 					if(ontologylocation != null){
 						ontLocations = new ArrayList<String>();
@@ -119,7 +120,14 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract{
 						this.viewPath = "/servicesui/golddb-updateform.jsp";
 					}
 			}else if("bulkload".equals(command) || ("update".equals(command) && list.isEmpty()) ){
-				this.ontLocations = GoConfigManager.getInstance().getDefaultOntologyLocations();
+				if(ontologylocation != null){
+					ontLocations = new ArrayList<String>();
+					for(String l: ontologylocation)
+						ontLocations.add(l);
+					runner = new GoldDbTaskExecution();
+				}else				
+					this.ontLocations = GoConfigManager.getInstance().getDefaultOntologyLocations();
+				
 				runner = new GoldDbTaskExecution();
 				command = "bulkload";
 			}else if("getlastupdate".equals(command)){
