@@ -10,6 +10,7 @@ import org.bbop.io.FileUtil;
 import org.bbop.io.IOUtil;
 import org.bbop.swing.*;
 import org.bbop.util.OSUtil;
+import org.bbop.util.Pair;
 import org.obo.datamodel.*;
 import org.oboedit.gui.*;
 import org.oboedit.gui.event.ReconfigEvent;
@@ -1270,23 +1271,25 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		String numMem = mem.substring(0, mem.indexOf("M"));
 		int intMem = Integer.parseInt(numMem);
 		int memLimit = 1860;
-		if (is64Bit()) {
-			if (isWindows) {
+		boolean is64Bit = is64Bit();
+		if (isWindows) {
+			if (is64Bit) {
 				// there is no easy way to get 
 				// the physical memory of a Windows OS
 				memLimit = Integer.MAX_VALUE;
 			}
-			else if(OSUtil.isLinux()) {
-				memLimit = getAvailableMaxMemoryLinux();
-			}
-			else if (OSUtil.isMacOSX()) {
-				memLimit = getAvailableMaxMemoryMacOS();
-			}
-		}
-		else {
-			if (isWindows) {
+			else {
 				memLimit = 1024;
 			}
+		}
+		if (OSUtil.isLinux() && is64Bit) {
+			memLimit = getAvailableMaxMemoryLinux();
+		}
+		boolean isMacOSX = OSUtil.isMacOSX();
+		if (isMacOSX) {
+			Pair pair = getAvailableMaxMemoryMacOS();
+			memLimit = (Integer) pair.a;
+			is64Bit = (Boolean) pair.b;
 		}
 		if(intMem > memLimit){
 			String message;
@@ -1342,7 +1345,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		return (arch != null) && (arch.contains("x86_64") || arch.contains("amd64"));
 	}
 	
-	private static int getAvailableMaxMemoryMacOS() {
+	private static Pair getAvailableMaxMemoryMacOS() {
 		int maxMemory = 1860; // default for 32-bit
 		// There are snow leopard version which have 64-bit java, 
 		// but are running the OS in 32-bit mode
@@ -1362,7 +1365,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			}
 			in.close();
 			String uname = sb.toString().toLowerCase();
-			is64bitOS = uname.contains("x86_64");
+			is64bitOS = uname.contains("x86_64") && is64Bit();
 		} catch (java.io.IOException e) {
 		}
 		if (is64bitOS) {
@@ -1389,7 +1392,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			} catch (NumberFormatException e) {
 			}
 		}
-		return maxMemory;
+		return new Pair(Integer.valueOf(maxMemory), Boolean.valueOf(is64bitOS));
 	}
 	
 	private static int getAvailableMaxMemoryLinux() {
