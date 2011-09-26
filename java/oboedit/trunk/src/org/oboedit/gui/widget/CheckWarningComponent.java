@@ -20,6 +20,7 @@ import org.obo.util.HTMLUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.controller.VerificationManager;
+import org.oboedit.gui.event.ReconfigEvent;
 import org.oboedit.gui.Preferences;
 import org.oboedit.verify.*;
 
@@ -85,6 +86,11 @@ public class CheckWarningComponent extends JEditorPane {
 			}
 			boolean globalReload = action.getLevel().equals(
 				QuickFix.ReloadLevel.GLOBAL) || (action instanceof ImmediateQuickFix);
+                        // Force TextEditor (which listens for ReconfigEvents) to reload.
+                        // (Possibly this should fire some other sort of event, but since
+                        // TextEditor was already set up to listen for ReconfigEvents, this
+                        // was the easiest way to fix it.)
+ 			Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 			if (globalReload)
 				redoCheck();
 			else {
@@ -144,7 +150,9 @@ public class CheckWarningComponent extends JEditorPane {
 		Thread thread = new Thread() {
 			@Override
 			public void run() {
-				JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(), "Rerunning verification checks...");
+                            // It doesn't in fact seem to be rerunning them, so no point in
+                            // having it show this message...
+                            //				JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(), "Rerunning verification checks...");
 				VerificationManager.getManager().runChecks(session,
 									   currentObject, condition);
 			}
