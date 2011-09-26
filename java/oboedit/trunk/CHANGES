@@ -28,6 +28,13 @@ Made cutoff for number of warnings to show 500 instead of 300.
 
 [ geneontology-Feature Requests-1925380 ] Verification plugin should flag synonyms that match term
 
+[ geneontology-Feature Requests-3412485 ] "Add dbxref" button in Dbxref Library doesn't work
+
+[ geneontology-Feature Requests-2800022] Verfication check for empty DBxrefs (ID:0)
+
+[ geneontology-Bugs-2504879 ] Verification manager 'quick-fixes' don't show up in Text Ed
+If you clicked on the "quick-fix" icons in the Verification Manager, the fixes
+didn't show up in the Text Editor automatically. Now they do.
 
 ================================
 What's New in OBO-Edit v2.1-beta18 (8/18/2011)
