@@ -42,9 +42,13 @@ is "User Settings".</p>
   memory allocation on MacOSX</a></b>.
   <p><i>Changing the memory configuration without the configuration manager:</i><br/>
   The configuration manager limits the maximum memory you can set depending on the 
-  installed Java, available memory and Operation system. If you need/want to change 
-  the setting by hand edit the OBO-Edit.vmoptions file in the installation folder. 
-  After an OBO-Edit restart (on MacOS two restarts are required) this change will 
+  version of Java you have installed, the available memory, and the operating
+  system. If you want to set a higher memory allocation and you know your
+  computer can handle it (for example, if you have a 64-bit-capable Mac and OBO-Edit is refusing to let you
+  set a memory allocation higher than 1860M), you can edit the OBO-Edit.vmoptions file in the folder
+  where OBO-Edit is installed.
+  After an OBO-Edit restart (on MacOS two restarts are required) the new
+  memory setting will be used.
   be used.<br/> 
   <b>WARNING:</b> Setting an invalid or too large amount of memory will prevent 
   OBO-Edit from starting.
