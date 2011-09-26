@@ -1298,7 +1298,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				message = "Error -- you cannot allocate more memory for OBO-Edit than is physically available on your machine ("+memLimit+"M).";
 			}
 			else if (isMacOSX && !is64BitMacOS) {
-				message = "Error -- You cannot set the memory higher than "+memLimit+"M. This is a precaution as your MacOS is not in 64-bit mode. If you are <b>sure<b> that your Java supports more memory, you can try increasing the memory size in the OBO-Edit.vmoptions configuation file. Please check the OBO-Edit Configuration Manager documentation for more details.";
+				message = "<html>Error -- You cannot set the memory higher than "+memLimit+"M.<br>This is a precaution as your MacOS does not appear to be in 64-bit mode.<br>If you are <b>sure</b> that your Java supports more memory,you can try increasing<br>the memory allocation by editing the OBO-Edit.vmoptions file (and then<br>restarting OBO-Edit <i>twice</i>), but if you set the memory allocation too high,<br>OBO-Edit won't start.<br>For more details, see the Configuration Manager page in the user guide.</html>";
 			}
 			else {
 				message = "Error -- Your current JVM (32-bit) does not support more than "+memLimit+"M of memory.";
@@ -1313,11 +1313,10 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			}
 		}
 		//sending mem value to preferences to update vmoptions file
-	    preferences.setMemoryValue(mem);
-	    //updating mem in config manager text field
-	    memoryField.setText(mem);
+                preferences.setMemoryValue(mem);
+                //updating mem in config manager text field
+                memoryField.setText(mem);
 	    
-
 		Map<String, String> iconURLIndex = new HashMap<String, String>();
 		Map<String, Color> colorIndex = new HashMap<String, Color>();
 		for (int i = 0; i < icons.size(); i++) {
