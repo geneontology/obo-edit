@@ -10,7 +10,6 @@ import org.bbop.io.FileUtil;
 import org.bbop.io.IOUtil;
 import org.bbop.swing.*;
 import org.bbop.util.OSUtil;
-import org.bbop.util.Pair;
 import org.obo.datamodel.*;
 import org.oboedit.gui.*;
 import org.oboedit.gui.event.ReconfigEvent;
@@ -1271,9 +1270,9 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		String numMem = mem.substring(0, mem.indexOf("M"));
 		int intMem = Integer.parseInt(numMem);
 		int memLimit = 1860;
-		boolean is64Bit = is64Bit();
+		boolean useMaxMemory = is64BitJava();
 		if (isWindows) {
-			if (is64Bit) {
+			if (useMaxMemory) {
 				// there is no easy way to get 
 				// the physical memory of a Windows OS
 				memLimit = Integer.MAX_VALUE;
@@ -1282,19 +1281,24 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				memLimit = 1024;
 			}
 		}
-		if (OSUtil.isLinux() && is64Bit) {
+		if (OSUtil.isLinux() && useMaxMemory) {
 			memLimit = getAvailableMaxMemoryLinux();
 		}
 		boolean isMacOSX = OSUtil.isMacOSX();
+		boolean is64BitMacOS = false;
 		if (isMacOSX) {
-			Pair pair = getAvailableMaxMemoryMacOS();
-			memLimit = (Integer) pair.a;
-			is64Bit = (Boolean) pair.b;
+			Object[] macOSMemorySettings = getAvailableMaxMemoryMacOS(useMaxMemory);
+			memLimit = (Integer) macOSMemorySettings[0];
+			useMaxMemory = (Boolean) macOSMemorySettings[1];
+			is64BitMacOS = (Boolean) macOSMemorySettings[2];
 		}
 		if(intMem > memLimit){
 			String message;
-			if (is64Bit()) {
+			if (useMaxMemory) {
 				message = "Error -- you cannot allocate more memory for OBO-Edit than is physically available on your machine ("+memLimit+"M).";
+			}
+			else if (isMacOSX && !is64BitMacOS) {
+				message = "Error -- You cannot set the memory higher than "+memLimit+"M. This is a precaution as your MacOS is not in 64-bit mode. If you are <b>sure<b> that your Java supports more memory, you can try increasing the memory size in the OBO-Edit.vmoptions configuation file. Please check the OBO-Edit Configuration Manager documentation for more details.";
 			}
 			else {
 				message = "Error -- Your current JVM (32-bit) does not support more than "+memLimit+"M of memory.";
@@ -1340,12 +1344,12 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		reload();
 	}
 	
-	private static boolean is64Bit() {
+	private static boolean is64BitJava() {
 		String arch = OSUtil.getOSArch();
 		return (arch != null) && (arch.contains("x86_64") || arch.contains("amd64"));
 	}
 	
-	private static Pair getAvailableMaxMemoryMacOS() {
+	private static Object[] getAvailableMaxMemoryMacOS(boolean is64bitJava) {
 		int maxMemory = 1860; // default for 32-bit
 		// There are snow leopard version which have 64-bit java, 
 		// but are running the OS in 32-bit mode
@@ -1365,10 +1369,11 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			}
 			in.close();
 			String uname = sb.toString().toLowerCase();
-			is64bitOS = uname.contains("x86_64") && is64Bit();
+			is64bitOS = uname.contains("x86_64");
 		} catch (java.io.IOException e) {
 		}
-		if (is64bitOS) {
+		boolean useMaxMemory = is64bitOS && is64bitJava;
+		if (useMaxMemory) {
 			try {
 				// Execute command
 				String cmd = "sysctl hw.memsize";
@@ -1392,7 +1397,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			} catch (NumberFormatException e) {
 			}
 		}
-		return new Pair(Integer.valueOf(maxMemory), Boolean.valueOf(is64bitOS));
+		return new Object[] {Integer.valueOf(maxMemory), Boolean.valueOf(useMaxMemory), Boolean.valueOf(is64bitOS)};
 	}
 	
 	private static int getAvailableMaxMemoryLinux() {
