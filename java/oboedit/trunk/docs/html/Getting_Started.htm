@@ -60,9 +60,9 @@ you have a 64-bit Java Virtual Machine (JVM), Java limits the maximum memory all
 (1024M on Windows machines). The OBO-Edit installer will suggest an
 appropriate memory setting for your computer. You can change the memory setting
 after installation via OBO-Edit's <a href="Configuration_Manager.htm">Configuration Manager</a> or by hand-editing
-oboedit.vmoptions (located in the OBO-Edit installation directory).</p>
+OBO-Edit.vmoptions (located in the OBO-Edit installation directory).</p>
 <p>
-  For MacOSX there are three requirements to use more than 1860M of main memory for Java:
+  For MacOSX there are three requirements in order to use more than 1860M of main memory for Java:
   <ol>
   	<li>Intel CPU with support for 64-bit</li>
   	<li>MacOS in 64-bit mode 
@@ -70,8 +70,8 @@ oboedit.vmoptions (located in the OBO-Edit installation directory).</p>
   	you may need to change this by hand.
     <a href="http://macperformanceguide.com/SnowLeopard-64bit.html">Here</a> is a
   guide to getting your 64-bit-capable Mac to boot into 64-bit mode.</p>
-    <p>(<i>Sometimes</i> this step is not required to use Java in 64-mode. But OBO-Edit always
-        checks this feature to prevent a too high memory setting)</p></li>
+    <p>(<i>Sometimes</i> this step is not required to use Java in 64-mode, but OBO-Edit always
+        checks this to prevent you from choosing a memory setting that is too high.)</p></li>
   	<li>64-bit Java as default
   	<p>To change this, open <strong>/Applications/Utilities/Java Preferences</strong> 
   	 and make sure that a 64-bit version of Java is selected as the default for 
@@ -98,7 +98,8 @@ oboedit.vmoptions (located in the OBO-Edit installation directory).</p>
 <p>If you had already installed a previous version of OBO-Edit2, your
 configuration directory 
 may contain stale configuration files that clash with
-the new version, which can cause problems when you try to run the new OBO-Edit2.  For best results, remove your configuration directory before
+the new version, which can cause problems when you try to run the new
+  OBO-Edit2.  For best results, remove (or rename) your OBO-Edit configuration directory before
 launching the new OBO-Edit2.
 You can find the name of the directory by opening the <a href="Configuration_Manager.htm">Configuration
     Manager</a>.

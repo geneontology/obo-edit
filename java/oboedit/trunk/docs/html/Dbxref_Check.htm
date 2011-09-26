@@ -13,12 +13,13 @@ OBO compatible. The Dbxref Check will display a warning if a dbxref is not
 OBO-compatible. It checks for:</P>
 <UL>
   <LI>
-<DIV><STRONG>Missing database identifiers</STRONG> - This 
+<DIV><STRONG>Missing database</STRONG> - This 
   includes dbxrefs with no characters before the colon (or dbxrefs with no colon 
   at all)</DIV>
   <LI>
-<DIV><STRONG>Missing database identifiers</STRONG> - 
-  This&nbsp;includes dbxrefs with no characters after the colon</DIV>
+<DIV><STRONG>Missing ID</STRONG> - 
+  This includes dbxrefs with no characters after the colon, or the string "0"
+  or "<new xref>" after the colon.</DIV>
   <LI>
 <DIV><STRONG>Non-URI characters</STRONG> - This includes 
   dbxrefs with characters that are not defined as legal URI characters by the 
