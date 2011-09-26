@@ -842,8 +842,8 @@ FieldCheck {
 						Iterator<Word> it = arg0.getSuggestions().iterator();
 						while (it.hasNext()) {
 							String replacement = it.next().getWord();
-							String newText = text.substring(0, arg0
-									.getWordContextPosition())
+                                                        int pos = arg0.getWordContextPosition();
+							String newText = text.substring(0, (pos > 0 && pos < text.length()) ? pos : 0)
 									+ replacement
 									+ text.substring(arg0
 											.getWordContextPosition()
