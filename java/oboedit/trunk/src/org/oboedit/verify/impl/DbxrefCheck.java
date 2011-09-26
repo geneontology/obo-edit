@@ -75,7 +75,7 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 	protected JCheckBox missingDbCheckBox = new JCheckBox("Check for missing "
 			+ "database");
 	protected JCheckBox missingIDCheckBox = new JCheckBox("Check for missing "
-			+ "id");
+			+ "ID");
 	protected JCheckBox badCharacterCheckBox = new JCheckBox(
 			"Check for non-URL " + "characters");
 	protected JCheckBox validURLCheckBox = new JCheckBox(
@@ -481,15 +481,18 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 	protected void checkDbxref(Dbxref ref, FieldPath field, LinkedList<CheckWarning> out,
 			int index, String title) {
 		DbxrefCheckConfiguration dbconfig = (DbxrefCheckConfiguration) configuration;
-		if (dbconfig.getDoMissingDbCheck() && ref.getDatabase().length() == 0) {
+		if (dbconfig.getDoMissingDbCheck() && ((ref.getDatabase().length() == 0) ||
+                                                       ref.getDatabase().equals("XX"))) {
 			out.add(new CheckWarning(getWarningHeader(title, index, field
 					.getObject())
 					+ " has no database name.", false, this, field));
 		}
-		if (dbconfig.getDoMissingIDCheck() && ref.getDatabaseID().length() == 0) {
+		if (dbconfig.getDoMissingIDCheck() && (ref.getDatabaseID().length() == 0 ||
+                                                       ref.getDatabaseID().equals("0") ||
+                                                       ref.getDatabaseID().equals("<new xref>"))) {
 			out.add(new CheckWarning(getWarningHeader(title, index, field
 					.getObject())
-					+ " has no id string.", false, this, field));
+					+ " has no ID.", false, this, field));
 		}
 		if (dbconfig.getDoValidURLCheck() && isURLStarter(ref.getDatabase())) {
 			try {
