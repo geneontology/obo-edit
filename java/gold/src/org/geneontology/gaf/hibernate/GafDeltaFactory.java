@@ -23,6 +23,8 @@ import org.geneontology.gold.io.postgres.PostgresDialect;
  * @author Shahid Manzoor
  *
  */
+
+@Deprecated
 public class GafDeltaFactory {
 
 	private static Logger LOG = Logger.getLogger(GafDeltaFactory.class);

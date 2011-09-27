@@ -12,7 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import org.apache.log4j.Logger;
@@ -31,11 +30,16 @@ import org.hibernate.jdbc.Work;
 import owltools.gaf.Bioentity;
 import owltools.gaf.CompositeQualifier;
 import owltools.gaf.ExtensionExpression;
-import owltools.gaf.GeneAnnotation;
 import owltools.gaf.WithInfo;
 
+/**
+ * The class performs Database operations (bulkload and update) for GAF files. 
+ * @author Shahid Manzoor
+ *
+ */
 public class GAFDbOperations{
 
+	//Holds list of the listeners which notified with different stages of a db operation.
 	private List<DbOperationsListener> listeners;
 	
 	private static Logger LOG = Logger.getLogger(GAFDbOperations.class);
@@ -58,9 +62,9 @@ public class GAFDbOperations{
 	
 	
 	/**
-	 * Loads the contents of the obo file whose path is supplied 
-	 * the geneontology.gold.obofil property.
-	 * @param force
+	 * Loads the contents of the gaf file whose path is supplied 
+	 * the geneontology.gold.gaflocation property in the conf/gold.properties.
+	 * @param force This parameter overrides the database tables.
 	 * @throws Exception
 	 */
 	public void bulkLoad(boolean force) throws GafDbOperationsException{
@@ -81,7 +85,7 @@ public class GAFDbOperations{
 	}
 	
 	/**
-	 * Load the contents of the obo file into GOLD
+	 * Load the contents of the gaf file into GOLD
 	 * @param oboFile: The path of the obo file
 	 * @param The true value of the force parameter drops all the existing tables
 	 * 			creates new ones.
@@ -89,16 +93,52 @@ public class GAFDbOperations{
 	 */
 	public void bulkLoad(String gafLocation, boolean force) throws GafDbOperationsException{
 
-		try{
+		/*try{
 			gafDocument = buildGafDocument(gafLocation);
 		}catch(IOException ex){
 			throw new GafDbOperationsException("An Error occured while building GAF document", ex);
 		}
 		
-		bulkLoad(gafDocument, force);
-	
+		bulkLoad(gafDocument, force);*/
+		
+		gafLocation = toURI(gafLocation);
+		GafURLFetch fetch = new GafURLFetch(gafLocation);
+		Reader reader = new InputStreamReader((InputStream)fetch.next());
+		
+		bulkload(reader, fetch.getCurrentGafFile(), fetch.getCurrentGafFilePath(), force);
 	}
 	
+	/**
+	 * Converts file location to URI
+	 * @param gafLocation
+	 * @return
+	 * @throws GafDbOperationsException
+	 */
+	private String toURI(String gafLocation) throws GafDbOperationsException{
+		if(gafLocation == null )
+			throw new GafDbOperationsException("Gaf location is not provided in the input");
+		
+		gafLocation = gafLocation.trim();
+		if(!(gafLocation.startsWith("http:") || gafLocation.startsWith("ftp:") || gafLocation.startsWith("file:"))){
+			File f = new File(gafLocation);
+			gafLocation= f.toURI().toString();
+		}
+		
+		return gafLocation;
+		
+	}
+	
+	/**
+	 * It builds {@link GafDocument} from the reader and perform bulkload on the document. If the document
+	 * is large enough then it read the document in blocks sequentially and performs bulkload on each block in temporary tables.
+	 * Each block is a fixed set of rows, e.g. 900000 row, in GAF file.
+	 * Once all the blocks are bulk-loaded then the changes are propagated into the database.  
+	 * @param reader
+	 * @param docid
+	 * @param path
+	 * @param force
+	 * @throws GafDbOperationsException
+	 */
 	public void bulkload(Reader reader, String docid, String path, boolean force) throws GafDbOperationsException{
 		GafHibObjectsBuilder builder = new GafHibObjectsBuilder();
 		
@@ -153,36 +193,21 @@ public class GAFDbOperations{
 		}
 	}
 	
-	public void bulkLoad(GafDocument gafDocument, boolean force) throws GafDbOperationsException{
-		/*if(DEBUG)
-			LOG.debug("--");
-		
-		for(DbOperationsListener listener: listeners){
-			listener.bulkLoadStart();
-		}
-		
-		
-		List<String> list = dumpFiles("", gafDocument);
-		
-		loadTsvFiles(GoConfigManager.getInstance().getTsvFilesDir(), list);
-
-		LOG.info("Bulk Load completed successfully");
-
-		for(DbOperationsListener listener: listeners){
-			listener.bulkLoadEnd();
-		}*/
-		
+	/*public void bulkLoad(GafDocument gafDocument, boolean force) throws GafDbOperationsException{
 		bulkLoad(gafDocument, "", force);
 		
 	}
 	
 	public void bulkLoad(GafDocument gafDocument, String prefix, boolean force) throws GafDbOperationsException{
 		bulkLoad(gafDocument, prefix, force, false);
-	}
+	}*/
 	
 	//private GafObjectsFactory factory;
 	//private Session session;
 	
+	/**
+	 * This method bulk-loads the gafDocument in the gaf tables having the prefix (provided in the input).
+	 */
 	private void bulkLoad(GafDocument gafDocument, String prefix, boolean force, boolean split) throws GafDbOperationsException{
 		if(DEBUG)
 			LOG.debug("--");
@@ -237,7 +262,14 @@ public class GAFDbOperations{
 	}
 	
 	
-	
+	/**
+	 * The {@link org.geneontology.gaf.hibernate.WithInfo}, {@link org.geneontology.gaf.hibernate.CompositeQualifier} and {@link org.geneontology.gaf.hibernate.ExtensionExpression} saved 
+	 * in this method can be duplicate with the existing data in the database.
+	 * That's why they are loaded through hibernate which uses internally insert or update statements.  
+	 * @param session
+	 * @param gafDocument
+	 * @param split
+	 */
 	private void bulkLoadHibernate(Session session, GafDocument gafDocument, boolean split){
 
 		
@@ -280,29 +312,6 @@ public class GAFDbOperations{
 	 * @throws Exception
 	 */
 	public List<String> dumpFiles(String tablePrefix, String gafFile) throws GafDbOperationsException{
-		/*for(DbOperationsListener listener: listeners){
-			listener.dumpFilesStart();
-		}
-		
-		if(LOG.isDebugEnabled()){
-			LOG.debug("-");
-		}
-		
-		
-		GeneOntologyManager manager = GeneOntologyManager.getInstance();
-
-		gafDocument = buildGafDocument(gafFile);
-		GafBulkLoader loader = new GafBulkLoader(gafDocument, manager.getTsvFilesDir(), tablePrefix);
-		
-		List<String> list = loader.loadAll();
-		
-		LOG.info("Tables dump completed");
-		
-		for(DbOperationsListener listener: listeners){
-			listener.dumpFilesEnd();
-		}
-		
-		return list;*/
 		
 		try{
 			gafDocument = buildGafDocument(gafFile);
@@ -425,39 +434,6 @@ public class GAFDbOperations{
 	 * 		to be loaded in the GOLD database
 	 * @throws Exception
 	 */
-	/*public void loadTsvFiles(String tsvFilesDir, List<String> list) throws GafDbOperationsException{
-	for(DbOperationsListener listener: listeners){
-			listener.loadTsvFilesStart();
-		}
-	
-		
-		if(LOG.isDebugEnabled()){
-			LOG.debug(list + " files being loaded");
-		}
-
-		GoConfigManager manager = GoConfigManager.getInstance();
-
-		try{
-			TsvFileLoader tsvLoader = new TsvFileLoader(manager.getGolddbUserName(),
-					manager.getGolddbUserPassword(), manager.getGolddbHostName(), 
-					manager.getGolddbName());
-			
-			tsvLoader.loadTables(tsvFilesDir, list);
-		}catch(Exception ex){
-			throw new GafDbOperationsException(ex);
-		}
-		
-		
-		LOG.info("TSV files load completed");
-		
-		for(DbOperationsListener listener: listeners){
-			listener.loadTsvFilesEnd();
-		}
-		
-		loadTsvFiles(tsvFilesDir, list);
-		
-	}*/
-
 	public void loadTsvFiles(String tsvFilesDir, List<String> list) throws GafDbOperationsException{
 		for(DbOperationsListener listener: listeners){
 			listener.loadTsvFilesStart();
@@ -550,13 +526,12 @@ public class GAFDbOperations{
 			LOG.debug("-");
 		}
 		
-		try{
-			gafDocument = buildGafDocument(gafLocation);
-		}catch(IOException ex){
-			throw new GafDbOperationsException("An Error occured while building GAF document", ex);
-		}
+		gafLocation = toURI(gafLocation);
+		GafURLFetch fetch = new GafURLFetch(gafLocation);
+		Reader reader = new InputStreamReader((InputStream)fetch.next());
 		
-		update(gafDocument);
+		update(reader, fetch.getCurrentGafFile(), fetch.getCurrentGafFilePath());
+		
 	}
 
 	
@@ -566,9 +541,9 @@ public class GAFDbOperations{
 	 * @param oboFile
 	 * @throws Exception
 	 */
-	public void update(GafDocument gafDocument) throws GafDbOperationsException{
+/*	public void update(GafDocument gafDocument) throws GafDbOperationsException{
 		update(gafDocument, false);
-	}
+	}*/
 	
 	/**
 	 * This variable is set to true only when a big document loaded
@@ -576,6 +551,8 @@ public class GAFDbOperations{
 	 */
 	private boolean isSchemaCreted;
 	private boolean isFirstUpdateIteration;
+	
+	/*
 	public void update(GafDocument gafDocument, boolean splitt) throws GafDbOperationsException{
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
@@ -692,7 +669,7 @@ public class GAFDbOperations{
 		}
 		
 		
-	}
+	}*/
 	
 	/*private void saveOrUpdate(Session session, Collection objects){
 		
@@ -769,6 +746,12 @@ public class GAFDbOperations{
 		listeners.remove(listener);
 	}
 	
+	/**
+	 * This work is executed through hibernate session object. If the gaf file large enough then it is loaded through split
+	 * strategy, and this work is only executed when split methodology is used on a gaf file.
+	 * @author shahidmanzoor
+	 *
+	 */
 	private class BulkloadWork implements Work{
 
 		private String prefix;
@@ -819,6 +802,11 @@ public class GAFDbOperations{
 		
 	}
 	
+	/**
+	 * This work is executed during the processing of the update command.
+	 * @author shahidmanzoor
+	 *
+	 */
 	private class UpdateWork implements Work{
 
 		private String prefix;

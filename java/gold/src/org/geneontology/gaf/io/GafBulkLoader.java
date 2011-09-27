@@ -12,6 +12,14 @@ import owltools.gaf.GafDocument;
 import owltools.gaf.GeneAnnotation;
 import owltools.gaf.WithInfo;
 
+/**
+ * This class generates tab separated text files for bulkload into database tables, i.e bioentity, gene_annotation 
+ * with_info, extension_expression and composite_qualifier. It takes a {@link GafDocument} as input
+ * and builds tables files from it.  
+ * @author Shahid Manzoor
+ *
+ */
+		
 public class GafBulkLoader {
 
 	

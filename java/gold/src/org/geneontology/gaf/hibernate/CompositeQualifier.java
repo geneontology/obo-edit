@@ -2,6 +2,12 @@ package org.geneontology.gaf.hibernate;
 
 import java.io.Serializable;
 
+/**
+ * The class represents the composite_qualifier table in the database. Please see CompositeQualifier.hbm.xml file in this 
+ * for the mapping detail 
+ * @author Shahid Manzoor
+ *
+ */
 public class CompositeQualifier extends owltools.gaf.CompositeQualifier implements Serializable {
 
 	public CompositeQualifier() {
@@ -12,6 +18,9 @@ public class CompositeQualifier extends owltools.gaf.CompositeQualifier implemen
 		super(id, qualifierObj);
 	}
 
+	/**
+	 * This method generates unique hashcode used by hibernate.
+	 */
 	public int hashCode() {
 		int result = 37;
 		
