@@ -66,7 +66,7 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 	public DbxrefLibrary(String id) {
 		super(id);
 		setLayout(new BorderLayout());
-		useButton = new JButton("Add dbxref");
+		useButton = new JButton("Add as dbxref");
 		useAsDefButton = new JButton("Add as definition dbxref");
 		useForAll = new JCheckBox("Apply to all selected terms");
 //		useForAllButton = new JButton("Add dbxref to ALL selected terms");
@@ -103,6 +103,7 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 	public void setConfiguration(ComponentConfiguration config) {
 		if (config instanceof DbxrefLibraryConfiguration) {
 			dbxrefs = ((DbxrefLibraryConfiguration) config).getLibrary();
+                        Collections.sort(dbxrefs, sortByDbxrefDescrip);
 			updateList();
 //			if (dbxrefs.size() > 0) {
 //			useButton.setEnabled(true);
@@ -144,7 +145,7 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 		dialog.setSize(450, 330);
 
 		dialog.show();
-		Collections.sort(dbxrefs);
+		Collections.sort(dbxrefs, sortByDbxrefDescrip);
 		refList.setListData(dbxrefs);
 	}
 
@@ -195,7 +196,7 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 		dbxrefs = editor.getData();
 		if (dbxrefs == null)
 			dbxrefs = new Vector<Dbxref>();
-		Collections.sort(dbxrefs);
+		Collections.sort(dbxrefs, sortByDbxrefDescrip);
 		refList.setListData(dbxrefs);
 		refList.repaint();
 	}
@@ -300,7 +301,7 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 							Dbxref.ANALOG, null);
 					dbxrefs.add(dbxref);
 				}
-				Collections.sort(dbxrefs);
+                                Collections.sort(dbxrefs, sortByDbxrefDescrip);
 				refList.setListData(dbxrefs);
 				refList.repaint();
 			} catch (IOException ex) {
@@ -366,4 +367,30 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 	public void cleanup() {
 		// controller.getDragController().unregisterDropTarget(dropTarget);
 	}
+
+        // Sort by description, if any; then sort by db:ID
+	public static final Comparator sortByDbxrefDescrip = new Comparator() {
+		public int compare(Object a, Object b) {
+			Dbxref ad = (Dbxref) a;
+			Dbxref bd = (Dbxref) b;
+			if (ad.getDesc() != null) { // a has description
+                            if (bd.getDesc() == null) // b doesn't
+                                return -1;
+                            else { // both have description
+                                return ad.getDesc().compareToIgnoreCase(bd.getDesc());
+                            }
+			} else if (bd.getDesc() != null) {// a doesn't have description; b does {
+				return 1;
+                        }
+
+			int compVal = ad.getDatabase()
+					.compareToIgnoreCase(bd.getDatabase());
+			if (compVal != 0)
+				return compVal;
+			compVal = ad.getDatabaseID().compareToIgnoreCase(bd.getDatabaseID());
+			if (compVal != 0)
+				return compVal;
+                        return 0;
+		}
+            };
 }
