@@ -7,9 +7,16 @@ import java.io.Reader;
 import org.apache.log4j.Logger;
 import owltools.gaf.ExtensionExpression;
 import owltools.gaf.GAFParser;
+import owltools.gaf.GafObjectsBuilder;
 import owltools.gaf.WithInfo;
 import org.geneontology.conf.GoConfigManager;
 
+/**
+ * This class is wrapper around {@link GafObjectsBuilder}. It basically rebuilts the object model for hibernate from the 
+ * object model built from {@link GafObjectsBuilder}.
+ * @author Shahid Manzoor
+ *
+ */
 public class GafHibObjectsBuilder {
 
 	private final static Logger LOG = Logger.getLogger(GafHibObjectsBuilder.class);

@@ -25,6 +25,12 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GoConfigManager;
 
+/**
+ * This command line utility executes commands to process gaf file.
+ * @author Shahid Manzoor
+ *
+ */
+
 public class GafCommandLine {
 
 	private static Logger LOG = Logger.getLogger(GafCommandLine.class);
@@ -87,6 +93,16 @@ public class GafCommandLine {
 	}
 	
 	
+	/**
+	 * This method sends request to run annotation checks at the GOLD server via using Jakarata Commans Http Client library. 
+	 * The annotation checks run asynchronously at server. When a request is sent first time the server sends session id.
+	 * This client sends requests in a infinite loop to the sever along with session id to get annotation violations. The loop
+	 * breaks only when it gets NO_DATA in result (response text).
+	 * 
+	 * @param adminServletURL
+	 * @param annotationFilePath
+	 * @param outFile
+	 */
 	private static void checkAnnotations(String adminServletURL, String annotationFilePath, String outFile){
 	
 		
@@ -104,6 +120,7 @@ public class GafCommandLine {
 	        Pattern pattern = Pattern.compile("name\\s*=\\s*\"filelocation\"\\s*value\\s*=\\s*\"([^\"]*)\"");
 	        String sessionId = null;
 	    	while(true){
+	    		
 		    	if(!annotationFilePath.trim().startsWith("file:")){
 				    String encodedPath = URLEncoder.encode(annotationFilePath, "UTF-8");
 			
@@ -126,6 +143,7 @@ public class GafCommandLine {
 				    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
 				    		new DefaultHttpMethodRetryHandler(3, false));		
 		    	}else{
+		    		//This part of the program build post method to upload file.
 		    		LOG.info("Sending request with POST method");
 	
 		    		PostMethod post = new PostMethod(adminServletURL);
@@ -144,8 +162,6 @@ public class GafCommandLine {
 		    		
 		    	}
 			    
-	//		    	params.setParameter("remote-gaf", encodedPath);
-	
 				HttpClient httpclient = new HttpClient();
 				
 				  // Create a method instance.
@@ -157,13 +173,13 @@ public class GafCommandLine {
 		          System.err.println("Method failed: " + method.getStatusLine());
 		        }
 	
+		        //Reading response from the method
 		        InputStream is = method.getResponseBodyAsStream();
 		        
 		        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		         
 		         String line = null;
 		     
-		     //    StringBuffer buf = new StringBuffer();
 		         boolean breakLoop = false;
 		         while((line = reader.readLine()) != null ){
 		        	// buf.append(line + "\n");
@@ -210,13 +226,7 @@ public class GafCommandLine {
         	 
 	    	} 
         	 
-        	 
-        	 
-        	 
-        	 
-	       //  ps.print(buf.toString());
-
-	      } catch (Exception e) {
+ 	      } catch (Exception e) {
 	        System.err.println("Fatal protocol violation: " + e.getMessage());
 	        e.printStackTrace();
 	      } finally {

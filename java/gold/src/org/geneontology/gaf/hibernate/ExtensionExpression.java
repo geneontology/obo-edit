@@ -6,6 +6,12 @@ import org.geneontology.gold.hibernate.model.Cls;
 import org.geneontology.gold.hibernate.model.GOModel;
 import org.geneontology.gold.hibernate.model.Relation;
 
+/**
+ * The class represents the extension_expression table in the database. Please see ExtensionExpression.hbm.xml file in this 
+ * for the mapping detail 
+ * @author Shahid Manzoor
+ *
+ */
 
 public class ExtensionExpression extends owltools.gaf.ExtensionExpression implements Serializable {
 
@@ -46,6 +52,9 @@ public class ExtensionExpression extends owltools.gaf.ExtensionExpression implem
 		this.clsObj = clsObj;
 	}
 	
+	/**
+	 * This method generates unique hashcode used by hibernate.
+	 */
 	public int hashCode() {
 		int result = 17;
 	

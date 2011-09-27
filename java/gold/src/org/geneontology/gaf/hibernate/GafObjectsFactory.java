@@ -10,6 +10,11 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+/**
+ * This factory class build hibernate objects by quering the database through HQL (Hibernate Query Language) language.
+ * @author Shahid Manzoor
+ *
+ */
 public class GafObjectsFactory {
 
 	private static Logger LOG = Logger.getLogger(GoldObjectFactory.class);

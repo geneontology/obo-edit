@@ -4,6 +4,12 @@ import java.io.Serializable;
 import org.geneontology.gold.hibernate.model.Cls;
 import org.geneontology.gold.hibernate.model.GOModel;
 
+/**
+ * The class represents the bioentity table in the database. Please see Bioentity.hbm.xml file in this 
+ * for the mapping detail 
+ * @author Shahid Manzoor
+ *
+ */
 public class Bioentity extends owltools.gaf.Bioentity implements Serializable {
 
 	
@@ -29,20 +35,18 @@ public class Bioentity extends owltools.gaf.Bioentity implements Serializable {
 		return ncbiTaxonIdObject;
 	}
 
-
+/*
 	@Override
 	public String getId() {
-		// TODO Auto-generated method stub
 		return super.getId();
 	}
 
 
 	@Override
 	public void setId(String id) {
-		// TODO Auto-generated method stub
 		super.setId(id);
 	}
-
+*/
 	
 	
 	
