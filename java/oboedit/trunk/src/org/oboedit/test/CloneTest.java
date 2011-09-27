@@ -99,10 +99,11 @@ public class CloneTest extends TestCase {
 					.getSession());
 			int termCount = terms.size();
 			OBOClass currentClass = itemObjectMap.get(item);
-			logger.info("currentClass = " + item); // DEL
+			logger.info("currentClass = " + item + "; terms.contains = " + terms.contains(currentClass) + "(should be true)"); // DEL
 			assertTrue("Current object collection should contain " + currentClass,
 				   terms.contains(currentClass));
 			testUtil.reverse(item);
+			logger.info("After reverse, currentClass = " + item + "; name = " + currentClass.getName() + ", id = " + currentClass.getID()  +"; terms.contains = " + terms.contains(currentClass) + "(should be false)"); // DEL
 			assertTrue("Current object collection should not contain a class with name = " +
 				   currentClass.getName() + ", id = " + currentClass.getID(),
 				   !terms.contains(currentClass));
@@ -112,8 +113,11 @@ public class CloneTest extends TestCase {
 		assertTrue("Term set should be the same size as before; oldSize = "
 				+ oldTerms.size() + ", currentSize = " + terms.size(), oldTerms
 				.size() == terms.size());
+		logger.info("Term set should be the same size as before; oldSize = "
+				+ oldTerms.size() + ", currentSize = " + terms.size()); // DEL
 
 		assertTrue("Term set should contain all the same elements as before.",
 				terms.containsAll(oldTerms));
+		logger.info("Term set should contain all the same elements as before: "+                      terms.containsAll(oldTerms)); // DEL
 	}
 }
