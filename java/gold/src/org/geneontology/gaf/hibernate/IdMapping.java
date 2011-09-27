@@ -2,6 +2,13 @@ package org.geneontology.gaf.hibernate;
 
 import java.io.Serializable;
 
+/**
+ * The class represents the id_mapping table in the database. Please see IdMapping.hbm.xml file in this 
+ * for the mapping detail 
+ * @author Shahid Manzoor
+ *
+ */
+
 public class IdMapping extends owltools.gaf.IdMapping implements Serializable {
 
 	public IdMapping() {
@@ -13,6 +20,9 @@ public class IdMapping extends owltools.gaf.IdMapping implements Serializable {
 		super(sourceId, targetId, relationship, mappingSource);
 	}
 
+	/**
+	 * This method generates unique hashcode used by hibernate.
+	 */
 	public int hashCode() {
 		int result = 17;
 	

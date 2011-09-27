@@ -13,7 +13,7 @@ import org.geneontology.gold.io.DatabaseDialect;
 
 /**
  * 
- * @author Shahid Manzoor This class is singleton class. It can only have one
+ * This class is singleton class. It can only have one
  *         instance. Application level share resources of the Gene Ontology
  *         software pipe lines are managed through this class. This class reads
  *         properties files at conf/*.properties location. The properties
@@ -22,7 +22,7 @@ import org.geneontology.gold.io.DatabaseDialect;
  *         {@link http
  *         ://commons.apache.org/configuration/userguide/howto_properties
  *         .html#Properties_files}
- * 
+ * @author Shahid Manzoor
  */
 public class GoConfigManager {
 

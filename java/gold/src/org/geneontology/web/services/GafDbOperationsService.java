@@ -533,14 +533,14 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 					// isLargefile = true;
 				}*/
 
-				if (update) {
+				/*if (update) {
 				//	db.update(d);
 					db.update(d, true);
 				}else if (bulkload){
 					db.bulkLoad(d, false);
-				}
+				}*/
 
-				else if (solrLoad) {
+				if (solrLoad) {
 					GafSolrLoader loader = new GafSolrLoader(
 							GoConfigManager.getInstance().getSolrUrl());
 
@@ -568,9 +568,9 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			}while ((d = builder.getNextSplitDocument()) != null);
 
 			
-			if(update){
+			/*if(update){
 				db.update(null, true);
-			}
+			}*/
 			
 			endDomLoad(builder);
 

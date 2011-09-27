@@ -2,6 +2,12 @@ package org.geneontology.gaf.hibernate;
 
 import java.io.Serializable;
 
+/**
+ * The class represents the with_info table in the database. Please see WithInfo.hbm.xml file in this 
+ * for the mapping detail 
+ * @author Shahid Manzoor
+ *
+ */
 
 public class WithInfo extends owltools.gaf.WithInfo implements Serializable {
 
@@ -13,6 +19,9 @@ public class WithInfo extends owltools.gaf.WithInfo implements Serializable {
 		super(id, withXref);
 	}
 
+	/**
+	 * This method generates unique hashcode used by hibernate.
+	 */
 	public int hashCode() {
 		int result = 17;
 		

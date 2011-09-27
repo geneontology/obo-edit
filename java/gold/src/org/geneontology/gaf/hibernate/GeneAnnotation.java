@@ -7,7 +7,8 @@ import org.geneontology.gold.hibernate.model.GOModel;
 import owltools.gaf.Bioentity;
 
 /**
- * 
+ * The class represents the gene_annotation table in the database. Please see GeneAnnotation.hbm.xml file in this 
+ * for the mapping detail 
  * @author Shahid Manzoor
  *
  */
@@ -77,6 +78,9 @@ public class GeneAnnotation extends owltools.gaf.GeneAnnotation implements Seria
 				gafDocument);
 	}
 
+	/**
+	 * This method generates unique hashcode used by hibernate.
+	 */
 	public int hashCode() {
 		int result = 37;
 		
