@@ -18,23 +18,36 @@ I have disabled it for now.  The current treatment of extended characters
 dbxrefs) is what most people want anyway.
 
 [ geneontology-Feature Requests-3408075 ] Allow 64 bit to be chosen on install
-Heiko improved the installer so it now detects if you have a 64-bit machine and
-suggests a larger memory allocation. If you have a 64-bit computer, then when
-you install OBO-Edit, it will launch in 64-bit mode.
+Heiko improved the installer so that if you have a 64-bit computer with 64-bit
+Java, the installer will install OBO-Edit so that it will launch in 64-bit
+mode.  The installer tries to detect if you have a 64-bit machine, in which
+case it suggests a larger memory allocation, but it is (by necessity)
+conservative about this (because if it suggested a too-high memory setting you
+wouldn't be able to launch OE at all), so it may limit you to an 1860M
+setting. If this happens, you can hand-edit OBO-Edit.vmoptions and put a
+higher memory setting (up to the amount of physical memory on your computer),
+and then relaunch OE (twice, if you're on a Mac).
 
 [ geneontology-Bugs-2507049 ] b52 - history browser won't save history
 
-Made cutoff for number of warnings to show 500 instead of 300.
+Made cutoff for number of warnings to show in Verification Manager 500 instead
+of 300.
 
 [ geneontology-Feature Requests-1925380 ] Verification plugin should flag synonyms that match term
 
 [ geneontology-Feature Requests-3412485 ] "Add dbxref" button in Dbxref Library doesn't work
+This broke in 2.1-b7. Now fixed.
 
 [ geneontology-Feature Requests-2800022] Verfication check for empty DBxrefs (ID:0)
 
 [ geneontology-Bugs-2504879 ] Verification manager 'quick-fixes' don't show up in Text Ed
 If you clicked on the "quick-fix" icons in the Verification Manager, the fixes
 didn't show up in the Text Editor automatically. Now they do.
+
+[ geneontology-Feature Requests-2737303 ] Improvements to DBxref library tool
+As requested, DBxref library entries are now sorted by description (if any)
+and then by db:ID.
+
 
 ================================
 What's New in OBO-Edit v2.1-beta18 (8/18/2011)
