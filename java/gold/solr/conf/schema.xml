@@ -27,7 +27,8 @@
     <!-- this section of the schema has fields that are typically shared across all documents -->
 
     <!-- this schema is overloaded so we can use a general category -->
-    <!-- can we use an enum? one of: ontology_class, bioentity or annotation -->
+    <!-- can we use an enum? one of: ontology_class, bioentity, -->
+    <!-- annotation, or annotation_aggregate. -->
     <field name="document_category"
 	   type="string"
 	   indexed="true"
@@ -313,9 +314,9 @@
 	   required="false" />
 
 
-    <!--               -->
-    <!-- ANNOT FIELDS  -->
-    <!--               -->
+    <!--                    -->
+    <!-- Annotation fields  -->
+    <!--                    -->
 
     <!-- Required for all annotations -->
     <!-- c1+c2 -->
@@ -426,11 +427,14 @@
 	   multiValued="false"
 	   required="false" />
 
+    <!-- BUG/WARNING/TODO: for the sake of easy experimentation -->
+    <!-- right now, we'll use this field to play with evidence  -->
+    <!-- aggregates.                                            -->
     <field name="evidence_closure"
 	   type="string"
 	   indexed="true"
 	   stored="true"
-	   multiValued="false"
+	   multiValued="true"
 	   required="false" />
 
     <field name="evidence_with"
@@ -474,7 +478,6 @@
 	   stored="true"
 	   multiValued="true"
 	   required="false" />
-
 
   </fields>
 
