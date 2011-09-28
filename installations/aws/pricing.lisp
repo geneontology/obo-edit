@@ -53,8 +53,8 @@
 (defvar *aws-gb-xfer-in-charge* 0.100)
 
 ;; Amazon S3 charges.
-(defvar *aws-s3-gb-store-charge* 0.165)
-(defvar *aws-s3-1000-op-charge* 0.011)
+(defvar *aws-s3-gb-store-charge* 0.140)
+(defvar *aws-s3-1000-op-charge* 0.010)
 
 ;; Amazon EBS numbers charges.
 (defvar *aws-ebs-gb-store-charge* 0.11)
@@ -68,7 +68,7 @@
 (defparameter +bbop-monthly-restarts+ 4.0)
 
 ;; BBOP S3 variables.
-(defparameter +bbop-s3-stored-data-gb+ 100.0)
+(defparameter +bbop-s3-stored-data-gb+ 1000.0)
 (defparameter +bbop-s3-ops-per-day+ 1000.0)
 
 ;; BBOP EC2.
@@ -181,3 +181,6 @@
 	(+bbop-monthly-churn-rate+ 0.25)
 	(+bbop-s3-ops-per-day+ 1000.0))
     (bbop-s3-total)))
+
+
+;;(defun bbop-s3-monthly-storage ()
