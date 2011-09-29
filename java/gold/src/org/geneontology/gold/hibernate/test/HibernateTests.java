@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.geneontology.gold.hibernate.factory.GoldDeltaFactory;
-import org.geneontology.gold.hibernate.factory.GoldObjectFactory;
 import org.geneontology.gold.hibernate.model.AllSomeRelationship;
 import org.geneontology.gold.hibernate.model.Cls;
+import org.geneontology.gold.hibernate.model.GoldDeltaFactory;
+import org.geneontology.gold.hibernate.model.GoldObjectFactory;
 import org.geneontology.gold.hibernate.model.ObjAlternateLabel;
 import org.geneontology.gold.hibernate.model.Relation;
 import org.geneontology.gold.hibernate.model.SubclassOf;

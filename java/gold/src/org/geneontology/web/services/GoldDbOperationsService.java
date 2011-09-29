@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.io.GAFDbOperations;
-import org.geneontology.gold.hibernate.factory.GoldObjectFactory;
+import org.geneontology.gold.hibernate.model.GoldObjectFactory;
 import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.io.DbOperationsListener;
