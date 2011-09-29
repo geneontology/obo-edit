@@ -621,11 +621,10 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				+ "");
 		allowCyclesBox.setSelected(Preferences.getPreferences()
 				.getAllowCycles());
-                //		allowExtendedCheckbox.setSelected(Preferences.getPreferences()
-                //				.getAllowExtendedCharacters());
-                // This option doesn't work. For now, setting it to "on".
-                allowExtendedCheckbox.setSelected(true);
-                allowExtendedCheckbox.setEnabled(false);
+                allowExtendedCheckbox.setSelected(Preferences.getPreferences()
+                                                  .getAllowExtendedCharacters());
+                //                allowExtendedCheckbox.setSelected(true);
+                //                allowExtendedCheckbox.setEnabled(false);
 
 		personalDefCheckbox.setSelected(Preferences.getPreferences()
 				.getUsePersonalDefinition());

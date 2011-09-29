@@ -203,7 +203,7 @@ FieldCheck {
 
 	protected boolean allowBlank = false;
 
-	protected boolean allowExtended = false;
+        protected boolean allowExtended = getAllowExtended();
 
 	protected boolean sentenceStructureChecks = false;
 
@@ -459,9 +459,9 @@ FieldCheck {
 		return allowNewlines;
 	}
 
-        // Not currently used
 	public boolean getAllowExtended() {
-		return allowExtended;
+            //		return allowExtended;
+            return Preferences.getPreferences().getAllowExtendedCharacters();
 	}
 
 	public boolean getAllowBlank() {
@@ -895,6 +895,7 @@ FieldCheck {
 				for (int i = 0; i < text.length(); i++) {
 					char c = text.charAt(i);
 					if (!allowExtended && !AbstractTextCheck.isLegal(c)
+                                            // Why is this !foundExtended rather than foundExtended?
 							&& !foundExtended) {
 						out
 						.add(new TextCheckWarning(getWarningLabel(path,
