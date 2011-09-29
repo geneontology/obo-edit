@@ -1,7 +1,7 @@
 package org.geneontology.gold.io.postgres;
 
 import org.geneontology.conf.GoConfigManager;
-import org.geneontology.gold.hibernate.factory.GoldDeltaFactory;
+import org.geneontology.gold.hibernate.model.GoldDeltaFactory;
 import org.hibernate.EmptyInterceptor;
 
 /**

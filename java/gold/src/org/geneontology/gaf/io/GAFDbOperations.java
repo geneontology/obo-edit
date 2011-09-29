@@ -19,7 +19,7 @@ import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.hibernate.GafDocument;
 import org.geneontology.gaf.hibernate.GafHibObjectsBuilder;
 import org.geneontology.gaf.hibernate.GafObjectsFactory;
-import org.geneontology.gold.hibernate.factory.GoldObjectFactory;
+import org.geneontology.gold.hibernate.model.GoldObjectFactory;
 import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.io.DbOperationsListener;
