@@ -492,7 +492,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 	};
 
 	protected boolean runChecksAndCommit() {
-	    //		logger.debug("runChecksAndCommit: object = " + currentObject + ", hasChanges = " + hasChanges()); // DEL
+            //            logger.debug("runChecksAndCommit: object = " + currentObject + ", hasChanges = " + hasChanges()); // DEL
 		if (currentObject == null || !hasChanges())
 			return true;
 		PostcompUtil.getNameExpression(currentObject, true);
@@ -538,7 +538,8 @@ RootTextEditComponent, SelectionDrivenComponent {
 			 * This is a temporary fix while investigating similar feature request - ideally the items would be cached for multiple terms till the user decides to commit
 			 * although this keeps things simple at the moment.*/
 			else if(!Preferences.getPreferences().getAutoCommitTextEdits() && this.dirtyPaths.size() > 0){
-				if(this.dirtyPaths.get(0).getSpec().toString().equalsIgnoreCase("[Definition dbxref]") || this.dirtyPaths.get(0).getSpec().toString().equalsIgnoreCase("[General dbxref]")){
+				if(this.dirtyPaths.get(0).getSpec().toString().equalsIgnoreCase("[Definition dbxref]") || this.dirtyPaths.get(0).getSpec().toString().equalsIgnoreCase("[General dbxref]")
+                                    || this.dirtyPaths.get(0).getSpec().toString().equalsIgnoreCase("[General xref]")){
 					installAutocommitListener();
 					autocommit();
 				}
