@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.geneontology.gold.hibernate.factory.GoldObjectFactory;
+import org.geneontology.gold.hibernate.model.GoldObjectFactory;
 import org.geneontology.gold.io.postgres.DeltaQueryInterceptor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

@@ -24,7 +24,7 @@ import org.geneontology.gaf.hibernate.GafHibObjectsBuilder;
 import org.geneontology.gaf.hibernate.GafObjectsFactory;
 import org.geneontology.gaf.io.GAFDbOperations;
 import org.geneontology.gaf.io.GafURLFetch;
-import org.geneontology.gold.hibernate.factory.GoldObjectFactory;
+import org.geneontology.gold.hibernate.model.GoldObjectFactory;
 import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.rules.AnnotationRuleCheckException;

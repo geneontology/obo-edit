@@ -13,7 +13,7 @@ name: x2
 
 [Term]
 id: CHEBI:15355
-name: acetylcholine
+name: acetylcholine [mid="hello2"]
 namespace: chebi_ontology
 def: "Actylcholine is an ester of acetic acid and choline, which acts as a neurotransmitter." [ANON:ANON]
 synonym: "2-acetyloxy-N,N,N-trimethylethanaminium" EXACT IUPAC_NAME [IUPAC:]
@@ -43,7 +43,7 @@ synonym: "[Al-]" RELATED SMILES [ChEBI:]
 synonym: "InChI=1/Al/q-1" RELATED InChI [ChEBI:]
 synonym: "InChIKey=SBLSYFIUPXRQRY-UHFFFAOYAW" RELATED InChIKey [ChEBI:]
 xref: NIST Chemistry WebBook:22325-47-9 "CAS Registry Number"
-is_a: CHEBI:33429
+is_a: CHEBI:33429 [mid="hello3"]
 is_a: CHEBI:33627
 
 [Typedef]
