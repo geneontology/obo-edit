@@ -1,4 +1,4 @@
-package org.geneontology.web;
+package org.geneontology.web.services;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -15,7 +15,6 @@ import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.io.FileMonitorListener;
-import org.geneontology.web.Task;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import owltools.graph.OWLGraphWrapper;
@@ -23,7 +22,7 @@ import owltools.graph.OWLGraphWrapper;
 
 /**
  * This class performs bulkload and update operations for geneontology GOLD database against the
- * web based requests.
+ * web based requests. Only one instance of this class exists throughout 
  *  
  * @author Shahid Manzoor
  *
@@ -375,6 +374,12 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract{
 		
 	}
 
+	/**
+	 * This class monitors for change in the ontology file configurated in the geneontology.gold.ontologylocation property
+	 * in the gold.properties file. If the file is changed it rebuilds the {@link OWLGraphWrapper} for the ontology file.
+	 * @author Shahid Manzoor
+	 *
+	 */
 	private static class FileMonitorListenerImp implements FileMonitorListener{
 		/**
 		 * Rebuild the ontologyGraph when ontology files are modified
@@ -399,7 +404,10 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract{
 		
 	}
 	
-	
+	/**
+	 * 
+	 * @return
+	 */
 	public static FileMonitorListener getFileMonitorListener(){
 		return fileMonitor;
 	}

@@ -7,11 +7,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.geneontology.gold.io.postgres.SchemaManager;
-import org.geneontology.web.Task;
 
 /**
  * This service initializes the database which includes creating database and creating schema.
- * @author shahidmanzoor
+ * @author Shahid Manzoor
  *
  */
 public class InitializationService extends ServiceHandlerAbstract {
@@ -79,6 +78,11 @@ public class InitializationService extends ServiceHandlerAbstract {
 		return this.viewPath;
 	}
 	
+	/**
+	 * Thread runs in background to load schema into the database
+	 * @author Shahid Manzoor
+	 *
+	 */
 	class InitializationTask extends Task{
 
 		@Override

@@ -1,4 +1,4 @@
-package org.geneontology.web;
+package org.geneontology.web.services;
 
 import java.io.File;
 import java.io.IOException;

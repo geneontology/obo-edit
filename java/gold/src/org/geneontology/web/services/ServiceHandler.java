@@ -5,8 +5,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.geneontology.web.AdminServlet;
-
 /**
  * The implementation of this interface is called by {@link AdminServlet}.
  * @author Shahid Manzoor

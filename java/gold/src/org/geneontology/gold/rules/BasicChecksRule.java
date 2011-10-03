@@ -15,10 +15,17 @@ import org.geneontology.gaf.hibernate.GeneAnnotation;
 
 import owltools.gaf.GAFParser;
 
+/**
+ * This class performs basic checks. See the GO_AR:0000001 rule in the {@link http://www.geneontology.org/quality_control/annotation_checks/annotation_qc.xml} file
+ * for detal about the checks.
+ * @author Shahid Manzoor
+ *
+ */
 public class BasicChecksRule extends AbstractAnnotationRule {
 
 	private static Logger LOG = Logger.getLogger(BasicChecksRule.class);
 	
+	//this object validate date format in the GAF file.
 	private static SimpleDateFormat dtFormat = new SimpleDateFormat("yyyyMMdd");
 	
 	

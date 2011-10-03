@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GoConfigManager;
 import org.geneontology.solrj.OntSolrLoader;
-import org.geneontology.web.Task;
 
 /**
  * This service load ontology files into solr through solrj interface.
@@ -70,6 +69,11 @@ public class OntSolrjLoaderService extends ServiceHandlerAbstract {
 		return "ont-solrj-loading-service";
 	}
 	
+	/**
+	 * Thread runs in background to perform the gaf load into the solr indexer.
+	 * @author shahidmanzoor
+	 *
+	 */
 	class SorjLoaderTask extends Task{
 
 		@Override
