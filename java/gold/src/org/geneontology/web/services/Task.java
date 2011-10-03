@@ -1,4 +1,4 @@
-package org.geneontology.web;
+package org.geneontology.web.services;
 
 import java.util.ArrayList;
 import java.util.Calendar;

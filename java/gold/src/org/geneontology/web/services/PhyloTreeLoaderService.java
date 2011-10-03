@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.geneontology.gaf.io.GAFDbOperations;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.io.PhyloTreeLoader;
-import org.geneontology.web.Task;
 
 public class PhyloTreeLoaderService extends ServiceHandlerAbstract {
 
@@ -19,7 +18,7 @@ public class PhyloTreeLoaderService extends ServiceHandlerAbstract {
 
 
 	/**
-	 * The GAF files paths
+	 * files paths
 	 */
 	private Object fileLocations;
 
@@ -28,14 +27,15 @@ public class PhyloTreeLoaderService extends ServiceHandlerAbstract {
 	 */
 	private DbTaskExecution runner;
 
-	/**
-	 * It holds the value of the 'force' request parameter. The parameter is
-	 * used in bulkload. If the value is true then delete gold database tables
-	 * and create from scratch.
-	 */
 
+	/**
+	 * Path to the jsp to file to render the contents
+	 */
 	private String viewPath;
 
+	/**
+	 * Only one 
+	 */
 	private static boolean updateInProgress;
 	
 

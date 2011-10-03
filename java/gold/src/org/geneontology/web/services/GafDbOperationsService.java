@@ -25,13 +25,11 @@ import org.geneontology.gaf.hibernate.GafObjectsFactory;
 import org.geneontology.gaf.io.GAFDbOperations;
 import org.geneontology.gaf.io.GafURLFetch;
 import org.geneontology.gold.hibernate.model.GoldObjectFactory;
-import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.rules.AnnotationRuleCheckException;
 import org.geneontology.gold.rules.AnnotationRuleViolation;
 import org.geneontology.gold.rules.AnnotationRulesEngine;
 import org.geneontology.solrj.GafSolrLoader;
-import org.geneontology.web.Task;
 
 /**
  * This class performs bulkload and update operations for GAF database against
@@ -74,35 +72,33 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	 */
 	private Set<AnnotationRuleViolation> annotationRuleViolations;
 
+	//storing command line name, e.g update, bulkload, runrules
 	private String command;
 
+	//true if the commad is update
 	private boolean update;
+	//true if command is bulkload
 	private boolean bulkload;
 
+	//true if annotation checks are requested
 	private boolean runAnnotationRules;
 
+	//true if solr load is requested
 	private boolean solrLoad;
 
-//	private List<GafDocument> gafDocuments;
-
-//	private List<String> splittedDocuments;
-
+	/**
+	 * If the service completes its operation then the user 
+	 * is not allowed to re-run this service again. User has to
+	 * send new request to run another operation.
+	 */
 	private boolean complete;
 
+	/**
+	 * It keeps track if auny of the update operation ,e.g bulkload, update and solrload, is in-progress.
+	 * A new update operation is not allowed if a update operation is already in progress.
+	 */
 	private static boolean updateInProgress;
 	
-	// private boolean annotationRulesComplete;
-
-	// When annotation checks completed this variable set to true
-	// This variable helps to prevent re-run the annotation checks
-	// private boolean annotationChecksCompleted;
-
-	// When commit operation is completed this variable is set to true
-	// This prevent to execute commit multiple times
-	// private boolean commitCompleted;
-
-	// / private boolean isLargefile;
-
 	/**
 	 * Each GAF operation runs a thread in background. The web browser calls the
 	 * handle service method in intervals to check whether the operation is
@@ -125,15 +121,10 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	 * This service performs the computations and stores the computations
 	 * results via request.setAttribute method. This request object attributes
 	 * values are visible in the jsp file associated with this service. The jsp
-	 * file prints the values during its rendering process. update and bulkload
-	 * is a two stage process. In the first stage GAF file parsed and annotation
-	 * rules are run. A summary of rules voilation is represented to the user.
-	 * The second stage is commit which makes changes in the database.
+	 * file prints the values during its rendering process. 
 	 * 
-	 * This service performs some of the tasks in multiple steps. The first step
-	 * for the task except the 'getlastupdate' is to load gaf documents. It
-	 * tries to load three locations: 1)system default location, 2) remote
-	 * location (http/ftp urls) and (3) through the filelocation parameter.
+	 * This method collects the parameter from the request object. And initialize
+	 * the thread object which performs the requested operation,i.e. bulkload, update, solrload and run annotations check 
 	 */
 	public void handleService(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
@@ -175,8 +166,6 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			 */
 			else if (runner == null && !complete) {
 				
-				//wait for ontologies to be loaded first then proceed.
-			//	GoldDbOperationsService.getGraphWrapper();
 				
 				if (remoteGAF != null) {
 					gafLocations = new GafURLFetch(remoteGAF);
@@ -195,7 +184,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 					runner.start();
 				}
 				
-				if(update || bulkload)
+				if(update || bulkload || solrLoad)
 					updateInProgress = true;
 
 			}
@@ -358,6 +347,12 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			}
 		}
 
+		
+		/**
+		 * Run annotation checks rule here
+		 * @param doc
+		 * @throws AnnotationRuleCheckException
+		 */
 		private void _performAnnotationChecks(GafDocument doc) throws AnnotationRuleCheckException {
 			LOG.info("Performing Annotation Checks");
 			AnnotationRulesEngine engine = AnnotationRulesEngine.getInstance();

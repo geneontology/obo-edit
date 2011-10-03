@@ -18,7 +18,9 @@ public abstract class AbstractBulkLoader {
 	 */
 	protected OWLGraphWrapper graphWrapper;
 
-	//This variable is used as prefix of each dump file created through this loader
+	/**
+	 * 	This variable is used as prefix of each dump file created through this loader
+	 */
 	protected String dumpFilePrefix;
 	
 	
