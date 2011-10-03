@@ -22,18 +22,34 @@ public class FileMonitor extends TimerTask {
 
 	private static Logger LOG = Logger.getLogger(FileMonitor.class);
 	
+	/**
+	 * This object runs file monitoring method at regular intervals.
+	 */
 	private Timer timer;
 	
-	//delay in milliseconds
+	/**
+	 * The delay at which files last update status are checked
+	 */
 	private long delay;
 	
 	
 	private List<String> modifiedFiles;
 	
+	/**
+	 * This table maintains file name (being monitored) and last update date. 
+	 * This helps to find out whether a file is modified or not by checking the
+	 * last modified date.
+	 */
 	private Hashtable<String, Long> table;
 	
+	/**
+	 * List of files being monitered.
+	 */
 	private List filesToMonitor;
 	
+	/**
+	 * The list of listeners which are notified when a file is modified 
+	 */
 	private List<FileMonitorListener> listeners;
 	/**
 	 * 
@@ -62,6 +78,12 @@ public class FileMonitor extends TimerTask {
 		listeners.add(listener);
 	}
 	
+	/**
+	 * This method returns the last modified date of the file referred in the location object.
+	 * @param location
+	 * @return
+	 * @throws IOException
+	 */
 	private long getLastModified(String location) throws IOException{
 		URL url = null;
 		if(location.startsWith("http://"))
@@ -77,6 +99,12 @@ public class FileMonitor extends TimerTask {
 		return con.getLastModified();
 	}
 	
+	/**
+	 * This method checks whether a file is modified or not referred in the location object.
+	 * @param location
+	 * @return
+	 * @throws IOException
+	 */
 	private boolean isModified(String location) throws IOException{
 		
 		long currentTime = getLastModified(location);
@@ -118,11 +146,17 @@ public class FileMonitor extends TimerTask {
 		
 	}
 	
+	/**
+	 * This method is required to be called by the object creating file monitor object. 
+	 * The file monitoring process is only started when this method is called.
+	 */
 	public void startMonitoring(){
-		//timer.schedule(this, delay);
 		timer.scheduleAtFixedRate(this, Calendar.getInstance().getTime(), delay);
 	}
 	
+	/**
+	 * The method stops the file monitoring process.
+	 */
 	public void stopMonitoring(){
 		timer.cancel();
 	}

@@ -5,7 +5,7 @@
 <%@page import="java.io.PrintWriter"%>
 <%@page import="org.geneontology.gold.rules.AnnotationRuleViolation"%>
 <%@page import="java.util.Set"%>
-<%@page import="org.geneontology.web.Task"%>
+<%@page import="org.geneontology.web.services.Task"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1" trimDirectiveWhitespaces="true"%>
 

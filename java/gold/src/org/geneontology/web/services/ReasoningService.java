@@ -7,7 +7,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
-import org.geneontology.web.Task;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import owltools.InferenceBuilder;
 
@@ -21,7 +20,7 @@ public class ReasoningService extends ServiceHandlerAbstract {
 	/**
 	 * The reference of the inference builder is kept alive
 	 * until the life of the servlet. The inference builder cache
-	 * the reasoner reference.
+	 * the reasoner reference. If the ontology is change then the inference builder is rebuilt.
 	 */
 	private InferenceBuilder inf;
 	
@@ -37,6 +36,12 @@ public class ReasoningService extends ServiceHandlerAbstract {
 		runner = null;
 	}
 	
+	/**
+	 * This method 
+	 * 	(1) sets the view (jsp file path) to render the reasoning results in html.
+	 * 	(2) It checks if a user request is  not running. If that is the case then it creates  {@link InferenceBuilderTask} the task to perform the operation
+	 * `(3) It sets status information, e.g. is the task completed, the task completion time and reasoner results in the request object.
+	 */
 	public void handleService(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
 
@@ -46,8 +51,10 @@ public class ReasoningService extends ServiceHandlerAbstract {
 	
 		command = request.getParameter("command");
 
+		//The rendering the inferences in html
 		viewPath = "/servicesui/reasoning.jsp";
 		
+		//the view of the consistency checks
 		if("checkconsistency".equals(command)){
 			viewPath = "/servicesui/consistencycheck.jsp";
 		}
@@ -120,6 +127,7 @@ public class ReasoningService extends ServiceHandlerAbstract {
 		return inf;
 	}
 	
+	//The task runs in background to perform reasoners operations
 	class InferenceBuilderTask extends Task{
 		private Object data;
 

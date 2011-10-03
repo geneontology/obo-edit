@@ -5,9 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
-
 import org.apache.log4j.Logger;
-import org.geneontology.web.DbOperationsTask;
+import org.geneontology.web.services.DbOperationsTask;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
 import owltools.graph.OWLGraphWrapper;

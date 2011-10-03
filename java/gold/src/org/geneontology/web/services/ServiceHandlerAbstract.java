@@ -1,19 +1,19 @@
 package org.geneontology.web.services;
 
-import org.apache.log4j.Logger;
-
-
+/**
+ * All services are required to implement this abstract class. 
+ * @author Shahid Manzoor
+ *
+ */
 public abstract class ServiceHandlerAbstract implements ServiceHandler  {
 
-	private static Logger LOG = Logger.getLogger(ServiceHandlerAbstract.class);
-	
 	protected ServiceHandlerAbstract(){
 	
 	}
 	
-	public String getViewPath(){
+	/*public String getViewPath(){
 		return null;
-	}
+	}*/
 
 	
 }
