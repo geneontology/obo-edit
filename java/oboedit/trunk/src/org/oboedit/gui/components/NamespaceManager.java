@@ -263,7 +263,7 @@ public class NamespaceManager extends AbstractGUIComponent {
 		}
 
 		Iterator<NamespaceWrapper> it2 = v.iterator();
-		while (it.hasNext()) {
+		while (it2.hasNext()) {
 			NamespaceWrapper nw = it2.next();
 			if (nw.getNamespace() == null) {
 				item.addItem(new TermNamespaceHistoryItem(null, nw.getID(),
