@@ -53,7 +53,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	/**
 	 * The GAF files paths
 	 */
-	private Object gafLocations;
+	private List<GafURLFetch> gafLocations;
 
 	/**
 	 * The thread which runs the bulkload and update operations in background.
@@ -166,16 +166,66 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 			 */
 			else if (runner == null && !complete) {
 				
-				
+				gafLocations = new ArrayList<GafURLFetch>();
 				if (remoteGAF != null) {
-					gafLocations = new GafURLFetch(remoteGAF);
-				} else if (fileLocation != null) {
-					gafLocations = new ArrayList<String>();
-					((ArrayList) gafLocations).add(fileLocation);
-				} else {
+					//gafLocations = new GafURLFetch(remoteGAF);
+					gafLocations.add(new GafURLFetch(remoteGAF));
+				}else {
 
-					this.gafLocations = GoConfigManager.getInstance()
-							.getDefaultGafFileLocations();
+					List gafFiles = null;
+					
+					if (fileLocation != null){
+						gafFiles = new ArrayList();
+						gafFiles.add(fileLocation);
+					}else{
+						gafFiles = GoConfigManager.getInstance()
+						.getDefaultGafFileLocations();
+						
+					}
+					
+					List<String> files = (List<String>) gafFiles;
+					//List<GafURLFetch> gafURLs = new ArrayList<GafURLFetch>();
+					for (String ontLocation : files) {
+
+						if (ontLocation.startsWith("http:/") || ontLocation.startsWith("ftp:/")){
+							gafLocations.add( new GafURLFetch(ontLocation));
+						}else{
+							File file = null;
+							
+							if(ontLocation.startsWith("file:/")){
+								try{
+									file = new File(new URI(ontLocation));
+								}catch(Exception ex){
+									LOG.error(ex.getMessage(), ex);
+									throw new IOException(ex);
+								}
+							}else{
+								file = new File(ontLocation);
+								File  files2[] =new File[]{ file};
+							
+							
+								if(file.isDirectory()){
+									files2 = file.listFiles();
+								}
+								
+								
+								for(File f: files2){
+									if( f.isDirectory() || f.getName().endsWith(".")){
+										continue;
+									}
+									
+									gafLocations.add(new GafURLFetch(f.toURI().toString()));
+								}
+							}
+							
+						}
+					}
+					
+					
+					
+					
+					
+					
 
 				}
 				
@@ -189,7 +239,12 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 			}
 
-		} finally {
+		}catch(Exception ex){
+			LOG.error(ex.getMessage(), ex);
+			throw new IOException(ex);
+		}
+		
+		finally {
 
 			// store information in the request object. The request object is
 			// available in the
@@ -259,84 +314,46 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 		public void execute() {
 
 
-			try {
+		//	try {
 
 
-				if (gafLocations instanceof GafURLFetch) {
-					GafURLFetch fetch = (GafURLFetch) gafLocations;
-					fetch.connect();
-					while (fetch.hasNext()) {
-
-						
-						try{
-							InputStream is = (InputStream) fetch.next();
-							java.io.Reader reader = new InputStreamReader(is);
-							buildGafDocument(reader,
-									fetch.getCurrentGafFile(),
-									fetch.getCurrentGafFilePath());
+				for (GafURLFetch fetch: gafLocations) {
+					//GafURLFetch fetch = (GafURLFetch) gafLocations;
+					try{
+							fetch.connect();
+							while (fetch.hasNext()) {
+		
 								
-								//gafDocuments.add(doc);
-							reader.close();
-							is.close();
-							fetch.completeDownload();
-						}catch (Exception ex) {
-							this.exception = ex;
-							LOG.error(ex, ex);
-						}
-					}
-				} else {
-
-					List<String> files = (List<String>) gafLocations;
-					for (String ontLocation : files) {
-
-						File file = null;
-
-						if (ontLocation.startsWith("http:/")
-								|| ontLocation.startsWith("file:/")) {
-							file = new File(new URI(ontLocation));
-						} else
-							file = new File(ontLocation);
-
-						File dirFiles[] = null;
-
-						if (file.isDirectory()) {
-							dirFiles = file.listFiles();
-						} else {
-							dirFiles = new File[] { file };
-						}
-
-						for (File f : dirFiles) {
-							if (!f.isFile() || f.getName().startsWith("."))
-								continue;
-							ontLocation = f.getAbsolutePath();
-							this.currentOntologyBeingProcessed = ontLocation;
-
-							
-							try{
-								InputStream is = new FileInputStream(f);
-	
-								if (f.getName().endsWith(".gz")) {
-									is = new GZIPInputStream(is);
-								}
-	
-								buildGafDocument(
-										new InputStreamReader(is), f.getName(),
-										ontLocation);
-							}catch(Exception ex){
-								this.exception = ex;
-								LOG.error(ex, ex);
+									InputStream is = (InputStream) fetch.next();
+									java.io.Reader reader = new InputStreamReader(is);
+									buildGafDocument(reader,
+											fetch.getCurrentGafFile(),
+											fetch.getCurrentGafFilePath());
+										
+										//gafDocuments.add(doc);
+									reader.close();
+									is.close();
+									fetch.completeDownload();
 							}
-								//gafDocuments.add(doc);
-
+						}catch (Exception ex) {
+							this.exceptions.add(new Exception("The operation is failed for the file " + fetch.getCurrentGafFile() , ex));
+						//	this.exception = ex;
+							LOG.error(ex, ex);
+						}finally{
+							//gafDocuments = null;
+							//splittedDocuments = null;
+							complete = true;
+							updateInProgress = false;
 						}
+						
+						
+						
 					}
-
-				}
-
-
+	/*			}
 
 			} catch (Throwable ex) {
-				this.exception = ex;
+				//this.exception = ex;
+				this.exceptions.add(new Exception("Operation is failed for the file " + fetch., arg1))
 				LOG.error(ex, ex);
 
 			}finally{
@@ -344,7 +361,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 				//splittedDocuments = null;
 				complete = true;
 				updateInProgress = false;
-			}
+			}*/
 		}
 
 		

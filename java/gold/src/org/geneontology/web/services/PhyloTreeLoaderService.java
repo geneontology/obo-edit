@@ -154,7 +154,7 @@ public class PhyloTreeLoaderService extends ServiceHandlerAbstract {
 
 
 			} catch (Throwable ex) {
-				this.exception = ex;
+				this.exceptions.add(ex);
 				LOG.error(ex, ex);
 
 			}finally{

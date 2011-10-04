@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Vector;
 
 public abstract class Task extends Thread {
 
@@ -16,7 +18,7 @@ public abstract class Task extends Thread {
 	protected String currentRunningOperation;
 	
 //	protected Exception exception;
-	protected Throwable exception;
+	protected List<Throwable> exceptions;
 	
 	protected Object data;
 	
@@ -27,12 +29,13 @@ public abstract class Task extends Thread {
 		opsOrder = new ArrayList<String>();
 		running = true;
 		taskCompletionTime = -1;
+		exceptions =new Vector<Throwable>();
 	}
 	
 	
 //	public Exception getException(){
-	public Throwable getException(){
-		return this.exception;
+	public List<Throwable> getException(){
+		return this.exceptions;
 	}
 	
 	public boolean isRunning(){

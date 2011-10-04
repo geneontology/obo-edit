@@ -92,7 +92,8 @@ public class InitializationService extends ServiceHandlerAbstract {
 				sm.loadSchemaSQL();
 				
 			}catch(Exception ex){
-				exception = ex;
+				//exception = ex;
+				this.exceptions.add(ex);
 			}
 		}
 		

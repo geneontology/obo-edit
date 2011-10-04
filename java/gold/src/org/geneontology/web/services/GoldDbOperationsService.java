@@ -292,7 +292,8 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract{
 					
 				}
 			}catch(Exception ex){
-				this.exception = ex;
+				//this.exception = ex;
+				this.exceptions.add(ex);
 				LOG.error(ex, ex);
 			}
 			
@@ -363,7 +364,8 @@ public class GoldDbOperationsService extends ServiceHandlerAbstract{
 						ontologyGraph = new OWLGraphWrapper(ont);
 					} catch (Exception ex) {
 						LOG.error(ex.getMessage(), ex);
-						this.exception = ex;
+						//this.exception = ex;
+						this.exceptions.add(ex);
 					}
 				} else {
 					ontologyGraph.addSupportOntology(ont);

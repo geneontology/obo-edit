@@ -13,7 +13,7 @@
 		Task task = (Task)request.getAttribute("task");
 		Set<AnnotationRuleViolation> annotationRuleViolations = (Set<AnnotationRuleViolation>)request.getAttribute("violations");
 		String sessionId = request.getParameter("id");
-		Throwable ex = null;
+		List<Throwable> ex = null;
 		
 		
 	///	out.println("{ \"QcChecksOutput\": {");
@@ -41,7 +41,8 @@
 						ex = task.getException();
 					
 						if(ex != null){
-							out.println("\t{\"error\": \""+ ex.getMessage() +"\"},");
+							for(Throwable t: ex)
+								out.println("\t{\"error\": \""+ t.getMessage() +"\"},");
 							//	ex.printStackTrace(pw);
 							//pw.flush();
 						}else{

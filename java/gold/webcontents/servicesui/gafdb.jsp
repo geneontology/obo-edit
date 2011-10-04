@@ -82,7 +82,7 @@
 
 	<table><tr><th>Operation Name</th><th>Status/Completion Time</th></tr>
 	<% 		
-		Throwable ex = null;
+		List<Throwable> ex = null;
 		if(task != null){
 			ex = task.getException();
 			String ontology = "";
@@ -120,7 +120,7 @@
 		}
 		
 		if(ex == null){
-			ex = (Throwable)request.getAttribute("exception");
+			ex = (List<Throwable>)request.getAttribute("exception");
 		}
 		%>	
 	</table>
@@ -128,7 +128,11 @@
 	<%
 	if(ex != null){
 		PrintWriter pw = new PrintWriter(out);
-		ex.printStackTrace(pw);
+		
+		for(Throwable t: ex){
+			t.printStackTrace(pw);
+			pw.println("<br /><hr />");
+		}
 		pw.flush();
 	}
 	
