@@ -1,3 +1,5 @@
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.List"%>
 <%@page import="java.util.Vector"%>
 <%@page import="org.geneontology.gaf.hibernate.GeneAnnotation"%>
 <%@page import="java.io.PrintWriter"%>
@@ -14,15 +16,17 @@
 
 		
 		
-		Throwable ex = null;
+		List<Throwable> ex = null;
 		
 		if(task != null){
 			
 			ex = task.getException();
 		
-			if(ex != null){
+			if(ex != null && !ex.isEmpty()){
 				PrintWriter pw = new PrintWriter(out);
-				ex.printStackTrace(pw);
+				for(Throwable t: ex)
+					t.printStackTrace(pw);
+			
 				pw.flush();
 			}
 			

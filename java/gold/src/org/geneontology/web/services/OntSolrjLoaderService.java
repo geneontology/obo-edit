@@ -86,7 +86,7 @@ public class OntSolrjLoaderService extends ServiceHandlerAbstract {
 				this.addCompleted("load-ontology");
 			}catch(Exception ex){
 				LOG.error(ex.getMessage(), ex);
-				exception = ex;
+				this.exceptions.add(ex);
 			}
 			
 		}
