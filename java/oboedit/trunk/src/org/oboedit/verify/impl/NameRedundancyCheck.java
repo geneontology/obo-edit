@@ -57,7 +57,7 @@ public class NameRedundancyCheck extends AbstractCheck implements OntologyCheck 
 				if (c.size() > 1) { // More than one term has this as its name or synonym
 					StringBuffer termList = new StringBuffer();
 					Iterator<IdentifiedObject> it2 = c.iterator();
-					for (int i = 0; i < c.size(); i++) {
+					for (int i = 0; it2.hasNext(); i++) {
 						IdentifiedObject io = it2.next();
 						if (!checkObsoletes && TermUtil.isObsolete(io))
 							continue;
