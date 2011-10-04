@@ -663,7 +663,7 @@ public class OBO2Flat {
 		}
 
 		Iterator<String> its = defHash.keySet().iterator();
-		while (it.hasNext()) {
+		while (its.hasNext()) {
 			String id = its.next();
 			String def = defHash.get(id);
 			if (def != null) {
@@ -676,7 +676,7 @@ public class OBO2Flat {
 		}
 
 		Iterator<ObsoleteRecord> ito = obsHash.values().iterator();
-		while (its.hasNext()) {
+		while (ito.hasNext()) {
 			ObsoleteRecord or = ito.next();
 
 			// destroy all the obsolete holder nodes, if they exist already
