@@ -1,3 +1,4 @@
+<%@page import="java.util.List"%>
 <%@page import="java.io.PrintWriter"%>
 <%@page import="org.geneontology.web.services.Task"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
@@ -34,7 +35,7 @@
 		String status = (String)request.getAttribute("status");
 		status = status == null ? "" : status;
 		
-		Throwable ex = null;
+		List<Throwable> ex = null;
 		Task task = (Task)request.getAttribute("task");
 
 		if(task != null){
@@ -43,7 +44,8 @@
 		
 		if(ex != null){
 			PrintWriter writer = new PrintWriter(out);
-			ex.printStackTrace(writer);
+			for(Throwable t: ex)
+				t.printStackTrace(writer);
 		}
 		
 	%>

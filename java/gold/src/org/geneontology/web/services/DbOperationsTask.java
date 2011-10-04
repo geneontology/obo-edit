@@ -109,7 +109,7 @@ public class DbOperationsTask extends Task implements DbOperationsListener {
 	public void run() {
 		LOG.info("Running Db operation : " + opName);
 
-		this.exception = null;
+	//	this.exception = null;
 		running = true;
 		DbOperationsInterface db = null;
 		OWLGraphWrapper graph = null;
@@ -190,7 +190,7 @@ public class DbOperationsTask extends Task implements DbOperationsListener {
 			}
 		} catch (Exception e) {
 			running = false;
-			this.exception = e;
+			this.exceptions.add( e );
 			e.printStackTrace();
 			LOG.error("DB Operation failed " + opName, e);
 		} finally {
@@ -268,7 +268,8 @@ public class DbOperationsTask extends Task implements DbOperationsListener {
 					graph = new OWLGraphWrapper(ont);
 				} catch (Exception ex) {
 					LOG.error(ex.getMessage(), ex);
-					this.exception = ex;
+					//this.exception = ex;
+					this.exceptions.add(ex);
 				}
 			} else {
 				graph.addSupportOntology(ont);

@@ -1,3 +1,4 @@
+<%@page import="java.util.List"%>
 <%@page import="java.io.PrintWriter"%>
 <%@page import="org.geneontology.gold.rules.AnnotationRuleViolation"%>
 <%@page import="java.util.Set"%>
@@ -62,7 +63,7 @@
 
 	<table><tr><th>Operation Name</th><th>Status/Completion Time</th></tr>
 	<% 		
-		Throwable ex = null;
+		List<Throwable> ex = null;
 		if(task != null){
 			ex = task.getException();
 			String ontology = "";
@@ -91,7 +92,8 @@
 	<%
 	if(ex != null){
 		PrintWriter pw = new PrintWriter(out);
-		ex.printStackTrace(pw);
+		for(Throwable t: ex)
+			t.printStackTrace(pw);
 		pw.flush();
 	}
 	

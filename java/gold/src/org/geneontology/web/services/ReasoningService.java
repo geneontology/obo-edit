@@ -143,7 +143,8 @@ public class ReasoningService extends ServiceHandlerAbstract {
 					data = inf.performConsistencyChecks();
 				}
 			}catch(Exception ex){
-				exception = ex;
+				//exception = ex;
+				this.exceptions.add(ex);
 			}
 			this.addCompleted("processing-time");
 			
