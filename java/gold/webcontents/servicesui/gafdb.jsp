@@ -143,7 +143,7 @@
 	
 		Set<AnnotationRuleViolation> annotationRuleViolations = (Set<AnnotationRuleViolation>)request.getAttribute("violations");
 	
-		if(runAnnotationRules && ex == null){
+		if(runAnnotationRules && ( ex == null || (ex != null && ex.isEmpty()) )){
 			%>
 			
 					<script type='text/javascript'>
