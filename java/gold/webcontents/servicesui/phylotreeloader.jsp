@@ -77,7 +77,7 @@
 				if (endTime > 0) {
 					status = (float) (endTime - stTime) / 1000 + "";
 					isCompleted = true;
-				} else if (ex != null) {
+				} else if (ex != null && !ex.isEmpty()) {
 					status = "failed";
 				}
 			%>
