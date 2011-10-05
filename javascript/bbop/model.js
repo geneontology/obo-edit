@@ -24,6 +24,7 @@
 
 
 // Module and namespace checking.
+var core 
 bbop.core.require('bbop', 'core'); // not needed, but want the habit
 bbop.core.namespace('bbop', 'model');
 
