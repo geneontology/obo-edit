@@ -35,7 +35,7 @@ public class NameRedundancyCheck extends AbstractCheck implements OntologyCheck 
 				if (!checkObsoletes && TermUtil.isObsolete(io))
 					continue;
 				createMapping(nameMap, io.getName(), io);
-                                out.addAll(checkForRedundancy(session, io, condition, checkObsoletes));
+                                out.addAll(checkForRedundantSynonym(session, io, condition, checkObsoletes));
 				if (io instanceof SynonymedObject) {
 					SynonymedObject so = (SynonymedObject) io;
 					Iterator<Synonym> it2 = so.getSynonyms().iterator();
@@ -83,86 +83,34 @@ public class NameRedundancyCheck extends AbstractCheck implements OntologyCheck 
 							return out;
 					}
 				}
-                                //                                checkForRedundancy(c.last()); // ?
-                                //                                checkForRedundancy(session, (IdentifiedObject) c.last(), condition, checkObsoletes);
 			}
 		} else { // currentObject != null
 			if (!checkObsoletes && TermUtil.isObsolete(currentObject))
 				return Collections.emptyList();
-                        return checkForRedundancy(session, currentObject, condition, checkObsoletes);
+                        return checkForRedundantSynonym(session, currentObject, condition, checkObsoletes);
                 }
 		return out;
 	}
 
-	public Collection<CheckWarning> checkForRedundancy(OBOSession session, IdentifiedObject currentObject,
+	public Collection<CheckWarning> checkForRedundantSynonym(OBOSession session, IdentifiedObject currentObject,
 			byte condition, boolean checkObsoletes) {
             List<CheckWarning> out = new LinkedList<CheckWarning>();
 
             // First check if a synonym of this term is the same as the term name
-            for(Synonym s : ((SynonymedObject) currentObject).getSynonyms()) {
-                if (s.getScope() == Synonym.EXACT_SYNONYM
-                    && s.getText().equals(currentObject.getName())) {
-                    CheckWarning warning = new CheckWarning(
-                                                            "The term "
-                                                            + "<a href='file:" + currentObject.getID() + "'>"
-                                                            + currentObject.getName() + " (" + currentObject.getID()
-                                                            + "</a>) has a synonym with the identical name.",
-                                                            false, this, currentObject);
-                    //                    logger.debug("warning: " + warning);
-                    out.add(warning);
-                    if (isCancelled()
-                        || out.size() > VerificationManager.MAX_WARNINGS)
-                        return out;
-                }
-            }
-
-
-            Collection<String> names = new HashSet<String>();
             if (currentObject instanceof SynonymedObject) {
-                Iterator<Synonym> it = ((SynonymedObject) currentObject).getSynonyms().iterator();
-                while (it.hasNext()) {
-                    Synonym s = it.next();
-                    if (s.getScope() == Synonym.EXACT_SYNONYM)
-                        names.add(s.getText());
-                }
-            }
-
-            Iterator<IdentifiedObject> it = session.getObjects().iterator();
-            while (it.hasNext()) {
-                IdentifiedObject io = it.next();
-                if (io.equals(currentObject))
-                    continue;
-                if (!checkObsoletes && TermUtil.isObsolete(io))
-                    continue;
-                // Dangling objects have null names
-                String ioName = (io.getName() == null) ? "" : io.getName();
-                if (ioName.equals(currentObject.getName())) {
-                    CheckWarning warning = new CheckWarning("The term <a href='file:" + currentObject.getID() + "'>"
-                                                            + currentObject.getName() + " (" + currentObject.getID() + ")</a>"
-                                                            + " has the same name as "
-                                                            + "<a href='file:" + io.getID() + "'>"
-                                                            + io.getID() + "</a>",
-                                                            false, this, currentObject);
-                    out.add(warning);
-                    if (out.size() > VerificationManager.MAX_WARNINGS)
-                        return out;
-                }
-
-                if (io instanceof SynonymedObject) {
-                    if (names.contains(io.getName())) {
+                for(Synonym s : ((SynonymedObject) currentObject).getSynonyms()) {
+                    if (s.getScope() == Synonym.EXACT_SYNONYM
+                        && s.getText().equals(currentObject.getName())) {
                         CheckWarning warning = new CheckWarning(
-								"The synonym " + "\""
-                                                                + io.getName() + "\" of "
+                                                                "The term "
                                                                 + "<a href='file:" + currentObject.getID() + "'>"
-                                                                + currentObject.getName() + " (" + currentObject.getID() + ")</a>"
-                                                                + " is also the term name of "
-                                                                + "<a href='file:" + io.getID() + "'>"
-                                                                + io.getID() + "</a>",
-                                                                false, this,
-								currentObject);
-                        //                        logger.debug("Other warning: " + warning);
+                                                                + currentObject.getName() + " (" + currentObject.getID()
+                                                                + "</a>) has a synonym with the identical name.",
+                                                                false, this, currentObject);
+                        //                    logger.debug("warning: " + warning);
                         out.add(warning);
-                        if (out.size() > VerificationManager.MAX_WARNINGS)
+                        if (isCancelled()
+                            || out.size() > VerificationManager.MAX_WARNINGS)
                             return out;
                     }
                 }
