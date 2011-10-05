@@ -157,6 +157,15 @@ bbop.test = function(){
 	}
     };
 
+    //
+    this.is_x_greater_than_y = function(x_thing, y_thing, msg){
+	if( x_thing > y_thing ){
+	    _complete(true, msg);
+	}else{
+	    _complete(false, msg);
+	}
+    };
+
     // Try and see if two links are functionally equivalent.
     this.is_same_url = function(link1, link2, msg){
 	_complete(_link_comp(link1, link2), msg);
