@@ -6,6 +6,7 @@ What's New in OBO-Edit v2.1-rc2
 
 [ geneontology-Bugs-3418128 ] namespace manager not saving new namespace
 
+[ geneontology-Bugs-3419113 ] Name Redundancy check very slow in 2.1-b19
 
 
 ==============================================
