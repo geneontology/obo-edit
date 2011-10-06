@@ -1,0 +1,2 @@
+You need to create a link from hibernate.cfg.xml in this directory to a
+hibernate.cfg.xml file in the site/ directory.
