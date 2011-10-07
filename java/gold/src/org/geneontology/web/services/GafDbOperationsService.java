@@ -378,6 +378,8 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 					.validateAnnotations(doc);
 
 			annotationRuleViolations.addAll(violations);
+			
+			LOG.info("Annotation Checks are completed.");
 
 		}
 

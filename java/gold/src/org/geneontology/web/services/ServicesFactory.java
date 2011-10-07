@@ -1,7 +1,5 @@
 package org.geneontology.web.services;
 
-import java.util.Hashtable;
-
 /**
  * This factory object builds services (instanceof {@link ServiceHandler}) objects.
  * @author Shahid Manzoor
@@ -39,6 +37,8 @@ public class ServicesFactory {
 			return reasoningService;
 		}else if(PhyloTreeLoaderService.SERVICE_NAME.equals(name)){
 			return new PhyloTreeLoaderService();
+		}else if(LoginService.SERVICE_NAME.equals(name)){
+			return new LoginService();
 		}
 		
 		return null;

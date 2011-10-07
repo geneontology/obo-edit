@@ -157,49 +157,79 @@ public class AdminServlet extends HttpServlet {
 			HttpServletResponse response)
 			throws ServletException, IOException {
 
-		HttpSession session = request.getSession(true);
-		//servicesCache.flush();
-	//	System.out.println("cache..........................."+servicesCache.getKeys());
+//		String url = request.getRequestURL().toString();
 		
-		InitializationService initHandler =(InitializationService) ServicesFactory.getInstance().createServiceHandler(InitializationService.SERVICE_NAME);
-		initHandler.handleService(request, response);
-		String view = initHandler.getViewPath();
-		String id = request.getParameter("id");
-		ServiceHandler handler = null;
-		if(initHandler.isInitialized()){
-			//get the service name from the parameter
-			String servicename= request.getParameter("servicename");
+		//System.out.println(url.substring(0, url.indexOf(request.getContextPath())  ));
+		
+	//	System.out.println(request.getServerName()+":" + request.getLocalPort());
+		
+		LoginService loginService =(LoginService) ServicesFactory.getInstance().createServiceHandler(LoginService.SERVICE_NAME);
+		
+		loginService.handleService(request, response);
+		
+		String view = "/servicesui/index.jsp";
+
+		String path =request.getRequestURI();
+		
+		path= path.substring(request.getContextPath().length());
+		
+		if(path.length()>1){
+			if(!path.startsWith("/"))
+				path = "/" + path;
 			
-			String error = null;
-			
-			if(servicename == null){
-				error = "servicename parameter is missing in the parameter";
-			}else if(id != null && servicesCache.get(id) == null){
-					error = "The service session id '" + id + "' is expired. Please call this service wihout id parameter to run a new task.";
-			}else if(id != null){
-				handler =  servicesCache.get(id);
-			}else{
-				handler = ServicesFactory.getInstance().createServiceHandler(servicename);
-				if(handler == null){
-					error = "The service '"+ servicename + "' is not supported by the server";
-				}else{
-					servicesCache.put(session.getId(), handler);
-				}
-			}
-			
-			//find the service object
-			if(handler != null){
-				handler.handleService(request, response);
-				view = handler.getViewPath();
-			}
-			
-			if(error != null){
-				view = "/servicesui/error.jsp";
-				request.setAttribute("error", error);
-			}
+			view = "/servicesui" +path;
 		}
 		
-			
+		
+		
+		String servicename= request.getParameter("servicename");
+		
+		if(loginService.isLoggedIn() && servicename !=null){
+		
+			InitializationService initHandler =(InitializationService) ServicesFactory.getInstance().createServiceHandler(InitializationService.SERVICE_NAME);
+			initHandler.handleService(request, response);
+			view = initHandler.getViewPath();
+			String id = request.getParameter("id");
+			ServiceHandler handler = null;
+			if(initHandler.isInitialized()){
+				HttpSession session = request.getSession(true);
+	
+				//get the service name from the parameter
+				
+				String error = null;
+				
+				if(servicename == null){
+					error = "servicename parameter is missing in the parameter";
+				}else if(id != null && servicesCache.get(id) == null){
+						error = "The service session id '" + id + "' is expired. Please call this service wihout id parameter to run a new task.";
+				}else if(id != null){
+					handler =  servicesCache.get(id);
+				}else{
+					handler = ServicesFactory.getInstance().createServiceHandler(servicename);
+					if(handler == null){
+						error = "The service '"+ servicename + "' is not supported by the server";
+					}else{
+						servicesCache.put(session.getId(), handler);
+					}
+				}
+				
+				//find the service object
+				if(handler != null){
+					handler.handleService(request, response);
+					view = handler.getViewPath();
+				}
+				
+				if(error != null){
+					view = "/servicesui/error.jsp";
+					request.setAttribute("error", error);
+				}
+			}
+		}else if(!loginService.isLoggedIn()){
+			view = loginService.getViewPath();
+		}
+		
+		System.out.println(view);
+		
 		//forwarding the request to a jsp file reffered in the 'view' variable
 		if(view != null){
 			ServletContext context = getServletContext().getContext("/");
