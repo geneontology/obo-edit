@@ -108,6 +108,8 @@ public class CheckWarningComponent extends JEditorPane {
 					int index = Integer.parseInt(path.substring(14, path
 							.length()));
 //					logger.info("path = " + path + ", index = " + index + ", num warnings = " + warnings.size()); // DEL
+					if (index > warnings.size())
+					    return;
 					CheckWarning warning = warnings.get(index);
 					JPopupMenu menu = new JPopupMenu();
 					Iterator<QuickFix> it = warning.getFixes().iterator();
@@ -169,7 +171,7 @@ public class CheckWarningComponent extends JEditorPane {
 				Iterator<CheckWarning> it = warnings.iterator();
 				while (it.hasNext()) {
 					CheckWarning warning = it.next();
-					if (warning.getSource().equals(source)) {
+					if (warning.getSource() != null && warning.getSource().equals(source)) {
 						it.remove();
 					}
 				}
