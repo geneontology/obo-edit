@@ -4,6 +4,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.geneontology.gold.io.postgres.SchemaManager;
@@ -25,11 +26,32 @@ public class InitializationService extends ServiceHandlerAbstract {
 	
 	private Task runner;
 	
+	
+	
 //	@Override
 	public void handleService(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
 
-		this.viewPath = "/index.html";
+		/*HttpSession session = request.getSession(true);
+
+		Object userId = session.getAttribute("userid");
+		String assertion = request.getParameter("assertion");
+		//user is not logged-in uet
+		if(userId == null){
+			if(assertion == null){
+				this.viewPath = "/servicesui/login.jsp";
+				return;
+			}else{
+				if(authenticateUser(assertion, request.getRequestURL().toString())){
+					session.setAttribute("userid", assertion);
+				}else{
+					this.viewPath = "/servicesui/login.jsp";
+					return;
+				}
+			}
+		}*/
+		
+		this.viewPath = "/servicesui/index.jsp";
 		
 		if(this.isInitialized){
 			return;
@@ -77,6 +99,12 @@ public class InitializationService extends ServiceHandlerAbstract {
 	public String getViewPath(){
 		return this.viewPath;
 	}
+	
+	
+/*	private boolean authenticateUser(String assertion, String hostAddress){
+		return false;
+	}
+*/	
 	
 	/**
 	 * Thread runs in background to load schema into the database
