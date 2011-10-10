@@ -1,6 +1,9 @@
 ####
 #### Testing and benchmarking for serverable/CLI JS.
 ####
+#### A report-mistakes-only testing run can be done as:
+####   make test | grep FAIL
+####
 
 TESTS = $(wildcard *.js.tests) \
  $(wildcard bbop/*.js.tests) \
