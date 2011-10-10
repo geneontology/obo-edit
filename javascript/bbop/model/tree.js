@@ -19,8 +19,15 @@
 
 // Module and namespace checking.
 bbop.core.require('bbop', 'core');
+bbop.core.require('bbop', 'logger');
 bbop.core.require('bbop', 'model');
 bbop.core.namespace('bbop', 'model', 'tree');
+
+
+// TODO: remove later...or something...
+bbop.model.tree.logger = new bbop.logger();
+bbop.model.tree.logger.DEBUG = true;
+var _kvetch = bbop.model.tree.logger.kvetch;
 
 
 // Same same.
@@ -52,9 +59,6 @@ bbop.model.tree.edge.prototype.clone = function(){
 ///  Graph sub-object.
 ///
 
-bbop.core.DEBUG = true;
-
-
 // Needs somemore functionality...
 bbop.model.tree.graph = function(){
     bbop.model.graph.call(this);
@@ -72,7 +76,7 @@ bbop.model.tree.graph = function(){
 	}else if( a.id > b.id ){
 	    sort_val = 1;
 	}
-	//bbop.core.kvetch('sort: ' + a.id + ' <?> ' + b.id + ' = ' + sort_val);
+	//_kvetch('sort: ' + a.id + ' <?> ' + b.id + ' = ' + sort_val);
 	return sort_val;
     };
 
@@ -89,7 +93,7 @@ bbop.model.tree.graph = function(){
     function info_up(node_id){
 	
 	var nid = node_id;
-	bbop.core.kvetch("info_up: working on: " + nid);
+	_kvetch("info_up: working on: " + nid);
 
 	// Node bookkeeping.
 	if( ! node_hash[nid] ){
@@ -108,11 +112,11 @@ bbop.model.tree.graph = function(){
 	    if( ! edge_hash[edge_uid] ){
 		edge_hash[edge_uid] = true;
 		edge_list.push([pid, node_id]);
-		bbop.core.kvetch('info_up: indexing: ' + edge_uid);
+		_kvetch('info_up: indexing: ' + edge_uid);
 	    }
 
 	    // Add new data to globals.
-	    bbop.core.kvetch(" info_up: seems to have parent: " + pid);
+	    _kvetch(" info_up: seems to have parent: " + pid);
 	    if( ! all_dists_parent[pid]){
 		all_dists_parent[pid] = {};
 	    }
@@ -163,7 +167,7 @@ bbop.model.tree.graph = function(){
 	if( ! parent_node_id ){ parent_node_id = null; }
 
 	var in_node_id = in_node.id();
-	bbop.core.kvetch(' bracket_down: ' + in_node_id);
+	_kvetch(' bracket_down: ' + in_node_id);
 
 	// 
 	var child_bracket = new Array();
@@ -171,7 +175,7 @@ bbop.model.tree.graph = function(){
 	for( var cb = 0; cb < child_nodes.length; cb++ ){
 	    var child_node = child_nodes[cb];
 	    child_node_id = child_node.id();
-	    bbop.core.kvetch('  bracket_down: pushing: ' + child_node_id);
+	    _kvetch('  bracket_down: pushing: ' + child_node_id);
 	    child_bracket.push(bracket_down(child_node, lvl + 1, in_node_id));
 	}
 
@@ -182,7 +186,7 @@ bbop.model.tree.graph = function(){
 	if( lvl > max_depth ){ max_depth = lvl;	}
 
 	//
-	bbop.core.kvetch(' bracket_down: found kids: ' + child_bracket.length);
+	_kvetch(' bracket_down: found kids: ' + child_bracket.length);
 	return {
 	    id: in_node_id,
 	    routing_node: false,
@@ -212,7 +216,7 @@ bbop.model.tree.graph = function(){
 	// brackets to some function.
 	var base_nodes = anchor.get_root_nodes();
 	for( var bb = 0; bb < base_nodes.length; bb++ ){
-	    bbop.core.kvetch('bracket_down: start: ' +
+	    _kvetch('bracket_down: start: ' +
 			     base_nodes[bb].id());
 	    brackets.push(bracket_down(base_nodes[bb]));
 	}
@@ -243,10 +247,10 @@ bbop.model.tree.graph = function(){
 
 		//
 		if( item.brackets.length == 0 && item.level < max_depth ){
-		    bbop.core.kvetch(' add_routing: dangle: ' + item.id);
+		    _kvetch(' add_routing: dangle: ' + item.id);
 		    dangle_routing(item);
 		}else if( item.brackets.length != 0 ){
-		    bbop.core.kvetch(' add_routing: descend: ' + item.id);
+		    _kvetch(' add_routing: descend: ' + item.id);
 		    add_routing(item.brackets);
 		}
 	    }
@@ -265,12 +269,12 @@ bbop.model.tree.graph = function(){
 	    for( var i = 0; i < in_brackets.length; i++ ){
 		var bracket_item = in_brackets[i];
 		//
-		bbop.core.kvetch(' order_cohort: i: ' + i);
-		bbop.core.kvetch(' order_cohort: lvl: ' + bracket_item.level);
+		_kvetch(' order_cohort: i: ' + i);
+		_kvetch(' order_cohort: lvl: ' + bracket_item.level);
 		cohort_list[bracket_item.level - 1].push(bracket_item);
 		// Drill down.
 		if( bracket_item.brackets.length > 0 ){
-		    bbop.core.kvetch(' order_cohort: down: ' +
+		    _kvetch(' order_cohort: down: ' +
 				     bracket_item.brackets.length);
 		    order_cohort(bracket_item.brackets);
 		}
@@ -295,26 +299,26 @@ bbop.model.tree.graph = function(){
 	// the final cohort.
 	var position_y = {};
 	var final_cohort = cohort_list[(max_depth - 1)];
-	bbop.core.kvetch('look at final cohort: ' + (max_depth - 1));
+	_kvetch('look at final cohort: ' + (max_depth - 1));
 	for( var j = 0; j < final_cohort.length; j++ ){
 	    var item = final_cohort[j];
 	    //var local_shift = j + 1.0; // correct, but shifts too far down
 	    var local_shift = j + 0.0;
 	    position_y[item.id] = local_shift;
-	    bbop.core.kvetch('position_y: ' + item.id + ', ' + local_shift);
+	    _kvetch('position_y: ' + item.id + ', ' + local_shift);
 	}
 	// Walk backwards through the remaining cohorts to find the best Y
 	// positions.
 	for( var i = cohort_list.length - 1; i > 0; i-- ){
 	    //
 	    var cohort = cohort_list[i - 1];
-	    bbop.core.kvetch('look at cohort: ' + (i - 1));
+	    _kvetch('look at cohort: ' + (i - 1));
 	    for( var j = 0; j < cohort.length; j++ ){
 		var item = cohort[j];
 
 		// Deeper placements always take precedence.
 		if( position_y[item.id] != undefined ){
-		    bbop.core.kvetch('position_y (old): '+ item.id);
+		    _kvetch('position_y (old): '+ item.id);
 		}else{
 
 		    // If you have one parent, they have the same Y as you.
@@ -331,12 +335,12 @@ bbop.model.tree.graph = function(){
 			var node = c_nodes[ci];
 			position_acc = position_acc + position_y[node.id()];
 		    }
-		    // bbop.core.kvetch(' position_acc: ' + position_acc);
-		    // bbop.core.kvetch(' c_nodes: ' + c_nodes);
-		    // bbop.core.kvetch(' c_nodes.length: ' + c_nodes.length);
+		    // _kvetch(' position_acc: ' + position_acc);
+		    // _kvetch(' c_nodes: ' + c_nodes);
+		    // _kvetch(' c_nodes.length: ' + c_nodes.length);
 		    var avg = position_acc / (c_nodes.length * 1.0);
 		    position_y[item.id] = avg;
-		    bbop.core.kvetch('position_y (new): '+ item.id +', '+ avg);
+		    _kvetch('position_y (new): '+ item.id +', '+ avg);
 		}
 	    }
 	}
@@ -349,7 +353,7 @@ bbop.model.tree.graph = function(){
 
 	    var root_id = roots[r].id();
 	    position_x[root_id] = x_offset;
-	    bbop.core.kvetch('position_x:: ' + root_id + ', '
+	    _kvetch('position_x:: ' + root_id + ', '
 			     + position_x[root_id]);
     
 	    if( item.routing_node == false ){
@@ -357,7 +361,7 @@ bbop.model.tree.graph = function(){
 		for( var nid in all_dists_parent[root_id] ){
 		    var dist = all_dists_parent[root_id][nid] + x_offset;
 		    position_x[nid] = dist;
-		    bbop.core.kvetch('position_x:: ' + nid + ', ' + dist);
+		    _kvetch('position_x:: ' + nid + ', ' + dist);
 		}
 	    }
 	}
@@ -383,7 +387,7 @@ bbop.model.tree.graph = function(){
     	for( var i = 0; i < cohort_list.length; i++ ){
     	    for( var j = 0; j < cohort_list[i].length; j++ ){
     		var item = cohort_list[i][j];
-    		bbop.core.kvetch(item.id + ' ' + i + ':' + j +
+    		_kvetch(item.id + ' ' + i + ':' + j +
 				 ', ' + item.routing_node);
     	    }
     	}
@@ -391,7 +395,7 @@ bbop.model.tree.graph = function(){
 
     this.dump_dist = function(in_arg){
 
-	bbop.core.kvetch(' in ');
+	_kvetch(' in ');
 
 	// Argument selection.
 	var dists = all_dists_parent;
@@ -402,7 +406,7 @@ bbop.model.tree.graph = function(){
 	// Dump selected dist.
 	for( var n_id in dists ){
 	    for( var k_id in dists[n_id] ){
-		bbop.core.kvetch(n_id +' : '+ k_id +' => '+ dists[n_id][k_id]);
+		_kvetch(n_id +' : '+ k_id +' => '+ dists[n_id][k_id]);
 	    }
 	}
     };
@@ -419,7 +423,7 @@ bbop.model.tree.graph = function(){
 	    var pid = '(null)';
 	    if( brack[i].parent_id ){ pid = brack[i].parent_id; }
 
-	    bbop.core.kvetch('id: ' + brack[i].id +
+	    _kvetch('id: ' + brack[i].id +
 			     ', parent: ' + pid +
 			     ', level: ' + brack[i].level);
 	    this.dump_brackets(brack[i].brackets);
