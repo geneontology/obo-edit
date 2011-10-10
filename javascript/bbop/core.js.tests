@@ -29,7 +29,33 @@ mr_t.is_defined(happy.bar, "made namespace");
 happy.bar.prop = true;
 mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
 
+// Array iterator.
+(function(){
+    var sum_val = 0;
+    var sum_i = 0;
+    var sum_array = [1, 2, 3];
+    function sum_add(in_num, in_index){
+	sum_val = sum_val + in_num;
+	sum_i = in_index;
+    }
+    bbop.core.each(sum_array, sum_add);
+    mr_t.is_same_atom(6, sum_val, "iterated value");
+    mr_t.is_same_atom(2, sum_i, "iterated index");
+})();
 
+// Hash iterator.
+(function(){
+    var sum_val = 0;
+    var sum_s = '';
+    var sum_hash = {'dog': 2, 'cat': 4, 'cow': 6};
+    function sum_add(in_key, in_val){
+	sum_val = sum_val + in_val;
+	sum_s = sum_s + in_key;
+    }
+    bbop.core.each(sum_hash, sum_add);
+    mr_t.is_same_atom(9, sum_s.length, "iterated key");
+    mr_t.is_same_atom(12, sum_val, "iterated value");
+})();
 
 ///
 /// End unit testing.

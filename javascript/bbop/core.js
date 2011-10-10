@@ -124,6 +124,32 @@ bbop.core.get_hash_keys = function get_hash_keys (arg_hash){
     return out_keys;
 };
 
+// Implement a simple iterator so I don't go mad.
+// (@Array|@Object)/@Function
+// @Array: function(item, index)
+// @Object: function(key, value)
+bbop.core.each = function(in_thing, in_function){
+
+    // Probably an not array then.
+    if( typeof(in_thing) != 'object' ){
+	throw new Error('unsupported type in each');
+    }else{
+	// Probably a hash, otherwise likely an array.
+	if( typeof(in_thing).length == 'undefined' ){
+	    var hkeys = bbop.core.get_hash_keys(in_thing);
+	    for( var ihk = 0; ihk < hkeys.length; ihk++ ){
+		var ikey = hkeys[ihk];
+		var ival = in_thing[ikey];
+		in_function(ikey, ival);
+	    }
+	}else{
+	    for( var iai = 0; iai < in_thing.length; iai++ ){
+		in_function(in_thing[iai], iai);
+	    }
+	}
+    }
+};
+
 // @Object?
 // Clone an object down to its atoms.
 bbop.core.clone = function(thing){
