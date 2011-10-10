@@ -29,7 +29,7 @@ mr_t.is_defined(happy.bar, "made namespace");
 happy.bar.prop = true;
 mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
 
-// Array iterator.
+// each: array iterator.
 (function(){
     var sum_val = 0;
     var sum_i = 0;
@@ -43,7 +43,7 @@ mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
     mr_t.is_same_atom(2, sum_i, "iterated index");
 })();
 
-// Hash iterator.
+// each: hash iterator.
 (function(){
     var sum_val = 0;
     var sum_s = '';
@@ -55,6 +55,80 @@ mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
     bbop.core.each(sum_hash, sum_add);
     mr_t.is_same_atom(9, sum_s.length, "iterated key");
     mr_t.is_same_atom(12, sum_val, "iterated value");
+})();
+
+// get_keys.
+(function(){
+
+    var hash1 = {'foo': 3};
+    var keys1 = bbop.core.get_keys(hash1);
+    mr_t.is_same_atom(1, keys1.length, "got keys1 len");
+    mr_t.is_same_atom('foo', keys1[0], "got keys1 str 0");
+
+    var hash2 = {'foo': 3, 'bar': 4};
+    var keys2 = bbop.core.get_keys(hash2);
+    keys2.sort();
+    mr_t.is_same_atom(2, keys2.length, "got keys2 len");
+    mr_t.is_same_atom('bar', keys2[0], "got keys2 str 0");
+    mr_t.is_same_atom('foo', keys2[1], "got keys2 str 1");
+})();
+
+// is_array.
+(function(){
+    var t1 = 1;
+    var t2 = 'moo';
+    var t3 = [];
+    var t4 = {};
+    var t5 = ['moo'];
+    var t6 = {'cow': 'moo'};
+    var t7 = function(){ return true; };
+
+    mr_t.is_false(bbop.core.is_array(t1), "correctly is_array t1");
+    mr_t.is_false(bbop.core.is_array(t2), "correctly is_array t2");
+    mr_t.is_true(bbop.core.is_array(t3), "correctly is_array t3");
+    mr_t.is_false(bbop.core.is_array(t4), "correctly is_array t4");
+    mr_t.is_true(bbop.core.is_array(t5), "correctly is_array t5");
+    mr_t.is_false(bbop.core.is_array(t6), "correctly is_array t6");
+    mr_t.is_false(bbop.core.is_array(t7), "correctly is_array t7");
+})();
+
+// is_hash.
+(function(){
+    var t1 = 1;
+    var t2 = 'moo';
+    var t3 = [];
+    var t4 = {};
+    var t5 = ['moo'];
+    var t6 = {'cow': 'moo'};
+    var t7 = function(){ return true; };
+
+    mr_t.is_false(bbop.core.is_hash(t1), "correctly is_hash t1");
+    mr_t.is_false(bbop.core.is_hash(t2), "correctly is_hash t2");
+    mr_t.is_false(bbop.core.is_hash(t3), "correctly is_hash t3");
+    // ...?
+    mr_t.is_true(bbop.core.is_hash(t4), "correctly is_hash t4");
+    mr_t.is_false(bbop.core.is_hash(t5), "correctly is_hash t5");
+    mr_t.is_true(bbop.core.is_hash(t6), "correctly is_hash t6");
+    mr_t.is_false(bbop.core.is_hash(t7), "correctly is_hash t7");
+})();
+
+// is_empty.
+(function(){
+    var t1 = 1;
+    var t2 = 'moo';
+    var t3 = [];
+    var t4 = {};
+    var t5 = ['moo'];
+    var t6 = {'cow': 'moo'};
+    var t7 = function(){ return true; };
+
+    mr_t.is_false(bbop.core.is_empty(t1), "correctly empty t1");
+    mr_t.is_false(bbop.core.is_empty(t2), "correctly empty t2");
+    mr_t.is_true(bbop.core.is_empty(t3), "correctly empty t3");
+    mr_t.is_true(bbop.core.is_empty(t4), "correctly empty t4");
+    mr_t.is_false(bbop.core.is_empty(t5), "correctly empty t5");
+    mr_t.is_false(bbop.core.is_empty(t6), "correctly empty t6");
+    mr_t.is_false(bbop.core.is_empty(t7), "correctly empty t7");
 })();
 
 ///

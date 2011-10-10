@@ -14,6 +14,7 @@ var mr_t = new bbop.test();
 
 // Correct environment.
 load('../core.js');
+load('../logger.js');
 load('../model.js');
 load('tree.js');
 

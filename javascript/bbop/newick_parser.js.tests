@@ -14,7 +14,7 @@ var mr_t = new bbop.test();
 // Correct environment.
 load('core.js');
 load('newick_parser.js');
-load('../_data/panther-newick.js');
+//load('../_data/panther-newick.js');
 //load('model.js');
 
 ///
@@ -28,12 +28,12 @@ load('../_data/panther-newick.js');
     var np = new bbop.parser.newick();
 
     // Minimal.
-    mr_t.is_defined(np, 'at least this would be nice');
-    mr_t.is_defined(panther_test_01, 'small data is there');
-    mr_t.is_defined(panther_test_02, 'big data is there');
+    //mr_t.is_defined(np, 'at least this would be nice');
+    //mr_t.is_defined(panther_test_01, 'small data is there');
+    //mr_t.is_defined(panther_test_02, 'big data is there');
 
     // Can create a token stream.
-    var token_stream = np.tokenize(panther_test_01);
+    //var token_stream = np.tokenize(panther_test_01);
     //mr_t.is_x_greater_than_y(token_stream.length, 0 , "doesn't look crazy");
 
 

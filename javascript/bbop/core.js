@@ -110,8 +110,8 @@ bbop.core.merge = function(default_hash, arg_hash){
 };
 
 // @Object?
-// Get the hash keys from a hash.
-bbop.core.get_hash_keys = function get_hash_keys (arg_hash){
+// Get the hash keys from a hash/object, return as an array.
+bbop.core.get_keys = function get_keys (arg_hash){
 
     if( ! arg_hash ){ arg_hash = {}; }
     var out_keys = [];
@@ -124,10 +124,57 @@ bbop.core.get_hash_keys = function get_hash_keys (arg_hash){
     return out_keys;
 };
 
-// Implement a simple iterator so I don't go mad.
+// @Object
+// Return the best guess (true/false) for whether ot not a given object is 
+// being used as an array.
+bbop.core.is_array = function(in_thing){
+    var retval = false;
+    if( typeof(in_thing) == 'object' &&
+	typeof(in_thing.push) == 'function' &&
+	typeof(in_thing.length) == 'number' ){
+	retval = true;
+    }
+    return retval;
+};
+
+// @Object
+// Return the best guess (true/false) for whether ot not a given object is 
+// being used as a hash.
+bbop.core.is_hash = function(in_thing){
+    var retval = false;
+    if( typeof(in_thing) == 'object' &&
+	(! bbop.core.is_array(in_thing)) ){
+	retval = true;
+    }
+    return retval;
+};
+
+// @Object
+// Return true/false on whether or not the object in question has any
+// items of interest.
+bbop.core.is_empty = function(in_thing){
+    var retval = false;
+    if( bbop.core.is_array(in_thing) ){
+	if( in_thing.length == 0 ){
+	    retval = true;
+	}
+    }else if( bbop.core.is_hash(in_thing) ){
+	var in_hash_keys = bbop.core.get_keys(in_thing);
+	if( in_hash_keys.length == 0 ){
+	    retval = true;
+	}
+    }else{
+	// TODO: don't know about this case yet...
+	//throw new Error('unsupported type in is_empty');	
+	retval = false;
+    }
+    return retval;
+};
+
 // (@Array|@Object)/@Function
 // @Array: function(item, index)
 // @Object: function(key, value)
+// Implement a simple iterator so I don't go mad.
 bbop.core.each = function(in_thing, in_function){
 
     // Probably an not array then.
@@ -136,7 +183,7 @@ bbop.core.each = function(in_thing, in_function){
     }else{
 	// Probably a hash, otherwise likely an array.
 	if( typeof(in_thing).length == 'undefined' ){
-	    var hkeys = bbop.core.get_hash_keys(in_thing);
+	    var hkeys = bbop.core.get_keys(in_thing);
 	    for( var ihk = 0; ihk < hkeys.length; ihk++ ){
 		var ikey = hkeys[ihk];
 		var ival = in_thing[ikey];

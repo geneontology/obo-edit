@@ -158,6 +158,15 @@ bbop.test = function(){
     };
 
     //
+    this.is_false = function(bool, msg){
+	if( bool == false ){
+	    _complete(true, msg);
+	}else{
+	    _complete(false, msg);
+	}
+    };
+
+    //
     this.is_x_greater_than_y = function(x_thing, y_thing, msg){
 	if( x_thing > y_thing ){
 	    _complete(true, msg);
