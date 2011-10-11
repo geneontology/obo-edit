@@ -1,17 +1,18 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
-=================================
-What's New in OBO-Edit v2.1-rc2
-=================================
+==============================
+What's New in OBO-Edit v2.1-rc1 (10/11/2011)
+==============================
 
+Fixed:
 [ geneontology-Bugs-3418128 ] namespace manager not saving new namespace
-
 [ geneontology-Bugs-3419113 ] Name Redundancy check very slow in 2.1-b19
+Prevented exceptions that were keeping some quick-fixex from working.
 
 
-==============================================
+================================
 What's New in OBO-Edit v2.1-beta19 (9/29/2011)
-===============================================
+================================
 
 [ geneontology-Bugs-3388601 ] obo2obo no longer prints status messages to stdout
 (obo2obo and the other command-line utilities now do their own logger
