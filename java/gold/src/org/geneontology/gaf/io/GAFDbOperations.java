@@ -874,7 +874,7 @@ public class GAFDbOperations{
 			
 			while(rs.next()){
 				stmt = connection.createStatement();
-				stmt.execute("delete from bioentity where id='"+rs.getString("id"));
+				stmt.execute("delete from bioentity where id='"+rs.getString("id")+"'");
 			}
 
 			stmt = connection.createStatement();
