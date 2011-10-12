@@ -174,7 +174,7 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 				
 				GUIManager.getManager().fireUserEvent(
 						new AbstractDbxrefEditorComponent.DbxrefUpdateEvent(this,
-								(isDef ? "gui.xref.def.add"
+								(isDef ? "gui.dbxref.def.add"
 										: "gui.xref.general.add"), 
 										refs.toArray(new Dbxref[0])));
 			}
@@ -187,7 +187,7 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 		else
 			GUIManager.getManager().fireUserEvent(
 					new AbstractDbxrefEditorComponent.DbxrefUpdateEvent(this,
-							(isDef ? "gui.xref.def.add"
+							(isDef ? "gui.dbxref.def.add"
 									: "gui.xref.general.add"), 
 									refs.toArray(new Dbxref[0])));
 	}
