@@ -351,13 +351,12 @@ FieldCheck {
 	}
 
 	protected static void writeWordSet(Collection<String> words, String filename) {
-		//logger.debug("words = " + words.toString());
+	    //		logger.debug("writeWordSet: words = " + words.toString());
 		StringBuffer buf = new StringBuffer();
 		Iterator<String> it = words.iterator();
-		//logger.debug("writeWordSet: it = " + it.toString());
+		// logger.debug("writeWordSet: it = " + it.toString());
 		while (it.hasNext()) {
-			buf.append(it.next()).append("%n");
-
+			buf.append(it.next()).append("\n");
 		}
                 //		logger.debug("writeWordSet: filename = " + filename);
 		writeWordSet(buf.toString(), filename);
@@ -770,6 +769,7 @@ FieldCheck {
 									"Add \"" + word
 									+ "\" to legally repeatable words") {
 								public void run() {
+								    logger.debug("Adding word to allowed repeats: " + word);
 									getAllowedRepeats().add(word);
 
 									flushWordSets();
@@ -807,6 +807,7 @@ FieldCheck {
 								+ "\" to user-defined dictionary") {
 
 							public void run() {
+							    logger.debug("Adding word to user-defined dictionary: " + arg0.getInvalidWord());
 								getSpellChecker().addToDictionary(
 										arg0.getInvalidWord());
 								// Add this word to the user defined dictionary: user.dict
@@ -1041,6 +1042,7 @@ FieldCheck {
 								"Add \"" + firstSentenceWord
 								+ "\" to legal always-lowercase words") {
 							public void run() {
+							    logger.debug("Adding word to legal lowercase words: " + firstSentenceWord);
 								getAlwaysLowercaseWords()
 								.add(firstSentenceWord);
 								flushWordSets();
