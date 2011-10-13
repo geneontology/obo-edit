@@ -55,7 +55,11 @@ public class TsvFileLoader {
 		
 		String table = file.getName().substring(0, file.getName().indexOf('.'));
 		
-		copyManager.copyIn("COPY "+ table + " FROM STDIN WITH DELIMITER AS '\t'", new FileInputStream(file));
+		try{
+			copyManager.copyIn("COPY "+ table + " FROM STDIN WITH DELIMITER AS '\t'", new FileInputStream(file));
+		}catch(Exception ex){
+			throw new IOException("Cannot copy the " +  file.getAbsolutePath() + "' into database", ex);
+		}
 	}
 	
 	
