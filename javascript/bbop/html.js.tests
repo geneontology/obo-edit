@@ -1,0 +1,130 @@
+////
+//// Some unit testing for html.js
+////
+//// Usage:
+////    Command line: "js -f html.tests.js"
+////    Interactive: "js -f html.tests.js -f -"
+////
+
+
+// Load testing.
+load('test.js');
+var mr_t = new bbop.test();
+
+// Correct environment.
+load('core.js');
+load('logger.js');
+load('html.js');
+
+///
+/// "Type checker" to enforce "interfaces" during testing.
+///
+
+mr_t.is_true(bbop.core.has_interface(bbop.html, 'output'),
+	     'supplies output');
+mr_t.is_true(bbop.core.has_interface(bbop.html, 'add_child'),
+	     'supplies add_child');
+mr_t.is_true(bbop.core.has_interface(bbop.html, 'empty'),
+	     'supplies empty');
+
+///
+/// Start unit testing.
+///
+
+//
+(function(){
+     var t1 = new bbop.html.tag('div');
+     mr_t.is_same_atom(t1.output(), '<div></div>', "same div");
+
+     var t2 = new bbop.html.tag('div', {foo: "bar"});
+     mr_t.is_same_atom(t2.output(), '<div foo="bar"></div>', "same div attr");
+
+     var t3 = new bbop.html.tag('div', {bar: "bib"});
+     t3.add_child(t2);
+     mr_t.is_same_atom(t3.output(),
+		       '<div bar="bib"><div foo="bar"></div></div>',
+		       "same div compound");
+
+     t3.empty();
+     mr_t.is_same_atom(t3.output(),
+		       '<div bar="bib"></div>',
+		       "div emptied");
+ })();
+
+//
+(function(){
+
+     var t1 = new bbop.html.tag('div', {foo: "bar"},
+				new bbop.html.tag('span', {'class': 'red'},
+						  ['foo', 'bar']));
+     mr_t.is_same_atom(t1.output(),
+		       '<div foo="bar"><span class="red">foobar</span></div>',
+		       "same hard div attr");
+     
+     t1.add_child(new bbop.html.tag('p', {}, 'happy'));
+     mr_t.is_same_atom(t1.output(),
+		       '<div foo="bar"><span class="red">foobar' +
+		       '</span><p>happy</p></div>',
+		       "same hard div attr 2");
+})();
+
+(function(){
+     var a0 = new bbop.html.accordion([]);
+     mr_t.is_same_atom(a0.output(), '<div></div>', 'nil accordion');
+
+     var a1 = new bbop.html.accordion([['foo', 'bar']],
+				      {id: 'test-accordion'});
+     mr_t.is_same_atom(a1.output(),
+		       '<div id="test-accordion"><h3><a href="#">foo</a>' + 
+		       '</h3><div><p>bar</p></div></div>',
+		       'simple accordion');
+
+     var t2 = new bbop.html.tag('div', {foo: "bar"}, 'bib');
+     var a2 = new bbop.html.accordion([['foo1', 'yay!'], ['foo2', t2]],
+				      {id: 'test-accordion'});
+     mr_t.is_same_atom(a2.output(),
+		       '<div id="test-accordion"><h3><a href="#">foo1</a>' + 
+		       '</h3><div><p>yay!</p></div><h3><a href="#">foo2</a>' +
+		       '</h3><div><p><div foo="bar">bib</div></p></div></div>',
+		       'harder accordion');
+ })();
+
+
+var a3 = new bbop.html.accordion([], {id: 'test-a'});
+var d3 = new bbop.html.tag('div');
+var p3 = new bbop.html.tag('p', {}, 'foo');
+d3.add_child(p3);
+a3.add_child('test-b', d3);
+
+
+//
+(function(){
+
+     var l1 = new bbop.html.list(['foo', 'bar'], {id: 'test-list'});
+     mr_t.is_same_atom(l1.output(),
+		       '<ul id="test-list"><li>foo</li><li>bar</li></ul>',
+		       "check list 1");
+
+     var l2 = new bbop.html.list([], {id: 'test-list'});
+     l2.add_child('foo');
+     l2.add_child('bar');
+     mr_t.is_same_atom(l2.output(),
+		       '<ul id="test-list"><li>foo</li><li>bar</li></ul>',
+		       "check list 2");
+
+     var l3 = new bbop.html.list([], {id: 'test-list'});
+     l3.add_child('');
+     l3.add_child('foo');
+     l3.add_child('bar');
+     mr_t.is_same_atom(l3.output(),
+		       '<ul id="test-list"><li></li><li>foo</li>' + 
+		       '<li>bar</li></ul>',
+		       "check list 3");
+ })();
+
+///
+/// End unit testing.
+///
+
+// Final report.
+mr_t.report();
