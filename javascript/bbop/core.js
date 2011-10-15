@@ -182,7 +182,7 @@ bbop.core.each = function(in_thing, in_function){
 	throw new Error('unsupported type in each');
     }else{
 	// Probably a hash, otherwise likely an array.
-	if( typeof(in_thing).length == 'undefined' ){
+	if( bbop.core.is_hash(in_thing) ){
 	    var hkeys = bbop.core.get_keys(in_thing);
 	    for( var ihk = 0; ihk < hkeys.length; ihk++ ){
 		var ikey = hkeys[ihk];
@@ -239,6 +239,24 @@ bbop.core.clone = function(thing){
 	//print("no idea what it is");
     }
     return clone;
+};
+
+// @Object
+// Check to see if an object supplies an "interface"
+// TODO: Unit test this to make sure it catches both prototype (okay I think)
+//       and uninstantiated objects (harder/impossible?).
+bbop.core.has_interface = function(iobj, iface){
+    var retval = true;
+    bbop.core.each(iobj,
+		   function(in_key, in_val){
+		       if( typeof(in_val[iface]) == 'undefined' &&
+			   typeof(in_val.prototype[iface]) == 'undefined'){
+			   retval = false;
+			   throw new Error(in_key + ' breaks interface ' + 
+					   iface);
+                       }
+		   });
+    return retval;
 };
 
 // @Object
