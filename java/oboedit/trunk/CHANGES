@@ -18,8 +18,6 @@ Fixed:
 [ geneontology-Bugs-3419113 ] Name Redundancy check very slow in 2.1-b19
 Prevented exceptions that were keeping some quick-fixes from working.
 
-Prevented exceptions that were keeping certain quick-fixes from working.
-
 
 ==============================================
 What's New in OBO-Edit v2.1-beta19 (9/29/2011)
