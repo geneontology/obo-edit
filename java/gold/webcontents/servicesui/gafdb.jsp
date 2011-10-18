@@ -1,11 +1,7 @@
+<%@page import="java.util.List"%>
 <%@page import="org.geneontology.web.services.GafDbOperationsService"%>
 <%@page import="org.geneontology.gaf.hibernate.GeneAnnotation"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.List"%>
-<%@page import="java.util.Hashtable"%>
 <%@page import="java.io.PrintWriter"%>
-<%@page import="org.geneontology.gold.rules.AnnotationRuleViolation"%>
-<%@page import="java.util.Set"%>
 <%@page import="org.geneontology.web.services.Task"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
@@ -17,6 +13,7 @@
 	<title>Gold Db Operation Status</title>
 
 	<script type="text/javascript" src="/scripts/jquery-1.5.1.min.js" language="javascript"></script>
+	<script type="text/javascript" src="/scripts/gold.js" language="javascript"></script>
 
 
 </head>
@@ -141,7 +138,6 @@
 	<%
 //	if(!commit){
 	
-		Set<AnnotationRuleViolation> annotationRuleViolations = (Set<AnnotationRuleViolation>)request.getAttribute("violations");
 	
 		if(runAnnotationRules && ( ex == null || (ex != null && ex.isEmpty()) )){
 			%>
@@ -154,22 +150,38 @@
 						//	alert("before condition");
 							//if(isTaskRunning){
 								//alert("before condition");
-								jQuery.ajax({
-									  url: window.location.pathname + window.location.search + "&view=annotationchecks&id=<%=id%>",
-									  success: function(data) {
+								jQuery.getJSON(
+									  window.location.pathname + window.location.search + "&view=annotationchecks&id=<%=id%>",
+									  function(data) {
 
-										jQuery('#voilations').append(data);
+
+										  if (typeof(data.error) !== "undefined") {
+												if(data.error = "task_completed"){
+													  clearInterval(interval);
+													  jQuery(".progress").hide();
+													  jQuery(".commands").show();
+													  jQuery(".inprogress").attr('bgcolor', 'green');
+												}
+										  }else{
+											  printVoilations(data);										  
+										  }
+										//  alert(data);
+										 // alert(data.items);
+										 /* jQuery.each(data, function(i,item){
+												jQuery('#voilations').append('<li>'+item.message+'</li>');
+										  });
+										  
 										jQuery('.totalvoilations').html(jQuery('#voilations').children().size());
-
-										  data = jQuery.trim(data) + "";
+											*/
+										//  data = jQuery.trim(data) + "";
 									//	  alert('Load was performed.: "' + data + '"');
-										  var error = data.indexOf('ServletException');
+										//  var error = data.indexOf('ServletException');
 										  
-										 if(error == -1){
+										 /*if(error == -1){
 											  error = data.indexOf('AnnotationRuleCheckException');
-										 }
+										 }*/
 										  
-										  if(data.match('NO_DATA$') == 'NO_DATA' || error != -1){
+										/*  if(data =='NO_DATA$' || error != -1){
 											//  isTaskRunning = false;  
 											  clearInterval(interval);
 											  jQuery(".progress").hide();
@@ -180,8 +192,8 @@
 											  	data = "";
 											  
 											  
-										  }
-									  },
+										  }*/
+									  }/*,
 									  
 									  
 									  error:function (xhr, ajaxOptions, thrownError){
@@ -192,8 +204,8 @@
 										  	.html('failed');
 
 										  jQuery('#voilations').parent().append('<div class="server-error">'+xhr.responseText+'</div>');
-						                }    									  
-									});
+						                }*/    									  
+									);
 							//}
 						}
 						
@@ -201,45 +213,27 @@
 			<% } %>
 			
 			<br />
-			<div><h1>Annotation Violations (<span class="totalvoilations"><%=annotationRuleViolations.size()%></span>)</h1></div>
-			<ul id="voilations">
+
+			<div class="voilations">
+			</div>
 			
 			<%
 			
+			//Set<AnnotationRuleViolation> annotationRuleViolations = (Set<AnnotationRuleViolation>)request.getAttribute("violations");
+			//List<AnnotationVoilationForJson> list = new ArrayList<AnnotationVoilationForJson>();
 			if(!runAnnotationRules){
-				for(AnnotationRuleViolation v: annotationRuleViolations){
-					String msg = v.getMessage();
-					String source = v.getSourceAnnotation() + "";
-					String ruleId = v.getRuleId();
-					GeneAnnotation ga = v.getSourceAnnotation();
-					String lineNr = "";
-					if(ga != null)
-						lineNr =  ga.getSource() != null ? ga.getSource().getLineNumber() + "" : "";
-					%>
-	                <li>
-	                	<div style="font-size: 1.1em;font-weight:bold">Rule Id: <%=ruleId  %> --- Line Number: <%=lineNr  %> --- <%= msg %> </div>
-	                	    <ul>
-	                	       <li>
-	                				<div style="color:red"><%= source  %> </div>
-	                			</li>
-	                		</ul>
-	                </li>
-	                <%
-				}
+				%>
+			<script type="text/javascript">
+				var annotationVoilations= <jsp:include page="/servicesui/print_annotations_voilations.jsp"/>;
+		 		printVoilations(annotationVoilations);
+	 		</script>
+				
+				<%
 			}
-			//annotationRuleViolations.clear();
-			
 			
 			%>
 			
-			</ul>
-			<%
-	//	}
-		
-		
-	//}
-	%>
-
-
+			
+			
 </body>
 </html>
