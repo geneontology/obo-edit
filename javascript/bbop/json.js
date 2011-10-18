@@ -3,7 +3,10 @@
 ////
 
 // Module and namespace checking.
-if ( typeof bbop == "undefined" ){ bbop = {}; }
+bbop.core.require('bbop', 'core');
+bbop.core.namespace('bbop', 'json');
+// if ( typeof bbop == "undefined" ){ bbop = {}; }
+// if ( typeof bbop == "undefined" ){ bbop = {}; }
 
 ///
 /// Bring in the public domain JSON parser from
