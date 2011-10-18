@@ -24,7 +24,6 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.geneontology.web.services.GoldDbOperationsService;
 import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gold.io.FileMonitor;
-import org.geneontology.gold.io.postgres.SchemaManager;
 
 /**
  * This class responsible for start and stop of the jetty server.
@@ -37,12 +36,18 @@ public class JettyStarter {
 	private static Logger LOG = Logger.getLogger(JettyStarter.class);
 
 	private static Server server;
+	
+	private static JettyStarter jettyStart;
+	
+	private static Object LOCK = new Object();
+	
+	private boolean isDevelopmentInstanceRunning;
 
 	private JettyStarter() {
 
 	}
 
-	public void start() throws Exception {
+	private void start() throws Exception {
 		
 		GoConfigManager manager = GoConfigManager.getInstance();
 		int jetty_port = manager.getJettyPort();
@@ -254,7 +259,7 @@ public class JettyStarter {
 	 * the jetty server.
 	 * 
 	 */
-	public void stop() throws Exception {
+	private void stop() throws Exception {
 
 		Socket s = new Socket(InetAddress.getByName("127.0.0.1"), 8079);
 		OutputStream out = s.getOutputStream();
@@ -282,8 +287,24 @@ public class JettyStarter {
 			System.out.println("\tstop");
 	}
 	
+	public static JettyStarter getInstance(){
+		if(jettyStart == null){
+			synchronized (LOCK) {
+				jettyStart = new JettyStarter();
+			}
+ 		}
+		
+		return jettyStart;
+	}
+	
+	public boolean isDevelopmentInstanceRunning(){
+		return this.isDevelopmentInstanceRunning;
+	}
+	
 	public static void main(String args[]) throws Exception {
 
+		
+		
 		System.out.println("**************Jetty Utility**************");
 		
 		Logger.getRootLogger().setLevel(Level.INFO);
@@ -295,12 +316,18 @@ public class JettyStarter {
 		String command = args[0];
 		
 		if("start".equals(command)){
-			new JettyStarter().start();
+			if(args.length>1){
+				getInstance().isDevelopmentInstanceRunning = "development".equals(args[1]);
+			}
+
+			getInstance().start();
 		}else if ("stop".equals(command)){
-			new JettyStarter().stop();
+			getInstance().stop();
 		}else{
 			exit("Invalid options");
 		}
+		
+		
 		
 	}
 

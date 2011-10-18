@@ -10,9 +10,8 @@ public class AnnotationRuleViolation {
 	private Set<GeneAnnotation> suggestedReplacements;
 	private GeneAnnotation sourceAnnotation;
 	private String annotationRow;
-	
+	private String gafDoument;
 	private String ruleId;
-	
 	private int lineNumber;
 	
 	
@@ -35,8 +34,9 @@ public class AnnotationRuleViolation {
 			GeneAnnotation sourceAnnotation) {
 		super();
 		this.message = message;
-		this.sourceAnnotation = sourceAnnotation;
-		this.annotationRow = sourceAnnotation != null ? sourceAnnotation.toString() : null;
+		setSourceAnnotation(sourceAnnotation);
+		//this.sourceAnnotation = sourceAnnotation;
+		//this.annotationRow = sourceAnnotation != null ? sourceAnnotation.toString() : null;
 	}
 
 
@@ -69,10 +69,19 @@ public class AnnotationRuleViolation {
 
 	public void setSourceAnnotation(GeneAnnotation sourceAnnotation) {
 		this.sourceAnnotation = sourceAnnotation;
-		this.annotationRow = sourceAnnotation != null ? sourceAnnotation.toString() : null;
+		if(sourceAnnotation != null){
+			this.annotationRow = sourceAnnotation.toString();
+			if(sourceAnnotation.getSource() != null){
+				this.annotationRow = sourceAnnotation.getSource().getRow();
+				this.lineNumber = sourceAnnotation.getSource().getLineNumber();
+				this.gafDoument = sourceAnnotation.getSource().getFileName();
+			
+
+			}
+			
+		}
 
 	}
-
 
 	public String getAnnotationRow() {
 		return annotationRow;
@@ -91,6 +100,19 @@ public class AnnotationRuleViolation {
 
 	public void setLineNumber(int lineNumber) {
 		this.lineNumber = lineNumber;
+	}
+
+
+	public String getGafDoument() {
+		if(this.sourceAnnotation != null)
+			return this.sourceAnnotation.getGafDocument();
+		
+		return gafDoument;
+	}
+
+
+	public void setGafDoument(String gafDoument) {
+		this.gafDoument = gafDoument;
 	}
 	
 

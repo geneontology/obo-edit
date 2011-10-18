@@ -31,6 +31,8 @@ import org.geneontology.gold.rules.AnnotationRuleViolation;
 import org.geneontology.gold.rules.AnnotationRulesEngine;
 import org.geneontology.solrj.GafSolrLoader;
 
+import owltools.gaf.GafParserListener;
+
 /**
  * This class performs bulkload and update operations for GAF database against
  * the web based requests.
@@ -38,7 +40,7 @@ import org.geneontology.solrj.GafSolrLoader;
  * @author Shahid Manzoor
  * 
  */
-public class GafDbOperationsService extends ServiceHandlerAbstract {
+public class GafDbOperationsService extends ServiceHandlerAbstract{
 
 	private static Logger LOG = Logger.getLogger(GafDbOperationsService.class);
 
@@ -296,7 +298,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 	 */
 	// class GafDbTaskExecution extends Task implements TaskExecution,
 	// DbOperationsListener{
-	class GafDbTaskExecution extends Task implements DbOperationsListener {
+	class GafDbTaskExecution extends Task implements DbOperationsListener, GafParserListener {
 
 		// id of the current
 		private String currentOntologyBeingProcessed;
@@ -439,14 +441,14 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 		public void endDomLoad(Object object) {
 			reportEndTime("Parsing GAF--" + currentOntologyBeingProcessed);
 
-			if (object instanceof GafHibObjectsBuilder) {
+			/*if (object instanceof GafHibObjectsBuilder) {
 				GafHibObjectsBuilder builder = (GafHibObjectsBuilder) object;
 				// gafDocuments.add(builder.getGafDocument());
 
 				for(Object v: builder.getParser().getAnnotationRuleViolations())
 					annotationRuleViolations.add(new AnnotationRuleViolation(v+""));
 
-			}
+			}*/
 
 		}
 
@@ -499,7 +501,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 		private void buildGafDocument(Reader reader, String docId,
 				String path) throws Exception {
-			this.currentOntologyBeingProcessed = path;
+			this.currentOntologyBeingProcessed = docId;
 
 			if(bulkload){
 				reportStartTime(path+"bulkload");
@@ -513,11 +515,13 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 				return;
 				
 			}
-			
+
 			startDomLoad();
 
 			GafHibObjectsBuilder builder = new GafHibObjectsBuilder();
-
+			
+			builder.getParser().addParserListener(this);
+			
 			GafDocument doc = builder.buildDocument(reader, docId, path);
 
 			GafDocument d = doc;
@@ -533,7 +537,6 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 				if(d == null)
 					break;
 				
-				currentOntologyBeingProcessed = d.getDocumentPath();
 
 				if (annotationRuleViolations.size() >= splitSize) {
 					throw new Exception(
@@ -590,6 +593,24 @@ public class GafDbOperationsService extends ServiceHandlerAbstract {
 
 		}
 
+		@Override
+		public void parserError(String message, String row, int lineNumber) {
+			AnnotationRuleViolation av = new AnnotationRuleViolation(message);
+			av.setAnnotationRow(row);
+			av.setLineNumber(lineNumber);
+			av.setGafDoument(this.currentOntologyBeingProcessed);
+			av.setRuleId("Parsing Error");
+			
+			annotationRuleViolations.add(av);
+		}
+
+		@Override
+		public void parsing(String arg0, int arg1) {
+			// TODO Auto-generated method stub
+			
+		}
+
 	}
+
 
 }

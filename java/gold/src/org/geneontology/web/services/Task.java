@@ -7,6 +7,12 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+/**
+ * This class runs operations asynchronously. This class maintains the  data structure to hold the information of start time and end time 
+ * of sub-operations in an operation.  
+ * @author Shahid Manzoor
+ *
+ */
 public abstract class Task extends Thread {
 
 	protected boolean running;
