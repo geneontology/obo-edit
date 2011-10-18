@@ -311,5 +311,4 @@ public class GoConfigManager {
 		return splitsize;
 	}
 	
-	
 }

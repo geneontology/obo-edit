@@ -4,6 +4,7 @@ import java.io.Serializable;
 import org.geneontology.gold.hibernate.model.Cls;
 import org.geneontology.gold.hibernate.model.GOModel;
 
+import owltools.gaf.AnnotationSource;
 import owltools.gaf.Bioentity;
 
 /**
@@ -126,6 +127,12 @@ public class GeneAnnotation extends owltools.gaf.GeneAnnotation implements Seria
 		return ret;
 		
 			
+	}
+
+	void setSource(AnnotationSource annotationSource) {
+		this.annotationSource = annotationSource;
+		this.toString = annotationSource.getRow();
+		isChanged = false;
 	}
 
 	
