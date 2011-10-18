@@ -341,7 +341,7 @@ bbop.core.coder = function(args){
     var mangle_base_space_size = 10;
 
     var defs = {string: mangle_base_string, size: mangle_base_space_size};
-    var final_args = _merge(defs, args);
+    var final_args = bbop.core.merge(defs, args);
     var mangle_str = final_args['string'];
     var space_size = final_args['size'];
 
@@ -351,7 +351,7 @@ bbop.core.coder = function(args){
     //var de_re = new RegExp("/-_-/", "gi");
     this.encode = function(str){
 	// Mangle and encode.
-	var new_str = mangle_str + _randomness(space_size) +'_'+ str;
+	var new_str = mangle_str + bbop.core.randomness(space_size) +'_'+ str;
 	// TODO:
 	// str.replace(en_re, "-_-");
 	return new_str;
