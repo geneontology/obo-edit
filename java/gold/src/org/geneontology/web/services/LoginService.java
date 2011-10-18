@@ -12,6 +12,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.geneontology.jetty.JettyStarter;
 
 import com.google.gson.Gson;
 
@@ -32,6 +33,13 @@ public class LoginService extends ServiceHandlerAbstract {
 		
 		this.viewPath = "/servicesui/login.jsp";
 
+		//If the server is running in the deveopment environment then 
+		//skip the security.
+		if(JettyStarter.getInstance().isDevelopmentInstanceRunning()){
+			this.isLoggedIn = true;
+			return;
+		}
+		
 		HttpSession session = request.getSession(true);
 
 		Object userId = session.getAttribute("userid");

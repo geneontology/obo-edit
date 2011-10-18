@@ -58,6 +58,7 @@ public class GoClassReferenceAnnotationRule extends AbstractAnnotationRule {
 			AnnotationRuleViolation arv = new AnnotationRuleViolation(
 					"The GO id in the annotation is a obsolete class", a);
 			arv.setRuleId(getRuleId());
+			
 			// arv.setSuggestedReplacements(suggestedReplacements)
 			set.add(arv);
 		}
