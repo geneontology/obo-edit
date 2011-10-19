@@ -21,9 +21,7 @@
 
 	<%
 		boolean  isTaskRunning = (Boolean)request.getAttribute("isTaskRunning");
-//		boolean  isLargeFile = (Boolean)request.getAttribute("isLargeFile");
 		boolean runAnnotationRules = "runrules".equals(request.getParameter("command"));
-//		boolean commit = "commit".equals(request.getParameter("command"));
 		String id = request.getParameter("id");
 		HttpSession s = request.getSession(true);
 		if(id == null){
@@ -143,18 +141,29 @@
 			%>
 			
 					<script type='text/javascript'>
+						//This variable increments every time getVoilations() function is called.
+						//It is reset when function(data) is called inside the getJSON function.
+						//If the data is not returned (when function(data) is not called) after 20 attempts 
+						//it stops the getVoilations function calls.
+						var getVoilationsCounter = 1;
 						var interval= setInterval('getVoilations()', 20000);
 						//var isTaskRunning = true;
 						function getVoilations() {
 							
-						//	alert("before condition");
-							//if(isTaskRunning){
-								//alert("before condition");
+								if(getVoilationsCounter>=20){
+									  clearInterval(interval);
+									  jQuery(".progress").hide();
+									  jQuery(".commands").show();
+									  jQuery(".inprogress").attr('bgcolor', 'red');
+									
+									return;
+								}
+								getVoilationsCounter = getVoilationsCounter+1;
 								jQuery.getJSON(
 									  window.location.pathname + window.location.search + "&view=annotationchecks&id=<%=id%>",
 									  function(data) {
 
-
+										  getVoilationsCounter = 1;
 										  if (typeof(data.error) !== "undefined") {
 												if(data.error = "task_completed"){
 													  clearInterval(interval);
@@ -165,34 +174,6 @@
 										  }else{
 											  printVoilations(data);										  
 										  }
-										//  alert(data);
-										 // alert(data.items);
-										 /* jQuery.each(data, function(i,item){
-												jQuery('#voilations').append('<li>'+item.message+'</li>');
-										  });
-										  
-										jQuery('.totalvoilations').html(jQuery('#voilations').children().size());
-											*/
-										//  data = jQuery.trim(data) + "";
-									//	  alert('Load was performed.: "' + data + '"');
-										//  var error = data.indexOf('ServletException');
-										  
-										 /*if(error == -1){
-											  error = data.indexOf('AnnotationRuleCheckException');
-										 }*/
-										  
-										/*  if(data =='NO_DATA$' || error != -1){
-											//  isTaskRunning = false;  
-											  clearInterval(interval);
-											  jQuery(".progress").hide();
-											  jQuery(".commands").show();
-											  jQuery(".inprogress").attr('bgcolor', error != -1 ? 'red' : 'green')
-											  	.html(error != -1 ? 'failed' : 'completed');
-											  if(error == -1)
-											  	data = "";
-											  
-											  
-										  }*/
 									  }/*,
 									  
 									  
@@ -219,8 +200,6 @@
 			
 			<%
 			
-			//Set<AnnotationRuleViolation> annotationRuleViolations = (Set<AnnotationRuleViolation>)request.getAttribute("violations");
-			//List<AnnotationVoilationForJson> list = new ArrayList<AnnotationVoilationForJson>();
 			if(!runAnnotationRules){
 				%>
 			<script type="text/javascript">
