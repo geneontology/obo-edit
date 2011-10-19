@@ -20,12 +20,16 @@ load('html.js');
 /// "Type checker" to enforce "interfaces" during testing.
 ///
 
-mr_t.is_true(bbop.core.has_interface(bbop.html, 'output'),
-	     'supplies output');
-mr_t.is_true(bbop.core.has_interface(bbop.html, 'add_child'),
-	     'supplies add_child');
-mr_t.is_true(bbop.core.has_interface(bbop.html, 'empty'),
-	     'supplies empty');
+(function(){
+    mr_t.is_true(bbop.core.has_interface(bbop.html, 'output'),
+		 'supplies output');
+    mr_t.is_true(bbop.core.has_interface(bbop.html, 'add_child'),
+		 'supplies add_child');
+    mr_t.is_true(bbop.core.has_interface(bbop.html, 'empty'),
+		 'supplies empty');
+    
+    var d = new bbop.html.tag('div');
+})();
 
 ///
 /// Start unit testing.
@@ -34,6 +38,8 @@ mr_t.is_true(bbop.core.has_interface(bbop.html, 'empty'),
 //
 (function(){
      var t1 = new bbop.html.tag('div');
+     mr_t.is_same_atom(bbop.core.what_is(t1), 'bbop.html.tag', 'id');
+
      mr_t.is_same_atom(t1.output(), '<div></div>', "same div");
 
      var t2 = new bbop.html.tag('div', {foo: "bar"});
@@ -70,6 +76,8 @@ mr_t.is_true(bbop.core.has_interface(bbop.html, 'empty'),
 
 (function(){
      var a0 = new bbop.html.accordion([]);
+     mr_t.is_same_atom(bbop.core.what_is(a0), 'bbop.html.accordion', 'id');
+
      mr_t.is_same_atom(a0.output(), '<div></div>', 'nil accordion');
 
      var a1 = new bbop.html.accordion([['foo', 'bar']],
@@ -101,6 +109,8 @@ a3.add_child('test-b', d3);
 (function(){
 
      var l1 = new bbop.html.list(['foo', 'bar'], {id: 'test-list'});
+     mr_t.is_same_atom(bbop.core.what_is(l1), 'bbop.html.list', 'id');
+
      mr_t.is_same_atom(l1.output(),
 		       '<ul id="test-list"><li>foo</li><li>bar</li></ul>',
 		       "check list 1");

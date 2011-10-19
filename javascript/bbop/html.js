@@ -8,7 +8,7 @@
 ////
 
 bbop.core.require('bbop', 'core');
-bbop.core.require('bbop', 'logger');
+//bbop.core.require('bbop', 'logger');
 //bbop.core.require('bbop', 'amigo');
 bbop.core.namespace('bbop', 'html');
 bbop.core.namespace('bbop', 'html', 'tag');
@@ -32,7 +32,8 @@ bbop.core.output = function(in_thing){
 
 //
 bbop.html.tag = function(tag, attrs, below){
-    
+    this._is_a = 'bbop.html.tag';
+
     // Arg check--attrs should be defined as something.
     if( ! attrs ){ attrs = {}; }
 
@@ -98,6 +99,7 @@ bbop.html.tag.prototype.empty = function(){
 //   ...
 // </div>
 bbop.html.accordion = function(in_list, attrs){
+    this._is_a = 'bbop.html.accordion';
 
     // Arg check--attrs should be defined as something.
     if( ! attrs ){ attrs = {}; }
@@ -157,6 +159,7 @@ bbop.html.accordion.prototype.empty = function(){
 //   ...
 // </ul>
 bbop.html.list = function(in_list, attrs){
+    this._is_a = 'bbop.html.list';
     
     // Arg check--attrs should be defined as something.
     if( ! attrs ){ attrs = {}; }
