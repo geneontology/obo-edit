@@ -228,8 +228,6 @@ public class AdminServlet extends HttpServlet {
 			view = loginService.getViewPath();
 		}
 		
-		System.out.println(view);
-		
 		//forwarding the request to a jsp file reffered in the 'view' variable
 		if(view != null){
 			ServletContext context = getServletContext().getContext("/");
