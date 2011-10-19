@@ -131,6 +131,47 @@ mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
     mr_t.is_false(bbop.core.is_empty(t7), "correctly empty t7");
 })();
 
+// what_is.
+(function(){
+    // Simple items.
+    mr_t.is_same_atom(bbop.core.what_is(), null, "nil");
+    mr_t.is_same_atom(bbop.core.what_is(null), "null", "null");
+    mr_t.is_same_atom(bbop.core.what_is(true), "boolean", "boolean");
+    mr_t.is_same_atom(bbop.core.what_is(''), "string", "string 1");
+    mr_t.is_same_atom(bbop.core.what_is('hi'), "string", "string 2");
+    mr_t.is_same_atom(bbop.core.what_is(0), "number", "number 1");
+    mr_t.is_same_atom(bbop.core.what_is(-1), "number", "number 2");
+    mr_t.is_same_atom(bbop.core.what_is(1), "number", "number 3");
+    mr_t.is_same_atom(bbop.core.what_is([]), "array", "array 1");
+    mr_t.is_same_atom(bbop.core.what_is([1, 2]), "array", "array 2");
+    mr_t.is_same_atom(bbop.core.what_is({}), "object", "object 1");
+    mr_t.is_same_atom(bbop.core.what_is({a: 2, 'b': 3}), "object", "object 2");
+    mr_t.is_same_atom(bbop.core.what_is(function(x){ return x; }),
+		      "function", "function");
+
+    // More complicated items.
+    foo = {};
+    foo.bar = function(){
+	this._is_a = 'foo.bar';
+    };
+    var fb = new foo.bar();
+    mr_t.is_same_atom(bbop.core.what_is(fb), 'foo.bar', 'class/object');
+})();
+
+// dump.
+(function(){
+    mr_t.is_same_atom(bbop.core.dump(), 'null', "dump 0");
+    mr_t.is_same_atom(bbop.core.dump(''), '""', "dump 1");
+    mr_t.is_same_atom(bbop.core.dump('abc'), '"abc"', "dump 2");
+    mr_t.is_same_atom(bbop.core.dump(1), "1", "dump 3");
+    mr_t.is_same_atom(bbop.core.dump(null), "null", "dump 4");
+    mr_t.is_same_atom(bbop.core.dump(true), "true", "dump 5");
+    mr_t.is_same_atom(bbop.core.dump([]), "[]", "dump 6");
+    mr_t.is_same_atom(bbop.core.dump({}), "{}", "dump 7");
+    mr_t.is_same_atom(bbop.core.dump([null, ['bob', 'bar', {foo: 1}]]),
+		      '[null, ["bob", "bar", {"foo": 1}]]', "dump 8");
+})();
+
 ///
 /// End unit testing.
 ///

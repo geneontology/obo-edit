@@ -124,6 +124,39 @@ bbop.core.get_keys = function get_keys (arg_hash){
     return out_keys;
 };
 
+// @Anything
+// Return the string best guess for what the input is, null if it
+// can't be identified.
+// In addition to the _is_a property convention, current core output
+// strings are: 'null', 'array', 'boolean', 'number', 'string',
+// 'function', and 'object'.
+bbop.core.what_is = function(in_thing){
+    var retval = null;
+    if( typeof(in_thing) != 'undefined' ){
+
+	// If it's an object, try and guess the 'type', otherwise, let
+	// typeof.
+	if( in_thing == null ){
+	    retval = 'null';
+	}else if( typeof(in_thing) == 'object' ){
+	    
+	    // Look for the 'is_a' property that I should be using.
+	    if( typeof(in_thing._is_a) != 'undefined' ){
+		retval = in_thing._is_a;
+	    }else{
+		if( bbop.core.is_array(in_thing) ){
+		    retval = 'array';
+		}else{
+		    retval = 'object';
+		}		
+	    }
+	}else{
+	    retval = typeof(in_thing);
+	}
+    }
+    return retval;
+};
+
 // @Object
 // Return the best guess (true/false) for whether ot not a given object is 
 // being used as an array.
@@ -239,6 +272,49 @@ bbop.core.clone = function(thing){
 	//print("no idea what it is");
     }
     return clone;
+};
+
+// @Object?
+// Dump an object to a string form as best as possible.
+bbop.core.dump = function(thing){
+
+    var retval = '';
+
+    var what = bbop.core.what_is(thing);
+    if( what == null ){
+	retval = 'null';
+    }else if( what == 'null' ){
+	retval = 'null';
+    }else if( what == 'string' ){
+	retval = '"' + thing + '"';
+    }else if( what == 'boolean' ){
+	if( thing ){
+	    retval = "true";
+	}else{
+	    retval = "false";
+	}
+    }else if( what == 'array' ){
+
+	var astack = [];
+	bbop.core.each(thing, function(item, i){
+			   astack.push(bbop.core.dump(item));
+		       });
+	retval = '[' + astack.join(', ') + ']';
+
+    }else if( what == 'object' ){
+
+	var hstack = [];
+	bbop.core.each(thing, function(key, val){
+			   hstack.push('"'+ key + '": ' +
+				       bbop.core.dump(val));
+		       });
+	retval = '{' + hstack.join(', ') + '}';
+
+    }else{
+	retval = thing;
+    }
+
+    return retval;
 };
 
 // @Object

@@ -1,0 +1,64 @@
+////
+//// Some unit testing for logic.js
+////
+//// Usage:
+////    Command line: "js -f logic.tests.js"
+////    Interactive: "js -f logic.tests.js -f -"
+////
+
+
+// Load testing.
+load('test.js');
+var mr_t = new bbop.test();
+
+// Correct environment.
+load('core.js');
+load('logger.js');
+load('logic.js');
+
+///
+/// Start unit testing.
+///
+
+// Simple logic
+//(function(){
+var l0 = new bbop.logic();
+mr_t.is_same_atom(bbop.core.what_is(l0), 'bbop.logic', 'id');
+mr_t.is_same_atom(bbop.core.dump(l0._bundle), '{"and": []}',
+		  'l0 start internal');
+
+var l1 = new bbop.logic();
+l1.add('fly')
+mr_t.is_same_atom(bbop.core.dump(l1._bundle), '{"and": ["fly"]}',
+		  'l1 start internal');
+mr_t.is_same_atom(l1.url(), 'fly', 'trivial');
+
+var l2 = new bbop.logic();
+l2.add('fly')
+l2.negate()
+mr_t.is_same_atom(bbop.core.dump(l2._bundle),
+		  '{"not": {"and": ["fly"]}}', 'l2 start internal');
+mr_t.is_same_atom(l2.url(), 'not fly', 'not trivial');
+
+var l3 = new bbop.logic();
+l3.add('fly')
+l3.add('mouse')
+l3.add('worm')
+mr_t.is_same_atom(bbop.core.dump(l3._bundle),
+		  '{"and": ["fly", "mouse", "worm"]}',
+		  'l3 start internal');
+mr_t.is_same_atom(l3.url(), 'fly and mouse and worm', 'and trivial');
+
+//})();
+
+// Harder logic
+//(function(){
+//})();
+
+
+///
+/// End unit testing.
+///
+
+// Final report.
+mr_t.report();
