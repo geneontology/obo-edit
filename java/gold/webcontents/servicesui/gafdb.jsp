@@ -19,6 +19,7 @@
 </head>
 <body>
 
+
 	<%
 		boolean  isTaskRunning = (Boolean)request.getAttribute("isTaskRunning");
 		boolean runAnnotationRules = "runrules".equals(request.getParameter("command"));
@@ -96,9 +97,10 @@
 					opLocalName = st[0];
 				}
 	
+				
 				long stTime = task.getStartTime(opName);
 				long endTime = task.getEndTime(opName);
-	
+
 				String status = "In progress";
 				boolean isCompleted = false;
 				if (endTime > 0) {
@@ -108,7 +110,7 @@
 					status = "failed";
 				}
 			%>
-				<tr><td> <%= opLocalName %>  </td><td bgcolor='<%= isCompleted ? "green" : "" %>' class="inprogress" > <%= status %> </td></tr>
+				<tr><td> <%= opLocalName %>  </td><td id="<%= opLocalName.hashCode() %>" bgcolor='<%= isCompleted ? "green" : "" %>' class="inprogress" > <%= status %> </td></tr>
 			<% 			
 			}
 	
@@ -170,6 +172,22 @@
 													  jQuery(".progress").hide();
 													  jQuery(".commands").show();
 													  jQuery(".inprogress").attr('bgcolor', 'green');
+													  
+													  var url = "http://"+window.location.hostname+":"+window.location.port+"/gold/"
+													  	+"?servicename=gaf-db-operations&command=getTasksCompletionTime&id=<%=id%>";
+													  
+													  jQuery.getJSON(url, function(taskData){
+														  
+														  jQuery.each(taskData, function(i, td){
+															  
+															  if(td.endTime>0){
+																  jQuery("#"+ td.taskId).html("&nbsp;&nbsp;&nbsp;completed in " + (td.endTime-td.startTime)/1000 + " seconds");  
+															  }
+															  
+															  
+														  });
+													  });
+													  
 												}
 										  }else{
 											  printVoilations(data);										  

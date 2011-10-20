@@ -162,6 +162,8 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 						dbs.put(doc.getId(), f.getLatestDatabaseChangeStatus(doc.getId()).getChangeTime().toString());
 					}
 				
+			}else if("getTasksCompletionTime".equals(command)){
+				viewPath = "/servicesui/tasks-completion-times.jsp";
 			}
 			/**
 			 * The below condition sets gaf documents location
@@ -516,7 +518,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 				
 			}
 
-			startDomLoad();
+		//	startDomLoad();
 
 			GafHibObjectsBuilder builder = new GafHibObjectsBuilder();
 			
@@ -589,7 +591,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 				db.update(null, true);
 			}*/
 			
-			endDomLoad(builder);
+		//	endDomLoad(builder);
 
 		}
 
