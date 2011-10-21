@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
@@ -56,7 +57,7 @@ public class TsvFileLoader {
 		String table = file.getName().substring(0, file.getName().indexOf('.'));
 		
 		try{
-			copyManager.copyIn("COPY "+ table + " FROM STDIN WITH DELIMITER AS '\t'", new FileInputStream(file));
+			copyManager.copyIn("COPY "+ table + " FROM STDIN WITH DELIMITER AS '\t'", new InputStreamReader( new FileInputStream(file) ) );
 		}catch(Exception ex){
 			throw new IOException("Cannot copy the " +  file.getAbsolutePath() + "' into database", ex);
 		}

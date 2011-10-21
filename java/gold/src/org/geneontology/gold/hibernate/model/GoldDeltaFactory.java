@@ -528,7 +528,7 @@ public class GoldDeltaFactory {
 		
 		while(rs.next()){
 			RelationDisjointWith disjoint = new RelationDisjointWith(rs.getString("relation"), rs.getString("disjoint_relation"), 
-					rs.getString(" ontology") );
+					rs.getString("ontology") );
 			list.add(disjoint);
 		}
 		return list;
