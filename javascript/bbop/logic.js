@@ -100,9 +100,19 @@ bbop.logic = function(default_conjunction){
     };
     
     // Walk the data structure...
-    this._read_walk = function(data_bundle){
+    this._read_walk = function(data_bundle, lvl){
 	
 	ll("LRW: with: " + bbop.core.dump(data_bundle));
+
+	// If level is not defined, we just started and we're on level
+	// one, the first level.
+	var l_enc = '(';
+	var r_enc = ')';
+	if( typeof(lvl) == 'undefined' ){
+	    lvl = 1;
+	    l_enc = '';
+	    r_enc = '';
+	}	
 
 	var read = '';
 	
@@ -130,7 +140,7 @@ bbop.logic = function(default_conjunction){
 	    //ll('L: arg: ' + bbop.core.what_is(arg));
 	    var stack = [];
 	    bbop.core.each(arg, function(item, i){
-			       stack.push(logic_anchor._read_walk(item));
+			       stack.push(logic_anchor._read_walk(item, lvl+1));
 			   });
 
 	    // Slightly different things depending on if it's a unary
@@ -141,7 +151,7 @@ bbop.logic = function(default_conjunction){
 		// that a single argument.
 		read = op + ' ' + stack.join('');
 	    }else{
-		read = stack.join(' ' + op + ' ');		
+		read = l_enc + stack.join(' ' + op + ' ') + r_enc;
 	    }
 	}
 
