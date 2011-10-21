@@ -21,7 +21,7 @@ load('html.js');
 ///
 
 (function(){
-    mr_t.is_true(bbop.core.has_interface(bbop.html, 'output'),
+    mr_t.is_true(bbop.core.has_interface(bbop.html, 'to_string'),
 		 'supplies output');
     mr_t.is_true(bbop.core.has_interface(bbop.html, 'add_child'),
 		 'supplies add_child');
@@ -40,19 +40,19 @@ load('html.js');
      var t1 = new bbop.html.tag('div');
      mr_t.is_same_atom(bbop.core.what_is(t1), 'bbop.html.tag', 'id');
 
-     mr_t.is_same_atom(t1.output(), '<div></div>', "same div");
+     mr_t.is_same_atom(t1.to_string(), '<div></div>', "same div");
 
      var t2 = new bbop.html.tag('div', {foo: "bar"});
-     mr_t.is_same_atom(t2.output(), '<div foo="bar"></div>', "same div attr");
+     mr_t.is_same_atom(t2.to_string(), '<div foo="bar"></div>', "same div attr");
 
      var t3 = new bbop.html.tag('div', {bar: "bib"});
      t3.add_child(t2);
-     mr_t.is_same_atom(t3.output(),
+     mr_t.is_same_atom(t3.to_string(),
 		       '<div bar="bib"><div foo="bar"></div></div>',
 		       "same div compound");
 
      t3.empty();
-     mr_t.is_same_atom(t3.output(),
+     mr_t.is_same_atom(t3.to_string(),
 		       '<div bar="bib"></div>',
 		       "div emptied");
  })();
@@ -63,12 +63,12 @@ load('html.js');
      var t1 = new bbop.html.tag('div', {foo: "bar"},
 				new bbop.html.tag('span', {'class': 'red'},
 						  ['foo', 'bar']));
-     mr_t.is_same_atom(t1.output(),
+     mr_t.is_same_atom(t1.to_string(),
 		       '<div foo="bar"><span class="red">foobar</span></div>',
 		       "same hard div attr");
      
      t1.add_child(new bbop.html.tag('p', {}, 'happy'));
-     mr_t.is_same_atom(t1.output(),
+     mr_t.is_same_atom(t1.to_string(),
 		       '<div foo="bar"><span class="red">foobar' +
 		       '</span><p>happy</p></div>',
 		       "same hard div attr 2");
@@ -78,11 +78,11 @@ load('html.js');
      var a0 = new bbop.html.accordion([]);
      mr_t.is_same_atom(bbop.core.what_is(a0), 'bbop.html.accordion', 'id');
 
-     mr_t.is_same_atom(a0.output(), '<div></div>', 'nil accordion');
+     mr_t.is_same_atom(a0.to_string(), '<div></div>', 'nil accordion');
 
      var a1 = new bbop.html.accordion([['foo', 'bar']],
 				      {id: 'test-accordion'});
-     mr_t.is_same_atom(a1.output(),
+     mr_t.is_same_atom(a1.to_string(),
 		       '<div id="test-accordion"><h3><a href="#">foo</a>' + 
 		       '</h3><div><p>bar</p></div></div>',
 		       'simple accordion');
@@ -90,7 +90,7 @@ load('html.js');
      var t2 = new bbop.html.tag('div', {foo: "bar"}, 'bib');
      var a2 = new bbop.html.accordion([['foo1', 'yay!'], ['foo2', t2]],
 				      {id: 'test-accordion'});
-     mr_t.is_same_atom(a2.output(),
+     mr_t.is_same_atom(a2.to_string(),
 		       '<div id="test-accordion"><h3><a href="#">foo1</a>' + 
 		       '</h3><div><p>yay!</p></div><h3><a href="#">foo2</a>' +
 		       '</h3><div><p><div foo="bar">bib</div></p></div></div>',
@@ -111,14 +111,14 @@ a3.add_child('test-b', d3);
      var l1 = new bbop.html.list(['foo', 'bar'], {id: 'test-list'});
      mr_t.is_same_atom(bbop.core.what_is(l1), 'bbop.html.list', 'id');
 
-     mr_t.is_same_atom(l1.output(),
+     mr_t.is_same_atom(l1.to_string(),
 		       '<ul id="test-list"><li>foo</li><li>bar</li></ul>',
 		       "check list 1");
 
      var l2 = new bbop.html.list([], {id: 'test-list'});
      l2.add_child('foo');
      l2.add_child('bar');
-     mr_t.is_same_atom(l2.output(),
+     mr_t.is_same_atom(l2.to_string(),
 		       '<ul id="test-list"><li>foo</li><li>bar</li></ul>',
 		       "check list 2");
 
@@ -126,7 +126,7 @@ a3.add_child('test-b', d3);
      l3.add_child('');
      l3.add_child('foo');
      l3.add_child('bar');
-     mr_t.is_same_atom(l3.output(),
+     mr_t.is_same_atom(l3.to_string(),
 		       '<ul id="test-list"><li></li><li>foo</li>' + 
 		       '<li>bar</li></ul>',
 		       "check list 3");

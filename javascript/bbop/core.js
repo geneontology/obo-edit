@@ -274,8 +274,27 @@ bbop.core.clone = function(thing){
     return clone;
 };
 
+// @Anything
+// Essentially add standard 'to string' interface to the string class
+// and as a stringifier interface to other classes. 
+// More meant for output. For a slightly different take, see dump.
+bbop.core.to_string = function(in_thing){
+
+    var what = bbop.core.what_is(in_thing);
+    if( what == 'number' ){
+	return in_thing.toString();
+    }else if( typeof(in_thing) == 'string' ){
+	return in_thing;
+    }else if( in_thing.to_string && typeof(in_thing.to_string) == 'function' ){
+	return in_thing.to_string();
+    }else{
+	throw new Error('to_string interface not defined for this thing');
+    }
+};
+
 // @Object?
 // Dump an object to a string form as best as possible.
+// More meant for debugging. For a slightly different take, see to_string.
 bbop.core.dump = function(thing){
 
     var retval = '';

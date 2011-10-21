@@ -18,18 +18,6 @@ bbop.core.namespace('bbop', 'html', 'accordion');
 /// bbop.html.tag--the fundamental unit that we'll work with.
 ///
 
-// TODO/BUG: move this somewhere better.
-// Essentially add output to the string class (allowing string to
-// interface with bbop.html).
-// Or perhaps I could frame this as a generic serializer?
-bbop.core.output = function(in_thing){
-    if( typeof(in_thing) == 'string' ){
-	return in_thing;
-    }else{
-	return in_thing.output();
-    }
-};
-
 //
 bbop.html.tag = function(tag, attrs, below){
     this._is_a = 'bbop.html.tag';
@@ -60,14 +48,14 @@ bbop.html.tag = function(tag, attrs, below){
 };
 
 //
-bbop.html.tag.prototype.output = function(){
+bbop.html.tag.prototype.to_string = function(){
     var acc = '';
     bbop.core.each(this._contents,
 		   function(item, i){
 		       if( typeof(item) == 'string' ){
 			   acc = acc + item;
 		       }else{
-			   acc = acc + item.output();
+			   acc = acc + item.to_string();
 		       }
 		   });
     return this._car + acc + this._cdr;
@@ -88,7 +76,7 @@ bbop.html.tag.prototype.empty = function(){
 /// A jQuery accordion structure.
 ///
 
-// [[title, string/*.output()], ...]
+// [[title, string/*.to_string()], ...]
 // <div id="accordion">
 //   <h3><a href="#">Section 1</a></h3>
 //   <div>
@@ -119,8 +107,8 @@ bbop.html.accordion = function(in_list, attrs){
 };
 
 //
-bbop.html.accordion.prototype.output = function(){
-    return this._div_stack.output();
+bbop.html.accordion.prototype.to_string = function(){
+    return this._div_stack.to_string();
 };
 
 //
@@ -139,7 +127,7 @@ bbop.html.accordion.prototype.add_child = function(title, content){
     
     // Add body section.
     var div = new bbop.html.tag('div');
-    var p = new bbop.html.tag('p', {}, bbop.core.output(content));
+    var p = new bbop.html.tag('p', {}, bbop.core.to_string(content));
     div.add_child(p);
     this._div_stack.add_child(div);
 };
@@ -153,7 +141,7 @@ bbop.html.accordion.prototype.empty = function(){
 /// An unordered list
 ///
 
-// [string/*.output(), ...]
+// [string/*.to_string(), ...]
 // <ul id="list">
 //     <li>foo</li>
 //   ...
@@ -173,13 +161,13 @@ bbop.html.list = function(in_list, attrs){
 };
 
 //
-bbop.html.list.prototype.output = function(){
-    return this._ul_stack.output();
+bbop.html.list.prototype.to_string = function(){
+    return this._ul_stack.to_string();
 };
 
 // Add section.
 bbop.html.list.prototype.add_child = function(item){
-    var li = new bbop.html.tag('li', {}, bbop.core.output(item));
+    var li = new bbop.html.tag('li', {}, bbop.core.to_string(item));
     this._ul_stack.add_child(li);
 };
 
