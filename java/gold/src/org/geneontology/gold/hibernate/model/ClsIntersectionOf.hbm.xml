@@ -14,14 +14,10 @@
 	       <key-property name="ontology" column="ontology" type="string"/>
 	       <key-property name="targetCls" column="target_cls" type="string"/>
 	       <key-property name="cls" column="cls" type="string"/>
+	       <key-property name="relation" column="relation" type="string"/>
           
           
         </composite-id>
-        
-	     <property name="relation" type="string">
-	     	<column name="relation"></column>
-	     </property>
-
 
     </class>
 </hibernate-mapping>

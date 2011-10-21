@@ -534,6 +534,7 @@ public class DbOperations implements DbOperationsInterface{
 			List<OntologyAlternateLabelType> oatList = gdf.buildOntologyAlternateLabelType();
 			//close the session associated with the tables prefixed with 
 			// the value of the geneontology.gold.deltatableprefix property
+			gdf.getSession().getTransaction().commit();
 			gdf.getSession().close();
 			
 			if(DEBUG){

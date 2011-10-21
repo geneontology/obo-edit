@@ -177,6 +177,8 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 			
 			//String clsId = graphWrapper.getIdentifier(ax.getClassExpression());
 			
+			System.out.println("+++++++"+ax.getClassExpression());
+			
 			OboFormatTag tag = OBOFormatConstants.getTag(Owl2Obo.owlObjectToTag(ax.getClassExpression()));
 			
 			if(tag == OboFormatTag.TAG_SYNONYMTYPEDEF){
@@ -500,7 +502,7 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 			TableDumper inferred_never_some_relationshipDumper=tables.get("inferred_never_some_relationship");
 			
 			// populate reflexive closure for subclassof
-			inferred_subclass_ofDumper.dumpRow(id, id, "false" , "true", "is_a", null ,ontologyId);
+//			inferred_subclass_ofDumper.dumpRow(id, id, "false" , "true", "is_a", null ,ontologyId);
 
 			//TODO: Inferred relationship
 			Set<OWLGraphEdge> outgoing = graphWrapper.getOutgoingEdges(cls);
