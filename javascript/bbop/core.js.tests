@@ -158,6 +158,22 @@ mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
     mr_t.is_same_atom(bbop.core.what_is(fb), 'foo.bar', 'class/object');
 })();
 
+// to_string.
+(function(){
+    
+    function foo (){
+	this.to_string = function(){
+	    return 'foo!';
+	}
+    }
+
+    var f = new foo();
+
+    mr_t.is_same_atom(bbop.core.to_string(0), '0', "to_string 0");
+    mr_t.is_same_atom(bbop.core.to_string('a'), 'a', "to_string 1");
+    mr_t.is_same_atom(bbop.core.to_string(f), 'foo!', "to_string 2");
+})();
+
 // dump.
 (function(){
     mr_t.is_same_atom(bbop.core.dump(), 'null', "dump 0");
