@@ -234,9 +234,9 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 			for (Iterator obsoleteTermConsiderTagsIterator = considerTerms.iterator(); obsoleteTermConsiderTagsIterator.hasNext();) {
 				ObsoletableObject considerTerm = (ObsoletableObject) obsoleteTermConsiderTagsIterator.next();
 
-				System.out.println("TermMergeHistoryItem: obsoletes section: " +
-						"considerTerm = " + considerTerm +
-						" slaveNode = " + slaveNode);		
+                                //				logger.debug("TermMergeHistoryItem: obsoletes section: " +
+                                //						"considerTerm = " + considerTerm +
+                                //						" slaveNode = " + slaveNode);		
 
 				//If the term that is being subsumed in the merge is mentioned in the collection
 				// of consider terms for the obsolete term currently being examined, then call this method. 
@@ -250,9 +250,9 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 			for (Iterator obsoleteTermReplacedByIterator = replacementTerms.iterator(); obsoleteTermReplacedByIterator.hasNext();) {
 				ObsoletableObject replacementTerm = (ObsoletableObject) obsoleteTermReplacedByIterator.next();
 
-				System.out.println("TermMergeHistoryItem: obsoletes section: " +
-						"replacementTerm = " + replacementTerm +
-						" slaveNode = " + slaveNode);
+                                //				logger.debug("TermMergeHistoryItem: obsoletes section: " +
+                                //						"replacementTerm = " + replacementTerm +
+                                //						" slaveNode = " + slaveNode);
 
 				//If the term that is being subsumed in the merge is mentioned in the collection
 				// of replaced_by terms for the obsolete term currently being examined, then call this method. 
