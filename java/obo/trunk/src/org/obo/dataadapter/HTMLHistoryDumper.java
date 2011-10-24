@@ -112,9 +112,11 @@ public class HTMLHistoryDumper implements HistoryDumper {
 			StringBuffer out = new StringBuffer("");
 			StringRelationship tr = ((DeleteLinkHistoryItem) item)
 					.getRel();
-			out.append("Deleted " + getLinkFromIDWithName(history, tr.getChild(), history.getObject(tr.getChild()).getName())
-					+ " from " + getLinkFromIDWithName(history, tr.getParent(), history.getObject(tr.getParent()).getName())
-					+ " with " + tr.getType());
+			out.append("Deleted " + getLinkFromIDWithName(history, tr.getChild(),
+                                                                      (tr.getChild() == null ? null : history.getObject(tr.getChild()).getName()))
+                                   + " from " + getLinkFromIDWithName(history, tr.getParent(), 
+                                                                      (tr.getParent() == null ? null : history.getObject(tr.getParent()).getName()))
+                                   + " with " + tr.getType());
 			return out.toString();
 		} else
 			return item.toString();
