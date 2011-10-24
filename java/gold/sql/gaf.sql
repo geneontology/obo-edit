@@ -74,18 +74,8 @@ CREATE TABLE gene_annotation (
   -- TBD:
   -- id = concat(bioentity,qualifier,cls,reference,evidence_cls)
 
-  -- GAF: col1:col2
   bioentity VARCHAR NOT NULL,
 
-  -- GAF: col4
-  -- the value of this column is identical to col 4 in the GAF.
-  -- This can be viewed as a composite expression describing the relationship
-  -- between the bioentity and the GO cls.
-  -- Typically this will be a single qualifier (e.g. 'contributes_to'), but
-  -- may be a pipe-separated list of qualifiers. These are decomposed
-  -- in the composite_qualifier table.
-  --
-  -- note: negative annotations to go in separate table.
   composite_qualifier VARCHAR,
 
   -- TBD: add to qualifier column?
@@ -101,6 +91,7 @@ CREATE TABLE gene_annotation (
   -- single identifier
   -- PMID is prioritized.
   -- put alternate identifiers in id_mapping table
+  -- TODO: rename according to standard convention?
   reference_id VARCHAR,
 
   -- col 7
@@ -137,11 +128,41 @@ CREATE TABLE gene_annotation (
   gaf_document VARCHAR
 );
 
+COMMENT ON TABLE gene_annotation IS 'An association between a gene,
+gene-product or similar bioentity (e.g. a protein complex) and an
+ontology class that describes an attribute of that entity (e.g. its
+function or location), together with associated provenance
+metadata. Corresponds to a line in a GPAD or GAF file.';
+
+COMMENT ON COLUMN gene_annotation.cls_qualifier IS 'The ontology class that describes an attribute of the bioentity';
+
+COMMENT ON COLUMN gene_annotation.reference_id IS 'The ontology class that describes an attribute of the bioentity';
+
+COMMENT ON COLUMN gene_annotation.with_expression IS '
+Identical to GAF col 8. StringBlob. Example: <b>CGSC:pabA|CGSC:pabB</b>
+';
+
+COMMENT ON COLUMN gene_annotation.composite_qualifier IS ' Identical
+to col 4 in the GAF. StringBlob.  This can be viewed as a composite
+expression describing the relationship between the bioentity and the
+GO cls.  Typically this will be a single qualifier
+(e.g. "contributes_to"), but may be a pipe-separated list of
+qualifiers. These are decomposed in the composite_qualifier table.
+<b>note</b>: negative annotations to go in separate table.';
+
+COMMENT ON COLUMN gene_annotation.extension_expression IS '
+Examples:
+<ul>
+<li>occurs_in(CL:0000123)</li>
+<li>occurs_in(CL:0000123)|occurs_in(MA:9999999)</li>
+</ul>
+';
+
 -- qualifier expression
 -- syntax: QE --> [ Q ]
 CREATE TABLE composite_qualifier (
   -- composite pipe-separated ID
-  id VARCHAR, 
+  id VARCHAR  PRIMARY KEY, 
 
   -- cls or relation
   qualifier_obj VARCHAR 
@@ -153,7 +174,7 @@ CREATE TABLE composite_qualifier (
 CREATE TABLE with_info (
   --- this is the exact value of the expression in col 8 of the GAF.
   --- EXAMPLE: CGSC:pabA|CGSC:pabB
-  id VARCHAR,
+  id VARCHAR PRIMARY KEY,
 
   --- 
   --- EXAMPLE: CGSC:pabA
@@ -166,14 +187,13 @@ CREATE TABLE with_info (
 --  in this case there would be two rows in the table
 CREATE TABLE extension_expression (
   -- composite expression
-  id VARCHAR,
+  id VARCHAR  PRIMARY KEY,
 
   -- EXAMPLE: "occurs_in"
   relation VARCHAR,
 
   -- EXAMPLE: "CL:000123"
-  cls VARCHAR,
-  PRIMARY KEY (id, relation, cls)
+  cls VARCHAR
 );
 
 CREATE TABLE gaf_document (
