@@ -54,3 +54,14 @@ CREATE TABLE family_data_dump (
        data_dump TEXT,
        data_format VARCHAR -- e.g. nhx, phyloxml
 );
+
+-- See: ftp://ftp.pantherdb.org/ortholog/current/README
+-- relationship_type: LDO (least-diverged ortholog), O (ortholog), P (within-species paralog).  LDO is the best 1:1 match of all orthologs between two species
+-- 
+CREATE TABLE homology_relationship (
+       bioentity1 VARCHAR,
+       bioentity2 VARCHAR,
+       relationship_type VARCHAR,
+       ancestor_taxon VARCHAR,
+       family VARCHAR
+);

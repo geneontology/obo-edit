@@ -8,11 +8,12 @@ CREATE TABLE ontology (
        versionIRI VARCHAR,
        creation_date VARCHAR
 );
-COMMENT ON TABLE ontology IS 'A collection of classes, relations and relationships.
+COMMENT ON TABLE ontology IS 'A collection of classes, relations and relationships.<br/>
 MAPPINGS: 
  OBO: header.ontology (introduced in obof1.4)
  OWL: Ontology
- LEAD: n/a';
+ LEAD: n/a
+';
 
 CREATE TABLE ontology_annotation (
        ontology VARCHAR,
@@ -20,12 +21,14 @@ CREATE TABLE ontology_annotation (
        annotation_value VARCHAR,
        PRIMARY KEY (ontology, property, annotation_value)
 );
-COMMENT ON TABLE ontology_annotation IS 'A property of an ontology
-Example properties: saved_by
+COMMENT ON TABLE ontology_annotation IS 'A property of an ontology<br/>
 MAPPINGS: 
+<pre>
  OBO: header.<property>
  OWL: OntologyAnnotation(ontology property value)
- LEAD: n/a';
+ LEAD: n/a</pre>
+Example properties: saved_by
+';
 
 CREATE TABLE ontology_imports (
        ontology VARCHAR PRIMARY KEY,
@@ -48,52 +51,61 @@ CREATE TABLE cls (
 
        is_obsolete BOOLEAN 
 );
-COMMENT ON TABLE cls IS 'An ontology class.
-TODO: use separate table?
+COMMENT ON TABLE cls IS 'An ontology class (aka term).<br/>
 MAPPINGS: 
+<pre>
  OBO: Term stanza.
  OWL: Class
- LEAD: term';
+ LEAD: term</pre>';
 
-COMMENT ON COLUMN cls.id IS 'A unique identifier for this class.
-Example: GO:0008150
-MAPPINGS:
- OBO: Term.id
- OWL: URI for class, with obo2owl transform. E.g. GO_nnnnnnn -> GO:nnnnnnn
- LEAD: term.acc';
+COMMENT ON COLUMN cls.id IS 'A unique identifier for this class.<br/>
+Example: GO:0008150<br/>
+MAPPINGS:<br/>
+ OBO: Term.id<br/>
+ OWL: URI for class, with obo2owl transform. E.g. GO_nnnnnnn -> GO:nnnnnnn<br/>
+ LEAD: term.acc<br/>
+';
 
 COMMENT ON COLUMN cls.label IS 'A descriptive label for this class.
 Should be unique within the ontology, but this is not enforced.
 Example: "lung development"
 MAPPINGS:
+<pre>
  OBO: term.name
  OWL: rdfs:label
  LEAD: term.name
+</pre>
 ';
 COMMENT ON COLUMN cls.ontology IS 'The ontology to which this class belongs.
 Examples: "GO", "CL". References ontology.id
 MAPPINGS:
+<pre>
  OBO: the idspace for the term id
  OWL: ontology
  LEAD: n/a
+</pre>
 ';
 
 COMMENT ON COLUMN cls.obo_namespace IS 'An obo namespace is similar to an ontology.
 The GO is split into 3 namespaces. Most ontologies have a 1:1 association between
 ontology and obo_namespace.
 MAPPINGS:
+<pre>
  OBO: term.namespace
  OWL: n/a
  LEAD: term.term_type
+</pre>
 Example: "biological_process".
 ';
 
 COMMENT ON COLUMN cls.text_definition IS 'A textual definition uniquely defining the class.
 MAPPINGS:
+<pre>
  OBO: term.definition
  OWL: see obo2owl guide
  LEAD: term_definition.term_definition
  API: getDef()
+</pre>
 ';
 
 COMMENT ON COLUMN cls.is_obsolete IS 'True if this is an obsolete/deprecated class
@@ -120,12 +132,11 @@ CREATE TABLE relation (
        is_obsolete BOOLEAN 
 );
 
-COMMENT ON TABLE relation IS 'An ontology relation.
-TODO: use separate table?
-MAPPINGS: 
- OBO: Typedef stanza.
- OWL: ObjectProperty
- LEAD: term (the term table is overloaded)';
+COMMENT ON TABLE relation IS 'An ontology relation
+MAPPINGS: <br/>
+ OBO: Typedef stanza.<br/>
+ OWL: ObjectProperty<br/>
+ LEAD: term (the term table is overloaded)<br/>';
 
 COMMENT ON COLUMN relation.id IS 'A unique identifier for this relation.
 Example: part_of
@@ -465,6 +476,7 @@ CREATE TABLE cls_intersection_of (
 COMMENT ON TABLE cls_intersection_of IS 'A shorthand for stating necessary and sufficient definitions.
 For any cls, the set of all_intersection_of tuples are collected. This constitutes a conjunctive expression that is equivalent to cls.
 E.g.
+<pre>
 [Term]
 id: blue_car
 intersection_of: car
@@ -474,6 +486,7 @@ cls_intersection_of(blue_car,null,car)
 cls_intersection_of(blue_car,has_color,blue)
 ==> [owl]
 EquivalentTo (blue_car IntersectionOf(car SomeValuesFrom(has_color blue)))
+</pre>
 //
 Limitation: only a single such equivalence relation is allowed per class
 //
@@ -494,6 +507,7 @@ CREATE TABLE cls_union_of (
 COMMENT ON TABLE cls_union_of IS 'A shorthand declaring a class to be equivalent to a union of other classes.
 For any cls, the set of all_union_of tuples are collected. This constitutes a conjunctive expression that is equivalent to cls.
 E.g.
+<pre>
 [Term]
 id: prokaryote
 union_of: eubacteria
@@ -503,14 +517,17 @@ cls_union_of(prokaryote,eubacteria)
 cls_union_of(prokaryote,archaea)
 ==> [owl]
 EquivalentTo (prokaryote UnionOf(eubacteria archaea))
+</pre>
 //
 Limitation: only a single such equivalence relation is allowed per class
 //
 Note that there should never be a cls that only has a single cls_union_of.
 MAPPINGS:
+<pre>
  OBO: union_of
  OWL: EquivalentTo(cls UnionOf( {...} ) -- see obo2owl doc
  LEAD: n/a
+</pre>
 ';
 
 -- ****************************************
@@ -612,7 +629,7 @@ CREATE TABLE axiom_cache (
        owlformat VARCHAR
 );
 
-COMMENT ON TABLE axiom_cache IS 'This table contains a cache of all axioms in the ontology, and their relationship to an object (a class, property or individual)
+COMMENT ON TABLE axiom_cache IS 'This table contains a cache of all axioms in the ontology, and their relationship to an object (a class, property or individual). Note that not every OWL axiom can be stored in a normalized fashion this schema, only the ones that are useful and simple to query relationally are included. However, all axioms can be stored in an OWL format in this table.
 ';
 
 COMMENT ON COLUMN axiom_cache.obj IS 'ID for the entity that is associated with the axiom. E.g. GO:0008150';
