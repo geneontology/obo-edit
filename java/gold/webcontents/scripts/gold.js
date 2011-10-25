@@ -13,7 +13,8 @@ function printVoilations(voilations){
 		}
 		if(element.length==0){
 			voilationsDom.append("<br /><br /><hr /><div id='"+voilation.fileId+"' style='font-weight:bold;'>"+voilation.fileName+"</div><br />");
-			printVoilations(voilations);
+			element= jQuery("#"+voilation.fileId);
+			//printVoilations(voilations);
 		}
 		
 		var html = "<div class='voilation-body'>"
@@ -25,8 +26,6 @@ function printVoilations(voilations){
 			
 		
 		element.append(html);
-		
-		
 		
 	});
 	
