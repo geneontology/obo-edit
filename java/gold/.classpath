@@ -75,5 +75,6 @@
 	<classpathentry kind="lib" path="lib/solrj/commons-httpclient-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/jdom/jaxen.jar"/>
 	<classpathentry kind="lib" path="lib/jdom/jdom.jar"/>
+	<classpathentry kind="lib" path="lib/gson-1.7.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
