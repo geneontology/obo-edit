@@ -1,37 +1,43 @@
 package org.geneontology.gold.rules;
 
-import java.io.File;
-import java.net.URI;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 import org.apache.log4j.Logger;
-import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.hibernate.GafDocument;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
-import org.jdom.xpath.XPath;
 
 import owltools.gaf.GeneAnnotation;
 
 public class AnnotationRulesEngine {
 
-	private List<AbstractAnnotationRule> rules;
+///	private List<AbstractAnnotationRule> rules;
 	
-	private static AnnotationRulesEngine engine;
+//	private static AnnotationRulesEngine engine;
 	
 	private static Logger LOG = Logger.getLogger(AnnotationRulesEngine.class);
 	
-	private Exception initException;
+//	private Exception initException;
 	
-	private AnnotationRulesEngine(){
-		init();
+	//if this variable is set to rue then stop the annotation checks
+	private Hashtable<String, Set<AnnotationRuleViolation>> annotationRuleViolations;
+	private Hashtable<String, Integer> annotationRuleViolationsCounter;
+	
+	private int annotationVoilationLimit;
+
+	
+	public AnnotationRulesEngine(){
+		this(-1);
+	}
+	
+	
+	public AnnotationRulesEngine(int annotationVoilationLimit){
 	//	AbstractAnnotatioRule rule = new AnnotationRuglarExpressionFromXMLRule();
 		//rules.add(rule);
-		
+		annotationRuleViolations = new Hashtable<String, Set<AnnotationRuleViolation>>();
+		annotationRuleViolationsCounter = new Hashtable<String, Integer>();
+		this.annotationVoilationLimit = annotationVoilationLimit;
 		
 		/*try{
 			rule  = new AnnotationTaxonRule();
@@ -50,7 +56,7 @@ public class AnnotationRulesEngine {
 		rules.add(rule);*/
 	}
 	
-	public static AnnotationRulesEngine getInstance(){
+	/*public static AnnotationRulesEngine getInstance(){
 		if(engine == null){
 			engine = new AnnotationRulesEngine();
 		}
@@ -62,20 +68,52 @@ public class AnnotationRulesEngine {
 		return rules;
 	}
 	
+	public void stopAnnotaitonChecks(){
+		this.stopAnnotaitonChecks = true;
+	}*/
 	
-	public Set<AnnotationRuleViolation> validateAnnotations(GafDocument doc) throws AnnotationRuleCheckException{
-		if(initException != null){
-			throw new AnnotationRuleCheckException("Rules are not initialized. Please check the annotation_qc.xml file for errors and restart the server", initException);
+	
+	public Hashtable<String, Set<AnnotationRuleViolation>> validateAnnotations(GafDocument doc) throws AnnotationRuleCheckException{
+		
+//		this.stopAnnotaitonChecks = false;
+		AnnotationRulesFactory rulesFactory = AnnotationRulesFactory.getInstance();
+		List<AnnotationRule> rules = rulesFactory.getRules();
+		if(rules == null || rules.isEmpty()){
+			throw new AnnotationRuleCheckException("Rules are not initialized. Please check the annotation_qc.xml file for errors and restart the server");
 		}
 		
-		
-		HashSet<AnnotationRuleViolation> set = new HashSet<AnnotationRuleViolation>();
-		
+		//HashSet<AnnotationRuleViolation> set = new HashSet<AnnotationRuleViolation>();
 		try{
 		
+			HashSet<String> rulesNotToRun = new HashSet<String>();
 			for(GeneAnnotation annotation: doc.getGeneAnnotations()){
-				for(AbstractAnnotationRule rule: rules){
-					set.addAll( rule.getRuleViolations((org.geneontology.gaf.hibernate.GeneAnnotation)annotation) );
+				for(AnnotationRule rule: rules){
+					
+					if(rulesNotToRun.contains(rule.getRuleId()))
+						continue;
+					
+					for(AnnotationRuleViolation av: rule.getRuleViolations((org.geneontology.gaf.hibernate.GeneAnnotation)annotation)){
+						Set<AnnotationRuleViolation> setV= annotationRuleViolations.get(av.getRuleId());
+						Integer counter = annotationRuleViolationsCounter.get(av.getRuleId());
+						if(setV == null){
+							setV = new HashSet<AnnotationRuleViolation>();
+							setV = Collections.synchronizedSet(setV);
+							annotationRuleViolations.put(av.getRuleId(), setV);
+							counter = 0;
+						}
+						
+						if(annotationVoilationLimit != -1 && counter>=annotationVoilationLimit)
+							rulesNotToRun.add(rule.getRuleId());
+						else	
+							setV.add(av);
+						
+						annotationRuleViolationsCounter.put(av.getRuleId(), counter+1);
+	
+						
+						
+//						annotationVoilationLimitReached = annotationVoilationLimit != -1 || setV.size()>annotationVoilationLimit;
+					}
+					
 				}
 			}
 		}catch(Exception ex){
@@ -83,76 +121,10 @@ public class AnnotationRulesEngine {
 			throw new RuntimeException(ex);
 		}
 		
-		return set;
+		return annotationRuleViolations;
 	}
 	
 	
-	private  void init(){
-		rules = new ArrayList<AbstractAnnotationRule>();
-		SAXBuilder builder = new SAXBuilder();
-		Document doc = null;
-		try {
-			String path = GoConfigManager.getInstance().getAnnotationQCFile();
-			
-			if(!(path.startsWith("http://") || path.startsWith("file:///"))){
-				File f = new File(path);
-				path = f.toURI().toString();
-			}
-			URI uri = new URI(path);
-			doc = builder.build(uri.toURL());
-		} catch (Exception e) {
-			LOG.error(e.getMessage(), e);
-			this.initException = e;
-		}
-		
-		if(doc == null)
-			return;
-		
-		
-		try{
-			XPath regexRule = XPath.newInstance("//implementation/script[@language='regex']");			
-		    List regexRules = regexRule.selectNodes(doc);
-	
-		    AbstractAnnotationRule rule = new AnnotationRuglarExpressionFromXMLRule(regexRules);
-		    rules.add(rule);
-		}catch(Exception ex){
-			LOG.error(ex.getMessage(), ex);
-			this.initException = ex;
-			
-		}
-	    
-		
-		try{
-			XPath javaRule = XPath.newInstance("//implementation/script[@language='java']");			
-		    Iterator itr = javaRule.selectNodes(doc).iterator();
-		    
-		    while(itr.hasNext()){
-		    	Element script = (Element)itr.next();
-		    	Element idElement = script.getParentElement().getParentElement().getParentElement().getChild("id");
-		    	String id = "";
-		    	
-		    	if(idElement != null){
-		    		id = idElement.getTextNormalize();
-		    	}
-		    	
-		    	String className = script.getAttributeValue("source");
-		    	if(className != null){
-		    		try{
-		    			AbstractAnnotationRule rule= (AbstractAnnotationRule) Class.forName(className).newInstance();
-		    			rule.setRuleId(id);
-		    			rules.add(rule);
-		    		}catch(Exception ex){
-		    			LOG.error(ex.getMessage(), ex);
-		    		}
-		    	}
-		    }
-		}catch(Exception ex){
-			LOG.error(ex.getMessage(), ex);
-			this.initException = ex;
-		}
-	    
-
-	}
 	
 	
 }

@@ -1,3 +1,4 @@
+<%@page import="java.util.Hashtable"%>
 <%@page import="com.google.gson.Gson"%>
 <%@page import="org.geneontology.gold.rules.json.ErrorForJson"%>
 <%@page import="org.geneontology.gold.rules.AnnotationRuleViolation"%>
@@ -11,7 +12,7 @@
 	<%
 	
 		Task task = (Task)request.getAttribute("task");
-		Set<AnnotationRuleViolation> annotationRuleViolations = (Set<AnnotationRuleViolation>)request.getAttribute("violations");
+		Hashtable<String, Set<AnnotationRuleViolation>> annotationRuleViolations= (Hashtable<String, Set<AnnotationRuleViolation>>)request.getAttribute("violations");
 
 		request.setAttribute("removeAnnotations", new Boolean(true));
 		
@@ -28,6 +29,7 @@
 			
 				pw.flush();
 			}else if(annotationRuleViolations !=null && !annotationRuleViolations.isEmpty()){
+				request.setAttribute("removeAnnotations", new Boolean(true));
 				%>
 				<jsp:include page="/servicesui/print_annotations_voilations.jsp"/>
 				<%
