@@ -20,19 +20,25 @@ import org.jdom.Element;
 public class AnnotationRuglarExpressionFromXMLRule extends
 		AbstractAnnotationRule {
 
+	private String regex;
+	private Pattern pattern;
+	private String errorMessage;
+	
+	
+	
 	/**
 	 * 
 	 * @param The parameter is the list of the {@link Element} objects. These elements objects are 
 	 * build from the annotation-qc.xml xml file. The each element object points to 'script' xml tag.
 	 */
-	public AnnotationRuglarExpressionFromXMLRule(List regexList){
-		init(regexList);
+	public AnnotationRuglarExpressionFromXMLRule(){
+		//init(regexList);
 	}
 
 	private static Logger LOG = Logger.getLogger(AnnotationRuglarExpressionFromXMLRule.class);
 	
 	
-	private  List<RuleData> rules;
+	//private  List<RuleData> rules;
 	
 	public Set<AnnotationRuleViolation> getRuleViolations(GeneAnnotation a) {
 
@@ -42,33 +48,57 @@ public class AnnotationRuglarExpressionFromXMLRule extends
 		
 		HashSet<AnnotationRuleViolation> voilations = new HashSet<AnnotationRuleViolation>();
 
-		for(RuleData data: rules){
-			getRuleViolations(voilations, a, data);
-		}
+		getRuleViolations(voilations, a);
 		
 		return voilations;
 	}
 	
-	private void getRuleViolations(Set<AnnotationRuleViolation> voilations, GeneAnnotation ann, RuleData data){
+	private void getRuleViolations(Set<AnnotationRuleViolation> voilations, GeneAnnotation ann){
 
-		Matcher m = data.pattern.matcher(ann.toString());
+		Matcher m = pattern.matcher(ann.toString());
 		
 		if(m.find()){
-			AnnotationRuleViolation v = new AnnotationRuleViolation(data.errorMsg, ann);
-			v.setRuleId(data.ruleId);
+			AnnotationRuleViolation v = new AnnotationRuleViolation(this.errorMessage, ann);
+			v.setRuleId(this.getRuleId());
 			voilations.add(v);
 		}
 		
 		
 	}
 
+	public String getRegex() {
+		return regex;
+	}
+
+	public Pattern getPattern() {
+		return pattern;
+	}
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setRegex(String regex) {
+		this.regex = regex;
+	}
+
+	public void setPattern(Pattern pattern) {
+		this.pattern = pattern;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+
+	
+	
 	/**
 	 * 
 	 * @param This method iterates through the script xml elements to get the regular expression. 
 	 * It gets the 'title' element (child of the 'rule' element). During the execution of the rule title
 	 * is used as an error message when the regular expression is matched.
 	 */
-	private  void init(List regexList){
+	/*private  void init(List regexList){
 		rules = new ArrayList<AnnotationRuglarExpressionFromXMLRule.RuleData>();
 		
 		try {
@@ -129,6 +159,6 @@ public class AnnotationRuglarExpressionFromXMLRule extends
 		private Pattern pattern;
 		private String errorMsg;
 		private String ruleId;
-	}
+	}*/
 	
 }

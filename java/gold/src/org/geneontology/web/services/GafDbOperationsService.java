@@ -29,6 +29,7 @@ import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.rules.AnnotationRuleCheckException;
 import org.geneontology.gold.rules.AnnotationRuleViolation;
 import org.geneontology.gold.rules.AnnotationRulesEngine;
+import org.geneontology.gold.rules.json.AnnotationVoilationForJson;
 import org.geneontology.solrj.GafSolrLoader;
 
 import owltools.gaf.GafParserListener;
@@ -72,8 +73,10 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 	/**
 	 * It holds the collections gene annotation voilations.
 	 */
-	private Set<AnnotationRuleViolation> annotationRuleViolations;
+	//private Set<AnnotationRuleViolation> annotationRuleViolations;
 
+	private Hashtable<String, Set<AnnotationRuleViolation>> annotationRuleViolations;
+	
 	//storing command line name, e.g update, bulkload, runrules
 	private String command;
 
@@ -88,6 +91,10 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 	//true if solr load is requested
 	private boolean solrLoad;
 
+	
+	private int annotationVoilationLimit;
+	
+	
 	/**
 	 * If the service completes its operation then the user 
 	 * is not allowed to re-run this service again. User has to
@@ -114,9 +121,10 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 	public GafDbOperationsService() {
 		runner = null;
 		// isOPerationCompleted = true;
-		annotationRuleViolations = new HashSet<AnnotationRuleViolation>();
-		annotationRuleViolations = Collections
-				.synchronizedSet(annotationRuleViolations);
+		annotationRuleViolations = new Hashtable<String, Set<AnnotationRuleViolation>>();
+		annotationVoilationLimit = -1;
+		//annotationRuleViolations = Collections
+			//	.synchronizedSet(annotationRuleViolations);
 	}
 
 	/**
@@ -140,7 +148,16 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 			solrLoad = "solrload".equals(command) ? true : false;
 			String remoteGAF = request.getParameter("remote-gaf");
 			String fileLocation = request.getParameter("filelocation");
-
+			String val = request.getParameter("annotationViolationsLimit");
+			
+			if(val != null && annotationVoilationLimit == -1){
+				try{
+					annotationVoilationLimit = Integer.parseInt(val);
+				}catch(Exception ex){
+					LOG.error(ex);
+				}
+			}
+			
 			String view = request.getParameter("view");
 			// set the default view
 			viewPath = "/servicesui/gafdb.jsp";
@@ -376,12 +393,35 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 		 */
 		private void _performAnnotationChecks(GafDocument doc) throws AnnotationRuleCheckException {
 			LOG.info("Performing Annotation Checks");
-			AnnotationRulesEngine engine = AnnotationRulesEngine.getInstance();
+			AnnotationRulesEngine engine = new AnnotationRulesEngine(annotationVoilationLimit);
 
-			Set<AnnotationRuleViolation> violations = engine
+			Hashtable<String, Set<AnnotationRuleViolation>> violations = engine
 					.validateAnnotations(doc);
 
-			annotationRuleViolations.addAll(violations);
+			for(String ruleId: violations.keySet()){
+				annotationRuleViolations.put(ruleId, violations.get(ruleId));
+			}
+			/*annotationVoilationLimitReached = violations.size()>0;
+			for(AnnotationRuleViolation av: violations){
+				String ruleId = av.getRuleId() != null ? av.getRuleId() : "null";
+				Set<AnnotationRuleViolation> set = annotationRuleViolations.get(ruleId);
+				if(set == null){
+					set = new HashSet<AnnotationRuleViolation>();
+					set = Collections.synchronizedSet(set);
+					annotationRuleViolations.put(ruleId, set);
+				}
+				
+				if(annotationVoilationLimit == -1 || set.size()<annotationVoilationLimit){
+					annotationVoilationLimitReached = false;
+					set.add(av);
+				}
+			}
+			
+			
+			if(annotationVoilationLimitReached){
+				
+			}*/
+//			annotationRuleViolations.addAll(violations);
 			
 			LOG.info("Annotation Checks are completed.");
 
@@ -534,17 +574,22 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 				db.addDbOperationsListener(this);
 			}*/
 
-			int splitSize = GoConfigManager.getInstance().getSplitSize() * 4;
+		//	int splitSize = GoConfigManager.getInstance().getSplitSize() * 4;
 			do {
 				if(d == null)
 					break;
 				
 
-				if (annotationRuleViolations.size() >= splitSize) {
+				/*if (annotationRuleViolations.size() >= splitSize) {
 					throw new Exception(
 							"The annotations check is terminated as the annotations violations messages are not being consumed.");
+				}*/
+				
+/*				if(annotationVoilationLimitReached){
+					LOG.info("Annotation Voilation limit is reached. The rest of the document is discarded");
+					break;
 				}
-
+*/
 				LOG.info("Splitting the '" + path + "' document");
 
 				/*if (doc != null && !splittedDocuments.contains(path)) {
@@ -597,13 +642,25 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 
 		@Override
 		public void parserError(String message, String row, int lineNumber) {
+			Set<AnnotationRuleViolation> voilations = annotationRuleViolations.get("Parsing Error");
+			
+			if(voilations == null){
+				voilations = new HashSet<AnnotationRuleViolation>();
+			}
+			
+			if(annotationVoilationLimit != -1 && voilations.size()>=annotationVoilationLimit)
+				return;
+			 
 			AnnotationRuleViolation av = new AnnotationRuleViolation(message);
 			av.setAnnotationRow(row);
 			av.setLineNumber(lineNumber);
 			av.setGafDoument(this.currentOntologyBeingProcessed);
 			av.setRuleId("Parsing Error");
 			
-			annotationRuleViolations.add(av);
+			
+			
+			
+			voilations.add(av);
 		}
 
 		@Override
