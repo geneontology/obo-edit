@@ -76,9 +76,15 @@ public class GoConfigManager {
 
 		config = new PropertiesConfiguration();
 
-		File confDir = new File(guessAbsolutePath("conf/gold.properties"));
+		File confFile = new File(guessAbsolutePath("conf/gold.properties"));
+		
+		if(!confFile.exists()){
+			throw new RuntimeException("The file at "
+					+ confFile.getAbsolutePath() + " does not exist");
+			
+		}
 
-		File[] files = confDir.getParentFile().listFiles(new FileFilter() {
+		/*File[] files = confDir.getParentFile().listFiles(new FileFilter() {
 
 			public boolean accept(File pathname) {
 				// TODO Auto-generated method stub
@@ -95,7 +101,11 @@ public class GoConfigManager {
 			PropertiesConfiguration pc = new PropertiesConfiguration(f);
 
 			config.append(pc);
-		}
+		}*/
+
+		PropertiesConfiguration pc = new PropertiesConfiguration(confFile);
+
+		config.append(pc);
 		
 		try{
 			PropertyConfigurator.configure("conf/log4j.properties");
