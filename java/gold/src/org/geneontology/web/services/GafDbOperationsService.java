@@ -324,10 +324,13 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 
 		// private Exception exception;
 		GAFDbOperations db = null;
+		
+		private int violationsCounter;
 
 		public GafDbTaskExecution() {
 			this.data = this;
 			db = new GAFDbOperations();
+			violationsCounter = 0;
 			//db.addDbOperationsListener(this);
 		}
 
@@ -642,10 +645,16 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 
 		@Override
 		public void parserError(String message, String row, int lineNumber) {
+			
+			if(annotationVoilationLimit != -1 &&  violationsCounter>annotationVoilationLimit)
+				return;
+			
 			Set<AnnotationRuleViolation> voilations = annotationRuleViolations.get("Parsing Error");
 			
 			if(voilations == null){
 				voilations = new HashSet<AnnotationRuleViolation>();
+				voilations = Collections.synchronizedSet(voilations);
+				annotationRuleViolations.put("Parsing Error", voilations);
 			}
 			
 			if(annotationVoilationLimit != -1 && voilations.size()>=annotationVoilationLimit)
@@ -661,6 +670,8 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 			
 			
 			voilations.add(av);
+			
+			violationsCounter++;
 		}
 
 		@Override
