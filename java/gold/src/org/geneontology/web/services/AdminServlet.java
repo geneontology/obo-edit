@@ -163,12 +163,14 @@ public class AdminServlet extends HttpServlet {
 		
 	//	System.out.println(request.getServerName()+":" + request.getLocalPort());
 		
-		LoginService loginService =(LoginService) ServicesFactory.getInstance().createServiceHandler(LoginService.SERVICE_NAME);
+//		LoginService loginService =(LoginService) ServicesFactory.getInstance().createServiceHandler(LoginService.SERVICE_NAME);
 		
-		loginService.handleService(request, response);
+//		loginService.handleService(request, response);
 		
 		String view = "/servicesui/index.jsp";
-
+		HttpSession session = request.getSession(true);
+		boolean isAuthenticated = request.getAttribute("isAuthenticated") == null ? false : true;
+		
 		String path =request.getRequestURI();
 		
 		path= path.substring(request.getContextPath().length());
@@ -184,7 +186,8 @@ public class AdminServlet extends HttpServlet {
 		
 		String servicename= request.getParameter("servicename");
 		
-		if(loginService.isLoggedIn() && servicename !=null){
+//		if(loginService.isLoggedIn() && servicename !=null){
+		if(isAuthenticated && servicename !=null){
 		
 			InitializationService initHandler =(InitializationService) ServicesFactory.getInstance().createServiceHandler(InitializationService.SERVICE_NAME);
 			initHandler.handleService(request, response);
@@ -192,7 +195,6 @@ public class AdminServlet extends HttpServlet {
 			String id = request.getParameter("id");
 			ServiceHandler handler = null;
 			if(initHandler.isInitialized()){
-				HttpSession session = request.getSession(true);
 	
 				//get the service name from the parameter
 				
@@ -224,9 +226,14 @@ public class AdminServlet extends HttpServlet {
 					request.setAttribute("error", error);
 				}
 			}
-		}else if(!loginService.isLoggedIn()){
-			view = loginService.getViewPath();
+		}else if(!isAuthenticated){
+			view = "/servicesui/login.jsp";
 		}
+		
+		
+		/*else if(!loginService.isLoggedIn()){
+			view = loginService.getViewPath();
+		}*/
 		
 		//forwarding the request to a jsp file reffered in the 'view' variable
 		if(view != null){

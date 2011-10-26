@@ -21,6 +21,13 @@ import org.geneontology.jetty.JettyStarter;
 
 import com.google.gson.Gson;
 
+/**
+ * This class is deprecated. It is replaced by the {@link AuthenticationFilter} class.
+ * @author shahidmanzoor
+ *
+ */
+
+@Deprecated
 public class LoginService extends ServiceHandlerAbstract {
 
 	private static final Gson gson = new Gson();	
