@@ -471,7 +471,8 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 			String label = graphWrapper.getLabel(cls);
 			String def = graphWrapper.getDef(cls);
 			
-			def= def.replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n");
+			if(def != null)
+				def= def.replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n");
 			
 			String id = graphWrapper.getIdentifier(cls);
 			String comment = graphWrapper.getComment(cls);
