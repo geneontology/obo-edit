@@ -94,7 +94,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 	JCheckBox advIntersectionEditorCheckBox;
 
-	JCheckBox advSemanticParserCheckBox;
+    //	JCheckBox advSemanticParserCheckBox;
 
 	JCheckBox autosaveEnabledCheckBox;
 
@@ -570,7 +570,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		confirmOnExitBox = new JCheckBox("Confirm on exit");
 		advxpMatrixEditorCheckBox = new JCheckBox("Cross-Product Matrix Editor");
 		advIntersectionEditorCheckBox = new JCheckBox("Intersection Editor");
-		advSemanticParserCheckBox = new JCheckBox("Semantic Parser Manager");
+                //		advSemanticParserCheckBox = new JCheckBox("Semantic Parser Manager");
 		autosaveEnabledCheckBox = new JCheckBox("Enable autosave");
 		autosavePathField = new JTextField();
 		autosaveExpirationField = new JTextField();
@@ -592,7 +592,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		confirmOnExitBox.setOpaque(false);
 		advxpMatrixEditorCheckBox.setOpaque(false);
 		advIntersectionEditorCheckBox.setOpaque(false);
-		advSemanticParserCheckBox.setOpaque(false);
+                //		advSemanticParserCheckBox.setOpaque(false);
 
 		useDefaultBrowserBox.setSelected(Preferences.getPreferences()
 				.getBrowserCommand().length() == 0);
@@ -671,8 +671,8 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				.getadvMatrixEditorOptions());
 		advIntersectionEditorCheckBox.setSelected(Preferences.getPreferences()
 				.getadvIntersectionEditorOptions());
-		advSemanticParserCheckBox.setSelected(Preferences.getPreferences()
-				.getadvSemanticParserOptions());
+                //		advSemanticParserCheckBox.setSelected(Preferences.getPreferences()
+                //				.getadvSemanticParserOptions());
 
 		allowBox.add(allowCyclesBox);
 		allowBox.add(Box.createHorizontalGlue());
@@ -1012,13 +1012,13 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		advancedPanel.setLayout(new GridLayout(5,1));
 		//		advancedPanel.setOpaque(true);
 		JLabel advEditorsLabel = new JLabel("Editors");
-		JLabel advReasonerLabel = new JLabel("Reasoner");
+                //		JLabel advReasonerLabel = new JLabel("Reasoner");
 
 		advancedPanel.add(advEditorsLabel);
 		advancedPanel.add(advxpMatrixEditorCheckBox);
 		advancedPanel.add(advIntersectionEditorCheckBox);
-		advancedPanel.add(advReasonerLabel);
-		advancedPanel.add(advSemanticParserCheckBox);
+                //		advancedPanel.add(advReasonerLabel);
+                //		advancedPanel.add(advSemanticParserCheckBox);
 
 		mainPanel.addTab("User Settings", null, userPanel, "Set user options");
 		//		mainPanel.addTab("General GUI", null, guiPanel, "General GUI options");
@@ -1231,11 +1231,11 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		}else
 			GUIManager.getManager().setEnabledMenuItem("Editors:Intersection Editor", false);
 
-		preferences.setadvSemanticParserOptions(advSemanticParserCheckBox.isSelected());
-		if (advSemanticParserCheckBox.isSelected()) {
-			GUIManager.getManager().setEnabledMenuItem("Reasoner:SemanticParser Manager", true);
-		} else
-			GUIManager.getManager().setEnabledMenuItem("Reasoner:SemanticParser Manager", false);
+                //		preferences.setadvSemanticParserOptions(advSemanticParserCheckBox.isSelected());
+                //		if (advSemanticParserCheckBox.isSelected()) {
+                //			GUIManager.getManager().setEnabledMenuItem("Reasoner:SemanticParser Manager", true);
+                //		} else
+                //			GUIManager.getManager().setEnabledMenuItem("Reasoner:SemanticParser Manager", false);
 
 		preferences.setAutosaveEnabled(autosaveEnabledCheckBox.isSelected());
 
