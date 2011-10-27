@@ -66,10 +66,10 @@ public class ExplanationUtil {
 		out.append("<b>Why is the link "
 				+ HTMLUtil.getHTMLLink(link, !hasBeenTrimmed(reasoner,
 						activeLinkDatabase, link))
-				+ " in the ontology?</b><p>");
+				+ " in the ontology?</b>");
 		if (documentation && explanations.size() > 1) {
 			out
-					.append("<b>Note:</b>There are several different explanations for why "
+					.append("<br><br><b>Note:</b> There are several different explanations for why "
 							+ "this link appears in the ontology. This is not "
 							+ "necessarily a problem; in complex ontologies with "
 							+ " cross products, it's not unusual for there to be several "
