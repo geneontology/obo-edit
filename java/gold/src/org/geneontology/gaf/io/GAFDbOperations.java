@@ -235,15 +235,15 @@ public class GAFDbOperations{
 		}else
 			session = factory.getSession();
 		
-		if(!gafDocs.isEmpty() || split){
-			tablesNames.add("gene_annotation");
-			if(!split){
-				tablesNames.add("bioentity");
-			}
-			
-			bulkLoadHibernate(session, gafDocument, split);
-			
+		//if(!gafDocs.isEmpty() || split){
+		tablesNames.add("gene_annotation");
+		if(!split){
+			tablesNames.add("bioentity");
 		}
+		
+		bulkLoadHibernate(session, gafDocument, split);
+			
+		//}
 		
 		List<String> list = dumpFiles(prefix, gafDocument, tablesNames);
 		
