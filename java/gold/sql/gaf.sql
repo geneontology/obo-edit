@@ -162,7 +162,7 @@ Examples:
 -- syntax: QE --> [ Q ]
 CREATE TABLE composite_qualifier (
   -- composite pipe-separated ID
-  id VARCHAR  PRIMARY KEY, 
+  id VARCHAR, 
 
   -- cls or relation
   qualifier_obj VARCHAR 
@@ -174,7 +174,7 @@ CREATE TABLE composite_qualifier (
 CREATE TABLE with_info (
   --- this is the exact value of the expression in col 8 of the GAF.
   --- EXAMPLE: CGSC:pabA|CGSC:pabB
-  id VARCHAR PRIMARY KEY,
+  id VARCHAR,
 
   --- 
   --- EXAMPLE: CGSC:pabA
@@ -187,7 +187,7 @@ CREATE TABLE with_info (
 --  in this case there would be two rows in the table
 CREATE TABLE extension_expression (
   -- composite expression
-  id VARCHAR  PRIMARY KEY,
+  id VARCHAR,
 
   -- EXAMPLE: "occurs_in"
   relation VARCHAR,
