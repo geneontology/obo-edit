@@ -90,7 +90,8 @@ public class SelectionManager implements ObjectSelector {
 
 		Collection<Link> links = new LinkedList<Link>();
 		for (Link link : postSelection.getLinks()) {
-			links.add(TermUtil.resolve(session, link));
+                    if (link != null) // Why would link be null? And yet, sometimes it is.
+                        links.add(TermUtil.resolve(session, link));
 		}
 
 		Link linkSubSelection = null;
