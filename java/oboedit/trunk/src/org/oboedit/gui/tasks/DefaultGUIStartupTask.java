@@ -135,7 +135,7 @@ import org.oboedit.gui.factory.ReasonerManagerFactory;
 import org.oboedit.gui.factory.RemoveRedundantLinksComponentFactory;
 import org.oboedit.gui.factory.SearchComponentFactory;
 import org.oboedit.gui.factory.SearchResultsComponentFactory;
-import org.oboedit.gui.factory.SemanticParserManagerFactory;
+//import org.oboedit.gui.factory.SemanticParserManagerFactory;
 import org.oboedit.gui.factory.SubsetManagerFactory;
 import org.oboedit.gui.factory.SynonymTypeManagerFactory;
 import org.oboedit.gui.factory.TableOfContentsFactory;
@@ -233,7 +233,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				new HistoryBrowserFactory(),
 				new IDManagerFactory(), 
 				new ReasonerManagerFactory(),
-				new SemanticParserManagerFactory(),
+                                //				new SemanticParserManagerFactory(),
 				new NamespaceManagerFactory(),
 				new OBOMergeCanvasFactory(),
 				new OntologyChangeTrackerFactory(), 
@@ -624,7 +624,8 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		menus.add(new LayoutMenu());
 
 		List<JMenu> viewMenus = new ViewMenus().getMenus();
-		String[] advancedMenuItems = {"SemanticParser Manager", "Intersection Editor", "Cross-Product Matrix Editor"};
+                //		String[] advancedMenuItems = {"SemanticParser Manager", "Intersection Editor", "Cross-Product Matrix Editor"};
+		String[] advancedMenuItems = {"Intersection Editor", "Cross-Product Matrix Editor"};
 		String[] reqReasonerMenuItems = { "Explanations", "Assert Implied Links Panel", "Remove Redundant Links Panel"};
 
 		for (JMenu m : viewMenus){
