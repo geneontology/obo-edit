@@ -470,6 +470,9 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 		for (OWLClass cls : getOwlOntology().getClassesInSignature()) {
 			String label = graphWrapper.getLabel(cls);
 			String def = graphWrapper.getDef(cls);
+			
+			def= def.replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n");
+			
 			String id = graphWrapper.getIdentifier(cls);
 			String comment = graphWrapper.getComment(cls);
 			String namespace = graphWrapper.getNamespace(cls);
