@@ -7,8 +7,6 @@
 <toc version="2.0">
 	<tocitem text="OBO-Edit User's Guide">
 		<tocitem text="What is OBO-Edit?" target="What_is_OBO_Edit_" />
-		<tocitem text="What is an ontology?"
-			target="What_is_an_ontology_" />
 		<tocitem text="Basic Concepts and Vocabulary"
 			target="Basic_Concepts_and_Vocabulary" />
 		<tocitem text="An Introduction to OBO Ontologies"
@@ -39,12 +37,6 @@
 		<tocitem text="The GO Flat File Adapter"
 			target="The_GO_Flat_File_Adapter" />
 		<tocitem text="The Serial Adapter" target="The_Serial_Adapter" />
-		<tocitem text="The OBO OWL Adapter"
-			target="The_OBO_OWL_Adapter" />
-		<tocitem text="The OWL URL Reader"
-			target="The_OWL_URL_Reader" />
-		<tocitem text="The GO Association File Adapter"
-			target="The_GO_Association_File_Adapter" />
 		<tocitem text="Custom Data Adapters"
 			target="Custom_Data_Adapters" />
 	</tocitem>
@@ -119,7 +111,7 @@
 	</tocitem>
 	<tocitem text="Organizing Your Ontology: Editing Metadata"
 			target="Metadata" >
-		<tocitem text="Working with Categories"
+		<tocitem text="Working with Subsets"
 			target="Working_with_Categories" />
 		<tocitem text="Working with IDs">
 			<tocitem text="How ID Generation Works"
@@ -131,7 +123,7 @@
 		</tocitem>
 		<tocitem text="Working with Namespaces"
 			target="Working_with_Namespaces" />
-		<tocitem text="Working with Synonym Categories"
+		<tocitem text="Working with Synonym Types"
 			target="Working_with_Synonym_Categories" />
 		<tocitem text="Working with Obsoletes">
 			<tocitem text="Editing Obsoletes"
@@ -160,10 +152,6 @@
 			target="The_Reasoner_and_the_Interface" />
 		<tocitem text="Showing Explanations"
 			target="The_Explanation_Plugin" />
-		<tocitem text="Reasoner Prefilters"
-			target="Reasoner_Prefilters" />
-		<tocitem text="The Semantic Parser Manager"
-			target="Semantic_Parser_Manager" />
 	</tocitem>
 	<tocitem text="Ontology Verification">
 		<tocitem text="Introduction to Verification"
