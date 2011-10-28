@@ -89,12 +89,10 @@
    <mapID target="OBOMerge_User_Interface" url="html/OBOMerge_User_Interface.htm"/>
    <mapID target="Other_Uses_of_Filters" url="html/Other_Uses_of_Filters.htm"/>
    <mapID target="Plugins" url="html/Plugins.htm"/>
-   <mapID target="Reasoner_Prefilters" url="html/Reasoner_Prefilters.htm"/>
    <mapID target="Rendering" url="html/Rendering.htm"/>
    <mapID target="Reusing_Filters" url="html/Reusing_Filters.htm"/>
    <mapID target="Saving_a_History_File" url="html/Saving_a_History_File.htm"/>
    <mapID target="Searching" url="html/Searching.htm"/>
-   <mapID target="Semantic_Parser_Manager" url="html/Semantic_Parser_Manager.htm"/>
    <mapID target="Slowness" url="html/Slowness.htm"/>
    <mapID target="Structural_Editing" url="html/Structural_Editing.htm"/>
    <mapID target="Term_Filters" url="html/Term_Filters.htm"/>
@@ -118,13 +116,10 @@
    <mapID target="The_Term_Editor_Panel" url="html/The_Term_Editor_Panel.htm"/>
    <mapID target="Parent_Editor" url="html/Parent_Editor.htm"/>
    <mapID target="The_Reasoner_and_the_Interface" url="html/The_Reasoner_and_the_Interface.htm"/>
-   <mapID target="The_Reasoner_Manager" url="html/The_Reasoner_Manager.htm"/>
-   <mapID target="The_Reasoner_Plugin" url="html/The_Reasoner_Plugin.htm"/>
    <mapID target="The_Serial_Adapter" url="html/The_Serial_Adapter.htm"/>
    <mapID target="The_Verification_Plugin" url="html/The_Verification_Plugin.htm"/>
    <mapID target="Undo_Redo" url="html/Undo_Redo.htm"/>
    <mapID target="User_Defined_Checks" url="html/User_Defined_Checks.htm"/>
-   <mapID target="What_is_an_ontology_" url="html/What_is_an_ontology_.htm"/>
    <mapID target="What_is_OBO_Edit_" url="html/What_is_OBO_Edit_.htm"/>
    <mapID target="Working_with_Categories" url="html/Working_with_Categories.htm"/>
    <mapID target="Working_with_Namespaces" url="html/Working_with_Namespaces.htm"/>
