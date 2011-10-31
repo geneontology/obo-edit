@@ -13,6 +13,24 @@ import owltools.graph.OWLGraphEdge;
 import owltools.graph.OWLGraphWrapper;
 import owltools.graph.OWLQuantifiedProperty;
 
+/**
+ * Checks if an annotation is valid according to GO taxon constraints.
+ * 
+ * Ensure that gold.properties contains:
+ * 
+ * <pre>
+ * geneontology.gold.taxonomylocation=http://www.geneontology.org/ontology/obo_format_1_2/gene_ontology_ext.obo
+ * geneontology.gold.taxonomylocation=http://www.geneontology.org/quality_control/annotation_checks/taxon_checks/taxon_go_triggers.obo
+ * geneontology.gold.taxonomylocation=http://www.geneontology.org/quality_control/annotation_checks/taxon_checks/ncbi_taxon_slim.obo
+ * geneontology.gold.taxonomylocation=http://www.geneontology.org/quality_control/annotation_checks/taxon_checks/taxon_union_terms.obo
+ * </pre>
+ * 
+ * See also:
+ * http://www.biomedcentral.com/1471-2105/11/530
+ * 
+ * @author cjm
+ *
+ */
 public class AnnotationTaxonRule extends AbstractAnnotationRule implements AnnotationRule {
 	/*OWLGraphWrapper graphWrapper;
 	OWLGraphWrapper taxGraphWrapper;
