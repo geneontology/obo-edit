@@ -7,14 +7,15 @@
 </HEAD>
 <BODY BGCOLOR=#ffffff>
 <H1>How Do I Not Search Obsoletes?</H1>
-<p>To ignore obsoletes in a search, set up a compound filter that includes a filter specifying terms that <strong>[don't have] [Is Obsolete]</strong>.</p>
-
-<p>For example, this filter searches for all non-obsolete terms that have a name or synonym containing "kinase":
-<br>
-<IMG hspace=0 src="../images/faq_filter_not_obsolete.png" border=0>
-</p>
-<p>See the <a href="Term_Filters.htm">Search documentation</a> for more information on setting up compound filters.</p>
-
+<p>By default, OBO-Edit includes obsolete terms in search results (or
+autocomplete suggestions). Obsolete terms that match your query are included in the result list 
+but shown in red and crossed out.
+</p><p>
+You can change this behavior and make OE ignore obsoletes in searches by checking the checkbox for
+"Exclude obsolete terms from search results" on the Behavior tab of the
+the <a href="Configuration_manager.htm">Configuration Manager</a>, and restarting
+OBO-Edit. Note that if you choose this setting, searches will be slower
+(because OE has to check all the search results to see if they are obsolete).</p>
 <P>&nbsp;</P>
 </BODY>
 </HTML>
