@@ -61,7 +61,10 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import owltools.graph.OWLGraphWrapper;
 
 /**
- * This class provides adminstrative operations for the GOLD database.
+ * This class provides adminstrative operations for the GOLD database. The two major operations of this class are update and bulkload
+ * The bulkload operation first generate tab delimited files for the database tables and then load the files into the database through its
+ * native command. The update process first perform the bulkload into temporary tables (tables names are prefixed with the value of geneontology.gold.deltatableprefix property).
+ * Then the update command computes changes and the changes are saved into the databse through the hibernate layer.  
  * @author Shahid Manzoor
  *
  */
@@ -78,25 +81,15 @@ public class DbOperations implements DbOperationsInterface{
 	private List<DbOperationsListener> listeners;
 	
 	private static Logger LOG = Logger.getLogger(DbOperations.class);
-
 	private static boolean DEBUG = LOG.isDebugEnabled();
-	
-//	private boolean dbCreate;
 	
 	public DbOperations(){
 		listeners = new ArrayList<DbOperationsListener>();
 	}
 	
-	/*public List<Ontology> getLastUpdateStatus(){
-		GoldObjectFactory factory = GoldObjectFactory.buildDefaultFactory();
-		
-		return factory.getOntologies();
-	}*/
-	
 	public static boolean IsOperationRunning(){
 		return isOperationRunning;
 	}
-	
 	
 	/**
 	 * Loads the contents of the obo file whose path is supplied 
@@ -113,8 +106,6 @@ public class DbOperations implements DbOperationsInterface{
 		if(files == null || files.size()==0){
 			throw new Exception("Ontology File Location is not Found specified in the geneontology.gold.ontologylocation property" );
 		}
-		
-	//	dbCreate = false;
 		
 		for(Object obj: files){
 			bulkLoad(obj.toString(), force);
@@ -141,8 +132,12 @@ public class DbOperations implements DbOperationsInterface{
 	}
 	
 
-	public static void saveChangesHistory(String objectId){
-		DatabaseChangesHistory changeHistory = new DatabaseChangesHistory(objectId, Calendar.getInstance().getTime());
+	/**
+	 * This method saves the last update date of ontology
+	 * @param ontologId: Refer to ontology id
+	 */
+	public static void saveChangesHistory(String ontologId){
+		DatabaseChangesHistory changeHistory = new DatabaseChangesHistory(ontologId, Calendar.getInstance().getTime());
 		
 		GoldObjectFactory factory =  GoldObjectFactory.buildDefaultFactory();
 		Session session= factory.getSession();
@@ -151,12 +146,21 @@ public class DbOperations implements DbOperationsInterface{
 		
 	}
 
+
+	/**
+	 * Perform bulkload on the ontology referenced by wrapper (instance of {@link OWLGraphWrapper}).
+	 * The bulkload operation first generate tab delimited files for the database tables and then load the files into the database through its
+	 * native command.	 * @param wrapper
+	 * @param force
+	 * @throws Exception
+	 */
 	private void _bulkLoad(OWLGraphWrapper wrapper, boolean force) throws Exception{
 
 		if(DEBUG){
 			LOG.debug("Bulk Load for: " + wrapper.getOntologyId());
 		}
 		
+		//only one database update operation is allowed 
 		if(isOperationRunning){
 			throw new RuntimeException("Another operating is still running. ");
 		}
@@ -164,21 +168,13 @@ public class DbOperations implements DbOperationsInterface{
 		try{
 			isOperationRunning = true;
 	
+			//generates tab delimited files for the database tables
 			List<String> list = dumpFiles("", wrapper);
 			
-			/*if(!dbCreate)
-				buildSchema(force, "");
-			
-			dbCreate = true;*/
+			//load the tab delimited files into the database.
 			loadTsvFiles(GoConfigManager.getInstance().getTsvFilesDir(), list);
 		
-			/*DatabaseChangesHistory changeHistory = new DatabaseChangesHistory(wrapper.getOntologyId(), Calendar.getInstance().getTime());
-			
-			GoldObjectFactory factory =  GoldObjectFactory.buildDefaultFactory();
-			Session session= factory.getSession();
-			session.save(changeHistory);
-			session.getTransaction().commit();*/
-			
+			//save the last update date of the onotlogy
 			saveChangesHistory(wrapper.getOntologyId());
 			
 			LOG.info("Bulk Load completed successfully");
@@ -212,9 +208,9 @@ public class DbOperations implements DbOperationsInterface{
 	
 	
 	/**
-	 * This method dumps the obo file (oboFile) as tab separated files
+	 * This method dumps the obo ontology file (oboFile) as tab separated files
 	 * for GOLD database to be used for bulk loading 
-	 * @param tablePrefix
+	 * @param tablePrefix  The prefix is used when the tables are dumped for the temporary tables during the update process.
 	 * @param oboFile
 	 * @return It returns the name of the tables for which the files are dumped
 	 * @throws Exception
@@ -224,8 +220,44 @@ public class DbOperations implements DbOperationsInterface{
 	}
 	
 	/**
+	 * This method dumps the owl ontology as tab separated files
+	 * for GOLD database to be used for bulk loading 
+	 * @param tablePrefix  The prefix is used when the tables are dumped for the temporary tables during the update process.
+	 * @param wrapper
+	 * @return
+	 * @throws Exception
+	 */
+	public List<String> dumpFiles(String tablePrefix, OWLGraphWrapper wrapper) throws Exception{
+		for(DbOperationsListener listener: listeners){
+			listener.dumpFilesStart();
+		}
+		
+		if(DEBUG){
+			LOG.debug("-");
+		}
+		
+		
+		GoConfigManager manager = GoConfigManager.getInstance();
+
+		OntologyBulkLoader loader = new OntologyBulkLoader(wrapper, manager.getTsvFilesDir(), tablePrefix);
+		
+		List<String> list = loader.dumpBulkLoadTables();
+		
+		LOG.info("Tables dump completed");
+		
+		for(DbOperationsListener listener: listeners){
+			listener.dumpFilesEnd();
+		}
+		
+		return list;
+		
+	}
+	
+	
+	/**
 	 * 
-	 * @return This method build a new instance of the {@link OWLGraphWrapper} class
+	 * @return This method builds array of the instances of the {@link OWLGraphWrapper} class; wrapper around the OWLOntology.
+	 * The graph wrappers are built from the default location ontology configured at conf/gold.properties file.
 	 * @throws IOException 
 	 * @throws OWLOntologyCreationException 
 	 */
@@ -241,8 +273,17 @@ public class DbOperations implements DbOperationsInterface{
 	
 		
 		return graph;
-		
+	
 	}
+	
+	public OWLGraphWrapper buildOWLGraphWrapper(String ontologyLocation) throws IOException, OWLOntologyCreationException{
+		OWLOntology ontology = buildOWLOntology(ontologyLocation);
+		
+		OWLGraphWrapper wrapper = new OWLGraphWrapper(ontology);
+
+		return wrapper;
+	}	
+	
 
 	public OWLOntology buildOWLOntology(String ontologyLocation) throws IOException, OWLOntologyCreationException{
 		if(ontologyLocation == null)
@@ -280,75 +321,9 @@ public class DbOperations implements DbOperationsInterface{
 	}	
 	
 	
-	public OWLGraphWrapper buildOWLGraphWrapper(String ontologyLocation) throws IOException, OWLOntologyCreationException{
-		/*if(ontologyLocation == null)
-			throw new FileNotFoundException("The file is not found");
-		
-
-		for(DbOperationsListener listener: listeners){
-			listener.startOntologyLoad();
-		}
-		
-		OWLOntology ontology = null;
-		if(ontologyLocation.endsWith(".obo")){
-			OBOFormatParser parser = new OBOFormatParser();
-			
-			OBODoc doc = parser.parse(ontologyLocation);
-			
-			Obo2Owl obo2owl = new Obo2Owl();
-			
-			ontology = obo2owl.convert(doc);
-		}else{
-			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-			if(ontologyLocation.startsWith("http:"))
-				ontology = manager.loadOntologyFromOntologyDocument(IRI.create(ontologyLocation));
-			else
-				ontology = manager.loadOntologyFromOntologyDocument(new File(ontologyLocation));
-				
-		}*/
-		OWLOntology ontology = buildOWLOntology(ontologyLocation);
-		
-		OWLGraphWrapper wrapper = new OWLGraphWrapper(ontology);
-
-		/*
-		for(DbOperationsListener listener: listeners){
-			listener.endOntologyLoad(wrapper);
-		}*/
-		
-		return wrapper;
-	}	
-	
-	public List<String> dumpFiles(String tablePrefix, OWLGraphWrapper wrapper) throws Exception{
-		for(DbOperationsListener listener: listeners){
-			listener.dumpFilesStart();
-		}
-		
-		if(DEBUG){
-			LOG.debug("-");
-		}
-		
-		
-		GoConfigManager manager = GoConfigManager.getInstance();
-		/*OWLGraphWrapper wrapper = new OWLGraphWrapper( 	
-			new Obo2Owl().convert(oboFile));
-		*/
-		OntologyBulkLoader loader = new OntologyBulkLoader(wrapper, manager.getTsvFilesDir(), tablePrefix);
-		
-		List<String> list = loader.dumpBulkLoadTables();
-		
-		LOG.info("Tables dump completed");
-		
-		for(DbOperationsListener listener: listeners){
-			listener.dumpFilesEnd();
-		}
-		
-		return list;
-		
-	}
-	
 	
 	/**
-	 * It creates schema of GOLD database.
+	 * This method creates schema of GOLD database.
 	 * @param force: The true value of this parameter drop of all existing tables and
 	 * 			creates new ones.
 	 * @param tablePrefix This prefix is used as prefix of each table created in the database.
@@ -363,6 +338,7 @@ public class DbOperations implements DbOperationsInterface{
 			LOG.debug("-");
 		}
 
+		//The schema is created in the database through the SchemaManager class.
 		SchemaManager sm = new SchemaManager();
 		GoConfigManager manager = GoConfigManager.getInstance();
 		sm.loadSchemaSQL(manager.getGolddbHostName(),
@@ -381,10 +357,11 @@ public class DbOperations implements DbOperationsInterface{
 	 * It loads the TSV files in the GOLD database.
 	 * @param tsvFilesDir The directory where TSV files are residing
 	 * @param list It is list of the names (without extension) of the files 
-	 * 		to be loaded in the GOLD database
+	 * 		to be loaded in the GOLD database. The extension of the tab delimited files is .txt
 	 * @throws Exception
 	 */
 	public void loadTsvFiles(String tsvFilesDir, List<String> list) throws Exception{
+	
 		for(DbOperationsListener listener: listeners){
 			listener.loadTsvFilesStart();
 		}
@@ -395,6 +372,8 @@ public class DbOperations implements DbOperationsInterface{
 		}
 
 		GoConfigManager manager = GoConfigManager.getInstance();
+	
+		//This class loads the tab delimited files into the database
 		TsvFileLoader tsvLoader = new TsvFileLoader(manager.getGolddbUserName(),
 				manager.getGolddbUserPassword(), manager.getGolddbHostName(), 
 				manager.getGolddbName());
@@ -422,7 +401,8 @@ public class DbOperations implements DbOperationsInterface{
 		}
 
 		File dir = new File(tsvFilesDir);
-		
+
+		//Get only the list of the .txt extension files
 		File[] files = dir.listFiles(new FileFilter() {
 			
 //			@Override
@@ -445,7 +425,7 @@ public class DbOperations implements DbOperationsInterface{
 	
 	/**
 	 * Incrementa update of the GOLD database from the contents of the obo file
-	 * located the default location.
+	 * located the default location. 
 	 * @throws Exception
 	 */
 	public void update() throws Exception{
@@ -453,6 +433,7 @@ public class DbOperations implements DbOperationsInterface{
 			LOG.debug("-");
 		}
 
+		//Get the list of the onotlogies file from the system configuration 
 		List list = GoConfigManager.getInstance().getDefaultOntologyLocations();
 		
 		if(list == null || list.size()==0){
@@ -464,7 +445,7 @@ public class DbOperations implements DbOperationsInterface{
 	}	
 	
 	/**
-	 * Incrementa update of the GOLD database from the contents of the obo file
+	 * Incrementa update of the GOLD database from the contents of the obo ontology file
 	 * located at the path supplied in the parameter
 	 * @param oboFile
 	 * @throws Exception
@@ -475,6 +456,12 @@ public class DbOperations implements DbOperationsInterface{
 		
 	}
 	
+	/**
+	 * The update process first perform the bulkload into temporary tables (tables names are prefixed with the value of geneontology.gold.deltatableprefix property).
+	 * Then the update command computes changes and the changes are saved into the databse through the hibernate layer.
+	 * @param wrapper
+	 * @throws Exception
+	 */
 	public void updateGold(OWLGraphWrapper wrapper) throws Exception{
 		if(DEBUG){
 			LOG.debug("-");
@@ -484,6 +471,7 @@ public class DbOperations implements DbOperationsInterface{
 			listener.updateStart();
 		}
 	
+		//only one process for changes in the database is allowed
 		if(isOperationRunning){
 			throw new RuntimeException("Another operating is still running. ");
 		}
@@ -494,16 +482,21 @@ public class DbOperations implements DbOperationsInterface{
 			GoConfigManager manager = GoConfigManager.getInstance();
 			
 			List<String> list = dumpFiles(manager.getGoldDetlaTablePrefix(), wrapper);
+			
+			//build schema for the temporary tables.
 			buildSchema(true, manager.getGoldDetlaTablePrefix());
 	
 			loadTsvFiles(GoConfigManager.getInstance().getTsvFilesDir(), list);
 			
-			GoldDeltaFactory gdf = new GoldDeltaFactory();
 	
 			if(DEBUG){
 				LOG.debug("Extracting delt hibernate objects from prefixed temporary tables");
 			}
 			
+			//build hibernate objects which represent new changes in the database.
+			
+			
+			GoldDeltaFactory gdf = new GoldDeltaFactory();
 			List<SubclassOf> subclassList = gdf.buildSubclassOfDelta();
 			List<Relation> relationList = gdf.buildRelationDelta();
 			List<AllSomeRelationship> asmList = gdf.buildAllSomeRelationships();
@@ -532,8 +525,9 @@ public class DbOperations implements DbOperationsInterface{
 			List<AnnotationAssertion> annAssertionList = gdf.buildAnnotationAssertion();
 			List<RelationEquivalenTo> relEqList = gdf.buildRelationEquivalenTo();
 			List<OntologyAlternateLabelType> oatList = gdf.buildOntologyAlternateLabelType();
-			//close the session associated with the tables prefixed with 
-			// the value of the geneontology.gold.deltatableprefix property
+
+			//The hibernate objects are built from temporary tables. The associated with the session links to temporary tables
+			//The session is need to be closed otherwise the hibernate objects cannot be saved by the other session.
 			gdf.getSession().getTransaction().commit();
 			gdf.getSession().close();
 			
@@ -542,15 +536,17 @@ public class DbOperations implements DbOperationsInterface{
 			}
 			
 			
-			
+			//Build a new session points to the main tables of the database.
 			GoldObjectFactory gof = GoldObjectFactory.buildDefaultFactory();
 			Session session = gof.getSession();
 			session.clear();
 	
-			//delete the removed assertions
-			//TODO: implement it for mult ontologies
+			//The utility deletes the removed assertions in the ontology from the databse.
+			//With the help of this utility deletes becomes part of a single transaction which is performing the updates 
 			DeleteUtility du = new DeleteUtility(manager.getGoldDetlaTablePrefix(), wrapper.getOntologyId());
 			session.doWork(du);
+			
+			//session the hibernate objects through the session object
 			
 			saveList(session, clsList);
 			
@@ -630,7 +626,6 @@ public class DbOperations implements DbOperationsInterface{
 		
 	}
 	
-	
 	public void addDbOperationsListener(DbOperationsListener listener){
 		if(!listeners.contains(listener))
 			listeners.add(listener);
@@ -647,8 +642,10 @@ public class DbOperations implements DbOperationsInterface{
 	}
 	
 	/**
-	 * This class delete corresponding records of
-	 *  the removed assertions in the obo file during the update process
+	 * This class delete records from the database corresponding to 
+	 *  the assertions removed from the ontology file.
+	 *  The delete opertion is performed during the ontology update process.
+	 *  The delete utility is part of the session object (to main a transaction) which saves the hibernates objects (represents new changes in the databse)
 	 * @author Shahid Manzoor
 	 *
 	 */
