@@ -6,6 +6,7 @@
 </HEAD><BODY bgcolor="#ffffff">
 <H1>Pubmed Ontology Generation Tool</H1>
 
+<p>(Note: this page is out of date.)</p>
 <P>
 The ontology generation process is structured in three major steps:
 <OL>
@@ -25,9 +26,9 @@ http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/anatomy/cell_type/cel
 <H2>Step1: Term Generation</H2>
 <P>
 <STRONG> Query PubMed and extract the terminology</STRONG> <BR>
-Submit the query "stem cell". The abstracts are retrieved from PubMed and terminilogy is extracted. Terms are listed by level of importance. 
+Submit the query "stem cell". The abstracts are retrieved from PubMed and terminology is extracted. Terms are listed by level of importance. 
 </P>
-<P align="center"><IMG height=450 hspace=0 src="../images/term_generation.png" width=900 border=0></P>
+<P align="center"><IMG hspace=0 src="../images/term_generation.png" border=0></P>
 <P align="center">Figure: Candidate terms extracted from PubMed abstracts for query <EM>stem cell</EM>.</P><BR>
 
 <P>
@@ -45,30 +46,30 @@ Examples of regular expressions:<OL>
 <LI type="disc"> sequence (*) of arbitrary characters (.) - human .* cell
 </LI></OL>
 
-<P align="center"><IMG height=400 hspace=0 src="../images/OBOEdit-Ontogen_SearchBoneMarrow.png" width=700 border=0></P>
+<P align="center"><IMG hspace=0 src="../images/OBOEdit-Ontogen_SearchBoneMarrow.png" border=0></P>
 <P align="center">Figure: Searching and selecting <EM>bone marrow</EM>.</P><BR>
 
-<P align="center"><IMG height=400 hspace=0 src="../images/OBOEdit-Ontogen_FilterStemCell.png" width=700 border=0></P>
+<P align="center"><IMG hspace=0 src="../images/OBOEdit-Ontogen_FilterStemCell.png" border=0></P>
 <P align="center">Figure:  Filtering candidate terms that end with <EM>stem cell</EM> or <EM>stem cells</EM>.</P><BR>
 
 <STRONG>Select and add terms to clipboard</STRONG> <BR>
 Clicking the checkbox or hitting the spacebar on a row selects a term and adds it to the clipboard.<BR>
 
-<P align="center"><IMG height=400 hspace=0 src="../images/OBOEdit-Ontogen_SelectTerm.png" width=700 border=0></P>
+<P align="center"><IMG hspace=0 src="../images/OBOEdit-Ontogen_SelectTerm.png" border=0></P>
 <P align="center">Figure: Selecting candidate terms.</P><BR>
 
 Several queries for a topic can be issued, the selections are stored until the current session exists. For the stem cell example, the search for human stem cell gets more specific existing terminology<BR>
 
-<P align="center"><IMG height=400 hspace=0 src="../images/OBOEdit-Ontogen_TermGenerationHumanStemCell.png" width=700 border=0></P>
+<P align="center"><IMG hspace=0 src="../images/OBOEdit-Ontogen_TermGenerationHumanStemCell.png" border=0></P>
 <P align="center">Figure: Refine results by generating candidate terms for the query <EM>human stem cell</EM></P><BR>
 
 <BR><STRONG>Loading, saving clipboard and clipboard behaviour</STRONG><BR>
 The clipboard content can be saved and loaded back from a file. Terms in the clipoard are enriched with synonyms and abbreviations found in later queries. All generated candidate terms matching terms labels from the clipboard are automatically selected and the merged representation is used then on.
 
-<P align="center"><IMG height=400 hspace=0 src="../images/OBOEdit-Ontogen_ClipboardSave.png" width=700 border=0></P>
+<P align="center"><IMG hspace=0 src="../images/OBOEdit-Ontogen_ClipboardSave.png" border=0></P>
 <P align="center">Figure: Saving clipboard content</P><BR>
 
-<P align="center"><IMG height=250 hspace=0 src="../images/ontology_gen_file.png" width=500 border=0></P>
+<P align="center"><IMG hspace=0 src="../images/ontology_gen_file.png" border=0></P>
 <P align="center">Figure: Tab delimited file containing the clipboard content.</P><BR>
 </P>
 
@@ -77,15 +78,15 @@ The clipboard content can be saved and loaded back from a file. Terms in the cli
 <STRONG>Generate Definiton Phrases</STRONG><BR>
 Clicking the <EM>DEF</EM> icon generates the definitions table with phrases for the candidate term.
 
-<P align="center"><IMG height=250 hspace=0 src="../images/OBOEdit-Ontogen_DefinitionGeneration.png" width=650 border=0></P>
+<P align="center"><IMG hspace=0 src="../images/OBOEdit-Ontogen_DefinitionGeneration.png" border=0></P>
 <P align="center">Figure: Definition phrases for the term <EM> human mesenchymal stem cell.</EM></P><BR>
 
 Definitions can be filtered as shown for candidate terms above. Selecting a definition phrase makes it appear in the editing area below the definition table along with known abbreviations found in the analyzed text.
 
-<P align="center"><IMG height=175 hspace=0 src="../images/OBOEdit-Ontogen_DefinitionEditing.png" width=600 border=0></P>
+<P align="center"><IMG hspace=0 src="../images/OBOEdit-Ontogen_DefinitionEditing.png" border=0></P>
 <P align="center">Figure: Generated phrases for term <EM> human mesenchymal stem cell.</EM></P><BR>
 
-<P align="center"><IMG height=175 hspace=0 src="../images/OBOEdit-Ontogen_DefinitionEditing2.png" width=600 border=0></P>
+<P align="center"><IMG hspace=0 src="../images/OBOEdit-Ontogen_DefinitionEditing2.png" border=0></P>
 <P align="center">Figure: Edit definition for term <EM> human mesenchymal stem cell.</EM></P><BR>
 </P>
 
@@ -100,7 +101,7 @@ The generated and defined term can then be added to the ontology with the follow
   <LI>Find similar existing terms from the ontology as potential parents
 </LI></OL>
 
-<P align="center"><IMG height=250 hspace=0 src="../images/OBOEdit-Ontogen_AddToOntology.png" width=600 border=0></P>
+<P align="center"><IMG hspace=0 src="../images/OBOEdit-Ontogen_AddToOntology.png" border=0></P>
 <P align="center">Figure:Proposing suitable parent terms for the term <EM> human mesenchymal stem cell.</EM></P><BR>
 </P>
 
