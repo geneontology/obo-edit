@@ -10,9 +10,12 @@ import org.semanticweb.owlapi.model.OWLClass;
 
 import owltools.graph.OWLGraphWrapper;
 
+/**
+ * Checks to see if an annotation uses a class that is not in the current ontology, and that
+ * the class has not been obsoleted
+ *
+ */
 public class GoClassReferenceAnnotationRule extends AbstractAnnotationRule {
-
-	// private OWLGraphWrapper graph;
 
 	/*
 	 * public GoClassReferenceAnnotationRule(OWLGraphWrapper wrapper){
