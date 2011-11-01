@@ -13,6 +13,8 @@ bbop.core.require('bbop', 'core');
 bbop.core.namespace('bbop', 'html');
 bbop.core.namespace('bbop', 'html', 'tag');
 bbop.core.namespace('bbop', 'html', 'accordion');
+bbop.core.namespace('bbop', 'html', 'list');
+bbop.core.namespace('bbop', 'html', 'input');
 
 ///
 /// bbop.html.tag--the fundamental unit that we'll work with.
@@ -45,6 +47,7 @@ bbop.html.tag = function(tag, attrs, below){
     this._car = '<' + tag + additional_attrs + '>';
     this._cdr = '</' + tag + '>';
     this._contents = below;
+    this._singleton = '<' + tag + additional_attrs + ' />';
 };
 
 //
@@ -58,7 +61,13 @@ bbop.html.tag.prototype.to_string = function(){
 			   acc = acc + item.to_string();
 		       }
 		   });
-    return this._car + acc + this._cdr;
+    
+    // Special return case if there are no children (to prevent
+    // weirdness for things like br and input).
+    var output = this._singleton;
+    if( acc != '' ){ output = this._car + acc + this._cdr; }
+
+    return output;
 };
 
 //
@@ -174,4 +183,38 @@ bbop.html.list.prototype.add_child = function(item){
 //
 bbop.html.list.prototype.empty = function(){
     this._ul_stack = new bbop.html.tag('ul', this._attrs);
+};
+
+///
+/// A form input.
+///
+
+//bbop.html.input = function(in_list, attrs){
+bbop.html.input = function(attrs){
+    this._is_a = 'bbop.html.input';
+    
+    // Arg check--attrs should be defined as something.
+    if( ! attrs ){ attrs = {}; }
+    this._attrs = attrs;
+
+    // Internal stack always starts with a ul.
+    this._input_stack = new bbop.html.tag('input', this._attrs);
+
+    // var input_this = this;
+    // bbop.core.each(in_list, function(item){ input_this.add_child(item); });
+};
+
+//
+bbop.html.input.prototype.to_string = function(){
+    return this._input_stack.to_string();
+};
+
+// Add section.
+bbop.html.input.prototype.add_child = function(item){
+    this._input_stack.add_child(bbop.core.to_string(item));
+};
+
+// Reset/remove all children.
+bbop.html.input.prototype.empty = function(){
+    this._input_stack = new bbop.html.tag('input', this._attrs);
 };
