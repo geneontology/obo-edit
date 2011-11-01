@@ -75,17 +75,17 @@ load('logic.js');
  })();
 
 // Empty logic.
-//(function(){
-
-var l1 = new bbop.logic();
-mr_t.is_same_atom(l1.url(), '', "nothing");
-l1.add('fly');
-l1.add('human');
-mr_t.is_same_atom(l1.url(), 'fly and human', "something");
-l1.empty();
-mr_t.is_same_atom(l1.url(), '', "nothing again");
-
-// })();
+(function(){
+     
+     var l1 = new bbop.logic();
+     mr_t.is_same_atom(l1.url(), '', "nothing");
+     l1.add('fly');
+     l1.add('human');
+     mr_t.is_same_atom(l1.url(), 'fly and human', "something");
+     l1.empty();
+     mr_t.is_same_atom(l1.url(), '', "nothing again");
+     
+ })();
 
 ///
 /// End unit testing.

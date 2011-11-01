@@ -1,0 +1,73 @@
+////
+//// Some unit testing for registry.js
+////
+//// Usage:
+////    Command line: "js -f registry.js.tests"
+////    Interactive: "js -f registry.js.tests -f -"
+////
+
+
+// Load testing.
+load('test.js');
+var mr_t = new bbop.test();
+
+// Correct environment.
+load('core.js');
+load('logger.js');
+load('registry.js');
+
+///
+/// Start unit testing.
+///
+
+//
+(function(){
+
+     // Absolute basics.
+     var reg = new bbop.registry(['start', 'stop', 'reset']);
+     mr_t.is_same_atom(bbop.core.get_keys(reg.callback_registry).length, 3, "3 categories");
+     mr_t.is_same_atom(bbop.core.get_keys(reg.callback_registry['reset']).length, 0, "nothing in");
+     
+     // Create testable environment.
+     var acc = 0;
+     function plus(plus_val){ acc = acc + plus_val; }
+     function mult(mult_val){ acc = acc * mult_val; }
+     function sum(val1, val2){ acc = val1 + val2; }
+     
+     // Registration tests.
+     reg.register('reset', '0', plus, 0);
+     reg.register('reset', '1', mult, 1);
+     mr_t.is_same_atom(reg.get_callbacks('reset').length, 2, "2 callbacks");
+     reg.unregister('reset', '1');
+     mr_t.is_same_atom(reg.get_callbacks('reset').length, 1, "now 1 callback");
+     
+     // Test apply.
+     acc = 0;
+     reg.register('start', '0', plus, 0);
+     reg.register('start', '1', mult, 1);
+     reg.apply_callbacks('start', [2]);
+     mr_t.is_same_atom(acc, 2, "apply test 1");
+     
+     // Test apply and priority.
+     acc = 0;
+     reg.register('stop', '1', plus, 1);
+     reg.register('stop', '0', mult, 0);
+     reg.apply_callbacks('stop', [2]);
+     mr_t.is_same_atom(acc, 4, "apply test 2");
+     
+     // Test multivalued apply.
+     acc = 0;
+     reg.unregister('stop', '0');
+     reg.unregister('stop', '1');
+     reg.register('stop', '-1', sum, -1);
+     reg.apply_callbacks('stop', [2, 3]);
+     mr_t.is_same_atom(acc, 5, "apply test 3");
+     
+ })();
+
+///
+/// End unit testing.
+///
+
+// Final report.
+mr_t.report();
