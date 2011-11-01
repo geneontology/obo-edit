@@ -21,60 +21,71 @@ load('logic.js');
 ///
 
 // Simple logic
-//(function(){
-var l0 = new bbop.logic();
-mr_t.is_same_atom(bbop.core.what_is(l0), 'bbop.logic', 'id');
-mr_t.is_same_atom(bbop.core.dump(l0._bundle), '{"and": []}',
-		  'l0 start internal');
-
-var l1 = new bbop.logic();
-l1.add('fly');
-mr_t.is_same_atom(bbop.core.dump(l1._bundle), '{"and": ["fly"]}',
-		  'l1 start internal');
-mr_t.is_same_atom(l1.url(), 'fly', 'trivial');
-
-var l2a = new bbop.logic();
-l2a.add('fly');
-l2a.negate();
-mr_t.is_same_atom(bbop.core.dump(l2a._bundle),
-		  '{"not": {"and": ["fly"]}}', 'l2a start internal');
-mr_t.is_same_atom(l2a.url(), 'not (fly)', 'not trivial');
-
-var l2b = new bbop.logic();
-l2b.add('fly');
-l2b.add('worm');
-l2b.negate();
-mr_t.is_same_atom(bbop.core.dump(l2b._bundle),
-		  '{"not": {"and": ["fly", "worm"]}}', 'l2b start internal');
-mr_t.is_same_atom(l2b.url(), 'not (fly and worm)', 'not a little harder');
-
-var l3 = new bbop.logic();
-l3.add('fly');
-l3.add('mouse');
-l3.add('worm');
-mr_t.is_same_atom(bbop.core.dump(l3._bundle),
-		  '{"and": ["fly", "mouse", "worm"]}',
-		  'l3 start internal');
-mr_t.is_same_atom(l3.url(), 'fly and mouse and worm', 'and trivial');
-
-//})();
+(function(){
+     var l0 = new bbop.logic();
+     mr_t.is_same_atom(bbop.core.what_is(l0), 'bbop.logic', 'id');
+     mr_t.is_same_atom(bbop.core.dump(l0._bundle), '{"and": []}',
+		       'l0 start internal');
+     
+     var l1 = new bbop.logic();
+     l1.add('fly');
+     mr_t.is_same_atom(bbop.core.dump(l1._bundle), '{"and": ["fly"]}',
+		       'l1 start internal');
+     mr_t.is_same_atom(l1.url(), 'fly', 'trivial');
+     
+     var l2a = new bbop.logic();
+     l2a.add('fly');
+     l2a.negate();
+     mr_t.is_same_atom(bbop.core.dump(l2a._bundle),
+		       '{"not": {"and": ["fly"]}}', 'l2a start internal');
+     mr_t.is_same_atom(l2a.url(), 'not (fly)', 'not trivial');
+     
+     var l2b = new bbop.logic();
+     l2b.add('fly');
+     l2b.add('worm');
+     l2b.negate();
+     mr_t.is_same_atom(bbop.core.dump(l2b._bundle),
+		       '{"not": {"and": ["fly", "worm"]}}',
+		       'l2b start internal');
+     mr_t.is_same_atom(l2b.url(), 'not (fly and worm)', 'not a little harder');
+     
+     var l3 = new bbop.logic();
+     l3.add('fly');
+     l3.add('mouse');
+     l3.add('worm');
+     mr_t.is_same_atom(bbop.core.dump(l3._bundle),
+		       '{"and": ["fly", "mouse", "worm"]}',
+		       'l3 start internal');
+     mr_t.is_same_atom(l3.url(), 'fly and mouse and worm', 'and trivial');
+ })();
 
 // Harder logic
+(function(){
+     var l4a = new bbop.logic('or');
+     var l4b = new bbop.logic('or');
+     l4b.add('fly');
+     l4b.add('human');
+     l4a.add(l4b);
+     var l4c = new bbop.logic('and');
+     l4c.add('mouse');
+     l4c.add('worm');
+     l4a.add(l4c);
+     mr_t.is_same_atom(l4a.url(), '(fly or human) or (mouse and worm)',
+		       'or compound');
+ })();
+
+// Empty logic.
 //(function(){
-var l4a = new bbop.logic('or');
-var l4b = new bbop.logic('or');
-l4b.add('fly');
-l4b.add('human');
-l4a.add(l4b);
-var l4c = new bbop.logic('and');
-l4c.add('mouse');
-l4c.add('worm');
-l4a.add(l4c);
-mr_t.is_same_atom(l4a.url(), '(fly or human) or (mouse and worm)',
-		  'or compound');
 
-//})();
+var l1 = new bbop.logic();
+mr_t.is_same_atom(l1.url(), '', "nothing");
+l1.add('fly');
+l1.add('human');
+mr_t.is_same_atom(l1.url(), 'fly and human', "something");
+l1.empty();
+mr_t.is_same_atom(l1.url(), '', "nothing again");
 
+// })();
 
 ///
 /// End unit testing.

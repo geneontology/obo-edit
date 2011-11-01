@@ -40,20 +40,20 @@ load('html.js');
      var t1 = new bbop.html.tag('div');
      mr_t.is_same_atom(bbop.core.what_is(t1), 'bbop.html.tag', 'id');
 
-     mr_t.is_same_atom(t1.to_string(), '<div></div>', "same div");
+     mr_t.is_same_atom(t1.to_string(), '<div />', "same div");
 
      var t2 = new bbop.html.tag('div', {foo: "bar"});
-     mr_t.is_same_atom(t2.to_string(), '<div foo="bar"></div>', "same div attr");
+     mr_t.is_same_atom(t2.to_string(), '<div foo="bar" />', "same div attr");
 
      var t3 = new bbop.html.tag('div', {bar: "bib"});
      t3.add_child(t2);
      mr_t.is_same_atom(t3.to_string(),
-		       '<div bar="bib"><div foo="bar"></div></div>',
+		       '<div bar="bib"><div foo="bar" /></div>',
 		       "same div compound");
 
      t3.empty();
      mr_t.is_same_atom(t3.to_string(),
-		       '<div bar="bib"></div>',
+		       '<div bar="bib" />',
 		       "div emptied");
  })();
 
@@ -78,7 +78,7 @@ load('html.js');
      var a0 = new bbop.html.accordion([]);
      mr_t.is_same_atom(bbop.core.what_is(a0), 'bbop.html.accordion', 'id');
 
-     mr_t.is_same_atom(a0.to_string(), '<div></div>', 'nil accordion');
+     mr_t.is_same_atom(a0.to_string(), '<div />', 'nil accordion');
 
      var a1 = new bbop.html.accordion([['foo', 'bar']],
 				      {id: 'test-accordion'});
@@ -127,10 +127,27 @@ a3.add_child('test-b', d3);
      l3.add_child('foo');
      l3.add_child('bar');
      mr_t.is_same_atom(l3.to_string(),
-		       '<ul id="test-list"><li></li><li>foo</li>' + 
+		       '<ul id="test-list"><li /><li>foo</li>' + 
 		       '<li>bar</li></ul>',
 		       "check list 3");
  })();
+
+//
+//(function(){
+var i1 = new bbop.html.input({id: 'test-input', type: 'text'});
+mr_t.is_same_atom(i1.to_string(),
+		  '<input id="test-input" type="text" />',
+		  "quick input 1");
+var i2 = new bbop.html.input({id: 'test-input', type: 'text'});
+i2.add_child('foo');
+mr_t.is_same_atom(i2.to_string(),
+		  '<input id="test-input" type="text">foo</input>',
+		  "quick input 2");
+i2.empty();
+mr_t.is_same_atom(i2.to_string(),
+		  '<input id="test-input" type="text" />',
+		  "empty input");
+// })();
 
 ///
 /// End unit testing.
