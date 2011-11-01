@@ -71,9 +71,15 @@ bbop.logic = function(default_conjunction){
     }
     this.default_conjunction = default_conjunction;
 
+    // Set initial state.
     // ie: this._bundle = {'__AND__': []};
-    this._bundle = {};
-    this._bundle[this.default_conjunction] = [];
+    //this._bundle = {};
+    //this._bundle[this.default_conjunction] = [];
+    var _empty = function(){
+	logic_anchor._bundle = {};
+	logic_anchor._bundle[logic_anchor.default_conjunction] = [];
+    };
+    _empty();
 
     // 
     //this.and = function(){
@@ -164,6 +170,10 @@ bbop.logic = function(default_conjunction){
     this.url = function(){
 	return logic_anchor._read_walk(logic_anchor._bundle);
     };
+
+    // Empty/reset self.
+    // Staggered declaration so I can use it above during initialization.
+    this.empty = _empty;
 
     // TODO
     // Parse an incoming string into the internal data 
