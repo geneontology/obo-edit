@@ -239,7 +239,7 @@ public class OBOSessionImpl implements OBOSession {
 	}
 
 	public IdentifiedObject getObject(String id) {
-		if (id == null)
+		if (id == null || idHash == null)
 			return null;
 		IdentifiedObject out = (IdentifiedObject) idHash.get(id);
 		if (out != null)

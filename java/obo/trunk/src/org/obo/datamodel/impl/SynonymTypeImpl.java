@@ -1,11 +1,12 @@
 package org.obo.datamodel.impl;
 
+import java.io.Serializable;
 import org.obo.datamodel.*;
 
 import org.apache.log4j.*;
 import org.bbop.util.ObjectUtil;
 
-public class SynonymTypeImpl implements SynonymType {
+public class SynonymTypeImpl implements SynonymType, Serializable {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(SynonymTypeImpl.class);
@@ -13,6 +14,8 @@ public class SynonymTypeImpl implements SynonymType {
 	protected String id;
 	protected String name;
 	protected int scope;
+
+	private static final long serialVersionUID = 4339972913226533792L;
 
 	public SynonymTypeImpl() {
 		this(null, null, Synonym.UNKNOWN_SCOPE);
