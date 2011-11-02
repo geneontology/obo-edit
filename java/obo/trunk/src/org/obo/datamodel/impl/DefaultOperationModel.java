@@ -1,5 +1,6 @@
 package org.obo.datamodel.impl;
 
+import java.io.Serializable;
 import java.util.*;
 
 import org.obo.datamodel.*;
@@ -8,7 +9,12 @@ import org.obo.util.HistoryUtil;
 
 import org.apache.log4j.*;
 
-public class DefaultOperationModel implements OperationModel {
+public class DefaultOperationModel implements OperationModel, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5913604837564515607L;
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(DefaultOperationModel.class);
