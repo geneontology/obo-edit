@@ -89,11 +89,17 @@ public class SerialAdapter implements OBOAdapter {
 	}
 
 	public String getProgressString() {
+            if (pfis != null)
 		return pfis.getProgressString();
+            else
+                return "";
 	}
 
 	public Number getProgressValue() {
+            if (pfis != null)
 		return pfis.getProgressValue();
+            else
+                return 0;
 	}
 
 	public OBOSession getRoot() throws DataAdapterException {
