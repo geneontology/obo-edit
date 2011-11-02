@@ -2,8 +2,8 @@
 //// Some unit testing for logic.js
 ////
 //// Usage:
-////    Command line: "js -f logic.tests.js"
-////    Interactive: "js -f logic.tests.js -f -"
+////    Command line: "js -f logic.js.tests"
+////    Interactive: "js -f logic.js.tests -f -"
 ////
 
 
@@ -31,14 +31,14 @@ load('logic.js');
      l1.add('fly');
      mr_t.is_same_atom(bbop.core.dump(l1._bundle), '{"and": ["fly"]}',
 		       'l1 start internal');
-     mr_t.is_same_atom(l1.url(), 'fly', 'trivial');
+     mr_t.is_same_atom(l1.to_string(), 'fly', 'trivial');
      
      var l2a = new bbop.logic();
      l2a.add('fly');
      l2a.negate();
      mr_t.is_same_atom(bbop.core.dump(l2a._bundle),
 		       '{"not": {"and": ["fly"]}}', 'l2a start internal');
-     mr_t.is_same_atom(l2a.url(), 'not (fly)', 'not trivial');
+     mr_t.is_same_atom(l2a.to_string(), 'not (fly)', 'not trivial');
      
      var l2b = new bbop.logic();
      l2b.add('fly');
@@ -47,7 +47,7 @@ load('logic.js');
      mr_t.is_same_atom(bbop.core.dump(l2b._bundle),
 		       '{"not": {"and": ["fly", "worm"]}}',
 		       'l2b start internal');
-     mr_t.is_same_atom(l2b.url(), 'not (fly and worm)', 'not a little harder');
+     mr_t.is_same_atom(l2b.to_string(), 'not (fly and worm)', 'not a little harder');
      
      var l3 = new bbop.logic();
      l3.add('fly');
@@ -56,7 +56,7 @@ load('logic.js');
      mr_t.is_same_atom(bbop.core.dump(l3._bundle),
 		       '{"and": ["fly", "mouse", "worm"]}',
 		       'l3 start internal');
-     mr_t.is_same_atom(l3.url(), 'fly and mouse and worm', 'and trivial');
+     mr_t.is_same_atom(l3.to_string(), 'fly and mouse and worm', 'and trivial');
  })();
 
 // Harder logic
@@ -70,7 +70,7 @@ load('logic.js');
      l4c.add('mouse');
      l4c.add('worm');
      l4a.add(l4c);
-     mr_t.is_same_atom(l4a.url(), '(fly or human) or (mouse and worm)',
+     mr_t.is_same_atom(l4a.to_string(), '(fly or human) or (mouse and worm)',
 		       'or compound');
  })();
 
@@ -78,12 +78,12 @@ load('logic.js');
 (function(){
      
      var l1 = new bbop.logic();
-     mr_t.is_same_atom(l1.url(), '', "nothing");
+     mr_t.is_same_atom(l1.to_string(), '', "nothing");
      l1.add('fly');
      l1.add('human');
-     mr_t.is_same_atom(l1.url(), 'fly and human', "something");
+     mr_t.is_same_atom(l1.to_string(), 'fly and human', "something");
      l1.empty();
-     mr_t.is_same_atom(l1.url(), '', "nothing again");
+     mr_t.is_same_atom(l1.to_string(), '', "nothing again");
      
  })();
 

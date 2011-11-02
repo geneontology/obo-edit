@@ -167,6 +167,11 @@ bbop.logic = function(default_conjunction){
     };
 
     // Dump the current data out to a URL.
+    this.to_string = function(){
+	return logic_anchor._read_walk(logic_anchor._bundle);
+    };
+
+    // TODO: Dump the current data out to a URL.
     this.url = function(){
 	return logic_anchor._read_walk(logic_anchor._bundle);
     };
