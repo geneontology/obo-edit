@@ -211,8 +211,11 @@ bbop.core.is_empty = function(in_thing){
 bbop.core.each = function(in_thing, in_function){
 
     // Probably an not array then.
-    if( typeof(in_thing) != 'object' ){
-	throw new Error('unsupported type in each');
+    if( typeof(in_thing) == 'undefined' ){
+	// this is a nothing, to nothing....
+    }else if( typeof(in_thing) != 'object' ){
+	throw new Error('Unsupported type in bbop.core.each: ' +
+			typeof(in_thing) );
     }else{
 	// Probably a hash, otherwise likely an array.
 	if( bbop.core.is_hash(in_thing) ){
