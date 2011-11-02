@@ -16,13 +16,13 @@ bbop.core.namespace('bbop', 'registry');
 bbop.registry = function(evt_list){
     this._is_a = 'bbop.registry';
 
-    var anchor = this;
+    var registry_anchor = this;
 
     // Handle the registration of call functions to get activated
     // after certain events.
     this.callback_registry = {};
     bbop.core.each(evt_list, function(item, i){
-		       anchor.callback_registry[item] = {};
+		       registry_anchor.callback_registry[item] = {};
 		   });
     
     // Remove the specified function from the registry, with an
@@ -30,7 +30,7 @@ bbop.registry = function(evt_list){
     this.register = function(category, function_id, in_function, in_priority){
 
 	// Only these categories.
-	if( typeof(anchor.callback_registry[category]) == 'undefined'){
+	if( typeof(registry_anchor.callback_registry[category]) == 'undefined'){
 	    throw new Error('cannot register, unknown category');
 	}
 
@@ -38,7 +38,7 @@ bbop.registry = function(evt_list){
 	var priority = 0;
 	if( in_priority ){ priority = in_priority; }
 
-	anchor.callback_registry[category][function_id] =
+	registry_anchor.callback_registry[category][function_id] =
 	    {
 		runner: in_function,
 		priority: priority
@@ -47,9 +47,9 @@ bbop.registry = function(evt_list){
 
     // Remove the specified function from the registry.
     this.unregister = function(category, function_id){
-	if( anchor.callback_registry[category] &&
-	    anchor.callback_registry[category][function_id] ){
-		delete anchor.callback_registry[category][function_id];
+	if( registry_anchor.callback_registry[category] &&
+	    registry_anchor.callback_registry[category][function_id] ){
+		delete registry_anchor.callback_registry[category][function_id];
             }
     };
     
@@ -57,22 +57,24 @@ bbop.registry = function(evt_list){
     this.get_callbacks = function(category){
 
 	var cb_id_list =
-	    bbop.core.get_keys(anchor.callback_registry[category]);
+	    bbop.core.get_keys(registry_anchor.callback_registry[category]);
 	// Sort callback list according to priority.
-	var ptype_anchor = this;
-	cb_id_list.sort(function(a, b){  
-			    var pkg_a =
-				ptype_anchor.callback_registry[category][a];
-			    var pkg_b =
-				ptype_anchor.callback_registry[category][b];
-			    return pkg_b['priority'] - pkg_a['priority'];
-			});
+	var ptype_registry_anchor = this;
+	cb_id_list.sort(
+	    function(a, b){  
+		var pkg_a =
+		    ptype_registry_anchor.callback_registry[category][a];
+		var pkg_b =
+		    ptype_registry_anchor.callback_registry[category][b];
+		return pkg_b['priority'] - pkg_a['priority'];
+	    });
 	
 	// Collect the actual stored functions by priority.
 	var cb_fun_list = [];
 	for( var cbi = 0; cbi < cb_id_list.length; cbi++ ){
 	    var cb_id = cb_id_list[cbi];
-	    var to_run = anchor.callback_registry[category][cb_id]['runner'];
+	    var to_run =
+		registry_anchor.callback_registry[category][cb_id]['runner'];
 	    cb_fun_list.push(to_run);
 	    // ll('callback: ' + category + ', ' + cb_id + ', ' +
 	    //    this.callback_registry[category][cb_id]['priority']);
@@ -85,7 +87,7 @@ bbop.registry = function(evt_list){
     this.apply_callbacks = function(category, arg_list, context){
 
 	// Run all against registered functions.
-	var callbacks = anchor.get_callbacks(category);
+	var callbacks = registry_anchor.get_callbacks(category);
 	for( var ci = 0; ci < callbacks.length; ci++ ){
 	    var run_fun = callbacks[ci];
 	    //run_fun(arg_list);
