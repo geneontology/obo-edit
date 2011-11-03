@@ -18,7 +18,7 @@ class DefinitionAddButtonEditor extends DefaultCellEditor {
 	public DefinitionAddButtonEditor(JCheckBox checkBox) {
 		super(checkBox);
 		button = new JButton("+");
-		button.setToolTipText(Messages.getString("ButtonRenderer.AddDefinitionButton")); //$NON-NLS-1$
+		button.setToolTipText(Messages.getString("ButtonRenderer.AddDefinitionButton.tooltip")); //$NON-NLS-1$
 		button.setFont(button.getFont().deriveFont(12.0f));
 		button.setMargin(new Insets(1, 1, 1, 1));
 		button.setOpaque(true);

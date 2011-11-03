@@ -17,24 +17,21 @@ import javax.swing.SwingUtilities;
  * 
  * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2008
  */
-public class ProgressBarDialog extends JDialog
-{
+public class ProgressBarDialog extends JDialog {
 	private static final long serialVersionUID = 8003810001805242066L;
 
-	private static final String defaultWaitLabelText = "Please wait...                                                  ";
+	private static final String defaultWaitLabelText = Messages.getString("ProgressBarDialog.PleaseWait"); //$NON-NLS-1$
 
-	public ProgressBarDialog(JComponent parent) throws HeadlessException
-	{
+	public ProgressBarDialog(JComponent parent) throws HeadlessException {
 		this(parent, defaultWaitLabelText);
 	}
 
-	public ProgressBarDialog(JComponent parent, String waitLabelText) throws HeadlessException
-	{
+	public ProgressBarDialog(JComponent parent, String waitLabelText) throws HeadlessException {
 		super();
 
 		setModal(true);
 		setAlwaysOnTop(true);
-		setTitle("Working");
+		setTitle(Messages.getString("ProgressBarDialog.Working")); //$NON-NLS-1$
 		JPanel contentPane = new JPanel(new BorderLayout(7, 7));
 		setContentPane(contentPane);
 		JProgressBar progressBar = new JProgressBar();
@@ -42,8 +39,7 @@ public class ProgressBarDialog extends JDialog
 		contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		if (waitLabelText != null) {
 			contentPane.add(new JLabel(waitLabelText));
-		}
-		else {
+		} else {
 			contentPane.add(new JLabel(defaultWaitLabelText));
 		}
 		contentPane.add(progressBar, BorderLayout.SOUTH);

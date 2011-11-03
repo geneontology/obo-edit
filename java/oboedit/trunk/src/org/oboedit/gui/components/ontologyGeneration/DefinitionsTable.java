@@ -132,7 +132,6 @@ public class DefinitionsTable extends JTable
 		final int MAX_LINE_LENGTH = 40;
 		String toolTipText = "";
 		
-		int lineCount = 0;
 		// counts the number of characters outside HTML tags
 		int numberOfCharsRead = 0;
 		boolean openedTag = false;
@@ -163,7 +162,6 @@ public class DefinitionsTable extends JTable
 					}
 					
 				}
-				lineCount++;
 			}
 			
 			toolTipText += htmlDefinition.charAt(i);

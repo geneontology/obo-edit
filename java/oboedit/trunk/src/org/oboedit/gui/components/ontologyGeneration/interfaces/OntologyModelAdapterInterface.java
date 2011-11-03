@@ -3,7 +3,6 @@ package org.oboedit.gui.components.ontologyGeneration.interfaces;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.oboedit.gui.components.ontologyGeneration.CandidateTerm;
 
@@ -18,7 +17,10 @@ import org.oboedit.gui.components.ontologyGeneration.CandidateTerm;
  * @param <R>
  *            relationShipType used in the external ontology model
  */
-public interface OntologyModelAdapterInterface<T, R> {
+public interface OntologyModelAdapterInterface<T extends OntologyClassInterface,R> {
+	/*
+	 * Needed interface methods
+	 */
 
 	public abstract String getOntologyEditorVersion();
 
@@ -30,14 +32,6 @@ public interface OntologyModelAdapterInterface<T, R> {
 
 	public abstract List<String> lookupOntologyTermIdsFromIndexFuzzy(Collection<String> queries);
 
-	public abstract String getLabelForCandidateTermAsExistingOntologyTerm(CandidateTerm candidateTerm);
-
-	public abstract List<String> getSynonymsForOntologyTerm(T linkedObject);
-	
-	public abstract String getDefinitionForCandidateTermAsExistingOntologyTerm(CandidateTerm candidateTerm);
-
-	public abstract Map<String, String> getParentsForExistingTerm(CandidateTerm candidateTerm);
-
 	public abstract void selectOntologyTerm(String id);
 
 	public abstract void commitLabel(CandidateTerm candidateTerm);
@@ -47,6 +41,8 @@ public interface OntologyModelAdapterInterface<T, R> {
 	public abstract void commitAddToOntologyAsChildOfOntologyTerm(CandidateTerm selectedCandidateTerm,
 			Collection<ParentRelationEntry<R>> parentRelations, boolean includeChildren, boolean includeBranch);
 
+	public abstract String getLanguage();
+	
 	public abstract Locale getLocale();
 
 	public abstract void setLocale(Locale locale);
@@ -55,9 +51,15 @@ public interface OntologyModelAdapterInterface<T, R> {
 	 * Wrapper organizational methods
 	 */
 
-	public abstract void setService(OntologyGenerationComponentServiceInterface<T, R> service);
+	public abstract void setService(OntologyGenerationComponentServiceInterface<T,R> service);
 
 	public abstract void cleanup();
 
+	public abstract OntologyClassInterface getSelectedOntologyTerm();
 
+	public void registerForOntologyTermSelectionChange(OntologyGenerationComponentServiceInterface<T,R> component);
+	
+	public abstract OntologyClassInterface getOntologyClassForCandidateTerm(CandidateTerm candidateTerm);
+	
+	public abstract CandidateTerm getCandidateTermForOntologyClass(OntologyClassInterface ontologyClass);
 }

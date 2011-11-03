@@ -35,10 +35,10 @@ import org.apache.log4j.Logger;
  * @author waechter
  */
 public class ProxyInfo {
-	public static final String PROXY_PASSWORD = "http.proxyPassword";
-	public static final String PROXY_USERNAME = "http.proxyUser";
-	public static final String PROXY_PORT = "http.proxyPort";
-	public static final String PROXY_HOST = "http.proxyHost";
+	public static final String PROXY_PASSWORD = "http.proxyPassword"; //$NON-NLS-1$
+	public static final String PROXY_USERNAME = "http.proxyUser"; //$NON-NLS-1$
+	public static final String PROXY_PORT = "http.proxyPort"; //$NON-NLS-1$
+	public static final String PROXY_HOST = "http.proxyHost"; //$NON-NLS-1$
 	private static String host;
 	private static String port;
 	private static String username;
@@ -109,7 +109,7 @@ public class ProxyInfo {
 				}
 			}
 			boolean b = null != username && null != password;
-			logger.info("Use Axis2 with proxy " + host + ":" + port + " with username/password=" + String.valueOf(b));
+			logger.debug("Use Axis2 with proxy " + host + ":" + port + " with username/password=" + String.valueOf(b)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 			stub._getServiceClient().getOptions()
 					.setProperty(org.apache.axis2.transport.http.HTTPConstants.PROXY, proxyProperties);
@@ -166,14 +166,14 @@ public class ProxyInfo {
 				password = System.getProperty(PROXY_PASSWORD);
 
 			boolean b = null != username && null != password;
-			logger.info("Initialized proxy from JVM arguments. proxy=" + host + ":" + port
-					+ " with username/password=" + String.valueOf(b));
+			logger.debug("Initialized proxy from JVM arguments. proxy=" + host + ":" + port //$NON-NLS-1$ //$NON-NLS-2$
+					+ " with username/password=" + String.valueOf(b)); //$NON-NLS-1$
 		} else {
 			/* CASE 2: properties set in system settings, get proxy object */
-			System.setProperty("java.net.useSystemProxies", "true");
+			System.setProperty("java.net.useSystemProxies", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 			List<Proxy> l = null;
 			try {
-				l = ProxySelector.getDefault().select(new URI("http://www.yahoo.com"));
+				l = ProxySelector.getDefault().select(new URI("http://www.yahoo.com")); //$NON-NLS-1$
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
@@ -181,18 +181,18 @@ public class ProxyInfo {
 			if (l != null) {
 				for (Iterator<Proxy> iter = l.iterator(); iter.hasNext();) {
 					Proxy proxy = iter.next();
-					logger.trace("proxy type : " + proxy.type());
+					logger.trace("proxy type : " + proxy.type()); //$NON-NLS-1$
 					InetSocketAddress addr = (InetSocketAddress) proxy.address();
 					if (addr == null) {
-						logger.trace("No Proxy");
+						logger.trace("No Proxy"); //$NON-NLS-1$
 					} else {
-						logger.info("proxy hostname : " + addr.getHostName() + ":" + addr.getPort());
+						logger.debug("proxy hostname : " + addr.getHostName() + ":" + addr.getPort()); //$NON-NLS-1$ //$NON-NLS-2$
 						if (null == host)
 							ProxyInfo.setHost(addr.getHostName());
 						if (null == port)
 							ProxyInfo.setPort(String.valueOf(addr.getPort()));
 						boolean b = null != username && null != password;
-						logger.info("Initialized proxy from System settings. proxy=" + host + ":" + port
+						logger.debug("Initialized proxy from System settings. proxy=" + host + ":" + port //$NON-NLS-1$ //$NON-NLS-2$
 								+ String.valueOf(b));
 					}
 				}
@@ -210,10 +210,10 @@ public class ProxyInfo {
 		URL url;
 		try {
 			Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(host, Integer.valueOf(port)));
-			url = new URL("http://www.yahoo.com");
+			url = new URL("http://www.yahoo.com"); //$NON-NLS-1$
 			HttpURLConnection uc = (HttpURLConnection) url.openConnection(proxy);
-			String encoded = new String(Base64.encodeBase64(new String(username + ":" + password).getBytes()));
-			uc.setRequestProperty("Proxy-Authorization", "Basic " + encoded);
+			String encoded = new String(Base64.encodeBase64(new String(username + ":" + password).getBytes())); //$NON-NLS-1$
+			uc.setRequestProperty("Proxy-Authorization", "Basic " + encoded); //$NON-NLS-1$ //$NON-NLS-2$
 			uc.connect();
 			
 			if (uc.getResponseCode() == HttpURLConnection.HTTP_PROXY_AUTH) {
@@ -237,7 +237,7 @@ public class ProxyInfo {
 
 		// USERNAME
 		{
-			JLabel label = new JLabel("Username:", JLabel.RIGHT);
+			JLabel label = new JLabel(Messages.getString("ProxyInfo.Username"), JLabel.RIGHT); //$NON-NLS-1$
 			userNameField = new JTextField(10);
 			label.setLabelFor(userNameField);
 			
@@ -249,7 +249,7 @@ public class ProxyInfo {
 		}
 		// PASSWORD
 		{
-			JLabel label = new JLabel("Password:", JLabel.RIGHT);
+			JLabel label = new JLabel(Messages.getString("ProxyInfo.Password"), JLabel.RIGHT); //$NON-NLS-1$
 			passwordField = new JPasswordField(10);
 			label.setLabelFor(passwordField);
 			passwordField.setEchoChar('*');
@@ -264,7 +264,7 @@ public class ProxyInfo {
 		credentialsPanel.add(labelPanel, BorderLayout.WEST);
 		credentialsPanel.add(fieldPanel, BorderLayout.CENTER);
 		
-		JOptionPane.showMessageDialog(null, credentialsPanel, "Enter proxy user and password", JOptionPane.OK_OPTION);
+		JOptionPane.showMessageDialog(null, credentialsPanel, Messages.getString("ProxyInfo.EnterProxyUserAndPassword"), JOptionPane.OK_OPTION); //$NON-NLS-1$
 
 		setUsername(userNameField.getText());
 		setPassword(new String(passwordField.getPassword()));
@@ -273,7 +273,7 @@ public class ProxyInfo {
 	}
 	
 	private static void showConnectionErrorDialog(String message) {
-		JOptionPane.showMessageDialog(null, message, "Connection error", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(null, message, Messages.getString("ProxyInfo.ConnectionError"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
 	}
 
 	public static void registerListener(ChangeListener listener) {

@@ -17,9 +17,9 @@ import org.oboedit.gui.components.ontologyGeneration.TermsTable;
  * @param <R>
  *            relationShipType used in the external ontology model
  */
-public interface OntologyGenerationComponentServiceInterface<T, R> {
+public interface OntologyGenerationComponentServiceInterface<T extends OntologyClassInterface,R> {
 
-	public abstract AbstractOntologyTermsTable<T, R> getOntologyTermsTable();
+	public abstract AbstractOntologyTermsTable<T,R> getOntologyTermsTable();
 
 	public abstract JComponent buildGUI();
 
@@ -35,13 +35,15 @@ public interface OntologyGenerationComponentServiceInterface<T, R> {
 
 	public abstract void setTextSelectedOntologyTermField(String s);
 
-	public abstract void showProgressDlg(boolean displayDlg, String displayMsg);
+	public abstract void showProgressDialog(boolean displayDlg, String displayMsg);
 
 	public abstract void updateAllDependedOnSelectedCandidateTerm();
 
-	public abstract void updateOnOntologyTermSelectionChange(String label);
+	public abstract void updateOnOntologyTermSelectionChange(CandidateTerm candidateTerm);
 
 	public abstract CandidateTerm getSelectedCandidateTerm();
 	
 	public abstract void updateEditDefArea(String definition);
+	
+	public abstract void ontologyTermSelectionChanged();
 }

@@ -13,8 +13,6 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.text.TableView.TableRow;
 
-import org.jdesktop.swingx.PatternModel.RegexCreator;
-
 
 /**
  * Model for definitionsTable, holds candidateDefinition objects and provide operation on definitionsTable
@@ -93,10 +91,10 @@ public class DefinitionsTableModel extends AbstractTableModel
 	public String getColumnName(int column)
 	{
 		if (column == 2) {
-			return "Definitions";
+			return Messages.getString("DefinitionsTableModel.Definitions"); //$NON-NLS-1$
 		}
 		else {
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 
 	}

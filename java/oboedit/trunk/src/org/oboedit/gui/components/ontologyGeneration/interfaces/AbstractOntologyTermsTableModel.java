@@ -19,6 +19,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
+import org.oboedit.gui.components.ontologyGeneration.Messages;
+
 /**
  * {@link AbstractOntologyTermsTableModel} to hold instances of T for display in
  * {@link JTable}
@@ -52,14 +54,12 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 
 	private Map<String, Integer> termsRankInDefinitions = new HashMap<String, Integer>();
 
-	private Map<String, String> commentForKnownParentTerms = new HashMap<String, String>();
-
-	private Object[][] order = { { termsSelected, "selected term", null }, //
-			{ termsSameAsCandidateTerm, "same as existing term", "identical" }, //
-			{ termsKnownParentsOfCandidateTerm, "validated", commentForKnownParentTerms },//
-			{ termsPredictedParentsOfCandidateTerm, "predicted", "sub_class_of" }, //
-			{ termsFromDefinitions, "predicted", "sub_class_of" }, //
-			{ termsSimilarToCandidateTerm, "similar term", null } };
+	private Object[][] order = { { termsSelected, Messages.getString("AbstractOntologyTermsTableModel.SelectedTerm"), null }, // //$NON-NLS-1$
+			{ termsSameAsCandidateTerm, Messages.getString("AbstractOntologyTermsTableModel.SameAsExistingTerm"), Messages.getString("AbstractOntologyTermsTableModel.Identical") }, // //$NON-NLS-1$ //$NON-NLS-2$
+			{ termsKnownParentsOfCandidateTerm, Messages.getString("AbstractOntologyTermsTableModel.Validated"), Messages.getString("AbstractOntologyTermsTableModel.ExistingParentTerm") },// //$NON-NLS-1$ //$NON-NLS-2$
+			{ termsPredictedParentsOfCandidateTerm, Messages.getString("AbstractOntologyTermsTableModel.Predicted"), Messages.getString("AbstractOntologyTermsTableModel.SubClassOf") }, // //$NON-NLS-1$ //$NON-NLS-2$
+			{ termsFromDefinitions, Messages.getString("AbstractOntologyTermsTableModel.Predicted"), Messages.getString("AbstractOntologyTermsTableModel.SubClassOf") }, // //$NON-NLS-1$ //$NON-NLS-2$
+			{ termsSimilarToCandidateTerm, Messages.getString("AbstractOntologyTermsTableModel.SimilarTerm"), null } }; //$NON-NLS-1$
 
 	private boolean showOnlyTicked;
 
@@ -108,7 +108,6 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 		if (parentTerms != null) {
 			for (Entry<String, String> entry : parentTerms.entrySet()) {
 				termsKnownParentsOfCandidateTerm.add(entry.getKey());
-				commentForKnownParentTerms.put(entry.getKey(), entry.getValue());
 				ticked.add(entry.getKey());
 			}
 			sortingNeeded = true;
@@ -290,7 +289,7 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 		if (column < columns.values().length) {
 			return columns.values()[column].name();
 		} else {
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 
 	}
@@ -374,10 +373,8 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 			for (Object[] objects : order) {
 				Set<String> set = (Set<String>) objects[0];
 				if (set.contains(getTermId(term))) {
-					if (objects[2] instanceof String)
+					if (objects[2] instanceof String) {
 						return objects[2];
-					else if (objects[2] == commentForKnownParentTerms) {
-						return commentForKnownParentTerms.get(getTermId(term));
 					}
 				}
 			}
@@ -388,13 +385,13 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 				Set<String> set = (Set<String>) objects[0];
 				if (set.contains(getTermId(term))) {
 					if (buffer.length() > 0) {
-						buffer.append(", ");
+						buffer.append(", "); //$NON-NLS-1$
 					}
 					buffer.append(objects[1]);
 				}
 			}
 			if (buffer.length() == 0) {
-				buffer.append("existing term");
+				buffer.append(Messages.getString("AbstractOntologyTermsTableModel.ExistingTerm")); //$NON-NLS-1$
 			}
 			return buffer.toString();
 		}
@@ -584,7 +581,7 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 					}
 				}
 			} else {
-				throw new RuntimeException("id not known!");
+				throw new RuntimeException("id not known!"); //$NON-NLS-1$
 			}
 		}
 		sortingNeeded = true;
@@ -714,3 +711,4 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
     	this.language = language;
     }
 }
+
