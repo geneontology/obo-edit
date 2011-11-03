@@ -7,32 +7,28 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class FilterTextField extends JPanel
-{
+public class FilterTextField extends JPanel {
 	private static final long serialVersionUID = 8878237220844157476L;
-	
+
 	private JTextField textField;
 	private JLabel label;
-	
-	public FilterTextField(boolean needsFilterIcon) {
+
+	public FilterTextField() {
 		BorderLayout borderLayout = new BorderLayout();
 		this.setLayout(borderLayout);
-    	textField = new JTextField(5);
-    	if (needsFilterIcon)
-    		label = new JLabel(new ImageIcon(getClass().getResource("resources/filterIcon.png"))); 
-    	else
-    		label = new JLabel(new ImageIcon(getClass().getResource("resources/searchIcon.png"))); 
-	    label.setOpaque(true);  
-	    label.setBackground(textField.getBackground());
-	    this.setBorder(textField.getBorder());
-	    textField.setBorder(null);
-		textField.setToolTipText(Messages.getString("FilterTextField.ToolTip")); //$NON-NLS-1$
+		textField = new JTextField(5);
+		label = new JLabel(new ImageIcon(getClass().getResource("resources/searchIcon.png"))); //$NON-NLS-1$
+		label.setOpaque(true);
+		label.setBackground(textField.getBackground());
+		this.setBorder(textField.getBorder());
+		textField.setBorder(null);
+		textField.setToolTipText(Messages.getString("FilterTextField.tooltip")); //$NON-NLS-1$
 
-	    this.setBackground(textField.getBackground());
-	    this.add(label, BorderLayout.WEST);
-	    this.add(textField, BorderLayout.CENTER);
+		this.setBackground(textField.getBackground());
+		this.add(label, BorderLayout.WEST);
+		this.add(textField, BorderLayout.CENTER);
 	}
-	
+
 	public JTextField getTextField() {
 		return textField;
 	}
