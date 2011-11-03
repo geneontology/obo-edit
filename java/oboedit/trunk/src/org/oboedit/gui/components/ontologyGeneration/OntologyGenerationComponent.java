@@ -267,6 +267,7 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 	public OntologyGenerationComponent(OntologyModelAdapterInterface<T, R> adapter, JComponent guiComponent) {
 		// this.id = id;
 		this.adapter = adapter;
+		adapter.registerForOntologyTermSelectionChange(this);
 		PLUGIN_VERSIONED_NAME = adapter.getOntologyEditorVersion() + "_" + PLUGIN_VERSION;
 		this.guiComponent = guiComponent;
 		this.ontologyLookupQueue = new LinkedBlockingQueue<CandidateTerm>(100) {
@@ -3023,6 +3024,8 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 		if (children.size() < 2)
 			return;
 
+		List<? extends OntologyClassInterface> parents = selectedOntologyTerm.getParents();
+		
 		// Randomly select at least 2 seed terms
 		List<OntologyClassInterface> selectedSeedTerms = new ArrayList<OntologyClassInterface>();
 		Random random = new Random();

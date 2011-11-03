@@ -75,10 +75,10 @@ public class OBOClassWrapper implements OntologyClassInterface {
 			children = new ArrayList<OBOClassWrapper>(); 
 
 			Collection<Link> linkedObjectChildren = linkedObject.getChildren();
-			for (Link child : linkedObjectChildren) {
-				if (child instanceof LinkedObject) {
-					children.add(new OBOClassWrapper((LinkedObject)child));
-				}
+			for (Link childLink : linkedObjectChildren) {
+				LinkedObject child = childLink.getChild();
+				if (child != null)
+					children.add(new OBOClassWrapper(child));
 			}
 		}
 		
@@ -90,10 +90,10 @@ public class OBOClassWrapper implements OntologyClassInterface {
 			parents = new ArrayList<OBOClassWrapper>(); 
 
 			Collection<Link> linkedObjectParents = linkedObject.getParents();
-			for (Link parent : linkedObjectParents) {
-				if (parent instanceof LinkedObject) {
-					parents.add(new OBOClassWrapper((LinkedObject)parent));
-				}
+			for (Link parentLink : linkedObjectParents) {
+				LinkedObject parent = parentLink.getParent();
+				if (parent != null)
+					parents.add(new OBOClassWrapper(parent));
 			}
 		}
 		
@@ -105,10 +105,10 @@ public class OBOClassWrapper implements OntologyClassInterface {
 			parentMap = new HashMap<String, String>();
 			
 			Collection<Link> parents = linkedObject.getParents();
-			for (Link parent : parents) {
-				if (parent instanceof LinkedObject) {
+			for (Link parentLink : parents) {
+				LinkedObject parent = parentLink.getParent();
+				if (parent != null)
 					parentMap.put(parent.getID(), ((LinkedObject) parent).getName());
-				}
 			}
 		}
 		
