@@ -726,7 +726,7 @@ public class OntologyBulkLoader extends AbstractBulkLoader{
 				}else{
 					if(prop1 != null){
 						String prop2 = graphWrapper.getIdentifier(prop);
-						relation_chainDumper.dumpRow(supr, prop1, prop2, null);
+						relation_chainDumper.dumpRow(supr, prop1, prop2, null, ontologyId);
 					}
 				}
 			}

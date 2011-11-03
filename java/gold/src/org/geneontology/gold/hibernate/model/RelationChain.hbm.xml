@@ -8,6 +8,7 @@
 	       <key-property name="inferredRelation" column="inferred_relation" type="string"/>
 	       <key-property name="relation1" column="relation1" type="string"/>
 	       <key-property name="relation2" column="relation2" type="string"/>
+	       <key-property name="ontology" column="ontology" type="string"/>
         </composite-id>
         
         <property name="isBidirectional" type="java.lang.Boolean">
