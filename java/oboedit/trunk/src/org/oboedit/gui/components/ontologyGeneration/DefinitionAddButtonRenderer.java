@@ -15,7 +15,7 @@ class DefinitionAddButtonRenderer extends JButton implements TableCellRenderer
 	{
 		setOpaque(true);
 		this.setText("+");
-		this.setToolTipText(Messages.getString("ButtonRenderer.AddDefinitionButton")); //$NON-NLS-1$
+		this.setToolTipText(Messages.getString("ButtonRenderer.AddDefinitionButton.tooltip")); //$NON-NLS-1$
 		this.setFont(this.getFont().deriveFont(12.0f));
 		this.setMargin(new Insets(1,1,1,1));
 	}

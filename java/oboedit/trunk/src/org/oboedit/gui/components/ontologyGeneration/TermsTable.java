@@ -39,7 +39,8 @@ public class TermsTable extends JTable {
 	 * @param numberOfColumnsToShow
 	 * @param clipboard
 	 */
-	public TermsTable(OntologyModelAdapterInterface<?, ?> adapter, CandidateTermCache clipboard, int numberOfColumnsToShow, boolean isMainTermsTable) {
+	public TermsTable(OntologyModelAdapterInterface<?,?> adapter, CandidateTermCache clipboard, int numberOfColumnsToShow,
+			boolean isMainTermsTable) {
 		super(new TermsTableModel(adapter, clipboard, numberOfColumnsToShow, isMainTermsTable));
 		setGridColor(Color.LIGHT_GRAY);
 		setRowHeight(getRowHeight() + 4);
@@ -168,13 +169,15 @@ public class TermsTable extends JTable {
 			int index = 0;
 			while (it.hasNext()) {
 				CandidateTerm term = it.next();
-				String name = term.getGeneratedLabel();
-				if (p.matcher(name).find()) {
-					getSelectionModel().setSelectionInterval(index, index);
-					JTableHelper.scrollToCenter(this, index, 2);
-					return;
+				if (term.isVisible()) {
+					String name = term.getGeneratedLabel();
+					if (p.matcher(name).find()) {
+						getSelectionModel().setSelectionInterval(index, index);
+						JTableHelper.scrollToCenter(this, index, 2);
+						return;
+					}
+					index++;
 				}
-				index++;
 			}
 		}
 	}

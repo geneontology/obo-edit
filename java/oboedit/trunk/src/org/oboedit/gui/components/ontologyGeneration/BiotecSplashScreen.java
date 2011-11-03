@@ -49,7 +49,7 @@ public class BiotecSplashScreen extends JDialog
 		getContentPane().add(bip);
 		getContentPane().setBackground(Color.white);
 		setUndecorated(true);
-		setSize(500, 400);
+		setSize(500, 410);
 		setFocusable(true);
 
 		// center
@@ -123,10 +123,10 @@ public class BiotecSplashScreen extends JDialog
 		StringBuffer stringBuffer = new StringBuffer();
 		stringBuffer.append("<html>");
 		stringBuffer
-		    .append("<h3><b>DOG4DAG <small>(v" + OntologyGenerationComponent.PLUGIN_VERSION + ")</small> Ontology Generation Tool</b> for OBO-Edit 2</h3>");
+		    .append("<h3><b>DOG4DAG Ontology Generation Tool <small>(v" + OntologyGenerationComponent.PLUGIN_VERSION + ")</small></b></h3>");
 		stringBuffer.append("<p>The plugin was created by <b>Thomas W&auml;chter</b>.</p>");
 		stringBuffer.append("<p>Special thanks to: <b>G&ouml;tz Fabian</b>.</p>");
-		stringBuffer.append("<p><i>Under the terms of the Artistic License, TU Dresden, (c)2007-" + year + "</i></p>");
+		stringBuffer.append("<p><i>Under the terms of the Artistic License 2.0, TU Dresden, (c)2007-" + year + "</i></p>");
 		stringBuffer.append("<br>");
 		stringBuffer.append("<p>");
 		stringBuffer.append("DOG4DAG (Dresden Ontology Generator for Directed Acyclic Graphs) uses an ontology generation and a definition extraction web service developed at TU Dresden. Both services are hosted at TU Dresden.");
@@ -155,9 +155,9 @@ public class BiotecSplashScreen extends JDialog
 		textLabel.setText(stringBuffer.toString());
 
 		backgroundImagePanel.setBorder(BorderFactory.createEtchedBorder());
-		backgroundImagePanel.setSize(new Dimension(500, 400));
-		backgroundImagePanel.setPreferredSize(new Dimension(500, 400));
-		backgroundImagePanel.setMinimumSize(new Dimension(500, 400));
+		backgroundImagePanel.setSize(new Dimension(500, 410));
+		backgroundImagePanel.setPreferredSize(new Dimension(500, 410));
+		backgroundImagePanel.setMinimumSize(new Dimension(500, 410));
 		return backgroundImagePanel;
 	}
 }

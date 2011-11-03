@@ -31,7 +31,7 @@ public class TermsTableModel extends AbstractTableModel
 	private final CandidateTermCache clipboard;
 	private final boolean isMainTermsTable;
 	private boolean onlyShowExistingTerms;
-	private final OntologyModelAdapterInterface<?, ?> adapter;
+	private final OntologyModelAdapterInterface<?,?> adapter;
 
 	/**
 	 * Constructs a {@link TermsTableModel}.
@@ -39,7 +39,7 @@ public class TermsTableModel extends AbstractTableModel
 	 * @param isMainTermsTable
 	 * @param clipboard
 	 */
-	public TermsTableModel(OntologyModelAdapterInterface<?, ?> adapter, CandidateTermCache clipboard, int numberOfColumnsToShow, boolean isMainTermsTable)
+	public TermsTableModel(OntologyModelAdapterInterface<?,?> adapter, CandidateTermCache clipboard, int numberOfColumnsToShow, boolean isMainTermsTable)
 	{
 		this.adapter = adapter;
 		this.numberOfColumnsToShow = numberOfColumnsToShow;
@@ -90,36 +90,36 @@ public class TermsTableModel extends AbstractTableModel
 				StringBuffer buffer = new StringBuffer();
 				buffer.append(term.getLabel());
 				if (term.isInLoadedOntology() && !term.getLabel().equals(term.getGeneratedLabel())) {
-					buffer.append(" (generated: '");
+					buffer.append(Messages.getString("TermsTableModel.Generated")); //$NON-NLS-1$
 					buffer.append(term.getGeneratedLabel());
-					buffer.append("')");
+					buffer.append("')"); //$NON-NLS-1$
 			    }
 				StringBuffer typebuffer = new StringBuffer();
 				if (term.getTypes() != null && !isMainTermsTable) {
 					for (String type : term.getTypes()) {
 						if (!type.equals(CandidateTerm.TYPE_GENERATED) && !type.equals(CandidateTerm.TYPE_LOADED)) {
 							typebuffer.append(type);
-							typebuffer.append(" ");
-						}
+							typebuffer.append(" "); //$NON-NLS-1$
+						} 
 					}
 				}
 				String string = typebuffer.toString().trim();
 				if (string.length() > 0) {
-					buffer.append(" (");
+					buffer.append(" ("); //$NON-NLS-1$
 					buffer.append(string);
-					buffer.append(")");
+					buffer.append(")"); //$NON-NLS-1$
 				}
-				if (term.getExistingOntologyTerms() != null && term.getExistingOntologyTerms().size() > 0) {
-					buffer.append("  [");
+				if (term.getExistingLookupTerms() != null && term.getExistingLookupTerms().size() > 0) {
+					buffer.append("  ["); //$NON-NLS-1$
 					int i = 0;
-					for (OBOLookupTerm oboLookupTerm : term.getExistingOntologyTerms()) {
+					for (OBOLookupTerm oboLookupTerm : term.getExistingLookupTerms()) {
 						buffer.append(oboLookupTerm.getOboID());
 						i++;
-						if (i < term.getExistingOntologyTerms().size()) {
-							buffer.append(", ");
+						if (i < term.getExistingLookupTerms().size()) {
+							buffer.append(", "); //$NON-NLS-1$
 						}
 					}
-					buffer.append("]");
+					buffer.append("]"); //$NON-NLS-1$
 				}
 				return buffer.toString();
 			}
@@ -135,13 +135,13 @@ public class TermsTableModel extends AbstractTableModel
 	public String getColumnName(int column)
 	{
 		if (column == 0) {
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		else if (column == 1) {
-			return "Terms";
+			return Messages.getString("TermsTableModel.TermsColumnName"); //$NON-NLS-1$
 		}
 		else
-			return "";
+			return ""; //$NON-NLS-1$
 
 	}
 
@@ -191,7 +191,8 @@ public class TermsTableModel extends AbstractTableModel
 	{
 		synchronized (this) {
 			this.results.clear();
-			this.results.addAll(list);
+			if (list != null)
+				this.results.addAll(list);
 			updateExistingTermsInExternalModel();
 			fireTableDataChanged();
 		}
@@ -373,16 +374,7 @@ public class TermsTableModel extends AbstractTableModel
 	private void updateExistingTermsInExternalModel() {
 		// check terms against ontology labels and add to lookup list
 		for (CandidateTerm candidateTerm : this.results) {
-			candidateTerm.clearTermIdInLoadedOntology();
-			String id = adapter.findTermId(candidateTerm);
-			if (id != null) {
-				candidateTerm.setExistingIdOfLoadedTerm(id);
-				String existingLabel = adapter.getLabelForCandidateTermAsExistingOntologyTerm(candidateTerm);
-				if (existingLabel != null) {
-					candidateTerm.setExistingLabel(existingLabel);
-				}
-			}
+			candidateTerm.setExistingOntologyClass(adapter.getOntologyClassForCandidateTerm(candidateTerm));
 		}		
 	}
-	
 }

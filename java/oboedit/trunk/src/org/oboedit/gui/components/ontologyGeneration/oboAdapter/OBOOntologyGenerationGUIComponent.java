@@ -3,7 +3,6 @@ package org.oboedit.gui.components.ontologyGeneration.oboAdapter;
 import java.awt.Cursor;
 
 import org.bbop.framework.AbstractGUIComponent;
-import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
 import org.oboedit.gui.components.ontologyGeneration.OntologyGenerationComponent;
 import org.oboedit.gui.components.ontologyGeneration.interfaces.AbstractOntologyTermsTable;
@@ -22,17 +21,17 @@ public class OBOOntologyGenerationGUIComponent extends AbstractGUIComponent
 {
 
 	private static final long serialVersionUID = 6424353594539158432L;
-	final OntologyGenerationComponent<LinkedObject, OBOProperty> innerComponent;
-	final OntologyModelAdapterInterface<LinkedObject, OBOProperty> adapter;
+	final OntologyGenerationComponent<OBOClassWrapper, OBOProperty> innerComponent;
+	final OntologyModelAdapterInterface<OBOClassWrapper, OBOProperty> adapter;
 
 	public OBOOntologyGenerationGUIComponent(String id)
 	{
 		super(id);
 		adapter = OBOOntologyModelAdapter.getInstance();
-		innerComponent = new OntologyGenerationComponent<LinkedObject,OBOProperty>(adapter, this){
+		innerComponent = new OntologyGenerationComponent<OBOClassWrapper,OBOProperty>(adapter, this){
 
 			@Override
-			public AbstractOntologyTermsTable<LinkedObject, OBOProperty> createOntologyTermsTable()
+			public AbstractOntologyTermsTable<OBOClassWrapper, OBOProperty> createOntologyTermsTable()
 			{
 				return new OBOTermsTable(new OBOTermsTableModel());
 			}};

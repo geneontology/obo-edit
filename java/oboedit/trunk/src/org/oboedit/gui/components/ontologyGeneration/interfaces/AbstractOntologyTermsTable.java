@@ -25,7 +25,7 @@ import org.oboedit.gui.components.ontologyGeneration.TermsTable;
  * 
  * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2008
  */
-public abstract class AbstractOntologyTermsTable<T, R> extends JTable
+public abstract class AbstractOntologyTermsTable<T extends OntologyClassInterface, R> extends JTable
 {
 	private static final long serialVersionUID = -5517462579527283469L;
 	private int minScrollableViewPortHeight;
@@ -131,9 +131,9 @@ public abstract class AbstractOntologyTermsTable<T, R> extends JTable
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public AbstractOntologyTermsTableModel<T, R> getModel()
+	public AbstractOntologyTermsTableModel<T,R> getModel()
 	{
-		return (AbstractOntologyTermsTableModel<T, R>) super.getModel();
+		return (AbstractOntologyTermsTableModel<T,R>) super.getModel();
 	}
 
 	private class RelationComboBoxRenderer extends DefaultTableCellRenderer
