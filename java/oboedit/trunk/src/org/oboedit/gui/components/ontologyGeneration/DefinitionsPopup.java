@@ -30,6 +30,7 @@ import javax.swing.table.TableCellRenderer;
 
 import org.apache.log4j.Logger;
 import org.oboedit.gui.components.ontologyGeneration.extraction.DefinitionExtensionWorker;
+import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyClassInterface;
 import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyGenerationComponentServiceInterface;
 
 /**
@@ -38,7 +39,7 @@ import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyGenerati
  * @author Goetz Fabian
  * @author Marcel Hanke
  */
-public class DefinitionsPopup<T, R> extends JDialog
+public class DefinitionsPopup<T extends OntologyClassInterface, R> extends JDialog
 {
 
 	private static final long serialVersionUID = -9159196480683973991L;
@@ -75,10 +76,10 @@ public class DefinitionsPopup<T, R> extends JDialog
 		 */
 		Container contentPane = getContentPane();
 		box = new Box(BoxLayout.Y_AXIS);
-		label = new JLabel("Available Definitions:");
+		label = new JLabel(Messages.getString("DefinitionsPopup.AvailableDefinitions")); //$NON-NLS-1$
 		table = new DefinitionPopupTable();
 		scrollPane = new JScrollPane(table);
-		closeButton = new JButton("Close");
+		closeButton = new JButton(Messages.getString("DefinitionsPopup.Close")); //$NON-NLS-1$
 
 		/*
 		 * Adjust objects
@@ -298,6 +299,7 @@ public class DefinitionsPopup<T, R> extends JDialog
 
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public DefinitionPopupTableModel getModel()
 		{
@@ -312,7 +314,7 @@ public class DefinitionsPopup<T, R> extends JDialog
 			 * column, Otherwise (row contains definition), use standard cell renderer.
 			 */
 			if (column == 2 && candidateDefinitionList.get(row).isURL()) {
-				TableCellImageRenderer tableCellImageRenderer = new TableCellImageRenderer("resources/aboutIcon.png");
+				TableCellImageRenderer tableCellImageRenderer = new TableCellImageRenderer("resources/aboutIcon.png"); //$NON-NLS-1$
 				tableCellImageRenderer.setToolTipText(Messages.getString("DefinitionsPopup.ExternalBrowserIcon")); //$NON-NLS-1$
 				return tableCellImageRenderer;
 			}
@@ -356,9 +358,8 @@ public class DefinitionsPopup<T, R> extends JDialog
 								// add multi-line tooltip displaying the full HTML-formatted definition.
 								String htmlDef = getModel().getDefinitionForRow(pRow).def.getDefinitionHTMLFormatted();
 
-								String toolTipText = "";
+								String toolTipText = ""; //$NON-NLS-1$
 
-								int lineCount = 0;
 								// counts the number of characters outside HTML tags
 								int numberOfCharsRead = 0;
 								boolean openedTag = false;
@@ -378,18 +379,17 @@ public class DefinitionsPopup<T, R> extends JDialog
 									// if the maximum line length is reached, start a new line by appending "<br/>"
 									if ((numberOfCharsRead % MAX_LINE_LENGTH) == 0 && !openedTag && htmlDef.charAt(i) != '>') {
 										if (numberOfCharsRead > 0) {
-											int nextSpace = htmlDef.indexOf(" ", i);
+											int nextSpace = htmlDef.indexOf(" ", i); //$NON-NLS-1$
 											if (nextSpace != -1) {
 												toolTipText += htmlDef.substring(i, nextSpace);
 												i = nextSpace;
-												toolTipText += "<br/>";
+												toolTipText += "<br/>"; //$NON-NLS-1$
 											}
 											else {
 												toolTipText += htmlDef.substring(i);
 											}
 
 										}
-										lineCount++;
 									}
 
 									toolTipText += htmlDef.charAt(i);
@@ -416,36 +416,36 @@ public class DefinitionsPopup<T, R> extends JDialog
 		/**
 		 * Launches web browser to show the webpage definition is fetched from
 		 */
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		private void onClickOpenExternalDefinitionWebPage(int rowIndex)
 		{
-			String errMsg = "Error attempting to launch web browser";
-			String osName = System.getProperty("os.name");
+			String errMsg = Messages.getString("DefinitionsPopup.ErrorAttemptingToLaunchWebBrowser"); //$NON-NLS-1$
+			String osName = System.getProperty("os.name"); //$NON-NLS-1$
 			DefPosPair defPosPair = getModel().getDefinitionForRow(rowIndex);
 			String url = defPosPair.def.getCachedURLs().get(defPosPair.pos - 1);
 			try {
-				if (osName.startsWith("Mac OS")) {
-					Class fileMgr = Class.forName("com.apple.eio.FileManager");
-					Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] { String.class });
+				if (osName.startsWith("Mac OS")) { //$NON-NLS-1$
+					Class fileMgr = Class.forName("com.apple.eio.FileManager"); //$NON-NLS-1$
+					Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] { String.class }); //$NON-NLS-1$
 					openURL.invoke(null, new Object[] { url });
 				}
-				else if (osName.startsWith("Windows")) {
-					Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
+				else if (osName.startsWith("Windows")) { //$NON-NLS-1$
+					Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url); //$NON-NLS-1$
 				}
 				else { // assume Unix or Linux
-					String[] browsers = { "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" };
+					String[] browsers = { "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 					String browser = null;
 					for (int count = 0; count < browsers.length && browser == null; count++)
-						if (Runtime.getRuntime().exec(new String[] { "which", browsers[count] }).waitFor() == 0)
+						if (Runtime.getRuntime().exec(new String[] { "which", browsers[count] }).waitFor() == 0) //$NON-NLS-1$
 							browser = browsers[count];
 					if (browser == null)
-						throw new Exception("Could not find web browser");
+						throw new Exception("Could not find web browser"); //$NON-NLS-1$
 					else
 						Runtime.getRuntime().exec(new String[] { browser, url });
 				}
 			}
 			catch (Exception exception) {
-				JOptionPane.showMessageDialog(parent, errMsg + ":\n" + exception.getLocalizedMessage());
+				JOptionPane.showMessageDialog(parent, errMsg + ":\n" + exception.getLocalizedMessage()); //$NON-NLS-1$
 			}
 		}
 
@@ -492,8 +492,8 @@ public class DefinitionsPopup<T, R> extends JDialog
 					String fullDef = defPosPair.def.getDefinitionHTMLFormatted();
 					if (fullDef.length() >= MAX_SHORTDEF_LENGTH) {
 						String shortDef = fullDef.substring(0, MAX_SHORTDEF_LENGTH);
-						int lastSpace = shortDef.lastIndexOf(" ");
-						return shortDef.substring(0, lastSpace) + " ...";
+						int lastSpace = shortDef.lastIndexOf(" "); //$NON-NLS-1$
+						return shortDef.substring(0, lastSpace) + " ..."; //$NON-NLS-1$
 					}
 					else {
 						return fullDef;
@@ -517,7 +517,7 @@ public class DefinitionsPopup<T, R> extends JDialog
 		@Override
 		public String getColumnName(int columnIndex)
 		{
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 
 		@Override
