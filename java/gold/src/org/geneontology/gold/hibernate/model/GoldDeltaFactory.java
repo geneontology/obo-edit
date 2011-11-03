@@ -385,7 +385,7 @@ public class GoldDeltaFactory {
 		
 		while(rs.next()){
 			RelationChain ret = new RelationChain(rs.getString("inferred_relation"), rs.getString("relation1"), rs.getString("relation2"), 
-					rs.getBoolean("is_bidirectional") );
+					rs.getBoolean("is_bidirectional"), rs.getString("ontology") );
 			list.add(ret);
 		}
 		return list;

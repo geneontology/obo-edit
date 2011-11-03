@@ -2,7 +2,6 @@ package org.geneontology.gaf.io;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,14 +12,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 import org.apache.log4j.Logger;
 import org.geneontology.conf.GoConfigManager;
 import org.geneontology.gaf.hibernate.GafDocument;
 import org.geneontology.gaf.hibernate.GafHibObjectsBuilder;
 import org.geneontology.gaf.hibernate.GafObjectsFactory;
 import org.geneontology.gold.hibernate.model.GoldObjectFactory;
-import org.geneontology.gold.hibernate.model.Ontology;
 import org.geneontology.gold.io.DbOperations;
 import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.io.postgres.SchemaManager;
@@ -46,19 +43,11 @@ public class GAFDbOperations{
 
 	private static boolean DEBUG = LOG.isDebugEnabled();
 	
-	//private boolean dbCreate;
-	
-	private GafDocument gafDocument;
 	
 	public GAFDbOperations(){
 		listeners = new ArrayList<DbOperationsListener>();
 	}
 
-	
-	
-	public List<Ontology> getLastUpdateStatus(){
-		return null;
-	}
 	
 	
 	/**
@@ -71,13 +60,12 @@ public class GAFDbOperations{
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
+		//Geting GAf files configured in the gold.properties file
 		List files = GoConfigManager.getInstance().getDefaultGafFileLocations();
 		
 		if(files == null || files.size()==0){
 			throw new GafDbOperationsException("Ontology File Location is not Found specified in the geneontology.gold.ontologylocation property" );
 		}
-		
-	//	dbCreate = false;
 		
 		for(Object obj: files){
 			bulkLoad(obj.toString(), force);
@@ -86,22 +74,16 @@ public class GAFDbOperations{
 	
 	/**
 	 * Load the contents of the gaf file into GOLD
-	 * @param oboFile: The path of the obo file
+	 * @param oboFile: The path of the obo file. The path could be any for these http,ftp and file:// forms. It can also be relative path.
 	 * @param The true value of the force parameter drops all the existing tables
 	 * 			creates new ones.
 	 * @throws Exception
 	 */
 	public void bulkLoad(String gafLocation, boolean force) throws GafDbOperationsException{
 
-		/*try{
-			gafDocument = buildGafDocument(gafLocation);
-		}catch(IOException ex){
-			throw new GafDbOperationsException("An Error occured while building GAF document", ex);
-		}
-		
-		bulkLoad(gafDocument, force);*/
-		
+		//if path is relative the function will convert it to URI
 		gafLocation = toURI(gafLocation);
+		
 		GafURLFetch fetch = new GafURLFetch(gafLocation);
 		Reader reader = new InputStreamReader((InputStream)fetch.next());
 		
@@ -134,36 +116,46 @@ public class GAFDbOperations{
 	 * Each block is a fixed set of rows, e.g. 900000 row, in GAF file.
 	 * Once all the blocks are bulk-loaded then the changes are propagated into the database.  
 	 * @param reader
-	 * @param docid
-	 * @param path
+	 * @param docid The name of file
+	 * @param path The path of the file
 	 * @param force
 	 * @throws GafDbOperationsException
 	 */
 	public void bulkload(Reader reader, String docid, String path, boolean force) throws GafDbOperationsException{
+		
 		GafHibObjectsBuilder builder = new GafHibObjectsBuilder();
 		
 		try{
+			//Read the whole document/ read partial rows. The rows limit is configured in the gold.properties file
 			GafDocument doc = builder.buildDocument(reader, docid, path);
+			
 			ArrayList<GafDocument> docs = new ArrayList<GafDocument>();
 			if(doc != null)
 				docs.add(doc);
-			
+
+			//try to get GafDocument for the next block of rows
 			doc = builder.getNextSplitDocument();
 			if(doc != null)
 				docs.add(doc);
 			
+			//checking wehther the document is splitted
 			boolean split = docs.size()>1;
+			
+			//if the document is splitted then data will be populated in the temporary tables (the tables with prefix)
+			//, and create the temporary tables overriding the existing temporary tables.
 			boolean _force = split || force;
 			
 			while(!docs.isEmpty()){
 				doc = docs.remove(0);
 				
-				
+				//if split bulkload in the temporary tables otherwise bulkload in the main database tables
 				bulkLoad(doc, split ? GoConfigManager.getInstance().getGoldDetlaTablePrefix() : "", _force, split);
 				
+				//we only want to override the tables in the first iteration
 				if(_force)
 					_force = false;
 				
+				//try to get the document from the next block of rows
 				doc = builder.getNextSplitDocument();
 				if(doc != null)
 					docs.add(doc);
@@ -171,10 +163,14 @@ public class GAFDbOperations{
 			}
 
 			LOG.info("Commiting Bulk Load.");
+			
 			if(split){
+				//merge changes in the main database tables
+				
 				GafObjectsFactory factory = new GafObjectsFactory();
 				List docsList = factory.getGafDocument();
 
+				//merge rows through insert into select statements
 				BulkloadWork splitUpdateWork = new BulkloadWork(GoConfigManager.getInstance().getGoldDetlaTablePrefix(), docsList.isEmpty());
 				Session session = factory.getSession();
 				session.doWork(splitUpdateWork);
@@ -183,6 +179,7 @@ public class GAFDbOperations{
 				
 			}
 			
+			//save the last update date of the document
 			DbOperations.saveChangesHistory(docid);
 			
 			LOG.info("Bulk load is commited");
@@ -193,17 +190,6 @@ public class GAFDbOperations{
 		}
 	}
 	
-	/*public void bulkLoad(GafDocument gafDocument, boolean force) throws GafDbOperationsException{
-		bulkLoad(gafDocument, "", force);
-		
-	}
-	
-	public void bulkLoad(GafDocument gafDocument, String prefix, boolean force) throws GafDbOperationsException{
-		bulkLoad(gafDocument, prefix, force, false);
-	}*/
-	
-	//private GafObjectsFactory factory;
-	//private Session session;
 	
 	/**
 	 * This method bulk-loads the gafDocument in the gaf tables having the prefix (provided in the input).
@@ -212,45 +198,54 @@ public class GAFDbOperations{
 		if(DEBUG)
 			LOG.debug("--");
 		
+		if(prefix == null)
+			prefix = "";
+		
 		for(DbOperationsListener listener: listeners){
 			listener.bulkLoadStart();
 		}
 
+		//try to override the existing schema
 		if(force){
 			buildSchema(true, prefix);
 		}
 		
-		//if(factory == null || !split || gafDocument == null){
 		GafObjectsFactory	factory = new GafObjectsFactory();
-		//}
 
-		List gafDocs = factory.getGafDocument();
-		
 		List<String> tablesNames = new ArrayList<String>();
 
 		Session session = null;
 		
 		if(split || prefix.length()>0){
+			//if split or prefix is provided then all sql statements (select, insert and delete) 
+			//executed from the session object will be intercepted and, the statements will be rebuild
+			//by replacing the tables name with prefix + table name.
 			session =GoldObjectFactory.buildDeltaObjectFactory().getSession();
 		}else
 			session = factory.getSession();
 		
-		//if(!gafDocs.isEmpty() || split){
 		tablesNames.add("gene_annotation");
+		
+		//If the gaf file is splitted then the bioentities could be share between between splitted documents. 
+		//In this case bulk load (copy command) will not work. The bioentities will be stored by sesssion.saveOrUpdate() method 
+		//If split then don't bulkload the bioentity table.
 		if(!split){
 			tablesNames.add("bioentity");
 		}
 		
+		//with_info, composite_qualifier, extension_expression and bioentity (if split) tables are populated with session.saveOrUpdate command
 		bulkLoadHibernate(session, gafDocument, split);
 			
-		//}
-		
+		//dump gene_annotation and bioentity (if not split) into tab delimited files
 		List<String> list = dumpFiles(prefix, gafDocument, tablesNames);
 		
+		//load the tab delimited files into database via bulkload (copy command)
 		loadTsvFiles(GoConfigManager.getInstance().getTsvFilesDir(), list);
 
+		//update gaf_document table
 		session.saveOrUpdate(gafDocument);
 
+		//commit the all changes
 		session.getTransaction().commit();
 		
 		LOG.info("Bulk Load completed successfully");
@@ -273,7 +268,6 @@ public class GAFDbOperations{
 	private void bulkLoadHibernate(Session session, GafDocument gafDocument, boolean split){
 
 		
-	//	session.save(gafDocument);
 		for(String id: gafDocument.getWithInfosIds()){
 			List<WithInfo> list = gafDocument.getWithInfos(id);
 			for(WithInfo wi: list){
@@ -311,7 +305,7 @@ public class GAFDbOperations{
 	 * @return It returns the name of the tables for which the files are dumped
 	 * @throws Exception
 	 */
-	public List<String> dumpFiles(String tablePrefix, String gafFile) throws GafDbOperationsException{
+	/*public List<String> dumpFiles(String tablePrefix, String gafFile) throws GafDbOperationsException{
 		
 		try{
 			gafDocument = buildGafDocument(gafFile);
@@ -325,7 +319,7 @@ public class GAFDbOperations{
 
 	public List<String> dumpFiles(String tablePrefix, GafDocument gafDocument) throws GafDbOperationsException{
 		return dumpFiles(tablePrefix, gafDocument, new ArrayList<String>());
-	}
+	}*/
 
 		
 	
@@ -361,7 +355,7 @@ public class GAFDbOperations{
 		
 	}
 	
-	public GafDocument buildGafDocument(Reader reader, String docId, String path) throws IOException{
+	/*public GafDocument buildGafDocument(Reader reader, String docId, String path) throws IOException{
 		for(DbOperationsListener listener: listeners){
 			listener.startDomLoad();
 		}
@@ -388,7 +382,7 @@ public class GAFDbOperations{
 		}
 		
 		return buildGafDocument(new InputStreamReader(is), f.getName(), f.getCanonicalPath());
-	}
+	}*/
 	
 	
 	/**
@@ -525,7 +519,8 @@ public class GAFDbOperations{
 		if(LOG.isDebugEnabled()){
 			LOG.debug("-");
 		}
-		
+
+		//if path is relative the function will convert it to URI
 		gafLocation = toURI(gafLocation);
 		GafURLFetch fetch = new GafURLFetch(gafLocation);
 		Reader reader = new InputStreamReader((InputStream)fetch.next());
@@ -536,170 +531,39 @@ public class GAFDbOperations{
 
 	
 	/**
-	 * Incremental update of the GOLD database from the contents of the GAF document
-	 * located at the path supplied in the parameter
-	 * @param oboFile
-	 * @throws Exception
+	 * 
+	 * @param reader
+	 * @param docid name of the gaf
+	 * @param path
+	 * @throws GafDbOperationsException
 	 */
-/*	public void update(GafDocument gafDocument) throws GafDbOperationsException{
-		update(gafDocument, false);
-	}*/
-	
-	/**
-	 * This variable is set to true only when a big document loaded
-	 * through split methodology
-	 */
-	private boolean isSchemaCreted;
-	private boolean isFirstUpdateIteration;
-	
-	/*
-	public void update(GafDocument gafDocument, boolean splitt) throws GafDbOperationsException{
-		if(LOG.isDebugEnabled()){
-			LOG.debug("-");
-		}
-		
-		this.isFirstUpdateIteration = false;
-		
-		
-		if(gafDocument != null){
-		
-			GafObjectsFactory f = new GafObjectsFactory();
-			
-			this.gafDocument = gafDocument;
-			if(f.getGafDocument().isEmpty()){
-				bulkLoad(gafDocument, false);
-				return;
-			}
-			
-			for(DbOperationsListener listener: listeners){
-				listener.updateStart();
-			}
-			
-			GoConfigManager manager = GoConfigManager.getInstance();
-
-			if(!splitt || (splitt && !isSchemaCreted)){
-				
-				buildSchema(true, manager.getGoldDetlaTablePrefix());
-				buildSchema(true, "tmp-"+manager.getGoldDetlaTablePrefix());
-				isSchemaCreted = true;
-				isFirstUpdateIteration = true;
-
-			}
-
-			
-			List<String> list = dumpFiles(manager.getGoldDetlaTablePrefix(), gafDocument);
-			
-			
-			List<String> ll = new ArrayList<String>();
-			
-			ll.add(manager.getGoldDetlaTablePrefix()+"gene_annotation");
-			
-			loadTsvFiles(GoConfigManager.getInstance().getTsvFilesDir(), ll);
-			isSchemaCreted = true;
-			
-			LOG.info("updating bioentity table.");
-			
-				Session ssn = f.getSession();
-			
-				for(Bioentity be: gafDocument.getBioentities()){
-					ssn.saveOrUpdate(be);
-				}
-				
-				for(String id: gafDocument.getWithInfosIds()){
-					for(WithInfo wi: gafDocument.getWithInfos(id)){
-						ssn.saveOrUpdate(wi);
-					}
-				}
-				
-				for(String id: gafDocument.getExtensionExpressionIds()){
-					for(ExtensionExpression ee: gafDocument.getExpressions(id)){
-						ssn.saveOrUpdate(ee);
-					}
-				}
-				
-				for(String id: gafDocument.getCompositeQualifiersIds()){
-					for(CompositeQualifier cq: gafDocument.getCompositeQualifiers(id)){
-						ssn.saveOrUpdate(cq);
-					}
-				}
-				
-				for(GeneAnnotation ga: gafDocument.getGeneAnnotations()){
-					ssn.saveOrUpdate(ga);
-				}
-				
-				ssn.saveOrUpdate(gafDocument);
-				
-				ssn.getTransaction().commit();
-			
-			if(splitt)
-				return;
-		}
-		
-		LOG.info("last step of update.");
-		isSchemaCreted = false;
-
-//		GafDeltaFactory deltaFactory = new GafDeltaFactory(gafDocument);
-//		GafObjectsFactory factory = new GafObjectsFactory();
-		
-//		Collection<Bioentity> entities = deltaFactory.buildBioentityDelta();
-//		Collection<GeneAnnotation> annotations = deltaFactory.buildGeneAnnotations();
-//		Collection<CompositeQualifier> qualifiers = deltaFactory.buildCompositeQualifiers();
-//		Collection<ExtensionExpression> expressions = deltaFactory.buildExtensionExpressions();
-//		Collection<WithInfo> infos = deltaFactory.buildWithInfos();
-		
-//		deltaFactory.closeConnection();
-		
-//		Session session = factory.getSession();
-		
-		
-//		session.saveOrUpdate(this.gafDocument);
-//		saveOrUpdate(session, entities);
-//s		saveOrUpdate(session, annotations);
-//		saveOrUpdate(session, qualifiers);
-///		saveOrUpdate(session, expressions);
-//		saveOrUpdate(session, infos);
-		
-	
-	//	session.getTransaction().commit();
-		
-		LOG.info("Update completed successfully");
-
-		for(DbOperationsListener listener: listeners){
-			listener.updateEnd();
-		}
-		
-		
-	}*/
-	
-	/*private void saveOrUpdate(Session session, Collection objects){
-		
-		for(Object obj: objects){
-			session.saveOrUpdate(obj);
-		}
-	}*/
-	
-	
 	public void update(Reader reader, String docid, String path) throws GafDbOperationsException{
 		GafHibObjectsBuilder builder = new GafHibObjectsBuilder();
 		
 		try{
+			//build the document by reading a fixed block of rows. The rows limit is set in the gold.properties file
 			GafDocument doc = builder.buildDocument(reader, docid, path);
 			ArrayList<GafDocument> docs = new ArrayList<GafDocument>();
 			if(doc != null)
 				docs.add(doc);
 			
+			//try to read the next block of rows
 			doc = builder.getNextSplitDocument();
 			if(doc != null)
 				docs.add(doc);
 			
+			//check the gaf file is splitted
 			boolean split = docs.size()>1;
 			boolean _force = true;
 			int docsNumber = docs.size();
 			while(!docs.isEmpty()){
 				doc = docs.remove(0);
-				
+		
+				//perform bulkload into the temporary tables (the tables with a prefix). If the iteration
+				//is first time the create schema first
 				bulkLoad(doc, GoConfigManager.getInstance().getGoldDetlaTablePrefix(), _force, split);
 				
+				//we only the schema creation in the first iteration of the loop
 				if(_force)
 					_force = false;
 				
@@ -710,9 +574,11 @@ public class GAFDbOperations{
 			}
 
 			LOG.info("Commiting Update.");
+
+			//if atleast one document is build above the merge the changes
 			if(docsNumber>0){
+
 				GafObjectsFactory factory = new GafObjectsFactory();
-//				List docsList = factory.getGafDocument();
 
 				UpdateWork updateWork = new UpdateWork(GoConfigManager.getInstance().getGoldDetlaTablePrefix(), docid);
 				Session session = factory.getSession();
@@ -749,6 +615,7 @@ public class GAFDbOperations{
 	/**
 	 * This work is executed through hibernate session object. If the gaf file large enough then it is loaded through split
 	 * strategy, and this work is only executed when split methodology is used on a gaf file.
+	 * It merges data from temporary tables to main database tables via insert into select command.
 	 * @author shahidmanzoor
 	 *
 	 */
@@ -766,33 +633,42 @@ public class GAFDbOperations{
 		@Override
 		public void execute(Connection connection) throws SQLException {
 			Statement stmt= connection.createStatement();
-			stmt.executeUpdate("insert into gene_annotation (bioentity, composite_qualifier, is_contributes_to, is_integral_to, cls, reference_id, evidence_cls, with_expression, acts_on_taxon_id, last_update_date, assigned_by, extension_expression, gene_product_form, gaf_document) select bioentity, composite_qualifier, is_contributes_to, is_integral_to, cls, reference_id, evidence_cls, with_expression, acts_on_taxon_id, last_update_date, assigned_by, extension_expression, gene_product_form, gaf_document from " + prefix + "gene_annotation");
-
 			
-//			stmt= connection.createStatement();
+
+			//merge data into gene_annotation table
+			stmt.executeUpdate("insert into gene_annotation (bioentity, composite_qualifier, is_contributes_to, is_integral_to, cls, reference_id, evidence_cls, with_expression, acts_on_taxon_id, last_update_date, assigned_by, extension_expression, gene_product_form, gaf_document) select bioentity, composite_qualifier, is_contributes_to, is_integral_to, cls, reference_id, evidence_cls, with_expression, acts_on_taxon_id, last_update_date, assigned_by, extension_expression, gene_product_form, gaf_document from " + prefix + "gene_annotation");
+			//merge data into bioentity
+
+			stmt = connection.createStatement();
 			stmt.executeUpdate("insert into bioentity (id, symbol, full_name, type_cls,taxon_cls, db, gaf_document) select id, symbol, full_name, type_cls,taxon_cls, db, gaf_document from " +prefix+ "bioentity");
 			
 			if(isFirstTimeBulkload){
+				//if database is empty then this block is executed
 			
-	//			stmt = connection.createStatement();
+				//merge data into composite_qualifier
+				stmt = connection.createStatement();
 				stmt.executeUpdate("insert into composite_qualifier (id, qualifier_obj) select id, qualifier_obj from " + prefix + "composite_qualifier");
 			
-		//		stmt = connection.createStatement();
+				//merge data into with_info
+				stmt = connection.createStatement();
 				stmt.executeUpdate("insert into with_info (id, with_xref) select id, with_xref from " + prefix + "with_info");
 				
-			//	stmt = connection.createStatement();
+				//merge data into extension_expression
+				stmt = connection.createStatement();
 				stmt.execute("insert into extension_expression (id, relation, cls) select id, relation, cls from " + prefix + "extension_expression");
 			}else{
-				//stmt.execute("insert into composite_qualifier (id, qualifier_obj) select id, qualifier_obj from " + prefix + "composite_qualifier")
-				/*ResultSet rs= stmt.executeQuery("select t2.* from with_info t1, " + prefix+"with_info t2 where t1.id = t2.id");
-				while(rs.next()){
-					objectsToBeUpdated.add(new org.geneontology.gaf.hibernate.WithInfo(rs.getString("id"), rs.getString("with_xref")));
-				}*/
+				//this block is executed when the database has already some data.
 				
+				//for each insert statement below: first compute difference via EXCEPT operator between main database tables and the tables with prefix and then insert 
+				//the difference into the main tables
+				
+				stmt = connection.createStatement();
 				stmt.execute("insert into with_info (id, with_xref) select id, with_xref from " + prefix + "with_info EXCEPT select id, with_xref from with_info");
 				
+				stmt = connection.createStatement();
 				stmt.execute("insert into composite_qualifier (id, qualifier_obj) select id, qualifier_obj from " + prefix + "composite_qualifier except select id, qualifier_obj from composite_qualifier");
-				
+
+				stmt = connection.createStatement();
 				stmt.execute("insert into extension_expression (id, relation, cls) select id, relation, cls from " + prefix + "extension_expression except select id, relation, cls from extension_expression");
 
 			}
@@ -810,7 +686,13 @@ public class GAFDbOperations{
 	private class UpdateWork implements Work{
 
 		private String prefix;
+		
+		//gaf file name
 		private String docid;
+
+		/**
+		 * The collection holds the objects which represents new changes for the database. 
+		 */
 		private List objectsToBeUpdated;
 		
 		private UpdateWork(String prefix, String docId){
@@ -822,37 +704,9 @@ public class GAFDbOperations{
 		
 		@Override
 		public void execute(Connection connection) throws SQLException {
+
+			//compute changes for bioentity table
 			Statement stmt= connection.createStatement();
-
-			/*try{
-				stmt.execute("drop table "+prefix+"tmpgene_annotation");
-			}catch(Exception ex){
-				//ignore this
-			}
-
-			try{
-				stmt.execute("drop table "+prefix+"tmpbioentity");
-			}catch(Exception ex){
-				//ignore this
-			}
-			
-			
-			
-			stmt.execute("create table abc (id varchar)");
-			
-			stmt.execute("create table "+prefix+"tmpgene_annotation  (bioentity VARCHAR NOT NULL, " +
-				"composite_qualifier VARCHAR, is_contributes_to BOOLEAN, is_integral_to BOOLEAN, " +
-				"cls VARCHAR NOT NULL, reference_id VARCHAR, evidence_cls VARCHAR, with_expression VARCHAR, " +
-				"acts_on_taxon_id VARCHAR, last_update_date VARCHAR, assigned_by VARCHAR, extension_expression VARCHAR, " +
-				"gene_product_form VARCHAR, gaf_document VARCHAR)");
-			
-			
-			stmt.execute("create table "+prefix+"tmpbioentity" +
-					  "id VARCHAR PRIMARY KEY, symbol VARCHAR NOT NULL, full_name VARCHAR NOT NULL," + 
-					  "type_cls VARCHAR NOT NULL, taxon_cls VARCHAR NOT NULL, db VARCHAR, gaf_document varchar)");*/
-			
-		
-			stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery("select * from "+ prefix + "bioentity EXCEPT select * from bioentity where gaf_document='"+docid + "'");
 			while(rs.next()){
 				org.geneontology.gaf.hibernate.Bioentity entity = new org.geneontology.gaf.hibernate.Bioentity(
@@ -861,6 +715,7 @@ public class GAFDbOperations{
 				this.objectsToBeUpdated.add(entity);
 			}
 
+			//compute changes for gaf_document table
 			stmt = connection.createStatement();
 			rs = stmt.executeQuery("select * from "+ prefix + "gaf_document EXCEPT select * from gaf_document where id='"+docid + "'");
 			while(rs.next()){
@@ -869,6 +724,7 @@ public class GAFDbOperations{
 			}
 			
 			
+			//delete 
 			stmt = connection.createStatement();
 			rs = stmt.executeQuery("select * from bioentity where gaf_document='"+docid + "' EXCEPT select * from "+ prefix + "bioentity");
 			
@@ -904,59 +760,6 @@ public class GAFDbOperations{
 				stmt = connection.createStatement();
 				stmt.execute(sql);
 			}
-			
-			
-			/*stmt.execute("insert into "+prefix+"tmpbioentity (id, symbol, full_name, type_cls,taxon_cls, db, gaf_document) select id, symbol, full_name, type_cls,taxon_cls, db, gaf_document from bioentity where gaf_document='"+this.docid+"'");
-			
-			ResultSet rs = stmt.executeQuery("select * from "+ prefix + "tmpbioentity EXCEPT select * from "+prefix + "bioentity");
-			while(rs.next()){
-				stmt.execute("delete from bioentity where id='"+rs.getString("id")+"'");
-				stmt.execute("delete from " +prefix+ "tmpbioentity where id='"+rs.getString("id")+"'");
-
-			}
-			
-			stmt.execute("insert into " +prefix+ "tmpgene_annotation (bioentity, composite_qualifier, is_contributes_to, is_integral_to, cls, reference_id, evidence_cls, with_expression, acts_on_taxon_id, last_update_date, assigned_by, extension_expression, gene_product_form, gaf_document) select bioentity, composite_qualifier, is_contributes_to, is_integral_to, cls, reference_id, evidence_cls, with_expression, acts_on_taxon_id, last_update_date, assigned_by, extension_expression, gene_product_form, gaf_document from gene_annotation where gaf_document='"+this.docid+"'");
-			
-			rs = stmt.executeQuery("select * from "+ prefix + "tmpgene_annotation EXCEPT select * from "+prefix + "gene_annotation");
-			while(rs.next()){
-				stmt.execute("delete from gene_annotation where bioentity='"+rs.getString("bioentity")+
-						"' and gaf_document ='"+rs.getString("gaf_document")+ "' and composite_qualifier='" + rs.getString("composite_qualifier")
-						+ " and cls='"+rs.getString("cls") + "' and reference_id='"+ rs.getString("reference_id") + "' and " +
-								"evidence_cls='"+rs.getString("evidence_cls") + "' and ");
-								
-			}
-			
-			stmt.execute("insert into bioentity select * from "+prefix + "bioentity EXCEPT select * from "+ prefix +"tmpbioentity");
-
-			stmt.execute("insert into gene_annotation select * from "+prefix + "gene_annotation EXCEPT select * from "+ prefix +"tmpgene_annotation");*
-
-			/*
-			ResultSet rs= stmt.executeQuery("select * from " + prefix + "bioentity EXCEPT select * from bioentity");
-			while(rs.next()){
-				org.geneontology.gaf.hibernate.Bioentity entity = new org.geneontology.gaf.hibernate.Bioentity(
-						rs.getString("id"), rs.getString("symbol"), rs.getString("full_name"), 
-						rs.getString("type_cls"), rs.getString("taxon_cls"), rs.getString("db"), rs.getString("gaf_document"));
-				this.objectsToBeUpdated.add(entity);
-			}
-			
-			
-			rs = stmt.executeQuery("select * from "+ prefix + "gene_annotation EXCEPT select * from gene_annotation");
-			while(rs.next()){
-				org.geneontology.gaf.hibernate.GeneAnnotation ga = new org.geneontology.gaf.hibernate.GeneAnnotation(
-						rs.getString("bioentity"), rs.getBoolean("is_contributes_to") , rs.getBoolean("is_integral_to") 
-						, rs.getString("composite_qualifier") , rs.getString("cls"), 
-						rs.getString("reference_id") , rs.getString("evidence_cls") ,rs.getString("with_expression")  , 
-						rs.getString("acts_on_taxon_id") , rs.getString("last_update_date") , rs.getString("assigned_by"),
-						rs.getString("extension_expression") , rs.getString("gene_product_form") , 
-						rs.getString("gafDocument"));
-				this.objectsToBeUpdated.add(ga);
-			}
-			*/
-//			stmt.execut
-	//		stmt.executeQ
-			
-	//		stmt.execute("insert into bioentity (id, symbol, full_name, type_cls,taxon_cls, db, gaf_document) select * from "+prefix+"bioentity EXCEPT SELECT * from "+prefix+"tmpbioentity");
-	//		stmt.execute("insert into gene_annotation (bioentity, composite_qualifier, is_contributes_to, is_integral_to, cls, reference_id, evidence_cls, with_expression, acts_on_taxon_id, last_update_date, assigned_by, extension_expression, gene_product_form, gaf_document) select * from "+prefix+"gene_annotation EXCEPT select * from " + prefix +"tmpgene_annotation");
 			
 			
 			stmt.execute("insert into with_info (id, with_xref) select id, with_xref from " + prefix + "with_info EXCEPT select id, with_xref from with_info");

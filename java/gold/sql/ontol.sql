@@ -416,7 +416,8 @@ CREATE TABLE relation_chain (
        relation1 VARCHAR,
        relation2 VARCHAR,
        is_bidirectional BOOLEAN,
-       PRIMARY KEY (inferred_relation, relation1, relation2)
+       ontology VARCHAR,
+       PRIMARY KEY (inferred_relation, relation1, relation2, ontology)
 );
 
 COMMENT ON TABLE relation_chain IS 'A rule defining how two relations are composed.

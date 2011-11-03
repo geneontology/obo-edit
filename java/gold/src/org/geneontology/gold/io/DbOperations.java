@@ -735,8 +735,7 @@ public class DbOperations implements DbOperationsInterface{
 			tables.put("ontology_imports", new String[]{"ontology", "imports_ontology"});
 			//TODO: special case of deletion
 			tables.put("ontology_subset", new String[]{"id"});
-			//TODO: TBD
-			tables.put("relation_chain", new String[]{"inferred_relation", "relation1", "relation2"});
+			tables.put("relation_chain", new String[]{"inferred_relation", "relation1", "relation2", "ontology"});
 			tables.put("relation_disjoint_with", new String[]{"ontology", "disjoint_relation", "relation"});
 			tables.put("relation_equivalent_to", new String[]{"ontology", "equivalent_relation", "relation"});
 			tables.put("subclass_of", new String[]{"ontology", "super_cls", "cls"});

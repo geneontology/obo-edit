@@ -33,6 +33,7 @@ import org.geneontology.gold.rules.json.AnnotationVoilationForJson;
 import org.geneontology.solrj.GafSolrLoader;
 
 import owltools.gaf.GafParserListener;
+import owltools.gaf.GeneAnnotation;
 
 /**
  * This class performs bulkload and update operations for GAF database against
@@ -94,6 +95,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 	
 	private int annotationVoilationLimit;
 	
+	private boolean buildInferences;
 	
 	/**
 	 * If the service completes its operation then the user 
@@ -146,10 +148,12 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 			bulkload = "bulkload".equals(request.getParameter("command"));
 			runAnnotationRules = "runrules".equals(command) ? true : false;
 			solrLoad = "solrload".equals(command) ? true : false;
+			buildInferences = "buildinferences".equals(command);
+			
 			String remoteGAF = request.getParameter("remote-gaf");
 			String fileLocation = request.getParameter("filelocation");
+
 			String val = request.getParameter("annotationViolationsLimit");
-			
 			if(val != null && annotationVoilationLimit == -1){
 				try{
 					annotationVoilationLimit = Integer.parseInt(val);
@@ -158,6 +162,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 				}
 			}
 			
+			//this view is passed from the command line interface (GafCommandLine class)
 			String view = request.getParameter("view");
 			// set the default view
 			viewPath = "/servicesui/gafdb.jsp";
@@ -179,7 +184,11 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 						dbs.put(doc.getId(), f.getLatestDatabaseChangeStatus(doc.getId()).getChangeTime().toString());
 					}
 				
-			}else if("getTasksCompletionTime".equals(command)){
+			}
+			/**
+			 * This command is called from the ajax interface for annotation checks (see gafdb.jsp)
+			 */
+			else if("getTasksCompletionTime".equals(command)){
 				viewPath = "/servicesui/tasks-completion-times.jsp";
 			}
 			/**
@@ -630,6 +639,16 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 							+ currentOntologyBeingProcessed);
 					
 					
+				}else if(buildInferences){
+
+					reportStartTime("Annotations Inferences--"
+							+ currentOntologyBeingProcessed);
+
+
+					
+					reportEndTime("Annotations Inferences--"
+							+ currentOntologyBeingProcessed);
+					
 				}
 
 			}while ((d = builder.getNextSplitDocument()) != null);
@@ -641,6 +660,13 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 			
 		//	endDomLoad(builder);
 
+		}
+		
+		
+		private void buildAnnotationInferences(GafDocument doc){
+			for(GeneAnnotation ga: doc.getGeneAnnotations()){
+				
+			}
 		}
 
 		@Override
