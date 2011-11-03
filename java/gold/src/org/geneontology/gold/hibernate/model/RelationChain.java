@@ -11,24 +11,27 @@ public class RelationChain extends GOModel implements java.io.Serializable {
 	private String relation1;
 	private String relation2;
 	private Boolean isBidirectional;
-
+	private String ontology;
+	
 	private Relation inferredRelationObject;
 	private Relation relation1Object;
 	private Relation relation2Object;
+	private Ontology ontologyObject;
 	
 	
 	public RelationChain() {
-		String keys[] = {"inferredRelation", "relation1", "relation2"};
+		String keys[] = {"inferredRelation", "relation1", "relation2", "ontology"};
 		this.initUniqueConstraintFields(RelationChain.class, keys);
 	}
 
 	public RelationChain(String inferredRelation, String relation1,
-			String relation2, Boolean isBidirectional) {
+			String relation2, Boolean isBidirectional, String ontology) {
 		this();
 		this.inferredRelation = inferredRelation;
 		this.relation1 = relation1;
 		this.relation2 = relation2;
 		this.isBidirectional = isBidirectional;
+		this.ontology = ontology;
 	}
 
 	public String getInferredRelation() {
@@ -87,4 +90,22 @@ public class RelationChain extends GOModel implements java.io.Serializable {
 		return relation2Object;
 	}
 
+	public String getOntology() {
+		if(ontologyObject == null && ontology != null){
+			ontologyObject = (Ontology)getHibernateObject(Ontology.class, "ontology", ontology);
+		}
+		return ontology;
+	}
+
+	public Ontology getOntologyObject() {
+		return ontologyObject;
+	}
+
+	public void setOntology(String ontology) {
+		this.ontology = ontology;
+	}
+
+	
+	
+	
 }
