@@ -45,7 +45,6 @@ import org.geneontology.gold.hibernate.model.RelationDisjointWith;
 import org.geneontology.gold.hibernate.model.RelationEquivalenTo;
 import org.geneontology.gold.hibernate.model.SubclassOf;
 import org.geneontology.gold.hibernate.model.SubrelationOf;
-import org.geneontology.gold.io.postgres.PostgresDialect;
 import org.geneontology.gold.io.postgres.SchemaManager;
 import org.geneontology.gold.io.postgres.TsvFileLoader;
 import org.hibernate.Session;
@@ -495,8 +494,6 @@ public class DbOperations implements DbOperationsInterface{
 			}
 			
 			//build hibernate objects which represent new changes in the database.
-			
-			
 			GoldDeltaFactory gdf = new GoldDeltaFactory();
 			List<SubclassOf> subclassList = gdf.buildSubclassOfDelta();
 			List<Relation> relationList = gdf.buildRelationDelta();
@@ -540,23 +537,11 @@ public class DbOperations implements DbOperationsInterface{
 			//Build a new session points to the main tables of the database.
 			GoldObjectFactory gof = GoldObjectFactory.buildDefaultFactory();
 			Session session = gof.getSession();
-		//	PostgresDialect db = new PostgresDialect();
-		//	Connection connection = db.getConnect();
-		//	connection.setAutoCommit(false);
-			
-			//session.
-			//session.clear();
 	
 			//The utility deletes the removed assertions in the ontology from the databse.
 			//With the help of this utility deletes becomes part of a single transaction which is performing the updates 
 			DeleteUtility du = new DeleteUtility(manager.getGoldDetlaTablePrefix(), wrapper.getOntologyId());
-		
-			//du.execute(connection);
-			//session.reconnect(connection);
-
 			session.doWork(du);
-			
-			//session the hibernate objects through the session object
 			
 			saveList(session, clsList);
 			
@@ -655,24 +640,52 @@ public class DbOperations implements DbOperationsInterface{
 	 * This class delete records from the database corresponding to 
 	 *  the assertions removed from the ontology file.
 	 *  The delete opertion is performed during the ontology update process.
-	 *  The delete utility is part of the session object (to main a transaction) which saves the hibernates objects (represents new changes in the databse)
+	 *  The delete utility is part of the session object (to main a transaction) which saves the hibernates objects (represents new changes in the database)
+	 *  
+	 *  <p>The delete operation runs in two passes
+	 *  	<ol>
+	 *  		<li>In this pass it deletes records from the tables which does not have <b>ontologyId</b> as a foreign key.
+	 *  		As GOLD database can maintain multiple ontologies so in the delete process we want to delete the records which belongs to 
+	 *  		the current ontology. For example in the case of the table obj_alternate_id (obj, id) as it does not contain the information 
+	 *  		current ontology being updated, we will make join with cls, relation and annotation_property tables (because obj field points to ids of the table) 
+	 *  		to get records belongs to current ontology.
+	 *  		</li>
+	 *  		<li>In this pass it deletes records from the tables which have ontologyId as a foreign key</li>
+	 *  	</ol>
+	 *  </p>
+	 *  	
 	 * @author Shahid Manzoor
 	 *
 	 */
 	private static class DeleteUtility implements Work{
-		
-		//delete operation is executed for this table in the first pass
-		private static Hashtable<String, String[]> tables = buildTables();
-		//delete operation is executed for this table in the second pass
+
+		/**
+		 * Tables for first pass
+		 */
+		//This variable holds the tables which does not have ontology id as foreign key.
+		//It maintains <table-name, primary-keys> pairs
 		private static Hashtable<String, String[]> dependentTables = buildTDependentables();
-		
+		//This variable maintains <table-name, obj-key-references-tables> pair.
+		//The place holder obj-key-references-tables represents tables whose id is used foreign key in the table referred by the table-name place holder.
+		//With this Hashtable we make link that records in the table-name table belongs to current ontology 
 		private static Hashtable<String, String[]> objTablesDependency = buildObjTablesDependency();
 		
-	//	private PostgresDialect db ;
-		//the ontology which is being updated
+		
+		/**
+		 * Tables for the second pass
+		 */
+		//This variable holds tables namees which ontologyId as a primary key.
+		//It maintains <table-name, primary-keys> pairs
+		private static Hashtable<String, String[]> tables = buildTables();
+		
+		//the id of the current ontology being updated
 		private String ontology;
+
+		//prefix of the temporary tables. This prefix is only used in the update process
+		//It comes from the geneontology.gold.deltatableprefix property
 		private String tablePrefix;
 
+		
 		private static Hashtable<String, String[]> buildObjTablesDependency(){
 			Hashtable<String, String[]> tables = new Hashtable<String, String[]>();
 			
@@ -735,31 +748,34 @@ public class DbOperations implements DbOperationsInterface{
 		public DeleteUtility(String tablePrefix, String ontology){
 			this.tablePrefix = tablePrefix;
 			this.ontology= ontology;
-		//	db = new PostgresDialect();
-			
-			
 		}
 		
-		//It deletes records from the tables 
-		//which don't jave ontology column
-		private void executeDependentTables(Connection connecion, Hashtable<String, String[]> tables) throws SQLException {
+		/**
+		 * First pass
+		 * @param connecion
+		 * @param tables refers to <table-name, primary-keys> pairs
+		 * @throws SQLException
+		 */
+		private void executeDependentTables(Connection connecion) throws SQLException {
 
-			Collection<String> keysSet = tables.keySet();
+			Collection<String> keysSet = dependentTables.keySet();
 			for(String table: keysSet){
-				String keys[] = tables.get(table);
+				String keys[] = dependentTables.get(table);
 				
 				String cols = "";
 				for(String key: keys){
 					cols +=  table + "." + key + ", ";
 				}
 				
-				//Connection cn = db.getConnect();
-				
-				//removing the last ',' character from the string
 				cols = cols.substring(0, cols.length()-2);
 				
 				for(String onDep: objTablesDependency.get(table)){
 				
+					/**
+					 * By joining the table with the onDep we will get records belongs to current ontology
+					 * To get which records to delete we get difference through EXCEPT command
+					 *  between the main tables and temporary tables (the tables names having prefix)  
+					 */
 					String deltaQuery = "SELECT " +  cols + " FROM " + table  + ", " + onDep
 					 + " WHERE  obj = " + onDep + ".id and ontology = '" + this.ontology + "'"  +
 					 " EXCEPT SELECT " +  cols + " FROM " + tablePrefix + table  + " as " + table
@@ -772,6 +788,9 @@ public class DbOperations implements DbOperationsInterface{
 					
 					ResultSet rs = connecion.createStatement().executeQuery(deltaQuery);
 					
+					/**
+					 * If records come out in the difference (from the previous step) then delete those records 
+					 */
 					while(rs.next()){
 						String deleteQuery = "DELETE FROM " + table;
 						String whereClause = " WHERE ";
@@ -799,9 +818,10 @@ public class DbOperations implements DbOperationsInterface{
 			
 		}
 		
+		//second pass
 		//This method deletes records from the tables which
 		//have ontology column
-		private void execute(Connection connecion, Hashtable<String, String[]> tables) throws SQLException {
+		private void _execute(Connection connecion) throws SQLException {
 
 			Collection<String> keysSet = tables.keySet();
 			for(String table: keysSet){
@@ -857,11 +877,11 @@ public class DbOperations implements DbOperationsInterface{
 		}
 		
 		public void execute(Connection connecion) throws SQLException {
-			//run second pass
-			executeDependentTables(connecion, dependentTables);
-
 			//run first pass
-			execute(connecion, tables);
+			executeDependentTables(connecion);
+
+			//run second pass
+			_execute(connecion);
 			
 		}
 		
