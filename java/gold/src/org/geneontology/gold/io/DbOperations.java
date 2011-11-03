@@ -45,6 +45,7 @@ import org.geneontology.gold.hibernate.model.RelationDisjointWith;
 import org.geneontology.gold.hibernate.model.RelationEquivalenTo;
 import org.geneontology.gold.hibernate.model.SubclassOf;
 import org.geneontology.gold.hibernate.model.SubrelationOf;
+import org.geneontology.gold.io.postgres.PostgresDialect;
 import org.geneontology.gold.io.postgres.SchemaManager;
 import org.geneontology.gold.io.postgres.TsvFileLoader;
 import org.hibernate.Session;
@@ -539,11 +540,20 @@ public class DbOperations implements DbOperationsInterface{
 			//Build a new session points to the main tables of the database.
 			GoldObjectFactory gof = GoldObjectFactory.buildDefaultFactory();
 			Session session = gof.getSession();
-			session.clear();
+		//	PostgresDialect db = new PostgresDialect();
+		//	Connection connection = db.getConnect();
+		//	connection.setAutoCommit(false);
+			
+			//session.
+			//session.clear();
 	
 			//The utility deletes the removed assertions in the ontology from the databse.
 			//With the help of this utility deletes becomes part of a single transaction which is performing the updates 
 			DeleteUtility du = new DeleteUtility(manager.getGoldDetlaTablePrefix(), wrapper.getOntologyId());
+		
+			//du.execute(connection);
+			//session.reconnect(connection);
+
 			session.doWork(du);
 			
 			//session the hibernate objects through the session object
@@ -611,7 +621,7 @@ public class DbOperations implements DbOperationsInterface{
 			if(session.isOpen())
 				session.getTransaction().commit();
 
-			
+		//	db.getConnect().commit();
 			LOG.info("Database update is completed");
 
 		}catch(Exception ex){
@@ -658,7 +668,7 @@ public class DbOperations implements DbOperationsInterface{
 		
 		private static Hashtable<String, String[]> objTablesDependency = buildObjTablesDependency();
 		
-		
+	//	private PostgresDialect db ;
 		//the ontology which is being updated
 		private String ontology;
 		private String tablePrefix;
@@ -725,6 +735,8 @@ public class DbOperations implements DbOperationsInterface{
 		public DeleteUtility(String tablePrefix, String ontology){
 			this.tablePrefix = tablePrefix;
 			this.ontology= ontology;
+		//	db = new PostgresDialect();
+			
 			
 		}
 		
@@ -741,6 +753,9 @@ public class DbOperations implements DbOperationsInterface{
 					cols +=  table + "." + key + ", ";
 				}
 				
+				//Connection cn = db.getConnect();
+				
+				//removing the last ',' character from the string
 				cols = cols.substring(0, cols.length()-2);
 				
 				for(String onDep: objTablesDependency.get(table)){
@@ -753,6 +768,7 @@ public class DbOperations implements DbOperationsInterface{
 					
 					if(DEBUG)
 						LOG.debug("Find delete delta " + deltaQuery);
+					
 					
 					ResultSet rs = connecion.createStatement().executeQuery(deltaQuery);
 					
@@ -841,11 +857,11 @@ public class DbOperations implements DbOperationsInterface{
 		}
 		
 		public void execute(Connection connecion) throws SQLException {
+			//run second pass
+			executeDependentTables(connecion, dependentTables);
 
 			//run first pass
 			execute(connecion, tables);
-			//run second pass
-			executeDependentTables(connecion, dependentTables);
 			
 		}
 		
