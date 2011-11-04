@@ -2,8 +2,8 @@
 //// Some unit testing for html.js
 ////
 //// Usage:
-////    Command line: "js -f html.tests.js"
-////    Interactive: "js -f html.tests.js -f -"
+////    Command line: "js -f html.js.tests"
+////    Interactive: "js -f html.js.tests -f -"
 ////
 
 
@@ -23,8 +23,8 @@ load('html.js');
 (function(){
     mr_t.is_true(bbop.core.has_interface(bbop.html, 'to_string'),
 		 'supplies output');
-    mr_t.is_true(bbop.core.has_interface(bbop.html, 'add_child'),
-		 'supplies add_child');
+    mr_t.is_true(bbop.core.has_interface(bbop.html, 'add_to'),
+		 'supplies add_to');
     mr_t.is_true(bbop.core.has_interface(bbop.html, 'empty'),
 		 'supplies empty');
     
@@ -35,7 +35,7 @@ load('html.js');
 /// Start unit testing.
 ///
 
-//
+// tag part 1
 (function(){
      var t1 = new bbop.html.tag('div');
      mr_t.is_same_atom(bbop.core.what_is(t1), 'bbop.html.tag', 'id');
@@ -46,7 +46,7 @@ load('html.js');
      mr_t.is_same_atom(t2.to_string(), '<div foo="bar" />', "same div attr");
 
      var t3 = new bbop.html.tag('div', {bar: "bib"});
-     t3.add_child(t2);
+     t3.add_to(t2);
      mr_t.is_same_atom(t3.to_string(),
 		       '<div bar="bib"><div foo="bar" /></div>',
 		       "same div compound");
@@ -57,7 +57,7 @@ load('html.js');
 		       "div emptied");
  })();
 
-//
+// tag part 2
 (function(){
 
      var t1 = new bbop.html.tag('div', {foo: "bar"},
@@ -67,13 +67,14 @@ load('html.js');
 		       '<div foo="bar"><span class="red">foobar</span></div>',
 		       "same hard div attr");
      
-     t1.add_child(new bbop.html.tag('p', {}, 'happy'));
+     t1.add_to(new bbop.html.tag('p', {}, 'happy'));
      mr_t.is_same_atom(t1.to_string(),
 		       '<div foo="bar"><span class="red">foobar' +
 		       '</span><p>happy</p></div>',
 		       "same hard div attr 2");
 })();
 
+// accordion
 (function(){
      var a0 = new bbop.html.accordion([]);
      mr_t.is_same_atom(bbop.core.what_is(a0), 'bbop.html.accordion', 'id');
@@ -98,14 +99,14 @@ load('html.js');
  })();
 
 
-var a3 = new bbop.html.accordion([], {id: 'test-a'});
-var d3 = new bbop.html.tag('div');
-var p3 = new bbop.html.tag('p', {}, 'foo');
-d3.add_child(p3);
-a3.add_child('test-b', d3);
+// var a3 = new bbop.html.accordion([], {id: 'test-a'});
+// var d3 = new bbop.html.tag('div');
+// var p3 = new bbop.html.tag('p', {}, 'foo');
+// d3.add_to(p3);
+// a3.add_to('test-b', d3);
 
 
-//
+// list
 (function(){
 
      var l1 = new bbop.html.list(['foo', 'bar'], {id: 'test-list'});
@@ -116,38 +117,69 @@ a3.add_child('test-b', d3);
 		       "check list 1");
 
      var l2 = new bbop.html.list([], {id: 'test-list'});
-     l2.add_child('foo');
-     l2.add_child('bar');
+     l2.add_to('foo');
+     l2.add_to('bar');
      mr_t.is_same_atom(l2.to_string(),
 		       '<ul id="test-list"><li>foo</li><li>bar</li></ul>',
 		       "check list 2");
 
      var l3 = new bbop.html.list([], {id: 'test-list'});
-     l3.add_child('');
-     l3.add_child('foo');
-     l3.add_child('bar');
+     l3.add_to('');
+     l3.add_to('foo');
+     l3.add_to('bar');
      mr_t.is_same_atom(l3.to_string(),
 		       '<ul id="test-list"><li /><li>foo</li>' + 
 		       '<li>bar</li></ul>',
 		       "check list 3");
  })();
 
-//
-//(function(){
-var i1 = new bbop.html.input({id: 'test-input', type: 'text'});
-mr_t.is_same_atom(i1.to_string(),
-		  '<input id="test-input" type="text" />',
-		  "quick input 1");
-var i2 = new bbop.html.input({id: 'test-input', type: 'text'});
-i2.add_child('foo');
-mr_t.is_same_atom(i2.to_string(),
-		  '<input id="test-input" type="text">foo</input>',
-		  "quick input 2");
-i2.empty();
-mr_t.is_same_atom(i2.to_string(),
-		  '<input id="test-input" type="text" />',
-		  "empty input");
-// })();
+// input
+(function(){
+     var i1 = new bbop.html.input({id: 'test-input', type: 'text'});
+     mr_t.is_same_atom(i1.to_string(),
+		       '<input id="test-input" type="text" />',
+		       "quick input 1");
+     var i2 = new bbop.html.input({id: 'test-input', type: 'text'});
+     i2.add_to('foo');
+     mr_t.is_same_atom(i2.to_string(),
+		       '<input id="test-input" type="text">foo</input>',
+		       "quick input 2");
+     i2.empty();
+     mr_t.is_same_atom(i2.to_string(),
+		       '<input id="test-input" type="text" />',
+		       "empty input");
+ })();
+
+// table
+(function(){
+
+     // Simple.
+     var t1 = new bbop.html.table([], []);
+     mr_t.is_same_atom(bbop.core.what_is(t1), 'bbop.html.table', 'table id');
+     mr_t.is_same_atom(t1.to_string(), '<table><tbody /></table>', "table");
+
+     // Equiv ops.
+     t1.add_to(['foo', 'bar']);
+     var t2 = new bbop.html.table([], [['foo', 'bar']]);
+     mr_t.is_same_atom(t1.to_string(), t2.to_string(), 'equiv ops');
+     mr_t.is_same_atom(t1.to_string(), '<table><tbody><tr class="even_row"><td>foo</td><td>bar</td></tr></tbody></table>', 'good out');
+
+     // empty
+     t1.empty();
+     mr_t.is_same_atom(t1.to_string(), '<table><tbody /></table>', "empty table");
+
+     // multi-row
+     t1.add_to('foo');
+     t1.add_to('bar');
+     mr_t.is_same_atom(t1.to_string(), '<table><tbody><tr class="even_row"><td>foo</td></tr><tr class="odd_row"><td>bar</td></tr></tbody></table>', 'row out');
+
+     // headers.
+     var t3 = new bbop.html.table(['aaa', 'bbb'], [['one', 'two'], ['foo', 'bar']]);
+     mr_t.is_same_atom(t3.to_string(), '<table><thead><tr><th>aaa</th><th>bbb</th></tr></thead><tbody><tr class="even_row"><td>one</td><td>two</td></tr><tr class="odd_row"><td>foo</td><td>bar</td></tr></tbody></table>', 'header table');
+     t3.empty();
+     mr_t.is_same_atom(t3.to_string(), '<table><thead><tr><th>aaa</th><th>bbb</th></tr></thead><tbody /></table>', 'header empty');
+     
+ })();
 
 ///
 /// End unit testing.

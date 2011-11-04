@@ -71,7 +71,7 @@ bbop.html.tag.prototype.to_string = function(){
 };
 
 //
-bbop.html.tag.prototype.add_child = function(bbop_html_tag_or_string){
+bbop.html.tag.prototype.add_to = function(bbop_html_tag_or_string){
     this._contents.push(bbop_html_tag_or_string);
 };
 
@@ -110,7 +110,7 @@ bbop.html.accordion = function(in_list, attrs){
     bbop.core.each(in_list, function(item){
 		       var title = item[0];
 		       var content = item[1];
-		       accordion_this.add_child(title, content);
+		       accordion_this.add_to(title, content);
 		   });
 
 };
@@ -121,24 +121,24 @@ bbop.html.accordion.prototype.to_string = function(){
 };
 
 //
-bbop.html.accordion.prototype.add_child = function(title, content){
+bbop.html.accordion.prototype.add_to = function(title, content){
 
     // I keep forgetting this.
     if( ! title || ! content ){
-	throw new Error('bbop.html.accordion.prototype.add_child 2 args');
+	throw new Error('bbop.html.accordion.prototype.add_to 2 args');
     }
 	
     // Add header section.
     var h3 = new bbop.html.tag('h3');
     var anc = new bbop.html.tag('a', {href: '#'}, title);
-    h3.add_child(anc);
-    this._div_stack.add_child(h3);
+    h3.add_to(anc);
+    this._div_stack.add_to(h3);
     
     // Add body section.
     var div = new bbop.html.tag('div');
     var p = new bbop.html.tag('p', {}, bbop.core.to_string(content));
-    div.add_child(p);
-    this._div_stack.add_child(div);
+    div.add_to(p);
+    this._div_stack.add_to(div);
 };
 
 //
@@ -166,7 +166,7 @@ bbop.html.list = function(in_list, attrs){
     this._ul_stack = new bbop.html.tag('ul', this._attrs);
 
     var list_this = this;
-    bbop.core.each(in_list, function(item){ list_this.add_child(item); });
+    bbop.core.each(in_list, function(item){ list_this.add_to(item); });
 };
 
 //
@@ -175,9 +175,9 @@ bbop.html.list.prototype.to_string = function(){
 };
 
 // Add section.
-bbop.html.list.prototype.add_child = function(item){
+bbop.html.list.prototype.add_to = function(item){
     var li = new bbop.html.tag('li', {}, bbop.core.to_string(item));
-    this._ul_stack.add_child(li);
+    this._ul_stack.add_to(li);
 };
 
 //
@@ -199,9 +199,6 @@ bbop.html.input = function(attrs){
 
     // Internal stack always starts with a ul.
     this._input_stack = new bbop.html.tag('input', this._attrs);
-
-    // var input_this = this;
-    // bbop.core.each(in_list, function(item){ input_this.add_child(item); });
 };
 
 //
@@ -210,11 +207,87 @@ bbop.html.input.prototype.to_string = function(){
 };
 
 // Add section.
-bbop.html.input.prototype.add_child = function(item){
-    this._input_stack.add_child(bbop.core.to_string(item));
+bbop.html.input.prototype.add_to = function(item){
+    this._input_stack.add_to(bbop.core.to_string(item));
 };
 
 // Reset/remove all children.
 bbop.html.input.prototype.empty = function(){
     this._input_stack = new bbop.html.tag('input', this._attrs);
+};
+
+///
+/// A simple table structure.
+///
+
+// in_headers is necessary, but can be empty. As can in_entries.
+bbop.html.table = function(in_headers, in_entries, in_attrs){
+    this._is_a = 'bbop.html.table';
+    
+    // Arg check--attrs should be defined as something.
+    var headers = in_headers || [];
+    var entries = in_entries || [];
+    var attrs = in_attrs || {};
+
+    // Row class count.
+    this._count = 0;
+
+    // Internal stack always starts with a table.
+    this._table_stack = new bbop.html.tag('table', this._attrs);
+
+    // Only add headers if they exist.
+    if( ! bbop.core.is_empty(headers) ){
+	var head_row = new bbop.html.tag('tr');
+	bbop.core.each(headers,
+		       function(header){
+			   var th = new bbop.html.tag('th');
+			   th.add_to(header);
+			   head_row.add_to(th);
+		       });
+	var head_stack = new bbop.html.tag('thead');
+	head_stack.add_to(head_row);
+	this._table_stack.add_to(head_stack);
+    }
+
+    // Add incoming rows to the body. Keep the body stack around for
+    // bookkeeping.
+    this._body_stack = new bbop.html.tag('tbody');
+    this._table_stack.add_to(this._body_stack);
+
+    var this_table = this;
+    bbop.core.each(entries, function(item){ this_table.add_to(item); });
+};
+
+//
+bbop.html.table.prototype.to_string = function(){
+    return this._table_stack.to_string();
+};
+
+// Add data row. entries is coerced into an array of tds.
+bbop.html.table.prototype.add_to = function(entries){
+    
+    //this._body_stack = new bbop.html.tag('tbody');
+
+    // Get the class for the row.
+    var row_class = 'odd_row';
+    if( this._count % 2 == 0 ){ row_class = 'even_row'; }
+    this._count = this._count + 1;
+
+    var tr = new bbop.html.tag('tr', {'class': row_class});
+
+    // Array or not, add everything as tds.
+    if( ! bbop.core.is_array(entries) ){ entries = [entries]; }
+    bbop.core.each(entries,
+		   function(entry){
+		       var td = new bbop.html.tag('td');
+		       td.add_to(entry);
+		       tr.add_to(td);
+		   });
+    this._body_stack.add_to(tr);
+};
+
+// Headers do not get wiped, just the data rows in the tbody.
+bbop.html.table.prototype.empty = function(){
+    this._count = 0;
+    this._body_stack.empty();
 };
