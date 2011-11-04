@@ -23,6 +23,10 @@
 	<%
 		boolean  isTaskRunning = (Boolean)request.getAttribute("isTaskRunning");
 		boolean runAnnotationRules = "runrules".equals(request.getParameter("command"));
+		boolean buildinferences = "buildinferences".equals(request.getParameter("command"));
+		
+		
+		
 		String id = request.getParameter("id");
 		HttpSession s = request.getSession(true);
 		if(id == null){
@@ -35,7 +39,7 @@
 			<p class="progress" align="center">Your Request is in Progress</p>
 
 			
-			<% if(!runAnnotationRules){ %>
+			<% if(!runAnnotationRules && !buildinferences){ %>
 			
 					<form id="reloadform" action="/gold">
 						<%
@@ -136,10 +140,7 @@
 	%>
 
 	<%
-//	if(!commit){
-	
-	
-		if(runAnnotationRules && ( ex == null || (ex != null && ex.isEmpty()) )){
+		if((runAnnotationRules) && ( ex == null || (ex != null && ex.isEmpty()) )){
 			%>
 			
 					<script type='text/javascript'>
@@ -192,24 +193,69 @@
 										  }else{
 											  printVoilations(data);										  
 										  }
-									  }/*,
-									  
-									  
-									  error:function (xhr, ajaxOptions, thrownError){
-										  clearInterval(interval);
-										  jQuery(".progress").hide();
-										  jQuery(".commands").show();
-										  jQuery(".inprogress").attr('bgcolor', 'red')
-										  	.html('failed');
-
-										  jQuery('#voilations').parent().append('<div class="server-error">'+xhr.responseText+'</div>');
-						                }*/    									  
+									  }   									  
 									);
-							//}
 						}
 						
 					</script>
-			<% } %>
+			<% }else if((buildinferences) && ( ex == null || (ex != null && ex.isEmpty()) )){
+			%>
+				<script type="text/javascript">
+		
+				
+				//This variable increments every time getVoilations() function is called.
+				//It is reset when function(data) is called inside the getJSON function.
+				//If the data is not returned (when function(data) is not called) after 20 attempts 
+				//it stops the getVoilations function calls.
+				var interval= setInterval('getInferences()', 20000);
+				//var isTaskRunning = true;
+				function getInferences() {
+					
+						jQuery.getJSON(
+							  window.location.pathname + window.location.search + "&view=annotation-inferences&id=<%=id%>",
+							  function(data) {
+
+								  if (typeof(data.error) !== "undefined") {
+										if(data.error = "task_completed"){
+											  clearInterval(interval);
+											  jQuery(".progress").hide();
+											  jQuery(".commands").show();
+											  jQuery(".inprogress").attr('bgcolor', 'green');
+											  
+											  var url = "http://"+window.location.hostname+":"+window.location.port+"/gold/"
+											  	+"?servicename=gaf-db-operations&command=getTasksCompletionTime&id=<%=id%>";
+											  
+											  jQuery.getJSON(url, function(taskData){
+												  
+												  jQuery.each(taskData, function(i, td){
+													  
+													  if(td.endTime>0){
+														  jQuery("#"+ td.taskId).html("&nbsp;&nbsp;&nbsp;completed in " + (td.endTime-td.startTime)/1000 + " seconds");  
+													  }
+													  
+													  
+												  });
+											  });
+											  
+										}
+								  }else{
+									  printAnnotationInferences(data);										  
+								  }
+							  }   									  
+							);
+				}
+				
+				
+				
+				
+				</script>
+				
+			
+			<%
+			}
+			
+			
+			%>
 			
 			<br />
 
