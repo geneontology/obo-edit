@@ -40,52 +40,6 @@
 			}
 			
 		}
-		/*Gson gson = new Gson();
-		
-		if(annotationRuleViolations != null && annotationRuleViolations.size()>0){			
-		
-				int i =0;
-				Vector<AnnotationRuleViolation> toRmove = new Vector<AnnotationRuleViolation>();
-				List<AnnotationVoilationForJson> list = new ArrayList<AnnotationVoilationForJson>();
-				for(AnnotationRuleViolation v: annotationRuleViolations){
-					if(i>=2000){
-						i=0;
-						break;
-					}
-					toRmove.add(v);
-					String msg = v.getMessage();
-					String s = v.getSourceAnnotation() + "";
-					String ruleId = v.getRuleId();
-					GeneAnnotation ga = v.getSourceAnnotation();
-					int lineNr = -1;
-					String fileName = "";
-					if(ga != null){
-						lineNr =  ga.getSource() != null ? ga.getSource().getLineNumber() : -1;
-						fileName = ga.getGafDocument();
-					}
-                    
-                    AnnotationVoilationForJson av = new AnnotationVoilationForJson(msg, s, ruleId,lineNr, fileName);
-                    list.add(av);
-                    i++;
-				}
-
-				
-				for(AnnotationRuleViolation v: toRmove){
-					annotationRuleViolations.remove(v);
-				}
-				
-				String jsonString= gson.toJson(list);
-				
-				out.println(jsonString);
-				
-			
-				
-			//annotationRuleViolations.clear();
-			
-		}else if(task == null || (task != null && !task.isRunning())){
-			ErrorForJson error = new ErrorForJson("NO_DATA");
-			out.println("["+gson.toJson(error)+"]");
-		}*/
 	
 %>
 

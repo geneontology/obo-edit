@@ -1,19 +1,18 @@
 package org.geneontology.web.services;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
-import java.util.zip.GZIPInputStream;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,11 +28,11 @@ import org.geneontology.gold.io.DbOperationsListener;
 import org.geneontology.gold.rules.AnnotationRuleCheckException;
 import org.geneontology.gold.rules.AnnotationRuleViolation;
 import org.geneontology.gold.rules.AnnotationRulesEngine;
-import org.geneontology.gold.rules.json.AnnotationVoilationForJson;
 import org.geneontology.solrj.GafSolrLoader;
-
+import owltools.gaf.Bioentity;
 import owltools.gaf.GafParserListener;
-import owltools.gaf.GeneAnnotation;
+import owltools.gaf.inference.CompositionalClassPredictor;
+import owltools.gaf.inference.Prediction;
 
 /**
  * This class performs bulkload and update operations for GAF database against
@@ -74,9 +73,10 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 	/**
 	 * It holds the collections gene annotation voilations.
 	 */
-	//private Set<AnnotationRuleViolation> annotationRuleViolations;
-
 	private Hashtable<String, Set<AnnotationRuleViolation>> annotationRuleViolations;
+
+	private Hashtable<String, Set<Prediction>> inferredAnnotations;
+	
 	
 	//storing command line name, e.g update, bulkload, runrules
 	private String command;
@@ -124,6 +124,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 		runner = null;
 		// isOPerationCompleted = true;
 		annotationRuleViolations = new Hashtable<String, Set<AnnotationRuleViolation>>();
+		inferredAnnotations = new Hashtable<String, Set<Prediction>>();
 		annotationVoilationLimit = -1;
 		//annotationRuleViolations = Collections
 			//	.synchronizedSet(annotationRuleViolations);
@@ -262,6 +263,12 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 				if(!((update || bulkload )&& updateInProgress)){
 					runner = new GafDbTaskExecution();
 					runner.start();
+					
+					//wait little bit execute run method
+					synchronized (annotationRuleViolations) {
+						annotationRuleViolations.wait();
+					}
+					
 				}
 				
 				if(update || bulkload || solrLoad)
@@ -281,6 +288,7 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 			// jsp file. The jsp use the objects data in print html.
 			//if (runAnnotationRules)
 			request.setAttribute("violations", annotationRuleViolations);
+			request.setAttribute("inferredAnnotations", inferredAnnotations);
 
 			if (runner != null) {
 				request.setAttribute("task", runner);
@@ -359,6 +367,10 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 								
 									InputStream is = (InputStream) fetch.next();
 									java.io.Reader reader = new InputStreamReader(is);
+									
+									synchronized (annotationRuleViolations) {
+										annotationRuleViolations.notifyAll();
+									}
 									buildGafDocument(reader,
 											fetch.getCurrentGafFile(),
 											fetch.getCurrentGafFilePath());
@@ -377,6 +389,9 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 							//splittedDocuments = null;
 							complete = true;
 							updateInProgress = false;
+							synchronized (annotationRuleViolations) {
+								annotationRuleViolations.notifyAll();
+							}
 						}
 						
 						
@@ -413,27 +428,6 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 			for(String ruleId: violations.keySet()){
 				annotationRuleViolations.put(ruleId, violations.get(ruleId));
 			}
-			/*annotationVoilationLimitReached = violations.size()>0;
-			for(AnnotationRuleViolation av: violations){
-				String ruleId = av.getRuleId() != null ? av.getRuleId() : "null";
-				Set<AnnotationRuleViolation> set = annotationRuleViolations.get(ruleId);
-				if(set == null){
-					set = new HashSet<AnnotationRuleViolation>();
-					set = Collections.synchronizedSet(set);
-					annotationRuleViolations.put(ruleId, set);
-				}
-				
-				if(annotationVoilationLimit == -1 || set.size()<annotationVoilationLimit){
-					annotationVoilationLimitReached = false;
-					set.add(av);
-				}
-			}
-			
-			
-			if(annotationVoilationLimitReached){
-				
-			}*/
-//			annotationRuleViolations.addAll(violations);
 			
 			LOG.info("Annotation Checks are completed.");
 
@@ -495,63 +489,9 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 		public void endDomLoad(Object object) {
 			reportEndTime("Parsing GAF--" + currentOntologyBeingProcessed);
 
-			/*if (object instanceof GafHibObjectsBuilder) {
-				GafHibObjectsBuilder builder = (GafHibObjectsBuilder) object;
-				// gafDocuments.add(builder.getGafDocument());
-
-				for(Object v: builder.getParser().getAnnotationRuleViolations())
-					annotationRuleViolations.add(new AnnotationRuleViolation(v+""));
-
-			}*/
 
 		}
 
-		/*
-		 * private GafDocument buildGafDocument(Reader reader, String docId,
-		 * String path) throws IOException{ this.currentOntologyBeingProcessed =
-		 * path; startOntologyLoad();
-		 * 
-		 * GafObjectsBuilder builder = new GafObjectsBuilder();
-		 * 
-		 * GafDocument doc = builder.buildDocument(reader, docId, path);
-		 * 
-		 * GafDocument d = null;
-		 * 
-		 * while((d = builder.getNextSplitDocument() ) != null){
-		 * LOG.info("Splitting the '" + path + "' document");
-		 * splittedDocuments.add(path); doc = null; }
-		 * 
-		 * endOntologyLoad(builder);
-		 * 
-		 * return buildGafDocument(reader, docId, path, false); }
-		 */
-
-		/*private void buildSplittedDocuments() throws Exception {
-			for (String path : splittedDocuments) {
-				if (path.startsWith("http://") || path.startsWith("ftp:/")) {
-					GafURLFetch fetch = new GafURLFetch(path);
-					fetch.connect();
-					InputStream is = (InputStream) fetch.next();
-
-					InputStreamReader reader = new InputStreamReader(is);
-					buildGafDocument(reader, fetch.getCurrentGafFile(), path);
-					is.close();
-					reader.close();
-					fetch.completeDownload();
-				} else {
-					File f = new File(path);
-					InputStream is = new FileInputStream(f);
-
-					if (f.getName().endsWith(".gz")) {
-						is = new GZIPInputStream(is);
-					}
-					buildGafDocument(new InputStreamReader(is), f.getName(),
-							path);
-
-					is.close();
-				}
-			}
-		}*/
 
 		private void buildGafDocument(Reader reader, String docId,
 				String path) throws Exception {
@@ -570,8 +510,24 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 				
 			}
 
-		//	startDomLoad();
-
+			
+			String opName = null;
+		
+			if (solrLoad) {
+				opName = "Loading into Solr";
+			}
+			else if (runAnnotationRules) {
+				opName = "Performing Annotations Checks";
+			}else if(buildInferences){
+				opName = "Annotations Inferences";
+				
+			}
+			
+			if(opName != null){
+				reportStartTime(opName+"--"
+						+ currentOntologyBeingProcessed);
+			}
+			
 			GafHibObjectsBuilder builder = new GafHibObjectsBuilder();
 			
 			builder.getParser().addParserListener(this);
@@ -580,92 +536,80 @@ public class GafDbOperationsService extends ServiceHandlerAbstract{
 
 			GafDocument d = doc;
 
-			/*GAFDbOperations db = null;
-			if (update) {
-				db = new GAFDbOperations();
-				db.addDbOperationsListener(this);
-			}*/
-
-		//	int splitSize = GoConfigManager.getInstance().getSplitSize() * 4;
 			do {
 				if(d == null)
 					break;
 				
 
-				/*if (annotationRuleViolations.size() >= splitSize) {
-					throw new Exception(
-							"The annotations check is terminated as the annotations violations messages are not being consumed.");
-				}*/
-				
-/*				if(annotationVoilationLimitReached){
-					LOG.info("Annotation Voilation limit is reached. The rest of the document is discarded");
-					break;
-				}
-*/
 				LOG.info("Splitting the '" + path + "' document");
 
-				/*if (doc != null && !splittedDocuments.contains(path)) {
-					splittedDocuments.add(path);
-					// isLargefile = true;
-				}*/
-
-				/*if (update) {
-				//	db.update(d);
-					db.update(d, true);
-				}else if (bulkload){
-					db.bulkLoad(d, false);
-				}*/
 
 				if (solrLoad) {
 					GafSolrLoader loader = new GafSolrLoader(
 							GoConfigManager.getInstance().getSolrUrl());
 
-					reportStartTime("Loading into Solr--"
-							+ currentOntologyBeingProcessed);
+				//	reportStartTime("Loading into Solr--"
+					//		+ currentOntologyBeingProcessed);
 					
 					loader.load(d);
 					
-					reportEndTime("Loading into Solr--"
-							+ currentOntologyBeingProcessed);
+				//	reportEndTime("Loading into Solr--"
+					//		+ currentOntologyBeingProcessed);
 					
 				}
 
 				else if (runAnnotationRules) {
 					
-					reportStartTime("Performing Annotations Checks--"
-							+ currentOntologyBeingProcessed);
+			//		reportStartTime("Performing Annotations Checks--"
+				//			+ currentOntologyBeingProcessed);
 					_performAnnotationChecks(d);
-					reportEndTime("Performing Annotations Checks--"
-							+ currentOntologyBeingProcessed);
+				//	reportEndTime("Performing Annotations Checks--"
+					//		+ currentOntologyBeingProcessed);
 					
 					
 				}else if(buildInferences){
 
-					reportStartTime("Annotations Inferences--"
-							+ currentOntologyBeingProcessed);
+				//	reportStartTime("Annotations Inferences--"
+					//		+ currentOntologyBeingProcessed);
 
-
+					buildAnnotationInferences(d);
 					
-					reportEndTime("Annotations Inferences--"
-							+ currentOntologyBeingProcessed);
+				//	reportEndTime("Annotations Inferences--"
+					//		+ currentOntologyBeingProcessed);
 					
 				}
 
 			}while ((d = builder.getNextSplitDocument()) != null);
-
 			
-			/*if(update){
-				db.update(null, true);
-			}*/
-			
-		//	endDomLoad(builder);
+			if(opName != null){
+					reportEndTime(opName+"--"
+						+ currentOntologyBeingProcessed);
+				
+			}
 
 		}
 		
 		
 		private void buildAnnotationInferences(GafDocument doc){
-			for(GeneAnnotation ga: doc.getGeneAnnotations()){
+			
+			CompositionalClassPredictor coClassPredictor = new CompositionalClassPredictor(doc, GoldDbOperationsService.getGraphWrapper());
+			
+			Set<Prediction> predictions= inferredAnnotations.get(doc.getId());
+			if(predictions ==  null){
+				predictions = new HashSet<Prediction>();
+				inferredAnnotations.put(doc.getId(), predictions);
+				predictions = Collections.synchronizedSet(predictions);
+			}
+			int counter = 0;
+			for(Bioentity entity: doc.getBioentities()){
 				
+				if(annotationVoilationLimit != -1 && counter>=annotationVoilationLimit){
+					break;
+				}
+				
+				Collection<Prediction> cols = coClassPredictor.predict(entity.getId());
+				counter = counter + cols.size();
+				predictions.addAll(cols);
 			}
 		}
 

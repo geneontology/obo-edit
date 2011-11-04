@@ -30,3 +30,37 @@ function printVoilations(voilations){
 	});
 	
 }
+
+
+function printAnnotationInferences(predictions){
+
+	var voilationsDom = jQuery(".voilations");		
+	var cache = new Array();
+	jQuery.each(predictions, function(index, prediction){
+		var element = cache[prediction.fileId];
+		
+		if(element == null){
+			element= jQuery("#"+prediction.fileId);
+			if(element.length >0){
+			 	cache[prediction.fileId]=element;			
+			}
+		}
+		if(element.length==0){
+			voilationsDom.append("<br /><br /><hr /><div id='"+prediction.fileId+"' style='font-weight:bold;'>"+prediction.fileName+"</div><br />");
+			element= jQuery("#"+prediction.fileId);
+		}
+		
+		var html = "<div class='prediction-body'>"
+			+ "<div class='annotation' style='margin-left:15px'>Message: "+prediction.annotation+"</div>"
+			+ "<div class='annotation' style='margin-left:15px'>isRedundantWithExistingAnnotations: "+prediction.isRedundantWithExistingAnnotations+"</div>"
+			+ "<div class='annotation' style='margin-left:15px'>isRedundantWithOtherPredictions: "+prediction.isRedundantWithOtherPredictions+"</div>"
+			+ "</div><br />";
+			
+		
+		element.append(html);
+		
+	});
+	
+	
+}
+
