@@ -55,11 +55,16 @@ bbop.html.tag.prototype.to_string = function(){
     var acc = '';
     bbop.core.each(this._contents,
 		   function(item, i){
-		       if( typeof(item) == 'string' ){
-			   acc = acc + item;
-		       }else{
-			   acc = acc + item.to_string();
-		       }
+		       // if( typeof(item) == 'string' ){
+		       // 	   acc = acc + item;
+		       // }else if( typeof(item['to_string']) == 'function' ){
+		       // 	   acc = acc + item.to_string();
+		       // }else{
+		       // 	   throw new Error('No to_string for (' +
+		       // 			   bbop.core.what_is(item) +
+		       // 			   ') ' + item);
+		       // }
+		       acc = acc + bbop.core.to_string(item);
 		   });
     
     // Special return case if there are no children (to prevent
@@ -214,6 +219,36 @@ bbop.html.input.prototype.add_to = function(item){
 // Reset/remove all children.
 bbop.html.input.prototype.empty = function(){
     this._input_stack = new bbop.html.tag('input', this._attrs);
+};
+
+///
+/// An anchor.
+///
+
+// href, title, etc. go through attrs
+bbop.html.anchor = function(in_cont, in_attrs){
+    this._is_a = 'bbop.html.anchor';
+    
+    // Arg check--attrs should be defined as something.
+    this._attrs = in_attrs || {};
+
+    // Internal stack always starts with a ul.
+    this._anchor_stack = new bbop.html.tag('a', this._attrs, in_cont);
+};
+
+//
+bbop.html.anchor.prototype.to_string = function(){
+    return this._anchor_stack.to_string();
+};
+
+// Add section.
+bbop.html.anchor.prototype.add_to = function(item){
+    this._anchor_stack.add_to(item);
+};
+
+// ...
+bbop.html.anchor.prototype.empty = function(){
+    this._anchor_stack.empty();
 };
 
 ///

@@ -181,6 +181,26 @@ load('html.js');
      
  })();
 
+// anchor
+(function(){
+
+     var a1 = new bbop.html.anchor();
+     mr_t.is_same_atom(bbop.core.what_is(a1), 'bbop.html.anchor', 'a id');
+     mr_t.is_same_atom(a1.to_string(), '<a />', "anchor 1");
+     a1.add_to('foo');
+     mr_t.is_same_atom(a1.to_string(), '<a>foo</a>', "anchor 2");
+     
+     var a2 = new bbop.html.anchor('foo', {'href': 'bar', 'title': 'bib'});
+     mr_t.is_same_atom(a2.to_string(),
+		       '<a href="bar" title="bib">foo</a>',
+		       "anchor 3");
+     a2.empty();
+     mr_t.is_same_atom(a2.to_string(),
+		       '<a href="bar" title="bib" />',
+		       "anchor 4");
+     
+ })();
+
 ///
 /// End unit testing.
 ///
