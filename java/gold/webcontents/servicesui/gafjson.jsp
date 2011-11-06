@@ -79,7 +79,7 @@
 									out.println(",");
 								}*/
 								
-								AnnotationVoilationForJson av = new AnnotationVoilationForJson(msg, s, v.getRuleId() == null ? "": v.getRuleId(), lineNumber);
+								AnnotationVoilationForJson av = new AnnotationVoilationForJson(msg, s, v.getRuleId() == null ? "": v.getRuleId(), lineNumber, "");
 							//	list.add(av);
 								out.println(gson.toJson(av));
 								
