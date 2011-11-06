@@ -87,7 +87,7 @@ bbop.html.tag.prototype.empty = function(){
 
 
 ///
-/// A jQuery accordion structure.
+/// The functional part of a jQuery accordion structure.
 ///
 
 // [[title, string/*.to_string()], ...]
@@ -100,24 +100,27 @@ bbop.html.tag.prototype.empty = function(){
 //   </div>
 //   ...
 // </div>
-bbop.html.accordion = function(in_list, attrs){
+bbop.html.accordion = function(in_list, attrs, add_id_p){
     this._is_a = 'bbop.html.accordion';
 
+    //
+    if( typeof(add_id_p) == 'undefined' ){ add_id_p = false; }
+
     // Arg check--attrs should be defined as something.
-    if( ! attrs ){ attrs = {}; }
-    this._attrs = attrs;
+    this._attrs = attrs || {};
 
     // Internal stack always starts with a div.
     this._div_stack = new bbop.html.tag('div', this._attrs);
 
+    this._section_id_to_content_id = {};
+
     // Iterate over the incoming argument list.
     var accordion_this = this;
     bbop.core.each(in_list, function(item){
-		       var title = item[0];
+		       var sect_title = item[0];
 		       var content = item[1];
-		       accordion_this.add_to(title, content);
+		       accordion_this.add_to(sect_title, content, add_id_p);
 		   });
-
 };
 
 //
@@ -125,31 +128,61 @@ bbop.html.accordion.prototype.to_string = function(){
     return this._div_stack.to_string();
 };
 
-//
-bbop.html.accordion.prototype.add_to = function(title, content){
+// Add a section to the accordion.
+bbop.html.accordion.prototype.add_to = function(section_id, content, add_id_p){
 
-    // I keep forgetting this.
-    if( ! title || ! content ){
-	throw new Error('bbop.html.accordion.prototype.add_to 2 args');
-    }
-	
+    //
+    if( typeof(add_id_p) == 'undefined' ){ add_id_p = false; }
+
     // Add header section.
     var h3 = new bbop.html.tag('h3');
-    var anc = new bbop.html.tag('a', {href: '#'}, title);
+    var anc = new bbop.html.tag('a', {href: '#'}, section_id);
     h3.add_to(anc);
     this._div_stack.add_to(h3);
-    
-    // Add body section.
-    var div = new bbop.html.tag('div');
-    var p = new bbop.html.tag('p', {}, bbop.core.to_string(content));
+
+    var div = null;
+
+    // Generate random id for the div.
+    if( add_id_p ){
+	var rid = 'accordion-' + section_id + '-' + bbop.core.randomness(20);
+	this._section_id_to_content_id[section_id] = rid;    
+	div = new bbop.html.tag('div', {'id': rid});	
+    }else{
+	div = new bbop.html.tag('div');	
+    }
+
+    // Add add content stub to section.
+   var p = new bbop.html.tag('p', {}, bbop.core.to_string(content));
     div.add_to(p);
     this._div_stack.add_to(div);
 };
 
-//
+// // Add a section to the accordion.
+// bbop.html.accordion.prototype.add_to_section = function(sect_id, content){
+//     var cdiv = this._section_id_to_content_div[sect_id];
+//     if( ! cdiv ){
+// 	throw new Error('Cannot add to undefined section.');
+//     }
+
+// };
+
+// Empty all sections from the accordion.
 bbop.html.accordion.prototype.empty = function(){
     this._div_stack = new bbop.html.tag('div', this._attrs);
+    this._section_id_to_content_id = {};
 };
+
+// 
+bbop.html.accordion.prototype.get_section_id = function(sect_id){
+	return this._section_id_to_content_id[sect_id];    
+};
+
+
+// // TODO: just empty the contents from an ided section.
+// bbop.html.accordion.prototype.empty_section = function(sect_id){
+//     var div = this._section_id_to_content_div[sect_id];
+//     div.empty();
+// };
 
 ///
 /// An unordered list

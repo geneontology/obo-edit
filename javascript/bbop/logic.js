@@ -106,8 +106,11 @@ bbop.logic = function(default_conjunction){
     };
     
     // Walk the data structure...
-    this._read_walk = function(data_bundle, lvl){
+    this._read_walk = function(data_bundle, in_encoder, lvl){
 	
+	// The encoder defaults to whatever--no transformations
+	var encoder = in_encoder || function(in_out){ return in_out; };
+
 	ll("LRW: with: " + bbop.core.dump(data_bundle));
 
 	// If level is not defined, we just started and we're on level
@@ -146,7 +149,9 @@ bbop.logic = function(default_conjunction){
 	    //ll('L: arg: ' + bbop.core.what_is(arg));
 	    var stack = [];
 	    bbop.core.each(arg, function(item, i){
-			       stack.push(logic_anchor._read_walk(item, lvl+1));
+			       stack.push(logic_anchor._read_walk(item,
+								  encoder,
+								  lvl + 1));
 			   });
 
 	    // Slightly different things depending on if it's a unary
