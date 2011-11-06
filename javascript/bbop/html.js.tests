@@ -75,10 +75,9 @@ load('html.js');
 })();
 
 // accordion
-(function(){
+//(function(){
      var a0 = new bbop.html.accordion([]);
      mr_t.is_same_atom(bbop.core.what_is(a0), 'bbop.html.accordion', 'id');
-
      mr_t.is_same_atom(a0.to_string(), '<div />', 'nil accordion');
 
      var a1 = new bbop.html.accordion([['foo', 'bar']],
@@ -96,7 +95,24 @@ load('html.js');
 		       '</h3><div><p>yay!</p></div><h3><a href="#">foo2</a>' +
 		       '</h3><div><p><div foo="bar">bib</div></p></div></div>',
 		       'harder accordion');
- })();
+
+     var a3 = new bbop.html.accordion([['foo', 'bar']],
+				      {id: 'test-accordion'}, true);
+     mr_t.is_same_atom(a3.get_section_id('foo').length, 34,
+		       'id accordion');
+
+// var a3 = new bbop.html.accordion([]);
+// a3.add_to('foo');
+// a3.add_to('aaa');
+// a3.add_to_section('foo', 'bar');
+// a3.add_to_section('aaa', 'bbb');
+// mr_t.is_same_atom(a3.to_string(),
+// 		  '<div>' + 
+// 		  '<h3><a href="#">foo</a></h3><div><p>bar</p></div>' +
+// 		  '<h3><a href="#">aaa</a></h3><div><p>bbb</p></div>' +
+// 		  '</div>',
+// 		  'modular accordion');
+// })();
 
 
 // var a3 = new bbop.html.accordion([], {id: 'test-a'});
