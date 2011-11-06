@@ -418,10 +418,7 @@ bbop.core.randomness = function(len){
 	['1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
 	 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
 	 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
-    var length = 10;
-    if( len ){
-	length = len;
-    }
+    var length = len || 10;
     var cache = new Array();
     for( var ii = 0; ii < length; ii++ ){
 	var rbase_index = Math.floor(Math.random() * random_base.length);
