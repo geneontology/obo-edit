@@ -164,6 +164,7 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 
 	// Variables
 	private CandidateTerm selectedCandidateTerm;
+	private List<OntologyClassInterface> tentativeSeedTerms;
 	private String id;
 
 	// Tables
@@ -312,6 +313,7 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 		ontologyTermsTable.getColumnModel().getColumn(1).setCellRenderer(openInOntologyRenderer);
 
 		this.selectedCandidateTerm = null;
+		this.tentativeSeedTerms = new ArrayList<OntologyClassInterface>();
 
 		this.inputPubMedQueryField = new JTextField();
 		this.inputPubMedQueryField.setMaximumSize(new Dimension(1000, 25));
@@ -933,17 +935,29 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 			}
 		};
 		
+		KeyAdapter seedTermKeyAdapter = new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent event) {
+				if (event.getKeyCode() == KeyEvent.VK_ENTER &&
+					!inputSeedTermField1.getText().equals("") && !inputSeedTermField2.getText().equals("")) {
+					onClickGenerateSiblings();
+				}
+			}
+		};
+
 		inputSeedTermField1.getDocument().addDocumentListener(seedTermDocumentListener);
 		inputSeedTermField2.getDocument().addDocumentListener(seedTermDocumentListener);
 		inputSeedTermField3.getDocument().addDocumentListener(seedTermDocumentListener);
 
+		inputSeedTermField2.addKeyListener(seedTermKeyAdapter);
+		inputSeedTermField3.addKeyListener(seedTermKeyAdapter);
+		
 		generateSiblingsButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				onClickGenerateSiblingsFromTextFields();
+				onClickGenerateSiblings();
 			}
-		});
-		
+		});		
 		ProxyInfo.registerListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				proxyHostTextField.setText(ProxyInfo.getHost() != null ? ProxyInfo.getHost() : ""); //$NON-NLS-1$
@@ -1255,21 +1269,39 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 		showProgressDlg(true);
 	}
 
-	private void onClickGenerateSiblingsFromTextFields() {
+	private void onClickGenerateSiblings() {
 		showProgressDlg(false);
 
 		ontologyLookupQueue.clear();
 		ontologyLookupChildrenQueue.clear();
 
-		List<String> seedTermStrings = new ArrayList<String>();
-		if (!inputSeedTermField1.getText().equals(""))
-			seedTermStrings.add(inputSeedTermField1.getText());
-		if (!inputSeedTermField2.getText().equals(""))
-			seedTermStrings.add(inputSeedTermField2.getText());
-		if (!inputSeedTermField3.getText().equals(""))
-			seedTermStrings.add(inputSeedTermField3.getText());
+		boolean useOntologySeedTerms = true;
+		if (tentativeSeedTerms.size() > 0) {
+			useOntologySeedTerms &= (inputSeedTermField1.getText().equals(tentativeSeedTerms.get(0).getLabel(adapter.getLanguage())));
+			useOntologySeedTerms &= (inputSeedTermField2.getText().equals(tentativeSeedTerms.get(1).getLabel(adapter.getLanguage())));
+			if (inputSeedTermField3.getText().length() > 0) {
+				useOntologySeedTerms &= (inputSeedTermField3.getText().equals(tentativeSeedTerms.get(2).getLabel(adapter.getLanguage())));
+			}
+		} else {
+			useOntologySeedTerms = false;
+		}
 		
-		SiblingGenerationServiceWorker worker = new SiblingGenerationServiceWorker(seedTermStrings, candidateTermsTable);
+		SiblingGenerationServiceWorker worker = null;
+		
+		if (useOntologySeedTerms) {
+			worker = new SiblingGenerationServiceWorker(tentativeSeedTerms, selectedCandidateTerm.getExistingOntologyClass(), candidateTermsTable);
+		} else {
+			List<String> seedTermStrings = new ArrayList<String>();
+			if (!inputSeedTermField1.getText().equals(""))
+				seedTermStrings.add(inputSeedTermField1.getText());
+			if (!inputSeedTermField2.getText().equals(""))
+				seedTermStrings.add(inputSeedTermField2.getText());
+			if (!inputSeedTermField3.getText().equals(""))
+				seedTermStrings.add(inputSeedTermField3.getText());
+			
+			worker = new SiblingGenerationServiceWorker(seedTermStrings, candidateTermsTable);
+		}
+		
 		worker.execute();
 		worker.addPropertyChangeListener(this);
 
@@ -3423,17 +3455,20 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
             }
     }
     
-    private class SiblingGenerationServiceWorker extends SwingWorker<TextConceptRepresentation[], Void> {
-    	private static final int requestTimeout = 60000;
+	private class SiblingGenerationServiceWorker extends SwingWorker<TextConceptRepresentation[], Void> {
+		private static final int requestTimeout = 60000;
 		private final TextConceptRepresentation[] seedTerms;
-		private final TermsTable table; 
-
+		@SuppressWarnings("unused")
+		private final TextConceptRepresentation parentTerm;
+		private final TermsTable table;
+		
 		private final int maxSiblings = 20;
 
 		public SiblingGenerationServiceWorker(List<String> seedTermStrings, TermsTable destinationTable) {
 			seedTerms = new TextConceptRepresentation[seedTermStrings.size()];
+			parentTerm = null;
 			table = destinationTable;
-
+			
 			int i = 0;
 			for (String seedTermString : seedTermStrings) {
 				TextConceptRepresentation representation = new TextConceptRepresentation();
@@ -3448,6 +3483,60 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 			}
 
 			createSiblingGenerationStub();
+		}
+		
+		public SiblingGenerationServiceWorker(List<OntologyClassInterface> seedTerms, OntologyClassInterface parentTerm, TermsTable destinationTable) {
+			this.seedTerms = new TextConceptRepresentation[seedTerms.size()];
+			for (int i = 0; i < seedTerms.size(); i++) {
+				this.seedTerms[i] = createConceptRepresentation(seedTerms.get(i));
+			}
+			
+			this.parentTerm = createConceptRepresentation(parentTerm);
+			this.table = destinationTable;
+			
+			createSiblingGenerationStub();
+		}
+		
+		private TextConceptRepresentation createConceptRepresentation(OntologyClassInterface ontologyClass) {
+			TextConceptRepresentation representation = new TextConceptRepresentation();
+
+			// LABEL
+			representation.setLabel(ontologyClass.getLabel());
+
+			// LEXICAL REPRESENTATIONS
+			String[] lexicalRepresentations = null;
+			if (ontologyClass.getSynonyms(adapter.getLanguage()) != null
+					&& !ontologyClass.getSynonyms(adapter.getLanguage()).isEmpty()) {
+				lexicalRepresentations = new String[ontologyClass.getSynonyms(adapter.getLanguage()).size()];
+				int j = 0;
+				for (String synonym : ontologyClass.getSynonyms(adapter.getLanguage())) {
+					lexicalRepresentations[j] = synonym;
+					j++;
+				}
+			} else {
+				lexicalRepresentations = new String[1];
+				lexicalRepresentations[0] = ontologyClass.getLabel();
+			}
+			representation.setLexicalRepresentation(lexicalRepresentations);
+
+			 // ABBREVIATIONS
+//			String[] abbreviations = null;
+//			if (ontologyClass.getAbbreviations() != null
+//					&& !ontologyClass.getAbbreviations().isEmpty()) {
+//				abbreviations = new String[ontologyClass.getAbbreviations()
+//						.size()];
+//				int j = 0;
+//				for (String abbreviation : ontologyClass.getAbbreviations()) {
+//					abbreviations[j] = abbreviation;
+//					j++;
+//				}
+//			} else {
+//				abbreviations = new String[1];
+//				abbreviations[0] = ontologyClass.getLabel();
+//			}
+//			representation.setKnownAbbreviation(abbreviations);
+
+			return representation;
 		}
 
 		private void createSiblingGenerationStub() {
@@ -3511,87 +3600,87 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 
 			return trimmedConcepts;
 		}
-		
-        @Override
-        public void done() {
-                List<CandidateTerm> termsFromService = new ArrayList<CandidateTerm>();
-                TextConceptRepresentation[] concepts = new TextConceptRepresentation[1000];
-                try {
-                        concepts = get();
-                } catch (InterruptedException ignore) {
-                        this.setProgress(100);
-                } catch (java.util.concurrent.ExecutionException exception) {
-                        this.setProgress(100);
-                        JOptionPane.showMessageDialog(guiComponent,
-                                        "Error retrieving terms. Are you connected to the Internet?");
-                        logger.error("Error retrieving terms!", exception);
-                }
 
-                if (concepts == null) {
-                        // close the progress bar
-                        this.setProgress(100);
-                        JOptionPane.showMessageDialog(guiComponent, "No sibling generated.");
-                } else {
-                        for (TextConceptRepresentation concept : concepts) {
-                                if (concept != null) {
-                                        // set Each OBoTermlabel
-                                        CandidateTerm candidateTerm = null;
-                                        if (candidateTermCache.hasCandidateTermWithLabel(concept.getLabel())) {
-                                                candidateTerm = candidateTermCache.get(concept.getLabel());
-                                                candidateTerm = updateCandidateTermWithConcept(concept, candidateTerm);
-                                        } else if (clipboard.hasCandidateTermWithLabel(concept.getLabel())) {
-                                                candidateTerm = clipboard.get(concept.getLabel());
-                                                candidateTerm = updateCandidateTermWithConcept(concept, candidateTerm);
-                                        } else {
-                                                candidateTerm = new CandidateTerm(concept.getLabel(), concept.getKnownAbbreviation(),
-                                                                concept.getLexicalRepresentation(), concept.getScore(),
-                                                                CandidateTerm.TYPE_GENERATED_SIBLING);
-                                        }
-                                        termsFromService.add(candidateTerm);
-                                }
-                        }
-                        updateTermsTableHeader(SOURCE_SIBLING, null);
+		@Override
+		public void done() {
+			List<CandidateTerm> termsFromService = new ArrayList<CandidateTerm>();
+			TextConceptRepresentation[] concepts = new TextConceptRepresentation[1000];
+			try {
+				concepts = get();
+			} catch (InterruptedException ignore) {
+				this.setProgress(100);
+			} catch (java.util.concurrent.ExecutionException exception) {
+				this.setProgress(100);
+				JOptionPane.showMessageDialog(guiComponent,
+						"Error retrieving terms. Are you connected to the Internet?");
+				logger.error("Error retrieving terms!", exception);
+			}
 
-                        this.table.setTerms(termsFromService);
+			if (concepts == null) {
+				// close the progress bar
+				this.setProgress(100);
+				JOptionPane.showMessageDialog(guiComponent, "No sibling generated.");
+			} else {
+				for (TextConceptRepresentation concept : concepts) {
+					if (concept != null) {
+						// set Each OBoTermlabel
+						CandidateTerm candidateTerm = null;
+						if (candidateTermCache.hasCandidateTermWithLabel(concept.getLabel())) {
+							candidateTerm = candidateTermCache.get(concept.getLabel());
+							candidateTerm = updateCandidateTermWithConcept(concept, candidateTerm);
+						} else if (clipboard.hasCandidateTermWithLabel(concept.getLabel())) {
+							candidateTerm = clipboard.get(concept.getLabel());
+							candidateTerm = updateCandidateTermWithConcept(concept, candidateTerm);
+						} else {
+							candidateTerm = new CandidateTerm(concept.getLabel(), concept.getKnownAbbreviation(),
+									concept.getLexicalRepresentation(), concept.getScore(),
+									CandidateTerm.TYPE_GENERATED_SIBLING);
+						}
+						termsFromService.add(candidateTerm);
+					}
+				}
+				updateTermsTableHeader(SOURCE_SIBLING, null);
 
-                        for (CandidateTerm generatedTerm : termsFromService) {
-                                if (table.getModel().isInClipboard(generatedTerm)) {
-                                        // add merged existing from clipboard with generated
-                                        table.getModel().addTermToClipboard(generatedTerm);
-                                }
-                        }
-                        // Scroll and select
-                        JTableHelper.scrollToTopAndSelectFirst(this.table);
+				this.table.setTerms(termsFromService);
 
-                        // trigger update ontology lookup
-                        updateTermsTableUsingOntologyLookup(this.table);
+				for (CandidateTerm generatedTerm : termsFromService) {
+					if (table.getModel().isInClipboard(generatedTerm)) {
+						// add merged existing from clipboard with generated
+						table.getModel().addTermToClipboard(generatedTerm);
+					}
+				}
+				// Scroll and select
+				JTableHelper.scrollToTopAndSelectFirst(this.table);
 
-                        // finish progessbar
-                        this.setProgress(100);
-                }
-        }
+				// trigger update ontology lookup
+				updateTermsTableUsingOntologyLookup(this.table);
 
-        /**
-         * Update an given candidate term with the information
-         *
-         * @param concept
-         * @param candidateTerm
-         */
-        private CandidateTerm updateCandidateTermWithConcept(TextConceptRepresentation concept,
-                        CandidateTerm candidateTerm) {
-                if (null != concept.getKnownAbbreviation()) {
-                        for (String abbr : concept.getKnownAbbreviation()) {
-                                candidateTerm.addAbbreviation(abbr);
-                        }
-                }
-                if (null != concept.getLexicalRepresentation()) {
-                        for (String lex : concept.getLexicalRepresentation()) {
-                                candidateTerm.addLexicalRepresentation(lex);
-                        }
-                }
-                candidateTerm.setScore(Math.max(candidateTerm.getScore(), concept.getScore()));
-                return candidateTerm;
-        }
+				// finish progessbar
+				this.setProgress(100);
+			}
+		}
+
+		/**
+		 * Update an given candidate term with the information
+		 * 
+		 * @param concept
+		 * @param candidateTerm
+		 */
+		private CandidateTerm updateCandidateTermWithConcept(TextConceptRepresentation concept,
+				CandidateTerm candidateTerm) {
+			if (null != concept.getKnownAbbreviation()) {
+				for (String abbr : concept.getKnownAbbreviation()) {
+					candidateTerm.addAbbreviation(abbr);
+				}
+			}
+			if (null != concept.getLexicalRepresentation()) {
+				for (String lex : concept.getLexicalRepresentation()) {
+					candidateTerm.addLexicalRepresentation(lex);
+				}
+			}
+			candidateTerm.setScore(Math.max(candidateTerm.getScore(), concept.getScore()));
+			return candidateTerm;
+		}
 	}
 
 	/**
