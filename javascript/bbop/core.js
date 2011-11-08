@@ -21,22 +21,34 @@ if ( typeof bbop == "undefined" ){ bbop = {}; }
 if ( typeof bbop.core == "undefined" ){ bbop.core = {}; }
 //if ( typeof bbop.core.json == "undefined" ){ bbop.core.json = {}; }
 
-// @???
-// Capture the global object for later reference.
-bbop.core._global = this;
+/*
+ * Variable: global
+ * 
+ * Capture the global object for later reference.
+ */
+bbop.core.global = this;
 
 ///
 /// Utility functions can hang as prototypes.
 ///
 
-// @Object?
-// This function extends the global object for easy namespace
-// creation.
+/*
+ * Function: namespace
+ * 
+ * Create a namespace (chained object) in the global environment.
+ * 
+ * Parameters: An arbitrary number of strings.
+ * 
+ * Returns: Nothing. Side-effects: this function extends the global
+ * object for easy namespace creation.
+ * 
+ * Also See: <require>
+ */
 bbop.core.namespace = function(){
 
     // Go through the arguments and add them to the namespace,
     // starting at global.
-    var current_object = bbop.core._global;
+    var current_object = bbop.core.global;
     for ( var i = 0; i < arguments.length; i++ ) {
 	var ns = arguments[i];
 	if( ! current_object[ns] ){
@@ -47,13 +59,22 @@ bbop.core.namespace = function(){
     return current_object;
 };
 
-// @Object?
-// Checks to make sure that the requested namespace is extant
-// (checking to see if our libraries are loaded).
+/*
+ * Function: require
+ * 
+ * Throw an error unless a specified namespace is defined.
+ * 
+ * Parameters: An arbitrary number of strings.
+ * 
+ * Returns: Nothing. Side-effects: throws an error if the namespace
+ * defined by the strings is not currently found.
+ * 
+ * Also See: <namespace>
+ */
 bbop.core.require = function(){
 
     // Walk through from global namespace, checking.
-    var current_object = bbop.core._global;
+    var current_object = bbop.core.global;
     for ( var i = 0; i < arguments.length; i++ ) {
 	var ns = arguments[i];
 	if( ! current_object[ns] ){
@@ -64,18 +85,37 @@ bbop.core.require = function(){
     return current_object;
 };
 
-// @Object?
-// Extend an object properly.
-bbop.core.extend = function(kid, sup){  
-    for (var property in sup.prototype) {  
-	if (typeof kid.prototype[property] == "undefined")  
-            kid.prototype[property] = sup.prototype[property];  
-    }  
-    return kid;
-};
+// /*
+//  * Function: extend
+//  * 
+//  * Parameters: An arbitrary number of strings.
+//  * 
+//  * Returns: Nothing. Side-effects: throws an error if the namespace
+//  * defined by the strings is not currently found.
+//  */
+// // @Object?
+// // Extend an object properly.
+// bbop.core.extend = function(kid, sup){  
+//     for( var property in sup.prototype ){
+// 	if (typeof kid.prototype[property] == "undefined")  
+//             kid.prototype[property] = sup.prototype[property];  
+//     }  
+//     return kid;
+// };
 
-// @String
-// Crop a string to a certain limit and add ellipses.
+/*
+ * Function: crop
+ *
+ * Crop a string nicely.
+ * 
+ * Parameters:
+ *  str - the string to crop
+ *  lim - the final length to crop to (optional, defaults to 10)
+ *  suff - the string to add to the end (optional, defaults to '')
+ * 
+ * Returns: Nothing. Side-effects: throws an error if the namespace
+ * defined by the strings is not currently found.
+ */
 bbop.core.crop = function(str, lim, suff){
     var ret = str;
 
@@ -91,9 +131,18 @@ bbop.core.crop = function(str, lim, suff){
     return ret;
 };
 
-// @Object?
-// Merge a pair of hashes, using the first as default and template.
-bbop.core.merge = function(default_hash, arg_hash){
+/*
+ * Function: fold
+ *
+ * Fold a pair of hashes together, using the first one as a template.
+ * 
+ * Parameters:
+ *  default_hash - template hash
+ *  arg_hash - argument hash to match
+ * 
+ * Returns: A new hash.
+ */
+bbop.core.fold = function(default_hash, arg_hash){
 
     if( ! default_hash ){ default_hash = {}; }
     if( ! arg_hash ){ arg_hash = {}; }
@@ -109,8 +158,42 @@ bbop.core.merge = function(default_hash, arg_hash){
     return ret_hash;
 };
 
-// @Object?
-// Get the hash keys from a hash/object, return as an array.
+/*
+ * Function: merge
+ *
+ * Merge a pair of hashes together, using the second values getting
+ * precedence.
+ * 
+ * Parameters:
+ *  older_hash - first pass
+ *  newer_hash - second pass
+ * 
+ * Returns: A new hash.
+ */
+bbop.core.merge = function(older_hash, newer_hash){
+
+    if( ! older_hash ){ older_hash = {}; }
+    if( ! newer_hash ){ newer_hash = {}; }
+
+    var ret_hash = {};
+    function _add (key, val){
+	ret_hash[key] = val;
+    }
+    bbop.core.each(older_hash, _add);
+    bbop.core.each(newer_hash, _add);
+    return ret_hash;
+};
+
+/*
+ * Function: get_keys
+ *
+ * Get the hash keys from a hash/object, return as an array.
+ *
+ * Parameters:
+ *  arg_hash - the hash in question
+ *
+ * Returns: an array of keys
+ */
 bbop.core.get_keys = function get_keys (arg_hash){
 
     if( ! arg_hash ){ arg_hash = {}; }
@@ -124,12 +207,19 @@ bbop.core.get_keys = function get_keys (arg_hash){
     return out_keys;
 };
 
-// @Anything
-// Return the string best guess for what the input is, null if it
-// can't be identified.
-// In addition to the _is_a property convention, current core output
-// strings are: 'null', 'array', 'boolean', 'number', 'string',
-// 'function', and 'object'.
+/*
+ * Function: what_is
+ *
+ * Return the string best guess for what the input is, null if it
+ * can't be identified. In addition to the _is_a property convention,
+ * current core output strings are: 'null', 'array', 'boolean',
+ * 'number', 'string', 'function', and 'object'.
+ * 
+ * Parameters: 
+ *  in_thing - the thing in question
+ *
+ * Returns: a string
+ */
 bbop.core.what_is = function(in_thing){
     var retval = null;
     if( typeof(in_thing) != 'undefined' ){
@@ -157,9 +247,17 @@ bbop.core.what_is = function(in_thing){
     return retval;
 };
 
-// @Object
-// Return the best guess (true/false) for whether ot not a given object is 
-// being used as an array.
+/*
+ * Function: is_array
+ *
+ * Return the best guess (true/false) for whether ot not a given
+ * object is being used as an array.
+ *
+ * Parameters: 
+ *  in_thing - the thing in question
+ *
+ * Returns: boolean
+ */
 bbop.core.is_array = function(in_thing){
     var retval = false;
     if( typeof(in_thing) == 'object' &&
@@ -170,9 +268,17 @@ bbop.core.is_array = function(in_thing){
     return retval;
 };
 
-// @Object
-// Return the best guess (true/false) for whether ot not a given object is 
-// being used as a hash.
+/*
+ * Function: is_hash
+ *
+ * Return the best guess (true/false) for whether ot not a given
+ * object is being used as a hash.
+ *
+ * Parameters: 
+ *  in_thing - the thing in question
+ *
+ * Returns: boolean
+ */
 bbop.core.is_hash = function(in_thing){
     var retval = false;
     if( typeof(in_thing) == 'object' &&
@@ -182,9 +288,17 @@ bbop.core.is_hash = function(in_thing){
     return retval;
 };
 
-// @Object
-// Return true/false on whether or not the object in question has any
-// items of interest.
+/*
+ * Function: is_empty
+ *
+ * Return true/false on whether or not the object in question has any
+ * items of interest (iterable?).
+ *
+ * Parameters: 
+ *  in_thing - the thing in question
+ *
+ * Returns: boolean
+ */
 bbop.core.is_empty = function(in_thing){
     var retval = false;
     if( bbop.core.is_array(in_thing) ){
@@ -204,10 +318,20 @@ bbop.core.is_empty = function(in_thing){
     return retval;
 };
 
-// (@Array|@Object)/@Function
-// @Array: function(item, index)
-// @Object: function(key, value)
-// Implement a simple iterator so I don't go mad.
+
+/*
+ * Function: each
+ *
+ * Implement a simple iterator so I don't go mad.
+ *  array - function(item, index)
+ *  object - function(key, value)
+ *
+ * Parameters: 
+ *  in_thing - hash or array
+ *  in_function - function to apply to elements
+ *
+ * Returns: Nothing
+ */
 bbop.core.each = function(in_thing, in_function){
 
     // Probably an not array then.
@@ -233,8 +357,16 @@ bbop.core.each = function(in_thing, in_function){
     }
 };
 
-// @Object?
-// Clone an object down to its atoms.
+/*
+ * Function: clone
+ *
+ * Clone an object down to its atoms.
+ *
+ * Parameters: 
+ *  thing - whatever
+ *
+ * Returns: a new whatever
+ */
 bbop.core.clone = function(thing){
 
     var clone = null;
@@ -277,10 +409,20 @@ bbop.core.clone = function(thing){
     return clone;
 };
 
-// @Anything
-// Essentially add standard 'to string' interface to the string class
-// and as a stringifier interface to other classes. 
-// More meant for output. For a slightly different take, see dump.
+/*
+ * Function: to_string
+ *
+ * Essentially add standard 'to string' interface to the string class
+ * and as a stringifier interface to other classes. More meant for
+ * output.
+ *
+ * Parameters: 
+ *  in_thing - something
+ *
+ * Returns: string
+ * 
+ * Also See: <dump>
+ */
 bbop.core.to_string = function(in_thing){
 
     var what = bbop.core.what_is(in_thing);
@@ -295,9 +437,19 @@ bbop.core.to_string = function(in_thing){
     }
 };
 
-// @Object?
-// Dump an object to a string form as best as possible.
-// More meant for debugging. For a slightly different take, see to_string.
+/*
+ * Function: dump
+ *
+ * Dump an object to a string form as best as possible. More meant for
+ * debugging. For a slightly different take, see to_string.
+ *
+ * Parameters: 
+ *  in_thing - something
+ *
+ * Returns: string
+ * 
+ * Also See: <to_string>
+ */
 bbop.core.dump = function(thing){
 
     var retval = '';
@@ -339,10 +491,21 @@ bbop.core.dump = function(thing){
     return retval;
 };
 
+/*
+ * Function: has_interface
+ *
+ * Check to see if an object supplies an "interface".
+ *
+ * Parameters: 
+ *  iobj - the objct in question
+ *  iface - the interface (as a string) that we're looking for
+ *
+ * Returns: boolean
+ *
+ * TODO: Unit test this to make sure it catches both prototype (okay I
+ * think) and uninstantiated objects (harder/impossible?).
+ */
 // @Object
-// Check to see if an object supplies an "interface"
-// TODO: Unit test this to make sure it catches both prototype (okay I think)
-//       and uninstantiated objects (harder/impossible?).
 bbop.core.has_interface = function(iobj, iface){
     var retval = true;
     bbop.core.each(iobj,
@@ -357,8 +520,16 @@ bbop.core.has_interface = function(iobj, iface){
     return retval;
 };
 
-// @Object
-// Assemble an object into a GET-like query.
+/*
+ * Function: get_assemble
+ *
+ * Assemble an object into a GET-like query.
+ *
+ * Parameters: 
+ *  qargs - hash/object
+ *
+ * Returns: string
+ */
 bbop.core.get_assemble = function(qargs){
 
     var mbuff = [];	
@@ -409,9 +580,17 @@ bbop.core.get_assemble = function(qargs){
     return mbuff.join('&');
 };
 
-// @Math
-// Random number generator of fixed length.
-// Return a randome number string of length len.
+/*
+ * Function: 
+ *
+ * Random number generator of fixed length. Return a random number
+ * string of length len.
+ *
+ * Parameters: 
+ *  len - the number of random character to return.
+ *
+ * Returns: string
+ */
 bbop.core.randomness = function(len){
 
     var random_base =
@@ -427,16 +606,24 @@ bbop.core.randomness = function(len){
     return cache.join('');
 };
 
-// @???
-// Functions to encode and decode data that we'll be hiding in the
-// element ids. This is a
+/*
+ * Function: coder
+ *
+ * TODO doc Functions to encode and decode data that we'll be hiding
+ *  in the element ids. This is a
+ *
+ * Parameters: 
+ *   - 
+ *
+ * Returns: 
+ */
 bbop.core.coder = function(args){
 
     var mangle_base_string = "bbop_core_coder_mangle_";
     var mangle_base_space_size = 10;
 
     var defs = {string: mangle_base_string, size: mangle_base_space_size};
-    var final_args = bbop.core.merge(defs, args);
+    var final_args = bbop.core.fold(defs, args);
     var mangle_str = final_args['string'];
     var space_size = final_args['size'];
 
