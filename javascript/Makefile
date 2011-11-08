@@ -2,7 +2,7 @@
 #### Testing and benchmarking for serverable/CLI JS.
 ####
 #### A report-mistakes-only testing run can be done as:
-####   make test | grep FAIL
+####   make test | grep -i fail
 ####
 
 TESTS = $(wildcard *.js.tests) \
@@ -18,7 +18,7 @@ all:
 	@echo "All JS engines: $(JSENGINES)"
 	@echo "Tests defined: $(TESTS)"
 	@echo "Benchmarks defined: $(BENCHMARKS)"
-	@echo "Try 'make test' or 'make benchmark'"
+	@echo "Try 'make test', 'make benchmark', or 'make docs'"
 
 ###
 ### Tests.
@@ -45,3 +45,12 @@ $(BENCHMARKS):
            echo "Trying engine: $$e"; \
            $$e -f $@; \
         done
+
+###
+### Documentation.
+###
+
+.PHONY: docs
+
+docs:
+	naturaldocs --rebuild-output --input bbop/ --project docs/.naturaldocs_project/ --output html docs/
