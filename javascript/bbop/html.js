@@ -20,7 +20,16 @@ bbop.core.namespace('bbop', 'html', 'input');
 /// bbop.html.tag--the fundamental unit that we'll work with.
 ///
 
-//
+// Test of jsdoc-toolkit
+
+/*
+ * The fundamental unit that we'll work with.
+ * @name tag
+ * @function
+ * @param tag a thing
+ * @param attrs a thing
+ * @param below a thing
+ */
 bbop.html.tag = function(tag, attrs, below){
     this._is_a = 'bbop.html.tag';
 
