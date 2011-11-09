@@ -106,8 +106,8 @@ public class SplashScreen extends JWindow {
 				 + "copyright 2001-" + year + "\n"
 				 + "Originally written by John Day-Richter, with\n"
 				 + "contributions by Nomi Harris, Chris Mungall,\n"
-				 + "Jennifer Deegan, Amina Abdulla, and\n"
-				 + "Nicolas Rodriguez.");
+				 + "Jennifer Deegan, Amina Abdulla, "
+				 + "Nicolas Rodriguez,\nand others.");
 		bip.setBorder(null);
 		return bip;
 	}

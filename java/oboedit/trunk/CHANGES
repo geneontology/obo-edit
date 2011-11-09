@@ -3,9 +3,18 @@
 ==============================
 What's New in OBO-Edit v2.1-rc3
 ==============================
-Fixed a null pointer exception that sometimes was thrown during merges, and
+- Fixed a null pointer exception that sometimes was thrown during merges, and
 which may or may not have anything to do with the sporadic loss of information
 (synonyms, etc.) from merges that some users have observed.
+- At Chris M's request, these adapters or components have been removed:
+	The OBO OWL Adapter
+	The OWL URL Reader
+	The GO Association File Adapter
+        Semantic Parser Manager
+- Discovered that the serial writer and reader were both broken, and not easy
+to fix, and no one uses them anyway, so they are gone for now.
+- Updated some user guide pages.
+- Thomas Waechter checked in some changes to the Ontology Generation component.
 
 
 ==============================
