@@ -468,21 +468,6 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 		fireTableDataChanged();
 	}
 
-	/**
-	 * Remove all instances of {@link T} provided in terms from the
-	 * {@link TableModel}
-	 * 
-	 * @param terms
-	 */
-	public void removeAll(Collection<T> terms) {
-		clearStates();
-		for (T term : terms) {
-			String termId = getTermId(term);
-			allTermsidList.remove(termId);
-			allTermsMap.remove(termId);
-		}
-		fireTableDataChanged();
-	}
 
 	public void setRelationTypes(R[] relationTypes) {
 		this.relationTypes = relationTypes;
@@ -583,23 +568,6 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 			} else {
 				throw new RuntimeException("id not known!"); //$NON-NLS-1$
 			}
-		}
-		sortingNeeded = true;
-		fireTableDataChanged();
-	}
-
-	/**
-	 * Updating linked object in the table (usually in cases where those
-	 * {@link T}s have been changed)
-	 * 
-	 * @param terms
-	 *            to update
-	 */
-	public void updateTerms(List<T> terms) {
-		removeAll(terms);
-		for (T term : terms) {
-			allTermsidList.add(getTermId(term));
-			allTermsMap.put(getTermId(term), term);
 		}
 		sortingNeeded = true;
 		fireTableDataChanged();
