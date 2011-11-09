@@ -36,7 +36,6 @@
    <mapID target="Cross_Product_Info" url="html/Cross_Product_Info.htm"/>
    <mapID target="Cross_Product_Matrix_Editor" url="html/Cross_Product_Matrix_Editor.htm"/>
    <mapID target="Cross_Products" url="html/Cross_Products.htm"/>
-   <mapID target="Cross_Products_By_Hand" url="html/Cross_Products_By_Hand.htm"/>
    <mapID target="Cross_Products_in_the_Text_Editor" url="html/Cross_Products_in_the_Text_Editor.htm"/>
    <mapID target="Custom_Data_Adapters" url="html/Custom_Data_Adapters.htm"/>
    <mapID target="Dangling_Intersection_Check" url="html/Dangling_Intersection_Check.htm"/>
@@ -116,7 +115,6 @@
    <mapID target="The_Term_Editor_Panel" url="html/The_Term_Editor_Panel.htm"/>
    <mapID target="Parent_Editor" url="html/Parent_Editor.htm"/>
    <mapID target="The_Reasoner_and_the_Interface" url="html/The_Reasoner_and_the_Interface.htm"/>
-   <mapID target="The_Serial_Adapter" url="html/The_Serial_Adapter.htm"/>
    <mapID target="The_Verification_Plugin" url="html/The_Verification_Plugin.htm"/>
    <mapID target="Undo_Redo" url="html/Undo_Redo.htm"/>
    <mapID target="User_Defined_Checks" url="html/User_Defined_Checks.htm"/>
