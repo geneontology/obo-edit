@@ -44,6 +44,11 @@ bbop.core.namespace('bbop', 'render', 'phylo');
 // Actually, use this to wrap graph abstraction.
 bbop.render.phylo.renderer = function (element_id, info_box_p){
 
+    // Logger.
+    var logger = new bbop.logger();
+    logger.DEBUG = true;
+    function ll(str){ logger.kvetch(str); }
+
     var elt_id = element_id;
 
     var renderer_context = this;
@@ -299,7 +304,7 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
 	var path = path_info['path'];
 	var cp = path_info['center_point'];
 
-	// bbop.core.kvetch("conn: cp: (" + cp[0] + ", " + cp[1] + ")");
+	// ll("conn: cp: (" + cp[0] + ", " + cp[1] + ")");
 
 	// Future visibility.
 	this.visible = true;
@@ -439,9 +444,9 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
     // 	var bb1 = this.from.getBBox();
     // 	var bb2 = this.to.getBBox();
 
-    // 	//bbop.core.kvetch("bb1.width: " + bb1.width);
-    // 	//bbop.core.kvetch("bb1.x: " + bb1.x + ", bb1.y: " + bb1.y);
-    // 	//bbop.core.kvetch("bb1.width: "+ bb1.width +", bb1.height: "+ bb1.height);
+    // 	//ll("bb1.width: " + bb1.width);
+    // 	//ll("bb1.x: " + bb1.x + ", bb1.y: " + bb1.y);
+    // 	//ll("bb1.width: "+ bb1.width +", bb1.height: "+ bb1.height);
 
     // 	var p = [{x: bb1.x + bb1.width / 2, y: bb1.y - 1},
     // 		 {x: bb1.x + bb1.width / 2, y: bb1.y + bb1.height + 1},
@@ -496,9 +501,9 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
 	var bb1 = this.from.getBBox();
 	var bb2 = this.to.getBBox();
 
-	//bbop.core.kvetch("bb1.width: " + bb1.width);
-	//bbop.core.kvetch("bb1.x: " + bb1.x + ", bb1.y: " + bb1.y);
-	//bbop.core.kvetch("bb1.width: "+ bb1.width +", bb1.height: "+ bb1.height);
+	//ll("bb1.width: " + bb1.width);
+	//ll("bb1.x: " + bb1.x + ", bb1.y: " + bb1.y);
+	//ll("bb1.width: "+ bb1.width +", bb1.height: "+ bb1.height);
 
 	var p =
 	    [
@@ -590,7 +595,7 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
 	if( elt.clientWidth ){
 	    this._render_frame_width = elt.clientWidth;
 	}else{
-	    bbop.core.kvetch("UFP: Unidentified Failing Platform.");
+	    ll("UFP: Unidentified Failing Platform.");
 	}
 	// Now adjust the drawing width to make sure that the boxes
 	// fit.
@@ -606,14 +611,14 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
 	// Recalculate x-scale.
 	x_scale = this._render_internal_width / layout.max_distance;
 	// Get that last pixel column on board.
-	bbop.core.kvetch('internal width: ' + this._render_internal_width);
-	bbop.core.kvetch('frame width: ' + this._render_frame_width);
+	ll('internal width: ' + this._render_internal_width);
+	ll('frame width: ' + this._render_frame_width);
 
 	// Create context.
 	var paper = Raphael(elt_id,
 			    this._render_frame_width,
 			    this._render_frame_height);
-	bbop.core.kvetch('display: made paper');
+	ll('display: made paper');
 
 	///
 	/// Graph helper function definitions.
@@ -633,7 +638,7 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
     	    retlist.push(nid);
     	    // Get all nodes cribbing from distances.
     	    for( vt in hash[nid] ){
-    		//bbop.core.kvetch("id: " + id + ", v: " + ct);
+    		//ll("id: " + id + ", v: " + ct);
     		retlist.push(vt);
     	    }
     	    return retlist;	
@@ -694,7 +699,7 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
 		    for( var anid in conn_hash[tnid] ){
 			var conn_index = conn_hash[tnid][anid];
 			var conn = connections[conn_index];
-			bbop.core.kvetch('get_conn: found: [' + conn_index +
+			ll('get_conn: found: [' + conn_index +
 					 '] ' + anid + ' <=> ' + tnid +
 					 ' ... ' + conn);
 			retlist.push(conn);
@@ -754,7 +759,7 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
     	    for( var si = 0; si < assoc_phynodes.length; si++ ){
 		var mshp = assoc_phynodes[si];
 		mshp.move_y(dy);
-		//bbop.core.kvetch('mshp['+si+']:'+' oy: '+mshp.start_y+', dy:'+dy);
+		//ll('mshp['+si+']:'+' oy: '+mshp.start_y+', dy:'+dy);
     	    }
 
 	    // Collect subtree edges for next bit.
@@ -968,7 +973,7 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
 	    // Create node at place. 
 	    var phynode = null;
 	    if( ! this._graph.is_leaf_node(node_id) && info_box_p ){
-		bbop.core.kvetch('display: internal node: ' + node_id);
+		ll('display: internal node: ' + node_id);
 		phynode = new graph_pnode(paper, node_id, lpx, lpy, true);
 		//phynode.attr("width") = 10;
 		//phynode.attr("height") = 10;
@@ -988,7 +993,7 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
 	    phynode_id_to_node_id[phynode_id] = node_id;
 	    node_id_to_index[node_id] = ref_index;
 
-	    bbop.core.kvetch('display: indexed (node): node_id: ' + node_id +
+	    ll('display: indexed (node): node_id: ' + node_id +
 			     ', phynode_id: ' + phynode_id +
 			     ', ref_index: ' + ref_index);
 	}
@@ -1026,9 +1031,9 @@ bbop.render.phylo.renderer = function (element_id, info_box_p){
 	    if( ! conn_hash_ancestor[e1] ){ conn_hash_ancestor[e1] = {}; }
 	    conn_hash_ancestor[e1][e0] = ei;
 
-	    bbop.core.kvetch('display: indexed (edge): e0: ' + e0 +
-			     ', e1: ' + e1 +
-			     ', ei: ' + ei);
+	    ll('display: indexed (edge): e0: ' + e0 +
+	       ', e1: ' + e1 +
+	       ', ei: ' + ei);
 	}
 	
 	// See: https://github.com/sorccu/cufon/wiki/about
