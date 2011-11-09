@@ -92,17 +92,6 @@ public abstract class AbstractOntologyTermsTable<T extends OntologyClassInterfac
 	 * 
 	 * @param terms
 	 */
-	public void removeTerms(Collection<T> terms)
-	{
-		getModel().removeAll(terms);
-		JTableHelper.recalculateScrollableViewportSize(this, minScrollableViewPortHeight, maxScrollableViewPortHeight);
-	}
-
-	/**
-	 * Remove all instances of {@link T} from the {@link TermsTable} and resize table if necessary.
-	 * 
-	 * @param terms
-	 */
 	public void removeAllTerms()
 	{
 		getModel().removeAll();
