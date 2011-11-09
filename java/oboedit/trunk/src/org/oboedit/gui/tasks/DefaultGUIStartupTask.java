@@ -56,7 +56,7 @@ import org.obo.dataadapter.GOFlatFileAdapter;
 //import org.obo.dataadapter.GOStyleAnnotationFileAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 //import org.obo.dataadapter.OWLURLReaderAdapter;
-import org.obo.dataadapter.SerialAdapter;
+//import org.obo.dataadapter.SerialAdapter;
 import org.obo.dataadapter.SimpleLinkFileAdapter;
 import org.obo.dataadapter.XMLHistoryAdapter;
 import org.obo.datamodel.OBOProperty;
@@ -552,7 +552,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
                 //		adapters.add(new GOStyleAnnotationFileAdapter());
                 //		adapters.add(owladapter);
                 //		adapters.add(new OWLURLReaderAdapter());
-		adapters.add(new SerialAdapter());
+                //		adapters.add(new SerialAdapter());
 		adapters.add(new XMLHistoryAdapter());
 		return adapters;
 	}

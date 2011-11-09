@@ -36,7 +36,6 @@
 		<tocitem text="The OBO Adapter" target="The_OBO_Adapter" />
 		<tocitem text="The GO Flat File Adapter"
 			target="The_GO_Flat_File_Adapter" />
-		<tocitem text="The Serial Adapter" target="The_Serial_Adapter" />
 		<tocitem text="Custom Data Adapters"
 			target="Custom_Data_Adapters" />
 	</tocitem>
