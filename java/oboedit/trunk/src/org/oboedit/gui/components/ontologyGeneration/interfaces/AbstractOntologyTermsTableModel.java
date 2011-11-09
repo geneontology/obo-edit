@@ -48,17 +48,22 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	private Set<String> termsSelected = new HashSet<String>();
 	private Set<String> termsSameAsCandidateTerm = new HashSet<String>();
 	private Set<String> termsKnownParentsOfCandidateTerm = new HashSet<String>();
-	private Set<String> termsPredictedParentsOfCandidateTerm = new HashSet<String>();
 	private Set<String> termsFromDefinitions = new HashSet<String>();
 	private Set<String> termsSimilarToCandidateTerm = new HashSet<String>();
 
 	private Map<String, Integer> termsRankInDefinitions = new HashMap<String, Integer>();
 
-	private Object[][] order = { { termsSelected, Messages.getString("AbstractOntologyTermsTableModel.SelectedTerm"), null }, // //$NON-NLS-1$
-			{ termsSameAsCandidateTerm, Messages.getString("AbstractOntologyTermsTableModel.SameAsExistingTerm"), Messages.getString("AbstractOntologyTermsTableModel.Identical") }, // //$NON-NLS-1$ //$NON-NLS-2$
-			{ termsKnownParentsOfCandidateTerm, Messages.getString("AbstractOntologyTermsTableModel.Validated"), Messages.getString("AbstractOntologyTermsTableModel.ExistingParentTerm") },// //$NON-NLS-1$ //$NON-NLS-2$
-			{ termsPredictedParentsOfCandidateTerm, Messages.getString("AbstractOntologyTermsTableModel.Predicted"), Messages.getString("AbstractOntologyTermsTableModel.SubClassOf") }, // //$NON-NLS-1$ //$NON-NLS-2$
-			{ termsFromDefinitions, Messages.getString("AbstractOntologyTermsTableModel.Predicted"), Messages.getString("AbstractOntologyTermsTableModel.SubClassOf") }, // //$NON-NLS-1$ //$NON-NLS-2$
+	private Object[][] order = {
+			{ termsSelected, Messages.getString("AbstractOntologyTermsTableModel.SelectedTerm"), null }, // //$NON-NLS-1$
+			{
+					termsSameAsCandidateTerm,
+					Messages.getString("AbstractOntologyTermsTableModel.SameAsExistingTerm"), Messages.getString("AbstractOntologyTermsTableModel.Identical") }, // //$NON-NLS-1$ //$NON-NLS-2$
+			{
+					termsKnownParentsOfCandidateTerm,
+					Messages.getString("AbstractOntologyTermsTableModel.Validated"), Messages.getString("AbstractOntologyTermsTableModel.ExistingParentTerm") },// //$NON-NLS-1$ //$NON-NLS-2$
+			{
+					termsFromDefinitions,
+					Messages.getString("AbstractOntologyTermsTableModel.Predicted"), Messages.getString("AbstractOntologyTermsTableModel.SubClassOf") }, // //$NON-NLS-1$ //$NON-NLS-2$
 			{ termsSimilarToCandidateTerm, Messages.getString("AbstractOntologyTermsTableModel.SimilarTerm"), null } }; //$NON-NLS-1$
 
 	private boolean showOnlyTicked;
@@ -66,7 +71,7 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	private R[] relationTypes = getDefaultRelationTypes();
 
 	private Map<T, R> selectedRelationType = new HashMap<T, R>(1);
-	
+
 	private String language;
 
 	/**
@@ -80,7 +85,7 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 		for (int i = 0; i < order.length; i++) {
 			rankingOrder.add((Set<String>) order[i][0]);
 		}
-		
+
 		language = Locale.getDefault().getLanguage();
 	}
 
@@ -102,7 +107,7 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	 * IMPLEMENTED METHODS
 	 */
 
-	public void addParentsTermsOfExistingCandidateTerm(Map<String, String> parentTerms) {
+	public void setParentsTermsOfExistingCandidateTerm(Map<String, String> parentTerms) {
 		ticked.removeAll(termsKnownParentsOfCandidateTerm);
 		termsKnownParentsOfCandidateTerm.clear();
 		if (parentTerms != null) {
@@ -115,14 +120,6 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 		}
 	}
 
-	protected void addPredictedParentsOfCandidateTerm(Collection<T> terms) {
-		for (T term : terms) {
-			termsPredictedParentsOfCandidateTerm.add(getTermId(term));
-		}
-		sortingNeeded = true;
-		fireTableDataChanged();
-	}
-
 	public void addSameAsCandidateTerm(Collection<T> terms) {
 		for (T term : terms) {
 			termsSameAsCandidateTerm.add(getTermId(term));
@@ -131,7 +128,7 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 		fireTableDataChanged();
 	}
 
-	protected void addSelectedT(Collection<T> terms) {
+	public void addSelectedT(Collection<T> terms) {
 		for (T term : terms) {
 			termsSelected.add(getTermId(term));
 		}
@@ -178,8 +175,7 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 				}
 				if (!visible.contains(termId)) {
 					String name = getTermName(term);
-					if (name != null && p.matcher(name).find() ||
-						p.matcher(termId).find()) {
+					if (name != null && p.matcher(name).find() || p.matcher(termId).find()) {
 						visible.add(termId);
 					}
 				}
@@ -217,31 +213,17 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	}
 
 	/*
-	 * OTHER PUBLIC METHODS
+	 * UPDATE PARENTS
 	 */
 
-	protected void clearPredictedParentsOfCandidateTerm() {
-		termsPredictedParentsOfCandidateTerm.clear();
-		sortingNeeded = true;
-		fireTableDataChanged();
-	}
-
-	public void clearSameAsCandidateTerms() {
+	private void clearSameAsCandidateTerms() {
 		termsSameAsCandidateTerm.clear();
 		sortingNeeded = true;
 		fireTableDataChanged();
 	}
 
-	/*
-	 * UPDATE PARENTS
-	 */
-	protected void clearSelectedTs() {
-		termsSelected.clear();
-		sortingNeeded = true;
-		fireTableDataChanged();
-	}
 
-	public void clearSimiliarToCandidateTerm() {
+	private void clearSimiliarToCandidateTerm() {
 		termsSimilarToCandidateTerm.clear();
 		sortingNeeded = true;
 		fireTableDataChanged();
@@ -249,6 +231,7 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 
 	public void clearTermsFromDefinitions() {
 		termsFromDefinitions.clear();
+		termsRankInDefinitions.clear();
 		sortingNeeded = true;
 		fireTableDataChanged();
 	}
@@ -260,7 +243,7 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	 */
 	public List<T> getAllTerms() {
 		List<T> list = new ArrayList<T>();
-		
+
 		// FIXME: there's a bug in here, this list will always be empty
 		for (T term : list) {
 			list.add(term);
@@ -352,10 +335,10 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	@SuppressWarnings("unchecked")
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		List<T> visibleElements = this.getVisibleElements();
-		
+
 		if (rowIndex >= visibleElements.size())
 			return null;
-		
+
 		T term = visibleElements.get(rowIndex);
 		if (columnIndex == columns.Selector.ordinal()) {
 			return ticked.contains(getTermId(term));
@@ -395,7 +378,7 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 			}
 			return buffer.toString();
 		}
-		
+
 		return null;
 	}
 
@@ -461,12 +444,27 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	 * Remove all instances of {@link T} from the {@link TableModel}
 	 */
 	public void removeAll() {
+		clearStates();
 		allTermsMap.clear();
 		allTermsidList.clear();
+		sortingNeeded = true;
+		fireTableDataChanged();
+	}
+
+	/**
+	 * clear all internally stored states
+	 **/
+	public void clearStates() {
+
+		termsRankInDefinitions.clear();
+		termsSameAsCandidateTerm.clear();
+		termsKnownParentsOfCandidateTerm.clear();
+		termsFromDefinitions.clear();
+		termsSimilarToCandidateTerm.clear();
+
 		ticked.clear();
 		visible.clear();
 		visibleThroughSynonymMap.clear();
-		sortingNeeded = true;
 		fireTableDataChanged();
 	}
 
@@ -477,13 +475,11 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	 * @param terms
 	 */
 	public void removeAll(Collection<T> terms) {
+		clearStates();
 		for (T term : terms) {
 			String termId = getTermId(term);
 			allTermsidList.remove(termId);
 			allTermsMap.remove(termId);
-			ticked.remove(termId);
-			visible.remove(termId);
-			visibleThroughSynonymMap.remove(termId);
 		}
 		fireTableDataChanged();
 	}
@@ -568,6 +564,10 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	}
 
 	public void updateSimilarTerms(Collection<String> labels, List<String> idsOfSimilarTerms) {
+		// clearing
+		clearSameAsCandidateTerms();
+		clearSimiliarToCandidateTerm();
+
 		for (String id : idsOfSimilarTerms) {
 			if (allTermsMap.containsKey(id)) {
 				T term = allTermsMap.get(id);
@@ -702,13 +702,13 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	public T getTermById(String parentId) {
 		return allTermsMap.get(parentId);
 	}
-	
+
 	public String getLanguageSetting() {
-    	return language;
-    }
+		return language;
+	}
 
 	public void setLanguage(String language) {
-    	this.language = language;
-    }
-}
+		this.language = language;
+	}
 
+}

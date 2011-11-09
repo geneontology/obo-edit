@@ -98,6 +98,7 @@ import javax.swing.text.JTextComponent;
 import org.apache.axis2.AxisFault;
 import org.apache.log4j.Logger;
 import org.jdesktop.swingworker.SwingWorker;
+import org.oboedit.gui.components.ontologyGeneration.bioportal.ParseXMLFile;
 import org.oboedit.gui.components.ontologyGeneration.extraction.DefinitionExtensionWorker;
 import org.oboedit.gui.components.ontologyGeneration.extraction.PdfToTextExtraction;
 import org.oboedit.gui.components.ontologyGeneration.interfaces.AbstractOntologyTermsTable;
@@ -137,7 +138,7 @@ import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGeneration
  * @version 2.0, 25/06/2009
  */
 public abstract class OntologyGenerationComponent<T extends OntologyClassInterface, R> implements
-PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
+		PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 
 	private final OntologyModelAdapterInterface<T, R> adapter;
 	private final JComponent guiComponent;
@@ -212,6 +213,7 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 	private JTextField selectedLinkedObjectField = new JTextField(10);
 	private FilterTextField searchPotentialParentsTextField;
 	private JComboBox languageSelectionBox;
+	private JComboBox ontologyLookupSelectionBox;
 
 	private JTabbedPane clipboardTabPanel;
 	private JScrollPane scrollPaneForTermsTable;
@@ -232,6 +234,7 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 	private JCheckBox checkboxIncludeChildren;
 	// private JCheckBox checkboxIncludeBranch;
 
+	private BioPortalLookupServiceWorker bioPortalLookupServiceWorker;
 	private OntologyLookupServiceWorker lookupServiceWorker;
 	private OntologyLookupChildrenServiceWorker lookupChildrenServiceWorker;
 	private JPanel termGenerationPanel;
@@ -269,7 +272,7 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 		// this.id = id;
 		this.adapter = adapter;
 		adapter.registerForOntologyTermSelectionChange(this);
-		PLUGIN_VERSIONED_NAME = adapter.getOntologyEditorVersion() + "_" + PLUGIN_VERSION;
+		PLUGIN_VERSIONED_NAME = adapter.getOntologyEditorVersion() + "_" + PLUGIN_VERSION; //$NON-NLS-1$
 		this.guiComponent = guiComponent;
 		this.ontologyLookupQueue = new LinkedBlockingQueue<CandidateTerm>(100) {
 			private static final long serialVersionUID = 7448640043596470248L;
@@ -324,15 +327,18 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 		this.inputWebQueryField.setPreferredSize(new Dimension(100, 25));
 
 		this.inputSeedTermField1 = new JTextField();
-		this.inputSeedTermField1.setMaximumSize(new Dimension(200, 25));
-		this.inputSeedTermField1.setPreferredSize(new Dimension(200, 25));
+		this.inputSeedTermField1.setMinimumSize(new Dimension(30, 25));
+		this.inputSeedTermField1.setMaximumSize(new Dimension(250, 25));
+		this.inputSeedTermField1.setPreferredSize(new Dimension(30, 25));
 		this.inputSeedTermField2 = new JTextField();
-		this.inputSeedTermField2.setMaximumSize(new Dimension(200, 25));
-		this.inputSeedTermField2.setPreferredSize(new Dimension(200, 25));
+		this.inputSeedTermField2.setMinimumSize(new Dimension(30, 25));
+		this.inputSeedTermField2.setMaximumSize(new Dimension(250, 25));
+		this.inputSeedTermField2.setPreferredSize(new Dimension(30, 25));
 		this.inputSeedTermField3 = new JTextField();
-		this.inputSeedTermField3.setMaximumSize(new Dimension(200, 25));
-		this.inputSeedTermField3.setPreferredSize(new Dimension(200, 25));
-		
+		this.inputSeedTermField3.setMinimumSize(new Dimension(30, 25));
+		this.inputSeedTermField3.setMaximumSize(new Dimension(250, 25));
+		this.inputSeedTermField3.setPreferredSize(new Dimension(30, 25));
+
 		this.inputFolderLocationField = new JTextField();
 		this.inputFolderLocationField.setMaximumSize(new Dimension(1000, 25));
 		this.inputFolderLocationField.setPreferredSize(new Dimension(100, 25));
@@ -403,6 +409,7 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 
 		ontologyLocales = new TreeMap<String, Locale>();
 		setUpOntologyLanguagesSelectionBox();
+		setUpOntologyLookupSelectionBox();
 	}
 
 	public void initListener() {
@@ -431,21 +438,38 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 			logger.info("Cancel EBI ontology lookup service");
 			lookupServiceWorker.cancel(true);
 		}
-		if (ontoLookupProxy == null)
-			ontoLookupProxy = new OntologyLookupManagerPortTypeProxy();
-		if (lookupServiceWorker == null) {
-			lookupServiceWorker = new OntologyLookupServiceWorker();
-			lookupServiceWorker.execute();
-			logger.info("Started EBI ontology lookup service.");
-		} else {
-			lookupServiceWorker.execute();
-			logger.info("Resumed EBI ontology lookup service.");
+		if (bioPortalLookupServiceWorker != null) {
+			logger.info("Cancel BioPortal ontology lookup service");
+			bioPortalLookupServiceWorker.cancel(true);
 		}
-		// if (lookupChildrenServiceWorker == null) {
-		// lookupChildrenServiceWorker = new
-		// OntologyLookupChildrenServiceWorker();
-		// lookupChildrenServiceWorker.execute();
-		// }
+		if (ontologyLookupSelectionBox.getSelectedItem().toString().equals("EBI Ontology Lookup Service")) {
+			if (ontoLookupProxy == null)
+				ontoLookupProxy = new OntologyLookupManagerPortTypeProxy();
+			if (lookupServiceWorker == null) {
+				lookupServiceWorker = new OntologyLookupServiceWorker();
+				lookupServiceWorker.execute();
+				logger.info("Started EBI ontology lookup service.");
+			} else {
+				lookupServiceWorker.execute();
+				logger.info("Resumed EBI ontology lookup service.");
+			}
+			// if (lookupChildrenServiceWorker == null) {
+			// lookupChildrenServiceWorker = new
+			// OntologyLookupChildrenServiceWorker();
+			// lookupChildrenServiceWorker.execute();
+			// }
+		} else if (ontologyLookupSelectionBox.getSelectedItem().toString().equals("NCBO BioPortal Service")) {
+			if (bioPortalLookupServiceWorker == null) {
+				bioPortalLookupServiceWorker = new BioPortalLookupServiceWorker();
+				bioPortalLookupServiceWorker.execute();
+				logger.info("Started BioPortal ontology lookup service.");
+			} else {
+				bioPortalLookupServiceWorker.execute();
+				logger.info("Resumed BioPortal ontology lookup service.");
+			}
+		} else {
+			throw new RuntimeException("Unknown ontology lookup service requested");
+		}
 	}
 
 	/**
@@ -921,25 +945,33 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 			}
 		});
 
+		ontologyLookupSelectionBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				initOntologyLookupServices();
+			}
+		});
+
 		// SIBLING GENERATION
-		
+
 		DocumentListener seedTermDocumentListener = new DocumentListener() {
 			public void changedUpdate(DocumentEvent arg0) {
 				updateGenerateSiblingsButton();
 			}
+
 			public void insertUpdate(DocumentEvent arg0) {
 				updateGenerateSiblingsButton();
 			}
+
 			public void removeUpdate(DocumentEvent arg0) {
 				updateGenerateSiblingsButton();
 			}
 		};
-		
+
 		KeyAdapter seedTermKeyAdapter = new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent event) {
-				if (event.getKeyCode() == KeyEvent.VK_ENTER &&
-					!inputSeedTermField1.getText().equals("") && !inputSeedTermField2.getText().equals("")) {
+				if (event.getKeyCode() == KeyEvent.VK_ENTER && !inputSeedTermField1.getText().equals("")
+						&& !inputSeedTermField2.getText().equals("")) {
 					onClickGenerateSiblings();
 				}
 			}
@@ -951,13 +983,14 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 
 		inputSeedTermField2.addKeyListener(seedTermKeyAdapter);
 		inputSeedTermField3.addKeyListener(seedTermKeyAdapter);
-		
+
 		generateSiblingsButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				onClickGenerateSiblings();
 			}
-		});		
+		});
+
 		ProxyInfo.registerListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				proxyHostTextField.setText(ProxyInfo.getHost() != null ? ProxyInfo.getHost() : ""); //$NON-NLS-1$
@@ -1277,19 +1310,23 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 
 		boolean useOntologySeedTerms = true;
 		if (tentativeSeedTerms.size() > 0) {
-			useOntologySeedTerms &= (inputSeedTermField1.getText().equals(tentativeSeedTerms.get(0).getLabel(adapter.getLanguage())));
-			useOntologySeedTerms &= (inputSeedTermField2.getText().equals(tentativeSeedTerms.get(1).getLabel(adapter.getLanguage())));
+			useOntologySeedTerms &= (inputSeedTermField1.getText().equals(tentativeSeedTerms.get(0).getLabel(
+					adapter.getLanguage())));
+			useOntologySeedTerms &= (inputSeedTermField2.getText().equals(tentativeSeedTerms.get(1).getLabel(
+					adapter.getLanguage())));
 			if (inputSeedTermField3.getText().length() > 0) {
-				useOntologySeedTerms &= (inputSeedTermField3.getText().equals(tentativeSeedTerms.get(2).getLabel(adapter.getLanguage())));
+				useOntologySeedTerms &= (inputSeedTermField3.getText().equals(tentativeSeedTerms.get(2).getLabel(
+						adapter.getLanguage())));
 			}
 		} else {
 			useOntologySeedTerms = false;
 		}
-		
+
 		SiblingGenerationServiceWorker worker = null;
-		
+
 		if (useOntologySeedTerms) {
-			worker = new SiblingGenerationServiceWorker(tentativeSeedTerms, selectedCandidateTerm.getExistingOntologyClass(), candidateTermsTable);
+			worker = new SiblingGenerationServiceWorker(tentativeSeedTerms,
+					selectedCandidateTerm.getExistingOntologyClass(), candidateTermsTable);
 		} else {
 			List<String> seedTermStrings = new ArrayList<String>();
 			if (!inputSeedTermField1.getText().equals(""))
@@ -1298,16 +1335,16 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 				seedTermStrings.add(inputSeedTermField2.getText());
 			if (!inputSeedTermField3.getText().equals(""))
 				seedTermStrings.add(inputSeedTermField3.getText());
-			
+
 			worker = new SiblingGenerationServiceWorker(seedTermStrings, candidateTermsTable);
 		}
-		
+
 		worker.execute();
 		worker.addPropertyChangeListener(this);
 
 		showProgressDlg(true);
 	}
-	
+
 	private void updateTermsTableHeader(String source, String inputData) {
 		if (source.equals(SOURCE_PUBMED)) {
 			String message = String.format(
@@ -1388,7 +1425,7 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 		}
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	private static void openExternalWebPage(String url, Component guiComponent) {
 		String errMsg = Messages.getString("OntologyGenerationComponent.ErrorAttemptingToLaunchWebBrowser"); //$NON-NLS-1$
 
@@ -1751,12 +1788,8 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 	 * Add similar (based on substring inclusion) terms to similiarTermsComboBox
 	 * based on substring comparison
 	 */
-	public void updateParentAsSimiliarTerm() {
+	private void updateParentAsSimiliarTerm() {
 		logger.trace("UPDATE SIMILAR TERMS for :" + selectedCandidateTerm.getLabel()); //$NON-NLS-1$
-
-		// clearing
-		ontologyTermsTable.getModel().clearSameAsCandidateTerms();
-		ontologyTermsTable.getModel().clearSimiliarToCandidateTerm();
 
 		Collection<String> labels = new HashSet<String>();
 		labels.addAll(selectedCandidateTerm.getLexicalRepresentations());
@@ -1780,7 +1813,8 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 			OntologyClassInterface ontologyClass = adapter.getOntologyClassForCandidateTerm(selectedCandidateTerm);
 			if (ontologyClass != null) {
 				Map<String, String> parents = ontologyClass.getParentMap(adapter.getLanguage());
-				ontologyTermsTable.getModel().addParentsTermsOfExistingCandidateTerm(parents);
+				// clear and set new parents
+				ontologyTermsTable.getModel().setParentsTermsOfExistingCandidateTerm(parents);
 			}
 		}
 	}
@@ -1935,6 +1969,15 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 
 	}
 
+	private void setUpOntologyLookupSelectionBox() {
+		Vector<String> labels = new Vector<String>();
+		labels.add("EBI Ontology Lookup Service");
+		labels.add("NCBO BioPortal Service");
+		ontologyLookupSelectionBox = new JComboBox(labels);
+		ontologyLookupSelectionBox.setSelectedItem(labels.get(0));
+
+	}
+
 	private void clearAllDependendOnSelectedTerm() {
 		definitionTable.removeAll();
 		definitionTable.getColumnModel().getColumn(2)
@@ -1946,6 +1989,7 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 		saveLabelWarningLabel.setText(""); //$NON-NLS-1$
 		editNameTextField.setText(null);
 		searchPotentialParentsTextField.getTextField().setText(null);
+		ontologyTermsTable.getModel().clearStates();
 	}
 
 	private void clearFieldsInTermGenerationTable() {
@@ -2002,29 +2046,30 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 		candidateTermsTable.getSelectionModel().setSelectionInterval(0, 1);
 	}
 
-	public void updateParentAsTermFromDefinition(CandidateTerm pSelectedCandidateTerm, TermsTable termsTable,
-			AbstractOntologyTermsTable<T, R> pOntologyTermsTable, DefinitionsTable definitionsTable) {
+	private void updateParentAsTermFromDefinition(CandidateTerm pSelectedCandidateTerm, TermsTable termsTable,
+			AbstractOntologyTermsTable<T, R> ontologyTermsTable, DefinitionsTable definitionsTable) {
 		logger.trace("UPDATE TERMS FROM DEFINITION for :" + pSelectedCandidateTerm); //$NON-NLS-1$
+
+		// clear terms from definition
+		ontologyTermsTable.getModel().clearTermsFromDefinitions();
 
 		if (null == pSelectedCandidateTerm) {
 			int row = termsTable.rowAtPoint(termsTable.getMousePosition());
 			pSelectedCandidateTerm = termsTable.getModel().getTermAt(row);
 			logger.warn("Selection lost in terms table, recovered though mouse position"); //$NON-NLS-1$
 		}
-		// clearT
-		pOntologyTermsTable.getModel().clearTermsFromDefinitions();
 
 		// process user defined definition
 		if (null != pSelectedCandidateTerm.getUserDefinedDefinition()) {
 			String definitionalContext = pSelectedCandidateTerm.getUserDefinedDefinition();
-			String[] split = definitionalContext.split("is a|a|are|are a|are an", 2); //$NON-NLS-1$
+			String[] split = definitionalContext.split(" is a | a | are | are a | are an | are the ", 2); //$NON-NLS-1$
 			if (split.length == 2) {
 				definitionalContext = split[1].trim();
 			}
 			List<String> ids = searchForOntologyTermsInStrings(Collections.singletonList(definitionalContext), true);
 			int rank = 1;
 			for (String someId : ids) {
-				pOntologyTermsTable.getModel().addFromUserDefinedDefinition(someId, rank);
+				ontologyTermsTable.getModel().addFromUserDefinedDefinition(someId, rank);
 				rank++;
 			}
 		}
@@ -2049,7 +2094,7 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 			List<String> ids = searchForOntologyTermsInStrings(definitionStringsToCheck, false);
 			int rank = 1;
 			for (String someId : ids) {
-				pOntologyTermsTable.getModel().addFromCandidateDefinition(someId, rank);
+				ontologyTermsTable.getModel().addFromCandidateDefinition(someId, rank);
 				rank++;
 
 			}
@@ -2202,7 +2247,7 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 			for (String[] stringArray : setOfArrays) {
 				for (int i = 0; i < stringArray.length && i < RANGE_FOR_PARENT_IN_DEFINITION; i++) {
 					for (int j = 0; j < stringArray.length && j < RANGE_FOR_PARENT_IN_DEFINITION; j++) {
-						if (i < j) {
+						if (i <= j) {
 							StringBuffer buffer = new StringBuffer();
 							for (int k = i; k <= j; k++) {
 								if (k < stringArray.length) {
@@ -2211,6 +2256,11 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 								}
 							}
 							String trim = buffer.toString().trim();
+							if (trim.endsWith(".") || trim.endsWith(":") || trim.endsWith(",") || trim.endsWith("-")
+									|| trim.endsWith(";")) {
+								// remove trailing punctuation
+								trim = trim.substring(0, trim.length() - 1);
+							}
 							if (trim.length() > 0) {
 								queriesHead.add(trim);
 							}
@@ -2787,6 +2837,29 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 
 		final JPanel innerPreferencesPanel = new JPanel(new GridBagLayout());
 
+		// Lookup PANEL
+		{
+			final JPanel preferenceOntologyLookupPanel = new JPanel();
+			JLabel label = new JLabel(Messages.getString("PreferenceTab.OntologyLookupLabel.label")); //$NON-NLS-1$
+			preferenceOntologyLookupPanel.add(label);
+			label.setLabelFor(ontologyLookupSelectionBox);
+			preferenceOntologyLookupPanel.add(ontologyLookupSelectionBox);
+
+			final TitledBorder titleBorder = new TitledBorder(
+					Messages.getString("PreferenceTab.OntologyLookupTitleBoarder.label"));
+			titleBorder.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+			titleBorder.setTitleFont(titleBorder.getTitleFont().deriveFont(Font.BOLD));
+			preferenceOntologyLookupPanel.setBorder(titleBorder);
+
+			GridBagConstraints innerPreferencesPanelConstraints = new GridBagConstraints();
+			innerPreferencesPanelConstraints.weightx = 0;
+			innerPreferencesPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
+			innerPreferencesPanelConstraints.gridx = 0;
+			innerPreferencesPanelConstraints.gridy = 0;
+
+			innerPreferencesPanel.add(preferenceOntologyLookupPanel, innerPreferencesPanelConstraints);
+		}
+
 		// LANGUAGE PANEL
 		{
 			final JPanel preferenceLanguangePanel = new JPanel();
@@ -3038,7 +3111,7 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 		}
 
 	}
-	
+
 	public void updateGenerateSiblingsButton() {
 		if (!inputSeedTermField1.getText().equals("") && !inputSeedTermField2.getText().equals(""))
 			generateSiblingsButton.setEnabled(true);
@@ -3058,14 +3131,22 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 
 		// Randomly select at least 2 seed terms
 		List<OntologyClassInterface> selectedSeedTerms = new ArrayList<OntologyClassInterface>();
-		Random random = new Random();
-		while (selectedSeedTerms.size() < Math.min(children.size(), 3)) {
-			int r = random.nextInt(children.size());
-			OntologyClassInterface selectedOntologyClass = children.get(r);
-			if (!selectedSeedTerms.contains(selectedOntologyClass)) {
-				selectedSeedTerms.add(selectedOntologyClass);
+		if (children.size() <= 3) {
+			selectedSeedTerms.addAll(children);
+		} else {
+
+			Random random = new Random();
+			while (selectedSeedTerms.size() < Math.min(children.size(), 3)) {
+				int r = random.nextInt(children.size());
+				OntologyClassInterface selectedOntologyClass = children.get(r);
+				if (!selectedSeedTerms.contains(selectedOntologyClass)) {
+					selectedSeedTerms.add(selectedOntologyClass);
+				}
 			}
 		}
+
+		tentativeSeedTerms.clear();
+		tentativeSeedTerms.addAll(selectedSeedTerms);
 
 		// Set seed terms in text fields
 		inputSeedTermField1.setText(selectedSeedTerms.get(0).getLabel());
@@ -3074,10 +3155,10 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 			inputSeedTermField3.setText(selectedSeedTerms.get(2).getLabel());
 		else
 			inputSeedTermField3.setText("");
-		
+
 		generateSiblingsButton.setEnabled(true);
 	}
-	
+
 	private class OntologyLookupServiceWorker extends SwingWorker<Void, Void> {
 		/**
 		 * Constructs an {@link OntologyLookupServiceWorker}
@@ -3127,6 +3208,60 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 					logger.info("EBI ontology lookup service has been interrupted.");
 				} catch (Throwable exception) {
 					logger.error("Ontology lookup service failure!"); //$NON-NLS-1$
+				}
+			}
+		}
+	}
+
+	private class BioPortalLookupServiceWorker extends SwingWorker<Void, Void> {
+		private static final String BIOPORTAL_APPLICATION_ID = "ac21a542-14db-41ae-a5c3-757f8199c0ea";
+
+		/**
+		 * @return {@link Void}
+		 * @throws Exception
+		 * @see org.jdesktop.swingworker.SwingWorker#doInBackground()
+		 */
+		@Override
+		protected Void doInBackground() throws Exception {
+			while (true) {
+				try {
+					final CandidateTerm candidateTerm = ontologyLookupQueue.take();
+					if (candidateTerm.getExistingLookupTerms() == null) {
+						final Set<String> lexicalRepresentations = candidateTerm.getLexicalRepresentations();
+						String[] labels = new String[lexicalRepresentations.size()];
+						labels = lexicalRepresentations.toArray(labels);
+
+						String ONTOLOGY_ID = "";
+						String BIOPORTAL_URL_PREFIX = "http://rest.bioontology.org/bioportal/search/";
+
+						String searchParameters = "?ontologyids=" + ONTOLOGY_ID + "&isexactmatch=1"
+								+ "&includeproperties=0&apikey=" + BIOPORTAL_APPLICATION_ID;
+						// Configure web service URL
+
+						Set<OBOLookupTerm> terms = new HashSet<OBOLookupTerm>();
+
+						for (String label : labels) {
+
+							String bioPortalSearchUrl = BIOPORTAL_URL_PREFIX + label + searchParameters;
+
+							// Call Search REST URL and Parse results
+							Collection<OBOLookupTerm> retrievedTerms = ParseXMLFile.parseXMLFile(bioPortalSearchUrl);
+							if (retrievedTerms != null)
+								terms.addAll(retrievedTerms);
+						}
+
+						candidateTerm.setExistingLookupOntologyTerms(new ArrayList<OBOLookupTerm>(terms));
+						synchronized (OntologyGenerationComponent.class) {
+							for (int i = candidateTermsTable.getCurrentFirstVisibleRow(); i <= candidateTermsTable
+									.getCurrentLastVisibleRow(); i++) {
+								candidateTermsTable.getModel().fireTableCellUpdated(i, 1);
+							}
+						}
+					}
+				} catch (InterruptedException exception) {
+					logger.info("BioPortal ontology lookup service has been interrupted.");
+				} catch (Throwable exception) {
+					logger.error("Ontology lookup service failure!");
 				}
 			}
 		}
@@ -3213,262 +3348,264 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 	}
 
 	/**
-     * Inner Class to invoke {@link GoPubMedTermGenerationStub} in a separate
-     * worker thread
-     */
-    private class TermGenerationServiceWorker extends SwingWorker<TextConceptRepresentation[], Void> {
-            private String inputData = new String();
-            private final TermsTable table;
-            private final String source;
-            private StringBuffer errorMessage;
+	 * Inner Class to invoke {@link GoPubMedTermGenerationStub} in a separate
+	 * worker thread
+	 */
+	private class TermGenerationServiceWorker extends SwingWorker<TextConceptRepresentation[], Void> {
+		private String inputData = new String();
+		private final TermsTable table;
+		private final String source;
+		private StringBuffer errorMessage;
 
-            /**
-             * Constructs a {@link TermGenerationServiceWorker}
-             *
-             * @param inputData
-             *            , the query or text uses for the generation
-             * @param destinationTable
-             *            , the table where to place the terms
-             * @param textSourceName
-             *            , the source type (e.g. TEXT,PUBMED)
-             */
-            public TermGenerationServiceWorker(String inputData, TermsTable destinationTable, String textSourceName) {
-                    this.inputData = prepareTextReplaceInvalidCharacter(inputData);
-                    this.table = destinationTable;
-                    this.source = textSourceName;
-                    if (termGenerationServiceStub == null) {
-                            try {
-                                    // Set ContextClassLoader to load a class inside
-                                    // GoPubMedGenerationStub correctly.
-                                    ClassLoader cl = GoPubMedTermGenerationStub.class.getClassLoader();
-                                    Thread.currentThread().setContextClassLoader(cl);
-                                    termGenerationServiceStub = new GoPubMedTermGenerationStub();
-                            } catch (AxisFault exception) {
-                                    logger.warn("Term generation initialization failed.", exception);
-                            }
-                    } else {
-                            try {
-                                    termGenerationServiceStub.cleanup();
-                            } catch (AxisFault exception) {
-                                    try {
-                                            termGenerationServiceStub = new GoPubMedTermGenerationStub();
-                                    } catch (AxisFault exception2) {
-                                            logger.warn("Term generation initialization failed.", exception);
-                                    }
-                            }
-                    }
+		/**
+		 * Constructs a {@link TermGenerationServiceWorker}
+		 * 
+		 * @param inputData
+		 *            , the query or text uses for the generation
+		 * @param destinationTable
+		 *            , the table where to place the terms
+		 * @param textSourceName
+		 *            , the source type (e.g. TEXT,PUBMED)
+		 */
+		public TermGenerationServiceWorker(String inputData, TermsTable destinationTable, String textSourceName) {
+			this.inputData = prepareTextReplaceInvalidCharacter(inputData);
+			this.table = destinationTable;
+			this.source = textSourceName;
+			if (termGenerationServiceStub == null) {
+				try {
+					// Set ContextClassLoader to load a class inside
+					// GoPubMedGenerationStub correctly.
+					ClassLoader cl = GoPubMedTermGenerationStub.class.getClassLoader();
+					Thread.currentThread().setContextClassLoader(cl);
+					termGenerationServiceStub = new GoPubMedTermGenerationStub();
+				} catch (AxisFault exception) {
+					logger.warn("Term generation initialization failed.", exception);
+				}
+			} else {
+				try {
+					termGenerationServiceStub.cleanup();
+				} catch (AxisFault exception) {
+					try {
+						termGenerationServiceStub = new GoPubMedTermGenerationStub();
+					} catch (AxisFault exception2) {
+						logger.warn("Term generation initialization failed.", exception);
+					}
+				}
+			}
 
-            }
+		}
 
-            @Override
-            protected TextConceptRepresentation[] doInBackground() {
-                    this.setProgress(0);
-                    TextConceptRepresentation[] concepts = new TextConceptRepresentation[1000];
+		@Override
+		protected TextConceptRepresentation[] doInBackground() {
+			this.setProgress(0);
+			TextConceptRepresentation[] concepts = new TextConceptRepresentation[1000];
 
-                    try {
-                            ProxyInfo.prepareProxySettings(termGenerationServiceStub);
-                            if (source.equals(SOURCE_PUBMED)) {
-                                    candidateTermsTable.setShowInformationIcon(true);
-                                    GenerateConceptsFromPubMedQuery query = new GoPubMedTermGenerationStub.GenerateConceptsFromPubMedQuery();
-                                    query.setMaxNumberOfTerms(1000);
-                                    query.setQueryString(inputData);
-                                    query.setApplicationCode(PLUGIN_VERSIONED_NAME);
-                                    GenerateConceptsFromPubMedQueryResponse response = termGenerationServiceStub
-                                                    .generateConceptsFromPubMedQuery(query);
-                                    concepts = response.get_return();
-                            }
-                            if (source.equals(SOURCE_WEB)) {
-                                    candidateTermsTable.setShowInformationIcon(true);
-                                    GenerateConceptsFromWebQueryForLanguage query = new GoPubMedTermGenerationStub.GenerateConceptsFromWebQueryForLanguage();
-                                    query.setLanguage(adapter.getLocale().getLanguage());
-                                    query.setRegion(adapter.getLocale().getCountry().toLowerCase());
-                                    query.setMaxNumberOfTerms(1000);
-                                    query.setQueryString(inputData);
-                                    query.setApplicationCode(PLUGIN_VERSIONED_NAME);
-                                    GenerateConceptsFromWebQueryForLanguageResponse response = termGenerationServiceStub
-                                                    .generateConceptsFromWebQueryForLanguage(query);
-                                    concepts = response.get_return();
-                            }
-                            if (source.equals(SOURCE_TEXT)) {
-                                    candidateTermsTable.setShowInformationIcon(false);
-                                    String[] lines = inputData.split("\n");
-                                    GenerateConceptsFromTextForLanguage query = new GoPubMedTermGenerationStub.GenerateConceptsFromTextForLanguage();
-                                    query.setMaxNumberOfTerms(1000);
-                                    query.setTexts(lines);
-                                    query.setApplicationCode(PLUGIN_VERSIONED_NAME);
-                                    query.setLanguage(null);
-                                    query.setRegion(null);
-                                    GenerateConceptsFromTextForLanguageResponse response = termGenerationServiceStub
-                                                    .generateConceptsFromTextForLanguage(query);
-                                    concepts = response.get_return();
-                            }
-                            if (source.equals(SOURCE_FOLDER)) {
-                                    candidateTermsTable.setShowInformationIcon(false);
-                                    File file = new File(inputData);
-                                    String data = "";
-                                    PdfToTextExtraction pdfParser = new PdfToTextExtraction();
-                                    errorMessage = new StringBuffer();
-                                    if (file.isDirectory()) {
-                                            String extractedString = "";
-                                            File[] fileArray = file.listFiles(new FilenameFilter() {
-                                                    public boolean accept(File dir, String name) {
-                                                            return (!name.startsWith("."));
-                                                    }
-                                            });
+			try {
+				ProxyInfo.prepareProxySettings(termGenerationServiceStub);
+				if (source.equals(SOURCE_PUBMED)) {
+					candidateTermsTable.setShowInformationIcon(true);
+					GenerateConceptsFromPubMedQuery query = new GoPubMedTermGenerationStub.GenerateConceptsFromPubMedQuery();
+					query.setMaxNumberOfTerms(1000);
+					query.setQueryString(inputData);
+					query.setApplicationCode(PLUGIN_VERSIONED_NAME);
+					GenerateConceptsFromPubMedQueryResponse response = termGenerationServiceStub
+							.generateConceptsFromPubMedQuery(query);
+					concepts = response.get_return();
+				}
+				if (source.equals(SOURCE_WEB)) {
+					candidateTermsTable.setShowInformationIcon(true);
+					GenerateConceptsFromWebQueryForLanguage query = new GoPubMedTermGenerationStub.GenerateConceptsFromWebQueryForLanguage();
+					query.setLanguage(adapter.getLocale().getLanguage());
+					query.setRegion(adapter.getLocale().getCountry().toLowerCase());
+					query.setMaxNumberOfTerms(1000);
+					query.setQueryString(inputData);
+					query.setApplicationCode(PLUGIN_VERSIONED_NAME);
+					GenerateConceptsFromWebQueryForLanguageResponse response = termGenerationServiceStub
+							.generateConceptsFromWebQueryForLanguage(query);
+					concepts = response.get_return();
+				}
+				if (source.equals(SOURCE_TEXT)) {
+					candidateTermsTable.setShowInformationIcon(false);
+					String[] lines = inputData.split("\n");
+					GenerateConceptsFromTextForLanguage query = new GoPubMedTermGenerationStub.GenerateConceptsFromTextForLanguage();
+					query.setMaxNumberOfTerms(1000);
+					query.setTexts(lines);
+					query.setApplicationCode(PLUGIN_VERSIONED_NAME);
+					query.setLanguage(null);
+					query.setRegion(null);
+					GenerateConceptsFromTextForLanguageResponse response = termGenerationServiceStub
+							.generateConceptsFromTextForLanguage(query);
+					concepts = response.get_return();
+				}
+				if (source.equals(SOURCE_FOLDER)) {
+					candidateTermsTable.setShowInformationIcon(false);
+					File file = new File(inputData);
+					String data = "";
+					PdfToTextExtraction pdfParser = new PdfToTextExtraction();
+					errorMessage = new StringBuffer();
+					if (file.isDirectory()) {
+						String extractedString = "";
+						File[] fileArray = file.listFiles(new FilenameFilter() {
+							public boolean accept(File dir, String name) {
+								return (!name.startsWith("."));
+							}
+						});
 
-                                            for (int i = 0; i < fileArray.length; i++) {
-                                                    if (fileArray[i].isFile()) {
-                                                            extractedString = pdfParser.fileExtraction(fileArray[i]);
-                                                            if (extractedString.equals(PdfToTextExtraction.ERROR)) {
-                                                                    errorMessage.append(fileArray[i] + "]");
-                                                            } else {
-                                                                    data += extractedString;
-                                                            }
-                                                    }
-                                            }
-                                    } else if (file.isFile()) {
-                                            data += pdfParser.fileExtraction(file);
-                                            if (data.equals(PdfToTextExtraction.ERROR)) {
-                                                    errorMessage.append(file);
-                                                    data = "";
-                                            }
-                                    }
+						for (int i = 0; i < fileArray.length; i++) {
+							if (fileArray[i].isFile()) {
+								extractedString = pdfParser.fileExtraction(fileArray[i]);
+								if (extractedString.equals(PdfToTextExtraction.ERROR)) {
+									errorMessage.append(fileArray[i] + "]");
+								} else {
+									data += extractedString;
+								}
+							}
+						}
+					} else if (file.isFile()) {
+						data += pdfParser.fileExtraction(file);
+						if (data.equals(PdfToTextExtraction.ERROR)) {
+							errorMessage.append(file);
+							data = "";
+						}
+					}
 
-                                    if (!data.equals("")) {
-                                            String[] pdfText = data.split("\n");
-                                            GenerateConceptsFromTextForLanguage query = new GoPubMedTermGenerationStub.GenerateConceptsFromTextForLanguage();
-                                            query.setLanguage(adapter.getLocale().getLanguage());
-                                            query.setRegion(adapter.getLocale().getCountry().toLowerCase());
-                                            query.setMaxNumberOfTerms(1000);
-                                            query.setTexts(pdfText);
-                                            query.setApplicationCode(PLUGIN_VERSIONED_NAME);
-                                            GenerateConceptsFromTextForLanguageResponse response = termGenerationServiceStub
-                                                            .generateConceptsFromTextForLanguage(query);
-                                            concepts = response.get_return();
-                                    }
-                            }
-                    } catch (RemoteException exception) {
-                            logger.warn("Term generation failed.", exception);
-                    } catch (Throwable exception) {
-                            logger.error("Term generation has failed.", exception);
-                    } finally {
-                            ProxyInfo.restoreSystemProxySettings();
-                    }
-                    this.setProgress(50);
-                    return concepts;
-            }
+					if (!data.equals("")) {
+						String[] pdfText = data.split("\n");
+						GenerateConceptsFromTextForLanguage query = new GoPubMedTermGenerationStub.GenerateConceptsFromTextForLanguage();
+						query.setLanguage(adapter.getLocale().getLanguage());
+						query.setRegion(adapter.getLocale().getCountry().toLowerCase());
+						query.setMaxNumberOfTerms(1000);
+						query.setTexts(pdfText);
+						query.setApplicationCode(PLUGIN_VERSIONED_NAME);
+						GenerateConceptsFromTextForLanguageResponse response = termGenerationServiceStub
+								.generateConceptsFromTextForLanguage(query);
+						concepts = response.get_return();
+					}
+				}
+			} catch (RemoteException exception) {
+				logger.warn("Term generation failed.", exception);
+			} catch (Throwable exception) {
+				logger.error("Term generation has failed.", exception);
+			} finally {
+				ProxyInfo.restoreSystemProxySettings();
+			}
+			this.setProgress(50);
+			return concepts;
+		}
 
-            @Override
-            public void done() {
-                    List<CandidateTerm> termsFromService = new ArrayList<CandidateTerm>();
-                    TextConceptRepresentation[] concepts = new TextConceptRepresentation[1000];
-                    try {
-                            concepts = get();
-                    } catch (InterruptedException ignore) {
-                            this.setProgress(100);
-                    } catch (java.util.concurrent.ExecutionException exception) {
-                            this.setProgress(100);
-                            JOptionPane.showMessageDialog(guiComponent,
-                                            "Error retrieving terms. Are you connected to the Internet?");
-                            logger.error("Error retrieving terms!", exception);
-                    }
+		@Override
+		public void done() {
+			List<CandidateTerm> termsFromService = new ArrayList<CandidateTerm>();
+			TextConceptRepresentation[] concepts = new TextConceptRepresentation[1000];
+			try {
+				concepts = get();
+			} catch (InterruptedException ignore) {
+				this.setProgress(100);
+			} catch (java.util.concurrent.ExecutionException exception) {
+				this.setProgress(100);
+				JOptionPane.showMessageDialog(guiComponent,
+						"Error retrieving terms. Are you connected to the Internet?");
+				logger.error("Error retrieving terms!", exception);
+			}
 
-                    if (source.equals(SOURCE_FOLDER)) {
-                            String errors = errorMessage.toString();
-                            if (!errors.equals("")) {
-                                    StringBuffer message = new StringBuffer();
-                                    message.append("Unfortunately, it was not possible to extract information from the given files.\n");
-                                    String files[] = errors.split("]");
-                                    for (int i = 0; i < files.length; ++i) {
-                                            message.append(files[i] + "\n");
-                                    }
-                                    this.setProgress(100);
-                                    JOptionPane.showMessageDialog(guiComponent, message.toString());
-                            }
-                    }
+			if (source.equals(SOURCE_FOLDER)) {
+				String errors = errorMessage.toString();
+				if (!errors.equals("")) {
+					StringBuffer message = new StringBuffer();
+					message.append("Unfortunately, it was not possible to extract information from the given files.\n");
+					String files[] = errors.split("]");
+					for (int i = 0; i < files.length; ++i) {
+						message.append(files[i] + "\n");
+					}
+					this.setProgress(100);
+					JOptionPane.showMessageDialog(guiComponent, message.toString());
+				}
+			}
 
-                    if (concepts == null) {
-                            // close the progress bar
-                            this.setProgress(100);
-                            JOptionPane.showMessageDialog(guiComponent, "No candidate terms found for query '" + inputData + "'.");
-                    } else {
-                            for (TextConceptRepresentation concept : concepts) {
-                                    if (concept != null) {
-                                            // set Each OBoTermlabel
-                                            CandidateTerm candidateTerm = null;
-                                            if (candidateTermCache.hasCandidateTermWithLabel(concept.getLabel())) {
-                                                    candidateTerm = candidateTermCache.get(concept.getLabel());
-                                                    candidateTerm = updateCandidateTermWithConcept(concept, candidateTerm);
-                                            } else if (clipboard.hasCandidateTermWithLabel(concept.getLabel())) {
-                                                    candidateTerm = clipboard.get(concept.getLabel());
-                                                    candidateTerm = updateCandidateTermWithConcept(concept, candidateTerm);
-                                            } else {
-                                                    candidateTerm = new CandidateTerm(concept.getLabel(), concept.getKnownAbbreviation(),
-                                                                    concept.getLexicalRepresentation(), concept.getScore(),
-                                                                    CandidateTerm.TYPE_GENERATED);
-                                            }
-                                            termsFromService.add(candidateTerm);
-                                    }
-                            }
-                            updateTermsTableHeader(source, inputData);
+			if (concepts == null) {
+				// close the progress bar
+				this.setProgress(100);
+				JOptionPane.showMessageDialog(guiComponent, "No candidate terms found for query '" + inputData + "'.");
+			} else {
+				for (TextConceptRepresentation concept : concepts) {
+					if (concept != null) {
+						// set Each OBoTermlabel
+						CandidateTerm candidateTerm = null;
+						if (candidateTermCache.hasCandidateTermWithLabel(concept.getLabel())) {
+							candidateTerm = candidateTermCache.get(concept.getLabel());
+							candidateTerm = updateCandidateTermWithConcept(concept, candidateTerm);
+						} else if (clipboard.hasCandidateTermWithLabel(concept.getLabel())) {
+							candidateTerm = clipboard.get(concept.getLabel());
+							candidateTerm = updateCandidateTermWithConcept(concept, candidateTerm);
+						} else {
+							candidateTerm = new CandidateTerm(concept.getLabel(), concept.getKnownAbbreviation(),
+									concept.getLexicalRepresentation(), concept.getScore(),
+									CandidateTerm.TYPE_GENERATED);
+						}
+						termsFromService.add(candidateTerm);
+					}
+				}
+				updateTermsTableHeader(source, inputData);
 
-                            this.table.setTerms(termsFromService);
+				this.table.setTerms(termsFromService);
 
-                            for (CandidateTerm generatedTerm : termsFromService) {
-                                    if (table.getModel().isInClipboard(generatedTerm)) {
-                                            // add merged existing from clipboard with generated
-                                            table.getModel().addTermToClipboard(generatedTerm);
-                                    }
-                            }
-                            // Scroll and select
-                            JTableHelper.scrollToTopAndSelectFirst(this.table);
+				for (CandidateTerm generatedTerm : termsFromService) {
+					if (table.getModel().isInClipboard(generatedTerm)) {
+						// add merged existing from clipboard with generated
+						table.getModel().addTermToClipboard(generatedTerm);
+					}
+				}
+				// Scroll and select
+				JTableHelper.scrollToTopAndSelectFirst(this.table);
 
-                            // trigger update ontology lookup
-                            updateTermsTableUsingOntologyLookup(this.table);
+				// trigger update ontology lookup
+				updateTermsTableUsingOntologyLookup(this.table);
 
-                            // finish progessbar
-                            this.setProgress(100);
+				// finish progessbar
+				this.setProgress(100);
 
-                    }
-            }
+				// trigger update ontology lookup
+				updateTermsTableUsingOntologyLookup(this.table);
+			}
+		}
 
-            /**
-             * Update an given candidate term with the information
-             *
-             * @param concept
-             * @param candidateTerm
-             */
-            private CandidateTerm updateCandidateTermWithConcept(TextConceptRepresentation concept,
-                            CandidateTerm candidateTerm) {
-                    if (null != concept.getKnownAbbreviation()) {
-                            for (String abbr : concept.getKnownAbbreviation()) {
-                                    candidateTerm.addAbbreviation(abbr);
-                            }
-                    }
-                    if (null != concept.getLexicalRepresentation()) {
-                            for (String lex : concept.getLexicalRepresentation()) {
-                                    candidateTerm.addLexicalRepresentation(lex);
-                            }
-                    }
-                    candidateTerm.setScore(Math.max(candidateTerm.getScore(), concept.getScore()));
-                    return candidateTerm;
-            }
-    }
-    
+		/**
+		 * Update an given candidate term with the information
+		 * 
+		 * @param concept
+		 * @param candidateTerm
+		 */
+		private CandidateTerm updateCandidateTermWithConcept(TextConceptRepresentation concept,
+				CandidateTerm candidateTerm) {
+			if (null != concept.getKnownAbbreviation()) {
+				for (String abbr : concept.getKnownAbbreviation()) {
+					candidateTerm.addAbbreviation(abbr);
+				}
+			}
+			if (null != concept.getLexicalRepresentation()) {
+				for (String lex : concept.getLexicalRepresentation()) {
+					candidateTerm.addLexicalRepresentation(lex);
+				}
+			}
+			candidateTerm.setScore(Math.max(candidateTerm.getScore(), concept.getScore()));
+			return candidateTerm;
+		}
+	}
+
 	private class SiblingGenerationServiceWorker extends SwingWorker<TextConceptRepresentation[], Void> {
 		private static final int requestTimeout = 60000;
 		private final TextConceptRepresentation[] seedTerms;
 		@SuppressWarnings("unused")
 		private final TextConceptRepresentation parentTerm;
 		private final TermsTable table;
-		
+
 		private final int maxSiblings = 20;
 
 		public SiblingGenerationServiceWorker(List<String> seedTermStrings, TermsTable destinationTable) {
 			seedTerms = new TextConceptRepresentation[seedTermStrings.size()];
 			parentTerm = null;
 			table = destinationTable;
-			
+
 			int i = 0;
 			for (String seedTermString : seedTermStrings) {
 				TextConceptRepresentation representation = new TextConceptRepresentation();
@@ -3484,19 +3621,20 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 
 			createSiblingGenerationStub();
 		}
-		
-		public SiblingGenerationServiceWorker(List<OntologyClassInterface> seedTerms, OntologyClassInterface parentTerm, TermsTable destinationTable) {
+
+		public SiblingGenerationServiceWorker(List<OntologyClassInterface> seedTerms,
+				OntologyClassInterface parentTerm, TermsTable destinationTable) {
 			this.seedTerms = new TextConceptRepresentation[seedTerms.size()];
 			for (int i = 0; i < seedTerms.size(); i++) {
 				this.seedTerms[i] = createConceptRepresentation(seedTerms.get(i));
 			}
-			
+
 			this.parentTerm = createConceptRepresentation(parentTerm);
 			this.table = destinationTable;
-			
+
 			createSiblingGenerationStub();
 		}
-		
+
 		private TextConceptRepresentation createConceptRepresentation(OntologyClassInterface ontologyClass) {
 			TextConceptRepresentation representation = new TextConceptRepresentation();
 
@@ -3519,22 +3657,22 @@ PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R> {
 			}
 			representation.setLexicalRepresentation(lexicalRepresentations);
 
-			 // ABBREVIATIONS
-//			String[] abbreviations = null;
-//			if (ontologyClass.getAbbreviations() != null
-//					&& !ontologyClass.getAbbreviations().isEmpty()) {
-//				abbreviations = new String[ontologyClass.getAbbreviations()
-//						.size()];
-//				int j = 0;
-//				for (String abbreviation : ontologyClass.getAbbreviations()) {
-//					abbreviations[j] = abbreviation;
-//					j++;
-//				}
-//			} else {
-//				abbreviations = new String[1];
-//				abbreviations[0] = ontologyClass.getLabel();
-//			}
-//			representation.setKnownAbbreviation(abbreviations);
+			// ABBREVIATIONS
+			// String[] abbreviations = null;
+			// if (ontologyClass.getAbbreviations() != null
+			// && !ontologyClass.getAbbreviations().isEmpty()) {
+			// abbreviations = new String[ontologyClass.getAbbreviations()
+			// .size()];
+			// int j = 0;
+			// for (String abbreviation : ontologyClass.getAbbreviations()) {
+			// abbreviations[j] = abbreviation;
+			// j++;
+			// }
+			// } else {
+			// abbreviations = new String[1];
+			// abbreviations[0] = ontologyClass.getLabel();
+			// }
+			// representation.setKnownAbbreviation(abbreviations);
 
 			return representation;
 		}
