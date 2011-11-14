@@ -1,0 +1,36 @@
+[Term]
+id: TEST:0000001
+name: automobile
+synonym: "car" EXACT []
+
+[Term]
+id: TEST:0000002
+name: blue
+
+[Term]
+id: TEST:0000003
+name: blue car
+
+[Term]
+id: TEST:0000004
+name: blue VW
+
+[Term]
+id: TEST:0000005
+name: VW
+
+[Term]
+id: TEST:0000006
+name: automobile
+def: "This is the obsolete definition of automobile" [FBC:auto_generated_definition]
+is_obsolete: true
+consider: TEST:0000001
+replaced_by: TEST:0000001
+
+[Typedef]
+id: has_color
+name: has_color
+
+[Typedef]
+id: has_make
+name: has_make

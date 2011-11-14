@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.4.2_12" class="java.beans.XMLDecoder"> 
+ <object class="org.geneontology.oboedit.gui.filters.FilterPairImpl"> 
+  <void property="objectFilter"> 
+   <object class="org.geneontology.oboedit.gui.filters.CompoundFilterImpl"> 
+    <void property="filters"> 
+     <void method="add"> 
+      <object class="org.geneontology.oboedit.gui.filters.ObjectFilterImpl"> 
+       <void property="aspect"> 
+        <object class="org.geneontology.oboedit.gui.filters.AncestorSearchAspect"/> 
+       </void> 
+       <void property="comparison"> 
+        <object class="org.geneontology.oboedit.gui.filters.EqualsComparison"/> 
+       </void> 
+       <void property="criterion"> 
+        <object class="org.geneontology.oboedit.gui.filters.IDSearchCriterion"/> 
+       </void> 
+       <void property="value"> 
+        <string>`if (GUI.getSubSelection() == null) return ""; else return GUI.getSubSelection().getID();`</string> 
+       </void> 
+      </object> 
+     </void> 
+    </void> 
+   </object> 
+  </void> 
+ </object> 
+</java> 

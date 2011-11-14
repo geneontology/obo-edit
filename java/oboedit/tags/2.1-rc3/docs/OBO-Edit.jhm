@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='ISO-8859-1'  ?>
+<!DOCTYPE map
+  PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 1.0//EN"
+         "/Applications/jh2.0/javahelp/lib/dtd/map_2_0.dtd">
+<!-- Was http://java.sun.com/products/javahelp/map_1_0.dtd but that no longer exists.
+     Change dtd path as appropriate to point to your copy of javahelp. -->
+<map version="1.0">
+
+
+<!-- Images -->
+
+
+<!-- Topics -->
+
+     <mapID target="Table_of_Contents" url="html/Table_of_Contents.htm"/>
+     <mapID target="Term_Image_Display_Panel" url="html/Term_Image_Display_Panel.htm"/>
+     <mapID target="HTML_Rendering" url="html/HTML_Rendering.htm"/>
+     <mapID target="Color_by_Namespace" url="html/Color_by_Namespace.htm"/>
+     <mapID target="Configurable_Message" url="html/Configurable_Message.htm"/>
+     <mapID target="Perspectives" url="html/Perspectives.htm"/>
+     <mapID target="Components" url="html/Components.htm"/>
+     <mapID target="Advanced_Searching" url="html/Advanced_Searching.htm"/>
+   <mapID target="Adding_New_Relationships" url="html/Adding_New_Relationships.htm"/>
+   <mapID target="Adding_New_Terms" url="html/Adding_New_Terms.htm"/>
+   <mapID target="An_Introduction_to_OBO_Ontologies" url="html/An_Introduction_to_OBO_Ontologies.htm"/>
+   <mapID target="Assigning_New_Roots" url="html/Assigning_New_Roots.htm"/>
+   <mapID target="Assigning_Replacement_Terms" url="html/Assigning_Replacement_Terms.htm"/>
+   <mapID target="Backtick_Expressions" url="html/Backtick_Expressions.htm"/>
+   <mapID target="Basic_Concepts_and_Vocabulary" url="html/Basic_Concepts_and_Vocabulary.htm"/>
+   <mapID target="Bugs_and_Troubleshooting" url="html/Bugs_and_Troubleshooting.htm"/>
+   <mapID target="Building_a_Filter" url="html/Building_a_Filter.htm"/>
+   <mapID target="Changing_Link_Attributes" url="html/Changing_Link_Attributes.htm"/>
+   <mapID target="Changing_Relationship_Types" url="html/Changing_Relationship_Types.htm"/>
+   <mapID target="Cloning" url="html/Cloning.htm"/>
+   <mapID target="Creating_Your_Own_GO_Slim_in_OBO_Edit" url="html/Creating_Your_Own_GO_Slim_in_OBO_Edit.htm"/>
+   <mapID target="Cross_Product_Info" url="html/Cross_Product_Info.htm"/>
+   <mapID target="Cross_Product_Matrix_Editor" url="html/Cross_Product_Matrix_Editor.htm"/>
+   <mapID target="Cross_Products" url="html/Cross_Products.htm"/>
+   <mapID target="Cross_Products_in_the_Text_Editor" url="html/Cross_Products_in_the_Text_Editor.htm"/>
+   <mapID target="Custom_Data_Adapters" url="html/Custom_Data_Adapters.htm"/>
+   <mapID target="Dangling_Intersection_Check" url="html/Dangling_Intersection_Check.htm"/>
+   <mapID target="Dbxref_Check" url="html/Dbxref_Check.htm"/>
+   <mapID target="Definition_Check" url="html/Definition_Check.htm"/>
+   <mapID target="Deleting" url="html/Deleting.htm"/>
+   <mapID target="Destroying" url="html/Destroying.htm"/>
+   <mapID target="Disjointedness_Check" url="html/Disjointedness_Check.htm"/>
+   <mapID target="Editing" url="html/Editing.htm"/>
+   <mapID target="Editing_Obsoletes" url="html/Editing_Obsoletes.htm"/>
+   <mapID target="Example_Scripts" url="html/Example_Scripts.htm"/>
+   <mapID target="Expression_Syntax" url="html/Expression_Syntax.htm"/>
+   <mapID target="Filtering" url="html/Filtering.htm"/>
+   <mapID target="Filters" url="html/Filters.htm"/>
+   <mapID target="Getting_Started" url="html/Getting_Started.htm"/>
+   <mapID target="Global_Filters___Renderers" url="html/Global_Filters___Renderers.htm"/>
+   <mapID target="Graph_Editor" url="html/Graph_Editor.htm"/>
+   <mapID target="Graph_Viewer" url="html/Graph_Viewer.htm"/>
+   <mapID target="How_Do_I_Find_Terms_Without_an_is_a_Parent_" url="html/How_Do_I_Find_Terms_Without_an_is_a_Parent_.htm"/>
+   <mapID target="How_Do_I_Make_a__Slim__Ontology_" url="html/How_Do_I_Make_a__Slim__Ontology_.htm"/>
+   <mapID target="How_Do_I_Not_Search_Obsoletes_" url="html/How_Do_I_Not_Search_Obsoletes_.htm"/>
+   <mapID target="How_Do_I_Spell_Check_" url="html/How_Do_I_Spell_Check_.htm"/>
+   <mapID target="How_ID_Generation_Works" url="html/How_ID_Generation_Works.htm"/>
+   <mapID target="How_OBO_Edit_Understands_Histories" url="html/How_OBO_Edit_Understands_Histories.htm"/>
+   <mapID target="ID_check" url="html/ID_check.htm"/>
+   <mapID target="Importing_Terms" url="html/Importing_Terms.htm"/>
+   <mapID target="Intersection_Editor" url="html/Intersection_Editor.htm"/>
+   <mapID target="Introduction_to_Adapters" url="html/Introduction_to_Adapters.htm"/>
+   <mapID target="Introduction_to_Cross_Products" url="html/Introduction_to_Cross_Products.htm"/>
+   <mapID target="Introduction_to_Expressions" url="html/Introduction_to_Expressions.htm"/>
+   <mapID target="Introduction_to_Plugins" url="html/Introduction_to_Plugins.htm"/>
+   <mapID target="Introduction_to_Verification" url="html/Introduction_to_Verification.htm"/>
+   <mapID target="ISA_Cycle_Check" url="html/ISA_Cycle_Check.htm"/>
+   <mapID target="Java_Options_on_the_Command_line" url="html/Java_Options_on_the_Command_line.htm"/>
+   <mapID target="Language_Concepts" url="html/Language_Concepts.htm"/>
+   <mapID target="Link_Filters" url="html/Link_Filters.htm"/>
+   <mapID target="Loading___Saving" url="html/Loading___Saving.htm"/>
+   <mapID target="Loading_a_History_File" url="html/Loading_a_History_File.htm"/>
+   <mapID target="Metadata" url="html/Metadata.htm"/>
+   <mapID target="Merging" url="html/Merging.htm"/>
+   <mapID target="Moving" url="html/Moving.htm"/>
+   <mapID target="Name_Redundancy_Check" url="html/Name_Redundancy_Check.htm"/>
+   <mapID target="obo2flat" url="html/obo2flat.htm"/>
+   <mapID target="obo2obo" url="html/obo2obo.htm"/>
+   <mapID target="obo2linkfile" url="html/obo2linkfile.htm"/>
+   <mapID target="obodiff" url="html/obodiff.htm"/>
+   <mapID target="OBO_Edit_Command_line_Options" url="html/OBO_Edit_Command_line_Options.htm"/>
+   <mapID target="OBO_Edit_Specific_Variables" url="html/OBO_Edit_Specific_Variables.htm"/>
+   <mapID target="obomerge" url="html/obomerge.htm"/>
+   <mapID target="OBOMerge_User_Interface" url="html/OBOMerge_User_Interface.htm"/>
+   <mapID target="Other_Uses_of_Filters" url="html/Other_Uses_of_Filters.htm"/>
+   <mapID target="Plugins" url="html/Plugins.htm"/>
+   <mapID target="Rendering" url="html/Rendering.htm"/>
+   <mapID target="Reusing_Filters" url="html/Reusing_Filters.htm"/>
+   <mapID target="Saving_a_History_File" url="html/Saving_a_History_File.htm"/>
+   <mapID target="Searching" url="html/Searching.htm"/>
+   <mapID target="Slowness" url="html/Slowness.htm"/>
+   <mapID target="Structural_Editing" url="html/Structural_Editing.htm"/>
+   <mapID target="Term_Filters" url="html/Term_Filters.htm"/>
+   <mapID target="Text_Checks" url="html/Text_Checks.htm"/>
+   <mapID target="Text_Editing" url="html/Text_Editing.htm"/>
+   <mapID target="The_Basic_Flat_File_Interface" url="html/The_Basic_Flat_File_Interface.htm"/>
+   <mapID target="The_Change_Tracker_Plugin" url="html/The_Change_Tracker_Plugin.htm"/>
+   <mapID target="Configuration_Manager" url="html/Configuration_Manager.htm"/>
+   <mapID target="Tree_Viewer" url="html/Tree_Viewer.htm"/>
+   <mapID target="The_Dbxref_Library_Plugin" url="html/The_Dbxref_Library_Plugin.htm"/>
+   <mapID target="The_Explanation_Plugin" url="html/The_Explanation_Plugin.htm"/>
+   <mapID target="The_Extended_Info_Plugin" url="html/The_Extended_Info_Plugin.htm"/>
+   <mapID target="The_GO_Flat_File_Adapter" url="html/The_GO_Flat_File_Adapter.htm"/>
+   <mapID target="The_GraphViz_Viewer" url="html/The_GraphViz_Viewer.htm"/>
+   <mapID target="The_History_Plugin" url="html/The_History_Plugin.htm"/>
+   <mapID target="The_ID_Manager_Plugin" url="html/The_ID_Manager_Plugin.htm"/>
+   <mapID target="The_ID_Fixer" url="html/The_ID_Fixer.htm"/>
+   <mapID target="The_Interface" url="html/The_Interface.htm"/>
+   <mapID target="The_OBO_Adapter" url="html/The_OBO_Adapter.htm"/>
+   <mapID target="The_OBO_Edit_Reasoner" url="html/The_OBO_Edit_Reasoner.htm"/>
+   <mapID target="The_Term_Editor_Panel" url="html/The_Term_Editor_Panel.htm"/>
+   <mapID target="Parent_Editor" url="html/Parent_Editor.htm"/>
+   <mapID target="The_Reasoner_and_the_Interface" url="html/The_Reasoner_and_the_Interface.htm"/>
+   <mapID target="The_Verification_Plugin" url="html/The_Verification_Plugin.htm"/>
+   <mapID target="Undo_Redo" url="html/Undo_Redo.htm"/>
+   <mapID target="User_Defined_Checks" url="html/User_Defined_Checks.htm"/>
+   <mapID target="What_is_OBO_Edit_" url="html/What_is_OBO_Edit_.htm"/>
+   <mapID target="Working_with_Categories" url="html/Working_with_Categories.htm"/>
+   <mapID target="Working_with_Namespaces" url="html/Working_with_Namespaces.htm"/>
+   <mapID target="Working_with_Selections" url="html/Working_with_Selections.htm"/>
+   <mapID target="Working_with_Synonym_Categories" url="html/Working_with_Synonym_Categories.htm"/>
+   <mapID target="Pubmed_Ontology_Generation_Tool" url="html/Pubmed_Ontology_Generation_Tool.htm"/>
+<!-- Index Bookmarks -->
+
+
+</map>

@@ -1,0 +1,20 @@
+// writes the category information to
+// a separate file, and clears category
+// info from the original file
+
+writer = Util.getFileWriter(args[0]);
+foreach (term in session.getObjects()) {
+  if (TermUtil.isTerm(term)) {
+    println("* Writing category info for "+term);
+    if (term.getCategories().size() > 0) {
+        writer.println("[Term]");
+	writer.println("id: "+term.getID());
+        foreach (category in term.getCategories()) {
+		writer.println("subset: "+category.getName());
+        }
+        writer.println("");
+    }
+    term.getCategories().clear();
+  }
+}
+writer.close();

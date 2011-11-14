@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+  <head>
+    <title>obo2linkfile</title>
+    <link rel="stylesheet" type="text/css" href="../javahelp.css">
+  </head>
+  <body bgcolor="#ffffff">
+
+    <h1>obo2linkfile</h1>
+
+    <p>The obo2linkfile utility takes an OBO file and produces a
+      tab-delimited text file that contains the transitive closure for
+      the ontology in the OBO file.</p>
+
+    <p><strong><code>
+	  obo2linkfile&nbsp;&lt;obo_file&gt;&nbsp;-o&nbsp;&lt;output_file&gt;
+    </code></strong></p>
+
+<p>The command line parameters are:</p>
+    <ul>
+      <li>
+	<strong>&lt;obo_file&gt;</strong>&nbsp;- Input file.
+      </li>
+      <li>
+	<strong>-o&nbsp;&lt;output_file&gt;</strong>&nbsp;- Output file.
+      </li>
+    </ul>
+
+    <h3>Example:</h3>
+    <p>Make the transitive closure text file for "foo.obo". Set CLASSPATH to include obo.jar, bbop.jar and log4j-1.2.15.jar present in the runtime directory.</p>
+    <p>
+      <code>
+CLASSPATH= /home/user/local/OBO-Edit2b52/runtime/obo.jar:/home/user/local/OBO-Edit2b52/runtime/bbop.jar:/home/user/local/OBO-Edit2b52/runtime/log4j-1.2.15.jar obo2linkfile foo.obo -o link.txt
+      </code>
+    </p>
+  </body>
+</html>
