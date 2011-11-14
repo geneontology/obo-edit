@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" CONTENT="Solutionsoft HelpBreeze JavaHelp Edition">
+<TITLE>Bugs and Troubleshooting</TITLE>
+<LINK REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
+</HEAD>
+<BODY BGCOLOR=#ffffff>
+<H1>Bugs and Troubleshooting</H1>
+<P>
+The <a href="http://www.oboedit.org/">OBO-Edit website</a> is a good place to
+       look for more information about OBO-Edit. Check the CHANGES
+file in the directory where you installed OBO-Edit for a summary of changes in
+       this release.</P>
+<h2>Slowness</h2>
+<p>If OBO-Edit is running slowly, please see <a href="Slowness.htm">this page</a>
+for some advice on how to get it to run better.</p>
+<H2>Configuration Directory</H2>
+<p>OBO-Edit configuration and history files used to be kept in your home directory in a
+(usually hidden) subdirectory called .oboeditbeta.  They are now stored in a visible
+directory appropriate to your operating system (for example, on a Mac, it is ~/Library/Application Support/OBO-Edit2-beta)
+.  You can find the name of the
+directory by opening the <a href="Configuration_Manager.htm">Configuration
+    Manager</a>.
+<P>
+If you have configuration files in your .oboeditbeta directory but not in the new
+configuration directory, OBO-Edit will offer copy your existing configuration
+files to the new directory.  However, when you install a new
+version of OBO-Edit, there may be clashes with your saved configuration files
+that can
+cause strange behavior.  If you install a new OBO-Edit and it is behaving
+oddly, try removing your OBO-Edit configuration directory and relaunching--this often
+fixes the problem.  You can reset your configuration directory in the
+<a href="Configuration_Manager.htm#config_dir">Configuration
+    Manager</a>.
+</p>
+<H2>Bug Reports</H2>
+<P>OBO-Edit is a work in progress. Bugs can and will creep in. Please report any 
+odd behavior or bugs immediately. The OBO-Edit Working Group is very responsive 
+to bug reports, and your bugs will be addressed as quickly as possible
+  (especially if they have a high priority rating).</P>
+<P>To report a bug, please use our Sourceforge bug tracker at: <A 
+href="http://sourceforge.net/tracker/?group_id=36855&amp;atid=418257">http://sourceforge.net/tracker/?group_id=36855&amp;atid=418257</A>
+<br>
+Be sure to set the category to "OBO-Edit", the group to "OBO-Edit 2.0x", and
+assign an appropriate priority score (where 9 means "fatal error that makes it
+impossible to use OBO-Edit at all" and 1 means "not at all important but I
+just wanted to let you know").</p>
+
+<H2>Feature Requests</H2>
+<P>We're always listening to suggestions for new OBO-Edit features. To request a 
+new feature, please use our Sourceforge Feature Request Tracker at: <A 
+href="http://sourceforge.net/tracker/?group_id=36855&amp;atid=418260">http://sourceforge.net/tracker/?group_id=36855&amp;atid=418260</A>
+<br>Be sure to set the category to "OBO-Edit" (you can leave the group blank)
+and assign an appropriate priority score.
+<H2>Getting the Source Code</H2>
+<p>
+<a href="http://wiki.geneontology.org/index.php/OBO-Edit:_Getting_the_Source_Code">This wiki page</a> describes how to download, compile, and run the OBO-Edit source code.  If you are familiar with Java, getting the source code may help you track down and perhaps even work around a bug.</p>
+</BODY>
+</HTML>

@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+<title>Term Image Display Panel</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>Term Image Display Panel</h1>
+
+<p>The Term Image Display Panel enables users to view an image that is connected
+to an ontology term (via the term's ID). For example, in the GO cellular component ontology a user
+can select the term 'mitochondrion' in the Ontology Editor Panel and see an image
+of a mitochondrion in the Term Image Display Panel.</p>
+<p><img border=0 src="../images/TermImageDisplayPanel.PNG"></p>
+<p>(The image in this figure is drawn from Alberts et al. <em>The Molecular Biology of the Cell</em>
+ISBN 0-8153-3218-1.)</p>
+
+<h2>Adding term images</h2>
+<p>OBO-Edit looks for images in the images subdirectory of your OBO-Edit
+configuration directory (see
+  the <a href="Configuration_Manager.htm">Configuration Manager</a> to find
+  where that is).
+</p>
+<p>The images are associated with terms by the term IDs.  For example, if you wanted to have
+an image of a chromosome show up when the user selects "chromosome" (GO:0005694), you'd
+save the chromosome image in a file called GO_0005694.jpg (note the underscore
+  used between "GO" and the GO ID number) and put it in the images subdirectory
+in your configuration directory. Once this is done, the image will
+automatically appear in the Term Image Display Panel when its associated term
+is selected.
+</p>
+<p>OBO-Edit is distributed with a few pre-loaded term images.  Currently,
+  these are for GO cellular component terms 0005623, 0005739, 0005783, and
+  0005794.
+</p>
+</body>
+</html>

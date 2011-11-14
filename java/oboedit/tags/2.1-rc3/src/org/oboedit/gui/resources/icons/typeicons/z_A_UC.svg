@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.0" width="60" height="60" viewBox="0 0 60 60"
+   id="custom_svg"
+   xml:space="preserve">
+
+	<rect id="square" x="7.5" y="7.5" width="44" height="44" style="fill:#000000" />
+	<path id="A_UC" d="M16.65,38.276l10.125-26.016h5.414l10.125,26.016H36.76l-2.707-6.943H23.295l-2.707,6.943H16.65z M24.631,27.87h8.086
+		l-4.043-10.371L24.631,27.87z" style="fill:#FFFFFF" />
+</svg>

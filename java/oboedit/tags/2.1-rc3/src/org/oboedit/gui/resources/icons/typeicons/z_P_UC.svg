@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.0" width="60" height="60" viewBox="0 0 60 60"
+   id="custom_svg"
+   xml:space="preserve">
+
+	<rect id="square" x="7.5" y="7.5" width="44" height="44" style="fill:#000000" />
+	<path id="P_UC" d="M21.713,38.276V12.261h9.07c3.164,0,5.423,0.53,6.776,1.591s2.03,2.833,2.03,5.317c0,2.812-0.905,5.001-2.716,6.565
+		s-4.345,2.347-7.603,2.347h-2.25v10.195H21.713z M27.021,24.513h1.055c1.852,0,3.313-0.431,4.386-1.292s1.608-2.03,1.608-3.507
+		c0-2.59-1.646-3.885-4.939-3.885h-2.109V24.513z" style="fill:#FFFFFF" />
+</svg>
