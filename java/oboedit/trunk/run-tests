@@ -118,3 +118,5 @@ foreach my $class (@testClasses) {
 print "Begin time: $beginTime.  End time: " . `date`;
 print "Output from tests is in $testLogs\n";
 print "Ran $tests $project unit tests.  $passed passed.\n";
+
+system("rm runtime/runtime");
