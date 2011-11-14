@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>The Dbxref Library</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>The Dbxref Library</h1>
+<p>The Dbxref Library allows users to keep a 
+database of frequently used dbxrefs to save the effort of typing long or obscure 
+dbxrefs each time they want to add a dbxref to a term or a definition.</p>
+<p><IMG hspace=0 
+src="../images/dbxref_library.png"  border=0></p>
+
+<h2>Loading a Dbxref Library</h2>
+<p>A dbxref library file is simply a text file with one dbxref on each line.
+  Usually dbxrefs have a database identifier, a colon, and a term identifier
+  (e.g., GOC:cr), but sometimes they are a URL or a text string. Optionally,
+each dbxref can have a description after the db:ID, e.g., "MetaCyc:PWY-881
+Cell Cycle, Mitotic".
+</p>
+<p>To load a dbxref library, foollow the instructions for "Modifying
+the Library" or using the "Import dbxrefs" button, both described
+below.</p><p>The list of dbxrefs is sorted by description (if any) and then by
+db:ID. Any dbxrefs that have a description will appear before those with no description.</p>
+
+<h2>Adding Dbxrefs to Terms</h2>
+<p>To add a dbxref from the library to one or more terms, select the dbxref from 
+the list.  Press the "Add as dbxref" or "Add
+as def dbxref" button to add the selected dbxref to the currently selected
+  term (the one that is shown in the Text Editor).  If you want to add dbxrefs
+  to multiple terms, select the desired terms in an Ontology Tree Editor that
+  is in global selection mode, and check the "Apply to all selected terms"
+  checkbox before pressing one of the Add buttons.
+</p>
+
+<h2>Modifying the Library</h2>
+<p>To add new dbxrefs or remove items from the list, 
+press the "Configure dbxrefs" button. The Dbxref Library configuration window 
+will appear:</p>
+<p><IMG hspace=0 
+src="../images/dbxref_library_config.png" border=0></p>
+<p>This window contains a dbxref editor list that works much like a <A
+href="Text_Editing.htm#dbxref">dbxref tab</A>, except that a dbxref is
+selected by a single click. See <A href="Text_Editing.htm#dbxref">Text
+Editing</A> for more information on the fields. Press "Save
+configuration" to save your changes.</p>
+
+<h2>Sharing Your Library</h2>
+<p>Dbxref libraries can be saved to an external file. Dbxref 
+lists can be imported into other installations of OBO-Edit.</p>
+<p>To export your dbxref list to a file, press the "Export 
+dbxrefs" button. A file browser window will appear where a save file can be 
+specified.</p>
+
+<p>To import a dbxref list from a file, press the "Import dbxrefs"
+button. A file browser window will appear where a file can be chosen
+off the disk.&nbsp;Beware! The imported dbxrefs will <em>replace</em>
+the existing dbxref library.</p>
+
+</body>
+</html>

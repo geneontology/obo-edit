@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" CONTENT="Solutionsoft HelpBreeze JavaHelp Edition">
+<TITLE>Text Checks</TITLE>
+<LINK REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
+</HEAD>
+<BODY BGCOLOR=#ffffff>
+<H1>Text Checks</H1>
+<P>Comment checks, definition checks, name checks and 
+synonym checks are all very similar, so they are all discussed in this 
+section.  These text checks are run automatically when you commit a change
+made in the Text Editor.  You can also run text checks on all terms at once
+by going to the Configuration tab in the Verification Manager and clicking
+the button that says "Run manual check now".</P>
+<P>A text check can look for any of the following:</P>
+<UL>
+  <LI><STRONG>Misspelled words</STRONG> 
+    - A warning will appear if the text includes a word that is not found in the
+    the default dictionary file or the user dictionary file, both of which are stored in
+    oboedit_config/dict.  (If you hover your mouse over the supposedly misspelled word,
+    which is shown in red text, you will be given the option to add the word to the
+    default dictionary or your personal user dictionary.)
+  <LI><STRONG>Repeated words</STRONG> 
+  - A warning will appear if the text contains a repeated word. Of course, some 
+  words should be repeated, so OBO-Edit maintains a list of legally repeatable 
+  words. Use the appropriate <A 
+  href="The_Verification_Plugin.htm#quickfix">quick fix</A> to add a word to the 
+  list of allowed repeats.
+  <LI><STRONG>Repeated whitespace</STRONG> - A warning will appear if multiple 
+  whitespace characters (like spaces or tabs) appear in a row (even between sentences).
+  <LI><STRONG>Sentence case</STRONG> - A warning will appear if a new sentence 
+  starts with a lower-case letter. Sometimes sentences should start with a lower 
+  case letter, so OBO-Edit provides a <A 
+  href="The_Verification_Plugin.htm#quickfix">quick fix</A> that allows a word 
+  to be added to a list of words that may legally appear at the beginning of a 
+  sentence in lower case.
+  <LI><STRONG>Sentence punctuation</STRONG> (definitions and comments only) - A 
+  warning will appear if a definition or comment doesn't end with appropriate 
+  punctuation.
+  <LI><STRONG>Sentence separation</STRONG> - A warning will appear if a period, 
+  question mark or exclamation point is not followed by a space. Sometimes a 
+  period should not be followed by a space (for example, in an abbreviation), so 
+  OBO-Edit provides a quick fix that adds a word to a list of legal 
+  abbreviations. OBO-Edit knows the abbreviations "i.e.", "e.g." and "etc." by 
+  default.</LI></UL>
+<P>You can configure which of these tests are done, and when, by clicking the
+  "Configure" button next to the check name in the 
+Verification Manager:</P>
+<P><IMG hspace=0 
+src="../images/verification_plugin_textedit_config.png" border=0></P>
+<P>Each line of the configuration window configures one of the tests listed 
+above. Each test can be configured to run under one of the following 
+conditions:</P>
+<UL>
+  <LI><STRONG>Threaded checks only</STRONG> - This part of the text
+  check will always be run except on a manual check.
+  <LI><STRONG>On Text Edit/Manual</STRONG> - This 
+  part of the text check will only be run before committing a text edit (or
+  when verification is run manually).
+  <LI><STRONG>Always</STRONG> - This part 
+  of the text check will always be run. 
+  <LI><STRONG>Never</STRONG> - This part of the text check will never be 
+  run.</LI></UL>
+<P>The default setting for most checks is <STRONG>Always</STRONG>. Repeated
+  whitespace check is turned off by default.
+  </P>
+<p>The <a href="Text_Editing.htm">Text Editor</a> performs text checks on the
+selected term.  If there are any errors or warnings, this is indicated in the
+  Text Editor title bar.  To see the warnings, hover your
+mouse over the title bar for a few seconds; a window listing the warnings will
+pop up.
+</BODY>
+</HTML>

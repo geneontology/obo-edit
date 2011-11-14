@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>obodiff</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>obodiff</h1>
+<p>The obodiff utility compares a pair of OBO files and 
+reports all of the edits necessary to transform the first file into the second. 
+This utility is useful for detecting&nbsp;semantic changes in a file that may 
+have superficial syntactic changes (such as rearranged terms and 
+tags), and it can be used to track changes over several versions of an 
+ontology.&nbsp;The command usage is:</p>
+<p><strong><code>obodiff [-o &lt;outputfile&gt;] [-t xml|text] 
+&lt;file1&gt; &lt;file2&gt;</code></strong>      
+</p>
+<p>The command line parameters are:</p>
+<UL>
+  <li><strong>-o &lt;outputfile&gt;</strong> - Writes the output to a file. If this parameter 
+  is not specified, the results are written to stdout. 
+  <li><strong>-t xml|text</strong> - Determines the format that will be written. 
+  <strong>text</strong> writes out the differences in an easy-to-read plain text 
+  format. <strong>xml</strong> 
+  writes the results in OBO-Edit xml history format, can be loaded into 
+  OBO-Edit. 
+  <li><strong>&lt;file1&gt;</strong> - 
+  The first file to compare 
+  <li><strong>&lt;file2&gt;</strong> - The second file to 
+compare</li></UL>
+<P>Also see <A href="Java_Options_on_the_Command_line.htm">Java Options on the 
+Command-line</A> </P>
+</body>
+</html>

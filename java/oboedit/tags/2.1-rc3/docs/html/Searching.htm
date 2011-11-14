@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<HEAD>
+<META NAME="GENERATOR" CONTENT="Solutionsoft HelpBreeze JavaHelp Edition">
+<TITLE>Searching</TITLE>
+<LINK REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
+</HEAD>
+<BODY bgColor=#ffffff>
+<H1>Searching</H1>
+
+<P>The main use of filters is for searching. An OBO-Edit search checks
+every term or link in the ontology to see if it matches the given filter.
+When the search is complete, a list of matching terms is displayed to
+the user.</P>
+
+<h2>Term Searches</h2>
+<P>The OBO-Edit term search panel looks like this:</P>
+<P><IMG src="../images/filter_term_standard.png" border=0></P>
+<P>To do a search, first use the filter designer to create 
+the filter you want to use. Then click the "Search" button.</P>
+<P>When the search is complete, a list of results will appear and a
+new tab will be added to the search interface. Term search results
+consist of a list of terms that match your search query. Each term's ID and name are
+listed:</P>
+
+<p><img hspace=0 src="../images/search_results_term.png" border=0></p>
+
+<P>The search results appear at the top of the tab. To sort the search
+results by a particular field (e.g., ID), click the appropriate header
+at the top of the search column. Clicking again will reverse-sort by
+the same column.</P>
+
+<P>Click a search result to select it. The search result will
+automatically be selected in any panel set to global selection
+mode.</P>
+
+<p>Each search result panel behaves as a <a
+href="Components.htm">component</a> and can be handled separately; by
+default, new search results panels appear docked behind the search
+panel.</p>
+
+<p>Note that you can control whether or not OBO-Edit includes obsolete terms
+in search results.  The default is to include them.  You can exclude obsolete
+terms from search results (including dropdown autocomplete lists) by checking
+the checkbox for the option "Exclude obsolete terms from search results" in
+the <a href="Configuration_manager.htm">Configuration Manager</a>.  If you
+change the setting of this option, you will need to quit and restart OBO-Edit
+to see the change in search behavior.</p>
+
+<H2>Link Searches</H2>
+<P>You can do a link search by choosing "Link Search Panel" from the "Search" menu.
+Link search results consist of a list of matching links. For each link, the 
+child name, child ID, type ID, parent name, and parent ID are listed:</P>
+<P><IMG hspace=0 src="../images/search_results_link.png" border=0></P>
+
+<p>As with term search results, link search results appear in tabs
+that behave as components, and the results can be sorted by clicking
+the headers. Clicking on a link in the list selects it in other relevant panels if
+you're in
+global selection mode; note that because each result is a link, no
+selection will appear in the Text Editor.</p>
+
+<h2>Configuring Search Results Headers</h2>
+<p>
+To control what information appears at the top of each search result panel, click the wrench icon. A configuration panel appears:
+</p>
+<p><img hspace=0 src="../images/search_panel_config.png" border=0></p>
+
+<p>Check the first box to show the words "Search results:" at the top. Use the pulldown to select whether to show the number of matches ("Result Count"), the search parameters ("Query Expression") or no additional text.
+</p>
+
+<h2>Saving Search Results to a File</h2>
+<p>
+You can save just the ontology terms that matched a particular search. The
+way to do this is with a <a href="Loading___Saving.htm#filter">filtered save</a>.
+</p>
+
+</BODY>
+</html>

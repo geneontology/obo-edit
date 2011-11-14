@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+<title>Components</title>
+<link REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
+</head>
+<body bgcolor="#ffffff">
+<h1>Components</h1>
+<p>OBO-Edit 2 has multiple components, or panels, that can be added to the display using
+the top-level menus, which are organized by category (Editors, Viewers,
+  Search, etc.).  You can resize components by pulling their
+  edges, drag them around to rearrange them, or
+even detach them from the main OBO-Edit window as free-floating windows.</p>
+<p><IMG hspace=0 src="../images/oe-with-floating-window.png" border=0></p>
+<p>When you add a new component to the OBO-Edit display, it will generally
+appear in the same spot as the panel you were looking at when you requested
+it from the menu.  Two or more components can share the spot by means
+  of <b>tabs</b>.  You can select a particular component by clicking on its
+  tab.  If there are more tabs than can fit in the space available, you can
+access the hidden ones using the "Scroll Right", "Scroll Left", and "Tab List" buttons to the right of the
+  tabs:</p>
+<p><IMG hspace=0 src="../images/tab_controls.png" border=0></p>
+</p>
+<div class="sidebar">
+
+<h1>Perspectives</h1>
+<hr>
+<p>OBO-Edit has several default layouts, or <i>perspectives</i>, that have a set of
+components pre-loaded.
+Please refer to the
+section about <a href="Perspectives.htm">Perspectives</a> for more information
+about configuring your OBO-Edit layout.
+</p>
+</div>
+
+<h3>Component Titlebars</h3>
+<p>Each component has its name in its titlebar.  You can edit the name by
+  right-clicking on it.  Hit return in the text box or right-click again when you're done editing it.
+</p>
+<h3>Component Toolbars</h3>
+<p>
+Each component has a row of little icon buttons in its title bar:
+</p><p><IMG hspace=0 src="../images/toolbar.png" center border=0></p>
+<p>If you hover your mouse over
+an icon, a phrase will appear that explains what the button does.  The exact set of
+icons depends on the type of component, but it may include:
+<ul>
+<li> A wrench or spanner icon, which means "Configure this component."  Clicking it will switch the
+component to a panel that lets you change some aspects of the display.  When you are done
+setting the configuration, click the checkmark icon to return to the normal component display.
+<br><li> A lowercase 'f', which means "Quick filtering options."  This will pop up a menu of
+<a href="Filtering.htm">filtering options</a>.
+<br><li> A question mark, which means "Help."  Clicking this will launch a window showing
+help for that specific component.
+<br><li> A tiny globe (looks kind of like an octagon with a lightning bolt in
+    it), which means "Switch to 
+<a href="The_Term_Editor_Panel.htm#global">local selection mode</a>."
+If you're in local selection mode, this icon will appear as a little house, which you can click to
+switch back to <a href="The_Term_Editor_Panel.htm#global">global selection mode</a>.
+<br><li> A little camera, which means "Save an image file of this component."
+<br><li> An arrow that points upwards and to the right, which means "Undock."  This turns the
+component into a free-floating window.  To return a panel to the
+main OBO-Edit window, click its icon that shows an arrow pointing downwards and
+to the left.
+<br><li> An underscore, which means "Minimize."  If you click this icon, the component will
+disappear and be replaced by a tab at the bottom of the OBO-Edit window.  To reopen a minimized
+component, click the "Restore" icon in the tab, which looks like two overlapping windows.
+<br><li> A rectangle, which means "Maximize."  This makes the component take over the whole
+OBO-Edit window.  To restore it to its normal size, use the "Restore" button.
+<br><li> An X, which means "Close."  Clicking this will remove the component from the OBO-Edit display.
+(If you want it back, you can recreate it from the appropriate menu.)
+</li>
+</ul>
+</p>
+<h3>Types of Components</h3>
+<p>The current components available in OBO-Edit 2 are:
+<ul> 
+<li> Editors</li>
+<ul>
+  <li> <a href="Graph_Editor.htm">Graph Editor</a></li>
+  <li> <a href="Parent_Editor.htm">Parent Editor</a></li>
+  <li> <a href="The_Term_Editor_Panel.htm">Ontology Tree Editor</a></li>
+</ul>
+<li> Viewers</li>
+<ul>
+  <li> <a href="Graph_Viewer.htm">Graph Viewer</a></li>
+  <li> <a href="The_GraphViz_Viewer.htm">GraphViz Viewer</a></li>
+  <li> <a href="Tree_Viewer.htm">Tree Viewer</a></li>
+</ul>
+<li> Search</li>
+<ul>
+  <li> <a href="Searching.htm">Search Panel</a></li>
+  <li> <a href="Searching.htm">Link Search Panel</a></li>
+</ul>
+<li> Tools</li>
+<ul>
+  <li> <a href="Configurable_Message.htm">Configurable Message </a></li>
+  <li> <a href="The_History_Plugin.htm">History Browser </a></li>
+  <li> <a href="The_ID_Fixer.htm">ID Fixer </li>
+  <li> <a href="OBOMerge_User_Interface.htm">OBO Merge </a></li>
+  <li> <a href="The_Change_Tracker_Plugin.htm">Ontology Change Tracker </a></li>
+  <li> <a href="The_Verification_Plugin.htm">Verification Manager </a></li>
+</ul>
+<li> Metadata</li>
+<ul>
+  <li> <a href="Working_with_Categories.htm">Subset Manager </a></li>
+  <li> <a href="The_Dbxref_Library_Plugin.htm">Dbxref Library </a></li>
+  <li> <a href="The_ID_Manager_Plugin.htm">ID Manager </a></li>
+  <li> <a href="Working_with_Namespaces.htm">Namespace Manager</li>
+  <li> <a href="Working_With_Synonym_Categories.htm">Synonym Type Manager </a></li>
+</ul>
+<li> Reasoner </li>
+<ul>
+  <li> <a href="The_Explanation_Plugin.htm">Explanations</a> (Note: the reasoner must be running for this component to be available.)</li>
+  <li> <a href="The_Reasoner_Manager.htm">Reasoner Manager</a></li>
+</ul>
+<li> Summary </li>
+<ul>
+  <li> <a href="Annotation_Summary.htm">Annotation Summary </a></li>
+  <li> <a href="Cross_Product_Info.htm">Cross Product Info</li>
+  <li> <a href="Table_of_Contents.htm">Table of Contents</a></li>
+</ul>
+<li> Config </li>
+<ul>
+  <li> <a href="Configuration_Manager.htm">Configuration Manager </a></li>
+  <li> <a href="Global_Filters___Renderers.htm">Global Filters </a></li>
+</ul>
+<p>A few experimental components have grayed-out placeholders in the Editors menu:</p>
+ <li> <a href="Cross_Product_Matrix_Editor.htm">Cross-Product Matrix Editor</a></li>
+ <li> <a href="Intersection_Editor.htm">Intersection Editor</a></li>
+
+</body>
+</html>
