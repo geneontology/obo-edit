@@ -292,7 +292,7 @@ public class Main {
                     if ((result[0] != null) && (result[1] != null)) {
                         //System.out.println("1: "+result[0]+", 2: "+result[1]+", prefix: "+sp1_ph_pfx);
 
-                        if (result[1].contains(sp1_ph_pfx)) {
+                        if (result[1].contains(sp1_ph_pfx)) {                      
                             gpset.add(new GenePheno(result[0], result[1]));
                         }
                     }
@@ -358,7 +358,7 @@ public class Main {
                     // result[0] : Gene ID
                     // result[1] : Phenotype ID
                     if ((result[0] != null) && (result[1] != null)) {
-                        if (result[1].contains(sp2_ph_pfx + ":")) {
+                        if (result[1].contains(sp2_ph_pfx + ":")) {                        	
                             gpset.add(new GenePheno(result[0], result[1]));
                         }
                     }
@@ -646,9 +646,18 @@ public class Main {
         for (Pheno t_ph2 : ph2) {
             t_ph2.setNonTCIndividualSize(t_ph2.getIndividuals().size());
         }
-        ph1 = ptc.performtransiviteclosure(sp1_obo, sp1_ph_pfx, ph1, hm1, hm_indpair1);
-        ph2 = ptc.performtransiviteclosure(sp2_obo, sp2_ph_pfx, ph2, hm2, hm_indpair1);
+        
+        
+        HashSet<Pheno> tph1 = ptc.performtransiviteclosure(sp1_obo, sp1_ph_pfx, ph1, ph2, hm1, hm_indpair1);
+        HashSet<Pheno> tph2 = ptc.performtransiviteclosure(sp2_obo, sp2_ph_pfx, ph2, ph1, hm2, hm_indpair1);
+        
+        ph1.clear();
+        ph2.clear();
+        
+        ph1.addAll(tph1);
+        ph2.addAll(tph2);
 
+        
         System.out.println("Done with PH2 Graph");
 
         System.out.println("SP1 size=" + ph1.size() + " , SP2 size=" + ph2.size());
