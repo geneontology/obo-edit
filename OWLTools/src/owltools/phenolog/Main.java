@@ -159,10 +159,7 @@ public class Main {
      */
 
 
-
-
-
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 
 
         /**
@@ -632,7 +629,6 @@ public class Main {
         System.out.println("Total Time Taken: " + total + " SP1 size=" + ph1.size() + " , SP2 size=" + ph2.size());
         System.out.println("Total orthologs: " + hs_indpair1.size());
 
-        PhenoTransitiveClosure ptc = new PhenoTransitiveClosure();
         HashSet<Pheno> oldph1 = new HashSet<Pheno>();
         HashSet<Pheno> oldph2 = new HashSet<Pheno>();
 
@@ -648,8 +644,8 @@ public class Main {
         }
         
         
-        HashSet<Pheno> tph1 = ptc.performtransiviteclosure(sp1_obo, sp1_ph_pfx, ph1, ph2, hm1, hm_indpair1);
-        HashSet<Pheno> tph2 = ptc.performtransiviteclosure(sp2_obo, sp2_ph_pfx, ph2, ph1, hm2, hm_indpair1);
+        HashSet<Pheno> tph1 = PhenoTransitiveClosure.performtransiviteclosure(sp1_obo, sp1_ph_pfx, ph1, ph2, hm1, hm_indpair1);
+        HashSet<Pheno> tph2 = PhenoTransitiveClosure.performtransiviteclosure(sp2_obo, sp2_ph_pfx, ph2, ph1, hm2, hm_indpair1);
         
         ph1.clear();
         ph2.clear();
@@ -925,7 +921,7 @@ public class Main {
         printresults(out_path.concat("/reciprocal_pairs.xls"), reciprocal_list, 1, 0);
 
 
-        if (1 == 1) {
+        if (true) {
             return;
         }
 
