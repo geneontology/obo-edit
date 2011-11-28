@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="OBO-Edit" default="all">
 
-	<property name="developer_email" value="aabdulla@berkeleybop.org" />
-
 	<!-- project variables -->
 	<property name="projectname" value="oboedit" />
 	<property name="runtimedir_name" value="runtime" />
@@ -132,7 +130,8 @@
 		<mkdir dir="${release_path}" />
 		<tar compression="gzip" destfile="${release_path}/oboedit_${major_version}_${minor-beta_version}.tar.gz">
 			<tarfileset dir=".">
-				<include name="${runtimedir_name}/*" />
+				<include name="${runtimedir_name}/**" />
+				<exclude name="${runtimedir_name}/.svn" />
 				<include name="docs/**" />
 				<include name="test_resources/**" />
 				<include name="extensions" />
@@ -367,6 +366,7 @@
 		</javac>
 	</target>
 
+        <!-- Note: if build fails with "Invalid Manifest", this probably means that src/org/oboedit/resources/VERSION got a newline in it. -->
 	<target name="jar" depends="classes, jarmanifest, checkjar, scripts" unless="main_jar_current" description="Generate jar file">
 		<jar destfile="${jarfile}" manifest="${main_jar_manifest}">
 			<fileset refid="main_jar_contents" />
