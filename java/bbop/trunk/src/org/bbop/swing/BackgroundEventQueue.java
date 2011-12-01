@@ -94,7 +94,7 @@ public class BackgroundEventQueue {
 					t.cancel();		
 				}
 			} catch(Exception e){
-				logger.debug("Exception while cancelling talk: " + e.getStackTrace());
+//				logger.debug("Exception while cancelling talk: " + e.getStackTrace());
 			}
 
 		}
