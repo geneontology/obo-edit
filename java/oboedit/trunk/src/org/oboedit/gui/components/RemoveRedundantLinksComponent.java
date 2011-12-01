@@ -94,7 +94,7 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 
 		redundantLinks = getRedundantLinks();
 		//notify when there are no redundant links
-		if(redundantLinks.size()==0){
+		if(redundantLinks == null || redundantLinks.size()==0){
 			JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
 			"There are no redundant links in the current ontology.");	
 		}
@@ -139,8 +139,12 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 
 	protected Collection<Link> getRedundantLinks(){
 		final ReasonedLinkDatabase reasoner = SessionManager.getManager().getReasoner();
+
 		allLinks = new LinkedHashSet<Link>();
 		redundantLinks = new LinkedHashSet<Link>();
+
+                if (reasoner == null)
+                    return redundantLinks;
 
 		final Iterator<Link> it = TermUtil.getAllLinks(reasoner);
 		while (it.hasNext()) {
