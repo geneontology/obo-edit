@@ -85,7 +85,7 @@ public class FieldAutocompleteModel<T> extends AbstractAutocompleteModel<T, T> {
 			Collection<FieldPath> fpaths = FieldPath.resolve(spec,
 					getLinkDatabase());
 			((Superset<FieldPath>) paths).addSubset(fpaths);
-//                        logger.debug("FieldAutocompleteModel.getAllValues: for spec " + spec + ", got " + fpaths.size() + " fpaths, " + paths.size() + " paths"); 
+                        //                        logger.debug("FieldAutocompleteModel.getAllValues: for spec " + spec + ", got " + fpaths.size() + " fpaths, " + paths.size() + " paths"); 
 		}
 		if (specQuery != null)
 			paths = QueryUtil.query(getQueryEngine(), paths, specQuery);

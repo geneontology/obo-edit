@@ -12,6 +12,8 @@ import org.obo.datamodel.FieldPath;
 import org.obo.datamodel.FieldPathSpec;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.LinkDatabase;
+import org.obo.datamodel.OBOClass;
+import org.obo.datamodel.impl.SynonymImpl;
 import org.obo.filters.NameSearchCriterion;
 import org.obo.filters.SynonymSearchCriterion;
 import org.oboedit.controller.SessionManager;
@@ -27,6 +29,7 @@ public class TermAutocompleteModel extends
 	protected Map<FieldPathSpec, Double> pathSpecs = new LinkedHashMap<FieldPathSpec, Double>();
 
 	public TermAutocompleteModel() {
+            // What are the 5 and the 1 for?
 		addPathSpec(new FieldPathSpec(NameSearchCriterion.CRITERION), 5);
 		addPathSpec(new FieldPathSpec(SynonymSearchCriterion.CRITERION), 1);
 	}
@@ -84,8 +87,33 @@ public class TermAutocompleteModel extends
 	public String toString(FieldPath val) {
 	    if (val.getLastValue() == null)
 		return "";
-	    return val.getLastValue().toString();
-	}
+            Object lastVal = val.getLastValue();
+            //            logger.debug("TermAutocompleteModel: fpObj = " + val.getObject() + "; lastVal " + lastVal + " is a " + lastVal.getClass().getName()); // DEL
+
+            Object fpObj = val.getObject();
+
+            if (fpObj instanceof OBOClass) {
+                OBOClass ob = (OBOClass)fpObj;
+                //                logger.debug("TermAutocompleteModel: ob " + ob + "; name = " + ob.getName() + "; id = " + ob.getID()); // DEL
+		if (ob.getName() == null)
+                    return ob.getID();
+                else if (lastVal instanceof SynonymImpl) {
+                    SynonymImpl syn = (SynonymImpl) lastVal;
+                    // Include synonym name AND ID, and also an indication that this is a synonym.
+                    return syn.toString() + " (" + ob.getID() + ")--synonym for " + ob.getName();
+                }
+                else {
+                    // I kind of feel like there should be a way to filter these unwanted
+                    // things out before we get to this point, but I didn't find an obvious way.
+                    if (ob.getName().startsWith("obo:"))
+                        return "";
+                    // Include term name AND ID
+                    return ob.getName() + " (" + ob.getID() + ")";
+                }
+            }
+            else // If it's not an OBOClass, we're not interested in it (it's a relation or something built-in)
+                return "";
+        }
 
 	@Override
 	public Collection<FieldPath> getQueryInput() {
