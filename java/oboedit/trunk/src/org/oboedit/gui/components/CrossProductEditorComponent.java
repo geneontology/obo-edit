@@ -62,10 +62,14 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 	protected JButton selectGenusButton;
 	protected ActionListener selectGenusActionListener;	
+	protected JButton deleteGenusButton;
+	protected ActionListener deleteGenusActionListener;	
 
 	protected AutocompleteBox<IdentifiedObject> genusField = new AutocompleteBox<IdentifiedObject>(new TermAutocompleteModel());
 	
 	protected CrossProductPanelFocusPolicy focusPolicy = new CrossProductPanelFocusPolicy();
+
+    protected boolean deleteGenus = false;
 
 	protected class CrossProductPanelFocusPolicy extends LayoutFocusTraversalPolicy {
 		public boolean accept(Component aComponent) {
@@ -308,6 +312,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 	};
 
+
 	/**
 	 * addDiscriminating: add new differentia
 	 * called by dropButton action listener
@@ -368,9 +373,6 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		List<HistoryItem> historyList = new LinkedList<HistoryItem>();
 
 		if (currentObject instanceof LinkedObject && !(currentObject instanceof OBOPropertyImpl)) {
-			//get existing differentia
-			Collection<Link> differentia = ReasonerUtil.getDifferentia((OBOClass) currentObject);
-			
 			//get the list of discriminating relations associated with this object to compute additions and deletions to the relations list
   			Collection<Link> relations = getRelationshipList();
 			
@@ -382,26 +384,43 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 				// only if relations exist do the check to see if they have been deleted.
 				// this has been added due to false positive results being generated for links being deleted.
 				// (found is returning true after links have been committed)
-				if(relations.size() >= 1){
+                                //                                logger.debug("CPEC.getChanges(): link = " + link + ", relations.size = " + relations.size());
+
+                                if(relations.size() >= 1){
 					boolean found = false;
 
 					for(Object o : relations){
 						OBORestriction completeDefLink = (OBORestriction) o;
-//						logger.debug("CPEC.getChanges -- relations -- completeDefLink: " + completeDefLink);
+                                                //                                                logger.debug("CPEC.getChanges -- relations -- completeDefLink: " + completeDefLink + ", comparing with link "+ link);
 						
-						// check for deleted links
+						// check for UNdeleted links
 						if (completeDefLink.equals(link)) {
 							found = true;
 							break;
 						}
-						
 					}
-					if (!found){
-//						logger.debug("CPEC - deleting link: " + link);
-						historyList.add(new DeleteLinkHistoryItem(link));			
-					}
+                                        // This link is no longer found--deleted it.
+					if (!found) {
+                                            //                                                logger.debug("CPEC - deleting link: " + link);
+						historyList.add(new DeleteLinkHistoryItem(link));
+                                        }
 				}
+                                // Delete genus if requested
+                                if (deleteGenus && (link.getType().equals(OBOProperty.IS_A))) {
+                                    //                                    logger.debug("Deleting genus link " + link);
+                                    historyList.add(new DeleteLinkHistoryItem(link));
+                                }
 			}
+			
+                        // If user wanted to delete the genus, also delete any remaining differentia
+                        if (deleteGenus) {
+                            Collection<Link> differentia = ReasonerUtil.getDifferentia((OBOClass) currentObject);
+                            for (Link dl : differentia) {
+                                //                                logger.debug("CPEC - also deleting link: " + dl);
+                                historyList.add(new DeleteLinkHistoryItem(dl));
+                            }
+                            deleteGenus = false;
+                        }
 
 			//Find intersection links that have been added
 			for(Object o : relations){
@@ -417,7 +436,6 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 					historyList.add(new CreateIntersectionLinkHistoryItem(completeDefLink));
 				}
 			}
-
 		}
 		return historyList;
 	}
@@ -506,21 +524,42 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		selectGenusButton.setToolTipText("Go to genus term");
 		selectGenusButton.addActionListener(selectGenusActionListener);
 
-
 		labelBox.add(genusLabel);
 		labelBox.add(Box.createHorizontalStrut(10));
+
+                //trash can icon - delete whole cross-product (genus AND any differentia)
+                Icon deleteGenusIcon = Preferences.loadLibraryIcon("trashcan.gif");
+		deleteGenusButton = new JButton(deleteGenusIcon);
+		deleteGenusButton.setPreferredSize(new Dimension(20, 20));
+		deleteGenusButton.setToolTipText("Delete entire cross product");
+                deleteGenusButton.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            genusField.setValue(null);
+                            // Remove all the differentia
+                            for (Component c : linkListPanel.getComponents()) {
+                                if (c instanceof RelationshipLinePanel) {
+                                    RelationshipLinePanel panel = (RelationshipLinePanel) c;
+                                    Container parent = panel.getParent();
+                                    parent.remove(panel);
+                                    parent.repaint();
+                                }
+                            }
+                            // The actual deletion will be done in getChanges
+                            deleteGenus = true;
+                        }
+                    });
 
 		linkWrapperPanel.add(linkListPanel, "North");
 		linkWrapperPanel.add(dropButton, "South");
 
-
 		northPanel.setOpaque(false);
 		northPanel.setLayout(new SpringLayout());
 
+                northPanel.add(deleteGenusButton);
 		northPanel.add(genusLabel);
 		northPanel.add(genusField);
-		northPanel.add(selectGenusButton);
-		SpringUtilities.makeCompactGrid(northPanel, -1, 3, // rows, cols
+                northPanel.add(selectGenusButton);
+		SpringUtilities.makeCompactGrid(northPanel, -1, 4, // rows, cols
 				6, 6, // initX, initY
 				6, 0);
 
@@ -542,10 +581,10 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 	@Override
 	protected void loadGUI() {
 		removeAll();
+                deleteGenus = false;
 		if (currentObject != null && currentObject instanceof OBOClass) {
 			add(editorScroller);
 			setClass((OBOClass) currentObject);
-
 		} else {
 			add(notLoadedLabel);
 		}
@@ -589,13 +628,12 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			}
 
 			final OBOClass genusTerm = (OBOClass) parent;
-			//			logger.debug("genusTerm: " +  genusTerm);
+                        //                        logger.debug("setClass: link = " + link + ", parent = " + parent + ", genusTerm: " +  genusTerm);
 			if (link.getType().equals(OBOProperty.IS_A)) {
 				genusField.setValue(parent);
 
 				selectGenusButton.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e) {
-						logger.debug("genusTerm: " + genusTerm);
 						SelectionManager.selectTerm(CrossProductEditorComponent.this, genusTerm);
 					}
 
