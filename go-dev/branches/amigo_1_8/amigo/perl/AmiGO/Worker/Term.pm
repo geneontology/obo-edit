@@ -58,9 +58,34 @@ sub get_info {
     $self->{AW_TQ}->get_all_results({'me.acc' => {-in => $arg}});
   my $term_info = $self->{AW_AID}->term_information($query_results);
 
-  # ## Add even more information! But only if desired...
-  #  if( defined $self->{AWT_LOTS} && $self->{AWT_LOTS} ){
-  #  }
+  # $self->kvetch('info');
+  # $self->kvetch('$term_info: ' . Dumper($term_info));
+
+  ## Look for synonym if we came up empty...
+  if( ! defined($term_info) || $self->empty_hash_p($term_info) ){
+    $self->kvetch("couldn't find initial term, looking for synonyms");
+
+    ## Do the same thing, but if we find a synonym, walk back over to
+    ## the term.
+    my $syn_get = GOBO::DBIC::GODBModel::Query->new({type=>'term_synonym'});
+    $query_results =
+      $syn_get->get_all_results({'me.acc_synonym' => {-in => $arg}});
+
+    ## Try and pick out a synonym.
+    if( $query_results && scalar(@$query_results) ){
+      my $syn_term = $$query_results[0];
+
+      ## Get the info for the actual term.
+      $term_info = $self->{AW_AID}->term_information([$syn_term->term()]);
+
+      ## Check again to see if we could find anything.
+      if( ! defined($term_info) || $self->empty_hash_p($term_info) ){
+	$self->kvetch("couldn't find pick out synonyms");
+      }
+    }else{
+      $self->kvetch("couldn't find synonyms either");
+    }
+  }
 
   return $term_info;
 }
