@@ -1,7 +1,14 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 ==============================
-What's New in OBO-Edit v2.1-rc4
+What's New in OBO-Edit v2.1.0
+==============================
+Updated documentation on how to hide disjoint_from links in the Graph Editor
+(do it using the Graph Editor filtering, NOT with a global link filter).
+
+
+==============================
+What's New in OBO-Edit v2.1-rc4 (12/5/2011)
 ==============================
 [ geneontology-Bugs-3303595 ] deleting genus relationship in cross product tab
 The Cross Product Editor had a trashcan (delete) button for deleting
