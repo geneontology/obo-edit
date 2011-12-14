@@ -1,7 +1,7 @@
 Copyright (C) 2011, Gene Ontology Consortium
 Original author:  John Day-Richter
-Version:  2.1-rc3
-Release date: 2011-11-14
+Version:  2.1-rc4
+Release date: 2011-12-09
 
 OBO-Edit is an open source tool written in Java for browsing, searching, and
 modifying OBO ontologies.
@@ -21,7 +21,28 @@ How to report bugs
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 ==============================
-What's New in OBO-Edit v2.1-rc3 (11/14/2001)
+What's New in OBO-Edit v2.1-rc4 (12/9/2011)
+==============================
+[ geneontology-Bugs-3303595 ] deleting genus relationship in cross product tab
+The Cross Product Editor had a trashcan (delete) button for deleting
+discriminating relations, but no way to delete a genus. There is now a
+whole-cross-product delete button that will delete the genus along with any
+discriminating relations.  This change also ameliorates a pre-existing bug: if
+you created a cross product with discriminating relations but no genus, you
+couldn't delete the discriminating relations. Now you can use the
+whole-cross-product trashcan to do that.
+
+[ geneontology-Feature Requests-3446935 ] IDs in the Intersection Genus box
+Genus box and dropdown autocomplete list in cross product editor now show the
+term name and also the ID, helping to clarify what you're actually
+selecting. It also indicates if the selected genus is actually a synonym
+rather than a primary term name. 
+You can also now paste an ID into the genus box for completion (in the past,
+you could only use term names).
+
+
+==============================
+What's New in OBO-Edit v2.1-rc3 (11/14/2011)
 ==============================
 - Fixed a null pointer exception that sometimes was thrown during merges, and
 which may or may not have anything to do with the sporadic loss of information
