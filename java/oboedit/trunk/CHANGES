@@ -3,9 +3,6 @@
 ==============================
 What's New in OBO-Edit v2.1.0
 ==============================
-Updated documentation on how to hide disjoint_from links in the Graph Editor
-(do it using the Graph Editor filtering, NOT with a global link filter).
-
 
 ==============================
 What's New in OBO-Edit v2.1-rc4 (12/9/2011)
@@ -27,6 +24,12 @@ rather than a primary term name.
 You can also now paste an ID into the genus box for completion (in the past,
 you could only use term names).
 
+Updated documentation on how to hide disjoint_from links in the Graph Editor
+(do it using the Graph Editor filtering, NOT with a global link filter).
+
+Updated page on creating cross products in the Text Editor.
+
+Removed runtime/gopubmed-ontology-generation-service-clients-jar-with-dependencies.jar
 
 ==============================
 What's New in OBO-Edit v2.1-rc3 (11/14/2011)
