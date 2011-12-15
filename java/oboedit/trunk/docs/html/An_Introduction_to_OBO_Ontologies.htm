@@ -130,10 +130,16 @@ classes and instances.</p>
 <p>This does not mean that our notion of domain and range 
 can't be used for verification. If terms are properly marked with 
 <strong>disjoint_from</strong>           
-            
 relationships, an "improperly used" relation will usually imply that a term has 
 an is_a relationship to two disjoint classes, and a reasoner will complain.</p>
-
+<p>You can specify a domain or a range for a relation using the <a
+href="Text_Editing.htm">Text Editor</a> component:
+<ul>
+<li>Open both the Text Editor and the Ontology Tree Editor panels.</li>
+<li>Set the ontology tree editor to Local Mode.</li>
+<li>Drag the ontology term from the tree editor to the &lt;no domain specified&gt; or &lt;no range specified&gt; bubble in the text editor. The corners of the bubble will momentarily turn square, and when you release the curser, the domain or range term should show up in the bubble.</li>
+</ul>
+</p>
 
 <h3>Relationships between Relations</h3>
 <p>Relations can have relationships to other relations. Normally, relations 
@@ -145,9 +151,7 @@ users from relating relations to each other using user-defined relations.</p>
 relation B, A is a sub-relation of B. Any class-level or instance-level 
 relationship of type A is also a relationship of type B.</p>
 <h3>Built-in Relations</h3>
-<p>             
-         The 
-OBO format allows users to define any number of new relations. 
+<p>The OBO format allows users to define any number of new relations. 
 The OBO format does provide a small number of pre-defined relations that are 
 present in all ontologies and cannot be modified: <strong>is_a</strong>, 
 <strong>disjoint_from</strong>, <strong>inverse_of</strong>, and 
