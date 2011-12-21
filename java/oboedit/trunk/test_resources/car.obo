@@ -18,6 +18,7 @@ name: blue VW
 [Term]
 id: TEST:0000005
 name: VW
+synonym: "Volkswagen" EXACT []
 
 [Term]
 id: TEST:0000006
