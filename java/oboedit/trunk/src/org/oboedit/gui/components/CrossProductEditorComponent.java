@@ -555,11 +555,13 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		northPanel.setOpaque(false);
 		northPanel.setLayout(new SpringLayout());
 
-                northPanel.add(deleteGenusButton);
+                // Commenting out genus trash can for release 2.1.0
+                //                northPanel.add(deleteGenusButton);
 		northPanel.add(genusLabel);
 		northPanel.add(genusField);
                 northPanel.add(selectGenusButton);
-		SpringUtilities.makeCompactGrid(northPanel, -1, 4, // rows, cols
+                //		SpringUtilities.makeCompactGrid(northPanel, -1, 4, // rows, cols
+		SpringUtilities.makeCompactGrid(northPanel, -1, 3, // rows, cols
 				6, 6, // initX, initY
 				6, 0);
 
