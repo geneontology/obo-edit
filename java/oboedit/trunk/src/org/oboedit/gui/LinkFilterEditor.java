@@ -31,7 +31,6 @@ public class LinkFilterEditor extends TermFilterEditor {
 
 	public LinkFilterEditor() {
 		super();
-		logger.debug("LinkFilterEditor init"); // DEL
 		aspectBox.addActionListener(linkAspectBoxListener);
 	}
 	
