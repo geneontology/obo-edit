@@ -17,6 +17,9 @@ public class VersionNumber implements Comparable<VersionNumber> {
 
 	protected int minorVersion;
 
+	// In case the version number has another place, e.g. 2.1.3
+	protected int subminorVersion = -999;
+
 	protected int betaVersion;
 	
 	//release candidate version
@@ -32,12 +35,21 @@ public class VersionNumber implements Comparable<VersionNumber> {
 			throw new ParseException(str, -1);
 		}
 		try {
-			s.findInLine(".(\\d+)");
+ 			s.findInLine(".(\\d+)");
 			MatchResult result = s.match();
 			minorVersion = Integer.parseInt(result.group(1));
 		} catch (IllegalStateException ex) {
 			throw new ParseException(str, -1);
 		}
+ 		try {
+		    // Need to leave s alone in case there's a beta or rc suffix
+		    Scanner s2 = s;
+ 			s2.findInLine("\\.(\\d+)");
+ 			MatchResult result = s2.match();
+ 			subminorVersion = Integer.parseInt(result.group(1));
+ 		} catch (Exception ex) {
+ 		    // It's ok if there's not a subminor version; just be quiet
+ 		}
 		try {
 			s.findInLine("-beta(\\d+)");
 			MatchResult result = s.match();
@@ -56,9 +68,10 @@ public class VersionNumber implements Comparable<VersionNumber> {
 
 	public String toString() {
 		return majorVersion + "."
-				+ StringUtil.pad(minorVersion + "", '0', 1, true)
-				+ (isRC() ? "-rc" +rcVersion : "")
-				+ (isBeta() ? "-beta" + betaVersion : "");
+		    + StringUtil.pad(minorVersion + "", '0', 1, true)
+		    + ((subminorVersion == -999) ? "" : "." + subminorVersion)
+		    + (isRC() ? "-rc" +rcVersion : "")
+		    + (isBeta() ? "-beta" + betaVersion : "");
 	}
 
 	public static void main(String[] args) throws Exception {
