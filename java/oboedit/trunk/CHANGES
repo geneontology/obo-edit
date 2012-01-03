@@ -3,9 +3,10 @@
 ==============================
 What's New in OBO-Edit v2.1.0 (12/21/2011)
 ==============================
-The genus trashcan wasn't working right with Autocommit on, so it has been
+- The genus trashcan wasn't working right with Autocommit on, so it has been
 commented out for this release. (As before, you can use the Parent Editor to
 delete unwanted genuses.)
+- [geneontology-Bugs=3302934] java.lang.Object@... appearing in cross-product intersection
 
 
 ==============================
