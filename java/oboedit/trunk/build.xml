@@ -230,6 +230,7 @@
 		<loadfile property="t_minor_version_w_beta" srcfile="${temp.file}" />
 		<copy file="${version_file}" tofile="${temp.file}" overwrite="true" />
 		<replaceregexp file="${temp.file}" match="[0-9]+\.([0-9]+)" replace="\1" />
+		<replaceregexp file="${temp.file}" match="[0-9]+\.([0-9]+)" replace="\1" />
 		<loadfile property="t_minor_version" srcfile="${temp.file}" />
 		<delete file="${temp.file}" />
 		<condition property="beta_version" value="" else="${t_beta_version}">
@@ -238,7 +239,17 @@
 		<condition property="minor_version" value="${t_minor_version}" else="${t_minor_version_w_beta}">
 			<equals arg1="${version}" arg2="${t_beta_version}" />
 		</condition>
-		<delete file="${temp.file}" />
+		<echo message="tempfile = ${temp.file}, version = ${version}, major_version = ${major_version}, t_beta_version = ${t_beta_version}, beta_version = ${beta_version}, t_minor_version = ${t_minor_version}, minor_version = ${minor_version}" />
+		<condition property="install4j_formatted_version_number" value="${major_version}.${minor_version}.${beta_version}" else="${major_version}.${minor_version}">
+			<and>
+			  <isset property="beta_version" />
+			  <not>
+			    <equals arg1="${beta_version}" arg2="" />
+			  </not>
+			</and>
+		</condition>
+		<echo message="install4j_formatted_version_number = ${install4j_formatted_version_number}" />
+<!--		<delete file="${temp.file}" /> -->
 		<tstamp>
 			<format property="build_date" pattern="MMddyyyy_hhmmss" locale="en" />
 			<format property="pretty_date" pattern="MMMM dd, yyyy" locale="en" />
