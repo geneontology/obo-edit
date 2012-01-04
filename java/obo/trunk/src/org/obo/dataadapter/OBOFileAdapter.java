@@ -18,7 +18,7 @@ public class OBOFileAdapter implements OBOAdapter {
 
 	protected OBOAdapterConfiguration ioprofile;
 
-	protected List progressListeners = new LinkedList();
+    //	protected List progressListeners = new LinkedList(); // not used
 
 	protected ParseEngine engine;
 
@@ -264,12 +264,13 @@ public class OBOFileAdapter implements OBOAdapter {
 				engine.setPaths(ioprofile.getReadPaths());
 				logger.info("Reading " +	ioprofile.getReadPaths()
 						+ "\n\t (allowDangling = " + ioprofile.getAllowDangling() + ")"
-						+ "\n\t (followImports = " + ioprofile.getFollowImports() + ")"); // DEL this part
+						+ "\n\t (followImports = " + ioprofile.getFollowImports() + ")");
 				engine.parse();
 				logger.debug("Done parsing file");
 				OBOSession history = parser.getSession();
 				metaData = parser.getMetaData();
-				history.setLoadRemark(createLoadRemark());
+				history.setLoadRemark(createLoadRemark(ioprofile.getReadPaths()));
+				//				history.setIOProfile(ioprofile);
 				// return new WriteCachedOBOSession(history);
 				return (OUTPUT_TYPE) history;
 			} catch (OBOParseException e) {
@@ -342,6 +343,11 @@ public class OBOFileAdapter implements OBOAdapter {
 
 				serializeEngine.serialize((OBOSession) input, serializer,filteredPaths);
 
+				Collection<String> writePath = new Vector<String>();
+				writePath.add(ioprofile.getWritePath());
+				OBOSession history = (OBOSession) input;
+				history.setLoadRemark(createLoadRemark(writePath)); // Sets title string; actual changing of frame title happens when FileMenu calls FrameNameUpdateTask.reload
+
 				return (OUTPUT_TYPE) input;
 				/*
 				 * serializer.setParentAdapter(this); return
@@ -366,8 +372,12 @@ public class OBOFileAdapter implements OBOAdapter {
 	}
 
 	protected String createLoadRemark() {
+	    return createLoadRemark(ioprofile.getReadPaths());
+	}
+
+	protected String createLoadRemark(Collection<String> paths) {
 		StringBuffer out = new StringBuffer();
-		Iterator it = ioprofile.getReadPaths().iterator();
+		Iterator it = paths.iterator();
 		for (int i = 0; it.hasNext(); i++) {
 			String path = (String) it.next();
 			path = IOUtil.getShortName(path);
