@@ -21,11 +21,12 @@ import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.OBOSessionImpl;
 import org.obo.history.HistoryList;
 import org.obo.history.SessionHistoryList;
+import org.obo.identifier.DefaultIDGenerator;
+import org.obo.identifier.IDGenerator;
 import org.oboedit.controller.IDManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
-import org.obo.identifier.DefaultIDGenerator;
-import org.obo.identifier.IDGenerator;
+import org.oboedit.gui.tasks.FrameNameUpdateTask;
 
 import org.apache.log4j.*;
 
@@ -131,7 +132,13 @@ public class FileMenu extends DynamicMenu {
 							OBOAdapter.WRITE_ONTOLOGY,
 							SessionManager.getManager().getSession(), true);
 					if (session != null) {
-						SessionManager.getManager().markChangesFlushed();
+					    SessionManager.getManager().markChangesFlushed();
+					    // This is to make FrameNameUpdateTask update the title to show the name of the saved-as file
+					    // (The line below works, but has other side effects, such as deselecting the currently selected term.)
+					    //					    SessionManager.getManager().fireChangeRoot();
+					    // (Is this uncool, making a new FrameNameUpdateTask just to trigger the title updating? It seems
+					    // fairly harmless, but maybe it's bad style.)
+					    (new FrameNameUpdateTask()).reload();
 					}
 				} catch (DataAdapterException e1) {
 					// TODO Auto-generated catch block
