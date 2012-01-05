@@ -95,18 +95,14 @@ sub mode_term_details_core {
   my $i = AmiGO::WebApp::Input->new();
   my $params = $i->input_profile('term');
   my $input_term_id = $params->{term};
-  $self->_common_params_settings({'title' =>
-				  'AmiGO: Term Details for ' . $input_term_id});
 
   ## TODO/BUG: these need to go later.
   my $graph_type = $params->{graph_type};
 
   ## Input sanity check.
-  my $acc_list_for_gpc_info = [];
   if( ! $input_term_id ){
     return $self->mode_die_with_message('Term acc could not be found!');
   }
-  push @$acc_list_for_gpc_info, $input_term_id;
 
   ###
   ### Get full term info.
@@ -117,7 +113,31 @@ sub mode_term_details_core {
   my $term_info = $term_q->get_info($input_term_id);
   if( ! defined($term_info) || $self->{CORE}->empty_hash_p($term_info) ){
     return $self->mode_die_with_message('Unable to find any such acc!');
+  }else{
+    ## If we did indeed find some term_info, see if it was a synonym;
+    ## if so, go back and update our variables--things could fall out
+    ## of sync otherwise...
+    my $is_syn_p = 1; # is a synonym until proven otherwise...
+    my $syn_acc = undef; # there should only be one if there is an acc
+    foreach my $tmp_syn_acc (keys %$term_info){
+      if( $input_term_id eq $tmp_syn_acc ){
+	## Okay, not a synonym.
+	$is_syn_p = 0;
+      }else{
+	$syn_acc = $tmp_syn_acc; # keep it updated just in case
+      }
+    }
+    ## Update the main variable if we think it's a synonym.
+    if( $is_syn_p ){
+      $input_term_id = $syn_acc;
+    }
   }
+
+  ## Collect necessary things for later.
+  my $acc_list_for_gpc_info = [];
+  push @$acc_list_for_gpc_info, $input_term_id;
+  $self->_common_params_settings({'title' =>
+				  'AmiGO: Term Details for ' . $input_term_id});
 
   ##
   my $foo = (keys %$term_info)[0];
