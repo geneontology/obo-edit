@@ -61,12 +61,12 @@ sub get_info {
   # $self->kvetch('info');
   # $self->kvetch('$term_info: ' . Dumper($term_info));
 
-  ## Look for synonym if we came up empty...
+  ## Look for a synonym if we came up empty...
   if( ! defined($term_info) || $self->empty_hash_p($term_info) ){
     $self->kvetch("couldn't find initial term, looking for synonyms");
 
-    ## Do the same thing, but if we find a synonym, walk back over to
-    ## the term.
+    ## Do the same thing we did above, but if we find a synonym, walk
+    ## back over to the term.
     my $syn_get = GOBO::DBIC::GODBModel::Query->new({type=>'term_synonym'});
     $query_results =
       $syn_get->get_all_results({'me.acc_synonym' => {-in => $arg}});
