@@ -79,6 +79,10 @@ sub setup {
 
 
 ## This is just a very thin pass-through client.
+## NOTE/WARNING: See similar in visualize::mode_client.
+##   The only difference should be redirect vs. forward. By including
+##   the client with the outputter (forward), because we're not sending
+##   a reencoded (safe) longer URL, we can get a lot more input.
 ## TODO/BUG: not accepting "inline" parameter yet...
 sub mode_visualize {
 
