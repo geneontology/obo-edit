@@ -40,6 +40,7 @@ sub setup {
   $self->start_mode('status');
   $self->error_mode('mode_fatal');
   $self->run_modes(
+		   'client'       => 'mode_client',
 		   'quickgo'      => 'mode_quickgo', # TODO: fold into ...?
 		   'subset'       => 'mode_subset',
 		   'single'       => 'mode_single',
@@ -81,6 +82,97 @@ sub _add_fiddly_header {
       $self->header_add( -type => 'image/' . $type );
     }
   }
+}
+
+
+## This is just a very thin pass-through client.
+## NOTE/WARNING: See similar in HTMLClient::mode_visualize.
+##   The only difference should be redirect vs. forward. By including
+##   the client with the outputter (forward), because we're not sending
+##   a reencoded (safe) longer URL, we can get a lot more input.
+##   This one may be the future (software points to this now)...
+## TODO/BUG: not accepting "inline" parameter yet...
+sub mode_client {
+
+  my $self = shift;
+  my $output = '';
+
+  ##
+  my $i = AmiGO::WebApp::Input->new();
+  my $params = $i->input_profile('visualize');
+  my $format = $params->{format};
+  my $input_term_data_type = $params->{term_data_type};
+  my $input_term_data = $params->{term_data};
+
+  ## Cleanse input data of newlines.
+  $input_term_data =~ s/\n/ /gso;
+
+  ## If there is no incoming data, display the "client" page.
+  ## Otherwise, forward to render app.
+  if( ! defined $input_term_data ){
+
+    ##
+    $self->_common_params_settings({title=>'AmiGO: Visualization',
+				    'amigo_mode' => 'visualize'});
+    $self->add_template_content('html/main/visualize-client.tmpl');
+    $output = $self->generate_template_page();
+
+  }else{
+
+    ## What kind of data do we have?
+    #     my $data_type = 'string';
+    #     if( $input_term_data_type eq 'json' ){
+    #       $data_type = 'json';
+    #     }
+
+    #$self->{CORE}->kvetch(Dumper($input_term_data_type));
+    #$self->{CORE}->kvetch(Dumper($input_term_data));
+    #print STDERR Dumper($input_term_data_type);
+    #print STDERR Dumper($input_term_data);
+    #print STDERR $input_term_data;
+
+    ## Check to see if this JSON is even parsable...that's really all
+    ## that we're doing here.
+    if( $input_term_data_type eq 'json' ){
+      eval {
+	JSON::decode_json($input_term_data);
+      };
+      if ($@) {
+	my $str = 'Your JSON was not formatted correctly...please go back and retry. Look at the "advanced format" documentation for more details.';
+	#return $self->mode_die_with_message($str . '<br />' . $@);
+	return $self->mode_die_with_message($str);
+      }
+    }
+
+    ## TODO: Until I can think of something better...
+    if( $format eq 'navi' ){
+
+      ## BETA: Just try and squeeze out whatever I can.
+      my $in_terms = $self->{CORE}->clean_term_list($input_term_data);
+      my $jump = $self->{CORE}->get_interlink({mode=>'layers_graph',
+				       arg => {
+					       terms => $in_terms,
+					      }});
+      return $self->redirect($jump, '302 Found');
+    }else{
+      my $jump = $self->{CORE}->get_interlink({mode=>'visualize',
+				       #optional => {url_safe=>1, html_safe=>0},
+				       #optional => {html_safe=>0},
+				       arg => {
+					       format => $format,
+					       data_type =>
+					       $input_term_data_type,
+					       data => $input_term_data,
+					      }});
+      #$self->{CORE}->kvetch("Jumping to: " . $jump);
+      ##
+      #$output = $jump;
+      #return $self->redirect($jump, '302 Found');
+      return $self->redirect('mode_advanced');
+    }
+  }
+
+  return $output;
 }
 
 
