@@ -67,7 +67,7 @@ sub setup {
   $self->start_mode('software_list');
   $self->error_mode('mode_fatal');
   $self->run_modes(
-		   'visualize'           => 'mode_visualize',
+		   #'visualize'           => 'mode_visualize', # replaced
 		   'software_list'       => 'mode_software_list',
 		   'homolset_summary'    => 'mode_homolset_summary',
 		   'homolset_graph'      => 'mode_homolset_graph',
@@ -78,93 +78,94 @@ sub setup {
 }
 
 
-## This is just a very thin pass-through client.
-## NOTE/WARNING: See similar in visualize::mode_client.
-##   The only difference should be redirect vs. forward. By including
-##   the client with the outputter (forward), because we're not sending
-##   a reencoded (safe) longer URL, we can get a lot more input.
-## TODO/BUG: not accepting "inline" parameter yet...
-sub mode_visualize {
+## Replaced.
+# ## This is just a very thin pass-through client.
+# ## NOTE/WARNING: See similar in visualize::mode_client.
+# ##   The only difference should be redirect vs. forward. By including
+# ##   the client with the outputter (forward), because we're not sending
+# ##   a reencoded (safe) longer URL, we can get a lot more input.
+# ## TODO/BUG: not accepting "inline" parameter yet...
+# sub mode_visualize {
 
-  my $self = shift;
-  my $output = '';
+#   my $self = shift;
+#   my $output = '';
 
-  ##
-  my $i = AmiGO::WebApp::Input->new();
-  my $params = $i->input_profile('visualize');
-  my $format = $params->{format};
-  my $input_term_data_type = $params->{term_data_type};
-  my $input_term_data = $params->{term_data};
+#   ##
+#   my $i = AmiGO::WebApp::Input->new();
+#   my $params = $i->input_profile('visualize');
+#   my $format = $params->{format};
+#   my $input_term_data_type = $params->{term_data_type};
+#   my $input_term_data = $params->{term_data};
 
-  ## Cleanse input data of newlines.
-  $input_term_data =~ s/\n/ /gso;
+#   ## Cleanse input data of newlines.
+#   $input_term_data =~ s/\n/ /gso;
 
-  ## If there is no incoming data, display the "client" page.
-  ## Otherwise, forward to render app.
-  if( ! defined $input_term_data ){
+#   ## If there is no incoming data, display the "client" page.
+#   ## Otherwise, forward to render app.
+#   if( ! defined $input_term_data ){
 
-    ##
-    $self->_common_params_settings({title=>'AmiGO: Visualization',
-				    'amigo_mode' => 'visualize'});
-    $self->add_template_content('html/main/visualize.tmpl');
-    $output = $self->generate_template_page();
+#     ##
+#     $self->_common_params_settings({title=>'AmiGO: Visualization',
+# 				    'amigo_mode' => 'visualize'});
+#     $self->add_template_content('html/main/visualize.tmpl');
+#     $output = $self->generate_template_page();
 
-  }else{
+#   }else{
 
-    ## What kind of data do we have?
-    #     my $data_type = 'string';
-    #     if( $input_term_data_type eq 'json' ){
-    #       $data_type = 'json';
-    #     }
+#     ## What kind of data do we have?
+#     #     my $data_type = 'string';
+#     #     if( $input_term_data_type eq 'json' ){
+#     #       $data_type = 'json';
+#     #     }
 
-    #$self->{CORE}->kvetch(Dumper($input_term_data_type));
-    #$self->{CORE}->kvetch(Dumper($input_term_data));
-    #print STDERR Dumper($input_term_data_type);
-    #print STDERR Dumper($input_term_data);
-    #print STDERR $input_term_data;
+#     #$self->{CORE}->kvetch(Dumper($input_term_data_type));
+#     #$self->{CORE}->kvetch(Dumper($input_term_data));
+#     #print STDERR Dumper($input_term_data_type);
+#     #print STDERR Dumper($input_term_data);
+#     #print STDERR $input_term_data;
 
-    ## Check to see if this JSON is even parsable...that's really all
-    ## that we're doing here.
-    if( $input_term_data_type eq 'json' ){
-      eval {
-	JSON::decode_json($input_term_data);
-      };
-      if ($@) {
-	my $str = 'Your JSON was not formatted correctly...please go back and retry. Look at the "advanced format" documentation for more details.';
-	#return $self->mode_die_with_message($str . '<br />' . $@);
-	return $self->mode_die_with_message($str);
-      }
-    }
+#     ## Check to see if this JSON is even parsable...that's really all
+#     ## that we're doing here.
+#     if( $input_term_data_type eq 'json' ){
+#       eval {
+# 	JSON::decode_json($input_term_data);
+#       };
+#       if ($@) {
+# 	my $str = 'Your JSON was not formatted correctly...please go back and retry. Look at the "advanced format" documentation for more details.';
+# 	#return $self->mode_die_with_message($str . '<br />' . $@);
+# 	return $self->mode_die_with_message($str);
+#       }
+#     }
 
-    ## TODO: Until I can think of something better...
-    if( $format eq 'navi' ){
+#     ## TODO: Until I can think of something better...
+#     if( $format eq 'navi' ){
 
-      ## BETA: Just try and squeeze out whatever I can.
-      my $in_terms = $self->{CORE}->clean_term_list($input_term_data);
-      my $jump = $self->{CORE}->get_interlink({mode=>'layers_graph',
-				       arg => {
-					       terms => $in_terms,
-					      }});
-      return $self->redirect($jump, '302 Found');
-    }else{
-      my $jump = $self->{CORE}->get_interlink({mode=>'visualize',
-				       #optional => {url_safe=>1, html_safe=>0},
-				       #optional => {html_safe=>0},
-				       arg => {
-					       format => $format,
-					       data_type =>
-					       $input_term_data_type,
-					       data => $input_term_data,
-					      }});
-      #$self->{CORE}->kvetch("Jumping to: " . $jump);
-      ##
-      #$output = $jump;
-      return $self->redirect($jump, '302 Found');
-    }
-  }
+#       ## BETA: Just try and squeeze out whatever I can.
+#       my $in_terms = $self->{CORE}->clean_term_list($input_term_data);
+#       my $jump = $self->{CORE}->get_interlink({mode=>'layers_graph',
+# 				       arg => {
+# 					       terms => $in_terms,
+# 					      }});
+#       return $self->redirect($jump, '302 Found');
+#     }else{
+#       my $jump = $self->{CORE}->get_interlink({mode=>'visualize',
+# 				       #optional => {url_safe=>1, html_safe=>0},
+# 				       #optional => {html_safe=>0},
+# 				       arg => {
+# 					       format => $format,
+# 					       data_type =>
+# 					       $input_term_data_type,
+# 					       data => $input_term_data,
+# 					      }});
+#       #$self->{CORE}->kvetch("Jumping to: " . $jump);
+#       ##
+#       #$output = $jump;
+#       return $self->redirect($jump, '302 Found');
+#     }
+#   }
 
-  return $output;
-}
+#   return $output;
+# }
 
 
 ##
