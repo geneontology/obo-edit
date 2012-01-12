@@ -64,6 +64,8 @@ import org.obo.filters.Filter;
 import org.obo.filters.SearchCriterion;
 import org.obo.identifier.DefaultIDGenerator;
 import org.obo.identifier.IDGenerator;
+import org.obo.identifier.IDProfile;
+import org.obo.owl.dataadapter.OWLAdapter;
 //import org.obo.owl.dataadapter.OWLAdapter;
 import org.obo.util.FilterUtil;
 import org.obo.util.TermUtil;
@@ -75,6 +77,7 @@ import org.oboedit.controller.IDManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.AdvancedOBOUI;
 //import org.oboedit.gui.AdvancedOWLUI;
+import org.oboedit.gui.AdvancedOWLUI;
 import org.oboedit.gui.DefaultInputHandler;
 import org.oboedit.gui.Filterable;
 import org.oboedit.gui.GOFlatFileGUI;
@@ -520,9 +523,8 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		List<DataAdapter> adapters = new LinkedList<DataAdapter>();
 		final OBOFileAdapter oboadapter = new OBOFileAdapter();
 		oboadapter.setAdvancedUI(new AdvancedOBOUI());
-                // OWL adapter not currently supported (Oct 2011)
-                //		final OWLAdapter owladapter = new OWLAdapter();
-                //		owladapter.setAdvancedUI(new AdvancedOWLUI());
+		final OWLAdapter owladapter = new OWLAdapter();
+		owladapter.setAdvancedUI(new AdvancedOWLUI());
 		final GOFlatFileAdapter goadapter = new GOFlatFileAdapter();
 		goadapter.setAdvancedUI(new GOFlatFileGUI());
 		Preferences.getPreferences().addReconfigListener(
@@ -533,24 +535,29 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 								.getUserName());
 						oboadapter.setUserName(Preferences.getPreferences()
 								.getUserName());
-						IDGenerator idGen = IDManager.getManager()
-						.getIDAdapter();
-						if (idGen instanceof DefaultIDGenerator)
-							oboadapter
-							.setIDProfile(((DefaultIDGenerator) idGen)
-									.getProfile());
+						owladapter.setUserName(Preferences.getPreferences()
+								.getUserName());
+						IDGenerator idGen = IDManager.getManager().getIDAdapter();
+						if (idGen instanceof DefaultIDGenerator) {
+							DefaultIDGenerator generator = (DefaultIDGenerator) idGen;
+							IDProfile profile = generator.getProfile();
+							oboadapter.setIDProfile(profile);
+							owladapter.setIDProfile(profile);
+						}
 					}
 				});
 		goadapter.setAutogenString("OBO-Edit "
 				+ Preferences.getVersion().toString());
 		oboadapter.setAutogenString("OBO-Edit "
 				+ Preferences.getVersion().toString());
+		owladapter.setAutogenString("OBO-Edit "
+				+ Preferences.getVersion().toString());
 		adapters.add(oboadapter);
 		adapters.add(goadapter);
 		adapters.add(new SimpleLinkFileAdapter());
+		adapters.add(owladapter);
                 // Not currently supported.
                 //		adapters.add(new GOStyleAnnotationFileAdapter());
-                //		adapters.add(owladapter);
                 //		adapters.add(new OWLURLReaderAdapter());
                 //		adapters.add(new SerialAdapter());
 		adapters.add(new XMLHistoryAdapter());
