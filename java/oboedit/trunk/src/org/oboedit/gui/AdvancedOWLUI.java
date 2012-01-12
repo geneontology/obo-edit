@@ -12,11 +12,6 @@ import org.bbop.dataadapter.*;
 import org.bbop.swing.*;
 import org.bbop.util.*;
 import org.obo.owl.dataadapter.OWLAdapter;
-import org.obo.owl.datamodel.MetadataMapping;
-import org.obo.owl.datamodel.impl.AxiomAnnotationBasedOWLMetadataMapping;
-import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping;
-import org.obo.owl.datamodel.impl.SAO_1_2_OWLMetadataMapping;
-import org.obo.owl.datamodel.impl.SimpleOWLMetadataMapping;
 import org.obo.dataadapter.OBOSerializationEngine;
 import org.obo.dataadapter.OBOSerializationEngine.FilteredPath;
 import org.obo.datamodel.*;
@@ -102,11 +97,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 
 	protected JComboBox serializerBox = new JComboBox();
 	
-	private Collection<MetadataMapping> metadataMappings =
-		new LinkedList<MetadataMapping>();
-	protected Map<MetadataMapping,JCheckBox> mapping2CheckBox =
-		new HashMap<MetadataMapping,JCheckBox>();
-
 	protected GraphicalUI advancedUI;
 
 	public void setUIConfiguration(UIConfiguration uiconfig) {
@@ -449,14 +439,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 
 			allowDanglingBox.setSelected(profile.getAllowDangling());
 			allowLossyBox.setSelected(currentProfile.isAllowLossy());
-			logger.info("setting OWL metadata mappings");
-			for (MetadataMapping m : mapping2CheckBox.keySet()) {
-				logger.info("testing "+m);
-				JCheckBox cb = mapping2CheckBox.get(m);
-				if (cb.isSelected())
-					currentProfile.addMetadataMapping(m);
-			}
-
 			writeModificationBox.setSelected(profile.getWriteModificationData());
 			saveImpliedBox.setSelected(profile.getSaveImplied());
 			impliedTypeBox.setSelectedItem(profile.getImpliedType());
@@ -501,13 +483,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 			profile.setAllowDangling(allowDanglingBox.isSelected());
 			currentProfile.setAllowLossy(allowLossyBox.isSelected());
 			
-			logger.info("setting OWL metadata mappings");
-			for (MetadataMapping m : mapping2CheckBox.keySet()) {
-				logger.info("testing "+m);
-				JCheckBox cb = mapping2CheckBox.get(m);
-				if (cb.isSelected())
-					currentProfile.addMetadataMapping(m);
-			}
 			profile.setWriteModificationData(writeModificationBox.isSelected());
 			profile.setSaveImplied(saveImpliedBox.isSelected());
 			profile.setImpliedType((String) impliedTypeBox.getSelectedItem());
@@ -619,15 +594,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 
 	public AdvancedOWLUI() {
 		
-		// TODO: introspect, or use registry?
-		metadataMappings =
-			new LinkedList<MetadataMapping>();
-		metadataMappings.add(new NCBOOboInOWLMetadataMapping());
-		metadataMappings.add(new SimpleOWLMetadataMapping());
-		metadataMappings.add(new SAO_1_2_OWLMetadataMapping());
-		metadataMappings.add(new AxiomAnnotationBasedOWLMetadataMapping());
-		
-		
 		// TODO: clean this up; holdover from copy-n-paste
 		serializerBox.addItem("OBO_1_2");
 		serializerBox.addItem("OBO_1_0");
@@ -708,14 +674,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 			profile.getReadPaths().add(temp.get(i).toString());
 		profile.setAllowDangling(allowDanglingBox.isSelected());
 		profile.setAllowLossy(allowLossyBox.isSelected());
-		logger.info("setting OWL metadata mappings");
-		for (MetadataMapping m : mapping2CheckBox.keySet()) {
-			logger.info("testing "+m);
-			JCheckBox cb = mapping2CheckBox.get(m);
-			if (cb.isSelected())
-				currentProfile.addMetadataMapping(m);
-		}
-
 		profile.setSerializer((String) serializerBox.getSelectedItem());
 		profile.setSaveRecords(namespaceList.getData());
 		profile.setBasicSave(false);
@@ -772,19 +730,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 			pathBox.add(serializerPanel, "South");
 		}
 		
-		JPanel mdPanel = new JPanel();
-		mdPanel.setLayout(new BoxLayout(mdPanel, BoxLayout.Y_AXIS));
-		mapping2CheckBox =
-			new HashMap<MetadataMapping,JCheckBox>();
-		
-		for (MetadataMapping m : metadataMappings) {
-			JCheckBox checkBox = new JCheckBox(m.getName());
-			mdPanel.add(checkBox);
-			mapping2CheckBox.put(m,checkBox);
-		}
-		pathBox.add(mdPanel, "East");
-
-		// setDefaultGUIValues(currentHistory);
 		setConfiguration(createEmptyConfig());
 		validate();
 		repaint();
@@ -805,30 +750,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 		return currentProfile;
 	}
 
-	/*
-	 * protected void setDefaultGUIValues(OBOSession history) { new
-	 * Exception("Someone called setDefaultGUIValues()").printStackTrace();
-	 * nsmap.clear(); Vector v = new Vector(); if (history.getDefaultNamespace() !=
-	 * null) { String path = history.getDefaultNamespace().getPath(); try { URL
-	 * url = new URL(path); if (url.getProtocol().equals("file")) { path =
-	 * url.getPath(); } } catch (MalformedURLException e) {}
-	 * OWLAdapter.SaveProfileRecord spr = new OWLAdapter.
-	 * SaveProfileRecord(history.getDefaultNamespace(), path, path,
-	 * OBOFileSerializer.PRIMARY, true); v.add(spr);
-	 * nsmap.put(spr.getNamespace(), spr); } Iterator it =
-	 * history.getNamespaces().iterator(); while(it.hasNext()) { Namespace ns =
-	 * (Namespace) it.next();
-	 * 
-	 * if (!ns.equals(history.getDefaultNamespace())) { String path =
-	 * ns.getPath(); try { URL url = new URL(path); if
-	 * (url.getProtocol().equals("file")) path = url.getPath(); } catch
-	 * (MalformedURLException e) {} OWLAdapter.SaveProfileRecord spr = new
-	 * OWLAdapter.SaveProfileRecord(ns, path, path,
-	 * OBOFileSerializer.ABSORB, true); v.add(spr);
-	 * nsmap.put(spr.getNamespace(), spr); } }
-	 * 
-	 * namespaceList.setData(v); }
-	 */
 	@Override
 	public void setFont(Font font) {
 		super.setFont(font);

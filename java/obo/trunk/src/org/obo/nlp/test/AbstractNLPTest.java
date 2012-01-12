@@ -1,16 +1,8 @@
 package org.obo.nlp.test;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.bbop.dataadapter.DataAdapterException;
-import org.obo.dataadapter.OBOAdapter;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
 import org.obo.nlp.SemanticParser;
-import org.obo.owl.dataadapter.OWLAdapter;
-import org.obo.owl.datamodel.MetadataMapping;
-import org.obo.owl.datamodel.impl.SimpleOWLMetadataMapping;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.test.AbstractOBOTest;
