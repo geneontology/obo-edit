@@ -28,14 +28,14 @@
   :long-description "GOOOOOOOO database access."
   :components ((:static-file "go.asd")
                (:module :common
-			:pathname "src/common"
+			:pathname "src/common/"
                         :serial t
                         :components ((:file "packages")
 				     ;;(:file "couchdb")
 				     ;;(:file "irc")
 				     (:file "obo")))
                (:module :lead
-			:pathname "src/lead"
+			:pathname "src/lead/"
                         :serial t
                         :components (
 				     ;;((:file "schema")
@@ -43,7 +43,7 @@
 				     ;;(:file "model")
 				     ))
 	       (:module :godot
-			:pathname "src/godot"
+			:pathname "src/godot/"
                         :serial t
                         :components (
 				     ;;(:file "godot")
@@ -51,7 +51,7 @@
 				     ;;(:file "amigo-js")
 				     ))
 	       (:module :gold
-			:pathname "src/gold"
+			:pathname "src/gold/"
                         :serial t
                         :components (
 				     ;; TODO
