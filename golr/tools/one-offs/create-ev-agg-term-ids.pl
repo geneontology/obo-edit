@@ -20,9 +20,10 @@ use WebService::Solr;
 use vars qw(
 	     $opt_h
 	     $opt_v
+	     $opt_x
 	  );
 
-getopts('hv');
+getopts('hvx');
 
 ## Embedded help through perldoc.
 if( $opt_h ){
@@ -36,9 +37,16 @@ sub ll {
   print $str . "\n" if $opt_v;
 }
 
+## Actually execute?
+if( ! $opt_x ){
+  ll("Simulation run--no changes will be made.");
+}else{
+  ll("Real run--will make changes.");
+}
+
 ## Make sure we have a URL defined.
 my $url = shift @ARGV || die "url not defined";
-ll("URL: " . $url);
+ll("Solr URL: " . $url);
 
 ###
 ### Get documents and alter them.
@@ -58,32 +66,47 @@ if( $solr->ping() ){
     my $solr = shift || die 'need a solr instance';
     my $doc = shift || die 'need a doc to process';
 
-    my $id = $doc->value_for('id');
-    ll('id: ' . $id);
-    my($tmp, $acc) = split(/\^\^\^/, $id);
-    ll("\tacc: " . $acc);
+    ll("doc: " . $doc);
+    ll("doc contents: " . Dumper($doc));
 
-    # ## DEBUG
-    # my @fnames = $doc->field_names();
-    # for my $fnm (@fnames){
-    #   ll("\tfield name: " . $fnm);
-    # }
+    ## Dump out document contents on verbose.
+    if( $opt_v ){
+      my @fnames = $doc->field_names();
+      for my $fnm (@fnames){
+	my @fval = $doc->values_for($fnm);
+	my $val_str = '';
+	if( scalar(@fval) == 1 ){
+	  $val_str = $fval[0];
+	}elsif( scalar(@fval) > 1 ){
+	  $val_str = join ', ', @fval;
+	}
+	ll("\t" . $fnm . ": " . $val_str);
+      }
+    }
 
-    ## TODO:
-    ## Commit new info?
-    #my $alt_id_field = WebService::Solr::Field->new('alternate_id' => $acc);
-    #$doc->add_fields([$alt_id_field]);
-    #$solr->add($doc);
-    #$solr->commit();
+    ## Jimmy new info into alternate_id field...
+    if( $opt_x ){
+      my $id = $doc->value_for('id');
+      ll('id: ' . $id);
+      my($tmp, $acc) = split(/\^\^\^/, $id);
+      ll("\tacc: " . $acc);
+      my $alt_id_field = WebService::Solr::Field->new('alternate_id' => $acc);
+      $doc->add_fields([$alt_id_field]);
+      $solr->add($doc);
+    }
   }
 
-  ## How to process a doc response set.
+  ## How to process a doc response set (page).
+  ## Commit after every page.
   sub process_response {
     my $solr = shift || die 'need a solr instance';
     my $response = shift || die 'need a response to process';
+
     for my $doc ($response->docs()){
       &process_doc($solr, $doc);
     }
+
+    $solr->commit() if $opt_x;
   }
 
   ## Initial query.
@@ -103,6 +126,9 @@ if( $solr->ping() ){
     &process_response($solr, $response);
   }
 
+  ## Finish.
+  $solr->optimize() if $opt_x;
+
 }else{
   die "could not contact server at: " . $url;
 }
@@ -117,7 +143,7 @@ rcreate-ev-agg-term-ids.pl
 
 =head1 SYNOPSIS
 
-rcreate-ev-agg-term-ids.pl [-h] [-v] URL
+rcreate-ev-agg-term-ids.pl [-h] [-v] [-x] URL
 
 =head1 DESCRIPTION
 
@@ -137,6 +163,10 @@ Print this message.
 =item -v
 
 Be verbose.
+
+=item -x
+
+Actually execute, instead of a simulation run.
 
 =back
 
