@@ -34,7 +34,7 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 
 	protected JButton browseButton = new JButton("Browse...");
 
-	protected IOOperation op;
+	protected IOOperation<?,?> op;
 
 	protected String defaultBrowsePath = System.getProperty("user.home");
 
@@ -49,9 +49,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 	protected JLabel pathOrURLLabel = new JLabel("Path or URL");
 
 	protected JLabel urlLabel = new JLabel("URL for import");
-
-	protected JCheckBox importExternalRefsBox = new JCheckBox(
-			"Import external references");
 
 	protected JCheckBox allowDanglingBox = new JCheckBox(
 	"Allow dangling links");
@@ -91,12 +88,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 
 	protected boolean embed = false;
 
-	protected JPanel serializerPanel = new JPanel();
-
-	protected JLabel serializerLabel = new JLabel("Output type");
-
-	protected JComboBox serializerBox = new JComboBox();
-	
 	protected GraphicalUI advancedUI;
 
 	public void setUIConfiguration(UIConfiguration uiconfig) {
@@ -594,19 +585,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 
 	public AdvancedOWLUI() {
 		
-		// TODO: clean this up; holdover from copy-n-paste
-		serializerBox.addItem("OBO_1_2");
-		serializerBox.addItem("OBO_1_0");
-
-		serializerPanel.setOpaque(false);
-		serializerPanel.setLayout(new BoxLayout(serializerPanel,
-				BoxLayout.X_AXIS));
-		serializerPanel.add(Box.createHorizontalGlue());
-		serializerPanel.add(serializerLabel);
-		serializerPanel.add(Box.createHorizontalStrut(10));
-		serializerPanel.add(serializerBox);
-		serializerPanel.add(Box.createHorizontalGlue());
-
 		nsPanel.setLayout(new BoxLayout(nsPanel, BoxLayout.X_AXIS));
 		nsPanel.add(nsLabel);
 		nsPanel.add(Box.createHorizontalStrut(10));
@@ -616,7 +594,7 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 
 		namespaceList = new ListEditor(new IOProfileEditor(), false, true,
 				true, true, false);
-		pathList = new ListEditor(new PathEditor(), true, true, true, true,
+		pathList = new ListEditor(new PathEditor(), false, true, true, true,
 				false);
 		addSaveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -654,7 +632,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 		pathBox.setAlignmentX(JComponent.LEFT_ALIGNMENT);
 		pathLabel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
 		urlLabel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
-		importExternalRefsBox.setAlignmentX(JComponent.LEFT_ALIGNMENT);
 		pathField.setAlignmentX(JComponent.LEFT_ALIGNMENT);
 		urlField.setAlignmentX(JComponent.LEFT_ALIGNMENT);
 		delButton.setAlignmentX(JComponent.LEFT_ALIGNMENT);
@@ -674,7 +651,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 			profile.getReadPaths().add(temp.get(i).toString());
 		profile.setAllowDangling(allowDanglingBox.isSelected());
 		profile.setAllowLossy(allowLossyBox.isSelected());
-		profile.setSerializer((String) serializerBox.getSelectedItem());
 		profile.setSaveRecords(namespaceList.getData());
 		profile.setBasicSave(false);
 	}
@@ -693,7 +669,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 		logger.info("setConfiguration called, allowDanglingBox.setSelected("
 						+ profile.getAllowDangling() + ")");
 		allowLossyBox.setSelected(profile.isAllowLossy());
-		serializerBox.setSelectedItem(profile.getSerializer());
 
 		Vector<OBOSerializationEngine.FilteredPath> v = new Vector<OBOSerializationEngine.FilteredPath>();
 		v.addAll(profile.getSaveRecords());
@@ -727,7 +702,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 
 		} else {
 			pathBox.add(namespaceList, "Center");
-			pathBox.add(serializerPanel, "South");
 		}
 		
 		setConfiguration(createEmptyConfig());
@@ -755,10 +729,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 		super.setFont(font);
 		if (pathLabel != null)
 			pathLabel.setFont(font);
-		if (serializerBox != null)
-			serializerBox.setFont(font);
-		if (serializerLabel != null)
-			serializerLabel.setFont(font);
 		if (allowDanglingBox != null)
 			allowDanglingBox.setFont(font);
 		if (allowLossyBox != null)
@@ -779,8 +749,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 			namespaceList.setFont(font);
 		if (urlLabel != null)
 			urlLabel.setFont(font);
-		if (importExternalRefsBox != null)
-			importExternalRefsBox.setFont(font);
 		if (pathField != null)
 			pathField.setFont(font);
 		if (nsLabel != null)
