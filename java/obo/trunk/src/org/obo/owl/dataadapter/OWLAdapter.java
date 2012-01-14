@@ -69,7 +69,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 	FileAdapterConfiguration {
 		protected boolean allowDangling = false;
 
-		protected boolean allowLossy = false;
+		protected boolean allowLossy = true;
 		
 		protected boolean followImports = true;
 
@@ -79,19 +79,9 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 
 		protected boolean basicSave = true;
 
-		protected String serializer = "OBO_1_0";
-
 		protected String impliedType = "Save for presentation";
 
 		public OWLAdapterConfiguration() {
-		}
-
-		public void setSerializer(String serializer) {
-			this.serializer = serializer;
-		}
-
-		public String getSerializer() {
-			return serializer;
 		}
 
 		public boolean getBasicSave() {
@@ -259,6 +249,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 					
 					// convert to OBO
 					Owl2Obo owl2Obo = new Owl2Obo();
+					owl2Obo.setStrictConversion(!ioprofile.isAllowLossy());
 					OBODoc oboDoc = owl2Obo.convert(ontology);
 					checkCancelled();
 					
