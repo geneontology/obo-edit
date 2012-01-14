@@ -8,7 +8,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/jena.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/arq.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/hsqldb.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/oboformat-0.5.1-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/oboformat-0.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/owlapi-3.2.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/antlr-runtime-3.0.jar"/>
