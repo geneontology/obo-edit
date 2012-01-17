@@ -616,13 +616,17 @@ AdapterWidgetI {
 		storeProfileList();
 
 		this.currentAdapter = adapter;
+                //                logger.debug("setCurrentAdapter " + adapter); // DEL
 		uiPanelBorder.setTitle(adapter.getName() + " Configuration");
 		DataAdapterUI ui = DataAdapterUtil.getUI(adapter, registry,
 				checkClasses);
 		setAdapterUI(ui);
 		initProfiles();
-
 	}
+
+        public DataAdapter getCurrentAdapter() {
+            return currentAdapter;
+        }
 
 	public void setProfileListVisible(boolean profileListChooserVisible) {
 		chooserConfig.setShowProfiles(profileListChooserVisible);

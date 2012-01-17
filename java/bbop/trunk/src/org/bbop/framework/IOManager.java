@@ -31,6 +31,8 @@ public class IOManager {
 
 	protected DataAdapterRegistry adapterRegistry;
 
+        protected DataAdapter currentAdapter = null;
+
 	protected String historyPath;
 
 	public void setHistoryFilePath(String historyPath) {
@@ -115,6 +117,7 @@ public class IOManager {
 				}
 
 			};
+                        // Why is this needed, anyway? It sometimes gets in the way.
 			BackgroundEventQueue queue = new BackgroundEventQueue();
 			BackgroundUtil.scheduleTask(queue, eventTask,
 						    true, "OBO-Edit: IOManager working");
@@ -129,9 +132,18 @@ public class IOManager {
 		gac.setHistoryPath(getHistoryFilePath());
 		boolean worked = gac.showDialog(op.getName(), GUIManager.getManager()
 				.getFrame());
-		if (worked)
-			return gac.getResult();
+		if (worked) {
+                    setCurrentAdapter(gac.getCurrentAdapter());
+                    return gac.getResult();
+                }
 		else
 			return null;
 	}
+
+    public DataAdapter getCurrentAdapter() {
+        return currentAdapter;
+    }
+    private void setCurrentAdapter(DataAdapter ca) {
+        this.currentAdapter = ca;
+    }
 }
