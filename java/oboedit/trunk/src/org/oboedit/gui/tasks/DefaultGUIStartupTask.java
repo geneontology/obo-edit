@@ -165,7 +165,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				.getManager().getScreenLockQueue(), GUIManager.getManager()
 				.getFrame(), Preferences.getPreferences()
 				.getUseModalProgressMonitors());
-		return CollectionUtil.list(new AutosaveTask(),
+		return CollectionUtil.list(new AutosaveTask(), new CheckOriginalFileTask(),
 				new PostLoadVerifyTask(), new PreSaveVerifyTask(),
 				new FrameNameUpdateTask(), screenLockTask,
 				new InstallTask(),
