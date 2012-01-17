@@ -1256,7 +1256,8 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		preferences.setFont(GUIUtil.decodeFont((String) fontNameList
 				.getSelectedItem(), (String) fontSizeList.getSelectedItem(),
 				(String) fontTypeList.getSelectedItem()));
-		
+
+		// Deal with memory setting
 		boolean isWindows = OSUtil.isWindows();
 		String mem = memoryField.getText();
 		if (mem == null || mem.toUpperCase().indexOf("M") < 1) {
@@ -1339,6 +1340,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			preferences.setPersonalDbxrefs(null);
 		}
 
+		JOptionPane.showMessageDialog(this, "Configuration saved.\n\nYou may need to quit and restart OBO-Edit\nfor your changes to take effect.");
 		reload();
 	}
 	
