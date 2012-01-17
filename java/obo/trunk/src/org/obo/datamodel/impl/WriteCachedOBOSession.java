@@ -1,5 +1,6 @@
 package org.obo.datamodel.impl;
 
+import java.io.File;
 import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.Date;
@@ -504,6 +505,7 @@ public class WriteCachedOBOSession implements OBOSession {
 	protected Map<String,String> idspaceToUri = new HashMap<String,String>();
 
 	protected String loadRemark;
+        protected Collection<String> currentFilenames;
 
 	protected Map<String, IdentifiedObject> cachedIDHash;
 
@@ -532,6 +534,7 @@ public class WriteCachedOBOSession implements OBOSession {
 				.clone();
 		this.profile = session.getIDProfile();
 		this.loadRemark = session.getLoadRemark();
+		this.currentFilenames = session.getCurrentFilenames();
 	}
 
 	public Collection<TermSubset> getSubsets() {
@@ -796,6 +799,10 @@ public class WriteCachedOBOSession implements OBOSession {
 		return loadRemark;
 	}
 
+	public Collection<String> getCurrentFilenames() {
+		return currentFilenames;
+	}
+
 	public ObjectFactory getObjectFactory() {
 		return objectFactory;
 	}
@@ -850,6 +857,16 @@ public class WriteCachedOBOSession implements OBOSession {
 
 	public void setLoadRemark(String loadRemark) {
 		this.loadRemark = loadRemark;
+	}
+
+        public void setCurrentFilenames(String currentFile) {
+            Collection files = new LinkedList<String>();
+            files.add(currentFile);
+            setCurrentFilenames(files);
+        }
+
+        public void setCurrentFilenames(Collection<String> currentFiles) {
+            this.currentFilenames = currentFiles;
 	}
 
 	public QueryResolver getQueryResolver() {
