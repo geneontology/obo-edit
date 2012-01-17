@@ -1,6 +1,7 @@
 package org.obo.datamodel;
 
 import java.util.*;
+import java.io.File;
 import java.io.Serializable;
 
 import org.obo.dataadapter.OBOFileAdapter;
@@ -199,10 +200,28 @@ public interface OBOSession extends IdentifiedObjectIndex, Serializable {
 	 * Sets a remark for this session. This remark may be used by a data adapter
 	 * at save time. For example, the {@link OBOFileAdapter} places this remark
 	 * in a remark: tag at the head of a saved file.
+         *
+         * (1/2012: This no longer seems to be how it's used. In the OBO
+         * adapter, the load remark is used to store the name of the file last
+         * loaded or saved, so it can be shown in the OBO-Edit titlebar.)
 	 * 
-	 * @return the session remark
 	 */
 	public void setLoadRemark(String loadRemark);
+
+	/**
+	 * Returns the currently loaded or saved File(s) (so we can check to
+	 * see if it's changed on disk since last loaded or saved).
+         * ! What if we loaded from an URL?
+	 * @return collection of most recently loaded or saved filename(s)
+         */
+    public Collection<String> getCurrentFilenames();
+
+	/**
+	 * Holds the currently loaded or saved filename(s) (so we can check to
+	 * see if file has changed on disk since last loaded or saved).
+         */
+    public void setCurrentFilenames(Collection<String> files);
+    public void setCurrentFilenames(String file);
 
 	/**
 	 * Sets the default ID profile for this session. This ID profile can be
