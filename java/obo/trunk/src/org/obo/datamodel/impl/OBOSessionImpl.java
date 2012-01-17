@@ -46,6 +46,7 @@ public class OBOSessionImpl implements OBOSession {
 	protected Map<String,String> idspaceToUri = new HashMap<String,String>();
 
 	protected String loadRemark;
+        protected Collection<String> currentFiles;
 	protected OperationModel operationModel;
 	protected String currentUser;
 
@@ -67,6 +68,21 @@ public class OBOSessionImpl implements OBOSession {
 
 	public void setLoadRemark(String loadRemark) {
 		this.loadRemark = loadRemark;
+	}
+
+	public Collection<String> getCurrentFilenames() {
+            return currentFiles;
+	}
+
+        public void setCurrentFilenames(String currentFile) {
+            Collection files = new ArrayList<String>();
+            files.add(currentFile);
+            setCurrentFilenames(files);
+        }
+
+        public void setCurrentFilenames(Collection<String> currentFiles) {
+            //            logger.debug("setCurrentFile " + currentFile + ", last modified = " + currentFile.lastModified()); // DEL
+            this.currentFiles = currentFiles;
 	}
 
 	public void setDefaultNamespace(Namespace ns) {

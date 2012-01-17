@@ -1,5 +1,6 @@
 package org.obo.dataadapter;
 
+import java.io.File;
 import java.util.*;
 
 import org.bbop.dataadapter.*;
@@ -253,6 +254,7 @@ public class OBOFileAdapter implements OBOAdapter {
 			try {
 				cancelled = false;
 				this.ioprofile = (OBOAdapterConfiguration) configuration;
+				//                                logger.debug("doOperation: ioprofile = " + ioprofile); // DEL
 				DefaultOBOParser parser = new DefaultOBOParser();
 				// CJM: Not sure I understand the following logic
 				// be careful - setting allowdangling is not enough
@@ -269,8 +271,11 @@ public class OBOFileAdapter implements OBOAdapter {
 				logger.debug("Done parsing file");
 				OBOSession history = parser.getSession();
 				metaData = parser.getMetaData();
+                                // Set title string for OE titlebar
+				// (Sets the title string, but the actual changing of frame title happens when FrameNameUpdateTask hears a reconfigEvent)
 				history.setLoadRemark(createLoadRemark(ioprofile.getReadPaths()));
-				//				history.setIOProfile(ioprofile);
+                                // Remember most recently loaded file(s) so it can be checked by CheckOriginalFileTask to see if it changes on disk
+                                history.setCurrentFilenames(ioprofile.getReadPaths());
 				// return new WriteCachedOBOSession(history);
 				return (OUTPUT_TYPE) history;
 			} catch (OBOParseException e) {
@@ -339,14 +344,18 @@ public class OBOFileAdapter implements OBOAdapter {
                                     }
                                 }
 				logger.info("Writing " + filteredPaths + " (serializer = " + ioprofile.getSerializer() + ", basicSave = " + ioprofile.getBasicSave() + ")");
-                                logger.debug("ioprofile = " + ioprofile + "; ioprofile.allowDangling = " + ioprofile.allowDangling); // DEL
+				//                                logger.debug("ioprofile = " + ioprofile + "; ioprofile.allowDangling = " + ioprofile.allowDangling); // DEL
 
 				serializeEngine.serialize((OBOSession) input, serializer,filteredPaths);
 
 				Collection<String> writePath = new Vector<String>();
 				writePath.add(ioprofile.getWritePath());
 				OBOSession history = (OBOSession) input;
-				history.setLoadRemark(createLoadRemark(writePath)); // Sets title string; actual changing of frame title happens when FileMenu calls FrameNameUpdateTask.reload
+                                // Set title string for OE titlebar
+				// (Sets the title string, but the actual changing of frame title happens when FrameNameUpdateTask hears a reconfigEvent)
+                                history.setLoadRemark(createLoadRemark(writePath));
+                                // Remember most recently saved file so it can be checked by CheckOriginalFileTask to see if it changes on disk
+                                history.setCurrentFilenames(getFirstPath(writePath));
 
 				return (OUTPUT_TYPE) input;
 				/*
@@ -388,6 +397,13 @@ public class OBOFileAdapter implements OBOAdapter {
 		}
 		return out.toString();
 	}
+
+    private String getFirstPath(Collection<String> paths) {
+        Iterator it = paths.iterator();
+        String relativePath = (String) it.next();
+        File file = new File(relativePath);
+        return file.getAbsolutePath();
+    }
 
 	public OBOMetaData getMetaData() {
 		return metaData;
