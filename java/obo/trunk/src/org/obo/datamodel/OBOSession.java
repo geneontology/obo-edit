@@ -211,7 +211,6 @@ public interface OBOSession extends IdentifiedObjectIndex, Serializable {
 	/**
 	 * Returns the currently loaded or saved File(s) (so we can check to
 	 * see if it's changed on disk since last loaded or saved).
-         * ! What if we loaded from an URL?
 	 * @return collection of most recently loaded or saved filename(s)
          */
     public Collection<String> getCurrentFilenames();

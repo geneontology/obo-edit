@@ -344,12 +344,23 @@ public class OBOFileAdapter implements OBOAdapter {
                                     }
                                 }
 				logger.info("Writing " + filteredPaths + " (serializer = " + ioprofile.getSerializer() + ", basicSave = " + ioprofile.getBasicSave() + ")");
-				//                                logger.debug("ioprofile = " + ioprofile + "; ioprofile.allowDangling = " + ioprofile.allowDangling); // DEL
+                                //                                logger.debug("ioprofile = " + ioprofile + "; ioprofile.allowDangling = " + ioprofile.allowDangling); // DEL
 
 				serializeEngine.serialize((OBOSession) input, serializer,filteredPaths);
 
 				Collection<String> writePath = new Vector<String>();
-				writePath.add(ioprofile.getWritePath());
+				if (ioprofile.getBasicSave()) {
+                                    writePath.add(ioprofile.getWritePath());
+				} else {
+                                    // In the Advanced Save profile, the write path
+                                    // is not saved in writePath but in saveRecords.
+                                    List<FilteredPath> saveRecords = ioprofile.getSaveRecords();
+                                    if (!saveRecords.isEmpty()) {
+                                        FilteredPath filteredPath = saveRecords.get(0);
+                                        writePath.add(filteredPath.getPath());
+                                    } // What if it IS empty? What then?
+				}
+                                //                                logger.debug("writePath = " + writePath); // DEL
 				OBOSession history = (OBOSession) input;
                                 // Set title string for OE titlebar
 				// (Sets the title string, but the actual changing of frame title happens when FrameNameUpdateTask hears a reconfigEvent)
@@ -389,7 +400,10 @@ public class OBOFileAdapter implements OBOAdapter {
 		Iterator it = paths.iterator();
 		for (int i = 0; it.hasNext(); i++) {
 			String path = (String) it.next();
+                        //                        logger.debug("createLoadRemark: path " + i + " = " + path); // DEL
 			path = IOUtil.getShortName(path);
+                        if (path == null)
+                            continue;
 
 			if (i != 0)
 				out.append(", ");
@@ -400,9 +414,14 @@ public class OBOFileAdapter implements OBOAdapter {
 
     private String getFirstPath(Collection<String> paths) {
         Iterator it = paths.iterator();
-        String relativePath = (String) it.next();
-        File file = new File(relativePath);
-        return file.getAbsolutePath();
+        for (int i = 0; it.hasNext(); i++) {
+            String relativePath = (String) it.next();
+            if (relativePath == null) // Actually, this shouldn't happen anymore
+                continue;
+            File file = new File(relativePath);
+            return file.getAbsolutePath();
+        }
+        return null;
     }
 
 	public OBOMetaData getMetaData() {
