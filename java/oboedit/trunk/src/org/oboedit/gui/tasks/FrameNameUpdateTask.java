@@ -43,6 +43,10 @@ public class FrameNameUpdateTask extends AbstractReloadTask {
 		if (session != null && loadRemark != null
 		    && loadRemark.length() > 0)
 		    out +=  ": " + loadRemark;
+                // This might be cool, but then we'd potentially have to update the titlebar
+                // whenever an edit was made.
+                //		if (SessionManager.getManager().needsSave())
+                //                    out += " (UNSAVED CHANGES)";
 		if (SessionManager.getManager().getUseReasoner())
 		    out +=  " (REASONER ON)";
 		if(SessionManager.getManager().getIncReasoningStatus())
