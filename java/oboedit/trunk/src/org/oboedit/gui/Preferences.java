@@ -55,7 +55,7 @@ public class Preferences {
 	protected Color orange = new Color(255, 153, 0);
 	protected Color purple = new Color(102, 0, 204);
 
-	protected boolean confirmOnExit = true;
+        protected boolean confirmOnExit = false; // changed 1/18/12
 
 	protected boolean advxpMatrixEditorCheckBox = false;
 
@@ -149,6 +149,7 @@ public class Preferences {
 		Collection<ReconfigListener> temp = new LinkedList<ReconfigListener>(
 				reconfigListeners);
 		for (ReconfigListener listener : temp) {
+                    //                    logger.debug("fireReconfigEvent: calling configReloaded for " + listener); // DEL
 			listener.configReloaded(event);
 		}
 	}

@@ -567,7 +567,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			}
 		});
 
-		confirmOnExitBox = new JCheckBox("Confirm on exit");
+		confirmOnExitBox = new JCheckBox("Confirm on exit, even if there are no changes to be saved");
 		advxpMatrixEditorCheckBox = new JCheckBox("Cross-Product Matrix Editor");
 		advIntersectionEditorCheckBox = new JCheckBox("Intersection Editor");
                 //		advSemanticParserCheckBox = new JCheckBox("Semantic Parser Manager");
