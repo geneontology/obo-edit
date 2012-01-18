@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.bbop.dataadapter.AdapterConfiguration;
@@ -272,7 +273,13 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 					throw new DataAdapterException(message, e);
 				}
 			}
-			return loadOBOSession(tempOboFiles);
+                        OBOSession session = loadOBOSession(tempOboFiles);
+                        // Set title string for OE titlebar
+                        // (Sets the title string, but the actual changing of frame title happens when FrameNameUpdateTask hears a reconfigEvent)
+                        session.setLoadRemark(createLoadRemark(sources));
+                        // Remember most recently loaded file(s) so it can be checked by CheckOriginalFileTask to see if it changes on disk
+                        session.setCurrentFilenames(sources);
+			return session;
 		}
 		finally {
 			// remove temporary files
@@ -306,6 +313,10 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		}
 	}
 	
+	private String createLoadRemark(String path) {
+            return IOUtil.getShortName(path);
+        }
+
 	private String createLoadRemark(Collection<String> paths) {
 		StringBuilder out = new StringBuilder();
 		Iterator<String> it = paths.iterator();
@@ -371,6 +382,10 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			// write OWL
 			OWLOntologyManager manager = owlOntology.getOWLOntologyManager();
 			manager.saveOntology(owlOntology, IRI.create(new File(filteredPath.getPath())));
+                        session.setCurrentFilenames(filteredPath.getPath());
+                        // Set title string for OE titlebar
+                        // (Sets the title string, but the actual changing of frame title happens when FrameNameUpdateTask hears a reconfigEvent)
+                        session.setLoadRemark(createLoadRemark(filteredPath.getPath()));
 			
 		} catch (IOException e) {
 			throw new DataAdapterException("Could not create temp file for obo2owl conversion.", e);
