@@ -18,7 +18,7 @@ class EvAggXFormRun {
 
 	private static Logger LOG = Logger.getLogger(EvAggXFormRun.class);
 	private static String url = "http://skewer.lbl.gov:8080/solr/";
-	private static int slice_size = 1000;
+	private static int batch_size = 1000;
 
 	public static void main(String [] args) throws Exception{		
 		
@@ -28,7 +28,7 @@ class EvAggXFormRun {
 		LOG.info("Status: " + pr.getStatus());	
 
 	    SolrQuery query = new SolrQuery();
-	    query.setRows(slice_size);
+	    query.setRows(batch_size);
 	    query.setQuery( "document_category:annotation_aggregate*" );
 	    
 	    QueryResponse rsp = server.query( query );
@@ -45,17 +45,45 @@ class EvAggXFormRun {
 
 		    query.setStart(offset_n);
 
-	    	for (SolrDocument doc : server.query(query).getResults()){
+	    	for( SolrDocument doc : server.query(query).getResults() ){
+
 	    		String in_id = (String) doc.getFieldValue("id");
 	    		
 	    		// Get the munged GO id.
 	    		String[] split_str = in_id.split("\\^\\^\\^");
 	    		String go_acc = split_str[1];
-	    		LOG.info("(" + processed_n + "/" + found_n + "): " + go_acc);
-	            processed_n++;
+	    		LOG.info("(" + processed_n + "/" + found_n + "): " + go_acc + ", with: " + doc.size());
+
+	    		// Create new doc for replacing the old one.
+	    		// Start by copying all the elements of the old doc over.
+	    		SolrInputDocument new_doc = new SolrInputDocument();
+	    		for( String field_name : doc.getFieldNames() ){
+	    			Object field_vals = doc.getFieldValues(field_name);
+	    			new_doc.setField(field_name, field_vals);
+	    		}
+	    		// Make sure we don't clobber our old ids.
+	    		String new_id = "retry^^^" + in_id;
+	    		new_doc.setField("id", new_id);
+	    		// Now add our new alternate_id field.
+	    		new_doc.setField("alternate_id", go_acc);
+	    		//LOG.info("new doc with: " + new_doc.size());
+	    		
+	    		// Add the new doc.
+	    		server.add(new_doc);
+	    		
+	    		// Increment; see above.
+	    		processed_n++;
 	        }
 	    	
-	    	offset_n += slice_size;
+	    	// Commit in chunks of slice size and increment.
+    		LOG.info("Commit batch of: " + batch_size);
+	    	server.commit();
+	    	offset_n += batch_size;
 	    }
+	    
+	    // Final optimize process.
+		LOG.info("Final optimize...");
+	    server.optimize();
+		LOG.info("Done!");
 	}
 }
