@@ -66,34 +66,41 @@ if( $solr->ping() ){
     my $solr = shift || die 'need a solr instance';
     my $doc = shift || die 'need a doc to process';
 
-    ll("doc: " . $doc);
-    ll("doc contents: " . Dumper($doc));
+    ## Copy everything into a new doc.
+    my $new_doc = WebService::Solr::Document->new();
+    my $new_doc_fields = [];
+    my @fnames = $doc->field_names();
+    for my $fnm (@fnames){
 
-    ## Dump out document contents on verbose.
-    if( $opt_v ){
-      my @fnames = $doc->field_names();
-      for my $fnm (@fnames){
-	my @fval = $doc->values_for($fnm);
-	my $val_str = '';
-	if( scalar(@fval) == 1 ){
-	  $val_str = $fval[0];
-	}elsif( scalar(@fval) > 1 ){
-	  $val_str = join ', ', @fval;
+      ## Get data--I don't think there are 
+      my @fval = $doc->values_for($fnm);
+      my $val_str = '';
+      if( scalar(@fval) == 1 ){
+	my $new_field = WebService::Solr::Field->new($fnm => $fval[0]);
+	push @$new_doc_fields, $new_field;
+      }elsif( scalar(@fval) > 1 ){
+	my $flist = [];
+	for my $val (@fval){
+	  push @$flist, $val;
 	}
-	ll("\t" . $fnm . ": " . $val_str);
+	ll('Dump: ' . join(', ', @$flist));
+	## BUG: right here--apparently this perl library doesn't do
+	## multivalued fields.
+	my $new_field = WebService::Solr::Field->new($fnm => $flist);
+	push @$new_doc_fields, $new_field;
       }
     }
 
     ## Jimmy new info into alternate_id field...
-    if( $opt_x ){
-      my $id = $doc->value_for('id');
-      ll('id: ' . $id);
-      my($tmp, $acc) = split(/\^\^\^/, $id);
-      ll("\tacc: " . $acc);
-      my $alt_id_field = WebService::Solr::Field->new('alternate_id' => $acc);
-      $doc->add_fields([$alt_id_field]);
-      $solr->add($doc);
-    }
+    my $id = $doc->value_for('id');
+    ll('id: ' . $id);
+    my($tmp, $acc) = split(/\^\^\^/, $id);
+    ll("\tacc: " . $acc);
+    my $alt_id_field = WebService::Solr::Field->new('alternate_id' => $acc);
+    push @$new_doc_fields, $alt_id_field;
+
+    $new_doc->add_fields($new_doc_fields);
+    $solr->add($new_doc) if $opt_x;
   }
 
   ## How to process a doc response set (page).
