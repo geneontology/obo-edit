@@ -57,7 +57,7 @@ import org.obo.dataadapter.GOFlatFileAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 //import org.obo.dataadapter.OWLURLReaderAdapter;
 //import org.obo.dataadapter.SerialAdapter;
-import org.obo.dataadapter.SimpleLinkFileAdapter;
+//import org.obo.dataadapter.SimpleLinkFileAdapter;
 import org.obo.dataadapter.XMLHistoryAdapter;
 import org.obo.datamodel.OBOProperty;
 import org.obo.filters.Filter;
@@ -554,9 +554,9 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				+ Preferences.getVersion().toString());
 		adapters.add(oboadapter);
 		adapters.add(goadapter);
-		adapters.add(new SimpleLinkFileAdapter());
 		adapters.add(owladapter);
                 // Not currently supported.
+                //		adapters.add(new SimpleLinkFileAdapter());
                 //		adapters.add(new GOStyleAnnotationFileAdapter());
                 //		adapters.add(new OWLURLReaderAdapter());
                 //		adapters.add(new SerialAdapter());
