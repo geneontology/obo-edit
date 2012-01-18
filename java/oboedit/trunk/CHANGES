@@ -1,16 +1,24 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 ==============================
-What's New in OBO-Edit v2.1.1-b1
+What's New in OBO-Edit v2.1.1-b1,2
 ==============================
 New features:
 - [ geneontology-Feature Requests-3469108 ] Titlebar should show last saved-as filename
 - [ geneontology-Feature Requests-1604638 ] quick save
 After your first Save As, you can do a quick Save (command-S) to save the ontology again with the same save parameters.
+(A message window briefly appears letting you know the quick save worked.)
 - [ geneontology-Feature Requests-3375766 ] Automatic detection of changed files/reload option
 A new background thread checks whether the file you're looking at has changed on disk since you last loaded or saved it.
 If it changes, a popup advises you to save your work (if you've made changes) and reload.
 - Chris and Heiko got OBO<->OWL conversion working inside OBO-Edit, so you can load and/or save in OWL format.
+
+Changes:
+- When you save your configuration in the Configuration Manager, you now get a
+popup message reminding you that you may need to quit and restart OE for your
+changes to take effect.  (If people find this annouying, I can take it out.)
+- I made the configuration option "Confirm on exit" say "Confirm on exit, even
+if there are no changes to be saved", and I made it default to false instead of true.
 
 
 ==============================
