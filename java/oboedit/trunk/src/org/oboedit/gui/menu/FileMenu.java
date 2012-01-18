@@ -9,8 +9,12 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.swing.JMenuItem;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import org.bbop.dataadapter.AdapterConfiguration;
 import org.bbop.dataadapter.DataAdapter;
 import org.bbop.dataadapter.DataAdapterException;
@@ -20,7 +24,10 @@ import org.bbop.dataadapter.GraphicalAdapterChooser;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.IOManager;
 import org.bbop.swing.DynamicMenu;
+import org.bbop.swing.HTMLLabel;
+import org.bbop.swing.SwingUtil;
 import org.obo.dataadapter.OBOAdapter;
+import org.obo.dataadapter.OBOFileAdapter.OBOAdapterConfiguration;
 import org.obo.datamodel.Namespace;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.OBOSessionImpl;
@@ -306,28 +313,101 @@ public class FileMenu extends DynamicMenu {
 	    return;
         }
 
-        // AdapterConfiguration config = ui.getConfig(op, adapter, input);
         AdapterConfiguration config = adapter.getConfiguration();
 	//	logger.debug("config = " + config); // DEL
-        if (config == null || (config instanceof FileAdapterConfiguration && ((FileAdapterConfiguration)config).getWritePath() == null)) {
+        if (config == null) {
 	    cantDoQuickSaveYet();
 	    return;
         }
+
+        // Figure out if we have a valid write path yet
+        if (config instanceof OBOAdapterConfiguration) {
+            OBOAdapterConfiguration oboconfig = (OBOAdapterConfiguration)config;
+            if ((oboconfig.getBasicSave() && oboconfig.getWritePath() == null) ||
+                // If user saved via the OBO Advanced interface, the write path will be in SaveRecord
+                (oboconfig.getSaveRecords() == null)) {
+                cantDoQuickSaveYet();
+                return;
+            }
+        }
+        else if (config instanceof FileAdapterConfiguration) {
+            FileAdapterConfiguration fileconfig = (FileAdapterConfiguration)config;
+            if (fileconfig.getWritePath() == null) {
+                cantDoQuickSaveYet();
+                doSaveAs();
+                return;
+            }
+        }
+            
+        // Ok, now we can do the silent save
         try {
             Object output = adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, config, SessionManager.getManager().getSession());
             // Are we supposed to then do something with output?? Doesn't seem like it...
-	    SessionManager.getManager().markChangesFlushed(); // ?
-            logger.debug("Did quick-save");
+	    SessionManager.getManager().markChangesFlushed();
+            showQuickSaveDoneDialog();
+            logger.debug("Did quick-save to " + SessionManager.getManager().getSession().getLoadRemark());
         } catch (DataAdapterException e1) {
             e1.printStackTrace();
         }
     }
 
     private static void cantDoQuickSaveYet() {
-	String message = "The first time you save in an OBO-Edit session, you need to do a Save As\nso that OBO-Edit knows how you want to set the various save options.\nAfter that, you will be able to do a quick Save (keyboard shortcut is Command-s).";
-	JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
-				      message, "Can't do quick save yet", JOptionPane.WARNING_MESSAGE);
-	doSaveAs();
+        String message = "The first time you save in an OBO-Edit session, you need to do a Save As\nso that OBO-Edit knows how you want to set the various save options.\nAfter that, you will be able to do a quick Save (keyboard shortcut is Command-s).";
+        JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
+                                      message, "Can't do quick save yet", JOptionPane.WARNING_MESSAGE);
+
+        // I wanted to make this message come up in a dialog window that would then
+        // go away by itself (without having to click OK) after a few seconds, but this
+        // proved problematic. Leaving the not-working-right code here in case I want to
+        // revisit this later.
+        // Thread warningThread = new Thread() {
+        //         public void run() {
+        //             try {
+        //                 SwingUtilities.invokeAndWait(new Runnable(){
+        //                         @Override
+        //                             public void run(){
+        //                             String message = "The first time you save in an OBO-Edit session, you need to do a Save As<br>so that OBO-Edit knows how you want to set the various save options.<br>After that, you will be able to do a quick Save (keyboard shortcut is Command-s).";
+        //                             createAndShowDialog("Can't do quick save yet", message, 3000); // wait 2.5 seconds before disposing dialog
+        //                         }
+        //                     });
+        //             } catch (Exception e1) { }
+        //         }
+        //     };
+        // warningThread.run();
+        doSaveAs(); // Want to do this after message is done being shown
     }
 
+    private static void showQuickSaveDoneDialog() {
+        SwingUtilities.invokeLater(new Runnable(){
+                @Override
+                    public void run(){
+                    String message="Saved to " + SessionManager.getManager().getSession().getLoadRemark();
+                    createAndShowDialog("Saved", message, 2500); // wait 2.5 seconds before disposing dialog
+                }
+            });
+    }
+
+    /** Show a simple dialog with a text message that disappears by itself after specified time */
+    private static void createAndShowDialog(final String title, final String content, final int time){
+        final JDialog dialog = new JDialog();
+        dialog.setTitle(title);
+
+        HTMLLabel label = new HTMLLabel("<html><body bgcolor=\"#ffffff\"><p>&nbsp;&nbsp;" + content + "&nbsp;&nbsp;</p></body></html>");
+
+        dialog.add(label);
+        dialog.pack();
+        SwingUtil.center(dialog);
+        dialog.toFront();
+        dialog.setVisible(true);
+
+        // start timer
+        Timer t = new Timer(time, new ActionListener() {
+                @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                    dialog.dispose();
+                }
+            });
+        t.setRepeats(false);
+        t.start();
+    }
 }
