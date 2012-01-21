@@ -48,7 +48,7 @@ public class GUIManager {
 
 	protected MultiMap<String, UserListener> userListeners = new MultiHashMap<String, UserListener>();
 
-	protected static boolean confirmOnExit = true;
+        protected static boolean confirmOnExit = true; // But note that it now defaults to true in oboedit.Preferences
 	
 	protected static boolean advxpMatrixEditorCheckBox = false;
 
