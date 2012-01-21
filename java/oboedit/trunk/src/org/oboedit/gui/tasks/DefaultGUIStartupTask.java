@@ -187,7 +187,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 								"<html>There are unsaved changes to your "
 								+ "ontology.<br>Really quit?</html>",
 								"Exit?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
-					} else if (GUIManager.isConfirmOnExit())
+					} else if (Preferences.getPreferences().getConfirmOnExit())
 						return JOptionPane.showConfirmDialog(GUIManager
 								.getManager().getFrame(), "Really quit?",
 								"Exit?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
