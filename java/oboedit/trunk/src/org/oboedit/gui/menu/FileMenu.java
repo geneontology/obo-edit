@@ -23,6 +23,7 @@ import org.bbop.dataadapter.FileAdapterConfiguration;
 import org.bbop.dataadapter.GraphicalAdapterChooser;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.IOManager;
+import org.bbop.swing.BackgroundUtil;
 import org.bbop.swing.DynamicMenu;
 import org.bbop.swing.HTMLLabel;
 import org.bbop.swing.SwingUtil;
@@ -48,9 +49,11 @@ public class FileMenu extends DynamicMenu {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(FileMenu.class);
 
+	protected static ActionListener saveAsActionListener;
+        protected static ActionListener saveActionListener;
+
 	public FileMenu() {
 		super("File");
-		JMenuItem saveItem;
 
 		JMenuItem newItem = new JMenuItem("New Ontology");
 		JMenuItem loadItem = new JMenuItem("Load Ontologies...") {
@@ -61,8 +64,8 @@ public class FileMenu extends DynamicMenu {
 			}
 		};
 		JMenuItem importItem = new JMenuItem("Import Terms...");
-		saveItem = new JMenuItem("Save");
 		JMenuItem saveAsItem = new JMenuItem("Save As...");
+		JMenuItem saveItem = new JMenuItem("Save");
 
 		JMenuItem saveHistoryItem = new JMenuItem("Save History...");
 		JMenuItem applyHistoryItem = new JMenuItem("Load History...");
@@ -110,22 +113,19 @@ public class FileMenu extends DynamicMenu {
                         }
 		});
 
-		saveItem.addActionListener(new ActionListener() {
+		saveActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
                             doSave();
-                            // This is so CheckOriginalFileTask knows that we saved the file ourselves--
-                            // it didn't change on disk out from under us
-                            // (It's not in doSave because we can't reference "this" staticly there)
-                            Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 			}
-		});
+		};
+		saveItem.addActionListener(saveActionListener);
 
-		saveAsItem.addActionListener(new ActionListener() {
+		saveAsActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-                            doSaveAs();
-                            Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
+			    doSaveAs();
 			}
-		});
+		    };
+		saveAsItem.addActionListener(saveAsActionListener);
 
 		saveHistoryItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -284,21 +284,23 @@ public class FileMenu extends DynamicMenu {
 		}
 	}
 
-    public static void doSaveAs() {
-        try {
-            OBOSession session = IOManager.getManager().doOperation(
+        public static void doSaveAs() {
+	    try {
+		OBOSession session = IOManager.getManager().doOperation(
 							OBOAdapter.WRITE_ONTOLOGY,
 							SessionManager.getManager().getSession(), true);
-                if (session != null) {
-                    SessionManager.getManager().markChangesFlushed();
-                    // When the adapter writes out the ontology, a ReconfigEvent is fired. FrameNameUpdateTask listens for this event and
-                    // updates the main OE titlebar to show the name of the saved file.
-                }
-          } catch (DataAdapterException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-                }
-          }
+		    if (session != null) {
+			SessionManager.getManager().markChangesFlushed();
+			// This is so CheckOriginalFileTask knows that we saved the file ourselves--
+			// it didn't change on disk out from under us
+			// (It will also cause FrameNameUpdateTask to update the titlebar.)
+			Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(saveAsActionListener));
+		    }
+			} catch (DataAdapterException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+		    }
+    }
 
     public static void doSave() {
         // Figure out whether we can do a silent save--if user hasn't done a save yet
@@ -334,16 +336,29 @@ public class FileMenu extends DynamicMenu {
             FileAdapterConfiguration fileconfig = (FileAdapterConfiguration)config;
             if (fileconfig.getWritePath() == null) {
                 cantDoQuickSaveYet();
-                doSaveAs();
                 return;
             }
         }
             
         // Ok, now we can do the silent save
         try {
-            Object output = adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, config, SessionManager.getManager().getSession());
-            // Are we supposed to then do something with output?? Doesn't seem like it...
+	    // This is to, for example, alert TextEditor that the user wants to save, so it can warn if there are uncommitted changes
+	    boolean cancelled = IOManager.getManager().justFireEvents(OBOAdapter.WRITE_ONTOLOGY, SessionManager.getManager().getSession());
+	    if (cancelled) {
+		logger.debug("User canceled save"); // DEL
+		return; // User decided not to save
+	    }
+
+	    Object output = adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, config, SessionManager.getManager().getSession());
+            if (output == null) { // Can this happen?
+                String message = "Quick save to " + SessionManager.getManager().getSession().getLoadRemark() + " failed!";
+                JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
+					      message, "Save failed", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 	    SessionManager.getManager().markChangesFlushed();
+	    Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(saveActionListener));
+
             showQuickSaveDoneDialog();
             logger.debug("Did quick-save to " + SessionManager.getManager().getSession().getLoadRemark());
         } catch (DataAdapterException e1) {
@@ -352,7 +367,7 @@ public class FileMenu extends DynamicMenu {
     }
 
     private static void cantDoQuickSaveYet() {
-        String message = "The first time you save in an OBO-Edit session, you need to do a Save As\nso that OBO-Edit knows how you want to set the various save options.\nAfter that, you will be able to do a quick Save (keyboard shortcut is Command-s).";
+        String message = "The first time you save with a particular data adapter in an OBO-Edit session,\n you need to do a Save As so that OBO-Edit knows how you want to set\nthe save options.\nAfter that, you will be able to do a quick Save (keyboard shortcut is Command-s).";
         JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
                                       message, "Can't do quick save yet", JOptionPane.WARNING_MESSAGE);
 
@@ -382,7 +397,7 @@ public class FileMenu extends DynamicMenu {
                 @Override
                     public void run(){
                     String message="Saved to " + SessionManager.getManager().getSession().getLoadRemark();
-                    createAndShowDialog("Saved", message, 2500); // wait 2.5 seconds before disposing dialog
+                    createAndShowDialog("", message, 2000); // wait 2 seconds before disposing dialog
                 }
             });
     }
