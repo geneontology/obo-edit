@@ -146,4 +146,33 @@ public class IOManager {
     private void setCurrentAdapter(DataAdapter ca) {
         this.currentAdapter = ca;
     }
+
+    /** Used by OBO-Edit. If you're not OBO-Edit, just ignore it. */
+    public <INPUT_TYPE, OUTPUT_TYPE> boolean justFireEvents(
+			final IOOperation<INPUT_TYPE, OUTPUT_TYPE> op,
+			final INPUT_TYPE input)
+			throws DataAdapterException {
+	boolean willExecute = true;
+	AbstractTaskDelegate<Boolean> eventTask = new AbstractTaskDelegate<Boolean>() {
+	    @Override
+	    public void execute() throws Exception {
+		for (IOListener listener : new LinkedList<IOListener>(listeners)) {
+		    if (!listener
+			.willExecuteOperation(new IOEvent<INPUT_TYPE>(
+								      this, op, input))) {
+			setResults(true);
+			return;
+		    }
+		}
+		setResults(false);
+	    }
+	};
+
+	BackgroundEventQueue queue = new BackgroundEventQueue();
+	BackgroundUtil.scheduleTask(queue, eventTask,
+				    true, "OBO-Edit: IOManager working");
+	queue.die();
+	return eventTask.getResults();
+    }
+
 }
