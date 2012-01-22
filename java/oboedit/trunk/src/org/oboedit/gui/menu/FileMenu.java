@@ -394,7 +394,6 @@ public class FileMenu extends DynamicMenu {
 
     private static void showQuickSaveDoneDialog() {
         SwingUtilities.invokeLater(new Runnable(){
-                @Override
                     public void run(){
                     String message="Saved to " + SessionManager.getManager().getSession().getLoadRemark();
                     createAndShowDialog("", message, 2000); // wait 2 seconds before disposing dialog
@@ -417,7 +416,6 @@ public class FileMenu extends DynamicMenu {
 
         // start timer
         Timer t = new Timer(time, new ActionListener() {
-                @Override
                     public void actionPerformed(ActionEvent arg0) {
                     dialog.dispose();
                 }
