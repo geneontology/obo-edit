@@ -1,5 +1,9 @@
 package org.geneontology.db.factory;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,9 +15,11 @@ import org.geneontology.db.model.Association;
 import org.geneontology.db.model.DB;
 import org.geneontology.db.model.DBXref;
 import org.geneontology.db.model.GeneProduct;
+import org.geneontology.db.model.GraphPath;
 import org.geneontology.db.model.Species;
 import org.geneontology.db.model.Term;
 import org.geneontology.db.model.TermSynonym;
+import org.geneontology.db.util.HibernateUtil;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -32,7 +38,7 @@ public class GOobjectFactory {
 			sf.close();
 		}
 		sf = sessionFactory;
-		*/
+		 */
 		if (sf == null) {
 			sf = sessionFactory;
 		}
@@ -43,11 +49,19 @@ public class GOobjectFactory {
 	 * @return {@link SessionFactory} object
 	 */
 	public synchronized Session getSession() {
-		Session session = sf.getCurrentSession();
-		session.beginTransaction();
+		Session session = null;
+		try {
+			session = sf.getCurrentSession();
+			session.beginTransaction();
+		} catch (Exception e) {
+			if (e instanceof SQLException)
+				printSQLException((SQLException) e);
+			sf.getCurrentSession();
+			session.beginTransaction();
+		}
 		return session;
 	}
-	
+
 	/** Graph factories for term class
 	 */
 
@@ -57,9 +71,11 @@ public class GOobjectFactory {
 	 */
 	public synchronized Term getTermByAcc(String acc){
 		Session session = getSession();
-		return (Term)session.createQuery("from Term where acc = ?").setString(0, acc).uniqueResult();
+		Term term =  (Term)session.createQuery("from Term where acc = ?").setString(0, acc).uniqueResult();
+		session.getTransaction().commit();
+		return term;
 	}
-	
+
 	public synchronized Term getTermByAlternateAcc(String acc) {
 		Session session = getSession();
 		String query = "from TermSynonym where alternateID = ?";
@@ -135,7 +151,7 @@ public class GOobjectFactory {
 		String query_str = "select g from GeneProduct as g inner join g.dbxref as xref where ";
 		String prefix = "";
 		for (Iterator<String []> xref_it = xrefs.iterator(); xref_it.hasNext();) {
-			String [] xref = xref_it.next();
+			xref_it.next(); // be sure to move forward through the list
 			query_str += prefix + "(xref.db_name = ? and xref.accession = ?)";
 			prefix = " or ";
 		}
@@ -149,7 +165,7 @@ public class GOobjectFactory {
 		Iterator<GeneProduct> results = query.iterate();
 		return results;
 	}
-	
+
 	/**
 	 * Fetches a GeneProduct of {@link GeneProduct} with a {@link org.geneontology.db.model.GeneProduct} having the specified db_name and key.  
 	 * @param db_name the {@link org.geneontology.db.model.DBXref} db_name to fetch {@link GeneProduct} objects by. 
@@ -165,7 +181,7 @@ public class GOobjectFactory {
 		.setString(1, db_key).uniqueResult();
 		return gp;
 	}
-	
+
 	/**
 	 * As getGPByDBXref, but accepts a dbxref as a string (e.g. "FlyBase:FBgn00000001")
 	 * @param xrefStr
@@ -229,7 +245,7 @@ public class GOobjectFactory {
 	/**
 	 * Fetches a GeneProduct of {@link GeneProduct} with a {@link org.geneontology.db.model.GeneProduct} having the specified db_name and key.  
 	 * @param db_name the {@link org.geneontology.db.model.DBXref} db_name to fetch {@link GeneProduct} objects by. 
-	 * @param db_key the {@link org..geneontology.db.model.DBXref} db_key to fetch {@link GeneProduct} objects by.
+	 * @param db_key the {@link org.geneontology.db.model.DBXref} db_key to fetch {@link GeneProduct} objects by.
 	 * @return the unique {@link GeneProduct} that have DBXref of with the specified name and key.
 	 */
 	public synchronized Iterator<GeneProduct>  getGPBySeq(String db_key) {
@@ -249,6 +265,49 @@ public class GOobjectFactory {
 	public synchronized Species getSpeciesByTaxa(int taxa){
 		Session session = getSession();
 		return (Species)session.createQuery("from Species where ncbi_taxa_id = ?").setInteger(0, taxa).uniqueResult();
+	}
+
+	public synchronized GraphPath getPath(int id1, int id2) {
+		Session session = getSession();
+		Query q = session.createQuery("from GraphPath p where p.object = ? and p.subject = ?");
+		q.setInteger(0, id1);
+		q.setInteger(1, id2);
+		GraphPath path = null;
+		List<GraphPath> path_list = null;
+		try {
+			path_list = (List<GraphPath>) q.list();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			System.out.println ("Hibernate choked on " + id1 + " and " + id2);
+		}
+
+		if (path_list == null || path_list.size() == 0) {
+			/* try again reversing the arguments */
+			q = session.createQuery("from GraphPath p where p.object = ? and p.subject = ?");
+			q.setInteger(0, id2);
+			q.setInteger(1, id1);
+			path_list = (List<GraphPath>) q.list();	
+		}
+		if (path_list != null && path_list.size() > 0) {
+			path = path_list.get(0);
+			if (path_list.size() > 1) {
+				for (int i = 1; i < path_list.size(); i++) {
+					GraphPath alt = path_list.get(i);
+					if (alt.getDistance() > path.getDistance())
+						path = alt;
+				}
+			}
+			//			System.out.println(path.getDistance() + " jumps from " + path.getSubject().getName() + " up to " + path.getObject().getName() + " across " + path_list.size() + " paths");
+		}
+		return path;
+	}
+
+	public synchronized GraphPath getPath(Term term1, Term term2) {
+		GraphPath path = null;
+		if (term1 != null && term2 != null) {
+			path = getPath(term1.getTerm_id(), term2.getTerm_id());
+		}
+		return path;
 	}
 
 	/**
@@ -333,7 +392,7 @@ public class GOobjectFactory {
 				"xref.accession IN (:gp_list) " +
 		"GROUP BY term.term_id"); //having COUNT(DISTINCT gene_product.gp_id) = :gp_count");
 		query.setParameterList("gp_list", gp_ids);
-//		query.setInteger("gp_count", gp_ids.size());
+		//		query.setInteger("gp_count", gp_ids.size());
 		Iterator<Object> it = query.list().iterator();
 		Vector<Term> terms = new Vector<Term> ();
 		while ( it.hasNext() ) {
@@ -346,6 +405,52 @@ public class GOobjectFactory {
 			}
 		}
 		return terms;
+	}
+
+	public static void printSQLException(SQLException ex) {
+		for (Throwable e : ex) {
+			if (e instanceof SQLException) {
+				e.printStackTrace(System.err);
+				System.err.println("SQLState: " +
+						((SQLException)e).getSQLState());
+				System.err.println("Error Code: " +
+						((SQLException)e).getErrorCode());
+				System.err.println("Message: " +
+						e.getMessage());
+				Throwable t = ex.getCause();
+				while(t != null) {
+					System.out.println(
+							"Cause: " + t);
+					t = t.getCause();
+				}
+			}
+
+		}
+	}
+	
+	public static void getWarningsFromResultSet(ResultSet rs) throws SQLException {
+		printWarnings(rs.getWarnings());
+	}
+
+	public static void getWarningsFromStatement(Statement stmt) throws SQLException {
+		printWarnings(stmt.getWarnings());
+	}
+
+	public static void printWarnings(SQLWarning warning) throws SQLException {
+		if (warning != null) {
+			System.out.println("\n---Warning---\n");
+			while (warning != null) {
+				System.out.println("Message: " +
+						warning.getMessage());
+				System.out.println("SQLState: " +
+						warning.getSQLState());
+				System.out.print("Vendor error code: ");
+				System.out.println(
+						warning.getErrorCode());
+				System.out.println("");
+				warning = warning.getNextWarning();
+			}
+		}
 	}
 }
 
