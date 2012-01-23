@@ -93,11 +93,13 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		setCreateNewObject(false);
 		
 		genusField.setFocusTraversalKeysEnabled(false);
-		genusField.addCommitListener(commitListener);
+		//		genusField.addCommitListener(commitListener); // Need?? It doesn't do anything!
 		genusField.setMinLength(1);
+		genusField.setAllowNonModelValues(true);  // Keeps the field from going blank when we commit (without the AutocompleteBox caching hack)
 		
 		addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent e) {
+			    //			    logger.debug(">> CrossProductEditorComponent focusGained: genusField = " + genusField.getValue());
 				Component firstComponent = focusPolicy
 				.getFirstComponent(CrossProductEditorComponent.this);
 				if (firstComponent != null)
@@ -175,7 +177,8 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 			parentField.setMinLength(1);
 			parentField.setFocusTraversalKeysEnabled(false);
-			parentField.addCommitListener(commitListener);
+			//			parentField.addCommitListener(commitListener); // but commitListener does nothing
+			parentField.setAllowNonModelValues(true); // To keep the field from going blank when we commit (without the AutocompleteBox caching hack)
 
 			deleteRelationButton.setPreferredSize(new Dimension(20, 18));
 			deleteRelationButton.setToolTipText("Delete relation");
@@ -283,6 +286,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			JMenuItem genusItem = new JMenuItem("Set genus term");
 			genusItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+				    //				    logger.debug("genusItem.actionPerformed; setting genus term to" + (OBOClass) term);
 					setGenusTerm((OBOClass) term);
 				}
 			});
@@ -330,7 +334,8 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 	protected Action commitListener = new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
-//			logger.debug(">> CrossProductEditorComponent commitListener");
+		    //		    logger.debug(">> CrossProductEditorComponent commitListener--doing nothing. genusField = " + genusField.getValue());
+		    // (This was already all commented out. Not sure what the point of this commitListener is, now that it does nothing.)
 			//			tabToNext();
 			//			if (e.getSource() instanceof Component) { Component next =
 			//			focusPolicy.getComponentAfter( IntersectionPanel.this,
@@ -360,7 +365,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 	public void commit() {
 		ActionEvent e = new ActionEvent(this, (int) Math.random() * Integer.MAX_VALUE, "commit");
 		for (ActionListener listener : actionListeners) {
-//			logger.debug(">>> CPEC.commit - listener: " + listener);
+		    //		    logger.debug(">>> CPEC.commit - listener: " + listener + "; genusField = " + genusField.getValue());
 			listener.actionPerformed(e);
 		}
 	}
@@ -370,6 +375,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 	 * called by AbstractTextEditComponent.hasChanges()
 	 * */
 	public List<HistoryItem> getChanges() {
+	    //	    logger.debug(">>> CPEC.getChanges: genusField = " + genusField.getValue());
 		List<HistoryItem> historyList = new LinkedList<HistoryItem>();
 
 		if (currentObject instanceof LinkedObject && !(currentObject instanceof OBOPropertyImpl)) {
@@ -381,17 +387,18 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 				if (!TermUtil.isIntersection(link))
 					continue;
 			
+				//				logger.debug("CPEC.getChanges(): link = " + link + ", relations.size = " + relations.size());
 				// only if relations exist do the check to see if they have been deleted.
 				// this has been added due to false positive results being generated for links being deleted.
 				// (found is returning true after links have been committed)
-                                //                                logger.debug("CPEC.getChanges(): link = " + link + ", relations.size = " + relations.size());
-
-                                if(relations.size() >= 1){
+				// 1/22/12: This was part of the massive tangle of kludges that was added to prevent the genus and differentia
+				// from disappearing. Now it needs to go away, or else we can't delete a differentium when there's no genus.
+				//				if(relations.size() >= 1){
 					boolean found = false;
 
 					for(Object o : relations){
 						OBORestriction completeDefLink = (OBORestriction) o;
-                                                //                                                logger.debug("CPEC.getChanges -- relations -- completeDefLink: " + completeDefLink + ", comparing with link "+ link);
+						//						logger.debug("CPEC.getChanges -- relations -- completeDefLink: " + completeDefLink + ", comparing with link "+ link);
 						
 						// check for UNdeleted links
 						if (completeDefLink.equals(link)) {
@@ -401,26 +408,35 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 					}
                                         // This link is no longer found--deleted it.
 					if (!found) {
-                                            //                                                logger.debug("CPEC - deleting link: " + link);
+					    // logger.debug("CPEC - deleting link: " + link);
 						historyList.add(new DeleteLinkHistoryItem(link));
                                         }
-				}
-                                // Delete genus if requested
-                                if (deleteGenus && (link.getType().equals(OBOProperty.IS_A))) {
-                                    //                                    logger.debug("Deleting genus link " + link);
-                                    historyList.add(new DeleteLinkHistoryItem(link));
+					//				} // matches if(relations.size() >= 1){
+
+                                // Delete genus if requested (or if user cleared out genus field)
+				// (deleteGenus was from the ill-fated genus trashcan)
+				//                                if (deleteGenus && (link.getType().equals(OBOProperty.IS_A))) {
+                                if ((genusField.getValue() == null) && (link.getType().equals(OBOProperty.IS_A))) {
+				    logger.debug("Deleting genus link " + link);
+				    historyList.add(new DeleteLinkHistoryItem(link));
                                 }
 			}
 			
                         // If user wanted to delete the genus, also delete any remaining differentia
-                        if (deleteGenus) {
-                            Collection<Link> differentia = ReasonerUtil.getDifferentia((OBOClass) currentObject);
-                            for (Link dl : differentia) {
-                                //                                logger.debug("CPEC - also deleting link: " + dl);
-                                historyList.add(new DeleteLinkHistoryItem(dl));
-                            }
-                            deleteGenus = false;
-                        }
+			// (Not currently used)
+//                         if (deleteGenus) { //  || genusField.getValue() == null) {
+// 			    Collection<Link> differentia = ReasonerUtil.getDifferentia((OBOClass) currentObject);
+// 			    if (differentia.size() > 0) {
+// 				String message = currentObject.getName() + " has one or more differentia but no genus. This is not a good idea.\nCan I delete the differentia?";
+// 				if (JOptionPane.showConfirmDialog(this, message, "Delete differentia?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+// 				    for (Link dl : differentia) {
+// 					logger.debug("CPEC - as user confirmed, also deleting differentia link: " + dl);
+// 					historyList.add(new DeleteLinkHistoryItem(dl));
+// 				    }
+// 				}
+// 				deleteGenus = false;
+// 			    }
+//                         }
 
 			//Find intersection links that have been added
 			for(Object o : relations){
@@ -432,7 +448,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 					// always created with completes=false by default
 					// we'll reset the completes flag in a moment
 					completeDefLink.setCompletes(true);
-//					logger.debug("CPEC - adding link: " + completeDefLink);
+					//					logger.debug("CPEC - adding link: " + completeDefLink);
 					historyList.add(new CreateIntersectionLinkHistoryItem(completeDefLink));
 				}
 			}
@@ -534,6 +550,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		deleteGenusButton.setToolTipText("Delete entire cross product");
                 deleteGenusButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
+			    // logger.debug("deleteGenusButton pressed--setting genusField to null");
                             genusField.setValue(null);
                             // Remove all the differentia
                             for (Component c : linkListPanel.getComponents()) {
@@ -618,6 +635,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 	 * */
 	public void setClass(OBOClass oboClass) {
 		this.oboClass = oboClass;
+		//		logger.debug("setClass(" + oboClass + "): setting genusField to null (was " + genusField.getValue() + ")"); // DEL
 		genusField.setValue(null);
 		linkListPanel.removeAll();
 		for(Object o : oboClass.getParents()){
@@ -630,12 +648,14 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			}
 
 			final OBOClass genusTerm = (OBOClass) parent;
-                        //                        logger.debug("setClass: link = " + link + ", parent = " + parent + ", genusTerm: " +  genusTerm);
+			//			logger.debug("setClass: link = " + link + ", parent = " + parent + ", genusTerm: " +  genusTerm);
 			if (link.getType().equals(OBOProperty.IS_A)) {
+			    //			    logger.debug("genusField.setValue(" + parent + ")");
 				genusField.setValue(parent);
 
 				selectGenusButton.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e) {
+					    //					    logger.debug("selectGenus.action; genus term = " + genusTerm);
 						SelectionManager.selectTerm(CrossProductEditorComponent.this, genusTerm);
 					}
 
