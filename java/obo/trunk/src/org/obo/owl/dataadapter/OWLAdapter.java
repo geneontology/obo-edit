@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.bbop.dataadapter.AdapterConfiguration;
@@ -161,9 +160,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 
 		FileAdapterUI ui = new FileAdapterUI() {
 
-			/**
-			 * 
-			 */
+			// generated
 			private static final long serialVersionUID = 8709597443707849569L;
 
 			@Override
@@ -175,9 +172,26 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			public void acceptComponentConfig(boolean storeonly)
 			throws DataAdapterUIException {
 				super.acceptComponentConfig(storeonly);
-				((OWLAdapterConfiguration) config).setBasicSave(true);
+				OWLAdapterConfiguration config = (OWLAdapterConfiguration) this.config;
+				config.setBasicSave(true);
 			}
 
+			@Override
+			protected String handleSelected(String selected, boolean write) {
+				selected = super.handleSelected(selected, write);
+				if (write) {
+					File file = new File(selected);
+					String fileName = file.getName();
+					int i = fileName.lastIndexOf('.');
+					if (i < 1) {
+						// assume there is no suffix
+						selected = selected + ".owl";
+					}
+				}
+				return selected;
+			}
+			
+			
 		};
 		ui.setReadOperation(READ_ONTOLOGY);
 		ui.setWriteOperation(WRITE_ONTOLOGY);

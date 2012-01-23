@@ -160,6 +160,7 @@ public class FileAdapterUI extends AbstractGraphicalUI implements ParameterUI {
 			    dialog.show();
 			    String selected = dialog.getSelectedCanonicalPath();
 			    if (selected != null) {
+			    	selected = handleSelected(selected, false);
 			    	readField.setSelectedItem(escapePath(selected, false));
 				}
 			}
@@ -173,10 +174,23 @@ public class FileAdapterUI extends AbstractGraphicalUI implements ParameterUI {
 			    dialog.show();
 				String selected = dialog.getSelectedCanonicalPath();
 				if (selected != null) {
+					selected = handleSelected(selected, true);
 					writeField.setSelectedItem(selected);
 				}
 			}
 		});
+	}
+	
+	/**
+	 * Post process a selected path from the file dialog.
+	 * Overwrite this method to implement custom behavior.
+	 * 
+	 * @param selected (not null)
+	 * @param write set true to indicate that this is a write path
+	 * @return revised selected string (not null)
+	 */
+	protected String handleSelected(String selected, boolean write) {
+		return selected;
 	}
 
 	public void setMultiSelectEnabled(boolean multiSelectEnabled) {
