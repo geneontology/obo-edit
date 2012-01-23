@@ -272,7 +272,7 @@ public class SessionManager {
 
 		fireHistoryApplied(new HistoryAppliedEvent(this, item));
 		
-		logger.debug(">>> SessionManager doApply:" + item.getShortName());
+		//		logger.debug(">>> SessionManager doApply:" + item.getShortName());
 		
 		if(item.getShortName() == "TermMergeHistoryItem" && !Preferences.getPreferences().getAutoCommitTextEdits()){
 			Preferences.getPreferences().setAutoCommitTextEdits(true);
