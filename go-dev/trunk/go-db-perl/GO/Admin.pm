@@ -410,7 +410,7 @@ sub make_release_tarballs {
 	$self->runcmds("mkdir $t",
 		       "chmod 777 $t",
 		       "cd $t; chmod 777 .",
-		       "mysqldump --compatible=mysql40 -T $t $mysqlargs",
+		       "mysqldump  -T $t $mysqlargs",
 		       
 		       # some WEIRD problem with tar on the bdgp machines;
 		       # it seems we need to sleep for a bit otherwise tar
@@ -422,7 +422,7 @@ sub make_release_tarballs {
 		      );
     };
     
-    $self->runcmds("mysqldump --compatible=mysql40 $mysqlargs > $td",
+    $self->runcmds("mysqldump $mysqlargs > $td",
 		   "$GZIP $td",
 		  );
     my $report_file = $distn.'-summary.txt';
