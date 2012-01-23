@@ -34,11 +34,6 @@ After your first Save As, you can do a quick Save (command-S) to save the ontolo
 A new background thread checks whether the file you're looking at has changed on disk since you last loaded or saved it.
 If it changes, a popup advises you to save your work (if you've made changes) and reload.
 - Chris and Heiko got OBO<->OWL conversion working inside OBO-Edit, so you can load and/or save in OWL format.
-Changes:
-- When you save your configuration in the Configuration Manager, you
-now get a popup message reminding you that you may need to quit and
-restart OE for your changes to take effect.
-(If people find this annouying, I can take it out.)
 
 Changes:
 - When you save your configuration in the Configuration Manager, you now get a
