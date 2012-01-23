@@ -826,6 +826,8 @@ RootTextEditComponent, SelectionDrivenComponent {
 	//reload on commit and 
 	// 1. after dictionary usage
 	// 2. after applying external changes from other components
+    // 1/22/12: Note that this method is currently not ever called. (I tried calling it to see if that might fix the problem
+    // with stale terms when you reload and click on a Graph Editor node, but it caused problems.)
 	public void textEditorReload(){
 		logger.debug("Reloading Text Editor");
 		long time = System.currentTimeMillis();
