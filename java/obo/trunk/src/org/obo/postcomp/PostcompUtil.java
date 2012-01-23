@@ -569,6 +569,11 @@ public class PostcompUtil {
 			boolean alwaysDecompose) {
 		if (link.getType().equals(OBOProperty.IS_A)) {
 			if (PostcompUtil.isPostcompable(link.getParent(), alwaysDecompose)) {
+			    if (link.getParent().equals(link.getChild())) {
+				logger.debug("Weird--parent and child are same for link " + link);
+				return;
+			    }
+			    logger.debug("updateNameBuffer: buffer = " + buffer + ", link = " + link); // DEL
 				buffer.append('(');
 				buffer.append(getNameExpression(link.getParent(),
 						alwaysDecompose));
@@ -577,7 +582,12 @@ public class PostcompUtil {
 				buffer.append(link.getParent().getName());
 		} else {
 			buffer.append(link.getType().getID());
+			    if (link.getParent().equals(link.getChild())) {
+				logger.debug("Weird--parent and child are same for link " + link);
+				return;
+			    }
 			buffer.append('(');
+			logger.debug("updateNameBuffer (not an IS_A link): buffer = " + buffer + ", link = " + link); // DEL
 			buffer.append(getNameExpression(link.getParent(), alwaysDecompose));
 			buffer.append(')');
 		}
