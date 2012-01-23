@@ -1,6 +1,7 @@
 package org.geneontology.db.test;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -15,6 +16,7 @@ import org.geneontology.db.model.DBXref;
 import org.geneontology.db.model.Evidence;
 import org.geneontology.db.model.GOModel;
 import org.geneontology.db.model.GeneProduct;
+import org.geneontology.db.model.GraphPath;
 import org.geneontology.db.model.HomolSet;
 import org.geneontology.db.model.MetaRelationship;
 import org.geneontology.db.model.ProductSeq;
@@ -59,6 +61,12 @@ public class GHOUL_UnitTest extends TestCase{
 		this.getSessionFactory().getCurrentSession().beginTransaction();
 		objFactory = new GOobjectFactory(this.getSessionFactory());
 		return objFactory;
+	}
+	
+	public void testGraphPath() {
+		GOobjectFactory factory = initSessionFactory();
+		GraphPath path = factory.getPath(12749, 7072);
+		Assert.assertTrue(path != null);
 	}
 
 	public void testGP() {
