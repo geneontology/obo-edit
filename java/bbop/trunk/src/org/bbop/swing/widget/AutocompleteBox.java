@@ -148,15 +148,18 @@ public class AutocompleteBox<T> extends JComboBox {
 		
 		protected FocusListener focusListener = new FocusListener() {
 			public void focusLost(FocusEvent e) {
-//				logger.debug("focus lost");
+			    //				logger.debug("focus lost");
 				if (allowNonModelValues
 						|| (AutocompleteBox.this.getSelectedItem() == null
 								&& getText().length() >= getMinLength() && getItemCount() > 0)) {
 					//setSelectedIndex(0);
+				    //				    logger.debug("AutocompleteBox.this.getSelectedItem() = " + AutocompleteBox.this.getSelectedItem() + "; getText = " + getText() + ", getSelectedItem = " + getSelectedItem()); // DEL
 					commit(true);
 				} else if (getSelectedItem() != null) {
 					String s = autocompleteModel.toString(getSelectedItem());
+					//					logger.debug("AutocompleteBox: setText(" + s + ")"); // DEL
 					setText(s);
+					//					commit(true);  // I thought this might fix the disappearing-genus problem, but it didn't totally.
 				}
 			}
 
@@ -183,14 +186,24 @@ public class AutocompleteBox<T> extends JComboBox {
 		 * */
 		public void commit(boolean focusCommit) {
 			killPendingTasks();
-//			logger.debug("committing.. getText()="+getText());
+			//			logger.debug("committing.. getText()="+getText());
 			if (getText().length() == 0) {
 				setSelectedItem(null);
 			}
 			else if ((!focusCommit || !allowNonModelValues) && lastHits != null && lastHits.size() > 0) {
+			    //			    logger.debug("AutocompleteBox.commit: setSelectedItem(" + list.getSelectedValue() + ")"); // DEL
 				setSelectedItem(list.getSelectedValue());
 			} else if (allowNonModelValues) {
+			    //			    			    logger.debug("AutocompleteBox.commit: allowNonModelValues; setSelectedItem(" + list.getSelectedValue() + ")"); // DEL
+			    try {
 				setSelectedItem(autocompleteModel.createValue(getText()));
+			    } catch (Exception e) {
+				// We get a not implemented exception when CrossProductEditor sets allowNonModelValues=true for the genus and parent fields,
+				// but it doesn't actually seem to matter that the setSelectedItem above failed.
+				logger.debug("Exception while calling setSelectedItem(autocompleteModel.createValue(" + getText() + ")--oh well; doesn't seem to matter.");
+				// Do something else instead?
+				// setSelectedItem(list.getSelectedValue()); //?
+			    }
 			}
 			// What's this big random number for??
 			ActionEvent e = new ActionEvent(AutocompleteBox.this, (int) (Math.random()* Integer.MAX_VALUE), "commit");
@@ -199,7 +212,7 @@ public class AutocompleteBox<T> extends JComboBox {
 			}
 			fireUpdateEvent();
 			hidePopup();
-			list.setSelectedIndex(-1);
+			list.setSelectedIndex(-1); // Why is this needed?
 		}
 
 		protected void update() {
@@ -232,6 +245,7 @@ public class AutocompleteBox<T> extends JComboBox {
 //				out = lastHits.size() == 0 ? null : lastHits.get(0).getVal();
 			if (lastHits != null && lastHits.size() > 0 && list.getSelectedIndex() >= 0)
                           out = lastHits.get(list.getSelectedIndex()).getVal();
+			//			logger.debug("AutocompleteBox: getItem = " + out); // DEL
 			return out;
 		}
 
@@ -429,10 +443,14 @@ public class AutocompleteBox<T> extends JComboBox {
 		 * value prior to fetching it.
 		 * -- CJM 2010-12-16
 		 */
-		if (cachedSelectedItem != null) {
+	    /* 1/22/12 This caching--which was intended to solve a problem where the genus field would mysteriously blank out when you committed-- was responsible
+	       for the bug that made the genus come back if you cleared the genus field and committed.
+	       Now I have properly fixed those bugs in the cross product editor, so we don't need this caching. */
+	    //		if (cachedSelectedItem != null) {
 //			logger.debug("reinstated:"+cachedSelectedItem);
-			setSelectedItem(cachedSelectedItem);
-		}
+//		    logger.debug("NOT reinstated:"+cachedSelectedItem + "; getSelectedItem = " + getSelectedItem());
+		    //			setSelectedItem(cachedSelectedItem);
+	    //		}
 		
 		
 		if (getSelectedItem() == null) {
@@ -441,15 +459,18 @@ public class AutocompleteBox<T> extends JComboBox {
 		}
 		else {
 			Object selected = getSelectedItem();
-//			logger.debug("select="+selected);
+			//			logger.debug("getValue: selected="+selected);
 		
 			if (allowNonModelValues) {
 				String s = ((JTextComponent) editor).getText();
 
-				if (!autocompleteModel.toString(getSelectedItem()).equals(s))
+				if (!autocompleteModel.toString(getSelectedItem()).equals(s)) {
+				    logger.debug("creating value " + s); // DEL
 					return (T) autocompleteModel
 							.getOutputValue(autocompleteModel.createValue(s));
+				}
 			}
+			//			logger.debug("returning autocompleteModel.getOutputValue(selected)");
 			return (T) autocompleteModel.getOutputValue(selected);
 		}
 	}
@@ -497,14 +518,16 @@ public class AutocompleteBox<T> extends JComboBox {
 
 		if (o == null) {
 			super.setSelectedItem(null);
-			cachedSelectedItem = null;
+			//			cachedSelectedItem = null;
 		}
 		else if (allowNonModelValues || autocompleteModel.isLegal(o)) {
+		    //		    logger.debug("doSetSelectedItem: allowNonModelValues = " + allowNonModelValues + ", o =  "+ o + ",  autocompleteModel.isLegal(o) = " +  autocompleteModel.isLegal(o)); // DEL
 			super.setSelectedItem(o);
-			cachedSelectedItem = o;
+			//			cachedSelectedItem = o;
 		}
 		else {
-			cachedSelectedItem = null;
+		    //		    logger.debug("doSetSelectedItem: setting selected item to null. allowNonModelValues = " + allowNonModelValues + ", o =  "+ o + ",  autocompleteModel.isLegal(o) = " +  autocompleteModel.isLegal(o)); // DEL
+		    //			cachedSelectedItem = null;
 			super.setSelectedItem(null);
 		}
 	}
@@ -691,6 +714,8 @@ public class AutocompleteBox<T> extends JComboBox {
 	 * we don't trust ACB to keep track of the selected item. it appears to get lost. we track this directly
 	 * in the gui component rather than the model.
 	 * -- CJM 2010-12-16
+	 * 1/22/2012: Not doing this anymore--it was making it impossible to delete the genus in the cross product editor
+	 * because it kept returning, zombie-style.
 	 */
 	protected Object cachedSelectedItem = null; // CJM
 
@@ -960,12 +985,12 @@ public class AutocompleteBox<T> extends JComboBox {
 		}
 
 		public Object getSelectedItem() {
-//			logger.debug("MODEL: getSelectedItem:"+ (selected == null ? "NULL" : selected));
+		    //			logger.debug("MODEL: getSelectedItem:"+ (selected == null ? "NULL" : selected));
 			return selected;
 		}
 
 		public void setSelectedItem(Object anItem) {
-//			logger.debug("MODEL: setSelectedItem:"+ (anItem == null ? "NULL" : anItem));
+		    //			logger.debug("MODEL: setSelectedItem:"+ (anItem == null ? "NULL" : anItem));
 			selected = anItem;
 		}
 
