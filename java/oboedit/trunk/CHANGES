@@ -1,6 +1,28 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 ==============================
+What's New in OBO-Edit v2.1.1-b1,3
+==============================
+- I made the configuration option "Confirm on exit" say "Confirm on exit, even
+if there are no changes to be saved", and I made it default to false instead of true.
+
+Fixed some issues with new Quick Save:
+- If you do quick save when you have unsaved changes in the text editor, it doesn't warn you (Save As does)
+- If you save as obo and then save as owl, quick save says you can't quick save yet, and also when it does
+the save as, it does it again after you hit ok.
+- [ geneontology-Bugs-3475532 ] 'Write ontology' box not dismissed upon save
+
+Fixed the evil twin Cross Product Editor problems:
+In an earlier version of OE, the genus would mysteriously disappear
+when you committed. Chris and Amina fixed this by caching the value of
+the genus field in AutocompleteBox and restoring it when it
+disappeared. However, this had the unwanted side effect of making it
+impossible to delete the genus by erasing the genus field--it would
+simply reappear, like a zombie returned from the dead, when you committed.
+Now you should be able to save OR delete your genus.
+
+
+==============================
 What's New in OBO-Edit v2.1.1-b1,2
 ==============================
 New features:
@@ -12,13 +34,16 @@ After your first Save As, you can do a quick Save (command-S) to save the ontolo
 A new background thread checks whether the file you're looking at has changed on disk since you last loaded or saved it.
 If it changes, a popup advises you to save your work (if you've made changes) and reload.
 - Chris and Heiko got OBO<->OWL conversion working inside OBO-Edit, so you can load and/or save in OWL format.
+Changes:
+- When you save your configuration in the Configuration Manager, you
+now get a popup message reminding you that you may need to quit and
+restart OE for your changes to take effect.
+(If people find this annouying, I can take it out.)
 
 Changes:
 - When you save your configuration in the Configuration Manager, you now get a
 popup message reminding you that you may need to quit and restart OE for your
 changes to take effect.  (If people find this annouying, I can take it out.)
-- I made the configuration option "Confirm on exit" say "Confirm on exit, even
-if there are no changes to be saved", and I made it default to false instead of true.
 
 
 ==============================
