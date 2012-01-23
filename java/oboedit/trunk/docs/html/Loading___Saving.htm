@@ -9,7 +9,11 @@
 <H1>Loading &amp; Saving</H1>
 <P>To load or save an ontology, use the "File" menu:</P>
 <p><IMG hspace=0 src="../images/load_save_menu.png" border=0></p>
-<P>Choose "Load ontologies..." or "Save As..." (Command-S). A window like this will appear:</P>
+<P>Choose "Load ontologies..." (keyboard shortcut is Command-O) or "Save
+As..." (Command-W).
+(After you've saved once in a session, you will subsequently be able to do a Quick Save
+(Command-S) without needing to go through the graphical user inteface.)
+A window like this will appear:</P>
 <p><IMG hspace=0 src="../images/load_save_dialog.png" border=0></p>
 <P>The top line is the same regardless of whether you are loading,
 saving, or doing some other operation. The drop down box contains a list of data adapters that support the current
@@ -93,6 +97,8 @@ One way to do this is to set up a filter that saves terms from a
   specified namespace.  To include all relations in the saved file, construct a
 compound filter 
 that includes "OR is property" (in this context, property means relation).</p>
+<p>After you've done a filtered save, you can repeat the same save with the
+same parameters via Quick Save (command-S).</p>
 
 <div class="sidebar">
 <h1>Tip: saving an ontology that has fatal errors</h1>
