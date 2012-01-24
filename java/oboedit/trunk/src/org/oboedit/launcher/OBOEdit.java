@@ -28,6 +28,7 @@ import org.obo.datamodel.OBOSession;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.tasks.DefaultGUIStartupTask;
+import org.oboedit.util.WarnIfNewVersion;
 
 public class OBOEdit {
 
@@ -209,6 +210,10 @@ public class OBOEdit {
 					logger.info("Config directory: " + Preferences.getOBOEditPrefsDir());
 					logger.info("Saving logfile to " + logFile);
 
+                                        // If user is starting a new version, warn that they may need to
+                                        // move their ~/oboedit_config/perspectives.
+                                        WarnIfNewVersion.warn(Preferences.getOBOEditPrefsDir().toString());
+
 					// Set up Data Adapter registry
 					DataAdapterRegistry registry = IOManager.getManager()
 					.getAdapterRegistry();
@@ -304,5 +309,4 @@ public class OBOEdit {
 		for (int i = 0; i < adapters.length; i++)
 			logger.info("   -" + adapters[i].getID());
 	}
-
 }
