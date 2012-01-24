@@ -34,6 +34,7 @@
 		<tocitem text="The Basic Flat File Interface"
 			target="The_Basic_Flat_File_Interface" />
 		<tocitem text="The OBO Adapter" target="The_OBO_Adapter" />
+		<tocitem text="The OWL Adapter" target="The_OWL_Adapter" />
 		<tocitem text="The GO Flat File Adapter"
 			target="The_GO_Flat_File_Adapter" />
 		<tocitem text="Custom Data Adapters"
