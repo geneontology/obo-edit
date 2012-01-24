@@ -1,7 +1,26 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 ==============================
-What's New in OBO-Edit v2.1.1-b1,3
+What's New in OBO-Edit v2.1.1-b4
+==============================
+OWL Adapter:
+- Fixed issue where file browser strips off .owl extension if you select an
+existing .owl file. (Can't fix problem in file browser itself, which is
+native, but the OWL adapter now restores the .owl suffix after you select the file.)
+- Added user guide page about OWL adapter
+
+[ geneontology-Feature Requests-3476913 ] Warn about possible stale config files when launching new ve
+Whenever you upgrade to a new version of OBO-Edit, there is the risk that
+out-of-date binary files in your ~/oboedit_config (mostly in
+oboedit_config/perspectives) will cause bad behavior of various unexpected
+sorts (for example, sometimes it makes Autocommit in the Text Editor not
+work). Now a warning message about it pops up the first time you run a new
+OBO-Edit release (and it offers to rename oboedit_config/perspectives for
+you.)
+
+
+==============================
+What's New in OBO-Edit v2.1.1-b3
 ==============================
 - I made the configuration option "Confirm on exit" say "Confirm on exit, even
 if there are no changes to be saved", and I made it default to false instead of true.
@@ -23,7 +42,7 @@ Now you should be able to save OR delete your genus.
 
 
 ==============================
-What's New in OBO-Edit v2.1.1-b1,2
+What's New in OBO-Edit v2.1.1-b1 and b2
 ==============================
 New features:
 - [ geneontology-Feature Requests-3469108 ] Titlebar should show last saved-as filename
