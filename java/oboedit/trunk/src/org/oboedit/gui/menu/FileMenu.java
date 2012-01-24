@@ -366,10 +366,14 @@ public class FileMenu extends DynamicMenu {
         }
     }
 
+    /* Tell user that they can't do quick save yet and then do a Save As. */
     private static void cantDoQuickSaveYet() {
         String message = "The first time you save with a particular data adapter in an OBO-Edit session,\n you need to do a Save As so that OBO-Edit knows how you want to set\nthe save options.\nAfter that, you will be able to do a quick Save (keyboard shortcut is Command-s).";
-        JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
-                                      message, "Can't do quick save yet", JOptionPane.WARNING_MESSAGE);
+
+        // Is this popup too annoying? For now, just send message to log (where they will never look at it, of course).
+        //        JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
+        //                                      message, "Can't do quick save yet", JOptionPane.WARNING_MESSAGE);
+        logger.info(message);
 
         // I wanted to make this message come up in a dialog window that would then
         // go away by itself (without having to click OK) after a few seconds, but this
@@ -382,7 +386,7 @@ public class FileMenu extends DynamicMenu {
         //                         @Override
         //                             public void run(){
         //                             String message = "The first time you save in an OBO-Edit session, you need to do a Save As<br>so that OBO-Edit knows how you want to set the various save options.<br>After that, you will be able to do a quick Save (keyboard shortcut is Command-s).";
-        //                             createAndShowDialog("Can't do quick save yet", message, 3000); // wait 2.5 seconds before disposing dialog
+        //                             createAndShowDialog("Can't do quick save yet", message, 3000); // wait 3 seconds before disposing dialog
         //                         }
         //                     });
         //             } catch (Exception e1) { }
@@ -395,8 +399,8 @@ public class FileMenu extends DynamicMenu {
     private static void showQuickSaveDoneDialog() {
         SwingUtilities.invokeLater(new Runnable(){
                     public void run(){
-                    String message="Saved to " + SessionManager.getManager().getSession().getLoadRemark();
-                    createAndShowDialog("", message, 2000); // wait 2 seconds before disposing dialog
+                    String message=" Saved to " + SessionManager.getManager().getSession().getLoadRemark() + " ";
+                    createAndShowDialog("", message, 1500); // wait 1.5 seconds before disposing dialog
                 }
             });
     }
