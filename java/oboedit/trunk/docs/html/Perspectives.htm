@@ -53,5 +53,22 @@ file around to let others use your favorite perspective.</p>
 <p>
 To import a perspective, use [Layout] -> [Import perspective...].  The perspective name will be derived from the filename (e.g., if the file is called "new-perspective.idw", the perspective will be called "new-perspective").</p>
 </p>
+<div class="sidebar">
+<h1>Stale perspectives can be dangerous</h1>
+<hr>
+<p>If you had already installed a previous version of OBO-Edit2, the
+  perspectives subdirectory in your
+configuration directory 
+may contain stale configuration files that clash with
+the new version, which can cause problems when you try to run the new
+  OBO-Edit2.  Recent versions of OBO-Edit warn you about this
+  issue and offer to rename your perspectives directory for you. Note that if
+  you do this, you will lose your personalized OBO-Edit layout, which will
+  return to the default layout. If that annoys you, you can try keeping your
+  perspectives directory, but be alert for new "bugs" that could be caused by
+  stale perspectives files--for example, in some cases it makes Autocommit
+  mode in the Text Editor fail to commit your changes.
+</p>
+</div>
 </BODY>
 </html>
