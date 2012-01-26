@@ -24,6 +24,11 @@ public class WarnIfNewVersion {
         String warnFilename = perspectives + "/version.txt";
         File warnFile = new File(warnFilename);
         if (!warnFile.exists()) {
+            if (firstLaunch(configDir)) {
+                logger.debug("First time launching OBO-Edit!"); // DEL
+                createWarnFile(warnFilename);
+                return;
+            }
             logger.debug(warnFilename + " didn't exist"); // DEL
             offerToRenamePerspectives(configDir, perspectives, "older_version");
             createWarnFile(warnFilename);
@@ -103,5 +108,17 @@ public class WarnIfNewVersion {
         }
         // Now we need to create a new perspectives directory so that version.txt can be saved to it
         pers.mkdir();
+    }
+
+    /** Returns true if this appears (based on user's oboedit_config) to be
+     * the first time they've ever launched OBO-Edit (in which case we don't
+     * need to have the conversation about renaming perspectives). */
+    private static boolean firstLaunch(String configDir) {
+        // This file is created the first time you quit OE
+        String filterPrefs = configDir + "/filter_prefs.xml";
+        File fp = new File(filterPrefs);
+        if (fp.exists())
+            return false;
+        return true;
     }
 }
