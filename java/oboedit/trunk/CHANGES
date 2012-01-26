@@ -9,7 +9,8 @@ existing .owl file. (Can't fix problem in file browser itself, which is
 native, but the OWL adapter now restores the .owl suffix after you select the file.)
 - Added user guide page about OWL adapter
 
-[ geneontology-Feature Requests-3476913 ] Warn about possible stale config files when launching new ve
+New feature:
+[ geneontology-Feature Requests-3476913 ] Warn about possible stale config files when launching new version
 Whenever you upgrade to a new version of OBO-Edit, there is the risk that
 out-of-date binary files in your ~/oboedit_config (mostly in
 oboedit_config/perspectives) will cause bad behavior of various unexpected
@@ -32,6 +33,8 @@ the save as, it does it again after you hit ok.
 - [ geneontology-Bugs-3475532 ] 'Write ontology' box not dismissed upon save
 
 Fixed the evil twin Cross Product Editor problems:
+[ geneontology-Bugs-3471901] can't delete cross products
+[ geneontology-Bugs-3303595] deleting genus relationship in cross product tab
 In an earlier version of OE, the genus would mysteriously disappear
 when you committed. Chris and Amina fixed this by caching the value of
 the genus field in AutocompleteBox and restoring it when it
