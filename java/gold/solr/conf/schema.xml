@@ -242,6 +242,13 @@
 	   stored="true"
 	   multiValued="true"
 	   required="false" />
+    <!-- EXPERIMENTAL: capture flexible synonym scope. -->
+    <dynamicField name="synonym_label_with_scope_*" 
+		  type="string"
+		  indexed="true"
+		  stored="true"
+		  multiValued="true"
+		  required="false" />
 
     <!-- Lead: (both): (term_synonym.acc_synonym|BUG: not implemented for gp) -->
     <!-- Gene: obj_alternate_label.label[obj=$gene] -->
