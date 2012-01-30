@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <schema name="golr" version="1.3">
-
+  
   <types>
     <!-- Used to be in string: omitNorms="true"/> -->
     <fieldType name="string"
@@ -19,13 +19,36 @@
   </types>
 
   <fields>
-
-
+    
+    <!--               -->
+    <!-- DYNAMIC FIELDS -->
+    <!--               -->
+    <!-- Defined as above: string, text_ws, and integer. -->
+    <!--  -->
+    <dynamicField name="bbop_ext_string_*" 
+		  type="string"
+		  indexed="true"
+		  stored="true"
+		  multiValued="true"
+		  required="false" />
+    <dynamicField name="bbop_ext_text_*" 
+		  type="text_ws"
+		  indexed="true"
+		  stored="true"
+		  multiValued="true"
+		  required="false" />
+    <dynamicField name="bbop_ext_integer_*" 
+		  type="integer"
+		  indexed="true"
+		  stored="true"
+		  multiValued="true"
+		  required="false" />
+    
     <!--               -->
     <!-- SHARED FIELDS -->
     <!--               -->
     <!-- this section of the schema has fields that are typically shared across all documents -->
-
+    
     <!-- this schema is overloaded so we can use a general category -->
     <!-- can we use an enum? one of: ontology_class, bioentity, -->
     <!-- annotation, or annotation_aggregate. -->
@@ -242,13 +265,6 @@
 	   stored="true"
 	   multiValued="true"
 	   required="false" />
-    <!-- EXPERIMENTAL: capture flexible synonym scope. -->
-    <dynamicField name="synonym_label_with_scope_*" 
-		  type="string"
-		  indexed="true"
-		  stored="true"
-		  multiValued="true"
-		  required="false" />
 
     <!-- Lead: (both): (term_synonym.acc_synonym|BUG: not implemented for gp) -->
     <!-- Gene: obj_alternate_label.label[obj=$gene] -->
