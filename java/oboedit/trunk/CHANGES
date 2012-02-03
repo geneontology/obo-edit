@@ -1,6 +1,13 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 ==============================
+What's New in OBO-Edit v2.1.1-b6
+==============================
+When user saves their work in a file, the titlebar changes to show the new
+filename--but don't do that if the save was an autosave.
+
+
+==============================
 What's New in OBO-Edit v2.1.1-b5
 ==============================
 TEMPORARY WORKAROUND for [ geneontology-Bugs-3481225 ] Can't launch two (recent) OBO-Edits at the same time
