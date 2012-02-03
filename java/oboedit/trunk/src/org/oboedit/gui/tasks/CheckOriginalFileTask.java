@@ -97,6 +97,12 @@ public class CheckOriginalFileTask implements GUITask, Runnable {
         if (latest == null || lastLoadedOrSaved == null)
             return false;
 
+        if (latest.getAbsolutePath().indexOf(".autosave") >= 0) {
+            //            logger.debug("fileChanged: autosave"); // DEL
+            // Don't change the last-loaded-or-saved filename if it was just an autosave.
+            return false;
+        }
+
         if (!(latest.getAbsolutePath().equals(lastLoadedOrSaved.getAbsolutePath()))) {
             logger.debug("fileChanged: filename changed from " + lastLoadedOrSaved + " to " + latest);
             lastChanged = 0; // So it won't be reported as changed next time we check
