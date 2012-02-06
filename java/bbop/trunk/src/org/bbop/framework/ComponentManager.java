@@ -450,12 +450,18 @@ public class ComponentManager {
 
 	public static String getFactoryID(String componentID) {
 		int endIndex = componentID.indexOf(':');
-		return componentID.substring(0, endIndex);
+                if (endIndex > 0)
+                    return componentID.substring(0, endIndex);
+                else
+                    return componentID;
 	}
 
 	public static String getIDSuffix(String componentID) {
 		int endIndex = componentID.indexOf(':');
-		return componentID.substring(endIndex + 1, componentID.length());
+                if (endIndex > 0)
+                    return componentID.substring(endIndex + 1, componentID.length());
+                else
+                    return "";
 	}
 
 	public GUIComponentFactory getFactory(String id) {
