@@ -1,36 +1,20 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 ==============================
-What's New in OBO-Edit v2.1.1-b6
+What's New in OBO-Edit v2.1.1-b6 (2/6/2012)
 ==============================
-When user saves their work in a file, the titlebar changes to show the new
+- When user saves their work in a file, the titlebar changes to show the new
 filename--but don't do that if the save was an autosave.
+- [ geneontology-Bugs-3481225 ] Can't launch two (recent) OBO-Edits at the
+same time
+(Fixed by upgrading InstallAnywhere)
 
 
 ==============================
 What's New in OBO-Edit v2.1.1-b5
 ==============================
 TEMPORARY WORKAROUND for [ geneontology-Bugs-3481225 ] Can't launch two (recent) OBO-Edits at the same time
-Some users like to to have two different versions of OBO-Edit running
-at the same time--for example, stable release 2.1.0 and new beta
-2.1.1-b4. Starting with version 2.1-b19, this became impossible--if
-you have one OBO-Edit running, you can't launch another (post-2.1-b19)
-OBO-Edit.
-It turns out this is due to the installer fix (added in 2.1-b19) that
-lets the installer detect whether you have a 64-bit machine, and, if
-so, lets you set a higher memory setting (which is otherwise limited
-to 1860M). Setting the OBO-Edit memory allocation higher is useful for
-the many users who do have 64-bit-capable computers, because they can
-then load bigger ontologies (and even run the reasoner on them)
-without running out of memory.
-
-The temporary workaround in 2.1.1-b5 is that I removed that 64-bit
-Java stuff, so you can run 2.1.1-b5 (which is otherwise basically the
-same as 2.1.1-b4) at the same time as 2.1.0. However, you will not be
-able to set your memory allocation higher than 1860M when you install
-2.1.1-b5, so if that is a problem for you, then just stick with
-2.1.1-b4 for now until we figure out a better way to fix the
-unique-launch problem.
+[Fixed properly in 2.1.1-b6]
 
 Minor change:
 Warn about possible stale config files when launching new version--but
@@ -54,8 +38,7 @@ out-of-date binary files in your ~/oboedit_config (mostly in
 oboedit_config/perspectives) will cause bad behavior of various unexpected
 sorts (for example, sometimes it makes Autocommit in the Text Editor not
 work). Now a warning message about it pops up the first time you run a new
-OBO-Edit release (and it offers to rename oboedit_config/perspectives for
-you.)
+OBO-Edit release (and it offers to rename oboedit_config/perspectives for you.)
 
 
 ==============================
