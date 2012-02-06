@@ -1,7 +1,7 @@
 Copyright (C) 2011, Gene Ontology Consortium
 Original author:  John Day-Richter
-Version:  2.1.1-b4
-Release date: 2011-01-24
+Version:  2.1.1-b6
+Release date: 2011-02-06
 
 OBO-Edit is an open source tool written in Java for browsing, searching, and
 modifying OBO ontologies.
@@ -21,6 +21,28 @@ How to report bugs
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 ==============================
+What's New in OBO-Edit v2.1.1-b6 (2/6/2012)
+==============================
+- When user saves their work in a file, the titlebar changes to show the new
+filename--but don't do that if the save was an autosave.
+- [ geneontology-Bugs-3481225 ] Can't launch two (recent) OBO-Edits at the
+same time
+(Fixed by upgrading InstallAnywhere)
+
+
+==============================
+What's New in OBO-Edit v2.1.1-b5
+==============================
+TEMPORARY WORKAROUND for [ geneontology-Bugs-3481225 ] Can't launch two (recent) OBO-Edits at the same time
+[Fixed properly in 2.1.1-b6]
+
+Minor change:
+Warn about possible stale config files when launching new version--but
+not when a user who's never installed OBO-Edit launches for the first
+time. (Existing users won't notice this change.)
+
+
+==============================
 What's New in OBO-Edit v2.1.1-b4
 ==============================
 OWL Adapter:
@@ -36,8 +58,7 @@ out-of-date binary files in your ~/oboedit_config (mostly in
 oboedit_config/perspectives) will cause bad behavior of various unexpected
 sorts (for example, sometimes it makes Autocommit in the Text Editor not
 work). Now a warning message about it pops up the first time you run a new
-OBO-Edit release (and it offers to rename oboedit_config/perspectives for
-you.)
+OBO-Edit release (and it offers to rename oboedit_config/perspectives for you.)
 
 
 ==============================
@@ -53,6 +74,8 @@ the save as, it does it again after you hit ok.
 - [ geneontology-Bugs-3475532 ] 'Write ontology' box not dismissed upon save
 
 Fixed the evil twin Cross Product Editor problems:
+[ geneontology-Bugs-3471901] can't delete cross products
+[ geneontology-Bugs-3303595] deleting genus relationship in cross product tab
 In an earlier version of OE, the genus would mysteriously disappear
 when you committed. Chris and Amina fixed this by caching the value of
 the genus field in AutocompleteBox and restoring it when it
@@ -84,12 +107,24 @@ changes to take effect.  (If people find this annouying, I can take it out.)
 ==============================
 What's New in OBO-Edit v2.1.0 (12/21/2011)
 ==============================
+- The genus trashcan wasn't working right with Autocommit on, so it has been
+commented out for this release. (As before, you can use the Parent Editor to
+delete unwanted genuses.)
 - [geneontology-Bugs=3302934] java.lang.Object@... appearing in cross-product intersection
 
 
 ==============================
 What's New in OBO-Edit v2.1-rc4 (12/9/2011)
  ==============================
+[ geneontology-Bugs-3303595 ] deleting genus relationship in cross product tab
+The Cross Product Editor had a trashcan (delete) button for deleting
+discriminating relations, but no way to delete a genus. There is now a
+whole-cross-product delete button that will delete the genus along with any
+discriminating relations.  This change also ameliorates a pre-existing bug: if
+you created a cross product with discriminating relations but no genus, you
+couldn't delete the discriminating relations. Now you can use the
+whole-cross-product trashcan to do that.
+
 [ geneontology-Feature Requests-3446935 ] IDs in the Intersection Genus box
 Genus box and dropdown autocomplete list in cross product editor now show the
 term name and also the ID, helping to clarify what you're actually
