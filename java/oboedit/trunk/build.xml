@@ -23,7 +23,7 @@
 	<!-- install4j specific properties; these can be deleted if you don't intend to create install4j installers -->
 	<!--property name="install4j_installation_path" location="/Applications/install4j 4" / -->
 	<!-- change install path for linux -->
-	<property name="install4j_installation_path" location="/Applications/install4j 4" />
+	<property name="install4j_installation_path" location="/Applications/install4j-5" />
 	<property name="install4j_ant_library_path" location="${install4j_installation_path}/bin/ant.jar" />
 	<property name="install4j_api_library_path" location="${install4j_installation_path}/resource/i4jruntime.jar" />
 
@@ -34,9 +34,14 @@
 	<!-- utility program paths -->
 	<property name="svnpath" value="/usr/local/bin/svn" />
 	<property name="antpath" value="ant" />
-	<!-- Note: to make javahelp_indxers, you will need to install javahelp 
-	     (see http://java.sun.com/products/javahelp/download_binary.html)
-	     and you may need to change the path below to point to where you've installed it. -->
+	<!-- Note: to make javahelp_indexer (which sets up user guide pages
+	     for browsing via the Help browser widget), you need javahelp,
+	     which I gather is no longer available.  If you don't have it,
+	     then set the location in the line below to "", and you will be
+	     able to build everything else. As long as you're not adding or
+	     removing help pages, you can edit the text on the existing pages
+	     without a problem. Although come to think of it I don't know if
+	     the new text will be indexed for searching from the help browser. -->
 	<property name="javahelp_indexer" location="/Applications/jh2.0/javahelp/bin/jhindexer" />
 
 	<!-- test to see if optional regular expression targets are available -->
