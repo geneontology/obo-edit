@@ -13,12 +13,12 @@
     	<many-to-one name="gene_product" column="gene_product_id" class="org.geneontology.db.model.GeneProduct" not-null="true"/>
 		<property name="is_not"/>
 		<property name="date" column="assocdate"/>
-    	<many-to-one name="source_db" column="source_db_id" class="org.geneontology.db.model.DB"/>
-		<set name="evidence" table="evidence">
+    	<many-to-one name="source_db" column="source_db_id" class="org.geneontology.db.model.DB" fetch="join"/>
+		<set name="evidence" table="evidence" fetch="join">
 			<key column="association_id"/>
 			<one-to-many class="org.geneontology.db.model.Evidence"/>
 		</set>
-		<set name="qualifiers" table="association_qualifier">
+		<set name="qualifiers" table="association_qualifier" fetch="join">
    		  <key column="association_id"/>
     	  <many-to-many column="term_id" class="org.geneontology.db.model.Term"/>
 		</set>

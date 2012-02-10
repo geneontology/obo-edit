@@ -10,9 +10,9 @@
 		</id>
 		
 		<property name="code" not-null="true"/>
-    	<many-to-one name="association" column="association_id" class="org.geneontology.db.model.Association" not-null="true"/>
-    	<many-to-one name="dbxref" column="dbxref_id" class="org.geneontology.db.model.DBXref" not-null="true"/>
-   		<set name="withs" table="evidence_dbxref">
+    	<many-to-one name="association" column="association_id" class="org.geneontology.db.model.Association" fetch="join" not-null="true"/>
+    	<many-to-one name="dbxref" column="dbxref_id" class="org.geneontology.db.model.DBXref" fetch="join" not-null="true"/>
+   		<set name="withs" table="evidence_dbxref" fetch="join">
    		  <key column="evidence_id"/>
     	  <many-to-many column="dbxref_id" class="org.geneontology.db.model.DBXref"/>
 		</set>
