@@ -135,8 +135,8 @@ public class GeneProduct extends GOModel {
 	}
 
 	public void addAssociation(Association assoc) {
-		assoc.setGene_product(this);
 		this.getAssociations().add(assoc);
+		assoc.setGene_product(this);
 	}
 
 	public Association findAssociation(Term term, String from_db) {

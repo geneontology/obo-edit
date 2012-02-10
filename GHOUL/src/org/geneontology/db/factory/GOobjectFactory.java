@@ -20,45 +20,40 @@ import org.geneontology.db.model.Species;
 import org.geneontology.db.model.Term;
 import org.geneontology.db.model.TermSynonym;
 import org.geneontology.db.util.HibernateUtil;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 public class GOobjectFactory {
 	/** The local {@link SessionFactory} object used to retrieve data. */
-	private static SessionFactory sf;
+	private static SessionFactory sessions;
 
 	/**
 	 * Creates a new ChadoAdaptor that will retrieve data from the database configured in the supplied {@link SessionFactory} object.
-	 * @param sf a {@link SessionFactory} object with an active transaction. 
+	 * @param sessions a {@link SessionFactory} object without an active transaction. 
 	 */
-	public GOobjectFactory(SessionFactory sessionFactory){
-		/*
-		if (sf != null) {
-			sf.close();
-		}
-		sf = sessionFactory;
-		 */
-		if (sf == null) {
-			sf = sessionFactory;
+	public GOobjectFactory(String config){
+		try {
+			sessions  = HibernateUtil.buildSessionFactory(config);
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (e instanceof SQLException)
+				printSQLException((SQLException) e);
 		}
 	}
 
 	/**
-	 * 
-	 * @return {@link SessionFactory} object
+	 * Creates a new ChadoAdaptor that will retrieve data from the database configured in the supplied {@link SessionFactory} object.
+	 * @param sessions a {@link SessionFactory} object without an active transaction. 
 	 */
-	public synchronized Session getSession() {
-		Session session = null;
-		try {
-			session = sf.getCurrentSession();
-			session.beginTransaction();
-		} catch (Exception e) {
-			if (e instanceof SQLException)
-				printSQLException((SQLException) e);
-			sf.getCurrentSession();
-			session.beginTransaction();
-		}
+	public GOobjectFactory(SessionFactory sessionFactory){
+		sessions  = sessionFactory;
+	}
+
+	public synchronized Session startSession() {
+		Session session = sessions.getCurrentSession();
+		session.beginTransaction();
 		return session;
 	}
 
@@ -69,15 +64,14 @@ public class GOobjectFactory {
 	 * @param acc
 	 * @return
 	 */
-	public synchronized Term getTermByAcc(String acc){
-		Session session = getSession();
+	public synchronized Term getTermByAcc(String acc, Session session) {
+		if (acc == null || session == null)
+			return null;
 		Term term =  (Term)session.createQuery("from Term where acc = ?").setString(0, acc).uniqueResult();
-		session.getTransaction().commit();
 		return term;
 	}
 
-	public synchronized Term getTermByAlternateAcc(String acc) {
-		Session session = getSession();
+	public synchronized Term getTermByAlternateAcc(String acc, Session session) {
 		String query = "from TermSynonym where alternateID = ?";
 		TermSynonym ts = (TermSynonym)session.createQuery(query).setString(0, acc).uniqueResult();
 		if (ts == null) {
@@ -89,8 +83,7 @@ public class GOobjectFactory {
 	/**
 	 * getTermByName: Fetches a Term from the database with the specified name
 	 */
-	public synchronized Term getTermByName(String name){
-		Session session = getSession();
+	public synchronized Term getTermByName(String name, Session session){
 		Iterator<Term> results = session.createQuery("from Term where name = ?").setString(0, name).iterate();
 		Term term = null;
 		int cnt = 0;
@@ -111,8 +104,7 @@ public class GOobjectFactory {
 	 * @param int id
 	 * @return DBXref
 	 */
-	public synchronized DBXref getDBXrefByID (int id) {
-		Session session = getSession();
+	public synchronized DBXref getDBXrefByID (int id, Session session) {
 		return (DBXref)session.createQuery("from DBXref where id = ?").setInteger(0, id).uniqueResult();
 	}
 
@@ -122,8 +114,7 @@ public class GOobjectFactory {
 	 * @param String acc - the accession number
 	 * @return DBXref
 	 */
-	public synchronized DBXref getDBXrefByDBAcc (String db, String acc) {
-		Session session = getSession();
+	public synchronized DBXref getDBXrefByDBAcc (String db, String acc, Session session) {
 		Query q = session.createQuery("from DBXref where db = ? and acc = ?");
 		q.setString(0, db);
 		q.setString(1, acc);
@@ -135,8 +126,7 @@ public class GOobjectFactory {
 	 * @param String name
 	 * @return DB
 	 */
-	public synchronized DB getDBByName (String name) {
-		Session session = getSession();
+	public synchronized DB getDBByName (String name, Session session) {
 		return (DB)session.createQuery("from DB where name = ?").setString(0, name).uniqueResult();
 	}
 
@@ -146,8 +136,7 @@ public class GOobjectFactory {
 	 * @param db_key the {@link org..geneontology.db.model.DBXref} db_key to fetch {@link GeneProduct} objects by.
 	 * @return the unique {@link GeneProduct} that have DBXref of with the specified name and key.
 	 */
-	public synchronized Iterator<GeneProduct> getGPListByDBXref(Vector<String []> xrefs) {
-		Session session = getSession();
+	public synchronized Iterator<GeneProduct> getGPListByDBXref(Vector<String []> xrefs, Session session) {
 		String query_str = "select g from GeneProduct as g inner join g.dbxref as xref where ";
 		String prefix = "";
 		for (Iterator<String []> xref_it = xrefs.iterator(); xref_it.hasNext();) {
@@ -172,8 +161,7 @@ public class GOobjectFactory {
 	 * @param db_key the {@link org..geneontology.db.model.DBXref} db_key to fetch {@link GeneProduct} objects by.
 	 * @return the unique {@link GeneProduct} that have DBXref of with the specified name and key.
 	 */
-	public synchronized GeneProduct getGPByDBXref(String db_name, String db_key) {
-		Session session = getSession();
+	public synchronized GeneProduct getGPByDBXref(String db_name, String db_key, Session session) {
 		GeneProduct gp = (GeneProduct) session.createQuery("select g from GeneProduct as g inner join g.dbxref as xref " +
 				" where xref.db_name = ? and" +
 		" xref.accession = ?")
@@ -187,9 +175,9 @@ public class GOobjectFactory {
 	 * @param xrefStr
 	 * @return
 	 */
-	public synchronized GeneProduct getGPByDBXrefStr(String xrefStr) {
+	public synchronized GeneProduct getGPByDBXrefStr(String xrefStr, Session session) {
 		String[] parts = xrefStr.split(":", 2);
-		return getGPByDBXref(parts[0], parts[1]);
+		return getGPByDBXref(parts[0], parts[1], session);
 	}
 
 	/**
@@ -197,8 +185,7 @@ public class GOobjectFactory {
 	 * @param seq_acc the {@link org..geneontology.db.model.DBXref} db_key to fetch {@link GeneProduct} objects by.
 	 * @return the unique {@link GeneProduct} that have DBXref of with the specified name and key.
 	 */
-	public synchronized GeneProduct getGPByAcc(String seq_acc) {
-		Session session = getSession();
+	public synchronized GeneProduct getGPByAcc(String seq_acc, Session session) {
 		GeneProduct	gp = (GeneProduct) session.createQuery("select g from GeneProduct as g inner join g.dbxref as xref " +
 		" where xref.accession = ?")
 		.setString(0, seq_acc).uniqueResult();
@@ -210,8 +197,7 @@ public class GOobjectFactory {
 	 * @param int dbxref_id
 	 * @return GeneProduct
 	 */
-	public synchronized GeneProduct getGPByDBXref_ID(int dbxref_id){
-		Session session = getSession();
+	public synchronized GeneProduct getGPByDBXref_ID(int dbxref_id, Session session){
 		return (GeneProduct)session.createQuery("from GeneProduct where dbxref_id = ?").setInteger(0, dbxref_id).uniqueResult();
 	}
 
@@ -220,8 +206,7 @@ public class GOobjectFactory {
 	 * @param int dbxref_id
 	 * @return GeneProduct
 	 */
-	public synchronized GeneProduct getGPByID(int gene_id){
-		Session session = getSession();
+	public synchronized GeneProduct getGPByID(int gene_id, Session session){
 		return (GeneProduct)session.createQuery("from GeneProduct where id = ?").setInteger(0, gene_id).uniqueResult();
 	}
 
@@ -230,8 +215,7 @@ public class GOobjectFactory {
 	 * @param String name
 	 * @return GeneProduct
 	 */
-	public synchronized Iterator<GeneProduct> getGPByName (String name) {
-		Session session = getSession();
+	public synchronized Iterator<GeneProduct> getGPByName (String name, Session session) {
 		return (Iterator<GeneProduct>)session.createQuery("from GeneProduct where symbol = ?").setString(0, name).iterate();
 	}
 
@@ -248,8 +232,7 @@ public class GOobjectFactory {
 	 * @param db_key the {@link org.geneontology.db.model.DBXref} db_key to fetch {@link GeneProduct} objects by.
 	 * @return the unique {@link GeneProduct} that have DBXref of with the specified name and key.
 	 */
-	public synchronized Iterator<GeneProduct>  getGPBySeq(String db_key) {
-		Session session = getSession();
+	public synchronized Iterator<GeneProduct>  getGPBySeq(String db_key, Session session) {
 		return (Iterator<GeneProduct>) session.createQuery("select g from GeneProduct as g inner join g.seqs as seq_link " +
 				"inner join seq_link.seq as seq " +
 				"inner join seq.dbxrefs as xref " +
@@ -262,13 +245,11 @@ public class GOobjectFactory {
 	 * @param taxa
 	 * @return Species
 	 */
-	public synchronized Species getSpeciesByTaxa(int taxa){
-		Session session = getSession();
+	public synchronized Species getSpeciesByTaxa(int taxa, Session session){
 		return (Species)session.createQuery("from Species where ncbi_taxa_id = ?").setInteger(0, taxa).uniqueResult();
 	}
 
-	public synchronized GraphPath getPath(int id1, int id2) {
-		Session session = getSession();
+	public synchronized GraphPath getPath(int id1, int id2, Session session) {
 		Query q = session.createQuery("from GraphPath p where p.object = ? and p.subject = ?");
 		q.setInteger(0, id1);
 		q.setInteger(1, id2);
@@ -277,8 +258,15 @@ public class GOobjectFactory {
 		try {
 			path_list = (List<GraphPath>) q.list();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			System.out.println ("Hibernate choked on " + id1 + " and " + id2);
+			if (HibernateException.class.isInstance( e ) ) {
+				System.out.println ("HibernateException: " + e.getMessage());
+			} else if (SQLException.class.isInstance( e ) ) {
+				System.out.println ("SQLException: " + e.getMessage());
+			} else {
+				System.out.println (e.getClass().toString() + " Exception: " + e.getMessage() + " on " + q.getQueryString());
+			}
+			session.cancelQuery();
+//			session.flush();
 		}
 
 		if (path_list == null || path_list.size() == 0) {
@@ -286,7 +274,18 @@ public class GOobjectFactory {
 			q = session.createQuery("from GraphPath p where p.object = ? and p.subject = ?");
 			q.setInteger(0, id2);
 			q.setInteger(1, id1);
-			path_list = (List<GraphPath>) q.list();	
+			try {
+				path_list = (List<GraphPath>) q.list();	
+			} catch (Exception e) {
+				if (HibernateException.class.isInstance( e ) ) {
+					System.out.println ("HibernateException: " + e.getMessage());
+				} else if (SQLException.class.isInstance( e ) ) {
+					System.out.println ("SQLException: " + e.getMessage());
+				} else {
+					System.out.println (e.getClass().toString() + " Exception: " + e.getMessage() + " on " + q.getQueryString());
+				}
+				session.cancelQuery();
+			}
 		}
 		if (path_list != null && path_list.size() > 0) {
 			path = path_list.get(0);
@@ -302,10 +301,10 @@ public class GOobjectFactory {
 		return path;
 	}
 
-	public synchronized GraphPath getPath(Term term1, Term term2) {
+	public synchronized GraphPath getPath(Term term1, Term term2, Session session) {
 		GraphPath path = null;
 		if (term1 != null && term2 != null) {
-			path = getPath(term1.getTerm_id(), term2.getTerm_id());
+			path = getPath(term1.getTerm_id(), term2.getTerm_id(), session);
 		}
 		return path;
 	}
@@ -315,34 +314,46 @@ public class GOobjectFactory {
 	 * @param species name
 	 * @return Species
 	 */
-	public synchronized List<Species> getSpeciesByName(String genus, String species){
-		Session session = getSession();
+	public synchronized List<Species> getSpeciesByName(String genus, String species, Session session){
 		Query q;
-		if (species != null) {
-			q = session.createQuery("from Species where genus = ? and species = ?");
-			q.setString(0, genus);
-			q.setString(1, species);
-			Species result = (Species)q.uniqueResult();
-			List<Species> specie_list = new ArrayList<Species>();
-			specie_list.add(result);
-			return specie_list;			
-		} else {
-			q = session.createQuery("from Species where genus = ?");
-			q.setString(0, genus);
-			List<Species> specie_list = (List<Species>) q.list();
-			return specie_list;
+		List<Species> specie_list = new ArrayList<Species>();
+		try {
+			if (species != null && !species.equals("")) {
+				q = session.createQuery("from Species where genus = ? and species = ?");
+				q.setString(0, genus);
+				q.setString(1, species);
+				Species result = (Species)q.uniqueResult();
+				specie_list.add(result);
+				return specie_list;			
+			} else {
+				q = session.createQuery("from Species where genus = ?");
+				q.setString(0, genus);
+				q.toString();
+				specie_list = (List<Species>) q.list();
+			}
+		} catch (Exception e) {
+			if (HibernateException.class.isInstance( e ) ) {
+				System.out.println ("HibernateException: " + e.getMessage());
+			} else if (SQLException.class.isInstance( e ) ) {
+				System.out.println ("SQLException: " + e.getMessage());
+			} else {
+				e.printStackTrace();
+			}
+			session.close();
+			// TODO Auto-generated catch block
 		}
+		return specie_list;
 	}
 
-	public synchronized Iterator<Association> getAssociationsIteratorByGP(GeneProduct gp) {
-		Iterator<Association> it = getSession().createQuery("from Association where gene_product = ?").setEntity(0, gp).iterate();
+	public synchronized Iterator<Association> getAssociationsIteratorByGP(GeneProduct gp, Session session) {
+		Iterator<Association> it = session.createQuery("from Association where gene_product = ?").setEntity(0, gp).iterate();
 		return it;
 	}
 
 	/**
 	 * 
 	 */
-	public synchronized Vector<Term> getTermIntersection(HashMap<Term, Vector<Association>> annots) {
+	public synchronized Vector<Term> getTermIntersection(HashMap<Term, Vector<Association>> annots, Session session) {
 		Vector<String> gp_ids = new Vector<String> (annots.size());
 		for (Iterator<Vector<Association>> it = annots.values().iterator(); it.hasNext();) {
 			Vector<Association> assocs = it.next();
@@ -355,12 +366,11 @@ public class GOobjectFactory {
 				}
 			}
 		}
-		return getTermIntersectionByGP(gp_ids);
+		return getTermIntersectionByGP(gp_ids, session);
 
 	}
 
-	public synchronized Vector<Term> getTermIntersectionByGP(Collection<String> gp_ids) {
-		Session session = getSession();
+	public synchronized Vector<Term> getTermIntersectionByGP(Collection<String> gp_ids, Session session) {
 		/* 
 		 * For (working) example
 		 * select term.acc, term.name, COUNT(DISTINCT gene_product.id) 
@@ -427,7 +437,7 @@ public class GOobjectFactory {
 
 		}
 	}
-	
+
 	public static void getWarningsFromResultSet(ResultSet rs) throws SQLException {
 		printWarnings(rs.getWarnings());
 	}

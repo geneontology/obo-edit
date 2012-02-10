@@ -1,7 +1,6 @@
 package org.geneontology.db.test;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -27,53 +26,52 @@ import org.geneontology.db.model.Term;
 import org.geneontology.db.model.TermDBXref;
 import org.geneontology.db.model.TermSynonym;
 import org.geneontology.db.util.HibernateUtil;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 public class GHOUL_UnitTest extends TestCase{
 
 	private SessionFactory sessionFactory;
-	private GOobjectFactory objFactory;
+	private GOobjectFactory factory;
+
 	protected final static Logger logger = Logger.getLogger(GHOUL_UnitTest.class);
 
 	public GHOUL_UnitTest(){
 		try {
 			this.sessionFactory = HibernateUtil.buildSessionFactory("hibernate.cfg.xml");
+			factory = new GOobjectFactory(sessionFactory);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public SessionFactory getSessionFactory() {
-		return this.sessionFactory;
+	public Session startSession() {
+		Session session = factory.startSession();
+		return session;
 	}
-	
-	public GOobjectFactory getObjFactory() {
-		if (objFactory == null)
-			return initSessionFactory();
-		return objFactory;
+
+	public void endSession(Session session) {
+		if (session != null) {
+			session.close();
+		}
 	}
 
 	public void setSessionFactory(SessionFactory sf) {
 		this.sessionFactory = sf;
 	}
 
-	public GOobjectFactory initSessionFactory() {
-		this.getSessionFactory().getCurrentSession().beginTransaction();
-		objFactory = new GOobjectFactory(this.getSessionFactory());
-		return objFactory;
-	}
-	
 	public void testGraphPath() {
-		GOobjectFactory factory = initSessionFactory();
-		GraphPath path = factory.getPath(12749, 7072);
+		Session session = startSession();
+		GraphPath path = factory.getPath(12749, 7072, session);
 		Assert.assertTrue(path != null);
+		endSession(session);
 	}
 
 	public void testGP() {
-//		this.getSessionFactory().getCurrentSession().beginTransaction();
-//		GeneProduct gp = (GeneProduct) this.getSessionFactory().getCurrentSession().get(GeneProduct.class, 252956);
-		GOobjectFactory factory = initSessionFactory();
-		GeneProduct gp = (GeneProduct) factory.getGPByDBXrefStr("ZFIN:ZDB-GENE-030318-3");
+		//		this.getSessionFactory().getCurrentSession().beginTransaction();
+		//		GeneProduct gp = (GeneProduct) this.getSessionFactory().getCurrentSession().get(GeneProduct.class, 252956);
+		Session session = startSession();
+		GeneProduct gp = (GeneProduct) factory.getGPByDBXrefStr("ZFIN:ZDB-GENE-030318-3", session);
 		Assert.assertTrue(gp != null);
 		if (gp != null) {
 			logger.assertLog(gp.getSymbol().equals("myo6b"), "Symbol does not match myo6b");
@@ -94,41 +92,45 @@ public class GHOUL_UnitTest extends TestCase{
 			Assert.assertEquals(gp.getSpecies().getSpecies(), "rerio");
 			logger.info("\n" + prettyPrint(gp));
 
-			gp = (GeneProduct) factory.getGPByDBXref("RGD", "Q5M819");
+			gp = (GeneProduct) factory.getGPByDBXref("RGD", "Q5M819", session);
 			Assert.assertTrue(gp != null);
 
-			Iterator<Association> it = factory.getAssociationsIteratorByGP(gp);
+			Iterator<Association> it = factory.getAssociationsIteratorByGP(gp, session);
 			Assert.assertTrue(it.hasNext());
 			while (it.hasNext()) {
 				Association assoc = it.next();
 				logger.info(" assoc: "+assoc);
 			}
-
 		}
+		endSession(session);
 	}
 
 	public void testGPJoin() {
-		GOobjectFactory factory = initSessionFactory();
-		GeneProduct gp = (GeneProduct) factory.getGPByDBXref("RGD", "Q5M819");
+		Session session = startSession();
+		GeneProduct gp = (GeneProduct) factory.getGPByDBXref("RGD", "Q5M819", session);
 		Assert.assertTrue(gp != null);
 		if (gp == null) {
-			gp = (GeneProduct) factory.getGPByName("Psph");
+			gp = (GeneProduct) factory.getGPByName("Psph", session);
 			Assert.assertTrue(gp != null);
 		}
+		endSession(session);
 		logger.info(prettyPrint(gp));
 	}
 
 	public void testObsolete() {
-		Term term = (Term) getObjFactory().getTermByAcc("GO:0000005"); // ribosomal chaperone activity
+		Session session = startSession();
+		Term term = (Term) factory.getTermByAcc("GO:0000005", session); // ribosomal chaperone activity
 		Assert.assertTrue(term != null);
 		if (term != null) {
 			logger.info("\n\t" + prettyPrint(term));
 		}
+		endSession(session);
 		Assert.assertTrue(term.isObsolete());
 	}
 
 	public void testTerm() {
-		Term term = (Term) getObjFactory().getTermByAcc("GO:0000011"); // vacuole inheritance
+		Session session = startSession();
+		Term term = (Term) factory.getTermByAcc("GO:0000011", session); // vacuole inheritance
 		Assert.assertTrue(term != null);
 		if (term != null) {
 			/** check for associations with foreign keys to DB table that don't exist in the DB table */
@@ -140,6 +142,7 @@ public class GHOUL_UnitTest extends TestCase{
 			}			
 			logger.info("\n\t" + prettyPrint(term));
 		}
+		endSession(session);
 	}
 
 	public void testTermParents() {
@@ -147,8 +150,8 @@ public class GHOUL_UnitTest extends TestCase{
 		gp_list.add("MGI:98358");
 		gp_list.add("3735"); // RGD
 		gp_list.add("ZDB-GENE-011207-1");
-		GOobjectFactory factory = initSessionFactory();
-		Vector<Term> terms = (Vector<Term>) factory.getTermIntersectionByGP(gp_list);
+		Session session = startSession();
+		Vector<Term> terms = (Vector<Term>) factory.getTermIntersectionByGP(gp_list, session);
 		if (terms != null) {
 			/** check for associations with foreign keys to DB table that don't exist in the DB table */
 			for (Iterator<Term> it = terms.iterator(); it.hasNext();) {
@@ -159,21 +162,22 @@ public class GHOUL_UnitTest extends TestCase{
 						a.getName() != null);
 			}			
 		}
-
+		endSession(session);
 	}
 
 	private GeneProduct testGetGP_byName() {
-		GOobjectFactory factory = initSessionFactory();
-		Iterator<GeneProduct> gps = factory.getGPByName("clock");
+		Session session = startSession();
+		Iterator<GeneProduct> gps = factory.getGPByName("clock", session);
 		GeneProduct found = null;
 		while (gps.hasNext() && found == null) {
 			GeneProduct gp = gps.next();
 			found = (gp.getGp_id() == 244529 ? gp : null);
 		}
+		endSession(session);
 		Assert.assertTrue(found != null);
 		return found;
 	}
-	
+
 	public void testAssocQualifier() {
 		GeneProduct gp = testGetGP_byName();
 		boolean found = false;
@@ -295,8 +299,9 @@ public class GHOUL_UnitTest extends TestCase{
 	}
 
 	private String validDBName(String db_name) {
-		GOobjectFactory goFactory = initSessionFactory();	
-		DB db = goFactory.getDBByName(db_name);
+		Session session = startSession();
+		DB db = factory.getDBByName(db_name, session);
+		endSession(session);
 		return (db == null ? "(not in db table)" : "");
 	}
 
