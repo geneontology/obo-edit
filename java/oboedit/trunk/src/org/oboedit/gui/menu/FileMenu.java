@@ -327,7 +327,7 @@ public class FileMenu extends DynamicMenu {
             OBOAdapterConfiguration oboconfig = (OBOAdapterConfiguration)config;
             if ((oboconfig.getBasicSave() && oboconfig.getWritePath() == null) ||
                 // If user saved via the OBO Advanced interface, the write path will be in SaveRecord
-                (oboconfig.getSaveRecords() == null)) {
+                (oboconfig.getSaveRecords() == null || oboconfig.getSaveRecords().size() == 0)) {
                 cantDoQuickSaveYet();
                 return;
             }
@@ -350,7 +350,7 @@ public class FileMenu extends DynamicMenu {
 	    }
 
 	    Object output = adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, config, SessionManager.getManager().getSession());
-            if (output == null) { // Can this happen?
+            if (output == null || SessionManager.getManager().getSession().getLoadRemark() == null) {
                 String message = "Quick save to " + SessionManager.getManager().getSession().getLoadRemark() + " failed!";
                 JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
 					      message, "Save failed", JOptionPane.ERROR_MESSAGE);
