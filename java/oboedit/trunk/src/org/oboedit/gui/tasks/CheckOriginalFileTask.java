@@ -73,8 +73,10 @@ public class CheckOriginalFileTask implements GUITask, Runnable {
                     return;
 
                 for (Object filename : filenames) {
-                    file = new File((String)filename);
-                    break;
+                    if (filename != null) {
+                        file = new File((String)filename);
+                        break;
+                    }
                 }
                 if (file == null)
                     return;
