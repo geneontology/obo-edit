@@ -296,7 +296,7 @@ public class OBOEdit {
 		props.setProperty("log4j.appender.A2.append","true");
 		props.setProperty("log4j.appender.A2.layout","org.apache.log4j.PatternLayout");
                 //		props.setProperty("log4j.appender.A2.layout.ConversionPattern","%d [%t] %-5p %c - %m%n");
-		props.setProperty("log4j.appender.A2.layout.ConversionPattern","[%d{yy-MM-dd HH:mm:ss}] %c{4}%m%n");
+		props.setProperty("log4j.appender.A2.layout.ConversionPattern","[%d{yy-MM-dd HH:mm:ss}] %c{3} - %m%n");
 		LogManager.resetConfiguration();
 		PropertyConfigurator.configure(props);
 	}
