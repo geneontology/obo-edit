@@ -1,6 +1,29 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 ==============================
+What's New in OBO-Edit v2.1.1-b7
+==============================
+Quick Save fixes:
+[ geneontology-Bugs-3487349 ] Quick save lets you save the first time when it shouldn't
+If you loaded via Advanced interface, you could then do a Quick Save the first
+time you saved (but it didn't actually know yet what file to save to, so it
+tried to save to null).
+[ geneontology-Bugs-3490963 ] quick save not working properly
+Was letting you do Quick Save before you'd done Save As on that file.
+
+[ geneontology-Bugs-3486945 ] 64bit JRE can not be used on windows 7
+Windows apparently doesn't let you designate a preferred Java version, so the
+installer can do no better than using the first Java it comes across. The fix
+is to distribute two Windows installers: 32-bit and 64-bit, and let Windows
+users choose the appropriate one.
+
+[ geneontology-Bugs-3487892 ] In compound ancestor/descendant queries, relation list bad
+In a compound search with two aspects, the relation pulldown lists didn't
+behave well. This turned out to be because of basically infinite refreshing of
+the lists.
+
+
+==============================
 What's New in OBO-Edit v2.1.1-b6 (2/6/2012)
 ==============================
 - When user saves their work in a file, the titlebar changes to show the new
