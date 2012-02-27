@@ -52,6 +52,9 @@ public class FileMenu extends DynamicMenu {
 	protected static ActionListener saveAsActionListener;
         protected static ActionListener saveActionListener;
 
+        // This becomes true if user does a save as after loading the current file
+        private static boolean didSaveAs = false;
+
 	public FileMenu() {
 		super("File");
 
@@ -147,6 +150,7 @@ public class FileMenu extends DynamicMenu {
 	}
 
 	protected void doImport() {
+            didSaveAs = false;
 		int proceed = JOptionPane
 				.showConfirmDialog(
 						GUIManager.getManager().getFrame(),
@@ -170,23 +174,11 @@ public class FileMenu extends DynamicMenu {
 		}
 	}
 
-	// Moved to EditMenu
-// 	protected boolean resolveIDs() {
-// 		try {
-// 			IDUtil.updateIDs(SessionManager.getManager().getSession(),
-// 					new ArrayList<LinkIDResolution>(), true);
-// 			return true;
-// 		} catch (UnresolvedIDsException e) {
-// 			ComponentManager.getManager().showComponent(
-// 					new IDResolutionComponentFactory(), true);
-// 			return false;
-// 		}
-// 	}
-
 
     /** Made this method public so it can be called by CheckOriginalFileTask to prompt user
       * to reload the file if it's changed on disk. */
             public static void doLoad() {
+                didSaveAs = false;
                 if (SessionManager.getManager().needsSave()) {
                     int proceed = JOptionPane
                         .showConfirmDialog(GUIManager.getManager().getFrame(),
@@ -217,6 +209,7 @@ public class FileMenu extends DynamicMenu {
             }
 
 	public static void newOntology() {
+            didSaveAs = false;
 		if (SessionManager.getManager().needsSave()) {
 			int proceed = JOptionPane
 					.showConfirmDialog(
@@ -295,6 +288,7 @@ public class FileMenu extends DynamicMenu {
 			// it didn't change on disk out from under us
 			// (It will also cause FrameNameUpdateTask to update the titlebar.)
 			Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(saveAsActionListener));
+                        didSaveAs = true;
 		    }
 			} catch (DataAdapterException e1) {
 		// TODO Auto-generated catch block
@@ -305,6 +299,11 @@ public class FileMenu extends DynamicMenu {
     public static void doSave() {
         // Figure out whether we can do a silent save--if user hasn't done a save yet
         // this session, then they have to do a Save As.
+        if (!didSaveAs) {
+	    cantDoQuickSaveYet();
+	    return;
+        }
+
         OBOSession session = SessionManager.getManager().getSession();
         if (session == null) // Why would this happen?
             return;
@@ -325,9 +324,12 @@ public class FileMenu extends DynamicMenu {
         // Figure out if we have a valid write path yet
         if (config instanceof OBOAdapterConfiguration) {
             OBOAdapterConfiguration oboconfig = (OBOAdapterConfiguration)config;
-            if ((oboconfig.getBasicSave() && oboconfig.getWritePath() == null) ||
+            if ((oboconfig.getBasicSave() && (oboconfig.getWritePath() == null)) ||
                 // If user saved via the OBO Advanced interface, the write path will be in SaveRecord
-                (oboconfig.getSaveRecords() == null || oboconfig.getSaveRecords().size() == 0)) {
+                (!oboconfig.getBasicSave() && (oboconfig.getSaveRecords() == null || oboconfig.getSaveRecords().size() == 0))) {
+                //                logger.debug("doSave: oboconfig.getBasicSave() = " + oboconfig.getBasicSave() +
+                //                             ", oboconfig.getWritePath() = " + oboconfig.getWritePath() +
+                //                             ", oboconfig.getSaveRecords() = " + oboconfig.getSaveRecords()); // DEL
                 cantDoQuickSaveYet();
                 return;
             }
@@ -345,7 +347,7 @@ public class FileMenu extends DynamicMenu {
 	    // This is to, for example, alert TextEditor that the user wants to save, so it can warn if there are uncommitted changes
 	    boolean cancelled = IOManager.getManager().justFireEvents(OBOAdapter.WRITE_ONTOLOGY, SessionManager.getManager().getSession());
 	    if (cancelled) {
-		logger.debug("User canceled save"); // DEL
+		// logger.debug("User canceled save"); // DEL
 		return; // User decided not to save
 	    }
 
