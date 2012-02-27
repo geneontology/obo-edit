@@ -122,7 +122,11 @@ public class LinkFilterEditor extends TermFilterEditor {
 				.getSelectedItem()));
 		//		logger.debug("linkFilter.getFilter " + linkFilter);
 		//		logger.debug("linkFilter.getFilter: calling updateFields"); // DEL
-		updateFields(); // This is needed in order to properly update pulldown menus, although getFilter gets called like 30 times, so it seems a bit wasteful.
+                // This call to updateFields results in excessive calls to getFilter when there are TWO aspect boxes visible
+                // (which makes the relation pulldown lists behave badly).
+                // Doesn't seem to be needed anymore to update relation lists, probably
+                // because of other changes I've made.
+                //		updateFields(); // This is needed in order to properly update pulldown menus, although getFilter gets called like 30 times, so it seems a bit wasteful.
 		return linkFilter;
 	}
 }
