@@ -169,7 +169,9 @@ public class FileAdapterUI extends AbstractGraphicalUI implements ParameterUI {
 			public void actionPerformed(ActionEvent e) {
 			    // Start FileChooser ("Browse...") at most recently selected directory
 			    String currentPath = (String) writeField.getSelectedItem();
-			    
+			    // When you open the Save As browser, it grays out all the files (including .obo files).
+                            // It is possible to give an "extensions" argument to getFileSelector,
+                            // although leaving that out is supposed to show all files, which it doesn't.
 			    SelectDialog dialog = SelectDialog.getFileSelector(SelectDialog.SAVE, currentPath);
 			    dialog.show();
 				String selected = dialog.getSelectedCanonicalPath();
