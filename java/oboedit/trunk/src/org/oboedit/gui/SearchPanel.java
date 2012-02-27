@@ -140,7 +140,8 @@ public class SearchPanel extends JPanel {
 			{
 				addHierarchyListener(new HierarchyListener() {
 					public void hierarchyChanged(HierarchyEvent e) {
-						ensureButtonState();
+                                            logger.debug("SearchPanel.hierarchyChanged");
+                                            ensureButtonState(); // need?
 					}
 				});
 			}
@@ -199,21 +200,22 @@ public class SearchPanel extends JPanel {
 
 		JButton addButton = new JButton(Preferences.loadLibraryIcon("plus.gif"));
 		addButton.setToolTipText("Add additional search filter");
-		MultiIcon doublePlusIcon = new MultiIcon();
-		doublePlusIcon.addIcon(Preferences.loadLibraryIcon("plus.gif"));
-		doublePlusIcon.addIcon(Preferences
-				.loadLibraryIcon("right_indent_icon.gif"));
-		JButton addRecursiveButton = new JButton(doublePlusIcon);
+                // None of this (for the ++ button) is currently used.
+                //		MultiIcon doublePlusIcon = new MultiIcon();
+                //		doublePlusIcon.addIcon(Preferences.loadLibraryIcon("plus.gif"));
+                //		doublePlusIcon.addIcon(Preferences
+                //				.loadLibraryIcon("right_indent_icon.gif"));
+                //		JButton addRecursiveButton = new JButton(doublePlusIcon);
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				add();
 			}
 		});
-		addRecursiveButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				addSubSearch();
-			}
-		});
+                //		addRecursiveButton.addActionListener(new ActionListener() {
+                //			public void actionPerformed(ActionEvent e) {
+                //				addSubSearch();
+                //			}
+                //		});
 
 		ActionListener actionListener = new ActionListener() {
 
@@ -588,8 +590,9 @@ public class SearchPanel extends JPanel {
 			component = factory.createSubEditor();
 			factory.addUpdateListener(component, new GUIUpdateListener() {
 				public void guiupdated(GUIUpdateEvent e) {
+                                    //                                    logger.debug("guiupdated ");
 				    // Is this really necessary?  It gets updated anyway.
-//					updateMatchLabel();
+                                    //				updateMatchLabel();
 				}
 			});
 			JPanel p = new JPanel();
