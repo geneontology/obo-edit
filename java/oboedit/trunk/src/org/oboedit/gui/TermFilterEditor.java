@@ -38,6 +38,9 @@ import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.event.GUIUpdateEvent;
 import org.oboedit.gui.event.GUIUpdateListener;
+import org.oboedit.gui.event.ReloadEvent;
+import org.oboedit.gui.event.ReloadListener;
+import org.oboedit.util.GUIUtil;
 import org.apache.log4j.*;
 
 public class TermFilterEditor extends JPanel {
@@ -89,7 +92,8 @@ public class TermFilterEditor extends JPanel {
 	protected class BasicActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-                  // This call to updateFields is needed by the Link Search when the user
+                  // updateFields();
+                  // <3/2011: This call to updateFields is needed by the Link Search when the user
                   // selects a different item from the "Find links where" menu.
                   // 3/31/2011: Is it?  It doesn't seem to be, and having it there breaks
                   // the aspect field (in [self, child, etc.]) in the Search Panel (it
@@ -98,9 +102,12 @@ public class TermFilterEditor extends JPanel {
                   // Oh, I see...if you don't updateFields, the status label
                   // (the text that has a descriptin of the search, e.g., "all_text_fields contains 'blue'")
                   // (it's in FilterComponent.java) doesn't update when you change the search.
-                    //                  updateFields();
-		    //		    logger.debug("TermFilterEditor.actionPerformed: " + e); // DEL
+                    //                    logger.debug("TermFilterEditor.actionPerformed: " + e); // DEL
                     fireUpdateEvent(); // This seems to do the trick--statusLabel updates as it should.
+                    // 2/2012: Except that if you type something into
+                    // valueField and then select one of the autocomplete terms,
+                    // the statusLabel doesn't update right away to show the selected term.
+                    // (and changing back to updateFields didn't help).
 		}
 	}
 
@@ -111,10 +118,10 @@ public class TermFilterEditor extends JPanel {
 	protected ActionListener aspectBoxListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
                     boolean showTypeBox = !(aspectBox.getSelectedItem() instanceof SelfSearchAspect);
-		    //		    logger.debug("aspectBoxListener: aspectBox.getSelectedItem = " + aspectBox.getSelectedItem() + ", showTypeBox = " + showTypeBox); // DEL
+                    //                    logger.debug("aspectBoxListener: aspectBox.getSelectedItem = " + aspectBox.getSelectedItem() + ", showTypeBox = " + showTypeBox); // DEL
                     reachedViaLabel.setVisible(showTypeBox);
                     typeBox.setVisible(showTypeBox);
-                    updateFields();
+                    updateFields(); // Need?
 		}
 	};
 
@@ -128,12 +135,18 @@ public class TermFilterEditor extends JPanel {
 
 	protected ActionListener valueFieldListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-                    //                    logger.debug("valueFieldListener.actionPerformed: " + e); // DEL
-			fireUpdateEvent();
-                        updateFields();
+                    //                                        logger.debug("valueFieldListener.actionPerformed: " + e); // DEL
+                    // Need? It's not clear these calls accomplish anything.
+                    // They don't solve the problem that if you type something into
+                    // valueField and then select one of the autocomplete terms,
+                    // the statusLabel doesn't update to show the selected term.
+                    //                    fireUpdateEvent();
+                    //                    updateFields();
 		}
 	};
 
+    // The timer causes the statusLabel (the string at the bottom of the search panel
+    // that describes the search) to get updated. (Not sure why it's done this way.)
 	protected Timer timer = new Timer(500, new ActionListener() {
 
 		public void actionPerformed(ActionEvent e) {
@@ -149,7 +162,15 @@ public class TermFilterEditor extends JPanel {
 		return IdentifiedObject.class;
 	}
 
-  // This method gets called 33 times when OBO-Edit launches!
+	protected ReloadListener reloadListener = new ReloadListener() {
+		public void reload(ReloadEvent e) {
+                    //                    logger.debug("TFE: ReloadEvent: " + e); // DEL
+                    //fireUpdateEvent(); // this wasn't good enough--aspect relation pulldown didn't show ontology-specific relations
+                    updateFields();
+            }
+	};
+
+        // This method gets called 33 times when OBO-Edit launches!
 	protected Collection<SearchCriterion<?, ?>> getCriteria() {
 		Collection<SearchCriterion<?, ?>> out = new LinkedList<SearchCriterion<?, ?>>();
 		for (SearchCriterion sc : FilterManager.getManager()
@@ -163,10 +184,12 @@ public class TermFilterEditor extends JPanel {
 
 	protected boolean aspectVisible = false;
 
+        // This method gets called excessively
 	protected void updateFields() {
+            //            logger.debug("TFE.updateFields"); // DEL
 		aspectBox.removeActionListener(aspectBoxListener);
 		comparisonBox.removeActionListener(comparisonBoxListener);
-		criterionBox.removeActionListener(criterionBoxListener);
+                //		criterionBox.removeActionListener(criterionBoxListener);
 		notBox.removeActionListener(notBoxListener);
 		typeBox.removeActionListener(typeBoxListener);
 
@@ -191,7 +214,7 @@ public class TermFilterEditor extends JPanel {
 
 		if (!containsCurrentSelection)
 			criterion = (SearchCriterion) criterionBox.getItemAt(0);
-//                logger.debug("criterionBox.setSelectedItem(" + criterion + ")");
+                //                logger.debug("criterionBox.setSelectedItem(" + criterion + ")");
 		criterionBox.setSelectedItem(criterion);
 
                 // 5/9/11: No longer doing this
@@ -257,7 +280,7 @@ public class TermFilterEditor extends JPanel {
 
 		aspectBox.addActionListener(aspectBoxListener);
 		comparisonBox.addActionListener(comparisonBoxListener);
-		criterionBox.addActionListener(criterionBoxListener);
+                //		criterionBox.addActionListener(criterionBoxListener);
 		notBox.addActionListener(notBoxListener);
 		typeBox.addActionListener(typeBoxListener);
 		fireUpdateEvent();
@@ -272,7 +295,6 @@ public class TermFilterEditor extends JPanel {
 	}
 
 	public TermFilterEditor() {
-            //	    logger.debug("TermFilterEditor()"); // DEL
 		setOpaque(false);
 		mainPanel.setOpaque(false);
 		rightIcon = new MultiIcon();
@@ -317,10 +339,11 @@ public class TermFilterEditor extends JPanel {
 		criterionBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.clear();
-                                //				logger.info("criterionBox.actionPerformed: " + e); // DEL
+                                //                             logger.info("criterionBox.actionPerformed: " + e); // DEL
 				model.addCriterion((SearchCriterion) criterionBox
 						.getSelectedItem());
-                                updateFields();
+                                // Is this really needed? (It doesn't seem to solve the issue of updating the statusLabel.)
+                                // updateFields();
 			}
 		});
 
@@ -401,6 +424,7 @@ public class TermFilterEditor extends JPanel {
 //                     }
 //                   });
 
+		GUIUtil.addReloadListener(reloadListener);
 		timer.start();
 		layoutGUI();
 		updateFields(); // Apparently this is needed, although it seems to get called excessively.
@@ -425,7 +449,10 @@ public class TermFilterEditor extends JPanel {
 			p.topmostValidate();
 	}
 
+        // This method gets called excessively. Could we maybe cache the filter and
+        // only update it when there's some event that warrants it?
 	public Filter<IdentifiedObject> getFilter() {
+            //            logger.debug("TermFilterEditor.getFilter");
           ObjectFilter out = new ObjectFilterImpl(Preferences.getPreferences().getExcludeObsoletesFromSearches());
 		out.setCriterion((SearchCriterion) criterionBox.getSelectedItem());
 		// out.setValue(valueField.getValue());
@@ -441,9 +468,14 @@ public class TermFilterEditor extends JPanel {
 				LinkFilter linkFilter = new LinkFilterImpl(p);
 				out.setTraversalFilter(linkFilter);
 			}
-			//			logger.debug("TermFilterEditor.getFilter: calling updateFields.  But first a stack trace:"); // DEL
-			//			(new Exception()).printStackTrace(); // DEL
-			updateFields(); // This is needed in order to properly update pulldown menus, although getFilter gets called like 30 times, so it seems a bit wasteful.
+                        // This call to updateFields results in excessive calls to getFilter when there are TWO aspect boxes visible
+                        // (which makes the relation pick lists behave badly)
+                        // but just commenting it out prevented the aspect relation lists from updating to
+                        // show ontology-specific relations when a new ontology was reloaded.
+                        // Solved that by adding a reload listener.
+                        //                        updateFields();
+                        fireUpdateEvent(); // Need?
+                        // fireUpdateEventImmediately(); // stack overflow!
 		}
 		if (SessionManager.getManager().getUseReasoner())
 			out.setReasoner(SessionManager.getManager().getReasoner());
@@ -462,6 +494,7 @@ public class TermFilterEditor extends JPanel {
 	}
 
 	protected void fireUpdateEventImmediately() {
+            //            logger.debug("fireUpdateEventImmediately");
 		for (GUIUpdateListener listener : updateListeners) {
 			listener.guiupdated(updateEvent);
 		}
@@ -478,6 +511,7 @@ public class TermFilterEditor extends JPanel {
 	public void setFilter(Filter filter) {
 		if (filter instanceof ObjectFilter) {
 			ObjectFilter of = (ObjectFilter) filter;
+                        //                        logger.debug("setFilter:  set selected item to " + of.getCriterion()); // DEL
 			criterionBox.setSelectedItem(of.getCriterion());
 			valueField.setSelectedItem(of.getValue());
 			if (of.getNegate())
@@ -507,19 +541,5 @@ public class TermFilterEditor extends JPanel {
 		} else
 			throw new IllegalArgumentException("Cannot load non-object filter");
 	}
-
-  /** Some filters and aspects require the reasoner, in which case they are not valid
-      unless the reasoner is on. 
-      This method returns false if the specified SearchAspect requires the reasoner
-      and the reasoner is not on. */
-    /** 5/9/11: No longer doing this--instead, we leave all the aspects in the aspect menu,
-        and if user selects Ancestor or Descendent when reasoner is not on, they get a
-        pop-up error message. */
-  // private boolean isValid(SearchAspect aspect) {
-  //   if (aspect.requiresReasoner() && !(SessionManager.getManager().getUseReasoner()))
-  //     return false;
-  //   else
-  //     return true;
-  // }
 
 }
