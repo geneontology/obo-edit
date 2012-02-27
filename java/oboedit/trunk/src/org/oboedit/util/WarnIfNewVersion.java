@@ -73,7 +73,8 @@ public class WarnIfNewVersion {
     }
 
     private static void offerToRenamePerspectives(String configDir, String perspectives, String oldVersion) {
-        String message = "I see you have switched to a new version of OBO-Edit.\nPlease note that OBO-Edit saves binary information in its configuration directory\n(" + configDir + ") that is version-specific, which can cause unexpected problems\n(for example, in the Text Editor) when you run a different version of OBO-Edit.\n\nFor best results, you should remove or rename the directory " + perspectives + "\nand then quit and relaunch OBO-Edit (but be aware that doing this will restore the\narrangement of components in the OBO-Edit window to their default settings.)\n\nIf you'd like, I can rename your perspectives directory for you now.\nRename perspectives?";
+        String message = "I see you have switched to a new version of OBO-Edit.\nPlease note that OBO-Edit saves binary information in its configuration directory\n(" + configDir + ") that is version-specific, which can cause unexpected problems\n(for example, in the Text Editor) when you run a different version of OBO-Edit.\n\n" +
+            "To avoid these possible problems, I can move your OBO-Edit layout directory for you now.\nNote that this will restore your OBO-Edit layout to the default settings, though it\nwon't affect other saved settings such as Load/Save profiles or filters.\n\nMove layout directory?";
         if (!(JOptionPane.showConfirmDialog(null, message, "Version update warning", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION))
             return;
 
@@ -106,6 +107,9 @@ public class WarnIfNewVersion {
             JOptionPane.showMessageDialog(null, message, "Couldn't rename perspectives", JOptionPane.WARNING_MESSAGE);
             return;
         }
+        message = "Moved " + perspectives + " to\n" + re;
+        JOptionPane.showMessageDialog(null, message);
+
         // Now we need to create a new perspectives directory so that version.txt can be saved to it
         pers.mkdir();
     }
