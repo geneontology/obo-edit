@@ -140,7 +140,7 @@ public class SearchPanel extends JPanel {
 			{
 				addHierarchyListener(new HierarchyListener() {
 					public void hierarchyChanged(HierarchyEvent e) {
-                                            logger.debug("SearchPanel.hierarchyChanged");
+                                            // logger.debug("SearchPanel.hierarchyChanged");
                                             ensureButtonState(); // need?
 					}
 				});
