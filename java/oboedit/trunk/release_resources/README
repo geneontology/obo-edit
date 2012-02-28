@@ -1,7 +1,7 @@
 Copyright (C) 2011, Gene Ontology Consortium
 Original author:  John Day-Richter
-Version:  2.1.1-b6
-Release date: 2011-02-06
+Version:  2.1.1-b7
+Release date: 2011-02-28
 
 OBO-Edit is an open source tool written in Java for browsing, searching, and
 modifying OBO ontologies.
@@ -19,6 +19,29 @@ How to report bugs
 
 
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
+
+==============================
+What's New in OBO-Edit v2.1.1-b7 (2/28/2012)
+==============================
+Quick Save fixes:
+[ geneontology-Bugs-3487349 ] Quick save lets you save the first time when it shouldn't
+If you loaded via Advanced interface, you could then do a Quick Save the first
+time you saved (but it didn't actually know yet what file to save to, so it
+tried to save to null).
+[ geneontology-Bugs-3490963 ] quick save not working properly
+Was letting you do Quick Save before you'd done Save As on that file.
+
+[ geneontology-Bugs-3486945 ] 64bit JRE can not be used on windows 7
+Windows apparently doesn't let you designate a preferred Java version, so the
+installer can do no better than using the first Java it comes across. The fix
+is to distribute two Windows installers: 32-bit and 64-bit, and let Windows
+users choose the appropriate one.
+
+[ geneontology-Bugs-3487892 ] In compound ancestor/descendant queries, relation list bad
+In a compound search with two aspects, the relation pulldown lists didn't
+behave well. This turned out to be because of basically infinite refreshing of
+the lists.
+
 
 ==============================
 What's New in OBO-Edit v2.1.1-b6 (2/6/2012)
@@ -86,7 +109,7 @@ Now you should be able to save OR delete your genus.
 
 
 ==============================
-What's New in OBO-Edit v2.1.1-b1 and b2
+What's New in OBO-Edit v2.1.1-b1-b2
 ==============================
 New features:
 - [ geneontology-Feature Requests-3469108 ] Titlebar should show last saved-as filename
@@ -107,24 +130,12 @@ changes to take effect.  (If people find this annouying, I can take it out.)
 ==============================
 What's New in OBO-Edit v2.1.0 (12/21/2011)
 ==============================
-- The genus trashcan wasn't working right with Autocommit on, so it has been
-commented out for this release. (As before, you can use the Parent Editor to
-delete unwanted genuses.)
-- [geneontology-Bugs=3302934] java.lang.Object@... appearing in cross-product intersection
+[geneontology-Bugs=3302934] java.lang.Object@... appearing in cross-product intersection
 
 
 ==============================
 What's New in OBO-Edit v2.1-rc4 (12/9/2011)
  ==============================
-[ geneontology-Bugs-3303595 ] deleting genus relationship in cross product tab
-The Cross Product Editor had a trashcan (delete) button for deleting
-discriminating relations, but no way to delete a genus. There is now a
-whole-cross-product delete button that will delete the genus along with any
-discriminating relations.  This change also ameliorates a pre-existing bug: if
-you created a cross product with discriminating relations but no genus, you
-couldn't delete the discriminating relations. Now you can use the
-whole-cross-product trashcan to do that.
-
 [ geneontology-Feature Requests-3446935 ] IDs in the Intersection Genus box
 Genus box and dropdown autocomplete list in cross product editor now show the
 term name and also the ID, helping to clarify what you're actually
