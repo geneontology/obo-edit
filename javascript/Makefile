@@ -5,9 +5,9 @@
 ####   make test | grep -i fail
 ####
 
-TESTS = $(wildcard *.js.tests) \
- $(wildcard bbop/*.js.tests) \
- $(wildcard bbop/model/*.js.tests)
+TESTS = $(wildcard lib/*.js.tests) \
+ $(wildcard lib/bbop/*.js.tests) \
+ $(wildcard lib/bbop/model/*.js.tests)
 BENCHMARKS = $(wildcard _benchmark/*.js)
 JS = smjs # or smjs, rhino
 JSFLAGS = # Some require things like "-opt -1" in some cases (big GO tests)
