@@ -73,8 +73,8 @@ public class WarnIfNewVersion {
     }
 
     private static void offerToRenamePerspectives(String configDir, String perspectives, String oldVersion) {
-        String message = "I see you have switched to a new version of OBO-Edit.\nPlease note that OBO-Edit saves binary information in its configuration directory\n(" + configDir + ") that is version-specific, which can cause unexpected problems\n(for example, in the Text Editor) when you run a different version of OBO-Edit.\n\n" +
-            "To avoid these possible problems, I can move your OBO-Edit layout directory for you now.\nNote that this will restore your OBO-Edit layout to the default settings, though it\nwon't affect other saved settings such as Load/Save profiles or filters.\n\nMove layout directory?";
+        String message = "I see you have switched to a new version of OBO-Edit.\nPlease note that OBO-Edit saves binary information in its configuration directory\n(" + configDir + ")\nthat is version-specific, which can cause unexpected problems (for example,\nin the Text Editor) when you run a different version of OBO-Edit.\n\n" +
+            "To avoid these possible problems, I can move your OBO-Edit layout directory for you now.\nNote that this will restore your OBO-Edit layout to the default settings, though it won't affect\nother saved settings such as Load/Save profiles or filters.\n\nMove layout directory?";
         if (!(JOptionPane.showConfirmDialog(null, message, "Version update warning", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION))
             return;
 
