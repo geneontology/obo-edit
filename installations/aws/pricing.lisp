@@ -192,15 +192,19 @@
 ;; Usage:
 ;; (+ (bbop-s3-cost-monthly-sliding 1.5 -2) (bbop-s3-cost-monthly-sliding 3 2))
 
+(defparameter +gb-per-month-first+ 0.125 "Amazon's current default 1st GB.")
+(defparameter +gb-per-month-rest+ 0.110 "Amazon's current default 2-49GB.")
+
 (defun bbop-s3-cost-monthly (terabytes)
-  "The cost o (not counting free-tier bonus of under a dollar (~0.63))."
+  "The cost ... (not counting free-tier bonus of under a dollar (~0.63))."
   (let ((first-tb (if (> 1.0 terabytes) terabytes 1.0))
 	(rest-tb  (if (> 1.0 terabytes) 0.0 (- terabytes 1.0))))
-    (+ (* first-tb 1024 0.125) (* rest-tb 1024 0.110))))
+    (+ (* first-tb 1024 +gb-per-month-first+)
+       (* rest-tb 1024 +gb-per-month-rest+))))
 
 (defun bbop-s3-cost-monthly-sliding (terabytes
 				     &optional (offset 0.0 has-offset-p))
-  "The cost o (not counting free-tier bonus of under a dollar (~0.63))."
+  "The cost ... (not counting free-tier bonus of under a dollar (~0.63))."
   (let ((monthly-cost (bbop-s3-cost-monthly terabytes)))
     (cond ; 0 > offset
       ((and has-offset-p (> 0.0 offset)) ; 0 > offset
@@ -216,14 +220,14 @@
 (defun list-merge (al bl)
   (cond
     ((< 0 (length al))
-     (cons (cons (car al) (car bl)) (list-glob (cdr al) (cdr bl))))
+     (cons (cons (car al) (car bl)) (list-merge (cdr al) (cdr bl))))
      (t nil)))
 
 ;; (s3-calc
 ;;  3.0 @ 1.5 ; 3 days at 1.5TB
 ;;  5.0 @ 3.2 ; 5 days at 3.2TB
 ;;  1.0)      ; the rest of the days at 1TB
-(defmacro s3-calc (&rest arg-lang)
+(defmacro storage-calc (&rest arg-lang)
   "..."
   (let ((rest-size (if (= 0 (mod (length arg-lang) 3)) 0.0
 		       (car (reverse arg-lang))))
@@ -247,4 +251,9 @@
 
 ;; NOTE: Equivalent:
 ;; (+ (bbop-s3-cost-monthly-sliding 1.5 -2.0) (bbop-s3-cost-monthly-sliding 3.0 2.0))
-;; (s3-calc 2.0 @ 3.0 1.5)
+;; Default Amazon calc:
+;; (storage-calc 2.0 @ 3.0 1.5)
+;; Nimbus.io clac:
+;; (let ((+gb-per-month-first+ 0.06)
+;;       (+gb-per-month-rest+ 0.06))
+;;   (storage-calc 2.0 @ 3.0 1.5))
