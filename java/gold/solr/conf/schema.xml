@@ -25,24 +25,69 @@
     <!--               -->
     <!-- Defined as above: string, text_ws, and integer. -->
     <!--  -->
-    <dynamicField name="bbop_ext_string_*" 
-		  type="string"
-		  indexed="true"
-		  stored="true"
-		  multiValued="true"
-		  required="false" />
-    <dynamicField name="bbop_ext_text_*" 
-		  type="text_ws"
-		  indexed="true"
-		  stored="true"
-		  multiValued="true"
-		  required="false" />
-    <dynamicField name="bbop_ext_integer_*" 
-		  type="integer"
-		  indexed="true"
-		  stored="true"
-		  multiValued="true"
-		  required="false" />
+    <!-- Minimal: doesn't work -->
+    <!-- <dynamicField name="*_ext" -->
+    <!-- 		  type="string" -->
+    <!-- 		  indexed="true" -->
+    <!-- 		  stored="true" -->
+    <!-- 		  multiValued="true" -->
+    <!-- 		  required="false" /> -->
+    <!-- Original try: needs to be finer -->
+    <!-- <dynamicField name="*_ext_string" -->
+    <!-- 		  type="string" -->
+    <!-- 		  indexed="true" -->
+    <!-- 		  stored="true" -->
+    <!-- 		  multiValued="true" -->
+    <!-- 		  required="false" /> -->
+    <!-- <dynamicField name="*_ext_text" -->
+    <!-- 		  type="text_ws" -->
+    <!-- 		  indexed="true" -->
+    <!-- 		  stored="true" -->
+    <!-- 		  multiValued="true" -->
+    <!-- 		  required="false" /> -->
+    <!-- <dynamicField name="*_ext_integer" -->
+    <!-- 		  type="integer" -->
+    <!-- 		  indexed="true" -->
+    <!-- 		  stored="true" -->
+    <!-- 		  multiValued="true" -->
+    <!-- 		  required="false" /> -->
+    <!-- Finer detailed used: needs to be finer -->
+    <dynamicField name="*_ext_string_single"
+    		  type="string"
+    		  indexed="true"
+    		  stored="true"
+    		  multiValued="false"
+    		  required="false" />
+    <dynamicField name="*_ext_text_single"
+    		  type="text_ws"
+    		  indexed="true"
+    		  stored="true"
+    		  multiValued="false"
+    		  required="false" />
+    <dynamicField name="*_ext_integer_single"
+    		  type="integer"
+    		  indexed="true"
+    		  stored="true"
+    		  multiValued="false"
+    		  required="false" />
+    <dynamicField name="*_ext_string_multi"
+    		  type="string"
+    		  indexed="true"
+    		  stored="true"
+    		  multiValued="true"
+    		  required="false" />
+    <dynamicField name="*_ext_text_multi"
+    		  type="text_ws"
+    		  indexed="true"
+    		  stored="true"
+    		  multiValued="true"
+    		  required="false" />
+    <dynamicField name="*_ext_integer_multi"
+    		  type="integer"
+    		  indexed="true"
+    		  stored="true"
+    		  multiValued="true"
+    		  required="false" />
     
     <!--               -->
     <!-- SHARED FIELDS -->
