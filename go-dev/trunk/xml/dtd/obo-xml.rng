@@ -2,7 +2,7 @@
 <grammar xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <start>
     <a:documentation>OBO-XML 1.2
-$Id: obo-xml.rng,v 1.3 2009/11/10 22:56:15 cmungall Exp $
+$Id: obo-xml.rnc,v 1.5 2009/11/10 22:56:15 cmungall Exp $
 
 This is an XML representation of the Obo-text file format, for
 modeling any GO or OBO ontology
@@ -514,6 +514,15 @@ Corresponds to owl:intersectionOf</a:documentation>
         </optional>
         <optional>
           <ref name="range"/>
+        </optional>
+        <zeroOrMore>
+          <ref name="subset"/>
+        </zeroOrMore>
+        <optional>
+          <ref name="comment"/>
+        </optional>
+        <optional>
+          <ref name="is_obsolete"/>
         </optional>
         <zeroOrMore>
           <ref name="consider"/>
