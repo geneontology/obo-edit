@@ -367,7 +367,7 @@ sub get_human_name_fn {
 		interpro => 'InterPro',
 		mgi => 'MGI',
 		pinc => 'Proteome Inc.',
-		pombase => 'Pombase',
+		pombase => 'PomBase',
 		reactome => 'Reactome',
 		rgd => 'RGD',
 		roslin_institute => 'Roslin Institute',
