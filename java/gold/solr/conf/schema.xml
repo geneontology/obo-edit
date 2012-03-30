@@ -11,17 +11,17 @@
     <!--Term acc/id.-->
     <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
     <!--Common term name.-->
-    <field name="label" type="text" indexed="true" stored="true" required="false" multiValued="false" />
+    <field name="label" type="text_ws" indexed="true" stored="true" required="false" multiValued="false" />
     <!--Term description.-->
-    <field name="descriptive_name" type="text" indexed="true" stored="true" required="false" multiValued="false" />
+    <field name="descriptive_name" type="text_ws" indexed="true" stored="true" required="false" multiValued="false" />
     <!--Term definition.-->
-    <field name="description" type="text" indexed="true" stored="true" required="false" multiValued="false" />
+    <field name="description" type="text_ws" indexed="true" stored="true" required="false" multiValued="false" />
     <!--Term namespace.-->
     <field name="source" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <!--Is the term obsolete?-->
     <field name="is_obsolete" type="integer" indexed="true" stored="true" required="false" multiValued="false" />
     <!--Term comment.-->
-    <field name="comment" type="text" indexed="true" stored="true" required="false" multiValued="true" />
+    <field name="comment" type="text_ws" indexed="true" stored="true" required="false" multiValued="true" />
     <!--Term synonym.-->
     <field name="synonym" type="string" indexed="true" stored="true" required="false" multiValued="true" />
     <!--Alternate term id.-->
