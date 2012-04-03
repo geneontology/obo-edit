@@ -607,6 +607,27 @@ bbop.core.randomness = function(len){
 };
 
 /*
+ * Function: 
+ *
+ * RFC 4122 v4 compliant UUID generator.
+ * From: http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/2117523#2117523
+ *
+ * Parameters: 
+ *
+ * Returns: string
+ */
+bbop.core.uuid = function(){
+
+    // Replace x (and y) in string.
+    function replacer(c) {
+	var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+	return v.toString(16);
+    }
+    var target_str = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
+    return target_str.replace(/[xy]/g, replacer);
+};
+
+/*
  * Function: coder
  *
  * TODO doc Functions to encode and decode data that we'll be hiding
