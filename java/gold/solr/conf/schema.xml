@@ -6,30 +6,113 @@
     <fieldType name="text_ws" class="solr.TextField" positionIncrementGap="100" />
   </types>
   <fields>
+    <!--Closure of ids/accs over regulates.-->
+    <field name="regulates_closure" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--All terms associatied with GP.-->
+    <field name="annotation_closure" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--???-->
+    <field name="bioentity_isoform_label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--Term synonym.-->
+    <!--Any synonym.-->
+    <field name="synonym" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--Derived from C13 + ncbi_taxonomy.obo.-->
+    <field name="taxon_label" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <!--Column 3.-->
+    <field name="bioentity_label" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <!--Closure of ids/accs over isa and partof.-->
+    <field name="isa_partof_closure" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--???-->
+    <field name="evidence_type" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <!--Derived from column 4.-->
+    <field name="qualifier" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--Derived from column 4.-->
+    <field name="is_negated" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <!--Alternate label.-->
+    <field name="bioentity_alternate_label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--Column 5.-->
+    <field name="annotation_class" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <!--???-->
+    <field name="annotation_extension_class_closure" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--???-->
+    <field name="bioentity_isoform" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--Column 12: type class id.-->
+    <field name="type" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <!--Column 14: date.-->
+    <field name="date" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <!--???-->
+    <field name="evidence_with" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--Column 5 + ontology.-->
+    <field name="annotation_class_label" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <!--Column 12: type class label.-->
+    <field name="type_label" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <!--Term subset.-->
+    <!--Member of these named subsets.-->
+    <field name="subset" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--Term acc/id.-->
+    <!--Bioentity id.-->
+    <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+    <!--???-->
+    <field name="annotation_extension_class_label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--The category of the document in the Solr index.-->
     <!--The category of the document in the Solr index.-->
     <field name="document_category" type="string" indexed="true" stored="true" required="false" multiValued="false" />
-    <!--Term acc/id.-->
-    <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
-    <!--Common term name.-->
-    <field name="label" type="text_ws" indexed="true" stored="true" required="false" multiValued="false" />
-    <!--Term description.-->
-    <field name="descriptive_name" type="text_ws" indexed="true" stored="true" required="false" multiValued="false" />
     <!--Term definition.-->
+    <!--Definition.-->
     <field name="description" type="text_ws" indexed="true" stored="true" required="false" multiValued="false" />
-    <!--Term namespace.-->
-    <field name="source" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <!--Closure of labels over regulates.-->
+    <field name="regulates_label_closure" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--Column 13: taxon.-->
+    <field name="taxon" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <!--Full name or name.-->
+    <field name="descriptive_name" type="text_ws" indexed="true" stored="true" required="false" multiValued="false" />
     <!--Is the term obsolete?-->
+    <!--Is this obsolete?-->
     <field name="is_obsolete" type="integer" indexed="true" stored="true" required="false" multiValued="false" />
-    <!--Term comment.-->
-    <field name="comment" type="text_ws" indexed="true" stored="true" required="false" multiValued="true" />
-    <!--Term synonym.-->
-    <field name="synonym" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--Derived from c12 + SO.-->
+    <field name="type_label_closure" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--Direct terms associatied with GP.-->
+    <field name="direct_annotation" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--Common term name.-->
+    <!--Symbol or name.-->
+    <field name="label" type="text_ws" indexed="true" stored="true" required="false" multiValued="false" />
+    <!--???-->
+    <field name="annotation_extension_class" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--???-->
+    <field name="annotation_extension_class_label_closure" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--Column 1 + columns 2.-->
+    <field name="bioentity_id" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <!--Derived from C13 + ncbi_taxonomy.obo.-->
+    <field name="taxon_closure" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--???-->
+    <field name="reference" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <!--Alternate term id.-->
+    <!--Any alternaitve id.-->
     <field name="alternate_id" type="string" indexed="true" stored="true" required="false" multiValued="true" />
-    <!--Term subset.-->
-    <field name="subset" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--Column 9.-->
+    <field name="aspect" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <!--Term namespace.-->
+    <!--Column 15: database.-->
+    <field name="source" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <!--Derived from C13 + ncbi_taxonomy.obo.-->
+    <field name="taxon_label_closure" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--???-->
+    <field name="evidence_closure" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--Each ontology entity (class or property) can be associated with multiple OWL axioms. We cache them in the index so that advanced OWL-aware clients can pull relevant information quickly. Axioms are stored in functional syntax.-->
+    <field name="axiom" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--Term comment.-->
+    <!--Comment.-->
+    <field name="comment" type="text_ws" indexed="true" stored="true" required="false" multiValued="false" />
+    <!--Closure of labels over isa and partof.-->
+    <field name="isa_partof_label_closure" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--Acts on taxon.-->
+    <field name="secondary_taxon_label" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <!--Definition cross-reference.-->
+    <!--DBXref for definitions.-->
     <field name="definition_xref" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--Derived from c12 + SO.-->
+    <field name="type_closure" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+    <!--Acts on taxon.-->
+    <field name="secondary_taxon" type="string" indexed="true" stored="true" required="false" multiValued="false" />
   </fields>
   <uniqueKey>id</uniqueKey>
   <defaultSearchField>label</defaultSearchField>
