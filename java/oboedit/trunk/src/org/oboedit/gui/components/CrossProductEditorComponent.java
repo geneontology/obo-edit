@@ -29,7 +29,6 @@ import org.oboedit.gui.Preferences;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.TermAutocompleteModel;
 
-
 import org.apache.log4j.*;
 
 /**
@@ -381,24 +380,27 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		if (currentObject instanceof LinkedObject && !(currentObject instanceof OBOPropertyImpl)) {
 			//get the list of discriminating relations associated with this object to compute additions and deletions to the relations list
   			Collection<Link> relations = getRelationshipList();
-			
+
+                        // logger.debug("Checking parents of " + currentObject + ": " + ((LinkedObject) currentObject).getParents());
 			// Find intersection links that have been deleted
-			for(Link link : ((LinkedObject) currentObject).getParents()){
-				if (!TermUtil.isIntersection(link))
-					continue;
+                        for(Link link : ((LinkedObject) currentObject).getParents()){
+                            //                                logger.debug("getChanges(): link = " + link + ", relations.size = " + relations.size());
+				if (!TermUtil.isIntersection(link)) {
+                                    continue;
+                                }
 			
-				//				logger.debug("CPEC.getChanges(): link = " + link + ", relations.size = " + relations.size());
 				// only if relations exist do the check to see if they have been deleted.
 				// this has been added due to false positive results being generated for links being deleted.
 				// (found is returning true after links have been committed)
 				// 1/22/12: This was part of the massive tangle of kludges that was added to prevent the genus and differentia
 				// from disappearing. Now it needs to go away, or else we can't delete a differentium when there's no genus.
 				//				if(relations.size() >= 1){
+                                //                                logger.debug("Checking intersection link for deletion: " + link + "; relations = " + relations); // DEL
 					boolean found = false;
 
 					for(Object o : relations){
 						OBORestriction completeDefLink = (OBORestriction) o;
-						//						logger.debug("CPEC.getChanges -- relations -- completeDefLink: " + completeDefLink + ", comparing with link "+ link);
+                                                //              logger.debug("completeDefLink: " + completeDefLink + ", comparing with link "+ link);
 						
 						// check for UNdeleted links
 						if (completeDefLink.equals(link)) {
@@ -408,10 +410,9 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 					}
                                         // This link is no longer found--deleted it.
 					if (!found) {
-					    // logger.debug("CPEC - deleting link: " + link);
-						historyList.add(new DeleteLinkHistoryItem(link));
+                                            logger.debug("Deleting link: " + link);
+                                            historyList.add(new DeleteLinkHistoryItem(link));
                                         }
-					//				} // matches if(relations.size() >= 1){
 
                                 // Delete genus if requested (or if user cleared out genus field)
 				// (deleteGenus was from the ill-fated genus trashcan)
@@ -441,14 +442,13 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			//Find intersection links that have been added
 			for(Object o : relations){
 				OBORestriction completeDefLink = (OBORestriction) o;
-				//logger.debug("completeDefLink: " + completeDefLink);
 				Link matchLink = HistoryUtil.findParentRel(completeDefLink, (LinkedObject) currentObject);
 				if (matchLink == null) {
 					// set completes to false because new links are
 					// always created with completes=false by default
 					// we'll reset the completes flag in a moment
 					completeDefLink.setCompletes(true);
-					//					logger.debug("CPEC - adding link: " + completeDefLink);
+                                        logger.debug("Adding link: " + completeDefLink);
 					historyList.add(new CreateIntersectionLinkHistoryItem(completeDefLink));
 				}
 			}
