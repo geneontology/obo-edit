@@ -239,12 +239,21 @@ public class HistoryUtil {
 		if (tr.getType() == null)
 			return false;
 
+                // logger.debug("hasChild: link = " + tr + ", child = " + tr.getChild() + ", children of " + t + ": " + t.getChildren()); // DEL
 		for(Link tra : t.getChildren()){
+                    // logger.debug("tr.getChild() = " + tr.getChild() + ", tra.getchild = " + tra.getChild() + "; tr.getType = " + tr.getType() + ", tra.gettype = " + tra.getType()); // DEL
 			if (tr.getChild().equals(tra.getChild())
 					&& tr.getType().equals(tra.getType())){
+                            // logger.debug("children and types are equal. OBORes(tr) = " + (tr instanceof OBORestriction) + "; OBORes(tra) = " + (tra instanceof OBORestriction) + 
+                            // "; (OBORestriction)tr).getCompletes() = " + 
+                            // ((OBORestriction)tr).getCompletes() + "; tra.getCompletes() = " + ((OBORestriction)tra).getCompletes());
 				if((tr instanceof OBORestriction) && (tra instanceof OBORestriction)){
-					return ((OBORestriction)tr).getCompletes() == ((OBORestriction)tra).getCompletes();
+                                    // Don't return yet--there might be two links with the same parents & children but one is an intersection link and one isn't.
+                                    //					return ((OBORestriction)tr).getCompletes() == ((OBORestriction)tra).getCompletes();
+                                    if (((OBORestriction)tr).getCompletes() == ((OBORestriction)tra).getCompletes())
+                                        return true; // otherwise, maybe next time we'll get it
 				}
+                                // logger.debug("hasChild: children are equal " + tr.getChild()); // DEL
 				return true;
 			}
 			
