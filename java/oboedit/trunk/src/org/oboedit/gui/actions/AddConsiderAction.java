@@ -66,7 +66,10 @@ public class AddConsiderAction implements DropMenuAction {
 		isLegal = false;
 		for (LinkedObject term : selection.getTerms()) {
 			if (term instanceof ObsoletableObject) {
-				if (term.getName().equals(lo.getName())) {
+                            if (term.getName().equals(lo.getName()) &&
+                                // Sometimes there are two terms (one obsolete) with the same name
+                                // but different IDs
+                                term.getID().equals(lo.getID())) {
 					isLegal = false;
 					return;
 				}
