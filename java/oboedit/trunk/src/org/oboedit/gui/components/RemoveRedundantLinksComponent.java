@@ -52,6 +52,9 @@ import org.obo.util.TermUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
+import org.oboedit.gui.event.ReloadEvent;
+import org.oboedit.gui.event.ReloadListener;
+import org.oboedit.util.GUIUtil;
 
 import org.apache.log4j.Logger;
 
@@ -95,8 +98,8 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 		redundantLinks = getRedundantLinks();
 		//notify when there are no redundant links
 		if(redundantLinks == null || redundantLinks.size()==0){
-			JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
-			"There are no redundant links in the current ontology.");	
+                    //			JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
+                    logger.info("There are no redundant links in the current ontology.");	
 		}
 		links = new ArrayList<Link>(redundantLinks);
 		displayResults();
@@ -110,8 +113,23 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 		southPanel.add(removeLinksButton);
 		add(northPanel,"Center");
 		add(southPanel, "South");
+                // Do we need to remove it if this panel is closed? How?
+                GUIUtil.addReloadListener(reloadListener);
+		// Preferences.getPreferences().addReconfigListener(reconfigListener);
 		revalidate();
 	}
+
+	protected ReloadListener reloadListener = new ReloadListener() {
+		public void reload(ReloadEvent e) {
+                    if (e.isHistory() || e.isRoot() || e.isReasoner() || e.isOntologyReload()
+                        || e.isFilter()) {
+                        redundantLinks = getRedundantLinks();
+                        links = new ArrayList<Link>(redundantLinks);
+                        displayResults();
+                    }
+                }
+            };
+
 
 	protected void removeLinks(){
 		final Collection<Link> removeLinks = new ArrayList<Link>();
@@ -119,11 +137,19 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 
 		logger.debug("Removing " + selectedIx.size() + " links...");
 		for(int i=0; i<selectedIx.size(); i++){
-			logger.debug("Remove selectedIx[" + i + "]: " + selectedIx.get(i));
-			logger.debug("which is link: " + links.get(selectedIx.get(i)));
-			removeLinks.add(links.get(selectedIx.get(i)));
-			redundantLinks.remove(links.get(selectedIx.get(i)));
-
+                    int which = selectedIx.get(i);
+                    logger.debug("Remove selectedIx[" + i + "]: " + which); //  + ", which would be link: " + links.get(selectedIx.get(i)));
+                        //                        logger.debug("data["+ i + "][1] = " + table.getValueAt(i, 1) + ", data[i][2] = " + table.getValueAt(i, 2)); // DEL
+                        //			removeLinks.add(links.get(selectedIx.get(i)));
+                        //			redundantLinks.remove(links.get(selectedIx.get(i)));
+                    Link link = findLink(links, table.getValueAt(which, 1), table.getValueAt(which, 2));
+                        logger.debug("Link to remove: " + link);
+                        if (link == null) {
+                            logger.error("Couldn't find link to remove!");
+                            return;
+                        }
+                        removeLinks.add(link);
+                        redundantLinks.remove(link);
 		}
 		for (final Link link : removeLinks) {
 			final TermMacroHistoryItem item = new TermMacroHistoryItem(
@@ -157,6 +183,27 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 		}
 		return redundantLinks;		
 	}
+
+    protected Link findLink(List<Link> links, Object childObj, Object parentObj) {
+        LinkedObject parent = null;
+        LinkedObject child = null;
+        if (parentObj instanceof LinkedObject)
+            parent = (LinkedObject)parentObj;
+        if (childObj instanceof LinkedObject)
+            child = (LinkedObject)childObj;
+        if (parent != null && child != null) {
+            final Iterator<Link> it = links.iterator();
+            while (it.hasNext()) {
+                Link l = it.next();
+                // logger.debug("findLink: parent = " + parent + ", child = " + child + ", l = " + l); // DEL
+                if ((l.getParent().getName()).equals(parent.getName()) && (l.getChild().getName()).equals(child.getName()))
+                    return l;
+            }
+        }
+        // logger.debug("findLink: parent = " + parent + ", child = " + child + ", couldn't find matching link"); // DEL
+        return null;
+    }
+
 
 	class RemoveRedundantLinksModel extends AbstractTableModel {
 		private static final long serialVersionUID = 1L;
@@ -257,9 +304,9 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 				SelectionManager.selectTerm(table, (LinkedObject) colobj);
 			}
 			//Select link and show explanation in explanation component
-			if(table.getSelectedColumn() ==3){
+			if(table.getSelectedColumn() ==3 && table.getSelectedRow() >= 0){
 				Link rowobj = links.get(table.getSelectedRow());
-				SelectionManager.selectLink(table, rowobj, false);
+                                SelectionManager.selectLink(table, rowobj, false);
 			}
 		}
 	}
@@ -272,10 +319,11 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 			data[i][1]= link.getChild();
 			data[i][2]= link.getParent();
 			data[i][3] = expIcon;
+                        // logger.debug("displayResults(" + i + "): child = " + data[i][1] + ", parent = " + data[i][2]); // DEL
 			i++;
 		}
 		final String[] columnToolTips = {
-				"Select Links to Delete",
+				"Select links to delete",
 				"Sort table alphabetically on Child Name",
 				"Sort table alphabetically on Parent Name", 
 				"Highlight link and display additional information in the Explanation Component",
@@ -329,6 +377,9 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 		} 
 		else {
 			table.setModel(model);
+			// for(int x = 0, y = table.getRowCount(); x < y; x++) // DEL
+                        // logger.debug("Now table[0] = " + table.getValueAt(x, 1) + ", " + table.getValueAt(x, 2)); // DEL
+                        //                        table.tableChanged(new TableModelEvent(RemoveRedundantLinksModel)); // ?
 		}
 
 		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -354,8 +405,9 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 			sp.getViewport().add(table);
 			northPanel.add(sp, BorderLayout.CENTER);
 		}
-		else
+		else {
 			table.repaint();
+                }
 	}
 
 	//	private void sortAllRowsBy(Object[][] tableData, AssertedLinksModel model, int colIndex, boolean ascending) {
@@ -413,41 +465,60 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 	class MyItemListener implements ItemListener{   
 		public void itemStateChanged(final ItemEvent e){  
 			final boolean checked = e.getStateChange() == ItemEvent.SELECTED;   
-			for(int x = 0, y = table.getRowCount(); x < y; x++){   
-				table.setValueAt(new Boolean(checked),x,0);  
+			for(int x = 0, y = table.getRowCount(); x < y; x++){
+                            // logger.debug("itemStateChanged: checked = " + checked + ", x = " + x); // DEL
+				table.setValueAt(new Boolean(checked),x,0);
 			}
+                        // What happens if we don't do this? (Then selectAll doesn't delete all)
+                        // Maybe only do this IF they clicked select all??
+                        if (checked)
+                            handleMouseClick();
 		}   
 	}
 
 	class MyMouseListener extends MouseAdapter{  
 		public void mouseClicked(final MouseEvent mouseEvent) {
+                    handleMouseClick();
+                }
+	}
+
+    private void handleMouseClick() {
 			int checkedCount = 0;  
-			selectAll.removeItemListener(it);  
-			if (selectAll instanceof JCheckBox) {  
+                        //			selectAll.removeItemListener(it);  // Why?
+			if (selectAll instanceof JCheckBox) { // Why would it not be?
 				selectFlags = new boolean[table.getRowCount()];  
+                                selectedIx.clear();
 				for (int i = 0; i < table.getRowCount(); i++) {  
 					selectFlags[i] = ((Boolean) table.getValueAt(i, 0)).booleanValue();
-					//logger.debug("Flag[" + i + "]: " + selectFlags[i]);
+                                        // logger.debug("mouseClicked: Flag[" + i + "]: " + selectFlags[i]);
 					if(selectFlags[i]){  
 						checkedCount++;  
 					}  
 				}
 				for(int i=0; i<selectFlags.length;i++){
+                                    // logger.debug("Flag[" + i + "]: " + selectFlags[i]);
 					if(!selectedIx.contains(i) && selectFlags[i] == true){
+                                            // logger.debug("selectedIx.add(" + i + ")"); // DEL
 						selectedIx.add(i);
 					}
 				}
-				if(checkedCount== table.getRowCount()){  
-					selectAll.setSelected(true);                 
-				}  
-				if(checkedCount!= table.getRowCount()){  
-					selectAll.setSelected(false);      
-				}  
-			}  
-			selectAll.addItemListener(it);  
-			table.getTableHeader().repaint();  
-		}  
-	}  
+                                // This is not needed and was screwing up the behavior of Select All--the first time you clicked it,
+                                // it wouldn't click, and it turned out to be because of this code.
+				// if(checkedCount== table.getRowCount()){  
+				// 	selectAll.setSelected(true);                 
+				// }  
+				// if(checkedCount!= table.getRowCount()){  
+				// 	selectAll.setSelected(false);      
+				// }  
+			}
+                        else // DEL
+                            logger.debug("Weird--selectAll not instanceof JCheckBox!"); // DEL
+
+                        //			selectAll.addItemListener(it);  
+			table.getTableHeader().repaint();
+                        // logger.debug("After mouseClick, selectedIx = " + selectedIx); // DEL
+    }
+
 
 	class CheckBoxHeader extends JCheckBox implements TableCellRenderer, MouseListener {   
 		private static final long serialVersionUID = 1L;
@@ -456,8 +527,8 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 		ItemListener it1; 
 		public CheckBoxHeader(final ItemListener itemListener) {   
 			setSelectAllComponent(this);
-			this.it1 = itemListener;
-			selectAll.addItemListener(it1);
+                        this.it1 = itemListener;
+                        selectAll.addItemListener(it1);
 		}	  
 		public Component getTableCellRendererComponent(final JTable table, final Object value,final boolean isSelected, final boolean hasFocus, final int row, final int column) {
 			if (table != null) {   
@@ -481,15 +552,16 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 		}   
 		protected void handleClickEvent(final MouseEvent e) {   
 			if (mousePressed) {   
-				mousePressed=false; 	      
+                            mousePressed=false; // Why?
 				final JTableHeader header = (JTableHeader)(e.getSource());   
 				final JTable tableView = header.getTable();   
 				final TableColumnModel columnModel = tableView.getColumnModel();
 				final int viewColumn = columnModel.getColumnIndexAtX(e.getX());   
 				final int column = tableView.convertColumnIndexToModel(viewColumn);
+                                // logger.debug("selectAll handleClickEvent: source = " + e.getSource() + ", viewCol = " + viewColumn + ", column = " + column + ", this.column = " + this.column); // DEL
 				if (viewColumn == this.column && e.getClickCount() == 1 && column != -1) {  
-					doClick();
-				} 
+                                    doClick();
+				}
 			}   
 		}   
 		public void mouseClicked(final MouseEvent e) {
@@ -517,6 +589,7 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 		return "Remove Redundant Links Panel";
 	}
 
+	public void cleanup() {
+            GUIUtil.removeReloadListener(reloadListener);
+        }
 }
-
-
