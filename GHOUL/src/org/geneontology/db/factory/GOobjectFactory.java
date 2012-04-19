@@ -25,6 +25,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
+
 public class GOobjectFactory {
 	/** The local {@link SessionFactory} object used to retrieve data. */
 	private static SessionFactory sessions;
@@ -53,6 +54,8 @@ public class GOobjectFactory {
 
 	public synchronized Session startSession() {
 		Session session = sessions.getCurrentSession();
+		
+//		Session session = sessions.getCurrentSession();
 		session.beginTransaction();
 		return session;
 	}
