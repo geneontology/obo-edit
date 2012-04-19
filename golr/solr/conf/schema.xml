@@ -31,6 +31,8 @@
     <field name="annotation_extension_class_closure" type="string" indexed="true" stored="true" required="false" multiValued="true" />
     <!-- bbop_bio: Column 12: type class id. -->
     <field name="type" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <!-- bbop_ann: Column 14: date of assignment. -->
+    <field name="date" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <!-- bbop_ann: ??? -->
     <!-- bbop_ann_ev_agg: ??? -->
     <field name="evidence_with" type="string" indexed="true" stored="true" required="false" multiValued="true" />
@@ -44,18 +46,20 @@
     <!-- bbop_ann: A unique (and internal) combination of bioentity and ontology class. -->
     <!-- bbop_ann_ev_agg: Bioentity id. -->
     <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+    <!-- bbop_ann: ??? -->
+    <field name="annotation_extension_class_label" type="text_ws" indexed="true" stored="true" required="false" multiValued="true" />
     <!-- bbop_ont: The category of the document in the Solr index. -->
     <!-- bbop_bio: The category of the document in the Solr index. -->
     <!-- bbop_ann: The category of the document in the Solr index. -->
     <!-- bbop_ann_ev_agg: The category of the document in the Solr index. -->
     <field name="document_category" type="string" indexed="true" stored="true" required="false" multiValued="false" />
-    <!-- bbop_ann: ??? -->
-    <field name="annotation_extension_class_label" type="text_ws" indexed="true" stored="true" required="false" multiValued="true" />
     <!-- bbop_ont: Term definition. -->
     <field name="description" type="text_ws" indexed="true" stored="true" required="false" multiValued="false" />
     <!-- bbop_bio: Column 13: taxon. -->
     <!-- bbop_ann: Column 13: taxon. -->
     <field name="taxon" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <!-- bbop_bio: Column 1: Identifier database. -->
+    <field name="db" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <!-- bbop_ont: Is the term obsolete? -->
     <field name="is_obsolete" type="boolean" indexed="true" stored="true" required="false" multiValued="false" />
     <!-- bbop_ont: Common term name. -->
@@ -73,6 +77,7 @@
     <!-- bbop_ont: Alternate term id. -->
     <field name="alternate_id" type="string" indexed="true" stored="true" required="false" multiValued="true" />
     <!-- bbop_ont: Term namespace. -->
+    <!-- bbop_ann: Column 15: assigned by. -->
     <field name="source" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <!-- bbop_ann_ev_agg: ??? -->
     <field name="evidence_closure" type="string" indexed="true" stored="true" required="false" multiValued="true" />
