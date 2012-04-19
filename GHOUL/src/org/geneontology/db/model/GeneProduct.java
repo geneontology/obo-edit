@@ -70,9 +70,6 @@ public class GeneProduct extends GOModel {
 
 	public void setDbxref(DBXref dbxref) {
 		this.dbxref = dbxref;
-		if (dbxref.getAccession().endsWith("010123") || dbxref.getAccession().endsWith("001839")) {
-			System.out.println("Setting gp xref to " + dbxref.getAccession());
-		}
 	}
 
 	public Species getSpecies() {
@@ -135,21 +132,21 @@ public class GeneProduct extends GOModel {
 	}
 
 	public void addAssociation(Association assoc) {
-		this.getAssociations().add(assoc);
 		assoc.setGene_product(this);
+		associations.add(assoc);
 	}
 
 	public Association findAssociation(Term term, String from_db) {
 		Association found = null;
-		for (Iterator<Association> it = associations.iterator(); it.hasNext() && found == null;) {
-			Association assoc = it.next();
-			if (assoc.getTerm() == term && assoc.getSource_db().getName().equals(from_db)) {
-				found = assoc;
+		for (Iterator<Association> it = associations.iterator(); it.hasNext() && found == null; ) {
+			Association a = it.next();
+			if (a.getTerm() == term && a.getSource_db().getName().equals(from_db)) {
+				found = a;
 			}
 		}
 		return found;
 	}
-	
+
 	public Association removeAssociation(Term term, String from_db) {
 		Association removal = findAssociation (term, from_db);
 		if (removal != null) {
@@ -157,4 +154,18 @@ public class GeneProduct extends GOModel {
 		}
 		return removal;
 	}
+
+	public Association removeAssociation(Association a) {	
+		System.out.println ("1. Associations contains " + associations.contains(a));				
+		if (!associations.remove(a)) {
+			System.out.println ("Unable to remove");
+		} else {
+			System.out.println ("Yippee! removed ");
+			System.out.println ("Associations contains " + associations.contains(a));
+			return a;
+		}
+		System.out.println ("2. Associations contains " + associations.contains(a));	
+		return null;
+	}
+
 }

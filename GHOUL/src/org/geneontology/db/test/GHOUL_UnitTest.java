@@ -25,21 +25,17 @@ import org.geneontology.db.model.Species;
 import org.geneontology.db.model.Term;
 import org.geneontology.db.model.TermDBXref;
 import org.geneontology.db.model.TermSynonym;
-import org.geneontology.db.util.HibernateUtil;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 
 public class GHOUL_UnitTest extends TestCase{
 
-	private SessionFactory sessionFactory;
 	private GOobjectFactory factory;
 
 	protected final static Logger logger = Logger.getLogger(GHOUL_UnitTest.class);
 
 	public GHOUL_UnitTest(){
 		try {
-			this.sessionFactory = HibernateUtil.buildSessionFactory("hibernate.cfg.xml");
-			factory = new GOobjectFactory(sessionFactory);
+			factory = new GOobjectFactory("hibernate.cfg.xml");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -54,10 +50,6 @@ public class GHOUL_UnitTest extends TestCase{
 		if (session != null) {
 			session.close();
 		}
-	}
-
-	public void setSessionFactory(SessionFactory sf) {
-		this.sessionFactory = sf;
 	}
 
 	public void testGraphPath() {
