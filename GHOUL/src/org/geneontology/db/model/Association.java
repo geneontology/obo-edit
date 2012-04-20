@@ -135,8 +135,8 @@ public class Association extends GOModel {
 	public void addEvidence(Evidence evidence) {
 		if (this.evidence == null)
 			this.evidence = new HashSet<Evidence> ();
-		this.evidence.add(evidence);
 		evidence.setAssociation(this);
+		this.evidence.add(evidence);
 	}
 
 	public String toString() {
