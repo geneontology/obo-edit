@@ -132,6 +132,11 @@ public class GeneProduct extends GOModel {
 	}
 
 	public void addAssociation(Association assoc) {
+		/*
+		 * It is critical important that these two lines are executed in this order
+		 * Otherwise, because of Hibernate's implementation of Sets, the assoc isn't -really and truly- added
+		 * 
+		 */
 		assoc.setGene_product(this);
 		associations.add(assoc);
 	}
