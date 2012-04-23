@@ -71,7 +71,7 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 	protected Box northPanel = Box.createHorizontalBox();
 	protected Box southPanel = Box.createHorizontalBox();
 	protected static ImageIcon expIcon = (ImageIcon) Preferences.loadLibraryIcon("info_icon.gif");
-	protected JButton removeLinksButton = new JButton("Delete Links");
+	protected JButton removeLinksButton = new JButton("Delete Selected Link(s)");
 	protected JScrollPane sp = null;
 
 	protected Collection<Link> redundantLinks = null;
@@ -138,26 +138,39 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 		logger.debug("Removing " + selectedIx.size() + " links...");
 		for(int i=0; i<selectedIx.size(); i++){
                     int which = selectedIx.get(i);
-                    logger.debug("Remove selectedIx[" + i + "]: " + which); //  + ", which would be link: " + links.get(selectedIx.get(i)));
+                    // logger.debug("Remove selectedIx[" + i + "]: " + which); //  + ", which would be link: " + links.get(selectedIx.get(i)));
                         //                        logger.debug("data["+ i + "][1] = " + table.getValueAt(i, 1) + ", data[i][2] = " + table.getValueAt(i, 2)); // DEL
+                    // This worked for the FIRST link you removed, but after that, the numbering was off!
+                    // Was this ever actually tested?
                         //			removeLinks.add(links.get(selectedIx.get(i)));
                         //			redundantLinks.remove(links.get(selectedIx.get(i)));
                     Link link = findLink(links, table.getValueAt(which, 1), table.getValueAt(which, 2));
-                        logger.debug("Link to remove: " + link);
-                        if (link == null) {
-                            logger.error("Couldn't find link to remove!");
-                            return;
-                        }
-                        removeLinks.add(link);
-                        redundantLinks.remove(link);
+                    // logger.debug("Link to remove: " + link);
+                    if (link == null) {
+                        logger.error("Couldn't find link to remove!");
+                        return;
+                    }
+                    removeLinks.add(link);
+                    redundantLinks.remove(link);
 		}
+                // logger.debug("removeLinks: " + removeLinks); // DEL
+
+                // Maybe eventually it would be better to make one big TermMacroHistoryItem
+                // for all the links to be removed, but for now, that is problematic (makes it
+                // impossible to undo any link deletion).
+                // You can now undo single deletions, but for some reason, it still doesn't
+                // undo multiple deletions successfully.
+                // final TermMacroHistoryItem item = new TermMacroHistoryItem("Delete "+ removeLinks.size() +" redundant links");
 		for (final Link link : removeLinks) {
-			final TermMacroHistoryItem item = new TermMacroHistoryItem(
-					"Delete "+ removeLinks.size() +" redundant links");
-			item.addItem(new DeleteLinkHistoryItem(link));
-			if (item != null)
-				SessionManager.getManager().apply(item);
+                    // Why would you do this? Make a TermMacroHistoryItem for EACH link to be deleted,
+                    // and then add the link to it? This not only creates unnecessary overhead, it
+                    // makes it impossible to Undo the delete.
+                    //			item.addItem(new DeleteLinkHistoryItem(link));
+                    final DeleteLinkHistoryItem singleItem = new DeleteLinkHistoryItem(link);
+                    // item.addItem(new DeleteLinkHistoryItem(link));
+                    SessionManager.getManager().apply(singleItem);
 		}
+                // SessionManager.getManager().apply(item);
 		//logger.debug("redundantLinks size after deleting: " + redundantLinks.size());
 		//update table
 		displayResults();
