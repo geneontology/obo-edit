@@ -11,9 +11,18 @@ IDs. Ramona wanted to be able to drag the live term onto the obsolete term and
 see the menu items for adding a consider or replaced_by relation between the
 two same-named terms, and it wasn't showing those menu items.
 
+Remove Redundant Links panel:
+[ geneontology-Bugs-3520750 ] Remove Redundant Link doesn't always remove the right link
 [ geneontology-Bugs-3147642 ] 'Select all' not working in Remove Redundant Links panel
 [ geneontology-Bugs-3517323 ] Remove Redundant Links Panel doesn't refresh when it should
-
+The way links were being removed (by creating multiple(!) TermMacroHistoryItems)
+the removal couldn't be undone. If you deleted even a single link, Undo wouldn't
+restore it.
+I have improved this behavior--you can now undo single deletions. However, if you
+delete multiple links at a time, Undo only successfully undoes the last one. I'm
+not sure why. See https://sourceforge.net/tracker/?func=detail&atid=418257&aid=3517324&group_id=36855
+As a beneficial side effect of improving the Undoableness, I expect link deletion
+to be faster than it was.
 
 ==============================
 What's New in OBO-Edit v2.1.1-b7 (2/28/2012)
