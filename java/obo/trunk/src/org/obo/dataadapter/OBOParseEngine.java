@@ -45,7 +45,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 	// Handle both old and new date formats
 	protected SimpleDateFormat oldDateFormat = new SimpleDateFormat(
 	"dd:MM:yyyy HH:mm");  // old date format
-	protected SimpleDateFormat newDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'"); // ISO 8601
+	protected SimpleDateFormat newDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); // ISO 8601
 
 	protected static final HashMap<Character, Character> escapeChars = new HashMap<Character, Character>();
 
