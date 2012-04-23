@@ -303,8 +303,8 @@ public class RuleBasedReasoner extends AbstractReasoner {
 
 			}
 		}
-		logger.debug("finished on sweep: "+sweep);
-		logger.debug("new links: "+newLinks);
+                //		logger.debug("finished on sweep: "+sweep);
+		// logger.debug("new links: "+newLinks);
 		for (Rule rule : rules) {
 			rule.end(this);
 		}
@@ -312,13 +312,12 @@ public class RuleBasedReasoner extends AbstractReasoner {
 		logger.debug("   Total reasoner time = "
 				+ (totalTime / 1000000d) + " ms");
 
-		for (Rule rule : rules) {
-			if (rule instanceof AbstractRule)
-				logger.debug("   time in rule (" + rule + ") = "
-						+ (((AbstractRule) rule).ruleTime / 1000000d)
-						+ " ms");
-
-		}
+		// for (Rule rule : rules) {
+		// 	if (rule instanceof AbstractRule)
+		// 		logger.debug("   time in rule (" + rule + ") = "
+		// 				+ (((AbstractRule) rule).ruleTime / 1000000d)
+		// 				+ " ms");
+                // }
 	}
 
 	public void addRule(Rule rule) {
@@ -437,7 +436,7 @@ public class RuleBasedReasoner extends AbstractReasoner {
 		Collection<Link> togo = new HashSet<Link>();
 		for (Explanation exp : deps) {
 			Link depLink = (Link) exp.getExplainedObject();
-			logger.debug("link : "+link+" // has DEP: "+depLink+" // via EXPL: "+exp);
+			// logger.debug("link : "+link+" // has DEP: "+depLink+" // via EXPL: "+exp);
 			togo.add(depLink);
 		}
 		explanationDeps.remove(link);
