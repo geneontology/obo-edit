@@ -1,0 +1,91 @@
+format-version: 1.2
+date: 10:04:2012 14:42
+saved-by: nomi
+auto-generated-by: OBO-Edit 2.1.1-beta9
+remark: For testing Cycle Check. This ontology has one tight cycle and one loose cycle.
+
+[Term]
+id: TEST:0000001
+name: car
+synonym: "automobile" EXACT []
+
+[Term]
+id: TEST:0000002
+name: blue
+
+[Term]
+id: TEST:0000003
+name: blue car
+is_a: TEST:0000001 ! car
+relationship: has_color TEST:0000002 ! blue
+
+[Term]
+id: TEST:0000004
+name: blue VW
+is_a: TEST:0000005 ! VW
+relationship: has_color TEST:0000002 ! blue
+
+[Term]
+id: TEST:0000005
+name: VW
+is_a: TEST:0000001 ! car
+
+[Term]
+id: TEST:0000006
+name: automobile
+is_obsolete: true
+
+[Term]
+id: TEST:0000007
+name: red
+
+[Term]
+id: TEST:0000008
+name: red car
+is_a: TEST:0000001 ! car
+relationship: has_color TEST:0000003 ! red
+
+[Term]
+id: TEST:0000009
+name: fast red car
+is_a: TEST:0000008 ! red car
+
+[Term]
+id: TEST:0000010
+name: red VW
+is_a: TEST:0000008 ! red car
+is_a: TEST:0000005 ! VW
+
+[Term]
+id: TEST:0000011
+name: cyclical red car 1
+comment: tight cycle between 11 and 12
+is_a: TEST:0000012 ! cyclical red car 2
+
+id: TEST:0000012
+name: cyclical red car 2
+is_a: TEST:0000011 ! cyclical red car 1
+
+[Term]
+id: TEST:0000013
+name: big red car
+is_a: TEST:0000015 ! cycle 3
+
+[Term]
+id: TEST:0000014
+name: big cyclical red car
+is_a: TEST:0000013 ! big red can
+
+[Term]
+id: TEST:0000015
+name: cycle 3
+comment: loose cycle 14 -> 13 -> 15 -> 14
+is_a: TEST:0000014 ! big cyclical red car
+
+[Typedef]
+id: has_color
+name: has_color
+
+[Typedef]
+id: has_make
+name: has_make
