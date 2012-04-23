@@ -517,12 +517,19 @@ public class SessionManager {
 	}
 
 	protected void reverse(HistoryItem item) {
-		OperationWarning warning = getOperationModel().reverse(item);
-		if (warning != null)
-			logger.warn("SessionManager.reverse " + item + ": warning = " + warning);
-		if (getUseReasoner()) {
-			reasonerOpModel.reverse(item);
+            OperationWarning warning = null;
+            warning = getOperationModel().reverse(item);
+            if (warning != null)
+                logger.warn("SessionManager.reverse " + item + ": warning = " + warning);
+
+                if (getUseReasoner()) {
+                    // logger.debug("Calling reasonerOpModel.reverse(" + item + ")"); // DEL
+                    // Do we really want to do this ALSO? Shouldn't it be INSTEAD?
+                    warning = reasonerOpModel.reverse(item);
+                    if (warning != null)
+			logger.warn("reasonerOpModel.reverse " + item + ": warning = " + warning);
 		}
+
 		fireHistoryReversed(new HistoryAppliedEvent(this, item));
 
 		SelectionManager.setGlobalSelection(GUIUtil.getPreSelection(item));
@@ -536,13 +543,14 @@ public class SessionManager {
 	public void undo() {
 		HistoryList historyList = session.getCurrentHistory();
 		HistoryItem item = historyList.getItemAt(historyList.size() - 1);
+                // logger.debug("Undo: undoing " + item);
 		historyList.removeItem(item);
 		reverse(item);
 		redoHistoryItems.add(item);
 	}
 
 	protected void fireReasonerStatusChange(ReasonerStatusEvent e) {
-		logger.debug("SessionManager.fireReasonerStatusChange");
+            // logger.debug("SessionManager.fireReasonerStatusChange");
 		for (ReasonerStatusListener listener : reasonerStatusListeners) {
 			listener.statusChanged(e);
 		}
