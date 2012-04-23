@@ -1,7 +1,7 @@
 Copyright (C) 2011, Gene Ontology Consortium
 Original author:  John Day-Richter
-Version:  2.1.1-b7
-Release date: 2011-02-28
+Version:  2.1
+Release date: 2011
 
 OBO-Edit is an open source tool written in Java for browsing, searching, and
 modifying OBO ontologies.
@@ -19,6 +19,30 @@ How to report bugs
 
 
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
+
+==============================
+What's New in OBO-Edit v2.1.1-b9
+==============================
+[ geneontology-Bugs-3487351 ] Deleted differentia (in XP editor) sometimes reappear
+
+[ geneontology-Feature Requests-3181194 ] allow obsolete term to have same name as live term
+The issue here is that there were two terms with the same name but different
+IDs. Ramona wanted to be able to drag the live term onto the obsolete term and
+see the menu items for adding a consider or replaced_by relation between the
+two same-named terms, and it wasn't showing those menu items.
+
+Remove Redundant Links panel:
+[ geneontology-Bugs-3520750 ] Remove Redundant Link doesn't always remove the right link
+[ geneontology-Bugs-3147642 ] 'Select all' not working in Remove Redundant Links panel
+[ geneontology-Bugs-3517323 ] Remove Redundant Links Panel doesn't refresh when it should
+The way links were being removed (by creating multiple(!) TermMacroHistoryItems)
+the removal couldn't be undone. If you deleted even a single link, Undo wouldn't
+restore it.
+I have improved this behavior--you can now undo single deletions. However, if you
+delete multiple links at a time, Undo only successfully undoes the last one. I'm
+not sure why. See https://sourceforge.net/tracker/?func=detail&atid=418257&aid=3517324&group_id=36855
+As a beneficial side effect of improving the Undoableness, I expect link deletion
+to be faster than it was.
 
 ==============================
 What's New in OBO-Edit v2.1.1-b7 (2/28/2012)
@@ -109,7 +133,7 @@ Now you should be able to save OR delete your genus.
 
 
 ==============================
-What's New in OBO-Edit v2.1.1-b1-b2
+What's New in OBO-Edit v2.1.1-b1 and b2
 ==============================
 New features:
 - [ geneontology-Feature Requests-3469108 ] Titlebar should show last saved-as filename
