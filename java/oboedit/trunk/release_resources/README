@@ -1,7 +1,7 @@
-Copyright (C) 2011, Gene Ontology Consortium
+Copyright (C) 2012, Gene Ontology Consortium
 Original author:  John Day-Richter
 Version:  2.1
-Release date: 2011
+Release date: 2012
 
 OBO-Edit is an open source tool written in Java for browsing, searching, and
 modifying OBO ontologies.
@@ -43,6 +43,9 @@ delete multiple links at a time, Undo only successfully undoes the last one. I'm
 not sure why. See https://sourceforge.net/tracker/?func=detail&atid=418257&aid=3517324&group_id=36855
 As a beneficial side effect of improving the Undoableness, I expect link deletion
 to be faster than it was.
+
+Fixed data format to use 24 hours for writing ISO 8601 dates (e.g., creation_date). (Heiko)
+
 
 ==============================
 What's New in OBO-Edit v2.1.1-b7 (2/28/2012)
