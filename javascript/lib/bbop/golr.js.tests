@@ -1,0 +1,64 @@
+////
+//// Some unit testing for package golr.js
+////
+//// Usage:
+////    Command line: "js -f golr.js.tests"
+////    Interactive: "js -f golr.js.tests -f -"
+////
+//// To get fresh data:
+////    cp /srv/www/htdocs/amigo2/javascript/bbop/amigo/golr_conf_data.js /home/sjcarbon/local/src/svn/geneontology/javascript/_data/golr_conf_data.js
+////
+
+// Load testing.
+load('test.js');
+var mr_t = new bbop.test();
+
+// Correct environment.
+load('core.js');
+load('logger.js');
+load('registry.js');
+load('golr.js');
+
+// Get some test data as well.
+// This defines "bbop.amigo.golr_conf_data".
+load('../../_data/golr_conf_data.js');
+
+///
+/// Start unit testing.
+///
+
+// bbop.golr.search_field
+(function(){
+
+     // Absolute basics.
+     var fconf = bbop.golr.conf_data['bbop_ont']['fields'][0];
+     var g = new bbop.golr.search_field(fconf);
+     mr_t.is_same_atom(g._is_a, 'bbop.golr.search_field', "me");
+     
+ })();
+
+// bbop.golr.search_aspect
+(function(){
+
+     // Absolute basics.
+     var g = new bbop.golr.search_aspect(bbop.golr.conf_data['bbop_ont']);
+     mr_t.is_same_atom(g._is_a, 'bbop.golr.search_aspect', "me");
+     
+ })();
+
+// bbop.golr.manager
+(function(){
+
+     // Absolute basics.
+     var g = new bbop.golr.manager('http://golr.berkeleybop.org/',
+				   bbop.golr.conf_data);
+     mr_t.is_same_atom(g._is_a, 'bbop.golr.manager', "me");
+     
+ })();
+
+///
+/// End unit testing.
+///
+
+// Final report.
+mr_t.report();

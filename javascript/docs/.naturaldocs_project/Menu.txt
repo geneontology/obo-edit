@@ -47,10 +47,13 @@ Format: 1.51
 
 
 File: core.js  (core.js)
+File: golr.js  (golr.js)
+File: logger.js  (logger.js)
 
 Group: Index  {
 
    Index: Everything
+   Class Index: Classes
    File Index: Files
    Function Index: Functions
    Variable Index: Variables
