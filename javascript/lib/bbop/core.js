@@ -137,8 +137,8 @@ bbop.core.crop = function(str, lim, suff){
  * Fold a pair of hashes together, using the first one as a template.
  * 
  * Parameters:
- *  default_hash - template hash
- *  arg_hash - argument hash to match
+ *  default_hash - Template hash.
+ *  arg_hash - Argument hash to match.
  * 
  * Returns: A new hash.
  */
