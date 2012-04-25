@@ -251,9 +251,14 @@
 
 ;; NOTE: Equivalent:
 ;; (+ (bbop-s3-cost-monthly-sliding 1.5 -2.0) (bbop-s3-cost-monthly-sliding 3.0 2.0))
-;; Default Amazon calc:
+
+;; ;; Default Amazon calc: $195
 ;; (storage-calc 2.0 @ 3.0 1.5)
-;; Nimbus.io clac:
+;; ;; Nimbus.io calc: $98
 ;; (let ((+gb-per-month-first+ 0.06)
 ;;       (+gb-per-month-rest+ 0.06))
+;;   (storage-calc 2.0 @ 3.0 1.5))
+;; ;; Google Drive Calc: $163
+;; (let ((+gb-per-month-first+ 0.10)
+;;       (+gb-per-month-rest+ 0.10))
 ;;   (storage-calc 2.0 @ 3.0 1.5))
