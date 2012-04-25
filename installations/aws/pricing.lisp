@@ -258,6 +258,14 @@
 ;; (let ((+gb-per-month-first+ 0.06)
 ;;       (+gb-per-month-rest+ 0.06))
 ;;   (storage-calc 2.0 @ 3.0 1.5))
+;; SpiderOak yearly calc: $136
+;; (let ((+gb-per-month-first+ (/ 1.0 12.0))
+;;       (+gb-per-month-rest+ (/ 1.0 12.0)))
+;;   (storage-calc 2.0 @ 3.0 1.5))
+;; ;; SpiderOak monthly calc: $163
+;; (let ((+gb-per-month-first+ 0.1)
+;;       (+gb-per-month-rest+ 0.1))
+;;   (storage-calc 2.0 @ 3.0 1.5))
 ;; ;; Google Drive Calc: $163
 ;; (let ((+gb-per-month-first+ 0.10)
 ;;       (+gb-per-month-rest+ 0.10))
