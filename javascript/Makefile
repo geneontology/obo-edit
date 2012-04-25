@@ -53,4 +53,4 @@ $(BENCHMARKS):
 .PHONY: docs
 
 docs:
-	naturaldocs --rebuild-output --input bbop/ --project docs/.naturaldocs_project/ --output html docs/
+	naturaldocs --rebuild-output --input lib/bbop/ --project docs/.naturaldocs_project/ --output html docs/

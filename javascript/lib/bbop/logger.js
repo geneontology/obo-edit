@@ -1,21 +1,76 @@
-////////////
-////
-//// bbop.logger
-////
-//// BBOP JS logger object.
-////
-//// Taken name spaces:
-////    bbop.logger
-////
-//////////
+/*
+ * Package: logger.js
+ * Namespace: bbop.logger
+ * 
+ * BBOP JS logger object.
+ */
 
+// Setup the internal requirements.
 bbop.core.require('bbop', 'core');
 bbop.core.namespace('bbop', 'logger');
 
-bbop.logger = function(){
+/*
+ * Structure: bbop.logger
+ * Constructor: logger
+ * 
+ * Arguments: (optional) initial context.
+ */
+bbop.logger = function(initial_context){
 
-    // Different debugging available per object.
+    /*
+     * Variable: DEBUG 
+     * 
+     * Different debugging available per object. Externally toggle
+     * between true and false to switch on and off the logging.
+     */
     this.DEBUG = false;
+
+    // Define an optional context to tag onto the front of messages.
+    this._context = [];
+    if( initial_context ){
+	this._context = [initial_context];
+    }
+
+    /*
+     * Function: reset_context
+     * 
+     * Define the ability to reset the contex.
+     * 
+     * Arguments:
+     *  new_initial_context - (optional) New context to start with.
+     */
+    this.reset_context = function(new_initial_context){
+	if( new_initial_context ){
+	    this._context = [new_initial_context];
+	}else{
+	    this._context = [];	    
+	}
+    };
+
+    /*
+     * Function: push_context
+     * 
+     * Add an additional logging context to the stack.
+     * 
+     * Arguments:
+     *  new_context - New context to add to the context stack.
+     */
+    this.push_context = function(new_context){
+	this._context.push(new_context);
+    };
+
+    /*
+     * Function: push_context
+     * 
+     * Remove the last context if it's there.
+     */
+    this.pop_context = function(){
+	var popped_context = null;
+	if( this._context.length > 0 ){
+	    popped_context = this._context.pop();
+	}
+	return popped_context;
+    };
 
     // Generalizer console (or whatever) printing.
     this._console_sayer = function(){};
@@ -61,10 +116,34 @@ bbop.logger = function(){
 	this._console_sayer = function(msg){ print(msg); };
     }
     
+    /*
+     * Function: kvetch
+     * 
+     * Log a string to somewhere. Also return a string to (mostly for
+     * the unit tests).
+     * 
+     * Arguments:
+     *  string - The string to print out to wherever we found.
+     */
     this.kvetch = function(string){
+	var ret_str = null;
 	if( this.DEBUG == true ){
+
+	    // Make sure there is something there no matter what.
 	    if( typeof(string) == 'undefined' ){ string = ''; }
+
+	    // Redefined the string a little if we have contexts.
+	    if( this._context.length > 0 ){
+		var cstr = this._context.join(':');
+		string = cstr + ': '+ string;
+	    }
+
+	    // Actually log to the console.
 	    this._console_sayer(string);
+
+	    // Bind for output.
+	    ret_str = string;
 	}
+	return ret_str;
     };
 };
