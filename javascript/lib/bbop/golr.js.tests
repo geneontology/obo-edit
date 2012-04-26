@@ -32,18 +32,42 @@ load('../../_data/golr_conf_data.js');
 
      // Absolute basics.
      var fconf = bbop.golr.conf_data['bbop_ont']['fields'][0];
-     var g = new bbop.golr.search_field(fconf);
-     mr_t.is_same_atom(g._is_a, 'bbop.golr.search_field', "me");
+     var sf = new bbop.golr.search_field(fconf);
+     mr_t.is_same_atom(sf._is_a, 'bbop.golr.search_field', "me");
      
+     // Simple getters.
+     mr_t.is_same_atom("Category", sf.display_name(), "display_name");
+     mr_t.is_same_atom("The category of the document in the Solr index.",
+		       sf.description(), "desc");
+     mr_t.is_same_atom(0, sf.weight(), "w");
+     mr_t.is_same_atom("document_category", sf.id(), "id");
+     mr_t.is_same_atom(false, sf.searchable(), "searchable");
+     mr_t.is_same_atom(false, sf.required(), "required");
+     mr_t.is_same_atom(false, sf.is_multi(), "multi?");
+     mr_t.is_same_atom(true, sf.is_fixed(), "fixed?");
+     mr_t.is_same_atom("ontology_class",
+		       sf.property(), "prop");
  })();
 
 // bbop.golr.search_aspect
 (function(){
 
      // Absolute basics.
-     var g = new bbop.golr.search_aspect(bbop.golr.conf_data['bbop_ont']);
-     mr_t.is_same_atom(g._is_a, 'bbop.golr.search_aspect', "me");
-     
+     var sa = new bbop.golr.search_aspect(bbop.golr.conf_data['bbop_ont']);
+     mr_t.is_same_atom(sa._is_a, 'bbop.golr.search_aspect', "me");
+
+     // Simple getters.
+     mr_t.is_same_atom("Ontology", sa.display_name(), "display_name");
+     mr_t.is_same_atom("Test mapping of ontology class for GO.",
+		       sa.description(), "desc");
+     mr_t.is_same_atom(40, sa.weight(), "w");
+     mr_t.is_same_atom("bbop_ont", sa.id(), "id");
+     mr_t.is_same_atom('_searchable', sa.searchable_extension(),
+		       "searchable_extension");
+
+     // More complicated.
+     mr_t.is_same_atom(null, sa.get_field('blork'), "s1");
+     mr_t.is_same_atom(false, sa.get_field('id').is_fixed(), "s2");
  })();
 
 // bbop.golr.manager
@@ -53,6 +77,8 @@ load('../../_data/golr_conf_data.js');
      var g = new bbop.golr.manager('http://golr.berkeleybop.org/',
 				   bbop.golr.conf_data);
      mr_t.is_same_atom(g._is_a, 'bbop.golr.manager', "me");
+
+     // 
      
  })();
 

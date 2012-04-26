@@ -22,10 +22,10 @@ bbop.core.namespace('bbop', 'golr');
 // facets and can build the initial model off of that.
 
 /*
- * Structure: bbop.golr.manager
+ * Structure: bbop.golr.configuration
  * Constructor: manager
  * 
- * Contructor for the GOlr query manager.
+ * Contructor for the GOlr query manager
  * 
  * Arguments:
  *  golr_loc - string url to GOlr server;
@@ -70,21 +70,15 @@ bbop.golr.manager = function (golr_loc, golr_conf_var){
     }
     
     // Our default target url.
-    this.solr_url = golr_loc;
+    this._solr_url = golr_loc;
+
+    // Settle in the configurations.
+    this._golr_conf = new bbop.golr.configuration(golr_conf_var);
+
+    // // Get the aspects.
+    // this._search_apsects_hash = {};
+    // //bbop.core.each();
     
-    /*
-     * Function: get_configurations
-     * 
-     * ???
-     * 
-     * Arguments:
-     *  ??? - ???
-     */
-    this.get_configurations = function(){
-
-	
-    };
-
     ///
     /// BUG/TODO: Below still needs to be reworked.
     ///
@@ -204,7 +198,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_var){
 	};
 
 	// Structure of the necessary invariant parts.	
-	var qs_head = anchor.solr_url + 'select?';
+	var qs_head = anchor._solr_url + 'select?';
 	var invariant_qs = bbop.core.get_assemble(anchor.query_invariants);
 	var qurl = qs_head + invariant_qs;
 
@@ -286,6 +280,91 @@ bbop.golr.manager = function (golr_loc, golr_conf_var){
 bbop.golr.prototype = new bbop.registry;
 
 /*
+ * Structure: bbop.golr.configuration
+ * Constructor: manager
+ * 
+ * Contructor for the GOlr query manager.
+ * 
+ * Arguments:
+ *  golr_conf_var - JSONized GOlr config
+ * 
+ * Returns: golr object
+ * 
+ * Also See: <bbop.registry>
+ */
+bbop.golr.configuration = function (golr_conf_var){
+    // // We are a registry like this:
+    //bbop.registry.call(this, ['reset', 'search', 'error']);
+    this._is_a = 'bbop.golr.configuration';
+
+    // Get a good self-reference point.
+    var anchor = this;
+
+    // Per-manager logger.
+    var logger = new bbop.logger(this._is_a);
+    logger.DEBUG = true;
+    function ll(str){ logger.kvetch(str); }
+
+    // Lightly check incoming arguments.
+    // There could be a hash of pinned filters argument.
+    if( ! golr_conf_var || typeof golr_conf_var != 'object' ){
+	ll('ERROR: no proper golr conf var argument');
+    }
+    
+    // Settle in the configurations.
+    this._golr_conf = golr_conf_var;
+
+    // Get the search aspects.
+    this._aspects = {};
+    bbop.core.each(anchor._golr_conf,
+		  function(key, val){
+		      var new_asp = new bbop.golr.search_aspect(val);
+		      anchor._aspects[new_asp.id()] = new_asp;
+		  });
+
+    /*
+     * Function: get_aspect
+     * 
+     * Returns a search aspect by id string. Null otherwise.
+     * 
+     * Returns: bbop.search_aspect.
+     */
+    this.get_aspect = function(fid){
+	retval = null;
+	if( this._aspects &&
+	    this._aspects[fid] ){
+		retval = this._aspects[fid];
+	    }
+	return retval;
+    };
+
+    /*
+     * Function: get_aspects
+     * 
+     * Returns an array of all search aspects.
+     * 
+     * Returns: Array of bbop.golr.search_aspect.
+     */
+    this.get_aspects = function(){
+	ret = [];
+	bbop.core.each(anchor._aspects,
+		       function(key, val){
+			   ret.push(val);
+		       });
+	return ret;
+    };
+
+    /*
+     * Function: get_visible_aspect_ids
+     * 
+     * Returns an array of all visible search aspects by id string,
+     * ordered by weight.
+     * 
+     * Returns: Array of strings.
+     */
+};
+
+/*
  * Structure: bbop.golr.search_aspect
  * Constructor: search_aspect
  * 
@@ -309,8 +388,14 @@ bbop.golr.search_aspect = function (aspect_conf_struct){
     logger.DEBUG = true;
     function ll(str){ logger.kvetch(str); }
 
-    // Capture aspect.
+    // Capture aspect and the component fields into variables.
     this._aspect = aspect_conf_struct;
+    this._fields = {};
+    bbop.core.each(this._aspect['fields'],
+		   function(item, index){
+		       var sf = new bbop.golr.search_field(item);
+		       anchor._fields[sf.id()] = sf;
+		  });
 
     /*
      * Function: display_name
@@ -343,7 +428,7 @@ bbop.golr.search_aspect = function (aspect_conf_struct){
      * Returns: Integer.
      */
     this.weight = function(){
-	return this._aspect['weight'] || 0;
+	return parseInt(this._aspect['weight']) || 0;
     };
 
     /*
@@ -368,7 +453,37 @@ bbop.golr.search_aspect = function (aspect_conf_struct){
 	return this._aspect['searchable_extension'] || '_searchable';
     };
 
-    // TODO: fields and boots
+    /*
+     * Function: get_field
+     * 
+     * Returns a search field by id string. Null otherwise.
+     * 
+     * Returns: bbop.search_field.
+     */
+    this.get_field = function(fid){
+	retval = null;
+	if( this._fields &&
+	    this._fields[fid] ){
+		retval = this._fields[fid];
+	    }
+	return retval;
+    };
+
+    // /*
+    //  * Function: get_visible_fields
+    //  * 
+    //  * Returns an array of all visible search field by id string. Null otherwise.
+    //  * 
+    //  * Returns: bbop.search_field.
+    //  */
+    // this.get_visible_fields = function(){
+    // 	retval = null;
+    // 	if( this._fields &&
+    // 	    this._fields[fid] ){
+    // 		retval = this._fields[fid];
+    // 	    }
+    // 	return retval;
+    // };
 };
 
 /*
@@ -395,7 +510,7 @@ bbop.golr.search_field = function (field_conf_struct){
     logger.DEBUG = true;
     function ll(str){ logger.kvetch(str); }
 
-    // Capture field.
+    // Capture search fields.
     this._field = field_conf_struct;
 
     /*
@@ -429,7 +544,7 @@ bbop.golr.search_field = function (field_conf_struct){
      * Returns: Integer.
      */
     this.weight = function(){
-	return this._field['weight'] || 0;
+	return parseInt(this._field['weight']) || 0;
     };
 
     /*
