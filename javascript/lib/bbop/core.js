@@ -318,7 +318,6 @@ bbop.core.is_empty = function(in_thing){
     return retval;
 };
 
-
 /*
  * Function: each
  *
@@ -340,21 +339,89 @@ bbop.core.each = function(in_thing, in_function){
     }else if( typeof(in_thing) != 'object' ){
 	throw new Error('Unsupported type in bbop.core.each: ' +
 			typeof(in_thing) );
+    }else if( bbop.core.is_hash(in_thing) ){
+	// Probably a hash...
+	var hkeys = bbop.core.get_keys(in_thing);
+	for( var ihk = 0; ihk < hkeys.length; ihk++ ){
+	    var ikey = hkeys[ihk];
+	    var ival = in_thing[ikey];
+	    in_function(ikey, ival);
+	}
     }else{
-	// Probably a hash, otherwise likely an array.
-	if( bbop.core.is_hash(in_thing) ){
-	    var hkeys = bbop.core.get_keys(in_thing);
-	    for( var ihk = 0; ihk < hkeys.length; ihk++ ){
-		var ikey = hkeys[ihk];
-		var ival = in_thing[ikey];
-		in_function(ikey, ival);
-	    }
-	}else{
-	    for( var iai = 0; iai < in_thing.length; iai++ ){
-		in_function(in_thing[iai], iai);
-	    }
+	// Otherwise likely an array.
+	for( var iai = 0; iai < in_thing.length; iai++ ){
+	    in_function(in_thing[iai], iai);
 	}
     }
+};
+
+/*
+ * Function: pare
+ *
+ * Take an array or hash and par it down using a couple of functions
+ * to what we want.
+ * 
+ * Both parameters are optional in the sense that you can set them to
+ * null and they will have no function; i.e. a null filter will let
+ * everything through and a null sort will let things go in whatever
+ * order.
+ *
+ * Parameters: 
+ *  in_thing - hash or array
+ *  filter_function - hash (function(key, val)) or array (function(item, i)).
+ *   This function must return boolean true or false.
+ *  sort_function - function to apply to elements: function(a, b)
+ *   This function must return an integer as the usual sort functions do.
+ *
+ * Returns: An array.
+ */
+bbop.core.pare = function(in_thing, filter_function, sort_function){
+
+    var ret = [];
+    
+    // Probably an not array then.
+    if( typeof(in_thing) == 'undefined' ){
+	// this is a nothing, to nothing....
+    }else if( typeof(in_thing) != 'object' ){
+	throw new Error('Unsupported type in bbop.core.pare: ' +
+			typeof(in_thing) );
+    }else if( bbop.core.is_hash(in_thing) ){
+	// Probably a hash; filter it if filter_function is defined.
+	if( filter_function ){	
+	    bbop.core.each(in_thing,
+			   function(key, val){
+			       if( filter_function(key, val) ){
+				   // Remove matches to the filter.
+			       }else{
+				   ret.push(val);
+			       }
+			   });
+	}else{
+	    bbop.core.each(in_thing, function(key, val){ ret.push(val); });
+	}
+    }else{
+	// Otherwise, probably an array; filter it if filter_function
+	// is defined.
+	if( filter_function ){	
+	    bbop.core.each(in_thing,
+			   function(item, index){
+			       if( filter_function(item, index) ){
+				   // filter out item if true
+			       }else{
+				   ret.push(item);
+			       }
+			   });
+	}else{
+	    bbop.core.each(in_thing, function(item, index){ ret.push(item); });
+	}
+    }
+
+    // For both: sort if there is anything.
+    if( ret.length > 0 && sort_function ){
+	ret.sort(sort_function);	    
+    }
+
+    return ret;
 };
 
 /*
