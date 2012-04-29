@@ -2,6 +2,7 @@ package org.oboedit.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Box;
@@ -16,6 +17,7 @@ import org.obo.filters.Filter;
 import org.obo.filters.LinkFilter;
 import org.obo.filters.LinkFilterImpl;
 import org.obo.filters.ObjectFilter;
+import org.obo.filters.SelfSearchAspect;
 import org.apache.log4j.*;
 
 public class LinkFilterEditor extends TermFilterEditor {
@@ -27,11 +29,16 @@ public class LinkFilterEditor extends TermFilterEditor {
 	protected JComboBox aspectBox;
 	protected JLabel selectLinkLabel;
 
-	protected ActionListener linkAspectBoxListener = new BasicActionListener();
+    // Fix for [ geneontology-Bugs-3521387 ] link filter not working properly
+	protected ActionListener linkAspectBoxListener = new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+                    updateFields(); // Needed in order to update the list of criteria based on the chosen aspect
+		}
+	};
 
 	public LinkFilterEditor() {
 		super();
-		aspectBox.addActionListener(linkAspectBoxListener);
+                aspectBox.addActionListener(linkAspectBoxListener);
 	}
 	
 	@Override
@@ -47,17 +54,21 @@ public class LinkFilterEditor extends TermFilterEditor {
 	
 	@Override
 	protected Class<?> getInputClass() {
-		if (aspectBox.getSelectedIndex() == 0)
-			return Link.class;
-		else
+            // logger.debug("getInputClass: aspectBox.getSelectedIndex() = " + aspectBox.getSelectedIndex()); // DEL
+            // !! Shouldn't the test actually be whether the selected aspect is a SelfSearchAspect?
+            // Can we count on index 0 always being "Self"? What about index 1, "Type"?
+            // Should that get all the criteria or just the link ones?
+            if (aspectBox.getSelectedIndex() == 0)
+                        return Link.class;
+            else
 			return IdentifiedObject.class;
 	}
 	
 	@Override
 	protected void updateFields() {
-		aspectBox.removeActionListener(linkAspectBoxListener);
+                aspectBox.removeActionListener(linkAspectBoxListener);
 		super.updateFields();
-		aspectBox.addActionListener(linkAspectBoxListener);
+                aspectBox.addActionListener(linkAspectBoxListener);
 	}
 
 	@Override
@@ -120,13 +131,10 @@ public class LinkFilterEditor extends TermFilterEditor {
 		linkFilter.setFilter(filter);
 		linkFilter.setAspect(getValueForName((String) aspectBox
 				.getSelectedItem()));
-		//		logger.debug("linkFilter.getFilter " + linkFilter);
-		//		logger.debug("linkFilter.getFilter: calling updateFields"); // DEL
-                // This call to updateFields results in excessive calls to getFilter when there are TWO aspect boxes visible
+                // This call to updateFields resulted in excessive (possibly
+		// infinite) calls to getFilter when there are TWO aspect boxes visible
                 // (which makes the relation pulldown lists behave badly).
-                // Doesn't seem to be needed anymore to update relation lists, probably
-                // because of other changes I've made.
-                //		updateFields(); // This is needed in order to properly update pulldown menus, although getFilter gets called like 30 times, so it seems a bit wasteful.
+                // updateFields();
 		return linkFilter;
 	}
 }
