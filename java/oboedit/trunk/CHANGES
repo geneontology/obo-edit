@@ -15,6 +15,7 @@ Remove Redundant Links panel:
 [ geneontology-Bugs-3520750 ] Remove Redundant Link doesn't always remove the right link
 [ geneontology-Bugs-3147642 ] 'Select all' not working in Remove Redundant Links panel
 [ geneontology-Bugs-3517323 ] Remove Redundant Links Panel doesn't refresh when it should
+[ geneontology-Bugs-3517324 ] Undo only restores last link removed in Remove Redundant Links
 The way links were being removed (by creating multiple(!) TermMacroHistoryItems)
 the removal couldn't be undone. If you deleted even a single link, Undo wouldn't
 restore it.
