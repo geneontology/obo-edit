@@ -75,9 +75,11 @@ public class GOobjectFactory {
 	}
 
 	public synchronized Term getTermByAlternateAcc(String acc, Session session) {
-		String query = "from TermSynonym where alternateID = ?";
-		TermSynonym ts = (TermSynonym)session.createQuery(query).setString(0, acc).uniqueResult();
-		if (ts == null) {
+		String query = "from TermSynonym where acc_synonym = ?";
+		Query q = session.createQuery(query);
+		q.setString(0, acc);
+		TermSynonym ts = (TermSynonym)q.uniqueResult();
+		 if (ts == null) {
 			return null;
 		}
 		return ts.getTerm();
