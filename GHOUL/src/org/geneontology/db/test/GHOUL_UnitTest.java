@@ -300,7 +300,7 @@ public class GHOUL_UnitTest extends TestCase{
 	protected String prettyPrintSyns(Term term, StringBuffer buffer) {
 		for (TermSynonym tsyn : term.getSynonyms()){
 			buffer.append("\tSYN:\t" + tsyn.getSynonym() + "\ttype=" + tsyn.getSynonymType().getName() + 
-					"\tcategory=" + tsyn.getSynonymCategory() + "\talt_id=" + tsyn.getAlternateID() + "\n");
+					"\tcategory=" + tsyn.getSynonymCategory() + "\talt_id=" + tsyn.getAlternateAcc() + "\n");
 
 		}
 		return buffer.toString();
