@@ -10,7 +10,7 @@
 			<key-property name="synonym" column="term_synonym"/>
     	</composite-id>
 
-		<property name="alternateID" column="acc_synonym"/>
+		<property name="alternateAcc" column="acc_synonym"/>
    		<many-to-one name="synonymType" column="synonym_type_id" class="org.geneontology.db.model.Term" foreign-key="id" />
    		<many-to-one name="synonymCategory" column="synonym_category_id" class="org.geneontology.db.model.Term" foreign-key="id" />
 	

@@ -24,7 +24,7 @@ public class TermSynonym extends GOModel implements Serializable {
 
 	protected String synonym;
 	
-	protected String alternateID;
+	protected String alternateAcc;
 	
 	protected Term synonymType;
 	
@@ -51,12 +51,12 @@ public class TermSynonym extends GOModel implements Serializable {
 		this.synonym = synonym;
 	}
 
-	public String getAlternateID() {
-		return alternateID;
+	public String getAlternateAcc() {
+		return alternateAcc;
 	}
 
-	public void setAlternateID(final String alternateID) {
-		this.alternateID = alternateID;
+	public void setAlternateAcc(final String alternateAcc) {
+		this.alternateAcc = alternateAcc;
 	}
 
 	public Term getSynonymType() {
