@@ -86,8 +86,8 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 		Collection<CheckWarning> out = new LinkedList<CheckWarning>();
 		// What if it needs the reasoner, but the reasoner is not currently on?  --NH
 		if (currentCheck.needsReasoner()) {
-			logger.debug("currentCheck: " + currentCheck);
-			logger.info("Check " + currentCheck + " needs reasoner--reasoner state is currently " + SessionManager.getManager().getReasoner());
+                    // logger.debug("currentCheck: " + currentCheck);
+                    // logger.info("Check " + currentCheck + " needs reasoner--reasoner state is currently " + SessionManager.getManager().getReasoner());
 			currentCheck.setReasoner(SessionManager.getManager().getReasoner());
 		}
 		IdentifiedObject currentObject = path.getObject();
