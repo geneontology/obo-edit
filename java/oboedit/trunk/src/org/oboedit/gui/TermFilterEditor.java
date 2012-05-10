@@ -102,7 +102,7 @@ public class TermFilterEditor extends JPanel {
                   // Oh, I see...if you don't updateFields, the status label
                   // (the text that has a descriptin of the search, e.g., "all_text_fields contains 'blue'")
                   // (it's in FilterComponent.java) doesn't update when you change the search.
-                    //                    logger.debug("TermFilterEditor.actionPerformed: " + e); // DEL
+                    // logger.debug("actionPerformed: " + e); // DEL
                     fireUpdateEvent(); // This seems to do the trick--statusLabel updates as it should.
                     // 2/2012: Except that if you type something into
                     // valueField and then select one of the autocomplete terms,
@@ -118,7 +118,7 @@ public class TermFilterEditor extends JPanel {
 	protected ActionListener aspectBoxListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
                     boolean showTypeBox = !(aspectBox.getSelectedItem() instanceof SelfSearchAspect);
-                    //                    logger.debug("aspectBoxListener: aspectBox.getSelectedItem = " + aspectBox.getSelectedItem() + ", showTypeBox = " + showTypeBox); // DEL
+                    // logger.debug("aspectBoxListener: aspectBox.getSelectedItem = " + aspectBox.getSelectedItem() + ", showTypeBox = " + showTypeBox); // DEL
                     reachedViaLabel.setVisible(showTypeBox);
                     typeBox.setVisible(showTypeBox);
                     updateFields(); // Need?
@@ -135,13 +135,12 @@ public class TermFilterEditor extends JPanel {
 
 	protected ActionListener valueFieldListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-                    //                                        logger.debug("valueFieldListener.actionPerformed: " + e); // DEL
-                    // Need? It's not clear these calls accomplish anything.
-                    // They don't solve the problem that if you type something into
+                    // logger.debug("TFE.valueFieldListener.actionPerformed: " + e); // DEL
+                    // Calling updateFields doesn't solve the problem that if you type something into
                     // valueField and then select one of the autocomplete terms,
                     // the statusLabel doesn't update to show the selected term.
-                    //                    fireUpdateEvent();
                     //                    updateFields();
+                    // fireUpdateEvent(); // Need?
 		}
 	};
 
@@ -173,8 +172,10 @@ public class TermFilterEditor extends JPanel {
         // This method gets called 33 times when OBO-Edit launches!
 	protected Collection<SearchCriterion<?, ?>> getCriteria() {
 		Collection<SearchCriterion<?, ?>> out = new LinkedList<SearchCriterion<?, ?>>();
+                
 		for (SearchCriterion sc : FilterManager.getManager()
 				.getDisplayableCriteria()) {
+                    // Could call getInputClass once outside loop...
 			if (getInputClass().isAssignableFrom(sc.getInputType())) {
                             out.add(sc);
                         }
@@ -186,10 +187,10 @@ public class TermFilterEditor extends JPanel {
 
         // This method gets called excessively
 	protected void updateFields() {
-            //            logger.debug("TFE.updateFields"); // DEL
+            // logger.debug("TFE.updateFields"); // DEL
 		aspectBox.removeActionListener(aspectBoxListener);
 		comparisonBox.removeActionListener(comparisonBoxListener);
-                //		criterionBox.removeActionListener(criterionBoxListener);
+                criterionBox.removeActionListener(criterionBoxListener); // Need?
 		notBox.removeActionListener(notBoxListener);
 		typeBox.removeActionListener(typeBoxListener);
 
@@ -206,15 +207,17 @@ public class TermFilterEditor extends JPanel {
 		comparisonBox.removeAllItems();
 
 		boolean containsCurrentSelection = false;
+                //                logger.debug("TFE.updateFields: adding " + getCriteria().size() + " criteria"); // DEL
 		for (SearchCriterion c : getCriteria()) {
 			criterionBox.addItem(c);
 			if (ObjectUtil.equals(c, criterion))
 				containsCurrentSelection = true;
 		}
 
-		if (!containsCurrentSelection)
+                if (!containsCurrentSelection) {
 			criterion = (SearchCriterion) criterionBox.getItemAt(0);
-                //                logger.debug("criterionBox.setSelectedItem(" + criterion + ")");
+                }
+                // logger.debug("criterionBox.setSelectedItem(" + criterion + ")");
 		criterionBox.setSelectedItem(criterion);
 
                 // 5/9/11: No longer doing this
@@ -280,7 +283,7 @@ public class TermFilterEditor extends JPanel {
 
 		aspectBox.addActionListener(aspectBoxListener);
 		comparisonBox.addActionListener(comparisonBoxListener);
-                //		criterionBox.addActionListener(criterionBoxListener);
+                criterionBox.addActionListener(criterionBoxListener); // Need?
 		notBox.addActionListener(notBoxListener);
 		typeBox.addActionListener(typeBoxListener);
 		fireUpdateEvent();
@@ -339,11 +342,11 @@ public class TermFilterEditor extends JPanel {
 		criterionBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.clear();
-                                //                             logger.info("criterionBox.actionPerformed: " + e); // DEL
+                                // logger.info("criterionBox.actionPerformed: " + e); // DEL
 				model.addCriterion((SearchCriterion) criterionBox
 						.getSelectedItem());
                                 // Is this really needed? (It doesn't seem to solve the issue of updating the statusLabel.)
-                                // updateFields();
+                                // updateFields(); // Need?
 			}
 		});
 
@@ -511,7 +514,7 @@ public class TermFilterEditor extends JPanel {
 	public void setFilter(Filter filter) {
 		if (filter instanceof ObjectFilter) {
 			ObjectFilter of = (ObjectFilter) filter;
-                        //                        logger.debug("setFilter:  set selected item to " + of.getCriterion()); // DEL
+                        // logger.debug("setFilter:  set selected item to " + of.getCriterion()); // DEL
 			criterionBox.setSelectedItem(of.getCriterion());
 			valueField.setSelectedItem(of.getValue());
 			if (of.getNegate())
@@ -522,6 +525,7 @@ public class TermFilterEditor extends JPanel {
 
 				if (!(of.getAspect() instanceof SelfSearchAspect)) {
 					setAspectControlsVisible(true);
+					// logger.debug("setFilter: aspectBox.setSelectedItem(" + of.getAspect()); // DEL
 					aspectBox.setSelectedItem(of.getAspect());
 
 					if (of.getTraversalFilter() != null) {
