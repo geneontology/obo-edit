@@ -77,6 +77,7 @@ public class CycleCheck extends AbstractCheck implements OntologyCheck {
                                                             // false means this is not a fatal error
                                                             false, this, object);
                     warnings.add(warning);
+		    return; // Don't need to check any more children
                 }
             }
         }
