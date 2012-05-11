@@ -1,0 +1,46 @@
+////
+//// Some unit testing for package golr_manager.js
+////
+//// Usage:
+////    Command line: "js -f golr_manager.js.tests"
+////    Interactive: "js -f golr_manager.js.tests -f -"
+////
+
+// Load testing.
+load('test.js');
+var mr_t = new bbop.test();
+
+// Correct environment.
+load('core.js');
+load('logger.js');
+
+// Get some test data as well.
+// This defines "bbop.golr.golr_meta".
+load('../../_data/golr_meta.js');
+load('golr_conf.js');
+
+load('registry.js');
+load('golr_manager.js');
+
+///
+/// Start unit testing.
+///
+
+// bbop.golr.manager
+(function(){
+
+     // Absolute basics.
+     var gconf = new bbop.golr.conf(bbop.golr.golr_meta);
+     var g = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
+     mr_t.is_same_atom(g._is_a, 'bbop.golr.manager', "me");
+
+     // 
+     
+ })();
+
+///
+/// End unit testing.
+///
+
+// Final report.
+mr_t.report();
