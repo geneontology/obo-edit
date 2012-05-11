@@ -19,7 +19,10 @@ public class CycleCheck extends AbstractCheck implements OntologyCheck {
 	protected void initConfiguration() {
 		configuration
 				.setCondition((byte) (VerificationManager.SAVE
-						| VerificationManager.REASONER_ACTIVATED | VerificationManager.MANUAL));
+                                                      // If it's reasoner activated, it also runs on load
+                                                      // (yes, even if the reasoner's off).
+                                                      // | VerificationManager.REASONER_ACTIVATED
+                                                      | VerificationManager.MANUAL));
 	}
 
 	public Collection<CheckWarning> check(OBOSession history, IdentifiedObject currentObject,
@@ -47,7 +50,11 @@ public class CycleCheck extends AbstractCheck implements OntologyCheck {
 								+ history.getObjects().size());
 				if (o instanceof LinkedObject) {
 					LinkedObject lo = (LinkedObject) o;
-					check(lo, properties, out);
+					// check(lo, properties, out);
+                                        // That check doesn't work.
+                                        // Trying a different check.
+                                        checkForCycles(lo, out);
+                                        // logger.debug("CycleCheck: lo = " + lo + ", out = " + out); // DEL
 					if (isCancelled() || out.size() > VerificationManager.MAX_WARNINGS)
 						return out;
 				}
@@ -55,6 +62,24 @@ public class CycleCheck extends AbstractCheck implements OntologyCheck {
 		}
 		return out;
 	}
+
+	protected void checkForCycles(LinkedObject object, List<CheckWarning> warnings) {
+            for (Link link : object.getChildren()) {
+                LinkedObject child = link.getChild();
+                // If object is a descendant of its own child, then we have a cycle
+                // (possibly a mixed-relationship cycle)
+                boolean isDesc = TermUtil.isDescendant(child, object);
+                // logger.debug("checkForCycles: obj = " + object + ", child = " + child + ", isDescendent = " + isDesc);
+                if (isDesc) {
+                    CheckWarning warning = new CheckWarning(object.getName() + " ("
+                                                            + object.getID() + ") "
+                                                            + "is part of a cycle.",
+                                                            // false means this is not a fatal error
+                                                            false, this, object);
+                    warnings.add(warning);
+                }
+            }
+        }
 
 	protected void check(LinkedObject object, Collection<OBOProperty> properties,
 			List<CheckWarning> warnings) {
