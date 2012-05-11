@@ -1,0 +1,94 @@
+////
+//// Some unit testing for package golr.js
+////
+//// Usage:
+////    Command line: "js -f golr_conf.js.tests"
+////    Interactive: "js -f golr_conf.js.tests -f -"
+////
+//// To get fresh data from an AmiGO install (must be done periodically):
+////    cp /srv/www/htdocs/amigo2/javascript/bbop/amigo/golr_meta.js /home/sjcarbon/local/src/svn/geneontology/javascript/_data/golr_meta.js
+////
+
+// Load testing.
+load('test.js');
+var mr_t = new bbop.test();
+
+// Correct environment.
+load('core.js');
+load('logger.js');
+load('registry.js');
+load('golr_conf.js');
+
+// Get some test data as well.
+// This defines "bbop.golr.golr_meta".
+load('../../_data/golr_meta.js');
+
+///
+/// Start unit testing.
+///
+
+// bbop.golr.class_field
+(function(){
+
+     // Absolute basics.
+     var fconf = bbop.golr.golr_meta['bbop_ont']['fields_hash']['source'];
+     var cf = new bbop.golr.conf_field(fconf);
+     mr_t.is_same_atom(cf._is_a, 'bbop.golr.conf_field', "me");
+     
+     // Simple getters.
+     mr_t.is_same_atom("Source", cf.display_name(), "display_name");
+     mr_t.is_same_atom("Term namespace.",
+		       cf.description(), "desc");
+     mr_t.is_same_atom("source", cf.id(), "id");
+     mr_t.is_same_atom(false, cf.searchable(), "searchable");
+     mr_t.is_same_atom(false, cf.required(), "required");
+     mr_t.is_same_atom(false, cf.is_multi(), "multi?");
+     mr_t.is_same_atom(false, cf.is_fixed(), "fixed?");
+     mr_t.is_same_atom("getNamespace", cf.property(), "prop");
+ })();
+
+// bbop.golr.conf_class
+(function(){
+
+     // Absolute basics.
+     var cc = new bbop.golr.conf_class(bbop.golr.golr_meta['bbop_ont']);
+     mr_t.is_same_atom(cc._is_a, 'bbop.golr.conf_class', "me");
+     
+     // Simple getters.
+     mr_t.is_same_atom("Ontology", cc.display_name(), "display_name");
+     mr_t.is_same_atom("Test mapping of ontology class for GO.",
+		       cc.description(), "desc");
+     mr_t.is_same_atom(40, cc.weight(), "w");
+     mr_t.is_same_atom("bbop_ont", cc.id(), "id");
+     mr_t.is_same_atom('_searchable', cc.searchable_extension(),
+		       "searchable_extension");
+     
+     // More complicated.
+     mr_t.is_same_atom(null, cc.get_field('blork'), "s1");
+     mr_t.is_same_atom('source', cc.get_field('source').id(), "s2");
+     
+     // TODO: look at weights.
+     var boosts = cc.get_weights('boost');
+     mr_t.is_same_atom(2.0, boosts['id'], "boost 1");
+     mr_t.is_same_atom(null, boosts['ashdlas'], "no boost");
+ })();
+
+// Top-level bbop.golr.conf
+(function(){
+
+     // Absolute basics.
+     var c = new bbop.golr.conf(bbop.golr.golr_meta);
+     mr_t.is_same_atom(c._is_a, 'bbop.golr.conf', "me");
+
+     // Simple getters.
+     mr_t.is_same_atom("Ontology", c.get_class('bbop_ont').display_name(),
+		       "display_name");
+     mr_t.is_same_atom(4, c.get_classes().length, "num classes");
+ })();
+
+///
+/// End unit testing.
+///
+
+// Final report.
+mr_t.report();
