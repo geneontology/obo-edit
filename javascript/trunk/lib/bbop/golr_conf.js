@@ -268,6 +268,22 @@ bbop.golr.conf_class = function (class_conf_struct){
 	return retval;
     };
 
+    // Internal function to determine if the weight category that's
+    // used by several functions is okay.
+    this._munge_weight_category = function(weight_category){
+
+	// Not defined or only the defined few.
+	if( ! weight_category ){
+	    throw new Error("Missing weight category");	
+	}else if( weight_category != 'boost' &&
+	    weight_category != 'result' &&
+	    weight_category != 'filter' ){
+	    throw new Error("Unknown weight category: " + weight_category);
+	}
+
+	return weight_category + '_weights';
+    };
+
     /*
      * Function: get_weights
      * 
@@ -283,13 +299,7 @@ bbop.golr.conf_class = function (class_conf_struct){
 	var rethash = {};
 
 	// Only the defined few.
-	if( weight_category != 'boost' &&
-	    weight_category != 'result' &&
-	    weight_category != 'filter' ){
-	    throw new Error("Unknown weight category: " + weight_category);
-	}else{
-	    weight_category = weight_category + '_weights';
-	}
+	weight_category = this._munge_weight_category(weight_category);
 
 	// Collect the good bits.
 	if( ! this._class[weight_category] ){
@@ -307,21 +317,44 @@ bbop.golr.conf_class = function (class_conf_struct){
 	return rethash;
     };
 
-    // /*
-    //  * Function: get_visible_fields
-    //  * 
-    //  * Returns an array of all visible search field by id string. Null otherwise.
-    //  * 
-    //  * Returns: bbop.conf_field.
-    //  */
-    // this.get_visible_fields = function(){
-    // 	retval = null;
-    // 	if( this._fields &&
-    // 	    this._fields[fid] ){
-    // 		retval = this._fields[fid];
-    // 	    }
-    // 	return retval;
-    // };
+    /*
+     * Function: field_order_by_weight
+     * 
+     * Returns an array of field ids ordered by weight.
+     * 
+     * Arguments: string identifying the legal weight category
+     * ('boost', 'result', or 'filter') and an optional cutoff
+     * weight. If no cutoff is defined, all listed fields are returned
+     * in the set.
+     * 
+     * Returns: [field5, field4, ...]
+     */
+    this.field_order_by_weight = function(weight_category, cutoff){
+
+    	retset = [];
+
+	var weights = this.get_weights(weight_category);
+
+	// Add the ones that meet threshold (if there is one) to the
+	// set.
+	bbop.core.each(weights,
+		       function(key, val){
+			   if( cutoff ){
+			       if( val >= cutoff ){
+				   retset.push(key);			       
+			       }
+			   }else{
+			       retset.push(key);			       
+			   }
+		      });
+
+	// Order the set.
+	retset.sort(function(a, b){
+			return weights[b] - weights[a];
+		    });
+
+    	return retset;
+    };
 };
 
 /*

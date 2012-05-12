@@ -101,6 +101,7 @@ load('html.js');
      mr_t.is_same_atom(a3.get_section_id('foo').length, 34,
 		       'id accordion');
 
+// TODO
 // var a3 = new bbop.html.accordion([]);
 // a3.add_to('foo');
 // a3.add_to('aaa');
