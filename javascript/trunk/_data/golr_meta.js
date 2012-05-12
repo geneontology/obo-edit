@@ -19,7 +19,7 @@
 
 // All of the server/instance-specific meta-data.
 bbop.core.require('bbop', 'core');
-bbop.core.namespace('bbop', 'golr', 'golr_meta');
+bbop.core.namespace('bbop', 'golr');
 bbop.golr.golr_meta = {
    "bbop_ann_ev_agg" : {
       "searchable_extension" : "_searchable",
@@ -195,8 +195,8 @@ bbop.golr.golr_meta = {
    },
    "bbop_ann" : {
       "searchable_extension" : "_searchable",
-      "result_weights" : "",
-      "filter_weights" : "",
+      "result_weights" : "annotation_class_label^9.0 evidence_type^8.0 bioentity_label^7.0 type^6.0 source^4.0 taxon_label^3.0 annotation_extension_class_label^1.0",
+      "filter_weights" : "source^7.0 evidence_type^6.0 taxon^5.0 isa_partof_label_closure^4.0 annotation_extension_class^3.0 type^2.0",
       "_infile" : "/home/sjcarbon/local/src/svn/owltools/OWLTools-Solr/src/main/resources/ann-config.yaml",
       "display_name" : "Annotations",
       "description" : "A description of annotations for GOlr and AmiGO.",
@@ -803,7 +803,7 @@ bbop.golr.golr_meta = {
    },
    "bbop_ont" : {
       "searchable_extension" : "_searchable",
-      "result_weights" : "label^10.0 id^8.0 description^6.0 source^4.0  synonym^3.0 alternate_id^2.0 comment^1.0",
+      "result_weights" : "label^10.0 id^8.0 description^6.0 source^4.0 synonym^3.0 alternate_id^2.0 comment^1.0",
       "filter_weights" : "",
       "_infile" : "/home/sjcarbon/local/src/svn/owltools/OWLTools-Solr/src/main/resources/ont-config.yaml",
       "display_name" : "Ontology",

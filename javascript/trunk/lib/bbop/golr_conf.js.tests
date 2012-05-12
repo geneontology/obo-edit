@@ -6,7 +6,7 @@
 ////    Interactive: "js -f golr_conf.js.tests -f -"
 ////
 //// To get fresh data from an AmiGO install (must be done periodically):
-////    cp /srv/www/htdocs/amigo2/javascript/bbop/amigo/golr_meta.js /home/sjcarbon/local/src/svn/geneontology/javascript/_data/golr_meta.js
+////    cp /srv/www/htdocs/amigo2/javascript/bbop/golr_meta.js /home/sjcarbon/local/src/svn/geneontology/javascript/trunk/_data/
 ////
 
 // Load testing.
@@ -51,15 +51,15 @@ load('../../_data/golr_meta.js');
 (function(){
 
      // Absolute basics.
-     var cc = new bbop.golr.conf_class(bbop.golr.golr_meta['bbop_ont']);
+     var cc = new bbop.golr.conf_class(bbop.golr.golr_meta['bbop_ann']);
      mr_t.is_same_atom(cc._is_a, 'bbop.golr.conf_class', "me");
      
      // Simple getters.
-     mr_t.is_same_atom("Ontology", cc.display_name(), "display_name");
-     mr_t.is_same_atom("Test mapping of ontology class for GO.",
+     mr_t.is_same_atom("Annotations", cc.display_name(), "display_name");
+     mr_t.is_same_atom("A description of annotations for GOlr and AmiGO.",
 		       cc.description(), "desc");
-     mr_t.is_same_atom(40, cc.weight(), "w");
-     mr_t.is_same_atom("bbop_ont", cc.id(), "id");
+     mr_t.is_same_atom(20, cc.weight(), "w");
+     mr_t.is_same_atom("bbop_ann", cc.id(), "id");
      mr_t.is_same_atom('_searchable', cc.searchable_extension(),
 		       "searchable_extension");
      
@@ -67,10 +67,20 @@ load('../../_data/golr_meta.js');
      mr_t.is_same_atom(null, cc.get_field('blork'), "s1");
      mr_t.is_same_atom('source', cc.get_field('source').id(), "s2");
      
-     // TODO: look at weights.
+     // Look at weights individually.
      var boosts = cc.get_weights('boost');
-     mr_t.is_same_atom(2.0, boosts['id'], "boost 1");
+     mr_t.is_same_atom(2.0, boosts['bioentity_id'], "boost 1");
      mr_t.is_same_atom(null, boosts['ashdlas'], "no boost");
+
+     // Look at weights as a group.
+     var ordered_filter_list_5 = cc.field_order_by_weight('filter', 5.0);
+     mr_t.is_same_atom(3, ordered_filter_list_5.length, "ofl5 len");
+     mr_t.is_same_atom('source', ordered_filter_list_5[0], "ofl5 first");
+     mr_t.is_same_atom('taxon', ordered_filter_list_5[2], "ofl5 last");
+     var ordered_filter_list_all = cc.field_order_by_weight('filter');
+     mr_t.is_same_atom(6, ordered_filter_list_all.length, "ofla len");
+     mr_t.is_same_atom('source', ordered_filter_list_all[0], "ofla first");
+     mr_t.is_same_atom('type', ordered_filter_list_all[5], "ofla last");
  })();
 
 // Top-level bbop.golr.conf

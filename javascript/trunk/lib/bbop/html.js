@@ -138,20 +138,42 @@ bbop.html.accordion.prototype.to_string = function(){
 };
 
 // Add a section to the accordion.
-bbop.html.accordion.prototype.add_to = function(section_id, content, add_id_p){
+// 
+bbop.html.accordion.prototype.add_to =
+    function(section_info, content_blob, add_id_p){
 
-    //
-    if( typeof(add_id_p) == 'undefined' ){ add_id_p = false; }
+    // If section_info isn't an object, assume it is a string and use
+    // it for everything.
+    var section_id = null;
+    var section_label = null;
+    var section_desc = null;
+    if(typeof section_info != 'object' ){
+	section_id = section_info;
+	section_label = section_info;
+    }else{
+	if( section_info['id'] ){ section_id = section_info['id']; }
+	if( section_info['label'] ){ section_label = section_info['label']; }
+	if( section_info['description'] ){
+	    section_desc = section_info['description'];
+	}
+    }
 
     // Add header section.
     var h3 = new bbop.html.tag('h3');
-    var anc = new bbop.html.tag('a', {href: '#'}, section_id);
+    var anc = null;
+    if( section_desc ){
+	anc = new bbop.html.tag('a', {href: '#', title: section_desc},
+				section_label);
+    }else{
+	anc = new bbop.html.tag('a', {href: '#'}, section_label);
+    }
     h3.add_to(anc);
     this._div_stack.add_to(h3);
 
     var div = null;
 
     // Generate random id for the div.
+    if( typeof(add_id_p) == 'undefined' ){ add_id_p = false; }
     if( add_id_p ){
 	var rid = 'accordion-' + section_id + '-' + bbop.core.randomness(20);
 	this._section_id_to_content_id[section_id] = rid;    
@@ -161,7 +183,7 @@ bbop.html.accordion.prototype.add_to = function(section_id, content, add_id_p){
     }
 
     // Add add content stub to section.
-   var p = new bbop.html.tag('p', {}, bbop.core.to_string(content));
+   var p = new bbop.html.tag('p', {}, bbop.core.to_string(content_blob));
     div.add_to(p);
     this._div_stack.add_to(div);
 };
