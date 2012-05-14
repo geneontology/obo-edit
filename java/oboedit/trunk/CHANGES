@@ -1,7 +1,31 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
+===============================
+What's New in OBO-Edit v2.1.1-b10 (5/14/2012)
+===============================
+[ geneontology-Bugs-3521387 ] link filter not working properly
+Regardless of what you selected in the first drop-down menu (self, type,
+parent, child), the only options offered in the "have a/don't have a" menu
+were those that apply to Self (Namespace, Is intersection, Is necessary, Is
+implied, and Is redundant), rather that the complete list that starts with
+"Any text field".
+
+[ geneontology-Bugs-3521113 ] Cycle Check doesn't work
+(Note that this also fixes [ geneontology-Bugs-3323275 ] equivalent_to cycle
+not detected )
+- New cycle check method finds (possibly mixed-relationship) cycles by
+checking for objects that are descendants of one of their own children.
+- The check works whether or not you have the reasoner on, but it doesn't find
+cycles that involve implied links found by the reasoner.
+- The new cycle check is set by default to run on save and on manual
+verification; other times (e.g., on reasoner change) can be added by the user
+via the Verification Manager configuration panel.
+
+[ geneontology-Bugs-3384594 ] Name redundancy check not working in Text Editor
+
+
 ==============================
-What's New in OBO-Edit v2.1.1-b10
+What's New in OBO-Edit v2.1.1-b9 (4/23/2012)
 ==============================
 [ geneontology-Bugs-3487351 ] Deleted differentia (in XP editor) sometimes reappear
 
@@ -26,26 +50,6 @@ As a beneficial side effect of improving the Undoableness, I expect link deletio
 to be faster than it was.
 
 Fixed data format to use 24 hours for writing ISO 8601 dates (e.g., creation_date). (Heiko)
-
-[ geneontology-Bugs-3521387 ] link filter not working properly
-Regardless of what you selected in the first drop-down menu (self, type,
-parent, child), the only options offered in the "have a/don't have a" menu
-were those that apply to Self (Namespace, Is intersection, Is necessary, Is
-implied, and Is redundant), rather that the complete list that starts with
-"Any text field".
-
-[ geneontology-Bugs-3521113 ] Cycle Check doesn't work
-(Note that this also fixes [ geneontology-Bugs-3323275 ] equivalent_to cycle
-not detected )
-- New cycle check method finds (possibly mixed-relationship) cycles by
-checking for objects that are descendants of one of their own children.
-- The check works whether or not you have the reasoner on, but it doesn't find
-cycles that involve implied links found by the reasoner.
-- The new cycle check is set by default to run on save and on manual
-verification; other times (e.g., on reasoner change) can be added by the user
-via the Verification Manager configuration panel.
-
-[ geneontology-Bugs-3384594 ] Name redundancy check not working in Text Editor
 
 
 ==============================
