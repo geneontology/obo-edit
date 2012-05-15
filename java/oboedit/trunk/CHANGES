@@ -1,7 +1,13 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 ===============================
-What's New in OBO-Edit v2.1.1-b10 (5/14/2012)
+What's New in OBO-Edit 2.2-rc2
+===============================
+Cycle Check
+
+
+===============================
+What's New in OBO-Edit 2.2-rc1 (aka v2.1.1-b10) (5/14/2012)
 ===============================
 [ geneontology-Bugs-3521387 ] link filter not working properly
 Regardless of what you selected in the first drop-down menu (self, type,
