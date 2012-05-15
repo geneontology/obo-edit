@@ -410,18 +410,18 @@ function TermDetailsInit(){
     // 	    // widgets: ['zebra'],
     //         headers: { 3: { sorter:'integer' }} 
     // 	});
-    jQuery("#all-table-above").tablesorter(
-	{ 
-	    textExtraction: ts_callback,
-	    // widgets: ['zebra'],
-            headers: { 3: { sorter:'integer' }} 
-	});
-    jQuery("#all-table-below").tablesorter(
-	{ 
-	    textExtraction: ts_callback,
-	    // widgets: ['zebra'],
-            headers: { 3: { sorter:'integer' }} 
-	});
+    jQuery("#all-table-above").tablesorter();
+	// { 
+	//     textExtraction: ts_callback,
+	//     // widgets: ['zebra'],
+        //     headers: { 3: { sorter:'integer' }} 
+	// });
+    jQuery("#all-table-below").tablesorter();
+	// { 
+	//     textExtraction: ts_callback,
+	//     // widgets: ['zebra'],
+        //     headers: { 3: { sorter:'' }} 
+	// });
 
     //
     core.kvetch('TermDetailsInit done.');
