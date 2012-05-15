@@ -28,18 +28,20 @@ public class CycleCheck extends AbstractCheck implements OntologyCheck {
 	public Collection<CheckWarning> check(OBOSession history, IdentifiedObject currentObject,
 			byte condition, boolean checkObsoletes) {
 
-		Collection<OBOProperty> properties = new HashSet<OBOProperty>();
-		Iterator<OBOProperty> it = TermUtil.getRelationshipTypes(history).iterator();
-		while (it.hasNext()) {
-			OBOProperty property = it.next();
-			if (property.isTransitive() && !property.isCyclic())
-				properties.add(property);
-		}
-//		logger.info("CycleCheck: properties = " + properties);
+            // properties not currently used
+// 		Collection<OBOProperty> properties = new HashSet<OBOProperty>();
+// 		Iterator<OBOProperty> it = TermUtil.getRelationshipTypes(history).iterator();
+// 		while (it.hasNext()) {
+// 			OBOProperty property = it.next();
+// 			if (property.isTransitive() && !property.isCyclic())
+// 				properties.add(property);
+// 		}
+// //		logger.info("CycleCheck: properties = " + properties);
 		List<CheckWarning> out = new LinkedList<CheckWarning>();
 		if (currentObject != null) {
 			if (currentObject instanceof LinkedObject)
-				check((LinkedObject) currentObject, properties, out);
+                            // check((LinkedObject) currentObject, properties, out);
+                            checkForCycles((LinkedObject) currentObject, out);
 		} else {
 			Iterator<IdentifiedObject> ith = history.getObjects().iterator();
 			for (int i = 0; ith.hasNext(); i++) {
@@ -51,8 +53,6 @@ public class CycleCheck extends AbstractCheck implements OntologyCheck {
 				if (o instanceof LinkedObject) {
 					LinkedObject lo = (LinkedObject) o;
 					// check(lo, properties, out);
-                                        // That check doesn't work.
-                                        // Trying a different check.
                                         checkForCycles(lo, out);
                                         // logger.debug("CycleCheck: lo = " + lo + ", out = " + out); // DEL
 					if (isCancelled() || out.size() > VerificationManager.MAX_WARNINGS)
@@ -82,6 +82,8 @@ public class CycleCheck extends AbstractCheck implements OntologyCheck {
             }
         }
 
+    // I don't think this method is currently used--it's been replaced by
+    // checkForCycles, above.
 	protected void check(LinkedObject object, Collection<OBOProperty> properties,
 			List<CheckWarning> warnings) {
 		Iterator<OBOProperty> it = properties.iterator();
