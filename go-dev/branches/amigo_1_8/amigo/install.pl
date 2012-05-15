@@ -1102,7 +1102,7 @@ if ( $opt_c ) {
 
     ## TODO/BUG: Temporarily get the Newick tree stuff over until we can
     ## fix it more permanently.
-    force_copy($env_conf{GO_JS_ROOT}{NEW_VALUE} . '/newick_tree',
+    force_copy($env_conf{GO_JS_ROOT}{NEW_VALUE} . '/lib/newick_tree',
 	       $synth_vars{AMIGO_HTDOCS_ROOT_DIR} . '/js');
   }
 
