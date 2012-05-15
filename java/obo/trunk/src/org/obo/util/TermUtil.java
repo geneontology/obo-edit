@@ -701,7 +701,7 @@ public class TermUtil {
 				parents.add(link.getParent());
 			}
 		}
-                logger.debug("getParentsByType(" + lo + "): type = " + type + ", parents = " + parents); // DEL
+                // logger.debug("getParentsByType(" + lo + "): type = " + type + ", parents = " + parents); // DEL
 		return parents;
 	}
 
@@ -713,7 +713,7 @@ public class TermUtil {
                     //			children.add(link.getParent());
 			children.add(link.getChild());
 		}
-                logger.debug("TermUtil.getChildren(" + lo + "): " + children); // DEL
+                // logger.debug("TermUtil.getChildren(" + lo + "): " + children); // DEL
 		return children;
 	}
 
@@ -1124,6 +1124,9 @@ public class TermUtil {
 	 * is not a {@link ReasonedLinkDatabase}, this method runs slowly,
 	 * requiring many recursive steps, and will not find implied cycles.
 	 */
+    /* Note that this method is not currently used (since it didn't work
+	right). The only place it was called was in CycleCheck.check, which
+        has been replaced by checkForCycles. */
 	public static boolean isCycle(LinkDatabase linkDatabase,
 			OBOProperty property, LinkedObject lo) {
 		if (linkDatabase instanceof ReasonedLinkDatabase) {
