@@ -16,17 +16,19 @@
     <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" />
   </types>
   <fields>
-    <!-- bbop_ont: Term synonym. -->
-    <field name="synonym" type="string" required="false" multiValued="true" indexed="true" stored="true" />
-    <!--An easily searchable (TextField tokenized) version of synonym.-->
-    <field name="synonym_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true" />
-    <copyField source="synonym" dest="synonym_searchable" />
+    <!-- A special static/fixed (by YAML conf file) field all documents have. -->
+    <field name="document_category" type="string" required="false" multiValued="false" indexed="true" stored="true" />
     <!-- bbop_bio: Derived from C13 + ncbi_taxonomy.obo. -->
     <!-- bbop_ann: Derived from C13 + ncbi_taxonomy.obo. -->
     <field name="taxon_label" type="string" required="false" multiValued="false" indexed="true" stored="true" />
     <!--An easily searchable (TextField tokenized) version of taxon_label.-->
     <field name="taxon_label_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true" />
     <copyField source="taxon_label" dest="taxon_label_searchable" />
+    <!-- bbop_ont: Term synonym. -->
+    <field name="synonym" type="string" required="false" multiValued="true" indexed="true" stored="true" />
+    <!--An easily searchable (TextField tokenized) version of synonym.-->
+    <field name="synonym_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true" />
+    <copyField source="synonym" dest="synonym_searchable" />
     <!-- bbop_ann: Column 3: bioentity label. -->
     <!-- bbop_ann_ev_agg: Column 3. -->
     <field name="bioentity_label" type="string" required="false" multiValued="false" indexed="true" stored="true" />
@@ -68,11 +70,6 @@
     <!--An easily searchable (TextField tokenized) version of annotation_extension_class_label.-->
     <field name="annotation_extension_class_label_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true" />
     <copyField source="annotation_extension_class_label" dest="annotation_extension_class_label_searchable" />
-    <!-- bbop_ont: The category of the document in the Solr index. -->
-    <!-- bbop_bio: The category of the document in the Solr index. -->
-    <!-- bbop_ann: The category of the document in the Solr index. -->
-    <!-- bbop_ann_ev_agg: The category of the document in the Solr index. -->
-    <field name="document_category" type="string" required="false" multiValued="false" indexed="true" stored="true" />
     <!-- bbop_ont: Term definition. -->
     <field name="description" type="string" required="false" multiValued="false" indexed="true" stored="true" />
     <!--An easily searchable (TextField tokenized) version of description.-->
@@ -98,6 +95,10 @@
     <!--An easily searchable (TextField tokenized) version of annotation_extension_class_label_closure.-->
     <field name="annotation_extension_class_label_closure_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true" />
     <copyField source="annotation_extension_class_label_closure" dest="annotation_extension_class_label_closure_searchable" />
+    <!-- Automatically created to capture mapping information -->
+    <!-- between annotation_extension_class and annotation_extension_class_label_closure.-->
+    <!-- It is not indexed for searching, but may be useful to the client. -->
+    <field name="annotation_extension_class_map" type="string" required="false" multiValued="false" indexed="false" stored="true" />
     <!-- bbop_ann: Column 1 + columns 2. -->
     <!-- bbop_ann_ev_agg: Column 1 + columns 2. -->
     <field name="bioentity_id" type="string" required="false" multiValued="false" indexed="true" stored="true" />
@@ -121,6 +122,10 @@
     <!--An easily searchable (TextField tokenized) version of isa_partof_label_closure.-->
     <field name="isa_partof_label_closure_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true" />
     <copyField source="isa_partof_label_closure" dest="isa_partof_label_closure_searchable" />
+    <!-- Automatically created to capture mapping information -->
+    <!-- between isa_partof and isa_partof_label_closure.-->
+    <!-- It is not indexed for searching, but may be useful to the client. -->
+    <field name="isa_partof_map" type="string" required="false" multiValued="false" indexed="false" stored="true" />
     <!-- bbop_ont: Definition cross-reference. -->
     <field name="definition_xref" type="string" required="false" multiValued="true" indexed="true" stored="true" />
   </fields>
