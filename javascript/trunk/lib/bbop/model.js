@@ -625,13 +625,37 @@ bbop.model.graph.prototype.get_ancestor_subgraph = function(nb_id_or_list, pid){
  * 
  * Load the graph from the specified JSON object (not string).
  * 
+ * TODO: a work in progress
+ * 
  * Parameters: JSON object
  * 
  * Returns: true. Side-effects: creates the graph internally.
  */
 bbop.model.graph.prototype.load_json = function(json_object){
 
-    //    var anchor = this;
+    var anchor = this;
+
+    // First, load nodes; scrape out what we can.
+    if( json_object.nodes ){
+	bbop.core.each(json_object.nodes,
+		       function(node_raw){
+			  var nid = node_raw.id;
+			  var nlabel = node_raw.label;
+			  var n = new bbop.model.node(nid, nlabel);
+			  anchor.add_node(n);
+		      });
+    }
+
+    // Now try to load edges; scrape out what we can.
+    if( json_object.edges ){
+	bbop.core.each(json_object.edges,
+		       function(edge_raw){
+			   var e = new bbop.model.edge(edge_raw.subject_id,
+						       edge_raw.object_id,
+						       edge_raw.predicate_id);
+			   anchor.add_edge(e);
+		      });
+    }
 
     return true;
 };

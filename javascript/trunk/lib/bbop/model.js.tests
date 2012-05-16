@@ -195,17 +195,19 @@ load('model.js');
  })();
 
 // Check loading from JSON (good with Solr/GOlr).
-//(function(){
+(function(){
 
-     // TODO: json load unit test
-     var jo = {	
-     };
+     // Test case from owltools.graph.shunt junit test cases.
+     var jo = {"nodes":[{"id":"a","label":"A"},{"id":"b","label":"B"}],"edges":[{"subject_id":"a","object_id":"b","predicate_id":"is_a"}]};
+
      var g = new bbop.model.graph();
      var result = g.load_json(jo);
-// mr_t.is_same_atom(true, result,
-     mr_t.is_same_atom(true, false,
-		       'TODO: placeholder for load_json unit test');
-// })();
+     
+     mr_t.is_same_atom(true, g.is_root_node('b'), 'root b');
+     mr_t.is_same_atom(false, g.is_root_node('a'), '! root a');
+     mr_t.is_same_atom('b', g.get_parent_nodes('a')[0].id(), 'b under a');
+     
+})();
 
 
 ///
