@@ -537,7 +537,6 @@ bbop.model.graph.prototype.get_child_nodes = function(nb_id, in_pred){
     return results;
 };
 
-
 // Return new ancestors subgraph. Single id or id list as first
 // argument. Predicate string/id as optional second.
 bbop.model.graph.prototype.get_ancestor_subgraph = function(nb_id_or_list, pid){
@@ -619,4 +618,20 @@ bbop.model.graph.prototype.get_ancestor_subgraph = function(nb_id_or_list, pid){
     }
 
     return new_graph;
+};
+
+/*
+ * Function: load_json
+ * 
+ * Load the graph from the specified JSON object (not string).
+ * 
+ * Parameters: JSON object
+ * 
+ * Returns: true. Side-effects: creates the graph internally.
+ */
+bbop.model.graph.prototype.load_json = function(json_object){
+
+    //    var anchor = this;
+
+    return true;
 };
