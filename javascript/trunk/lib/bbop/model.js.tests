@@ -2,8 +2,8 @@
 //// Some unit testing for model.js
 ////
 //// Usage:
-////    Command line: "js -f model.tests.js"
-////    Interactive: "js -f model.tests.js -f -"
+////    Command line: "js -f model.js.tests"
+////    Interactive: "js -f model.js.tests -f -"
 ////
 
 
@@ -193,6 +193,20 @@ load('model.js');
      mr_t.is_same_atom(0, sub2.get_child_nodes('d').length, 'd: -');
 
  })();
+
+// Check loading from JSON (good with Solr/GOlr).
+//(function(){
+
+     // TODO: json load unit test
+     var jo = {	
+     };
+     var g = new bbop.model.graph();
+     var result = g.load_json(jo);
+// mr_t.is_same_atom(true, result,
+     mr_t.is_same_atom(true, false,
+		       'TODO: placeholder for load_json unit test');
+// })();
+
 
 ///
 /// End unit testing.
