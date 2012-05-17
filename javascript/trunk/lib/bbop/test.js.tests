@@ -47,6 +47,31 @@ mr_t.is_different_hash({foo: 1},{});
 mr_t.is_different_hash({foo: 1}, {foo: 12});
 mr_t.is_different_hash(a_hash, {foo: 1, bar: 2, blah: 3});
 
+// 
+var a_list = ['a', 'b', 'c'];
+mr_t.is_in_list('a', a_list);
+mr_t.is_in_list('b', a_list);
+mr_t.is_in_list('c', a_list);
+mr_t.is_not_in_list('d', a_list);
+
+// 
+var a_item = {id: 'a'};
+var b_item = {id: 'b'};
+var c_item = {id: 'c'};
+var d_item = {id: 'd'};
+var obj_list = [{id: 'a'}, {id: 'b'}, {id: 'c'}];
+function id_comp(a, b){
+    retval = false;
+    if( a['id'] == b['id'] ){
+	retval = true;
+    }
+    return retval;
+};
+mr_t.is_in_list_diy(a_item, obj_list, id_comp);
+mr_t.is_in_list_diy(b_item, obj_list, id_comp);
+mr_t.is_in_list_diy(c_item, obj_list, id_comp);
+mr_t.is_not_in_list_diy(d_item, obj_list, id_comp);
+
 ///
 /// End unit testing.
 ///

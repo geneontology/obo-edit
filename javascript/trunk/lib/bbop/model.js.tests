@@ -195,18 +195,43 @@ load('model.js');
  })();
 
 // Check loading from JSON (good with Solr/GOlr).
+// Test cases from owltools.graph.shunt junit test cases.
 (function(){
 
-     // Test case from owltools.graph.shunt junit test cases.
-     var jo = {"nodes":[{"id":"a","label":"A"},{"id":"b","label":"B"}],"edges":[{"subject_id":"a","object_id":"b","predicate_id":"is_a"}]};
+     ///
+     /// Trivial.
+     ///
 
-     var g = new bbop.model.graph();
-     var result = g.load_json(jo);
+     var jo = {"nodes":[{"id":"a","label":"A"},{"id":"b","label":"B"}],"edges":[{"subject_id":"a","object_id":"b","predicate_id":"is_a"}]};
+     var g1 = new bbop.model.graph();
+     var result1 = g1.load_json(jo);
+
+     mr_t.is_same_atom(true, g1.is_root_node('b'), 'root b');
+     mr_t.is_same_atom(false, g1.is_root_node('a'), '! root a');
+     mr_t.is_same_atom('b', g1.get_parent_nodes('a')[0].id(), 'b under a');
      
-     mr_t.is_same_atom(true, g.is_root_node('b'), 'root b');
-     mr_t.is_same_atom(false, g.is_root_node('a'), '! root a');
-     mr_t.is_same_atom('b', g.get_parent_nodes('a')[0].id(), 'b under a');
-     
+     ///
+     /// A bit of GO.
+     /// Generate from:
+     ///    cd ~/local/src/svn/owltools/OWLTools-Runner
+     ///    ./bin/owltools --solr-shunt-test
+     ///
+
+     var go = {"nodes":[{"id":"GO:0007399","label":"nervous system development"},{"id":"GO:0030154","label":"cell differentiation"},{"id":"GO:0048699","label":"generation of neurons"},{"id":"GO:0022008","label":"neurogenesis"},{"id":"GO:0042063","label":"gliogenesis"}],"edges":[{"subject_id":"GO:0022008","object_id":"GO:0030154"},{"subject_id":"GO:0048699","object_id":"GO:0022008"},{"subject_id":"GO:0022008","object_id":"GO:0007399"},{"subject_id":"GO:0042063","object_id":"GO:0022008"}]};
+     var g2 = new bbop.model.graph();
+     var result2 = g2.load_json(go);
+
+     var leaves = g2.get_child_nodes('GO:0022008');
+     mr_t.is_same_atom(2, leaves.length, 'two children for GO:0022008');
+
+     var leaf1 = leaves[0];
+     var leaf2 = leaves[1];
+     mr_t.is_in_list(leaf1.id(), ['GO:0042063', 'GO:0048699'],
+		     'either of the two kids (1)');
+     mr_t.is_in_list(leaf2.id(), ['GO:0042063', 'GO:0048699'],
+		     'either of the two kids (2)');
+     mr_t.is_different_atom(leaf1.id(), leaf2.id(),
+			    'the children are different');
 })();
 
 
