@@ -1,133 +1,135 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" ?>
 <schema name="golr" version="3.6">
   <types>
     <!--Unsplit string for when text needs to be dealt with atomically.-->
     <!--For example, faceted querying.-->
-    <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true"></fieldType>
     <!--Any string with spaces that needs to be treated for searching purposes.-->
     <!--This will be automatically used in cases where "searchable: true" has been-->
     <!--specified in the YAML.-->
     <fieldType name="text_searchable" class="solr.TextField" positionIncrementGap="100" sortMissingLast="true">
       <analyzer>
-        <tokenizer class="solr.StandardTokenizerFactory" />
+        <tokenizer class="solr.StandardTokenizerFactory"></tokenizer>
       </analyzer>
     </fieldType>
-    <fieldType name="integer" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0" sortMissingLast="true" />
-    <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" />
+    <fieldType name="integer" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0" sortMissingLast="true"></fieldType>
+    <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"></fieldType>
   </types>
   <fields>
     <!-- A special static/fixed (by YAML conf file) field all documents have. -->
-    <field name="document_category" type="string" required="false" multiValued="false" indexed="true" stored="true" />
+    <field name="document_category" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <!-- bbop_ont: Term synonym. -->
+    <field name="synonym" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <!--An easily searchable (TextField tokenized) version of synonym.-->
+    <field name="synonym_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <copyField source="synonym" dest="synonym_searchable"></copyField>
     <!-- bbop_bio: Derived from C13 + ncbi_taxonomy.obo. -->
     <!-- bbop_ann: Derived from C13 + ncbi_taxonomy.obo. -->
-    <field name="taxon_label" type="string" required="false" multiValued="false" indexed="true" stored="true" />
+    <field name="taxon_label" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of taxon_label.-->
-    <field name="taxon_label_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true" />
-    <copyField source="taxon_label" dest="taxon_label_searchable" />
-    <!-- bbop_ont: Term synonym. -->
-    <field name="synonym" type="string" required="false" multiValued="true" indexed="true" stored="true" />
-    <!--An easily searchable (TextField tokenized) version of synonym.-->
-    <field name="synonym_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true" />
-    <copyField source="synonym" dest="synonym_searchable" />
+    <field name="taxon_label_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <copyField source="taxon_label" dest="taxon_label_searchable"></copyField>
     <!-- bbop_ann: Column 3: bioentity label. -->
     <!-- bbop_ann_ev_agg: Column 3. -->
-    <field name="bioentity_label" type="string" required="false" multiValued="false" indexed="true" stored="true" />
+    <field name="bioentity_label" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of bioentity_label.-->
-    <field name="bioentity_label_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true" />
-    <copyField source="bioentity_label" dest="bioentity_label_searchable" />
+    <field name="bioentity_label_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <copyField source="bioentity_label" dest="bioentity_label_searchable"></copyField>
     <!-- bbop_bio: Closure of ids/accs over isa and partof. -->
     <!-- bbop_ann: Closure of ids/accs over isa and partof. -->
-    <field name="isa_partof_closure" type="string" required="false" multiValued="true" indexed="true" stored="true" />
+    <field name="isa_partof_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ann: ??? -->
-    <field name="evidence_type" type="string" required="false" multiValued="false" indexed="true" stored="true" />
+    <field name="evidence_type" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ann: Column 5. -->
     <!-- bbop_ann_ev_agg: Column 5. -->
-    <field name="annotation_class" type="string" required="false" multiValued="false" indexed="true" stored="true" />
+    <field name="annotation_class" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ann: ??? -->
-    <field name="annotation_extension_class_closure" type="string" required="false" multiValued="true" indexed="true" stored="true" />
+    <field name="annotation_extension_class_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_bio: Column 12: type class id. -->
-    <field name="type" type="string" required="false" multiValued="false" indexed="true" stored="true" />
+    <field name="type" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ann: Column 14: date of assignment. -->
-    <field name="date" type="string" required="false" multiValued="false" indexed="true" stored="true" />
+    <field name="date" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ann: Column 8: with/from. -->
     <!-- bbop_ann_ev_agg: ??? -->
-    <field name="evidence_with" type="string" required="false" multiValued="true" indexed="true" stored="true" />
+    <field name="evidence_with" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ann: Column 5 + ontology. -->
     <!-- bbop_ann_ev_agg: Column 5 + ontology. -->
-    <field name="annotation_class_label" type="string" required="false" multiValued="false" indexed="true" stored="true" />
+    <field name="annotation_class_label" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of annotation_class_label.-->
-    <field name="annotation_class_label_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true" />
-    <copyField source="annotation_class_label" dest="annotation_class_label_searchable" />
+    <field name="annotation_class_label_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <copyField source="annotation_class_label" dest="annotation_class_label_searchable"></copyField>
     <!-- bbop_ont: Term subset. -->
-    <field name="subset" type="string" required="false" multiValued="true" indexed="true" stored="true" />
+    <field name="subset" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ont: Term acc/id. -->
     <!-- bbop_bio: Bioentity id. -->
     <!-- bbop_ann: A unique (and internal) combination of bioentity and ontology class. -->
     <!-- bbop_ann_ev_agg: Bioentity id. -->
-    <field name="id" type="string" required="true" multiValued="false" indexed="true" stored="true" />
+    <field name="id" type="string" required="true" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ann: ??? -->
-    <field name="annotation_extension_class_label" type="string" required="false" multiValued="true" indexed="true" stored="true" />
+    <field name="annotation_extension_class_label" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of annotation_extension_class_label.-->
-    <field name="annotation_extension_class_label_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true" />
-    <copyField source="annotation_extension_class_label" dest="annotation_extension_class_label_searchable" />
+    <field name="annotation_extension_class_label_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <copyField source="annotation_extension_class_label" dest="annotation_extension_class_label_searchable"></copyField>
+    <!-- bbop_ont: JSON blob form of the local graph. -->
+    <field name="graph" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
     <!-- bbop_ont: Term definition. -->
-    <field name="description" type="string" required="false" multiValued="false" indexed="true" stored="true" />
+    <field name="description" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of description.-->
-    <field name="description_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true" />
-    <copyField source="description" dest="description_searchable" />
+    <field name="description_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <copyField source="description" dest="description_searchable"></copyField>
     <!-- bbop_bio: Column 13: taxon. -->
     <!-- bbop_ann: Column 13: taxon. -->
-    <field name="taxon" type="string" required="false" multiValued="false" indexed="true" stored="true" />
+    <field name="taxon" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_bio: Column 1: Identifier database. -->
-    <field name="db" type="string" required="false" multiValued="false" indexed="true" stored="true" />
+    <field name="db" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ont: Is the term obsolete? -->
-    <field name="is_obsolete" type="boolean" required="false" multiValued="false" indexed="true" stored="true" />
+    <field name="is_obsolete" type="boolean" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ont: Common term name. -->
     <!-- bbop_bio: Symbol or name. -->
-    <field name="label" type="string" required="false" multiValued="false" indexed="true" stored="true" />
+    <field name="label" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of label.-->
-    <field name="label_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true" />
-    <copyField source="label" dest="label_searchable" />
+    <field name="label_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <copyField source="label" dest="label_searchable"></copyField>
     <!-- bbop_ann: ??? -->
-    <field name="annotation_extension_class" type="string" required="false" multiValued="true" indexed="true" stored="true" />
+    <field name="annotation_extension_class" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ann: ??? -->
-    <field name="annotation_extension_class_label_closure" type="string" required="false" multiValued="true" indexed="true" stored="true" />
+    <field name="annotation_extension_class_label_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of annotation_extension_class_label_closure.-->
-    <field name="annotation_extension_class_label_closure_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true" />
-    <copyField source="annotation_extension_class_label_closure" dest="annotation_extension_class_label_closure_searchable" />
+    <field name="annotation_extension_class_label_closure_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <copyField source="annotation_extension_class_label_closure" dest="annotation_extension_class_label_closure_searchable"></copyField>
     <!-- Automatically created to capture mapping information -->
     <!-- between annotation_extension_class and annotation_extension_class_label_closure.-->
     <!-- It is not indexed for searching, but may be useful to the client. -->
-    <field name="annotation_extension_class_map" type="string" required="false" multiValued="false" indexed="false" stored="true" />
+    <field name="annotation_extension_class_map" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
     <!-- bbop_ann: Column 1 + columns 2. -->
     <!-- bbop_ann_ev_agg: Column 1 + columns 2. -->
-    <field name="bioentity_id" type="string" required="false" multiValued="false" indexed="true" stored="true" />
+    <field name="bioentity_id" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ann: ??? -->
-    <field name="reference" type="string" required="false" multiValued="false" indexed="true" stored="true" />
+    <field name="reference" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ont: Alternate term id. -->
-    <field name="alternate_id" type="string" required="false" multiValued="true" indexed="true" stored="true" />
+    <field name="alternate_id" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ont: Term namespace. -->
     <!-- bbop_ann: Column 15: assigned by. -->
-    <field name="source" type="string" required="false" multiValued="false" indexed="true" stored="true" />
+    <field name="source" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ann_ev_agg: ??? -->
-    <field name="evidence_closure" type="string" required="false" multiValued="true" indexed="true" stored="true" />
+    <field name="evidence_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ont: Term comment. -->
-    <field name="comment" type="string" required="false" multiValued="false" indexed="true" stored="true" />
+    <field name="comment" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of comment.-->
-    <field name="comment_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true" />
-    <copyField source="comment" dest="comment_searchable" />
+    <field name="comment_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <copyField source="comment" dest="comment_searchable"></copyField>
     <!-- bbop_bio: Closure of labels over isa and partof. -->
     <!-- bbop_ann: Closure of labels over isa and partof. -->
-    <field name="isa_partof_label_closure" type="string" required="false" multiValued="true" indexed="true" stored="true" />
+    <field name="isa_partof_label_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of isa_partof_label_closure.-->
-    <field name="isa_partof_label_closure_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true" />
-    <copyField source="isa_partof_label_closure" dest="isa_partof_label_closure_searchable" />
+    <field name="isa_partof_label_closure_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <copyField source="isa_partof_label_closure" dest="isa_partof_label_closure_searchable"></copyField>
     <!-- Automatically created to capture mapping information -->
     <!-- between isa_partof and isa_partof_label_closure.-->
     <!-- It is not indexed for searching, but may be useful to the client. -->
-    <field name="isa_partof_map" type="string" required="false" multiValued="false" indexed="false" stored="true" />
+    <field name="isa_partof_map" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
     <!-- bbop_ont: Definition cross-reference. -->
-    <field name="definition_xref" type="string" required="false" multiValued="true" indexed="true" stored="true" />
+    <field name="definition_xref" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
   </fields>
   <uniqueKey>id</uniqueKey>
 </schema>
