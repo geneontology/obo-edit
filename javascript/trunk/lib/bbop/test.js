@@ -124,6 +124,30 @@ bbop.test = function(){
 	return retval;
     }
 
+    // 
+    // Walk through the list and see if it's there.
+    // If compareator is not defined, just to atom comparison.
+    function _in_list(in_item, list, comparator){
+
+	var retval = false;
+	for(var li = 0; li < list.length; li++ ){
+	    var list_item = list[li];
+
+	    if( comparator ){
+		var comp_op = comparator(in_item, list_item);
+		if( comp_op && comp_op == true ){
+		    retval = true;
+		}
+	    }else{
+		if( in_item == list_item ){
+		    retval = true;
+		}
+	    }
+	}
+
+	return retval;
+    }
+
     ///
     /// End-user comparisions and asserions.
     ///
@@ -192,5 +216,23 @@ bbop.test = function(){
     //
     this.is_different_hash = function(hash1, hash2, msg){
 	_complete(! _same_hash(hash1, hash2), msg);
+    };
+
+    //
+    this.is_in_list = function(item, list, msg){
+	_complete(_in_list(item, list), msg);
+    };
+    //
+    this.is_not_in_list = function(item, list, msg){
+	_complete(! _in_list(item, list), msg);
+    };
+
+    //
+    this.is_in_list_diy = function(item, list, comp, msg){
+	_complete(_in_list(item, list, comp), msg);
+    };
+    //
+    this.is_not_in_list_diy = function(item, list, comp, msg){
+	_complete(! _in_list(item, list, comp), msg);
     };
 };
