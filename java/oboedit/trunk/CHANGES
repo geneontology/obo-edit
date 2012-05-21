@@ -3,7 +3,9 @@
 ===============================
 What's New in OBO-Edit 2.2-rc2
 ===============================
-Cycle Check
+Cycle Check fixed in Text Editor (warns you if the specific term is in a
+cycle). (The Cycle Check of all terms done by the Verification Manager was
+fixed in the previous release.)
 
 
 ===============================
