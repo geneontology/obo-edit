@@ -1,4 +1,3 @@
-<?xml version="1.0" ?>
 <schema name="golr" version="3.6">
   <types>
     <!--Unsplit string for when text needs to be dealt with atomically.-->
@@ -35,6 +34,7 @@
     <!--An easily searchable (TextField tokenized) version of bioentity_label.-->
     <field name="bioentity_label_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
     <copyField source="bioentity_label" dest="bioentity_label_searchable"></copyField>
+    <!-- bbop_ont: Closure of ids/accs over isa and partof. -->
     <!-- bbop_bio: Closure of ids/accs over isa and partof. -->
     <!-- bbop_ann: Closure of ids/accs over isa and partof. -->
     <field name="isa_partof_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
@@ -113,11 +113,7 @@
     <field name="source" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ann_ev_agg: ??? -->
     <field name="evidence_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
-    <!-- bbop_ont: Term comment. -->
-    <field name="comment" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
-    <!--An easily searchable (TextField tokenized) version of comment.-->
-    <field name="comment_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
-    <copyField source="comment" dest="comment_searchable"></copyField>
+    <!-- bbop_ont: Closure of labels over isa and partof. -->
     <!-- bbop_bio: Closure of labels over isa and partof. -->
     <!-- bbop_ann: Closure of labels over isa and partof. -->
     <field name="isa_partof_label_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
@@ -128,6 +124,11 @@
     <!-- between isa_partof and isa_partof_label_closure.-->
     <!-- It is not indexed for searching, but may be useful to the client. -->
     <field name="isa_partof_map" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
+    <!-- bbop_ont: Term comment. -->
+    <field name="comment" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <!--An easily searchable (TextField tokenized) version of comment.-->
+    <field name="comment_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <copyField source="comment" dest="comment_searchable"></copyField>
     <!-- bbop_ont: Definition cross-reference. -->
     <field name="definition_xref" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
   </fields>
