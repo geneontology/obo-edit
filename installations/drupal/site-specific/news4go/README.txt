@@ -20,7 +20,8 @@ The 12 Steps for a Drupal upgrade:
 5) Disable contributed modules (may take several passes):
    Content, Content Permissions, Text
    Calendar, Date API, Date Timezone
-   Advanced Help, BUEditor, IMCE, OAuth, Twitter, Twitter Post, Twitter Signin
+   OAuth
+   Advanced Help, Autoload, BUEditor, IMCE, Twitter, Twitter Actions, Twitter Post
    CAPTCHA, reCAPTCHA
    Google Analytics
    Views, Views UI
