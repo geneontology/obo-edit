@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>The Basic Flat File Interface</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>The Basic Flat File Interface</h1>
+<p>All OBO-Edit flat file adapters share the same interface 
+in Basic mode. The interface looks like this:</p>
+<p><IMG hspace=0 src="../images/load_save_dialog.png" border=0></p>
+<h2>Loading</h2>
+<p>OBO-Edit can load as many ontology files as you want at one time (with some adapter 
+specific exceptions; for example, the flat file adapter can only load a single 
+definitions file).</p>
+<p>Files or URLs can be loaded by typing them into the text box. To specify 
+multiple files, enter a space-separated list of files and/or URLs. If the filenames 
+contain spaces, the spaces can be escaped with a backslash-space combination, or 
+the filename may be enclosed in quotes.</p>
+<p>If the dropdown arrow to the right of the text box is pressed, a list of 
+recently loaded files will appear. Click a filename to load it into the text 
+box.</p>
+<p>Press the "Browse..." button to open a browsing 
+window to look for files on your computer.</p>
+<p>Select the ontology file(s) you would like to load, and press the "Open" button. 
+Multiple files can be selected by holding down the Ctrl key while clicking each 
+file (on Macs, hold the "Command" key instead of Ctrl). The paths to the files you selected will appear in the text box.
+Once the files have been specified, press the "Ok" button to load.</p>
+<h2>Saving</h2>
+  <p>Saving works similarly to loading. A file path is specified in the 
+filename text box. You can look for a save location using the Browse 
+button. To complete the save operation, press the ok button.</p>
+<p>Note that it is only possible to save onto a local disk. You cannot save to a 
+URL.</p>
+<p>You may only specify one save location in Basic mode. Some data adapters 
+allow you to save pieces of your ontology to different files. To take advantage 
+of these features, you must enable "Advanced" mode and set up your adapter 
+appropriately.</p>
+
+<h2>Restoring from Autosave Files</h2>
+<p>By default, OBO-Edit periodically autosaves a copy of the ontology you're working on.  If you want to restore a version from the autosaved
+  file, use the file browser to look in the directory where your autosave files are
+  stored.  This is normally in your OBO-Edit configuration directory (you
+  can find out where that is by opening the Configuration Manager) in a subdirectory
+  called "autosave".  You will usually want to choose the most recent file.
+</p>
+</body>
+</html>

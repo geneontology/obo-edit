@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.4.2_12" class="java.beans.XMLDecoder"> 
+ <object class="org.geneontology.oboedit.gui.filters.FilterPairImpl"> 
+  <void property="objectFilter"> 
+   <object class="org.geneontology.oboedit.gui.filters.CompoundFilterImpl"> 
+    <void property="filters"> 
+     <void method="add"> 
+      <object class="org.geneontology.oboedit.gui.filters.ObjectFilterImpl"> 
+       <void property="criterion"> 
+        <object class="org.geneontology.oboedit.gui.filters.IsObsoleteCriterion"/> 
+       </void> 
+       <void property="negate"> 
+        <boolean>true</boolean> 
+       </void> 
+      </object> 
+     </void> 
+    </void> 
+   </object> 
+  </void> 
+ </object> 
+</java> 

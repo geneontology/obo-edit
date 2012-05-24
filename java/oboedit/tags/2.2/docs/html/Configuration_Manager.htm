@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>Configuration Manager</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>Configuration Manager</h1>
+<p>The Configuration Manager lets you control some of the settings in OBO-Edit.
+You can bring it up as a free-floating window with
+  [Config]->[Configuration Manager].
+If you prefer it to be docked into the main OBO-Edit window, you can use the
+  little downward-curving arrow to dock it.
+</p><p><IMG hspace=0 src="../images/configuration_manager.png" border=0></p>
+<p>When you are done adjusting your configuration options, click the
+"Save Configuration" button to accept your changes and update the
+display. There are several different configuration tabs. The first tab
+is "User Settings".</p>
+
+<h2>User Settings</h2>
+<ul>
+<a name="config_dir"></a>
+  <li><strong>Configuration directory</strong> - 
+  Displays the path to the OS-appropriate directory that contains your personal OBO-Edit 
+  configuration info. This field is not editable; it is for
+  informational purposes only.  You can mouse-select the directory path and copy it to your
+  clipboard to paste elsewhere, if you want.
+<li><strong>Log file</strong> - The text output from OBO-Edit is saved in
+  this file in your configuration directory.  It can be useful for debugging.
+  This field is not editable, but can be copied and pasted elsewhere.</li>
+  <li><strong>OBO-Edit memory allocation</strong> (requires restart) - 
+    The text box specifies the amount of memory that should 
+  be allocated to OBO-Edit. The value is given as an integer followed by the 
+  letter M, indicating the number of megabytes of memory that should be 
+  allocated. A high value will make OBO-Edit less likely to run out of memory and 
+  crash, but will also lessen the amount of memory available to 
+  other programs and may cause OBO-Edit to run slower on some platforms. Unless
+  you have a 64-bit JVM, Java limits the maximum memory allocation to 1860M
+  (1024M on Windows machines).<br/>
+  <b>Mac users, please see <a href="Getting_started.htm#memory">this information about
+  memory allocation on MacOSX</a></b>.
+  <p><i>Changing the memory configuration without the configuration manager:</i><br/>
+  The configuration manager limits the maximum memory you can set depending on the 
+  version of Java you have installed, the available memory, and the operating
+  system. If you want to set a higher memory allocation and you know your
+  computer can handle it (for example, if you have a 64-bit-capable Mac and OBO-Edit is refusing to let you
+  set a memory allocation higher than 1860M), you can edit the OBO-Edit.vmoptions file in the folder
+  where OBO-Edit is installed.
+  After an OBO-Edit restart (on MacOS two restarts are required) the new
+  memory setting will be used.
+  be used.<br/> 
+  <b>WARNING:</b> Setting an invalid or too large amount of memory will prevent 
+  OBO-Edit from starting.
+  </p>
+ </li>
+  <li><strong>User name</strong> - The user name OBO-Edit should use when
+  saving your edits. This 
+  information is used in the "saved-by" header field when using the <A 
+  href="The_OBO_Adapter.htm">OBO adapter</a>.</li>
+</ul>
+
+<h2>Font</h2>
+<ul>
+  <li><strong>Default font</strong> - These controls specify the font OBO-Edit 
+  should use when displaying buttons, labels, dropdown menus, etc. The first 
+  dropdown specifies the font family name, the second specifies the font size, 
+  and the third specifies the font style (normal, italic, bold or bold-italic). 
+  The "Font preview" shows the alphabet in the selected 
+  font.</li></ul>
+
+<a name="icons"></a>
+<h2>Icons and Colors</h2>
+<h3>Changing relationship type icons</h3>
+<p>These controls allow a custom icon to be specified for a relationship type. 
+<em>This does not create new relationship types!</em> It just associates an icon 
+with an existing relationship type.</p>
+<p>Note that relationship types don't need a custom icon. If no icon is specified, OBO-Edit will display the default icon, consisting of a black rectangle containing the relationship type id in white text.</p>
+<p>To edit an existing relationship type icon association, select a
+relationship type from the list. The icon association editor will appear:</p>
+</p><p><IMG hspace=0 src="../images/config_icons_and_colors.png" border=0></p>
+<p>To pick an image file from the local disk, press the "Browse 
+files" button. To use one of OBO-Edit's built-in icons, press the "Browse 
+built-in icons" button.  (Note: it takes a few seconds for OBO-Edit to find
+  and display all the built-in icons.) The "Icon URL" box will get filled in automatically
+  when you choose one of the icons.</p>
+<p>To delete a relationship type icon association, left-click the association 
+and press the "Del" button.</p>
+<p>To add a new relationship type icon association, press the "Add" button. A 
+new association will be created with the temporary id "UNKNOWN" and the icon path "&lt;new 
+icon path&gt;".</p>
+<p>To change the link color for a relationship, click the button below "Link
+color" that says the color name (e.g., "blue (click to modify)").
+</p>
+</ul>
+<div class="sidebar">
+<h1>Why won't my is_a icon appear?</h1>
+<hr>
+<p class="sidebar">Longtime users of OBO-Edit or DAG-Edit may find that OBO-Edit seems to ignore their settings for the <b>is_a</b> icon, but all other icons seem to display correctly. Remember, the id for <b>is_a</b> has changed 
+recently to ensure compatibility with <a 
+href="http://www.obofoundry.org/ro/">the OBO relations ontology</a>. 
+The new id for <strong>is_a</strong> is <strong>OBO_REL:is_a</strong>.</p>
+</div>
+
+<h3>Changing link color</h3>
+<p>Below the "Browse" buttons is the text "Link color" and the name of the color (e.g., "blue").
+Click on the color name to pop up a color chooser and select a new color for links
+of that particular relationship type.
+As when you select a new icon, the OBO-Edit
+display will not automatically refresh.  You will see the new link color when you do
+something that changes the display (e.g., click open a node).</p>
+
+<h2>Autosave</h2>
+<ul>
+  <li><strong>Enable autosave</strong> - If this box is checked, OBO-Edit will
+  automatically save backup copies of your work. Your edited ontology will be saved periodically in the autosave file
+  path (see next item).  The default is for autosave
+  to be enabled; you can turn this off if you prefer.
+  <li><strong>Directory for autosave</strong> -This field specifies a directory where autosave 
+  files will be stored. 
+  <li><strong>Do autosave every</strong> - This field specifies the number of minutes between autosaves.
+  <li><strong>Autosave files expire in </strong>- The number of days old an 
+  autosave file must be before it is automatically deleted.</li>
+</ul>
+
+<h2>Behavior</h2>
+<ul>
+  <li><strong>Exclude obsolete terms from search results</strong> - OBO-Edit's
+  default behavior is to allow obsolete terms in autocomplete lists and search
+  results. When
+  you start typing in a search or filter box, a dropdown list of term names
+  appears, including terms (or relations) that include the text you've typed
+  so far.  By default, this list includes terms that have been marked as
+  obsolete.  If you prefer to exclude obsolete terms from these dropdown lists
+  and also from search results, check this checkbox.
+  The downside is that the searches will take slightly longer
+  (because OBO-Edit has to do extra work, checking each term to see
+  whether it's obsolete or not).<br>Note that if you change this option in the
+  configuration manager, you must quit and restart OBO-Edit for the behavior
+  to change.</li>
+  <li><strong>Case sensitive term sorting</strong> - If this box is checked, the case of a term name will be 
+  taken into account when sorting terms. Lower case letters will appear before 
+  upper case letters. </li>
+  <li><strong>Show terms IDs as tool tips in term panels</strong> - If this box 
+  is checked, the ID of a term will appear if the mouse hovers over a term in 
+  the <A href="The_Term_Editor_Panel.htm">Ontology Tree Editor</a>. Enabling this feature will make OBO-Edit run slightly slower 
+  on older machines. </li> 
+  <li><strong>Allow new cycles to be created</strong> - If this box is checked, OBO-Edit will allow cycles to be 
+  created. If it is not checked, OBO-Edit will refuse to allow new cycles to be 
+  made. Only enable this option if an ontology requires cycles. Most do not. See 
+  <A href="Text_Editing.htm#is_cyclic">cyclic relations</a>
+  for more information about what constitutes a cycle.
+  <li><strong>Use advanced root detection</strong> - If this box is selected, 
+  OBO-Edit will use advanced root detection. Normally, OBO-Edit treats a term as 
+  a root if it has no parents. If advanced root detection is enabled, terms with 
+  no <em>transitive</em> parents are treated as roots.</li>
+  <li><strong>Only one Ontology Tree Editor at a time can be in global mode</strong> - If this box is checked,
+  then only one Ontology Tree Editor can be in <a href="The_Term_Editor_Panel.htm#global">global selection mode</a> at a
+  given time.  Any other Ontology Tree Editors will automatically be put into
+  local selection mode.</li>
+  <li><strong>Warn before final delete</strong> - If this box is checked, OBO-Edit displays a warning before 
+  the last instance of a term is deleted and the term becomes obsolete. 
+  <li><strong>Warn before discarding definitions on save</strong> - If this box 
+  is checked, the old <A href="The_GO_Flat_File_Adapter.htm">GO Flat File 
+  Adapter</a> will 
+  issue a warning when saving with no definition file. 
+
+  <li><strong>Confirm on exit</strong>- If this 
+  box is checked, OBO-Edit will ask for confirmation before exiting.</li></ul>
+</ul>
+<h2><a name="textedit"></a>Text Editing</h2>
+<ul>
+  <li><strong>Autocommit text edits</strong> - If this box 
+  is checked, OBO-Edit commits text edits as soon as a new term is selected or 
+  the ontology is saved. The user does not have to explicitly commit text edits 
+  by pressing a "commit" button.
+  <li><strong>Warn before discarding text edits</strong> - If
+  <strong>Autocommit
+  text edits</strong> is not selected, this box is enabled. In manual 
+  commit mode, the user must press a "commit" button to make text edits 
+  permanent. If a user selects a new term without committing their text edits, 
+  the edits are lost. If this box is checked, the user will see a warning if 
+  uncommitted text edits are about to be discarded.
+  <li><strong>Allow extended characters (except in dbxrefs)</strong> - If this box is selected, 
+  extended (non-ASCII) characters are allowed in term names, synonyms, 
+  definitions, etc. Note that this does not guarantee that non-ASCII characters 
+  will actually be written out to disk. Also be aware that some other
+  applications may not accept extended characters.</li>
+ <li><strong>Use personal definition</strong> - If this box is selected, a user 
+  may specify a default definition and dbxrefs that will automatically be used 
+  when a new term is created.</li></ul>
+
+</body>
+</html>
