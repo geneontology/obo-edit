@@ -187,6 +187,10 @@
 		<echo message="install4J version = ${install4j_formatted_version_number}" />
 		<install4j projectfile="install4j_config.install4j" release="${install4j_formatted_version_number}" />
 	</target>
+
+        <!-- Note to developers: if you try "make install" and it dies with the error message
+        "install4j: compilation failed. Reason: java.lang.StackOverflowError", you need to
+        rm runtime/runtime (a link created by a script) and try again. -->
 	<target name="installers" depends="clean, -releasenotes, textfiles, backward_compatible_jar, library_jars, docindex, apidocs, install4j_installers" description="Build installers">
           <property name="backward_compatible" value="-target 1.5 -source 1.5" />
 	</target>
