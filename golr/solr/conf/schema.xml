@@ -1,3 +1,4 @@
+<?xml version="1.0" ?>
 <schema name="golr" version="3.6">
   <types>
     <!--Unsplit string for when text needs to be dealt with atomically.-->
@@ -60,8 +61,8 @@
     <copyField source="annotation_class_label" dest="annotation_class_label_searchable"></copyField>
     <!-- bbop_ont: Term subset. -->
     <field name="subset" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
-    <!-- bbop_ont: Term acc/id. -->
-    <!-- bbop_bio: Bioentity id. -->
+    <!-- bbop_ont: Term acc/ID. -->
+    <!-- bbop_bio: Bioentity ID. -->
     <!-- bbop_ann: A unique (and internal) combination of bioentity and ontology class. -->
     <!-- bbop_ann_ev_agg: Bioentity id. -->
     <field name="id" type="string" required="true" multiValued="false" indexed="true" stored="true"></field>
@@ -77,6 +78,20 @@
     <!--An easily searchable (TextField tokenized) version of description.-->
     <field name="description_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
     <copyField source="description" dest="description_searchable"></copyField>
+    <!-- bbop_ann: Column 1 + columns 2. -->
+    <!-- bbop_ann_ev_agg: Column 1 + columns 2. -->
+    <field name="bioentity" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <!-- bbop_ont: Closure of labels over isa and partof. -->
+    <!-- bbop_bio: Closure of labels over isa and partof. -->
+    <!-- bbop_ann: Closure of labels over isa and partof. -->
+    <field name="isa_partof_closure_label" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <!--An easily searchable (TextField tokenized) version of isa_partof_closure_label.-->
+    <field name="isa_partof_closure_label_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <copyField source="isa_partof_closure_label" dest="isa_partof_closure_label_searchable"></copyField>
+    <!-- Automatically created to capture mapping information -->
+    <!-- between isa_partof_closure and isa_partof_closure_label.-->
+    <!-- It is not indexed for searching, but may be useful to the client. -->
+    <field name="isa_partof_closure_map" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
     <!-- bbop_bio: Column 13: taxon. -->
     <!-- bbop_ann: Column 13: taxon. -->
     <field name="taxon" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
@@ -91,19 +106,16 @@
     <field name="label_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
     <copyField source="label" dest="label_searchable"></copyField>
     <!-- bbop_ann: ??? -->
-    <field name="annotation_extension_class" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
-    <!-- bbop_ann: ??? -->
-    <field name="annotation_extension_class_label_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
-    <!--An easily searchable (TextField tokenized) version of annotation_extension_class_label_closure.-->
-    <field name="annotation_extension_class_label_closure_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
-    <copyField source="annotation_extension_class_label_closure" dest="annotation_extension_class_label_closure_searchable"></copyField>
+    <field name="annotation_extension_class_closure_label" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <!--An easily searchable (TextField tokenized) version of annotation_extension_class_closure_label.-->
+    <field name="annotation_extension_class_closure_label_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <copyField source="annotation_extension_class_closure_label" dest="annotation_extension_class_closure_label_searchable"></copyField>
     <!-- Automatically created to capture mapping information -->
-    <!-- between annotation_extension_class and annotation_extension_class_label_closure.-->
+    <!-- between annotation_extension_class_closure and annotation_extension_class_closure_label.-->
     <!-- It is not indexed for searching, but may be useful to the client. -->
-    <field name="annotation_extension_class_map" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
-    <!-- bbop_ann: Column 1 + columns 2. -->
-    <!-- bbop_ann_ev_agg: Column 1 + columns 2. -->
-    <field name="bioentity_id" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <field name="annotation_extension_class_closure_map" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
+    <!-- bbop_ann: ??? -->
+    <field name="annotation_extension_class" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ann: ??? -->
     <field name="reference" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ont: Alternate term id. -->
@@ -113,17 +125,6 @@
     <field name="source" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ann_ev_agg: ??? -->
     <field name="evidence_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
-    <!-- bbop_ont: Closure of labels over isa and partof. -->
-    <!-- bbop_bio: Closure of labels over isa and partof. -->
-    <!-- bbop_ann: Closure of labels over isa and partof. -->
-    <field name="isa_partof_label_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
-    <!--An easily searchable (TextField tokenized) version of isa_partof_label_closure.-->
-    <field name="isa_partof_label_closure_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
-    <copyField source="isa_partof_label_closure" dest="isa_partof_label_closure_searchable"></copyField>
-    <!-- Automatically created to capture mapping information -->
-    <!-- between isa_partof and isa_partof_label_closure.-->
-    <!-- It is not indexed for searching, but may be useful to the client. -->
-    <field name="isa_partof_map" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
     <!-- bbop_ont: Term comment. -->
     <field name="comment" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of comment.-->
