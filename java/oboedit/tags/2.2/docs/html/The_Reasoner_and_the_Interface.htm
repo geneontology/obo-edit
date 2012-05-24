@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<HEAD>
+<META NAME="GENERATOR" CONTENT="Solutionsoft HelpBreeze JavaHelp Edition">
+<TITLE>The Reasoner and the Interface</TITLE>
+<LINK REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
+</HEAD>
+<BODY bgColor=#ffffff>
+<H1>The Reasoner and the Interface</H1>
+<P>(The <a href="The_OBO_Edit_Reasoner">OBO-Edit Reasoner page</a> discusses what a reasoner
+    is.)
+</p>
+<h2>The Reasoner Manager</h2>
+<p> The reasoner is activated and deactivated via the Reasoner Manager.
+You can turn on the reasoner in OBO-Edit by showing the Reasoner Manager ([Reasoner] -> [Reasoner Manager]) and selecting a reasoner from the
+pulldown list.  Once you make your choice, you can get rid of the Reasoner Manager panel
+However, because the reasoner uses so much memory, it is generally a good idea to turn it on only
+when you really need it, and turn it off when you're done.  Be sure to save your work
+<b>before</b> you turn on the reasoner, in case OBO-Edit runs out of memory
+and dies.
+</p>
+<p>Like most OBO-Edit components, the Reasoner Manager remembers its state when OBO-Edit is exited. This 
+means that if the reasoner is on when you exit OBO-Edit, 
+it will be on the next time you start OBO-Edit.  The entire application runs
+  more slowly when the reasoner is running, so usually it makes sense to turn
+  off the reasoner before you exit OBO-Edit (you can always turn it back on
+  next time if you need it).
+  </p><p>
+When the reasoner is turned on, the titlebar of the OBO-Edit window says
+  "(REASONER ON)" as a visual reminder.</p>
+<!-- <h2>RuleBasedReasoner and DirectLinkReasoner</h2> -->
+<!-- <p> Starting in version 2.1-b12 (11 April, 2011), OBO-Edit offers a choice of two -->
+<!-- reasoners:  the <i>RuleBasedReasoner</i> and the <i>DirectLinkReasoner</i>. -->
+<!-- The RuleBasedReasoner is the full reasoner.  The DirectLinkReasoner is a new, -->
+<!-- simpler reasoner that (unlike the RuleBasedReasoner) can only infer direct -->
+<!-- links. -->
+<!-- Direct links are typically trivial inferences that are useful for working in -->
+<!-- OBO-Edit, for example: -->
+<!-- <li> -->
+<!-- <ul> infer a simple link from an intersection link</ul> -->
+<!-- <ul> infer symmetric class-level axioms (e.g., X disjoint_from Y <-> Y -->
+<!--   disjoint_from X)</ul> -->
+<!-- </li> -->
+<!-- </p><p>Unlike the RuleBasedReasoner, which significantly slows down OBO-Edit -->
+<!-- and increases memory use, the DirectLinkReasoner has only a minimal impact on -->
+<!-- OBO-Edit's responsiveness. -->
+<!-- </p><p>In the rest of this discussion (and anywhere in the user guide where -->
+<!-- "the reasoner" is referred to), we will be describing the RuleBasedReasoner, -->
+<!-- not the DirectLinkReasoner. -->
+<!-- </p> -->
+<H2>Implied Links<A name=implied_links></A></H2>
+<p>The reasoner changes the way the 
+ontology is displayed in the ontology editor panel. 
+Some of the implied links 
+discovered by the reasoner may be shown in the ontology editor panel. By default, 
+these implied links are displayed with a wavy blue arrow:</P>
+<P><IMG height=39 hspace=0 src="../images/reasoner_implied_arrow.gif" width=181 
+border=0></P>
+<H2>Trimming<A name=trimming></A></H2>
+<P>Not all implied links are shown in the ontology editor panel, because doing so 
+would quickly make the interface unmanagable. Consider our elephant ontology 
+once more:</P>
+<P><IMG height=94 hspace=0 src="../images/reasoner_elephant_ontology.gif" 
+width=181 border=0></P>
+<P>If every single implied link were shown, we would see:</P>
+<P><IMG height=171 hspace=0 src="../images/reasoner_elephant_notrimming.gif" 
+width=185 border=0></P>
+<P>It's easy to imagine how confusing this would get with an ontology of any 
+complexity.</P>
+<P>To reduce this complexity, OBO-Edit <STRONG>trims</STRONG> the ontology 
+before displaying it. Trimming hides links that would unhelpfully clutter 
+the display. The reasoner still knows about these links, but they are not shown 
+to the user.</P>
+<P>A link <STRONG>L</STRONG> is trimmed if it satisfies either of the following 
+conditions:</P>
+<UL>
+  <LI>All evidence for&nbsp;<STRONG>L</STRONG> is based on the transitivity rule 
+  <LI><STRONG>L</STRONG>'s child term has any grandparent link with the same 
+  relationship type and parent term as <STRONG>L</STRONG></LI></UL>
+<P>There is one exception: user-created links are never 
+trimmed. This means that redundant links are always visible, because all redundant links are 
+user-created.</P>
+</BODY>
+</html>

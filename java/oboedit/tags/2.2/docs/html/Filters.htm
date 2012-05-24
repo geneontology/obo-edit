@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>Introduction to Filters</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>Introduction to Filters</h1>
+<P>OBO-Edit filters allow you to specify some subset of an 
+ontology. A filter might be able to pick out all the terms in the ontology that 
+have "kinase" in their name, or find every link in the ontology whose 
+relationship type is <EM>part_of</EM>.
+</P>
+<P>If a&nbsp;term or link belongs to the subset that a filter specifies, the 
+term or link is said to <STRONG>match</STRONG> 
+the filter. For example, if we create a filter&nbsp;for terms whose 
+name contains the word "kinase", that filter would match "fructokinase activity" 
+but not "fructose-biophosphatase activity".&nbsp;</P>
+<P>Once a filter has been created, there are a number of things you can do with 
+it. Filters can be used to <A href="Searching.htm">search</A> an ontology, 
+resulting in a list of matching terms and links.&nbsp;A filter can be used to 
+create a custom <A href="Rendering.htm">renderer</A> for an ontology, resulting 
+in special coloring or fonts for matching terms and links. Or, a filter can be 
+used to <A href="Filtering.htm">filter</A>&nbsp;an ontology so that&nbsp;terms 
+or links that don't match the filter are hidden in the ontology editor 
+panel.</P>
+<br>
+<H1>Link Filters vs Term Filters</H1>
+<P>There are two kinds of filters in OBO-Edit: <STRONG>term 
+filters</STRONG> and <STRONG>link filters</STRONG>.</P>
+<P><STRONG>Term filters</STRONG> match ontology "terms". Things like relations, 
+instances and classes can be matched by a term filter.</P>
+<P><STRONG>Link filters</STRONG> match links <EM>between</EM> terms. This does 
+<EM>not</EM> mean that a link filter matches two terms. A link filter will never 
+match any terms. It will only match&nbsp;links between terms.</P>
+<P>A link can be thought of as a triplet that consists of a child term, a 
+relationship type, and a parent term. This guide uses the following notation for 
+describing a link: <STRONG>[child term] --[type]--&gt; [parent term]</STRONG>. 
+An is_a link between "organ growth" and "growth" would be written as: 
+<STRONG>"organ growth" --<EM>is_a</EM>--&gt; 
+"growth"</STRONG>.</P>
+</body>
+</html>

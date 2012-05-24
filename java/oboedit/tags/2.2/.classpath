@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="lib/buildlibs/junit.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/bounce.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/debug.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/hsqldb.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/idw-gpl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/jazzy-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/jhall.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/jwf-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/piccolo.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/piccolox.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/tablelayout.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/buildlibs/xstream-1.2.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-bridge.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-gvt.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-script.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-util.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-svg-dom.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-dom.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-css.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-ext.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/xml-apis.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/xml-apis-ext.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-xml.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-parser.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-anim.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-awt-util.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/macify-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/swing-layout.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/jlibeps.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-svggen.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/mysql-connector-java-5.1.5-bin.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/postgresql-8.2-506.jdbc3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/relaxngDatatype.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/xercesImpl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/xsdlib.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/commons-lang-2.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/swinglabs-0.8.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/PDFBox-0.7.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/FontBox-0.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/checkstyle-all-4.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/lucene-core-2.4.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/lucene-snowball-2.4.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/antlr-runtime-3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/arq.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/aterm-java-1.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/commons-logging-1.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/commons-logging-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/jena.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/jpl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/junit.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/pellet.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/resolver.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/serializer.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/xsdlib-1.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/bbop.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/obo.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
+	<classpathentry kind="lib" path="lib/runlibs/image4j-core-0.7-withBugFixInfiniteLoop.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/activation-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/axiom-api-1.2.7.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/axiom-impl-1.2.7.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/axis-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/axis-jaxrpc-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/axis-saaj-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/axis2-adb-1.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/axis2-kernel-1.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/backport-util-concurrent-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/commons-discovery-0.5.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/commons-io-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/geronimo-stax-api_1.0_spec-1.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/gopubmed-definition-generation-client-0.0.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/gopubmed-ontology-lookup-service-client-0.0.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/gopubmed-term-generation-client-0.0.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/neethi-2.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/wsdl4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/wstx-asl-3.2.4.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/XmlSchema-1.4.2.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/junit-4.8.2.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/oboformat-0.5.1.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/owlapi-3.2.4.jar"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>

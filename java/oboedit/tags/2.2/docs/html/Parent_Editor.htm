@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<HEAD>
+<META NAME="GENERATOR" CONTENT="Solutionsoft HelpBreeze JavaHelp Edition">
+<TITLE>The Parent Editor</TITLE>
+<LINK REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
+</HEAD>
+<BODY BGCOLOR=#ffffff>
+<H1>The Parent Editor</H1>
+<P>The Parent Editor displays the immediate parents of the 
+current <A href="Working_with_Selections.htm">sub-selection</A>&nbsp;term:</P>
+<p><IMG hspace=0 src="../images/parent_editor.png" border=0></p>
+
+<P>The name and ID of the sub-selected term appear at the top of the
+panel. Each additional line in the display represents a parent link
+from the currently selected term to another term. The fields in each
+line are:</P>
+
+<UL>
+  <LI><STRONG>Delete button</STRONG> - Press this button (with
+  trashcan icon) to delete this parent link. (Note that this option is
+  not available if a term has only one parent; to delete the last
+  parent from a term, thereby making the term obsolete, use the <a
+  href="The_Term_Editor_Panel.htm">Ontology Tree Editor.</a></LI>
+  <LI><STRONG>Relationship type</STRONG> - This is a dropdown list of
+  all the relationship types in the ontology. The current relationship
+  type for this link is selected. To change the relationship type of
+  this link, choose a new item from the dropdown list.
+  <LI><STRONG>Parent term - </STRONG>This is the id and name of the
+  parent term of this link. Click the id to select the parent term.
+  <LI><STRONG>Cardinality control</STRONG> - Pops up a separate window
+  to let you set the cardinality of this link.  This information is
+  not currently used.
+  <LI><STRONG>Namespace control</STRONG> - This is a list of all the
+  namespaces in the ontology. This current namespace for this link is
+  selected. To change the namespace of this link, select a new
+  namespace from the dropdown.
+  <LI><STRONG>Show implied links</STRONG> - Checking this checkbox will make
+  implied parents appear in the editor; if the box is not checked,
+  only asserted parents appear. Note that the reasoner must be running
+  for this option to work.
+</UL>
+<P>To add a new parent link to the selected term, drag the parent term
+onto the "Local-select other terms and drop here to add new parents"
+panel. A new link will be added with the dropped term as the parent,
+and <STRONG>is_a</STRONG> as the relationship type. Change the
+relationship type as needed.</P>
+<p>Note that you have to drag the desired new parent from an Ontology
+Tree Editor that is in <b>local</b> selection mode, because you don't
+want the global selection to change. The most convenient way to do
+this is to have two Ontology Tree Editor panels open, with one in
+global and the other in local mode. Select the child in the global
+tree editor panel (which makes it the selected term in the Parent
+Editor), then drag the desired new parent from the local tree editor
+panel into the Parent Editor. To add a parent using a single Ontology
+Tree Editor panel, select the child with the OTE in global mode, then
+change to local mode before dragging the new parent.</p>
+
+</BODY>
+</html>

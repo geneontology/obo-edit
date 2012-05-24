@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.0" width="60" height="60" viewBox="0 0 60 60"
+   id="custom_svg"
+   xml:space="preserve">
+
+	<rect id="square" x="7.5" y="7.5" width="44" height="44" style="fill:#000000" />
+	<path id="greek_capital_rho" d="M20.562,38.275V12.261h9.069c3.164,0,5.423,0.53,6.776,1.591c1.353,1.061,2.029,2.833,2.029,5.317
+	c0,2.812-0.904,5.001-2.716,6.565s-4.345,2.347-7.603,2.347h-2.25v10.194H20.562z M25.87,24.513h1.055
+	c1.853,0,3.313-0.431,4.387-1.292c1.072-0.861,1.607-2.03,1.607-3.507c0-2.59-1.646-3.885-4.938-3.885h-2.109L25.87,24.513
+	L25.87,24.513z" style="fill:#FFFFFF" />
+</svg>

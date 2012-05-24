@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<HEAD>
+<META NAME="GENERATOR" CONTENT="Solutionsoft HelpBreeze JavaHelp Edition">
+<TITLE>Link Filters</TITLE>
+<LINK REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
+</HEAD>
+<BODY BGCOLOR=#ffffff>
+<H1>Link Filters</H1>
+<P>Link filters are used to pick certain links between 
+terms from a collection of links between terms. Note that links are 
+<EM>different kinds of objects</EM> than terms. Links represent relationships 
+between terms.</P>
+<P>In this guide, links are usually written in the form</P>
+<P><EM>child_term</EM> -<STRONG>relation</STRONG>-&gt; <EM>parent_term</EM></P>
+<P>So if there is an <STRONG>is_a</STRONG> relationship between "heart 
+development" and "development", that link would be written as</P>
+<P>"heart development" -<STRONG>is_a</STRONG>-&gt; "development"</P>
+<H2>The Link Filter Interface</H2>
+<P>To add or change link filters in a user configurable filter 
+designer (such as the Global Filters component), click the "Link filters" tab
+<P>The link filter interface looks like this:</P>
+<P><IMG hspace=0 src="../images/filter_link.png" border=0></P>
+<P>Notice the field that says "Self". This is called the "link facet".
+Other than this new field, the link 
+filter interface looks exactly like the term filter interface.</P>
+<P>The link facet determines what characteristics of the link will be considered 
+when filtering. There are 4 possible link facets:</P>
+<UL>
+  <LI><STRONG>Child</STRONG> - This 
+  link facet indicates that the link should be filtered based on the attributes 
+  of the link's child term. If this facet is selected, the rest of the filter 
+  simply specifies the search criteria to apply to the child term. 
+  <LI><STRONG>Type</STRONG> - This 
+  link facet indicates that the link should be filtered based on the attributes 
+  of the link's type (aka relation). If this facet is selected, the rest of the 
+  filter specifies search criteria to apply to the link type. 
+  <LI><STRONG>Parent</STRONG> - This 
+  link facet indicates that the link should be filtered based on the attributes 
+  of the link's parent term (aka relation). If this facet is selected, the rest 
+  of the filter specifies search criteria to apply to the link parent. 
+  <LI><STRONG>Self</STRONG> - This facet indicates that the link should be 
+  filtered based on attributes of the link itself. If this facet is selected, 
+  the rest of the filter specifies special, link-specific search 
+attributes.</LI></UL>
+
+<P>If any of the first three facets (<STRONG>child, type,</STRONG> or
+<STRONG>parent</STRONG>) are selected, the filter behaves just like a
+term filter (see <a href="Building_a_Filter.htm">Building Filters</a>
+and <a href="Term_Filters.htm">Term Filters</a> for more
+information). The <STRONG>have/don't have</STRONG>,
+<STRONG>Aspect</STRONG>, <STRONG>Attribute</STRONG>,
+<STRONG>Comparison</STRONG>, and <STRONG>Value</STRONG> fields are
+specified to select the desired terms, and the links whose appropriate
+facets match the filter will be matched.</P>
+
+<P>If the <STRONG>Self</STRONG> facet is selected, however, a special set of 
+link-specific attributes becomes available.</P>
+<H2>Link-Specific Attributes</H2>
+<P>The following attributes are available when the <STRONG>Self</STRONG> facet 
+has been selected:</P>
+<UL>
+  <LI><STRONG>Namespace</STRONG> 
+  <EM>(single text value</EM>) - Searches the namespace of the 
+  link itself (NOT the namespace of the child, type or parent term). See <A 
+  href="Parent_Editor.htm">The Parent_Editor</A> and <A 
+  href="Changing_Link_Attributes.htm">Changing Link Attributes</A> for 
+  information on setting the namespace of a link.
+  <LI><STRONG>Is intersection</STRONG> <EM>(boolean value)</EM> - Whether this link has been 
+  marked an intersection link. See <A 
+  href="Introduction_to_Cross_Products.htm">Cross Products</A> for 
+  information on intersection links.
+  <LI><STRONG>Is necessary</STRONG> <EM>(boolean value)</EM> - Whether this link 
+  has been marked necessarily true. See <A href="Parent_Editor.htm">The 
+  Parent_Editor</A> and <A href="Changing_Link_Attributes.htm">Changing Link 
+  Attributes</A> for more information.
+  <LI><STRONG>Is implied</STRONG> <EM>(boolean value)</EM> - Whether this is an implied link. 
+  Links may be marked implied when they are loaded (if they were loaded by a 
+  reasoner-generated file), but most of the time implied links have been created 
+  by the OBO-Edit reasoner. This kind of implied link will only exist if the 
+  reasoner is enabled. When searching, this attribute will only find implied 
+  links that have not been <A 
+  href="The_Reasoner_and_the_Interface.htm#trimming">trimmed</A>. See <A href="The_OBO_Edit_Reasoner.htm">The 
+  OBO-Edit Reasoner</A> for more information.
+  <LI><STRONG>Is redundant</STRONG> <EM>(boolean value)</EM> - Whether this is a 
+  redundant link. The OBO-Edit reasoner may mark a user-created link redundant 
+  if it reiterates information implied by other links in the ontology. Links 
+  will only be marked redundant if the reasoner is enabled. See <A 
+  href="The_OBO_Edit_Reasoner.htm#redundant" >The OBO-Edit Reasoner</A> for more 
+  information.</LI></UL>
+<H2>Special Behavior of the Search Aspect</H2>
+<P>If the <STRONG>Self</STRONG> facet is selected, search aspects work a little 
+differently. In a term filter, the search aspect specifies an alternate 
+collection of related terms to find a match. In a link filter, the search aspect 
+specifies an alternate collection of related <EM>links</EM>.</P>
+<P>For example, when the <STRONG>Self</STRONG> aspect is selected, the 
+ancestor aspect searches all the ancestor <EM>links</EM> (NOT ancestor terms) to 
+find a match.</P>
+
+<div class="sidebar">
+<h1>A global link filter that seems like a good idea but slows everything down</h1>
+<hr>
+<p>
+If your ontology has a lot of "disjoint_from" links, the graph display can
+become rather tangled, so it might occur to you to add a global link filter to hide
+those links:  "Find links where Type that don't have a ID that equals the value
+disjoint_from"
+or, in the syntax at the bottom of the link search panel, <code>link.type(ID NOT equals "disjoint_from")</code>.
+</p>
+<P><IMG hspace=0 src="../images/disjoint-from-link-filter.png" border=0></P>
+<p>The problem with this link filter is that any time you perform an ontology
+edit (for example, using the Text Editor to change the wording of a definition
+or add a dbxref), OBO-Edit runs all the link filters, and this "disjoint_from"
+filter is very expensive to perform.  You will thus see very slow editing
+performance--for example, with this filter in place, a text edit of the GO
+ontology takes 13 seconds to commit.</p>
+  <p>Fortunately, there's a better solution: you can add this link filter to
+  the <a href="Graph_Editor.htm">Graph Editor</a> instead of as a global link
+  filter. To do this, click the little
+  wrench/spanner icon in the Graph Editor titlebar to get to the Graph Editor configuration interface, then
+  select the Link Filters tab, and click the "Filter links" checkbox to enable
+  you to add
+  the anti-disjoint_from link filter.
+<p><IMG hspace=0 src="../images/disjoint-from-link-filter-graph-editor.png" border=0></p>
+<p>  When you've set up the filter, click the
+  little checkmark in the Graph Editor titlebar to save the filter and return
+  to the Graph Editor display.</p>
+</div>
+</BODY>
+</html>

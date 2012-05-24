@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.0" width="60" height="60" viewBox="0 0 60 60"
+   id="custom_svg"
+   xml:space="preserve">
+
+	<rect id="square" x="7.5" y="7.5" width="44" height="44" style="fill:#000000" />
+	<path id="greek_capital_nu" d="M18.918,38.275V12.261h4.764L35.74,30.032V12.261h4.342v26.017H35.23L23.26,20.505v17.771H18.918z" style="fill:#FFFFFF" />
+</svg>
