@@ -1,7 +1,7 @@
 ===  OBO-Edit v2.1 RELEASE NOTES  ===
 
 ===============================
-What's New in OBO-Edit 2.2-rc2
+What's New in OBO-Edit 2.2-rc2  (5/22/2012)
 ===============================
 Cycle Check fixed in Text Editor (warns you if the specific term is in a
 cycle). (The Cycle Check of all terms done by the Verification Manager was
