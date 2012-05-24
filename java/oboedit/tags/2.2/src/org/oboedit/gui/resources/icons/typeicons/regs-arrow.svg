@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 12.0.1, SVG Export Plug-In  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [
+	<!ENTITY ns_flows "http://ns.adobe.com/Flows/1.0/">
+	<!ENTITY ns_svg "http://www.w3.org/2000/svg">
+	<!ENTITY ns_xlink "http://www.w3.org/1999/xlink">
+]>
+<svg  version="1.1" xmlns="&ns_svg;" xmlns:xlink="&ns_xlink;" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+	 width="60" height="60" viewBox="0 0 60 60" enable-background="new 0 0 60 60" xml:space="preserve">
+<defs>
+</defs>
+<g id="r_arrow_1_">
+	<g display="inline">
+		<polygon fill-rule="evenodd" clip-rule="evenodd" points="60,30 32,0 32,8 8,8 8,52 
+			32,52 32,60 		"/>
+	</g>
+</g>
+<text id="R_lg_2_" transform="matrix(1 0 0 1 14.875 43.8779)" fill="#FFFFFF" font-family="'Verdana-Bold'" font-size="39">R</text>
+</svg>

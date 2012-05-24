@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<HEAD>
+<META NAME="GENERATOR" CONTENT="Solutionsoft HelpBreeze JavaHelp Edition">
+<TITLE>Rendering</TITLE>
+<LINK REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
+</HEAD>
+<BODY bgColor=#ffffff>
+<H1>Rendering</H1>
+<P>Rendering allows a user to specify special colors, fonts, 
+and other visual effects that will be applied to terms in a ontology editor panel that match a particular 
+filter. Renderers can be applied in any Ontology Tree Editor or Graph
+Editor panel, and each panel can have different renderers.  See <a
+href="Color_by_Namespace.htm">the page about coloring by namespace</a> for an
+example of how to use rendering.</p>
+
+<p> To create a new renderer, click the wrench icon on the panel where
+you want the rendering effects to appear. Choose the "Term Renderers"
+or "Link Renderers" tab. Click the <img valign="center" src="../images/plus.png"
+alt="" border=0> button to bring up a filter panel, then specify the
+filter criteria or load a saved filter (see <a
+href="Building_a_Filter.htm">Building Filters</a> for how to do
+this). </p>
+<P>Next, specify one or more visual effects to apply to matching
+terms. To apply the new renderer to the panel, click the check mark to
+complete panel configuration.</P>
+
+<P> With the settings shown in the screenshot below, the ontology
+editor panel will draw any term whose name contains "activity" in
+red:</P>
+<P><IMG hspace=0 src="../images/render_editor_panel.png" border=0></P>
+<P>A ontology editor panel can have any number of renderers at 
+the same time.</P>
+<H2>Specifying Renderer Options</H2>
+<P>Renderers can apply several different visual effects to matching
+terms. The available effects are different for term filters and link
+filters.</P>
+<P>In general, to apply a visual effect, select the checkbox 
+next to it. If a visual effect is configurable, a configuration control will 
+appear next to the checkbox once it is selected. A renderer may apply several 
+visual effects to a matching term.</P>
+<H3>Term Renderer Effects</H3>
+
+<P>Term renderer effects change the way a term name is displayed in
+the ontology editor panel. The following renderer effects are
+available for term filters:</P>
+
+<ul>
+  <li><strong>Foreground Color</strong> - The "Foreground Color" 
+  effect changes the color of the text displaying terms that match the filter. If the "Foreground Color" 
+  checkbox is checked, a set of controls will appear next to the checkbox, allowing you to configure the 
+  color that will be applied to matching terms. 
+
+  <ul>
+
+    <!-- if blending is fixed for release, include this and change the 'multiple renderers' section      <li><strong>Do blending</strong> - If this box is checked, colors will be blended if a term matches more than one color renderer. -->
+
+    <li><strong>Simple coloring</strong> - This is the most commonly
+    used color renderer. If the "Simple coloring" box is checked,
+    matching terms will appear in the selected color. To choose a
+    different color, click the "CHANGE" button. A color selection
+    window will appear where you can choose a different color for
+    matching terms.
+
+    <li><strong>Heat map coloring</strong> - Some OBO-Edit search
+    criteria are numeric rather than text based (e.g. Parent
+    Count). You can use the configurable "Heat map coloring" to create
+    a graduated coloring based on numeric search criteria. If the
+    "Heat map coloring" box is checked, additional controls appear
+    that allow you to configure the color gradient.
+
+    <ul>
+
+      <li><strong>Min color, Max color, and Blank color</strong> - The
+      "Min color" and "Max color" buttons allow you to select the
+      colors for the minimum and maximum ends of the gradient,
+      respectively; the "Blank color" button lets you specify the
+      color to use for missing values. Each button makes the color
+      selection panel appear.
+
+      <li><strong>Criterion</strong> - This selector lets you choose
+      which numeric criterion to use to generate the heat map. In
+      OBO-Edit 2.0, the available options are Parent Count and ISA
+      Parent Count (more may be added in future versions of OBO-Edit).
+
+      <li><strong>Minimum Value and Maximum Value</strong> - These
+      selectors let you specify the minimum and maximum values for the
+      gradient. The "&lt;auto-calculate&gt;" option automatically
+      determines the color depending on which matching terms are
+      selected; "&lt;enter constant&gt;" lets you enter your own
+      maximum and minimum values; "Max parent count" and "Min parent
+      count" use the maximum and minimum values in the ontology.
+
+    </ul>
+
+  </ul>
+
+  <li><strong>Background Color</strong> - The "Background Color"
+  effect changes the background color of terms that match the
+  filter. If the "Background Color" checkbox is checked, a set of
+  controls will appear next to the checkbox to configure the
+  background color that will be applied to matching terms. The color
+  controls work the same way as for "Foreground Color", described
+  above.
+
+  <li><strong>Font Face</strong> - The "Font Face" effect changes the
+  typeface of terms that match the filter. If the "Font Face" checkbox
+  is checked, a dropdown list of available fonts will appear next to
+  the checkbox. Select the font you would like to apply to matching
+  terms.
+
+  <li><strong>Font Size</strong> - The "Font Size" effect changes the
+  type size of terms that match the filter. If the "Font Size"
+  checkbox is checked, a text field with arrows appears next to the
+  checkbox. Type the desired text size into the text field or use the
+  arrows to increment the size up or down.
+
+  <li><strong>Bold</strong> - The "Bold" effect makes matching terms
+  appear in a bold typeface. There are no special configuration
+  controls for this effect.
+
+  <li><strong>Italic</strong> - The "Italic" effect makes matching
+  terms appear in a italic typeface. There are no special
+  configuration controls for this effect.
+
+  <li><strong>Underline</strong> - The "Underline" effect makes
+  matching terms appear undelined. There are no special configuration
+  controls for this effect.
+  <li><strong>Strikeout</strong> - The "Strikeout" effect makes
+  matching terms appear struck out, i.e. with a horizontal line
+  through the type. There are no special configuration controls for
+  this effect.
+
+  <li><strong>HTML Code</strong> - This checkbox allows you to specify
+  OBO-Edit renderers in HTML code. See <a
+  href="HTML_Rendering.htm">HTML Rendering</a> for details.
+
+</ul>
+
+
+
+
+<H3>Link Renderer Effects</H3>
+<P>Link renderer effects change the way the arrow between a 
+term and its parent (<IMG height=14 hspace=0 src="../images/link_arrow.gif" 
+width=80 border=0>) is displayed in the ontology editor panel. The following 
+renderer effects are available:</P>
+
+<UL>
+  <LI><STRONG>Foreground Color</STRONG> - The "Foreground Color"
+  effect changes the color of the link arrow for links that match the
+  filter. If the "Foreground Color" checkbox is checked, color
+  selection controls will appear next to the checkbox. See Term
+  Renderer Effects above for a description of the color selection
+  controls.
+  <LI><STRONG>Line Width</STRONG> - The "Line Width" effect changes
+  the thickness of the link arrow line. If the "Line Width" checkbox
+  is checked, a text field with arrows will appear next to the
+  checkbox. Type the desired line width (in pixels) into the text
+  field or use the arrows to increment the size up or down.
+  <LI><STRONG>Line Type</STRONG> - The "Line Type" effect changes the
+  way the link arrow line is drawn. If the "Line Type" checkbox is
+  checked, a dropdown box will appear next to the checkbox showing the
+  available line types. The available options are "SOLID-LINE",
+  "DASHED_LINE", and "ZIGZAG_LINE".
+</UL>
+
+<!-- old version; use if blending won't be fixed for release -->
+<H2>Multiple Renderers at Once</H2>
+<P>Any number of renderers may be applied to a ontology editor panel at once. If a 
+term matches multiple renderers, OBO-Edit will try to merge the renderer effects 
+to display as much information as possible.</P>
+<P>OBO-Edit can merge renderer effects of different types. If one renderer wants 
+to make a term red, and another wants to make a term bold, OBO-Edit will show 
+the term in red and in bold. But OBO-Edit cannot merge effects of the same type. 
+If one renderer wants to make a term red and another wants to make the term 
+blue, OBO-Edit will only display a single color.</P>
+<P>When two renderers specify two different values for the same effect, OBO-Edit 
+chooses the value from the most recently added renderer.</P>
+<P>Therefore, if you plan to use several renderers at once, it is usually a good 
+idea to use a different type of renderer effect for each renderer. That way it 
+is easy to tell if a term matches multiple renderers.</P>
+
+<H2>Removing Renderers</H2>
+
+<p>To remove a renderer, click the wrench icon to open the
+configuration screen, and choose the "Term Renderers" or "Link
+Renderers" tab. Select the renderer you want to remove, and click
+the <img src="../images/minus.png" alt="" border=0> button to remove
+it. Click the check mark to finish and exit configuration.</p>
+<br>
+</BODY>
+</html>

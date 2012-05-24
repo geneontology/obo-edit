@@ -1,0 +1,24 @@
+[OPTIONS]
+Compatibility=1.1
+Compiled file=oboedit.chm
+Full-text search=Yes
+Compiled file=oboedit.chm
+Contents file=oboedit.hhc
+Index file=oboedit.hhk
+Title=OBO-Edit User's Guide
+Default topic=FirstTopic.htm
+Error log file=compiler.log
+
+[FILES]
+FirstTopic.htm
+;Title=FirstTopic
+rtex.gif
+dwnex.gif
+htmlhelp.css
+master.js
+
+[ALIAS]
+#include oboedit.ali
+
+[MAP]
+#include oboedit.h

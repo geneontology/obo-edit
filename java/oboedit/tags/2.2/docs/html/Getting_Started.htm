@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>Getting OBO-Edit Started</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>Getting OBO-Edit Started</h1>
+OBO-Edit is a Java application, so you will need to have Java on your computer.
+Most new computers come with some version of Java already installed. 
+<div class="sidebar">
+<h1>What version of Java do I have?</h1>
+<hr>
+<p>To figure out which version of Java you have, open up a command 
+prompt, or console, or terminal, or whatever you use on your platform to type 
+commands onto a command-line. Then type:</p>
+<code><b>java -version</b></code> 
+<p>and press enter. You should get a response like:</p>
+<code><b>java version "1.5.0_06"<br>
+Java(TM) 2 Runtime Environment, Standard 
+Edition (build 1.5.0_06-b05)<br>
+Java HotSpot(TM) Client VM (build 1.5.0_06-b05, 
+mixed mode, sharing)</b></code>
+<p>The very first line tells you which version of Java is installed.  Make sure the version
+number is 1.5.something or 1.6.something.</p>
+<p>If you get a response like:</p>
+<code><b>'java' is not recognized as an internal or external command, operable program or batch file.</b></code>
+<p>or</p>
+<code><b>bash: java: command not found</b></code>
+<p>check that you typed a space after "java" and before 
+"-version". If you entered the command correctly but still do not get a response 
+indicating a specific version of Java, then Java is not installed, and you need to follow the installation instructions below.</p>
+</div>
+
+<h2>1) Install Java 1.5 or higher</h2>
+<p>On Macs, the latest version of Java can be installed automatically by doing a system software 
+update. On any other platform, download the appropriate Java Runtime
+Environment (JRE) binary from <a 
+href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Oracle</a>.
+  (The latest version, as of 2011, is Java SE 6.)
+<h2>2) Get OBO-Edit</h2>
+<p>Download the latest version of OBO-Edit from our SourceForge project 
+at&nbsp;<a 
+href="http://sourceforge.net/projects/geneontology">http://sourceforge.net/projects/geneontology</a></p>
+<p>There will be several downloads to choose from (Windows, Mac, Linux/Unix).
+<h2>3) Install and Launch OBO-Edit</h2>
+<div class="sidebar">
+<a name="memory">
+<h1>Memory allocation</h1>
+<hr>
+<p>Because OBO-Edit2 is a Java application, it cannot use an arbitrary amount of
+system memory like a native application. Instead, you must set a fixed maximum
+amount of memory that OBO-Edit2 can use. Unless
+you have a 64-bit Java Virtual Machine (JVM), Java limits the maximum memory allocation to 1860M
+(1024M on Windows machines). The OBO-Edit installer will suggest an
+appropriate memory setting for your computer. You can change the memory setting
+after installation via OBO-Edit's <a href="Configuration_Manager.htm">Configuration Manager</a> or by hand-editing
+OBO-Edit.vmoptions (located in the OBO-Edit installation directory).</p>
+<p>
+  For MacOSX there are three requirements in order to use more than 1860M of main memory for Java:
+  <ol>
+  	<li>Intel CPU with support for 64-bit</li>
+  	<li>MacOS in 64-bit mode 
+  	<p>This is the default for Lion, but on some versions of Snow Leopard,
+  	you may need to change this by hand.
+    <a href="http://macperformanceguide.com/SnowLeopard-64bit.html">Here</a> is a
+  guide to getting your 64-bit-capable Mac to boot into 64-bit mode.</p>
+    <p>(<i>Sometimes</i> this step is not required to use Java in 64-mode, but OBO-Edit always
+        checks this to prevent you from choosing a memory setting that is too high.)</p></li>
+  	<li>64-bit Java as default
+  	<p>To change this, open <strong>/Applications/Utilities/Java Preferences</strong> 
+  	 and make sure that a 64-bit version of Java is selected as the default for 
+  	 Java Applications.</p></li>
+  </ol>
+  In some cases, it might be necessary to re-install OBO-Edit, to take advantage of the 
+  changed default Java.
+</p>
+</div>
+<ul>
+  <li>Run the installer program 
+  and follow the onscreen prompts. Icons for running/uninstalling 
+  the program will be created on your start menu (or desktop).  On Macs, if
+  you want an OBO-Edit icon in your Dock, let the installer create a desktop
+  icon and then drag it into your Dock.
+  <li>If you prefer to launch OBO-Edit from the shell (on Unix or Mac), you
+  can use the oe-command-line script.  You can make it automatically load an
+  OBO-format file by giving the filename as the command-line argument:<br>
+  <code>/Applications/OBO-Edit2/oe-command-line /blahblahblah/foo.obo</code>
+</li></ul>
+<div class="sidebar">
+<h1>Stale files in your configuration directory</h1>
+<hr>
+<p>If you had already installed a previous version of OBO-Edit2, your
+configuration directory 
+may contain stale configuration files that clash with
+the new version, which can cause problems when you try to run the new
+  OBO-Edit2.  To avoid these issues, it's safest to remove (or rename) your OBO-Edit configuration directory before
+launching the new OBO-Edit2. Recent versions of OBO-Edit warn you about this
+  issue and offer to rename the appropriate configuration directory for you.
+</p>
+</div>
+<h2>5) Open an ontology</h2>
+<p>Go to the "File" menu and choose "Load Ontologies..." (shortcut is command-O). A box will appear that looks like 
+this:</p>
+<p><IMG hspace=0 src="../images/load_with_default.png" center border=0></p>
+<p>The ontology loader should show you the name of a sample ontology; just click "Ok" to load it.
+</p><p>
+You can download other ontologies from the Open Biomedical Ontologies site at <a 
+href="http://www.obofoundry.org/">http://www.obofoundry.org/</a>.
+</p>
+<p><a
+href="http://www.slideshare.net/dosumis/from-obo-to-owl-and-back-building-scalable-ontologies">This
+tutorial</a> provides a good introduction to the use of OBO-Edit, especially for some of the
+more advanced features, such as the reasoner and cross-products.</p>
+<br>
+</body>
+</html>
