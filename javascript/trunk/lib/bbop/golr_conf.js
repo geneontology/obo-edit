@@ -263,7 +263,7 @@ bbop.golr.conf_class = function (class_conf_struct){
 	retval = null;
 	if( this._class.fields_hash &&
 	    this._class.fields_hash[fid] ){
-		retval = new bbop.golr.conf_class(this._class.fields_hash[fid]);
+		retval = new bbop.golr.conf_field(this._class.fields_hash[fid]);
 	    }
 	return retval;
     };
