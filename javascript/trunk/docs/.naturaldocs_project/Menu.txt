@@ -47,7 +47,9 @@ Format: 1.51
 
 
 File: core.js  (core.js)
-File: golr.js  (golr.js)
+File: golr_conf.js  (golr_conf.js)
+File: golr_manager.js  (golr_manager.js)
+File: load_json  (model.js)
 File: logger.js  (logger.js)
 
 Group: Index  {
