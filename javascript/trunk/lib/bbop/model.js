@@ -184,7 +184,7 @@ bbop.model.graph.prototype.add_node = function(node){
 	this._nodes.hash[ node.id() ] ||
 	this._nodes.hash[ node.id() ] ){
 	    //alert("tried to add same node: " + node.id());
-	    throw new Error("tried to add same node: " + node.id());
+	    //throw new Error("tried to add same node: " + node.id());
 	}else{
 
 	    var nid = node.id();
