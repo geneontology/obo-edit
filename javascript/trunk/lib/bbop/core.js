@@ -639,8 +639,17 @@ bbop.core.get_assemble = function(qargs){
 		    mbuff.push(nano_buff.join(''));
 		}
 	    }
+	}else if( typeof qval == 'undefined' ){
+	    // This happens in some cases where a key is tried, but no
+	    // value is found--likely equivalent to q="", but we'll
+	    // let it drop.
+	    // var nano_buff = [];
+	    // nano_buff.push(qname);
+	    // nano_buff.push('=');
+	    // mbuff.push(nano_buff.join(''));	    
 	}else{
-	    throw new Error("bbop.coreget_assemble: unknown type");
+	    throw new Error("bbop.core.get_assemble: unknown type: " + 
+			    typeof(qval));
 	}
     }
     
