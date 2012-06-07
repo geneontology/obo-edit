@@ -1294,6 +1294,14 @@ sub get_interlink {
        $ilink = 'amigo_exp?mode=golr_term_details&term=' . $acc;
      },
 
+     ## Sometimes we need to squawk.
+     'goose' =>
+     sub {
+       die "interlink mode 'goose' requires args" if ! defined $args;
+       my $sql = $args->{sql} || '';
+       $ilink = 'http://goose.berkeleybop.org/?sql=' . $sql;
+     },
+
      ## Switch over to using the new pages.
      'term-details' =>
      sub {
