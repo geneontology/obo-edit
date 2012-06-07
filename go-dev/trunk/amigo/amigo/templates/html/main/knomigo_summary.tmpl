@@ -1,0 +1,90 @@
+<!-- START template: knomigo_summary.tmpl -->
+
+<div class="contents">
+  <h1>KnomiGO</h1>
+  
+  <div class="block" id="info">
+    <h2>Identifier Search</h2>
+    <h3>Probe for an identifier in the GO database.</h3>
+    
+    <p>
+      When working with identifiers like DB:DB:0123456, this tool will
+      try DB:0123456 and 0123456 as well (whether or not such behavior
+      exists in AmiGO).
+    </p>
+    <p>
+      This tool also checks the various generated identifiers for
+      basic fitness as a term enrichment identifiers. If one passes
+      this test, it <i>may</i> move on; if it doesn't pass, it would
+      <i>never</i> be considered. This check is the last thing in each
+      identifier information section.
+    </p>
+    <p>
+      Since the links are out to the main public GOOSE instance, and
+      this tool does <b>not</b> check across different GO databases
+      and only uses the current AmiGO installation's, you may have to
+      adjust GOOSE's settings once you arrive.
+    </p>
+
+    <form action="amigo_exp" id="identifier_search_form" method="GET">
+      <input type="hidden" name="mode" value="[% amigo_mode %]" />
+      <p>
+	<label for="id"></label>
+	<input class="textBox"
+	       type="text"
+	       name="id"
+	       size="25"
+	       value="[% RAW_ID %]"
+       	       id="id" />
+	<input type="submit" class="button" />
+      </p>
+    </form>
+
+  </div>
+
+  [% IF KNOW_P && KNOW_RESULTS.size > 0 %]
+  [%    set_len = KNOW_SETS.size - 1 %]
+  [%    FOREACH set_index IN [0 .. set_len] %]
+  [%       set_id = KNOW_SETS.$set_index %]
+  [%       set = KNOW_RESULTS.$set_index %]
+
+  <div class="block" id="info">
+    <h2>Identifier Information for: [% set_id %]</h2>
+    
+    <div id="" class="chunk">
+      <ul>
+        [% FOREACH line IN set %]
+	<li>
+	  [%  IF line.0 == 1 %]
+
+	  <img width="15px" height="15px"
+	       src="[% image_dir %]/orb_led_green.png" />
+	  [%    IF line.3 == "n/a" %]
+	  [%       line.1 %].
+	  [%    ELSE %]
+	  [%       line.1 %]
+	  ([%      line.2 %]).
+	  <small><a href="http://goose.berkeleybop.org/?sql=[% line.3 | uri %]"
+		    title="[% line.3 %]">GOOSE</a></small>
+	  [%     END %]
+	  [%  ELSE %]
+
+	  <img width="15px" height="15px"
+	       src="[% image_dir %]/orb_led_red.png" />
+	  [%     line.1 %].
+	  <small><a href="http://goose.berkeleybop.org/?sql=[% line.3 | uri %]"
+		    title="[% line.3 %]">GOOSE</a></small>
+
+	  [%  END %]
+	</li>
+	[% END %]
+      </ul>
+    </div>
+  </div>
+
+  [%    END %]
+
+  [% END %]
+
+</div>
+<!-- END template: knomigo_summary.tmpl -->

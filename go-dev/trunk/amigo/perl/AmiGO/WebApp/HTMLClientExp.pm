@@ -117,6 +117,7 @@ sub setup {
 		   'gp_with_2_terms'     => 'mode_gp_with_2_terms',
 		   'autocomplete_client' => 'mode_autocomplete_client',
 		   #'exp_search'          => 'mode_exp_search',
+		   'knomigo'             => 'mode_knomigo',
 		   'workspace_client'    => 'mode_workspace_client',
 		   'layers_graph'        => 'mode_layers_graph',
 		   'hierarchical'        => 'mode_hierarchical',
@@ -2329,6 +2330,270 @@ sub mode_report_slimmerish_1 {
   $self->add_template_bulk($prep);
   $self->add_template_content('html/main/report/slimmerish_1.tmpl');
   return $self->generate_template_page();
+}
+
+
+## A toy to figure out exactly what AmiGO thinks about an identifier
+## in the database.
+sub mode_knomigo {
+
+  my $self = shift;
+  my $i = AmiGO::WebApp::Input->new();
+  my $params = $i->input_profile('id');
+  my $raw_id = $params->{id} || "";
+  $self->_common_params_settings({'title' => 'KnomiGO',
+				  'amigo_mode' => 'knomigo'});
+
+  use GO::CGI::Utilities;
+
+  ## Try and collect the different ID variants.
+  my $know_sets = [$raw_id];
+  if( index($raw_id, ':') != -1 ){
+    my $cdr = substr($raw_id, index($raw_id, ':') +1);
+    if( $cdr ){
+      push @$know_sets, $cdr;
+      if( index($cdr, ':') != -1 ){
+	my $cddr = substr($cdr, index($cdr, ':') +1);
+	if( $cddr ){
+	  push @$know_sets, $cddr;
+	}
+      }
+    }
+  }
+
+  my $know_p = 0;
+  my $know_results = [];
+  if( defined $raw_id and $raw_id ){
+
+    $self->{CORE}->kvetch("will try and resolve id: ". $raw_id);
+    $know_p = 1;
+
+    ## Setup dbh.
+    my $apph = GO::CGI::Utilities::create_apph;
+    my $dbh = $apph->dbh;
+
+    ###
+    ### Collect info.
+    ### The format is [true|false, message, count (not shown if 0), sql]
+    ###
+
+    my $sql = undef;
+    for(my $i = 0; $i < scalar(@$know_sets); $i++ ){
+
+      my $set_results = [];
+      my $id = $$know_sets[$i];
+
+      ## dbxref
+      $sql = _q_dbxref($id);
+      if( my $cnt = _wrap_sql_count($dbh, $sql) ){
+	push @$set_results, [1, "Found in dbxref table", $cnt, $sql];
+
+	## gp dbx
+	push @$set_results, _simple_probe_runner($dbh, _q_gp_dbxacc($id),
+						"Found GP acc dbxref",
+						"Not found as GP acc dbxref");
+	## seq dbx
+	push @$set_results, _simple_probe_runner($dbh, _q_seq_dbxacc($id),
+						"Found sequence dbxref",
+						"Not found as sequence dbxref");
+	## ev dbx
+	push @$set_results, _simple_probe_runner($dbh, _q_ev_dbxacc($id),
+						"Found evidence dbxref",
+						"Not found as evidence dbxref");
+      }else{
+	push @$set_results, [0, "Not found in dbxref table", 0, $sql];
+      }
+
+      ## term acc
+      push @$set_results, _simple_probe_runner($dbh, _q_term_acc($id),
+					      "Found term acc",
+					      "Not found as term acc");
+      ## term name
+      push @$set_results, _simple_probe_runner($dbh, _q_term_name($id),
+					      "Found term name",
+					      "Not found as term name");
+      ## term syn acc
+      push @$set_results, _simple_probe_runner($dbh, _q_term_synonym_acc($id),
+					      "Found term acc synonym",
+					      "Not found as term acc synonym");
+      ## term syn term
+      push @$set_results, _simple_probe_runner($dbh, _q_term_synonym_term($id),
+					      "Found term term synonym",
+					      "Not found as term term synonym");
+      ## gp symbol
+      push @$set_results, _simple_probe_runner($dbh, _q_gp_symbol($id),
+					      "Found GP symbol",
+					      "Not found as GP symbol");
+      ## gp full_name
+      push @$set_results, _simple_probe_runner($dbh, _q_gp_full_name($id),
+					      "Found GP full name",
+					      "Not found as GP full name");
+      ## gp synonym
+      push @$set_results, _simple_probe_runner($dbh, _q_gp_synonym($id),
+					      "Found GP synonym",
+					      "Not found as GP synonym");
+      ## Test for TE worthiness.
+      my $te1 = _simple_probe_runner($dbh,_q_gp_dbxacc($id), "?", "?");
+      my $te2 = _simple_probe_runner($dbh, _q_gp_synonym($id), "?", "?");
+      my $te3 = _simple_probe_runner($dbh, _q_gp_symbol($id), "?", "?");
+      if( $$te1[0] || $$te2[0] || $$te3[0] ){
+	push @$set_results, [1, "Possibly good in term enrichment", 0, "n/a"];
+      }else{
+	push @$set_results, [0, "Unusable in term enrichment", 0, "n/a"];
+      }
+
+      push @$know_results, $set_results;
+    }
+  }
+
+  ###
+  ### Template-y and return-y stuff.
+  ###
+
+  $self->set_template_parameter('KNOW_SETS', $know_sets);
+  $self->set_template_parameter('KNOW_RESULTS', $know_results);
+  $self->set_template_parameter('KNOW_P', $know_p);
+  $self->set_template_parameter('RAW_ID', $raw_id);
+
+  ## Non-standard settings.
+  $self->set_template_parameter('STANDARD_YUI', 'no'); # no YUI please
+
+  ## Our AmiGO services CSS.
+  my $prep = {css_library => ['standard'],
+	      content => ['html/main/knomigo_summary.tmpl']};
+  $self->add_template_bulk($prep);
+
+  ## ...
+  return $self->generate_template_page();
+}
+
+
+## Returns the number of results for a query.
+sub _simple_probe_runner {
+
+  my $dbh = shift || die "need dbh";
+  my $sql = shift || die "need sql";
+  my $yes_m = shift || die "need yes message";
+  my $no_m = shift || die "need no message";
+
+  my $ret = undef;
+
+  if( my $cnt = _wrap_sql_count($dbh, $sql) ){
+    $ret = [1, $yes_m, $cnt, $sql];
+  }else{
+    $ret = [0, $no_m, 0, $sql];
+  }
+
+  return $ret;
+}
+
+## Returns the number of results for a query.
+sub _wrap_sql_count {
+
+  my $dbh = shift || die "need dbh";
+  my $sql = shift || die "need sql arg";
+
+  #$core->kvetch($complete_query);
+  my $sth = $dbh->prepare($sql)
+    or die "Couldn't prepare statement: " . $dbh->errstr;
+  $sth->execute()
+    or die "Couldn't execute statement: " . $sth->errstr;
+
+  #my @row = $sth->fetchrow_array();
+  my $rows = $sth->fetchall_arrayref({});
+  return scalar(@$rows) || 0;
+}
+
+
+## Returns...
+sub _q_dbxref {
+  my $id = shift || die "need id";
+  my $query = "select * from dbxref where dbxref.xref_key = '$id'";
+  return $query;
+}
+
+
+## Returns...
+sub _q_term_acc {
+  my $id = shift || die "need id";
+  my $query = "select * from term where term.acc = '$id'";
+  return $query;
+}
+
+## Returns...
+sub _q_term_name {
+  my $id = shift || die "need id";
+  my $query = "select * from term where term.name = '$id'";
+  return $query;
+}
+
+## Returns...
+sub _q_term_synonym_acc {
+  my $id = shift || die "need id";
+  my $query = "select * from term_synonym where term_synonym.acc_synonym = '$id'";
+  return $query;
+}
+
+## Returns...
+sub _q_term_synonym_term {
+  my $id = shift || die "need id";
+  my $query = "select * from term_synonym where term_synonym.term_synonym = '$id'";
+  return $query;
+}
+
+## Returns...
+sub _q_gp_symbol {
+  my $id = shift || die "need id";
+  my $query = "select * from gene_product where gene_product.symbol = '$id'";
+  return $query;
+}
+
+## Returns...
+sub _q_gp_full_name {
+  my $id = shift || die "need id";
+  my $query = "select * from gene_product where gene_product.full_name = '$id'";
+  return $query;
+}
+
+## Returns...
+sub _q_gp_synonym {
+  my $id = shift || die "need id";
+  my $query = "select * from gene_product_synonym where gene_product_synonym.product_synonym = '$id'";
+  return $query;
+}
+
+
+## Returns...
+sub _q_gp_dbxacc {
+  my $id = shift || die "need id";
+  my $query = "select * from gene_product, dbxref where gene_product.dbxref_id = dbxref.id and dbxref.xref_key = '$id'";
+  return $query;
+}
+
+
+## Returns...
+sub _q_seq_dbxacc {
+  my $id = shift || die "need id";
+  my $query = "select * from seq_dbxref, dbxref where seq_dbxref.dbxref_id = dbxref.id and dbxref.xref_key = '$id'";
+  return $query;
+}
+
+
+## Returns...
+sub _q_term_dbxacc {
+  my $id = shift || die "need id";
+  my $query = "select * from term_dbxref, dbxref where term_dbxref.dbxref_id = dbxref.id and dbxref.xref_key = '$id'";
+
+  return $query;
+}
+
+
+## Returns...
+sub _q_ev_dbxacc {
+  my $id = shift || die "need id";
+  my $query = "select * from evidence, dbxref where evidence.dbxref_id = dbxref.id and dbxref.xref_key = '$id'";
+
+  return $query;
 }
 
 
