@@ -1,7 +1,9 @@
 ////
 //// A trivial testing framework for JS. See test.tests.js for usage.
 ////
-//// Notes: cannot depend on core.js
+//// Note: this cannot depend on core.js (it tests that), so some
+//// stuff may be dupped. On the other hand, we can test
+//// ourselves--see test.js.tests.
 ////
 
 
@@ -124,7 +126,6 @@ bbop.test = function(){
 	return retval;
     }
 
-    // 
     // Walk through the list and see if it's there.
     // If compareator is not defined, just to atom comparison.
     function _in_list(in_item, list, comparator){
@@ -145,6 +146,27 @@ bbop.test = function(){
 	    }
 	}
 
+	return retval;
+    }
+
+    // Basically asking if you can make the target string from the
+    // base string with the add_str added into it somewhere. Strange,
+    // but another way of looking at URL creation in some cases.
+    function _is_string_embedded(target_str, base_str, add_str){
+
+	// Walk through all of ways of splitting base_str and add
+	// add_str in there to see if we get the target_str.
+	var retval = false;
+	for(var si = 0; si <= base_str.length; si++ ){
+	    
+	    var car = base_str.substr(0, si);
+	    var cdr = base_str.substr(si, base_str.length);
+	    //print(car + "|" + add_str + "|" + cdr);
+	    if( car + add_str + cdr == target_str){
+		retval = true;
+		break;
+	    }
+	}
 	return retval;
     }
 
@@ -235,4 +257,15 @@ bbop.test = function(){
     this.is_not_in_list_diy = function(item, list, comp, msg){
 	_complete(! _in_list(item, list, comp), msg);
     };
+
+    //
+    this.is_string_embedded = function(target_str, base_str, added_str, msg){
+	_complete(_is_string_embedded(target_str, base_str, added_str), msg);
+    };
+    //
+    this.is_string_not_embedded =
+	function(target_str, base_str, added_str, msg){
+	    _complete(! _is_string_embedded(target_str, base_str, added_str),
+		      msg);
+	};
 };
