@@ -72,6 +72,13 @@ mr_t.is_in_list_diy(b_item, obj_list, id_comp);
 mr_t.is_in_list_diy(c_item, obj_list, id_comp);
 mr_t.is_not_in_list_diy(d_item, obj_list, id_comp);
 
+// Test is_string_embedded.
+mr_t.is_string_embedded("", "", "", "str emb 1");
+mr_t.is_string_embedded("aabbaa", "aaaa", "bb", "str emb 2");
+mr_t.is_string_not_embedded("aabbaa", "aaaa", "bc", "str emb 3");
+mr_t.is_string_embedded("1234", "123", "4", "str emb 4");
+mr_t.is_string_embedded("1234", "234", "1", "str emb 5");
+
 ///
 /// End unit testing.
 ///
