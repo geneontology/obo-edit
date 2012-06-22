@@ -73,6 +73,15 @@ bbop.test = function(){
 	return retval;
     }
 
+    // Looking at array as sets of...something.
+    function _same_set(set1, set2){
+	var h1 = {};
+	var h2 = {};
+	for( var h1i = 0; h1i < set1.length; h1i++ ){ h1[set1[h1i]] = 1; }
+	for( var h2i = 0; h2i < set2.length; h2i++ ){ h2[set2[h2i]] = 1; }
+	return _same_hash(h1, h2);
+    }
+
     // NOTE/WARNING: This is a very shallow comparison function.
     function _same_hash(hash1, hash2){
 
@@ -230,6 +239,15 @@ bbop.test = function(){
     this.is_different_url = function(link1, link2, msg){
 	_complete(! _link_comp(link1, link2), msg);
     };    
+
+    //
+    this.is_same_set = function(set1, set2, msg){
+	_complete(_same_set(set1, set2), msg);
+    };
+    //
+    this.is_different_set = function(set1, set2, msg){
+	_complete(! _same_set(set1, set2), msg);
+    };
 
     //
     this.is_same_hash = function(hash1, hash2, msg){
