@@ -29,7 +29,8 @@ import org.hibernate.SessionFactory;
 public class GOobjectFactory {
 	/** The local {@link SessionFactory} object used to retrieve data. */
 	private static SessionFactory sessions;
-
+	private static String message = "";
+	
 	/**
 	 * Creates a new ChadoAdaptor that will retrieve data from the database configured in the supplied {@link SessionFactory} object.
 	 * @param sessions a {@link SessionFactory} object without an active transaction. 
@@ -53,13 +54,23 @@ public class GOobjectFactory {
 	}
 
 	public synchronized Session startSession() {
-		Session session = sessions.getCurrentSession();
-		
-//		Session session = sessions.getCurrentSession();
-		session.beginTransaction();
+		Session session = null;
+		try {
+			session = sessions.getCurrentSession();
+			session.beginTransaction();
+			message = "";
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			message = e.getMessage();
+			session = null;
+		}
 		return session;
 	}
 
+	public synchronized String getMessage() {
+		return message;
+	}
+	
 	/** Graph factories for term class
 	 */
 
