@@ -26,16 +26,80 @@ load('golr_manager.js');
 /// Start unit testing.
 ///
 
-// bbop.golr.manager
+// bbop.golr.faux_ajax
+// Verify that not working works.
+(function(){
+     var jq = new bbop.golr.faux_ajax();
+     mr_t.is_same_atom(bbop.core.what_is(jq), 'bbop.golr.faux_ajax', "faux me");
+     mr_t.is_same_atom(jq.ajax({}), null, 'not work 1');
+     mr_t.is_same_atom(jq.parseJSON({}), "", 'not work 2');
+ })();
+
+// bbop.golr.manager - 1
 (function(){
 
      // Absolute basics.
      var gconf = new bbop.golr.conf(bbop.golr.golr_meta);
-     var g = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
-     mr_t.is_same_atom(g._is_a, 'bbop.golr.manager', "me");
+     var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
+     mr_t.is_same_atom(bbop.core.what_is(gm), 'bbop.golr.manager', "me");
 
-     // 
+     // Let's play a little like we did in the DrillExp.js demo.
+     //var g = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
+     mr_t.is_same_atom(gm.get('rows'), 10, "default 10 rows");
+     gm.set('rows', 100);
+     mr_t.is_same_atom(gm.get('rows'), 100, "set/get 100 rows");
+
+     // Does extra behave?
+     var bits = "&fq=-isa_partof_closure:[*%20TO%20*]";
+     var url1 = gm.get_query_url();
+     gm.extra(bits);
+     var url2 = gm.get_query_url();
+     gm.extra("");
+     var url3 = gm.get_query_url();
+     mr_t.is_different_atom(url1, url2, "not the same out of it");
+     mr_t.is_string_embedded(url2, url1, bits, "set_extra adds");
+     mr_t.is_same_atom(url1, url3, "set_extra resets");
      
+ })();
+
+// bbop.golr.manager - 2 - facets
+(function(){
+
+     // Setup.
+     var gconf = new bbop.golr.conf(bbop.golr.golr_meta);
+     var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
+
+     // Let's play a little more...
+     mr_t.is_same_set(gm.facets(), [], "no facets");
+     gm.facets('foo');
+     mr_t.is_same_set(gm.facets(), ['foo'], "one facet");
+     mr_t.is_same_set(gm.facets('bar'), ['bar', 'foo'], "two facets");
+     gm.set_personality('bbop_ann');
+     mr_t.is_same_set(gm.facets(), ['source', 'evidence_type', 'taxon',
+				    'isa_partof_label_closure',
+				    'annotation_extension_class', 'type'],
+		      "personality");
+     gm.facets([]);
+     mr_t.is_same_set(gm.facets(), [], "no facets again");
+ })();
+
+// bbop.golr.manager - 3 - filters
+(function(){
+
+     // Setup.
+     var gconf = new bbop.golr.conf(bbop.golr.golr_meta);
+     var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
+
+     // Let's play a little more...
+     mr_t.is_same_hash(gm.filters(), {}, "no filters");
+     gm.filters({'a': 'b'});
+     mr_t.is_same_set(gm.filters(), {'a': 'b'}, "one filter");
+     mr_t.is_same_set(gm.filters({}), {}, "no filters again");
+     gm.filters('a', 'b');
+     gm.filters('c', 'd');
+     mr_t.is_same_set(gm.filters(), {'a': 'b', 'c': 'd'}, "some filters");
+     gm.filters({});
+     mr_t.is_same_set(gm.filters(), {}, "no filters again (2)");
  })();
 
 ///

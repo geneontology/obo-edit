@@ -79,6 +79,13 @@ mr_t.is_string_not_embedded("aabbaa", "aaaa", "bc", "str emb 3");
 mr_t.is_string_embedded("1234", "123", "4", "str emb 4");
 mr_t.is_string_embedded("1234", "234", "1", "str emb 5");
 
+// Test is_same/different_set.
+mr_t.is_same_set(new Array(), [], "same set 0");
+mr_t.is_same_set([1, 2, 3], [2, 3, 1], "same set 1");
+mr_t.is_same_set(['1', 'b', '3'], ['b', '3', '1'], "same set 2");
+mr_t.is_same_set([1, '2', 3], [1, 2, 3], "same set 3"); // js type quirk
+mr_t.is_different_set([1, 2, 3], [1, 2], "diff set 1");
+
 ///
 /// End unit testing.
 ///
