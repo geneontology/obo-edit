@@ -78,6 +78,7 @@ mr_t.is_string_embedded("aabbaa", "aaaa", "bb", "str emb 2");
 mr_t.is_string_not_embedded("aabbaa", "aaaa", "bc", "str emb 3");
 mr_t.is_string_embedded("1234", "123", "4", "str emb 4");
 mr_t.is_string_embedded("1234", "234", "1", "str emb 5");
+mr_t.is_string_embedded("abcdefghi", "abcdef", "g" + "hi", "str emb 6");
 
 // Test is_same/different_set.
 mr_t.is_same_set(new Array(), [], "same set 0");
