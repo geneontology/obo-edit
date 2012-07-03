@@ -118,6 +118,8 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 	JTextField logFilePath = new JTextField(Preferences.getPreferences().getLogfile());
 
+	JTextField extraDictionariesField;
+
 	private Vector<IconWrapper> icons;
 
 	private class IconWrapper {
@@ -453,6 +455,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		ComponentManager.getManager().addLayoutListener(layoutListener);
 		removeAll();
 		mainPanel = new JTabbedPane();
+		final Preferences pref = Preferences.getPreferences();
 
 		// setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setLayout(new BorderLayout());
@@ -559,9 +562,10 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		showToolTipsBox = new JCheckBox("Show term IDs as tool tips in "
 				+ "term panels");
                 excludeObsoletesFromSearchesBox = new JCheckBox("Exclude obsolete terms from search results [requires restart to change behavior]");
+		
 		excludeObsoletesFromSearchesBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-                          Preferences.getPreferences().setExcludeObsoletesFromSearches(excludeObsoletesFromSearchesBox.isSelected());
+				pref.setExcludeObsoletesFromSearches(excludeObsoletesFromSearchesBox.isSelected());
 //                          FilterManager.getManager().installDefaults();
 //                          reload(); // ?  // doesn't help
 			}
@@ -594,83 +598,54 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		advIntersectionEditorCheckBox.setOpaque(false);
                 //		advSemanticParserCheckBox.setOpaque(false);
 
-		useDefaultBrowserBox.setSelected(Preferences.getPreferences()
-				.getBrowserCommand().length() == 0);
+		useDefaultBrowserBox.setSelected(pref.getBrowserCommand().length() == 0);
 		browserCommandField.setEnabled(!useDefaultBrowserBox.isSelected());
 		browserLabel.setEnabled(!useDefaultBrowserBox.isSelected());
-		autosaveEnabledCheckBox.setSelected(Preferences.getPreferences()
-				.getAutosaveEnabled());
-		dbxrefEditor.load(Preferences.getPreferences().getPersonalDbxref());
-		autosavePathField.setText(Preferences.getPreferences()
-				.getAutosavePath().toString());
-		autosaveExpirationField.setText(Preferences.getPreferences()
-				.getAutosaveExpirationDays()
-				+ "");
-		autosaveWaitField.setText(Preferences.getPreferences()
-				.getAutosaveWaitTime()
-				+ "");
+		autosaveEnabledCheckBox.setSelected(pref.getAutosaveEnabled());
+		dbxrefEditor.load(pref.getPersonalDbxref());
+		autosavePathField.setText(pref.getAutosavePath().getAbsolutePath());
+		autosaveExpirationField.setText(Integer.toString(pref.getAutosaveExpirationDays()));
+		autosaveWaitField.setText(Integer.toString(pref.getAutosaveWaitTime()));
 
-		userField.setText(Preferences.getPreferences().getUserName());
-		fullnameField.setText(Preferences.getPreferences().getFullName());
-		emailField.setText(Preferences.getPreferences().getEmail());
-		selectionBatchField.setText(Preferences.getPreferences()
-				.getSelectionBatchSize()
-				+ "");
-		browserCommandField.setText(Preferences.getPreferences()
-				.getBrowserCommand()
-				+ "");
-		allowCyclesBox.setSelected(Preferences.getPreferences()
-				.getAllowCycles());
-                allowExtendedCheckbox.setSelected(Preferences.getPreferences()
-                                                  .getAllowExtendedCharacters());
+		userField.setText(pref.getUserName());
+		fullnameField.setText(pref.getFullName());
+		emailField.setText(pref.getEmail());
+		selectionBatchField.setText(Integer.toString(pref.getSelectionBatchSize()));
+		browserCommandField.setText(pref.getBrowserCommand());
+		allowCyclesBox.setSelected(pref.getAllowCycles());
+		allowExtendedCheckbox.setSelected(pref.getAllowExtendedCharacters());
                 //                allowExtendedCheckbox.setSelected(true);
                 //                allowExtendedCheckbox.setEnabled(false);
 
-		personalDefCheckbox.setSelected(Preferences.getPreferences()
-				.getUsePersonalDefinition());
+		personalDefCheckbox.setSelected(pref.getUsePersonalDefinition());
 
-		if (Preferences.getPreferences().getUsePersonalDefinition()) {
-			defTextArea.setText(Preferences.getPreferences()
-					.getPersonalDefinition());
+		if (pref.getUsePersonalDefinition()) {
+			defTextArea.setText(pref.getPersonalDefinition());
 			Vector<Dbxref> v = new Vector<Dbxref>();
-			v.addAll(Preferences.getPreferences().getPersonalDbxrefs());
+			v.addAll(pref.getPersonalDbxrefs());
 			defDbxrefList.setData(v);
 		} else {
 			defTextArea.setText("");
 			defDbxrefList.setData(new Vector<Object>());
 		}
 
-		updatePersonalDefFields(Preferences.getPreferences()
-				.getUsePersonalDefinition());
+		updatePersonalDefFields(pref.getUsePersonalDefinition());
 
-		autoCommitCheckBox.setSelected(Preferences.getPreferences()
-				.getAutoCommitTextEdits());
-		warnBeforeDiscardingEditsBox.setSelected(Preferences.getPreferences()
-				.getWarnBeforeDiscardingEdits());
-		warnBeforeDiscardingEditsBox.setEnabled(!autoCommitCheckBox
-				.isSelected());
-		warnBeforeDeleteBox.setSelected(Preferences.getPreferences()
-				.getWarnBeforeDelete());
-		warnBeforeDefinitionLossBox.setSelected(Preferences.getPreferences()
-				.getWarnBeforeDefinitionLoss());
-		advancedRootDetectionBox.setSelected(!Preferences.getPreferences()
-				.getUseBasicRootDetection());
-		onlyOneGlobalOTECheckbox.setSelected(Preferences.getPreferences()
-				.getOnlyOneGlobalOTE());
+		autoCommitCheckBox.setSelected(pref.getAutoCommitTextEdits());
+		warnBeforeDiscardingEditsBox.setSelected(pref.getWarnBeforeDiscardingEdits());
+		warnBeforeDiscardingEditsBox.setEnabled(!autoCommitCheckBox.isSelected());
+		warnBeforeDeleteBox.setSelected(pref.getWarnBeforeDelete());
+		warnBeforeDefinitionLossBox.setSelected(pref.getWarnBeforeDefinitionLoss());
+		advancedRootDetectionBox.setSelected(!pref.getUseBasicRootDetection());
+		onlyOneGlobalOTECheckbox.setSelected(pref.getOnlyOneGlobalOTE());
 		// showUndefinedTermsBox.setSelected(controller.getGlobalFilteredRenderers().contains(grayUndefinedRenderer));
-		caseSensitiveSortBox.setSelected(Preferences.getPreferences()
-				.getCaseSensitiveSort());
-		showToolTipsBox.setSelected(Preferences.getPreferences()
-				.getShowToolTips());
-                excludeObsoletesFromSearchesBox.setSelected(Preferences.getPreferences()
-				.getExcludeObsoletesFromSearches());
-		confirmOnExitBox.setSelected(Preferences.getPreferences()
-				.getConfirmOnExit());
+		caseSensitiveSortBox.setSelected(pref.getCaseSensitiveSort());
+		showToolTipsBox.setSelected(pref.getShowToolTips());
+		excludeObsoletesFromSearchesBox.setSelected(pref.getExcludeObsoletesFromSearches());
+		confirmOnExitBox.setSelected(pref.getConfirmOnExit());
 
-		advxpMatrixEditorCheckBox.setSelected(Preferences.getPreferences()
-				.getadvMatrixEditorOptions());
-		advIntersectionEditorCheckBox.setSelected(Preferences.getPreferences()
-				.getadvIntersectionEditorOptions());
+		advxpMatrixEditorCheckBox.setSelected(pref.getadvMatrixEditorOptions());
+		advIntersectionEditorCheckBox.setSelected(pref.getadvIntersectionEditorOptions());
                 //		advSemanticParserCheckBox.setSelected(Preferences.getPreferences()
                 //				.getadvSemanticParserOptions());
 
@@ -793,7 +768,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		fieldsPanel.add(Box.createHorizontalStrut(5));
 
 		memoryField = new JTextField();
-		memoryField.setText(Preferences.getPreferences().getMemString());
+		memoryField.setText(pref.getMemString());
 		JLabel memoryLabel = new JLabel("OBO-Edit Memory allocation ");
 
 		Box memoryBox = new Box(BoxLayout.X_AXIS);
@@ -947,7 +922,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		iconPanel.setLayout(new GridLayout(1, 1));
 		iconPanel.add(iconList);
 		iconPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
-		guiPanel.add(moreOptionsPanel, "Center");
+		guiPanel.add(moreOptionsPanel, BorderLayout.CENTER);
 
 		JPanel behaviorPanel = new JPanel();
 
@@ -990,10 +965,56 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		personalDefinitionSubPanel.add(scroller);
 		personalDefinitionSubPanel.add(defDbxrefList);
 
+		JPanel extraDictionariesSubPanel = new JPanel();
+		extraDictionariesSubPanel.setLayout(new BorderLayout());
+		extraDictionariesSubPanel.setOpaque(true);
+		
+		extraDictionariesSubPanel.add(new JSeparator(), BorderLayout.NORTH);
+		extraDictionariesSubPanel.add(new JLabel("<html><div><b>Dictionary Settings</b></div>Extra dictionary files (comma-separated)<div></div></html>"), BorderLayout.WEST);
+		
+		JButton extraDictionaryAddButton = new JButton("Add");
+		extraDictionariesField = new JTextField();
+		
+		List<String> extraDictionaries = pref.getExtraDictionaries();
+		if (extraDictionaries != null && !extraDictionaries.isEmpty()) {
+			StringBuilder sb = new StringBuilder();
+			for (String extra : extraDictionaries) {
+				if (sb.length() > 0) {
+					sb.append(',');
+				}
+				sb.append(extra);
+			}
+			extraDictionariesField.setText(sb.toString());
+		}
+		JPanel extraDictionariesFieldSubPanel = new JPanel();
+		extraDictionariesFieldSubPanel.setLayout(new BoxLayout(extraDictionariesFieldSubPanel, BoxLayout.LINE_AXIS));
+		extraDictionariesFieldSubPanel.add(extraDictionariesField);
+		extraDictionariesFieldSubPanel.add(extraDictionaryAddButton);
+		final SelectDialog addDictionaryDialog = SelectDialog.getFileSelector(false, null);
+		extraDictionaryAddButton.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				addDictionaryDialog.show();
+				String path = addDictionaryDialog.getSelectedCanonicalPath();
+				if (path != null) {
+					String text = extraDictionariesField.getText();
+					if (text == null || text.length() == 0) {
+						extraDictionariesField.setText(path);
+					}
+					else {
+						extraDictionariesField.setText(text+","+path);
+					}
+				}
+			}
+		});
+		
+		extraDictionariesSubPanel.add(extraDictionariesFieldSubPanel, BorderLayout.SOUTH);
+
 		JPanel personalDefinitionPanel = new JPanel();
 		personalDefinitionPanel.setLayout(new BorderLayout());
-		personalDefinitionPanel.add(personalDefinitionSubPanel, "Center");
-		personalDefinitionPanel.add(personalDefCheckbox, "North");
+		personalDefinitionPanel.add(personalDefinitionSubPanel, BorderLayout.CENTER);
+		personalDefinitionPanel.add(personalDefCheckbox, BorderLayout.NORTH);
+		personalDefinitionPanel.add(extraDictionariesSubPanel, BorderLayout.SOUTH);
 
 		personalDefCheckbox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1003,8 +1024,8 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 		personalDefinitionPanel.setOpaque(true);
 		personalDefinitionSubPanel.setOpaque(true);
-		textEditPanel.add(personalDefinitionPanel, "Center");
-		textEditPanel.add(textEditTopPanel, "North");
+		textEditPanel.add(personalDefinitionPanel, BorderLayout.CENTER);
+		textEditPanel.add(textEditTopPanel, BorderLayout.NORTH);
 
 
 		// advanced users config tab
@@ -1022,13 +1043,13 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 		mainPanel.addTab("User Settings", null, userPanel, "Set user options");
 		//		mainPanel.addTab("General GUI", null, guiPanel, "General GUI options");
+		mainPanel.addTab("Text Editing", null, textEditPanel,
+		"Set text editing options");
 		mainPanel.addTab("Font", null, guiPanel, "Set default font");
 		mainPanel.addTab("Icons & Colors", null, iconPanel,
 		"Set up default colors and icons for relationship types");
 		mainPanel.addTab("Autosave", null, autosavePanel, "Set autosave behavior");
 		mainPanel.addTab("Behavior", null, behaviorPanel, "Set behavior options");
-		mainPanel.addTab("Text Editing", null, textEditPanel,
-		"Set text editing options");
 		mainPanel.addTab("Enable Experimental Components", null, advancedPanel, "Advanced user options");
                 mainPanel.setPreferredSize(new Dimension(800,500));
 
@@ -1339,6 +1360,31 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			preferences.setPersonalDefinition(null);
 			preferences.setPersonalDbxrefs(null);
 		}
+		
+		List<String> extraDictionaries = null;
+		String extraDictionariesString = extraDictionariesField.getText();
+		if (extraDictionariesString != null) {
+			// parse list of extra dictionaries from comma separated list
+			extraDictionariesString = extraDictionariesString.trim();
+			if (extraDictionariesString.length() > 1) {
+				String[] split = extraDictionariesString.split(",");
+				if (split != null && split.length > 0) {
+					for (String dict : split) {
+						if (dict != null && dict.length() > 0) {
+							dict = dict.trim();
+							if (dict.length() > 1) {
+								// add extra dictionary to preferences
+								if (extraDictionaries == null) {
+									extraDictionaries = new ArrayList<String>();
+								}
+								extraDictionaries.add(dict);
+							}
+						}
+					}
+				}
+			}
+		}
+		preferences.setExtraDictionaries(extraDictionaries);
 
 		JOptionPane.showMessageDialog(this, "Configuration saved.\n\nYou may need to quit and restart OBO-Edit\nfor your changes to take effect.");
 		reload();
