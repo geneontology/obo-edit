@@ -124,6 +124,8 @@ public class Preferences {
 
 	protected boolean usePersonalDefinition = false;
 
+	protected List<String> extraDictionaries = null;
+
 	// protected Properties iconProperties = new Properties();
 
 	protected MultiProperties adapterChooserProperties = new MultiProperties();
@@ -209,7 +211,7 @@ public class Preferences {
 
 	protected static File filterFile;
 
-	protected static Preferences preferences;
+	protected volatile static Preferences preferences;
 
 	public Preferences() {
 		setFont(new Font("Arial", 0, 12));
@@ -239,7 +241,7 @@ public class Preferences {
 		colorIndex.put("negatively_regulates", purple);
 	}
 
-	public static Preferences getPreferences() {
+	public synchronized static Preferences getPreferences() {
 		if (preferences == null) {
 			XMLDecoder d;
 			try {
@@ -771,6 +773,14 @@ public class Preferences {
 
 	public void setUsePersonalDefinition(boolean usePersonalDefinition) {
 		this.usePersonalDefinition = usePersonalDefinition;
+	}
+
+	public void setExtraDictionaries(List<String> extraDictionaries) {
+            this.extraDictionaries = extraDictionaries;
+	}
+
+	public List<String> getExtraDictionaries() {
+            return extraDictionaries;
 	}
 
 	public Font getFont() {

@@ -203,7 +203,7 @@ FieldCheck {
 
 	protected boolean allowBlank = false;
 
-        protected boolean allowExtended = getAllowExtended();
+	protected boolean allowExtended = getAllowExtended();
 
 	protected boolean sentenceStructureChecks = false;
 
@@ -221,11 +221,10 @@ FieldCheck {
 	//		defaultPeriodWords.add("etc.");
 	//	}
 
-	protected static SpellChecker stdspellChecker;
-	protected static SpellChecker usrspellChecker;
+	protected volatile static SpellChecker stdspellChecker;
 
 	//standard dictionary spell check
-	public SpellChecker getSpellChecker() {
+	public synchronized SpellChecker getSpellChecker() {
 //		logger.debug("standard dict getSpellChecker... ");
 		if (stdspellChecker == null) {
 			SpellDictionary stddict = null;
@@ -238,16 +237,34 @@ FieldCheck {
 			stdspellChecker = new SpellChecker(stddict);
 
 			// Get user's personal dictionary and add to the spell checker
-			if (usrspellChecker == null) {
-			    SpellDictionary userdict = null;
-			    try {
+			SpellDictionary userdict = null;
+			try {
 				FileUtil.ensureExists(Preferences.getUserDefDictionaryFile(), "org/oboedit/resources/user.dict");
 				logger.debug("user-defined dict: opened dict " + Preferences.getUserDefDictionaryFile());
 				userdict = new SpellDictionaryHashMap(Preferences.getUserDefDictionaryFile());
-			    } catch (IOException e) {
+			} catch (IOException e) {
 				logger.error("Couldn't open user dictionary: " + e);
-			    }
-			    stdspellChecker.addDictionary(userdict);
+			}
+			stdspellChecker.addDictionary(userdict);
+			
+			// check for extra dictionaries in preferences
+			Preferences preferences = Preferences.getPreferences();
+			List<String> extraDictionaries = preferences.getExtraDictionaries();
+			if (extraDictionaries != null && !extraDictionaries.isEmpty()) {
+				for (String path : extraDictionaries) {
+					File file = new File(path);
+					if (file.exists() && file.isFile() && file.canRead()) {
+						try {
+							SpellDictionary extra = new SpellDictionaryHashMap(file);
+							stdspellChecker.addDictionary(extra);
+						} catch (IOException e) {
+							logger.error("Can't open extra dictionary for path: '"+path+"'", e);
+						}
+					}
+					else {
+						logger.warn("Can't open extra dictionary for path: '"+path+"'");
+					}
+				}
 			}
 		}
 		return stdspellChecker;
