@@ -50,14 +50,14 @@ load('golr_manager.js');
      mr_t.is_same_atom(gm.get('rows'), 100, "set/get 100 rows");
 
      // Does extra behave?
-     var bits = "&fq=-isa_partof_closure:[*%20TO%20*]";
+     var bits = "fq=-isa_partof_closure:[*%20TO%20*]";
      var url1 = gm.get_query_url();
      gm.extra(bits);
      var url2 = gm.get_query_url();
      gm.extra("");
      var url3 = gm.get_query_url();
      mr_t.is_different_atom(url1, url2, "not the same out of it");
-     mr_t.is_string_embedded(url2, url1, bits, "set_extra adds");
+     mr_t.is_string_embedded(url2, url1, '&' + bits, "set_extra adds");
      mr_t.is_same_atom(url1, url3, "set_extra resets");
      
  })();
@@ -100,6 +100,22 @@ load('golr_manager.js');
      mr_t.is_same_set(gm.filters(), {'a': 'b', 'c': 'd'}, "some filters");
      gm.filters({});
      mr_t.is_same_set(gm.filters(), {}, "no filters again (2)");
+ })();
+
+// bbop.golr.manager - 4 - simulation
+(function(){
+
+     // Setup.
+     var gconf = new bbop.golr.conf(bbop.golr.golr_meta);
+     var gm_ann = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
+     gm_ann.set_personality('bbop_ann'); // profile in gconf
+     gm_ann.sticky_filters('document_category', 'annotation');
+     gm_ann.sticky_filters('isa_partof_closure', 'GO:0022008');
+     gm_ann.extra('foo=bar');
+
+     mr_t.is_same_url(gm_ann.get_query_url(),
+		      'http://golr.berkeleybop.org/select?&qt=standard&indent=on&wt=json&rows=10&start=0&fl=*%2Cscore&facet=true&facet.mincount=1&json.nl=arrarr&facet.field=source&facet.field=evidence_type&facet.field=taxon&facet.field=isa_partof_label_closure&facet.field=annotation_extension_class&facet.field=type&document_category=annotation&isa_partof_closure=GO:0022008&foo=bar',
+		      "looks like the real thing");
  })();
 
 ///
