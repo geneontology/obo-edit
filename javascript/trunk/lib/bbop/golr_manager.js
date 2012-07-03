@@ -19,7 +19,8 @@ bbop.core.namespace('bbop', 'golr', 'faux_ajax');
  * Structure: bbop.golr.faux_ajax
  * Constructor: faux_ajax
  * 
- * Contructor for a fake and harmless Ajax.
+ * Contructor for a fake and inactive Ajax. Used by bbop.golr.manager
+ * in (testing) environments where jQuery is not available.
  * 
  * Returns: faux_ajax object
  */
@@ -34,7 +35,8 @@ bbop.golr.faux_ajax = function (){
      * Parameters: 
      *  args - whatever
      *
-     * Returns: null
+     * Returns:
+     *  null
      */
     this.ajax = function(args){
 	return null;
@@ -47,7 +49,8 @@ bbop.golr.faux_ajax = function (){
      * Parameters: 
      *  args - whatever
      *
-     * Returns: ""
+     * Returns:
+     *  ""
      */
     this.parseJSON = function(args){
 	return "";
@@ -63,7 +66,6 @@ bbop.golr.faux_ajax = function (){
 // query (whether we display it or not), we will have all possible
 // facets and can build the initial model off of that.
 
-
 /*
  * Structure: bbop.golr.manager
  * Constructor: manager
@@ -74,7 +76,8 @@ bbop.golr.faux_ajax = function (){
  *  golr_loc - string url to GOlr server;
  *  golr_conf_obj - a bbop.golr.conf object
  * 
- * Returns: golr manager object
+ * Returns:
+ *  golr manager object
  * 
  * Also See: <bbop.registry>
  */
@@ -109,8 +112,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     }
 
     // // AmiGO helper.
-    // var amigo = new bbop.amigo();
-    // var golr = amigo.golr_response;
+    var amigo = new bbop.amigo();
+    var golr_response = amigo.golr_response;
 
     // TODO: Block requests from the past from haunting us.
     this.last_sent_packet = 0;
@@ -173,6 +176,10 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    'facet.field': []
 	};
 
+    // A set of filters that survive things like reset, etc. Must be
+    // explicitly set outside of the "normal" methods.
+    this.query_sticky_filters = {};
+
     // A little extra thing that we might need sometimes.
     this.query_extra = null;
 
@@ -225,10 +232,10 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     	ll('in callback type decider...');
 
     	// 
-    	if( ! golr.success(json_data) ){
+    	if( ! golr_response.success(json_data) ){
     	    throw new Error("Unsuccessful response from golr server!");
     	}else{
-    	    var cb_type = golr.callback_type(json_data);
+    	    var cb_type = golr_response.callback_type(json_data);
     	    ll('okay response from server, will probe type...: ' + cb_type);
     	    if( cb_type == 'reset' ){
     		anchor._run_reset_callbacks(json_data);
@@ -250,7 +257,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *  update_type - update type string
      *  logic_hash - (optional?) logic hash argument
      *
-     * Returns: n/a
+     * Returns:
+     *  n/a
      */
     this.update = function(update_type, logic_hash){
 
@@ -272,9 +280,9 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    // Reset and do completely open query.
 	    ll('reset variant assembly');
 	    var update_qs = bbop.core.get_assemble(update_variants);
-	    ll('varient_qs: ' + update_qs);
-	    //qurl = qurl + '&' + update_qs + '&q=*:*';
-	    qurl = qurl + '&' + update_qs;
+	    ll('update_qs: ' + update_qs);
+	    qurl = qurl + '&' + update_qs + '&q=*:*';
+	    //qurl = qurl + '&' + update_qs;
 
 	}else if( update_type == 'search' ){
 
@@ -334,7 +342,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *
      * Trigger the "reset" chain of events.
      *
-     * Returns: n/a
+     * Returns:
+     *  n/a
      */
     // Trigger the "reset" chain of events.
     this.reset = function(){
@@ -362,16 +371,19 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * Getter/setter for facets.
      *
      * Parameters: 
-     *  list_or_key - TODO (optional)
-     *  value - TODO (optional)
+     *  key - facet to add to the facet list (optional)
      *
-     * Returns: the current facets hash.
+     * Parameters: 
+     *  list - list to replace the current list with (optional)
+     *
+     * Returns:
+     *  the current facets hash.
      */
     this.facets = function(list_or_key){
 	if( list_or_key ){
-	    if( bbop.core.what_is(list_or_key) == 'array' ){
+	    if( bbop.core.what_is(list_or_key) == 'array' ){ // replace as list
 		anchor.query_variants['facet.field'] = list_or_key;
-	    }else{
+	    }else{ // add as key
 		anchor.query_variants['facet.field'].push(list_or_key);
 	    }
 	}
@@ -384,18 +396,95 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * Getter/setter for filters.
      *
      * Parameters: 
-     *  hash_or_key - TODO (optional)
-     *  value - TODO (optional)
+     *  hash - TODO
      *
-     * Returns: the current filters hash.
+     * Parameters: 
+     *  key - TODO
+     *  value - TODO
+     *
+     * Parameters:
+     *  none
+     *
+     * Returns:
+     *  The current filters hash.
      */
     this.filters = function(hash_or_key, value){
-	if( value && hash_or_key ){
+	if( value && hash_or_key ){ // looks like a key: add
 	    anchor.query_variants['fq'][hash_or_key] = value;
-	}else if( hash_or_key ){
+	}else if( hash_or_key ){ // looks like a hash: replace
 	    anchor.query_variants['fq'] = hash_or_key;
 	}
-	return anchor.get('fq');
+	return anchor.get('fq'); // return what we have
+    };
+
+    /*
+     * Function: remove_filters
+     *
+     * Remove or reset filters.
+     *
+     * Parameters: 
+     *  key - TODO (optional)
+     *
+     * Returns:
+     *  The current filters hash.
+     */
+    this.remove_filters = function(key){
+	if( key ){ // looks like a key: try to remove the one
+	    delete anchor.query_variants['fq'][key];
+	}else{
+	    anchor.query_variants['fq'] = {};
+	}
+	return anchor.get('fq'); // return what we have
+    };
+
+    /*
+     * Function: sticky_filters
+     *
+     * Getter/setter for sticky filters.
+     *
+     * Parameters: 
+     *  key - TODO (optional)
+     *  value - TODO (optional)
+     * 
+     * Parameters: 
+     *  hash - TODO (optional)
+     * 
+     * Parameters: 
+     *  none
+     *
+     * Returns: 
+     *  The current sticky filters hash.
+     */
+    this.sticky_filters = function(hash_or_key, value){
+	if( value && hash_or_key ){ // looks like a key: add
+	    anchor.query_sticky_filters[hash_or_key] = value;
+	}else if( hash_or_key ){ // looks like a hash: replace
+	    anchor.query_sticky_filters = hash_or_key;
+	}
+	return anchor.query_sticky_filters; // return what we have
+    };
+
+    /*
+     * Function: remove_sticky_filters
+     *
+     * Remove or reset sticky filters.
+     *
+     * Parameters: 
+     *  key - TODO
+     * 
+     * Parameters: 
+     *  none
+     *
+     * Returns:
+     *  The current sticky filters hash.
+     */
+    this.remove_sticky_filters = function(key){
+	if( key ){ // looks like a key: try to remove the one
+	    delete anchor.query_sticky_filters[key];
+	}else{
+	    anchor.query_sticky_filters = {};
+	}
+	return anchor.query_sticky_filters; // return what we have
     };
 
     /*
@@ -405,12 +494,32 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * to the end. For special use cases only.
      *
      * Parameters: 
-     *  new_extra - TODO (optional)
+     *  new_extra - TODO
      *
-     * Returns: n/a
+     * Parameters: 
+     *  none
+     *
+     * Returns:
+     *  The current setting of extra
      */
     this.extra = function(new_extra){
 	anchor.query_extra = new_extra;
+	return anchor.query_extra;
+    };
+
+    /*
+     * Function: remove_extra
+     *
+     * Remove/reset the extra bit.
+     *
+     * Parameters:
+     *  none
+     *
+     * Returns:
+     *  ""
+     */
+    this.remove_extra = function(){
+	anchor.query_extra = "";
 	return anchor.query_extra;
     };
 
@@ -437,7 +546,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * Parameters: 
      *  key - the name of the parameter to get
      *
-     * Returns: n/a
+     * Returns:
+     *  The found value of the key.
      */
     this.get = function(key){
 	return anchor.query_variants[key];
@@ -454,7 +564,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * Parameters: 
      *  personality_id - string
      *
-     * Returns: n/a - will error if personality doesn't exist
+     * Returns:
+     *  Will return false if personality doesn't exist
      */
     this.set_personality = function(personality_id){
 	var retval = false;
@@ -466,6 +577,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	}
 
 	// TODO: other consequences of "personality".
+	// Like what!? Tell me, Past Me!
 
 	return retval;
     };
@@ -476,7 +588,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * Get the current invariant state of the manager returned as a
      * URL string.
      *
-     * Returns: string
+     * Returns:
+     *  URL string.
      */
     this.get_query_url = function(){
 
@@ -488,12 +601,13 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    //bbop.core.get_assemble(anchor.query_invariants),
 	    //bbop.core.get_assemble(anchor.query_facets),
 	    bbop.core.get_assemble(anchor.query_variants),
+	    bbop.core.get_assemble({'fq': anchor.query_sticky_filters}),
 	    anchor.query_extra
 	];
 	bbop.core.each(things_to_add,
 		       function(item, index){
 			   if( item && item != '' ){
-			       qurl = qurl + item;
+			       qurl = qurl + '&' + item;
 			   }
 		       });
 
