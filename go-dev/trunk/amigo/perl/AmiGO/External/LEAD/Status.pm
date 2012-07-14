@@ -14,6 +14,7 @@ package AmiGO::External::LEAD::Status;
 
 use base ("AmiGO::External::LEAD");
 use Date::Format;
+use Data::Dumper;
 
 
 =item new
@@ -38,19 +39,33 @@ sub new {
     my $sql = 'SELECT release_name, release_type FROM instance_data';
     my $statement = undef;
     my $meta_info = undef;
+    my $failiness = []; # trying to help pin hard-to-track bugs on remote dbs
     eval {
-      $statement = $self->{EXT_DB}->prepare($sql)
-	|| die "preparation failed $DBI::errstr\n";
+      if( ! ($statement = $self->{EXT_DB}->prepare($sql)) ){
+	push @$failiness, 'on prepare';
+	#$self->kvetch("Failed with args: " . Dumper($args));
+	die "preparation failed $DBI::errstr\n";
+      }
     };
     eval {
-      $statement->execute()
-	|| die "execution failed $DBI::errstr\n";
+      if( ! $statement->execute() ){
+	push @$failiness, 'on execute';
+	#$self->kvetch("Failed with args: " . Dumper($args));
+	die "execution failed $DBI::errstr\n";
+      }else{
+	if( ! ($meta_info = $statement->fetchrow_arrayref()) ){
+	  push @$failiness, 'on fetchrow_arrayref';
+	  #$self->kvetch("Failed with args: " . Dumper($args));
+	  die "fetch failed $DBI::errstr\n";
+	}
+	$statement->finish(); # done
+      }
     };
-    eval {
-      $meta_info = $statement->fetchrow_arrayref()
-	|| die "fetch failed $DBI::errstr\n";
-      $statement->finish(); # done
-    };
+    if( $@ ){
+	$self->kvetch("Non-fatal error: " . $@);
+	$self->kvetch("Non-fatal error like: " . join(', ', @$failiness));
+	$self->kvetch("Non-fatal error with args: " . Dumper($args));
+    }
 
     ## Parse out information.
     if( defined $meta_info ){
