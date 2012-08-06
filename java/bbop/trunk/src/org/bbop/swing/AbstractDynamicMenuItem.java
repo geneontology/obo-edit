@@ -102,6 +102,13 @@ public abstract class AbstractDynamicMenuItem extends JMenu implements
 			int condition, boolean pressed) {
 		if (!pressed)
 			return false;
+		if (ks == null) {
+			// bug fix for OpenJDK 7
+			// In other Java releases, this value was never null, 
+			// If ks is null, the first menu item is fired!
+			// This was usually the 'create new ontology' item.
+			return false;
+		}
 		Collection<? extends Component> items = getItems();
 		for(Component c : items) {
 			if (processComponent(ks, c))
@@ -111,7 +118,6 @@ public abstract class AbstractDynamicMenuItem extends JMenu implements
 	}
 	
 	protected boolean processComponent(KeyStroke ks, Component c) {
-		boolean match = false;
 		if (!c.isEnabled())
 			return false;
 		if (c instanceof JMenuItem) {
@@ -127,7 +133,7 @@ public abstract class AbstractDynamicMenuItem extends JMenu implements
 			}
 		} else if (c instanceof Container) {
 			for(Component child : ((Container) c).getComponents()) {
-				if (processComponent(ks, c))
+				if (processComponent(ks, child))
 					return true;
 			}
 		}
