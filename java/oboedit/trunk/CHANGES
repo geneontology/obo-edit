@@ -1,4 +1,21 @@
-===  OBO-Edit v2.1 RELEASE NOTES  ===
+===  OBO-Edit v2.3 RELEASE NOTES  ===
+
+===============================
+What's New in OBO-Edit 2.3-b2  (8/13/20128/13/20128/13/20128/13/20128/13/20128/13/20128/13/20128/13/2012)
+===============================
+
+[ geneontology-Bugs-3495346 ], [ geneontology-Bugs-3523730 ], [ geneontology-Bugs-3534554 ]
+Vanishing ontology after pressing any key and Java 7 (Any OS)
+
+Due to a change in the Java 7, key stroke events behave different. 
+This caused an unintentional fire of the first menu item: 'new ontology'. 
+
+===============================
+What's New in OBO-Edit 2.3-b1  (7/26/2012)
+===============================
+[ Feature request ] implement an option to use extra (and external) dictionary files
+
+[ Library upgrade ] update obo2owl relevant library to oboformat.jar to version 0.5.2
 
 ===============================
 What's New in OBO-Edit 2.2  (5/22/2012)
