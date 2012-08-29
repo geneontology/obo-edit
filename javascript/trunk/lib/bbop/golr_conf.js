@@ -18,7 +18,7 @@ bbop.core.namespace('bbop', 'golr');
  * Contructor for a GOlr search field.
  * 
  * Arguments:
- *  field_conf_struct - JSONized config.
+ *  field_conf_struct - JSONized config
  * 
  * Returns: conf_field object
  */
