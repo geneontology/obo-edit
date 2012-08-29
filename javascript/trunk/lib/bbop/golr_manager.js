@@ -252,7 +252,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *
      * Parameters: 
      *  update_type - update type string
-     *  logic_hash - (optional?) logic hash argument
+     *  logic_hash - *[optional]* logic hash argument
      *
      * Returns:
      *  n/a
@@ -354,7 +354,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * Takes a field-keyed hash of bbop.logics as an argument.
      *
      * Parameters: 
-     *  logic_hash - (optional?) logic hash argument
+     *  logic_hash - *[optional]* logic hash argument
      *
      * Returns: n/a
      */
@@ -368,10 +368,10 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * Getter/setter for facets.
      *
      * Parameters: 
-     *  key - facet to add to the facet list (optional)
+     *  key - *[optional]* facet to add to the facet list
      *
      * Parameters: 
-     *  list - list to replace the current list with (optional)
+     *  list - *[optional]* list to replace the current list with
      *
      * Returns:
      *  the current facets hash.
@@ -420,7 +420,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * Remove or reset filters.
      *
      * Parameters: 
-     *  key - TODO (optional)
+     *  key - *[optional]* TODO
      *
      * Returns:
      *  The current filters hash.
@@ -440,11 +440,11 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * Getter/setter for sticky filters.
      *
      * Parameters: 
-     *  key - TODO (optional)
-     *  value - TODO (optional)
+     *  key - *[optional]* TODO
+     *  value - *[optional]* TODO
      * 
      * Parameters: 
-     *  hash - TODO (optional)
+     *  hash - *[optional]* TODO
      * 
      * Parameters: 
      *  none
