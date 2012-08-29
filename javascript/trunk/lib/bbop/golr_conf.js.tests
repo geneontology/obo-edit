@@ -1,5 +1,5 @@
 ////
-//// Some unit testing for package golr.js
+//// Some unit testing for package golr_conf.js
 ////
 //// Usage:
 ////    Command line: "js -f golr_conf.js.tests"

@@ -11,6 +11,7 @@
 bbop.core.require('bbop', 'core');
 bbop.core.require('bbop', 'registry');
 bbop.core.require('bbop', 'golr', 'conf');
+bbop.core.require('bbop', 'golr', 'response');
 //bbop.core.namespace('bbop', 'golr');
 bbop.core.namespace('bbop', 'golr', 'manager');
 bbop.core.namespace('bbop', 'golr', 'faux_ajax');
@@ -110,10 +111,6 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	}
 	ll('Using ' + got + ' for Ajax calls.');
     }
-
-    // // AmiGO helper.
-    var amigo = new bbop.amigo();
-    var golr_response = amigo.golr_response;
 
     // TODO: Block requests from the past from haunting us.
     this.last_sent_packet = 0;
@@ -232,10 +229,10 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     	ll('in callback type decider...');
 
     	// 
-    	if( ! golr_response.success(json_data) ){
+    	if( ! bbop.golr.response.success(json_data) ){
     	    throw new Error("Unsuccessful response from golr server!");
     	}else{
-    	    var cb_type = golr_response.callback_type(json_data);
+    	    var cb_type = bbop.golr.response.callback_type(json_data);
     	    ll('okay response from server, will probe type...: ' + cb_type);
     	    if( cb_type == 'reset' ){
     		anchor._run_reset_callbacks(json_data);
