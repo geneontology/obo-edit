@@ -1,27 +1,23 @@
-////////////
-////
-//// bbop.model
-////
-//// Purpose: Basic edged graph and operations.
-//// 
-//// NOTE: A model instance may not the whole graph, just a
-//// subgraph--this is the difference between nodes and
-//// named_nodes. nodes are real things, while named_nodes are things
-//// referenced by edges.
-////
-//// Check TODOs, we would like everything as linear as possible.
-////
-//// TODO: memoize everything but add_*. Functional enough that it
-//// should work if we just empty the caches after every add_* op.
-////
-//// Taken name spaces:
-////    bbop.model.*
-////
-//// Required:
-////    bbop.core
-////
-//////////
-
+/* 
+ * Package: model.js
+ * Namespace: bbop.model
+ * 
+ * Purpose: Basic edged graph and operations.
+ * 
+ * NOTE: A model instance may not the whole graph, just a
+ * subgraph--this is the difference between nodes and
+ * named_nodes. nodes are real things, while named_nodes are things
+ * referenced by edges.
+ * 
+ * Check TODOs, we would like everything as linear as possible.
+ * 
+ * TODO: add documentation
+ * 
+ * TODO: memoize everything but add_*. Functional enough that it
+ * should work if we just empty the caches after every add_* op.
+ * 
+ * Required: bbop.core
+ */
 
 // Module and namespace checking.
 bbop.core.require('bbop', 'core'); // not needed, but want the habit
@@ -629,7 +625,7 @@ bbop.model.graph.prototype.get_ancestor_subgraph = function(nb_id_or_list, pid){
  * 
  * Parameters: JSON object
  * 
- * Returns: true. Side-effects: creates the graph internally.
+ * Returns: true; side-effects: creates the graph internally.
  */
 bbop.model.graph.prototype.load_json = function(json_object){
 

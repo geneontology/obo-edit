@@ -152,7 +152,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    // For restricting ourselves to a certain part if the
 	    // index as an initial condition.
 	    //	    fq: in_args['filters'],
-	    fq: {},
+	    // Deprecated: see query_filters
+	    //fq: {},
 	    
 	    // // Fixed UI location.
 	    // NOTE: punted to UI object.
@@ -173,6 +174,203 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    'facet.field': []
 	};
 
+    // A richer way to handle the 'fq' query variant.
+    // It should look like:
+    // {<filter>: {<key_or_encoding>:{'sticky':(t|f), 'negative':(t|f)}, ...}}
+    this.query_filters = {};
+
+    /*
+     * Function: add_query_filter
+     *
+     * Setter for query filters ('fq').
+     *
+     * Parameters: 
+     *  filter - filter (type) string
+     *  value - filter value string (TODO: or defined logic hash)
+     *  polarity - *[optional]* '+' or '-'; whether it is positive or negative
+     *  sticky_p - *[optional]* boolean; how it responds to a standard reset
+     *
+     * Returns: 
+     *  (TODO) The current query filter hash.
+     */
+    this.add_query_filter = function(filter, value, polarity, sticky_p){
+	
+	var act_negative_p = false;
+	if( polarity && polarity == '-' ){
+	    act_negative_p = true;
+	}
+
+	var act_sticky_p = false;
+	if( ! (typeof sticky_p === "undefined") && 
+	    sticky_p == true ){
+	    act_sticky_p = true;
+	}
+
+	// Make sure we've defined the group.
+	if( ! this.query_filters[filter] ){
+	    this.query_filters[filter] = {};
+	}
+
+	this.query_filters[filter][value] =
+	    {
+		'negative_p': act_negative_p,
+		'sticky_p': act_sticky_p
+	    };
+
+	return {}; // TODO
+    };
+
+    /*
+     * Function: remove_query_filter
+     *
+     * Remover for query filters ('fq').
+     *
+     * Parameters: 
+     *  filter - filter (type) string
+     *  value - filter value string (TODO: or defined logic hash)
+     *  polarity - *[optional]* ('+'|'-'); will remove iff polarity is the same
+     *
+     * Returns: 
+     *  boolean (on success)
+     */
+    this.remove_query_filter = function(filter, value, polarity){
+
+	// Default return value.
+	var retval = false;
+
+	// Delete a low level key, and then if the top-level is empty,
+	// get that one too.
+	function full_delete(hash, key1, key2){
+	    if( key1 && key2 && hash &&
+		hash[key1] && hash[key1][key2] ){
+		    delete hash[key1][key2];
+		}
+	    if( bbop.core.is_empty(hash[key1]) ){
+		delete hash[key1];
+	    }
+	}
+
+	// If we have a filter, a value, and it's there...
+	if( filter && value &&
+	    anchor.query_filters[filter] &&
+	    anchor.query_filters[filter][value] ){
+		
+	    // ...and polarity isn't defined, remove it.
+	    if( typeof polarity === "undefined" ){		
+		full_delete(anchor.query_filters, filter, value);
+		retval = true;
+	    }else{
+
+		// However, if polarity is defined, convert it into
+		// the equivalent negative_p.
+		var negative_p = false;
+		if( polarity == '-' ){
+		    negative_p = true;
+		}
+		
+		// Now delete iff all of the criteria match.
+		var f_val = anchor.query_filters[filter][value];
+		if( f_val['negative_p'] == negative_p ){
+		    full_delete(anchor.query_filters, key, value);
+		    retval = true;
+		}
+	    }
+	}
+
+	return retval;
+    };
+
+    /*
+     * Function: reset_query_filters
+     *
+     * Reset the query filters ('fq'); but leave sticky filters alone.
+     *
+     * Parameters: 
+     *  n/a
+     * 
+     * Returns: 
+     *  (TODO) The current query filter hash.
+     */
+    this.reset_query_filters = function(){
+
+	// Drill down and delete all non-stickies.
+	var loop = bbop.core.each;
+	loop(anchor.query_filters,
+	     function(filter, values){
+		 //ll('filter: ' + filter);
+		 loop(values,
+		      function(value, props){
+			  //ll('  value: ' + value);
+			  var sticky_p = props['sticky_p'];
+			  if( ! sticky_p ){
+			      //ll('hit: ' + filter + ', ' + value);
+			      anchor.remove_query_filter(filter, value);
+			  }
+		      });
+	     });
+
+	return {}; // TODO
+    };
+
+    /*
+     * Function: get_query_filter_properties
+     *
+     * Get a hash representing a query filter ('fq').
+     *
+     * Parameters: 
+     *  key - filter string (TODO: or defined logic hash)
+     *
+     * Returns: 
+     *  The current query filter hash for key.
+     */
+    this.get_query_filter_properties = function(filter, value){
+
+	// Default return value.
+	var retobj = null;
+	
+	// If we have a key and it's there...
+	var aqf = anchor.query_filters;
+	if( filter && value && aqf[filter] && aqf[filter][value] ){
+	    retobj =
+		{
+		    'filter' : filter,
+		    'value' : value,
+		    //'polarity': aqf[filter][value]['negative_p'],
+		    'negative_p': aqf[filter][value]['negative_p'],
+		    'sticky_p': aqf[filter][value]['sticky_p']
+		};
+	}
+
+	return retobj;
+    };
+
+    /*
+     * Function: get_query_filters
+     *
+     * Get a list of hashes representing the query filters ('fq').
+     *
+     * Parameters: 
+     *  n/a
+     *
+     * Returns: 
+     *  The current query filter hashs.
+     */
+    this.get_query_filters = function(){
+
+	var retlist = [];	
+	var loop = bbop.core.each;
+	loop(anchor.query_filters,
+	     function(f, values){
+		 loop(values,
+		      function(v, props){
+			  retlist.push(anchor.get_query_filter_properties(f,v));
+		      });
+	     });
+
+	return retlist;
+    };
+
+    // TODO: deprecate this
     // A set of filters that survive things like reset, etc. Must be
     // explicitly set outside of the "normal" methods.
     this.query_sticky_filters = {};
