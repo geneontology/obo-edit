@@ -45,7 +45,7 @@ bbop.golr.response.success = function(robj){
 };
 
 /*
- * Function: bbop.golr.respons.callback_type
+ * Function: bbop.golr.response.callback_type
  * 
  *  Return the callback type if it was specified in the query,
  *  otherwise return null. For example "reset" and "response".

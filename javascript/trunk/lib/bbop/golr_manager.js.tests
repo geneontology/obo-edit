@@ -119,6 +119,99 @@ load('golr_manager.js');
 		      "looks like the real thing");
  })();
 
+// bbop.golr.manager - 5 - new fq handling
+(function(){
+
+     // Setup.
+     var gconf = new bbop.golr.conf(bbop.golr.golr_meta);
+     var gm_ann = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
+
+     gm_ann.add_query_filter('foo1', 'bar1a');
+     gm_ann.add_query_filter('foo1', 'bar1b', '+');
+     gm_ann.add_query_filter('foo2', 'bar2', '-');
+     gm_ann.add_query_filter('foo3', 'bar3', '+', true);
+     gm_ann.add_query_filter('foo4', 'bar4', '-', true);
+
+     // Some helper functions to identify which of the filters we are
+     // currently inspecting.
+     function _is_1a(item){
+	 var retval = false;
+	 if( item['filter'] == 'foo1' && item['value'] == 'bar1a' &&
+	     item['negative_p'] == false && item['sticky_p'] == false ){
+		 retval = true;
+	     }
+	 return retval;
+     }
+     function _is_1b(item){
+	 var retval = false;
+	 if( item['filter'] == 'foo1' && item['value'] == 'bar1b' &&
+	     item['negative_p'] == false && item['sticky_p'] == false ){
+		 retval = true;
+	     }
+	 return retval;
+     }
+     function _is_2(item){
+	 var retval = false;
+	 if( item['filter'] == 'foo2' && item['value'] == 'bar2' &&
+	     item['negative_p'] == true && item['sticky_p'] == false ){
+		 retval = true;
+	     }
+	 return retval;
+     }
+     function _is_3(item){
+	 var retval = false;
+	 if( item['filter'] == 'foo3' && item['value'] == 'bar3' &&
+	     item['negative_p'] == false && item['sticky_p'] == true ){
+		 retval = true;
+	     }
+	 return retval;
+     }
+     function _is_4(item){
+	 var retval = false;
+	 if( item['filter'] == 'foo4' && item['value'] == 'bar4' &&
+	     item['negative_p'] == true && item['sticky_p'] == true ){
+		 retval = true;
+	     }
+	 return retval;
+     }
+     
+     // And the test framer to easily weild the above tests.
+     function test_frame_01(in_filters, func_test_list, msg_fragment){
+	 bbop.core.each(in_filters,
+			function(item, index){
+			    mr_t.is_in_list_diy(item, func_test_list,
+						function(in_item, list_func){
+						    return list_func(in_item);
+						},
+						msg_fragment + index);
+			});
+     }
+     
+     // Okay, now loop through the initial filters to make sure they are
+     // set correctly.
+     test_frame_01(gm_ann.get_query_filters(),
+		   [_is_1a, _is_1b, _is_2, _is_3, _is_4],
+		   'tried inital filter add: ');
+     
+     // Try and get rid of the first and third keys.
+     gm_ann.remove_query_filter('foo1', 'bar1a');
+     gm_ann.remove_query_filter('foo2', 'bar2');
+     test_frame_01(gm_ann.get_query_filters(),
+		   [_is_1b, _is_3, _is_4],
+		   'took out 2: ');
+     
+     // Then see if we can get the non-stickies out.
+     gm_ann.reset_query_filters();
+     test_frame_01(gm_ann.get_query_filters(),
+		   [_is_3, _is_4],
+		   'only stickies left: ');
+     
+     var p4 = gm_ann.get_query_filter_properties('foo4', 'bar4');
+     var p5 = gm_ann.get_query_filter_properties('foo5nope', 'bar5nothinghere');
+     mr_t.is_true(_is_4(p4), 'I see foo4/bar4');
+     mr_t.is_not_defined(p5, 'p5: there is nothing here');
+ })();
+
 ///
 /// End unit testing.
 ///
