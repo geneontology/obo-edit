@@ -1,20 +1,15 @@
-////////////
-////
-//// bbop.core
-////
-//// BBOP language extensions to JavaScript.
-////
-//// Purpose: Helpful basic utilities and operations to fix common
-//// needs in JS.
-//// 
-//// TODO: Think again on whether or not these should be folded in to
-//// language defined object prototypes.
-//// 
-//// Taken name spaces:
-////    bbop.core.*
-////
-//////////
-
+/* 
+ * Package: core.js
+ * Namespace: bbop.core
+ * 
+ * BBOP language extensions to JavaScript.
+ * 
+ * Purpose: Helpful basic utilities and operations to fix common needs in JS.
+ * 
+ * TODO: Think again on whether or not these should be folded in to
+ * language defined object prototypes.
+ * 
+ */
 
 // Module and namespace checking.
 if ( typeof bbop == "undefined" ){ bbop = {}; }

@@ -1,16 +1,29 @@
-////
-//// A trivial testing framework for JS. See test.tests.js for usage.
-////
-//// Note: this cannot depend on core.js (it tests that), so some
-//// stuff may be dupped. On the other hand, we can test
-//// ourselves--see test.js.tests.
-////
-
+/* 
+ * Package: test.js
+ * Namespace: bbop.test
+ * 
+ * A trivial testing framework for JS. See test.tests.js for usage.
+ * 
+ *  Note: this cannot depend on core.js (it tests that), so some stuff
+ *  may be dupped. On the other hand, we can test ourselves--see
+ *  test.js.tests.
+ */
 
 // Module and namespace checking.
 if ( typeof bbop == "undefined" ){ bbop = {}; }
 
-// 
+/*
+ * Structure: bbop.test
+ * Constructor: test
+ * 
+ * Contructor for the BBOP JS unit test system.
+ * 
+ * Arguments:
+ *  n/a
+ * 
+ * Returns:
+ *  BBOP test suite object
+ */
 bbop.test = function(){
 
     ///
@@ -43,7 +56,17 @@ bbop.test = function(){
 	test_number++;	
     }
 
-    //
+    /*
+     * Function: report
+     *
+     * Print a report about what happened during the tests.
+     *
+     * Parameters: 
+     *  n/a
+     *
+     * Returns: 
+     *  n/a; but prints the report as a side-effect
+     */
     this.report = function(){
 	if( tests_passed + 1 == test_number ){
 	    print('* All tests passed.');
@@ -180,21 +203,56 @@ bbop.test = function(){
     }
 
     ///
-    /// End-user comparisions and asserions.
+    /// End-user comparisions and assertions.
     ///
 
-    //
+    /*
+     * is_same_atom
+     *
+     * Test whether two atoms are the same.
+     *
+     * Parameters: 
+     *  question - the atom to test
+     *  answer - the expected atom
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
     function _is_simple_same(question, answer, msg){
 	_complete(question == answer, msg);
     };
     this.is_same_atom = _is_simple_same;
 
-    //
+    /*
+     * is_different_atom
+     *
+     * Test whether two atoms are different.
+     *
+     * Parameters: 
+     *  question - the atom to test
+     *  answer - the unexpected atom
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
     this.is_different_atom = function(question, answer, msg){
 	_complete(question != answer, msg);
     };
 
-    //
+    /*
+     * is_defined
+     *
+     * Test whether a value is defined.
+     *
+     * Parameters: 
+     *  thing - the value to test for being defined
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
     this.is_defined = function(thing, msg){
 	if( thing ){
 	    _complete(true, msg);
@@ -203,7 +261,38 @@ bbop.test = function(){
 	}
     };
 
-    //
+    /*
+     * is_not_defined
+     *
+     * Test whether a value is not defined.
+     *
+     * Parameters: 
+     *  thing - the value to test for being undefined
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
+    this.is_not_defined = function(thing, msg){
+	if( thing ){
+	    _complete(false, msg);
+	}else{
+	    _complete(true, msg);
+	}
+    };
+
+    /*
+     * is_true
+     *
+     * Test whether a value is true.
+     *
+     * Parameters: 
+     *  bool - the variable to test
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
     this.is_true = function(bool, msg){
 	if( bool == true ){
 	    _complete(true, msg);
@@ -212,7 +301,18 @@ bbop.test = function(){
 	}
     };
 
-    //
+    /*
+     * is_false
+     *
+     * Test whether a value is false.
+     *
+     * Parameters: 
+     *  bool - the variable to test
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
     this.is_false = function(bool, msg){
 	if( bool == false ){
 	    _complete(true, msg);
@@ -221,7 +321,20 @@ bbop.test = function(){
 	}
     };
 
-    //
+    /*
+     * is_x_greater_than_y
+     *
+     * Test whether one value is greate than another. Uses the
+     * standard ">" operator.
+     *
+     * Parameters: 
+     *  x_thing - the expected greater value
+     *  y_thing - the expected lesser value
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
     this.is_x_greater_than_y = function(x_thing, y_thing, msg){
 	if( x_thing > y_thing ){
 	    _complete(true, msg);
@@ -230,60 +343,250 @@ bbop.test = function(){
 	}
     };
 
-    // Try and see if two links are functionally equivalent.
+    /*
+     * is_same_url
+     *
+     * Test whether two links are functionally equivalent.
+     *
+     * Parameters: 
+     *  link1 - url
+     *  link2 - url
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
+    //
     this.is_same_url = function(link1, link2, msg){
 	_complete(_link_comp(link1, link2), msg);
     };    
 
-    // Try and see if two links are functionally different.
+    /*
+     * is_different_url
+     *
+     * Test whether two links are functionally different.
+     *
+     * Parameters: 
+     *  link1 - url
+     *  link2 - url
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
     this.is_different_url = function(link1, link2, msg){
 	_complete(! _link_comp(link1, link2), msg);
     };    
 
-    //
+    /*
+     * is_same_set
+     *
+     * Test whether two sets (as atomic arrays) are the same.
+     *
+     * Parameters: 
+     *  set1 - set (as array)
+     *  set2 - set (as array)
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
     this.is_same_set = function(set1, set2, msg){
 	_complete(_same_set(set1, set2), msg);
     };
-    //
+
+    /*
+     * is_different_set
+     *
+     * Test whether two sets (as atomic arrays) are different.
+     *
+     * Parameters: 
+     *  set1 - set (as array)
+     *  set2 - set (as array)
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
     this.is_different_set = function(set1, set2, msg){
 	_complete(! _same_set(set1, set2), msg);
     };
 
-    //
+    /*
+     * is_same_hash
+     *
+     * Test whether two simple atomic hashes are the same.
+     *
+     * Parameters: 
+     *  hash1 - hash
+     *  hash2 - hash
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
     this.is_same_hash = function(hash1, hash2, msg){
 	_complete(_same_hash(hash1, hash2), msg);
     };
-    //
+
+    /*
+     * is_different_hash
+     *
+     * Test whether two simple atomic hashes are different.
+     *
+     * Parameters: 
+     *  hash1 - hash
+     *  hash2 - hash
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
     this.is_different_hash = function(hash1, hash2, msg){
 	_complete(! _same_hash(hash1, hash2), msg);
     };
 
-    //
+    /*
+     * is_in_list
+     *
+     * Test whether an item is in a list (array).
+     *
+     * Parameters: 
+     *  item - the value to test
+     *  list - the array to test in
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
     this.is_in_list = function(item, list, msg){
 	_complete(_in_list(item, list), msg);
     };
-    //
+
+    /*
+     * is_not_in_list
+     *
+     * Test whether an item is not in a list (array).
+     *
+     * Parameters: 
+     *  item - the value to test
+     *  list - the array to test in
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
     this.is_not_in_list = function(item, list, msg){
 	_complete(! _in_list(item, list), msg);
     };
 
-    //
+    /*
+     * is_in_list_diy
+     *
+     * A DIY version of is_in_list. In this case, you can pass your
+     * own comparison function to check the item against the list.
+     *
+     * Parameters: 
+     *  item - the value to test
+     *  list - the array to test in
+     *  comp - the comparison function; like: function(in_item, list_item){...}
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
     this.is_in_list_diy = function(item, list, comp, msg){
 	_complete(_in_list(item, list, comp), msg);
     };
-    //
+
+    /*
+     * is_not_in_list_diy
+     *
+     * A negative version of is_in_list_diy.
+     *
+     * Parameters: 
+     *  item - the value to test
+     *  list - the array to test in
+     *  comp - the comparison function; like: function(in_item, list_item){...}
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
     this.is_not_in_list_diy = function(item, list, comp, msg){
 	_complete(! _in_list(item, list, comp), msg);
     };
 
-    //
+    /*
+     * is_string_embedded
+     *
+     * Test whether a target string (target_str) can be made by
+     * embedding a string (added_str) into a base string (base_str).
+     * 
+     * Useful in certain cases when checking URLs.
+     *
+     * Parameters: 
+     *  target_str - the value to test
+     *  base_str - the expected value
+     *  added_str - the expected value
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
     this.is_string_embedded = function(target_str, base_str, added_str, msg){
 	_complete(_is_string_embedded(target_str, base_str, added_str), msg);
     };
-    //
+
+    /*
+     * is_string_embedded
+     *
+     * A negative version of <is_string_embedded>.
+     *
+     * Parameters: 
+     *  target_str - the value to test
+     *  base_str - the expected value
+     *  added_str - the expected value
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
     this.is_string_not_embedded =
 	function(target_str, base_str, added_str, msg){
 	    _complete(! _is_string_embedded(target_str, base_str, added_str),
 		      msg);
 	};
+
+    /*
+     * pass
+     *
+     * Always return test as true--useful when testing using control
+     * structures and the like.
+     *
+     * Parameters: 
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
+    this.pass = function(msg){
+	_complete(true, msg);
+    };
+
+    /*
+     * fail
+     *
+     * Always return test as false--useful when testing using control
+     * structures and the like.
+     *
+     * Parameters: 
+     *  msg - *[optional]* informational message about test
+     *
+     * Returns: 
+     *  n/a
+     */
+    this.fail = function(msg){
+	_complete(false, msg);
+    };
 };

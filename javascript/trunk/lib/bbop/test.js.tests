@@ -2,8 +2,8 @@
 //// Some unit testing for test.js
 ////
 //// Usage:
-////    Command line: "js -f test.tests.js"
-////    Interactive: "js -f test.tests.js -f -"
+////    Command line: "js -f test.js.tests"
+////    Interactive: "js -f test.js.tests -f -"
 ////
 //// Notes: cannot depend on core.js
 ////
@@ -86,6 +86,11 @@ mr_t.is_same_set([1, 2, 3], [2, 3, 1], "same set 1");
 mr_t.is_same_set(['1', 'b', '3'], ['b', '3', '1'], "same set 2");
 mr_t.is_same_set([1, '2', 3], [1, 2, 3], "same set 3"); // js type quirk
 mr_t.is_different_set([1, 2, 3], [1, 2], "diff set 1");
+
+// Test pass and fail.
+mr_t.pass("passed");
+//mr_t.fail("failed");
+
 
 ///
 /// End unit testing.
