@@ -113,8 +113,8 @@ bbop.test = function(){
 	// See if the all of the keys in hash1 are defined in hash2
 	// and that they have the same ==.
 	for( var k1 in hash1 ){
-	    if( ! hash2[k1] ||
-		hash1[k1] != hash2[k1] ){
+	    if( typeof hash2[k1] === 'undefined' ||
+		hash1[k1] !== hash2[k1] ){
 		same_p = false;
 		break;
 	    }
@@ -125,8 +125,8 @@ bbop.test = function(){
 
 	    // Reverse of above.
 	    for( var k2 in hash2 ){
-		if( ! hash1[k2] ||
-		    hash2[k2] != hash1[k2] ){
+		if( typeof hash1[k2] === 'undefined' ||
+		    hash2[k2] !== hash1[k2] ){
 		    same_p = false;
 		    break;
 		}
