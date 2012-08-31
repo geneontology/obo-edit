@@ -256,6 +256,75 @@ mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
     mr_t.is_false(bbop.core.is_hash(t7), "correctly is_hash t7");
 })();
 
+// is_same.
+(function(){
+     var t0 = null;
+     var t1 = 1;
+     var t2 = 'moo';
+     var t3 = [];
+     var t4 = {};
+     var t5 = ['moo', 'a'];
+     var t6 = {'cow': 'moo'};
+     var t7 = true;
+     var t8 = false;
+
+     // Simple and true things.
+     mr_t.is_true(bbop.core.is_same(t0, null), "correctly is_same t0");
+     mr_t.is_true(bbop.core.is_same(t1, 1), "correctly is_same t1");
+     mr_t.is_true(bbop.core.is_same(t2, 'moo'), "correctly is_same t2");
+     mr_t.is_true(bbop.core.is_same(t3, []), "correctly is_same t3");
+     mr_t.is_true(bbop.core.is_same(t4, {}), "correctly is_same t4");
+     mr_t.is_true(bbop.core.is_same(t5, ['moo', 'a']), "correctly is_same t5");
+     mr_t.is_true(bbop.core.is_same(t6, {'cow': 'moo'}),
+		  "correctly is_same t6");
+     mr_t.is_true(bbop.core.is_same(t7, true), "correctly is_same t7");
+
+     // Now wrong things.
+     mr_t.is_false(bbop.core.is_same(t0, 1), "not is_same t0");
+     mr_t.is_false(bbop.core.is_same(t1, '1'), "not is_same t1a");
+     mr_t.is_false(bbop.core.is_same(t1, 2), "not is_same t1b");
+     mr_t.is_false(bbop.core.is_same(t2, 'mo'), "not is_same t2");
+     mr_t.is_false(bbop.core.is_same(t3, null), "not is_same t3a");
+     mr_t.is_false(bbop.core.is_same(t3, ['a']), "not is_same t3b");
+     mr_t.is_false(bbop.core.is_same(t4, null), "not is_same t4a");
+     mr_t.is_false(bbop.core.is_same(t4, {'a': 1}), "not is_same t4b");
+     mr_t.is_false(bbop.core.is_same(t4, 1), "not is_same t4c");
+     mr_t.is_false(bbop.core.is_same(t4, true), "not is_same t4d");
+     mr_t.is_false(bbop.core.is_same(t5, []), "not is_same t5a");
+     mr_t.is_false(bbop.core.is_same(t5, 1), "not is_same t5b");
+     mr_t.is_false(bbop.core.is_same(t5, ['moo']), "not is_same t5d");
+     mr_t.is_false(bbop.core.is_same(t5, ['moo', 'a', 'b']), "not is_same t5c");
+     mr_t.is_false(bbop.core.is_same(t6, {}), "not is_same t6a");
+     mr_t.is_false(bbop.core.is_same(t6, {'cw': 'moo'}), "not is_same t6b");
+     mr_t.is_false(bbop.core.is_same(t6, {'cow': 'moo', 'dog': 'arf'}),
+		   "not is_same t6c");
+     mr_t.is_false(bbop.core.is_same(t7, false), "not is_same t7a");
+     mr_t.is_false(bbop.core.is_same(t7, null), "not is_same t7b");
+     mr_t.is_false(bbop.core.is_same(t8, true), "not is_same t8a");
+     mr_t.is_false(bbop.core.is_same(t8, null), "not is_same t8b");
+
+
+})();
+
+// hashify.
+(function(){
+
+     var t0 = bbop.core.hashify();
+     var t1 = bbop.core.hashify([]);
+     var t2 = bbop.core.hashify(['a']);
+     var t3 = bbop.core.hashify(['a', 'b', 'c']);
+     var t4 = bbop.core.hashify([1, 2, 3]);
+
+     mr_t.is_same_hash(t0, {}, "nil is same hashified");
+     mr_t.is_same_hash(t1, {}, "[] is same hashified");
+     mr_t.is_same_hash(t2, {'a': true}, "{a} is same hashified");
+     mr_t.is_same_hash(t3, {'a': true, 'b': true, 'c': true},
+		       "{a, b, c} is same hashified");
+     mr_t.is_same_hash(t4, {1: true, 2: true, 3: true},
+		       "{1, 2, ,3} is same hashified");     
+
+})();
+
 // is_empty.
 (function(){
     var t1 = 1;
