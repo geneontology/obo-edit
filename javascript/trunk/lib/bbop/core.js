@@ -129,13 +129,17 @@ bbop.core.crop = function(str, lim, suff){
 /*
  * Function: fold
  *
- * Fold a pair of hashes together, using the first one as a template.
+ * Fold a pair of hashes together, using the first one as a
+ * template. Only the keys in the default hash will be defined in the
+ * final hash.
  * 
  * Parameters:
  *  default_hash - Template hash.
  *  arg_hash - Argument hash to match.
  * 
  * Returns: A new hash.
+ * 
+ * Also see: <merge>
  */
 bbop.core.fold = function(default_hash, arg_hash){
 
@@ -156,14 +160,16 @@ bbop.core.fold = function(default_hash, arg_hash){
 /*
  * Function: merge
  *
- * Merge a pair of hashes together, using the second values getting
- * precedence.
+ * Merge a pair of hashes together, the second hash getting
+ * precedence. This is a superset of the keys both hashes.
  * 
  * Parameters:
  *  older_hash - first pass
  *  newer_hash - second pass
  * 
  * Returns: A new hash.
+ * 
+ * Also see: <fold>
  */
 bbop.core.merge = function(older_hash, newer_hash){
 
@@ -189,7 +195,7 @@ bbop.core.merge = function(older_hash, newer_hash){
  *
  * Returns: an array of keys
  */
-bbop.core.get_keys = function get_keys (arg_hash){
+bbop.core.get_keys = function (arg_hash){
 
     if( ! arg_hash ){ arg_hash = {}; }
     var out_keys = [];
@@ -200,6 +206,103 @@ bbop.core.get_keys = function get_keys (arg_hash){
     }
     
     return out_keys;
+};
+
+/*
+ * Function: hashify
+ *
+ * Returns a hash form of the argument array/list. For example ['a',
+ * 'b'] would become {'a': true, 'b': true}.
+ *
+ * Parameters:
+ *  list - the list to convert
+ *
+ * Returns: a hash
+ */
+bbop.core.hashify = function (list){
+
+    var rethash = {};
+    bbop.core.each(list,
+		  function(item){
+		      rethash[item] = true;
+		  });
+    return rethash;
+};
+
+/*
+ * Function: is_same
+ *
+ * Returns true if it things the two incoming arguments are value-wise
+ * the same.
+ * 
+ * Currently only usable for simple (atomic single layer) hashes,
+ * atomic lists, boolean, null, number, and string values. Will return
+ * false otherwise.
+ * 
+ * Parameters:
+ *  thing1 - thing one
+ *  thing2 - thing two
+ *
+ * Returns: boolean
+ */
+bbop.core.is_same = function (thing1, thing2){
+
+    var retval = false;
+
+    // If is hash...steal the code from test.js.
+    if( bbop.core.is_hash(thing1) && bbop.core.is_hash(thing2) ){
+	
+	var same_p = true;
+	
+	// See if the all of the keys in hash1 are defined in hash2
+	// and that they have the same ==.
+	for( var k1 in thing1 ){
+	    if( ! thing2[k1] ||
+		thing1[k1] != thing2[k1] ){
+		    same_p = false;
+		    break;
+		}
+	}
+
+	// If there is still no problem...
+	if( same_p ){
+	    
+	    // Reverse of above.
+	    for( var k2 in thing2 ){
+		if( ! thing1[k2] ||
+		    thing2[k2] != thing1[k2] ){
+			same_p = false;
+			break;
+		    }
+	    }
+	}
+
+	retval = same_p;
+
+    }else if( bbop.core.is_array(thing1) && bbop.core.is_array(thing2) ){
+	// If it's an array convert and pass it off to the hash function.
+	retval = bbop.core.is_same(bbop.core.hashify(thing1),
+				   bbop.core.hashify(thing2));
+    }else{
+	
+	// So, we're hopefully dealing with an atomic type. If they
+	// are the same, let's go ahead and try.
+	var t1_is = bbop.core.what_is(thing1);
+	var t2_is = bbop.core.what_is(thing2);
+	if( t1_is == t2_is ){
+	    if( t1_is == 'null' ||
+		t1_is == 'boolean' ||
+		t1_is == 'null' ||
+		t1_is == 'number' ||
+		t1_is == 'string' ){
+		    if( thing1 == thing2 ){
+			retval = true;
+		    }
+		}
+	}
+    }
+
+    return retval;
 };
 
 /*
@@ -255,7 +358,8 @@ bbop.core.what_is = function(in_thing){
  */
 bbop.core.is_array = function(in_thing){
     var retval = false;
-    if( typeof(in_thing) == 'object' &&
+    if( in_thing &&
+	typeof(in_thing) == 'object' &&
 	typeof(in_thing.push) == 'function' &&
 	typeof(in_thing.length) == 'number' ){
 	retval = true;
@@ -276,7 +380,8 @@ bbop.core.is_array = function(in_thing){
  */
 bbop.core.is_hash = function(in_thing){
     var retval = false;
-    if( typeof(in_thing) == 'object' &&
+    if( in_thing &&
+	typeof(in_thing) == 'object' &&
 	(! bbop.core.is_array(in_thing)) ){
 	retval = true;
     }
