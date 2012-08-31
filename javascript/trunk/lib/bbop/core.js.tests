@@ -267,6 +267,7 @@ mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
      var t6 = {'cow': 'moo'};
      var t7 = true;
      var t8 = false;
+     var t9 = {'a': true, 'b': false};
 
      // Simple and true things.
      mr_t.is_true(bbop.core.is_same(t0, null), "correctly is_same t0");
@@ -278,6 +279,11 @@ mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
      mr_t.is_true(bbop.core.is_same(t6, {'cow': 'moo'}),
 		  "correctly is_same t6");
      mr_t.is_true(bbop.core.is_same(t7, true), "correctly is_same t7");
+     mr_t.is_true(bbop.core.is_same(t8, false), "correctly is_same t8");
+
+     // Apparently, harder.
+     mr_t.is_true(bbop.core.is_same(t9, {'a': true, 'b': false}),
+		  "correctly is_same t9");
 
      // Now wrong things.
      mr_t.is_false(bbop.core.is_same(t0, 1), "not is_same t0");
@@ -303,6 +309,21 @@ mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
      mr_t.is_false(bbop.core.is_same(t8, true), "not is_same t8a");
      mr_t.is_false(bbop.core.is_same(t8, null), "not is_same t8b");
 
+     // Again, apparently, harder.
+     mr_t.is_false(bbop.core.is_same(t9, {'a': true}),
+		   "not is_same t9a");
+     mr_t.is_false(bbop.core.is_same(t9, {'a': false}),
+		   "not is_same t9b");
+     mr_t.is_false(bbop.core.is_same(t9, {'a': true, 'b': true}),
+		   "not is_same t9c");
+     mr_t.is_false(bbop.core.is_same(t9, {'a': false, 'b': true}),
+		   "not is_same t9d");
+     mr_t.is_false(bbop.core.is_same(t9, {'a': false, 'b': false}),
+		   "not is_same t9e");
+     mr_t.is_false(bbop.core.is_same(t9, {'a': true, 'b': false, 'c': true}),
+		   "not is_same t9f");
+     mr_t.is_false(bbop.core.is_same(t9, {'a': true, 'b': false, 'c': false}),
+		   "not is_same t9g");
 
 })();
 

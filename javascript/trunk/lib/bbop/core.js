@@ -257,8 +257,8 @@ bbop.core.is_same = function (thing1, thing2){
 	// See if the all of the keys in hash1 are defined in hash2
 	// and that they have the same ==.
 	for( var k1 in thing1 ){
-	    if( ! thing2[k1] ||
-		thing1[k1] != thing2[k1] ){
+	    if( typeof thing2[k1] === 'undefined' ||
+		thing1[k1] !== thing2[k1] ){
 		    same_p = false;
 		    break;
 		}
@@ -269,8 +269,8 @@ bbop.core.is_same = function (thing1, thing2){
 	    
 	    // Reverse of above.
 	    for( var k2 in thing2 ){
-		if( ! thing1[k2] ||
-		    thing2[k2] != thing1[k2] ){
+		if( typeof thing1[k2] === 'undefined' ||
+		    thing2[k2] !== thing1[k2] ){
 			same_p = false;
 			break;
 		    }
