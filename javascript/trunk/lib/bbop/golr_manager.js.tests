@@ -84,42 +84,24 @@ load('golr_manager.js');
      mr_t.is_same_set(gm.facets(), [], "no facets again");
  })();
 
-// bbop.golr.manager - 3 - filters
-(function(){
-
-     // Setup.
-     var gconf = new bbop.golr.conf(bbop.golr.golr_meta);
-     var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
-
-     // Let's play a little more...
-     mr_t.is_same_hash(gm.filters(), {}, "no filters");
-     gm.filters({'a': 'b'});
-     mr_t.is_same_set(gm.filters(), {'a': 'b'}, "one filter");
-     mr_t.is_same_set(gm.filters({}), {}, "no filters again");
-     gm.filters('a', 'b');
-     gm.filters('c', 'd');
-     mr_t.is_same_set(gm.filters(), {'a': 'b', 'c': 'd'}, "some filters");
-     gm.filters({});
-     mr_t.is_same_set(gm.filters(), {}, "no filters again (2)");
- })();
-
-// bbop.golr.manager - 4 - simulation
+// bbop.golr.manager - 3 - simulation
 (function(){
 
      // Setup.
      var gconf = new bbop.golr.conf(bbop.golr.golr_meta);
      var gm_ann = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
      gm_ann.set_personality('bbop_ann'); // profile in gconf
-     gm_ann.sticky_filters('document_category', 'annotation');
-     gm_ann.sticky_filters('isa_partof_closure', 'GO:0022008');
+     gm_ann.add_query_filter('document_category', 'annotation', ['+', '*']);
+     gm_ann.add_query_filter('document_category', 'ontology_class', ['-']);
+     gm_ann.add_query_filter('isa_partof_closure', 'GO:0022008', ['+', '*']);
      gm_ann.extra('foo=bar');
 
      mr_t.is_same_url(gm_ann.get_query_url(),
-		      'http://golr.berkeleybop.org/select?&qt=standard&indent=on&wt=json&rows=10&start=0&fl=*%2Cscore&facet=true&facet.mincount=1&json.nl=arrarr&facet.field=source&facet.field=evidence_type&facet.field=taxon&facet.field=isa_partof_label_closure&facet.field=annotation_extension_class&facet.field=type&fq=document_category:"annotation"&fq=isa_partof_closure:"GO:0022008"&foo=bar',
-		      "looks like the real thing");
+      		      'http://golr.berkeleybop.org/select?&qt=standard&indent=on&wt=json&rows=10&start=0&fl=*%2Cscore&facet=true&facet.mincount=1&json.nl=arrarr&facet.field=source&facet.field=evidence_type&facet.field=taxon&facet.field=isa_partof_label_closure&facet.field=annotation_extension_class&facet.field=type&fq=document_category:"annotation"&fq=-document_category:"ontology_class"&fq=isa_partof_closure:"GO:0022008"&foo=bar',
+      		      "looks like the real thing");
  })();
 
-// bbop.golr.manager - 5 - new fq handling
+// bbop.golr.manager - 4 - new fq handling
 (function(){
 
      // Setup.
@@ -127,10 +109,10 @@ load('golr_manager.js');
      var gm_ann = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
 
      gm_ann.add_query_filter('foo1', 'bar1a');
-     gm_ann.add_query_filter('foo1', 'bar1b', '+');
-     gm_ann.add_query_filter('foo2', 'bar2', '-');
-     gm_ann.add_query_filter('foo3', 'bar3', '+', true);
-     gm_ann.add_query_filter('foo4', 'bar4', '-', true);
+     gm_ann.add_query_filter('foo1', 'bar1b', ['+']);
+     gm_ann.add_query_filter('foo2', 'bar2', ['-']);
+     gm_ann.add_query_filter('foo3', 'bar3', ['+', '*']);
+     gm_ann.add_query_filter('foo4', 'bar4', ['-', '*']);
 
      // Some helper functions to identify which of the filters we are
      // currently inspecting.
@@ -200,6 +182,11 @@ load('golr_manager.js');
 		   [_is_1b, _is_3, _is_4],
 		   'took out 2: ');
      
+     // Probe just for the stickies.
+     test_frame_01(gm_ann.get_sticky_query_filters(),
+		   [_is_3, _is_4],
+		   'just stickies: ');
+     
      // Then see if we can get the non-stickies out.
      gm_ann.reset_query_filters();
      test_frame_01(gm_ann.get_query_filters(),
@@ -210,6 +197,50 @@ load('golr_manager.js');
      var p5 = gm_ann.get_query_filter_properties('foo5nope', 'bar5nothinghere');
      mr_t.is_true(_is_4(p4), 'I see foo4/bar4');
      mr_t.is_not_defined(p5, 'p5: there is nothing here');
+ })();
+
+// bbop.golr.manager - 5 - plist_to_property_hash
+(function(){
+
+     // Setup.
+     var gconf = new bbop.golr.conf(bbop.golr.golr_meta);
+     var gm_ann = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
+
+     // Possible property hashes.
+     var p1 = {
+	 'negative_p': true,
+	 'sticky_p': true
+     };
+     var p2 = {
+	 'negative_p': true,
+	 'sticky_p': false
+     };
+     var p3 = {
+	 'negative_p': false,
+	 'sticky_p': false
+     };
+     var p4 = {
+	 'negative_p': false,
+	 'sticky_p': true
+     };
+
+     mr_t.is_same_hash(gm_ann.plist_to_property_hash(), p3,
+		       'nothing default phash');
+     mr_t.is_same_hash(gm_ann.plist_to_property_hash([]), p3,
+		       'empty default phash');
+     mr_t.is_same_hash(gm_ann.plist_to_property_hash(['+']), p3,
+		       '+ default phash');
+     mr_t.is_same_hash(gm_ann.plist_to_property_hash(['+', '$']), p3,
+		       '+ $ default phash');
+     mr_t.is_same_hash(gm_ann.plist_to_property_hash(['$']), p3,
+		       '$ default phash');
+     mr_t.is_same_hash(gm_ann.plist_to_property_hash(['-']), p2,
+		       '- phash');
+     mr_t.is_same_hash(gm_ann.plist_to_property_hash(['*']), p4,
+		       '* phash');
+     mr_t.is_same_hash(gm_ann.plist_to_property_hash(['-', '*']), p1,
+		       '- * phash');
+
  })();
 
 ///

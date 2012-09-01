@@ -690,8 +690,14 @@ bbop.core.has_interface = function(iobj, iface){
 /*
  * Function: get_assemble
  *
- * Assemble an object into a GET-like query.
+ * Assemble an object into a GET-like query. You probably want to see
+ * the tests to get an idea of what this is doing.
+ * 
+ * The last argument of double hashes gets quoted (Solr-esque),
+ * otherwise not.
  *
+ * This does nothing to make the produced "URL" in any way safe.
+ * 
  * Parameters: 
  *  qargs - hash/object
  *
@@ -724,7 +730,7 @@ bbop.core.get_assemble = function(qargs){
 	    }else{
 		// // TODO: The "and" case is pretty much like
 		// // the array, the "or" case needs to be
-		// // handled carfeully. In both cases, care will
+		// // handled carefully. In both cases, care will
 		// // be needed to show which filters are marked.
 		// Is object (probably).
 		for( var sub_name in qval ){
@@ -735,7 +741,11 @@ bbop.core.get_assemble = function(qargs){
 		    nano_buff.push('=');
 		    nano_buff.push(sub_name);
 		    nano_buff.push(':');
-		    nano_buff.push('"' + sub_val + '"');
+		    if( typeof sub_val !== 'undefined'&& sub_val ){
+			nano_buff.push('"' + sub_val + '"');
+		    }else{
+			nano_buff.push('""');
+		    }
 		    mbuff.push(nano_buff.join(''));
 		}
 	    }
