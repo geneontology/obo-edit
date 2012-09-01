@@ -149,9 +149,6 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    start: 0, // Solr is offset indexing
 	    fl: '*%2Cscore',
     
-	    // For restricting ourselves to a certain part if the
-	    // index as an initial condition.
-	    //	    fq: in_args['filters'],
 	    // Deprecated: see query_filters
 	    //fq: {},
 	    
@@ -176,8 +173,58 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 
     // A richer way to handle the 'fq' query variant.
     // It should look like:
-    // {<filter>: {<key_or_encoding>:{'sticky':(t|f), 'negative':(t|f)}, ...}}
+    // {<filter>: {<value>:{'sticky_p':(t|f), 'negative_p':(t|f)}, ...}}
     this.query_filters = {};
+
+    /*
+     * Function: plist_to_property_hash
+     *
+     * Turn a plist to a hash containing the different properties that
+     * can be defined for a query filter. Possible values are: '+'
+     * (positive filter), '-' (negative filter), '*' (sticky filter),
+     * '$' (transient). If mutually exclusive properties are defined
+     * (e.g. both '+' and '-'), the last one will be used. Or, since
+     * that is a call to silliness, let's say the behavior is
+     * undefined.
+     *
+     * Parameters: 
+     *  plist - *[optional]* a list of properties to apply to the filter
+     *
+     * Returns: 
+     *  A hash version of the plist; otherwise, the defaul property hash
+     */
+    this.plist_to_property_hash = function(plist){
+
+	// Let's start with the default values.
+	var phash = {
+	    //'positive_p': true,
+	    'negative_p': false,
+	    //'transient_p': true
+	    'sticky_p': false
+	};
+
+	// If not defined, just return the default list.
+	if( plist ){	    
+	    bbop.core.each(plist,
+			   function(item){
+			       if( item == '+' ){
+				   phash['negative_p'] = false;
+				   //phash['positive_p'] = true;
+			       }else if( item == '-' ){
+				   phash['negative_p'] = true;
+				   //phash['positive_p'] = false;
+			       }else if( item == '*' ){
+				   phash['sticky_p'] = true;
+				   //phash['transient_p'] = false;
+			       }else if( item == '$' ){
+				   phash['sticky_p'] = false;
+				   //phash['transient_p'] = true;
+			       }
+			   });
+	}
+
+	return phash;
+    };
 
     /*
      * Function: add_query_filter
@@ -187,35 +234,21 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * Parameters: 
      *  filter - filter (type) string
      *  value - filter value string (TODO: or defined logic hash)
-     *  polarity - *[optional]* '+' or '-'; whether it is positive or negative
-     *  sticky_p - *[optional]* boolean; how it responds to a standard reset
+     *  plist - *[optional]* list of properties of the filter
      *
      * Returns: 
      *  (TODO) The current query filter hash.
+     * 
+     * Also See: <plist_to_property_hash>
      */
-    this.add_query_filter = function(filter, value, polarity, sticky_p){
+    this.add_query_filter = function(filter, value, plist){
 	
-	var act_negative_p = false;
-	if( polarity && polarity == '-' ){
-	    act_negative_p = true;
-	}
-
-	var act_sticky_p = false;
-	if( ! (typeof sticky_p === "undefined") && 
-	    sticky_p == true ){
-	    act_sticky_p = true;
-	}
-
 	// Make sure we've defined the group.
 	if( ! this.query_filters[filter] ){
 	    this.query_filters[filter] = {};
 	}
 
-	this.query_filters[filter][value] =
-	    {
-		'negative_p': act_negative_p,
-		'sticky_p': act_sticky_p
-	    };
+	this.query_filters[filter][value] = this.plist_to_property_hash(plist);
 
 	return {}; // TODO
     };
@@ -223,24 +256,25 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     /*
      * Function: remove_query_filter
      *
-     * Remover for query filters ('fq').
+     * Remover for query filters ('fq'), is a plist is specified, it
+     * will only remove if all of the listed criteria are met.
      *
      * Parameters: 
      *  filter - filter (type) string
      *  value - filter value string (TODO: or defined logic hash)
-     *  polarity - *[optional]* ('+'|'-'); will remove iff polarity is the same
+     *  plist - *[optional]* list of properties of the filter
      *
      * Returns: 
      *  boolean (on success)
      */
-    this.remove_query_filter = function(filter, value, polarity){
+    this.remove_query_filter = function(filter, value, plist){
 
 	// Default return value.
 	var retval = false;
 
-	// Delete a low level key, and then if the top-level is empty,
-	// get that one too.
-	function full_delete(hash, key1, key2){
+	// Internal helper to delete a low level key, and then if the
+	// top-level is empty, get that one too.
+	function _full_delete(hash, key1, key2){
 	    if( key1 && key2 && hash &&
 		hash[key1] && hash[key1][key2] ){
 		    delete hash[key1][key2];
@@ -254,28 +288,25 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	if( filter && value &&
 	    anchor.query_filters[filter] &&
 	    anchor.query_filters[filter][value] ){
-		
-	    // ...and polarity isn't defined, remove it.
-	    if( typeof polarity === "undefined" ){		
-		full_delete(anchor.query_filters, filter, value);
-		retval = true;
-	    }else{
 
-		// However, if polarity is defined, convert it into
-		// the equivalent negative_p.
-		var negative_p = false;
-		if( polarity == '-' ){
-		    negative_p = true;
-		}
-		
-		// Now delete iff all of the criteria match.
-		var f_val = anchor.query_filters[filter][value];
-		if( f_val['negative_p'] == negative_p ){
-		    full_delete(anchor.query_filters, key, value);
+		// If no real plist hash been defined, just go ahead
+		// and get rid of that. Otherwise, make sure that the
+		// defined plist and the stored properties are the
+		// same before deleting.
+		if( ! plist || bbop.core.is_empty(plist) ){
+		    _full_delete(anchor.query_filters, filter, value);
 		    retval = true;
+		}else{
+		    
+		    var filter_phash = anchor.query_filters[filter][value];
+		    var in_phash = anchor.plist_to_property_hash(plist);
+		    
+		    if( bbop.core.is_same(filter_phash, in_phash) ){		
+			_full_delete(anchor.query_filters, filter, value);
+			retval = true;
+		    }
 		}
 	    }
-	}
 
 	return retval;
     };
@@ -353,7 +384,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *  n/a
      *
      * Returns: 
-     *  The current query filter hashs.
+     *  A list of the current query filter hashs.
      */
     this.get_query_filters = function(){
 
@@ -370,10 +401,40 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	return retlist;
     };
 
-    // TODO: deprecate this
-    // A set of filters that survive things like reset, etc. Must be
-    // explicitly set outside of the "normal" methods.
-    this.query_sticky_filters = {};
+    /*
+     * Function: get_sticky_query_filters
+     *
+     * Get a list of hashes representing the current stucky query
+     * filters ('fq').
+     *
+     * Parameters: 
+     *  n/a
+     *
+     * Returns: 
+     *  A list of the current sticky query filter hashs.
+     */
+    this.get_sticky_query_filters = function(){
+
+	var retlist = [];	
+	var loop = bbop.core.each;
+	loop(anchor.query_filters,
+	     function(f, values){
+		 loop(values,
+		      function(v, props){
+			  var qfp = anchor.get_query_filter_properties(f,v);
+			  if( qfp['sticky_p'] == true ){
+			      retlist.push(qfp);			      
+			  }
+		      });
+	     });
+
+	return retlist;
+    };
+
+    // // TODO: deprecate this
+    // // A set of filters that survive things like reset, etc. Must be
+    // // explicitly set outside of the "normal" methods.
+    // this.query_sticky_filters = {};
 
     // A little extra thing that we might need sometimes.
     this.query_extra = null;
@@ -586,103 +647,6 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     };
 
     /*
-     * Function: filters
-     *
-     * Getter/setter for filters.
-     *
-     * Parameters: 
-     *  hash - TODO
-     *
-     * Parameters: 
-     *  key - TODO
-     *  value - TODO
-     *
-     * Parameters:
-     *  none
-     *
-     * Returns:
-     *  The current filters hash.
-     */
-    this.filters = function(hash_or_key, value){
-	if( value && hash_or_key ){ // looks like a key: add
-	    anchor.query_variants['fq'][hash_or_key] = value;
-	}else if( hash_or_key ){ // looks like a hash: replace
-	    anchor.query_variants['fq'] = hash_or_key;
-	}
-	return anchor.get('fq'); // return what we have
-    };
-
-    /*
-     * Function: remove_filters
-     *
-     * Remove or reset filters.
-     *
-     * Parameters: 
-     *  key - *[optional]* TODO
-     *
-     * Returns:
-     *  The current filters hash.
-     */
-    this.remove_filters = function(key){
-	if( key ){ // looks like a key: try to remove the one
-	    delete anchor.query_variants['fq'][key];
-	}else{
-	    anchor.query_variants['fq'] = {};
-	}
-	return anchor.get('fq'); // return what we have
-    };
-
-    /*
-     * Function: sticky_filters
-     *
-     * Getter/setter for sticky filters.
-     *
-     * Parameters: 
-     *  key - *[optional]* TODO
-     *  value - *[optional]* TODO
-     * 
-     * Parameters: 
-     *  hash - *[optional]* TODO
-     * 
-     * Parameters: 
-     *  none
-     *
-     * Returns: 
-     *  The current sticky filters hash.
-     */
-    this.sticky_filters = function(hash_or_key, value){
-	if( value && hash_or_key ){ // looks like a key: add
-	    anchor.query_sticky_filters[hash_or_key] = value;
-	}else if( hash_or_key ){ // looks like a hash: replace
-	    anchor.query_sticky_filters = hash_or_key;
-	}
-	return anchor.query_sticky_filters; // return what we have
-    };
-
-    /*
-     * Function: remove_sticky_filters
-     *
-     * Remove or reset sticky filters.
-     *
-     * Parameters: 
-     *  key - TODO
-     * 
-     * Parameters: 
-     *  none
-     *
-     * Returns:
-     *  The current sticky filters hash.
-     */
-    this.remove_sticky_filters = function(key){
-	if( key ){ // looks like a key: try to remove the one
-	    delete anchor.query_sticky_filters[key];
-	}else{
-	    anchor.query_sticky_filters = {};
-	}
-	return anchor.query_sticky_filters; // return what we have
-    };
-
-    /*
      * Function: extra
      *
      * Getter/setter for the internal string variable to be appended
@@ -782,6 +746,9 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *
      * Get the current invariant state of the manager returned as a
      * URL string.
+     * 
+     * This is appropriate for getting data, but maybe not for things
+     * like autocomplete where races can occur.
      *
      * Returns:
      *  URL string.
@@ -791,12 +758,37 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	// Structure of the necessary invariant parts.	
 	var qurl = anchor._solr_url + 'select?';
 
+	// TODO: Get all of our query filter variables and try and
+	// make something of them that get_assemble can
+	// understand. Sticky doesn't matter here, but negativity
+	// does. However, we can be pretty naive since the hashing
+	// should have already taken out mutually exclusive dupes.
+	var fq = {};
+	bbop.core.each(anchor.get_query_filters(),
+		      function(filter_property){
+
+			  // Grab only the properties that affect the
+			  // URL.
+			  var filter = filter_property['filter'];
+			  var value = filter_property['value'];
+			  var negative_p = filter_property['negative_p'];
+
+			  // We need to alter at the filter level.
+			  if( negative_p ){
+			      filter = '-' + filter;
+			  }
+
+			  // Make sure it is defined.
+			  fq[filter] = value;
+		      });
+
 	// Add all of our different specialized hashes.
 	var things_to_add = [
 	    //bbop.core.get_assemble(anchor.query_invariants),
 	    //bbop.core.get_assemble(anchor.query_facets),
 	    bbop.core.get_assemble(anchor.query_variants),
-	    bbop.core.get_assemble({'fq': anchor.query_sticky_filters}),
+	    //bbop.core.get_assemble({'fq': anchor.query_sticky_filters}),
+	    bbop.core.get_assemble({'fq': fq}),
 	    anchor.query_extra
 	];
 	bbop.core.each(things_to_add,

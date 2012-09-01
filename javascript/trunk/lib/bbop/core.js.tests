@@ -495,6 +495,27 @@ mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
     }
 })();
 
+// Check get_assemble.
+(function(){
+
+     var s1 = {foo: 1, bar: 2};
+     var t1 = "foo=1&bar=2";
+     mr_t.is_same_url(bbop.core.get_assemble(s1), t1,
+		      'get_assemble simple hash');
+
+     var s2 = {foo: 1, bar: ['2', '3 4', null]};
+     var t2 = "foo=1&bar=2&bar=3 4&bar=";
+     mr_t.is_same_url(bbop.core.get_assemble(s2), t2,
+		      'get_assemble hash with array');
+     
+     // I'm unsure how I feel about undefined in this case.
+     var s3 = {foo: 1, bar: {'bib': 2, 'bab': null}};
+     var t3 = 'foo=1&bar=bib:"2"&bar=bab:""';
+     mr_t.is_same_url(bbop.core.get_assemble(s3), t3,
+		      'get_assemble hash with hash');
+
+ })();
+
 ///
 /// End unit testing.
 ///

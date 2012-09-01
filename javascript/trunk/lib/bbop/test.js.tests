@@ -31,6 +31,9 @@ mr_t.is_same_atom(b, 2);
 mr_t.is_true(! false);
 
 //
+mr_t.is_same_url("format=amigo&type=general&query=",
+		 "query=&format=amigo&type=general",
+		 "link compare testing 1");
 mr_t.is_same_url("completion?format=amigo&type=general&query=",
 		 "completion?query=&format=amigo&type=general",
 		 "link compare testing 1");

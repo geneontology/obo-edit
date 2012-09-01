@@ -141,13 +141,31 @@ bbop.test = function(){
 
 	// Decompose links and arguments.
 	var tmp1 = str1.split('?');
-	var head1 = tmp1[0];
-	var args1 = tmp1[1].split('&');
+	var head1 = '';
+	var args1 = [];
+	if( ! tmp1[1] ){ // nothing before '?'
+	    args1 = tmp1[0].split('&');
+	}else{ // normal structure
+	    head1 = tmp1[0];
+	    args1 = tmp1[1].split('&');
+	}
 	var sorted_args1 = args1.sort();
+
 	var tmp2 = str2.split('?');
-	var head2 = tmp2[0];
-	var args2 = tmp2[1].split('&');
+	var head2 = '';
+	var args2 = [];
+	if( ! tmp2[1] ){ // nothing before '?'
+	    args2 = tmp2[0].split('&');
+	}else{ // normal structure
+	    head2 = tmp2[0];
+	    args2 = tmp2[1].split('&');
+	}
 	var sorted_args2 = args2.sort();
+
+	// var tmp2 = str2.split('?');
+	// var head2 = tmp2[0];
+	// var args2 = tmp2[1].split('&');
+	// var sorted_args2 = args2.sort();
 
 	// Compare heads and arguments.
 	var retval = false;
@@ -207,7 +225,7 @@ bbop.test = function(){
     ///
 
     /*
-     * is_same_atom
+     * Function: is_same_atom
      *
      * Test whether two atoms are the same.
      *
@@ -225,9 +243,9 @@ bbop.test = function(){
     this.is_same_atom = _is_simple_same;
 
     /*
-     * is_different_atom
+     * Function: is_different_atom
      *
-     * Test whether two atoms are different.
+     * A negative version of <is_same_atom>.
      *
      * Parameters: 
      *  question - the atom to test
@@ -242,7 +260,7 @@ bbop.test = function(){
     };
 
     /*
-     * is_defined
+     * Function: is_defined
      *
      * Test whether a value is defined.
      *
@@ -262,9 +280,9 @@ bbop.test = function(){
     };
 
     /*
-     * is_not_defined
+     * Function: is_not_defined
      *
-     * Test whether a value is not defined.
+     * A negative version of <is_defined>.
      *
      * Parameters: 
      *  thing - the value to test for being undefined
@@ -282,7 +300,7 @@ bbop.test = function(){
     };
 
     /*
-     * is_true
+     * Function: is_true
      *
      * Test whether a value is true.
      *
@@ -302,9 +320,9 @@ bbop.test = function(){
     };
 
     /*
-     * is_false
+     * Function: is_false
      *
-     * Test whether a value is false.
+     * A negative version of <is_true>.
      *
      * Parameters: 
      *  bool - the variable to test
@@ -322,7 +340,7 @@ bbop.test = function(){
     };
 
     /*
-     * is_x_greater_than_y
+     * Function: is_x_greater_than_y
      *
      * Test whether one value is greate than another. Uses the
      * standard ">" operator.
@@ -344,7 +362,7 @@ bbop.test = function(){
     };
 
     /*
-     * is_same_url
+     * Function: is_same_url
      *
      * Test whether two links are functionally equivalent.
      *
@@ -362,9 +380,9 @@ bbop.test = function(){
     };    
 
     /*
-     * is_different_url
+     * Function: is_different_url
      *
-     * Test whether two links are functionally different.
+     * A negative version of <is_same_url>.
      *
      * Parameters: 
      *  link1 - url
@@ -379,7 +397,7 @@ bbop.test = function(){
     };    
 
     /*
-     * is_same_set
+     * Function: is_same_set
      *
      * Test whether two sets (as atomic arrays) are the same.
      *
@@ -396,9 +414,9 @@ bbop.test = function(){
     };
 
     /*
-     * is_different_set
+     * Function: is_different_set
      *
-     * Test whether two sets (as atomic arrays) are different.
+     * A negative version of <is_same_set>.
      *
      * Parameters: 
      *  set1 - set (as array)
@@ -413,7 +431,7 @@ bbop.test = function(){
     };
 
     /*
-     * is_same_hash
+     * Function: is_same_hash
      *
      * Test whether two simple atomic hashes are the same.
      *
@@ -430,9 +448,9 @@ bbop.test = function(){
     };
 
     /*
-     * is_different_hash
+     * Function: is_different_hash
      *
-     * Test whether two simple atomic hashes are different.
+     * A negative version of <is_same_hash>.
      *
      * Parameters: 
      *  hash1 - hash
@@ -447,7 +465,7 @@ bbop.test = function(){
     };
 
     /*
-     * is_in_list
+     * Function: is_in_list
      *
      * Test whether an item is in a list (array).
      *
@@ -464,9 +482,9 @@ bbop.test = function(){
     };
 
     /*
-     * is_not_in_list
+     * Function: is_not_in_list
      *
-     * Test whether an item is not in a list (array).
+     * A negative version of <is_in_list>.
      *
      * Parameters: 
      *  item - the value to test
@@ -481,7 +499,7 @@ bbop.test = function(){
     };
 
     /*
-     * is_in_list_diy
+     * Function: is_in_list_diy
      *
      * A DIY version of is_in_list. In this case, you can pass your
      * own comparison function to check the item against the list.
@@ -500,9 +518,9 @@ bbop.test = function(){
     };
 
     /*
-     * is_not_in_list_diy
+     * Function: is_not_in_list_diy
      *
-     * A negative version of is_in_list_diy.
+     * A negative version of <is_in_list_diy>.
      *
      * Parameters: 
      *  item - the value to test
@@ -518,7 +536,7 @@ bbop.test = function(){
     };
 
     /*
-     * is_string_embedded
+     * Function: is_string_embedded
      *
      * Test whether a target string (target_str) can be made by
      * embedding a string (added_str) into a base string (base_str).
@@ -539,7 +557,7 @@ bbop.test = function(){
     };
 
     /*
-     * is_string_embedded
+     * Function: is_string_not_embedded
      *
      * A negative version of <is_string_embedded>.
      *
@@ -559,7 +577,7 @@ bbop.test = function(){
 	};
 
     /*
-     * pass
+     * Function: pass
      *
      * Always return test as true--useful when testing using control
      * structures and the like.
@@ -575,7 +593,7 @@ bbop.test = function(){
     };
 
     /*
-     * fail
+     * Function: fail
      *
      * Always return test as false--useful when testing using control
      * structures and the like.
