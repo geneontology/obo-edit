@@ -60,7 +60,7 @@ bbop.logger = function(initial_context){
     };
 
     /*
-     * Function: push_context
+     * Function: pop_context
      * 
      * Remove the last context if it's there.
      */
