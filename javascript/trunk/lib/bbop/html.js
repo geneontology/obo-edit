@@ -1,11 +1,18 @@
-////
-//// Right now contains bbop.html.tag, but all html producing
-//// functions should go in here somewhere.
-////
-//// All bbop.html implement the interface:
-////   .output(): returns a string of you and below.
-//// These are enforced during the tests.
-////
+/* 
+ * Package: html.js
+ * Namespace: bbop.html
+ * 
+ * Right now contains bbop.html.tag, but all html producing functions
+ * should go in here somewhere.
+ * 
+ * All bbop.html implement the interface:
+ *  .to_string(): returns a string of you and below
+ *  .add_to(): add things between the tags
+ *  .empty(): empties all things between the tags
+ * These are enforced during the tests.
+ * 
+ * This package takes all of the bbop.html.* namespace.
+ */
 
 bbop.core.require('bbop', 'core');
 //bbop.core.require('bbop', 'logger');
@@ -16,19 +23,18 @@ bbop.core.namespace('bbop', 'html', 'accordion');
 bbop.core.namespace('bbop', 'html', 'list');
 bbop.core.namespace('bbop', 'html', 'input');
 
-///
-/// bbop.html.tag--the fundamental unit that we'll work with.
-///
-
-// Test of jsdoc-toolkit
-
 /*
- * The fundamental unit that we'll work with.
- * @name tag
- * @function
- * @param tag a thing
- * @param attrs a thing
- * @param below a thing
+ * Constructor: tag
+ * 
+ * Create the fundamental tag object to work with and extend.
+ * 
+ * Parameters:
+ *  tag - the tag name to be created
+ *  attrs - the typical attributes to add
+ *  below - a list/array of other html objects that exists "between" the tags
+ * 
+ * Returns:
+ *  bbop.html.tag object
  */
 bbop.html.tag = function(tag, attrs, below){
     this._is_a = 'bbop.html.tag';
@@ -59,7 +65,16 @@ bbop.html.tag = function(tag, attrs, below){
     this._singleton = '<' + tag + additional_attrs + ' />';
 };
 
-//
+/*
+ * Function: (tag) to_string
+ * 
+ * Convert a tag object into a html-ized string.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns:
+ *  string
+ */
 bbop.html.tag.prototype.to_string = function(){
     var acc = '';
     bbop.core.each(this._contents,
@@ -84,31 +99,63 @@ bbop.html.tag.prototype.to_string = function(){
     return output;
 };
 
-//
+/*
+ * Function: (tag) add_to
+ * 
+ * Add content between the tags. Order of addition is order of output.
+ * 
+ * Parameters:
+ *  bbop_html_tag_or_string - another tag object or a string (html or otherwise)
+ * 
+ * Returns: n/a
+ */
 bbop.html.tag.prototype.add_to = function(bbop_html_tag_or_string){
     this._contents.push(bbop_html_tag_or_string);
 };
 
-//
+/*
+ * Function: (tag) empty
+ * 
+ * Remove all content between the tags.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns: n/a
+ */
 bbop.html.tag.prototype.empty = function(){
     this._contents = [];
 };
 
-
-///
-/// The functional part of a jQuery accordion structure.
-///
-
-// [[title, string/*.to_string()], ...]
-// <div id="accordion">
-//   <h3><a href="#">Section 1</a></h3>
-//   <div>
-//     <p>
-//       foo
-//     </p>
-//   </div>
-//   ...
-// </div>
+/*
+ * Constructor: accordion
+ * 
+ * Create the a frame for the functional part of a jQuery accordion
+ * structure.
+ * 
+ * :Input:
+ * : [[title, string/*.to_string()], ...]
+ * :
+ * :Output:
+ * : <div id="accordion">
+ * :  <h3><a href="#">Section 1</a></h3>
+ * :  <div>
+ * :   <p>
+ * :    foo
+ * :   </p>
+ * :  </div>
+ * :  ...
+ * : </div>
+ * 
+ * Parameters:
+ *  in_list - accordion frame headers: [[title, string/*.to_string()], ...]
+ *  attrs - attributes to apply to the new top-level div
+ *  add_id_p - *[optional]* true or false; add a random id to each section
+ * 
+ * Returns:
+ *  bbop.html.accordion object
+ * 
+ * Also see: <tag>
+ */
 bbop.html.accordion = function(in_list, attrs, add_id_p){
     this._is_a = 'bbop.html.accordion';
 
@@ -132,13 +179,32 @@ bbop.html.accordion = function(in_list, attrs, add_id_p){
 		   });
 };
 
-//
+/*
+ * Function: (accordion) to_string
+ * 
+ * Convert the accordion object into a html-ized string.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns:
+ *  string
+ */
 bbop.html.accordion.prototype.to_string = function(){
     return this._div_stack.to_string();
 };
 
-// Add a section to the accordion.
-// 
+/*
+ * Function: (accordion) add_to
+ * 
+ * Add a contect section to the accordion.
+ * 
+ * Parameters:
+ *  section_info - a string or a hash with 'id', 'label', and 'description'
+ *  content_blob - string or bbop.html object to put in a section
+ *  add_id_p - *[optional]* true or false; add a random id to the section
+ * 
+ * Returns: n/a
+ */
 bbop.html.accordion.prototype.add_to =
     function(section_info, content_blob, add_id_p){
 
@@ -194,16 +260,32 @@ bbop.html.accordion.prototype.add_to =
 //     if( ! cdiv ){
 // 	throw new Error('Cannot add to undefined section.');
 //     }
-
 // };
 
-// Empty all sections from the accordion.
+/*
+ * Function: (accordion) empty
+ * 
+ * Empty all sections from the accordion.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns: n/a
+ */
 bbop.html.accordion.prototype.empty = function(){
     this._div_stack = new bbop.html.tag('div', this._attrs);
     this._section_id_to_content_id = {};
 };
 
-// 
+/*
+ * Function: (accordion) get_section_id
+ * 
+ * Get the "real" section id by way of the "convenience" section id?
+ * 
+ * Parameters:
+ *  sect_id - TODO ???
+ * 
+ * Returns: TODO ???
+ */
 bbop.html.accordion.prototype.get_section_id = function(sect_id){
 	return this._section_id_to_content_id[sect_id];    
 };
@@ -215,15 +297,29 @@ bbop.html.accordion.prototype.get_section_id = function(sect_id){
 //     div.empty();
 // };
 
-///
-/// An unordered list
-///
-
-// [string/*.to_string(), ...]
-// <ul id="list">
-//     <li>foo</li>
-//   ...
-// </ul>
+/*
+ * Constructor: list
+ * 
+ * Create the a frame for an unordered list object.
+ * 
+ * :Input:
+ * : [string/*.to_string(), ...]
+ * :
+ * :Output:
+ * : <ul id="list">
+ * :  <li>foo</li>
+ * :   ...
+ * : </ul>
+ * 
+ * Parameters:
+ *  in_list - list of strings/bbop.html objects to be li separated
+ *  attrs - *[optional]* attributes to apply to the new top-level ul
+ * 
+ * Returns:
+ *  bbop.html.list object
+ * 
+ * Also see: <tag>
+ */
 bbop.html.list = function(in_list, attrs){
     this._is_a = 'bbop.html.list';
     
@@ -238,27 +334,59 @@ bbop.html.list = function(in_list, attrs){
     bbop.core.each(in_list, function(item){ list_this.add_to(item); });
 };
 
-//
+/*
+ * Function: (list) to_string
+ * 
+ * Convert a list object into a html-ized string.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns:
+ *  string
+ */
 bbop.html.list.prototype.to_string = function(){
     return this._ul_stack.to_string();
 };
 
-// Add section.
+/*
+ * Function: (list) add_to
+ * 
+ * Add a new li section to a list.
+ * 
+ * Parameters:
+ *  item - another tag object or a string (html or otherwise)
+ * 
+ * Returns: n/a
+ */
 bbop.html.list.prototype.add_to = function(item){
     var li = new bbop.html.tag('li', {}, bbop.core.to_string(item));
     this._ul_stack.add_to(li);
 };
 
-//
+/*
+ * Function: (list) empty
+ * 
+ * Remove all content (li's) from the list.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns: n/a
+ */
 bbop.html.list.prototype.empty = function(){
     this._ul_stack = new bbop.html.tag('ul', this._attrs);
 };
 
-///
-/// A form input.
-///
-
-//bbop.html.input = function(in_list, attrs){
+/*
+ * Constructor: input
+ * 
+ * Create a form input.
+ * 
+ * Parameters:
+ *  attrs - *[optional]* the typical attributes to add
+ * 
+ * Returns:
+ *  bbop.html.input object
+ */
 bbop.html.input = function(attrs){
     this._is_a = 'bbop.html.input';
     
@@ -270,26 +398,60 @@ bbop.html.input = function(attrs){
     this._input_stack = new bbop.html.tag('input', this._attrs);
 };
 
-//
+/*
+ * Function: (input) to_string
+ * 
+ * Convert an input into a html-ized string.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns:
+ *  string
+ */
 bbop.html.input.prototype.to_string = function(){
     return this._input_stack.to_string();
 };
 
-// Add section.
+/*
+ * Function: (input) add_to
+ * 
+ * Add content between the input tags.
+ * 
+ * Parameters:
+ *  item - another tag object or a string (html or otherwise)
+ * 
+ * Returns: n/a
+ */
 bbop.html.input.prototype.add_to = function(item){
     this._input_stack.add_to(bbop.core.to_string(item));
 };
 
-// Reset/remove all children.
+/*
+ * Function: (input) empty
+ * 
+ * Reset/remove all children.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns: n/a
+ */
 bbop.html.input.prototype.empty = function(){
     this._input_stack = new bbop.html.tag('input', this._attrs);
 };
 
-///
-/// An anchor.
-///
-
-// href, title, etc. go through attrs
+/*
+ * Constructor: anchor
+ * 
+ * Create an anchor object. Note: href, title, etc. go through
+ * in_attrs.
+ * 
+ * Parameters:
+ *  in_cont - the contents between the "a" tags
+ *  in_attrs - *[optional]* the typical attributes to add
+ * 
+ * Returns:
+ *  bbop.html.anchor object
+ */
 bbop.html.anchor = function(in_cont, in_attrs){
     this._is_a = 'bbop.html.anchor';
     
@@ -300,26 +462,62 @@ bbop.html.anchor = function(in_cont, in_attrs){
     this._anchor_stack = new bbop.html.tag('a', this._attrs, in_cont);
 };
 
-//
+/*
+ * Function: (anchor) to_string
+ * 
+ * Convert an anchor object into a html-ized string.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns:
+ *  string
+ */
 bbop.html.anchor.prototype.to_string = function(){
     return this._anchor_stack.to_string();
 };
 
-// Add section.
+/*
+ * Function: (anchor) add_to
+ * 
+ * Add content between the tags. Order of addition is order of output.
+ * 
+ * Parameters:
+ *  item - another tag object or a string (html or otherwise)
+ * 
+ * Returns: n/a
+ */
 bbop.html.anchor.prototype.add_to = function(item){
     this._anchor_stack.add_to(item);
 };
 
-// ...
+/*
+ * Function: (anchor) empty
+ * 
+ * Remove all content between the tags.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns: n/a
+ */
 bbop.html.anchor.prototype.empty = function(){
     this._anchor_stack.empty();
 };
 
-///
-/// A simple table structure.
-///
-
-// in_headers is necessary, but can be empty. As can in_entries.
+/*
+ * Constructor: table
+ * 
+ * Create a simple table structure.
+ * in_headers is necessary, but can be empty.
+ * in_entries is necessary, but can be empty.
+ * 
+ * Parameters:
+ *  in_headers - ordered list of headers
+ *  in_entries - lists of lists of entry items
+ *  in_attrs - *[optional]* the typical attributes to add to the table
+ * 
+ * Returns:
+ *  bbop.html.table object
+ */
 bbop.html.table = function(in_headers, in_entries, in_attrs){
     this._is_a = 'bbop.html.table';
     
@@ -357,12 +555,30 @@ bbop.html.table = function(in_headers, in_entries, in_attrs){
     bbop.core.each(entries, function(item){ this_table.add_to(item); });
 };
 
-//
+/*
+ * Function: (table) to_string
+ * 
+ * Convert a table object into a html-ized string.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns:
+ *  string
+ */
 bbop.html.table.prototype.to_string = function(){
     return this._table_stack.to_string();
 };
 
-// Add data row. entries is coerced into an array of tds.
+/*
+ * Function: (table) add_to
+ * 
+ * Add data row. The entries argument is coerced into an array of tds.
+ * 
+ * Parameters:
+ *  entries - lists of lists of entry items
+ * 
+ * Returns: n/a
+ */
 bbop.html.table.prototype.add_to = function(entries){
     
     //this._body_stack = new bbop.html.tag('tbody');
@@ -385,8 +601,84 @@ bbop.html.table.prototype.add_to = function(entries){
     this._body_stack.add_to(tr);
 };
 
-// Headers do not get wiped, just the data rows in the tbody.
+/*
+ * Function: (table) empty
+ * 
+ * Headers do not get wiped, just the data rows in the tbody.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns: n/a
+ */
 bbop.html.table.prototype.empty = function(){
     this._count = 0;
     this._body_stack.empty();
+};
+
+/*
+ * Constructor: button
+ * 
+ * Create a button object.
+ * For labels, take a look at:
+ * <https://jquery-ui.googlecode.com/svn/tags/1.6rc5/tests/static/icons.html>
+ * 
+ * Parameters:
+ *  in_label - label
+ *  in_icon - the jQuery icon to use
+ *  in_attrs - *[optional]* the typical attributes to add
+ * 
+ * Returns:
+ *  bbop.html.button object
+ */
+bbop.html.button = function(in_label, in_icon, in_attrs){
+    this._is_a = 'bbop.html.button';
+    
+    // Arg check--attrs should be defined as something.
+    this._attrs = in_attrs || {};
+
+    // Internal stack is just the top-level button.
+    this._button_stack = new bbop.html.tag('button', this._attrs, in_label);
+};
+
+/*
+ * Function: (button) to_string
+ * 
+ * Convert a button object into a html-ized string.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns:
+ *  string
+ */
+bbop.html.button.prototype.to_string = function(){
+    return this._button_stack.to_string();
+};
+
+/*
+ * Function: (button) add_to
+ * 
+ * Add content between the tags. Order of addition is order of output.
+ * Not really worth much as it just equates to changing the label.
+ * 
+ * Parameters:
+ *  item - another tag object or a string (html or otherwise)
+ * 
+ * Returns: n/a
+ */
+bbop.html.button.prototype.add_to = function(item){
+    this._button_stack.add_to(item);
+};
+
+/*
+ * Function: (button) empty
+ * 
+ * Remove all content between the tags. This equates to removing the
+ * label.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns: n/a
+ */
+bbop.html.button.prototype.empty = function(){
+    this._button_stack.empty();
 };

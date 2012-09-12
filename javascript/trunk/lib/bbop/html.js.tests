@@ -28,7 +28,7 @@ load('html.js');
     mr_t.is_true(bbop.core.has_interface(bbop.html, 'empty'),
 		 'supplies empty');
     
-    var d = new bbop.html.tag('div');
+    //var d = new bbop.html.tag('div');
 })();
 
 ///
@@ -215,6 +215,28 @@ load('html.js');
      mr_t.is_same_atom(a2.to_string(),
 		       '<a href="bar" title="bib" />',
 		       "anchor 4");
+     
+ })();
+
+// button
+(function(){
+
+     // Basic button.
+     var b1 = new bbop.html.button();
+     mr_t.is_same_atom(bbop.core.what_is(b1), 'bbop.html.button', 'buttonness');
+     mr_t.is_same_atom(b1.to_string(), '<button />', "button 1 a");
+     b1.add_to('foo');
+     mr_t.is_same_atom(b1.to_string(), '<button>foo</button>', "button 1 b");
+     
+     // Fancy button.
+     var b2 = new bbop.html.button('foo');
+     mr_t.is_same_atom(b2.to_string(),
+		       '<button>foo</button>',
+		       "button 2 a");
+     b2.empty();
+     mr_t.is_same_atom(b2.to_string(),
+     		       '<button />',
+     		       "button 2 b");
      
  })();
 
