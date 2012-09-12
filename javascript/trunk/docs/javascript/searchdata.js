@@ -60,10 +60,10 @@ var indexSectionsWithContent = {
       "Z": false
       },
    "Functions": {
-      "Symbols": false,
+      "Symbols": true,
       "Numbers": false,
       "A": true,
-      "B": false,
+      "B": true,
       "C": true,
       "D": true,
       "E": true,
@@ -99,7 +99,7 @@ var indexSectionsWithContent = {
       "E": false,
       "F": false,
       "G": true,
-      "H": false,
+      "H": true,
       "I": false,
       "J": false,
       "K": false,

@@ -661,10 +661,13 @@ bbop.core.dump = function(thing){
 /*
  * Function: has_interface
  *
- * Check to see if an object supplies an "interface".
+ * Check to see if all top-level objects in a namespace supply an
+ * "interface".
+ * 
+ * Mostly intended for use during unit testing.
  *
  * Parameters: 
- *  iobj - the objct in question
+ *  iobj - the object in question
  *  iface - the interface (as a string) that we're looking for
  *
  * Returns: boolean
@@ -672,7 +675,6 @@ bbop.core.dump = function(thing){
  * TODO: Unit test this to make sure it catches both prototype (okay I
  * think) and uninstantiated objects (harder/impossible?).
  */
-// @Object
 bbop.core.has_interface = function(iobj, iface){
     var retval = true;
     bbop.core.each(iobj,
