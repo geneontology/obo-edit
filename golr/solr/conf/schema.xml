@@ -50,11 +50,11 @@
     <field name="type" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ann: Column 14: date of assignment. -->
     <field name="date" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
-    <!-- bbop_ont: JSON blob form of the local relation transitivity graph. -->
-    <field name="transitivity_graph" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
     <!-- bbop_ann: Column 8: with/from. -->
     <!-- bbop_ann_ev_agg: ??? -->
     <field name="evidence_with" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <!-- bbop_ont: JSON blob form of the local relation transitivity graph. -->
+    <field name="transitivity_graph" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
     <!-- bbop_ann: Column 5 + ontology. -->
     <!-- bbop_ann_ev_agg: Column 5 + ontology. -->
     <field name="annotation_class_label" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
@@ -73,6 +73,8 @@
     <!--An easily searchable (TextField tokenized) version of annotation_extension_class_label.-->
     <field name="annotation_extension_class_label_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
     <copyField source="annotation_extension_class_label" dest="annotation_extension_class_label_searchable"></copyField>
+    <!-- bbop_ont: Others terms you might want to look at. -->
+    <field name="consider" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ont: Term definition. -->
     <field name="description" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of description.-->
@@ -123,6 +125,8 @@
     <!-- bbop_ont: Term namespace. -->
     <!-- bbop_ann: Column 15: assigned by. -->
     <field name="source" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <!-- bbop_ont: Term that replaces this term. -->
+    <field name="replaced_by" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ont: JSON blob form of the local stepwise topology graph. -->
     <field name="topology_graph" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
     <!-- bbop_ann_ev_agg: ??? -->
