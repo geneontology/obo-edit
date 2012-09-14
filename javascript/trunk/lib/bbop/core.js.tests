@@ -365,6 +365,29 @@ mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
     mr_t.is_false(bbop.core.is_empty(t7), "correctly empty t7");
 })();
 
+// is_defined.
+(function(){
+    var t1 = 1;
+    var t2 = null;
+    var t3 = [];
+    var t4 = {};
+    var t5 = {'cow': 'moo'};
+    var t6 = function(){ return true; };
+    var t7 = true;
+    var t8 = false;
+
+    mr_t.is_true(bbop.core.is_defined(t1), "correctly defined t1");
+    mr_t.is_true(bbop.core.is_defined(t2), "correctly defined t2");
+    mr_t.is_true(bbop.core.is_defined(t3), "correctly defined t3");
+    mr_t.is_true(bbop.core.is_defined(t4), "correctly defined t4");
+    mr_t.is_true(bbop.core.is_defined(t5), "correctly defined t5a");
+    mr_t.is_true(bbop.core.is_defined(t5['cow']), "correctly defined t5b");
+    mr_t.is_false(bbop.core.is_defined(t5['moo']), "correctly defined t5c");
+    mr_t.is_true(bbop.core.is_defined(t6), "correctly defined t6");
+    mr_t.is_true(bbop.core.is_defined(t7), "correctly defined t7");
+    mr_t.is_true(bbop.core.is_defined(t8), "correctly defined t8");
+})();
+
 // what_is.
 (function(){
     // Simple items.

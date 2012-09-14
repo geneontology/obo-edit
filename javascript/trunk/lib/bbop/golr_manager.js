@@ -5,6 +5,9 @@
  * Generic BBOP manager for dealing with gross GOlr configuration
  * and management. Remember, this is actually a "subclass" of
  * bbop.registry.
+ * 
+ * Both json_data (or clean error data) and the manager itself (this
+ * as anchor) should be passed to the callbacks.
  */
 
 // Setup the internal requirements.
@@ -444,7 +447,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     // does all of the callbacks.
     this._run_reset_callbacks = function(json_data){
 	ll('run reset callbacks...');
-	anchor.apply_callbacks('reset', [json_data]);
+	anchor.apply_callbacks('reset', [json_data, anchor]);
     };
 
     // The main callback function called after a successful AJAX call in
@@ -452,7 +455,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     // all of the callbacks.
     this._run_search_callbacks = function(json_data){
 	ll('run search callbacks...');
-	anchor.apply_callbacks('search', [json_data]);
+	anchor.apply_callbacks('search', [json_data, anchor]);
     };
 
     // This is the function that runs where there is an AJAX error
@@ -462,7 +465,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 
 	ll('Failed server request: '+ result +', '+ status +', '+ error);
 		
-	// Get the error out if possible.
+	// Get the error out (clean it) if possible.
 	var jreq = result.responseText;
 	var req = JQ.parseJSON(jreq);
 	if( req && req['errors'] && req['errors'].length > 0 ){
@@ -479,7 +482,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	
 	// Run all against registered functions.
 	ll('run error callbacks...');
-	anchor.apply_callbacks('error', [clean_error]);
+	anchor.apply_callbacks('error', [clean_error, anchor]);
     };
     var _run_error_callbacks = this._run_error_callbacks;
 
