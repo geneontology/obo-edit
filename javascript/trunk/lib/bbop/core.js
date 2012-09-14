@@ -419,6 +419,24 @@ bbop.core.is_empty = function(in_thing){
 };
 
 /*
+ * Function: is_defined
+ *
+ * Return true/false on whether or not the passed object is defined.
+ *
+ * Parameters: 
+ *  in_thing - the thing in question
+ *
+ * Returns: boolean
+ */
+bbop.core.is_defined = function(in_thing){
+    var retval = true;
+    if( typeof(in_thing) === 'undefined' ){
+	retval = false;
+    }
+    return retval;
+};
+
+/*
  * Function: each
  *
  * Implement a simple iterator so I don't go mad.
