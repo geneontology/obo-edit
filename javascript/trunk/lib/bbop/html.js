@@ -9,7 +9,13 @@
  *  .to_string(): returns a string of you and below
  *  .add_to(): add things between the tags
  *  .empty(): empties all things between the tags
+ *  .get_id(): return the id or null if not defined
  * These are enforced during the tests.
+ * 
+ * For functions that take attribute hashes, there is a special
+ * attribute {'generate_id': true} that will generate a somewhat
+ * random id if an incoming id was not already specified. This id can
+ * be retrieved using get_id().
  * 
  * This package takes all of the bbop.html.* namespace.
  */
@@ -30,8 +36,8 @@ bbop.core.namespace('bbop', 'html', 'input');
  * 
  * Parameters:
  *  tag - the tag name to be created
- *  attrs - the typical attributes to add
- *  below - a list/array of other html objects that exists "between" the tags
+ *  attrs - *[serially optional]* the typical attributes to add
+ *  below - *[optional]* a list/array of other html objects that exists "between" the tags
  * 
  * Returns:
  *  bbop.html.tag object
@@ -42,19 +48,30 @@ bbop.html.tag = function(tag, attrs, below){
     // Arg check--attrs should be defined as something.
     if( ! attrs ){ attrs = {}; }
 
+    // Generate (or not) id if it was requested.
+    if( ! bbop.core.is_defined(attrs['id']) &&
+	bbop.core.is_defined(attrs['generate_id']) &&
+	bbop.core.is_defined(attrs['generate_id']) == true ){
+	    // Add a real id.
+	    attrs['id'] = 'gen_id-bbop-html-'+ bbop.core.randomness(20);
+	    // Remove the 'generated_id' property.
+	    delete attrs['generate_id'];
+	}
+    this._attrs = attrs;
+    
     // Arg check--below should be some kind of an array.
     if( ! below ){
 	below = [];
     }else if( bbop.core.is_array(below) ){
 	// do nothing
     }else{
-	// hopefully a bbop.html.tag
+	// hopefully a bbop.html.tag then
 	below = [below];
     }
 
     // Accumulate the incoming attributes if there are any.
     var additional_attrs = '';
-    bbop.core.each(attrs, function(in_key, in_val){
+    bbop.core.each(this._attrs, function(in_key, in_val){
 		       additional_attrs = additional_attrs + ' ' +
 			   in_key + '="' + in_val + '"';
 		   });
@@ -127,6 +144,23 @@ bbop.html.tag.prototype.empty = function(){
 };
 
 /*
+ * Function: (tag) get_id
+ * 
+ * Return the id if extant, null otherwise.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns: string or null
+ */
+bbop.html.tag.prototype.get_id = function(){
+    var retval = null;
+    if( bbop.core.is_defined(this._attrs['id']) ){
+	retval = this._attrs['id'];
+    }
+    return retval;
+};
+
+/*
  * Constructor: accordion
  * 
  * Create the a frame for the functional part of a jQuery accordion
@@ -148,7 +182,7 @@ bbop.html.tag.prototype.empty = function(){
  * 
  * Parameters:
  *  in_list - accordion frame headers: [[title, string/*.to_string()], ...]
- *  attrs - attributes to apply to the new top-level div
+ *  attrs - *[serially optional]* attributes to apply to the new top-level div
  *  add_id_p - *[optional]* true or false; add a random id to each section
  * 
  * Returns:
@@ -277,6 +311,19 @@ bbop.html.accordion.prototype.empty = function(){
 };
 
 /*
+ * Function: (accordion) get_id
+ * 
+ * Return the id if extant, null otherwise.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns: string or null
+ */
+bbop.html.accordion.prototype.get_id = function(){
+    return this._div_stack.get_id();
+};
+
+/*
  * Function: (accordion) get_section_id
  * 
  * Get the "real" section id by way of the "convenience" section id?
@@ -377,6 +424,19 @@ bbop.html.list.prototype.empty = function(){
 };
 
 /*
+ * Function: (accordion) get_id
+ * 
+ * Return the id if extant, null otherwise.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns: string or null
+ */
+bbop.html.list.prototype.get_id = function(){
+    return this._ul_stack.get_id();
+};
+
+/*
  * Constructor: input
  * 
  * Create a form input.
@@ -437,6 +497,19 @@ bbop.html.input.prototype.add_to = function(item){
  */
 bbop.html.input.prototype.empty = function(){
     this._input_stack = new bbop.html.tag('input', this._attrs);
+};
+
+/*
+ * Function: (input) get_id
+ * 
+ * Return the id if extant, null otherwise.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns: string or null
+ */
+bbop.html.input.prototype.get_id = function(){
+    return this._input_stack.get_id();
 };
 
 /*
@@ -501,6 +574,19 @@ bbop.html.anchor.prototype.add_to = function(item){
  */
 bbop.html.anchor.prototype.empty = function(){
     this._anchor_stack.empty();
+};
+
+/*
+ * Function: (anchor) get_id
+ * 
+ * Return the id if extant, null otherwise.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns: string or null
+ */
+bbop.html.anchor.prototype.get_id = function(){
+    return this._anchor_stack.get_id();
 };
 
 /*
@@ -616,21 +702,33 @@ bbop.html.table.prototype.empty = function(){
 };
 
 /*
+ * Function: (table) get_id
+ * 
+ * Return the id if extant, null otherwise.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns: string or null
+ */
+bbop.html.table.prototype.get_id = function(){
+    return this._table_stack.get_id();
+};
+
+/*
  * Constructor: button
  * 
  * Create a button object.
- * For labels, take a look at:
+ * For after-the-fact decoration, take a look at:
  * <https://jquery-ui.googlecode.com/svn/tags/1.6rc5/tests/static/icons.html>
  * 
  * Parameters:
  *  in_label - label
- *  in_icon - the jQuery icon to use
  *  in_attrs - *[optional]* the typical attributes to add
  * 
  * Returns:
  *  bbop.html.button object
  */
-bbop.html.button = function(in_label, in_icon, in_attrs){
+bbop.html.button = function(in_label, in_attrs){
     this._is_a = 'bbop.html.button';
     
     // Arg check--attrs should be defined as something.
@@ -681,4 +779,17 @@ bbop.html.button.prototype.add_to = function(item){
  */
 bbop.html.button.prototype.empty = function(){
     this._button_stack.empty();
+};
+
+/*
+ * Function: (button) get_id
+ * 
+ * Return the id if extant, null otherwise.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns: string or null
+ */
+bbop.html.button.prototype.get_id = function(){
+    return this._button_stack.get_id();
 };

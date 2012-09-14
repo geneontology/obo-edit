@@ -27,6 +27,8 @@ load('html.js');
 		 'supplies add_to');
     mr_t.is_true(bbop.core.has_interface(bbop.html, 'empty'),
 		 'supplies empty');
+    mr_t.is_true(bbop.core.has_interface(bbop.html, 'get_id'),
+		 'supplies get_id');
     
     //var d = new bbop.html.tag('div');
 })();
@@ -219,7 +221,7 @@ load('html.js');
  })();
 
 // button
-(function(){
+//(function(){
 
      // Basic button.
      var b1 = new bbop.html.button();
@@ -228,17 +230,25 @@ load('html.js');
      b1.add_to('foo');
      mr_t.is_same_atom(b1.to_string(), '<button>foo</button>', "button 1 b");
      
-     // Fancy button.
+     // Fancy button and null id test.
      var b2 = new bbop.html.button('foo');
      mr_t.is_same_atom(b2.to_string(),
 		       '<button>foo</button>',
 		       "button 2 a");
+     mr_t.is_true(b2.get_id() == null,
+		  "button 2 b");
      b2.empty();
      mr_t.is_same_atom(b2.to_string(),
      		       '<button />',
-     		       "button 2 b");
+     		       "button 2 c");
      
- })();
+     // Do some testing with the ids.
+     var b3 = new bbop.html.button('foo', {'generate_id': true});
+     // '<button>foo</button>',
+     mr_t.is_same_atom(b3.get_id().length, 37, 'button id okay');
+     mr_t.is_same_atom(b3.to_string().length, 63, 'button id with string okay');
+     
+// })();
 
 ///
 /// End unit testing.
