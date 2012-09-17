@@ -78,12 +78,13 @@ bbop.golr.faux_ajax = function (){
  * 
  * Arguments:
  *  golr_loc - string url to GOlr server;
- *  golr_conf_obj - a bbop.golr.conf object
+ *  golr_conf_obj - a <bbop.golr.conf> object
  * 
  * Returns:
  *  golr manager object
  * 
- * Also See: <bbop.registry>
+ * See also:
+ *  <bbop.registry>
  */
 bbop.golr.manager = function (golr_loc, golr_conf_obj){
 //function GOlrManager(in_args){
@@ -139,6 +140,15 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     // this._golr_conf = new bbop.golr.conf(golr_conf_var);
     this._golr_conf = golr_conf_obj;
 
+    // Our (default) query and the real deal.
+    this.default_query = '*:*';
+    this.query = this.default_query;
+
+    // We remember defaults in the case of rows and start since they
+    // are the core to any paging mechanisms and may change often.
+    this.default_rows = 10;
+    this.default_start = 0;
+
     // Our default query args, with facet fields plugged in.
     this.query_variants =
 	{
@@ -148,8 +158,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    indent: 'on',
 	    wt: 'json',
 	    //version: '2.2',
-	    rows: 10,
-	    start: 0, // Solr is offset indexing
+	    rows: anchor.default_rows,
+	    start: anchor.default_start, // Solr is offset indexing
 	    fl: '*%2Cscore',
     
 	    // Deprecated: see query_filters
@@ -170,7 +180,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    // TODO?: 'facet.limit': 20,
 	    // TODO?: 'f.???.facet.limit': 50,
 	    // TODO: 'json.nl': [flat|map|arrarr]
-	    // There are unlikely to be messed with too much.
+	    // They are unlikely to be messed with too much.
 	    'facet.field': []
 	};
 
@@ -178,6 +188,26 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     // It should look like:
     // {<filter>: {<value>:{'sticky_p':(t|f), 'negative_p':(t|f)}, ...}}
     this.query_filters = {};
+
+    // /*
+    //  * Function: plist_to_property_hash
+    //  *
+    //  * Turn a plist to a hash containing the different properties that
+    //  * can be defined for a query filter. Possible values are: '+'
+    //  * (positive filter), '-' (negative filter), '*' (sticky filter),
+    //  * '$' (transient). If mutually exclusive properties are defined
+    //  * (e.g. both '+' and '-'), the last one will be used. Or, since
+    //  * that is a call to silliness, let's say the behavior is
+    //  * undefined.
+    //  *
+    //  * Parameters: 
+    //  *  plist - *[optional]* a list of properties to apply to the filter
+    //  *
+    //  * Returns: 
+    //  *  A hash version of the plist; otherwise, the defaul property hash
+    //  */
+    // this.set_query = function(plist){
+    // };
 
     /*
      * Function: plist_to_property_hash
@@ -242,7 +272,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * Returns: 
      *  (TODO) The current query filter hash.
      * 
-     * Also See: <plist_to_property_hash>
+     * See also:
+     *  <plist_to_property_hash>
      */
     this.add_query_filter = function(filter, value, plist){
 	
@@ -507,43 +538,102 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     };
 
     /*
-     * Function: update
+     * Function: clear
      *
-     * The user code to select the type of update (and thus the type
-     * of callbacks to be called on data return).
-     *
+     * Clear all non-sticky query parameters to get back to a more
+     * "original" state.
+     * 
+     * Not to be confused with <reset>.
+     * 
      * Parameters: 
-     *  update_type - update type string
-     *  logic_hash - *[optional]* logic hash argument
+     *  n/a
      *
      * Returns:
      *  n/a
      */
-    this.update = function(update_type, logic_hash){
+    this.clear = function(){
 
-	// Structure of the necessary invariant parts.	
-	var qurl = anchor.get_query_url();
+	// Reset 'q'.
+	anchor.query = anchor.default_query;
+
+	// Reset 'fq'.
+	//anchor. reset all but sticky
+    };
+
+    /*
+     * Function: update
+     *
+     * The user code to select the type of update (and thus the type
+     * of callbacks to be called on data return).
+     * 
+     * This mechanism adds a couple of variables over other methods
+     * for bookkeeping: packet (incremented every time) and callback_type.
+     * 
+     * The currently recognized callback types are "reset" (for when
+     * you are starting or starting over) and "search" (what you
+     * typically want when you get new data).
+     * 
+     * The logic_hash argument is a string keyed hash of bbop.logic.
+     * This is a curried wrapper for update objects. The only two keys
+     * currently identified are 'q' and 'fq'.
+     * 
+     * If rows or start are not set, they will both be reset to their
+     * initial values--this is to allow for paging on "current"
+     * results and then getting back to the business of searching with
+     * as little fuss as possible. Because of things like this, one
+     * should avoid calling this directly whenever possible and prefer
+     * simpler functionality of the wrapper methods: <search>,
+     * <reset>, and <page>.
+     *
+     * Parameters: 
+     *  callback_type - callback type string
+     *  logic_hash - *[optional]* logic hash argument
+     *  rows - *[serially optional]* integer; the number of rows to return
+     *  start - *[serially optional]* integer; the offset of the returned rows
+     *
+     * Returns:
+     *  n/a
+     * 
+     * Also see:
+     *  <get_query_url>
+     */
+    this.update = function(callback_type, logic_hash, rows, start){
+
+	// Handle paging in this main section by resetting to
+	// the defaults if rows and offset are not explicitly
+	// defined.
+	if( ! bbop.core.is_defined(rows) || ! bbop.core.is_defined(start) ){
+	    anchor.set('rows', anchor.default_rows);
+	    anchor.set('start', anchor.default_start);
+	}
 
 	// Our bookkeeping--increment packet.
 	anchor.last_sent_packet = anchor.last_sent_packet + 1;
 	
-	// Necessary variants.
-	var update_variants = {
+	// Necessary updated query variants.
+	var update_query_variants = {
 	    packet: anchor.last_sent_packet,
-	    callback_type: update_type
+	    callback_type: callback_type
 	};
+	var update_qv = bbop.core.get_assemble(update_query_variants);
+
+	// Structure of the necessary invariant parts.	
+	var qurl = anchor.get_query_url();
 
 	// Conditional merging of the remaining variant parts.
-	if( update_type == 'reset' ){
+	if( callback_type == 'reset' ){
+
+	    // Take everything back to the initial state--this means
+	    // resetting the query and removing all non-sticky
+	    // filters.
 
 	    // Reset and do completely open query.
 	    ll('reset variant assembly');
-	    var update_qs = bbop.core.get_assemble(update_variants);
-	    ll('update_qs: ' + update_qs);
-	    qurl = qurl + '&' + update_qs + '&q=*:*';
-	    //qurl = qurl + '&' + update_qs;
+	    ll('update_qv: ' + update_qv);
+	    qurl = qurl + '&' + update_qv + '&q=' + anchor.query;
+	    //qurl = qurl + '&' + update_qv;
 
-	}else if( update_type == 'search' ){
+	}else if( callback_type == 'search' ){
 
 	    // NOTE/TODO: a lot of previous wacky q handling was done
 	    // in perl on the server, some of that will probably have
@@ -573,12 +663,11 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 
 	    // Finalize it.
 	    ll('final variant assembly');
-	    var update_qs = bbop.core.get_assemble(update_variants);
-	    //ll('varient_qs: ' + update_qs);
-	    qurl = qurl + '&' + update_qs + filter_qs + '&q=' + query_string;
+	    //ll('varient_qs: ' + update_qv);
+	    qurl = qurl + '&' + update_qv + filter_qs + '&q=' + query_string;
 
 	}else{
-	    throw new Error("Unknown update_type: " + update_type);
+	    throw new Error("Unknown callback_type: " + callback_type);
 	}
 
 	ll('try: ' + qurl);
@@ -590,8 +679,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    url: qurl,
 	    dataType: 'json',
 	    jsonp: 'json.wrf',
-	    success: _callback_type_decider,
-	    error: _run_error_callbacks
+	    success: _callback_type_decider, // decide and run search or reset
+	    error: _run_error_callbacks // run error callbacks
 	};
 	JQ.ajax(argvars);
     };
@@ -599,12 +688,19 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     /*
      * Function: reset
      *
-     * Trigger the "reset" chain of events.
+     * Manually trigger the "reset" chain of events.
+     *
+     * This is a curried wrapper for <update> and should be preferred
+     * over a direct call to update.
+     *
+     * Note to be confused with <clear>.
      *
      * Returns:
      *  n/a
+     * 
+     * See also:
+     *  <update>
      */
-    // Trigger the "reset" chain of events.
     this.reset = function(){
 	anchor.update('reset', null);
     };
@@ -614,14 +710,87 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *
      * Trigger the "search" chain of events.
      * Takes a field-keyed hash of bbop.logics as an argument.
-     *
+     * 
+     * This is a curried wrapper for <update> and should be preferred
+     * over a direct call to update.
+     * 
      * Parameters: 
      *  logic_hash - *[optional]* logic hash argument
      *
      * Returns: n/a
+     * 
+     * See also:
+     *  <update>
      */
     this.search = function(logic_hash){
 	anchor.update('search', logic_hash);
+    };
+
+    /*
+     * Function: page
+     *
+     * Re-trigger the "search" chain of events, but with the variables
+     * set for a different section of the results.
+     * 
+     * Note that this operates independently of any impossibilites in
+     * the results--just how such paging would look and
+     * triggering. Ths UI should handle impossibilities and the like.
+     * 
+     * This is a wrapper for <update> and should be preferred over a
+     * direct call to update.
+     * 
+     * Parameters: 
+     *  rows - the number of rows to return
+     *  start - the offset of the rows to return
+     *
+     * Returns:
+     *  n/a
+     * 
+     * See also:
+     *  <update>
+     */
+    this.page = function(rows, start){
+	anchor.set('rows', rows);
+	anchor.set('start', start);
+	anchor.update('search', null, rows, start);
+    };
+
+    /*
+     * Function: get_page_rows
+     *
+     * Return the number of rows the manager is currently set
+     * to. Useful as an argument to <page>.
+     * 
+     * Parameters: 
+     *  n/a
+     *
+     * Returns:
+     *  integer; the number of rows the manager is currently set to
+     * 
+     * See also:
+     *  <page>
+     */
+    this.get_page_rows = function(){
+	return anchor.get('rows');
+    };
+
+    /*
+     * Function: get_page_start
+     *
+     * Return the rows offset the manager is currently set to. Useful
+     * as an argument to <page>.
+     * 
+     * Parameters: 
+     *  n/a
+     *
+     * Returns:
+     *  integer; the offset the manager is currently set to
+     * 
+     * See also:
+     *  <page>
+     */
+    this.get_page_start = function(){
+	return anchor.get('start');
     };
 
     /*
@@ -721,7 +890,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * While we are always contacting the same Solr instance, we
      * sometimes want to have different weights, facets, etc. This
      * function allows us to use the pre-set ones defined in the
-     * configuration argument.
+     * constructor configuration argument.
      *
      * Parameters: 
      *  personality_id - string
@@ -750,11 +919,18 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * Get the current invariant state of the manager returned as a
      * URL string.
      * 
-     * This is appropriate for getting data, but maybe not for things
-     * like autocomplete where races can occur.
+     * This is generally appropriate for getting data, but maybe not
+     * for things like high-speed autocomplete where races can
+     * occur. For those, you might want to consider <update> or
+     * <search>.
      *
+     * Parameters:
+     *  n/a
+     * 
      * Returns:
-     *  URL string.
+     *  URL string
+     * 
+     * Also see: <update>, <search>
      */
     this.get_query_url = function(){
 
