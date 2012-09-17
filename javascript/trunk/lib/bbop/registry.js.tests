@@ -46,7 +46,7 @@ load('registry.js');
      reg.register('start', '0', plus, 0);
      reg.register('start', '1', mult, 1);
      reg.apply_callbacks('start', [2]);
-     mr_t.is_same_atom(acc, 2, "apply test 1");
+     mr_t.is_same_atom(acc, 2, "higher priority goes first");
      
      // Test apply and priority.
      acc = 0;

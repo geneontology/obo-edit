@@ -243,6 +243,27 @@ load('golr_manager.js');
 
  })();
 
+// bbop.golr.manager - 6 - paging
+(function(){
+
+     // Setup.
+     var gconf = new bbop.golr.conf(bbop.golr.golr_meta);
+     var gm_ann = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
+     gm_ann.set_personality('bbop_ann'); // profile in gconf
+
+     mr_t.is_same_url(gm_ann.get_query_url(),
+      		      'http://golr.berkeleybop.org/select?&qt=standard&indent=on&wt=json&rows=10&start=0&fl=*%2Cscore&facet=true&facet.mincount=1&json.nl=arrarr&facet.field=source&facet.field=evidence_type&facet.field=taxon&facet.field=isa_partof_label_closure&facet.field=annotation_extension_class&facet.field=type',
+      		      "paging looks okay before");
+     gm_ann.page(7, 11);
+     mr_t.is_same_url(gm_ann.get_query_url(),
+      		      'http://golr.berkeleybop.org/select?&qt=standard&indent=on&wt=json&rows=7&start=11&fl=*%2Cscore&facet=true&facet.mincount=1&json.nl=arrarr&facet.field=source&facet.field=evidence_type&facet.field=taxon&facet.field=isa_partof_label_closure&facet.field=annotation_extension_class&facet.field=type',
+      		      "paging looks okay after");
+     gm_ann.search();
+     mr_t.is_same_url(gm_ann.get_query_url(),
+      		      'http://golr.berkeleybop.org/select?&qt=standard&indent=on&wt=json&rows=10&start=0&fl=*%2Cscore&facet=true&facet.mincount=1&json.nl=arrarr&facet.field=source&facet.field=evidence_type&facet.field=taxon&facet.field=isa_partof_label_closure&facet.field=annotation_extension_class&facet.field=type',
+      		      "paging resets properly");
+ })();
+
 ///
 /// End unit testing.
 ///

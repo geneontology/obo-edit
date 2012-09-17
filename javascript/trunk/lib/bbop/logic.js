@@ -1,36 +1,45 @@
-////////////
-////
-//// bbop.logic
-////
-//// BBOP object to try and take some of the pain out of managing
-//// the boolean logic that seems to show up periodically. Right now
-//// mostly aimed at dealing with Solr/GOlr.
-////
-//// Taken name spaces:
-////    bbop.logic
-////
-//// Anatomy of a core data bundle.
-//// 
-////   data_bundle => {op: arg}
-////   op => '__AND__', '__OR__', '__NOT__'
-////   arg => <string>, array, data_bundle
-////   array => [array_item*]
-////   array_item => <string>, data
-//// 
-//// Ex:
-//// {and: [{or: ...}, {or: ...}, {and: ...} ]}
-//// var filters = {'and': []};
-////
-//// TODO: parens between levels
-////
-//////////
+/*
+ * Package: logic.js
+ * Namespace: bbop.logic
+ * 
+ * BBOP object to try and take some of the pain out of managing the
+ * boolean logic that seems to show up periodically. Right now mostly
+ * aimed at dealing with Solr/GOlr.
+ * 
+ * Anatomy of a core data bundle.
+ * 
+ * : data_bundle => {op: arg}
+ * : op => '__AND__', '__OR__', '__NOT__'
+ * : arg => <string>, array, data_bundle
+ * : array => [array_item*]
+ * : array_item => <string>, data
+ * 
+ * Example:
+ * 
+ * : {and: [{or: ...}, {or: ...}, {and: ...} ]}
+ * : var filters = {'and': []};
+ *
+ * TODO: parens between levels
+ */
 
 bbop.core.require('bbop', 'core');
 bbop.core.require('bbop', 'logger');
 bbop.core.namespace('bbop', 'logic');
 
-// NOTE: during processing, binary operators with a single argument
-// cease to exist as they will never make it to output.
+/*
+ * Structure: bbop.logic
+ * Constructor: logic
+ * 
+ * Contructor for the bbop.logic object. NOTE: during processing,
+ * binary operators with a single argument cease to exist as they will
+ * never make it to output.
+ * 
+ * Arguments:
+ *  default_conjuntion - *[optional]* "and" or "or"; defaults to "and"
+ * 
+ * Returns:
+ *  bbop logic object
+ */
 bbop.logic = function(default_conjunction){
     this._is_a = 'bbop.logic';
 
@@ -55,7 +64,7 @@ bbop.logic = function(default_conjunction){
     // 	}
     // 	return retval;
     // }
-    // // Cinvert the internal
+    // // Convert the internal
     // function _usable
 
     // // Set the internal default conjunction. Default to "and".
@@ -75,30 +84,52 @@ bbop.logic = function(default_conjunction){
     // ie: this._bundle = {'__AND__': []};
     //this._bundle = {};
     //this._bundle[this.default_conjunction] = [];
+    // See documentation for empty().
     var _empty = function(){
 	logic_anchor._bundle = {};
 	logic_anchor._bundle[logic_anchor.default_conjunction] = [];
     };
     _empty();
 
-    // 
+    /*
+     * Function: add
+     * 
+     * Add to the current stored logic bundle.
+     * 
+     * Parameters:
+     *  item - string or bbop.logic object
+     * 
+     * Returns:
+     *  n/a
+     */
     //this.and = function(){
     //this.or = function(){
     //this.not = function(){
-    this.add = function(foo){
+    this.add = function(item){
 
 	// Add things a little differently if it looks like a bit of
 	// logic.
-	if(  bbop.core.what_is(foo) == 'bbop.logic' ){
-	    this._bundle[this.default_conjunction].push(foo._bundle);
+	if(  bbop.core.what_is(item) == 'bbop.logic' ){
+	    this._bundle[this.default_conjunction].push(item._bundle);
 	}else{
-	    this._bundle[this.default_conjunction].push(foo);
+	    this._bundle[this.default_conjunction].push(item);
 	}
     };
 
-    // Negate the current stored logic.
-    // TODO/BUG: I think this might cause an unreleasable circular
-    // reference.
+    /*
+     * Function: negate
+     * 
+     * Negate the current stored logic.
+     * 
+     * TODO/BUG: I think this might cause an unreleasable circular
+     * reference.
+     * 
+     * Parameters:
+     *  n/a
+     * 
+     * Returns:
+     *  n/a
+     */
     this.negate = function(){
 	var nega = {};
 	nega['not'] = this._bundle;
@@ -171,23 +202,67 @@ bbop.logic = function(default_conjunction){
 	return read;
     };
 
-    // Dump the current data out to a URL.
+    /*
+     * Function: to_string
+     * 
+     * Dump the current data out to a string.
+     * 
+     * Parameters:
+     *  n/a
+     * 
+     * Returns:
+     *  n/a
+     */
     this.to_string = function(){
 	return logic_anchor._read_walk(logic_anchor._bundle);
     };
 
-    // TODO: Dump the current data out to a URL.
+    /*
+     * Function: url
+     * 
+     * TODO
+     * 
+     * Dump the current data out to a URL.
+     * 
+     * Parameters:
+     *  n/a
+     * 
+     * Returns:
+     *  n/a
+     */
     this.url = function(){
 	return logic_anchor._read_walk(logic_anchor._bundle);
     };
 
-    // Empty/reset self.
+    /*
+     * Function: empty
+     * 
+     * Empty/reset self.
+     * 
+     * Parameters:
+     *  n/a
+     * 
+     * Returns:
+     *  n/a
+     */
     // Staggered declaration so I can use it above during initialization.
     this.empty = _empty;
 
-    // TODO
-    // Parse an incoming string into the internal data 
-    this.parse = function(){
+    /*
+     * Function: parse
+     * 
+     * TODO: I think I can grab the shunting yard algorithm for a
+     * similar problem in the old AmiGO 1.x codebase.
+     * 
+     * Parse an incoming string into the internal data structure.
+     * 
+     * Parameters:
+     *  in_str - the incoming string to parse
+     * 
+     * Returns:
+     *  n/a
+     */
+    this.parse = function(in_str){
 	return null;
     };
 
