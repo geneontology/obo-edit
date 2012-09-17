@@ -1,18 +1,26 @@
-////////////
-////
-//// bbop.registry
-////
-//// BBOP generic lightweight listener/callback registry system.
-////
-//// Taken name spaces:
-////    bbop.registry
-////
-//////////
+/* 
+ * Package: registry.js
+ * Namespace: bbop.registry
+ * 
+ * BBOP generic lightweight listener/callback registry system.
+ */
 
 bbop.core.require('bbop', 'core');
 bbop.core.namespace('bbop', 'registry');
 
-// Takes a list of event categories as strings.
+/*
+ * Structure: bbop.registry
+ * Constructor: registry
+ * 
+ * Contructor for BBOP registry. Takes a list of event categories as
+ * strings.
+ * 
+ * Arguments:
+ *  evt_list - a list of strings that identify the events to be used
+ * 
+ * Returns:
+ *  bbop registry object
+ */
 bbop.registry = function(evt_list){
     this._is_a = 'bbop.registry';
 
@@ -25,8 +33,27 @@ bbop.registry = function(evt_list){
 		       registry_anchor.callback_registry[item] = {};
 		   });
     
-    // Remove the specified function from the registry, with an
-    // optional relative priority against other callback functions.
+    /*
+     * Function: register
+     *
+     * Add the specified function from the registry, with an optional
+     * relative priority against other callback functions.
+     *
+     * The in_priority value is relative to others in the category,
+     * with a higher priority...getting priority.
+     * 
+     * Parameters: 
+     *  category - string; ont of the pre-defined categories
+     *  function_id - string; a unique string to identify a function
+     *  in_function - function
+     *  in_priority - *[optional]* number
+     *
+     * Returns: 
+     *  n/a
+     * 
+     * See also:
+     *  <apply>
+     */
     this.register = function(category, function_id, in_function, in_priority){
 
 	// Only these categories.
@@ -45,7 +72,19 @@ bbop.registry = function(evt_list){
 	    };
     };
 
-    // Remove the specified function from the registry.
+    /*
+     * Function: unregister
+     *
+     * Remove the specified function from the registry. Must specify a
+     * legitimate category and the function id of the function in it.
+     *
+     * Parameters: 
+     *  category - string
+     *  function_id - string
+     *
+     * Returns: 
+     *  n/a
+     */
     this.unregister = function(category, function_id){
 	if( registry_anchor.callback_registry[category] &&
 	    registry_anchor.callback_registry[category][function_id] ){
@@ -53,7 +92,17 @@ bbop.registry = function(evt_list){
             }
     };
     
-    // Generic getter for callback functions, returns by priority.
+    /*
+     * Function: get_callbacks
+     *
+     * Generic getter for callback functions, returns by priority.
+     *
+     * Parameters: 
+     *  category - string
+     *
+     * Returns: 
+     *  an ordered (by priority) list of function_id strings
+     */
     this.get_callbacks = function(category){
 
 	var cb_id_list =
@@ -83,7 +132,20 @@ bbop.registry = function(evt_list){
 	return cb_fun_list;
     };
 
-    // Generic runner for prioritized callbacks with arg.
+    /*
+     * Function: apply_callbacks
+     *
+     * Generic runner for prioritized callbacks with various arguments
+     * and an optional change in context..
+     *
+     * Parameters: 
+     *  category - string
+     *  arg_list - a list of arguments to pass to the function in the category
+     *  context - *[optional]* the context to apply the arguments in
+     *
+     * Returns: 
+     *  n/a
+     */
     this.apply_callbacks = function(category, arg_list, context){
 
 	// Run all against registered functions.
