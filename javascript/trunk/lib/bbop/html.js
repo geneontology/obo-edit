@@ -400,13 +400,29 @@ bbop.html.list.prototype.to_string = function(){
  * 
  * Add a new li section to a list.
  * 
+ * Optionally, it can take multiple arguments and will add each of
+ * them to the new li tag in turn.
+ * 
  * Parameters:
- *  item - another tag object or a string (html or otherwise)
+ *  item1 - another tag object or a string (html or otherwise)
+ *  item2 - *[optional]* ...on forever
  * 
  * Returns: n/a
  */
-bbop.html.list.prototype.add_to = function(item){
-    var li = new bbop.html.tag('li', {}, bbop.core.to_string(item));
+bbop.html.list.prototype.add_to = function(){
+
+    // Convert anonymous arguments into an Array.
+    var args = Array.prototype.slice.call(arguments); 
+
+    // Cycle through and add them to the accumulator for the new li.
+    var li_acc = [];
+    bbop.core.each(args,
+		   function(arg){
+		       li_acc.push(bbop.core.to_string(arg));
+		   });
+
+    // Join them and add them to the stack of the encompassing ul.
+    var li = new bbop.html.tag('li', {}, li_acc.join(" "));
     this._ul_stack.add_to(li);
 };
 

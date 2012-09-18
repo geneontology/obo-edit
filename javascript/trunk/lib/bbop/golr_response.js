@@ -200,10 +200,25 @@ bbop.golr.response.documents = function(robj){
     return robj.response.docs;
 };
 
+// /*
+//  * Function: facet_fields
+//  * 
+//  * Return a count sorted array of the response's facet fields and counts.
+//  * 
+//  * Arguments:
+//  *  robj - JSONized GOlr response
+//  * 
+//  * Returns:
+//  *  list of string/integer doublets
+//  */
+// bbop.golr.response.facet_fields = function(robj){
+//     return robj.facet_counts.facet_fields;
+// };
+
 /*
  * Function: facet_field_list
  * 
- * Return a sorted array of the response's facet fields.
+ * Return a count sorted array of the response's facet fields.
  * 
  * Arguments:
  *  robj - JSONized GOlr response
@@ -219,6 +234,8 @@ bbop.golr.response.facet_field_list = function(robj){
  * Function: facet_field
  * 
  * Return a count-sorted array of a facet field's response.
+ * 
+ * : [["foo", 60], ...]
  * 
  * Arguments:
  *  robj - JSONized GOlr response
@@ -239,32 +256,34 @@ bbop.golr.response.facet_field = function(robj, facet_name){
  * 
  * Arguments:
  *  robj - JSONized GOlr response
- *  in_field - the string id of the facet to examine
  * 
  * Returns:
  *  hash of facets to their integer counts
  */
-bbop.golr.response.facet_counts = function(robj, in_field){
+bbop.golr.response.facet_counts = function(robj){
     
     var ret_hash = {};
     
-    var facet_list =
-	bbop.core.get_keys(robj.facet_counts.facet_fields);
-    for( var fli = 0; fli < facet_list.length; fli++ ){
-	
-	var facet_name = facet_list[fli];
-	if( ! ret_hash[facet_name] ){
-	    ret_hash[facet_name] = {};		
-	}
-	
-	var facet_counts = robj.facet_counts.facet_fields[facet_name];
-	for( var tc = 0; tc < facet_counts.length; tc = tc + 2 ){
-	    var faspect = facet_counts[tc];
-	    var fcount = facet_counts[tc + 1];
-	    ret_hash[facet_name][faspect] = fcount;
-	}
-    }
-    
+    var each = bbop.core.each;
+    var facet_field_list = bbop.golr.response.facet_field_list(robj);
+    each(facet_field_list,
+	 function(ffield){
+	     
+	     // Make sure the top field is present,
+	     if( ! ret_hash[ffield] ){
+		 ret_hash[ffield] = {};		
+	     }
+
+	     var facet_field_items =
+		 bbop.golr.response.facet_field(robj, ffield);
+	     each(facet_field_items,
+		 function(item, index){
+		     var name = item[0];
+		     var count = item[1];
+		     ret_hash[ffield][name] = count;
+		 });
+	 });
+
     return ret_hash;
 };
 
