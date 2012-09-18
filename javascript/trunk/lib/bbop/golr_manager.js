@@ -412,8 +412,13 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     /*
      * Function: get_query_filters
      *
-     * Get a list of hashes representing the query filters ('fq').
+     * Get a list of hashes representing the query filters ('fq'). The
+     * return lists look like:
      *
+     * : [{'filter': A, 'value': B, 'negative_p': C, 'sticky_p': D}, ...]
+     *
+     * Where A and B are strings and C and D are booleans.
+     * 
      * Parameters: 
      *  n/a
      *
@@ -439,13 +444,17 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * Function: get_sticky_query_filters
      *
      * Get a list of hashes representing the current stucky query
-     * filters ('fq').
-     *
+     * filters ('fq'). See <get_query_filters> for a specification of
+     * what the return type looks like.
+     * 
      * Parameters: 
      *  n/a
      *
      * Returns: 
      *  A list of the current sticky query filter hashs.
+     * 
+     * See also:
+     *  <get_query_filters>
      */
     this.get_sticky_query_filters = function(){
 
