@@ -853,7 +853,13 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	var do_rows = anchor.get_page_rows();
 	var mod = total_document_count % do_rows;
 	var do_offset = total_document_count - mod;
-	anchor.page(do_rows, do_offset);
+	// ll("page_last: " + total_document_count + " " +
+	//    do_rows + " " + mod + " " + do_offset);
+	if( mod == 0 ){
+	    anchor.page(do_rows, do_offset - do_rows);
+	}else{
+	    anchor.page(do_rows, do_offset);
+	}
     };
 
     /*
