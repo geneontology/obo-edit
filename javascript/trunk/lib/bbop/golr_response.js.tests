@@ -202,7 +202,7 @@ load('golr_response.js');
      mr_t.is_same_atom(bgr.query(robj), '*:*',
 		       'all query');
 
-     // TODO: query_filters
+     // query_filters
      mr_t.is_true(bgr.query_filters(robj)['document_category']['annotation'],
 		  '+ document_category annotation');
      mr_t.is_true(bgr.query_filters(robj)['isa_partof_closure']['GO:0022008'],
@@ -214,6 +214,11 @@ load('golr_response.js');
 		   '- source MGI');
      mr_t.is_false(bgr.query_filters(robj)['evidence_type']['ISO'],
 		   '- evidence_type ISO');
+
+     // paging_*
+     mr_t.is_false(bgr.paging_p(robj), 'paging: no');
+     mr_t.is_false(bgr.paging_previous_p(robj), 'paging: no back');
+     mr_t.is_false(bgr.paging_next_p(robj), 'paging: no forward');
 
  })();
 

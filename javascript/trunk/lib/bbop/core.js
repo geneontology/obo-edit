@@ -718,6 +718,9 @@ bbop.core.has_interface = function(iobj, iface){
  *
  * This does nothing to make the produced "URL" in any way safe.
  * 
+ * WARNING: Not a hugely clean function--there are a lot of special
+ * cases and it could use a good (and safe) clean-up.
+ * 
  * Parameters: 
  *  qargs - hash/object
  *
@@ -725,7 +728,7 @@ bbop.core.has_interface = function(iobj, iface){
  */
 bbop.core.get_assemble = function(qargs){
 
-    var mbuff = [];	
+    var mbuff = [];
     for( var qname in qargs ){
 	var qval = qargs[qname];
 
@@ -753,20 +756,31 @@ bbop.core.get_assemble = function(qargs){
 		// // handled carefully. In both cases, care will
 		// // be needed to show which filters are marked.
 		// Is object (probably).
+		// Special "Solr-esque" handling.
 		for( var sub_name in qval ){
-		    var sub_val = qval[sub_name];
+		    var sub_vals = qval[sub_name];
 
-		    var nano_buff = [];
-		    nano_buff.push(qname);
-		    nano_buff.push('=');
-		    nano_buff.push(sub_name);
-		    nano_buff.push(':');
-		    if( typeof sub_val !== 'undefined'&& sub_val ){
-			nano_buff.push('"' + sub_val + '"');
-		    }else{
-			nano_buff.push('""');
+		    // Since there might be an array down there,
+		    // ensure that there is an iterate over it.
+		    if( bbop.core.what_is(sub_vals) != 'array' ){
+			sub_vals = [sub_vals];
 		    }
-		    mbuff.push(nano_buff.join(''));
+
+		    var loop = bbop.core.each;
+		    loop(sub_vals,
+			 function(sub_val){
+			     var nano_buff = [];
+			     nano_buff.push(qname);
+			     nano_buff.push('=');
+			     nano_buff.push(sub_name);
+			     nano_buff.push(':');
+			     if( typeof sub_val !== 'undefined' && sub_val ){
+				 nano_buff.push('"' + sub_val + '"');
+			     }else{
+				 nano_buff.push('""');
+			     }
+			     mbuff.push(nano_buff.join(''));
+			 });
 		}
 	    }
 	}else if( typeof qval == 'undefined' ){

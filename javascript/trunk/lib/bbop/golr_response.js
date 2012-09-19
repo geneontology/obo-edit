@@ -101,7 +101,7 @@ bbop.golr.response.parameters = function(robj){
  */
 bbop.golr.response.parameter = function(robj, key){
     var retval = null;
-    if( robj.responseHeader.params[key] ){
+    if( robj.responseHeader.params[key] && robj.responseHeader.params[key] ){
 	retval = robj.responseHeader.params[key];
     }
     return retval;
@@ -168,25 +168,67 @@ bbop.golr.response.end_document = function(robj){
 	parseInt(robj.response.docs.length) - 1;
 };
 
-// /*
-//  * Function: paging_p
-//  * 
-//  * Whether or not paging is necessary with the given results set.
-//  * 
-//  * Arguments:
-//  *  robj - JSONized GOlr response
-//  * 
-//  * Returns:
-//  *  boolean
-//  */
-// bbop.golr.response.paging_p = function(robj){
-//     var retval = false;
-//     if( bbop.golr.response.total_document(robj) > 
-// 	bbop.golr.response.row_step(robj) ){
-// 	retval = true;
-//     }
-//     return retval;
-// };
+/*
+ * Function: paging_p
+ * 
+ * Whether or not paging is necessary with the given results set.
+ * 
+ * Arguments:
+ *  robj - JSONized GOlr response
+ * 
+ * Returns:
+ *  boolean
+ */
+bbop.golr.response.paging_p = function(robj){
+    var retval = false;
+    if( bbop.golr.response.total_documents(robj) > 
+	bbop.golr.response.row_step(robj) ){
+	retval = true;
+    }
+    return retval;
+};
+
+/*
+ * Function: paging_previous_p
+ * 
+ * Whether or paging backwards is an option right now.
+ * 
+ * Arguments:
+ *  robj - JSONized GOlr response
+ * 
+ * Returns:
+ *  boolean
+ */
+bbop.golr.response.paging_previous_p = function(robj){
+    // We'll take this as a proxy that a step was taken.
+    // Remember: we offset the start_document by one for readability.
+    var retval = false;
+    if( bbop.golr.response.start_document(robj) > 1 ){
+	retval = true;
+    }
+    return retval;
+};
+
+/*
+ * Function: paging_next_p
+ * 
+ * Whether or paging forwards is an option right now.
+ * 
+ * Arguments:
+ *  robj - JSONized GOlr response
+ * 
+ * Returns:
+ *  boolean
+ */
+bbop.golr.response.paging_next_p = function(robj){
+    // We'll take this as a proxy that a step was taken.
+    var retval = false;
+    if( bbop.golr.response.total_documents(robj) >
+	bbop.golr.response.end_document(robj) ){
+	retval = true;	
+    }
+    return retval;
+};
 
 /*
  * Function: documents
@@ -331,65 +373,60 @@ bbop.golr.response.query = function(robj){
  */
 bbop.golr.response.query_filters = function(robj){
     
-    //sayer('fq 1a: ' + robj + "\n");
-    //sayer('fq 1b: ' + typeof(robj) + "\n");
-    //sayer('fq 2a: ' + robj.responseHeader + "\n");
-    //sayer('fq 2b: ' + typeof(robj.responseHeader) + "\n");
-    
     var ret_hash = {};
-    if( robj.responseHeader.params && robj.responseHeader.params.fq ){
+    var fq_list = bbop.golr.response.parameter(robj, 'fq');
+    if( fq_list ){
 	
-	//sayer('fq in' + "\n");
-	
-	var process_list = [];
-	
-	// Check to see if it's not an array and copy it to be
-	// one. Otherwise, copy over the array contents.
-	if( typeof robj.responseHeader.params.fq == 'string'){
-	    process_list.push(robj.responseHeader.params.fq);
-	    //sayer('fq adjust for single' + "\n");
-	}else{
-	    for( var fqi = 0;
-		 fqi < robj.responseHeader.params.fq.length;
-		 fqi++ ){
-		     var new_bit = robj.responseHeader.params.fq[fqi];
-		     process_list.push(new_bit);
-		 }
+	// Ensure that it's a list and not just a naked string (as can
+	// sometimes happen).
+	if( bbop.core.what_is(fq_list) == 'string'){
+	    fq_list = [fq_list];
 	}
-	
-	//sayer('fq go through adjusted incoming' + "\n");
 	
 	// Make the return fq more tolerable.
-	for( var pli = 0; pli < process_list.length; pli++ ){
-	    var list_item = process_list[pli];
-	    
-	    //sayer('fq process ' + list_item + "\n");
-	    
-	    // Split on the colon.
-	    var splits = list_item.split(":");
-	    var type = splits.shift();
-	    var value = splits.join(":");
-	    
-	    if( ! ret_hash[type] ){
-		ret_hash[type] = {};
-	    }
-	    
-	    // Remove internal quotes.
-		// Actually, I want just the first quote and the
-	    // final quote.
-	    if( value.charAt(0) == '"' &&
-		value.charAt(value.length -1) == '"' ){
-		    //sayer('fq needs cropping: ' + value + "\n");
-		    value = value.substring(1, value.length -1);
-		    //sayer('fq cropped to: ' + value + "\n");
-		}
-	    
-	    ret_hash[type][value] = true;
-	    
-	    //sayer('fq done: ' + type + ':' + value + ":true\n");
-	}
-    }else{
-	//ll('fq out');
+	var each = bbop.core.each;
+	each(fq_list,
+	     function(fq_item){
+		 
+		 // Split everything on colons. Field is the first
+		 // one, and everything else joined back together is
+		 // the value of the filter. Best if you think about
+		 // the GO id and non-GO id cases.
+		 var splits = fq_item.split(":");
+		 var field = splits.shift();
+		 var value = splits.join(":"); // GO 0022008 -> GO:0022008
+
+		 // First let's just assume that we have a positive
+		 // filter.
+		 var polarity = true;
+		 
+		 // Check and see if the first value in our
+		 // field is '-' or '+'. If so, edit it out, but
+		 // change the polarity in the '-' case.
+		 if( field.charAt(0) == '-' ){
+		     polarity = false;
+		     field = field.substring(1, field.length);
+		 }else if( field.charAt(0) == '+' ){
+		     field = field.substring(1, field.length);
+		 }
+
+		 // Ensure that there is a place in the return hash
+		 // for us.
+		 if( ! ret_hash[field] ){
+		     ret_hash[field] = {};
+		 }
+		 
+		 // I want just the first quote and the final quote
+		 // gone from the value if they are matching quotes.
+		 if( value.charAt(0) == '"' &&
+		     value.charAt(value.length -1) == '"' ){
+			 value = value.substring(1, value.length -1);
+		     }
+		 
+		 // The final filter note.
+		 ret_hash[field][value] = polarity;
+		 
+	     });
     }
     
     return ret_hash;
