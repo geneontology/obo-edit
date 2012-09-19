@@ -73,6 +73,8 @@ bbop.golr.response.callback_type = function(robj){
  * 
  * Get the parameter chunk--variable stuff we put in.
  * 
+ * Pretty general, specialized functions are better.
+ * 
  * Arguments:
  *  robj - JSONized GOlr response
  * 
@@ -88,12 +90,14 @@ bbop.golr.response.parameters = function(robj){
  * 
  * Get the parameter chunk--variable stuff we put in.
  * 
+ * Pretty general, specialized functions are better.
+ * 
  * Arguments:
  *  robj - JSONized GOlr response
  *  key - string id for the wanted parameter
  * 
  * Returns:
- *  hash
+ *  hash, string, whatever is there at that key (otherwise null)
  */
 bbop.golr.response.parameter = function(robj, key){
     var retval = null;
@@ -145,8 +149,7 @@ bbop.golr.response.total_documents = function(robj){
  *  integer
  */
 bbop.golr.response.start_document = function(robj){
-    //return parseInt(robj.response.start) + 1;
-    return parseInt(robj.response.start);
+    return parseInt(robj.response.start) + 1;
 };
 
 /*
@@ -162,7 +165,7 @@ bbop.golr.response.start_document = function(robj){
  */
 bbop.golr.response.end_document = function(robj){
     return bbop.golr.response.start_document(robj) +
-	parseInt(robj.response.docs.length);
+	parseInt(robj.response.docs.length) - 1;
 };
 
 // /*
@@ -312,11 +315,19 @@ bbop.golr.response.query = function(robj){
 /*
  * Function: query_filters
  *
- * fq can be irritating single value or irritating array.
+ * A sensible handling of the not-so-great format of "fq" returned by
+ * Solr (fq can be irritating single value or irritating array, along
+ * with things like "-" in front of values). Since plus and minus
+ * filters are mutually exclusive, we have a return format like:
+ * 
+ * : {field1: {filter1: (true|false), ...}, ...}
+ * 
+ * Where the true|false value represents a positive (true) or negative
+ * (false) filter.
  * 
  * Parameters: json_data
  *
- * Returns: a hash of {field:{val:(true|false)}}; TODO: true|false
+ * Returns: a hash of keyed hashes
  */
 bbop.golr.response.query_filters = function(robj){
     
