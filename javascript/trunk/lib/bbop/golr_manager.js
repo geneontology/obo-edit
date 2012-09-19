@@ -266,7 +266,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *
      * Parameters: 
      *  filter - filter (type) string
-     *  value - filter value string (TODO: or defined logic hash)
+     *  value - filter value string (or TODO: defined logic hash)
      *  plist - *[optional]* list of properties of the filter
      *
      * Returns: 
@@ -278,11 +278,13 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     this.add_query_filter = function(filter, value, plist){
 	
 	// Make sure we've defined the group.
-	if( ! this.query_filters[filter] ){
+	if( ! bbop.core.is_defined(this.query_filters[filter]) ){
 	    this.query_filters[filter] = {};
 	}
 
 	this.query_filters[filter][value] = this.plist_to_property_hash(plist);
+	
+	ll("Current state: " + bbop.core.dump(this.query_filters));
 
 	return {}; // TODO
     };
@@ -565,8 +567,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	// Reset 'q'.
 	anchor.query = anchor.default_query;
 
-	// Reset 'fq'.
-	//anchor. reset all but sticky
+	// Reset 'fq', all but sticky.
+	anchor.reset_query_filters();
     };
 
     /*
@@ -765,6 +767,96 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     };
 
     /*
+     * Function: page_first
+     *
+     * Currently a convenience alias for <search>. Think about it--it
+     * makes sense.
+     * 
+     * This is a wrapper for <page> and should be preferred over a
+     * direct call to page.
+     * 
+     * Parameters: 
+     *  n/a
+     *
+     * Returns:
+     *  n/a
+     * 
+     * See also:
+     *  <page>
+     */
+    this.page_first = anchor.search;
+    
+    /*
+     * Function: page_previous
+     * 
+     * This is a wrapper for <page> and should be preferred over a
+     * direct call to page.
+     * 
+     * Parameters: 
+     *  n/a
+     *
+     * Returns:
+     *  n/a
+     * 
+     * See also:
+     *  <page>
+     */
+    this.page_previous = function(){
+	var do_rows = anchor.get_page_rows();
+	var do_offset = anchor.get_page_start() - do_rows;
+	anchor.page(do_rows, do_offset);
+    };
+    
+    /*
+     * Function: page_next
+     * 
+     * This is a wrapper for <page> and should be preferred over a
+     * direct call to page.
+     * 
+     * Parameters: 
+     *  n/a
+     *
+     * Returns:
+     *  n/a
+     * 
+     * See also:
+     *  <page>
+     */
+    this.page_next = function(){
+	var do_rows = anchor.get_page_rows();
+	var do_offset = anchor.get_page_start() + do_rows;
+	anchor.page(do_rows, do_offset);
+    };
+    
+    /*
+     * Function: page_last
+     * 
+     * Trigger search on last page parameters.
+     * 
+     * Since the manager has no idea about what is actually being
+     * returned, the real world number of total documents needs to be
+     * added as an argument.
+     * 
+     * This is a wrapper for <page> and should be preferred over a
+     * direct call to page.
+     * 
+     * Parameters: 
+     *  total_document_count - integer for the total number of docs found
+     *
+     * Returns:
+     *  n/a
+     * 
+     * See also:
+     *  <page>
+     */
+    this.page_last = function(total_document_count){
+	var do_rows = anchor.get_page_rows();
+	var mod = total_document_count % do_rows;
+	var do_offset = total_document_count - mod;
+	anchor.page(do_rows, do_offset);
+    };
+
+    /*
      * Function: get_page_rows
      *
      * Return the number of rows the manager is currently set
@@ -831,13 +923,11 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * Function: extra
      *
      * Getter/setter for the internal string variable to be appended
-     * to the end. For special use cases only.
+     * to the end of a query. For special use cases only (e.g. extend
+     * functionality of the API safely).
      *
      * Parameters: 
-     *  new_extra - TODO
-     *
-     * Parameters: 
-     *  none
+     *  new_extra - *[optional]* new value for the extras string
      *
      * Returns:
      *  The current setting of extra
@@ -939,7 +1029,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * Returns:
      *  URL string
      * 
-     * Also see: <update>, <search>
+     * Also see:
+     *  <update>, <search>
      */
     this.get_query_url = function(){
 
@@ -952,23 +1043,28 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	// does. However, we can be pretty naive since the hashing
 	// should have already taken out mutually exclusive dupes.
 	var fq = {};
-	bbop.core.each(anchor.get_query_filters(),
-		      function(filter_property){
+	var loop = bbop.core.each;
+	loop(anchor.get_query_filters(),
+	     function(filter_property){
 
-			  // Grab only the properties that affect the
-			  // URL.
-			  var filter = filter_property['filter'];
-			  var value = filter_property['value'];
-			  var negative_p = filter_property['negative_p'];
+		 // Grab only the properties that affect the
+		 // URL.
+		 var filter = filter_property['filter'];
+		 var value = filter_property['value'];
+		 var negative_p = filter_property['negative_p'];
 
-			  // We need to alter at the filter level.
-			  if( negative_p ){
-			      filter = '-' + filter;
-			  }
+		 // We need to alter at the filter level.
+		 if( negative_p ){
+		     filter = '-' + filter;
+		 }
 
-			  // Make sure it is defined.
-			  fq[filter] = value;
-		      });
+		 // Make sure it is defined.
+		 if( ! bbop.core.is_defined(fq[filter]) ){
+		     fq[filter] = [];
+		 }
+		 fq[filter].push(value);
+		 //fq[filter] = value;
+	     });
 
 	// Add all of our different specialized hashes.
 	var things_to_add = [
@@ -979,13 +1075,13 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    bbop.core.get_assemble({'fq': fq}),
 	    anchor.query_extra
 	];
-	bbop.core.each(things_to_add,
-		       function(item, index){
-			   if( item && item != '' ){
-			       qurl = qurl + '&' + item;
-			   }
-		       });
-
+	loop(things_to_add,
+	     function(item, index){
+		 if( item && item != '' ){
+		     qurl = qurl + '&' + item;
+		 }
+	     });
+	
     	return qurl;
     };
 };

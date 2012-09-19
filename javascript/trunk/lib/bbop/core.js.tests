@@ -537,6 +537,11 @@ mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
      mr_t.is_same_url(bbop.core.get_assemble(s3), t3,
 		      'get_assemble hash with hash');
 
+     var s4 = {'fq': {'foo': 'a', 'bar': ['b', 'c']}};
+     var t4 = 'fq=foo:"a"&fq=bar:"b"&fq=bar:"c"';
+     mr_t.is_same_url(bbop.core.get_assemble(s4), t4,
+		      'get_assemble hash with array in hash');
+     
  })();
 
 ///
