@@ -105,7 +105,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     // and work in a non-browser/networked environment.
     var JQ = new bbop.golr.faux_ajax();
     try{ // some interpreters might not like this kind of probing
-	if( typeof jQuery != 'undefined' ){ JQ = jQuery; }
+	if( typeof(jQuery) !== 'undefined' ){ JQ = jQuery; }
     }catch (x){
     }finally{
 	var got = bbop.core.what_is(JQ);
@@ -506,7 +506,11 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     this._run_error_callbacks = function(result, status, error) {
 
 	ll('Failed server request: '+ result +', '+ status +', '+ error);
+	//ll('Failed (a): '+ bbop.core.what_is(status));
+	//ll('Failed (b): '+ bbop.core.dump(status));
 		
+	var clean_error = "unknown error";
+
 	// Get the error out (clean it) if possible.
 	var jreq = result.responseText;
 	var req = JQ.parseJSON(jreq);
@@ -519,7 +523,13 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    var reg = new RegExp("\n+", "g");
 	    var clean_error_split =
 		in_error.split(reg);
-	    var clean_error = clean_error_split[0];
+	    clean_error = clean_error_split[0];
+	}else if( bbop.core.what_is(error) == 'string' &&
+		  error.length > 0){
+	    clean_error = error;
+	}else if( bbop.core.what_is(status) == 'string' &&
+		  status.length > 0){
+	    clean_error = status;
 	}
 	
 	// Run all against registered functions.
@@ -687,13 +697,16 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	// TODO/BUG: JSONP for solr looks like?
 	var argvars = {
 	    type: "GET",
-	    url: qurl,
-	    dataType: 'json',
+	    //url: qurl,
+	    dataType: 'jsonp',
 	    jsonp: 'json.wrf',
 	    success: _callback_type_decider, // decide and run search or reset
 	    error: _run_error_callbacks // run error callbacks
+	    //done: _callback_type_decider, // decide and run search or reset
+	    //fail: _run_error_callbacks, // run error callbacks
+	    //always: function(){} // do I need this?
 	};
-	JQ.ajax(argvars);
+	JQ.ajax(qurl, argvars);
     };
 
     /*
