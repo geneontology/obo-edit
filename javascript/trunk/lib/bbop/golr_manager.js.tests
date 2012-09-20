@@ -53,9 +53,9 @@ load('golr_manager.js');
      // Does extra behave?
      var bits = "fq=-isa_partof_closure:[*%20TO%20*]";
      var url1 = gm.get_query_url();
-     gm.extra(bits);
+     gm.set_extra(bits);
      var url2 = gm.get_query_url();
-     gm.extra("");
+     gm.set_extra("");
      var url3 = gm.get_query_url();
      mr_t.is_different_atom(url1, url2, "not the same out of it");
      mr_t.is_string_embedded(url2, url1, '&' + bits, "set_extra adds");
@@ -94,7 +94,7 @@ load('golr_manager.js');
      gm_ann.add_query_filter('document_category', 'annotation', ['+', '*']);
      gm_ann.add_query_filter('document_category', 'ontology_class', ['-']);
      gm_ann.add_query_filter('isa_partof_closure', 'GO:0022008', ['+', '*']);
-     gm_ann.extra('foo=bar');
+     gm_ann.set_extra('foo=bar');
 
      mr_t.is_same_url(gm_ann.get_query_url(),
       		      'http://golr.berkeleybop.org/select?&qt=standard&indent=on&wt=json&rows=10&start=0&fl=*%2Cscore&facet=true&facet.mincount=1&json.nl=arrarr&facet.field=source&facet.field=evidence_type&facet.field=taxon&facet.field=isa_partof_label_closure&facet.field=annotation_extension_class&facet.field=type&fq=document_category:"annotation"&fq=-document_category:"ontology_class"&fq=isa_partof_closure:"GO:0022008"&foo=bar',
