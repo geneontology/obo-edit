@@ -926,22 +926,36 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     };
 
     /*
-     * Function: extra
+     * Function: set_extra
      *
-     * Getter/setter for the internal string variable to be appended
-     * to the end of a query. For special use cases only (e.g. extend
+     * Setter for the internal string variable to be appended to the
+     * end of a query. For special use cases only (e.g. extend
      * functionality of the API safely).
-     *
+     * 
      * Parameters: 
      *  new_extra - *[optional]* new value for the extras string
      *
      * Returns:
-     *  The current setting of extra
+     *  the current setting of extra
      */
-    this.extra = function(new_extra){
+    this.set_extra = function(new_extra){
 	anchor.query_extra = new_extra;
 	return anchor.query_extra;
     };
+
+    /*
+     * Function: get_extra
+     *
+     * Getter for the internal string variable to be appended
+     * to the end of a query.
+     *
+     * Parameters: 
+     *  n/a
+     *
+     * Returns:
+     *  the current setting of extra
+     */
+    this.get_extra = anchor.set_extra;
 
     /*
      * Function: remove_extra
@@ -962,7 +976,11 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     /*
      * Function: set
      *
-     * Set an internal variable for the query.
+     * Set an internal variable for the query. The internal variables
+     * are typically things like 'qt', 'indent', etc.--things that you
+     * might set and forget a while. It does /not/ include highly
+     * dynamic variables (like callback and packet) or querying
+     * variables like 'q' and 'fq'; for those you need to use the API.
      *
      * Parameters: 
      *  key - the name of the parameter to change
@@ -979,6 +997,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *
      * Get an internal variable for the query.
      *
+     * See <set> for the kinds of parameters that can be read.
+     * 
      * Parameters: 
      *  key - the name of the parameter to get
      *
@@ -996,6 +1016,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * sometimes want to have different weights, facets, etc. This
      * function allows us to use the pre-set ones defined in the
      * constructor configuration argument.
+     * 
+     * Currently, this only sets the 'facet.field' internal variable.
      *
      * Parameters: 
      *  personality_id - string
@@ -1006,6 +1028,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     this.set_personality = function(personality_id){
 	var retval = false;
 
+	// This sets the facet.field internal variable.
 	var cclass = anchor._golr_conf.get_class(personality_id);
 	if( cclass ){
 	    anchor.facets(cclass.field_order_by_weight('filter'));
@@ -1023,6 +1046,10 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *
      * Get the current invariant state of the manager returned as a
      * URL string.
+     * 
+     * This means the URL for the current query to the GOlr store, but
+     * without extra information about packets, callbacks, and the
+     * like.
      * 
      * This is generally appropriate for getting data, but maybe not
      * for things like high-speed autocomplete where races can

@@ -494,29 +494,29 @@ mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
     mr_t.is_different_atom(foo.d.two[0], bar.d.two[0], 'different in hash');
 })();
 
-// Check encoding ids.
-(function(){
+// // Check encoding ids.
+// (function(){
 
-    var rounds = ["GO:1234567", "GO::GO:1234567", "::1:2::3:"];
-    var coders = [new bbop.core.coder(),
-		  new bbop.core.coder({string: "_TEST_", size: 1})];
+//     var rounds = ["GO:1234567", "GO::GO:1234567", "::1:2::3:"];
+//     var coders = [new bbop.core.coder(),
+// 		  new bbop.core.coder({string: "_TEST_", size: 1})];
 
-    // Iterate through coders and strings.
-    for( var cdr = 0; cdr < coders.length; cdr++ ){
-	var coder = coders[cdr];
-	for( var rnd = 0; rnd < rounds.length; rnd++ ){
-	    var round = rounds[rnd];
+//     // Iterate through coders and strings.
+//     for( var cdr = 0; cdr < coders.length; cdr++ ){
+// 	var coder = coders[cdr];
+// 	for( var rnd = 0; rnd < rounds.length; rnd++ ){
+// 	    var round = rounds[rnd];
 
-	    //
-	    var enc = coder.encode(round);
-	    //print(enc);
-	    mr_t.is_same_atom(round, coder.decode(enc),
-			      "round trip (coder: " +
-			      cdr + ', string: "' +
-			      round + '")');
-	}
-    }
-})();
+// 	    //
+// 	    var enc = coder.encode(round);
+// 	    //print(enc);
+// 	    mr_t.is_same_atom(round, coder.decode(enc),
+// 			      "round trip (coder: " +
+// 			      cdr + ', string: "' +
+// 			      round + '")');
+// 	}
+//     }
+// })();
 
 // Check get_assemble.
 (function(){
