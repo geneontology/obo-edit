@@ -809,3 +809,82 @@ bbop.html.button.prototype.empty = function(){
 bbop.html.button.prototype.get_id = function(){
     return this._button_stack.get_id();
 };
+
+/*
+ * Constructor: span
+ * 
+ * Create a span object.
+ * Fun for calling live bits after the fact.
+ * 
+ * Parameters:
+ *  in_label - label
+ *  in_attrs - *[optional]* the typical attributes to add
+ * 
+ * Returns:
+ *  bbop.html.span object
+ */
+bbop.html.span = function(in_label, in_attrs){
+    this._is_a = 'bbop.html.span';
+    
+    // Arg check--attrs should be defined as something.
+    this._attrs = in_attrs || {};
+
+    // Internal stack is just the top-level span.
+    this._span_stack = new bbop.html.tag('span', this._attrs, in_label);
+};
+
+/*
+ * Function: (span) to_string
+ * 
+ * Convert a span object into a html-ized string.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns:
+ *  string
+ */
+bbop.html.span.prototype.to_string = function(){
+    return this._span_stack.to_string();
+};
+
+/*
+ * Function: (span) add_to
+ * 
+ * Add content between the tags. Order of addition is order of output.
+ * Not really worth much as it just equates to changing the label.
+ * 
+ * Parameters:
+ *  item - another tag object or a string (html or otherwise)
+ * 
+ * Returns: n/a
+ */
+bbop.html.span.prototype.add_to = function(item){
+    this._span_stack.add_to(item);
+};
+
+/*
+ * Function: (span) empty
+ * 
+ * Remove all content between the tags. This equates to removing the
+ * label.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns: n/a
+ */
+bbop.html.span.prototype.empty = function(){
+    this._span_stack.empty();
+};
+
+/*
+ * Function: (span) get_id
+ * 
+ * Return the id if extant, null otherwise.
+ * 
+ * Parameters: n/a
+ * 
+ * Returns: string or null
+ */
+bbop.html.span.prototype.get_id = function(){
+    return this._span_stack.get_id();
+};
