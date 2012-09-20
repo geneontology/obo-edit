@@ -133,6 +133,9 @@ bbop.core.crop = function(str, lim, suff){
  * template. Only the keys in the default hash will be defined in the
  * final hash.
  * 
+ * The can be quite useful when defining functions--essentially
+ * allowing a limited default value system for arguments.
+ * 
  * Parameters:
  *  default_hash - Template hash.
  *  arg_hash - Argument hash to match.
@@ -476,7 +479,7 @@ bbop.core.each = function(in_thing, in_function){
 /*
  * Function: pare
  *
- * Take an array or hash and par it down using a couple of functions
+ * Take an array or hash and pare it down using a couple of functions
  * to what we want.
  * 
  * Both parameters are optional in the sense that you can set them to
@@ -599,7 +602,8 @@ bbop.core.clone = function(thing){
  *
  * Essentially add standard 'to string' interface to the string class
  * and as a stringifier interface to other classes. More meant for
- * output.
+ * output. Only atoms, arrays, and objects with a to_string function
+ * are handled.
  *
  * Parameters: 
  *  in_thing - something
@@ -613,12 +617,14 @@ bbop.core.to_string = function(in_thing){
     var what = bbop.core.what_is(in_thing);
     if( what == 'number' ){
 	return in_thing.toString();
-    }else if( typeof(in_thing) == 'string' ){
+    }else if( what == 'string' ){
 	return in_thing;
+    }else if( what == 'array' ){
+	return bbop.core.dump(in_thing);
     }else if( in_thing.to_string && typeof(in_thing.to_string) == 'function' ){
 	return in_thing.to_string();
     }else{
-	throw new Error('to_string interface not defined for this thing');
+	throw new Error('to_string interface not defined for this object');
     }
 };
 
@@ -847,43 +853,47 @@ bbop.core.uuid = function(){
     return target_str.replace(/[xy]/g, replacer);
 };
 
-/*
- * Function: coder
- *
- * TODO doc Functions to encode and decode data that we'll be hiding
- *  in the element ids. This is a
- *
- * Parameters: 
- *   - 
- *
- * Returns: 
- */
-bbop.core.coder = function(args){
+// /*
+//  * Function: coder
+//  *
+//  * An object that functions to encode and decode data that we might be
+//  * hiding in element ids.
+//  * 
+//  * This constructor takes hash parameters.
+//  *
+//  * Parameters: 
+//  *  string - the base "namespace" string to use; has a default
+//  *  size - 
+//  *
+//  * Returns: 
+//  *  bbop.core.coder object
+//  */
+// bbop.core.coder = function(args){
 
-    var mangle_base_string = "bbop_core_coder_mangle_";
-    var mangle_base_space_size = 10;
+//     var mangle_base_string = "bbop_core_coder_mangle_";
+//     var mangle_base_space_size = 10;
 
-    var defs = {string: mangle_base_string, size: mangle_base_space_size};
-    var final_args = bbop.core.fold(defs, args);
-    var mangle_str = final_args['string'];
-    var space_size = final_args['size'];
+//     var defs = {string: mangle_base_string, size: mangle_base_space_size};
+//     var final_args = bbop.core.fold(defs, args);
+//     var mangle_str = final_args['string'];
+//     var space_size = final_args['size'];
 
-    // TODO/BUG: apparently, html ids can only be of a limited
-    // character set.
-    //var en_re = new RegExp("/:/", "gi");
-    //var de_re = new RegExp("/-_-/", "gi");
-    this.encode = function(str){
-	// Mangle and encode.
-	var new_str = mangle_str + bbop.core.randomness(space_size) +'_'+ str;
-	// TODO:
-	// str.replace(en_re, "-_-");
-	return new_str;
-    };
-    this.decode = function(str){	    
-	// Decode and demangle.
-	var new_str = str.substring(mangle_str.length + space_size + 1);
-	// TODO:
-	// str.replace(de_re, ":");
-	return new_str;
-    };
-};
+//     // TODO/BUG: apparently, html ids can only be of a limited
+//     // character set.
+//     //var en_re = new RegExp("/:/", "gi");
+//     //var de_re = new RegExp("/-_-/", "gi");
+//     this.encode = function(str){
+// 	// Mangle and encode.
+// 	var new_str = mangle_str + bbop.core.randomness(space_size) +'_'+ str;
+// 	// TODO:
+// 	// str.replace(en_re, "-_-");
+// 	return new_str;
+//     };
+//     this.decode = function(str){	    
+// 	// Decode and demangle.
+// 	var new_str = str.substring(mangle_str.length + space_size + 1);
+// 	// TODO:
+// 	// str.replace(de_re, ":");
+// 	return new_str;
+//     };
+// };

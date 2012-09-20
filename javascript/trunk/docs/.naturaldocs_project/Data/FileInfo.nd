@@ -1,6 +1,6 @@
 1.51
 JavaScript
-/home/sjcarbon/local/src/svn/geneontology/javascript/trunk/lib/bbop/golr_manager.js	1348090317	1	golr_manager.js
+/home/sjcarbon/local/src/svn/geneontology/javascript/trunk/lib/bbop/golr_manager.js	1348165688	1	golr_manager.js
 /home/sjcarbon/local/src/svn/geneontology/javascript/trunk/lib/bbop/html.js	1348009180	1	html.js
 /home/sjcarbon/local/src/svn/geneontology/javascript/trunk/lib/bbop/model/tree.js	1335474653	0	/home/sjcarbon/local/src/svn/geneontology/javascript/trunk/lib/bbop/model/tree.js
 /home/sjcarbon/local/src/svn/geneontology/javascript/trunk/lib/bbop/test.js	1346455270	1	test.js
@@ -11,6 +11,6 @@ JavaScript
 /home/sjcarbon/local/src/svn/geneontology/javascript/trunk/lib/bbop/logger.js	1346455319	1	logger.js
 /home/sjcarbon/local/src/svn/geneontology/javascript/trunk/lib/bbop/newick_parser.js	1335474653	0	/home/sjcarbon/local/src/svn/geneontology/javascript/trunk/lib/bbop/newick_parser.js
 /home/sjcarbon/local/src/svn/geneontology/javascript/trunk/lib/bbop/newick_parser.tests.js	1335474653	0	/home/sjcarbon/local/src/svn/geneontology/javascript/trunk/lib/bbop/newick_parser.tests.js
-/home/sjcarbon/local/src/svn/geneontology/javascript/trunk/lib/bbop/core.js	1348092482	1	core.js
+/home/sjcarbon/local/src/svn/geneontology/javascript/trunk/lib/bbop/core.js	1348164481	1	core.js
 /home/sjcarbon/local/src/svn/geneontology/javascript/trunk/lib/bbop/json.js	1335474653	0	/home/sjcarbon/local/src/svn/geneontology/javascript/trunk/lib/bbop/json.js
 /home/sjcarbon/local/src/svn/geneontology/javascript/trunk/lib/bbop/golr_conf.js	1346272438	1	golr_conf.js
