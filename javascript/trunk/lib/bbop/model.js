@@ -4,19 +4,17 @@
  * 
  * Purpose: Basic edged graph and operations.
  * 
- * NOTE: A model instance may not the whole graph, just a
+ * NOTE: A model instance may not be the whole graph, just a
  * subgraph--this is the difference between nodes and
  * named_nodes. nodes are real things, while named_nodes are things
  * referenced by edges.
  * 
  * Check TODOs, we would like everything as linear as possible.
  * 
- * TODO: add documentation
- * 
  * TODO: memoize everything but add_*. Functional enough that it
  * should work if we just empty the caches after every add_* op.
  * 
- * Required: bbop.core
+ * Required: bbop.core (<core.js>)
  */
 
 // Module and namespace checking.
@@ -24,14 +22,32 @@ bbop.core.require('bbop', 'core'); // not needed, but want the habit
 bbop.core.namespace('bbop', 'model');
 
 
-// 
+/*
+ * Variable: default_predicate
+ * 
+ * The predicate we'll use when none other is defined. You can
+ * probably safely ignore this if all of the edges in your graph are
+ * the same.
+ */
 bbop.model.default_predicate = 'points_at';
-
 
 ///
 ///  Node sub-object.
 ///
 
+/*
+ * Structure: bbop.model.node
+ * Constructor: node
+ * 
+ * Contructor for a BBOP graph model node.
+ * 
+ * Arguments:
+ *  new_id - a unique id for the node
+ *  new_label - *[optional]* a user-friendly description of the node
+ * 
+ * Returns:
+ *  bbop model node
+ */
 bbop.model.node = function(new_id, new_label){
     this._id = new_id || undefined;
     this._label = new_label || undefined;
@@ -45,17 +61,76 @@ bbop.model.node = function(new_id, new_label){
     this._metadata = undefined;
 };
 
-// Prototype getter/setters.
+/*
+ * Function: id
+ *
+ * Getter/setter for node id.
+ *
+ * Parameters: 
+ *  value - *[optional]* new value for this property to take
+ *
+ * Returns: 
+ *  string
+ */
 bbop.model.node.prototype.id = function(value){
     if(value) this._id = value; return this._id; };
+
+/*
+ * Function: type
+ *
+ * Getter/setter for node type.
+ *
+ * Parameters: 
+ *  value - *[optional]* new value for this property to take
+ *
+ * Returns: 
+ *  string
+ */
 bbop.model.node.prototype.type = function(value){
     if(value) this._type = value; return this._type; };
+
+/*
+ * Function: label
+ *
+ * Getter/setter for node label.
+ *
+ * Parameters: 
+ *  value - *[optional]* new value for this property to take
+ *
+ * Returns: 
+ *  string
+ */
 bbop.model.node.prototype.label = function(value){
     if(value) this._label = value; return this._label; };
+
+/*
+ * Function: metadata
+ *
+ * Getter/setter for node metadata.
+ * 
+ * The metadata value does not necessarily have to be an atomic type.
+ *
+ * Parameters: 
+ *  value - *[optional]* new value for this property to take
+ *
+ * Returns: 
+ *  string
+ */
 bbop.model.node.prototype.metadata = function(value){
     if(value) this._metadata = value; return this._metadata; };
 
-// Clone, using bbop.core.clone for metadata object.
+/*
+ * Function: clone
+ *
+ * Get a fresh new copy of the current node (using bbop.core.clone for
+ * metadata object).
+ *
+ * Parameters:
+ *  n/a
+ *
+ * Returns: 
+ *  string
+ */
 bbop.model.node.prototype.clone = function(){
     var tmp_clone = new bbop.model.node(this.id());
     tmp_clone.type(this.type());
@@ -69,8 +144,23 @@ bbop.model.node.prototype.clone = function(){
 ///  Edge sub-object.
 ///
 
-// If no predicate is given, default. Predicates are currently treated
-// as raw strings.
+/*
+ * Structure: bbop.model.edge
+ * Constructor: edge
+ * 
+ * Contructor for a BBOP graph model edge.
+ * 
+ * If no predicate is given, <default_predicate> is used.
+ * Predicates are currently treated as raw strings.
+ * 
+ * Arguments:
+ *  subject - node id string or node
+ *  object - node id string or node
+ *  predicate - *[optional]* a user-friendly description of the node
+ * 
+ * Returns:
+ *  bbop model edge
+ */
 bbop.model.edge = function(subject, object, predicate){
 
     // Either a string or a node.
@@ -105,19 +195,90 @@ bbop.model.edge = function(subject, object, predicate){
     this._metadata = undefined;
 };
 
-// Prototype getter/setters.
+/*
+ * Function: subject_id
+ *
+ * Getter/setter for edge subject id.
+ *
+ * Parameters: 
+ *  value - *[optional]* new value for this property to take
+ *
+ * Returns: 
+ *  string
+ */
 bbop.model.edge.prototype.subject_id = function(){
     return this._subject_id; };
+
+/*
+ * Function: object_id
+ *
+ * Getter/setter for edge object id.
+ *
+ * Parameters: 
+ *  value - *[optional]* new value for this property to take
+ *
+ * Returns: 
+ *  string
+ */
 bbop.model.edge.prototype.object_id = function(){
     return this._object_id; };
+
+/*
+ * Function: predicate_id
+ *
+ * Getter/setter for edge predicate id.
+ *
+ * Parameters: 
+ *  value - *[optional]* new value for this property to take
+ *
+ * Returns: 
+ *  string
+ */
 bbop.model.edge.prototype.predicate_id = function(){
     return this._predicate_id; };
+
+/*
+ * Function: type
+ *
+ * Getter/setter for edge type.
+ *
+ * Parameters: 
+ *  value - *[optional]* new value for this property to take
+ *
+ * Returns: 
+ *  string
+ */
 bbop.model.edge.prototype.type = function(value){
     if(value) this._type = value; return this._type; };
+
+/*
+ * Function: metadata
+ *
+ * Getter/setter for edge metadata.
+ *
+ * The metadata value does not necessarily have to be an atomic type.
+ * 
+ * Parameters: 
+ *  value - *[optional]* new value for this property to take
+ *
+ * Returns: 
+ *  string
+ */
 bbop.model.edge.prototype.metadata = function(value){
     if(value) this._metadata = value; return this._metadata; };
 
-// Clone, using bbop.core.clone for metadata object.
+/*
+ * Function: clone
+ *
+ * Get a fresh new copy of the current edge (using bbop.core.clone for
+ * metadata object).
+ *
+ * Parameters:
+ *  n/a
+ *
+ * Returns: 
+ *  string
+ */
 bbop.model.edge.prototype.clone = function(){
     var tmp_clone = new bbop.model.edge(this.subject_id(),
 					this.object_id(),
@@ -126,12 +287,25 @@ bbop.model.edge.prototype.clone = function(){
     return tmp_clone;
 };
 
-
 ///
 ///  Graph sub-object.
 ///
 
-// TODO: make compilation piecewise with every added node and edge.
+/*
+ * Structure: bbop.model.graph
+ * Constructor: node
+ * 
+ * Contructor for a BBOP graph model graph.
+ * 
+ * TODO: make compilation piecewise with every added node and edge.
+ * 
+ * Arguments:
+ *  n/a
+ * 
+ * Returns:
+ *  bbop model node
+ */
+//
 bbop.model.graph = function(){
 
     this._id = undefined;
@@ -166,13 +340,32 @@ bbop.model.graph = function(){
 };
 
 
-// id getter/setter.
+/*
+ * Function: id
+ *
+ * Getter/setter for the graph id.
+ *
+ * Parameters: 
+ *  value - *[optional]* new value for this property to take
+ *
+ * Returns: 
+ *  string
+ */
 bbop.model.graph.prototype.id = function(value){
     if( value ) this._id = value; return this._id;
 };
-    
-    
-//
+
+/*
+ * Function: add_node
+ *
+ * Add a node to the graph.
+ *
+ * Parameters: 
+ *  node - <node> to add to the graph
+ *
+ * Returns: 
+ *  n/a
+ */
 bbop.model.graph.prototype.add_node = function(node){
 
     // Check for for anything funny.
@@ -200,7 +393,17 @@ bbop.model.graph.prototype.add_node = function(node){
 };
 
 
-//
+/*
+ * Function: add_edge
+ *
+ * Add an edge to the graph.
+ *
+ * Parameters: 
+ *  edge - <edge> to add to the graph
+ *
+ * Returns: 
+ *  n/a
+ */
 bbop.model.graph.prototype.add_edge = function(edge){
 
     //
@@ -257,26 +460,62 @@ bbop.model.graph.prototype.add_edge = function(edge){
     this._named_nodes.hash[ obj_id ] = edge;
 };
 
-
-// Returns an original list of all added nodes.
+/*
+ * Function: all_nodes
+ *
+ * Returns an /original/ list of all added nodes.
+ *
+ * Parameters:
+ *  n/a
+ *
+ * Returns: 
+ *  array of nodes
+ */
 bbop.model.graph.prototype.all_nodes = function(){
     return this._nodes.array;
 };
 
-
-// Returns an original list of all added edges.
+/*
+ * Function: all_edges
+ *
+ * Returns an /original/ list of all added edges.
+ *
+ * Parameters:
+ *  n/a
+ *
+ * Returns: 
+ *  array of edges
+ */
 bbop.model.graph.prototype.all_edges = function(){
     return this._edges.array;
 };
 
-
-// Returns an original list of all added predicates.
+/*
+ * Function: all_predicates
+ *
+ * Returns an /original/ list of all added predicates.
+ *
+ * Parameters:
+ *  n/a
+ *
+ * Returns: 
+ *  array of predicates (strings)
+ */
 bbop.model.graph.prototype.all_predicates = function(){
     return this._predicates.array;
 };
 
-
-// List all external nodes by referenced id.
+/*
+ * Function: all_dangling
+ *
+ * List all external nodes by referenced id.
+ *
+ * Parameters:
+ *  n/a
+ *
+ * Returns: 
+ *  array of extrnal nodes by id
+ */
 bbop.model.graph.prototype.all_dangling = function(){
     // Disjoint of named and extant.
     var unnamed = new Array();
@@ -288,7 +527,18 @@ bbop.model.graph.prototype.all_dangling = function(){
     return unnamed;
 };
 
-// Any bad parts in graph?
+/*
+ * Function: is_complete
+ *
+ * Any bad parts in graph? Essentially, make sure that there are no
+ * weird references and nothing is dangling.
+ *
+ * Parameters:
+ * n/a
+ *
+ * Returns: 
+ *  boolean
+ */
 bbop.model.graph.prototype.is_complete = function(){
     var retval = true;
     if( this.all_dangling().length > 0 ){
@@ -297,8 +547,17 @@ bbop.model.graph.prototype.is_complete = function(){
     return retval;
 };
 
-
-// Return a copy of a node by id (not the original) if extant.
+/*
+ * Function: get_node
+ *
+ * Return a /copy/ of a node by id (not the original) if extant.
+ *
+ * Parameters:
+ *  nid - the id of the node we're looking for
+ *
+ * Returns: 
+ *  <bbop.model.node>
+ */
 bbop.model.graph.prototype.get_node = function(nid){
     var retnode = null;
     if( this._nodes.hash[ nid ] ){
@@ -308,8 +567,19 @@ bbop.model.graph.prototype.get_node = function(nid){
     return retnode;
 };
 
-
-// Get a new edge defined in the graph or null.
+/*
+ * Function: get_edge
+ *
+ * Return a /copy/ of an edge by ids (not the original) if extant.
+ *
+ * Parameters:
+ *  sub_id - the subject_id of the edge we're looking for
+ *  obj_id - the object_id of the edge we're looking for
+ *  pred - *[optional]* the predicate of the edge we're looking for
+ *
+ * Returns: 
+ *  <bbop.model.edge>
+ */
 bbop.model.graph.prototype.get_edge = function(sub_id, obj_id, pred){	
 
     if( ! pred ){ pred = bbop.model.default_predicate; }
@@ -325,9 +595,19 @@ bbop.model.graph.prototype.get_edge = function(sub_id, obj_id, pred){
     return ret_edge; 
 };
 
-
-// Return all edges of given subject and object ids. Returns
-// entirely new edges.
+/*
+ * Function: get_edge
+ *
+ * Return all edges (copies) of given subject and object ids. Returns
+ * entirely new edges.
+ *
+ * Parameters:
+ *  sub_id - the subject_id of the edge we're looking for
+ *  obj_id - the object_id of the edge we're looking for
+ *
+ * Returns: 
+ *  list of <bbop.model.edge>
+ */
 bbop.model.graph.prototype.get_edges = function(sub_id, obj_id){
     var retlist = new Array();
     if( this._sop_table[sub_id] &&
@@ -340,8 +620,23 @@ bbop.model.graph.prototype.get_edges = function(sub_id, obj_id){
 };
 
 
-// Translate an edge array into extant bodies, switching on either
-// subject or object.
+/*
+ * Function: edges_to_nodes
+ *
+ * Translate an edge array into extant (node) bodies, switching on
+ * either 'subject' or 'object'.
+ * 
+ * This will return the /original/ nodes.
+ *
+ * This will throw an error on any world issues that crop up.
+ * 
+ * Parameters: 
+ *  in_edges - the edges we want the subjects or objects of
+ *  target - 'subject' or 'object'
+ *
+ * Returns: 
+ *  array of <bbop.model.node>
+ */
 bbop.model.graph.prototype.edges_to_nodes = function(in_edges, target){
     
     // Double check.
@@ -371,9 +666,18 @@ bbop.model.graph.prototype.edges_to_nodes = function(in_edges, target){
     return results;
 };
 
-
-// Roots are defined as nodes who are the subject of nothing,
-// independent of predicate.
+/*
+ * Function: is_root_node
+ *
+ * Roots are defined as nodes who are the subject of nothing,
+ * independent of predicate.
+ *
+ * Parameters: 
+ *  nb_id - id of the node to check
+ *
+ * Returns: 
+ *  boolean
+ */
 bbop.model.graph.prototype.is_root_node = function(nb_id){
     var result = false;	
     if( this._nodes.hash[ nb_id ] &&
@@ -384,9 +688,20 @@ bbop.model.graph.prototype.is_root_node = function(nb_id){
 };
 
 
-// BUG/TODO: Could I speed this up by my moving some of the
-// calculation into the add_node and add_edge methods?
-// O(|#nodes|)
+/*
+ * Function: get_root_nodes
+ *
+ * Return a list of /copies/ of the root nodes.
+ * 
+ * BUG/TODO: Could I speed this up by my moving some of the
+ * calculation into the add_node and add_edge methods? O(|#nodes|)
+ * 
+ * Parameters:
+ *  n/a 
+ *
+ * Returns:
+ *  array of <bbop.model.node>
+ */
 bbop.model.graph.prototype.get_root_nodes = function(){
     var results = new Array();
     for( var nb_id in this._nodes.hash ){
@@ -398,8 +713,18 @@ bbop.model.graph.prototype.get_root_nodes = function(){
 };
 
 
-// Leaves are defined as nodes who are the object of nothing,
-// independent of predicate.
+/*
+ * Function: is_leaf_node
+ *
+ * Leaves are defined as nodes who are the object of nothing,
+ * independent of predicate.
+ * 
+ * Parameters: 
+ *  nb_id - id of the node to check
+ *
+ * Returns: 
+ *  boolean
+ */
 bbop.model.graph.prototype.is_leaf_node = function(nb_id){
 
     var result = false;
@@ -410,10 +735,20 @@ bbop.model.graph.prototype.is_leaf_node = function(nb_id){
     return result;
 };
 
-
-// BUG/TODO: Could I speed this up by my moving some of the
-// calculation into the add_node and add_edge methods?
-// O(|#nodes|)
+/*
+ * Function: get_root_nodes
+ *
+ * Return a list of /copies/ of the leaf nodes.
+ * 
+ * BUG/TODO: Could I speed this up by my moving some of the
+ * calculation into the add_node and add_edge methods? O(|#nodes|)
+ * 
+ * Parameters:
+ *  n/a 
+ *
+ * Returns:
+ *  array of <bbop.model.node>
+ */
 bbop.model.graph.prototype.get_leaf_nodes = function(){
     var results = new Array();
     for( var nb_id in this._nodes.hash ){
@@ -424,8 +759,20 @@ bbop.model.graph.prototype.get_leaf_nodes = function(){
     return results;
 };
 
-
-// Nodes that are roots and leaves over all relations.
+/*
+ * Function: get_singleton_nodes
+ *
+ * Find nodes that are roots and leaves over all relations. This
+ * returns the /original/ node.
+ * 
+ * Throws an error if there is a world issue.
+ *
+ * Parameters:
+ *  n/a 
+ *
+ * Returns: 
+ *  array of <bbop.model.node>
+ */
 bbop.model.graph.prototype.get_singleton_nodes = function(){
     // Translate array into array extant bodies.
     var singleton_array = new Array();
@@ -439,10 +786,21 @@ bbop.model.graph.prototype.get_singleton_nodes = function(){
     return singleton_array;
 };
 
-
-// Return all parent edges. If no predicate is give, use the
-// default one.
-// TODO: it might be nice to memoize this since others depend on it.
+/*
+ * Function: get_parent_edges
+ *
+ * Return all parent edges; the /originals/. If no predicate is given,
+ * use the default one.
+ * 
+ * TODO: it might be nice to memoize this since others depend on it.
+ *
+ * Parameters: 
+ *  nb_id - the node to consider
+ *  in_pred - *[optional]* over this predicate
+ *
+ * Returns: 
+ *  array of <bbop.model.edge>
+ */
 bbop.model.graph.prototype.get_parent_edges = function(nb_id, in_pred){
 
     var results = new Array();
@@ -475,9 +833,19 @@ bbop.model.graph.prototype.get_parent_edges = function(nb_id, in_pred){
     return results;
 };
 
-
-// Return all parents nodes. If no predicate is given, use the
-// default one.
+/*
+ * Function: get_parent_nodes
+ *
+ * Return all parent nodes; the /originals/. If no predicate is given,
+ * use the default one.
+ * 
+ * Parameters: 
+ *  nb_id - the node to consider
+ *  in_pred - *[optional]* over this predicate
+ *
+ * Returns: 
+ *  array of <bbop.model.node>
+ */
 bbop.model.graph.prototype.get_parent_nodes = function(nb_id, in_pred){
 
     var results = new Array();
@@ -494,9 +862,19 @@ bbop.model.graph.prototype.get_parent_nodes = function(nb_id, in_pred){
     return results;
 };
 
-
-// Return all children. If no predicate is given, use the default
-// one.
+/*
+ * Function: get_child_nodes
+ *
+ * Return all child nodes; the /originals/. If no predicate is given,
+ * use the default one.
+ * 
+ * Parameters: 
+ *  nb_id - the node to consider
+ *  in_pred - *[optional]* over this predicate
+ *
+ * Returns: 
+ *  array of <bbop.model.node>
+ */
 bbop.model.graph.prototype.get_child_nodes = function(nb_id, in_pred){
 
     var results = new Array();
@@ -533,8 +911,19 @@ bbop.model.graph.prototype.get_child_nodes = function(nb_id, in_pred){
     return results;
 };
 
-// Return new ancestors subgraph. Single id or id list as first
-// argument. Predicate string/id as optional second.
+/*
+ * Function: get_ancestor_subgraph
+ *
+ * Return new ancestors subgraph. Single id or id list as first
+ * argument. Predicate string/id as optional second.
+ *
+ * Parameters: 
+ *  nb_id_or_list - the node id(s) to consider
+ *  pid - *[optional]* over this predicate
+ *
+ * Returns: 
+ *  <bbop.model.graph>
+ */
 bbop.model.graph.prototype.get_ancestor_subgraph = function(nb_id_or_list, pid){
 
     // Shared data structure to trim multiple paths.
@@ -623,9 +1012,11 @@ bbop.model.graph.prototype.get_ancestor_subgraph = function(nb_id_or_list, pid){
  * 
  * TODO: a work in progress
  * 
- * Parameters: JSON object
+ * Parameters:
+ *  JSON object
  * 
- * Returns: true; side-effects: creates the graph internally.
+ * Returns:
+ *  true; side-effects: creates the graph internally
  */
 bbop.model.graph.prototype.load_json = function(json_object){
 
