@@ -1,5 +1,6 @@
 /* 
  * Package: golr_response.js
+ * 
  * Namespace: bbop.golr.response
  * 
  * Generic BBOP handler for dealing with the gross parsing of

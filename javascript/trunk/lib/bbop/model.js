@@ -1,5 +1,6 @@
 /* 
  * Package: model.js
+ * 
  * Namespace: bbop.model
  * 
  * Purpose: Basic edged graph and operations.
@@ -36,7 +37,8 @@ bbop.model.default_predicate = 'points_at';
 ///
 
 /*
- * Structure: bbop.model.node
+ * Namespace: bbop.model.node
+ * 
  * Constructor: node
  * 
  * Contructor for a BBOP graph model node.
@@ -145,7 +147,8 @@ bbop.model.node.prototype.clone = function(){
 ///
 
 /*
- * Structure: bbop.model.edge
+ * Namespace: bbop.model.edge
+ * 
  * Constructor: edge
  * 
  * Contructor for a BBOP graph model edge.
@@ -292,8 +295,9 @@ bbop.model.edge.prototype.clone = function(){
 ///
 
 /*
- * Structure: bbop.model.graph
- * Constructor: node
+ * Namespace: bbop.model.graph
+ * 
+ * Constructor: graph
  * 
  * Contructor for a BBOP graph model graph.
  * 

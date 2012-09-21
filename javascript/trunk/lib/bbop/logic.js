@@ -1,5 +1,6 @@
 /*
  * Package: logic.js
+ * 
  * Namespace: bbop.logic
  * 
  * BBOP object to try and take some of the pain out of managing the
@@ -27,7 +28,6 @@ bbop.core.require('bbop', 'logger');
 bbop.core.namespace('bbop', 'logic');
 
 /*
- * Structure: bbop.logic
  * Constructor: logic
  * 
  * Contructor for the bbop.logic object. NOTE: during processing,

@@ -1,5 +1,6 @@
 /* 
  * Package: html.js
+ * 
  * Namespace: bbop.html
  * 
  * Right now contains bbop.html.tag, but all html producing functions
@@ -30,6 +31,8 @@ bbop.core.namespace('bbop', 'html', 'list');
 bbop.core.namespace('bbop', 'html', 'input');
 
 /*
+ * Namespace: bbop.html.tag
+ * 
  * Constructor: tag
  * 
  * Create the fundamental tag object to work with and extend.
@@ -83,7 +86,7 @@ bbop.html.tag = function(tag, attrs, below){
 };
 
 /*
- * Function: (tag) to_string
+ * Function: to_string
  * 
  * Convert a tag object into a html-ized string.
  * 
@@ -117,7 +120,7 @@ bbop.html.tag.prototype.to_string = function(){
 };
 
 /*
- * Function: (tag) add_to
+ * Function: add_to
  * 
  * Add content between the tags. Order of addition is order of output.
  * 
@@ -131,7 +134,7 @@ bbop.html.tag.prototype.add_to = function(bbop_html_tag_or_string){
 };
 
 /*
- * Function: (tag) empty
+ * Function: empty
  * 
  * Remove all content between the tags.
  * 
@@ -144,7 +147,7 @@ bbop.html.tag.prototype.empty = function(){
 };
 
 /*
- * Function: (tag) get_id
+ * Function: get_id
  * 
  * Return the id if extant, null otherwise.
  * 
@@ -161,6 +164,8 @@ bbop.html.tag.prototype.get_id = function(){
 };
 
 /*
+ * Namespace: bbop.html.accordion
+ * 
  * Constructor: accordion
  * 
  * Create the a frame for the functional part of a jQuery accordion
@@ -214,7 +219,7 @@ bbop.html.accordion = function(in_list, attrs, add_id_p){
 };
 
 /*
- * Function: (accordion) to_string
+ * Function: to_string
  * 
  * Convert the accordion object into a html-ized string.
  * 
@@ -228,7 +233,7 @@ bbop.html.accordion.prototype.to_string = function(){
 };
 
 /*
- * Function: (accordion) add_to
+ * Function: add_to
  * 
  * Add a contect section to the accordion.
  * 
@@ -297,7 +302,7 @@ bbop.html.accordion.prototype.add_to =
 // };
 
 /*
- * Function: (accordion) empty
+ * Function: empty
  * 
  * Empty all sections from the accordion.
  * 
@@ -311,7 +316,7 @@ bbop.html.accordion.prototype.empty = function(){
 };
 
 /*
- * Function: (accordion) get_id
+ * Function: get_id
  * 
  * Return the id if extant, null otherwise.
  * 
@@ -324,7 +329,7 @@ bbop.html.accordion.prototype.get_id = function(){
 };
 
 /*
- * Function: (accordion) get_section_id
+ * Function: get_section_id
  * 
  * Get the "real" section id by way of the "convenience" section id?
  * 
@@ -345,6 +350,8 @@ bbop.html.accordion.prototype.get_section_id = function(sect_id){
 // };
 
 /*
+ * Namespace: bbop.html.list
+ * 
  * Constructor: list
  * 
  * Create the a frame for an unordered list object.
@@ -382,7 +389,7 @@ bbop.html.list = function(in_list, attrs){
 };
 
 /*
- * Function: (list) to_string
+ * Function: to_string
  * 
  * Convert a list object into a html-ized string.
  * 
@@ -396,7 +403,7 @@ bbop.html.list.prototype.to_string = function(){
 };
 
 /*
- * Function: (list) add_to
+ * Function: add_to
  * 
  * Add a new li section to a list.
  * 
@@ -427,7 +434,7 @@ bbop.html.list.prototype.add_to = function(){
 };
 
 /*
- * Function: (list) empty
+ * Function: empty
  * 
  * Remove all content (li's) from the list.
  * 
@@ -440,7 +447,7 @@ bbop.html.list.prototype.empty = function(){
 };
 
 /*
- * Function: (accordion) get_id
+ * Function: get_id
  * 
  * Return the id if extant, null otherwise.
  * 
@@ -453,6 +460,8 @@ bbop.html.list.prototype.get_id = function(){
 };
 
 /*
+ * Namespace: bbop.html.input
+ * 
  * Constructor: input
  * 
  * Create a form input.
@@ -475,7 +484,7 @@ bbop.html.input = function(attrs){
 };
 
 /*
- * Function: (input) to_string
+ * Function: to_string
  * 
  * Convert an input into a html-ized string.
  * 
@@ -489,7 +498,7 @@ bbop.html.input.prototype.to_string = function(){
 };
 
 /*
- * Function: (input) add_to
+ * Function: add_to
  * 
  * Add content between the input tags.
  * 
@@ -503,7 +512,7 @@ bbop.html.input.prototype.add_to = function(item){
 };
 
 /*
- * Function: (input) empty
+ * Function: empty
  * 
  * Reset/remove all children.
  * 
@@ -516,7 +525,7 @@ bbop.html.input.prototype.empty = function(){
 };
 
 /*
- * Function: (input) get_id
+ * Function: get_id
  * 
  * Return the id if extant, null otherwise.
  * 
@@ -529,6 +538,8 @@ bbop.html.input.prototype.get_id = function(){
 };
 
 /*
+ * Namespace: bbop.html.anchor
+ * 
  * Constructor: anchor
  * 
  * Create an anchor object. Note: href, title, etc. go through
@@ -552,7 +563,7 @@ bbop.html.anchor = function(in_cont, in_attrs){
 };
 
 /*
- * Function: (anchor) to_string
+ * Function: to_string
  * 
  * Convert an anchor object into a html-ized string.
  * 
@@ -566,7 +577,7 @@ bbop.html.anchor.prototype.to_string = function(){
 };
 
 /*
- * Function: (anchor) add_to
+ * Function: add_to
  * 
  * Add content between the tags. Order of addition is order of output.
  * 
@@ -580,7 +591,7 @@ bbop.html.anchor.prototype.add_to = function(item){
 };
 
 /*
- * Function: (anchor) empty
+ * Function: empty
  * 
  * Remove all content between the tags.
  * 
@@ -593,7 +604,7 @@ bbop.html.anchor.prototype.empty = function(){
 };
 
 /*
- * Function: (anchor) get_id
+ * Function: get_id
  * 
  * Return the id if extant, null otherwise.
  * 
@@ -606,6 +617,8 @@ bbop.html.anchor.prototype.get_id = function(){
 };
 
 /*
+ * Namespace: bbop.html.table
+ * 
  * Constructor: table
  * 
  * Create a simple table structure.
@@ -658,7 +671,7 @@ bbop.html.table = function(in_headers, in_entries, in_attrs){
 };
 
 /*
- * Function: (table) to_string
+ * Function: to_string
  * 
  * Convert a table object into a html-ized string.
  * 
@@ -672,7 +685,7 @@ bbop.html.table.prototype.to_string = function(){
 };
 
 /*
- * Function: (table) add_to
+ * Function: add_to
  * 
  * Add data row. The entries argument is coerced into an array of tds.
  * 
@@ -704,7 +717,7 @@ bbop.html.table.prototype.add_to = function(entries){
 };
 
 /*
- * Function: (table) empty
+ * Function: empty
  * 
  * Headers do not get wiped, just the data rows in the tbody.
  * 
@@ -718,7 +731,7 @@ bbop.html.table.prototype.empty = function(){
 };
 
 /*
- * Function: (table) get_id
+ * Function: get_id
  * 
  * Return the id if extant, null otherwise.
  * 
@@ -731,6 +744,8 @@ bbop.html.table.prototype.get_id = function(){
 };
 
 /*
+ * Namespace: bbop.html.button
+ * 
  * Constructor: button
  * 
  * Create a button object.
@@ -755,7 +770,7 @@ bbop.html.button = function(in_label, in_attrs){
 };
 
 /*
- * Function: (button) to_string
+ * Function: to_string
  * 
  * Convert a button object into a html-ized string.
  * 
@@ -769,7 +784,7 @@ bbop.html.button.prototype.to_string = function(){
 };
 
 /*
- * Function: (button) add_to
+ * Function: add_to
  * 
  * Add content between the tags. Order of addition is order of output.
  * Not really worth much as it just equates to changing the label.
@@ -784,7 +799,7 @@ bbop.html.button.prototype.add_to = function(item){
 };
 
 /*
- * Function: (button) empty
+ * Function: empty
  * 
  * Remove all content between the tags. This equates to removing the
  * label.
@@ -798,7 +813,7 @@ bbop.html.button.prototype.empty = function(){
 };
 
 /*
- * Function: (button) get_id
+ * Function: get_id
  * 
  * Return the id if extant, null otherwise.
  * 
@@ -811,6 +826,8 @@ bbop.html.button.prototype.get_id = function(){
 };
 
 /*
+ * Namespace: bbop.html.span
+ * 
  * Constructor: span
  * 
  * Create a span object.
@@ -834,7 +851,7 @@ bbop.html.span = function(in_label, in_attrs){
 };
 
 /*
- * Function: (span) to_string
+ * Function: to_string
  * 
  * Convert a span object into a html-ized string.
  * 
@@ -848,7 +865,7 @@ bbop.html.span.prototype.to_string = function(){
 };
 
 /*
- * Function: (span) add_to
+ * Function: add_to
  * 
  * Add content between the tags. Order of addition is order of output.
  * Not really worth much as it just equates to changing the label.
@@ -863,7 +880,7 @@ bbop.html.span.prototype.add_to = function(item){
 };
 
 /*
- * Function: (span) empty
+ * Function: empty
  * 
  * Remove all content between the tags. This equates to removing the
  * label.
@@ -877,7 +894,7 @@ bbop.html.span.prototype.empty = function(){
 };
 
 /*
- * Function: (span) get_id
+ * Function: get_id
  * 
  * Return the id if extant, null otherwise.
  * 

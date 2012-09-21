@@ -1,5 +1,6 @@
 /* 
  * Package: golr_manager.js
+ * 
  * Namespace: bbop.golr.manager
  * 
  * Generic BBOP manager for dealing with gross GOlr configuration
@@ -19,48 +20,6 @@ bbop.core.require('bbop', 'golr', 'response');
 bbop.core.namespace('bbop', 'golr', 'manager');
 bbop.core.namespace('bbop', 'golr', 'faux_ajax');
 
-/*
- * Structure: bbop.golr.faux_ajax
- * Constructor: faux_ajax
- * 
- * Contructor for a fake and inactive Ajax. Used by bbop.golr.manager
- * in (testing) environments where jQuery is not available.
- * 
- * Returns: faux_ajax object
- */
-bbop.golr.faux_ajax = function (){
-    this._is_a = 'bbop.golr.faux_ajax';
-
-    /*
-     * Function: ajax
-     *
-     * Fake call to jQuery's ajax.
-     *
-     * Parameters: 
-     *  args - whatever
-     *
-     * Returns:
-     *  null
-     */
-    this.ajax = function(args){
-	return null;
-    };
-    /*
-     * Function: parseJSON
-     *
-     * Fake call to jQuery's parseJSON.
-     *
-     * Parameters: 
-     *  args - whatever
-     *
-     * Returns:
-     *  ""
-     */
-    this.parseJSON = function(args){
-	return "";
-    };
-};
-
 // Thinking about lessons learned from solr ajax.
 // Updatable model that connects to the Solr server.
 // Makes no attempt to join to a form--entirely held as an internal model.
@@ -71,7 +30,6 @@ bbop.golr.faux_ajax = function (){
 // facets and can build the initial model off of that.
 
 /*
- * Structure: bbop.golr.manager
  * Constructor: manager
  * 
  * Contructor for the GOlr query manager
@@ -1132,3 +1090,47 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     };
 };
 bbop.golr.manager.prototype = new bbop.registry;
+
+/*
+ * Constructor: faux_ajax
+ * 
+ * Namespace: bbop.golr.faux_ajax
+ *
+ * Contructor for a fake and inactive Ajax. Used by bbop.golr.manager
+ * in (testing) environments where jQuery is not available.
+ * 
+ * Returns:
+ *  faux_ajax object
+ */
+bbop.golr.faux_ajax = function (){
+    this._is_a = 'bbop.golr.faux_ajax';
+
+    /*
+     * Function: ajax
+     *
+     * Fake call to jQuery's ajax.
+     *
+     * Parameters: 
+     *  args - whatever
+     *
+     * Returns:
+     *  null
+     */
+    this.ajax = function(args){
+	return null;
+    };
+    /*
+     * Function: parseJSON
+     *
+     * Fake call to jQuery's parseJSON.
+     *
+     * Parameters: 
+     *  args - whatever
+     *
+     * Returns:
+     *  ""
+     */
+    this.parseJSON = function(args){
+	return "";
+    };
+};
