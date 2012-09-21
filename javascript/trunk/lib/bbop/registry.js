@@ -1,5 +1,6 @@
 /* 
  * Package: registry.js
+ * 
  * Namespace: bbop.registry
  * 
  * BBOP generic lightweight listener/callback registry system.
@@ -9,7 +10,6 @@ bbop.core.require('bbop', 'core');
 bbop.core.namespace('bbop', 'registry');
 
 /*
- * Structure: bbop.registry
  * Constructor: registry
  * 
  * Contructor for BBOP registry. Takes a list of event categories as

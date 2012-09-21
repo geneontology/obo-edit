@@ -1,5 +1,6 @@
 /*
  * Package: logger.js
+ * 
  * Namespace: bbop.logger
  * 
  * BBOP JS logger object.
@@ -10,7 +11,6 @@ bbop.core.require('bbop', 'core');
 bbop.core.namespace('bbop', 'logger');
 
 /*
- * Structure: bbop.logger
  * Constructor: logger
  * 
  * Arguments: (optional) initial context.
