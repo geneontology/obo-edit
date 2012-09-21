@@ -3,8 +3,14 @@
  * Namespace: bbop.golr.conf*
  * 
  * Generic BBOP manager for dealing with gross GOlr configuration
- * and management. Remember, this is actually a "subclass" of
- * bbop.registry.
+ * and management.
+ * 
+ * Contains <bbop.golr.conf_field>, <bbop.golr.conf_class>, and
+ * <bbop.golr.conf>.
+ * 
+ * TODO: better document all of this. Essentially, this is all for
+ * getting data out of a JSONized version of the YAML files used to
+ * drive the OWLTools-Solr parts of GOlr.
  */
 
 // Setup the internal requirements.
@@ -20,11 +26,10 @@ bbop.core.namespace('bbop', 'golr');
  * Arguments:
  *  field_conf_struct - JSONized config
  * 
- * Returns: conf_field object
+ * Returns:
+ *  conf_field object
  */
 bbop.golr.conf_field = function (field_conf_struct){
-    // We are a registry like this:
-    //bbop.registry.call(this, ['reset', 'search', 'error']);
     this._is_a = 'bbop.golr.conf_field';
 
     // Get a good self-reference point.
@@ -44,7 +49,8 @@ bbop.golr.conf_field = function (field_conf_struct){
      * The user-facing display name. Suitable for label or title
      * somewhere.
      * 
-     * Returns: Display name string.
+     * Returns:
+     *  Display name string.
      */
     this.display_name = function(){
 	return this._field['display_name'];
@@ -55,7 +61,8 @@ bbop.golr.conf_field = function (field_conf_struct){
      * 
      * A longer description. Suitable for tooltips.
      * 
-     * Returns: Description string.
+     * Returns:
+     *  Description string.
      */
     this.description = function(){
 	return this._field['description'];
@@ -66,7 +73,8 @@ bbop.golr.conf_field = function (field_conf_struct){
      * 
      * The unique ID of this profile.
      * 
-     * Returns: String.
+     * Returns:
+     *  String.
      */
     this.id = function(){
 	return this._field['id'];
@@ -79,7 +87,8 @@ bbop.golr.conf_field = function (field_conf_struct){
      * "*_searchable" field defined that is suitable for dismax
      * searches. Defaults to false.
      * 
-     * Returns: Boolean.
+     * Returns:
+     *  Boolean.
      */
     this.searchable = function(){
 	var retval = false;
@@ -98,7 +107,8 @@ bbop.golr.conf_field = function (field_conf_struct){
      * 
      * Not of particular use.
      * 
-     * Returns: Boolean.
+     * Returns:
+     *  Boolean.
      */
     this.required = function(){
 	var retval = false;
@@ -115,7 +125,8 @@ bbop.golr.conf_field = function (field_conf_struct){
      * Using the "cardinality" entry, returns whether or not this
      * field is "single" (false) or "multi" (true). Defaults to false.
      * 
-     * Returns: Boolean.
+     * Returns:
+     *  Boolean.
      */
     this.is_multi = function(){
 	var retval = false;
@@ -133,7 +144,8 @@ bbop.golr.conf_field = function (field_conf_struct){
      * 
      * Not of particular use.
      * 
-     * Returns: Boolean.
+     * Returns:
+     *  Boolean.
      */
     this.is_fixed = function(){
 	var retval = false;
@@ -150,7 +162,8 @@ bbop.golr.conf_field = function (field_conf_struct){
      * 
      * Not of particular use.
      * 
-     * Returns: String.
+     * Returns:
+     *  String.
      */
     this.property = function(){
 	var retval = '???';
@@ -172,11 +185,10 @@ bbop.golr.conf_field = function (field_conf_struct){
  * Arguments:
  *  class_conf_struct - JSONized config
  * 
- * Returns: conf_class object
+ * Returns:
+ *  conf_class object
  */
 bbop.golr.conf_class = function (class_conf_struct){
-    // We are a registry like this:
-    //bbop.registry.call(this, ['reset', 'search', 'error']);
     this._is_a = 'bbop.golr.conf_class';
 
     // Get a good self-reference point.
@@ -202,7 +214,8 @@ bbop.golr.conf_class = function (class_conf_struct){
      * The user-facing display name. Suitable for label or title
      * somewhere.
      * 
-     * Returns: Display name string.
+     * Returns:
+     *  Display name string.
      */
     this.display_name = function(){
 	return this._class['display_name'];
@@ -213,7 +226,8 @@ bbop.golr.conf_class = function (class_conf_struct){
      * 
      * A longer description. Suitable for tooltips.
      * 
-     * Returns: Description string.
+     * Returns:
+     *  Description string.
      */
     this.description = function(){
 	return this._class['description'];
@@ -224,7 +238,8 @@ bbop.golr.conf_class = function (class_conf_struct){
      * 
      * The relative weight of this search class.
      * 
-     * Returns: Integer.
+     * Returns:
+     *  Integer.
      */
     this.weight = function(){
     	return parseInt(this._class['weight']) || 0;
@@ -235,7 +250,8 @@ bbop.golr.conf_class = function (class_conf_struct){
      * 
      * The unique ID of this profile.
      * 
-     * Returns: String.
+     * Returns:
+     *  String.
      */
     this.id = function(){
 	return this._class['id'];
@@ -246,7 +262,8 @@ bbop.golr.conf_class = function (class_conf_struct){
      * 
      * ???
      * 
-     * Returns: String.
+     * Returns:
+     *  String.
      */
     this.searchable_extension = function(){
 	return this._class['searchable_extension'] || '_searchable';
@@ -257,7 +274,8 @@ bbop.golr.conf_class = function (class_conf_struct){
      * 
      * Returns a search field by id string. Null otherwise.
      * 
-     * Returns: bbop.conf_field.
+     * Returns:
+     *  bbop.conf_field.
      */
     this.get_field = function(fid){
 	retval = null;
@@ -289,10 +307,13 @@ bbop.golr.conf_class = function (class_conf_struct){
      * 
      * Get the various weights we need to run.
      * 
-     * Arguments: string identifying the legal weight category:
-     * 'boost', 'result', or 'filter'.
+     * The weight category can be 'boost', 'result', or 'filter'.
      * 
-     * Returns: object of {field => weight, ...}
+     * Arguments:
+     *  weight_category - string identifying the legal weight category
+     * 
+     * Returns:
+     *  object of {field => weight, ...}
      */
     this.get_weights = function(weight_category){
 	
@@ -322,12 +343,14 @@ bbop.golr.conf_class = function (class_conf_struct){
      * 
      * Returns an array of field ids ordered by weight.
      * 
-     * Arguments: string identifying the legal weight category
-     * ('boost', 'result', or 'filter') and an optional cutoff
-     * weight. If no cutoff is defined, all listed fields are returned
-     * in the set.
+     * The weight category can be 'boost', 'result', or 'filter'.
      * 
-     * Returns: [field5, field4, ...]
+     * Arguments:
+     * weight_category - string identifying the legal weight category
+     * cutoff - *[optional]* if not defined, all listed fields in set returned
+     * 
+     * Returns:
+     *  array like [field5, field4, ...]
      */
     this.field_order_by_weight = function(weight_category, cutoff){
 
@@ -368,7 +391,8 @@ bbop.golr.conf_class = function (class_conf_struct){
  * Arguments:
  *  golr_conf_var - JSized GOlr config
  * 
- * Returns: golr conf object
+ * Returns:
+ *  golr conf object
  * 
  */
 bbop.golr.conf = function (golr_conf_var){
@@ -404,7 +428,11 @@ bbop.golr.conf = function (golr_conf_var){
      * 
      * Returns a class info object by id string. Null otherwise.
      * 
-     * Returns: bbop.conf_class.
+     * Arguments:
+     *  fid - TODO
+     * 
+     * Returns:
+     *  bbop.conf_class.
      */
     this.get_class = function(fid){
 	retval = null;
@@ -420,7 +448,8 @@ bbop.golr.conf = function (golr_conf_var){
      * 
      * Returns an array of all search classes.
      * 
-     * Returns: Array of bbop.golr.conf_class (unordered).
+     * Returns:
+     *  Array of <bbop.golr.conf_class> (unordered).
      */
     this.get_classes = function(){
 	ret = [];
