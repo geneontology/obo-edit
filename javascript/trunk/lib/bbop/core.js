@@ -1,5 +1,6 @@
 /* 
  * Package: core.js
+ * 
  * Namespace: bbop.core
  * 
  * BBOP language extensions to JavaScript.

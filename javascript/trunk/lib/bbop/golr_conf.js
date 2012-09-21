@@ -1,6 +1,7 @@
 /* 
  * Package: golr_conf.js
- * Namespace: bbop.golr.conf*
+ * 
+ * Namespace: bbop.golr.conf
  * 
  * Generic BBOP manager for dealing with gross GOlr configuration
  * and management.
@@ -18,7 +19,6 @@ bbop.core.require('bbop', 'core');
 bbop.core.namespace('bbop', 'golr');
 
 /*
- * Structure: bbop.golr.conf_field
  * Constructor: conf_field
  * 
  * Contructor for a GOlr search field.

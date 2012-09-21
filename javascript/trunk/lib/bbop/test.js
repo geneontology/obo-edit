@@ -1,5 +1,6 @@
 /* 
  * Package: test.js
+ * 
  * Namespace: bbop.test
  * 
  * A trivial testing framework for JS. See test.tests.js for usage.
@@ -13,7 +14,6 @@
 if ( typeof bbop == "undefined" ){ bbop = {}; }
 
 /*
- * Structure: bbop.test
  * Constructor: test
  * 
  * Contructor for the BBOP JS unit test system.
