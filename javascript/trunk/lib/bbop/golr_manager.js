@@ -63,7 +63,10 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     // and work in a non-browser/networked environment.
     var JQ = new bbop.golr.faux_ajax();
     try{ // some interpreters might not like this kind of probing
-	if( typeof(jQuery) !== 'undefined' ){ JQ = jQuery; }
+	if( typeof(jQuery) !== 'undefined' ){
+	    //JQ = jQuery;
+	    JQ = jQuery.noConflict();
+	}
     }catch (x){
     }finally{
 	var got = bbop.core.what_is(JQ);
