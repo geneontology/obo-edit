@@ -220,6 +220,8 @@ load('golr_response.js');
      mr_t.is_false(bgr.paging_previous_p(robj), 'paging: no back');
      mr_t.is_false(bgr.paging_next_p(robj), 'paging: no forward');
 
+     // packet
+     mr_t.is_same_atom(bgr.packet(robj), 5, 'looks like the fifth packet');
  })();
 
 ///
