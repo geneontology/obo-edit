@@ -9,6 +9,10 @@
  * 
  * Both json_data (or clean error data) and the manager itself (this
  * as anchor) should be passed to the callbacks.
+ * 
+ * TODO/BUG: <set_query> and <set_default_query> should both take
+ * strings or <bbop.logic> as arguments. Those, as well as <get_query>
+ * and <get_query> should only return <bbop.logic>.
  */
 
 // Setup the internal requirements.
@@ -77,9 +81,10 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	ll('Using ' + got + ' for Ajax calls.');
     }
 
-    // TODO: Block requests from the past from haunting us.
+    // To help keep requests from the past haunting us. Actually doing
+    // something with this number is up to the UI.
     this.last_sent_packet = 0;
-    this.last_received_packet = 0;
+    //this.last_received_packet = 0;
 
     // Lightly check incoming arguments.
     // There should be a string url argument.
@@ -102,8 +107,9 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     this._golr_conf = golr_conf_obj;
 
     // Our (default) query and the real deal.
-    this.default_query = '*:*';
-    this.query = this.default_query;
+    this.fundamental_query = '*:*'; // cannot be changed
+    this.default_query = '*:*'; // changable
+    this.query = this.default_query; //current
 
     // We remember defaults in the case of rows and start since they
     // are the core to any paging mechanisms and may change often.
@@ -165,7 +171,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     //  *  plist - *[optional]* a list of properties to apply to the filter
     //  *
     //  * Returns: 
-    //  *  A hash version of the plist; otherwise, the defaul property hash
+    //  *  A hash version of the plist; otherwise, the default property hash
     //  */
     // this.set_query = function(plist){
     // };
@@ -185,7 +191,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *  plist - *[optional]* a list of properties to apply to the filter
      *
      * Returns: 
-     *  A hash version of the plist; otherwise, the defaul property hash
+     *  A hash version of the plist; otherwise, the default property hash
      */
     this.plist_to_property_hash = function(plist){
 
@@ -555,10 +561,6 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * you are starting or starting over) and "search" (what you
      * typically want when you get new data).
      * 
-     * The logic_hash argument is a string keyed hash of bbop.logic.
-     * This is a curried wrapper for update objects. The only two keys
-     * currently identified are 'q' and 'fq'.
-     * 
      * If rows or start are not set, they will both be reset to their
      * initial values--this is to allow for paging on "current"
      * results and then getting back to the business of searching with
@@ -569,7 +571,6 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *
      * Parameters: 
      *  callback_type - callback type string
-     *  logic_hash - *[optional]* logic hash argument
      *  rows - *[serially optional]* integer; the number of rows to return
      *  start - *[serially optional]* integer; the offset of the returned rows
      *
@@ -579,7 +580,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * Also see:
      *  <get_query_url>
      */
-    this.update = function(callback_type, logic_hash, rows, start){
+    this.update = function(callback_type, rows, start){
 
 	// Handle paging in this main section by resetting to
 	// the defaults if rows and offset are not explicitly
@@ -600,7 +601,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	var update_qv = bbop.core.get_assemble(update_query_variants);
 
 	// Structure of the necessary invariant parts.	
-	var qurl = anchor.get_query_url();
+	//var qurl = anchor.get_query_url();
+	var qurl = null;
 
 	// Conditional merging of the remaining variant parts.
 	if( callback_type == 'reset' ){
@@ -610,43 +612,23 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    // filters.
 
 	    // Reset and do completely open query.
-	    ll('reset variant assembly');
-	    ll('update_qv: ' + update_qv);
-	    qurl = qurl + '&' + update_qv + '&q=' + anchor.query;
-	    //qurl = qurl + '&' + update_qv;
+	    ll('reset assembly');
+
+	    // Save the q vals, do a fundamental get, then reset to
+	    // what we had.
+	    //var tmp_save = anchor.get_query();
+	    //anchor.reset_default_query();
+	    anchor.reset_query();
+	    anchor.reset_query_filters();
+	    qurl = anchor.get_query_url();
+	    qurl = qurl + '&' + update_qv;
+	    //anchor.set_query(tmp_save);
 
 	}else if( callback_type == 'search' ){
 
-	    // NOTE/TODO: a lot of previous wacky q handling was done
-	    // in perl on the server, some of that will probably have
-	    // to be ported over to JS around here.
-	    var query_string = '*:*';
-	    if( logic_hash && logic_hash['q'] ){
-		var q_logic = logic_hash['q'];
-		var str_rep = q_logic.to_string();
-		if( str_rep.length > 0 ){
-		    // query_string = 'label:' + str_rep +
-		    // 	' OR annotation_class_label:' + str_rep;
-		    query_string = str_rep;
-		}
-	    }
-
-	    // NOTE/TODO: Assemble filters from logic. Make clean for
-	    // URLs.
-	    var filter_qs = '';
-	    if( logic_hash && logic_hash['fq'] ){
-		var fq_logic = logic_hash['fq'];
-		var str_rep = fq_logic.to_string();	    
-
-		if( str_rep.length > 0 ){
-		    filter_qs = '&fq=' + str_rep;
-		}
-	    }
-
-	    // Finalize it.
-	    ll('final variant assembly');
-	    //ll('varient_qs: ' + update_qv);
-	    qurl = qurl + '&' + update_qv + filter_qs + '&q=' + query_string;
+	    ll('search assembly');
+	    qurl = anchor.get_query_url();
+	    qurl = qurl + '&' + update_qv;
 
 	}else{
 	    throw new Error("Unknown callback_type: " + callback_type);
@@ -687,7 +669,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *  <update>
      */
     this.reset = function(){
-	anchor.update('reset', null);
+	anchor.update('reset');
     };
 
     /*
@@ -699,16 +681,16 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * This is a curried wrapper for <update> and should be preferred
      * over a direct call to update.
      * 
-     * Parameters: 
-     *  logic_hash - *[optional]* logic hash argument
+     * Parameters:
+     *  n/a
      *
      * Returns: n/a
      * 
      * See also:
      *  <update>
      */
-    this.search = function(logic_hash){
-	anchor.update('search', logic_hash);
+    this.search = function(){
+	anchor.update('search');
     };
 
     /*
@@ -737,7 +719,32 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     this.page = function(rows, start){
 	anchor.set('rows', rows);
 	anchor.set('start', start);
-	anchor.update('search', null, rows, start);
+	anchor.update('search', rows, start);
+    };
+
+    /*
+     * Function: last_packet_sent
+     *
+     * Re-trigger the "search" chain of events, but with the variables
+     * set for a different section of the results.
+     * 
+     * It is up to the UI to do something interesting with this number.
+     * 
+     * Also remember that this number only rises through calls to
+     * <update> or one of its wrapper. Calls to <get_query_url> and
+     * the like will not affect this number.
+     * 
+     * Parameters:
+     *  n/a 
+     *
+     * Returns:
+     *  integer
+     * 
+     * See also:
+     *  <update>
+     */
+    this.last_packet_sent = function(){
+	return anchor.last_sent_packet;
     };
 
     /*
@@ -900,6 +907,94 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     };
 
     /*
+     * Function: set_default_query
+     *
+     * Setter for the default query for the query variable ('q').
+     * 
+     * Call <reset_query> if you want to affect query immediately.
+     * 
+     * Parameters: 
+     *  new_default_query - new default query string (or TODO: <bbop.logic>)
+     *
+     * Returns:
+     *  the current setting of default query for ('q')
+     */
+    this.set_default_query = function(new_default_query){
+	anchor.default_query = new_default_query;
+	return anchor.default_query;
+    };
+
+    /*
+     * Function: reset_default_query
+     *
+     * Reset the default query back to "*:*".
+     * 
+     * Call <reset_query> if you want to affect query immediately.
+     * 
+     * Parameters:
+     *  n/a
+     *
+     * Returns:
+     *  the current setting of default query ('q')
+     */
+    this.reset_default_query = function(){
+	anchor.default_query = anchor.fundamental_query;
+	return anchor.default_query;
+    };
+
+    /*
+     * Function: set_query
+     *
+     * Setter for the query variable ('q').
+     * 
+     * Parameters: 
+     *  new_query - new value for the query string (or TODO: <bbop.logic>)
+     *
+     * Returns:
+     *  the current setting of query ('q')
+     */
+    this.set_query = function(new_query){
+	anchor.query = new_query;
+	return anchor.query;
+    };
+
+    /*
+     * Function: get_query
+     *
+     * Getter for the query variable ('q').
+     * 
+     * Parameters: 
+     *  n/a
+     *
+     * Returns:
+     *  the current setting of extra
+     */
+    this.get_query = function(){
+	return anchor.query;
+    };
+
+    /*
+     * Function: reset_query
+     *
+     * Remove/reset the query variable ('q'); this set it back to the
+     * default query.
+     *
+     * Parameters:
+     *  none
+     *
+     * Returns:
+     *  ""
+     * 
+     * Also see:
+     *  <set_default_query>
+     *  <reset_default_query>
+     */
+    this.reset_query = function(){
+	anchor.query = anchor.default_query;
+	return anchor.query;
+    };
+
+    /*
      * Function: set_extra
      *
      * Setter for the internal string variable to be appended to the
@@ -1044,7 +1139,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	// Structure of the necessary invariant parts.	
 	var qurl = anchor._solr_url + 'select?';
 
-	// TODO: Get all of our query filter variables and try and
+	// Get all of our query filter variables and try and
 	// make something of them that get_assemble can
 	// understand. Sticky doesn't matter here, but negativity
 	// does. However, we can be pretty naive since the hashing
@@ -1080,6 +1175,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    bbop.core.get_assemble(anchor.query_variants),
 	    //bbop.core.get_assemble({'fq': anchor.query_sticky_filters}),
 	    bbop.core.get_assemble({'fq': fq}),
+	    bbop.core.get_assemble({'q': anchor.query}),
 	    anchor.query_extra
 	];
 	loop(things_to_add,
