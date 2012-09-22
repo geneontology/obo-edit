@@ -170,6 +170,26 @@ bbop.golr.response.end_document = function(robj){
 };
 
 /*
+ * Function: packet
+ * 
+ * Return the packet number of the current response.
+ * 
+ * Arguments:
+ *  robj - JSONized GOlr response
+ * 
+ * Returns:
+ *  integer or null (no packet defined)
+ */
+bbop.golr.response.packet = function(robj){
+    var retval = null;
+    var pval = robj.responseHeader.params.packet;
+    if( pval ){
+	retval = parseInt(pval);
+    }
+    return retval;
+};
+
+/*
  * Function: paging_p
  * 
  * Whether or not paging is necessary with the given results set.
