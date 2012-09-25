@@ -374,7 +374,6 @@ bbop.test = function(){
      * Returns: 
      *  n/a
      */
-    //
     this.is_same_url = function(link1, link2, msg){
 	_complete(_link_comp(link1, link2), msg);
     };    
@@ -395,6 +394,32 @@ bbop.test = function(){
     this.is_different_url = function(link1, link2, msg){
 	_complete(! _link_comp(link1, link2), msg);
     };    
+
+    // /*
+    //  * Function: is_same_url_by_assembly
+    //  *
+    //  * Test whether two URLs are functionally equivalent.
+    //  *
+    //  * Parameters: 
+    //  *  link - url
+    //  *  base - string
+    //  *  psuedo_assembly - hash 
+    //  *  msg - *[optional]* informational message about test
+    //  *
+    //  * Returns: 
+    //  *  n/a
+    //  */
+    // function _psuedo_assmble(assembly){
+    // 	var retval = '';
+    // 	for( var k2 in hash2 ){
+    // 	return retval;
+    // }
+    // this.is_same_url_by_assembly = function(link, base,
+    // 					    psuedo_assembly, msg){
+    // 	_complete(_link_comp(link,
+    // 			     base + bbop.core.get_assemble(assembly)),
+    // 		  msg);
+    // };    
 
     /*
      * Function: is_same_set
