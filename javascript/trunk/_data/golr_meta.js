@@ -1,15 +1,18 @@
 /* 
  * Package: golr_meta.js
+ * 
  * Namespace: bbop.golr.golr_meta
  * 
- * Useful information about GOlr for JS. See package golr.js
- * for API to interact with this data file.
+ * This package was automatically created during an AmiGO 2 installation.
  *
- * NOTE: Requirements: core.js for namespace controls.
+ * Useful information about GOlr for JS. See the package <golr_conf.js>
+ * for the API to interact with this data file.
+ *
+ * Requirements: core.js for namespace controls.
  *
  * NOTE: This file is generated dynamically at installation time.
- * Hard to work with unit tests--hope it's not too bad.
- * Want to keep this real simple.
+ * Hard to work with unit tests--hope it's not too bad. You have to
+ * occasionally copy back to keep the unit tests sane.
  *
  * NOTE: This file has a slightly different latout from the YAML
  * configurations files--in addition instead of the fields
@@ -19,8 +22,15 @@
 
 // All of the server/instance-specific meta-data.
 bbop.core.require('bbop', 'core');
-bbop.core.namespace('bbop', 'golr');
-bbop.golr.golr_meta = {
+bbop.core.namespace('bbop', 'amigo', 'golr_meta');
+
+/*
+ * Variable: golr_meta
+ * 
+ * The configuration for the data.
+ * Essentially a JSONification of the OWLTools YAML files.
+ */
+bbop.amigo.golr_meta = {
    "bbop_ann_ev_agg" : {
       "searchable_extension" : "_searchable",
       "result_weights" : "",
@@ -28,163 +38,177 @@ bbop.golr.golr_meta = {
       "_infile" : "/home/sjcarbon/local/src/svn/owltools/OWLTools-Solr/src/main/resources/ann_ev_agg-config.yaml",
       "display_name" : "Evidence Aggregate",
       "description" : "A description of annotation evidence aggregate for GOlr and AmiGO.",
-      "boost_weights" : "annotation_class^2.0 annotation_class_label^1.0 bioentity_id^2.0 bioentity_label^1.0",
+      "boost_weights" : "annotation_class^2.0 annotation_class_label^1.0 bioentity^2.0 bioentity_label^1.0",
       "fields" : [
          {
             "transform" : [],
             "description" : "Bioentity id.",
             "display_name" : "Acc",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "id",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Column 1 + columns 2.",
-            "display_name" : "Bioentity id",
+            "display_name" : "Bioentity ID",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
-            "id" : "bioentity_id",
-            "property" : "???"
+            "id" : "bioentity",
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Column 3.",
             "display_name" : "Bioentity label",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "bioentity_label",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Column 5.",
             "display_name" : "Annotation class",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "annotation_class",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Column 5 + ontology.",
             "display_name" : "Annotation class label",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "annotation_class_label",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "???",
             "display_name" : "Evidence closure",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "evidence_closure",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "???",
             "display_name" : "Evidence with",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "evidence_with",
-            "property" : "???"
+            "property" : []
          }
       ],
       "fields_hash" : {
+         "bioentity" : {
+            "transform" : [],
+            "description" : "Column 1 + columns 2.",
+            "display_name" : "Bioentity ID",
+            "indexed" : "true",
+            "searchable" : "false",
+            "required" : "false",
+            "cardinality" : "single",
+            "type" : "string",
+            "id" : "bioentity",
+            "property" : []
+         },
          "annotation_class_label" : {
             "transform" : [],
             "description" : "Column 5 + ontology.",
             "display_name" : "Annotation class label",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "annotation_class_label",
-            "property" : "???"
+            "property" : []
          },
          "bioentity_label" : {
             "transform" : [],
             "description" : "Column 3.",
             "display_name" : "Bioentity label",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "bioentity_label",
-            "property" : "???"
+            "property" : []
          },
          "evidence_with" : {
             "transform" : [],
             "description" : "???",
             "display_name" : "Evidence with",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "evidence_with",
-            "property" : "???"
+            "property" : []
          },
          "annotation_class" : {
             "transform" : [],
             "description" : "Column 5.",
             "display_name" : "Annotation class",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "annotation_class",
-            "property" : "???"
-         },
-         "bioentity_id" : {
-            "transform" : [],
-            "description" : "Column 1 + columns 2.",
-            "display_name" : "Bioentity id",
-            "searchable" : "false",
-            "required" : "false",
-            "cardinality" : "single",
-            "type" : "string",
-            "id" : "bioentity_id",
-            "property" : "???"
+            "property" : []
          },
          "id" : {
             "transform" : [],
             "description" : "Bioentity id.",
             "display_name" : "Acc",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "id",
-            "property" : "???"
+            "property" : []
          },
          "evidence_closure" : {
             "transform" : [],
             "description" : "???",
             "display_name" : "Evidence closure",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "evidence_closure",
-            "property" : "???"
+            "property" : []
          }
       },
       "document_category" : "annotation_evidence_aggregate",
@@ -195,210 +219,228 @@ bbop.golr.golr_meta = {
    },
    "bbop_ann" : {
       "searchable_extension" : "_searchable",
-      "result_weights" : "annotation_class_label^9.0 evidence_type^8.0 bioentity_label^7.0 type^6.0 source^4.0 taxon_label^3.0 annotation_extension_class_label^1.0",
-      "filter_weights" : "source^7.0 evidence_type^6.0 taxon^5.0 isa_partof_label_closure^4.0 annotation_extension_class^3.0 type^2.0",
+      "result_weights" : "annotation_class^9.0 evidence_type^8.0 bioentity^7.0 source^4.0 taxon_label^3.0 evidence_with^2.0 annotation_extension_class^1.0",
+      "filter_weights" : "source^7.0 evidence_type^6.0 taxon_label^5.0 isa_partof_closure_label^4.0 annotation_extension_class_closure_label^3.0",
       "_infile" : "/home/sjcarbon/local/src/svn/owltools/OWLTools-Solr/src/main/resources/ann-config.yaml",
       "display_name" : "Annotations",
       "description" : "A description of annotations for GOlr and AmiGO.",
-      "boost_weights" : "annotation_class^2.0 annotation_class_label^1.0 bioentity_id^2.0 bioentity_label^1.0 annotation_extension_class^2.0 annotation_extension_class_label^1.0",
+      "boost_weights" : "annotation_class^2.0 annotation_class_label^1.0 bioentity^2.0 bioentity_label^1.0 annotation_extension_class^2.0 annotation_extension_class_label^1.0",
       "fields" : [
          {
             "transform" : [],
             "description" : "A unique (and internal) combination of bioentity and ontology class.",
             "display_name" : "Acc",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "id",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Column 15: assigned by.",
             "display_name" : "Source",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "source",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Column 14: date of assignment.",
             "display_name" : "Date",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "date",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Column 13: taxon.",
             "display_name" : "Taxon",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "taxon",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Derived from C13 + ncbi_taxonomy.obo.",
-            "display_name" : "Taxon label",
+            "display_name" : "Taxon",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "taxon_label",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Closure of ids/accs over isa and partof.",
-            "display_name" : "isa/partof closure",
+            "display_name" : "isa/partof closure (ids)",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "isa_partof_closure",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Closure of labels over isa and partof.",
-            "display_name" : "isa/partof label closure",
+            "display_name" : "Is-a/Part-of closure (labels)",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
-            "id" : "isa_partof_label_closure",
-            "property" : "???"
+            "id" : "isa_partof_closure_label",
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Column 1 + columns 2.",
-            "display_name" : "Bioentity id",
+            "display_name" : "Gene Product",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
-            "id" : "bioentity_id",
-            "property" : "???"
+            "id" : "bioentity",
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Column 3: bioentity label.",
             "display_name" : "Bioentity label",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "bioentity_label",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Column 5.",
             "display_name" : "Annotation class",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "annotation_class",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Column 5 + ontology.",
             "display_name" : "Annotation class label",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "annotation_class_label",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "???",
             "display_name" : "Evidence type",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "evidence_type",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Column 8: with/from.",
             "display_name" : "With",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "evidence_with",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "???",
             "display_name" : "Reference",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "reference",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "???",
             "display_name" : "Annotation extension class",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "annotation_extension_class",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "???",
-            "display_name" : "Annotation extension class label",
+            "display_name" : "Annotation extension class (labels)",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "annotation_extension_class_label",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "???",
             "display_name" : "Annotation extension class closure",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "annotation_extension_class_closure",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "???",
-            "display_name" : "Annotation extension class label closure",
+            "display_name" : "Annotation extension class closure (labels)",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
-            "id" : "annotation_extension_class_label_closure",
-            "property" : "???"
+            "id" : "annotation_extension_class_closure_label",
+            "property" : []
          }
       ],
       "fields_hash" : {
@@ -406,199 +448,217 @@ bbop.golr.golr_meta = {
             "transform" : [],
             "description" : "???",
             "display_name" : "Annotation extension class",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "annotation_extension_class",
-            "property" : "???"
+            "property" : []
          },
          "source" : {
             "transform" : [],
             "description" : "Column 15: assigned by.",
             "display_name" : "Source",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "source",
-            "property" : "???"
+            "property" : []
          },
-         "isa_partof_label_closure" : {
+         "annotation_extension_class_closure_label" : {
             "transform" : [],
-            "description" : "Closure of labels over isa and partof.",
-            "display_name" : "isa/partof label closure",
+            "description" : "???",
+            "display_name" : "Annotation extension class closure (labels)",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
-            "id" : "isa_partof_label_closure",
-            "property" : "???"
+            "id" : "annotation_extension_class_closure_label",
+            "property" : []
          },
          "bioentity_label" : {
             "transform" : [],
             "description" : "Column 3: bioentity label.",
             "display_name" : "Bioentity label",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "bioentity_label",
-            "property" : "???"
+            "property" : []
          },
          "date" : {
             "transform" : [],
             "description" : "Column 14: date of assignment.",
             "display_name" : "Date",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "date",
-            "property" : "???"
-         },
-         "bioentity_id" : {
-            "transform" : [],
-            "description" : "Column 1 + columns 2.",
-            "display_name" : "Bioentity id",
-            "searchable" : "false",
-            "required" : "false",
-            "cardinality" : "single",
-            "type" : "string",
-            "id" : "bioentity_id",
-            "property" : "???"
+            "property" : []
          },
          "reference" : {
             "transform" : [],
             "description" : "???",
             "display_name" : "Reference",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "reference",
-            "property" : "???"
+            "property" : []
          },
          "evidence_type" : {
             "transform" : [],
             "description" : "???",
             "display_name" : "Evidence type",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "evidence_type",
-            "property" : "???"
+            "property" : []
          },
          "id" : {
             "transform" : [],
             "description" : "A unique (and internal) combination of bioentity and ontology class.",
             "display_name" : "Acc",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "id",
-            "property" : "???"
-         },
-         "annotation_extension_class_label_closure" : {
-            "transform" : [],
-            "description" : "???",
-            "display_name" : "Annotation extension class label closure",
-            "searchable" : "true",
-            "required" : "false",
-            "cardinality" : "multi",
-            "type" : "string",
-            "id" : "annotation_extension_class_label_closure",
-            "property" : "???"
+            "property" : []
          },
          "annotation_extension_class_label" : {
             "transform" : [],
             "description" : "???",
-            "display_name" : "Annotation extension class label",
+            "display_name" : "Annotation extension class (labels)",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "annotation_extension_class_label",
-            "property" : "???"
+            "property" : []
+         },
+         "isa_partof_closure_label" : {
+            "transform" : [],
+            "description" : "Closure of labels over isa and partof.",
+            "display_name" : "Is-a/Part-of closure (labels)",
+            "indexed" : "true",
+            "searchable" : "true",
+            "required" : "false",
+            "cardinality" : "multi",
+            "type" : "string",
+            "id" : "isa_partof_closure_label",
+            "property" : []
          },
          "annotation_class" : {
             "transform" : [],
             "description" : "Column 5.",
             "display_name" : "Annotation class",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "annotation_class",
-            "property" : "???"
+            "property" : []
          },
          "taxon" : {
             "transform" : [],
             "description" : "Column 13: taxon.",
             "display_name" : "Taxon",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "taxon",
-            "property" : "???"
+            "property" : []
+         },
+         "bioentity" : {
+            "transform" : [],
+            "description" : "Column 1 + columns 2.",
+            "display_name" : "Gene Product",
+            "indexed" : "true",
+            "searchable" : "false",
+            "required" : "false",
+            "cardinality" : "single",
+            "type" : "string",
+            "id" : "bioentity",
+            "property" : []
          },
          "isa_partof_closure" : {
             "transform" : [],
             "description" : "Closure of ids/accs over isa and partof.",
-            "display_name" : "isa/partof closure",
+            "display_name" : "isa/partof closure (ids)",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "isa_partof_closure",
-            "property" : "???"
+            "property" : []
          },
          "taxon_label" : {
             "transform" : [],
             "description" : "Derived from C13 + ncbi_taxonomy.obo.",
-            "display_name" : "Taxon label",
+            "display_name" : "Taxon",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "taxon_label",
-            "property" : "???"
+            "property" : []
          },
          "annotation_class_label" : {
             "transform" : [],
             "description" : "Column 5 + ontology.",
             "display_name" : "Annotation class label",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "annotation_class_label",
-            "property" : "???"
+            "property" : []
          },
          "evidence_with" : {
             "transform" : [],
             "description" : "Column 8: with/from.",
             "display_name" : "With",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "evidence_with",
-            "property" : "???"
+            "property" : []
          },
          "annotation_extension_class_closure" : {
             "transform" : [],
             "description" : "???",
             "display_name" : "Annotation extension class closure",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "annotation_extension_class_closure",
-            "property" : "???"
+            "property" : []
          }
       },
       "document_category" : "annotation",
@@ -618,181 +678,197 @@ bbop.golr.golr_meta = {
       "fields" : [
          {
             "transform" : [],
-            "description" : "Bioentity id.",
+            "description" : "Bioentity ID.",
             "display_name" : "Acc",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "id",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Column 12: type class id.",
             "display_name" : "Type class id",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "type",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Column 13: taxon.",
             "display_name" : "Taxon",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "taxon",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Derived from C13 + ncbi_taxonomy.obo.",
             "display_name" : "Taxon label",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "taxon_label",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Closure of ids/accs over isa and partof.",
             "display_name" : "isa/partof closure",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "isa_partof_closure",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Closure of labels over isa and partof.",
             "display_name" : "isa/partof label closure",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
-            "id" : "isa_partof_label_closure",
-            "property" : "???"
+            "id" : "isa_partof_closure_label",
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Symbol or name.",
             "display_name" : "Label",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "label",
-            "property" : "???"
+            "property" : []
          },
          {
             "transform" : [],
             "description" : "Column 1: Identifier database.",
             "display_name" : "Database",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "db",
-            "property" : "???"
+            "property" : []
          }
       ],
       "fields_hash" : {
-         "isa_partof_label_closure" : {
+         "isa_partof_closure_label" : {
             "transform" : [],
             "description" : "Closure of labels over isa and partof.",
             "display_name" : "isa/partof label closure",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
-            "id" : "isa_partof_label_closure",
-            "property" : "???"
+            "id" : "isa_partof_closure_label",
+            "property" : []
          },
          "db" : {
             "transform" : [],
             "description" : "Column 1: Identifier database.",
             "display_name" : "Database",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "db",
-            "property" : "???"
+            "property" : []
          },
          "taxon" : {
             "transform" : [],
             "description" : "Column 13: taxon.",
             "display_name" : "Taxon",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "taxon",
-            "property" : "???"
+            "property" : []
          },
          "isa_partof_closure" : {
             "transform" : [],
             "description" : "Closure of ids/accs over isa and partof.",
             "display_name" : "isa/partof closure",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "isa_partof_closure",
-            "property" : "???"
+            "property" : []
          },
          "taxon_label" : {
             "transform" : [],
             "description" : "Derived from C13 + ncbi_taxonomy.obo.",
             "display_name" : "Taxon label",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "taxon_label",
-            "property" : "???"
+            "property" : []
          },
          "id" : {
             "transform" : [],
-            "description" : "Bioentity id.",
+            "description" : "Bioentity ID.",
             "display_name" : "Acc",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "id",
-            "property" : "???"
+            "property" : []
          },
          "type" : {
             "transform" : [],
             "description" : "Column 12: type class id.",
             "display_name" : "Type class id",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "type",
-            "property" : "???"
+            "property" : []
          },
          "label" : {
             "transform" : [],
             "description" : "Symbol or name.",
             "display_name" : "Label",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "label",
-            "property" : "???"
+            "property" : []
          }
       },
       "document_category" : "bioentity",
@@ -812,113 +888,230 @@ bbop.golr.golr_meta = {
       "fields" : [
          {
             "transform" : [],
-            "description" : "Term acc/id.",
+            "description" : "Term acc/ID.",
             "display_name" : "Acc",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "id",
-            "property" : "getIdentifier"
+            "property" : [
+               "getIdentifier"
+            ]
          },
          {
             "transform" : [],
             "description" : "Common term name.",
             "display_name" : "Term",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "label",
-            "property" : "getLabel"
+            "property" : [
+               "getLabel"
+            ]
          },
          {
             "transform" : [],
             "description" : "Term definition.",
             "display_name" : "Definition",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "description",
-            "property" : "getDef"
+            "property" : [
+               "getDef"
+            ]
          },
          {
             "transform" : [],
             "description" : "Term namespace.",
             "display_name" : "Source",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "source",
-            "property" : "getNamespace"
+            "property" : [
+               "getNamespace"
+            ]
          },
          {
             "transform" : [],
             "description" : "Is the term obsolete?",
             "display_name" : "Obsoletion",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "boolean",
             "id" : "is_obsolete",
-            "property" : "getIsObsoleteBinaryString"
+            "property" : [
+               "getIsObsoleteBinaryString"
+            ]
          },
          {
             "transform" : [],
             "description" : "Term comment.",
             "display_name" : "Comment",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "comment",
-            "property" : "getComment"
+            "property" : [
+               "getComment"
+            ]
          },
          {
             "transform" : [],
             "description" : "Term synonym.",
             "display_name" : "Synonym",
+            "indexed" : "true",
             "searchable" : "true",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "synonym",
-            "property" : "getOBOSynonymStrings"
+            "property" : [
+               "getOBOSynonymStrings"
+            ]
          },
          {
             "transform" : [],
             "description" : "Alternate term id.",
             "display_name" : "Alt ID",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "alternate_id",
-            "property" : "getAltIds"
+            "property" : [
+               "getAnnotationPropertyValues",
+               "alt_id"
+            ]
+         },
+         {
+            "transform" : [],
+            "description" : "Term that replaces this term.",
+            "display_name" : "Replaced By",
+            "indexed" : "true",
+            "searchable" : "false",
+            "required" : "false",
+            "cardinality" : "multi",
+            "type" : "string",
+            "id" : "replaced_by",
+            "property" : [
+               "getAnnotationPropertyValues",
+               "replaced_by"
+            ]
+         },
+         {
+            "transform" : [],
+            "description" : "Others terms you might want to look at.",
+            "display_name" : "Consider",
+            "indexed" : "true",
+            "searchable" : "false",
+            "required" : "false",
+            "cardinality" : "multi",
+            "type" : "string",
+            "id" : "consider",
+            "property" : [
+               "getAnnotationPropertyValues",
+               "consider"
+            ]
          },
          {
             "transform" : [],
             "description" : "Term subset.",
             "display_name" : "Subset",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "subset",
-            "property" : "getSubsets"
+            "property" : [
+               "getSubsets"
+            ]
          },
          {
             "transform" : [],
             "description" : "Definition cross-reference.",
             "display_name" : "Def XRef",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "definition_xref",
-            "property" : "getDefXref"
+            "property" : [
+               "getDefXref"
+            ]
+         },
+         {
+            "transform" : [],
+            "description" : "Closure of ids/accs over isa and partof.",
+            "display_name" : "isa/partof closure (ids)",
+            "indexed" : "true",
+            "searchable" : "false",
+            "required" : "false",
+            "cardinality" : "multi",
+            "type" : "string",
+            "id" : "isa_partof_closure",
+            "property" : [
+               "getIsaPartofIDClosure"
+            ]
+         },
+         {
+            "transform" : [],
+            "description" : "Closure of labels over isa and partof.",
+            "display_name" : "Is-a/Part-of closure (labels)",
+            "indexed" : "true",
+            "searchable" : "true",
+            "required" : "false",
+            "cardinality" : "multi",
+            "type" : "string",
+            "id" : "isa_partof_closure_label",
+            "property" : [
+               "getIsaPartofLabelClosure"
+            ]
+         },
+         {
+            "transform" : [],
+            "description" : "JSON blob form of the local stepwise topology graph.",
+            "display_name" : "This should not be displayed",
+            "indexed" : "false",
+            "searchable" : "false",
+            "required" : "false",
+            "cardinality" : "single",
+            "type" : "string",
+            "id" : "topology_graph",
+            "property" : [
+               "getSegmentShuntGraphJSON"
+            ]
+         },
+         {
+            "transform" : [],
+            "description" : "JSON blob form of the local relation transitivity graph.",
+            "display_name" : "This should not be displayed",
+            "indexed" : "false",
+            "searchable" : "false",
+            "required" : "false",
+            "cardinality" : "single",
+            "type" : "string",
+            "id" : "transitivity_graph",
+            "property" : [
+               "getLineageShuntGraphJSON"
+            ]
          }
       ],
       "fields_hash" : {
@@ -926,111 +1119,228 @@ bbop.golr.golr_meta = {
             "transform" : [],
             "description" : "Term namespace.",
             "display_name" : "Source",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "source",
-            "property" : "getNamespace"
+            "property" : [
+               "getNamespace"
+            ]
          },
          "definition_xref" : {
             "transform" : [],
             "description" : "Definition cross-reference.",
             "display_name" : "Def XRef",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "definition_xref",
-            "property" : "getDefXref"
+            "property" : [
+               "getDefXref"
+            ]
          },
          "alternate_id" : {
             "transform" : [],
             "description" : "Alternate term id.",
             "display_name" : "Alt ID",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "alternate_id",
-            "property" : "getAltIds"
+            "property" : [
+               "getAnnotationPropertyValues",
+               "alt_id"
+            ]
          },
-         "description" : {
+         "consider" : {
             "transform" : [],
-            "description" : "Term definition.",
-            "display_name" : "Definition",
-            "searchable" : "true",
-            "required" : "false",
-            "cardinality" : "single",
-            "type" : "string",
-            "id" : "description",
-            "property" : "getDef"
-         },
-         "comment" : {
-            "transform" : [],
-            "description" : "Term comment.",
-            "display_name" : "Comment",
-            "searchable" : "true",
-            "required" : "false",
-            "cardinality" : "single",
-            "type" : "string",
-            "id" : "comment",
-            "property" : "getComment"
-         },
-         "synonym" : {
-            "transform" : [],
-            "description" : "Term synonym.",
-            "display_name" : "Synonym",
-            "searchable" : "true",
+            "description" : "Others terms you might want to look at.",
+            "display_name" : "Consider",
+            "indexed" : "true",
+            "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
-            "id" : "synonym",
-            "property" : "getOBOSynonymStrings"
+            "id" : "consider",
+            "property" : [
+               "getAnnotationPropertyValues",
+               "consider"
+            ]
          },
          "subset" : {
             "transform" : [],
             "description" : "Term subset.",
             "display_name" : "Subset",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "multi",
             "type" : "string",
             "id" : "subset",
-            "property" : "getSubsets"
+            "property" : [
+               "getSubsets"
+            ]
+         },
+         "topology_graph" : {
+            "transform" : [],
+            "description" : "JSON blob form of the local stepwise topology graph.",
+            "display_name" : "This should not be displayed",
+            "indexed" : "false",
+            "searchable" : "false",
+            "required" : "false",
+            "cardinality" : "single",
+            "type" : "string",
+            "id" : "topology_graph",
+            "property" : [
+               "getSegmentShuntGraphJSON"
+            ]
          },
          "id" : {
             "transform" : [],
-            "description" : "Term acc/id.",
+            "description" : "Term acc/ID.",
             "display_name" : "Acc",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "string",
             "id" : "id",
-            "property" : "getIdentifier"
-         },
-         "label" : {
-            "transform" : [],
-            "description" : "Common term name.",
-            "display_name" : "Term",
-            "searchable" : "true",
-            "required" : "false",
-            "cardinality" : "single",
-            "type" : "string",
-            "id" : "label",
-            "property" : "getLabel"
+            "property" : [
+               "getIdentifier"
+            ]
          },
          "is_obsolete" : {
             "transform" : [],
             "description" : "Is the term obsolete?",
             "display_name" : "Obsoletion",
+            "indexed" : "true",
             "searchable" : "false",
             "required" : "false",
             "cardinality" : "single",
             "type" : "boolean",
             "id" : "is_obsolete",
-            "property" : "getIsObsoleteBinaryString"
+            "property" : [
+               "getIsObsoleteBinaryString"
+            ]
+         },
+         "isa_partof_closure_label" : {
+            "transform" : [],
+            "description" : "Closure of labels over isa and partof.",
+            "display_name" : "Is-a/Part-of closure (labels)",
+            "indexed" : "true",
+            "searchable" : "true",
+            "required" : "false",
+            "cardinality" : "multi",
+            "type" : "string",
+            "id" : "isa_partof_closure_label",
+            "property" : [
+               "getIsaPartofLabelClosure"
+            ]
+         },
+         "replaced_by" : {
+            "transform" : [],
+            "description" : "Term that replaces this term.",
+            "display_name" : "Replaced By",
+            "indexed" : "true",
+            "searchable" : "false",
+            "required" : "false",
+            "cardinality" : "multi",
+            "type" : "string",
+            "id" : "replaced_by",
+            "property" : [
+               "getAnnotationPropertyValues",
+               "replaced_by"
+            ]
+         },
+         "description" : {
+            "transform" : [],
+            "description" : "Term definition.",
+            "display_name" : "Definition",
+            "indexed" : "true",
+            "searchable" : "true",
+            "required" : "false",
+            "cardinality" : "single",
+            "type" : "string",
+            "id" : "description",
+            "property" : [
+               "getDef"
+            ]
+         },
+         "transitivity_graph" : {
+            "transform" : [],
+            "description" : "JSON blob form of the local relation transitivity graph.",
+            "display_name" : "This should not be displayed",
+            "indexed" : "false",
+            "searchable" : "false",
+            "required" : "false",
+            "cardinality" : "single",
+            "type" : "string",
+            "id" : "transitivity_graph",
+            "property" : [
+               "getLineageShuntGraphJSON"
+            ]
+         },
+         "isa_partof_closure" : {
+            "transform" : [],
+            "description" : "Closure of ids/accs over isa and partof.",
+            "display_name" : "isa/partof closure (ids)",
+            "indexed" : "true",
+            "searchable" : "false",
+            "required" : "false",
+            "cardinality" : "multi",
+            "type" : "string",
+            "id" : "isa_partof_closure",
+            "property" : [
+               "getIsaPartofIDClosure"
+            ]
+         },
+         "synonym" : {
+            "transform" : [],
+            "description" : "Term synonym.",
+            "display_name" : "Synonym",
+            "indexed" : "true",
+            "searchable" : "true",
+            "required" : "false",
+            "cardinality" : "multi",
+            "type" : "string",
+            "id" : "synonym",
+            "property" : [
+               "getOBOSynonymStrings"
+            ]
+         },
+         "comment" : {
+            "transform" : [],
+            "description" : "Term comment.",
+            "display_name" : "Comment",
+            "indexed" : "true",
+            "searchable" : "true",
+            "required" : "false",
+            "cardinality" : "single",
+            "type" : "string",
+            "id" : "comment",
+            "property" : [
+               "getComment"
+            ]
+         },
+         "label" : {
+            "transform" : [],
+            "description" : "Common term name.",
+            "display_name" : "Term",
+            "indexed" : "true",
+            "searchable" : "true",
+            "required" : "false",
+            "cardinality" : "single",
+            "type" : "string",
+            "id" : "label",
+            "property" : [
+               "getLabel"
+            ]
          }
       },
       "document_category" : "ontology_class",

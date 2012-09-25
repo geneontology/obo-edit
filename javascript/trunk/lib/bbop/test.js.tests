@@ -90,6 +90,13 @@ mr_t.is_same_set(['1', 'b', '3'], ['b', '3', '1'], "same set 2");
 mr_t.is_same_set([1, '2', 3], [1, 2, 3], "same set 3"); // js type quirk
 mr_t.is_different_set([1, 2, 3], [1, 2], "diff set 1");
 
+// mr_t.is_same_url_by_assembly("completion?format=amigo&type=general&query=",
+// 			     "completion?",
+// 			     {'query': null, 
+// 			      'format': 'amigo',
+// 			      'type': 'general'},
+// 			      "link assembly testing 1");
+
 // Test pass and fail.
 mr_t.pass("passed");
 //mr_t.fail("failed");

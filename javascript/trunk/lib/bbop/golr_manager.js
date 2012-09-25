@@ -119,6 +119,12 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     // Our default query args, with facet fields plugged in.
     this.query_variants =
 	{
+	    // Our default standard search type. This means we don't
+	    // have to explicitly add fields to the search (although
+	    // the query fields ('qf') are still necessary to make
+	    // anything real happen).
+	    defType: 'edismax',
+
 	    // Things unlikely to be touched.
 	    // There are unlikely to be messed with too much.
 	    qt: 'standard',
@@ -132,13 +138,11 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    // Deprecated: see query_filters
 	    //fq: {},
 	    
-	    // // Fixed UI location.
-	    // NOTE: punted to UI object.
-	    // interface_id: this.interface_id
+	    // Deprecated: see query_fields
+	    //qf: {},
 	    
-	    // Query-type stuff is variant--see update and
-	    // update_variants.
-	    //	    q: '*:*' // start by going after everything
+	    // Deprecated: see query
+	    //q: '*:*'
 
 	    // Control of facets.
 	    facet: 'true',
@@ -151,30 +155,16 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    'facet.field': []
 	};
 
+    // This is the 'qf' parameter. Althoug we keep it, it only needs
+    // to be exposed when the query ('q') field is set. These have a
+    // different format, so assemble can't really be used.:
+    // [qf=field01^value01]
+    this.query_fields = [];
+
     // A richer way to handle the 'fq' query variant.
     // It should look like:
     // {<filter>: {<value>:{'sticky_p':(t|f), 'negative_p':(t|f)}, ...}}
     this.query_filters = {};
-
-    // /*
-    //  * Function: plist_to_property_hash
-    //  *
-    //  * Turn a plist to a hash containing the different properties that
-    //  * can be defined for a query filter. Possible values are: '+'
-    //  * (positive filter), '-' (negative filter), '*' (sticky filter),
-    //  * '$' (transient). If mutually exclusive properties are defined
-    //  * (e.g. both '+' and '-'), the last one will be used. Or, since
-    //  * that is a call to silliness, let's say the behavior is
-    //  * undefined.
-    //  *
-    //  * Parameters: 
-    //  *  plist - *[optional]* a list of properties to apply to the filter
-    //  *
-    //  * Returns: 
-    //  *  A hash version of the plist; otherwise, the default property hash
-    //  */
-    // this.set_query = function(plist){
-    // };
 
     /*
      * Function: plist_to_property_hash
@@ -523,6 +513,33 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     		throw new Error("Unknown callback type!");
     	    }
     	}
+    };
+
+    /*
+     * Function: sensible_query_p
+     * 
+     * Simply ask the manager if a free text query ('q') makes sense
+     * at this point.
+     * 
+     * This currently means that the query text ('q') is three (3) or
+     * longer and that query fields ('qf') are defined.
+     * 
+     * This is an overridable opinion of the manager.
+     * 
+     * Parameters:
+     *  n/a
+     *
+     * Returns:
+     *  boolean
+     */
+    this.sensible_query_p = function(qfs){
+	var retval = false;
+	var q = anchor.get_query();
+	var qf = anchor.query_field_set();
+	if( q && q.length >= 3 && qf && ! bbop.core.is_empty(qf) ){
+	    retval = true;
+	}
+	return retval;
     };
 
     /*
@@ -882,9 +899,38 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     };
 
     /*
+     * Function: query_field_set
+     *
+     * Getter/setter for the query fields--the fields that are search
+     * (and by what weight) when using a query ('q').
+     *
+     * The qfs argument should be a hash like:
+     * 
+     *  {'field01': value01, ...}
+     * 
+     * Parameters: 
+     *  qfs - *[optional]* query fields to set
+     *
+     * Returns:
+     *  the current query_fields array (e.g. ["field01^value01", ...])
+     */
+    this.query_field_set = function(qfs){
+	if( qfs ){
+	    // Convert them to the proper internal format.
+	    var actual_format = [];
+	    bbop.core.each(qfs,
+			   function(filter, value){
+			       actual_format.push(filter + '^' + value);
+			   });
+	    anchor.query_fields = actual_format;
+	}
+	return anchor.query_fields;
+    };
+
+    /*
      * Function: facets
      *
-     * Getter/setter for facets.
+     * Getter/setter for facets (technically 'facet.field').
      *
      * Parameters: 
      *  key - *[optional]* facet to add to the facet list
@@ -1101,11 +1147,14 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	var cclass = anchor._golr_conf.get_class(personality_id);
 	if( cclass ){
 	    anchor.facets(cclass.field_order_by_weight('filter'));
+
+	    // Set the query field weights ('qf') necessary to make
+	    // queries run properly.
+	    anchor.query_field_set(cclass.get_weights('boost'));
+	    
+	    // Show that we did indeed set a personality.
 	    retval = true;
 	}
-
-	// TODO: other consequences of "personality".
-	// Like what!? Tell me, Past Me!
 
 	return retval;
     };
@@ -1174,27 +1223,43 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    //bbop.core.get_assemble(anchor.query_facets),
 	    bbop.core.get_assemble(anchor.query_variants),
 	    //bbop.core.get_assemble({'fq': anchor.query_sticky_filters}),
+	    //bbop.core.get_assemble({'qf': anchor.query_fields}),
 	    bbop.core.get_assemble({'fq': fq}),
 	    bbop.core.get_assemble({'q': anchor.query}),
 	    anchor.query_extra
 	];
-	loop(things_to_add,
-	     function(item, index){
-		 if( item && item != '' ){
-		     qurl = qurl + '&' + item;
-		 }
-	     });
+	// Add query_fields ('qf') iff query ('q') is set and it is
+	// not length 0.
+	if( anchor.query &&
+	    anchor.query.length &&
+	    anchor.query.length != 0 &&
+	    anchor.query != anchor.fundamental_query ){
+		var in_qf = bbop.core.get_assemble({'qf': anchor.query_fields});
+		things_to_add.push(in_qf);
+	    }
 	
-    	return qurl;
+	// Assemble the assemblies into a single URL, throw out
+	// everything that seems like it isn't real to keep the URL as
+	// clean a possible.
+	var filtered_things = 
+	    bbop.core.pare(things_to_add,
+			   function(item, index){
+			       var retval = true;
+			       if( item && item != '' ){
+				   retval = false;
+			       }
+			       return retval;
+			   });
+    	return qurl + filtered_things.join('&');
     };
 };
 bbop.golr.manager.prototype = new bbop.registry;
 
 /*
- * Constructor: faux_ajax
- * 
  * Namespace: bbop.golr.faux_ajax
  *
+ * Constructor: faux_ajax
+ * 
  * Contructor for a fake and inactive Ajax. Used by bbop.golr.manager
  * in (testing) environments where jQuery is not available.
  * 
