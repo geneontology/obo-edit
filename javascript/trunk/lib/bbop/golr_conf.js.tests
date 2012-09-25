@@ -31,7 +31,7 @@ load('../../_data/golr_meta.js');
 (function(){
 
      // Absolute basics.
-     var fconf = bbop.golr.golr_meta['bbop_ont']['fields_hash']['source'];
+     var fconf = bbop.amigo.golr_meta['bbop_ont']['fields_hash']['source'];
      var cf = new bbop.golr.conf_field(fconf);
      mr_t.is_same_atom(cf._is_a, 'bbop.golr.conf_field', "me");
      
@@ -51,7 +51,7 @@ load('../../_data/golr_meta.js');
 (function(){
 
      // Absolute basics.
-     var cc = new bbop.golr.conf_class(bbop.golr.golr_meta['bbop_ann']);
+     var cc = new bbop.golr.conf_class(bbop.amigo.golr_meta['bbop_ann']);
      mr_t.is_same_atom(cc._is_a, 'bbop.golr.conf_class', "me");
      
      // Simple getters.
@@ -69,25 +69,24 @@ load('../../_data/golr_meta.js');
      
      // Look at weights individually.
      var boosts = cc.get_weights('boost');
-     mr_t.is_same_atom(2.0, boosts['bioentity_id'], "boost 1");
+     mr_t.is_same_atom(2.0, boosts['bioentity'], "boost 1");
      mr_t.is_same_atom(null, boosts['ashdlas'], "no boost");
 
      // Look at weights as a group.
      var ordered_filter_list_5 = cc.field_order_by_weight('filter', 5.0);
      mr_t.is_same_atom(3, ordered_filter_list_5.length, "ofl5 len");
      mr_t.is_same_atom('source', ordered_filter_list_5[0], "ofl5 first");
-     mr_t.is_same_atom('taxon', ordered_filter_list_5[2], "ofl5 last");
+     mr_t.is_same_atom('taxon_label', ordered_filter_list_5[2], "ofl5 last");
      var ordered_filter_list_all = cc.field_order_by_weight('filter');
-     mr_t.is_same_atom(6, ordered_filter_list_all.length, "ofla len");
+     mr_t.is_same_atom(5, ordered_filter_list_all.length, "ofla len");
      mr_t.is_same_atom('source', ordered_filter_list_all[0], "ofla first");
-     mr_t.is_same_atom('type', ordered_filter_list_all[5], "ofla last");
  })();
 
 // Top-level bbop.golr.conf
 (function(){
 
      // Absolute basics.
-     var c = new bbop.golr.conf(bbop.golr.golr_meta);
+     var c = new bbop.golr.conf(bbop.amigo.golr_meta);
      mr_t.is_same_atom(c._is_a, 'bbop.golr.conf', "me");
 
      // Simple getters.
