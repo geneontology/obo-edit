@@ -65,15 +65,15 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     // Before anything else, if we cannot find a viable jQuery library
     // for use, we're going to create a fake one so we can still test
     // and work in a non-browser/networked environment.
-    var JQ = new bbop.golr.faux_ajax();
+    anchor.JQ = new bbop.golr.faux_ajax();
     try{ // some interpreters might not like this kind of probing
 	if( typeof(jQuery) !== 'undefined' ){
 	    //JQ = jQuery;
-	    JQ = jQuery.noConflict();
+	    anchor.JQ = jQuery.noConflict();
 	}
     }catch (x){
     }finally{
-	var got = bbop.core.what_is(JQ);
+	var got = bbop.core.what_is(anchor.JQ);
 	if( got && got == 'bbop.golr.faux_ajax'){
 	}else{
 	    got = 'jQuery';
@@ -95,10 +95,14 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     if( typeof golr_loc != 'string' ){
 	ll('ERROR: no proper golr url string argument');
     }
-    if( ! golr_conf_obj._is_a || golr_conf_obj._is_a != 'bbop.golr.conf' ){
-	ll('ERROR: no proper bbop.golr.conf object argument');
-    }
+    if(	! golr_conf_obj._is_a || ! golr_conf_obj._is_a == 'bbop.golr.conf' ){
+	    ll('ERROR: no proper bbop.golr.conf object argument');
+	    throw new Error('boink! ' + bbop.core.what_is(golr_conf_obj) );
+	}
     
+    // Whether or not to prevent ajax events from going.
+    this._safety = false;
+
     // Our default target url.
     this._solr_url = golr_loc;
 
@@ -470,7 +474,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 
 	// Get the error out (clean it) if possible.
 	var jreq = result.responseText;
-	var req = JQ.parseJSON(jreq);
+	var req = anchor.JQ.parseJSON(jreq);
 	if( req && req['errors'] && req['errors'].length > 0 ){
 	    var in_error = req['errors'][0];
 	    ll('ERROR:' + in_error);
@@ -566,6 +570,27 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     };
 
     /*
+     * Function: safety
+     *
+     * Getter/setter for the trigger safety.
+     * 
+     * If the safety is on, ajax events controlled by the manager will
+     * not occur. The default if off (false).
+     * 
+     * Parameters: 
+     *  safety_on_p - boolean
+     *
+     * Returns:
+     *  boolean
+     */
+    this.safety = function(safety_on_p){
+	if( bbop.core.is_defined(safety_on_p) ){
+	    anchor._safety = safety_on_p;
+	}
+	return anchor._safety;
+    };
+
+    /*
      * Function: update
      *
      * The user code to select the type of update (and thus the type
@@ -585,6 +610,9 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * should avoid calling this directly whenever possible and prefer
      * simpler functionality of the wrapper methods: <search>,
      * <reset>, and <page>.
+     * 
+     * You can prevent the triggering of ajax with the <safety>
+     * method.
      *
      * Parameters: 
      *  callback_type - callback type string
@@ -592,7 +620,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *  start - *[serially optional]* integer; the offset of the returned rows
      *
      * Returns:
-     *  n/a
+     *  the query url (without the jQuery callback specific parameters)
      * 
      * Also see:
      *  <get_query_url>
@@ -651,22 +679,29 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    throw new Error("Unknown callback_type: " + callback_type);
 	}
 
-	ll('try: ' + qurl);
-	//widgets.start_wait('Updating...');
 
-	// TODO/BUG: JSONP for solr looks like?
-	var argvars = {
-	    type: "GET",
-	    //url: qurl,
-	    dataType: 'jsonp',
-	    jsonp: 'json.wrf',
-	    success: _callback_type_decider, // decide and run search or reset
-	    error: _run_error_callbacks // run error callbacks
-	    //done: _callback_type_decider, // decide and run search or reset
-	    //fail: _run_error_callbacks, // run error callbacks
-	    //always: function(){} // do I need this?
-	};
-	JQ.ajax(qurl, argvars);
+	// Only actually trigger if the safety of off.
+	if( ! anchor.safety() ){
+	    
+	    ll('try: ' + qurl);
+	    //widgets.start_wait('Updating...');
+
+	    // Setup JSONP for Solr and jQuery ajax-specific parameters.
+	    var argvars = {
+		type: "GET",
+		//url: qurl,
+		dataType: 'jsonp',
+		jsonp: 'json.wrf',
+		success: _callback_type_decider, // decide & run search or reset
+		error: _run_error_callbacks // run error callbacks
+		//done: _callback_type_decider, // decide & run search or reset
+		//fail: _run_error_callbacks, // run error callbacks
+		//always: function(){} // do I need this?
+	    };
+	    anchor.JQ.ajax(qurl, argvars);
+	}
+	
+	return qurl;
     };
 
     /*
@@ -1253,7 +1288,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     	return qurl + filtered_things.join('&');
     };
 };
-bbop.golr.manager.prototype = new bbop.registry;
+//bbop.golr.manager.prototype = new bbop.registry;
 
 /*
  * Namespace: bbop.golr.faux_ajax
