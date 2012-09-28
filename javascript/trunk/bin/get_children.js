@@ -6,9 +6,11 @@
  * 
  * This is a NodeJS script.
  * 
- * Get the ids and labels of the children of the specified node.
+ * Get the ids and labels of the children of the specified term.
  * 
  * Usage like: "get_children.js GO:0022008"
+ * 
+ * This is also a bit of a unit test for the NodeJS update function.
  * 
  * TODO: Maybe NodeJS isn't such a hot idea for scripting; how about
  * Rhino?
