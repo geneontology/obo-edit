@@ -27,15 +27,6 @@ load('golr_manager.js');
 /// Start unit testing.
 ///
 
-// bbop.golr.faux_ajax
-// Verify that not working works.
-(function(){
-     var jq = new bbop.golr.faux_ajax();
-     mr_t.is_same_atom(bbop.core.what_is(jq), 'bbop.golr.faux_ajax', "faux me");
-     mr_t.is_same_atom(jq.ajax({}), null, 'not work 1');
-     mr_t.is_same_atom(jq.parseJSON({}), "", 'not work 2');
- })();
-
 // bbop.golr.manager - 1
 (function(){
 

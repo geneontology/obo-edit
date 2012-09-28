@@ -21,8 +21,20 @@ if ( typeof bbop.core == "undefined" ){ bbop.core = {}; }
  * Variable: global
  * 
  * Capture the global object for later reference.
+ * 
+ * Used by namespace and require.
+ * 
+ * TODO: There is a temporary workaround for NodeJS here
+ * TODO: Creates loop; problem?
  */
-bbop.core.global = this;
+bbop.core.global = this; // TODO:
+if( typeof GLOBAL !== 'undefined' ){
+    (function(){
+	 var global_context = {};
+	 global_context['bbop'] = GLOBAL['bbop'];
+	 bbop.core.global = global_context;
+     })();
+}
 
 ///
 /// Utility functions can hang as prototypes.
