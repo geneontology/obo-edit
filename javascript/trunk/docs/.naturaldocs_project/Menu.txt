@@ -49,6 +49,8 @@ Format: 1.51
 File: core.js  (core.js)
 File: golr_conf.js  (golr_conf.js)
 File: golr_manager.js  (golr_manager.js)
+File: golr_manager_jquery.js  (golr_manager_jquery.js)
+File: golr_manager_nodejs.js  (golr_manager_nodejs.js)
 File: golr_response.js  (golr_response.js)
 File: golr_widget_autocomplete.js  (golr_widget_autocomplete.js)
 File: html.js  (html.js)
