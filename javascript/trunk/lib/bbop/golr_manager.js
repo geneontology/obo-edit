@@ -50,7 +50,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 
     // Per-manager logger.
     var logger = new bbop.logger(this._is_a);
-    logger.DEBUG = true;
+    //logger.DEBUG = true;
+    logger.DEBUG = false;
     function ll(str){ logger.kvetch(str); }
 
     // To help keep requests from the past haunting us. Actually doing

@@ -1,0 +1,131 @@
+////
+//// Some unit testing for package golr_manager_jquery.js
+////
+//// Usage:
+////    Command line: "js -f golr_manager_jqueyr.js.tests"
+////    Interactive: "js -f golr_manager_jquery.js.tests -f -"
+////
+
+// Load testing.
+load('test.js');
+var mr_t = new bbop.test();
+
+// Correct environment.
+load('core.js');
+load('logger.js');
+
+// Get some test data as well.
+// This defines "bbop.amigo.golr_meta".
+load('../../_data/golr_meta.js');
+load('golr_conf.js');
+load('golr_response.js');
+
+load('registry.js');
+load('golr_manager.js');
+load('golr_manager_jquery.js');
+
+///
+/// Start unit testing.
+///
+
+// bbop.golr.faux_ajax
+// Verify that not working works.
+(function(){
+     var jq = new bbop.golr.faux_ajax();
+     mr_t.is_same_atom(bbop.core.what_is(jq), 'bbop.golr.faux_ajax', "faux me");
+     mr_t.is_same_atom(jq.ajax({}), null, 'not work 1');
+     mr_t.is_same_atom(jq.parseJSON({}), "", 'not work 2');
+ })();
+
+// check override
+(function(){
+
+     // Setup.
+     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gm_ann =
+	 new bbop.golr.manager.jquery('http://golr.berkeleybop.org/', gconf);
+
+     mr_t.is_same_url(gm_ann.update('search'),
+      		      ['http://golr.berkeleybop.org/select?defType=edismax',
+		       'qt=standard',
+		       'indent=on',
+		       'wt=json',
+		       'rows=10',
+		       'start=0',
+		       'fl=*%2Cscore',
+		       'facet=true',
+		       'facet.mincount=1',
+		       'json.nl=arrarr',
+		  'q=*:*',
+		       'packet=1',
+		       'callback_type=search'].join('&'),
+      		      "page on update");
+     mr_t.is_same_url(gm_ann.update('search'),
+      		      ['http://golr.berkeleybop.org/select?defType=edismax',
+		       'qt=standard',
+		       'indent=on',
+		       'wt=json',
+		       'rows=10',
+		       'start=0',
+		       'fl=*%2Cscore',
+		       'facet=true',
+		       'facet.mincount=1',
+		       'json.nl=arrarr',
+		       'q=*:*',
+		       'packet=2',
+		       'callback_type=search'].join('&'),
+      		      "page increment on update");
+})();
+
+// // async handling
+// //(function(){
+
+// // Setup.
+// var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+// var gm_ann =
+//     new bbop.golr.manager.jquery('http://golr.berkeleybop.org/', gconf);
+
+// mr_t.is_false(gm_ann.async(false), 'async false self 1');
+// mr_t.is_false(gm_ann.async(), 'async false self 2');
+// mr_t.is_same_url(gm_ann.get_query_url(),
+//       		 ['http://golr.berkeleybop.org/select?defType=edismax',
+// 		  'qt=standard',
+// 		  'indent=on',
+// 		  'async=false',
+// 		  'wt=json',
+// 		  'rows=10',
+// 		  'start=0',
+// 		  'fl=*%2Cscore',
+// 		  'facet=true',
+// 		  'facet.mincount=1',
+// 		  'json.nl=arrarr',
+// 		  'q=*:*',
+// 		  'packet=1',
+// 		  'callback_type=search'].join('&'),
+//       		 "async on");
+
+// mr_t.is_false(gm_ann.async(true), 'async true self 1');
+// mr_t.is_false(gm_ann.async(), 'async true self 2');
+// mr_t.is_same_url(gm_ann.get_query_url(),
+//       		 ['http://golr.berkeleybop.org/select?defType=edismax',
+// 		  'qt=standard',
+// 		  'indent=on',
+// 		  'wt=json',
+// 		  'rows=10',
+// 		  'start=0',
+// 		  'fl=*%2Cscore',
+// 		  'facet=true',
+// 		  'facet.mincount=1',
+// 		  'json.nl=arrarr',
+// 		  'q=*:*',
+// 		  'packet=1',
+// 		  'callback_type=search'].join('&'),
+//       		 "async gone");
+//})();
+
+///
+/// End unit testing.
+///
+
+// Final report.
+mr_t.report();
