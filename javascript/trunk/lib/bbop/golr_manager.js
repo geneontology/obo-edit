@@ -5,7 +5,7 @@
  * 
  * Generic BBOP manager for dealing with gross GOlr configuration
  * and management. Remember, this is actually a "subclass" of
- * bbop.registry.
+ * <bbop.registry>.
  * 
  * Both json_data (or clean error data) and the manager itself (this
  * as anchor) should be passed to the callbacks.
@@ -22,16 +22,7 @@ bbop.core.require('bbop', 'golr', 'conf');
 bbop.core.require('bbop', 'golr', 'response');
 //bbop.core.namespace('bbop', 'golr');
 bbop.core.namespace('bbop', 'golr', 'manager');
-bbop.core.namespace('bbop', 'golr', 'faux_ajax');
-
-// Thinking about lessons learned from solr ajax.
-// Updatable model that connects to the Solr server.
-// Makes no attempt to join to a form--entirely held as an internal model.
-// {url: 'http://theplace', facets: ['foo', 'bar']}
-
-// This should act as a model--since we start with a completely open
-// query (whether we display it or not), we will have all possible
-// facets and can build the initial model off of that.
+//bbop.core.namespace('bbop', 'golr', 'faux_ajax');
 
 /*
  * Constructor: manager
@@ -61,25 +52,6 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     var logger = new bbop.logger(this._is_a);
     logger.DEBUG = true;
     function ll(str){ logger.kvetch(str); }
-
-    // Before anything else, if we cannot find a viable jQuery library
-    // for use, we're going to create a fake one so we can still test
-    // and work in a non-browser/networked environment.
-    anchor.JQ = new bbop.golr.faux_ajax();
-    try{ // some interpreters might not like this kind of probing
-	if( typeof(jQuery) !== 'undefined' ){
-	    //JQ = jQuery;
-	    anchor.JQ = jQuery.noConflict();
-	}
-    }catch (x){
-    }finally{
-	var got = bbop.core.what_is(anchor.JQ);
-	if( got && got == 'bbop.golr.faux_ajax'){
-	}else{
-	    got = 'jQuery';
-	}
-	ll('Using ' + got + ' for Ajax calls.');
-    }
 
     // To help keep requests from the past haunting us. Actually doing
     // something with this number is up to the UI.
@@ -437,11 +409,6 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	return retlist;
     };
 
-    // // TODO: deprecate this
-    // // A set of filters that survive things like reset, etc. Must be
-    // // explicitly set outside of the "normal" methods.
-    // this.query_sticky_filters = {};
-
     // A little extra thing that we might need sometimes.
     this.query_extra = null;
 
@@ -474,7 +441,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 
 	// Get the error out (clean it) if possible.
 	var jreq = result.responseText;
-	var req = anchor.JQ.parseJSON(jreq);
+	var req = anchor.JQ.parseJSON(jreq); // TODO/BUG: this must be removed
 	if( req && req['errors'] && req['errors'].length > 0 ){
 	    var in_error = req['errors'][0];
 	    ll('ERROR:' + in_error);
@@ -497,10 +464,9 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	ll('run error callbacks...');
 	anchor.apply_callbacks('error', [clean_error, anchor]);
     };
-    var _run_error_callbacks = this._run_error_callbacks;
 
     // Try and decide between a reset callback and a search callback.
-    function _callback_type_decider(json_data){
+    this._callback_type_decider = function(json_data){
     	ll('in callback type decider...');
 
     	// 
@@ -547,6 +513,28 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     };
 
     /*
+     * Function: last_packet_sent
+     *
+     * It is up to the UI to do something interesting with this number.
+     * 
+     * Also remember that this number only rises through calls to
+     * <update> or one of its wrappers. Calls to <get_query_url> and
+     * the like will not affect this number.
+     * 
+     * Parameters:
+     *  n/a 
+     *
+     * Returns:
+     *  integer
+     * 
+     * See also:
+     *  <update>
+     */
+    this.last_packet_sent = function(){
+    	return anchor.last_sent_packet;
+    };
+
+    /*
      * Function: clear
      *
      * Clear all non-sticky query parameters to get back to a more
@@ -569,140 +557,94 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	anchor.reset_query_filters();
     };
 
-    /*
-     * Function: safety
-     *
-     * Getter/setter for the trigger safety.
-     * 
-     * If the safety is on, ajax events controlled by the manager will
-     * not occur. The default if off (false).
-     * 
-     * Parameters: 
-     *  safety_on_p - boolean
-     *
-     * Returns:
-     *  boolean
-     */
-    this.safety = function(safety_on_p){
-	if( bbop.core.is_defined(safety_on_p) ){
-	    anchor._safety = safety_on_p;
-	}
-	return anchor._safety;
-    };
+    // /*
+    //  * Function: update
+    //  *
+    //  * The user code to select the type of update (and thus the type
+    //  * of callbacks to be called on data return).
+    //  * 
+    //  * This mechanism adds a couple of variables over other methods
+    //  * for bookkeeping: packet (incremented every time) and callback_type.
+    //  * 
+    //  * The currently recognized callback types are "reset" (for when
+    //  * you are starting or starting over) and "search" (what you
+    //  * typically want when you get new data).
+    //  * 
+    //  * If rows or start are not set, they will both be reset to their
+    //  * initial values--this is to allow for paging on "current"
+    //  * results and then getting back to the business of searching with
+    //  * as little fuss as possible. Because of things like this, one
+    //  * should avoid calling this directly whenever possible and prefer
+    //  * simpler functionality of the wrapper methods: <search>,
+    //  * <reset>, and <page>.
+    //  * 
+    //  * Parameters: 
+    //  *  callback_type - callback type string
+    //  *  rows - *[optional]* integer; the number of rows to return
+    //  *  start - *[serially optional]* integer; the offset of the returned rows
+    //  *
+    //  * Returns:
+    //  *  the query url (with the jQuery callback specific parameters)
+    //  * 
+    //  * Also see:
+    //  *  <get_query_url>
+    //  */
+    // this.update = function(callback_type, rows, start){
 
-    /*
-     * Function: update
-     *
-     * The user code to select the type of update (and thus the type
-     * of callbacks to be called on data return).
-     * 
-     * This mechanism adds a couple of variables over other methods
-     * for bookkeeping: packet (incremented every time) and callback_type.
-     * 
-     * The currently recognized callback types are "reset" (for when
-     * you are starting or starting over) and "search" (what you
-     * typically want when you get new data).
-     * 
-     * If rows or start are not set, they will both be reset to their
-     * initial values--this is to allow for paging on "current"
-     * results and then getting back to the business of searching with
-     * as little fuss as possible. Because of things like this, one
-     * should avoid calling this directly whenever possible and prefer
-     * simpler functionality of the wrapper methods: <search>,
-     * <reset>, and <page>.
-     * 
-     * You can prevent the triggering of ajax with the <safety>
-     * method.
-     *
-     * Parameters: 
-     *  callback_type - callback type string
-     *  rows - *[serially optional]* integer; the number of rows to return
-     *  start - *[serially optional]* integer; the offset of the returned rows
-     *
-     * Returns:
-     *  the query url (without the jQuery callback specific parameters)
-     * 
-     * Also see:
-     *  <get_query_url>
-     */
-    this.update = function(callback_type, rows, start){
+    // 	// Handle paging in this main section by resetting to
+    // 	// the defaults if rows and offset are not explicitly
+    // 	// defined.
+    // 	if( ! bbop.core.is_defined(rows) || ! bbop.core.is_defined(start) ){
+    // 	    anchor.set('rows', anchor.default_rows);
+    // 	    anchor.set('start', anchor.default_start);
+    // 	}
 
-	// Handle paging in this main section by resetting to
-	// the defaults if rows and offset are not explicitly
-	// defined.
-	if( ! bbop.core.is_defined(rows) || ! bbop.core.is_defined(start) ){
-	    anchor.set('rows', anchor.default_rows);
-	    anchor.set('start', anchor.default_start);
-	}
-
-	// Our bookkeeping--increment packet.
-	anchor.last_sent_packet = anchor.last_sent_packet + 1;
+    // 	// Our bookkeeping--increment packet.
+    // 	anchor.last_sent_packet = anchor.last_sent_packet + 1;
 	
-	// Necessary updated query variants.
-	var update_query_variants = {
-	    packet: anchor.last_sent_packet,
-	    callback_type: callback_type
-	};
-	var update_qv = bbop.core.get_assemble(update_query_variants);
+    // 	// Necessary updated query variants.
+    // 	var update_query_variants = {
+    // 	    packet: anchor.last_sent_packet,
+    // 	    callback_type: callback_type
+    // 	};
+    // 	var update_qv = bbop.core.get_assemble(update_query_variants);
 
-	// Structure of the necessary invariant parts.	
-	//var qurl = anchor.get_query_url();
-	var qurl = null;
+    // 	// Structure of the necessary invariant parts.	
+    // 	//var qurl = anchor.get_query_url();
+    // 	var qurl = null;
 
-	// Conditional merging of the remaining variant parts.
-	if( callback_type == 'reset' ){
+    // 	// Conditional merging of the remaining variant parts.
+    // 	if( callback_type == 'reset' ){
 
-	    // Take everything back to the initial state--this means
-	    // resetting the query and removing all non-sticky
-	    // filters.
+    // 	    // Take everything back to the initial state--this means
+    // 	    // resetting the query and removing all non-sticky
+    // 	    // filters.
 
-	    // Reset and do completely open query.
-	    ll('reset assembly');
+    // 	    // Reset and do completely open query.
+    // 	    ll('reset assembly');
 
-	    // Save the q vals, do a fundamental get, then reset to
-	    // what we had.
-	    //var tmp_save = anchor.get_query();
-	    //anchor.reset_default_query();
-	    anchor.reset_query();
-	    anchor.reset_query_filters();
-	    qurl = anchor.get_query_url();
-	    qurl = qurl + '&' + update_qv;
-	    //anchor.set_query(tmp_save);
+    // 	    // Save the q vals, do a fundamental get, then reset to
+    // 	    // what we had.
+    // 	    //var tmp_save = anchor.get_query();
+    // 	    //anchor.reset_default_query();
+    // 	    anchor.reset_query();
+    // 	    anchor.reset_query_filters();
+    // 	    qurl = anchor.get_query_url();
+    // 	    qurl = qurl + '&' + update_qv;
+    // 	    //anchor.set_query(tmp_save);
 
-	}else if( callback_type == 'search' ){
+    // 	}else if( callback_type == 'search' ){
 
-	    ll('search assembly');
-	    qurl = anchor.get_query_url();
-	    qurl = qurl + '&' + update_qv;
+    // 	    ll('search assembly');
+    // 	    qurl = anchor.get_query_url();
+    // 	    qurl = qurl + '&' + update_qv;
 
-	}else{
-	    throw new Error("Unknown callback_type: " + callback_type);
-	}
+    // 	}else{
+    // 	    throw new Error("Unknown callback_type: " + callback_type);
+    // 	}
 
-
-	// Only actually trigger if the safety of off.
-	if( ! anchor.safety() ){
-	    
-	    ll('try: ' + qurl);
-	    //widgets.start_wait('Updating...');
-
-	    // Setup JSONP for Solr and jQuery ajax-specific parameters.
-	    var argvars = {
-		type: "GET",
-		//url: qurl,
-		dataType: 'jsonp',
-		jsonp: 'json.wrf',
-		success: _callback_type_decider, // decide & run search or reset
-		error: _run_error_callbacks // run error callbacks
-		//done: _callback_type_decider, // decide & run search or reset
-		//fail: _run_error_callbacks, // run error callbacks
-		//always: function(){} // do I need this?
-	    };
-	    anchor.JQ.ajax(qurl, argvars);
-	}
-	
-	return qurl;
-    };
+    // 	return qurl;
+    // };
 
     /*
      * Function: reset
@@ -715,13 +657,13 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * Note to be confused with <clear>.
      *
      * Returns:
-     *  n/a
+     *  the query url (with the jQuery callback specific parameters)
      * 
      * See also:
      *  <update>
      */
     this.reset = function(){
-	anchor.update('reset');
+	return anchor.update('reset');
     };
 
     /*
@@ -736,13 +678,14 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * Parameters:
      *  n/a
      *
-     * Returns: n/a
+     * Returns:
+     *  the query url (with the jQuery callback specific parameters)
      * 
      * See also:
      *  <update>
      */
     this.search = function(){
-	anchor.update('search');
+	return anchor.update('search');
     };
 
     /*
@@ -763,7 +706,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *  start - the offset of the rows to return
      *
      * Returns:
-     *  n/a
+     *  the query url (with the jQuery callback specific parameters)
      * 
      * See also:
      *  <update>
@@ -771,32 +714,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     this.page = function(rows, start){
 	anchor.set('rows', rows);
 	anchor.set('start', start);
-	anchor.update('search', rows, start);
-    };
-
-    /*
-     * Function: last_packet_sent
-     *
-     * Re-trigger the "search" chain of events, but with the variables
-     * set for a different section of the results.
-     * 
-     * It is up to the UI to do something interesting with this number.
-     * 
-     * Also remember that this number only rises through calls to
-     * <update> or one of its wrapper. Calls to <get_query_url> and
-     * the like will not affect this number.
-     * 
-     * Parameters:
-     *  n/a 
-     *
-     * Returns:
-     *  integer
-     * 
-     * See also:
-     *  <update>
-     */
-    this.last_packet_sent = function(){
-	return anchor.last_sent_packet;
+	return anchor.update('search', rows, start);
     };
 
     /*
@@ -829,7 +747,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *  n/a
      *
      * Returns:
-     *  n/a
+     *  the query url (with the jQuery callback specific parameters)
      * 
      * See also:
      *  <page>
@@ -837,7 +755,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     this.page_previous = function(){
 	var do_rows = anchor.get_page_rows();
 	var do_offset = anchor.get_page_start() - do_rows;
-	anchor.page(do_rows, do_offset);
+	return anchor.page(do_rows, do_offset);
     };
     
     /*
@@ -847,7 +765,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      * direct call to page.
      * 
      * Parameters: 
-     *  n/a
+     *  the query url (with the jQuery callback specific parameters)
      *
      * Returns:
      *  n/a
@@ -858,7 +776,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     this.page_next = function(){
 	var do_rows = anchor.get_page_rows();
 	var do_offset = anchor.get_page_start() + do_rows;
-	anchor.page(do_rows, do_offset);
+	return anchor.page(do_rows, do_offset);
     };
     
     /*
@@ -877,7 +795,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *  total_document_count - integer for the total number of docs found
      *
      * Returns:
-     *  n/a
+     *  the query url (with the jQuery callback specific parameters)
      * 
      * See also:
      *  <page>
@@ -888,11 +806,13 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	var do_offset = total_document_count - mod;
 	// ll("page_last: " + total_document_count + " " +
 	//    do_rows + " " + mod + " " + do_offset);
+	var ret = null;
 	if( mod == 0 ){
-	    anchor.page(do_rows, do_offset - do_rows);
+	    ret = anchor.page(do_rows, do_offset - do_rows);
 	}else{
-	    anchor.page(do_rows, do_offset);
+	    ret = anchor.page(do_rows, do_offset);
 	}
+	return ret;
     };
 
     /*
@@ -1036,6 +956,30 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      */
     this.set_query = function(new_query){
 	anchor.query = new_query;
+	return anchor.query;
+    };
+
+    /*
+     * Function: set_id
+     *
+     * A limited setter, removing whatever else is on query. This is
+     * for when you want to lock into one (unique) document by id
+     * (essentially 'q=id:"foo"'). All other query operations behave
+     * as they should around it.
+     * 
+     * Parameters: 
+     *  new_id - string id
+     *
+     * Returns:
+     *  the current setting of query ('q')
+     */
+    this.set_id = function(new_id){
+	var nid = new_id;
+	// Quote it if it doesn't already have them.
+	if( new_id.charAt(0) != '"' && new_id.charAt(new_id.length -1) != '"' ){
+	    nid = '"' + new_id + '"';	    
+	}
+	anchor.query = 'id:' + new_id;
 	return anchor.query;
     };
 
@@ -1288,48 +1232,93 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     	return qurl + filtered_things.join('&');
     };
 };
-//bbop.golr.manager.prototype = new bbop.registry;
 
 /*
- * Namespace: bbop.golr.faux_ajax
+ * Function: update
  *
- * Constructor: faux_ajax
+ * The user code to select the type of update (and thus the type
+ * of callbacks to be called on data return).
  * 
- * Contructor for a fake and inactive Ajax. Used by bbop.golr.manager
- * in (testing) environments where jQuery is not available.
+ * This mechanism adds a couple of variables over other methods
+ * for bookkeeping: packet (incremented every time) and callback_type.
  * 
+ * The currently recognized callback types are "reset" (for when
+ * you are starting or starting over) and "search" (what you
+ * typically want when you get new data).
+ * 
+ * If rows or start are not set, they will both be reset to their
+ * initial values--this is to allow for paging on "current"
+ * results and then getting back to the business of searching with
+ * as little fuss as possible. Because of things like this, one
+ * should avoid calling this directly whenever possible and prefer
+ * simpler functionality of the wrapper methods: <search>,
+ * <reset>, and <page>.
+ * 
+ * Parameters: 
+ *  callback_type - callback type string; presently 'search' or 'reset'
+ *  rows - *[optional]* integer; the number of rows to return
+ *  start - *[serially optional]* integer; the offset of the returned rows
+ *
  * Returns:
- *  faux_ajax object
+ *  the query url (with the jQuery callback specific parameters)
+ * 
+ * Also see:
+ *  <get_query_url>
  */
-bbop.golr.faux_ajax = function (){
-    this._is_a = 'bbop.golr.faux_ajax';
+bbop.golr.manager.prototype.update = function(callback_type, rows, start){
 
-    /*
-     * Function: ajax
-     *
-     * Fake call to jQuery's ajax.
-     *
-     * Parameters: 
-     *  args - whatever
-     *
-     * Returns:
-     *  null
-     */
-    this.ajax = function(args){
-	return null;
+    // Handle paging in this main section by resetting to
+    // the defaults if rows and offset are not explicitly
+    // defined.
+    if( ! bbop.core.is_defined(rows) || ! bbop.core.is_defined(start) ){
+    	this.set('rows', this.default_rows);
+    	this.set('start', this.default_start);
+    }
+    
+    // Our bookkeeping--increment packet.
+    this.last_sent_packet = this.last_sent_packet + 1;
+    
+    // Necessary updated query variants.
+    var update_query_variants = {
+    	packet: this.last_sent_packet,
+    	callback_type: callback_type
     };
-    /*
-     * Function: parseJSON
-     *
-     * Fake call to jQuery's parseJSON.
-     *
-     * Parameters: 
-     *  args - whatever
-     *
-     * Returns:
-     *  ""
-     */
-    this.parseJSON = function(args){
-	return "";
-    };
+    var update_qv = bbop.core.get_assemble(update_query_variants);
+    
+    // Structure of the necessary invariant parts.	
+    //var qurl = this.get_query_url();
+    var qurl = null;
+    
+    // Conditional merging of the remaining variant parts.
+    if( callback_type == 'reset' ){
+	
+    	// Take everything back to the initial state--this means
+    	// resetting the query and removing all non-sticky
+    	// filters.
+	
+    	// Reset and do completely open query.
+    	//ll('reset assembly');
+	
+    	// Save the q vals, do a fundamental get, then reset to
+    	// what we had.
+    	//var tmp_save = this.get_query();
+    	//this.reset_default_query();
+    	this.reset_query();
+    	this.reset_query_filters();
+    	qurl = this.get_query_url();
+    	qurl = qurl + '&' + update_qv;
+    	//this.set_query(tmp_save);
+	
+    }else if( callback_type == 'search' ){
+	
+    	//ll('search assembly');
+    	qurl = this.get_query_url();
+    	qurl = qurl + '&' + update_qv;
+	
+    }else{
+    	throw new Error("Unknown callback_type: " + callback_type);
+    }
+    
+    return qurl;
 };
+

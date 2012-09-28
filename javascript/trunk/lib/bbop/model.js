@@ -740,7 +740,7 @@ bbop.model.graph.prototype.is_leaf_node = function(nb_id){
 };
 
 /*
- * Function: get_root_nodes
+ * Function: get_leaf_nodes
  *
  * Return a list of /copies/ of the leaf nodes.
  * 
