@@ -74,6 +74,66 @@ bbop.golr.manager.jquery = function (golr_loc, golr_conf_obj){
 	jsonp: 'json.wrf'
     };
 
+    // We'll override the original with something that actually speaks
+    // jQuery. This is the function that runs where there is an AJAX
+    // error during an update. First it has to run some template code,
+    // then it does all of the callbacks.
+    this._run_error_callbacks = function(result, status, error) {
+
+    	ll('Failed server request: '+ result +', '+ status +', '+ error);
+    	//ll('Failed (a): '+ bbop.core.what_is(status));
+    	//ll('Failed (b): '+ bbop.core.dump(status));
+		
+    	var clean_error = "unknown error";
+
+    	// Get the error out (clean it) if possible.
+    	var jreq = result.responseText;
+    	var req = anchor.JQ.parseJSON(jreq); // TODO/BUG: this must be removed
+    	if( req && req['errors'] && req['errors'].length > 0 ){
+    	    var in_error = req['errors'][0];
+    	    ll('ERROR:' + in_error);
+    	    // Split on newline if possible to get
+    	    // at the nice part before the perl
+    	    // error.
+    	    var reg = new RegExp("\n+", "g");
+    	    var clean_error_split =
+    		in_error.split(reg);
+    	    clean_error = clean_error_split[0];
+    	}else if( bbop.core.what_is(error) == 'string' &&
+    		  error.length > 0){
+    	    clean_error = error;
+    	}else if( bbop.core.what_is(status) == 'string' &&
+    		  status.length > 0){
+    	    clean_error = status;
+    	}
+	
+    	// Run all against registered functions.
+    	ll('run error callbacks...');
+    	anchor.apply_callbacks('error', [clean_error, anchor]);
+    };
+
+    // Try and decide between a reset callback and a search callback.
+    // This is useful since jQuery doesn't have a natural way to do
+    // that within the callbacks.
+    this._callback_type_decider = function(json_data){
+    	ll('in callback type decider...');
+
+    	// 
+    	if( ! bbop.golr.response.success(json_data) ){
+    	    throw new Error("Unsuccessful response from golr server!");
+    	}else{
+    	    var cb_type = bbop.golr.response.callback_type(json_data);
+    	    ll('okay response from server, will probe type...: ' + cb_type);
+    	    if( cb_type == 'reset' ){
+    		anchor._run_reset_callbacks(json_data);
+    	    }else if( cb_type == 'search' ){
+    		anchor._run_search_callbacks(json_data);
+    	    }else{
+    		throw new Error("Unknown callback type!");
+    	    }
+    	}
+    };
+
     /*
      * Function: safety
      *
@@ -94,41 +154,6 @@ bbop.golr.manager.jquery = function (golr_loc, golr_conf_obj){
 	}
 	return anchor._safety;
     };
-
-//     /*
-//      * Function: async
-//      *
-//      * Getter/setter for the jQuery sync/async action.
-//      * 
-//      * You probably really really /really/ don't want to touch this.
-//      * 
-//      * Parameters: 
-//      *  async_p - boolean; default true
-//      *
-//      * Returns:
-//      *  boolean (current state)
-//      */
-//     this.async = function(async_p){
-// 	// We lied to them up there. What we really want is to not
-// 	// have this variable specificied most of the time since it
-// 	// defaults in jQuery to true.
-// 	var retval = true;
-// 	if( ! bbop.core.is_defined(async_p) ){ // just want to know what it is
-// 	    if( bbop.core.is_defined(anchor.jq_vars['async']) ){
-// 		retval = false;
-// 	    }
-// 	}else{ // define and return
-// 	    if( ! bbop.core.is_defined(anchor.jq_vars['async']) ){
-// 		if( async_p == true ){
-// 		    delete anchor.jq_vars['async'];
-// 		}else{
-// 		    anchor.jq_vars['async'] = false;
-// 		    retval = false;
-// 		}
-// 	    }
-// 	}
-// 	return retval;
-//     };
 };
 
 /*
@@ -159,7 +184,7 @@ bbop.golr.manager.jquery.prototype.update = function(callback_type,
     var parent_update = bbop.golr.manager.prototype.update;
     var qurl = parent_update.call(this, callback_type, rows, start);
     
-    // Only actually trigger if the safety of off.
+    // Only actually trigger if the safety is off (default).
     if( ! this.safety() ){
 	
 	//ll('try: ' + qurl);

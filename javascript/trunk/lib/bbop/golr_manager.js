@@ -414,76 +414,24 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     this.query_extra = null;
 
     // The callback function called after a successful AJAX
-    // intialization/reset cal. First it runs some template code, then it
-    // does all of the callbacks.
+    // intialization/reset call. First it runs some template code,
+    // then it does all of the callbacks.
     this._run_reset_callbacks = function(json_data){
 	ll('run reset callbacks...');
 	anchor.apply_callbacks('reset', [json_data, anchor]);
     };
 
     // The main callback function called after a successful AJAX call in
-    // the update function. First it runs some template code, then it does
-    // all of the callbacks.
+    // the update function.
     this._run_search_callbacks = function(json_data){
 	ll('run search callbacks...');
 	anchor.apply_callbacks('search', [json_data, anchor]);
     };
 
-    // This is the function that runs where there is an AJAX error
-    // during an update. First it runs some template code, then it
-    // does all of the callbacks.
-    this._run_error_callbacks = function(result, status, error) {
-
-	ll('Failed server request: '+ result +', '+ status +', '+ error);
-	//ll('Failed (a): '+ bbop.core.what_is(status));
-	//ll('Failed (b): '+ bbop.core.dump(status));
-		
-	var clean_error = "unknown error";
-
-	// Get the error out (clean it) if possible.
-	var jreq = result.responseText;
-	var req = anchor.JQ.parseJSON(jreq); // TODO/BUG: this must be removed
-	if( req && req['errors'] && req['errors'].length > 0 ){
-	    var in_error = req['errors'][0];
-	    ll('ERROR:' + in_error);
-	    // Split on newline if possible to get
-	    // at the nice part before the perl
-	    // error.
-	    var reg = new RegExp("\n+", "g");
-	    var clean_error_split =
-		in_error.split(reg);
-	    clean_error = clean_error_split[0];
-	}else if( bbop.core.what_is(error) == 'string' &&
-		  error.length > 0){
-	    clean_error = error;
-	}else if( bbop.core.what_is(status) == 'string' &&
-		  status.length > 0){
-	    clean_error = status;
-	}
-	
-	// Run all against registered functions.
+    // This set is called when we run into a problem.
+    this._run_error_callbacks = function(json_data){
 	ll('run error callbacks...');
-	anchor.apply_callbacks('error', [clean_error, anchor]);
-    };
-
-    // Try and decide between a reset callback and a search callback.
-    this._callback_type_decider = function(json_data){
-    	ll('in callback type decider...');
-
-    	// 
-    	if( ! bbop.golr.response.success(json_data) ){
-    	    throw new Error("Unsuccessful response from golr server!");
-    	}else{
-    	    var cb_type = bbop.golr.response.callback_type(json_data);
-    	    ll('okay response from server, will probe type...: ' + cb_type);
-    	    if( cb_type == 'reset' ){
-    		anchor._run_reset_callbacks(json_data);
-    	    }else if( cb_type == 'search' ){
-    		anchor._run_search_callbacks(json_data);
-    	    }else{
-    		throw new Error("Unknown callback type!");
-    	    }
-    	}
+	anchor.apply_callbacks('error', [json_data, anchor]);
     };
 
     /*
@@ -557,95 +505,6 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	// Reset 'fq', all but sticky.
 	anchor.reset_query_filters();
     };
-
-    // /*
-    //  * Function: update
-    //  *
-    //  * The user code to select the type of update (and thus the type
-    //  * of callbacks to be called on data return).
-    //  * 
-    //  * This mechanism adds a couple of variables over other methods
-    //  * for bookkeeping: packet (incremented every time) and callback_type.
-    //  * 
-    //  * The currently recognized callback types are "reset" (for when
-    //  * you are starting or starting over) and "search" (what you
-    //  * typically want when you get new data).
-    //  * 
-    //  * If rows or start are not set, they will both be reset to their
-    //  * initial values--this is to allow for paging on "current"
-    //  * results and then getting back to the business of searching with
-    //  * as little fuss as possible. Because of things like this, one
-    //  * should avoid calling this directly whenever possible and prefer
-    //  * simpler functionality of the wrapper methods: <search>,
-    //  * <reset>, and <page>.
-    //  * 
-    //  * Parameters: 
-    //  *  callback_type - callback type string
-    //  *  rows - *[optional]* integer; the number of rows to return
-    //  *  start - *[serially optional]* integer; the offset of the returned rows
-    //  *
-    //  * Returns:
-    //  *  the query url (with the jQuery callback specific parameters)
-    //  * 
-    //  * Also see:
-    //  *  <get_query_url>
-    //  */
-    // this.update = function(callback_type, rows, start){
-
-    // 	// Handle paging in this main section by resetting to
-    // 	// the defaults if rows and offset are not explicitly
-    // 	// defined.
-    // 	if( ! bbop.core.is_defined(rows) || ! bbop.core.is_defined(start) ){
-    // 	    anchor.set('rows', anchor.default_rows);
-    // 	    anchor.set('start', anchor.default_start);
-    // 	}
-
-    // 	// Our bookkeeping--increment packet.
-    // 	anchor.last_sent_packet = anchor.last_sent_packet + 1;
-	
-    // 	// Necessary updated query variants.
-    // 	var update_query_variants = {
-    // 	    packet: anchor.last_sent_packet,
-    // 	    callback_type: callback_type
-    // 	};
-    // 	var update_qv = bbop.core.get_assemble(update_query_variants);
-
-    // 	// Structure of the necessary invariant parts.	
-    // 	//var qurl = anchor.get_query_url();
-    // 	var qurl = null;
-
-    // 	// Conditional merging of the remaining variant parts.
-    // 	if( callback_type == 'reset' ){
-
-    // 	    // Take everything back to the initial state--this means
-    // 	    // resetting the query and removing all non-sticky
-    // 	    // filters.
-
-    // 	    // Reset and do completely open query.
-    // 	    ll('reset assembly');
-
-    // 	    // Save the q vals, do a fundamental get, then reset to
-    // 	    // what we had.
-    // 	    //var tmp_save = anchor.get_query();
-    // 	    //anchor.reset_default_query();
-    // 	    anchor.reset_query();
-    // 	    anchor.reset_query_filters();
-    // 	    qurl = anchor.get_query_url();
-    // 	    qurl = qurl + '&' + update_qv;
-    // 	    //anchor.set_query(tmp_save);
-
-    // 	}else if( callback_type == 'search' ){
-
-    // 	    ll('search assembly');
-    // 	    qurl = anchor.get_query_url();
-    // 	    qurl = qurl + '&' + update_qv;
-
-    // 	}else{
-    // 	    throw new Error("Unknown callback_type: " + callback_type);
-    // 	}
-
-    // 	return qurl;
-    // };
 
     /*
      * Function: reset
@@ -1243,9 +1102,10 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
  * This mechanism adds a couple of variables over other methods
  * for bookkeeping: packet (incremented every time) and callback_type.
  * 
- * The currently recognized callback types are "reset" (for when
- * you are starting or starting over) and "search" (what you
- * typically want when you get new data).
+ * The currently recognized callback types are "reset" (for when you
+ * are starting or starting over) and "search" (what you typically
+ * want when you get new data) and "error" for when something went
+ * wrong. But only "search" and "reset" manipulate the system.
  * 
  * If rows or start are not set, they will both be reset to their
  * initial values--this is to allow for paging on "current"
@@ -1256,7 +1116,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
  * <reset>, and <page>.
  * 
  * Parameters: 
- *  callback_type - callback type string; presently 'search' or 'reset'
+ *  callback_type - callback type string; 'search', 'reset' and 'error'
  *  rows - *[optional]* integer; the number of rows to return
  *  start - *[serially optional]* integer; the offset of the returned rows
  *
@@ -1322,4 +1182,3 @@ bbop.golr.manager.prototype.update = function(callback_type, rows, start){
     
     return qurl;
 };
-
