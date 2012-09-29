@@ -202,37 +202,6 @@ bbop.golr.manager.jquery.prototype.update = function(callback_type,
     return qurl;
 };
 
-// /*
-//  * Function: action
-//  *
-//  * A odd cousin to <update>. It's only of use in very specific
-//  * circumstances; generally, do not use.
-//  * 
-//  * Parameters: 
-//  *  callback - callback
-//  *
-//  * Returns:
-//  *  the query url (with the jQuery callback specific parameters)
-//  * 
-//  * Also see:
-//  *  <update>
-//  */
-// bbop.golr.manager.jquery.prototype.action = function(callback_type){
-    
-//     // Get "parents" url first.
-//     var qurl = this.get_query_url();
-    
-//     //ll('try: ' + qurl);
-//     //widgets.start_wait('Updating...');
-	
-//     // Setup JSONP for Solr and jQuery ajax-specific parameters.
-//     this.jq_vars['success'] = this.callback;
-//     this.jq_vars['error'] = function(){}; // all errors dropped
-//     this.JQ.ajax(qurl, this.jq_vars);
-    
-//     return qurl;
-// };
-
 /*
  * Namespace: bbop.golr.faux_ajax
  *
