@@ -1,0 +1,50 @@
+////
+//// Some unit testing for stack.js.
+////
+//// Usage:
+////    Command line: "js -f stack.tests.js"
+////    Interactive: "js -f stack.tests.js -f -"
+////
+
+
+// Load testing.
+load('../test.js');
+var mr_t = new bbop.test();
+
+// Correct environment.
+load('../core.js');
+load('../logger.js');
+load('../model.js');
+load('stack.js');
+
+// test that this subclass actually behaves like one
+(function(){
+     var n_a = new bbop.model.node('a');
+     var n_b = new bbop.model.node('b');
+     var n_c = new bbop.model.node('c');
+     var e1 = new bbop.model.edge(n_b, n_a);
+     var e2 = new bbop.model.edge(n_c, n_a);
+     var s = new bbop.model.graph.stack();
+     s.add_node(n_a);
+     s.add_node(n_b);
+     s.add_node(n_c);
+     s.add_edge(e1);
+     s.add_edge(e2);
+
+     // Graph props.
+     mr_t.is_same_atom(2, s.get_leaf_nodes().length, 'tree leaves');
+     mr_t.is_same_atom('a', s.get_root_nodes()[0].id(), 'tree root');
+     mr_t.is_same_atom(1, s.get_parent_nodes('b').length, '1 b parent');
+     mr_t.is_same_atom('a', s.get_parent_nodes('b')[0].id(),'b under a');
+     mr_t.is_same_atom(2, s.get_child_nodes('a').length, 'a has 2');
+     mr_t.is_same_atom(0, s.get_child_nodes('b').length, 'b has 0');
+     mr_t.is_same_atom(0, s.get_child_nodes('c').length, 'c has 0');
+
+ })();
+
+///
+/// End unit testing.
+///
+
+// Final report.
+mr_t.report();

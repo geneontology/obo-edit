@@ -1,21 +1,19 @@
-////////////
-////
-//// bbop.model.tree
-////
-//// Purpose: Extend the model to be handy for a (phylo)tree.
-//// 
-//// Taken name spaces:
-////    bbop.model.tree.*
-////
-//// TODO: see: http://raphaeljs.com/graffle.html
-//// TODO: subtree calculation during bracket_down
-////
-//// Required:
-////    bbop.core
-////    bbop.model
-////
-//////////
-
+/* 
+ * Package: tree.js
+ * 
+ * Namespace: bbop.model.tree
+ * 
+ * Purpose: Extend <bbop.model> in <model.js> to be handy for a (phylo)tree.
+ * 
+ * BUG/TODO: Needs an overhaul (and class/subclass checking). See <stack.js>?
+ * 
+ * TODO: /Much/ better documentation. I have no idea what's going on
+ * in there anymore...
+ * 
+ * TODO: See: http://raphaeljs.com/graffle.html
+ * 
+ * TODO: Subtree calculation during bracket_down.
+ */
 
 // Module and namespace checking.
 bbop.core.require('bbop', 'core');
@@ -24,29 +22,67 @@ bbop.core.require('bbop', 'model');
 bbop.core.namespace('bbop', 'model', 'tree');
 
 
-// TODO: remove later...or something...
+// BUG/TODO: remove later...or something...
 bbop.model.tree.logger = new bbop.logger();
 bbop.model.tree.logger.DEBUG = true;
 var _kvetch = bbop.model.tree.logger.kvetch;
 
-
-// Same same.
+/*
+ * Namespace: bbop.model.tree.node
+ * 
+ * Constructor: node
+ * 
+ * Same as parent, but just takes id in constructor.
+ * 
+ * Arguments:
+ *  new_id - a unique id for the node
+ */
 bbop.model.tree.node = function(new_id){
     bbop.model.node.call(this, new_id);
+    this._is_a = 'bbop.model.tree.node';
 };
 bbop.model.tree.node.prototype = new bbop.model.node;
 
-
-// Add distance 
+/*
+ * Namespace: bbop.model.tree.edge
+ * 
+ * Constructor: edge
+ * 
+ * Same as parent, but adds distance.
+ */
 bbop.model.tree.edge = function(parent, child, distance){
     bbop.model.edge.call(this, child, parent, '');
+    this._is_a = 'bbop.model.tree.edge';
     this._distance = distance || 0.0;
 };
 bbop.model.tree.edge.prototype = new bbop.model.edge;
+
+/*
+ * Function: distance
+ *
+ * Return an edge's "distance".
+ *
+ * Parameters: 
+ *  n/a
+ *
+ * Returns: 
+ *  number
+ */
 bbop.model.tree.edge.prototype.distance = function(){
     return this._distance;
 };
-// Make sure that clone gets distance as well.
+
+/*
+ * Function: clone
+ *
+ * Make sure that clone gets distance as well.
+ *
+ * Parameters: 
+ *  n/a
+ *
+ * Returns: 
+ *  <bbop.model.tree.edge>
+ */
 bbop.model.tree.edge.prototype.clone = function(){
     var tmp_clone = new bbop.model.tree.edge(this.object_id(),
 					     this.subject_id(),
@@ -55,20 +91,35 @@ bbop.model.tree.edge.prototype.clone = function(){
     return tmp_clone;
 };
 
-///
-///  Graph sub-object.
-///
-
-// Needs somemore functionality...
+/*
+ * Namespace: bbop.model.tree.graph
+ * 
+ * Constructor: graph
+ * 
+ * Same as parent.
+ * Needs some more functionality...
+ */
 bbop.model.tree.graph = function(){
     bbop.model.graph.call(this);
+    this._is_a = 'bbop.model.tree.graph';
 
     // Useful for making sure that certain recursive functions keep
     // the desired notion of "this"ness.
     var anchor = this;
 
-    // Default comparator for ordering the brackets. Alphabetical down.
-    // a and b are bracket items.
+    /*
+     * Function: default_sort
+     *
+     * The default comparator function for ordering the
+     * brackets. Alphabetical down.
+     * 
+     * Parameters: 
+     *  a - a bracket item
+     *  b - a bracket item
+     *
+     * Returns: 
+     *  string
+     */
     this.default_sort = function(a, b){
 	var sort_val = 0;
 	if( a.id < b.id ){
@@ -79,7 +130,6 @@ bbop.model.tree.graph = function(){
 	//_kvetch('sort: ' + a.id + ' <?> ' + b.id + ' = ' + sort_val);
 	return sort_val;
     };
-
 
     // Get information on kids, relations, and distances working our
     // way up from the leaves.
@@ -154,7 +204,6 @@ bbop.model.tree.graph = function(){
 	}
     }
 
-
     // Recursive comb down (give partitioned ordering).
     // A bracket looks like: "[{id:a, brackets: [...]}, ...]".
     // TODO: subtree calculation during.
@@ -196,12 +245,25 @@ bbop.model.tree.graph = function(){
 	};
     }
 
-
     // Return a layout that can be trivially rendered
     // by...something...
     var max_width = 0;
     var cohort_list = new Array(); // will reinit
-    this.layout = function (){ // TODO: layout should take bracket ordering func
+
+    /*
+     * Function: layout
+     *
+     * With the current graph, produce a usable layout object.
+     * 
+     * TODO: layout should take bracket ordering func
+     *
+     * Parameters:
+     *  n/a
+     *
+     * Returns: 
+     *  a rather complicated layout object
+     */
+    this.layout = function (){
 
 	// Refresh scope on new layout call.
 	brackets = new Array();
@@ -383,6 +445,17 @@ bbop.model.tree.graph = function(){
 	};
     };
 
+    /*
+     * Function: dump_cohorts
+     *
+     * Dump the cohorts; for debugging?
+     *
+     * Parameters:
+     *  n/a
+     *
+     * Returns: 
+     *  n/a
+     */
     this.dump_cohorts = function(){
     	for( var i = 0; i < cohort_list.length; i++ ){
     	    for( var j = 0; j < cohort_list[i].length; j++ ){
@@ -393,6 +466,17 @@ bbop.model.tree.graph = function(){
     	}
     };
 
+    /*
+     * Function: dump_dist
+     *
+     * Dump distances; for debugging?
+     *
+     * Parameters: 
+     *  in_arg - string; 'child'/'parent'?
+     *
+     * Returns: 
+     *  n/a
+     */
     this.dump_dist = function(in_arg){
 
 	_kvetch(' in ');
@@ -411,6 +495,17 @@ bbop.model.tree.graph = function(){
 	}
     };
 
+    /*
+     * Function: dump_brackets
+     *
+     * Dump brackets; for debugging?
+     *
+     * Parameters: 
+     *  brack - *[optional]* ???
+     *
+     * Returns: 
+     *  n/a
+     */
     this.dump_brackets = function(brack){
 
 	// Bootstrap if just starting.
