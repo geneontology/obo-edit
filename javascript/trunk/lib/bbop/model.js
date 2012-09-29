@@ -51,6 +51,7 @@ bbop.model.default_predicate = 'points_at';
  *  bbop model node
  */
 bbop.model.node = function(new_id, new_label){
+    this._is_a = 'bbop.model.node';
     this._id = new_id || undefined;
     this._label = new_label || undefined;
 
@@ -165,6 +166,7 @@ bbop.model.node.prototype.clone = function(){
  *  bbop model edge
  */
 bbop.model.edge = function(subject, object, predicate){
+    this._is_a = 'bbop.model.edge';
 
     // Either a string or a node.
     if( ! subject ){
@@ -311,6 +313,7 @@ bbop.model.edge.prototype.clone = function(){
  */
 //
 bbop.model.graph = function(){
+    this._is_a = 'bbop.model.graph';
 
     this._id = undefined;
 
