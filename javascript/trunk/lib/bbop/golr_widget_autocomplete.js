@@ -110,19 +110,7 @@ bbop.golr.manager.widget.autocomplete = function(golr_loc, golr_conf_obj,
 	    if( bbop.core.is_defined(anchor._list_select_callback) ){
 		anchor._list_select_callback(doc_to_apply);
 	    }
-	    // var msg = ui.item ?
-	    // 	"Selected: " + ui.item.label + ui.item.document.id :
-	    // 	"Nothing selected, input was " + this.value;
-	    // alert(msg);
 	}
-	// // ???
-	// open: function() {
-	//     jQuery(this).removeClass("ui-corner-all").addClass("ui-corner-top");
-	// },
-	// // ???
-	// close: function() {
-	//     jQuery(this).removeClass("ui-corner-top").addClass("ui-corner-all");
-	// }
     };
 
     // Set the ball rolling (attach jQuery autocomplete to doc).
