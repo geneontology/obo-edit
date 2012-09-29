@@ -22,7 +22,6 @@ bbop.core.require('bbop', 'golr', 'conf');
 bbop.core.require('bbop', 'golr', 'response');
 //bbop.core.namespace('bbop', 'golr');
 bbop.core.namespace('bbop', 'golr', 'manager');
-//bbop.core.namespace('bbop', 'golr', 'faux_ajax');
 
 /*
  * Constructor: manager
@@ -74,6 +73,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	}
     
     // Whether or not to prevent ajax events from going.
+    // This may not be usable, or applicable, to all backends.
     this._safety = false;
 
     // Our default target url.
