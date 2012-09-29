@@ -31,6 +31,18 @@ bbop.model.graph.stack = function(){
     bbop.model.graph.call(this);
     this._is_a = 'bbop.model.graph.stack';
 
-    
+    /*
+     * Function: layout
+     *
+     * TODO
+     *
+     * Parameters: 
+     *  n/a
+     *
+     * Returns: 
+     *  list of lists or id strings [[id1, id2], ...]
+     */
+    this.layout = function(){
+    };
 };
 bbop.model.graph.stack.prototype = new bbop.model.graph;
