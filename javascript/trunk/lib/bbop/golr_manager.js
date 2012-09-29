@@ -48,10 +48,10 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     var anchor = this;
 
     // Per-manager logger.
-    var logger = new bbop.logger(this._is_a);
-    //logger.DEBUG = true;
-    logger.DEBUG = false;
-    function ll(str){ logger.kvetch(str); }
+    this._logger = new bbop.logger(this._is_a);
+    this._logger.DEBUG = true;
+    //this._logger.DEBUG = false;
+    function ll(str){ anchor._logger.kvetch(str); }
 
     // To help keep requests from the past haunting us. Actually doing
     // something with this number is up to the UI.
@@ -82,6 +82,9 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     // Settle in the configurations.
     // this._golr_conf = new bbop.golr.conf(golr_conf_var);
     this._golr_conf = golr_conf_obj;
+
+    // The current class/personality that we're using. It may be none.
+    this._current_class = null;
 
     // Our (default) query and the real deal.
     this.fundamental_query = '*:*'; // cannot be changed
@@ -142,6 +145,25 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     // It should look like:
     // {<filter>: {<value>:{'sticky_p':(t|f), 'negative_p':(t|f)}, ...}}
     this.query_filters = {};
+
+    /*
+     * Function: debug
+     * 
+     * Turn on or off the verbose messages. Uses <bbop.logger>, so
+     * they should come out everywhere.
+     * 
+     * Parameters: 
+     *  p - *[optional]* true or false for debugging
+     *
+     * Returns: 
+     *  boolean; the current state of debugging
+     */
+    this.debug = function(p){
+	if( p == true || p == false ){
+	    this._logger.DEBUG = p;
+	}
+	return this._logger.DEBUG;
+    };
 
     /*
      * Function: plist_to_property_hash
@@ -221,7 +243,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	ll("Current state: " + bbop.core.dump(this.query_filters));
 
 	return {}; // TODO
-    };
+   };
 
     /*
      * Function: remove_query_filter
@@ -718,6 +740,14 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *
      * Getter/setter for the query fields--the fields that are search
      * (and by what weight) when using a query ('q').
+     * 
+     * This will always use searchable fields if possible,
+     * automatically replacing the non-searchable versions (I can't
+     * think of any reason to use non-searchable versions unless you
+     * want your searches to not work) if a personality is set. If no
+     * personality is set, it will just use the arguments as-is.
+     * 
+     * The argument replaces the current set.
      *
      * The qfs argument should be a hash like:
      * 
@@ -730,15 +760,48 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *  the current query_fields array (e.g. ["field01^value01", ...])
      */
     this.query_field_set = function(qfs){
+
+	// Only do something if we have a query field set.
 	if( qfs ){
-	    // Convert them to the proper internal format.
+	    
+	    // Only do the probing if a personality has been set.
+	    var loop = bbop.core.each;
+	    var cclass = anchor._current_class;
+	    if( cclass ){
+
+		// Get the current searchable extension string from
+		// the personality class.
+		var sext = cclass.searchable_extension();
+
+		// Probe the input to see if there are any searchable
+		// alternatives to try, use those instead.
+		var searchable_qfs = {};
+		loop(qfs,
+	    	     function(filter, value){
+			 // If the probe fails, just put in
+			 // whatever is there.
+			 var cfield = cclass.get_field(filter);
+			 if( cfield && cfield.searchable() ){
+			     //ll('filter/value:');
+			     var new_f = filter + sext;
+			     searchable_qfs[new_f] = value;
+			 }else{
+			     searchable_qfs[filter] = value;
+			 }
+	    	     });
+		qfs = searchable_qfs;
+	    }
+	    
+	    // Using either the original or the converted information,
+	    // convert them to the proper internal format.
 	    var actual_format = [];
-	    bbop.core.each(qfs,
-			   function(filter, value){
-			       actual_format.push(filter + '^' + value);
-			   });
+	    loop(qfs,
+		 function(filter, value){
+		     actual_format.push(filter + '^' + value);
+		 });
 	    anchor.query_fields = actual_format;
 	}
+	
 	return anchor.query_fields;
     };
 
@@ -985,6 +1048,13 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	// This sets the facet.field internal variable.
 	var cclass = anchor._golr_conf.get_class(personality_id);
 	if( cclass ){
+
+	    // Remember what our personality is.
+	    // WARNING: this line must go before the query_field_set
+	    // line below, or else we won't get the "smart" search.
+	    this._current_class = cclass;
+
+	    // Set the facets for our class.
 	    anchor.facets(cclass.field_order_by_weight('filter'));
 
 	    // Set the query field weights ('qf') necessary to make
