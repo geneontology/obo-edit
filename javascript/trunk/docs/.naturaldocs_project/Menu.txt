@@ -59,7 +59,9 @@ File: logger.js  (logger.js)
 File: logic.js  (logic.js)
 File: model.js  (model.js)
 File: registry.js  (registry.js)
+File: stack.js  (model/stack.js)
 File: test.js  (test.js)
+File: tree.js  (model/tree.js)
 
 Group: Index  {
 

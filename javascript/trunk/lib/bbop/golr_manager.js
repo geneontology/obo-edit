@@ -771,7 +771,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 
 		// Get the current searchable extension string from
 		// the personality class.
-		var sext = cclass.searchable_extension();
+		var s_ext = cclass.searchable_extension();
 
 		// Probe the input to see if there are any searchable
 		// alternatives to try, use those instead.
@@ -783,7 +783,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 			 var cfield = cclass.get_field(filter);
 			 if( cfield && cfield.searchable() ){
 			     //ll('filter/value:');
-			     var new_f = filter + sext;
+			     var new_f = filter + s_ext;
 			     searchable_qfs[new_f] = value;
 			 }else{
 			     searchable_qfs[filter] = value;
