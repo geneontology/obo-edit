@@ -88,7 +88,7 @@ bbop.golr.conf_field = function (field_conf_struct){
      * searches. Defaults to false.
      * 
      * Returns:
-     *  Boolean.
+     *  boolean
      */
     this.searchable = function(){
 	var retval = false;
@@ -260,10 +260,15 @@ bbop.golr.conf_class = function (class_conf_struct){
     /*
      * Function: searchable_extension
      * 
-     * ???
+     * This returns the searchable extension used for this
+     * class. There is a typical default, but it might be change in
+     * namespace collisions, so it's better to just use this.
+     * 
+     * Parameters:
+     *  n/a
      * 
      * Returns:
-     *  String.
+     *  string
      */
     this.searchable_extension = function(){
 	return this._class['searchable_extension'] || '_searchable';
@@ -275,7 +280,7 @@ bbop.golr.conf_class = function (class_conf_struct){
      * Returns a search field by id string. Null otherwise.
      * 
      * Returns:
-     *  bbop.conf_field.
+     *  <bbop.conf_field>
      */
     this.get_field = function(fid){
 	retval = null;
@@ -323,16 +328,20 @@ bbop.golr.conf_class = function (class_conf_struct){
 	weight_category = this._munge_weight_category(weight_category);
 
 	// Collect the good bits.
-	if( ! this._class[weight_category] ){
+	if( ! bbop.core.is_defined(this._class[weight_category]) ){
 	    throw new Error("Missing weight category: " + weight_category);
 	}else{
-	    var dfab = this._class[weight_category];
-	    var fields = dfab.split(/\s+/);
-	    bbop.core.each(fields,
-			  function(item, i){
-			      var field_val = item.split(/\^/);
-			      rethash[field_val[0]] = parseFloat(field_val[1]);
-			  });
+	    // Only work it if there is something there more than "".
+	    if( this._class[weight_category] ){
+		var dfab = this._class[weight_category];
+		var fields = dfab.split(/\s+/);
+		bbop.core.each(fields,
+			       function(item, i){
+				   var field_val = item.split(/\^/);
+				   rethash[field_val[0]] =
+				       parseFloat(field_val[1]);
+			       });
+	    }
 	}
 
 	return rethash;
