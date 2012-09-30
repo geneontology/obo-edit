@@ -1,9 +1,9 @@
 /* 
- * Package: stack.js
+ * Package: bracket.js
  * 
- * Namespace: bbop.model.graph.stack
+ * Namespace: bbop.model.graph.bracket
  * 
- * Purpose: An extension of <bbop.model.graph> to produce a stacked
+ * Purpose: An extension of <bbop.model.graph> to produce a bracketed
  * layout (like the neighborhood view in miGO 1.8).
  * 
  * TODO: A work in progress...
@@ -12,12 +12,12 @@
 // Module and namespace checking.
 bbop.core.require('bbop', 'core'); // not needed, but want the habit
 bbop.core.require('bbop', 'model');
-bbop.core.namespace('bbop', 'model', 'graph', 'stack');
+bbop.core.namespace('bbop', 'model', 'graph', 'bracket');
 
 /*
- * Namespace: bbop.model.graph.stack
+ * Namespace: bbop.model.graph.bracket
  * 
- * Constructor: stack
+ * Constructor: bracket
  * 
  * Extension of <bbop.model.graph>
  * 
@@ -27,9 +27,9 @@ bbop.core.namespace('bbop', 'model', 'graph', 'stack');
  * Returns:
  *  this
  */
-bbop.model.graph.stack = function(){
+bbop.model.graph.bracket = function(){
     bbop.model.graph.call(this);
-    this._is_a = 'bbop.model.graph.stack';
+    this._is_a = 'bbop.model.graph.bracket';
 
     var anchor = this;
     var loop = bbop.core.each;
@@ -339,4 +339,4 @@ bbop.model.graph.stack = function(){
 	return bracket_list;
     };
 };
-bbop.model.graph.stack.prototype = new bbop.model.graph;
+bbop.model.graph.bracket.prototype = new bbop.model.graph;
