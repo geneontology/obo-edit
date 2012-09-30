@@ -42,10 +42,8 @@ bbop.golr.manager.jquery = function (golr_loc, golr_conf_obj){
     // Get a good self-reference point.
     var anchor = this;
 
-    // Per-manager logger.
-    var logger = new bbop.logger(this._is_a);
-    logger.DEBUG = true;
-    function ll(str){ logger.kvetch(str); }
+    // Per-manager logger helper.
+    function ll(str){ anchor._logger.kvetch(str); }
 
     // Before anything else, if we cannot find a viable jQuery library
     // for use, we're going to create a fake one so we can still test
@@ -155,6 +153,7 @@ bbop.golr.manager.jquery = function (golr_loc, golr_conf_obj){
 	return anchor._safety;
     };
 };
+//bbop.golr.manager.jquery.prototype = new bbop.golr.manager;
 
 /*
  * Function: update
