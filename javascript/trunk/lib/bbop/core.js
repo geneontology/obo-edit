@@ -459,11 +459,15 @@ bbop.core.is_defined = function(in_thing){
  *  array - function(item, index)
  *  object - function(key, value)
  *
+ *  TODO/BUG/WARNING?: This does not seem to work with the local
+ *  function variable "arguments".
+ * 
  * Parameters: 
  *  in_thing - hash or array
  *  in_function - function to apply to elements
  *
- * Returns: Nothing
+ * Returns:
+ *  n/a
  */
 bbop.core.each = function(in_thing, in_function){
 
