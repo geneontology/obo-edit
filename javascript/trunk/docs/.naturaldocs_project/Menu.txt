@@ -46,6 +46,7 @@ Format: 1.51
 # --------------------------------------------------------------------------
 
 
+File: bracket.js  (model/bracket.js)
 File: core.js  (core.js)
 File: golr_conf.js  (golr_conf.js)
 File: golr_manager.js  (golr_manager.js)
@@ -54,12 +55,12 @@ File: golr_manager_nodejs.js  (golr_manager_nodejs.js)
 File: golr_manager_rhino.js  (golr_manager_rhino.js)
 File: golr_response.js  (golr_response.js)
 File: golr_widget_autocomplete.js  (golr_widget_autocomplete.js)
+File: golr_widget_browse.js  (golr_widget_browse.js)
 File: html.js  (html.js)
 File: logger.js  (logger.js)
 File: logic.js  (logic.js)
 File: model.js  (model.js)
 File: registry.js  (registry.js)
-File: stack.js  (model/stack.js)
 File: test.js  (test.js)
 File: tree.js  (model/tree.js)
 

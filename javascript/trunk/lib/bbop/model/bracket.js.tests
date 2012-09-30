@@ -1,9 +1,9 @@
 ////
-//// Some unit testing for stack.js.
+//// Some unit testing for bracket.js.
 ////
 //// Usage:
-////    Command line: "js -f stack.tests.js"
-////    Interactive: "js -f stack.tests.js -f -"
+////    Command line: "js -f bracket.tests.js"
+////    Interactive: "js -f bracket.tests.js -f -"
 ////
 
 
@@ -15,7 +15,7 @@ var mr_t = new bbop.test();
 load('../core.js');
 load('../logger.js');
 load('../model.js');
-load('stack.js');
+load('bracket.js');
 
 // test that this subclass actually behaves like one
 (function(){
@@ -24,7 +24,7 @@ load('stack.js');
      var n_c = new bbop.model.node('c');
      var e1 = new bbop.model.edge(n_b, n_a);
      var e2 = new bbop.model.edge(n_c, n_a);
-     var s = new bbop.model.graph.stack();
+     var s = new bbop.model.graph.bracket();
      s.add_node(n_a);
      s.add_node(n_b);
      s.add_node(n_c);
@@ -45,7 +45,7 @@ load('stack.js');
 // teting helpers
 (function(){
 
-     var s = new bbop.model.graph.stack();
+     var s = new bbop.model.graph.bracket();
      mr_t.is_same_atom(s.relation_weight(), 0, "weight: naught");
      mr_t.is_same_atom(s.relation_weight(''), 0, "weight: empty");
      mr_t.is_same_atom(s.relation_weight('bag'), 0, "weight: bag default");
@@ -80,7 +80,7 @@ load('stack.js');
 	 {"nodes":[{"id":"GO:0009987","label":"cellular process"},{"id":"GO:0048869","label":"cellular developmental process"},{"id":"GO:0048731","label":"system development"},{"id":"GO:0007275","label":"multicellular organismal development"},{"id":"GO:0030154","label":"cell differentiation"},{"id":"GO:0007399","label":"nervous system development"},{"id":"GO:0048856","label":"anatomical structure development"},{"id":"GO:0008150","label":"biological_process"},{"id":"GO:0050769","label":"positive regulation of neurogenesis"},{"id":"GO:0042063","label":"gliogenesis"},{"id":"GO:0022008","label":"neurogenesis"},{"id":"GO:0032502","label":"developmental process"},{"id":"GO:0050767","label":"regulation of neurogenesis"},{"id":"GO:0032501","label":"multicellular organismal process"},{"id":"GO:0050768","label":"negative regulation of neurogenesis"},{"id":"GO:0048699","label":"generation of neurons"}],"edges":[{"subject_id":"GO:0022008","object_id":"GO:0007399","predicate_id":"part_of"},{"subject_id":"GO:0050768","object_id":"GO:0022008","predicate_id":"negatively_regulates"},{"subject_id":"GO:0042063","object_id":"GO:0022008","predicate_id":"is_a"},{"subject_id":"GO:0022008","object_id":"GO:0030154","predicate_id":"is_a"},{"subject_id":"GO:0032501","object_id":"GO:0008150","predicate_id":"is_a"},{"subject_id":"GO:0032502","object_id":"GO:0008150","predicate_id":"is_a"},{"subject_id":"GO:0048731","object_id":"GO:0048856","predicate_id":"is_a"},{"subject_id":"GO:0007399","object_id":"GO:0048731","predicate_id":"is_a"},{"subject_id":"GO:0007275","object_id":"GO:0032501","predicate_id":"is_a"},{"subject_id":"GO:0048869","object_id":"GO:0009987","predicate_id":"is_a"},{"subject_id":"GO:0048856","object_id":"GO:0032502","predicate_id":"is_a"},{"subject_id":"GO:0007275","object_id":"GO:0032502","predicate_id":"is_a"},{"subject_id":"GO:0050769","object_id":"GO:0022008","predicate_id":"positively_regulates"},{"subject_id":"GO:0048699","object_id":"GO:0022008","predicate_id":"is_a"},{"subject_id":"GO:0048869","object_id":"GO:0032502","predicate_id":"is_a"},{"subject_id":"GO:0009987","object_id":"GO:0008150","predicate_id":"is_a"},{"subject_id":"GO:0050767","object_id":"GO:0022008","predicate_id":"regulates"},{"subject_id":"GO:0030154","object_id":"GO:0048869","predicate_id":"is_a"},{"subject_id":"GO:0048731","object_id":"GO:0007275","predicate_id":"part_of"}]};
 
      // Load the graphs
-     var topo = new bbop.model.graph.stack();
+     var topo = new bbop.model.graph.bracket();
      topo.load_json(topology_graph_raw);
      
      // The produced bracket layout should look like:
@@ -128,7 +128,7 @@ load('stack.js');
      var transitivity_graph_raw =
 	 {"nodes":[{"id":"GO:0009987","label":"cellular process"},{"id":"GO:0022008","label":"neurogenesis"},{"id":"GO:0032502","label":"developmental process"},{"id":"GO:0032501","label":"multicellular organismal process"},{"id":"GO:0048869","label":"cellular developmental process"},{"id":"GO:0007275","label":"multicellular organismal development"},{"id":"GO:0048731","label":"system development"},{"id":"GO:0030154","label":"cell differentiation"},{"id":"GO:0007399","label":"nervous system development"},{"id":"GO:0048856","label":"anatomical structure development"},{"id":"GO:0008150","label":"biological_process"}],"edges":[{"subject_id":"GO:0022008","object_id":"GO:0032502","predicate_id":"is_a"},{"subject_id":"GO:0022008","object_id":"GO:0007399","predicate_id":"part_of"},{"subject_id":"GO:0022008","object_id":"GO:0007275","predicate_id":"part_of"},{"subject_id":"GO:0022008","object_id":"GO:0032502","predicate_id":"part_of"},{"subject_id":"GO:0022008","object_id":"GO:0009987","predicate_id":"is_a"},{"subject_id":"GO:0022008","object_id":"GO:0030154","predicate_id":"is_a"},{"subject_id":"GO:0022008","object_id":"GO:0032501","predicate_id":"part_of"},{"subject_id":"GO:0022008","object_id":"GO:0048869","predicate_id":"is_a"},{"subject_id":"GO:0022008","object_id":"GO:0048856","predicate_id":"part_of"},{"subject_id":"GO:0022008","object_id":"GO:0008150","predicate_id":"is_a"},{"subject_id":"GO:0022008","object_id":"GO:0008150","predicate_id":"part_of"},{"subject_id":"GO:0022008","object_id":"GO:0048731","predicate_id":"part_of"}]};
 
-     var trans = new bbop.model.graph.stack();
+     var trans = new bbop.model.graph.bracket();
      trans.load_json(transitivity_graph_raw);
      var rl = topo.rich_bracket_layout('GO:0022008', trans);
      
