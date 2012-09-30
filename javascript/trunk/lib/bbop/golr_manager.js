@@ -39,8 +39,6 @@ bbop.core.namespace('bbop', 'golr', 'manager');
  *  <bbop.registry>
  */
 bbop.golr.manager = function (golr_loc, golr_conf_obj){
-//function GOlrManager(in_args){
-    // We are a registry like this:
     bbop.registry.call(this, ['reset', 'search', 'error']);
     this._is_a = 'bbop.golr.manager';
 
