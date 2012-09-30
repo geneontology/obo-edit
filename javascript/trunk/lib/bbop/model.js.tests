@@ -13,6 +13,7 @@ var mr_t = new bbop.test();
 
 // Correct environment.
 load('core.js');
+load('logger.js');
 load('model.js');
 
 ///
@@ -144,6 +145,15 @@ load('model.js');
      mr_t.is_same_atom(0, g.get_child_nodes('d').length, 'd: -');
      mr_t.is_same_atom(0, g.get_child_nodes('z').length, 'z: -');
      mr_t.is_same_atom(0, g.get_child_nodes('x').length, 'x: -');
+
+     // Test edges and predicates.
+     //g.add_edge(new bbop.model.edge('d', 'b', 'is_a'));
+     var med = g.get_edges('d', 'b');
+     mr_t.is_same_atom(med.length, 1, 'one edge');
+     mr_t.is_same_atom(med[0].predicate_id(), 'is_a', 'one edge is_a');
+     var mrel = g.get_predicates('d', 'b');
+     mr_t.is_same_atom(mrel.length, 1, 'one pred');
+     mr_t.is_same_atom(mrel[0], 'is_a', 'one pred is_a');
 
      ///
      /// Test subgraphs.

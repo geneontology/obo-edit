@@ -20,6 +20,7 @@
 
 // Module and namespace checking.
 bbop.core.require('bbop', 'core'); // not needed, but want the habit
+bbop.core.require('bbop', 'logger');
 bbop.core.namespace('bbop', 'model');
 
 
@@ -317,6 +318,12 @@ bbop.model.graph = function(){
 
     this._id = undefined;
 
+    // A per-graph logger.
+    this._logger = new bbop.logger(this._is_a);
+    this._logger.DEBUG = true;
+    //this._logger.DEBUG = false;
+    //function ll(str){ anchor._logger.kvetch(str); }
+
     // For bbop.model.node and bbop.model.edge (hash not possible for
     // edges--only relation, not "real").
     this._nodes = { array: new Array, hash: {} };
@@ -603,7 +610,7 @@ bbop.model.graph.prototype.get_edge = function(sub_id, obj_id, pred){
 };
 
 /*
- * Function: get_edge
+ * Function: get_edges
  *
  * Return all edges (copies) of given subject and object ids. Returns
  * entirely new edges.
@@ -623,6 +630,30 @@ bbop.model.graph.prototype.get_edges = function(sub_id, obj_id){
 		retlist.push(new bbop.model.edge(sub_id, obj_id, pred));
 	    }
 	}		
+    return retlist;
+};
+
+
+/*
+ * Function: get_predicates
+ *
+ * Return all predicates of given subject and object ids.
+ *
+ * Parameters:
+ *  sub_id - the subject_id of the edge we're looking for
+ *  obj_id - the object_id of the edge we're looking for
+ *
+ * Returns: 
+ *  list of predicate ids (as strings)
+ */
+bbop.model.graph.prototype.get_predicates = function(sub_id, obj_id){
+    var retlist = [];
+    if( this._sop_table[sub_id] &&
+	this._sop_table[sub_id][obj_id] ){
+	    for( var pred in this._sop_table[sub_id][obj_id] ){
+		retlist.push(pred);
+	    }
+	}
     return retlist;
 };
 

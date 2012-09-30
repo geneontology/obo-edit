@@ -1198,6 +1198,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
  */
 bbop.golr.manager.prototype.update = function(callback_type, rows, start){
 
+    //function ll(s){ this._logger.kvetch(s); }
+
     // Handle paging in this main section by resetting to
     // the defaults if rows and offset are not explicitly
     // defined.
@@ -1250,5 +1252,6 @@ bbop.golr.manager.prototype.update = function(callback_type, rows, start){
     	throw new Error("Unknown callback_type: " + callback_type);
     }
     
+    //ll('qurl: ' + qurl);
     return qurl;
 };
