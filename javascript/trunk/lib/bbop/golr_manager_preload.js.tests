@@ -1,0 +1,98 @@
+////
+//// Some unit testing for package golr_manager_preload.js
+////
+//// Usage:
+////    Command line: "js -f golr_manager_jquery.js.tests"
+////    Interactive: "js -f golr_manager_preload.js.tests -f -"
+////
+
+// Load testing.
+load('test.js');
+var mr_t = new bbop.test();
+
+// Correct environment.
+load('core.js');
+load('logger.js');
+
+// Get some test data as well.
+// This defines "bbop.amigo.golr_meta".
+load('../../_data/golr_meta.js');
+load('golr_conf.js');
+load('golr_response.js');
+
+load('registry.js');
+load('golr_manager.js');
+load('golr_manager_preload.js');
+
+///
+/// Start unit testing.
+///
+
+// check std
+(function(){
+
+     // Setup.
+     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var go = new bbop.golr.manager.preload('http://golr.berkeleybop.org/',
+					    gconf);
+
+     mr_t.is_same_url(go.update('search'),
+      		      ['http://golr.berkeleybop.org/select?defType=edismax',
+		       'qt=standard',
+		       'indent=on',
+		       'wt=json',
+		       'rows=10',
+		       'start=0',
+		       'fl=*%2Cscore',
+		       'facet=true',
+		       'facet.mincount=1',
+		       'json.nl=arrarr',
+		  'q=*:*',
+		       'packet=1',
+		       'callback_type=search'].join('&'),
+      		      "page on update");
+     mr_t.is_same_url(go.update('search'),
+      		      ['http://golr.berkeleybop.org/select?defType=edismax',
+		       'qt=standard',
+		       'indent=on',
+		       'wt=json',
+		       'rows=10',
+		       'start=0',
+		       'fl=*%2Cscore',
+		       'facet=true',
+		       'facet.mincount=1',
+		       'json.nl=arrarr',
+		       'q=*:*',
+		       'packet=2',
+		       'callback_type=search'].join('&'),
+      		      "page increment on update");
+})();
+
+// check overrride
+(function(){
+
+     // Setup.
+     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var go = new bbop.golr.manager.preload('http://golr.berkeleybop.org/',
+					    gconf);
+     
+     var a = 1;
+     function replace(in_thing){
+	 a = in_thing;
+     }
+     go.register('search', 'do', replace);
+     
+     mr_t.is_same_atom(a, 1, "not updated"),
+     go.load(2);
+     go.search();
+     //go.update('search');
+     mr_t.is_same_atom(a, 2, "updated to 2");
+     
+ })();
+
+///
+/// End unit testing.
+///
+
+// Final report.
+mr_t.report();

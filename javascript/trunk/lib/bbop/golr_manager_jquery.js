@@ -34,11 +34,9 @@ bbop.core.namespace('bbop', 'golr', 'manager', 'jquery');
  *  <bbop.golr.manager>
  */
 bbop.golr.manager.jquery = function (golr_loc, golr_conf_obj){
-//function GOlrManager(in_args){
-    // We are a registry like this:
     bbop.golr.manager.call(this, golr_loc, golr_conf_obj);
     this._is_a = 'bbop.golr.manager.jquery';
-
+    
     // Get a good self-reference point.
     var anchor = this;
 
@@ -153,7 +151,7 @@ bbop.golr.manager.jquery = function (golr_loc, golr_conf_obj){
 	return anchor._safety;
     };
 };
-//bbop.golr.manager.jquery.prototype = new bbop.golr.manager;
+bbop.core.extend(bbop.golr.manager.jquery, bbop.golr.manager);
 
 /*
  * Function: update

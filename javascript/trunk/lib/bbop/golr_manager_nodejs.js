@@ -39,7 +39,7 @@ bbop.golr.manager.nodejs = function (golr_loc, golr_conf_obj){
     this._is_a = 'bbop.golr.manager.nodejs';
 
     // Get a good self-reference point.
-    var anchor = this;
+    //var anchor = this;
 
     // Per-manager logger.
     //this._ll = ll;
@@ -48,6 +48,7 @@ bbop.golr.manager.nodejs = function (golr_loc, golr_conf_obj){
     // ll('Alive.');
 
 };
+bbop.core.extend(bbop.golr.manager.nodejs, bbop.golr.manager);
 
 /*
  * Function: update
@@ -79,7 +80,7 @@ bbop.golr.manager.nodejs.prototype.update = function(callback_type,
     function ll(str){ logger.kvetch(str); }
 
     var anchor = this;
-    this.last_response = null;
+    this.last = null;
     
     //
     function on_error(e) {
@@ -97,7 +98,7 @@ bbop.golr.manager.nodejs.prototype.update = function(callback_type,
 	// Parse JS and call callback_type callbacks.
 	res.on('end', function () {
 		   var json_data = JSON.parse(raw_data);
-		   anchor.last_response = json_data;
+		   anchor.last = json_data;
 		   anchor.apply_callbacks(callback_type, [json_data, anchor]);
 	       });
     }

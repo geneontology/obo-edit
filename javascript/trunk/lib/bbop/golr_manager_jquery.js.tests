@@ -2,7 +2,7 @@
 //// Some unit testing for package golr_manager_jquery.js
 ////
 //// Usage:
-////    Command line: "js -f golr_manager_jqueyr.js.tests"
+////    Command line: "js -f golr_manager_jquery.js.tests"
 ////    Interactive: "js -f golr_manager_jquery.js.tests -f -"
 ////
 

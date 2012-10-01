@@ -544,6 +544,168 @@ mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
      
  })();
 
+// play with "classes" and "subclasses"
+//(function(){
+
+// 
+function thing1(arg){
+
+    // Three lexical variables.
+    var lex0 = 'lex0';
+    var lex1 = arg + 'lex1';
+    var lex2 = arg + 'lex2';
+    var lex3 = arg + 'lex3';
+
+    // Three object variables. 
+    this.obj0 = 'obj0';
+    this.obj1 = arg + 'obj1';
+    this.obj2 = arg + 'obj2';
+    this.obj3 = arg + 'obj3';
+
+    // Three object functions accessing lexical variables.
+    this.lex0_plus = function(msg){ return lex0 + ' ' + msg; };
+    this.lex1_plus = function(msg){ return lex1 + ' ' + msg; };
+    this.lex2_plus = function(msg){ return lex2 + ' ' + msg; };
+    this.lex3_plus = function(msg){ return lex3 + ' ' + msg; };
+
+    // Three object functions accessing object variables.
+    this.obj0_plus = function(msg){ return this.obj0 + ' ' + msg; };
+    this.obj1_plus = function(msg){ return this.obj1 + ' ' + msg; };
+    this.obj2_plus = function(msg){ return this.obj2 + ' ' + msg; };
+    this.obj3_plus = function(msg){ return this.obj3 + ' ' + msg; };
+}
+// Three prototype functions accessing object variables.
+thing1.prototype.pro0_plus = function(msg){ return this.obj0 + ' ' + msg; };
+thing1.prototype.pro1_plus = function(msg){ return this.obj1 + ' ' + msg; };
+thing1.prototype.pro2_plus =
+    function(msg){ return this.obj2 + ' ' + msg; };
+thing1.prototype.pro3_plus =
+    function(msg){ return this.obj3 + ' ' + msg; };
+
+// Now let's make a subthing.
+function subthing2(arg){
+    thing1.call(this, arg);
+
+    this.obj2 = 'OBJ2';
+}
+bbop.core.extend(subthing2, thing1);
+
+// Overrides.
+subthing2.prototype.pro1_plus =
+    function(msg){ return this.obj1 + ' (s2) ' + msg; };
+subthing2.prototype.pro2_plus =
+    function(msg){ return this.obj2 + ' (s2) ' + msg; };
+// Override with callback.
+subthing2.prototype.pro3_plus = function(msg){
+    var foo = thing1.prototype.pro3_plus.call(this, msg);
+    return this.obj3 + ' (s2+) ' + msg;
+};
+
+// Now let's make a subthing.
+function subsubthing3(arg1, arg2){
+    subthing2.call(this, arg1);
+
+    this.obj3 = arg2;
+
+    this.lex3_plus = function(){
+	return arg1 + ' mu';
+    };
+}
+bbop.core.extend(subsubthing3, subthing2);
+
+// Overrides.
+subsubthing3.prototype.pro2_plus =
+    function(msg){ return this.obj2 + ' (s3) ' + msg; };
+// Override with callback.
+subsubthing3.prototype.pro3_plus = function(msg){
+    subthing2.prototype.pro3_plus.call(this, msg + ' (extra)');
+    return this.obj3 + ' (s3+) ' + msg;
+};
+
+///     
+/// Show that the things we made makes sense.
+///
+
+var t1 = new thing1('t');
+mr_t.is_same_atom(t1.lex0_plus('foo'), 'lex0 foo',
+		  'extend: 1');
+mr_t.is_same_atom(t1.lex1_plus('foo'), 'tlex1 foo',
+		  'extend: 2');
+mr_t.is_same_atom(t1.lex2_plus('foo'), 'tlex2 foo',
+		  'extend: 3');
+mr_t.is_same_atom(t1.lex3_plus('foo'), 'tlex3 foo',
+		  'extend: 4');
+mr_t.is_same_atom(t1.obj0_plus('foo'), 'obj0 foo',
+		  'extend: 5');
+mr_t.is_same_atom(t1.obj1_plus('foo'), 'tobj1 foo',
+		  'extend: 6');
+mr_t.is_same_atom(t1.obj2_plus('foo'), 'tobj2 foo',
+		  'extend: 7');
+mr_t.is_same_atom(t1.obj3_plus('foo'), 'tobj3 foo',
+		  'extend: 8');
+mr_t.is_same_atom(t1.pro0_plus('foo'), 'obj0 foo',
+		  'extend: 9');
+mr_t.is_same_atom(t1.pro1_plus('foo'), 'tobj1 foo',
+		  'extend: 10');
+mr_t.is_same_atom(t1.pro2_plus('foo'), 'tobj2 foo',
+		  'extend: 11');
+mr_t.is_same_atom(t1.pro3_plus('foo'), 'tobj3 foo',
+		  'extend: 12');
+
+var s2 = new subthing2('s');
+mr_t.is_same_atom(s2.lex0_plus('bar'), 'lex0 bar',
+		  'extend: 13');
+mr_t.is_same_atom(s2.lex1_plus('bar'), 'slex1 bar',
+		  'extend: 14');
+mr_t.is_same_atom(s2.lex2_plus('bar'), 'slex2 bar',
+		  'extend: 15');
+mr_t.is_same_atom(s2.lex3_plus('bar'), 'slex3 bar',
+		  'extend: 16');
+mr_t.is_same_atom(s2.obj0_plus('bar'), 'obj0 bar',
+		  'extend: 17');
+mr_t.is_same_atom(s2.obj1_plus('bar'), 'sobj1 bar',
+		  'extend: 18');
+mr_t.is_same_atom(s2.obj2_plus('bar'), 'OBJ2 bar',
+		  'extend: 19');
+mr_t.is_same_atom(s2.obj3_plus('bar'), 'sobj3 bar',
+		  'extend: 20');
+mr_t.is_same_atom(s2.pro0_plus('bar'), 'obj0 bar',
+		  'extend: 21');
+mr_t.is_same_atom(s2.pro1_plus('bar'), 'sobj1 (s2) bar',
+		  'extend: 22');
+mr_t.is_same_atom(s2.pro2_plus('bar'), 'OBJ2 (s2) bar',
+		  'extend: 23');
+mr_t.is_same_atom(s2.pro3_plus('bar'), 'sobj3 (s2+) bar',
+		  'extend: 24');
+
+var s3 = new subsubthing3('S', 'OBJ3');
+mr_t.is_same_atom(s3.lex0_plus('bib'), 'lex0 bib',
+		  'extend: 25');
+mr_t.is_same_atom(s3.lex1_plus('bib'), 'Slex1 bib',
+		  'extend: 26');
+mr_t.is_same_atom(s3.lex2_plus('bib'), 'Slex2 bib',
+		  'extend: 27');
+mr_t.is_same_atom(s3.lex3_plus('bib'), 'S mu',
+		  'extend: 28');
+mr_t.is_same_atom(s3.obj0_plus('bib'), 'obj0 bib',
+		  'extend: 29');
+mr_t.is_same_atom(s3.obj1_plus('bib'), 'Sobj1 bib',
+		  'extend: 30');
+mr_t.is_same_atom(s3.obj2_plus('bib'), 'OBJ2 bib',
+		  'extend: 31');
+mr_t.is_same_atom(s3.obj3_plus('bib'), 'OBJ3 bib',
+		  'extend: 32');
+mr_t.is_same_atom(s3.pro0_plus('bib'), 'obj0 bib',
+		  'extend: 33');
+mr_t.is_same_atom(s3.pro1_plus('bib'), 'Sobj1 (s2) bib',
+		  'extend: 34');
+mr_t.is_same_atom(s3.pro2_plus('bib'), 'OBJ2 (s3) bib',
+		  'extend: 35');
+mr_t.is_same_atom(s3.pro3_plus('bib'), 'OBJ3 (s3+) bib',
+		  'extend: 36');
+
+// })();
+
 ///
 /// End unit testing.
 ///

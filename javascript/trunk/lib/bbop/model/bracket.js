@@ -339,4 +339,4 @@ bbop.model.graph.bracket = function(){
 	return bracket_list;
     };
 };
-bbop.model.graph.bracket.prototype = new bbop.model.graph;
+bbop.core.extend(bbop.model.graph.bracket, bbop.model.graph);
