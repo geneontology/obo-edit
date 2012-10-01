@@ -38,6 +38,7 @@ bbop.golr.manager.rhino = function (golr_loc, golr_conf_obj){
     bbop.golr.manager.call(this, golr_loc, golr_conf_obj);
     this._is_a = 'bbop.golr.manager.rhino';
 };
+bbop.core.extend(bbop.golr.manager.rhino, bbop.golr.manager);
 
 /*
  * Function: update

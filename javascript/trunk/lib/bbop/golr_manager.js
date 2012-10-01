@@ -39,6 +39,7 @@ bbop.core.namespace('bbop', 'golr', 'manager');
  *  <bbop.registry>
  */
 bbop.golr.manager = function (golr_loc, golr_conf_obj){
+    //bbop.registry.call(this, ['reset', 'search', 'error']);
     bbop.registry.call(this, ['reset', 'search', 'error']);
     this._is_a = 'bbop.golr.manager';
 
@@ -1160,6 +1161,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     	return qurl + filtered_things.join('&');
     };
 };
+bbop.core.extend(bbop.golr.manager, bbop.registry);
 
 /*
  * Function: update
