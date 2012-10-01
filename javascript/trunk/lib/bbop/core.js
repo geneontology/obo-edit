@@ -93,24 +93,6 @@ bbop.core.require = function(){
     return current_object;
 };
 
-// /*
-//  * Function: extend
-//  * 
-//  * Parameters: An arbitrary number of strings.
-//  * 
-//  * Returns: Nothing. Side-effects: throws an error if the namespace
-//  * defined by the strings is not currently found.
-//  */
-// // @Object?
-// // Extend an object properly.
-// bbop.core.extend = function(kid, sup){  
-//     for( var property in sup.prototype ){
-// 	if (typeof kid.prototype[property] == "undefined")  
-//             kid.prototype[property] = sup.prototype[property];  
-//     }  
-//     return kid;
-// };
-
 /*
  * Function: crop
  *
@@ -868,6 +850,54 @@ bbop.core.uuid = function(){
     }
     var target_str = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
     return target_str.replace(/[xy]/g, replacer);
+};
+
+/*
+ * Function: extend
+ * 
+ * What seems to be a typical idiom for subclassing in JavaScript.
+ * 
+ * This attempt has been scraped together from bits here and there and
+ * lucid explanations from Mozilla:
+ * 
+ * https://developer.mozilla.org/en-US/docs/JavaScript/Introduction_to_Object-Oriented_JavaScript
+ * https://developer.mozilla.org/en-US/docs/JavaScript/Guide/Details_of_the_Object_Model
+ * https://developer.mozilla.org/en-US/docs/JavaScript/Guide/Inheritance_Revisited
+ * https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Operators/new
+ * 
+ * Parameters:
+ *  subclass - the subclass object
+ *  superclass - the superclass object
+ * 
+ * Returns:
+ *  n/a
+ */
+bbop.core.extend = function(subclass, baseclass){
+
+    // Create a temporary nothing so that we don't fiddle the
+    // baseclass's(?) with what we do to subclass later on.
+    function tmp_object(){}
+
+    // This nothings prototype gets the base class's.
+    tmp_object.prototype = baseclass.prototype;
+
+    // We instantiate the tmp_object, whose prototype is the
+    // baseclass's; we make subclass's prototype this object, giving
+    // us something that is very much like baseclass.
+    subclass.prototype = new tmp_object; // same as: "new tmp_object();"
+
+    // Now we go back and make the constructor of subclass actually
+    // subclass again--we blew it away in the last step. Now we have a
+    // subclass constructor with the protoype of baseclass.
+    subclass.prototype.constructor = subclass;
+
+    // // Create a property to allow access to the constructor of
+    // // baseclass. This is useful when subclass needs access to
+    // // baseclass's constructor for property setting.
+    // subclass.base_constructor = baseclass;
+
+    // // Create a property to
+    // subclass.parent_class = baseclass.prototype;
 };
 
 // /*
