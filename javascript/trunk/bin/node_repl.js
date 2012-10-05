@@ -25,17 +25,18 @@
 // TODO: how to process remote again?
 // 		    });
 // 	 });
-require('./../lib/bbop/core');
-require('./../lib/bbop/logger');
-require('./../lib/bbop/registry');
-require('./../lib/bbop/golr_conf');
-require('./../lib/bbop/golr_response');
-require('./../lib/bbop/golr_manager');
-require('./../lib/bbop/golr_manager_nodejs');
-require('./../lib/bbop/model');
-require('./../../../AmiGO/trunk/javascript/bbop/amigo');
-require('./../../../AmiGO/trunk/javascript/bbop/amigo/golr_meta');
-require('./../../../AmiGO/trunk/javascript/bbop/amigo/amigo_meta');
+// require('./../lib/bbop/core');
+// require('./../lib/bbop/logger');
+// require('./../lib/bbop/registry');
+// require('./../lib/bbop/golr_conf');
+// require('./../lib/bbop/golr_response');
+// require('./../lib/bbop/golr_manager');
+// require('./../lib/bbop/golr_manager_nodejs');
+// require('./../lib/bbop/model');
+// require('./../../../AmiGO/trunk/javascript/bbop/amigo');
+// require('./../../../AmiGO/trunk/javascript/bbop/amigo/golr_meta');
+// require('./../../../AmiGO/trunk/javascript/bbop/amigo/amigo_meta');
+require('./../../../AmiGO/trunk/staging/bbop-amigo');
 
 // Setup the environment a little bit.
 gconf = new bbop.golr.conf(bbop.amigo.golr_meta);

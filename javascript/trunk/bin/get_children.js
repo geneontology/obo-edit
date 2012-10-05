@@ -19,17 +19,18 @@
 // Loading the necessary files.
 // TODO/BUG: These should be pointing at the remote files, not the
 // local ones.
-require('./../lib/bbop/core');
-require('./../lib/bbop/logger');
-require('./../lib/bbop/registry');
-require('./../lib/bbop/golr_conf');
-require('./../lib/bbop/golr_response');
-require('./../lib/bbop/golr_manager');
-require('./../lib/bbop/golr_manager_nodejs');
-require('./../lib/bbop/model');
-require('./../../../AmiGO/trunk/javascript/bbop/amigo');
-require('./../../../AmiGO/trunk/javascript/bbop/amigo/golr_meta');
-require('./../../../AmiGO/trunk/javascript/bbop/amigo/amigo_meta');
+// require('./../lib/bbop/core');
+// require('./../lib/bbop/logger');
+// require('./../lib/bbop/registry');
+// require('./../lib/bbop/golr_conf');
+// require('./../lib/bbop/golr_response');
+// require('./../lib/bbop/golr_manager');
+// require('./../lib/bbop/golr_manager_nodejs');
+// require('./../lib/bbop/model');
+// require('./../../../AmiGO/trunk/javascript/bbop/amigo');
+// require('./../../../AmiGO/trunk/javascript/bbop/amigo/golr_meta');
+// require('./../../../AmiGO/trunk/javascript/bbop/amigo/amigo_meta');
+require('./../../../AmiGO/trunk/staging/bbop-amigo');
 
 // First, get the last arg
 //console.log(process.argv.length);

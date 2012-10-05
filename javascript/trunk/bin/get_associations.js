@@ -14,17 +14,18 @@
 // Loading the necessary files.
 // TODO/BUG: These should be pointing at the remote files, not the
 // local ones.
-load('./../lib/bbop/core.js');
-load('./../lib/bbop/logger.js');
-load('./../lib/bbop/registry.js');
-load('./../lib/bbop/golr_conf.js');
-load('./../lib/bbop/golr_response.js');
-load('./../lib/bbop/golr_manager.js');
-load('./../lib/bbop/golr_manager_rhino.js');
-load('./../lib/bbop/model.js');
-load('./../../../AmiGO/trunk/javascript/bbop/amigo.js');
-load('./../../../AmiGO/trunk/javascript/bbop/amigo/golr_meta.js');
-load('./../../../AmiGO/trunk/javascript/bbop/amigo/amigo_meta.js');
+// load('./../lib/bbop/core.js');
+// load('./../lib/bbop/logger.js');
+// load('./../lib/bbop/registry.js');
+// load('./../lib/bbop/golr_conf.js');
+// load('./../lib/bbop/golr_response.js');
+// load('./../lib/bbop/golr_manager.js');
+// load('./../lib/bbop/golr_manager_rhino.js');
+// load('./../lib/bbop/model.js');
+// load('./../../../AmiGO/trunk/javascript/bbop/amigo.js');
+// load('./../../../AmiGO/trunk/javascript/bbop/amigo/golr_meta.js');
+// load('./../../../AmiGO/trunk/javascript/bbop/amigo/amigo_meta.js');
+load('./../../../AmiGO/trunk/staging/bbop-amigo.js');
 
 // First, get the last arg
 //print(arguments.length);
