@@ -26,6 +26,7 @@
 // load('./../../../AmiGO/trunk/javascript/bbop/amigo/golr_meta.js');
 // load('./../../../AmiGO/trunk/javascript/bbop/amigo/amigo_meta.js');
 load('./../../../AmiGO/trunk/staging/bbop-amigo.js');
+//load('./../../../AmiGO/trunk/staging/bbop-amigo.min.js');
 
 // First, get the last arg
 //print(arguments.length);
