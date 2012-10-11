@@ -127,101 +127,102 @@ load('golr_response.js');
 	     "facet_ranges":{}}};
 
      // Laziness.
-     var bgr = bbop.golr.response;
+     var bgr = new bbop.golr.response(robj);
 
      // Absolute basics.
-     mr_t.is_true(bgr.success(robj), 'looks like success');
-     mr_t.is_same_atom(bgr.callback_type(robj), 'search',
+     mr_t.is_true(bgr.success(), 'looks like success');
+     mr_t.is_same_atom(bgr.callback_type(), 'search',
 		       'looks like a "search"');
 
      // parameter
-     mr_t.is_same_atom(bgr.parameter(robj, 'rows'), '10',
+     mr_t.is_same_atom(bgr.parameter('rows'), '10',
 		       'found a parameter');
      
      // row_step
-     mr_t.is_same_atom(bgr.row_step(robj), 10,
+     mr_t.is_same_atom(bgr.row_step(), 10,
 		       'found a row step');     
      
      // total_documents
-     mr_t.is_same_atom(bgr.total_documents(robj), 8,
+     mr_t.is_same_atom(bgr.total_documents(), 8,
 		       '8 docs');     
      
      // start_document
-     mr_t.is_same_atom(bgr.start_document(robj), 1,
+     mr_t.is_same_atom(bgr.start_document(), 1,
 		       'no offset start == 1');
      
      // end_document
-     mr_t.is_same_atom(bgr.end_document(robj), 8,
+     mr_t.is_same_atom(bgr.end_document(), 8,
 		       'no offset end == 8');
      
      // documents
-     mr_t.is_same_atom(bgr.documents(robj).length, 8,
+     mr_t.is_same_atom(bgr.documents().length, 8,
 		       '8 docs');
 
      // facet_field_list
-     mr_t.is_same_atom(bgr.facet_field_list(robj).length, 5,
+     mr_t.is_same_atom(bgr.facet_field_list().length, 5,
 		       '5 facet fields');
-     mr_t.is_in_list("source", bgr.facet_field_list(robj),
+     mr_t.is_in_list("source", bgr.facet_field_list(),
 		     "source is in facet list");
-     mr_t.is_in_list("evidence_type", bgr.facet_field_list(robj),
+     mr_t.is_in_list("evidence_type", bgr.facet_field_list(),
 		     "evidence_type is in facet list");
-     mr_t.is_in_list("taxon_label", bgr.facet_field_list(robj),
+     mr_t.is_in_list("taxon_label", bgr.facet_field_list(),
 		     "taxon_label is in facet list");
-     mr_t.is_in_list("isa_partof_closure_label", bgr.facet_field_list(robj),
+     mr_t.is_in_list("isa_partof_closure_label", bgr.facet_field_list(),
 		     "isa_partof_closure_label is in facet  list");
      mr_t.is_in_list("annotation_extension_class_closure_label",
-		     bgr.facet_field_list(robj),
+		     bgr.facet_field_list(),
 		     "annotation_extension_class_closure_label is in facet list");
 
      // facet_field
-     mr_t.is_same_atom(bgr.facet_field(robj, 'evidence_type').length, 4,
+     mr_t.is_same_atom(bgr.facet_field('evidence_type').length, 4,
 		       '4 evidence_type facets');
-     mr_t.is_same_atom(bgr.facet_field(robj, 'evidence_type')[0][0], "IMP",
+     mr_t.is_same_atom(bgr.facet_field('evidence_type')[0][0], "IMP",
 		       'IMP evidence_type facet');
-     mr_t.is_same_atom(bgr.facet_field(robj, 'evidence_type')[0][1], 5,
+     mr_t.is_same_atom(bgr.facet_field('evidence_type')[0][1], 5,
 		       'IMP evidence_type facet count');
-     mr_t.is_same_atom(bgr.facet_field(robj, 'evidence_type')[1][0], "IGI",
+     mr_t.is_same_atom(bgr.facet_field('evidence_type')[1][0], "IGI",
 		       'IGI evidence_type facet');
-     mr_t.is_same_atom(bgr.facet_field(robj, 'evidence_type')[1][1], 1,
+     mr_t.is_same_atom(bgr.facet_field('evidence_type')[1][1], 1,
 		       'IGI evidence_type facet count');
-     mr_t.is_same_atom(bgr.facet_field(robj, 'evidence_type')[2][0], "ISS",
+     mr_t.is_same_atom(bgr.facet_field('evidence_type')[2][0], "ISS",
 		       'ISS evidence_type facet');
-     mr_t.is_same_atom(bgr.facet_field(robj, 'evidence_type')[2][1], 1,
+     mr_t.is_same_atom(bgr.facet_field('evidence_type')[2][1], 1,
 		       'ISS evidence_type facet count');
-     mr_t.is_same_atom(bgr.facet_field(robj, 'evidence_type')[3][0], "TAS",
+     mr_t.is_same_atom(bgr.facet_field('evidence_type')[3][0], "TAS",
 		       'TAS evidence_type facet');
-     mr_t.is_same_atom(bgr.facet_field(robj, 'evidence_type')[3][1], 1,
+     mr_t.is_same_atom(bgr.facet_field('evidence_type')[3][1], 1,
 		       'TAS evidence_type facet count');
 
-     // facet_counts
-     mr_t.is_same_atom(bgr.facet_counts(robj)['source']['BHF-UCL'], 1,
-		       'random facet count 1');
-     mr_t.is_same_atom(bgr.facet_counts(robj)['isa_partof_closure_label']['axonogenesis'], 6, 'random facet count 2');
-
      // query
-     mr_t.is_same_atom(bgr.query(robj), '*:*',
+     mr_t.is_same_atom(bgr.query(), '*:*',
 		       'all query');
 
      // query_filters
-     mr_t.is_true(bgr.query_filters(robj)['document_category']['annotation'],
+     mr_t.is_true(bgr.query_filters()['document_category']['annotation'],
 		  '+ document_category annotation');
-     mr_t.is_true(bgr.query_filters(robj)['isa_partof_closure']['GO:0022008'],
+     mr_t.is_true(bgr.query_filters()['isa_partof_closure']['GO:0022008'],
 		  '+ isa_partof_closure GO:0022008');
-     mr_t.is_true(bgr.query_filters(robj)['isa_partof_closure_label']['cell recognition'], '+ isa_partof_closure_label cell recognition');
-     mr_t.is_true(bgr.query_filters(robj)['taxon_label']['Mus musculus'],
+     mr_t.is_true(bgr.query_filters()['isa_partof_closure_label']['cell recognition'], '+ isa_partof_closure_label cell recognition');
+     mr_t.is_true(bgr.query_filters()['taxon_label']['Mus musculus'],
 		  '+ taxon_label Mus musculus');
-     mr_t.is_false(bgr.query_filters(robj)['source']['MGI'],
+     mr_t.is_false(bgr.query_filters()['source']['MGI'],
 		   '- source MGI');
-     mr_t.is_false(bgr.query_filters(robj)['evidence_type']['ISO'],
+     mr_t.is_false(bgr.query_filters()['evidence_type']['ISO'],
 		   '- evidence_type ISO');
 
      // paging_*
-     mr_t.is_false(bgr.paging_p(robj), 'paging: no');
-     mr_t.is_false(bgr.paging_previous_p(robj), 'paging: no back');
-     mr_t.is_false(bgr.paging_next_p(robj), 'paging: no forward');
+     mr_t.is_false(bgr.paging_p(), 'paging: no');
+     mr_t.is_false(bgr.paging_previous_p(), 'paging: no back');
+     mr_t.is_false(bgr.paging_next_p(), 'paging: no forward');
 
      // packet
-     mr_t.is_same_atom(bgr.packet(robj), 5, 'looks like the fifth packet');
+     mr_t.is_same_atom(bgr.packet(), 5, 'looks like the fifth packet');
+
+     // facet_counts
+     mr_t.is_same_atom(bgr.facet_counts()['source']['BHF-UCL'], 1,
+		       'random facet count 1');
+     mr_t.is_same_atom(bgr.facet_counts()['isa_partof_closure_label']['axonogenesis'], 6, 'random facet count 2');
+
  })();
 
 ///
