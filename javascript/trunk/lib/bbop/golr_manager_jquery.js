@@ -200,6 +200,59 @@ bbop.golr.manager.jquery.prototype.update = function(callback_type,
 };
 
 /*
+ * Function: run_batch
+ *
+ * A distant cousin of <update>.
+ * Designed to "serially" get data from a server for
+ * certain types of data crunching routines.
+ * 
+ * Why would you want this? Lets say there are ten distinct things
+ * that you want from the server. Coordinating and collating them all
+ * without annoying the server or going insane is hard in an
+ * asynchronous environment.
+ *
+ * Parameters: 
+ *  accumulator_func - the function that collects
+ *  final_func - the function to on completion
+ *
+ * Returns:
+ *  the number od batch items run
+ * 
+ * Also see:
+ *  <add_to_batch>
+ *  <clear_batch>
+ */
+bbop.golr.manager.jquery.prototype.run_batch = function(accumulator_func,
+							final_func){
+
+    var anchor = this;
+
+    // Set the various callbacks internally so we can get back at them
+    // when we lose our stack during the ajax.
+    if( accumulator_func ){ this._batch_accumulator_func = accumulator_func; }
+    if( final_func ){ this._batch_final_func = final_func; }
+
+    // Look at how many states are left
+    var qurl = anchor.next_batch_url();
+    if( qurl ){
+	    
+	// Generate a custom callback function that will start
+	// this process (next_generator) again--continue the cycle.
+	var next_cycle = function(json_data){
+	    anchor._batch_accumulator_func.apply(anchor, [json_data, anchor]);
+	    anchor.run_batch();
+	};
+	
+	// Put this custom callback on success.
+	anchor.jq_vars['success'] = next_cycle;
+	anchor.jq_vars['error'] = anchor._run_error_callbacks;
+	anchor.JQ.ajax(qurl, anchor.jq_vars);
+    }else{
+	anchor._batch_final_func.apply(anchor);
+    }
+};
+
+/*
  * Namespace: bbop.golr.faux_ajax
  *
  * Constructor: faux_ajax
