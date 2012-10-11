@@ -96,7 +96,8 @@ bbop.golr.manager.widget.autocomplete = function(golr_loc, golr_conf_obj,
 	    };
 
 	    // Get the selected term into the manager and fire.
-	    anchor.set_query(request_data.term);
+	    //anchor.set_query(request_data.term);
+	    anchor.set_comfy_query(request_data.term);
 	    anchor.JQ.ajax(anchor.get_query_url(), anchor.jq_vars);
 	},
 	// What to do when an element is selected.
