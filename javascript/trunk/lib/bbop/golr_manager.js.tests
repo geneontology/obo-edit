@@ -592,17 +592,18 @@ load('golr_manager.js');
      
  })();
 
-// bbop.golr.manager - 11 - set_comfy_query
+
+// bbop.golr.manager - 11 - comfy
 (function(){
 
      // Setup.
      var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
      var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
      //gm.set_personality('bbop_ann'); // profile in gconf
-
+     
      gm.set_comfy_query('fo');
      mr_t.is_same_atom(gm.get_query(), "fo", 'comfy: fo');
-
+     
      gm.set_comfy_query('foo');
      mr_t.is_same_atom(gm.get_query(), "foo*", 'comfy: foo*');
      
@@ -617,6 +618,37 @@ load('golr_manager.js');
      
      gm.set_comfy_query('fo_k foo');
      mr_t.is_same_atom(gm.get_query(), "fo_k foo", 'comfy: fo_k foo');
+
+ })();
+
+// bbop.golr.manager - 12 - set_comfy_query
+(function(){
+
+     // Setup.
+     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
+
+     // start
+     mr_t.is_same_atom(gm.batch_urls().length, 0, 'batch: nil 1');
+     mr_t.is_same_atom(gm.next_batch_url(), null, 'batch: nil 2');
+
+     // add
+     var foo1 = gm.add_to_batch();
+     gm.set_default_query('***');
+     gm.add_to_batch();
+     gm.set_default_query(':::');
+     gm.add_to_batch();
+     mr_t.is_same_atom(gm.batch_urls().length, 3, 'batch: add 1');
+     var foo2 = gm.next_batch_url();
+     mr_t.is_same_atom(gm.batch_urls().length, 2, 'batch: add 2');
+     // should be the standard one.
+     mr_t.is_same_atom(foo1, foo2, 'batch: add 3');
+
+     // reset
+     gm.reset_batch();
+     mr_t.is_same_atom(gm.batch_urls().length, 0, 'batch: nil 3');
+     mr_t.is_same_atom(gm.next_batch_url(), null, 'batch: nil 4');
+
 })();
 
 ///
