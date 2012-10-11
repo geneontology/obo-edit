@@ -7,11 +7,8 @@
  * responses from a GOlr server (whereas <golr_conf> deals with the
  * reported configuration). This is not intended to do anything like
  * modeling the data in the store (<golr_manager>), but rather to deal
- * with things like checking for success, errors, what paging would
- * look like, what parameterd were passed, etc.
- * 
- * This is a methods bundle for operating on the returned JSON data,
- * with no objects created.
+ * with things like checking for success, what paging would look like,
+ * what parameters were passed, etc.
  */
 
 // Setup the internal requirements.
@@ -19,33 +16,75 @@ bbop.core.require('bbop', 'core');
 bbop.core.namespace('bbop', 'golr', 'response');
 
 /*
+ * Constructor: response
+ * 
+ * Contructor for a GOlr query response object.
+ * 
+ * The constructor argument is an object, not a string.
+ * 
+ * Arguments:
+ *  json_data - the JSON data (as object) returned from a request
+ * 
+ * Returns:
+ *  golr response object
+ */
+bbop.golr.response = function(json_data){
+    this._success = null; // cache for repeated calls to success()
+    this._raw = json_data;
+};
+
+/*
+ * Function: raw
+ * 
+ * returns a pointer to the initial response object
+ * 
+ * Arguments:
+ *  n/a
+ * 
+ * Returns:
+ *  object
+ */
+bbop.golr.response.prototype.raw = function(){
+    return this._raw;
+};
+
+/*
  * Function: success
  * 
  * Simple return verification of sane response from server.
  * 
+ * Success caches its return value.
+ * 
  * Arguments:
- *  robj - JSONized GOlr response
+ *  n/a
  * 
  * Returns:
  *  boolean
  */
-bbop.golr.response.success = function(robj){
-    var retval = false;
-    if( robj &&
-	robj.responseHeader &&
-	typeof robj.responseHeader.status != 'undefined' &&
-	robj.responseHeader.status == 0 &&
-	robj.responseHeader.params &&
-	robj.response &&
-	typeof robj.response.numFound != 'undefined' &&
-	typeof robj.response.start != 'undefined' &&
-	typeof robj.response.maxScore != 'undefined' &&
-	robj.response.docs &&
-	robj.facet_counts &&
-	robj.facet_counts.facet_fields ){
-	    retval = true;
-	}
-    return retval;
+bbop.golr.response.prototype.success = function(){
+
+    if( this._success == null ){
+
+	var robj = this._raw;
+	if( robj &&
+	    robj.responseHeader &&
+	    typeof robj.responseHeader.status != 'undefined' &&
+	    robj.responseHeader.status == 0 &&
+	    robj.responseHeader.params &&
+	    robj.response &&
+	    typeof robj.response.numFound != 'undefined' &&
+	    typeof robj.response.start != 'undefined' &&
+	    typeof robj.response.maxScore != 'undefined' &&
+	    robj.response.docs &&
+	    robj.facet_counts &&
+	    robj.facet_counts.facet_fields ){
+		this._success = true;
+	    }else{
+		this._success = false;
+	    }
+    }
+
+    return this._success;
 };
 
 /*
@@ -55,12 +94,13 @@ bbop.golr.response.success = function(robj){
  * otherwise return null. For example "reset" and "response".
  * 
  * Arguments:
- *  robj - JSONized GOlr response
+ *  n/a
  * 
  * Returns:
  *  string (or null)
  */
-bbop.golr.response.callback_type = function(robj){
+bbop.golr.response.prototype.callback_type = function(){
+    var robj = this._raw;
     var retval = null;
     if( robj.responseHeader.params.callback_type &&
 	typeof robj.responseHeader.params.callback_type != 'undefined' ){
@@ -77,12 +117,13 @@ bbop.golr.response.callback_type = function(robj){
  * Pretty general, specialized functions are better.
  * 
  * Arguments:
- *  robj - JSONized GOlr response
+ *  n/a
  * 
  * Returns:
  *  hash
  */
-bbop.golr.response.parameters = function(robj){
+bbop.golr.response.prototype.parameters = function(){
+    var robj = this._raw;
     return robj.responseHeader.params;
 };
 
@@ -94,13 +135,14 @@ bbop.golr.response.parameters = function(robj){
  * Pretty general, specialized functions are better.
  * 
  * Arguments:
- *  robj - JSONized GOlr response
+ *  n/a
  *  key - string id for the wanted parameter
  * 
  * Returns:
  *  hash, string, whatever is there at that key (otherwise null)
  */
-bbop.golr.response.parameter = function(robj, key){
+bbop.golr.response.prototype.parameter = function(key){
+    var robj = this._raw;
     var retval = null;
     if( robj.responseHeader.params[key] && robj.responseHeader.params[key] ){
 	retval = robj.responseHeader.params[key];
@@ -114,12 +156,13 @@ bbop.golr.response.parameter = function(robj, key){
  * Returns the number of rows requested (integer).
  * 
  * Arguments:
- *  robj - JSONized GOlr response
+ *  n/a
  * 
  * Returns:
  *  integer
  */
-bbop.golr.response.row_step = function(robj){	
+bbop.golr.response.prototype.row_step = function(){	
+    var robj = this._raw;
     return parseInt(robj.responseHeader.params.rows);
 };
 
@@ -129,12 +172,13 @@ bbop.golr.response.row_step = function(robj){
  * Return the total number of documents found.
  * 
  * Arguments:
- *  robj - JSONized GOlr response
+ *  n/a
  * 
  * Returns:
  *  integer
  */
-bbop.golr.response.total_documents = function(robj){
+bbop.golr.response.prototype.total_documents = function(){
+    var robj = this._raw;
     return parseInt(robj.response.numFound);
 };
 
@@ -144,12 +188,13 @@ bbop.golr.response.total_documents = function(robj){
  * Returns the start document for this response as an integer.
  * 
  * Arguments:
- *  robj - JSONized GOlr response
+ *  n/a
  * 
  * Returns:
  *  integer
  */
-bbop.golr.response.start_document = function(robj){
+bbop.golr.response.prototype.start_document = function(){
+    var robj = this._raw;
     return parseInt(robj.response.start) + 1;
 };
 
@@ -159,13 +204,14 @@ bbop.golr.response.start_document = function(robj){
  * Returns the end document for this response as an integer.
  * 
  * Arguments:
- *  robj - JSONized GOlr response
+ *  n/a
  * 
  * Returns:
  *  integer
  */
-bbop.golr.response.end_document = function(robj){
-    return bbop.golr.response.start_document(robj) +
+bbop.golr.response.prototype.end_document = function(){
+    var robj = this._raw;
+    return this.start_document() +
 	parseInt(robj.response.docs.length) - 1;
 };
 
@@ -175,12 +221,13 @@ bbop.golr.response.end_document = function(robj){
  * Return the packet number of the current response.
  * 
  * Arguments:
- *  robj - JSONized GOlr response
+ *  n/a
  * 
  * Returns:
  *  integer or null (no packet defined)
  */
-bbop.golr.response.packet = function(robj){
+bbop.golr.response.prototype.packet = function(){
+    var robj = this._raw;
     var retval = null;
     var pval = robj.responseHeader.params.packet;
     if( pval ){
@@ -195,15 +242,15 @@ bbop.golr.response.packet = function(robj){
  * Whether or not paging is necessary with the given results set.
  * 
  * Arguments:
- *  robj - JSONized GOlr response
+ *  n/a
  * 
  * Returns:
  *  boolean
  */
-bbop.golr.response.paging_p = function(robj){
+bbop.golr.response.prototype.paging_p = function(){
+    var robj = this._raw;
     var retval = false;
-    if( bbop.golr.response.total_documents(robj) > 
-	bbop.golr.response.row_step(robj) ){
+    if( this.total_documents() > this.row_step() ){
 	retval = true;
     }
     return retval;
@@ -215,16 +262,17 @@ bbop.golr.response.paging_p = function(robj){
  * Whether or paging backwards is an option right now.
  * 
  * Arguments:
- *  robj - JSONized GOlr response
+ *  n/a
  * 
  * Returns:
  *  boolean
  */
-bbop.golr.response.paging_previous_p = function(robj){
+bbop.golr.response.prototype.paging_previous_p = function(){
     // We'll take this as a proxy that a step was taken.
     // Remember: we offset the start_document by one for readability.
+    var robj = this._raw;
     var retval = false;
-    if( bbop.golr.response.start_document(robj) > 1 ){
+    if( this.start_document() > 1 ){
 	retval = true;
     }
     return retval;
@@ -236,16 +284,16 @@ bbop.golr.response.paging_previous_p = function(robj){
  * Whether or paging forwards is an option right now.
  * 
  * Arguments:
- *  robj - JSONized GOlr response
+ *  n/a
  * 
  * Returns:
  *  boolean
  */
-bbop.golr.response.paging_next_p = function(robj){
+bbop.golr.response.prototype.paging_next_p = function(){
     // We'll take this as a proxy that a step was taken.
+    var robj = this._raw;
     var retval = false;
-    if( bbop.golr.response.total_documents(robj) >
-	bbop.golr.response.end_document(robj) ){
+    if( this.total_documents() > this.end_document() ){
 	retval = true;	
     }
     return retval;
@@ -257,12 +305,13 @@ bbop.golr.response.paging_next_p = function(robj){
  * Returns an array of document hashes.
  * 
  * Arguments:
- *  robj - JSONized GOlr response
+ *  n/a
  * 
  * Returns:
  *  hash
  */
-bbop.golr.response.documents = function(robj){
+bbop.golr.response.prototype.documents = function(){
+    var robj = this._raw;
     return robj.response.docs;
 };
 
@@ -272,12 +321,13 @@ bbop.golr.response.documents = function(robj){
 //  * Return a count sorted array of the response's facet fields and counts.
 //  * 
 //  * Arguments:
-//  *  robj - JSONized GOlr response
+//  *  n/a
 //  * 
 //  * Returns:
 //  *  list of string/integer doublets
 //  */
-// bbop.golr.response.facet_fields = function(robj){
+// bbop.golr.response.prototype.facet_fields = function(){
+//     var robj = this._raw;
 //     return robj.facet_counts.facet_fields;
 // };
 
@@ -287,12 +337,13 @@ bbop.golr.response.documents = function(robj){
  * Return a count sorted array of the response's facet fields.
  * 
  * Arguments:
- *  robj - JSONized GOlr response
+ *  n/a
  * 
  * Returns:
  *  list of strings
  */
-bbop.golr.response.facet_field_list = function(robj){
+bbop.golr.response.prototype.facet_field_list = function(){
+    var robj = this._raw;
     return bbop.core.get_keys(robj.facet_counts.facet_fields).sort();
 };
 
@@ -304,13 +355,14 @@ bbop.golr.response.facet_field_list = function(robj){
  * : [["foo", 60], ...]
  * 
  * Arguments:
- *  robj - JSONized GOlr response
+ *  n/a
  *  facet_name - name of the facet to examine
  * 
  * Returns:
  *  list of nested lists
  */
-bbop.golr.response.facet_field = function(robj, facet_name){
+bbop.golr.response.prototype.facet_field = function(facet_name){
+    var robj = this._raw;
     return robj.facet_counts.facet_fields[facet_name];
 };
 
@@ -321,17 +373,20 @@ bbop.golr.response.facet_field = function(robj, facet_name){
  * their counts.
  * 
  * Arguments:
- *  robj - JSONized GOlr response
+ *  n/a
  * 
  * Returns:
  *  hash of facets to their integer counts
  */
-bbop.golr.response.facet_counts = function(robj){
-    
+bbop.golr.response.prototype.facet_counts = function(){
+
+    var robj = this._raw;
     var ret_hash = {};
+
+    var anchor = this;
     
     var each = bbop.core.each;
-    var facet_field_list = bbop.golr.response.facet_field_list(robj);
+    var facet_field_list = this.facet_field_list();
     each(facet_field_list,
 	 function(ffield){
 	     
@@ -340,16 +395,15 @@ bbop.golr.response.facet_counts = function(robj){
 		 ret_hash[ffield] = {};		
 	     }
 
-	     var facet_field_items =
-		 bbop.golr.response.facet_field(robj, ffield);
+	     var facet_field_items = anchor.facet_field(ffield);
 	     each(facet_field_items,
-		 function(item, index){
-		     var name = item[0];
-		     var count = item[1];
-		     ret_hash[ffield][name] = count;
-		 });
+		  function(item, index){
+		      var name = item[0];
+		      var count = item[1];
+		      ret_hash[ffield][name] = count;
+		  });
 	 });
-
+    
     return ret_hash;
 };
 
@@ -359,13 +413,13 @@ bbop.golr.response.facet_counts = function(robj){
  * Return the raw query parameter "q".
  * 
  * Arguments:
- *  robj - JSONized GOlr response
+ *  n/a
  * 
  * Returns:
  *  string or null
  */
-bbop.golr.response.query = function(robj){
-    
+bbop.golr.response.prototype.query = function(){
+    var robj = this._raw;    
     var retval = null;
     
     if( robj.responseHeader.params && robj.responseHeader.params.q ){
@@ -388,14 +442,16 @@ bbop.golr.response.query = function(robj){
  * Where the true|false value represents a positive (true) or negative
  * (false) filter.
  * 
- * Parameters: json_data
+ * Parameters:
+ *  n/a
  *
- * Returns: a hash of keyed hashes
+ * Returns:
+ *  a hash of keyed hashes
  */
-bbop.golr.response.query_filters = function(robj){
-    
+bbop.golr.response.prototype.query_filters = function(){
+    var robj = this._raw;    
     var ret_hash = {};
-    var fq_list = bbop.golr.response.parameter(robj, 'fq');
+    var fq_list = this.parameter('fq');
     if( fq_list ){
 	
 	// Ensure that it's a list and not just a naked string (as can

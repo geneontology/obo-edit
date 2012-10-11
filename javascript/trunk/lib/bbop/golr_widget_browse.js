@@ -55,7 +55,6 @@ bbop.golr.manager.jquery.browse = function(golr_loc, golr_conf_obj,
 
     // 
     var anchor = this;
-    var resp = bbop.golr.response;
     var loop = bbop.core.each;
     
     // There should be a string interface_id argument.
@@ -75,6 +74,7 @@ bbop.golr.manager.jquery.browse = function(golr_loc, golr_conf_obj,
 	/// Get the rich layout from the returned document if
 	/// possible.
 	///
+	var resp = new bbop.golr.response(json_data);
 	var doc = resp.documents(json_data)[0];
 
 	var topo_graph = new bbop.model.graph.bracket();

@@ -114,11 +114,13 @@ bbop.golr.manager.jquery = function (golr_loc, golr_conf_obj){
     this._callback_type_decider = function(json_data){
     	ll('in callback type decider...');
 
+	var resp = new bbop.golr.response(json_data);
+
     	// 
-    	if( ! bbop.golr.response.success(json_data) ){
+    	if( ! resp.success() ){
     	    throw new Error("Unsuccessful response from golr server!");
     	}else{
-    	    var cb_type = bbop.golr.response.callback_type(json_data);
+    	    var cb_type = resp.callback_type();
     	    ll('okay response from server, will probe type...: ' + cb_type);
     	    if( cb_type == 'reset' ){
     		anchor._run_reset_callbacks(json_data);
