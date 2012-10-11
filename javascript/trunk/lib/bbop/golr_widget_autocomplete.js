@@ -46,7 +46,6 @@ bbop.golr.manager.widget.autocomplete = function(golr_loc, golr_conf_obj,
 
     // 
     var anchor = this;
-    var resp = bbop.golr.response;
     var loop = bbop.core.each;
     
     // Per-UI logger.
@@ -75,8 +74,9 @@ bbop.golr.manager.widget.autocomplete = function(golr_loc, golr_conf_obj,
 	source: function(request_data, response_hook) {
 	    anchor.jq_vars['success'] = function(json_data){
 		var retlist = [];
-		if( resp.success(json_data) ){
-		    loop(resp.documents(json_data),
+		var resp = new bbop.golr.response(json_data);
+		if( resp.success() ){
+		    loop(resp.documents(),
 			 function(doc){
 			     var lbl = null;
 			     if( anchor._id_p ){
