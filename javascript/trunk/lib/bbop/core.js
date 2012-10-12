@@ -832,14 +832,93 @@ bbop.core.randomness = function(len){
 };
 
 /*
- * Function: 
+ * Function: first_split
+ *
+ * Attempt to return a two part split on the first occurrence of a
+ * character.
+ *
+ * Returns '' for parts not found.
+ * 
+ * Unit tests make the edge cases clear.
+ * 
+ * Parameters:
+ *  character - the character to split on
+ *  string - the string to split
+ *
+ * Returns:
+ *  list of first and second parts
+ */
+bbop.core.first_split = function(character, string){
+
+    var retlist = null;
+
+    var eq_loc = string.indexOf(character);
+    if( eq_loc == 0 ){
+	retlist = ['', string.substr(eq_loc +1, string.length)];
+    }else if( eq_loc > 0 ){
+	var before = string.substr(0, eq_loc);
+	var after = string.substr(eq_loc +1, string.length);
+	retlist = [before, after];
+    }else{
+	retlist = ['', ''];
+    }
+
+    return retlist;
+};
+
+/*
+ * Function: url_parameters
+ *
+ * Return the parameters part of a URL.
+ *
+ * Unit tests make the edge cases clear.
+ * 
+ * Parameters:
+ *  url - url (or similar string)
+ *
+ * Returns:
+ *  list of part lists
+ */
+bbop.core.url_parameters = function(url){
+
+    var retlist = [];
+
+    // Pull parameters.
+    var tmp = url.split('?');
+    var path = '';
+    var parms = [];
+    if( ! tmp[1] ){ // catch bad url--nothing before '?'
+	parms = tmp[0].split('&');
+    }else{ // normal structure
+	path = tmp[0];
+	parms = tmp[1].split('&');
+    }
+
+    // Decompose parameters.
+    bbop.core.each(parms,
+		  function(p){
+		      var c = bbop.core.first_split('=', p);
+		      if( ! c[0] && ! c[1] ){
+			  retlist.push([p]);
+		      }else{
+			  retlist.push(c);		  
+		      }
+		  });
+    
+    return retlist;
+};
+
+/*
+ * Function: uuid
  *
  * RFC 4122 v4 compliant UUID generator.
  * From: http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/2117523#2117523
  *
- * Parameters: 
+ * Parameters:
+ *  n/a
  *
- * Returns: string
+ * Returns:
+ *  string
  */
 bbop.core.uuid = function(){
 
