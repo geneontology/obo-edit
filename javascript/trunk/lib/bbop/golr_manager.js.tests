@@ -621,7 +621,7 @@ load('golr_manager.js');
 
  })();
 
-// bbop.golr.manager - 12 - set_comfy_query
+// bbop.golr.manager - 12 - batch
 (function(){
 
      // Setup.
@@ -650,6 +650,75 @@ load('golr_manager.js');
      mr_t.is_same_atom(gm.next_batch_url(), null, 'batch: nil 4');
 
 })();
+
+// bbop.golr.manager - 13 - bookmark/loader - 1
+(function(){
+
+     // Setup.
+     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
+     gm.set_query('foo');
+     
+     gm.load_url('?personality=bbop_ont');
+     mr_t.is_same_url(gm.get_query_url(),
+		      ['http://golr.berkeleybop.org/select?defType=edismax',
+		       'qt=standard',
+		       'indent=on',
+		       'wt=json',
+		       'rows=10',
+		       'start=0',
+		       'fl=*%2Cscore',
+		       'facet=true',
+		       'facet.mincount=1',
+		       'json.nl=arrarr',
+		       'facet.field=source',
+		       'facet.field=subset',
+		       'facet.field=isa_partof_closure_label',
+		       'facet.field=is_obsolete',
+		       'q=foo',
+		       'qf=id^2',
+		       'qf=label_searchable^2',
+		       'qf=description_searchable^1',
+		       'qf=comment_searchable^0.5',
+		       'qf=synonym_searchable^1',
+		       'qf=alternate_id^1'].join('&'),
+		      "load: constructed personality");    
+ })();
+
+// bbop.golr.manager - 13 - bookmark/loader - 2
+//(function(){
+
+     // Setup.
+     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
+     gm.set_query('foo');
+     
+     gm.load_url('?personality=bbop_ont&fq=foo:bar&q=***');
+     mr_t.is_same_url(gm.get_query_url(),
+		      ['http://golr.berkeleybop.org/select?defType=edismax',
+		       'qt=standard',
+		       'indent=on',
+		       'wt=json',
+		       'rows=10',
+		       'start=0',
+		       'fl=*%2Cscore',
+		       'facet=true',
+		       'facet.mincount=1',
+		       'json.nl=arrarr',
+		       'facet.field=source',
+		       'facet.field=subset',
+		       'facet.field=isa_partof_closure_label',
+		       'facet.field=is_obsolete',
+		       'q=***',
+		       'fq=foo:"bar"',
+		       'qf=id^2',
+		       'qf=label_searchable^2',
+		       'qf=description_searchable^1',
+		       'qf=comment_searchable^0.5',
+		       'qf=synonym_searchable^1',
+		       'qf=alternate_id^1'].join('&'),
+		      "load: constructed personality");    
+// })();
 
 ///
 /// End unit testing.
