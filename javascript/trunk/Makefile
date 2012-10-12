@@ -7,7 +7,12 @@
 
 TESTS = $(wildcard lib/*.js.tests) \
  $(wildcard lib/bbop/*.js.tests) \
- $(wildcard lib/bbop/model/*.js.tests)
+ $(wildcard lib/bbop/contrib/*.js.tests) \
+ $(wildcard lib/bbop/golr/*.js.tests) \
+ $(wildcard lib/bbop/golr/manager/*.js.tests) \
+ $(wildcard lib/bbop/parse/*.js.tests) \
+ $(wildcard lib/bbop/model/*.js.tests) \
+ $(wildcard lib/bbop/widget/*.js.tests)
 BENCHMARKS = $(wildcard _benchmark/*.js)
 JS = smjs # or smjs, rhino
 JSFLAGS = # Some require things like "-opt -1" in some cases (big GO tests)

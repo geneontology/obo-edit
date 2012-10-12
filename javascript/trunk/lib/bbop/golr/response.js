@@ -1,5 +1,5 @@
 /* 
- * Package: golr_response.js
+ * Package: response.js
  * 
  * Namespace: bbop.golr.response
  * 

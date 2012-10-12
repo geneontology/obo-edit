@@ -1,5 +1,5 @@
 /* 
- * Package: golr_manager_preload.js
+ * Package: preload.js
  * 
  * Namespace: bbop.golr.manager.preload
  * 

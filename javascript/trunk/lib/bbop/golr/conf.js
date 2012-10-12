@@ -1,5 +1,5 @@
 /* 
- * Package: golr_conf.js
+ * Package: conf.js
  * 
  * Namespace: bbop.golr.conf
  * 

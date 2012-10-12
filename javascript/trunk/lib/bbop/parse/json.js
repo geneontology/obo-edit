@@ -4,7 +4,7 @@
 
 // Module and namespace checking.
 bbop.core.require('bbop', 'core');
-bbop.core.namespace('bbop', 'json');
+bbop.core.namespace('bbop', 'parse', 'json');
 // if ( typeof bbop == "undefined" ){ bbop = {}; }
 // if ( typeof bbop == "undefined" ){ bbop = {}; }
 
@@ -202,8 +202,8 @@ bbop.core.namespace('bbop', 'json');
 
 // If the JSON object does not yet have a stringify method, give it one.
 
-    if (typeof bbop.json.stringify !== 'function') {
-        bbop.json.stringify = function (value, replacer, space) {
+    if (typeof bbop.parse.json.stringify !== 'function') {
+        bbop.parse.json.stringify = function (value, replacer, space) {
 
 // The stringify method takes a value and an optional replacer, and an optional
 // space parameter, and returns a JSON text. The replacer can be a function
@@ -236,7 +236,7 @@ bbop.core.namespace('bbop', 'json');
             if (replacer && typeof replacer !== 'function' &&
                     (typeof replacer !== 'object' ||
                      typeof replacer.length !== 'number')) {
-                throw new Error('bbop.json.stringify');
+                throw new Error('bbop.parse.json.stringify');
             }
 
 // Make a fake root object containing our value under the key of ''.
@@ -249,8 +249,8 @@ bbop.core.namespace('bbop', 'json');
 
 // If the JSON object does not yet have a parse method, give it one.
 
-    if (typeof bbop.json.parse !== 'function') {
-        bbop.json.parse = function (text, reviver) {
+    if (typeof bbop.parse.json.parse !== 'function') {
+        bbop.parse.json.parse = function (text, reviver) {
 
 // The parse method takes a text and an optional reviver function, and returns
 // a JavaScript value if the text is a valid JSON text.
@@ -325,7 +325,7 @@ replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
 
 // If the text is not JSON parseable, then a SyntaxError is thrown.
 
-            throw new SyntaxError('bbop.json.parse');
+            throw new SyntaxError('bbop.parse.json.parse');
         };
     }
 }());

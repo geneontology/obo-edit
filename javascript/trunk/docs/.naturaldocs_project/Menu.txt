@@ -46,17 +46,27 @@ Format: 1.51
 # --------------------------------------------------------------------------
 
 
+File: autocomplete.js  (widget/autocomplete.js)
 File: bracket.js  (model/bracket.js)
+File: browse.js  (widget/browse.js)
 File: core.js  (core.js)
-File: golr_conf.js  (golr_conf.js)
-File: golr_manager.js  (golr_manager.js)
-File: golr_manager_jquery.js  (golr_manager_jquery.js)
-File: golr_manager_nodejs.js  (golr_manager_nodejs.js)
-File: golr_manager_preload.js  (golr_manager_preload.js)
-File: golr_manager_rhino.js  (golr_manager_rhino.js)
-File: golr_response.js  (golr_response.js)
-File: golr_widget_autocomplete.js  (golr_widget_autocomplete.js)
-File: golr_widget_browse.js  (golr_widget_browse.js)
+
+Group: Golr  {
+
+   File: conf.js  (golr/conf.js)
+
+   Group: Manager  {
+
+      File: jquery.js  (golr/manager/jquery.js)
+      File: nodejs.js  (golr/manager/nodejs.js)
+      File: preload.js  (golr/manager/preload.js)
+      File: rhino.js  (golr/manager/rhino.js)
+      }  # Group: Manager
+
+   File: manager.js  (golr/manager.js)
+   File: response.js  (golr/response.js)
+   }  # Group: Golr
+
 File: html.js  (html.js)
 File: logger.js  (logger.js)
 File: logic.js  (logic.js)
