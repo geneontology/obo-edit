@@ -5,8 +5,6 @@
  * 
  * Purpose: Extend <bbop.model> in <model.js> to be handy for a (phylo)tree.
  * 
- * BUG/TODO: Needs an overhaul (and class/subclass checking). See <stack.js>?
- * 
  * TODO: /Much/ better documentation. I have no idea what's going on
  * in there anymore...
  * 
@@ -41,7 +39,7 @@ bbop.model.tree.node = function(new_id){
     bbop.model.node.call(this, new_id);
     this._is_a = 'bbop.model.tree.node';
 };
-bbop.model.tree.node.prototype = new bbop.model.node;
+bbop.core.extend(bbop.model.tree.node, bbop.model.node);
 
 /*
  * Namespace: bbop.model.tree.edge
@@ -55,7 +53,7 @@ bbop.model.tree.edge = function(parent, child, distance){
     this._is_a = 'bbop.model.tree.edge';
     this._distance = distance || 0.0;
 };
-bbop.model.tree.edge.prototype = new bbop.model.edge;
+bbop.core.extend(bbop.model.tree.edge, bbop.model.edge);
 
 /*
  * Function: distance
@@ -526,5 +524,5 @@ bbop.model.tree.graph = function(){
     };
 
 };
-bbop.model.tree.graph.prototype = new bbop.model.graph;
+bbop.core.extend(bbop.model.tree.graph, bbop.model.graph);
 // Overload add_node to add label information to new object.
