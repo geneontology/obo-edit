@@ -1,5 +1,5 @@
 /* 
- * Package: golr_manager_jquery.js
+ * Package: jquery.js
  * 
  * Namespace: bbop.golr.manager.jquery
  * 

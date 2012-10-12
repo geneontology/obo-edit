@@ -1,7 +1,7 @@
 /*
- * Package: golr_widget_browse.js
+ * Package: browse.js
  * 
- * Namespace: bbop.golr.manager.jquery.browse
+ * Namespace: bbop.widget.browse
  * 
  * BBOP object to draw various UI elements that have to do with
  * autocompletion.
@@ -15,14 +15,12 @@ bbop.core.require('bbop', 'model');
 bbop.core.require('bbop', 'model', 'graph', 'bracket');
 bbop.core.require('bbop', 'html');
 bbop.core.require('bbop', 'golr', 'manager', 'jquery');
-bbop.core.namespace('bbop', 'golr', 'manager', 'jquery', 'browse');
+bbop.core.namespace('bbop', 'widget', 'browse');
 
 /*
  * Constructor: browse
  * 
- * Contructor for the bbop.golr.manager.jquery.browse object.
- * 
- * Yes, that is very long.
+ * Contructor for the bbop.widget.browse object.
  * 
  * This is a specialized (and widgetized) subclass of
  * <bbop.golr.manager.jquery>.
@@ -39,8 +37,8 @@ bbop.core.namespace('bbop', 'golr', 'manager', 'jquery', 'browse');
  * Returns:
  *  this object
  */
-bbop.golr.manager.jquery.browse = function(golr_loc, golr_conf_obj,
-					   interface_id, info_button_callback){
+bbop.golr.widget.browse = function(golr_loc, golr_conf_obj,
+				   interface_id, info_button_callback){
 
     // Per-UI logger.
     var logger = new bbop.logger();
@@ -50,7 +48,7 @@ bbop.golr.manager.jquery.browse = function(golr_loc, golr_conf_obj,
     ll(bbop.core.what_is(this));
     bbop.golr.manager.jquery.call(this, golr_loc, golr_conf_obj);
     ll(bbop.core.what_is(this));
-    this._is_a = 'bbop.golr.manager.jquery.browse';
+    this._is_a = 'bbop.widget.browse';
     ll(bbop.core.what_is(this));
 
     // 
@@ -203,7 +201,7 @@ bbop.golr.manager.jquery.browse = function(golr_loc, golr_conf_obj,
      * Returns
      *  n/a
      */
-    //bbop.golr.manager.jquery.browse.prototype.draw_browser = function(term_acc){
+    //bbop.widget.browse.prototype.draw_browser = function(term_acc){
     // this._current_acc = term_acc;
     // this.set_id(term_acc);
     // this.update('search');
@@ -214,4 +212,4 @@ bbop.golr.manager.jquery.browse = function(golr_loc, golr_conf_obj,
     };
     
 };
-bbop.core.extend(bbop.golr.manager.jquery.browse, bbop.golr.manager.jquery);
+bbop.core.extend(bbop.widget.browse, bbop.golr.manager.jquery);

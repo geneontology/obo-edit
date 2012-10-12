@@ -1,22 +1,22 @@
 ////
-//// Some unit testing for package golr_response.js
+//// Some unit testing for package response.js
 ////
 //// Usage:
-////    Command line: "js -f golr_response.js.tests"
-////    Interactive: "js -f golr_response.js.tests -f -"
+////    Command line: "js -f response.js.tests"
+////    Interactive: "js -f response.js.tests -f -"
 ////
 //// To get fresh data from an AmiGO install (must be done periodically):
 ////    cp /srv/www/htdocs/amigo2/javascript/bbop/golr_meta.js /home/sjcarbon/local/src/svn/geneontology/javascript/trunk/_data/
 ////
 
 // Load testing.
-load('test.js');
+load('../test.js');
 var mr_t = new bbop.test();
 
 // Correct environment.
-load('core.js');
+load('../core.js');
 //load('logger.js');
-load('golr_response.js');
+load('response.js');
 
 ///
 /// Start unit testing.

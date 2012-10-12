@@ -1,5 +1,5 @@
 /* 
- * Package: golr_manager.js
+ * Package: manager.js
  * 
  * Namespace: bbop.golr.manager
  * 
