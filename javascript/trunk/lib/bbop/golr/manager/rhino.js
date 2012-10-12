@@ -1,5 +1,5 @@
 /* 
- * Package: golr_manager_rhino.js
+ * Package: rhino.js
  * 
  * Namespace: bbop.golr.manager.rhino
  * 

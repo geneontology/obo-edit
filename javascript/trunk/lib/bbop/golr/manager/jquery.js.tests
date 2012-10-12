@@ -1,28 +1,28 @@
 ////
-//// Some unit testing for package golr_manager_jquery.js
+//// Some unit testing for package jquery.js
 ////
 //// Usage:
-////    Command line: "js -f golr_manager_jquery.js.tests"
-////    Interactive: "js -f golr_manager_jquery.js.tests -f -"
+////    Command line: "js -f jquery.js.tests"
+////    Interactive: "js -f jquery.js.tests -f -"
 ////
 
 // Load testing.
-load('test.js');
+load('../../test.js');
 var mr_t = new bbop.test();
 
 // Correct environment.
-load('core.js');
-load('logger.js');
+load('../../core.js');
+load('../../logger.js');
 
 // Get some test data as well.
 // This defines "bbop.amigo.golr_meta".
-load('../../_data/golr_meta.js');
-load('golr_conf.js');
-load('golr_response.js');
+load('../../../../_data/golr_meta.js');
+load('../conf.js');
+load('../response.js');
 
-load('registry.js');
-load('golr_manager.js');
-load('golr_manager_jquery.js');
+load('../../registry.js');
+load('../manager.js');
+load('jquery.js');
 
 ///
 /// Start unit testing.

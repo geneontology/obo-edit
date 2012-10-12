@@ -1,7 +1,7 @@
 /*
- * Package: golr_widget_autocomplete.js
+ * Package: autocomplete.js
  * 
- * Namespace: bbop.golr.manager.widget.autocomplete
+ * Namespace: bbop.widget.autocomplete
  * 
  * BBOP object to draw various UI elements that have to do with
  * autocompletion.
@@ -12,14 +12,12 @@
 bbop.core.require('bbop', 'core');
 bbop.core.require('bbop', 'logger');
 bbop.core.require('bbop', 'golr', 'manager', 'jquery');
-bbop.core.namespace('bbop', 'golr', 'manager', 'widget', 'autocomplete');
+bbop.core.namespace('bbop', 'widget', 'autocomplete');
 
 /*
  * Constructor: autocomplete
  * 
- * Contructor for the bbop.golr.manager.widget.autocomplete object.
- * 
- * Yes, that is very long.
+ * Contructor for the bbop.widget.autocomplete object.
  * 
  * This is a specialized (and widgetized) subclass of
  * <bbop.golr.manager.jquery>.
@@ -38,11 +36,11 @@ bbop.core.namespace('bbop', 'golr', 'manager', 'widget', 'autocomplete');
  * Returns:
  *  this object
  */
-bbop.golr.manager.widget.autocomplete = function(golr_loc, golr_conf_obj,
-						 interface_id, output_type,
-						 list_select_callback){
+bbop.widget.autocomplete = function(golr_loc, golr_conf_obj,
+				    interface_id, output_type,
+				    list_select_callback){
     bbop.golr.manager.jquery.call(this, golr_loc, golr_conf_obj);
-    this._is_a = 'bbop.golr.manager.widget.autocomplete';
+    this._is_a = 'bbop.widget.autocomplete';
 
     // 
     var anchor = this;
@@ -117,3 +115,4 @@ bbop.golr.manager.widget.autocomplete = function(golr_loc, golr_conf_obj,
     // Set the ball rolling (attach jQuery autocomplete to doc).
     jQuery('#' + anchor._interface_id).autocomplete(auto_args);
 };
+bbop.core.extend(bbop.widget.autocomplete, bbop.golr.manager.jquery);

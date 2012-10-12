@@ -1,6 +1,6 @@
 ////////////
 ////
-//// bbop.parser
+//// bbop.parser.newick
 ////
 //// Purpose: Newick tree parser for the strange PANTHER dialect.
 //// 
@@ -8,17 +8,14 @@
 //// (mostly simplifications) should do it.
 ////
 //// Taken name spaces:
-////    bbop.parser.*
-////
-//// Required:
-////    bbop.core
+////    bbop.parse.newick.*
 ////
 //////////
 
 
 // Module and namespace checking.
 bbop.core.require('bbop', 'core');
-bbop.core.namespace('bbop', 'parser');
+bbop.core.namespace('bbop', 'parse', 'newick');
 
 
 ///
@@ -32,28 +29,28 @@ function ll (str){
 
 
 // List of possible tokens types.
-bbop.parser.token_type = {};
-bbop.parser.token_type.STRING = 0;
-bbop.parser.token_type.LEFT = 1;
-bbop.parser.token_type.RIGHT = 2;
-bbop.parser.token_type.SEMI = 3;
-bbop.parser.token_type.COLON = 4;
+bbop.parse.newick.token_type = {};
+bbop.parse.newick.token_type.STRING = 0;
+bbop.parse.newick.token_type.LEFT = 1;
+bbop.parse.newick.token_type.RIGHT = 2;
+bbop.parse.newick.token_type.SEMI = 3;
+bbop.parse.newick.token_type.COLON = 4;
 
 // Create a token of type, with possible value of string.
-bbop.parser.token = function(type, string){
+bbop.parse.newick.token = function(type, string){
 
     this._type = type;
     this._string = null;
 
-    if( type == bbop.parser.token_type.STRING ){
+    if( type == bbop.parse.newick.token_type.STRING ){
 	this._string = string;
-    }else if( type == bbop.parser.token_type.LEFT ){
+    }else if( type == bbop.parse.newick.token_type.LEFT ){
 	this._string = '(';
-    }else if( type == bbop.parser.token_type.RIGHT ){
+    }else if( type == bbop.parse.newick.token_type.RIGHT ){
 	this._string = ')';
-    }else if( type == bbop.parser.token_type.SEMI ){
+    }else if( type == bbop.parse.newick.token_type.SEMI ){
 	this._string = ';';
-    }else if( type == bbop.parser.token_type.COLON ){
+    }else if( type == bbop.parse.newick.token_type.COLON ){
 	this._string = ':';
     }
 
@@ -63,10 +60,10 @@ bbop.parser.token = function(type, string){
 
 };
 // 
-bbop.parser.token.prototype.type = function(){ return this._type; };
-bbop.parser.token.prototype.string = function(){ return this._string; };
+bbop.parse.newick.token.prototype.type = function(){ return this._type; };
+bbop.parse.newick.token.prototype.string = function(){ return this._string; };
 // 
-bbop.parser.token.prototype.eq = function(in_token){
+bbop.parse.newick.token.prototype.eq = function(in_token){
     var retval = false;
     if( in_token.type() == this.type() &&
 	in_token.string() == this.string() ){
@@ -78,7 +75,7 @@ bbop.parser.token.prototype.eq = function(in_token){
 
 
 //
-bbop.parser.tokenizer = function(in_str){
+bbop.parse.newick.tokenizer = function(in_str){
 
     this._stream = new Array();
 
@@ -131,7 +128,7 @@ bbop.parser.tokenizer = function(in_str){
 // Branch --> Subtree Length
 // Name --> empty | string
 // Length --> empty | ":" number
-bbop.parser.newick = function(){
+bbop.parse.newick.parser = function(){
 
     function rule_check(){
 	// ...
