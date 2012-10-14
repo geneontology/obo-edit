@@ -1,15 +1,14 @@
 #!/usr/bin/perl -w
 ####
-#### TODO: ???
-#### BUG: ???
+#### Make ready to release the JS into the staging area.
+#### Also produce revisioned and minified versions in the staging area.
+#### See 'perldoc <this_file>' for usage and flags.
 ####
 
 use utf8;
 use strict;
 use File::Basename;
-use File::Find;
 use Cwd;
-use Data::Dumper;
 use vars qw(
 	     $opt_h
 	     $opt_v
@@ -54,11 +53,16 @@ die "need -r option--use -h flag for help" if ! $opt_r;
 ###
 
 my $base = getcwd();
+ll('Base: ' . $base);
 my $file_map_fname = $base . '/' . $opt_i;
 my $bundle_output_fname = $base . '/' . $opt_o;
+ll('Bundle output: ' . $bundle_output_fname);
 my $namespace = $opt_n;
+ll('Namespace: ' . $namespace);
 my $version_info_dest_fname =  $base . '/' . $opt_d;
+ll('Version info destination: ' . $version_info_dest_fname);
 my $revision = $opt_r;
+ll('Revision: ' . $revision);
 
 ## Verify what we can.
 if( ! -f $file_map_fname ){
@@ -94,7 +98,7 @@ while( my $js_file_fname = <MAPFILE> ){
   open(JSFILE, "<$js_file_fname") or die "cannot open $js_file_fname: $!";
   while( <JSFILE> ){
 
-    ## TODO: Remove bbop.core.require lines from the input.
+    ## TODO?: Remove bbop.core.require lines from the input?
 
     ## Dump to target site.
     print OUTFILE $_;
@@ -113,33 +117,27 @@ ll("Created JS lib file: ". $bundle_output_fname .
 ### Try to transform our single file into minified/versioned versions.
 ###
 
-## TODO:
+## Transform the original name into the various release files.
+my($base_fname, $base_dirs, $base_suff) =
+  fileparse($bundle_output_fname,qr/\.[^.]*/);
 
-  # ## Drop one bundle in the HTDOCS dir.
-  # my $bundle_output_fname = $env_conf{AMIGO_HTDOCS_ROOT_DIR} .
-  #   '/javascript/bbop-amigo.js';
+## Define the three other (four total) variations: versioned, base
+## minified, and versioned minified.
+my $versioned_fname = $base_dirs . $base_fname . '_' . $revision . $base_suff;
+my $mini_fname = $base_dirs . $base_fname . '.min' . $base_suff;
+my $versioned_mini_fname =
+  $base_dirs . $base_fname . '_' . $revision . '.min' . $base_suff;
 
-  # ## Drop one bundle in HTDOCS for ourselves.
-  # my $bundle_output_fname = $env_conf{AMIGO_HTDOCS_ROOT_DIR} .
-  #   '/javascript/bbop-amigo.js';
-  # drop_js_files($bundle_output_fname, $export_js_files);
+ll('Staging (base): ' . $bundle_output_fname);
 
-  # ## Drop the head version in the staging dir.
-  # my $head_out_fname = $staging_dir . '/bbop-amigo.js';
-  # drop_js_files($head_out_fname, $export_js_files);
-  # ## And compress it for CDN life.
-  # make_compressed_js($head_out_fname, $staging_dir .'/bbop-amigo.min.js');
+ll('Staging (base, versioned): ' . $versioned_fname);
+force_copy($bundle_output_fname, $versioned_fname);
 
-  # ## Drop a versioned version in the staging dir.
-  # my $rel_out_fname = $staging_dir . '/bbop-amigo_' . $release_version . '.js';
-  # drop_js_files($rel_out_fname, $export_js_files);
-  # ## And compress it for CDN life.
-  # make_compressed_js($rel_out_fname,
-  # 		     $staging_dir .'/bbop-amigo_'. $release_version .'.min.js');
+ll('Staging (base, minified): ' . $mini_fname);
+make_compressed_js($bundle_output_fname, $mini_fname);
 
-  ## TODO: just convert this by the command line--no reading tricks
-  ## TODO: check that we have the yui-compressor utility.
-  #die;
+ll('Staging (base, versioned, minified): ' . $versioned_mini_fname);
+force_copy($mini_fname, $versioned_mini_fname);
 
 ###
 ### Helper functions.
@@ -152,7 +150,9 @@ sub version_to_js {
   my $revision = shift || die 'wot? we need a revision argument';
   my $release = shift || die 'wot? we need a release argument';
   my $namespace = shift || die 'wot? we need a namespace argument';
-  my $location = shift || die 'wot? we need a location argument';
+  my $dirs = shift || die 'wot? we need a location argument';
+
+  my $location = $dirs . '/version.js';
 
   ## If the file is already there, blow it away.
   unlink $location if -f $location;
@@ -170,75 +170,45 @@ sub version_to_js {
  * API that you have.
  */
 
-/*
- * Variable: version
- *
- * The version information for this library. It contain the revision
- * (major/minor version numbers) and release (date-like) information.
- */
 $namespace.version = {}
-$namespace.version['revision'] = "$revision";
-$namespace.version['release'] = "$release";
+
+/*
+ * Variable: revision
+ *
+ * Partial version for this library; revision (major/minor version numbers)
+ * information.
+ */
+$namespace.version.revision = "$revision";
+
+/*
+ * Variable: release
+ *
+ * Partial version for this library: release (date-like) information.
+ */
+$namespace.version.release = "$release";
 EOJS
 
   ## Close file.
   close(FILE);
-  make_readable($js_file_str);
+  make_readable($location);
   ll("Created release version file: \"$location\".");
 }
 
 
-# ##
-# sub safe_make_dir {
+##
+sub force_copy {
 
-#   my $dir_to_make = shift || die "no first arg";
+  my $from = shift || die "no first arg";
+  my $to = shift || die "no second arg";
 
-#   ## Make the new session directory if necessary.
-#   if ( ! -e  $dir_to_make ) {
-#     my @args = ("mkdir", $dir_to_make);
-#     ll("System: \"@args\"");
-#     system(@args) == 0 || die "system @args failed: $?" if ! $opt_t;
-#   }
-# }
-
-
-# ##
-# sub force_copy {
-
-#   my $from = shift || die "no first arg";
-#   my $to = shift || die "no second arg";
-
-#   #my @args = ("cp", "-r", "-f", $from, $to);
-#   my @args = ("rsync", "-r",
-# 	      "--exclude=.svn",
-# 	      "--exclude=.emacs.desktop",
-# 	      $from, $to);
-#   ll("System: \"@args\"");
-#   system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_t;
-# }
-
-
-# ##
-# sub make_executable {
-
-#   my $file = shift || die "no first arg";
-
-#   my @args = ("chmod", "a+x", $file);
-#   ll("System: \"@args\"");
-#   system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_t;
-# }
-
-
-# ##
-# sub make_permissive {
-
-#   my $file = shift || die "no first arg";
-
-#   my @args = ("chmod", "777", $file);
-#   ll("System: \"@args\"");
-#   system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_t;
-# }
-
+  #my @args = ("cp", "-r", "-f", $from, $to);
+  my @args = ("rsync", "-r",
+	      "--exclude=.svn",
+	      "--exclude=.emacs.desktop",
+	      $from, $to);
+  ll("System: \"@args\"");
+  system(@args) == 0 || die "System \"@args\" failed: $?";
+}
 
 ##
 sub make_readable {
@@ -247,7 +217,7 @@ sub make_readable {
 
   my @args = ("chmod", "644", $file);
   ll("System: \"@args\"");
-  system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_t;
+  system(@args) == 0 || die "System \"@args\" failed: $?";
 }
 
 ## TODO/BUG: ALPHAish experiment.
@@ -260,7 +230,7 @@ sub make_compressed_js {
   my @args = ("yui-compressor", "--nomunge", "--type", "js",
 	      "-o", $out_file, $in_file);
   ll("System: \"@args\"");
-  system(@args) == 0 || die "System \"@args\" failed: $?" if ! $opt_t;
+  system(@args) == 0 || die "System \"@args\" failed: $?";
 }
 
 ## Just a little printin' when feeling verbose.
@@ -303,27 +273,27 @@ Enable more verbose messages. This is useful for checking installation errors.
 
 Print this help message.
 
-=item -i
+=item -i <path>
 
 Full path to the input map. This file contains the location of the
 files to release, one per line and relative to the base of the
 checkout.
 
-=item -o
+=item -o <path>
 
 Full path for the location of the JS release bundle file. This will be
 modified for minification and versioning.
 
-=item -n
+=item -n <JS namespace>
 
 The namespace of the versioning file. ".version" will be added to the
 end of it.
 
-=item -d
+=item -d <path>
 
 The destination of the version file.
 
-=item -r
+=item -r <version number>
 
 The major.minor version number to use (e.g. "0.9", "1.2").
 

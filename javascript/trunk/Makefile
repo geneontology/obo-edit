@@ -23,7 +23,7 @@ all:
 	@echo "All JS engines: $(JSENGINES)"
 	@echo "Tests defined: $(TESTS)"
 	@echo "Benchmarks defined: $(BENCHMARKS)"
-	@echo "Try 'make test', 'make benchmark', or 'make docs'"
+	@echo "Try make: 'test', 'benchmark', 'docs', 'bundle', or 'release'"
 
 ###
 ### Tests.
@@ -57,5 +57,22 @@ $(BENCHMARKS):
 
 .PHONY: docs
 
-docs:
+docs: bundle
 	naturaldocs --rebuild-output --input lib/bbop/ --project docs/.naturaldocs_project/ --output html docs/
+
+###
+### Create bundle.
+###
+
+.PHONY: bundle
+
+bundle:
+	./scripts/release-js.pl -v -i scripts/release-file-map.txt -o staging/bbop.js -n bbop -d lib/bbop -r 0.9
+
+###
+### Release: docs and bundle; really an alias for docs.
+###
+
+.PHONY: release
+
+release: bundle docs
