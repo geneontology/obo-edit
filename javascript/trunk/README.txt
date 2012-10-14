@@ -1,3 +1,7 @@
+The current release-js.pl command and version are in the Makefile.
+
+==========OLD BELOW==========
+
 I'm trying to move things into namespaces here.
 
 Should have the right structure:
