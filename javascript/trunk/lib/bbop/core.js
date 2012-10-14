@@ -15,7 +15,8 @@
 // Module and namespace checking.
 if ( typeof bbop == "undefined" ){ bbop = {}; }
 if ( typeof bbop.core == "undefined" ){ bbop.core = {}; }
-//if ( typeof bbop.core.json == "undefined" ){ bbop.core.json = {}; }
+// Prepare a spot for the version information (defined in a different file).
+if ( typeof bbop.version == "undefined" ){ bbop.version = {}; }
 
 /*
  * Variable: global

@@ -19,8 +19,6 @@
 bbop.core.require('bbop', 'core');
 bbop.core.require('bbop', 'registry');
 bbop.core.require('bbop', 'golr', 'conf');
-//bbop.core.require('bbop', 'golr', 'response');
-//bbop.core.namespace('bbop', 'golr');
 bbop.core.namespace('bbop', 'golr', 'manager');
 
 /*
