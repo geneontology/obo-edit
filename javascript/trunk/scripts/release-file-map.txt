@@ -1,6 +1,7 @@
 lib/bbop/core.js
 lib/bbop/version.js
 lib/bbop/logger.js
+lib/bbop/test.js
 lib/bbop/registry.js
 lib/bbop/html.js
 lib/bbop/model.js
