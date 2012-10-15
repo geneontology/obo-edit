@@ -1,5 +1,5 @@
 ####
-#### Testing and benchmarking for serverable/CLI JS.
+#### Testing, benchmarking, and release procedures for serverable/CLI JS.
 ####
 #### A report-mistakes-only testing run can be done as:
 ####   make test | grep -i fail
