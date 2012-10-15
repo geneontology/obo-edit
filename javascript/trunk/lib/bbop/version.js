@@ -8,7 +8,8 @@
  * API that you have.
  */
 
-bbop.version = {}
+bbop.core.namespace('bbop', 'version');
+bbop.version = {};
 
 /*
  * Variable: revision
@@ -23,4 +24,4 @@ bbop.version.revision = "0.9";
  *
  * Partial version for this library: release (date-like) information.
  */
-bbop.version.release = "20121014";
+bbop.version.release = "20121015";

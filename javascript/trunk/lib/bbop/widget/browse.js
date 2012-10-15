@@ -37,8 +37,8 @@ bbop.core.namespace('bbop', 'widget', 'browse');
  * Returns:
  *  this object
  */
-bbop.golr.widget.browse = function(golr_loc, golr_conf_obj,
-				   interface_id, info_button_callback){
+bbop.widget.browse = function(golr_loc, golr_conf_obj,
+			      interface_id, info_button_callback){
 
     // Per-UI logger.
     var logger = new bbop.logger();
