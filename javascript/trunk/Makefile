@@ -77,7 +77,7 @@ bundle:
 .PHONY: release
 
 release: bundle docs
-	s3cmd put staging/bbop*.js s3://bbop/jsapi/
+	s3cmd -P put staging/bbop*.js s3://bbop/jsapi/
 
 ###
 ### Refresh test data from AmiGO.
