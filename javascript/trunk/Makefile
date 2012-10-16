@@ -62,7 +62,7 @@ docs: bundle
 #	naturaldocs --rebuild-output --input lib/bbop/ --input bin/ --project docs/.naturaldocs_project/ --output html docs/
 
 ###
-### Create bundle.
+### Create exportable JS bundle.
 ###
 
 .PHONY: bundle
@@ -71,15 +71,17 @@ bundle:
 	./scripts/release-js.pl -v -i scripts/release-file-map.txt -o staging/bbop.js -n bbop -d lib/bbop -r 0.9
 
 ###
-### Release: docs and bundle; really an alias for docs.
+### Release: docs and bundle; then to an upload.
 ###
 
 .PHONY: release
 
 release: bundle docs
+	s3cmd put staging/bbop*.js s3://bbop/jsapi/
 
 ###
 ### Refresh test data from AmiGO.
+### TODO/BUG: Sorry that it's hard-coded; it's secret for now...
 ###
 
 .PHONY: refresh
