@@ -2,16 +2,14 @@
 /* 
  * Package: repl.js
  * 
- * Namespace: NONE
- * 
  * This is a NodeJS script.
  * 
  * Start a REPL in a sane GOlr environment.
  * 
  * Usage like: node_repl.js 
- *  golr> go.get_query_url()
- *  golr> go.set_personality('bbop_ann')
- *  golr> go.get_query_url()
+ * : golr> go.get_query_url()
+ * : golr> go.set_personality('bbop_ann')
+ * : golr> go.get_query_url()
  */
 
 // Loading the necessary files.
@@ -25,21 +23,11 @@
 // TODO: how to process remote again?
 // 		    });
 // 	 });
-// require('./../lib/bbop/core');
-// require('./../lib/bbop/logger');
-// require('./../lib/bbop/registry');
-// require('./../lib/bbop/golr_conf');
-// require('./../lib/bbop/golr_response');
-// require('./../lib/bbop/golr_manager');
-// require('./../lib/bbop/golr_manager_nodejs');
-// require('./../lib/bbop/model');
-// require('./../../../AmiGO/trunk/javascript/bbop/amigo');
-// require('./../../../AmiGO/trunk/javascript/bbop/amigo/golr_meta');
-// require('./../../../AmiGO/trunk/javascript/bbop/amigo/amigo_meta');
-require('./../../../AmiGO/trunk/staging/bbop-amigo');
+require('../staging/bbop');
+require('../_data/golr');
 
 // Setup the environment a little bit.
-gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+gconf = new bbop.golr.conf(amigo.data.golr);
 go = new bbop.golr.manager.nodejs('http://golr.berkeleybop.org/', gconf);
 //go.set_personality('bbop_ont');
 
