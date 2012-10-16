@@ -2,13 +2,12 @@
 /* 
  * Package: get_children.js
  * 
- * Namespace: NONE
- * 
  * This is a NodeJS script.
  * 
  * Get the ids and labels of the children of the specified term.
  * 
- * Usage like: "get_children.js GO:0022008"
+ * Usage like:
+ *  : get_children.js GO:0022008
  * 
  * This is also a bit of a unit test for the NodeJS update function.
  * 
@@ -19,18 +18,9 @@
 // Loading the necessary files.
 // TODO/BUG: These should be pointing at the remote files, not the
 // local ones.
-// require('./../lib/bbop/core');
-// require('./../lib/bbop/logger');
-// require('./../lib/bbop/registry');
-// require('./../lib/bbop/golr_conf');
-// require('./../lib/bbop/golr_response');
-// require('./../lib/bbop/golr_manager');
-// require('./../lib/bbop/golr_manager_nodejs');
-// require('./../lib/bbop/model');
-// require('./../../../AmiGO/trunk/javascript/bbop/amigo');
-// require('./../../../AmiGO/trunk/javascript/bbop/amigo/golr_meta');
-// require('./../../../AmiGO/trunk/javascript/bbop/amigo/amigo_meta');
-require('./../../../AmiGO/trunk/staging/bbop-amigo');
+require('../staging/bbop');
+require('../_data/golr');
+//require('./../../../AmiGO/trunk/staging/bbop-amigo');
 
 // First, get the last arg
 //console.log(process.argv.length);
@@ -41,7 +31,8 @@ var term_acc = process.argv[process.argv.length -1];
 function report(json_data){
 
     // Gather out info graph info from the first doc.
-    var doc = bbop.golr.response.documents(json_data)[0];
+    var resp = new bbop.golr.response(json_data);
+    var doc = resp.documents()[0];
     var graph_json = doc['topology_graph'];
     var graph = new bbop.model.graph();
     graph.load_json(JSON.parse(graph_json));
@@ -58,7 +49,7 @@ function report(json_data){
 
 // Define the server, define the query, bind the callback, and
 // trigger.
-gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+gconf = new bbop.golr.conf(amigo.data.golr);
 go = new bbop.golr.manager.nodejs('http://golr.berkeleybop.org/', gconf);
 go.set_id(term_acc);
 go.register('search', 'do', report);

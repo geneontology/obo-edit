@@ -2,10 +2,6 @@
 /* 
  * Package: rhino_golr.js
  * 
- * Namespace: NONE
- * 
- * TODO: A work in progress.
- * 
  * This is a Rhino script.
  * 
  * Attempt at an interactive Rhino session.
@@ -25,11 +21,12 @@
 ///
 
 // Loading the necessary file/url.
-//load('./../../../AmiGO/trunk/staging/bbop-amigo.js');
-eval(readUrl('https://s3.amazonaws.com/bbop/jsapi/bbop-amigo.js'));
+//eval(readUrl('https://cdn.berkeleybop.org/jsapi/bbop.js'));
+load('../staging/bbop.js');
+load('../_data/golr.js');
 
 // Setup the environment a little bit.
-var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+var gconf = new bbop.golr.conf(amigo.data.golr);
 var go = new bbop.golr.manager.rhino('http://golr.berkeleybop.org/', gconf);
 //go.set_personality('bbop_ont');
 
