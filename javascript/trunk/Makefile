@@ -59,6 +59,7 @@ $(BENCHMARKS):
 
 docs: bundle
 	naturaldocs --rebuild-output --input lib/bbop/ --project docs/.naturaldocs_project/ --output html docs/
+#	naturaldocs --rebuild-output --input lib/bbop/ --input bin/ --project docs/.naturaldocs_project/ --output html docs/
 
 ###
 ### Create bundle.
@@ -76,3 +77,12 @@ bundle:
 .PHONY: release
 
 release: bundle docs
+
+###
+### Refresh test data from AmiGO.
+###
+
+.PHONY: refresh
+
+refresh:
+	/bin/cp ../../AmiGO/trunk/javascript/lib/amigo/data/*.js ./_data/
