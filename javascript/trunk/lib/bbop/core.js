@@ -15,6 +15,7 @@
 // Module and namespace checking.
 if ( typeof bbop == "undefined" ){ bbop = {}; }
 if ( typeof bbop.core == "undefined" ){ bbop.core = {}; }
+if ( typeof amigo == "undefined" ){ amigo = {}; }
 
 /*
  * Variable: global
@@ -25,13 +26,19 @@ if ( typeof bbop.core == "undefined" ){ bbop.core = {}; }
  * 
  * TODO: There is a temporary workaround for NodeJS here
  * TODO: Creates loop; problem?
+ * 
+ * Also see:
+ *  <namespace>
+ *  <requires>
  */
-bbop.core.global = this; // TODO:
-if( typeof GLOBAL !== 'undefined' ){
+bbop.core.global = this;
+if( typeof GLOBAL !== 'undefined' ){ // TODO: Better probe of NodeJS-ness.
     (function(){
 	 var global_context = {};
 	 global_context['bbop'] = GLOBAL['bbop'];
+	 global_context['amigo'] = GLOBAL['amigo'];
 	 bbop.core.global = global_context;
+	 //bbop.core.global = GLOBAL;
      })();
 }
 
