@@ -16,7 +16,7 @@ load('../../logger.js');
 
 // Get some test data as well.
 // This defines "bbop.amigo.golr_meta".
-load('../../../../_data/golr_meta.js');
+load('../../../../_data/golr.js');
 load('../conf.js');
 load('../response.js');
 
@@ -41,7 +41,7 @@ load('jquery.js');
 (function(){
 
      // Setup.
-     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gconf = new bbop.golr.conf(amigo.data.golr);
      var gm_ann =
 	 new bbop.golr.manager.jquery('http://golr.berkeleybop.org/', gconf);
 
@@ -81,7 +81,7 @@ load('jquery.js');
 // //(function(){
 
 // // Setup.
-// var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+// var gconf = new bbop.golr.conf(amigo.data.golr);
 // var gm_ann =
 //     new bbop.golr.manager.jquery('http://golr.berkeleybop.org/', gconf);
 
