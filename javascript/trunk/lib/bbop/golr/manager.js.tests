@@ -16,7 +16,7 @@ load('../logger.js');
 
 // Get some test data as well.
 // This defines "bbop.amigo.golr_meta".
-load('../../../_data/golr_meta.js');
+load('../../../_data/golr.js');
 load('conf.js');
 load('response.js');
 
@@ -31,7 +31,7 @@ load('manager.js');
 (function(){
 
      // Absolute basics.
-     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gconf = new bbop.golr.conf(amigo.data.golr);
      var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
      mr_t.is_same_atom(bbop.core.what_is(gm), 'bbop.golr.manager', "me");
 
@@ -58,7 +58,7 @@ load('manager.js');
 (function(){
 
      // Setup.
-     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gconf = new bbop.golr.conf(amigo.data.golr);
      var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
 
      // Let's play a little more...
@@ -79,7 +79,7 @@ load('manager.js');
 (function(){
 
      // Setup.
-     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gconf = new bbop.golr.conf(amigo.data.golr);
      var gm_ann = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
      gm_ann.set_personality('bbop_ann'); // profile in gconf
      gm_ann.add_query_filter('document_category', 'annotation', ['+', '*']);
@@ -115,7 +115,7 @@ load('manager.js');
 (function(){
 
      // Setup.
-     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gconf = new bbop.golr.conf(amigo.data.golr);
      var gm_ann = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
 
      gm_ann.add_query_filter('foo1', 'bar1a');
@@ -213,7 +213,7 @@ load('manager.js');
 (function(){
 
      // Setup.
-     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gconf = new bbop.golr.conf(amigo.data.golr);
      var gm_ann = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
 
      // Possible property hashes.
@@ -257,7 +257,7 @@ load('manager.js');
 (function(){
 
      // Setup.
-     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gconf = new bbop.golr.conf(amigo.data.golr);
      var gm_ann = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
      gm_ann.set_personality('bbop_ann'); // profile in gconf
 
@@ -323,7 +323,7 @@ load('manager.js');
 (function(){
 
      // Setup.
-     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gconf = new bbop.golr.conf(amigo.data.golr);
      var gm_ann = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
      gm_ann.set_personality('bbop_ann'); // profile in gconf
      gm_ann.add_query_filter('document_category', 'annotation', ['-']);
@@ -355,7 +355,7 @@ load('manager.js');
 (function(){
 
      // Setup.
-     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gconf = new bbop.golr.conf(amigo.data.golr);
      var gm_ann = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
      
      mr_t.is_same_atom(gm_ann.last_packet_sent(), 0, 'no packets sent');
@@ -367,7 +367,7 @@ load('manager.js');
 (function(){
 
      // Setup.
-     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gconf = new bbop.golr.conf(amigo.data.golr);
      var gm_ann = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
      gm_ann.set_personality('bbop_ann'); // profile in gconf
 
@@ -498,7 +498,7 @@ load('manager.js');
 
 // bbop.golr.manager - 9 - debug
 (function(){
-     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gconf = new bbop.golr.conf(amigo.data.golr);
      var gm_ann = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
      gm_ann.debug(false);
      mr_t.is_false(gm_ann.debug(false), 'debug false');
@@ -509,7 +509,7 @@ load('manager.js');
 // bbop.golr.manager - 10 - query_field (qf) and personalities
 (function(){
 
-     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gconf = new bbop.golr.conf(amigo.data.golr);
      var go = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
      go.set_query('foo');
      
@@ -597,7 +597,7 @@ load('manager.js');
 (function(){
 
      // Setup.
-     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gconf = new bbop.golr.conf(amigo.data.golr);
      var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
      //gm.set_personality('bbop_ann'); // profile in gconf
      
@@ -625,7 +625,7 @@ load('manager.js');
 (function(){
 
      // Setup.
-     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gconf = new bbop.golr.conf(amigo.data.golr);
      var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
 
      // start
@@ -655,7 +655,7 @@ load('manager.js');
 (function(){
 
      // Setup.
-     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gconf = new bbop.golr.conf(amigo.data.golr);
      var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
      gm.set_query('foo');
      
@@ -689,7 +689,7 @@ load('manager.js');
 //(function(){
 
      // Setup.
-     var gconf = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var gconf = new bbop.golr.conf(amigo.data.golr);
      var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
      gm.set_query('foo');
      
