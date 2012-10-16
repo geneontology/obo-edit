@@ -6,7 +6,7 @@
 ////    Interactive: "js -f conf.js.tests -f -"
 ////
 //// To get fresh data from an AmiGO install (must be done periodically):
-////    cp /srv/www/htdocs/amigo2/javascript/bbop/golr_meta.js /home/sjcarbon/local/src/svn/geneontology/javascript/trunk/_data/
+////    make refresh
 ////
 
 // Load testing.
@@ -21,7 +21,7 @@ load('conf.js');
 
 // Get some test data as well.
 // This defines "bbop.golr.golr_meta".
-load('../../../_data/golr_meta.js');
+load('../../../_data/golr.js');
 
 ///
 /// Start unit testing.
@@ -31,7 +31,7 @@ load('../../../_data/golr_meta.js');
 (function(){
 
      // Absolute basics.
-     var fconf = bbop.amigo.golr_meta['bbop_ont']['fields_hash']['source'];
+     var fconf = amigo.data.golr['bbop_ont']['fields_hash']['source'];
      var cf = new bbop.golr.conf_field(fconf);
      mr_t.is_same_atom(cf._is_a, 'bbop.golr.conf_field', "me");
      
@@ -51,7 +51,7 @@ load('../../../_data/golr_meta.js');
 (function(){
 
      // Absolute basics.
-     var cc = new bbop.golr.conf_class(bbop.amigo.golr_meta['bbop_ann']);
+     var cc = new bbop.golr.conf_class(amigo.data.golr['bbop_ann']);
      mr_t.is_same_atom(cc._is_a, 'bbop.golr.conf_class', "me");
      
      // Simple getters.
@@ -86,7 +86,7 @@ load('../../../_data/golr_meta.js');
 (function(){
 
      // Absolute basics.
-     var c = new bbop.golr.conf(bbop.amigo.golr_meta);
+     var c = new bbop.golr.conf(amigo.data.golr);
      mr_t.is_same_atom(c._is_a, 'bbop.golr.conf', "me");
 
      // Simple getters.
