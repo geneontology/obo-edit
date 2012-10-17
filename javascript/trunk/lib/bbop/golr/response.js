@@ -29,8 +29,16 @@ bbop.core.namespace('bbop', 'golr', 'response');
  *  golr response object
  */
 bbop.golr.response = function(json_data){
-    this._success = null; // cache for repeated calls to success()
+
+    // The raw incoming document.
     this._raw = json_data;
+
+    // Cache for repeated calls to success().
+    this._success = null;
+
+    // Cache for repeated calls to get_doc* functions.
+    this._doc_id2index = null;
+    this._doc_index2_id = null;
 };
 
 /*
@@ -302,7 +310,7 @@ bbop.golr.response.prototype.paging_next_p = function(){
 /*
  * Function: documents
  * 
- * Returns an array of document hashes.
+ * Returns an array of raw and unprocessed document hashes.
  * 
  * Arguments:
  *  n/a
@@ -313,6 +321,135 @@ bbop.golr.response.prototype.paging_next_p = function(){
 bbop.golr.response.prototype.documents = function(){
     var robj = this._raw;
     return robj.response.docs;
+};
+
+/*
+ * Function: get_doc
+ * 
+ * Returns a specified document.
+ * 
+ * Arguments:
+ *  doc_id - document identifier either an id (first) or place in the array
+ * 
+ * Returns:
+ *  document hash or null
+ */
+bbop.golr.response.prototype.get_doc = function(doc_id){
+
+    var doc = null;
+    var robj = this._raw;
+
+    // First check if the document is available by position.
+    var docs = robj.response.docs;
+    if( docs && docs[doc_id] ){
+	doc = docs[doc_id];
+    }else{ // Not available by position, so lets see if we can get it by id.
+	
+	//print('in: ' + doc_id + ' _' + this._doc_id2index);
+
+	// Build the doc index if it isn't there.
+	var local_anchor = this;
+	if( ! this._doc_id2index ){
+	    //print('BUILD triggered on: ' + doc_id);
+	    this._doc_id2index = {};
+	    this._doc_index2id = {};
+	    bbop.core.each(docs,
+			   function(doc_item, doc_index){
+			       var did = doc_item['id'];
+			       //print('BUILD: ' + did + ' => ' + doc_index);
+			       local_anchor._doc_id2index[did] = doc_index;
+			       local_anchor._doc_index2id[doc_index] = did;
+			   });
+	}
+	
+	//print('pre-probe: ' + doc_id + ' _' + this._doc_id2index);
+
+	// Try and probe it out.
+	if( this._doc_id2index &&
+	    bbop.core.is_defined(this._doc_id2index[doc_id]) ){
+	    //print('PROBE: ' + doc_id);
+	    var doc_i = this._doc_id2index[doc_id];
+	    doc = docs[doc_i];
+	}
+    }
+
+    return doc;
+};
+
+/*
+ * Function: get_doc_field
+ * 
+ * Returns the value(s) of the requested fields.
+ * 
+ * Arguments:
+ *  doc_id - document identifier either an id (first) or place in the array
+ *  field_id - the identifier of the field we're trying to pull
+ * 
+ * Returns:
+ *  value or list of values
+ */
+bbop.golr.response.prototype.get_doc_field = function(doc_id, field_id){
+
+    var ret = null;
+
+    // If we found our doc, go ahead and start looking for the field.
+    var doc = this.get_doc(doc_id);
+    if( doc && bbop.core.is_defined(doc[field_id]) ){
+	
+	// We have an answer with this.
+	ret = doc[field_id];
+    }
+
+    return ret;
+};
+
+/*
+ * Function: get_doc_field_hl
+ * 
+ * Returns the highlighted value(s) of the requested fields.
+ * 
+ * WARNING: This function is a work in progress and may not return
+ * multi-valued fields properly. If you find an issues, please let the
+ * developers know. This is currently returning 
+ * 
+ * Arguments:
+ *  doc_id - document id
+ *  field_id - the identifier of the field we're trying to pull
+ * 
+ * Returns:
+ *  string or list of highlight, or null if nothing was found
+ */
+bbop.golr.response.prototype.get_doc_field_hl = function(doc_id, field_id){
+
+    var ret = null;
+    var robj = this._raw;
+
+    // See if we can find a highlighted version. First, see if the
+    // document is in the hilight section; otherwise try and pull the
+    // id out first, then head for the highlight section.
+    var hilite_obj = null;
+    if( robj.highlighting && robj.highlighting[doc_id] ){
+	hilite_obj = robj.highlighting[doc_id];
+    }else{
+	var iid = this._doc_index2id[doc_id];
+	if( iid ){
+	    var new_doc = this.get_doc(iid);
+	    var new_doc_id = new_doc['id'];
+	    if( robj.highlighting && robj.highlighting[new_doc_id] ){
+		hilite_obj = robj.highlighting[new_doc_id];
+	    }
+	}
+    }
+
+    // Now see if the highlighted field is there.
+    if( hilite_obj && hilite_obj[field_id] ){
+	
+	// BUG/TODO: Detect whether we want a list or
+	// single-valued return.
+	ret = hilite_obj[field_id][0];
+    }
+
+    return ret;
 };
 
 // /*
