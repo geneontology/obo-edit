@@ -686,7 +686,7 @@ load('manager.js');
  })();
 
 // bbop.golr.manager - 13 - bookmark/loader - 2
-//(function(){
+(function(){
 
      // Setup.
      var gconf = new bbop.golr.conf(amigo.data.golr);
@@ -718,7 +718,172 @@ load('manager.js');
 		       'qf=synonym_searchable^1',
 		       'qf=alternate_id^1'].join('&'),
 		      "load: constructed personality");    
-// })();
+ })();
+
+// bbop.golr.manager - 14 - unset
+(function(){
+
+     // Setup.
+     var gconf = new bbop.golr.conf(amigo.data.golr);
+     var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);     
+     
+     gm.set('foo', 'bar');     
+     mr_t.is_same_url(gm.get_query_url(),
+		      ['http://golr.berkeleybop.org/select?defType=edismax',
+		       'qt=standard',
+		       'indent=on',
+		       'wt=json',
+		       'rows=10',
+		       'start=0',
+		       'fl=*%2Cscore',
+		       'facet=true',
+		       'facet.mincount=1',
+		       'json.nl=arrarr',
+		       'foo=bar',
+		       'q=*:*'].join('&'),
+		      "unset: set foo");    
+
+     var c1 = gm.unset('foo');
+     mr_t.is_true(c1, 'unset: unset got true');
+     mr_t.is_same_url(gm.get_query_url(),
+		      ['http://golr.berkeleybop.org/select?defType=edismax',
+		       'qt=standard',
+		       'indent=on',
+		       'wt=json',
+		       'rows=10',
+		       'start=0',
+		       'fl=*%2Cscore',
+		       'facet=true',
+		       'facet.mincount=1',
+		       'json.nl=arrarr',
+		       'q=*:*'].join('&'),
+		      "unset: unset foo");    
+
+     var c2 = gm.unset('foo');
+     mr_t.is_false(c2, 'unset: unset got false');
+     mr_t.is_same_url(gm.get_query_url(),
+		      ['http://golr.berkeleybop.org/select?defType=edismax',
+		       'qt=standard',
+		       'indent=on',
+		       'wt=json',
+		       'rows=10',
+		       'start=0',
+		       'fl=*%2Cscore',
+		       'facet=true',
+		       'facet.mincount=1',
+		       'json.nl=arrarr',
+		       'q=*:*'].join('&'),
+		      "unset: unset foo");    
+ })();
+
+// bbop.golr.manager - 15 - include_highlighting
+(function(){
+
+     // Setup.
+     var gconf = new bbop.golr.conf(amigo.data.golr);
+     var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);     
+     
+     var c1 = gm.include_highlighting(false);
+     mr_t.is_false(c1, 'hilite: unset got false--none there');
+     mr_t.is_same_url(gm.get_query_url(),
+		      ['http://golr.berkeleybop.org/select?defType=edismax',
+		       'qt=standard',
+		       'indent=on',
+		       'wt=json',
+		       'rows=10',
+		       'start=0',
+		       'fl=*%2Cscore',
+		       'facet=true',
+		       'facet.mincount=1',
+		       'json.nl=arrarr',
+		       'q=*:*'].join('&'),
+		      "hilite: unset false url");    
+
+     var c2 = gm.include_highlighting();
+     mr_t.is_false(c2, 'hilite: current state nothing');
+     mr_t.is_same_url(gm.get_query_url(),
+		      ['http://golr.berkeleybop.org/select?defType=edismax',
+		       'qt=standard',
+		       'indent=on',
+		       'wt=json',
+		       'rows=10',
+		       'start=0',
+		       'fl=*%2Cscore',
+		       'facet=true',
+		       'facet.mincount=1',
+		       'json.nl=arrarr',
+		       'q=*:*'].join('&'),
+		      "hilite: current state nothing url");    
+
+     var c3 = gm.include_highlighting(true);
+     mr_t.is_same_atom(c3, '<em class="hilite">', 'hilite: simple turn on');
+     mr_t.is_same_url(gm.get_query_url(),
+		      ['http://golr.berkeleybop.org/select?defType=edismax',
+		       'qt=standard',
+		       'indent=on',
+		       'wt=json',
+		       'rows=10',
+		       'start=0',
+		       'fl=*%2Cscore',
+		       'facet=true',
+		       'facet.mincount=1',
+		       'json.nl=arrarr',
+		       'hl=true',
+		       'hl.simple.pre=<em class="hilite">',
+		       'q=*:*'].join('&'),
+		      "hilite: simple turn on url"); 
+
+     var c4 = gm.include_highlighting(false);
+     mr_t.is_false(c4, 'hilite: simple turn off');
+     mr_t.is_same_url(gm.get_query_url(),
+		      ['http://golr.berkeleybop.org/select?defType=edismax',
+		       'qt=standard',
+		       'indent=on',
+		       'wt=json',
+		       'rows=10',
+		       'start=0',
+		       'fl=*%2Cscore',
+		       'facet=true',
+		       'facet.mincount=1',
+		       'json.nl=arrarr',
+		       'q=*:*'].join('&'),
+		      "hilite: simple turn off url"); 
+
+     var c5 = gm.include_highlighting(true, '<em class="blah">');
+     mr_t.is_same_atom(c5, '<em class="blah">', 'hilite: turn on');
+     mr_t.is_same_url(gm.get_query_url(),
+		      ['http://golr.berkeleybop.org/select?defType=edismax',
+		       'qt=standard',
+		       'indent=on',
+		       'wt=json',
+		       'rows=10',
+		       'start=0',
+		       'fl=*%2Cscore',
+		       'facet=true',
+		       'facet.mincount=1',
+		       'json.nl=arrarr',
+		       'hl=true',
+		       'hl.simple.pre=<em class="blah">',
+		       'q=*:*'].join('&'),
+		      "hilite: turn on url"); 
+
+     var c6 = gm.include_highlighting(false);
+     mr_t.is_false(c6, 'hilite: turn off');
+     mr_t.is_same_url(gm.get_query_url(),
+		      ['http://golr.berkeleybop.org/select?defType=edismax',
+		       'qt=standard',
+		       'indent=on',
+		       'wt=json',
+		       'rows=10',
+		       'start=0',
+		       'fl=*%2Cscore',
+		       'facet=true',
+		       'facet.mincount=1',
+		       'json.nl=arrarr',
+		       'q=*:*'].join('&'),
+		      "hilite: turn off url"); 
+
+ })();
 
 ///
 /// End unit testing.

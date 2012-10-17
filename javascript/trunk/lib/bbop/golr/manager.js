@@ -163,6 +163,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     this.debug = function(p){
 	if( p == true || p == false ){
 	    this._logger.DEBUG = p;
+	    // TODO: add debug parameter a la include_highlighting
 	}
 	return this._logger.DEBUG;
     };
@@ -1059,7 +1060,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      *  key - the name of the parameter to change
      *  new_val - what you want the new value to be
      *
-     * Returns: n/a
+     * Returns:
+     *  n/a
      */
     this.set = function(key, new_val){
 	anchor.query_variants[key] = new_val;
@@ -1080,6 +1082,85 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
      */
     this.get = function(key){
 	return anchor.query_variants[key];
+    };
+
+    /*
+     * Function: unset
+     *
+     * Unset (remove) an internal variable for the query. Only usable on certain types of 
+     * 
+     * Only use is you really know what you're doing.
+     *
+     * Parameters: 
+     *  key - the name of the parameter to unset/remove
+     *
+     * Returns:
+     *  boolean; true false on whether the key was found
+     */
+    this.unset = function(key){
+	var retval = false;
+
+	if( bbop.core.is_defined(anchor.query_variants[key]) ){
+	    retval = true;
+	    delete anchor.query_variants[key];
+	}
+
+	return retval;
+    };
+
+    /*
+     * Function: include_highlighting
+     *
+     * Turn hilighting on or off (with true or false).
+     * 
+     * This essentially adds the parameters to the query string to
+     * make sure that basic highlighting on the search is returned.
+     * 
+     * It starts off as false. The optional html_elt_str argument
+     * defaults to:
+     *  : <em class="hilite">
+     *
+     * Parameters: 
+     *  hilite_p - *[optional]* boolean
+     *  html_elt_str - *[serially optional]* the HTML element string to use
+     *
+     * Returns:
+     *  either false or the current string being used for the return element
+     */
+    this.include_highlighting = function(hilite_p, html_elt_str){
+	var retval = false;
+
+	if( bbop.core.is_defined(hilite_p) &&
+	    (hilite_p == true || hilite_p == false) ){
+	    if( hilite_p == true ){
+
+		// Set the default string if necessary.
+		if( ! html_elt_str ){ html_elt_str = '<em class="hilite">'; }
+
+		// Set the parameters.
+		anchor.set('hl', 'true');
+		anchor.set('hl.simple.pre', html_elt_str);
+
+		// And the retval is not longer false.
+		retval = html_elt_str;
+
+	    }else{
+		
+		// Unset the parameters.
+		anchor.unset('hl');
+		anchor.unset('hl.simple.pre');
+	    }
+
+	}else{
+	    // Otherwise, just discover the current state and return
+	    // it.
+	    var cl_tmp = anchor.get('hl.simple.pre');
+	    if( bbop.core.is_defined(cl_tmp) ){
+		retval = cl_tmp;
+	    }
+	}
+
+	return retval;
     };
 
     /*
