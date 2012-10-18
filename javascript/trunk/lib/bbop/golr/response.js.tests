@@ -226,291 +226,291 @@ load('response.js');
  })();
 
 // bbop.golr.response get_doc, get_doc_field, get_doc_field_hl
-//(function(){
+(function(){
 
-var robj = {
-    "responseHeader":{
-	"status":0,
-	"QTime":23,
-	"params":{
-	    "facet":"true",
-	    "facet.mincount":"1",
-	    "indent":"on",
-	    "qf":["annotation_class^2",
-		  "annotation_class_label_searchable^1",
-		  "bioentity^2",
-		  "bioentity_label_searchable^1",
-		  "annotation_extension_class^2",
-		  "annotation_extension_class_label_searchable^1"],
-	    "hl.simple.pre":"<em class=\"hilite\">",
-	    "json.nl":"arrarr",
-	    "wt":"json",
-	    "callback_type":"search",
-	    "hl":"true",
-	    "rows":"2",
-	    "defType":"edismax",
-	    "fl":"*,score",
-	    "start":"0",
-	    "q":"tag*",
-	    "packet":"2",
-	    "facet.field":["source",
-			   "evidence_type",
-			   "taxon_label",
-			   "isa_partof_closure_label",
-			   "annotation_extension_class_closure_label"],
-	    "qt":"standard",
-	    "fq":"document_category:\"annotation\""}},
-    "response":{"numFound":48,"start":0,"maxScore":1.0,"docs":[
-		    {
-			"document_category":"annotation",
-			"id":"PomBase:SPCC548.04_:_GO:0031386",
-			"bioentity":"PomBase:SPCC548.04",
-			"bioentity_label":"urm1",
-			"bioentity_label_searchable":"urm1",
-			"source":"PomBase",
-			"date":"20051107",
-			"taxon":"NCBITaxon:4896",
-			"taxon_label":"Schizosaccharomyces pombe",
-			"taxon_label_searchable":"Schizosaccharomyces pombe",
-			"reference":"GO_REF:0000024",
-			"evidence_type":"ISO",
-			"annotation_class":"GO:0031386",
-			"annotation_class_label":"protein tag",
-			"annotation_class_label_searchable":"protein tag",
-			"isa_partof_closure_map":"{\"GO:0003674\":\"molecular_function\",\"GO:0031386\":\"protein tag\"}",
-			"isa_partof_closure":["GO:0003674","GO:0031386"],
-			"isa_partof_closure_label":["molecular_function","protein tag"],
-			"evidence_with":["SGD:S000001270"],
-			"isa_partof_closure_label_searchable":[
-			    "molecular_function",
-			    "protein tag"],
-			"score":1.0},
-		    {
-			"document_category":"annotation",
-			"id":"PomBase:SPAC1783.06c_:_GO:0031386",
-			"bioentity":"PomBase:SPAC1783.06c",
-			"bioentity_label":"atg12",
-			"bioentity_label_searchable":"atg12",
-			"source":"PomBase",
-			"date":"20091125",
-			"taxon":"NCBITaxon:4896",
-			"taxon_label":"Schizosaccharomyces pombe",
-			"taxon_label_searchable":"Schizosaccharomyces pombe",
-			"reference":"GO_REF:0000024",
-			"evidence_type":"ISS",
-			"annotation_class":"GO:0031386",
-			"annotation_class_label":"protein tag",
-			"annotation_class_label_searchable":"protein tag",
-			"isa_partof_closure_map":"{\"GO:0003674\":\"molecular_function\",\"GO:0031386\":\"protein tag\"}",
-			"isa_partof_closure":["GO:0003674","GO:0031386"],
-			"isa_partof_closure_label":["molecular_function","protein tag"],
-			"evidence_with":["SGD:S000000421"],
-			"isa_partof_closure_label_searchable":[
-			    "molecular_function",
-			    "protein tag"],
-			"score":1.0}]
-	       },
-    "facet_counts":{
-	"facet_queries":{},
-	"facet_fields":{
-	    "source":
-	    [
-		["dictyBase",25],
-		["ZFIN",16],
-		["PomBase",5],
-		["MGI",1],
-		["UniProtKB",1]],
-	    "evidence_type":
-	    [
-		["ISS",22],
-		["IEA",9],
-		["IMP",8],
-		["ND",4],
-		["IDA",2],
-		["ISO",1],
-		["NAS",1],
-		["TAS",1]],
-	    "taxon_label":
-	    [
-		["Dictyostelium discoideum",25],
-		["Danio rerio",16],
-		["Schizosaccharomyces pombe",5],
-		["Mus musculus",2]],
-	    "isa_partof_closure_label":
-	    [
-		["biological_process",29],
-		["molecular_function",20],
-		["metabolic process",13],
-		["cellular process",11],
-		["developmental process",10],
-		["catalytic activity",9],
-		["hydrolase activity",9],
-		["primary metabolic process",9],
-		["cellular_component",8],
-		["establishment of localization",8],
-		["localization",8],
-		["protein tag",8],
-		["transport",8],
-		["single-organism process",7],
-		["anatomical structure development",6],
-		["multicellular organismal development",6],
-		["multicellular organismal process",6],
-		["single-multicellular organism process",6],
-		["aromatic compound catabolic process",5],
-		["carbohydrate derivative catabolic process",5],
-		["carbohydrate derivative metabolic process",5],
-		["catabolic process",5],
-		["cellular aromatic compound metabolic process",5],
-		["cellular catabolic process",5],
-		["cellular metabolic process",5],
-		["cellular nitrogen compound catabolic process",5],
-		["cellular nitrogen compound metabolic process",5],
-		["heterocycle catabolic process",5],
-		["heterocycle metabolic process",5],
-		["hydrolase activity, acting on acid anhydrides",5],
-		["hydrolase activity, acting on acid anhydrides, in phosphorus-containing anhydrides",5],
-		["nitrogen compound metabolic process",5],
-		["nucleobase-containing compound catabolic process",5],
-		["nucleobase-containing compound metabolic process",5],
-		["nucleobase-containing small molecule metabolic process",5],
-		["nucleoside phosphate catabolic process",5],
-		["nucleoside phosphate metabolic process",5],
-		["nucleoside triphosphate catabolic process",5],
-		["nucleoside triphosphate metabolic process",5],
-		["nucleoside-triphosphatase activity",5],
-		["nucleotide catabolic process",5],
-		["nucleotide metabolic process",5],
-		["organ development",5],
-		["organic cyclic compound catabolic process",5],
-		["organic cyclic compound metabolic process",5],
-		["organic substance metabolic process",5],
-		["organophosphate catabolic process",5],
-		["organophosphate metabolic process",5],
-		["purine nucleoside triphosphate catabolic process",5],
-		["purine nucleoside triphosphate metabolic process",5],
-		["purine nucleotide catabolic process",5],
-		["purine nucleotide metabolic process",5],
-		["purine ribonucleoside triphosphate catabolic process",5],
-		["purine ribonucleoside triphosphate metabolic process",5],
-		["purine ribonucleotide catabolic process",5],
-		["purine ribonucleotide metabolic process",5],
-		["purine-containing compound catabolic process",5],
-		["purine-containing compound metabolic process",5],
-		["pyrophosphatase activity",5],
-		["ribonucleoside triphosphate catabolic process",5],
-		["ribonucleoside triphosphate metabolic process",5],
-		["ribonucleotide catabolic process",5],
-		["ribonucleotide metabolic process",5],
-		["small molecule metabolic process",5],
-		["system development",5],
-		["ATP catabolic process",4],
-		["ATP metabolic process",4],
-		["ATPase activity",4],
-		["ATPase activity, coupled",4],
-		["ATPase activity, coupled to movement of substances",4],
-		["ATPase activity, coupled to transmembrane movement of substances",4],
-		["P-P-bond-hydrolysis-driven transmembrane transporter activity",4],
-		["active transmembrane transporter activity",4],
-		["biological regulation",4],
-		["hydrolase activity, acting on acid anhydrides, catalyzing transmembrane movement of substances",4],
-		["integral to membrane",4],
-		["intrinsic to membrane",4],
-		["macromolecule metabolic process",4],
-		["membrane",4],
-		["membrane part",4],
-		["muscle organ development",4],
-		["muscle structure development",4],
-		["peptidase activity",4],
-		["peptidase activity, acting on L-amino acid peptides",4],
-		["primary active transmembrane transporter activity",4],
-		["protein metabolic process",4],
-		["proteolysis",4],
-		["regulation of biological process",4],
-		["regulation of cellular process",4],
-		["serine hydrolase activity",4],
-		["serine-type peptidase activity",4],
-		["transmembrane transport",4],
-		["transmembrane transporter activity",4],
-		["transporter activity",4],
-		["cell differentiation",3],
-		["cell",2],
-		["cell part",2],
-		["cellular component organization",2],
-		["cellular component organization or biogenesis",2],
-		["cellular developmental process",2]],
-	    "annotation_extension_class_closure_label":
-	    []},
-	"facet_dates":{},
-	"facet_ranges":{}},
-    "highlighting":{
-	"PomBase:SPCC548.04_:_GO:0031386":{
-	    "annotation_class_label_searchable":
-	    ["protein <em class=\"hilite\">tag</em>"]},
-	"PomBase:SPAC1783.06c_:_GO:0031386":{
-	    "annotation_class_label_searchable":
-	    ["protein <em class=\"hilite\">tag</em>"]}}};
+     var robj = {
+	 "responseHeader":{
+	     "status":0,
+	     "QTime":23,
+	     "params":{
+		 "facet":"true",
+		 "facet.mincount":"1",
+		 "indent":"on",
+		 "qf":["annotation_class^2",
+		       "annotation_class_label_searchable^1",
+		       "bioentity^2",
+		       "bioentity_label_searchable^1",
+		       "annotation_extension_class^2",
+		       "annotation_extension_class_label_searchable^1"],
+		 "hl.simple.pre":"<em class=\"hilite\">",
+		 "json.nl":"arrarr",
+		 "wt":"json",
+		 "callback_type":"search",
+		 "hl":"true",
+		 "rows":"2",
+		 "defType":"edismax",
+		 "fl":"*,score",
+		 "start":"0",
+		 "q":"tag*",
+		 "packet":"2",
+		 "facet.field":["source",
+				"evidence_type",
+				"taxon_label",
+				"isa_partof_closure_label",
+				"annotation_extension_class_closure_label"],
+		 "qt":"standard",
+		 "fq":"document_category:\"annotation\""}},
+	 "response":{"numFound":48,"start":0,"maxScore":1.0,"docs":[
+			 {
+			     "document_category":"annotation",
+			     "id":"PomBase:SPCC548.04_:_GO:0031386",
+			     "bioentity":"PomBase:SPCC548.04",
+			     "bioentity_label":"urm1",
+			     "bioentity_label_searchable":"urm1",
+			     "source":"PomBase",
+			     "date":"20051107",
+			     "taxon":"NCBITaxon:4896",
+			     "taxon_label":"Schizosaccharomyces pombe",
+			     "taxon_label_searchable":"Schizosaccharomyces pombe",
+			     "reference":"GO_REF:0000024",
+			     "evidence_type":"ISO",
+			     "annotation_class":"GO:0031386",
+			     "annotation_class_label":"protein tag",
+			     "annotation_class_label_searchable":"protein tag",
+			     "isa_partof_closure_map":"{\"GO:0003674\":\"molecular_function\",\"GO:0031386\":\"protein tag\"}",
+			     "isa_partof_closure":["GO:0003674","GO:0031386"],
+			     "isa_partof_closure_label":["molecular_function","protein tag"],
+			     "evidence_with":["SGD:S000001270"],
+			     "isa_partof_closure_label_searchable":[
+				 "molecular_function",
+				 "protein tag"],
+			     "score":1.0},
+			 {
+			     "document_category":"annotation",
+			     "id":"PomBase:SPAC1783.06c_:_GO:0031386",
+			     "bioentity":"PomBase:SPAC1783.06c",
+			     "bioentity_label":"atg12",
+			     "bioentity_label_searchable":"atg12",
+			     "source":"PomBase",
+			     "date":"20091125",
+			     "taxon":"NCBITaxon:4896",
+			     "taxon_label":"Schizosaccharomyces pombe",
+			     "taxon_label_searchable":"Schizosaccharomyces pombe",
+			     "reference":"GO_REF:0000024",
+			     "evidence_type":"ISS",
+			     "annotation_class":"GO:0031386",
+			     "annotation_class_label":"protein tag",
+			     "annotation_class_label_searchable":"protein tag",
+			     "isa_partof_closure_map":"{\"GO:0003674\":\"molecular_function\",\"GO:0031386\":\"protein tag\"}",
+			     "isa_partof_closure":["GO:0003674","GO:0031386"],
+			     "isa_partof_closure_label":["molecular_function","protein tag"],
+			     "evidence_with":["SGD:S000000421"],
+			     "isa_partof_closure_label_searchable":[
+				 "molecular_function",
+				 "protein tag"],
+			     "score":1.0}]
+		    },
+	 "facet_counts":{
+	     "facet_queries":{},
+	     "facet_fields":{
+		 "source":
+		 [
+		     ["dictyBase",25],
+		     ["ZFIN",16],
+		     ["PomBase",5],
+		     ["MGI",1],
+		     ["UniProtKB",1]],
+		 "evidence_type":
+		 [
+		     ["ISS",22],
+		     ["IEA",9],
+		     ["IMP",8],
+		     ["ND",4],
+		     ["IDA",2],
+		     ["ISO",1],
+		     ["NAS",1],
+		     ["TAS",1]],
+		 "taxon_label":
+		 [
+		     ["Dictyostelium discoideum",25],
+		     ["Danio rerio",16],
+		     ["Schizosaccharomyces pombe",5],
+		     ["Mus musculus",2]],
+		 "isa_partof_closure_label":
+		 [
+		     ["biological_process",29],
+		     ["molecular_function",20],
+		     ["metabolic process",13],
+		     ["cellular process",11],
+		     ["developmental process",10],
+		     ["catalytic activity",9],
+		     ["hydrolase activity",9],
+		     ["primary metabolic process",9],
+		     ["cellular_component",8],
+		     ["establishment of localization",8],
+		     ["localization",8],
+		     ["protein tag",8],
+		     ["transport",8],
+		     ["single-organism process",7],
+		     ["anatomical structure development",6],
+		     ["multicellular organismal development",6],
+		     ["multicellular organismal process",6],
+		     ["single-multicellular organism process",6],
+		     ["aromatic compound catabolic process",5],
+		     ["carbohydrate derivative catabolic process",5],
+		     ["carbohydrate derivative metabolic process",5],
+		     ["catabolic process",5],
+		     ["cellular aromatic compound metabolic process",5],
+		     ["cellular catabolic process",5],
+		     ["cellular metabolic process",5],
+		     ["cellular nitrogen compound catabolic process",5],
+		     ["cellular nitrogen compound metabolic process",5],
+		     ["heterocycle catabolic process",5],
+		     ["heterocycle metabolic process",5],
+		     ["hydrolase activity, acting on acid anhydrides",5],
+		     ["hydrolase activity, acting on acid anhydrides, in phosphorus-containing anhydrides",5],
+		     ["nitrogen compound metabolic process",5],
+		     ["nucleobase-containing compound catabolic process",5],
+		     ["nucleobase-containing compound metabolic process",5],
+		     ["nucleobase-containing small molecule metabolic process",5],
+		     ["nucleoside phosphate catabolic process",5],
+		     ["nucleoside phosphate metabolic process",5],
+		     ["nucleoside triphosphate catabolic process",5],
+		     ["nucleoside triphosphate metabolic process",5],
+		     ["nucleoside-triphosphatase activity",5],
+		     ["nucleotide catabolic process",5],
+		     ["nucleotide metabolic process",5],
+		     ["organ development",5],
+		     ["organic cyclic compound catabolic process",5],
+		     ["organic cyclic compound metabolic process",5],
+		     ["organic substance metabolic process",5],
+		     ["organophosphate catabolic process",5],
+		     ["organophosphate metabolic process",5],
+		     ["purine nucleoside triphosphate catabolic process",5],
+		     ["purine nucleoside triphosphate metabolic process",5],
+		     ["purine nucleotide catabolic process",5],
+		     ["purine nucleotide metabolic process",5],
+		     ["purine ribonucleoside triphosphate catabolic process",5],
+		     ["purine ribonucleoside triphosphate metabolic process",5],
+		     ["purine ribonucleotide catabolic process",5],
+		     ["purine ribonucleotide metabolic process",5],
+		     ["purine-containing compound catabolic process",5],
+		     ["purine-containing compound metabolic process",5],
+		     ["pyrophosphatase activity",5],
+		     ["ribonucleoside triphosphate catabolic process",5],
+		     ["ribonucleoside triphosphate metabolic process",5],
+		     ["ribonucleotide catabolic process",5],
+		     ["ribonucleotide metabolic process",5],
+		     ["small molecule metabolic process",5],
+		     ["system development",5],
+		     ["ATP catabolic process",4],
+		     ["ATP metabolic process",4],
+		     ["ATPase activity",4],
+		     ["ATPase activity, coupled",4],
+		     ["ATPase activity, coupled to movement of substances",4],
+		     ["ATPase activity, coupled to transmembrane movement of substances",4],
+		     ["P-P-bond-hydrolysis-driven transmembrane transporter activity",4],
+		     ["active transmembrane transporter activity",4],
+		     ["biological regulation",4],
+		     ["hydrolase activity, acting on acid anhydrides, catalyzing transmembrane movement of substances",4],
+		     ["integral to membrane",4],
+		     ["intrinsic to membrane",4],
+		     ["macromolecule metabolic process",4],
+		     ["membrane",4],
+		     ["membrane part",4],
+		     ["muscle organ development",4],
+		     ["muscle structure development",4],
+		     ["peptidase activity",4],
+		     ["peptidase activity, acting on L-amino acid peptides",4],
+		     ["primary active transmembrane transporter activity",4],
+		     ["protein metabolic process",4],
+		     ["proteolysis",4],
+		     ["regulation of biological process",4],
+		     ["regulation of cellular process",4],
+		     ["serine hydrolase activity",4],
+		     ["serine-type peptidase activity",4],
+		     ["transmembrane transport",4],
+		     ["transmembrane transporter activity",4],
+		     ["transporter activity",4],
+		     ["cell differentiation",3],
+		     ["cell",2],
+		     ["cell part",2],
+		     ["cellular component organization",2],
+		     ["cellular component organization or biogenesis",2],
+		     ["cellular developmental process",2]],
+		 "annotation_extension_class_closure_label":
+		 []},
+	     "facet_dates":{},
+	     "facet_ranges":{}},
+	 "highlighting":{
+	     "PomBase:SPCC548.04_:_GO:0031386":{
+		 "annotation_class_label_searchable":
+		 ["protein <em class=\"hilite\">tag</em>"]},
+	     "PomBase:SPAC1783.06c_:_GO:0031386":{
+		 "annotation_class_label_searchable":
+		 ["protein <em class=\"hilite\">tag</em>"]}}};
 
      var bgr = new bbop.golr.response(robj);
 
-// get_doc
-var di0 = bgr.get_doc(0);
-mr_t.is_same_atom(di0['id'], 'PomBase:SPCC548.04_:_GO:0031386',
-		  'get_doc: [0]');
-var di1 = bgr.get_doc(1);
-mr_t.is_same_atom(di1['id'], 'PomBase:SPAC1783.06c_:_GO:0031386',
-		  'get_doc: [1]');
-var di2 = bgr.get_doc(2);
-mr_t.is_same_atom(di2, null,
-		  'get_doc: [2]');
-var do0 = bgr.get_doc('PomBase:SPCC548.04_:_GO:0031386');
-mr_t.is_same_atom(do0['id'], 'PomBase:SPCC548.04_:_GO:0031386',
-		  'get_doc: do0');
-var do1 = bgr.get_doc('PomBase:SPAC1783.06c_:_GO:0031386');
-mr_t.is_same_atom(do1['id'], 'PomBase:SPAC1783.06c_:_GO:0031386',
-		  'get_doc: do1');
-var do2 = bgr.get_doc('foo');
-mr_t.is_same_atom(do2, null,
-		  'get_doc: do2');
+     // get_doc
+     var di0 = bgr.get_doc(0);
+     mr_t.is_same_atom(di0['id'], 'PomBase:SPCC548.04_:_GO:0031386',
+		       'get_doc: [0]');
+     var di1 = bgr.get_doc(1);
+     mr_t.is_same_atom(di1['id'], 'PomBase:SPAC1783.06c_:_GO:0031386',
+		       'get_doc: [1]');
+     var di2 = bgr.get_doc(2);
+     mr_t.is_same_atom(di2, null,
+		       'get_doc: [2]');
+     var do0 = bgr.get_doc('PomBase:SPCC548.04_:_GO:0031386');
+     mr_t.is_same_atom(do0['id'], 'PomBase:SPCC548.04_:_GO:0031386',
+		       'get_doc: do0');
+     var do1 = bgr.get_doc('PomBase:SPAC1783.06c_:_GO:0031386');
+     mr_t.is_same_atom(do1['id'], 'PomBase:SPAC1783.06c_:_GO:0031386',
+		       'get_doc: do1');
+     var do2 = bgr.get_doc('foo');
+     mr_t.is_same_atom(do2, null,
+		       'get_doc: do2');
 
-// get_doc_field
-mr_t.is_same_atom(bgr.get_doc_field(0, 'id'),
-		  'PomBase:SPCC548.04_:_GO:0031386',
-		  'get_doc_field: [0]');
-mr_t.is_same_atom(bgr.get_doc_field(1, 'id'),
-		  'PomBase:SPAC1783.06c_:_GO:0031386',
-		  'get_doc_field: [1]');
-mr_t.is_same_atom(bgr.get_doc_field(2, 'id'),
-		  null,
-		  'get_doc_field: [2]');
-mr_t.is_same_atom(bgr.get_doc_field('PomBase:SPCC548.04_:_GO:0031386', 'id'),
-		  'PomBase:SPCC548.04_:_GO:0031386',
-		  'get_doc_field: id 0');
-mr_t.is_same_atom(bgr.get_doc_field('PomBase:SPAC1783.06c_:_GO:0031386', 'id'),
-		  'PomBase:SPAC1783.06c_:_GO:0031386',
-		  'get_doc_field: id 1');
-mr_t.is_same_atom(bgr.get_doc_field('foo', 'id'),
-		  null,
-		  'get_doc_field: id foo');
+     // get_doc_field
+     mr_t.is_same_atom(bgr.get_doc_field(0, 'id'),
+		       'PomBase:SPCC548.04_:_GO:0031386',
+		       'get_doc_field: [0]');
+     mr_t.is_same_atom(bgr.get_doc_field(1, 'id'),
+		       'PomBase:SPAC1783.06c_:_GO:0031386',
+		       'get_doc_field: [1]');
+     mr_t.is_same_atom(bgr.get_doc_field(2, 'id'),
+		       null,
+		       'get_doc_field: [2]');
+     mr_t.is_same_atom(bgr.get_doc_field('PomBase:SPCC548.04_:_GO:0031386', 'id'),
+		       'PomBase:SPCC548.04_:_GO:0031386',
+		       'get_doc_field: id 0');
+     mr_t.is_same_atom(bgr.get_doc_field('PomBase:SPAC1783.06c_:_GO:0031386', 'id'),
+		       'PomBase:SPAC1783.06c_:_GO:0031386',
+		       'get_doc_field: id 1');
+     mr_t.is_same_atom(bgr.get_doc_field('foo', 'id'),
+		       null,
+		       'get_doc_field: id foo');
 
-// get_doc_field_hl
-mr_t.is_same_atom(bgr.get_doc_field_hl(0, 'id'),
-		  null,
-		  'get_doc_field_hl: [0]');
-mr_t.is_same_atom(bgr.get_doc_field_hl(1, 'foo'),
-		  null,
-		  'get_doc_field_hl: no foo 1');
-mr_t.is_same_atom(bgr.get_doc_field_hl(2, 'foo'),
-		  null,
-		  'get_doc_field_hl: no foo 2');
-mr_t.is_same_atom(bgr.get_doc_field_hl('PomBase:SPCC548.04_:_GO:0031386',
-				       'annotation_class_label_searchable'),
-		  'protein <em class=\"hilite\">tag</em>',
-		  'get_doc_field_hl: id acls');
-mr_t.is_same_atom(bgr.get_doc_field_hl(1, 'annotation_class_label_searchable'),
-		  'protein <em class=\"hilite\">tag</em>',
-		  'get_doc_field_hl: [1] acls');
+     // get_doc_field_hl
+     mr_t.is_same_atom(bgr.get_doc_field_hl(0, 'id'),
+		       null,
+		       'get_doc_field_hl: [0]');
+     mr_t.is_same_atom(bgr.get_doc_field_hl(1, 'foo'),
+		       null,
+		       'get_doc_field_hl: no foo 1');
+     mr_t.is_same_atom(bgr.get_doc_field_hl(2, 'foo'),
+		       null,
+		       'get_doc_field_hl: no foo 2');
+     mr_t.is_same_atom(bgr.get_doc_field_hl('PomBase:SPCC548.04_:_GO:0031386',
+					    'annotation_class_label_searchable'),
+		       'protein <em class=\"hilite\">tag</em>',
+		       'get_doc_field_hl: id acls');
+     mr_t.is_same_atom(bgr.get_doc_field_hl(1, 'annotation_class_label_searchable'),
+		       'protein <em class=\"hilite\">tag</em>',
+		       'get_doc_field_hl: [1] acls');
 
-//})();
+})();
 
 ///
 /// End unit testing.
