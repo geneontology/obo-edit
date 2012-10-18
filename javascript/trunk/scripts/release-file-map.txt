@@ -12,6 +12,7 @@ lib/bbop/golr/manager.js
 lib/bbop/golr/manager/jquery.js
 lib/bbop/widget/autocomplete.js
 lib/bbop/widget/browse.js
+lib/bbop/widget/term_shield.js
 lib/bbop/golr/manager/preload.js
 lib/bbop/golr/manager/nodejs.js
 lib/bbop/golr/manager/rhino.js
