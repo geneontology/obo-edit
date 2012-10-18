@@ -46,9 +46,7 @@ Format: 1.51
 # --------------------------------------------------------------------------
 
 
-File: autocomplete.js  (widget/autocomplete.js)
 File: bracket.js  (model/bracket.js)
-File: browse.js  (widget/browse.js)
 File: core.js  (core.js)
 
 Group: Golr  {
@@ -75,6 +73,13 @@ File: registry.js  (registry.js)
 File: test.js  (test.js)
 File: tree.js  (model/tree.js)
 File: version.js  (version.js)
+
+Group: Widget  {
+
+   File: autocomplete.js  (widget/autocomplete.js)
+   File: browse.js  (widget/browse.js)
+   File: term_shield.js  (widget/term_shield.js)
+   }  # Group: Widget
 
 Group: Index  {
 

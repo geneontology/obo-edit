@@ -26,7 +26,7 @@ bbop.core.namespace('bbop', 'widget', 'browse');
  * <bbop.golr.manager.jquery>.
  * 
  * The functions for the callbacks look like function(term_acc,
- * term_doc){}. If no function is given, an empty function is used.
+ * json_data){}. If no function is given, an empty function is used.
  * 
  * Arguments:
  *  golr_loc - string url to GOlr server;
@@ -45,11 +45,11 @@ bbop.widget.browse = function(golr_loc, golr_conf_obj,
     logger.DEBUG = true;
     function ll(str){ logger.kvetch('W (browse): ' + str); }
 
-    ll(bbop.core.what_is(this));
+    //ll(bbop.core.what_is(this));
     bbop.golr.manager.jquery.call(this, golr_loc, golr_conf_obj);
-    ll(bbop.core.what_is(this));
+    //ll(bbop.core.what_is(this));
     this._is_a = 'bbop.widget.browse';
-    ll(bbop.core.what_is(this));
+    //ll(bbop.core.what_is(this));
 
     // 
     var anchor = this;
@@ -185,7 +185,9 @@ bbop.widget.browse = function(golr_loc, golr_conf_obj,
 		     function(){
 			 var tid = jQuery(this).attr('id');
 			 var call_time_node_id = info_button_hash[tid];
-			 anchor._info_button_callback(call_time_node_id);
+			 anchor._info_button_callback(call_time_node_id,
+						      //json_data);
+						      doc);
 		     });
 	     });
     }
