@@ -47,7 +47,9 @@ bbop.widget.term_shield = function(item, linker, golr_conf_class_obj, golr_loc){
     logger.DEBUG = true;
     function ll(str){ logger.kvetch('W (term_shield): ' + str); }
 
+    // TODO/BUG: Whoa, that's rotten.
     //bbop.golr.manager.jquery.call(this, golr_loc, golr_conf_obj);
+    bbop.golr.manager.jquery.call(this, golr_loc, {_is_a : 'bbop.golr.conf'});
     this._is_a = 'bbop.widget.term_shield';
 
     // 
@@ -76,7 +78,7 @@ bbop.widget.term_shield = function(item, linker, golr_conf_class_obj, golr_loc){
 		     //var link = linker.anchor({id: val}, 'term');
 		     var link = null;
 		     if( val ){
-			 linker.anchor({id: val});
+			 link = linker.anchor({id: val});
 			 if( link ){ val = link; }
 		     }else{
 			 val = 'n/a';
@@ -106,9 +108,19 @@ bbop.widget.term_shield = function(item, linker, golr_conf_class_obj, golr_loc){
 	dia.close(function(){ jQuery('#' + div_id).remove(); });
     }
 
-    // BUG/TODO:
+    // Call the render directly if we already have a document,
+    // otherwise, if it seems like a string (potential id), do a
+    // callback on it and pull the doc out.
     if( bbop.core.what_is(item) == 'string' ){
-	// BUG/TODO: Do callback for data.
+	// Setup and do a callback for data.
+	function _process_resp(json_data){
+	    var resp = new bbop.golr.response(json_data);
+	    var doc = resp.get_doc(0);
+	    draw_shield(doc);
+	}
+	this.register('search', 'do', _process_resp);
+	this.set_id(item);
+	this.search();
     }else{
 	// It looks like a json data blob.
 	// var resp = bbop.golr.response(item);
@@ -118,4 +130,4 @@ bbop.widget.term_shield = function(item, linker, golr_conf_class_obj, golr_loc){
     }
     
 };
-//bbop.core.extend(bbop.widget.term_shield, bbop.golr.manager.jquery);
+bbop.core.extend(bbop.widget.term_shield, bbop.golr.manager.jquery);
