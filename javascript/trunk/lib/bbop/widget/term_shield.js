@@ -6,8 +6,6 @@
  * BBOP object to produce a self-constructing/self-destructing term
  * information shield.
  * 
- * TODO: A work in progress.
- * 
  * This is a completely self-contained UI and manager.
  */
 
@@ -26,10 +24,6 @@ bbop.core.namespace('bbop', 'widget', 'term_shield');
  * 
  * This is (sometimes) a specialized (and widgetized) subclass of
  * <bbop.golr.manager.jquery>.
- * 
- * TODO: Will display fields with weights ??? through ???.
- * 
- * TODO: A work in progress.
  * 
  * Arguments:
  *  item - string (term id) or solr-returned json response
