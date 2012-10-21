@@ -243,7 +243,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 
 	this.query_filters[filter][value] = this.plist_to_property_hash(plist);
 	
-	ll("Current state: " + bbop.core.dump(this.query_filters));
+	//ll("Current state: " + bbop.core.dump(this.query_filters));
 
 	return {}; // TODO
    };
