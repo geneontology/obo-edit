@@ -1065,7 +1065,7 @@ bbop.model.graph.prototype.load_json = function(json_object){
 	bbop.core.each(json_object.nodes,
 		       function(node_raw){
 			  var nid = node_raw.id;
-			  var nlabel = node_raw.label;
+			  var nlabel = node_raw.lbl;
 			  var n = new bbop.model.node(nid, nlabel);
 			  anchor.add_node(n);
 		      });
@@ -1075,9 +1075,9 @@ bbop.model.graph.prototype.load_json = function(json_object){
     if( json_object.edges ){
 	bbop.core.each(json_object.edges,
 		       function(edge_raw){
-			   var e = new bbop.model.edge(edge_raw.subject_id,
-						       edge_raw.object_id,
-						       edge_raw.predicate_id);
+			   var e = new bbop.model.edge(edge_raw.sub,
+						       edge_raw.obj,
+						       edge_raw.pred);
 			   anchor.add_edge(e);
 		      });
     }
