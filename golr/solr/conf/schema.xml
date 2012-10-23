@@ -25,6 +25,7 @@
     <copyField source="synonym" dest="synonym_searchable"></copyField>
     <!-- bbop_bio: Derived from C13 + ncbi_taxonomy.obo. -->
     <!-- bbop_ann: Derived from C13 + ncbi_taxonomy.obo. -->
+    <!-- bbop_ann_ev_agg: Derived from C13 + ncbi_taxonomy.obo. -->
     <field name="taxon_label" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of taxon_label.-->
     <field name="taxon_label_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
@@ -51,7 +52,7 @@
     <!-- bbop_ann: Column 14: date of assignment. -->
     <field name="date" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ann: Column 8: with/from. -->
-    <!-- bbop_ann_ev_agg: ??? -->
+    <!-- bbop_ann_ev_agg: All column 8s for this term/gene product pair -->
     <field name="evidence_with" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ont: JSON blob form of the local relation transitivity graph. -->
     <field name="transitivity_graph" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
@@ -96,6 +97,7 @@
     <field name="isa_partof_closure_map" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
     <!-- bbop_bio: Column 13: taxon. -->
     <!-- bbop_ann: Column 13: taxon. -->
+    <!-- bbop_ann_ev_agg: Column 13: taxon. -->
     <field name="taxon" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_bio: Column 1: Identifier database. -->
     <field name="db" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
@@ -107,6 +109,17 @@
     <!--An easily searchable (TextField tokenized) version of label.-->
     <field name="label_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
     <copyField source="label" dest="label_searchable"></copyField>
+    <!-- bbop_bio: Labels derived from C13 + ncbi_taxonomy.obo. -->
+    <!-- bbop_ann: Labels derived from C13 + ncbi_taxonomy.obo. -->
+    <!-- bbop_ann_ev_agg: Labels derived from C13 + ncbi_taxonomy.obo. -->
+    <field name="taxon_closure_label" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <!--An easily searchable (TextField tokenized) version of taxon_closure_label.-->
+    <field name="taxon_closure_label_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <copyField source="taxon_closure_label" dest="taxon_closure_label_searchable"></copyField>
+    <!-- Automatically created to capture mapping information -->
+    <!-- between taxon_closure and taxon_closure_label.-->
+    <!-- It is not indexed for searching, but may be useful to the client. -->
+    <field name="taxon_closure_map" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
     <!-- bbop_ann: ??? -->
     <field name="annotation_extension_class_closure_label" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of annotation_extension_class_closure_label.-->
@@ -118,6 +131,10 @@
     <field name="annotation_extension_class_closure_map" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
     <!-- bbop_ann: ??? -->
     <field name="annotation_extension_class" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <!-- bbop_bio: IDs derived from C13 + ncbi_taxonomy.obo. -->
+    <!-- bbop_ann: IDs derived from C13 + ncbi_taxonomy.obo. -->
+    <!-- bbop_ann_ev_agg: IDs derived from C13 + ncbi_taxonomy.obo. -->
+    <field name="taxon_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ann: ??? -->
     <field name="reference" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ont: Alternate term id. -->
@@ -129,8 +146,9 @@
     <field name="replaced_by" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ont: JSON blob form of the local stepwise topology graph. -->
     <field name="topology_graph" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
-    <!-- bbop_ann_ev_agg: ??? -->
-    <field name="evidence_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <!-- bbop_ann: All evidence (evidence closure) for this annotation -->
+    <!-- bbop_ann_ev_agg: All evidence for this term/gene product pair -->
+    <field name="evidence_type_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ont: Term comment. -->
     <field name="comment" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of comment.-->
