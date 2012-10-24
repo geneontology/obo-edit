@@ -216,7 +216,9 @@ bbop.core.get_keys = function (arg_hash){
  * Function: hashify
  *
  * Returns a hash form of the argument array/list. For example ['a',
- * 'b'] would become {'a': true, 'b': true}.
+ * 'b'] would become {'a': true, 'b': true} or [['a', '12'], ['b',
+ * '21']] would become {'a': '12', 'b': '21'}. Using mixed sub-lists
+ * is undefined.
  *
  * Parameters:
  *  list - the list to convert
@@ -224,12 +226,26 @@ bbop.core.get_keys = function (arg_hash){
  * Returns: a hash
  */
 bbop.core.hashify = function (list){
-
     var rethash = {};
-    bbop.core.each(list,
-		  function(item){
-		      rethash[item] = true;
-		  });
+
+    if( list && list[0] ){
+	if( bbop.core.is_array(list[0]) ){
+	    bbop.core.each(list,
+			   function(item){
+			       var key = item[0];
+			       var val = item[1];
+			       if( bbop.core.is_defined(key) ){
+				   rethash[key] = val;
+			       }
+			   });
+	}else{
+	    bbop.core.each(list,
+			   function(item){
+			       rethash[item] = true;
+			   });
+	}
+    }
+
     return rethash;
 };
 

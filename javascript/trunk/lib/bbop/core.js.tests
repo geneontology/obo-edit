@@ -130,7 +130,7 @@ mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
 })();
 
 // pare: for hashes.
-// (function(){
+(function(){
 
      var ir1 = {
 	 u: {a: 1, b: 2},
@@ -199,7 +199,7 @@ mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
 //      mr_t.is_same_atom(8, or4[0]['b'], "ir2 test 2");
 //      mr_t.is_same_atom(2, or4[2]['b'], "ir2 test 3");
      
-// })();
+ })();
 
 // get_keys.
 (function(){
@@ -335,6 +335,8 @@ mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
      var t2 = bbop.core.hashify(['a']);
      var t3 = bbop.core.hashify(['a', 'b', 'c']);
      var t4 = bbop.core.hashify([1, 2, 3]);
+     var t5 = bbop.core.hashify([[]]);
+     var t6 = bbop.core.hashify([['a', 1], ['b', 2], ['c', 3]]);
 
      mr_t.is_same_hash(t0, {}, "nil is same hashified");
      mr_t.is_same_hash(t1, {}, "[] is same hashified");
@@ -343,6 +345,9 @@ mr_t.is_same_atom(true, happy.bar.prop, "added prop to new NS");
 		       "{a, b, c} is same hashified");
      mr_t.is_same_hash(t4, {1: true, 2: true, 3: true},
 		       "{1, 2, ,3} is same hashified");     
+     mr_t.is_same_hash(t5, {}, "[[]] is same hashified");
+     mr_t.is_same_hash(t6, {'a': 1, 'b': 2, 'c': 3},
+		       "complex is same hashified");
 
 })();
 
