@@ -269,7 +269,7 @@
 (let ((+gb-per-month-first+ 0.1)
       (+gb-per-month-rest+ 0.1))
   ;;(storage-calc 2.0 @ 3.0 1.5))
-  (storage-calc 1.1))
+  (storage-calc 0.3))
 ;; Google Drive Calc: $163
 (let ((+gb-per-month-first+ 0.10)
       (+gb-per-month-rest+ 0.10))
