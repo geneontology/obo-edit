@@ -130,7 +130,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    facet: 'true',
 	    'facet.mincount': 1,
 	    'json.nl': 'arrarr', // only in facets right now
-	    // TODO?: 'facet.limit': 20,
+	    'facet.limit': 25,
 	    // TODO?: 'f.???.facet.limit': 50,
 	    // TODO: 'json.nl': [flat|map|arrarr]
 	    // They are unlikely to be messed with too much.
