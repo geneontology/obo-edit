@@ -1,0 +1,161 @@
+format-version: 1.2
+ontology: fypo
+
+[Term]
+id: FYPO:0000001
+name: phenotype
+namespace: fission_yeast_phenotype
+def: "Any of the set of observable characteristics of an organism resulting from the interaction of its genotype with the environment." [PomBase:mah]
+
+[Term]
+id: FYPO:0000002
+name: cell phenotype
+namespace: fission_yeast_phenotype
+def: "A phenotype that is observed at the level of an individual cell." [PomBase:mah]
+comment: This is a high-level term whose primary purpose is to organize terms beneath it in the ontology, and we expect that it will seldom be used for direct annotations. Please consider using a more specific term to annotate each phenotype.
+is_a: FYPO:0000001  ! phenotype
+intersection_of: FYPO:0000001  ! phenotype
+intersection_of: inheres_in CL:0000000
+
+[Term]
+id: FYPO:0000004
+name: viability
+namespace: fission_yeast_phenotype
+def: "A cell phenotype that consists of the cell's disposition to survive and develop normally." [PomBase:mah]
+comment: Viability is usually determined under standard laboratory conditions, i.e. a cell is generally considered viable if it can grow in rich medium under normal conditions such as temperature, pressure, oxygen level, pH, etc.
+is_a: FYPO:0000002  ! cell phenotype
+intersection_of: PATO:0000169 
+intersection_of: inheres_in CL:0000000
+
+[Term]
+id: FYPO:0000005
+name: abnormal cell morphology
+namespace: fission_yeast_phenotype
+alt_id: FYPO:0000019
+def: "A cell phenotype characterized by altered cell morphology." [PomBase:mah]
+synonym: "cell morphology, misshapen cells" RELATED [PomBase:mah]
+synonym: "cellular morphology: abnormal" EXACT [SGD:phenotype_annotation]
+is_a: FYPO:0000136  ! cellular structure phenotype
+intersection_of: PATO:0000051 
+intersection_of: inheres_in CL:0000000
+intersection_of: qualifier PATO:0000460
+
+[Term]
+id: FYPO:0000023
+name: small cells
+namespace: fission_yeast_phenotype
+def: "A cell morphology phenotype in which cells have an abnormally low volume." [PomBase:mah]
+synonym: "cell size: decreased" EXACT [SGD:phenotype_annotation]
+is_a: FYPO:0001127  ! abnormal cell size
+intersection_of: PATO:0000596 
+intersection_of: inheres_in CL:0000000
+
+[Term]
+id: FYPO:0000124
+name: viable
+namespace: fission_yeast_phenotype
+def: "A viability phenotype in which cells are able to survive under normal conditions." [PomBase:mah]
+comment: Viability is usually determined under standard laboratory conditions, i.e. a cell is generally considered viable if it can grow in rich medium under normal conditions such as temperature, pressure, oxygen level, pH, etc.
+is_a: FYPO:0000004  ! viability
+intersection_of: PATO:0000719 
+intersection_of: inheres_in CL:0000000
+
+[Term]
+id: FYPO:0000136
+name: cellular structure phenotype
+namespace: fission_yeast_phenotype
+def: "A phenotype that affects the structure of a cell or a cellular component." [PomBase:mah]
+is_a: FYPO:0000002  ! cell phenotype
+intersection_of: FYPO:0000002  ! cell phenotype
+intersection_of: inheres_in GO:0005575
+
+[Term]
+id: FYPO:0000645
+name: small vegetative cells
+namespace: fission_yeast_phenotype
+def: "A cell morphology phenotype in which vegetative cells have an abnormally low volume." [PomBase:mah]
+is_a: FYPO:0000023  ! small cells
+is_a: FYPO:0001320  ! vegetative cell phenotype
+intersection_of: PATO:0000596 
+intersection_of: exists_during GO:0072690
+intersection_of: inheres_in CL:0000334
+
+[Term]
+id: FYPO:0000648
+name: small viable vegetative cells
+namespace: fission_yeast_phenotype
+def: "A cell morphology phenotype in which vegetatively growing cells are viable but have an abnormally low volume. Note that small viable cells result from a cell cycle size regulation defect." [PomBase:mah]
+synonym: "small viable vegetative cells during vegetative growth" EXACT [PomBase:mah]
+synonym: "wee" EXACT [PomBase:jh, PomBase:mah]
+is_a: FYPO:0000645  ! small vegetative cells
+is_a: FYPO:0001491  ! viable vegetative cells
+intersection_of: FYPO:0000002  ! cell phenotype
+intersection_of: exists_during GO:0072690
+intersection_of: has_part FYPO:0000124 ! viable
+intersection_of: has_part FYPO:0000645 ! small vegetative cells
+relationship: has_part FYPO:0000124 ! viable
+relationship: has_part FYPO:0000645 ! small vegetative cells
+
+[Term]
+id: FYPO:0001127
+name: abnormal cell size
+namespace: fission_yeast_phenotype
+def: "A cell morphology phenotype in which cells have a volume or dimensions that differ from normal." [PomBase:mah]
+is_a: FYPO:0000005  ! abnormal cell morphology
+intersection_of: PATO:0000117 
+intersection_of: inheres_in CL:0000000
+intersection_of: qualifier PATO:0000460
+
+[Term]
+id: FYPO:0001320
+name: vegetative cell phenotype
+namespace: fission_yeast_phenotype
+def: "A phenotype that is observed at the level of an individual cell, when the cell is in the vegetative growth phase of the cell cycle." [PomBase:mah]
+synonym: "cell phenotype during vegetative growth" EXACT [PomBase:mah]
+synonym: "vegetative cell phenotype during vegetative growth" EXACT [PomBase:mah]
+is_a: FYPO:0000002  ! cell phenotype
+intersection_of: FYPO:0000002  ! cell phenotype
+intersection_of: during GO:0072690
+intersection_of: exists_during GO:0072690
+
+[Term]
+id: FYPO:0001491
+name: viable vegetative cells
+namespace: fission_yeast_phenotype
+def: "A cell morphology phenotype in which vegetatively growing cells are viable." [PomBase:mah]
+synonym: "viable cells during vegetative growth" EXACT [PomBase:mah]
+is_a: FYPO:0000124  ! viable
+intersection_of: FYPO:0000124  ! viable
+intersection_of: exists_during GO:0072690
+
+[Typedef]
+id: during
+name: during
+namespace: fission_yeast_phenotype
+xref: OBO_REL:during
+
+[Typedef]
+id: exists_during
+name: exists_during
+namespace: fission_yeast_phenotype
+xref: OBO_REL:exists_during
+
+[Typedef]
+id: has_part
+name: has_part
+namespace: fission_yeast_phenotype
+is_transitive: true
+xref: BFO:0000051
+
+[Typedef]
+id: inheres_in
+name: inheres_in
+namespace: fission_yeast_phenotype
+xref: BFO:0000052
+
+[Typedef]
+id: qualifier
+name: qualifier
+namespace: fission_yeast_phenotype
+comment: placeholder relation to indicate normality/abnormality.
+
