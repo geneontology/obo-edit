@@ -46,8 +46,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 
     // Per-manager logger.
     this._logger = new bbop.logger(this._is_a);
-    this._logger.DEBUG = true;
-    //this._logger.DEBUG = false;
+    //this._logger.DEBUG = true;
+    this._logger.DEBUG = false;
     function ll(str){ anchor._logger.kvetch(str); }
 
     // To help keep requests from the past haunting us. Actually doing
@@ -93,6 +93,10 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     this.default_query = '*:*'; // changable
     this.query = this.default_query; //current
 
+    // Our (default) fl and whatever we have now.
+    this.fl_default = '*%2Cscore';
+    this.fl_current = this.fl_default;
+
     // We remember defaults in the case of rows and start since they
     // are the core to any paging mechanisms and may change often.
     this.default_rows = 10;
@@ -115,7 +119,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    //version: '2.2',
 	    rows: anchor.default_rows,
 	    start: anchor.default_start, // Solr is offset indexing
-	    fl: '*%2Cscore',
+	    //fl: '*%2Cscore',
+	    fl: anchor.fl_default,
     
 	    // Deprecated: see query_filters
 	    //fq: {},
@@ -130,7 +135,8 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    facet: 'true',
 	    'facet.mincount': 1,
 	    'json.nl': 'arrarr', // only in facets right now
-	    'facet.limit': 25,
+	    'facet.limit': 26, // There is a reason for this...later (25+)
+	    //'facet.limit': 25,
 	    // TODO?: 'f.???.facet.limit': 50,
 	    // TODO: 'json.nl': [flat|map|arrarr]
 	    // They are unlikely to be messed with too much.
@@ -166,6 +172,67 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    // TODO: add debug parameter a la include_highlighting
 	}
 	return this._logger.DEBUG;
+    };
+
+    /*
+     * Function: lite
+     * 
+     * Limit the returns fields (the parameter "fl") to the ones
+     * defined in the set of fields defined in results, boost, and
+     * filter, plus score.
+     * 
+     * The default is "true".
+     * 
+     * Parameters: 
+     *  use_lite_p - *[optional]* true or false, none just returns current
+     *
+     * Returns: 
+     *  boolean; the current state of lite-ness
+     */
+    this.lite = function(use_lite_p){
+
+	// Adjust the current state accordingly.
+	if( use_lite_p == true || use_lite_p == false ){
+	    if( use_lite_p == true ){
+		
+		// The actual collections and adjustment.
+		// First, this only works if we have a personality, so
+		// check to see if we have one.
+		var per = anchor.get_personality();
+		if( per ){
+		    // Since we have a personality, collect all of the
+		    // mentioned fields.
+		    var field_collection = {};
+		    var loop = bbop.core.each;
+		    var union = bbop.core.merge;
+		    loop(['boost', 'result', 'filter'],
+			 function(cat){
+			     field_collection = 
+				 union(field_collection,
+				       anchor._current_class.get_weights(cat));
+			 });
+		    
+		    // Finally, set these fields (plus score) as the
+		    // new return fields.
+		    var flist = bbop.core.get_keys(field_collection);
+		    flist.push('score');
+		    anchor.fl_current = flist.join('%2C');
+		    anchor.set('fl', anchor.fl_current);
+		}
+
+	    }else{ // else false
+		// Reset.
+		anchor.fl_current = anchor.fl_default;
+		anchor.set('fl', anchor.fl_current);
+	    }
+	}
+
+	// Return the current state.
+	var retval = false;
+	if( anchor.fl_default != anchor.fl_current ){
+	    retval = true;
+	}
+	return retval;
     };
 
     /*
@@ -1200,6 +1267,28 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    
 	    // Show that we did indeed set a personality.
 	    retval = true;
+	}
+
+	return retval;
+    };
+
+    /*
+     * Function: get_personality
+     *
+     * Returns the current personality, null if none.
+     * 
+     * Parameters: 
+     *  n/a
+     *
+     * Returns:
+     *  Returns the current personality as a string, null if none is set
+     */
+    this.get_personality = function(){
+	var retval = null;
+
+	if( bbop.core.is_defined(anchor._current_class) &&
+	    bbop.core.what_is(anchor._current_class) == 'bbop.golr.conf_class'){
+	    retval = anchor._current_class.id();
 	}
 
 	return retval;
