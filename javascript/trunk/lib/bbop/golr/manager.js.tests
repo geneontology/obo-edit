@@ -98,6 +98,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'facet.field=source',
 		       'facet.field=evidence_type',
 		       'facet.field=taxon_label',
@@ -272,6 +273,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'facet.field=source',
 		       'facet.field=evidence_type',
 		       'facet.field=taxon_label',
@@ -291,6 +293,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'facet.field=source',
 		       'facet.field=evidence_type',
 		       'facet.field=taxon_label',
@@ -310,6 +313,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'facet.field=source',
 		       'facet.field=evidence_type',
 		       'facet.field=taxon_label',
@@ -340,6 +344,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'facet.field=source',
 		       'facet.field=evidence_type',
 		       'facet.field=taxon_label',
@@ -384,6 +389,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'facet.field=source',
 		       'facet.field=evidence_type',
 		       'facet.field=taxon_label',
@@ -405,6 +411,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'facet.field=source',
 		       'facet.field=evidence_type',
 		       'facet.field=taxon_label',
@@ -434,6 +441,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'facet.field=source',
 		       'facet.field=evidence_type',
 		       'facet.field=taxon_label',
@@ -457,6 +465,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'facet.field=source',
 		       'facet.field=evidence_type',
 		       'facet.field=taxon_label',
@@ -486,6 +495,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'facet.field=source',
 		       'facet.field=evidence_type',
 		       'facet.field=taxon_label',
@@ -513,6 +523,8 @@ load('manager.js');
      var go = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);
      go.set_query('foo');
      
+     mr_t.is_same_atom(null, go.get_personality(), 'no personality yet');
+
      mr_t.is_same_url(go.get_query_url(),
 		      ['http://golr.berkeleybop.org/select?defType=edismax',
 		       'qt=standard',
@@ -524,6 +536,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'q=foo'].join('&'),
 		      "qf base");
      
@@ -539,12 +552,15 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'qf=label^2',
 		       'qf=id^1',
 		       'q=foo'].join('&'),
 		      "qf base simple addition: no personality");
      
      go.set_personality('bbop_ont');
+     mr_t.is_same_atom('bbop_ont', go.get_personality(),
+		       'personality is now bbop_ont');
      mr_t.is_same_url(go.get_query_url(),
 		      ['http://golr.berkeleybop.org/select?defType=edismax',
 		       'qt=standard',
@@ -556,6 +572,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'facet.field=source',
 		       'facet.field=subset',
 		       'facet.field=isa_partof_closure_label',
@@ -581,6 +598,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'facet.field=source',
 		       'facet.field=subset',
 		       'facet.field=isa_partof_closure_label',
@@ -671,6 +689,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'facet.field=source',
 		       'facet.field=subset',
 		       'facet.field=isa_partof_closure_label',
@@ -705,6 +724,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'facet.field=source',
 		       'facet.field=subset',
 		       'facet.field=isa_partof_closure_label',
@@ -739,6 +759,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'foo=bar',
 		       'q=*:*'].join('&'),
 		      "unset: set foo");    
@@ -756,6 +777,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'q=*:*'].join('&'),
 		      "unset: unset foo");    
 
@@ -772,6 +794,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'q=*:*'].join('&'),
 		      "unset: unset foo");    
  })();
@@ -796,6 +819,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'q=*:*'].join('&'),
 		      "hilite: unset false url");    
 
@@ -812,6 +836,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'q=*:*'].join('&'),
 		      "hilite: current state nothing url");    
 
@@ -828,6 +853,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'hl=true',
 		       'hl.simple.pre=<em class="hilite">',
 		       'q=*:*'].join('&'),
@@ -846,6 +872,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'q=*:*'].join('&'),
 		      "hilite: simple turn off url"); 
 
@@ -862,6 +889,7 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'hl=true',
 		       'hl.simple.pre=<em class="blah">',
 		       'q=*:*'].join('&'),
@@ -880,10 +908,75 @@ load('manager.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+		       'facet.limit=26',
 		       'q=*:*'].join('&'),
 		      "hilite: turn off url"); 
 
  })();
+
+// bbop.golr.manager - 16 - lite
+//(function(){
+
+     // Setup.
+     var gconf = new bbop.golr.conf(amigo.data.golr);
+     var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);     
+
+// Trivialities.
+     mr_t.is_false(gm.lite(), 'no lite set yet');
+     gm.set_personality('dsfsdfsdf');
+     mr_t.is_false(gm.lite(), 'bad lite does nothing');
+     mr_t.is_false(gm.lite(false), 'false to false 1');     
+     mr_t.is_false(gm.lite(), 'false to false 2');
+     mr_t.is_false(gm.lite(true), 'true/no good personality does nothing 1');
+     mr_t.is_false(gm.lite(), 'true/no good personality does nothing 2');
+     
+// On.
+     gm.set_personality('bbop_ont');
+     mr_t.is_false(gm.lite(), 'defined personality not enough');
+     mr_t.is_true(gm.lite(true), 'okay, this is sufficient for lite 1');
+     mr_t.is_true(gm.lite(), 'okay, this is sufficient for lite 2');
+     mr_t.is_same_url(gm.get_query_url(),
+     		      ['http://golr.berkeleybop.org/select?defType=edismax',
+     		       'qt=standard',
+     		       'indent=on',
+     		       'wt=json',
+     		       'rows=10',
+     		       'start=0',
+     		       'fl=id%2Clabel%2Cdescription%2Ccomment%2Csynonym%2Calternate_id%2Csource%2Csubset%2Cisa_partof_closure_label%2Cis_obsolete%2Cscore',
+     		       'facet=true',
+     		       'facet.mincount=1',
+     		       'json.nl=arrarr',
+     		       'facet.limit=26',
+		       'facet.field=source',
+		       'facet.field=subset',
+		       'facet.field=isa_partof_closure_label',
+		       'facet.field=is_obsolete',
+     		       'q=*:*'].join('&'),
+     		      "liteness on for bbop_ont on");    
+
+// Toggle.
+     mr_t.is_false(gm.lite(false), 'toggle lite off 1');
+     mr_t.is_false(gm.lite(), 'toggle lite off 2');
+     mr_t.is_same_url(gm.get_query_url(),
+     		      ['http://golr.berkeleybop.org/select?defType=edismax',
+     		       'qt=standard',
+     		       'indent=on',
+     		       'wt=json',
+     		       'rows=10',
+     		       'start=0',
+     		       'fl=*%2Cscore',
+     		       'facet=true',
+     		       'facet.mincount=1',
+     		       'json.nl=arrarr',
+     		       'facet.limit=26',
+		       'facet.field=source',
+		       'facet.field=subset',
+		       'facet.field=isa_partof_closure_label',
+		       'facet.field=is_obsolete',
+     		       'q=*:*'].join('&'),
+     		      "liteness on for bbop_ont off");
+
+// })();
 
 ///
 /// End unit testing.

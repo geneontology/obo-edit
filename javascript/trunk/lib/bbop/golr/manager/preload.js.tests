@@ -47,7 +47,8 @@ load('preload.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
-		  'q=*:*',
+     		       'facet.limit=26',
+		       'q=*:*',
 		       'packet=1',
 		       'callback_type=search'].join('&'),
       		      "page on update");
@@ -62,6 +63,7 @@ load('preload.js');
 		       'facet=true',
 		       'facet.mincount=1',
 		       'json.nl=arrarr',
+     		       'facet.limit=26',
 		       'q=*:*',
 		       'packet=2',
 		       'callback_type=search'].join('&'),
