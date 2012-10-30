@@ -18,13 +18,16 @@
 // local ones.
 load('../staging/bbop.js');
 load('../_data/golr.js');
+load('../_data/server.js');
 
 // Setup environment.
 var acc = arguments[0];
 var opt = arguments[1];
 var gconf = new bbop.golr.conf(amigo.data.golr);
-var go = new bbop.golr.manager.rhino('http://golr.berkeleybop.org/', gconf);
-go.debug(false);
+var gserv = new amigo.data.server();
+var go = new bbop.golr.manager.rhino(gserv.golr_base(), gconf);
+go.set_id(acc);
+//go.debug(true);
 if( bbop.core.is_defined(opt) ){
     //print('opt: ' + opt);
     go.set_personality(opt);
