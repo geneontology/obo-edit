@@ -12,7 +12,7 @@
 bbop.core.require('bbop', 'core');
 bbop.core.require('bbop', 'logger');
 bbop.core.require('bbop', 'model');
-bbop.core.require('bbop', 'model', 'graph', 'bracket');
+bbop.core.require('bbop', 'model', 'bracket', 'graph');
 bbop.core.require('bbop', 'html');
 bbop.core.require('bbop', 'golr', 'manager', 'jquery');
 bbop.core.namespace('bbop', 'widget', 'browse');
@@ -75,7 +75,7 @@ bbop.widget.browse = function(golr_loc, golr_conf_obj,
 	var resp = new bbop.golr.response(json_data);
 	var doc = resp.documents(json_data)[0];
 
-	var topo_graph = new bbop.model.graph.bracket();
+	var topo_graph = new bbop.model.bracket.graph();
 	topo_graph.load_json(JSON.parse(doc['topology_graph']));
 
 	var trans_graph = new bbop.model.graph();
