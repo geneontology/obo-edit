@@ -29,6 +29,7 @@ bbop.core.namespace('bbop', 'golr', 'response');
  *  golr response object
  */
 bbop.golr.response = function(json_data){
+    this._is_a = 'bbop.golr.response';
 
     // The raw incoming document.
     this._raw = json_data;
