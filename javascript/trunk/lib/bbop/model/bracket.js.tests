@@ -24,7 +24,7 @@ load('bracket.js');
      var n_c = new bbop.model.node('c');
      var e1 = new bbop.model.edge(n_b, n_a);
      var e2 = new bbop.model.edge(n_c, n_a);
-     var s = new bbop.model.graph.bracket();
+     var s = new bbop.model.bracket.graph();
      s.add_node(n_a);
      s.add_node(n_b);
      s.add_node(n_c);
@@ -45,7 +45,7 @@ load('bracket.js');
 // teting helpers
 (function(){
 
-     var s = new bbop.model.graph.bracket();
+     var s = new bbop.model.bracket.graph();
      mr_t.is_same_atom(s.relation_weight(), 0, "weight: naught");
      mr_t.is_same_atom(s.relation_weight(''), 0, "weight: empty");
      mr_t.is_same_atom(s.relation_weight('bag'), 0, "weight: bag default");
@@ -80,7 +80,7 @@ load('bracket.js');
 	 {"nodes":[{"id":"GO:0009987","lbl":"cellular process"},{"id":"GO:0048869","lbl":"cellular developmental process"},{"id":"GO:0048731","lbl":"system development"},{"id":"GO:0007275","lbl":"multicellular organismal development"},{"id":"GO:0030154","lbl":"cell differentiation"},{"id":"GO:0007399","lbl":"nervous system development"},{"id":"GO:0048856","lbl":"anatomical structure development"},{"id":"GO:0008150","lbl":"biological_process"},{"id":"GO:0050769","lbl":"positive regulation of neurogenesis"},{"id":"GO:0042063","lbl":"gliogenesis"},{"id":"GO:0022008","lbl":"neurogenesis"},{"id":"GO:0032502","lbl":"developmental process"},{"id":"GO:0050767","lbl":"regulation of neurogenesis"},{"id":"GO:0032501","lbl":"multicellular organismal process"},{"id":"GO:0050768","lbl":"negative regulation of neurogenesis"},{"id":"GO:0048699","lbl":"generation of neurons"}],"edges":[{"sub":"GO:0022008","obj":"GO:0007399","pred":"part_of"},{"sub":"GO:0050768","obj":"GO:0022008","pred":"negatively_regulates"},{"sub":"GO:0042063","obj":"GO:0022008","pred":"is_a"},{"sub":"GO:0022008","obj":"GO:0030154","pred":"is_a"},{"sub":"GO:0032501","obj":"GO:0008150","pred":"is_a"},{"sub":"GO:0032502","obj":"GO:0008150","pred":"is_a"},{"sub":"GO:0048731","obj":"GO:0048856","pred":"is_a"},{"sub":"GO:0007399","obj":"GO:0048731","pred":"is_a"},{"sub":"GO:0007275","obj":"GO:0032501","pred":"is_a"},{"sub":"GO:0048869","obj":"GO:0009987","pred":"is_a"},{"sub":"GO:0048856","obj":"GO:0032502","pred":"is_a"},{"sub":"GO:0007275","obj":"GO:0032502","pred":"is_a"},{"sub":"GO:0050769","obj":"GO:0022008","pred":"positively_regulates"},{"sub":"GO:0048699","obj":"GO:0022008","pred":"is_a"},{"sub":"GO:0048869","obj":"GO:0032502","pred":"is_a"},{"sub":"GO:0009987","obj":"GO:0008150","pred":"is_a"},{"sub":"GO:0050767","obj":"GO:0022008","pred":"regulates"},{"sub":"GO:0030154","obj":"GO:0048869","pred":"is_a"},{"sub":"GO:0048731","obj":"GO:0007275","pred":"part_of"}]};
 
      // Load the graphs
-     var topo = new bbop.model.graph.bracket();
+     var topo = new bbop.model.bracket.graph();
      topo.load_json(topology_graph_raw);
      
      // The produced bracket layout should look like:
@@ -128,7 +128,7 @@ load('bracket.js');
      var transitivity_graph_raw =
 	 {"nodes":[{"id":"GO:0009987","lbl":"cellular process"},{"id":"GO:0022008","lbl":"neurogenesis"},{"id":"GO:0032502","lbl":"developmental process"},{"id":"GO:0032501","lbl":"multicellular organismal process"},{"id":"GO:0048869","lbl":"cellular developmental process"},{"id":"GO:0007275","lbl":"multicellular organismal development"},{"id":"GO:0048731","lbl":"system development"},{"id":"GO:0030154","lbl":"cell differentiation"},{"id":"GO:0007399","lbl":"nervous system development"},{"id":"GO:0048856","lbl":"anatomical structure development"},{"id":"GO:0008150","lbl":"biological_process"}],"edges":[{"sub":"GO:0022008","obj":"GO:0032502","pred":"is_a"},{"sub":"GO:0022008","obj":"GO:0007399","pred":"part_of"},{"sub":"GO:0022008","obj":"GO:0007275","pred":"part_of"},{"sub":"GO:0022008","obj":"GO:0032502","pred":"part_of"},{"sub":"GO:0022008","obj":"GO:0009987","pred":"is_a"},{"sub":"GO:0022008","obj":"GO:0030154","pred":"is_a"},{"sub":"GO:0022008","obj":"GO:0032501","pred":"part_of"},{"sub":"GO:0022008","obj":"GO:0048869","pred":"is_a"},{"sub":"GO:0022008","obj":"GO:0048856","pred":"part_of"},{"sub":"GO:0022008","obj":"GO:0008150","pred":"is_a"},{"sub":"GO:0022008","obj":"GO:0008150","pred":"part_of"},{"sub":"GO:0022008","obj":"GO:0048731","pred":"part_of"}]};
 
-     var trans = new bbop.model.graph.bracket();
+     var trans = new bbop.model.bracket.graph();
      trans.load_json(transitivity_graph_raw);
      var rl = topo.rich_bracket_layout('GO:0022008', trans);
      

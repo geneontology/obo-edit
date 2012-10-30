@@ -1,7 +1,7 @@
 /* 
  * Package: bracket.js
  * 
- * Namespace: bbop.model.graph.bracket
+ * Namespace: bbop.model.bracket.graph
  * 
  * Purpose: An extension of <bbop.model.graph> to produce a bracketed
  * layout (like the neighborhood view in miGO 1.8).
@@ -12,10 +12,10 @@
 // Module and namespace checking.
 bbop.core.require('bbop', 'core'); // not needed, but want the habit
 bbop.core.require('bbop', 'model');
-bbop.core.namespace('bbop', 'model', 'graph', 'bracket');
+bbop.core.namespace('bbop', 'model', 'bracket', 'graph');
 
 /*
- * Namespace: bbop.model.graph.bracket
+ * Namespace: bbop.model.bracket.graph
  * 
  * Constructor: bracket
  * 
@@ -27,9 +27,9 @@ bbop.core.namespace('bbop', 'model', 'graph', 'bracket');
  * Returns:
  *  this
  */
-bbop.model.graph.bracket = function(){
+bbop.model.bracket.graph = function(){
     bbop.model.graph.call(this);
-    this._is_a = 'bbop.model.graph.bracket';
+    this._is_a = 'bbop.model.bracket.graph';
 
     var anchor = this;
     var loop = bbop.core.each;
@@ -339,4 +339,4 @@ bbop.model.graph.bracket = function(){
 	return bracket_list;
     };
 };
-bbop.core.extend(bbop.model.graph.bracket, bbop.model.graph);
+bbop.core.extend(bbop.model.bracket.graph, bbop.model.graph);
