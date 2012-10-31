@@ -915,13 +915,13 @@ load('manager.js');
  })();
 
 // bbop.golr.manager - 16 - lite
-//(function(){
+(function(){
 
      // Setup.
      var gconf = new bbop.golr.conf(amigo.data.golr);
      var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);     
 
-// Trivialities.
+     // Trivialities.
      mr_t.is_false(gm.lite(), 'no lite set yet');
      gm.set_personality('dsfsdfsdf');
      mr_t.is_false(gm.lite(), 'bad lite does nothing');
@@ -930,7 +930,7 @@ load('manager.js');
      mr_t.is_false(gm.lite(true), 'true/no good personality does nothing 1');
      mr_t.is_false(gm.lite(), 'true/no good personality does nothing 2');
      
-// On.
+     // On.
      gm.set_personality('bbop_ont');
      mr_t.is_false(gm.lite(), 'defined personality not enough');
      mr_t.is_true(gm.lite(true), 'okay, this is sufficient for lite 1');
@@ -954,7 +954,7 @@ load('manager.js');
      		       'q=*:*'].join('&'),
      		      "liteness on for bbop_ont on");    
 
-// Toggle.
+     // Toggle.
      mr_t.is_false(gm.lite(false), 'toggle lite off 1');
      mr_t.is_false(gm.lite(), 'toggle lite off 2');
      mr_t.is_same_url(gm.get_query_url(),
@@ -976,7 +976,75 @@ load('manager.js');
      		       'q=*:*'].join('&'),
      		      "liteness on for bbop_ont off");
 
+ })();
+
+// bbop.golr.manager - 17 - facet limits
+//(function(){
+
+     // Setup.
+     var gconf = new bbop.golr.conf(amigo.data.golr);
+     var gm = new bbop.golr.manager('http://golr.berkeleybop.org/', gconf);     
+
+// Trivialities.
+mr_t.is_same_atom(gm.get_facet_limit(), 26, 'limit: std limit');
+mr_t.is_same_atom(gm.get_facet_limit('foo'), null, 'limit: no field limit');
+mr_t.is_true(gm.reset_facet_limit(), 'limit: can always reset all');
+mr_t.is_false(gm.reset_facet_limit('foo'), 'limit: cannot reset nothing');
+
+// Change limit, then reset it.
+     mr_t.is_true(gm.set_facet_limit(5), 'limit: global to 5 success');
+     mr_t.is_same_url(gm.get_query_url(),
+     		      ['http://golr.berkeleybop.org/select?defType=edismax',
+     		       'qt=standard',
+     		       'indent=on',
+     		       'wt=json',
+     		       'rows=10',
+     		       'start=0',
+     		       'fl=*%2Cscore',
+     		       'facet=true',
+     		       'facet.mincount=1',
+     		       'json.nl=arrarr',
+     		       'facet.limit=5',
+     		       'q=*:*'].join('&'),
+     		      "limit: global to 5");
+mr_t.is_same_atom(gm.get_facet_limit(), 5, 'limit: limited to 5');
+mr_t.is_same_atom(gm.get_facet_limit('foo'), null, 'limit: still no field limit');
+mr_t.is_true(gm.reset_facet_limit(), 'limit: can always reset all');
+mr_t.is_false(gm.reset_facet_limit('foo'), 'limit: cannot reset nothing');
+mr_t.is_same_atom(gm.get_facet_limit(), 26, 'limit: reset std limit');
+mr_t.is_same_atom(gm.get_facet_limit('foo'), null, 'limit: again no field limit');
+
+// Change limit and field limit, then reset it.
+mr_t.is_true(gm.set_facet_limit(10), 'limit: global to 10 success');
+mr_t.is_true(gm.set_facet_limit('foo', 1), 'limit: foo to 1 success');
+mr_t.is_same_url(gm.get_query_url(),
+     		 ['http://golr.berkeleybop.org/select?defType=edismax',
+     		  'qt=standard',
+     		  'indent=on',
+     		  'wt=json',
+     		  'rows=10',
+     		  'start=0',
+     		  'fl=*%2Cscore',
+     		  'facet=true',
+     		  'facet.mincount=1',
+     		  'json.nl=arrarr',
+     		  'facet.limit=10',
+     		  'f.foo.facet.limit=1',
+     		  'q=*:*'].join('&'),
+     		 "limit: global to 10, foo to 1");
+mr_t.is_same_atom(gm.get_facet_limit(), 10, 'limit: limited to 10');
+mr_t.is_same_atom(gm.get_facet_limit('foo'), 1, 'limit: foo to 1');
+
+mr_t.is_true(gm.reset_facet_limit('foo'), 'limit: foo reset');
+mr_t.is_same_atom(gm.get_facet_limit(), 10, 'limit: limited to 10');
+mr_t.is_same_atom(gm.get_facet_limit('foo'), null, 'limit: foo gone again');
+
+mr_t.is_true(gm.reset_facet_limit(), 'limit: can always reset all, again');
+mr_t.is_same_atom(gm.get_facet_limit(), 26, 'limit: reset std limit, again');
+mr_t.is_same_atom(gm.get_facet_limit('foo'), null, 'limit: again no field limit, again');
+
 // })();
+
 
 ///
 /// End unit testing.
