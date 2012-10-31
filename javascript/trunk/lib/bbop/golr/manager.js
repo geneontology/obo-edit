@@ -94,13 +94,22 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
     this.query = this.default_query; //current
 
     // Our (default) fl and whatever we have now.
-    this.fl_default = '*%2Cscore';
-    this.fl_current = this.fl_default;
+    this.default_fl = '*%2Cscore';
+    this.current_fl = this.default_fl;
 
     // We remember defaults in the case of rows and start since they
     // are the core to any paging mechanisms and may change often.
     this.default_rows = 10;
     this.default_start = 0;
+
+    // There is a reason for this...TODO: later (25+)
+    this.default_facet_limit = 26;
+    this.current_facet_limit = 26;
+    // {facet_field_name: value, ...}
+    this.current_facet_field_limits = {};
+    // TODO: paging for facets;
+    this.current_facet_offset = 26;
+    this.current_facet_field_offsets = {};
 
     // Our default query args, with facet fields plugged in.
     this.query_variants =
@@ -120,7 +129,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    rows: anchor.default_rows,
 	    start: anchor.default_start, // Solr is offset indexing
 	    //fl: '*%2Cscore',
-	    fl: anchor.fl_default,
+	    fl: anchor.default_fl,
     
 	    // Deprecated: see query_filters
 	    //fq: {},
@@ -135,7 +144,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    facet: 'true',
 	    'facet.mincount': 1,
 	    'json.nl': 'arrarr', // only in facets right now
-	    'facet.limit': 26, // There is a reason for this...later (25+)
+	    'facet.limit': anchor.default_facet_limit,
 	    //'facet.limit': 25,
 	    // TODO?: 'f.???.facet.limit': 50,
 	    // TODO: 'json.nl': [flat|map|arrarr]
@@ -216,22 +225,134 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 		    // new return fields.
 		    var flist = bbop.core.get_keys(field_collection);
 		    flist.push('score');
-		    anchor.fl_current = flist.join('%2C');
-		    anchor.set('fl', anchor.fl_current);
+		    anchor.current_fl = flist.join('%2C');
+		    anchor.set('fl', anchor.current_fl);
 		}
 
 	    }else{ // else false
 		// Reset.
-		anchor.fl_current = anchor.fl_default;
-		anchor.set('fl', anchor.fl_current);
+		anchor.current_fl = anchor.default_fl;
+		anchor.set('fl', anchor.current_fl);
 	    }
 	}
 
 	// Return the current state.
 	var retval = false;
-	if( anchor.fl_default != anchor.fl_current ){
+	if( anchor.default_fl != anchor.current_fl ){
 	    retval = true;
 	}
+	return retval;
+    };
+
+    // An internal helper function to munge the name of a field into
+    // the name of its corresponding facet field.
+    function _field_to_facet_field(field){
+	return 'f.' + field + '.facet.limit';
+    }
+    
+    /*
+     * Function: get_facet_limit
+     * 
+     * Get the limit for a specified facet or the global limit.
+     * 
+     * Parameters: 
+     *  field - *[optional]* limit for a specific field; otherwise global value
+     *
+     * Returns: 
+     *  integer or null
+     */
+    this.get_facet_limit = function(field){
+	var retval = null;
+
+	if( ! field ){
+	    retval = anchor.current_facet_limit;
+	}else{
+	    var f = _field_to_facet_field(field);
+	    var try_val = anchor.current_facet_field_limits[f];
+	    if( bbop.core.is_defined(try_val) ){
+		retval = try_val;
+	    }
+	}
+
+	return retval;
+    };
+
+    /*
+     * Function: set_facet_limit
+     * 
+     * Change the number of facet values returned per call.
+     * The default is likely 26.
+     * 
+     * Just as in Solr, a -1 argument is how to indicate unlimted
+     * facet returns.
+     * 
+     * Parameters: 
+     *  arg1 - (integer) set the global limit
+     *
+     * Parameters: 
+     *  arg1 - (string) the name of the field to check
+     *  arg2 - (integer) set the limit for this field
+     *
+     * Returns: 
+     *  boolean on whether something was set
+     */
+    this.set_facet_limit = function(arg1, arg2){
+	var retval = false;
+
+	// Decide which form of the function we're using.
+	if( ! bbop.core.is_defined(arg2) && 
+	    bbop.core.what_is(arg1) == 'number' ){ // form one
+		
+		// Set
+		var limit = arg1;
+		anchor.current_facet_limit = limit;
+		anchor.set('facet.limit', anchor.current_facet_limit);
+		
+		retval = true;
+	
+	}else if( bbop.core.is_defined(arg1) && 
+		  bbop.core.is_defined(arg2) &&
+		  bbop.core.what_is(arg1) == 'string' &&
+		  bbop.core.what_is(arg2) == 'number' ){
+		      
+		      var field = _field_to_facet_field(arg1);
+		      var limit = arg2;
+		      anchor.current_facet_field_limits[field] = limit;
+		      
+		      retval = true;
+	}
+
+	return retval;
+    };
+
+    /*
+     * Function: reset_facet_limit
+     * 
+     * Either reset the global limit to the original (likely 26)
+     * and/or remove the specified filter.
+     * 
+     * Parameters: 
+     *  field - *[optional]* remove limit for a field; otherwise all and global
+     *
+     * Returns: 
+     *  boolean on whether something was reset
+     */
+    this.reset_facet_limit = function(field){
+	var retval = false;
+
+	if( ! bbop.core.is_defined(field) ){
+	    // Eliminate all fields by blowing them away.
+	    anchor.current_facet_limit = anchor.default_facet_limit;
+	    anchor.current_facet_field_limits = {};
+	    retval = true;
+	}else{ // eliminate just the one field
+	    var f = _field_to_facet_field(field);
+	    if( bbop.core.is_defined(anchor.current_facet_field_limits[f]) ){
+		delete anchor.current_facet_field_limits[f];
+		retval = true;
+	    }
+	}
+
 	return retval;
     };
 
@@ -1357,6 +1478,7 @@ bbop.golr.manager = function (golr_loc, golr_conf_obj){
 	    //bbop.core.get_assemble(anchor.query_invariants),
 	    //bbop.core.get_assemble(anchor.query_facets),
 	    bbop.core.get_assemble(anchor.query_variants),
+	    bbop.core.get_assemble(anchor.current_facet_field_limits),
 	    //bbop.core.get_assemble({'fq': anchor.query_sticky_filters}),
 	    //bbop.core.get_assemble({'qf': anchor.query_fields}),
 	    bbop.core.get_assemble({'fq': fq}),

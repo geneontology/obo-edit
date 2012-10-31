@@ -24,4 +24,4 @@ bbop.version.revision = "0.9";
  *
  * Partial version for this library: release (date-like) information.
  */
-bbop.version.release = "20121030";
+bbop.version.release = "20121031";
