@@ -4,7 +4,7 @@
  * Namespace: bbop.model.bracket.graph
  * 
  * Purpose: An extension of <bbop.model.graph> to produce a bracketed
- * layout (like the neighborhood view in miGO 1.8).
+ * layout (like the neighborhood view in AmiGO 1.8).
  * 
  * TODO: A work in progress...
  */
