@@ -10,6 +10,7 @@
     <fieldType name="text_searchable" class="solr.TextField" positionIncrementGap="100" sortMissingLast="true">
       <analyzer>
         <tokenizer class="solr.StandardTokenizerFactory"></tokenizer>
+        <filter class="solr.LowerCaseFilterFactory"></filter>
       </analyzer>
     </fieldType>
     <fieldType name="integer" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0" sortMissingLast="true"></fieldType>
@@ -18,6 +19,13 @@
   <fields>
     <!-- A special static/fixed (by YAML conf file) field all documents have. -->
     <field name="document_category" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <!-- bbop_bio: Families that are associated with this entity. -->
+    <!-- bbop_ann: Families that are associated with this entity. -->
+    <!-- bbop_ann_ev_agg: Families that are associated with this entity. -->
+    <field name="family_tag_label" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <!--An easily searchable (TextField tokenized) version of family_tag_label.-->
+    <field name="family_tag_label_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <copyField source="family_tag_label" dest="family_tag_label_searchable"></copyField>
     <!-- bbop_ont: Term synonym. -->
     <field name="synonym" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of synonym.-->
@@ -30,25 +38,27 @@
     <!--An easily searchable (TextField tokenized) version of taxon_label.-->
     <field name="taxon_label_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
     <copyField source="taxon_label" dest="taxon_label_searchable"></copyField>
+    <!-- bbop_bio: Symbol or name. -->
     <!-- bbop_ann: Column 3: bioentity label. -->
     <!-- bbop_ann_ev_agg: Column 3. -->
     <field name="bioentity_label" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of bioentity_label.-->
     <field name="bioentity_label_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
     <copyField source="bioentity_label" dest="bioentity_label_searchable"></copyField>
-    <!-- bbop_ont: Closure of ids/accs over isa and partof. -->
-    <!-- bbop_bio: Closure of ids/accs over isa and partof. -->
-    <!-- bbop_ann: Closure of ids/accs over isa and partof. -->
-    <field name="isa_partof_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
-    <!-- bbop_bio: Families that this is associated with this entity. -->
-    <!-- bbop_ann: Families that this is associated with this entity. -->
-    <!-- bbop_ann_ev_agg: Families that this is associated with this entity. -->
+    <!-- bbop_bio: Family IDs that are associated with this entity. -->
+    <!-- bbop_ann: Family IDs that are associated with this entity. -->
+    <!-- bbop_ann_ev_agg: Family IDs that are associated with this entity. -->
     <field name="family_tag" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of family_tag.-->
     <field name="family_tag_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
     <copyField source="family_tag" dest="family_tag_searchable"></copyField>
+    <!-- bbop_ont: Closure of ids/accs over isa and partof. -->
+    <!-- bbop_bio: Closure of ids/accs over isa and partof. -->
+    <!-- bbop_ann: Closure of ids/accs over isa and partof. -->
+    <field name="isa_partof_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ann: ??? -->
     <field name="evidence_type" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <!-- bbop_ont: Term acc/ID. -->
     <!-- bbop_ann: Column 5. -->
     <!-- bbop_ann_ev_agg: Column 5. -->
     <field name="annotation_class" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
@@ -63,6 +73,7 @@
     <field name="evidence_with" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ont: JSON blob form of the local relation transitivity graph. -->
     <field name="transitivity_graph" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
+    <!-- bbop_ont: Common term name. -->
     <!-- bbop_ann: Column 5 + ontology. -->
     <!-- bbop_ann_ev_agg: Column 5 + ontology. -->
     <field name="annotation_class_label" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
@@ -88,9 +99,12 @@
     <!--An easily searchable (TextField tokenized) version of description.-->
     <field name="description_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
     <copyField source="description" dest="description_searchable"></copyField>
+    <!-- bbop_bio: Bioentity ID. -->
     <!-- bbop_ann: Column 1 + columns 2. -->
     <!-- bbop_ann_ev_agg: Column 1 + columns 2. -->
     <field name="bioentity" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <!-- bbop_bio: JSON blob form of the phylogenic tree. -->
+    <field name="phylo_graph" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
     <!-- bbop_ont: Closure of labels over isa and partof. -->
     <!-- bbop_bio: Closure of labels over isa and partof. -->
     <!-- bbop_ann: Closure of labels over isa and partof. -->
@@ -102,10 +116,6 @@
     <!-- between isa_partof_closure and isa_partof_closure_label.-->
     <!-- It is not indexed for searching, but may be useful to the client. -->
     <field name="isa_partof_closure_map" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
-    <!-- bbop_bio: JSON blob form of the phylogenic tree. -->
-    <!-- bbop_ann: JSON blob form of the phylogenic tree. -->
-    <!-- bbop_ann_ev_agg: JSON blob form of the phylogenic tree. -->
-    <field name="phylo_graph" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
     <!-- bbop_bio: Column 13: taxon. -->
     <!-- bbop_ann: Column 13: taxon. -->
     <!-- bbop_ann_ev_agg: Column 13: taxon. -->
@@ -114,12 +124,6 @@
     <field name="db" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ont: Is the term obsolete? -->
     <field name="is_obsolete" type="boolean" required="false" multiValued="false" indexed="true" stored="true"></field>
-    <!-- bbop_ont: Common term name. -->
-    <!-- bbop_bio: Symbol or name. -->
-    <field name="label" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
-    <!--An easily searchable (TextField tokenized) version of label.-->
-    <field name="label_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
-    <copyField source="label" dest="label_searchable"></copyField>
     <!-- bbop_bio: Labels derived from C13 + ncbi_taxonomy.obo. -->
     <!-- bbop_ann: Labels derived from C13 + ncbi_taxonomy.obo. -->
     <!-- bbop_ann_ev_agg: Labels derived from C13 + ncbi_taxonomy.obo. -->
@@ -148,19 +152,11 @@
     <field name="taxon_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ann: ??? -->
     <field name="reference" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
-    <!-- bbop_bio: All ancestors of this entity. -->
-    <!-- bbop_ann: All ancestors of this entity. -->
-    <!-- bbop_ann_ev_agg: All ancestors of this entity. -->
-    <field name="phylo_ancestor_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ont: Alternate term id. -->
     <field name="alternate_id" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ont: Term namespace. -->
     <!-- bbop_ann: Column 15: assigned by. -->
     <field name="source" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
-    <!-- bbop_bio: All descendants of this entity. -->
-    <!-- bbop_ann: All descendants of this entity. -->
-    <!-- bbop_ann_ev_agg: All descendants of this entity. -->
-    <field name="phylo_descendant_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ont: Term that replaces this term. -->
     <field name="replaced_by" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ont: JSON blob form of the local stepwise topology graph. -->
