@@ -674,7 +674,7 @@ sub parse_term_expression_with_rest {
             $self->parse_err("expected ) at end of genus. Got: $next_c followed by $diff_expr");
         }
     }
-    elsif ($expr =~ /^([\w\:]+)\^(.*)/) {
+    elsif ($expr =~ /^([\w\:\.\-]+)\^(.*)/) {
         my $genus = $1;
         my $diff_expr = $2;
         my ($diffs,$rest) = $self->parse_differentia_with_rest($diff_expr);
@@ -683,7 +683,7 @@ sub parse_term_expression_with_rest {
                                    @$diffs]];
         return ($stag,$rest);
     }
-    elsif ($expr =~ /^([\w\:]+)(.*)/) {
+    elsif ($expr =~ /^([\w\:\.]+)(.*)/) {
         return ($1,$2);
     }
     else {
@@ -718,6 +718,10 @@ sub parse_differentia_with_rest {
                 $next_c = substr($rest,0,1);
                 if ($next_c eq '^' || $next_c eq ',') {
                     my ($next_diffs,$next_rest) = $self->parse_differentia_with_rest(substr($rest,1));
+                    if (!$next_diffs) {
+                        $self->parse_err("problem parsing differentia: $rest. Expr: $term_expr");
+                        return ([$diff],$rest);
+                    }
                     return ([$diff,@$next_diffs],$next_rest);
                 }
                 elsif ($next_c eq '') {
@@ -727,19 +731,19 @@ sub parse_differentia_with_rest {
                     return ([$diff],$rest);
                 }
                 else {
-                    $self->parse_err("expected ^ or ). Got: $next_c followed_by: $rest");
+                    $self->parse_err("expected ^ or ) in differentium. Got: $next_c followed_by: $rest. Expr: $term_expr");
                 }
             }
             else {
-                $self->parse_err("exprected ). Got: $next_c followed by: $rest");
+                $self->parse_err("expected ) to close differentium. Got: $next_c followed by: $rest. Expr: $term_expr");
             }
         }
         else {
-            $self->parse_err("expected ). Got: \"\"");
+            $self->parse_err("expected ). Got: \"\". Expr: $term_expr");
         }
     }
     else {
-        $self->parse_err("expect relation(...). Got: $expr");
+        $self->parse_err("expect relation(...). Got: $expr. ");
     }
 }
 
