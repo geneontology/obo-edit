@@ -683,7 +683,7 @@ sub parse_term_expression_with_rest {
                                    @$diffs]];
         return ($stag,$rest);
     }
-    elsif ($expr =~ /^([\w\:\.]+)(.*)/) {
+    elsif ($expr =~ /^([\w\:\.\-]+)(.*)/) {
         return ($1,$2);
     }
     else {
