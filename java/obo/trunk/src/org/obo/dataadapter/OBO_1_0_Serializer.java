@@ -67,9 +67,9 @@ public class OBO_1_0_Serializer extends OBO_1_2_Serializer {
 	}
 
 	@Override
-	public void writeXrefTag(Dbxref ref, boolean includeDesc) throws IOException {
+	public void writeXrefTag(Dbxref ref) throws IOException {
 		print("xref_analog: ");
-		writeDbxref(ref, includeDesc);
+		writeDbxref(ref, true); // always write xref descriptions, see geneontology-Bugs-3366931
 		println();
 	}
 
