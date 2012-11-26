@@ -1,6 +1,16 @@
 ===  OBO-Edit v2.3 RELEASE NOTES  ===
 
 ===============================
+What's New in OBO-Edit 2.3-b3  (11/26/2012)
+===============================
+
+New feature:
+- Add option to advanced file save dialog: 
+  Checkbox for include xref descriptions for def and synonym tags (unchecked by default)
+  This will allow users to preserve such descriptions.
+  Related to [ geneontology-Bugs-3366931 ]: always write description for xref tag
+
+===============================
 What's New in OBO-Edit 2.3-b2  (8/13/2012)
 ===============================
 
