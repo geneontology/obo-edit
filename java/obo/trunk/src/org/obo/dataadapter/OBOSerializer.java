@@ -100,7 +100,7 @@ public interface OBOSerializer {
 
 	public void writeAltIDTag(String id, NestedValue nv) throws IOException;
 
-	public void writeDefTag(String def, Collection dbxrefs, NestedValue nv)
+	public void writeDefTag(String def, Collection dbxrefs, boolean includeDesc, NestedValue nv)
 	throws IOException;
 
 	public void writeCommentTag(String comment, NestedValue nv)
@@ -109,10 +109,10 @@ public interface OBOSerializer {
 	public void writeSubsetTag(TermSubset category, NestedValue nv)
 	throws IOException;
 
-	public void writeSynonymTag(Synonym synonym, NestedValue nv)
+	public void writeSynonymTag(Synonym synonym, boolean includeDesc, NestedValue nv)
 	throws IOException;
 
-	public void writeXrefTag(Dbxref ref) throws IOException;
+	public void writeXrefTag(Dbxref ref, boolean includeDesc) throws IOException;
 
 	public void writeInstanceOfTag(Type type, NestedValue nv)
 	throws IOException;

@@ -15,11 +15,6 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(OBO_1_2_Serializer.class);
 
-        // By default, don't include dbxref description in output, unless requested.
-        // For now, xrefs are requested to include the description; definition and synonym dbxrefs
-        // do not.  Might eventually want this behavior to be user-configurable.
-        protected static boolean SAVE_DBXREF_DESC = false;
-
 	protected PrintStream stream;
 
 	LinkedList serializer_1_2_tagOrdering = new LinkedList();
@@ -319,11 +314,11 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 		println();
 	}
 
-	public void writeDefTag(String def, Collection dbxrefs, NestedValue nv)
+	public void writeDefTag(String def, Collection dbxrefs, boolean includeDesc, NestedValue nv)
 	throws IOException {
 		if (def.length() > 0 || nv != null) {
 			print("def: \"" + escapeQuoted(def) + "\"");
-			writeDbxrefList(dbxrefs);
+			writeDbxrefList(dbxrefs, includeDesc);
 			writeNestedValue(nv);
 			println();
 		}
@@ -345,7 +340,7 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 		println();
 	}
 
-	public void writeSynonymTag(Synonym syn, NestedValue nv) throws IOException {
+	public void writeSynonymTag(Synonym syn, boolean includeDesc, NestedValue nv) throws IOException {
 		print("synonym: \"" + escapeQuoted(syn.getText()) + "\"");
 		if (syn.getScope() != Synonym.RELATED_SYNONYM
 				|| syn.getScope() != Synonym.UNKNOWN_SCOPE
@@ -360,14 +355,14 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 		if (c == null)
 			c = OBOConstants.DEFAULT_DBXREF_COMPARATOR;
 		Collections.sort(dbxrefs, c);
-		writeDbxrefList(dbxrefs);
+		writeDbxrefList(dbxrefs, includeDesc);
 		writeNestedValue(nv);
 		println();
 	}
 
-	public void writeXrefTag(Dbxref ref) throws IOException {
+	public void writeXrefTag(Dbxref ref, boolean includeDesc) throws IOException {
 		print("xref: ");
-		writeDbxref(ref, true);
+		writeDbxref(ref, includeDesc);
 		println();
 	}
 
@@ -598,7 +593,7 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 			return null;
 	}
 
-	protected void writeDbxrefList(Collection dbxrefs) throws IOException {
+	protected void writeDbxrefList(Collection dbxrefs, boolean includeDesc) throws IOException {
 		print(" [");
 		Iterator it = dbxrefs.iterator();
 		boolean first = true;
@@ -606,20 +601,13 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 			Dbxref dbxref = (Dbxref) it.next();
 			if (!first)
 				print(", ");
-                        // Note that whether or not dbxref description is saved
-                        // depends on the setting of SAVE_DBXREF_DESC.
-                        // Ultimately, might want to make this user-configurable.
-			writeDbxref(dbxref);
+			writeDbxref(dbxref, includeDesc);
 			first = false;
 		}
 		print("]");
 	}
 
-	protected void writeDbxref(Dbxref dbxref) throws IOException {
-            writeDbxref(dbxref, SAVE_DBXREF_DESC);
-        }
-
-        protected void writeDbxref(Dbxref dbxref, boolean includeDesc) throws IOException {
+    protected void writeDbxref(Dbxref dbxref, boolean includeDesc) throws IOException {
 		print(escapeDbxref(dbxref.getDatabase()));
 		print(":");
 		print(escapeDbxref(dbxref.getDatabaseID()));
