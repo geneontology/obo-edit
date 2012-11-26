@@ -885,7 +885,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			Collections.sort(scratchList, getDbxrefComparator(serializer));
 			for(Object o : scratchList){
 				Dbxref dbxref = (Dbxref) o;
-				serializer.writeXrefTag(dbxref, includeXrefDesc);
+				serializer.writeXrefTag(dbxref);
 			}
 		} else if (obj instanceof Instance
 				&& tagMapping.equals(OBOConstants.INSTANCE_OF_TAG)) {
