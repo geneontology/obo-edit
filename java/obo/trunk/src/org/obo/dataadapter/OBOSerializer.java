@@ -112,7 +112,7 @@ public interface OBOSerializer {
 	public void writeSynonymTag(Synonym synonym, boolean includeDesc, NestedValue nv)
 	throws IOException;
 
-	public void writeXrefTag(Dbxref ref, boolean includeDesc) throws IOException;
+	public void writeXrefTag(Dbxref ref) throws IOException;
 
 	public void writeInstanceOfTag(Type type, NestedValue nv)
 	throws IOException;

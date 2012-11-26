@@ -272,7 +272,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 		protected JComboBox idRuleSelector = new JComboBox();
 
-		protected JCheckBox includeXrefDescriptionsBox = new JCheckBox("Include xref descriptions");
+		protected JCheckBox includeXrefDescriptionsBox = new JCheckBox("Include xref descriptions for def or synonym");
 		
 		public void setMasterComponent(Component c) {
 			if (c instanceof ListEditor)

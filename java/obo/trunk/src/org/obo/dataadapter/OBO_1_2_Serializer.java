@@ -360,9 +360,9 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 		println();
 	}
 
-	public void writeXrefTag(Dbxref ref, boolean includeDesc) throws IOException {
+	public void writeXrefTag(Dbxref ref) throws IOException {
 		print("xref: ");
-		writeDbxref(ref, includeDesc);
+		writeDbxref(ref, true); // always write xref descriptions, see geneontology-Bugs-3366931
 		println();
 	}
 
