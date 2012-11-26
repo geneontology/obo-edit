@@ -92,6 +92,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		protected boolean writeModificationData = false;
 
 		protected HashSet<OBOConstants.TagMapping> tagsToWrite;
+		
+		protected boolean includeXrefDesc = false;
 
 		public FilteredPath() {
 		}
@@ -289,6 +291,15 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		public HashSet<OBOConstants.TagMapping> getTagsToWrite(){
 			return tagsToWrite;
 		}
+
+		public boolean getIncludeXrefDesc() {
+			return includeXrefDesc;
+		}
+
+		public void setIncludeXrefDesc(boolean includeXrefDesc) {
+			this.includeXrefDesc = includeXrefDesc;
+		}
+
 	}
 
 	protected boolean cancelled = false;
@@ -328,6 +339,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 	protected String username;
 
 	protected boolean writeModificationData;
+	
+	protected boolean includeXrefDesc;
 
 	protected static final char[] generic_escapes = { '{', '!', '\n', '\r' };
 
@@ -765,14 +778,15 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 	protected void writeTag(TagMapping tagMapping, IdentifiedObject obj,
 			LinkDatabase linkDatabase, OBOSerializer serializer)
 	throws IOException, CancelledAdapterException {
-		writeTag(tagMapping, obj, linkDatabase, serializer, allowDangling,followIsaClosure,
-				assertImplied, writeModificationData);
+		writeTag(tagMapping, obj, linkDatabase, serializer, allowDangling, followIsaClosure,
+				assertImplied, writeModificationData, includeXrefDesc);
 	}
 
 	protected void writeTag(TagMapping tagMapping, IdentifiedObject obj,
 			LinkDatabase linkDatabase, OBOSerializer serializer,
 			boolean allowDangling, boolean doIsaClosure, 
-			boolean realizeImpliedLinks, boolean writeModificationData) throws IOException, CancelledAdapterException {
+			boolean realizeImpliedLinks, boolean writeModificationData,
+			boolean includeXrefDesc) throws IOException, CancelledAdapterException {
 		//		logger.debug("OBOSerializationEngine.writeTag -- obj:  " + obj + "  tag: " + tagMapping);
 		for (OBOSerializerExtension extension : extensions) {
 			if (extension.writeTag(tagMapping, obj, linkDatabase))
@@ -808,7 +822,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			Collections.sort(scratchList, getDbxrefComparator(serializer));
 			serializer
 			.writeDefTag(((DefinedObject) obj).getDefinition(),
-					scratchList, ((DefinedObject) obj)
+					scratchList, includeXrefDesc, ((DefinedObject) obj)
 					.getDefinitionExtension());
 		} else if (obj instanceof CommentedObject
 				&& tagMapping.equals(OBOConstants.COMMENT_TAG)) {
@@ -862,7 +876,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			Collections.sort(scratchList, getSynonymComparator(serializer));
 			for(Object o : scratchList){
 				Synonym synonym = (Synonym) o;
-				serializer.writeSynonymTag(synonym, synonym.getNestedValue());
+				serializer.writeSynonymTag(synonym, includeXrefDesc, synonym.getNestedValue());
 			}
 		} else if (obj instanceof DbxrefedObject
 				&& tagMapping.equals(OBOConstants.XREF_TAG)) {
@@ -871,7 +885,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			Collections.sort(scratchList, getDbxrefComparator(serializer));
 			for(Object o : scratchList){
 				Dbxref dbxref = (Dbxref) o;
-				serializer.writeXrefTag(dbxref);
+				serializer.writeXrefTag(dbxref, includeXrefDesc);
 			}
 		} else if (obj instanceof Instance
 				&& tagMapping.equals(OBOConstants.INSTANCE_OF_TAG)) {
@@ -1094,6 +1108,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		saveImplied = filteredPath.getSaveImplied();
 		assertImplied = filteredPath.getSaveImplied();
 		writeModificationData = filteredPath.getWriteModificationData();
+		includeXrefDesc = filteredPath.getIncludeXrefDesc();
 		String impliedType = filteredPath.getImpliedType();
 		reasonerFactory = filteredPath.getReasonerFactory();
 
