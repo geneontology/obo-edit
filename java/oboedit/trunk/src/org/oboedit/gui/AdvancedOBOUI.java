@@ -272,6 +272,8 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 		protected JComboBox idRuleSelector = new JComboBox();
 
+		protected JCheckBox includeXrefDescriptionsBox = new JCheckBox("Include xref descriptions");
+		
 		public void setMasterComponent(Component c) {
 			if (c instanceof ListEditor)
 				editor = (ListEditor) c;
@@ -313,6 +315,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			writeModificationBox.setOpaque(false);
 			saveImpliedBox.setOpaque(false);
 			assertImpliedBox.setOpaque(false);
+			includeXrefDescriptionsBox.setOpaque(false);
 
 			TitledBorder remarkBorder = new TitledBorder("OBO File Remark");
 
@@ -390,6 +393,8 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			checkboxPanelA1.add(Box.createHorizontalGlue());
 
 			checkboxPanelA1.add(writeModificationBox);
+			checkboxPanelA.add(Box.createHorizontalStrut(10));
+			checkboxPanelA1.add(includeXrefDescriptionsBox);
 			checkboxPanelA1.add(Box.createHorizontalGlue());
 			// Todo: add "save creation info" checkbox to A1
 
@@ -539,6 +544,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			saveImpliedBox.setSelected(profile.getSaveImplied());
 			impliedTypeBox.setSelectedItem(profile.getImpliedType());
 			assertImpliedBox.setSelected(profile.getAssertImpliedLinks());
+			includeXrefDescriptionsBox.setSelected(profile.getIncludeXrefDesc());
 
 			prefilterBox.setSelected(profile.getPrefilterProperty() != null);
 			if (profile.getPrefilterProperty() != null) {
@@ -588,6 +594,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			profile.setSaveImplied(saveImpliedBox.isSelected());
 			profile.setImpliedType((String) impliedTypeBox.getSelectedItem());
 			profile.setAssertImpliedLinks(assertImpliedBox.isSelected());
+			profile.setIncludeXrefDesc(includeXrefDescriptionsBox.isSelected());
 			profile.setDoFilter(termFilterBox.isSelected());
 			profile.setSaveTypes(filterTypesBox.isSelected());
 			profile.setDoLinkFilter(linkFilterBox.isSelected());

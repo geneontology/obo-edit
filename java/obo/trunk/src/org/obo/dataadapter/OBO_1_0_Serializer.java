@@ -49,7 +49,7 @@ public class OBO_1_0_Serializer extends OBO_1_2_Serializer {
 	}
 
 	@Override
-	public void writeSynonymTag(Synonym syn, NestedValue nv) throws IOException {
+	public void writeSynonymTag(Synonym syn, boolean includeDesc, NestedValue nv) throws IOException {
 		if (syn.getScope() == Synonym.EXACT_SYNONYM)
 			print("exact_synonym: ");
 		else if (syn.getScope() == Synonym.NARROW_SYNONYM)
@@ -59,7 +59,7 @@ public class OBO_1_0_Serializer extends OBO_1_2_Serializer {
 		else
 			print("related_synonym: ");
 		print("\"" + escapeQuoted(syn.getText()) + "\"");
-		writeDbxrefList(syn.getXrefs());
+		writeDbxrefList(syn.getXrefs(), includeDesc);
 		writeNestedValue(nv);
 		if (syn.getSynonymType() != null)
 			print(" ! belonged to category " + syn.getSynonymType().getID());
@@ -67,9 +67,9 @@ public class OBO_1_0_Serializer extends OBO_1_2_Serializer {
 	}
 
 	@Override
-	public void writeXrefTag(Dbxref ref) throws IOException {
+	public void writeXrefTag(Dbxref ref, boolean includeDesc) throws IOException {
 		print("xref_analog: ");
-		writeDbxref(ref);
+		writeDbxref(ref, includeDesc);
 		println();
 	}
 
