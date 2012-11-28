@@ -898,9 +898,11 @@ public class Preferences {
 
 	protected static void writePreferences(Preferences preferences)
 	throws IOException {
+		File prefsXMLFile = getPrefsXMLFile();
+		prefsXMLFile.getParentFile().mkdirs();
 		XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
-				new FileOutputStream(getPrefsXMLFile())));
-		logger.info("Writing preferences to " + getPrefsXMLFile());
+				new FileOutputStream(prefsXMLFile)));
+		logger.info("Writing preferences to " + prefsXMLFile);
 		encoder.writeObject(preferences);
 		encoder.close();
 		preferences.updateLauncherConfigurations();
