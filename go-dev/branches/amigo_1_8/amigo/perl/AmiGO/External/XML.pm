@@ -49,6 +49,7 @@ sub get_external_data {
 
   ## Go and try and get the external document.
   my $doc = '';
+  $self->kvetch("GETing the document at: '$url'");
   eval {
     $mech->get($url);
   };
