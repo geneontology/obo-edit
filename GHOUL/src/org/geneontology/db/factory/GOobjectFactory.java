@@ -16,6 +16,7 @@ import org.geneontology.db.model.DB;
 import org.geneontology.db.model.DBXref;
 import org.geneontology.db.model.GeneProduct;
 import org.geneontology.db.model.GraphPath;
+import org.geneontology.db.model.Sequence;
 import org.geneontology.db.model.Species;
 import org.geneontology.db.model.Term;
 import org.geneontology.db.model.TermSynonym;
@@ -30,7 +31,7 @@ public class GOobjectFactory {
 	/** The local {@link SessionFactory} object used to retrieve data. */
 	private static SessionFactory sessions;
 	private static String message = "";
-	
+
 	/**
 	 * Creates a new ChadoAdaptor that will retrieve data from the database configured in the supplied {@link SessionFactory} object.
 	 * @param sessions a {@link SessionFactory} object without an active transaction. 
@@ -70,7 +71,7 @@ public class GOobjectFactory {
 	public synchronized String getMessage() {
 		return message;
 	}
-	
+
 	/** Graph factories for term class
 	 */
 
@@ -90,7 +91,7 @@ public class GOobjectFactory {
 		Query q = session.createQuery(query);
 		q.setString(0, acc);
 		TermSynonym ts = (TermSynonym)q.uniqueResult();
-		 if (ts == null) {
+		if (ts == null) {
 			return null;
 		}
 		return ts.getTerm();
@@ -152,7 +153,7 @@ public class GOobjectFactory {
 	 * @param db_key the {@link org..geneontology.db.model.DBXref} db_key to fetch {@link GeneProduct} objects by.
 	 * @return the unique {@link GeneProduct} that have DBXref of with the specified name and key.
 	 */
-	public synchronized Iterator<GeneProduct> getGPListByDBXref(Vector<String []> xrefs, Session session) {
+	public synchronized Iterator<GeneProduct> getGPListByDBXref(List<String []> xrefs, Session session) {
 		String query_str = "select g from GeneProduct as g inner join g.dbxref as xref where ";
 		String prefix = "";
 		for (Iterator<String []> xref_it = xrefs.iterator(); xref_it.hasNext();) {
@@ -169,6 +170,37 @@ public class GOobjectFactory {
 		}
 		Iterator<GeneProduct> results = query.iterate();
 		return results;
+	}
+
+	/**
+	 * Fetches a GeneProduct of {@link GeneProduct} with a {@link org.geneontology.db.model.GeneProduct} having the specified db_name and key.  
+	 * @param db_name the {@link org.geneontology.db.model.DBXref} db_name to fetch {@link GeneProduct} objects by. 
+	 * @param db_key the {@link org..geneontology.db.model.DBXref} db_key to fetch {@link GeneProduct} objects by.
+	 * @return the unique {@link GeneProduct} that have DBXref of with the specified name and key.
+	 */
+	public synchronized Iterator<GeneProduct> getGPListBySeqXref(List<String []> xrefs, Session session) {
+		String query_str;
+		List<GeneProduct> genes = new  ArrayList<GeneProduct>();
+		for (Iterator<String []> xref_it = xrefs.iterator(); xref_it.hasNext();) {
+			String [] xref = xref_it.next(); // be sure to move forward through the list
+			query_str = "select gp from GeneProduct as gp " +
+						"inner join gp.seqs as link " +
+						"inner join link.seq as seq " +
+						"inner join seq.dbxrefs as xref " +
+						"where " +
+						"(xref.db_name = ? and xref.accession = ?)";
+			Query query = session.createQuery(query_str);
+			if (xref[0].equals("UniProtKB"))
+				query.setString(0, "Uniprot");
+			else
+				query.setString(0, xref[0]);
+			query.setString(1, xref[1]);
+			GeneProduct results = (GeneProduct) query.uniqueResult();
+			if (results != null) {
+				genes.add(results);
+			}
+		}
+		return genes.iterator();
 	}
 
 	/**
@@ -282,7 +314,7 @@ public class GOobjectFactory {
 				System.out.println (e.getClass().toString() + " Exception: " + e.getMessage() + " on " + q.getQueryString());
 			}
 			session.cancelQuery();
-//			session.flush();
+			//			session.flush();
 		}
 
 		if (path_list == null || path_list.size() == 0) {
