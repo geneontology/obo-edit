@@ -21,9 +21,9 @@ public class Species extends GOModel {
 
 	protected Species parent;
 	
-	protected int left_value;
+	protected Integer left_value;
 	
-	protected int right_value;
+	protected Integer right_value;
 	
 	protected String taxonomic_rank;
 	

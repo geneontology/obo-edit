@@ -138,6 +138,9 @@ public class GeneProduct extends GOModel {
 		 * 
 		 */
 		assoc.setGene_product(this);
+		if (associations == null) {
+			associations = new HashSet<Association>();
+		}
 		associations.add(assoc);
 	}
 
