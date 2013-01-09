@@ -9,12 +9,8 @@
       <a href="#three-d-tab-[% DIV_COUNT %]" style="background-color: transparent; border-bottom: 0px;">
 	<span style="font-size: 80%; font-style: normal; font-weight: normal;">
 	  [% FILTER truncate(25) %]
-	  [%    term_info.$thracc.name %]
+	  [%    term_info.$thracc.name %] [% thracc %]
 	  [% END %]
-        </span>
-        <br />
-        <span style="font-size: 67%; font-style: normal; font-weight: normal;">
-	  [% thracc %]
         </span>
       </a>
     </li>
@@ -39,11 +35,7 @@
 	<td class="odd_row">
 	  [%   END %]
 	  <span style="font-size: 80%;">
-	    [% term_info.$term_acc.name %]
-	  </span>
-	  <br />
-          <span style="font-size:67%; font-style: normal; font-weight: normal;">
-	    [% term_acc %]
+	    [% term_info.$term_acc.name %] [% term_acc %]
 	  </span>
 	</td>
 	[%   EO_C = EO_C + 1 %]
@@ -60,11 +52,7 @@
 	<td class="odd_row">
 	  [% END %]
 	  <span style="font-size: 80%;">
-	    [% term_info.$row_acc.name %]
-	  </span>
-	  <br />
-        <span style="font-size: 67%; font-style: normal; font-weight: normal;">
-	  [% row_acc %]
+	    [% term_info.$row_acc.name %] [% row_acc %]
 	  </span>
 	</td>
 	
