@@ -113,9 +113,9 @@ sub input_profile {
     ## Default nothingness.
   }elsif( $profile_name eq 'term' ){
     $self->_add_ontology();
-    $self->_add_term();
-    ## TODO: remove these later after testing.
-    $self->_add_simple_argument('graph_type', 'correct', ['all', 'correct']);
+    $self->_add_compat_term();
+    # ## TODO: remove these later after testing.
+    #$self->_add_simple_argument('graph_type', 'correct', ['all', 'correct']);
   }elsif( $profile_name eq 'gp' ){
     $self->_add_gp_set();
   }elsif( $profile_name eq 'matrix' ){
@@ -200,6 +200,25 @@ sub input_profile {
     $self->_add_gptype();
     $self->_add_simple_optional_argument('homolset', ['included', 'excluded']);
   }elsif( $profile_name eq 'live_search_association' ){
+
+    ## Bookkeeping.
+    $self->_add_simple_search_set();
+    $self->_add_range_set();
+    $self->_add_packet_order();
+
+    ## Term.
+    $self->_add_ontology();
+
+    ## GP.
+    $self->_add_species();
+    $self->_add_scientific();
+    $self->_add_source();
+    $self->_add_gptype();
+
+    ## Association.
+    $self->_add_evidence();
+
+  }elsif( $profile_name eq 'live_search_association_golr' ){
 
     ## Bookkeeping.
     $self->_add_simple_search_set();
@@ -477,12 +496,41 @@ sub _add_term {
 }
 
 
+## This is specifically for the case where we want ot be compatible
+## with the old term-details.cgi and allow for subset accs and normal
+## go_ids. Likely only useful for term_details.
+sub _add_compat_term {
+
+  my $self = shift;
+
+  ## Terms.
+  push @{$profile->{required}}, 'term';
+  my $regexp = $self->{CORE}->term_regexp_string();
+  $profile->{constraint_methods}{term} = sub {
+
+    my ($dfv, $val) = @_;
+    #$dfv->set_current_constraint_name('my_constraint_name');
+    my $retval = 0;
+    if( $val =~ /^(\s*$regexp\s*)$/ ){
+      $retval = 1;
+    }else{
+      my $ss = $self->{CORE}->subset();
+      if( $ss->{$val} ){
+	$retval = 1;
+      }
+    }
+
+    return $retval;
+  }
+}
+
+
 ##
 sub _add_terms_string {
 
   my $self = shift;
 
-  ## A string on incoming terms.
+  ## A string of incoming terms.
   push @{$profile->{optional}}, 'term';
   push @{$profile->{optional}}, 'terms';
   my $regexp = $self->{CORE}->term_regexp_string();
@@ -861,7 +909,7 @@ sub _add_gp_set {
   ## GPs.
   push @{$profile->{optional}}, 'gp';
   ## TODO: get a tighter definition of a gene product.
-  $profile->{constraint_methods}{gp} = qr/^[\w\d]+$/i;
+  $profile->{constraint_methods}{gp} = qr/^[\w\d\:]+$/i;
 }
 
 
