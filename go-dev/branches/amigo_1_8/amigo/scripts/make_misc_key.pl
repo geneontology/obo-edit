@@ -28,7 +28,10 @@ my $dbh = $apph->dbh;
 
 my $hash = {};
 
-#datasource = speciesdb
+###
+### datasource = speciesdb
+###
+
 my $hl = select_hashlist
   ($dbh,
    ["gene_product g", "association a", "dbxref xref"],
@@ -45,11 +48,11 @@ $hash->{speciesdb} = [
 	@{$hl || []}
 ];
 
-##
-## Ontology
-##
-## It's done this way because subqueries were taking forever.
-##
+###
+### Ontology
+###
+### It's done this way because subqueries were taking forever.
+###
 
 ## Look for the relationship types that we don't want to see.
 ##
@@ -90,23 +93,24 @@ foreach my $poss (@$possible_hl) {
 }
 
 ## Continue as the previous version.
-#key = val
-#$hash->{ontology} = {map{$_->{term_type}=>$_->{term_type}}@{$hl || []}};
-$hash->{ontology} = [ 
+## key = val
+$hash->{ontology} = [
 	map { (split("\0", $_))[1] }
 	sort 
 	map { join("\0", lc($_->{term_type}), $_->{term_type}) }
 	@{$hl || []}
 ];
 
-#reltype
+###
+### reltype
+###
+
 $hl = select_hashlist
   ($dbh,
    ["term t", "term2term t2t"],
    ["t.id=t2t.relationship_type_id"],
    "distinct t.name",
   );
-#$hash->{reltype} = {map{$_->{name}=>$_->{name}}@{$hl || []}};
 $hash->{reltype} = [ 
 	map { (split("\0", $_))[1] }
 	sort 
@@ -114,14 +118,33 @@ $hash->{reltype} = [
 	@{$hl || []}
 ];
 
-#evcode
+###
+### subset/slim
+###
+
+$hl = select_hashlist
+  ($dbh,
+   ["term"],
+   ["term.term_type=\"subset\""],
+   "distinct term.acc",
+  );
+$hash->{subset} = [ 
+	map { (split("\0", $_))[1] }
+	sort 
+	map { join("\0", lc($_->{acc}), $_->{acc}) }
+	@{$hl || []}
+];
+
+###
+### evcode
+###
+
 $hl = select_hashlist
   ($dbh,
    ["association a", "evidence ev"],
    ["a.id=ev.association_id"],
    "distinct ev.code",
   );
-#$hash->{evcode} = {map{$_->{code}=>$_->{code}}@{$hl || []}};
 $hash->{evcode} = [ 
 	map { (split("\0", $_))[1] }
 	sort 
@@ -129,14 +152,16 @@ $hash->{evcode} = [
 	@{$hl || []}
 ];
 
-#gptype
+###
+### gptype
+###
+
 $hl = select_hashlist
   ($dbh,
    ["gene_product gp", "term t"],
    ["gp.type_id=t.id"],
    "distinct t.name",
   );
-#$hash->{gptype} = {map{$_->{name}=>$_->{name}}@{$hl || []}};
 $hash->{gptype} = [ 
 	map { (split("\0", $_))[1] }
 	sort 
@@ -144,14 +169,16 @@ $hash->{gptype} = [
 	@{$hl || []}
 ];
 
-#association qualifiers
+###
+### association qualifiers
+###
+
 $hl = select_hashlist
   ($dbh,
    ["association_qualifier aq", "term t"],
    ["aq.term_id=t.id"],
    "distinct t.name",
   );
-#$hash->{qual} = {map{$_->{name}=>$_->{name}}@{$hl || []}};
 $hash->{qual} = [ 
 	map { (split("\0", $_))[1] }
 	sort 
@@ -159,14 +186,16 @@ $hash->{qual} = [
 	@{$hl || []}
 ];
 
-#assigned by
+###
+### assigned by
+###
+
 $hl = select_hashlist
   ($dbh,
    ["association a", "db"],
    ["a.source_db_id=db.id"],
    "distinct db.name",
   );
-#$hash->{assby} = {map{$_->{name}=>$_->{name}}@{$hl || []}};
 $hash->{assby} = [ 
 	map { (split("\0", $_))[1] }
 	sort 
