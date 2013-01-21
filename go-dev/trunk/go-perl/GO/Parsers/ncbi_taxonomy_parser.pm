@@ -169,7 +169,8 @@ sub emit_term {
                 $s = $1;
                 $xref =~ s/\s+/_/g;
                 $xref =~ tr/\(\)//d;
-                $xref =~ s/,/\\,/d;
+                $xref =~ tr/\[\]//d;
+                $xref =~ s@,@\\,@g;
                 push(@xrefs, [dbxref=>[[acc=>$xref],[dbname=>"NCBITaxonRef"]]]);
             }
             $self->event(SYNONYM,[
