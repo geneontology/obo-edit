@@ -67,7 +67,6 @@ eg
   $parser = GO::Parser->new({handler=>'obj'});
   $parser->parse(@files);
   my $graph = $parser->graph;
-  
 
 =cut
 
@@ -79,7 +78,6 @@ sub g {
 
 *graph = \&g;
 *ontology = \&g;
-
 
 sub apph {
     my $self = shift;
