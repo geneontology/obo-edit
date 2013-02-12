@@ -28,7 +28,7 @@
     <copyField source="family_tag_label" dest="family_tag_label_searchable"></copyField>
     <!-- bbop_ont: Term synonym. -->
     <!-- bbop_bio: Gene product synonyms. -->
-    <!-- bbop_ann: Gene product synonyms. -->
+    <!-- bbop_ann: Column 11: gene product synonyms. -->
     <field name="synonym" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of synonym.-->
     <field name="synonym_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
@@ -47,10 +47,6 @@
     <!--An easily searchable (TextField tokenized) version of bioentity_label.-->
     <field name="bioentity_label_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
     <copyField source="bioentity_label" dest="bioentity_label_searchable"></copyField>
-    <!-- bbop_ont: Closure of ids/accs over isa and partof. -->
-    <!-- bbop_bio: Closure of ids/accs over isa and partof. -->
-    <!-- bbop_ann: Closure of ids/accs over isa and partof. -->
-    <field name="isa_partof_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_bio: Family IDs that are associated with this entity. -->
     <!-- bbop_ann: Family IDs that are associated with this entity. -->
     <!-- bbop_ann_ev_agg: Family IDs that are associated with this entity. -->
@@ -58,7 +54,11 @@
     <!--An easily searchable (TextField tokenized) version of family_tag.-->
     <field name="family_tag_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
     <copyField source="family_tag" dest="family_tag_searchable"></copyField>
-    <!-- bbop_ann: ??? -->
+    <!-- bbop_ont: Closure of ids/accs over isa and partof. -->
+    <!-- bbop_bio: Closure of ids/accs over isa and partof. -->
+    <!-- bbop_ann: Closure of ids/accs over isa and partof. -->
+    <field name="isa_partof_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <!-- bbop_ann: Column 7: evidence type. -->
     <field name="evidence_type" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ann: Derived from column 4. -->
     <field name="qualifier" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
@@ -123,6 +123,12 @@
     <!-- between isa_partof_closure and isa_partof_closure_label.-->
     <!-- It is not indexed for searching, but may be useful to the client. -->
     <field name="isa_partof_closure_map" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
+    <!-- bbop_bio: The full name of the gene product. -->
+    <!-- bbop_ann: The full name of the gene product. -->
+    <field name="bioentity_name" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <!--An easily searchable (TextField tokenized) version of bioentity_name.-->
+    <field name="bioentity_name_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <copyField source="bioentity_name" dest="bioentity_name_searchable"></copyField>
     <!-- bbop_bio: Column 13: taxon. -->
     <!-- bbop_ann: Column 13: taxon. -->
     <!-- bbop_ann_ev_agg: Column 13: taxon. -->
@@ -149,13 +155,13 @@
     <!-- between annotation_extension_class_closure and annotation_extension_class_closure_label.-->
     <!-- It is not indexed for searching, but may be useful to the client. -->
     <field name="annotation_extension_class_closure_map" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
-    <!-- bbop_ann: ??? -->
+    <!-- bbop_ann: Column 16: extension class for the annotation. -->
     <field name="annotation_extension_class" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_bio: IDs derived from C13 + ncbi_taxonomy.obo. -->
     <!-- bbop_ann: IDs derived from C13 + ncbi_taxonomy.obo. -->
     <!-- bbop_ann_ev_agg: IDs derived from C13 + ncbi_taxonomy.obo. -->
     <field name="taxon_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
-    <!-- bbop_ann: ??? -->
+    <!-- bbop_ann: Column 6: database reference. -->
     <field name="reference" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ont: Alternate term id. -->
     <field name="alternate_id" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
