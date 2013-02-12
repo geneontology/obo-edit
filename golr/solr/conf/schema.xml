@@ -110,6 +110,9 @@
     <!-- bbop_ann: Column 1 + columns 2. -->
     <!-- bbop_ann_ev_agg: Column 1 + columns 2. -->
     <field name="bioentity" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <!-- bbop_bio: The bioentity ID used at the database of origin. -->
+    <!-- bbop_ann: The bioentity ID used at the database of origin. -->
+    <field name="bioentity_internal_id" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
     <!-- bbop_bio: JSON blob form of the phylogenic tree. -->
     <field name="phylo_graph" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
     <!-- bbop_ont: Closure of labels over isa and partof. -->
