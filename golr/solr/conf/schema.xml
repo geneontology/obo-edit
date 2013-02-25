@@ -26,13 +26,8 @@
     <!--An easily searchable (TextField tokenized) version of family_tag_label.-->
     <field name="family_tag_label_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
     <copyField source="family_tag_label" dest="family_tag_label_searchable"></copyField>
-    <!-- bbop_ont: Term synonym. -->
-    <!-- bbop_bio: Gene product synonyms. -->
-    <!-- bbop_ann: Column 11: gene product synonyms. -->
-    <field name="synonym" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
-    <!--An easily searchable (TextField tokenized) version of synonym.-->
-    <field name="synonym_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
-    <copyField source="synonym" dest="synonym_searchable"></copyField>
+    <!-- bbop_ont: Closure of ids/accs over regulates. -->
+    <field name="regulates_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_bio: Derived from C13 + ncbi_taxonomy.obo. -->
     <!-- bbop_ann: Derived from C13 + ncbi_taxonomy.obo. -->
     <!-- bbop_ann_ev_agg: Derived from C13 + ncbi_taxonomy.obo. -->
@@ -40,6 +35,13 @@
     <!--An easily searchable (TextField tokenized) version of taxon_label.-->
     <field name="taxon_label_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
     <copyField source="taxon_label" dest="taxon_label_searchable"></copyField>
+    <!-- bbop_ont: Term synonym. -->
+    <!-- bbop_bio: Gene product synonyms. -->
+    <!-- bbop_ann: Column 11: gene product synonyms. -->
+    <field name="synonym" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <!--An easily searchable (TextField tokenized) version of synonym.-->
+    <field name="synonym_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <copyField source="synonym" dest="synonym_searchable"></copyField>
     <!-- bbop_bio: Symbol or name. -->
     <!-- bbop_ann: Column 3: bioentity label. -->
     <!-- bbop_ann_ev_agg: Column 3. -->
@@ -106,6 +108,15 @@
     <!--An easily searchable (TextField tokenized) version of description.-->
     <field name="description_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
     <copyField source="description" dest="description_searchable"></copyField>
+    <!-- bbop_ont: Closure of labels over regulates. -->
+    <field name="regulates_closure_label" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <!--An easily searchable (TextField tokenized) version of regulates_closure_label.-->
+    <field name="regulates_closure_label_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
+    <copyField source="regulates_closure_label" dest="regulates_closure_label_searchable"></copyField>
+    <!-- Automatically created to capture mapping information -->
+    <!-- between regulates_closure and regulates_closure_label.-->
+    <!-- It is not indexed for searching, but may be useful to the client. -->
+    <field name="regulates_closure_map" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
     <!-- bbop_bio: Bioentity ID. -->
     <!-- bbop_ann: Column 1 + columns 2. -->
     <!-- bbop_ann_ev_agg: Column 1 + columns 2. -->
