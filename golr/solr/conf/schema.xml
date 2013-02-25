@@ -27,6 +27,8 @@
     <field name="family_tag_label_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
     <copyField source="family_tag_label" dest="family_tag_label_searchable"></copyField>
     <!-- bbop_ont: Closure of ids/accs over regulates. -->
+    <!-- bbop_bio: Closure of ids/accs over regulates. -->
+    <!-- bbop_ann: Closure of ids/accs over regulates. -->
     <field name="regulates_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_bio: Derived from C13 + ncbi_taxonomy.obo. -->
     <!-- bbop_ann: Derived from C13 + ncbi_taxonomy.obo. -->
@@ -109,6 +111,8 @@
     <field name="description_searchable" type="text_searchable" required="false" multiValued="false" indexed="true" stored="true"></field>
     <copyField source="description" dest="description_searchable"></copyField>
     <!-- bbop_ont: Closure of labels over regulates. -->
+    <!-- bbop_bio: Closure of labels over regulates. -->
+    <!-- bbop_ann: Closure of labels over regulates. -->
     <field name="regulates_closure_label" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!--An easily searchable (TextField tokenized) version of regulates_closure_label.-->
     <field name="regulates_closure_label_searchable" type="text_searchable" required="false" multiValued="true" indexed="true" stored="true"></field>
