@@ -23,7 +23,7 @@ The 12 Steps for a Drupal upgrade:
 
 7) Move "sites":
    mv htdocs/sites htdocs/sites.orig
-   mv drupal.7.YY/sites htdocs
+   mv drupal-7.YY/sites htdocs
 
 8) Move misc.:
    mv htdocs/.htaccess htdocs/.htaccess.orig
