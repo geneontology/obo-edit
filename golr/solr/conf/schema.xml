@@ -64,6 +64,9 @@
     <field name="isa_partof_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ann: Column 7: evidence type. -->
     <field name="evidence_type" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
+    <!-- bbop_ont: Database cross-reference. -->
+    <!-- bbop_bio: Database cross-reference. -->
+    <field name="database_xref" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ann: Derived from column 4. -->
     <field name="qualifier" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ont: Term acc/ID. -->
@@ -72,7 +75,7 @@
     <field name="annotation_class" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ann: ??? -->
     <field name="annotation_extension_class_closure" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
-    <!-- bbop_ann: Columns 17: Bioentity isoform. -->
+    <!-- bbop_ann: Column 17: Bioentity isoform. -->
     <field name="bioentity_isoform" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ann: Column 14: date of assignment. -->
     <field name="date" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
@@ -94,9 +97,9 @@
     <!-- bbop_ont: Term subset. -->
     <field name="subset" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
     <!-- bbop_ont: Term acc/ID. -->
-    <!-- bbop_bio: Bioentity ID. -->
+    <!-- bbop_bio: Gene/product ID. -->
     <!-- bbop_ann: A unique (and internal) combination of bioentity and ontology class. -->
-    <!-- bbop_ann_ev_agg: Bioentity id. -->
+    <!-- bbop_ann_ev_agg: Gene/product ID. -->
     <field name="id" type="string" required="true" multiValued="false" indexed="true" stored="true"></field>
     <!-- bbop_ann: ??? -->
     <field name="annotation_extension_class_label" type="string" required="false" multiValued="true" indexed="true" stored="true"></field>
@@ -121,7 +124,7 @@
     <!-- between regulates_closure and regulates_closure_label.-->
     <!-- It is not indexed for searching, but may be useful to the client. -->
     <field name="regulates_closure_map" type="string" required="false" multiValued="false" indexed="false" stored="true"></field>
-    <!-- bbop_bio: Bioentity ID. -->
+    <!-- bbop_bio: Gene/product ID. -->
     <!-- bbop_ann: Column 1 + columns 2. -->
     <!-- bbop_ann_ev_agg: Column 1 + columns 2. -->
     <field name="bioentity" type="string" required="false" multiValued="false" indexed="true" stored="true"></field>
