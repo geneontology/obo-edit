@@ -1,0 +1,15 @@
+ontology: test
+
+[Term]
+id: TEST:01
+name: "test 01"
+
+[Term]
+id: TEST:02
+name: "test 02"
+is_a: TEST:01 {is_inferred="true"} ! test 01
+
+[Term]
+id: TEST:03
+name: "test 03"
+is_a: TEST:01 ! test 01
