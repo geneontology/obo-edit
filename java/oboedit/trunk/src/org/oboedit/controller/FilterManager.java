@@ -21,6 +21,7 @@ import org.bbop.framework.GUIManager;
 import org.obo.filters.AllTextFieldsCriterion;
 import org.obo.filters.AncestorSearchAspect;
 import org.obo.filters.IsIntersectionCriterion;
+import org.obo.filters.IsMarkedAsInferredLinkCriterion;
 import org.obo.filters.SubsetSearchCriterion;
 import org.obo.filters.ChildSearchAspect;
 import org.obo.filters.CommentSearchCriterion;
@@ -229,6 +230,7 @@ public class FilterManager {
 		addCriterion(new IsNecessaryCriterion());
 		addCriterion(new IsaParentCountCriterion());
 		addCriterion(new ParentCountCriterion());
+		addCriterion(new IsMarkedAsInferredLinkCriterion());
 		addCriterion(new IsImpliedLinkCriterion());
 		addCriterion(new IsRedundantLinkCriterion());
 		addCriterion(new IsTransitiveCriterion());
