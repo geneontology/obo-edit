@@ -36,6 +36,7 @@ import org.obolibrary.obo2owl.Obo2Owl;
 import org.obolibrary.obo2owl.Owl2Obo;
 import org.obolibrary.oboformat.model.OBODoc;
 import org.obolibrary.oboformat.parser.OBOFormatParser;
+import org.obolibrary.oboformat.parser.OBOFormatParserException;
 import org.obolibrary.oboformat.writer.OBOFormatWriter;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
@@ -407,6 +408,8 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			throw new DataAdapterException("Could not convert OBO to OWL.", e);
 		} catch (OWLOntologyStorageException e) {
 			throw new DataAdapterException("Could not save OWL to file: "+filteredPath.getPath(), e);
+		} catch (OBOFormatParserException e) {
+			throw new DataAdapterException("Could not parse OBO to file: "+filteredPath.getPath(), e);
 		}
 		finally {
 			deleteTempFile(tempFile);
