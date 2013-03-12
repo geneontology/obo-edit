@@ -1,6 +1,14 @@
 ===  OBO-Edit v2.3 RELEASE NOTES  ===
 
 ===============================
+What's New in OBO-Edit 2.3-b4  (03/12/2013)
+===============================
+
+New feature:
+- Add option to filter and render links with a trailing qualifier value of: is_inferred="true"
+- BugFix Obo2Owl and Owl2Obo: update library to support trailing qualifiers in conversion
+
+===============================
 What's New in OBO-Edit 2.3-b3  (11/26/2012)
 ===============================
 
