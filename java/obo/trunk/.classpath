@@ -24,6 +24,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/xml-apis.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xsdlib-1.5.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
-	<classpathentry kind="lib" path="lib/oboformat-0.5.2.jar"/>
+	<classpathentry kind="lib" path="lib/oboformat-0.5.4.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
