@@ -57,6 +57,12 @@ public class VersionNumber implements Comparable<VersionNumber> {
 		} catch (IllegalStateException ex) {
 		}
 		try {
+			s.findInLine("-b(\\d+)");
+			MatchResult result = s.match();
+			betaVersion = Integer.parseInt(result.group(1));
+		} catch (IllegalStateException ex) {
+		}
+		try {
 			s.findInLine("-rc(\\d+)");
 			MatchResult result = s.match();
 			rcVersion = Integer.parseInt(result.group(1));
@@ -72,11 +78,6 @@ public class VersionNumber implements Comparable<VersionNumber> {
 		    + ((subminorVersion == -999) ? "" : "." + subminorVersion)
 		    + (isRC() ? "-rc" +rcVersion : "")
 		    + (isBeta() ? "-beta" + betaVersion : "");
-	}
-
-	public static void main(String[] args) throws Exception {
-		logger.info(new VersionNumber("2.1-beta"));
-//		logger.info(new VersionNumber("3.008"));
 	}
 
 	public boolean isBeta() {
