@@ -23,7 +23,7 @@
 	<!-- install4j specific properties; these can be deleted if you don't intend to create install4j installers -->
 	<!--property name="install4j_installation_path" location="/Applications/install4j 4" / -->
 	<!-- change install path for linux -->
-	<property name="install4j_installation_path" location="/Applications/install4j-5" />
+	<property name="install4j_installation_path" location="/Applications/install4j 5" />
 	<property name="install4j_ant_library_path" location="${install4j_installation_path}/bin/ant.jar" />
 	<property name="install4j_api_library_path" location="${install4j_installation_path}/resource/i4jruntime.jar" />
 
@@ -42,7 +42,7 @@
 	     removing help pages, you can edit the text on the existing pages
 	     without a problem. Although come to think of it I don't know if
 	     the new text will be indexed for searching from the help browser. -->
-	<property name="javahelp_indexer" location="/Applications/jh2.0/javahelp/bin/jhindexer" />
+	<property name="javahelp_indexer" location="/Users/hdietze/tools/javahelp-2.0_05/javahelp/bin/jhindexer" />
 
 	<!-- test to see if optional regular expression targets are available -->
 	<available property="regexp_replace_available" classname="org.apache.tools.ant.taskdefs.optional.ReplaceRegExp" />
@@ -351,7 +351,7 @@
 		</move>
 	</target>
 
-        <!-- NOTE: To make docindex, you may need to edit docs/OBO-Edit.jhm and docs/OBO-EditTOC.jhm to set the path of your javahelp. -->
+        <!-- NOTE: To make docindex, you may need to edit docs/OBO-Edit.jhm and docs/OBO-EditTOC.xml to set the path of your javahelp. -->
 	<target name="docindex" depends="-dojhindex">
 	<!--target name="docindex"-->
 			<xslt out="docs/index.html" in="docs/OBO-EditTOC.xml" style="templates/toc_generator.xsl">
@@ -431,7 +431,9 @@
 		<delete file="${main_jar_manifest}" />
 		<delete file="docs/toc.html" />
 		<delete dir="${apidoc_dest}" />
-		<delete file="${runtimedir}/oboedit.jar" />
+		<delete includeEmptyDirs="true">
+		  <fileset dir="${runtimedir}" includes="**/*" defaultexcludes="no"/>
+		</delete>
 		<delete dir="${release_path}" />
 		<delete file="release_resources/README" />
 	</target>
