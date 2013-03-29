@@ -1,6 +1,14 @@
 ===  OBO-Edit v2.3 RELEASE NOTES  ===
 
 ===============================
+What's New in OBO-Edit 2.3-b5  (03/29/2013)
+===============================
+
+New feature:
+- BugFix: Version number detection, now properly works for one letter beta version codes
+- BugFix: Multiple versions of the obo2owl library in the OBO-Edit installer
+
+===============================
 What's New in OBO-Edit 2.3-b4  (03/12/2013)
 ===============================
 
