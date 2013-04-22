@@ -80,6 +80,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.CaretEvent;
@@ -2377,9 +2378,10 @@ public abstract class OntologyGenerationComponent<T extends OntologyClassInterfa
 		// Set the Border with Bold font face
 		final TitledBorder titledBorderTermGenerationPanel = new TitledBorder(
 				Messages.getString("OntologyGenerationComponent.TermGenerationPanel.titledBorder")); //$NON-NLS-1$
-		titledBorderTermGenerationPanel.setTitleFont(new Font(titledBorderTermGenerationPanel.getTitleFont()
-				.getFontName(), Font.BOLD, 18));
-		titledBorderTermGenerationPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+		
+		// wrap code to set title font bold into helper method
+		setTitleFontBold(titledBorderTermGenerationPanel, 18);
+		titledBorderTermGenerationPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));	
 
 		// 1 sub panels
 		// Input Panel
@@ -2590,7 +2592,7 @@ public abstract class OntologyGenerationComponent<T extends OntologyClassInterfa
 		// set the Border with Bold font face
 		final TitledBorder titledBorderDefPanel = new TitledBorder(
 				Messages.getString("OntologyGenerationComponent.DefinitionGenerationPanel.titledBorder")); //$NON-NLS-1$
-		titledBorderDefPanel.setTitleFont(new Font(titledBorderDefPanel.getTitleFont().getFontName(), Font.BOLD, 18));
+		setTitleFontBold(titledBorderDefPanel, 18);
 		titledBorderDefPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		definitionGenerationPanel.setBorder(titledBorderDefPanel);
 
@@ -2711,8 +2713,7 @@ public abstract class OntologyGenerationComponent<T extends OntologyClassInterfa
 		//
 		final TitledBorder titledBorderAddToOntologyPanel = new TitledBorder(
 				Messages.getString("OntologyGenerationComponent.OntologyTermsTablePanel.titledBorder")); //$NON-NLS-1$
-		titledBorderAddToOntologyPanel.setTitleFont(new Font(titledBorderAddToOntologyPanel.getTitleFont()
-				.getFontName(), Font.BOLD, 18));
+		setTitleFontBold(titledBorderAddToOntologyPanel, 18);
 		titledBorderAddToOntologyPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 
 		addToOntologyPanel = new JPanel();
@@ -2848,7 +2849,7 @@ public abstract class OntologyGenerationComponent<T extends OntologyClassInterfa
 			final TitledBorder titleBorder = new TitledBorder(
 					Messages.getString("PreferenceTab.OntologyLookupTitleBoarder.label"));
 			titleBorder.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-			titleBorder.setTitleFont(titleBorder.getTitleFont().deriveFont(Font.BOLD));
+			setTitleFontBold(titleBorder);
 			preferenceOntologyLookupPanel.setBorder(titleBorder);
 
 			GridBagConstraints innerPreferencesPanelConstraints = new GridBagConstraints();
@@ -2871,7 +2872,7 @@ public abstract class OntologyGenerationComponent<T extends OntologyClassInterfa
 			final TitledBorder languageTitleBorder = new TitledBorder(
 					Messages.getString("PreferenceTab.LanguageTitleBoarder.label")); //$NON-NLS-1$
 			languageTitleBorder.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-			languageTitleBorder.setTitleFont(languageTitleBorder.getTitleFont().deriveFont(Font.BOLD));
+			setTitleFontBold(languageTitleBorder);
 			preferenceLanguangePanel.setBorder(languageTitleBorder);
 
 			GridBagConstraints innerPreferencesPanelConstraints = new GridBagConstraints();
@@ -2889,7 +2890,7 @@ public abstract class OntologyGenerationComponent<T extends OntologyClassInterfa
 
 		final TitledBorder proxyTitleBorder = new TitledBorder(
 				Messages.getString("PreferenceTab.ProxyTitleBorder.label")); //$NON-NLS-1$
-		proxyTitleBorder.setTitleFont(proxyTitleBorder.getTitleFont().deriveFont(Font.BOLD));
+		setTitleFontBold(proxyTitleBorder);
 		proxyTitleBorder.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		preferencesProxyPanel.setBorder(proxyTitleBorder);
 
@@ -3077,6 +3078,51 @@ public abstract class OntologyGenerationComponent<T extends OntologyClassInterfa
 		return mainTabbedPane;
 	}
 
+	/**
+	 * Set the title font to bold and given font size.
+	 * 
+	 * @param border
+	 * @param size
+	 */
+	static void setTitleFontBold(TitledBorder border, int size) {
+		Font originalTitleFont = getTitleFont(border);
+		if (originalTitleFont != null) {
+			border.setTitleFont(new Font(originalTitleFont.getFontName(), Font.BOLD, size));
+		}
+	}
+
+	/**
+	 * Retrieve the title font from the given {@link TitledBorder}. If no font
+	 * was specified, look for the default font in the {@link UIManager}.<br>
+	 * This fixes a bug in the Java 7.
+	 * 
+	 * @param border
+	 * @return font or null
+	 * 
+	 * @see http://bugs.sun.com/view_bug.do?bug_id=7022041
+	 */
+	private static Font getTitleFont(TitledBorder border) {
+		Font originalTitleFont = border.getTitleFont();
+		if (originalTitleFont == null) {
+			// this is a fix for a Java 7 bug!
+			// http://bugs.sun.com/view_bug.do?bug_id=7022041
+			originalTitleFont = UIManager.getDefaults().getFont("TitledBorder.font");
+		}
+		return originalTitleFont;
+	}
+	
+	/**
+	 * Set the title font to bold, use the original font size.
+	 * 
+	 * @param border
+	 */
+	static void setTitleFontBold(TitledBorder border) {
+		Font originalTitleFont = getTitleFont(border);
+		if (originalTitleFont != null) {
+			border.setTitleFont(originalTitleFont.deriveFont(Font.BOLD));
+		}
+	}
+	
 	/**
 	 * Displays or hides the progress bar dialog with the default wait text
 	 * 
