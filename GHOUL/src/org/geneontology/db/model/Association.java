@@ -132,7 +132,7 @@ public class Association extends GOModel {
 		this.evidence = evidence;
 	}
 
-	public void addEvidence(Evidence evidence) {
+	public synchronized void addEvidence(Evidence evidence) {
 		if (this.evidence == null)
 			this.evidence = new HashSet<Evidence> ();
 		evidence.setAssociation(this);
