@@ -127,11 +127,11 @@ public class GeneProduct extends GOModel {
 		return associations;
 	}
 
-	public void setAssociations(Set<Association> associations) {
+	public synchronized void setAssociations(Set<Association> associations) {
 		this.associations = associations;
 	}
 
-	public void addAssociation(Association assoc) {
+	public synchronized void addAssociation(Association assoc) {
 		/*
 		 * It is critical important that these two lines are executed in this order
 		 * Otherwise, because of Hibernate's implementation of Sets, the assoc isn't -really and truly- added
@@ -144,26 +144,29 @@ public class GeneProduct extends GOModel {
 		associations.add(assoc);
 	}
 
-	public Association findAssociation(Term term, String from_db) {
+	public Association findAssociation(Term term, String source) {
 		Association found = null;
 		for (Iterator<Association> it = associations.iterator(); it.hasNext() && found == null; ) {
 			Association a = it.next();
-			if (a.getTerm() == term && a.getSource_db().getName().equals(from_db)) {
+			if (a.getTerm() == term && a.getSource_db().getName().equals(source)) {
 				found = a;
 			}
 		}
 		return found;
 	}
 
-	public Association removeAssociation(Term term, String from_db) {
-		Association removal = findAssociation (term, from_db);
+	public synchronized Association removeAssociation(Term term, String source) {
+		Association removal = findAssociation (term, source);
 		if (removal != null) {
+			int size = associations.size();
 			associations.remove(removal);
+			if (associations.size() == size)
+				System.out.println("Unable to remove " + term + " from associations for " + dbxref.getDb_name() + ":" + dbxref.getDbxref_id());
 		}
 		return removal;
 	}
 
-	public Association removeAssociation(Association a) {	
+	public synchronized Association removeAssociation(Association a) {	
 		System.out.println ("1. Associations contains " + associations.contains(a));				
 		if (!associations.remove(a)) {
 			System.out.println ("Unable to remove");

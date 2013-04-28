@@ -16,7 +16,6 @@ import org.geneontology.db.model.DB;
 import org.geneontology.db.model.DBXref;
 import org.geneontology.db.model.GeneProduct;
 import org.geneontology.db.model.GraphPath;
-import org.geneontology.db.model.Sequence;
 import org.geneontology.db.model.Species;
 import org.geneontology.db.model.Term;
 import org.geneontology.db.model.TermSynonym;
