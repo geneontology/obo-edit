@@ -1,5 +1,6 @@
 package org.geneontology.db.factory;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -19,44 +20,57 @@ import org.geneontology.db.model.GraphPath;
 import org.geneontology.db.model.Species;
 import org.geneontology.db.model.Term;
 import org.geneontology.db.model.TermSynonym;
-import org.geneontology.db.util.HibernateUtil;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+import org.hibernate.service.ServiceRegistryBuilder;
 
 
 public class GOobjectFactory {
 	/** The local {@link SessionFactory} object used to retrieve data. */
-	private static SessionFactory sessions;
+	private static SessionFactory sessionsFactory;
 	private static String message = "";
 
 	/**
 	 * Creates a new ChadoAdaptor that will retrieve data from the database configured in the supplied {@link SessionFactory} object.
-	 * @param sessions a {@link SessionFactory} object without an active transaction. 
+	 * @param sessionsFactory a {@link SessionFactory} object without an active transaction. 
 	 */
 	public GOobjectFactory(String config){
 		try {
-			sessions  = HibernateUtil.buildSessionFactory(config);
+			sessionsFactory  = buildSessionFactory(config);
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (e instanceof SQLException)
 				printSQLException((SQLException) e);
 		}
 	}
+	
+	private static SessionFactory buildSessionFactory(String config) {
+        try {
+            // Create the SessionFactory from hibernate.cfg.xml
+    	    Configuration configuration = new Configuration();
+    	    configuration.configure(new File(config));
+    	    ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();        
+    	    return configuration.buildSessionFactory(serviceRegistry);
+        }
+        catch (Throwable ex) {
+            // Make sure you log the exception, as it might be swallowed
+            System.err.println("Initial SessionFactory creation failed." + ex);
+            throw new ExceptionInInitializerError(ex);
+        }
+    }
 
-	/**
-	 * Creates a new ChadoAdaptor that will retrieve data from the database configured in the supplied {@link SessionFactory} object.
-	 * @param sessions a {@link SessionFactory} object without an active transaction. 
-	 */
-	public GOobjectFactory(SessionFactory sessionFactory){
-		sessions  = sessionFactory;
+	public void close() {
+		sessionsFactory.close();
 	}
 
 	public synchronized Session startSession() {
 		Session session = null;
 		try {
-			session = sessions.getCurrentSession();
+			session = sessionsFactory.getCurrentSession();
 			session.beginTransaction();
 			message = "";
 		} catch (Exception e) {
