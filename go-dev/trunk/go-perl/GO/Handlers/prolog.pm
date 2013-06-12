@@ -199,7 +199,24 @@ sub e_term {
 
     #my @is_as = $term->findval_is_a;
     my @is_as = $term->get_is_a;
-    $self->rfactq($_,'subclass', [$id, ref($_) ? $_->get('.') : $_], $name_h->{$_}) foreach @is_as;
+    foreach my $is_a (@is_as) {
+        if (ref($is_a)) {
+            my $gci_rel = $is_a->sget('@/gci_relation');
+            if ($gci_rel) {
+                $self->rfactq($_,
+                              'gci_subclass', 
+                              [$id,$is_a->get('.'), $gci_rel, $is_a->sget('@/gci_filler')]);
+            }
+            else {
+                #$self->rfactq($_,'subclass', [$id, ref($is_a) ? $_->get('.') : $_], $name_h->{$_});
+                $self->rfactq($_, 'subclass', [$id, $is_a->get('.')], $name_h->{$_});
+            }
+        }
+        else {
+            $self->rfactq($_,'subclass', [$id,  $is_a], $name_h->{$is_a});
+        }
+    }
+    
 
     my @equivs = $term->get_equivalent_to;
     $self->rfactq($_, 'equivalent_class', [$id, ref($_) ? $_->get('.') : $_]) foreach @equivs;
