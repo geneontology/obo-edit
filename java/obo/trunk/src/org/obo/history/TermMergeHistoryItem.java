@@ -81,8 +81,8 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 		checkSubstitutionTags(out, slaveNode, masterNode, history);
 
 
-		Collection targetDescendants = TermUtil.getDescendants(masterNode, true, null);
-		Collection targetAncestors = TermUtil.getAncestors(masterNode, true, null);
+		Collection<LinkedObject> targetDescendants = TermUtil.getDescendants(masterNode, true, null);
+		Collection<LinkedObject> targetAncestors = TermUtil.getAncestors(masterNode, true, null);
 
 		// remove the slave node as parents of slave node's children,
 		// and add them to the master node
@@ -202,6 +202,25 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 		out.add(new DefinitionChangeHistoryItem(masterNode, newDef));
 		out.add(new CommentChangeHistoryItem(masterNode, newComment));
 
+		
+		// copy also the subset tags from the slave node to the master node
+		Set<TermSubset> slaveSubsets = slaveNode.getSubsets();
+		if (slaveSubsets != null && !slaveSubsets.isEmpty()) {
+			Set<TermSubset> masterSubsets = masterNode.getSubsets();
+			if (masterSubsets != null && !masterSubsets.isEmpty()) {
+				for (TermSubset slaveSubset : slaveSubsets) {
+					if (!masterSubsets.contains(slaveSubset)) {
+						out.add(new SubsetChangeHistoryItem(slaveSubset.getName(), false, masterNode.getID()));
+					}
+				}
+			}
+			else {
+				for (TermSubset slaveSubset : slaveSubsets) {
+					out.add(new SubsetChangeHistoryItem(slaveSubset.getName(), false, masterNode.getID()));
+				}
+			}
+			
+		}
 		return null;
 	}
 

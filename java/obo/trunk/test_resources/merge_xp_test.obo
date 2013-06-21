@@ -5,6 +5,8 @@ auto-generated-by: OBO-Edit 2.1-beta3
 default-namespace: default_namespace
 namespace-id-rule: * FBbt:$sequence(8,7000,17000)$
 remark: transitional version - may contain incomplete edits. Not to be used for annotation
+subsetdef: subset_1 "Test subset one"
+subsetdef: subset_2 "Test subset two"
 
 [Term]
 id: Test:00040000
@@ -35,6 +37,7 @@ creation_date: 2010-03-16T12:29:36Z
 [Term]
 id: Test:00040004
 name: auto class
+subset: subset_1
 is_a: Test:00040000 ! term to be used in genus
 relationship: part_of Test:00040003 ! term to be used in diff
 created_by: djs93
@@ -43,6 +46,7 @@ creation_date: 2010-03-16T12:31:49Z
 [Term]
 id: Test:00040005
 name: auto class 2
+subset: subset_2
 is_a: Test:00040000 ! term to be used in genus
 relationship: part_of Test:00040003 ! term to be used in diff
 created_by: djs93
