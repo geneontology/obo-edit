@@ -44,8 +44,9 @@ public class TermMergeTest extends AbstractOBOTest {
 		operationModel.apply(item);
 		
 		out.addItem(item);
-		this.assertTrue(session.getObject("Test:00040005")==null);
+		assertNull(session.getObject("Test:00040005"));
 		OBOClass mergedObj = (OBOClass) session.getObject("Test:00040004");
+		assertEquals(2, mergedObj.getSubsets().size());
 	}
 
 	//merging intersection term with a regular term
@@ -61,7 +62,7 @@ public class TermMergeTest extends AbstractOBOTest {
 		operationModel.apply(item);
 		
 		OBOClass mergedObj = (OBOClass) session.getObject("Test:00040001");
-		this.assertTrue(ReasonerUtil.getIntersectionLinks(mergedObj).size()==2);
+		assertEquals(2, ReasonerUtil.getIntersectionLinks(mergedObj).size());
 	}
 	
 	//merging two intersection terms
