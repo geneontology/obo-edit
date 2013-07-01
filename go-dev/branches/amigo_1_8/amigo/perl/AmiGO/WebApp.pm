@@ -514,6 +514,7 @@ sub _common_params_settings {
   $params->{base} = $self->{CORE}->amigo_env('AMIGO_CGI_URL');
   $params->{public_base} = $self->{CORE}->amigo_env('AMIGO_PUBLIC_CGI_URL');
   $params->{BETA} = $self->{CORE}->amigo_env('AMIGO_BETA') || 0;
+  $params->{EOL} = int($self->{CORE}->amigo_env('AMIGO_EOL')) || 0;
   $params->{TROUBLE} = $self->{CORE}->amigo_env('AMIGO_TROUBLE_SWITCH') || 0;
   $params->{TROUBLE_MESSAGE} =
     $self->{CORE}->amigo_env('AMIGO_TROUBLE_MESSAGE') || '';
