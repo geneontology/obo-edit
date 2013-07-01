@@ -120,6 +120,7 @@ my @env_conf_order = qw(
 			 AMIGO_TROUBLE_MESSAGE
 			 AMIGO_BETA
                          AMIGO_GOOGLE_ANALYTICS_ID
+                         AMIGO_EOL
 		      );
 
 my %synth_vars = ();
@@ -696,6 +697,17 @@ my %env_conf = (
 		 PARSER => \&is_always_true,
 		 DEPENDS => \&is_always_false,
 		},
+
+		AMIGO_EOL =>
+		{
+		 DEFAULT => '0',
+		 MESSAGE =>
+		 "Mark the AmiGO site as EOLed (bring up forwarding messages).",
+		 ERROR => 'generic error',
+		 PARSER => \&is_always_true,
+		 DEPENDS => \&is_always_false,
+		},
+
 	       );
 
 ## First things first, check that the env_conf and env_conf_order
