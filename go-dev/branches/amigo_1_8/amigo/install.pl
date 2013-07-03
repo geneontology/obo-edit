@@ -121,6 +121,7 @@ my @env_conf_order = qw(
 			 AMIGO_BETA
                          AMIGO_GOOGLE_ANALYTICS_ID
                          AMIGO_EOL
+                         AMIGO2_BASE_URL
 		      );
 
 my %synth_vars = ();
@@ -703,6 +704,15 @@ my %env_conf = (
 		 DEFAULT => '0',
 		 MESSAGE =>
 		 "Mark the AmiGO site as EOLed (bring up forwarding messages).",
+		 ERROR => 'generic error',
+		 PARSER => \&is_always_true,
+		 DEPENDS => \&is_always_false,
+		},
+
+		AMIGO2_BASE_URL =>
+		{
+		 DEFAULT => 'http://amigo2.berkeleybop.org/cgi-bin/amigo2',
+		 MESSAGE => "Base URL for AmiGO 2 links.",
 		 ERROR => 'generic error',
 		 PARSER => \&is_always_true,
 		 DEPENDS => \&is_always_false,

@@ -428,6 +428,13 @@ sub mode_term_details_core {
   $self->set_template_parameter('QUICKGO_ENGINE_P',
 				$self->{CORE}->amigo_env('AMIGO_GO_ONLY_GRAPHICS'));
 
+  ## AmiGO 2 link.
+  ## Taken care of in generalized WebApp.pm.
+  #$vars->{EOL} = int($rg->amigo_env('AMIGO_EOL')) || 0;
+  my $a2l = $self->{CORE}->get_interlink({mode => 'amigo2-term-details',
+					  arg => {acc => $input_term_id}});
+  $self->set_template_parameter('AMIGO2_LINK', $a2l);
+
   ## Bridge variables from old system.
   #$self->set_template_parameter('cgi', 'term-details');
   $self->set_template_parameter('cgi', 'browse');
@@ -511,6 +518,10 @@ sub mode_term_details_core {
   ## Initialize javascript app.
   $self->add_template_javascript($self->{JS}->get_lib('TermDetails.js'));
   $self->add_template_javascript($self->{JS}->initializer_jquery('TermDetailsInit();'));
+
+  ## Initialize AmiGO 2 forwarding panel..
+  $self->add_template_javascript($self->{JS}->get_lib('AmiGO2Beta.js'));
+  $self->add_template_javascript($self->{JS}->initializer_jquery('AmiGO2BetaInit();'));
 
   ##
   if( $type eq 'compact' ){
