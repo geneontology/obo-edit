@@ -48,14 +48,15 @@ my $error;
 
 #print STDERR "cgi: ".Dumper($q)."\n";
 
-if ($cgi_error)
-{	if ($cgi_error eq '413 Request entity too large')
-	{	$cgi_error .= '.<br>The maximum size for file uploads is '.$max_size.' Kb.';
-	}
-	$error = set_message($error, 'fatal', $cgi_error);
-	my $session = new GO::CGI::Session(-temp => 1);
-	process_page_template({ error => $error, page_title => 'Search error' }, $session, 'advanced_search');
-	exit;
+if ($cgi_error){
+  if ($cgi_error eq '413 Request entity too large'){
+    $cgi_error .= '.<br>The maximum size for file uploads is '.$max_size.' Kb.';
+  }
+  $error = set_message($error, 'fatal', $cgi_error);
+  my $session = new GO::CGI::Session(-temp => 1);
+  process_page_template({ error => $error, page_title => 'Search error' },
+			$session, 'advanced_search');
+  exit;
 }
 
 my %params = $q->Vars;
@@ -146,24 +147,31 @@ if ($error->{fatal}){
 				     -ses_type=>'amigo_message',
 				     -temp => 1);
   $core->status_error_client();
-  process_page_template({ error => $error,
-			  page_title => 'Search error' },
-			$session,
-			'amigo_message');
+  process_page_template({ error => $error,  page_title => 'Search error' },
+			$session, 'amigo_message');
   exit;
 }
 
-my $session = new GO::CGI::Session('-q'=>$q, -ses_type=>$ses_type, -read_only=>1);
+my $session =
+  new GO::CGI::Session('-q'=>$q, -ses_type=>$ses_type, -read_only=>1);
 
-if ($ses_type eq 'front' || $ses_type eq 'advanced_query')
-{	#	nothing to do for these pages
-	$vars->{search_constraint} = $params{search_constraint} || $session->get_param('search_constraint');
-	
-	if ($ses_type eq 'advanced_query')
-	{	$vars->{searchfields}{$_.'fields'} = $session->set_option($_.'fields') foreach @valid_search_constraints;
-	}
-	process_page_template($vars, $session);
-	exit;
+if ($ses_type eq 'front' || $ses_type eq 'advanced_query'){
+  # nothing to do for these pages
+  $vars->{search_constraint} =
+    $params{search_constraint} || $session->get_param('search_constraint');
+
+  if ($ses_type eq 'advanced_query'){
+    $vars->{searchfields}{$_.'fields'} =
+      $session->set_option($_.'fields') foreach @valid_search_constraints;
+  }
+
+  ## If we get here, add AmiGO 2 link.
+  $vars->{EOL} = int($core->amigo_env('AMIGO_EOL')) || 0;
+  my $a2l = $core->get_interlink({mode => 'amigo2-landing'});
+  $vars->{'AMIGO2_LINK'} = $a2l;
+
+  process_page_template($vars, $session);
+  exit;
 }
 
 #
@@ -244,90 +252,96 @@ if ($search->{cache_me} && $search->cache)
 
 #	print STDERR "session object:\n".Dumper($session)."\n";
 
-if ($search->{results}{single_result})
-{	#print STDERR "data: ".Dumper($data);
-	print "Location: ".$session->get_param('cgi_url')."/".$data->{search_constraint}."-details.cgi?".$data->{search_constraint}."=".$data->{id}."&session_id=".$session->id."\n\n";
-	exit;
-      }else{
+if ($search->{results}{single_result}){
+  #print STDERR "data: ".Dumper($data);
+  print "Location: ".$session->get_param('cgi_url')."/".$data->{search_constraint}."-details.cgi?".$data->{search_constraint}."=".$data->{id}."&session_id=".$session->id."\n\n";
+  exit;
+}else{
 
-	#foreach my $p (@{$q->keywords}){
-	#  print STDERR "Search: " . $p . "\n";
-	#}
-	#print STDERR "Search: " . $q->query_string . "\n";
+  #foreach my $p (@{$q->keywords}){
+  #  print STDERR "Search: " . $p . "\n";
+  #}
+  #print STDERR "Search: " . $q->query_string . "\n";
 
-	## BUG: HUGE flaming kludge here.
-	my $fixed_query = $q->query_string;
-	## Not happy about the next line either.
-	$fixed_query =~ s/search_constraint=terms/search_constraint=term/;
-	#print STDERR "___" . $fixed_query . "\n";
-	#sleep 2;
-	print "Location: " .
-	  $session->get_param('cgi_url') .
-	    "/search.cgi?".
-	      $fixed_query .
-		"\n\n";
-	exit;
+  ## BUG: HUGE flaming kludge here.
+  my $fixed_query = $q->query_string;
+  ## Not happy about the next line either.
+  $fixed_query =~ s/search_constraint=terms/search_constraint=term/;
+  #print STDERR "___" . $fixed_query . "\n";
+  #sleep 2;
+  print "Location: " .
+    $session->get_param('cgi_url') .
+      "/search.cgi?".
+	$fixed_query .
+	  "\n\n";
+  exit;
 
-	#print STDERR "Search fields: " .
-	  #Dumper($search->get_param('select_list'))."\n";
+  #print STDERR "Search fields: " .
+  #Dumper($search->get_param('select_list'))."\n";
 
-	#my $foo =
-	#  map { GO::CGI::NameMunger::get_field_name(1, $_) } @$search->get_param('select_list');
+  #my $foo =
+  #  map { GO::CGI::NameMunger::get_field_name(1, $_) } @$search->get_param('select_list');
 
-	$vars =
-	  {
-	   #		data => $data,
-	   search => $search,
-	   search_constraint => $search->get_param('search_constraint'),
-	   cgi => 'search',
-	   #search_fields => [$foo],
-	   #search_fields => [ map { GO::CGI::NameMunger::get_field_name(1, $_) } @$select_list ],
-	   search_fields => ['all'],
-	   n_results => $search->get_result_param('n_results') || 0,
-	  };
+  $vars =
+    {
+     #		data => $data,
+     search => $search,
+     search_constraint => $search->get_param('search_constraint'),
+     cgi => 'search',
+     #search_fields => [$foo],
+     #search_fields => [ map { GO::CGI::NameMunger::get_field_name(1, $_) } @$select_list ],
+     search_fields => ['all'],
+     n_results => $search->get_result_param('n_results') || 0,
+    };
 
-	#	foreach ('exact_match', 'show_gp_counts', 'show_term_counts')
-	#	{	$vars->{$_} = 1 if $option_h->{$_};
-	#	}
+  #	foreach ('exact_match', 'show_gp_counts', 'show_term_counts')
+  #	{	$vars->{$_} = 1 if $option_h->{$_};
+  #	}
 
-	#print STDERR "get query param: ".Dumper($search->get_query_param)."\n";
+  #print STDERR "get query param: ".Dumper($search->get_query_param)."\n";
 
-	#	my $q = $search->get_query_param;
-	#	if ($q)
-	#
+  #	my $q = $search->get_query_param;
+  #	if ($q)
+  #
 
-	if ($search->get_query_param){
-	  $vars->{querylist} =
-	    [ map { join(" ", @$_) } @{$search->get_query_param} ];
+  if ($search->get_query_param){
+    $vars->{querylist} =
+      [ map { join(" ", @$_) } @{$search->get_query_param} ];
 
-	  #print STDERR "querylist: ".Dumper($vars->{querylist})."\n";
+    #print STDERR "querylist: ".Dumper($vars->{querylist})."\n";
 
-	  $vars->{query} = join(" ", $vars->{querylist}[0]);
-	  $vars->{querytext} = join(" or ", @{$vars->{querylist}});
-	  $vars->{queryurl} =
-	    CGI::escape( join("&amp;query=", @{$vars->{querylist}}) );
+    $vars->{query} = join(" ", $vars->{querylist}[0]);
+    $vars->{querytext} = join(" or ", @{$vars->{querylist}});
+    $vars->{queryurl} =
+      CGI::escape( join("&amp;query=", @{$vars->{querylist}}) );
 
-	  if ($search->get_result_param('large_result_set')){
-	    $vars->{large_result_set} = 1;
-	  }
+    if ($search->get_result_param('large_result_set')){
+      $vars->{large_result_set} = 1;
+    }
 
-	  if ($data){
-	    $vars->{data} = $data;
-	    $vars->{n_pages} = $search->get_result_param('n_pages') || 1;
-	    $vars->{page} = $params{page} || 1;
-	    $vars->{url_string} =
-	      "query=".$vars->{queryurl} .
-		"&amp;search_constraint=".
-		  $vars->{search_constraint};
-	  }
-	}
+    if ($data){
+      $vars->{data} = $data;
+      $vars->{n_pages} = $search->get_result_param('n_pages') || 1;
+      $vars->{page} = $params{page} || 1;
+      $vars->{url_string} =
+	"query=".$vars->{queryurl} .
+	  "&amp;search_constraint=".
+	    $vars->{search_constraint};
+    }
+  }
 
-	#	else
-	#	{	$vars->{n_results} = 0;
-	#	}
-	
-	$vars->{error} = $search->get_msg;
+  #	else
+  #	{	$vars->{n_results} = 0;
+  #	}
+
+  $vars->{error} = $search->get_msg;
+
 }
+
+## If we get here, add AmiGO 2 link.
+$vars->{EOL} = int($core->amigo_env('AMIGO_EOL')) || 0;
+my $a2l = $core->get_interlink({mode => 'amigo2-landing'});
+$vars->{'AMIGO2_LINK'} = $a2l;
 
 $session->save_session;
 process_page_template($vars, $session);

@@ -103,6 +103,12 @@ if ($result_h->{results}){
     }
   }
 
+  ## Add AmiGO 2 link.
+  $vars->{EOL} = int($core->amigo_env('AMIGO_EOL')) || 0;
+  my $a2l = $core->get_interlink({mode => 'amigo2-gp-details',
+				  arg => {acc => $gp_list[0]}});
+  $vars->{'AMIGO2_LINK'} = $a2l;
+
   if ($session->show_counts('gp') == 1){
     my $count = get_term_count_for_gps($session->apph, [ $vars->{gp} ], 1);
     #	print STDERR "Count: ".Dumper($count) if $verbose;

@@ -5,6 +5,8 @@
 <!-- bookmark           = [% bookmark %] -->
 <!-- session_id         = [% session_id %] -->
 <!-- session_id_for_url = [% session_id_for_url %] -->
+<!-- EOL                = [% EOL %] -->
+<!-- AMIGO2_LINK        = [% AMIGO2_LINK %] -->
 <div id="header">
   [% IF BETA == 1 %]
   <a class="logo floatR" href="search.cgi?session_id=[% session_id %]"><img src="[% image_dir %]/logo-amigolabs-sm.png" alt="AmiGO logo" title="AmiGO front page"></a> <h1 id="top"><a href="http://www.geneontology.org/" title="Gene Ontology website">the Gene Ontology</a></h1>
@@ -149,6 +151,36 @@
 [% END %]
 [% IF TROUBLE == 1 %]
 [%    TROUBLE_MESSAGE %]
+[% END %]
+
+[% IF EOL && EOL == 1 && AMIGO2_LINK && AMIGO2_LINK != '' %]
+<!-- EOL AmiGO 2 forwarding. -->
+<div id="amigo2-beta-panel" class="amigo2-beta-panel hidden">
+    <a class="override amigo2-beta-tab" href="[% AMIGO2_LINK %]">AmiGO 2 Beta</a>
+    <div id="amigo2-beta-panel-inner" class="" style="">
+      <h3><a href="[% AMIGO2_LINK %]">Try the AmiGO 2 Beta</a></h3>
+    
+      <!-- <p style="position:relative; left: -30px; display: block;"> -->
+      <p style="">
+	The functionality of <a href="[% AMIGO2_LINK %]">this page</a>
+	is now covered by the AmiGO 2 Beta.
+      </p>
+      <p style="">
+	<a href="http://wiki.geneontology.org/index.php/AmiGO_2">AmiGO
+	  2</a> is the next generation of AmiGO software from the GO
+	Consortium. Included in the many frontend and backend improvements
+	is:
+	<em>extremely fast searching</em>, 
+	<em>faceted browsing</em>, and a 
+	<em>simple search wizard interface</em> for the most common queries.
+	See the AmiGO 2<a href="http://wiki.geneontology.org/index.php/AmiGO_2">wiki page</a> for more details.
+      </p>
+      <p style="">
+	Please keep in mind that this is beta software and that the	
+	<a href="http://wiki.geneontology.org/index.php/AmiGO_Labs">usual warnings</a> apply.
+      </p>
+    </div>    
+</div>
 [% END %]
 
 <!-- End: header.tmpl -->
