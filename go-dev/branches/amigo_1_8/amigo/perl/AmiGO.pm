@@ -1275,6 +1275,52 @@ sub get_interlink {
 	 $acc . '&session_id=' . $sid;
      },
 
+     ## Switch over to using the new pages.
+     'amigo2-term-details' =>
+     sub {
+       die "interlink mode 'amigo2-term-details' requires args"
+	 if ! defined $args;
+       my $acc = $args->{acc} || '';
+       ## Force non-full non-public since we'll be supplying the whole
+       ## thing.
+       $optional_public_p = 0;
+       $optional_full_p = 0;
+       $ilink = $self->amigo_env('AMIGO2_BASE_URL') . '/amigo/term/' . $acc;
+     },
+
+     ## Switch over to using the new pages.
+     'amigo2-gp-details' =>
+     sub {
+       die "interlink mode 'amigo2-gp-details' requires args"
+	 if ! defined $args;
+       my $acc = $args->{acc} || '';
+       ## Force non-full non-public since we'll be supplying the whole
+       ## thing.
+       $optional_public_p = 0;
+       $optional_full_p = 0;
+       $ilink = $self->amigo_env('AMIGO2_BASE_URL').'/amigo/gene_product/'.$acc;
+     },
+
+     ## Switch over to using the new pages.
+     'amigo2-landing' =>
+     sub {
+       ## Force non-full non-public since we'll be supplying the whole
+       ## thing.
+       $optional_public_p = 0;
+       $optional_full_p = 0;
+       $ilink = $self->amigo_env('AMIGO2_BASE_URL') . '/amigo/';
+     },
+
+     ## Switch over to using the new pages.
+     'amigo2-search' =>
+     sub {
+       ## Force non-full non-public since we'll be supplying the whole
+       ## thing.
+       $optional_public_p = 0;
+       $optional_full_p = 0;
+       $ilink = $self->amigo_env('AMIGO2_BASE_URL') . '/amigo/search';
+     },
+
      'browse' =>
      sub {
        die "interlink mode 'browse' requires args" if ! defined $args;

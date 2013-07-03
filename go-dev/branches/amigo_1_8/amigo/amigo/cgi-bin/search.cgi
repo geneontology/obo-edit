@@ -194,6 +194,12 @@ if ($ses_type eq 'front' || $ses_type eq 'advanced_query'){
       foreach @valid_search_constraints;
     $vars->{max_upload_size} = $max_upload_size;
   }
+
+  ## Add AmiGO 2 link.
+  $vars->{EOL} = int($core->amigo_env('AMIGO_EOL')) || 0;
+  my $a2l = $core->get_interlink({mode => 'amigo2-search'});
+  $vars->{'AMIGO2_LINK'} = $a2l;
+
   process_page_template($vars, $session);
   exit;
 }
@@ -423,5 +429,11 @@ if( $params{search_constraint} eq 'gp'){
     }
   }
 }
+
+## Add AmiGO 2 link.
+$vars->{EOL} = int($core->amigo_env('AMIGO_EOL')) || 0;
+my $a2l = $core->get_interlink({mode => 'amigo2-search'});
+$vars->{'AMIGO2_LINK'} = $a2l;
+
 process_page_template($vars, $session);
 exit;

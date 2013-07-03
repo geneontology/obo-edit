@@ -524,3 +524,42 @@ class. */
     background: #ffffff;
     /* background: #cddcf3; */
 }
+
+/* Working on the AmiGO 2 forwarding options. */
+/* From: http://wpaoli.building58.com/wp-content/uploads/2009/08/feedback-panel.html */
+.amigo2-beta-panel {
+    padding: 15px;
+    width: 250px;
+    background: #cddcf3; /*#bab6d8;*/
+    border: #29216d 1px solid;
+    position: fixed;
+    top: 200px;
+    /* left: -291px; */
+    right: -282px;
+    z-index: 100;
+}
+/* .amigo2-beta-panel a.amigo2-beta-tab, a.amigo2-beta-tab:link, a.amigo2-beta-tab:visited { */
+/*     border-botttom: 1px solid #000000; */
+/*     border-left: 1px solid #000000; */
+/*     border-top: 1px solid #000000; */
+/* } */
+.amigo2-beta-panel a.amigo2-beta-tab {
+    background:transparent url(../images/amigo2-beta.gif) no-repeat scroll 0 0; 
+    /* border-width: 1px 1px 1px 0; */
+    border-bottom: 1px solid #000000;
+    border-left: 1px solid #000000;
+    border-top: 1px solid #000000;
+    display: block;
+    /* height: 99px; */
+    height: 100px;
+    width: 30px;
+    /* left: 51px; */
+    /* right: 51px; */
+    right: 46px;
+    bottom: 16px;
+    position: relative;
+    /* float: right; */
+    float: left;
+    text-indent: -9999px;
+    outline: none;
+}
