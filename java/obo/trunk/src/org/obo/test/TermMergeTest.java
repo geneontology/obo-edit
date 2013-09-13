@@ -7,8 +7,11 @@ package org.obo.test;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Set;
 
 import org.obo.datamodel.OBOClass;
+import org.obo.datamodel.Synonym;
+import org.obo.datamodel.SynonymType;
 import org.obo.datamodel.impl.DefaultOperationModel;
 import org.obo.history.DefaultHistoryList;
 import org.obo.history.HistoryItem;
@@ -114,6 +117,30 @@ public class TermMergeTest extends AbstractOBOTest {
 		this.assertTrue(session.getObject("Test:00040004")==null);
 	}
 
-	
+	public void testMergeSynonymType() throws Exception {
+		OBOClass master = (OBOClass) session.getObject("Test:00050000");
+		OBOClass slave = (OBOClass) session.getObject("Test:00050001");
+		
+		HistoryItem item = new TermMergeHistoryItem(master, slave);
+		operationModel = new DefaultOperationModel();
+		operationModel.setSession(session);
+		operationModel.apply(item);
+		
+		OBOClass mergedObj = (OBOClass) session.getObject("Test:00050000");
+		Set<Synonym> synonyms = mergedObj.getSynonyms();
+		// two synonyms, the merged term label and the merged synonyms with the type
+		assertEquals(2, synonyms.size());
+		boolean found = false;
+		for (Synonym synonym : synonyms) {
+			String text = synonym.getText();
+			if ("foo bar".equals(text)) {
+				SynonymType synonymType = synonym.getSynonymType();
+				assertNotNull(synonymType);
+				String id = synonymType.getID();
+				found = "st1".equals(id);
+			}
+		}
+		assertTrue(found);
+	}
 
 }
