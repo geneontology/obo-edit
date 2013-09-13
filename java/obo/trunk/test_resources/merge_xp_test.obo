@@ -7,6 +7,7 @@ namespace-id-rule: * FBbt:$sequence(8,7000,17000)$
 remark: transitional version - may contain incomplete edits. Not to be used for annotation
 subsetdef: subset_1 "Test subset one"
 subsetdef: subset_2 "Test subset two"
+synonymtypedef: st1 "synonym type 1"
 
 [Term]
 id: Test:00040000
@@ -61,6 +62,15 @@ intersection_of: part_of Test:00040007 ! diff2
 [Term]
 id: Test:00040007
 name: diff2
+
+[Term]
+id: Test:00050000
+name: term to be merged for synonym type test
+
+[Term]
+id: Test:00050001
+name: term with typed synonym
+synonym: "foo bar" EXACT st1 []
 
 [Typedef]
 id: part_of

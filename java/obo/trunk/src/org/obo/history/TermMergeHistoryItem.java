@@ -153,6 +153,11 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 						.getText(), Synonym.RELATED_SYNONYM, s.getScope()));
 				masters = DefaultObjectFactory.getFactory().createSynonym(
 						s.getText(), Synonym.RELATED_SYNONYM);
+				SynonymType type = s.getSynonymType();
+				if (type != null) {
+					out.add(new ChangeSynTypeHistoryItem(masterNode, s, type));
+					masters.setSynonymType(type);
+				}
 			}
 			for(Dbxref ref : s.getXrefs()){
 				if (!masters.getXrefs().contains(ref)) {
