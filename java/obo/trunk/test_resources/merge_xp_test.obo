@@ -72,6 +72,36 @@ id: Test:00050001
 name: term with typed synonym
 synonym: "foo bar" EXACT st1 []
 
+[Term]
+id: Test:00060000
+name: term to be merged for xref test
+xref: FOO:bar1
+
+[Term]
+id: Test:00060001
+name: term with xrefs
+xref: FOO:bar1
+xref: FOO:bar2
+
+[Term]
+id: Test:00060002
+name: term to be merged for synonym xref test
+
+[Term]
+id: Test:00060003
+name: term with xref synonym
+synonym: "foo bar" EXACT st1 [FOO:bar1, FOO:bar2]
+
+[Term]
+id: Test:00060004
+name: term to be merged for def xref test
+def: "Bla bla bla bla bla bla bla." [FOO:bar1]
+
+[Term]
+id: Test:00060005
+name: term with def xref
+def: "Blu blu blu blu blu blu blu." [FOO:bar1, FOO:bar2]
+
 [Typedef]
 id: part_of
 name: part_of

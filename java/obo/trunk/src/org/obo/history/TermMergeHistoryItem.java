@@ -207,6 +207,16 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 		out.add(new DefinitionChangeHistoryItem(masterNode, newDef));
 		out.add(new CommentChangeHistoryItem(masterNode, newComment));
 
+		// merge also the set of db xrefs for definitions
+		Set<Dbxref> slaveDefDbxrefs = slaveNode.getDefDbxrefs();
+		if (slaveDefDbxrefs != null && !slaveDefDbxrefs.isEmpty()) {
+			Set<Dbxref> masterDefDbxrefs = masterNode.getDefDbxrefs();
+			for (Dbxref dbxref : slaveDefDbxrefs) {
+				if (masterDefDbxrefs == null || masterDefDbxrefs.contains(dbxref) == false) {
+					out.add(new AddDbxrefHistoryItem(masterNode.getID(), dbxref, true, null));
+				}
+			}
+		}
 		
 		// copy also the subset tags from the slave node to the master node
 		Set<TermSubset> slaveSubsets = slaveNode.getSubsets();
