@@ -1,6 +1,16 @@
 ===  OBO-Edit v2.3 RELEASE NOTES  ===
 
 ===============================
+What's New in OBO-Edit 2.3-b6  (09/20/2013)
+===============================
+
+New features:
+- BugFix: Term merging, fixed missing synonym types [http://sourceforge.net/p/geneontology/bugs/1191/]
+- BugFix: Term merging, fixed missing subset tags [http://sourceforge.net/p/geneontology/bugs/1187/]
+- BugFix: Term merging, fixed missing Def xrefs
+- BugFix: DOG4DAG compatibility issues with Java 7
+
+===============================
 What's New in OBO-Edit 2.3-b5  (03/29/2013)
 ===============================
 
