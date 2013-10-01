@@ -1318,7 +1318,7 @@ sub get_interlink {
        ## thing.
        $optional_public_p = 0;
        $optional_full_p = 0;
-       $ilink = $self->amigo_env('AMIGO2_BASE_URL') . '/amigo/search';
+       $ilink = $self->amigo_env('AMIGO2_BASE_URL') . '/amigo/landing';
      },
 
      'browse' =>
