@@ -505,12 +505,13 @@ public class DefaultOBOParser implements OBOParser {
 	public void readImport(String path) throws IOException, OBOParseException {
 		URL originalURL = IOUtil.getURL(getCurrentPath());
 		try {
+			path = remapImports(path, originalURL);
 			URL url = new URL(originalURL, path);
 			path = url.toString();
 			if (!pathSet.contains(path)) {
 				metaData.addImport(getCurrentPath(), path);
 				if (getFollowImports()) {
-					engine.parse(path);
+					engine.parse(path, true);
 				}
 			}
 		} catch (MalformedURLException ex) {
@@ -520,6 +521,18 @@ public class DefaultOBOParser implements OBOParser {
 		}
 	}
 
+	protected String remapImports(String importPath, URL originalURL) {
+		String file = originalURL.getFile();
+		if (file != null && file.length() > 0) {
+			File currentPathFile = new File(file);
+			if (currentPathFile.isFile()) {
+				OBOCatalog catalog = new OBOCatalog(currentPathFile.getParentFile());
+				return catalog.map(importPath);
+			}
+		}
+		return importPath;
+	}
+	
 	// allows abbreviations for common URLs
 	// TODO: provide a full registry
 	public String mapPath(String path) {

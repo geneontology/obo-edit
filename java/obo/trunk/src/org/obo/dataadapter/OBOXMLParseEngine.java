@@ -1,14 +1,12 @@
 package org.obo.dataadapter;
 
 import java.io.IOException;
-import java.util.Collection;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.obo.datamodel.NestedValue;
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -20,6 +18,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 import org.apache.log4j.*;
 
+@Deprecated
 public class OBOXMLParseEngine extends AbstractParseEngine {
 
 	//initialize logger
@@ -112,7 +111,7 @@ public class OBOXMLParseEngine extends AbstractParseEngine {
 	}
 
 	@Override
-	protected void doParse(String path) throws IOException, OBOParseException {
+	protected void doParse(String path, boolean isImport) throws IOException, OBOParseException {
 
 		// Use an instance of ourselves as the SAX event handler
 		// Use the default (non-validating) parser
