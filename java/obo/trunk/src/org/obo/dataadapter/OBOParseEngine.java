@@ -270,8 +270,9 @@ public class OBOParseEngine extends AbstractParseEngine {
 		}
 	}
 
-	protected void doParse(String path) throws IOException, OBOParseException {
+	protected void doParse(String path, boolean isImport) throws IOException, OBOParseException {
 		setProgressString("Reading " + path);
+		List<String> imports = null;
 		String currentStanza = null;
 
 		BufferedReader reader = null;
@@ -401,7 +402,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 				if (parser instanceof OBOParser) {
 					try {
 						parseTag(currentStanza, line, linenum, pair.index + 1,
-								name, value, nv);
+								name, value, nv, isImport);
 					} catch (OBOParseException ex) {
 						ex.printStackTrace();
 						translateAndThrow(ex, line, linenum, pair.index + 1);
@@ -423,8 +424,20 @@ public class OBOParseEngine extends AbstractParseEngine {
 	public boolean parseTagValue(String stanza, String line, int linenum,
 			int charoffset, String name, String value, NestedValue nv)
 	throws OBOParseException, IOException {
+		return parseTagValue(stanza, line, linenum, charoffset, name, value, nv, false);
+	}
+	
+	private boolean parseTagValue(String stanza, String line, int linenum,
+			int charoffset, String name, String value, NestedValue nv, boolean isImport)
+	throws OBOParseException, IOException {
 		if (((OBOParser) parser).prefersRaw(name, value, nv)) {
 			return true;
+		} else if (name.equals("ontology")) {
+			// change of previous behavior: now we there is an explicit handler for the ontology tag
+			// only retain the ontology tag from the main ontology
+			if (isImport == false) {
+				parser.readTagValue(name, value, nv, false);
+			}
 		} else if (name.equals("import")) {
 			// TODO: CJM - improve imports. Allow registry/cache, selective imports
 			if (stanza != null) {
@@ -435,6 +448,11 @@ public class OBOParseEngine extends AbstractParseEngine {
 			int myLineNum = this.linenum;
 			((OBOParser) parser).readImport(value);
 			this.linenum = myLineNum;
+			
+			// change of previous behavior: now we retain the import statement from the main ontology
+			if (isImport == false) {
+				parser.readTagValue(name, value, nv, false);
+			}
 			return true;
 		} else if (name.equals("namespace-id-rule")) {
 			StringTokenizer tokenizer = new StringTokenizer(value);
@@ -975,7 +993,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 	}
 
 	protected void parseTag(String stanza, String line, int linenum,
-			int charoffset, String name, String value, NestedValue nv)
+			int charoffset, String name, String value, NestedValue nv, boolean isImport)
 	throws OBOParseException, IOException {
 		value = value.trim();
 		if (stanza != null) {
@@ -990,7 +1008,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 			// return;
 			// }
 		}
-		parseTagValue(stanza, line, linenum, charoffset, name, value, nv);
+		parseTagValue(stanza, line, linenum, charoffset, name, value, nv, isImport);
 	}
 
 	// see RelStruct in DefaultOBOParser and try to reference to RelStruct with comparable here

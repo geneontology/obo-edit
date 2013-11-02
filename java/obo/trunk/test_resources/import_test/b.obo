@@ -1,0 +1,12 @@
+format-version: 1.2
+subsetdef: subset_b "Subset defined in ontology B"
+import: http://purl.obolibrary.org/obo/bar.owl
+default-namespace: namespace_b
+ontology: B
+
+[Term]
+id: B:0002
+name: Two
+is_a: A:0001
+intersection: A:0001 ! One
+intersection: part_of C:0003 ! Three

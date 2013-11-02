@@ -16,7 +16,7 @@ public interface ParseEngine extends ProgressValued {
 
 	public abstract void parse() throws IOException, OBOParseException;
 
-	public abstract void parse(String path) throws IOException,
+	public abstract void parse(String path, boolean isImport) throws IOException,
 			OBOParseException;
 
 	public abstract int getLineNum();

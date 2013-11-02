@@ -37,15 +37,10 @@ public abstract class AbstractParseEngine extends AbstractProgressValued impleme
 		}
 	}
 
-	/* (non-Javadoc)
-	 * 
-	 * @see org.obo.dataadapter.ParseEngine#parse(java.lang.String)
-	 * @see org.obo.dataadapter.ParseEngine#doParse(java.lang.String)
-	 */
-	public void parse(String uri) throws IOException, OBOParseException {
+	public void parse(String uri, boolean isImport) throws IOException, OBOParseException {
 		pathStack.push(uri);
 		parser.startFileParse(uri);
-		doParse(uri);
+		doParse(uri, isImport);
 		parser.endFileParse(uri);
 		pathStack.pop();
 	}
@@ -54,8 +49,9 @@ public abstract class AbstractParseEngine extends AbstractProgressValued impleme
 	 * @param path to the file or URL at which the ontology resides
 	 * @throws IOException
 	 * @throws OBOParseException
+	 * return list of imports
 	 */
-	protected abstract void doParse(String path) throws IOException, OBOParseException;
+	protected abstract void doParse(String path, boolean isImport) throws IOException, OBOParseException;
 
 	public void setParser(OBOSimpleParser parser) {
 		this.parser = parser;
@@ -69,7 +65,7 @@ public abstract class AbstractParseEngine extends AbstractProgressValued impleme
 		pathStack = new Stack<String>();
 		parser.startParse();
 		for (String path : paths) {
-			parse(path);
+			parse(path, false);
 		}
 		parser.endParse();
 	}
