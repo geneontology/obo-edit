@@ -1,0 +1,9 @@
+format-version: 1.2
+subsetdef: subset_a "Subset defined in ontology A"
+import: http://purl.obolibrary.org/obo/foo.owl
+default-namespace: namespace_a
+ontology: A
+
+[Term]
+id: A:0001
+name: One

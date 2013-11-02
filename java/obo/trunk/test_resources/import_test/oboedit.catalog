@@ -1,0 +1,4 @@
+#This file contains test mappings
+http://purl.obolibrary.org/obo/foo.owl b.obo
+http://purl.obolibrary.org/obo/bar.owl c.obo
+
