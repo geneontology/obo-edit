@@ -1,6 +1,16 @@
 ===  OBO-Edit v2.3 RELEASE NOTES  ===
 
 ===============================
+What's New in OBO-Edit 2.3-b7  (10/04/2013)
+===============================
+
+New features:
+- Better handling of import statements in OBO, preserve import headers during loading of ontologies
+- Allow redirects of import statements using an catalog file. The catalog file must be in the same
+  folder as the ontology and be named 'oboedit.catalog'. It uses a simple pair value format with
+  whitespace as delimiters and '#' as comment symbol.
+
+===============================
 What's New in OBO-Edit 2.3-b6  (09/20/2013)
 ===============================
 
