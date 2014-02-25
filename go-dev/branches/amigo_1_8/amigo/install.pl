@@ -116,6 +116,8 @@ my @env_conf_order = qw(
 
 		         AMIGO_VERSION
 			 AMIGO_VERBOSE
+			 AMIGO_NOTICE_SWITCH
+			 AMIGO_NOTICE_MESSAGE
 			 AMIGO_TROUBLE_SWITCH
 			 AMIGO_TROUBLE_MESSAGE
 			 AMIGO_BETA
@@ -650,6 +652,25 @@ my %env_conf = (
 		 ERROR => 'generic error',
 		 PARSER => \&is_always_true,
 		 DEPENDS => \&is_always_false,
+		},
+
+		AMIGO_NOTICE_SWITCH =>
+		{
+		 DEFAULT => '0',
+		 MESSAGE =>
+		 "Add a notice to the top of AmiGO 1.x pages.",
+		 ERROR => 'generic error',
+		 PARSER => \&is_always_true,
+		 DEPENDS => \&is_always_false,
+		},
+
+		AMIGO_NOTICE_MESSAGE =>
+		{
+		 DEFAULT => '<h2 style="text-align: center;">Most functionality in AmiGO 1.x is deprecated.<br />You should try <a href="http://amigo2.geneontology.org/" title="Go to AmiGO 2">AmiGO 2</a> instead.</h2>',
+		 MESSAGE =>
+		 "Notice to present when a flag is triggered.",
+		 ERROR => 'not a string or empty',
+		 PARSER => \&is_a_string_or_empty_p,
 		},
 
 		AMIGO_TROUBLE_SWITCH =>
