@@ -148,9 +148,18 @@
       You are using AmiGO Labs
   </a>
 </h2>
+[% ELSE %]
+<!-- No BETA. -->
 [% END %]
 [% IF TROUBLE == 1 %]
 [%    TROUBLE_MESSAGE %]
+[% ELSE %]
+<!-- No TROUBLE. -->
+[% END %]
+[% IF NOTICE == 1 %]
+[%    NOTICE_MESSAGE %]
+[% ELSE %]
+<!-- No NOTICE. -->
 [% END %]
 
 [% IF EOL && EOL == 1 && AMIGO2_LINK && AMIGO2_LINK != '' %]
