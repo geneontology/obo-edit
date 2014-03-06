@@ -1151,6 +1151,51 @@ public class DefaultOBOParser implements OBOParser {
 	public void readIsMetadataTag(NestedValue nv) {
 		((OBOProperty)currentObject).setMetadataTag(true);
 	}
+	
+	public void readExpandAssertionTo(final String name, final String expr, final NestedValue nv) {
+		// expand_assertion_to tag is not supported by OBO-Edit
+		// Add it to the generic property values, but only 
+		// if no other equal NestedValue exists.
+		
+		Set<PropertyValue> allValues = ((OBOProperty)currentObject).getPropertyValues();
+		boolean add = true;
+		for (PropertyValue pv : allValues) {
+			if (name.equals(pv.getProperty())) {
+				if (expr.equals(pv.getValue())) {
+					add = false;
+					break;
+				}
+			}
+		}
+		if (add) {
+			PropertyValue pv = new PropertyValueImpl(name, expr, engine
+				.getCurrentPath(), engine.getLineNum());
+			((OBOProperty)currentObject).addPropertyValue(pv);
+		}
+	}
+
+	public void readIsClassLevel(String name, final boolean value, final NestedValue nv) {
+		// is_class_level tag is not supported by OBO-Edit
+		// Add it to the generic property values, but only 
+		// if no other equal NestedValue exists.
+		
+		Set<PropertyValue> allValues = ((OBOProperty)currentObject).getPropertyValues();
+		boolean add = true;
+		String valueString = Boolean.toString(value);
+		for (PropertyValue pv : allValues) {
+			if (name.equals(pv.getProperty())) {
+				if (valueString.equals(pv.getValue())) {
+					add = false;
+					break;
+				}
+			}
+		}
+		if (add) {
+			PropertyValue pv = new PropertyValueImpl(name, valueString,
+					engine.getCurrentPath(), engine.getLineNum());
+			((OBOProperty)currentObject).addPropertyValue(pv);
+		}
+	}
 
 	public void readIsObsolete(NestedValue nv) throws OBOParseException {
 		if (currentObject instanceof ObsoletableObject) {

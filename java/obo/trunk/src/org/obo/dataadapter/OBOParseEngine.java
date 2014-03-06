@@ -925,7 +925,14 @@ public class OBOParseEngine extends AbstractParseEngine {
 			if (value.trim().equalsIgnoreCase("true"))
 				((OBOParser) parser).readIsMetadataTag(nv);
 			return true;
-		} else if (name.equals("is_cyclic")) {
+		} else if (name.equals("expand_assertion_to")) {
+			((OBOParser) parser).readExpandAssertionTo(name, value, nv);
+			return true;
+		} else if (name.equals("is_class_level")) {
+			if (value.trim().equalsIgnoreCase("true"))
+				((OBOParser) parser).readIsClassLevel(name, true, nv);
+			return true;
+		}else if (name.equals("is_cyclic")) {
 			if (value.trim().equalsIgnoreCase("true"))
 				((OBOParser) parser).readIsCyclic(true, nv);
 			else if (value.trim().equalsIgnoreCase("false"))
