@@ -1,4 +1,13 @@
-===  OBO-Edit v2.3 RELEASE NOTES  ===
+===  OBO-Edit v2.3.1 RELEASE NOTES  ===
+
+===============================
+What's New in OBO-Edit 2.3.1-b1  (03/06/2014)
+===============================
+
+New features:
+- Better handling of 'expand_assertion_to' and 'is_class_level' tags. These tags (used 
+  in typedefs) will no longer be duplicated during an OBO-Edit roundtrip (in combination 
+  with imports).
 
 ===============================
 What's New in OBO-Edit 2.3     (12/02/2013)
